@@ -22,7 +22,7 @@ Configuration for the visualisation is provided via a number of local JSON files
   - This required file contains a hierarchal specification of data groups. Each group can either house sub-groups, or individual data sources and layers for display. The structure of these groups defines the layer selection tree to the left of the visualisation. The required format for this file is listed below.
 
 - `icons.json`:
-  - This optional file is used to list any image files required by the mapping library. Each image is specified with a unique name and a URL to the image file (which can be local or remote).
+  - This optional file is used to list any image files required by the mapping library. Each image is specified with a unique name and a URL to the image file (which can be local or remote). Adding "-sdf" to the icon's file name will ensure that the DTVF registers the image as an [SDF icon](https://docs.mapbox.com/help/troubleshooting/using-recolorable-images-in-mapbox-maps/) within Mapbox, enabling dynamic color changing (providing that the icon has been setup correctly).
 
 - `links.json`:
   - This optional file is used to provide links to additional resources; if present these are shown in the side panel of the visualisation.

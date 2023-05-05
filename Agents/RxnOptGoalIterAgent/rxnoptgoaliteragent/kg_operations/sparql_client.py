@@ -168,7 +168,7 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
     def generate_doe_instance_from_goal(
         self,
         goal_set: GoalSet,
-        chem_rxn: OntoCAPE_ChemicalReaction,
+        chem_rxn: ChemicalReaction,
         rxn_exp_as_beliefs: List[ReactionExperiment]=None,
     ) -> DesignOfExperiment:
         # get the doe template
@@ -185,17 +185,34 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
                     upperLimit=var.upperLimit,
                     lowerLimit=var.lowerLimit,
                     positionalID=var.positionalID,
-                    refersTo=OM_Quantity(
+                    refersToQuantity=OM_Quantity(
                         instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                        namespace_for_init=getNameSpace(var.refersTo.instance_iri),
-                        clz=var.refersTo.clz,
-                        hasUnit=var.refersTo.hasUnit,
+                        namespace_for_init=getNameSpace(var.refersToQuantity.instance_iri),
+                        clz=var.refersToQuantity.clz,
+                        hasUnit=var.refersToQuantity.hasUnit,
                     ),
                 )
                 list_design_variables.append(design_var)
             elif isinstance(var, CategoricalVariable):
-                # TODO [future work]: implement
-                raise NotImplementedError(f"Design variable type {type(var)} is not implemented yet.")
+                list_design_variables.append(
+                    CategoricalVariable(
+                        instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                        namespace_for_init=getNameSpace(var.instance_iri),
+                        positionalID=var.positionalID,
+                        refersToQuantity=OM_Quantity(
+                            instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                            namespace_for_init=getNameSpace(var.instance_iri),
+                            clz=var.refersToQuantity.clz,
+                            hasValue=OM_Measure(
+                                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                                namespace_for_init=getNameSpace(var.refersToQuantity.instance_iri),
+                                hasUnit=var.refersToQuantity.hasValue.hasUnit,
+                                hasNumericalValue=var.refersToQuantity.hasValue.hasNumericalValue,
+                            ),
+                        ),
+                        hasLevel=var.hasLevel,
+                    )
+                )
             else:
                 raise NotImplementedError(f"Design variable type {type(var)} is not implemented yet.")
 
@@ -206,15 +223,15 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 namespace_for_init=getNameSpace(param.instance_iri),
                 positionalID=param.positionalID,
-                refersTo=OM_Quantity(
+                refersToQuantity=OM_Quantity(
                     instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                    namespace_for_init=getNameSpace(param.refersTo.instance_iri),
-                    clz=param.refersTo.clz,
+                    namespace_for_init=getNameSpace(param.refersToQuantity.instance_iri),
+                    clz=param.refersToQuantity.clz,
                     hasValue=OM_Measure(
                         instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                        namespace_for_init=getNameSpace(param.refersTo.hasValue.instance_iri),
-                        hasUnit=param.refersTo.hasValue.hasUnit,
-                        hasNumericalValue=param.refersTo.hasValue.hasNumericalValue,
+                        namespace_for_init=getNameSpace(param.refersToQuantity.hasValue.instance_iri),
+                        hasUnit=param.refersToQuantity.hasValue.hasUnit,
+                        hasNumericalValue=param.refersToQuantity.hasValue.hasNumericalValue,
                     ),
                 )
             )
@@ -229,7 +246,7 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
                 namespace_for_init=getNameSpace(goal_set.instance_iri),
                 maximise=boolean_maximise,
                 # positionalID=None, # TODO [only when we are supporting same type of goal]
-                refersTo=goal.desires().clz,
+                refersToQuantity=goal.desires().clz,
             )
             list_system_responses.append(sys_res)
 
@@ -250,17 +267,14 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
             namespace_for_init=getNameSpace(goal_set.instance_iri),
             # TODO [nice-to-have] add support for Strategy defined by user
-            # NOTE at the moment, we use TSEMO and its default parameters
-            usesStrategy=TSEMO(
-                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                namespace_for_init=getNameSpace(goal_set.instance_iri),
-            ),
+            # TODO [urgent] make sure the strategy is not duplicated if already exists in the KG - current solution will mess up the TSEMO as duplicated data properties will be created
+            usesStrategy=doe_template.usesStrategy,
             hasDomain=constructed_domain,
             hasSystemResponse=list_system_responses,
             utilisesHistoricalData=HistoricalData(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 namespace_for_init=getNameSpace(goal_set.instance_iri),
-                refersTo=filtered_rxn_exp_as_beliefs,
+                refersToExperiment=filtered_rxn_exp_as_beliefs,
                 # NOTE in utilisesHistoricalData, the default value 1 is used for numOfNewExp
             ),
             designsChemicalReaction=chem_rxn.instance_iri,

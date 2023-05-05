@@ -20,3 +20,14 @@ services:
         builder: "${BUILDER}"
         description: "Blazegraph with BASIC authentication, based on the official Tomcat 9 image."
         hash: "${HASH}"
+
+  # File server
+  fileserver:
+    image: ghcr.io/cambridge-cares/fileserver:1.1.0
+    build:
+      context: fileserver
+      labels:
+        authors: "support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "Tomcat servlet designed to simplify the storage and retrieval of files referenced in the knowledge graph."
+        hash: "${HASH}"

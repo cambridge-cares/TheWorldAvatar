@@ -12,8 +12,9 @@ import requests
 from agent.datamodel.iris import *
 from agent.datamodel.data_mapping import GBP_PER_SM, GBP
 from agent.errorhandling.exceptions import KGException
-from agent.kgutils.kgclient import KGClient
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+
+from pyderivationagent import PySparqlClient
 
 # Initialise logger
 from py4jps import agentlogging
@@ -102,8 +103,8 @@ def upload_ontology(tbox_url=TBOX_URL, abox_url=None):
         abox_url - URL to ABox
     """
 
-    # Create KGclient to upload .owl files
-    kg_client = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
+    # Create PySparqlClient to upload .owl files
+    kg_client = PySparqlClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
     # Verify that TBox has not been initialized
     try:
@@ -116,7 +117,7 @@ def upload_ontology(tbox_url=TBOX_URL, abox_url=None):
     if not res:
         # Upload TBox and ABox if not already instantiated
         temp_fp = 'tmp.owl'
-        to_upload = [f for f in [tbox_url, abox_url] in f]
+        to_upload = [f for f in [tbox_url, abox_url] if f]
         for i in to_upload:
             try:
                 # Retrieve .owl file
@@ -131,11 +132,8 @@ def upload_ontology(tbox_url=TBOX_URL, abox_url=None):
                 logger.info(f'Writing temporary {i} .owl file ...')
                 with open(temp_fp, 'w') as f:
                     f.write(content.text)
-                # Create Java file
-                temp_f = kg_client.jpsBaseLibView.java.io.File(temp_fp)
-                # Upload .owl file to KG
-                logger.info(f'Uploading {i} .owl file to KG ...')
-                kg_client.kg_client.uploadFile(temp_f)
+                    # Upload .owl file to KG
+                    kg_client.uploadOntology(temp_fp)
                 os.remove(temp_fp)
             except Exception as ex:
                 logger.error("Unable to initialise knowledge graph with TBox and ABox.")

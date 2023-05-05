@@ -31,7 +31,7 @@ class TSClient:
         Initialise TimeSeriesClient (default properties taken from environment variables)
 
         Arguments:
-            kg_client (KGClient): KGClient object (as per `kgclient.py`)
+            kg_client (PySparqlClient): KGClient object (pyderivationagent.PySparqlClient)
             timeclass: Java time class objects supported by PostgreSQL
                        (see: https://www.jooq.org/javadoc/dev/org.jooq/org/jooq/impl/SQLDataType.html)
             rdb_url (str): URL of relational database

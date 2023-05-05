@@ -14,6 +14,15 @@ version: "3.8"
 
 services:
 
+  # Visualisation for DOME project
+  dome-vis:
+    image: docker.cmclinnovations.com/dome-vis:1.0.0-SNAPSHOT
+    container_name: "dome-vis${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    pull_policy: if_not_present
+    restart: unless-stopped
+    
   # Flood Map
   flood-map:
     image: docker.cmclinnovations.com/flood-vis-${MODE}:1.0.0-SNAPSHOT

@@ -41,8 +41,10 @@ ENV CLIENT_PROPERTIES="/root/client.properties"
 # Set the required environment variable
 ENV ESPHOME_CLIENT_PROPERTIES="/root/esphome-client.properties"
 
+#Set the required environment variable
+ENV ACCESS_AGENT_TARGETRESOURCEID="http://host.docker.internal:48888/esphome"
 
-COPY --from=builder /root/esphome-agent-code/output/esphome-agent##1.3.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/esphome-agent-code/output/esphome-agent##1.4.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]
