@@ -247,6 +247,22 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
             } else {
                 throw new IOException("Properties file is missing \"db.password=<db_password>\"");
             }
+            if (prop.containsKey("sparql.query.endpoint")) {
+                this.sparqlQueryEndpoint = prop.getProperty("sparql.query.endpoint");
+            } else {
+                throw new IOException("Properties file is missing \"sparql.query.endpoint=<sparql_query_endpoint>\"");
+            }
+            if (prop.containsKey("sparql.update.endpoint")) {
+                this.sparqlUpdateEndpoint = prop.getProperty("sparql.update.endpoint");
+            } else {
+                throw new IOException("Properties file is missing \"sparql.update.endpoint=<sparql_update_endpoint>\"");
+            }
+            if (prop.containsKey("bg.username")) {
+                this.bgUsername = prop.getProperty("bg.username");
+            }
+            if (prop.containsKey("bg.password")) {
+                this.bgPassword = prop.getProperty("bg.password");
+            }
         }
     }
 
