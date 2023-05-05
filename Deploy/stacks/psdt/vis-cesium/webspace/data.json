@@ -67,7 +67,20 @@
                     "id": "hugo-ball-lod3-tiles-layer",
                     "name": "Hugo-Ball-Gymnasium (3D, BIM)",
                     "source": "hugo-ball-lod3-tiles-source",
-                    "visibility": "none"
+                    "visibility": "none",
+                    "clipping": {
+                        "min": 379.9,
+                        "max": 396.1,
+                        "start": 396.1,
+                        "labels": {
+                            "379.9": "Untergeschoss",
+                            "383.0": "Erdgeschoss",
+                            "386.5": "1. Obergeschoss",
+                            "389.8": "2. Obergeschoss",
+                            "393.2": "3. Obergeschoss",
+                            "396.1": "Dach"
+                        }
+                    }
                 },
                 {
                     "id": "hugo-ball-solarpanel-lod3-tiles-layer",
