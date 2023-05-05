@@ -91,7 +91,19 @@
                     "id": "erlenbrunnerstr45-lod3-tiles-layer",
                     "name": "Erlenbrunnerstr. 45 (3D, BIM)",
                     "source": "erlenbrunnerstr45-lod3-tiles-source",
-                    "visibility": "none"
+                    "visibility": "none",
+                    "clipping": {
+                        "min": 415.42,
+                        "max": 424.3,
+                        "start": 424.3,
+                        "labels": {
+                            "415.42": "Keller",
+                            "417.42": "Garage",
+                            "418.14": "Erdgeschoss",
+                            "420.82": "1. Obergeschoss",
+                            "424.3": "Dach"
+                        }
+                    }
                 },
                 {
                     "id": "erlenbrunnerstr45-solarpanel-lod3-tiles-layer",
