@@ -45,8 +45,9 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
     private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
     private static final String CONNECTOR_ERROR_MSG = "Could not construct the NTUEnergy XLSX connector needed to interact with the Excel file!";
-    private static final String GET_READINGS_ERROR_MSG = "One or both readings could not be retrieved, this might have created a mismatch" +
+    private static final String GET_READINGS_ERROR_MSG = "The energy reading could not be retrieved, this might have created a mismatch" +
             " in the pointers if one readings was successful and needs to be fixed!";
+    private static final String GET_SPECS_ERROR_MSG = "One or multiple specs could not be retrieved. ";
     private static final String ONE_READING_EMPTY_ERROR_MSG = "Readings are empty, that means there is " +
             "a mismatch in the pointer for the readings. This should be fixed (and might require a clean up of the database)!";
 
@@ -164,9 +165,11 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
         HistoricalNTUEnergyAgentXLSXConnector connector;
         try {
             if (properties.length == 2) {
-                connector = new HistoricalNTUEnergyAgentXLSXConnector(System.getenv("ENERGY_READINGS"), properties[1]);
+                connector = new HistoricalNTUEnergyAgentXLSXConnector(System.getenv("ENERGY_READINGS"), properties[1],
+                        System.getenv("GENERATOR_SPECS"), System.getenv("BUSNODE_SPECS"), System.getenv("BRANCH_SPECS"), System.getenv("PV_SPECS"));
             } else {
-                connector = new HistoricalNTUEnergyAgentXLSXConnector(System.getenv("ENERGY_READINGS"), properties[2]);
+                connector = new HistoricalNTUEnergyAgentXLSXConnector(System.getenv("ENERGY_READINGS"), properties[2],
+                        System.getenv("GENERATOR_SPECS"), System.getenv("BUSNODE_SPECS"), System.getenv("BRANCH_SPECS"),  System.getenv("PV_SPECS"));
             }
         } catch (IOException e) {
             LOGGER.error(CONNECTOR_ERROR_MSG, e);
@@ -201,9 +204,25 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
             throw new JPSRuntimeException(ONE_READING_EMPTY_ERROR_MSG);
         }
 
+        //Retrieve specs
+        JSONArray busNodeSpecs;
+        JSONArray branchSpecs;
+        JSONArray generatorSpecs;
+        JSONArray pvSpecs;
+
+        try {
+            busNodeSpecs = connector.getBusNodeSpecs();
+            branchSpecs = connector.getBranchSpecs();
+            generatorSpecs = connector.getGeneratorSpecs();
+            pvSpecs = connector.getPVSpecs();
+        } catch (Exception e) {
+            LOGGER.error(GET_SPECS_ERROR_MSG, e);
+            throw new JPSRuntimeException(GET_SPECS_ERROR_MSG, e);
+        }
+
         HistoricalQueryBuilder queryBuilder;
         try {
-            queryBuilder = new HistoricalQueryBuilder(properties[0], kbClient);
+            queryBuilder = new HistoricalQueryBuilder(properties[0], kbClient, busNodeSpecs, branchSpecs, generatorSpecs, pvSpecs);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

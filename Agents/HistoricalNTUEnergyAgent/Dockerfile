@@ -34,6 +34,11 @@ COPY ./config/mappings /root/mappings
 
 # Copy in the energy data
 COPY ./config/NTU_Energy_Consumption.xlsx /root/NTU_Energy_Consumption.xlsx
+COPY ./config/Bus_node_specs.xlsx /root/Bus_node_specs.xlsx
+COPY ./config/Branch_specs.xlsx /root/Branch_specs.xlsx
+COPY ./config/Generator_specs.xlsx /root/Generator_specs.xlsx
+COPY ./config/PV_specs.xlsx /root/PV_specs.xlsx
+
 
 # Set the required environment variables
 ENV HISTORICALNTUENERGY_AGENTPROPERTIES="/root/agent.properties"
@@ -44,6 +49,10 @@ ENV HISTORICALNTUENERGY_AGENT_MAPPINGS="/root/mappings"
 
 # Set the required environment variable
 ENV ENERGY_READINGS="/root/NTU_Energy_Consumption.xlsx"
+ENV BUSNODE_SPECS="/root/Bus_node_specs.xlsx"
+ENV BRANCH_SPECS="/root/Branch_specs.xlsx"
+ENV GENERATOR_SPECS="/root/Generator_specs.xlsx"
+ENV PV_SPECS="/root/PV_specs.xlsx"
 
 COPY --from=builder /root/HistoricalNTUEnergyAgentCode/output/historical-ntuenergy-agent##1.0.0.war $CATALINA_HOME/webapps/
 

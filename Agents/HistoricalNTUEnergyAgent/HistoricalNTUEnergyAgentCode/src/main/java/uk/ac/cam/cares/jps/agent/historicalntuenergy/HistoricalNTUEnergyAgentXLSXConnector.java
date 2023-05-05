@@ -18,6 +18,10 @@ import java.util.Properties;
 public class HistoricalNTUEnergyAgentXLSXConnector {
 
     private String energyReadingsFilePath;
+    private String generatorSpecFilePath;
+    private String busNodeSpecFilePath;
+    private String branchSpecFilePath;
+    private String pvFilePath;
     private String numOfEnergyKeys;
     JSONArray readings;
     JSONObject readingsPerHour;
@@ -33,8 +37,12 @@ public class HistoricalNTUEnergyAgentXLSXConnector {
     /**
      * Standard constructor
      */
-    public HistoricalNTUEnergyAgentXLSXConnector(String energyReadingsFilePath, String numOfKeysFilePath) throws IOException {
+    public HistoricalNTUEnergyAgentXLSXConnector(String energyReadingsFilePath, String numOfKeysFilePath, String generatorSpecFilePath, String busNodeSpecFilePath, String branchSpecFilePath, String pvFilePath) throws IOException {
         this.energyReadingsFilePath = energyReadingsFilePath;
+        this.generatorSpecFilePath = generatorSpecFilePath;
+        this.branchSpecFilePath = branchSpecFilePath;
+        this.busNodeSpecFilePath = busNodeSpecFilePath;
+        this.pvFilePath = pvFilePath;
 
         File file = new File(numOfKeysFilePath);
         if (!file.exists()) {
@@ -51,6 +59,7 @@ public class HistoricalNTUEnergyAgentXLSXConnector {
         }
     }
 
+
     /**
      * Retrieves the energy readings from the Excel file
      *
@@ -59,6 +68,38 @@ public class HistoricalNTUEnergyAgentXLSXConnector {
     public JSONArray getEnergyReadings() {
         try {
             return retrieveReadings(energyReadingsFilePath, Integer.valueOf(numOfEnergyKeys));
+        } catch (IOException | JSONException e) {
+            LOGGER.error(ENERGY_ERROR_MSG, e);
+            throw new JPSRuntimeException(ENERGY_ERROR_MSG, e);
+        }
+    }
+    public JSONArray getGeneratorSpecs() {
+        try {
+            return retrieveSpecs(generatorSpecFilePath);
+        } catch (IOException | JSONException e) {
+            LOGGER.error(ENERGY_ERROR_MSG, e);
+            throw new JPSRuntimeException(ENERGY_ERROR_MSG, e);
+        }
+    }
+    public JSONArray getBusNodeSpecs() {
+        try {
+            return retrieveSpecs(busNodeSpecFilePath);
+        } catch (IOException | JSONException e) {
+            LOGGER.error(ENERGY_ERROR_MSG, e);
+            throw new JPSRuntimeException(ENERGY_ERROR_MSG, e);
+        }
+    }
+    public JSONArray getBranchSpecs() {
+        try {
+            return retrieveSpecs(branchSpecFilePath);
+        } catch (IOException | JSONException e) {
+            LOGGER.error(ENERGY_ERROR_MSG, e);
+            throw new JPSRuntimeException(ENERGY_ERROR_MSG, e);
+        }
+    }
+    public JSONArray getPVSpecs() {
+        try {
+            return retrieveSpecs(pvFilePath);
         } catch (IOException | JSONException e) {
             LOGGER.error(ENERGY_ERROR_MSG, e);
             throw new JPSRuntimeException(ENERGY_ERROR_MSG, e);
@@ -108,4 +149,50 @@ public class HistoricalNTUEnergyAgentXLSXConnector {
         }
         return readings;
     }
+
+    public static JSONArray retrieveSpecs(String filePath) throws IOException {
+        FileInputStream fileInputStream = new FileInputStream(new File(filePath));
+        XSSFWorkbook workbook = new XSSFWorkbook(fileInputStream);
+        XSSFSheet sheet = workbook.getSheetAt(0);
+        Row headerRow = sheet.getRow(0);
+        int lastColumn = headerRow.getLastCellNum();
+        JSONArray specs = new JSONArray();
+
+        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            JSONObject entry = new JSONObject();
+            for (int j = 0; j < lastColumn; j++) {
+                Cell headerCell = headerRow.getCell(j);
+                Cell cell = row.getCell(j);
+                String cellValue = getCellValueAsString(cell);
+                entry.put(headerCell.getStringCellValue(), cellValue);
+            }
+            specs.put(entry);
+        }
+        workbook.close();
+        fileInputStream.close();
+        return specs;
+    }
+    private static String getCellValueAsString(Cell cell) {
+        if (cell == null) {
+            return "";
+        }
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                if (org.apache.poi.ss.usermodel.DateUtil.isCellDateFormatted(cell)) {
+                    return cell.getDateCellValue().toString();
+                } else {
+                    return String.valueOf(cell.getNumericCellValue());
+                }
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            case FORMULA:
+                return cell.getCellFormula();
+            default:
+                return "";
+        }
+    }
+
 }
