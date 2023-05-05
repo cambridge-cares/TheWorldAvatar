@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>com.cmclinnovations.mods</groupId>
 	<artifactId>mods-simple-agent</artifactId>
-	<version>0.3.0-dev-mods-agent-sensitivity-analysis-SNAPSHOT</version>
+	<version>0.3.0</version>
 	<name>mods-simple-agent</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>

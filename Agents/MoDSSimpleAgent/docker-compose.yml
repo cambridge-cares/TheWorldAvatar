@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   modssimpleagent:
-    image: docker.cmclinnovations.com/modssimpleagent:0.3.0-dev-mods-agent-sensitivity-analysis-SNAPSHOT
+    image: docker.cmclinnovations.com/modssimpleagent:0.3.0
     build: .
     container_name: modssimpleagent
     environment:
