@@ -19,6 +19,7 @@ import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient;
 import com.cmclinnovations.stack.services.config.Connection;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.api.command.CreateNetworkCmd;
 import com.github.dockerjava.api.command.CreateServiceCmd;
 import com.github.dockerjava.api.command.CreateServiceResponse;
@@ -31,6 +32,7 @@ import com.github.dockerjava.api.command.PullImageCmd;
 import com.github.dockerjava.api.command.PullImageResultCallback;
 import com.github.dockerjava.api.command.RemoveServiceCmd;
 import com.github.dockerjava.api.command.StartContainerCmd;
+import com.github.dockerjava.api.model.AuthConfig;
 import com.github.dockerjava.api.model.Config;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.ContainerSpec;
@@ -67,6 +69,31 @@ public class DockerService extends AbstractService
     protected final DockerClient dockerClient;
 
     protected Network network;
+
+    private static final Map<String, AuthConfig> auths;
+
+    static {
+        try {
+            Path authDir = Path.of("/inputs/config/dockerRepos");
+            if (Files.isDirectory(authDir)) {
+                ObjectMapper mapper = new ObjectMapper();
+                auths = Files.list(authDir)
+                        .filter(path -> Files.isRegularFile(path) && path.getFileName().toString().endsWith(".json"))
+                        .map(path -> {
+                            try {
+                                return mapper.readValue(path.toFile(), AuthConfig.class);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }).collect(
+                                Collectors.toUnmodifiableMap(AuthConfig::getRegistryAddress, authConfig -> authConfig));
+            } else {
+                auths = Map.of();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public DockerService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
         super(serviceManager, config);
@@ -492,10 +519,16 @@ public class DockerService extends AbstractService
     }
 
     protected void pullImage(ContainerService service) {
+        String imageName = service.getImage();
         String image = service.getImage();
         if (dockerClient.getInternalClient().listImagesCmd().withImageNameFilter(image).exec().isEmpty()) {
             // No image with the requested image ID, so try to pull image
-            try (PullImageCmd pullImageCmd = dockerClient.getInternalClient().pullImageCmd(image)) {
+            try (PullImageCmd pullImageCmd = dockerClient.getInternalClient().pullImageCmd(imageName)) {
+
+                AuthConfig authConfig = auths.get(imageName.replaceFirst("/.*", ""));
+                if (null != authConfig) {
+                    pullImageCmd.withAuthConfig(authConfig);
+                }
                 pullImageCmd
                         .exec(new PullImageResultCallback())
                         .awaitCompletion();
