@@ -6,15 +6,6 @@
 # Ensure the host server is initialised
 init_server
 
-# Pull these images here because the "--with-registry-auth" argument
-# used below only seems to add credentials for Docker Hub
-private_images=('docker.cmclinnovations.com/blazegraph:1.1.0' 'docker.cmclinnovations.com/geoserver:2.20.4')
-for private_image in "${private_images[@]}" ; do
-    if [ -z "$(${EXECUTABLE} images -q "$private_image")" ]; then
-        ${EXECUTABLE} pull -q "$private_image"
-    fi
-done
-
 # Remove existing services started from this directory
 "${SCRIPTS_DIR}/stop.sh" "${STACK_NAME}"
 
