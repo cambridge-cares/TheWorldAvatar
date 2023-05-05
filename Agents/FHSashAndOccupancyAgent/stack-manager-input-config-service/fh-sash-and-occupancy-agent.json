@@ -4,6 +4,13 @@
     "TaskTemplate": {
       "ContainerSpec": {
         "Image": "docker.io/library/fh-sash-and-occupancy-agent:1.0.0",
+        "Mounts": [
+          {
+            "Type": "bind",
+            "Source": "/mnt/c/Users/WANG01/Documents/GitHub/TheWorldAvatar/Agents/FHSashAndOccupancyAgent/config",
+            "Target": "/usr/local/tomcat/config"
+          }
+        ],
         "Configs": [
           {
             "ConfigName": "blazegraph"
