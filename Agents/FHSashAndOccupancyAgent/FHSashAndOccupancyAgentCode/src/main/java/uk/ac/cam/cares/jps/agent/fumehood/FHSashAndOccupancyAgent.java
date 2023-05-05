@@ -137,8 +137,10 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
 
         map = getSashOpeningTsData(map);
 
+        if (checkSashAndOccupancy(map)) {
         EmailBuilder emailBuilder = new EmailBuilder();
         emailBuilder.parsesMapAndPostProcessing(map);
+        }
 
         LOGGER.info( map.get("FHandWFH").toString());
         LOGGER.info( map.get("Label").toString());
@@ -315,6 +317,29 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
             }
         }
         return map;
+    }
+
+    /**
+     * Check sash and occupancy values
+     * @param map map that consists of several keys where each key has its own List of Strings
+     * @return boolean of whether there exist a fumehood that is not occupied and have a sash opening value of more than 50
+     */
+    private Boolean checkSashAndOccupancy(Map<String, List<String>> map) {
+        Boolean check = false;
+        for (int i = 0; i < map.get("FHandWFH").size(); i++){
+            String occupiedStateData = map.get("OccupiedStateTsData").get(i);
+            String sashOpeningData = map.get("SashOpeningTsData").get(i);
+            if (occupiedStateData.contains("This device does not have an occupied state.") | sashOpeningData.contains("This device does not have a sash opening.")) {
+                check = false;
+            } else {
+                if (Double.parseDouble(occupiedStateData) == 0.0 && Double.parseDouble(sashOpeningData) > 50.0) {
+                    check = true;
+                    return check;
+                }
+            }
+        }
+        LOGGER.info("Check is " + check);
+        return check;
     }
 
 }
