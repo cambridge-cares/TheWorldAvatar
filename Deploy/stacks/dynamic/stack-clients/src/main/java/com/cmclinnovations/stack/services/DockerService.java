@@ -520,8 +520,13 @@ public class DockerService extends AbstractService
 
     protected void pullImage(ContainerService service) {
         String imageName = service.getImage();
-        String image = service.getImage();
-        if (dockerClient.getInternalClient().listImagesCmd().withImageNameFilter(image).exec().isEmpty()) {
+        // Need to filter image name in stream as withImageNameFilter doesn't work as it
+        // uses the obsolete "filter" parameter
+        if (dockerClient.getInternalClient().listImagesCmd().withImageNameFilter(imageName).exec()
+                .stream().noneMatch(image -> {
+                    String[] repoTags = image.getRepoTags();
+                    return null != repoTags && Stream.of(repoTags).anyMatch(imageName::equals);
+                })) {
             // No image with the requested image ID, so try to pull image
             try (PullImageCmd pullImageCmd = dockerClient.getInternalClient().pullImageCmd(imageName)) {
 
