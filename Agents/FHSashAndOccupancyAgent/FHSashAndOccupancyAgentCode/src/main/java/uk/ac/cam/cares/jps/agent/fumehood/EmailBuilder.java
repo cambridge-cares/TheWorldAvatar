@@ -36,7 +36,7 @@ public class EmailBuilder {
         sb.append("</th>");
         sb.append("<th>Occupied State");
         sb.append("</th>");
-        sb.append("<th>Sash Opening");
+        sb.append("<th>Sash Opening (%)");
         sb.append("</th>");
         sb.append("</tr>");
         EmailSender sender = new EmailSender();
