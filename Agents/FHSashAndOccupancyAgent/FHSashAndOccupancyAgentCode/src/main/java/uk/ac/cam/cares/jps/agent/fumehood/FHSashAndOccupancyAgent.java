@@ -137,6 +137,9 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
 
         map = getSashOpeningTsData(map);
 
+        EmailBuilder emailBuilder = new EmailBuilder();
+        emailBuilder.parsesMapAndPostProcessing(map);
+
         LOGGER.info( map.get("FHandWFH").toString());
         LOGGER.info( map.get("Label").toString());
         LOGGER.info( map.get("OccupancyIRIs").toString());
