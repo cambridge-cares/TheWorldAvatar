@@ -11,7 +11,7 @@
 	</parent>
 	<groupId>com.cmclinnovations.mods</groupId>
 	<artifactId>mods-simple-agent</artifactId>
-	<version>0.3.1-dev-mods-agent-fixes-to-scaling-and-outputs-SNAPSHOT</version>
+	<version>0.3.1</version>
 	<name>mods-simple-agent</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>

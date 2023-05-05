@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   modssimpleagent:
-    image: docker.cmclinnovations.com/modssimpleagent:0.3.1-dev-mods-agent-fixes-to-scaling-and-outputs-SNAPSHOT
+    image: docker.cmclinnovations.com/modssimpleagent:0.3.1
     build: .
     container_name: modssimpleagent
     environment:
