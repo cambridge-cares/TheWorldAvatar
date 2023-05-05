@@ -24,6 +24,9 @@ LAYERNAME             # Geoserver layer name, ALSO table name for geospatial fea
 GEOSERVER_WORKSPACE   
 ONTOP_FILE            # Path to ontop mapping file (i.e. path within Docker container)
 BUILDINGS_TABLE       # PostGIS table name containing building footprints
+# Derivation Agent configuration
+# NOTE: value needs to match counterpart specified in the docker-compose.yml file of FloodAssessmentAgent
+FLOOD_ASSESSMENT_AGENT_IRI
 ```
 After instantiating a new flood warning or alert, the `FloodWarningAgent` also instantiates the relevant derivation mark-up (i.e. to allow for automatic flood assessment by the [FloodAssessmentAgent] which is implemented using the Derivation Framework). To mark up affected buildings by a specific flood, PostGIS is used to geospatially assess all (previously) instantiated buildings within the flood area. Hence, the `BUILDINGS_TABLE` needs to be provided to the agent.
 

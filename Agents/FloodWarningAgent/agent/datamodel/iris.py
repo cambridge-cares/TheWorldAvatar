@@ -4,7 +4,6 @@ ABOX_URL = 'https://github.com/cambridge-cares/TheWorldAvatar/raw/main/JPS_Ontol
 
 ###--- Derivation Markup ---###
 DERIVATION_INSTANCE_BASE_URL = 'https://www.theworldavatar.com/kg/derivation/'
-FLOOD_ASSESSMENT_AGENT_IRI = 'https://www.theworldavatar.com/resource/agents/Service__KL_FloodAssessment/Service'
 
 ###--- Common Base URLs ---###
 # External ontologies
@@ -14,7 +13,7 @@ XSD = 'http://www.w3.org/2001/XMLSchema#'
 GEO = 'http://www.opengis.net/ont/geosparql#'
 OM = 'http://www.ontology-of-units-of-measure.org/resource/om-2/'
 OWL = 'http://www.w3.org/2002/07/owl#'
-TIME = 'https://www.w3.org/2006/time#'
+TIME = 'http://www.w3.org/2006/time#'
 RT = 'http://environment.data.gov.uk/flood-monitoring/def/core/'
 ENVO = 'http://purl.obolibrary.org/obo/'
 SOPH = 'http://sweetontology.net/phen/'

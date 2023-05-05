@@ -10,7 +10,7 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodevice/">
         <owl:imports rdf:resource="https://saref.etsi.org/core/"/>
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">08 March 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">06 April 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoDevice is an ontology for describing devices, their capabilities and properties.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.5</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -27,6 +27,19 @@
      -->
 
 
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasA -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasA">
+        <rdfs:domain rdf:resource="https://w3id.org/MON/person.owl#Person"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a person possessing a device.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has a</rdfs:label>
+    </owl:ObjectProperty>
     
 
 
@@ -47,6 +60,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasHeight">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a device and its height.</rdfs:comment>
@@ -60,6 +74,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasLength">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Length"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a device and its length.</rdfs:comment>
@@ -73,6 +88,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasMass">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Mass"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a device and its mass.</rdfs:comment>
@@ -95,10 +111,32 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasPressure -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasPressure">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+                    <rdf:Description rdf:about="https://w3id.org/bot#Zone"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Pressure"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship describing the pressure exerted on a substance, object or a space.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has pressure</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/hasPrice -->
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasPrice">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a device and its price.</rdfs:comment>
@@ -108,33 +146,57 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontodevice/hasProperty -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasProperty">
-        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Property"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a property of a device or space.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has property</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontodevice/hasQuantity -->
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasQuantity">
-        <rdfs:domain rdf:resource="http://www.w3.org/ns/ssn/systems/Condition"/>
-        <rdfs:domain rdf:resource="http://www.w3.org/ns/ssn/systems/OperatingProperty"/>
-        <rdfs:domain rdf:resource="http://www.w3.org/ns/ssn/systems/SystemProperty"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Property"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Setpoint"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#UnitOperation"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem"/>
+                    <rdf:Description rdf:about="http://www.w3.org/ns/ssn/systems/Condition"/>
+                    <rdf:Description rdf:about="http://www.w3.org/ns/ssn/systems/OperatingProperty"/>
+                    <rdf:Description rdf:about="http://www.w3.org/ns/ssn/systems/SystemProperty"/>
+                    <rdf:Description rdf:about="https://w3id.org/bot#Zone"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontodevice/Device"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontodevice/Setpoint"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a property of a device or space, a setpoint, an operating property, a system property, a condition and the quantity it represents.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between something (it could be a device or space, a setpoint, an operating property etc) and the quantity it represents or has.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has quantity</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasRelativeHumidity -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasRelativeHumidity">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/RelativeHumidity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship describing the relative humidity of a substance, object or space.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has relative humidity</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasScreenBrightness -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasScreenBrightness">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/MobilePhone"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/RelativeBrightness"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a device and its screen brightness.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has screen brightness</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -178,15 +240,76 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasTemperature -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasTemperature">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+                    <rdf:Description rdf:about="https://w3id.org/bot#Zone"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship describing the degree or intensity of heat present in a substance, object or space.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has temperature</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/hasWidth -->
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasWidth">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Width"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a device and its width.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has width</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasXComponent -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasXComponent">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Vector"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the component of a vector in x-direction.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has X component</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasYComponent -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasYComponent">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Vector"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the component of a vector in y-direction.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Y component</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasZComponent -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasZComponent">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Vector"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the component of a vector in z-direction.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has Z component</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -222,8 +345,15 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/measures">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
-        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a device and a quantity that it is measuring.</rdfs:comment>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontodevice/Vector"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a device and a quantity or vector that it is measuring.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">measures</rdfs:label>
     </owl:ObjectProperty>
@@ -256,6 +386,52 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/sensesSubstance -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/sensesSubstance">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://saref.etsi.org/core/TemperatureSensor"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontodevice/FlowSensor"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontodevice/PressureSensor"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#Substance"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the type of substance that a device is sensing or observing.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">senses substance</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasID -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasID">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the ID assigned to a device.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has ID</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -265,6 +441,13 @@
      -->
 
 
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration"/>
     
 
 
@@ -289,10 +472,24 @@
     
 
 
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/MagneticFluxDensity -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/MagneticFluxDensity"/>
+    
+
+
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Mass -->
 
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Mass"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Pressure -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Pressure"/>
     
 
 
@@ -310,6 +507,20 @@
     
 
 
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/RelativeHumidity -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/RelativeHumidity"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature"/>
+    
+
+
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Width -->
 
 
@@ -321,6 +532,41 @@
 
 
     <owl:Class rdf:about="http://www.opengis.net/ont/sf#Point"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#UnitOperation -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#UnitOperation"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#Substance -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#Substance"/>
     
 
 
@@ -403,6 +649,20 @@
     
 
 
+    <!-- https://saref.etsi.org/core/TemperatureSensor -->
+
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/TemperatureSensor"/>
+    
+
+
+    <!-- https://w3id.org/MON/person.owl#Person -->
+
+
+    <owl:Class rdf:about="https://w3id.org/MON/person.owl#Person"/>
+    
+
+
     <!-- https://w3id.org/bot#Element -->
 
 
@@ -417,11 +677,47 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/AccelerationVector -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/AccelerationVector">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Vector"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasXComponent"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasYComponent"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasZComponent"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A vector quantity that represents the rate of change of velocity.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Acceleration vector</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/Accelerometer -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Accelerometer">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Meter"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodevice/measures"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontodevice/AccelerationVector"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A tool that measures proper acceleration.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Accelerometer</rdfs:label>
@@ -566,9 +862,45 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/GravitySensor">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Sensor"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodevice/measures"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontodevice/GravityVector"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A sensor that detect minute localized changes in the force of Earth's gravity caused by variations in rock or other material's density underground.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gravity sensor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/GravityVector -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/GravityVector">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Vector"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasXComponent"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasYComponent"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasZComponent"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A vector quantity that represents the direction and magnitude of the gravitational acceleration.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gravity vector</rdfs:label>
     </owl:Class>
     
 
@@ -609,11 +941,47 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/MagneticFluxDensityVector -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/MagneticFluxDensityVector">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Vector"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasXComponent"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/MagneticFluxDensity"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasYComponent"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/MagneticFluxDensity"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasZComponent"/>
+                <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/MagneticFluxDensity"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A vector quantity that represents the strength and direction of a magnetic field.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Magnetic flux density vector</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/Magnetometer -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Magnetometer">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Meter"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodevice/measures"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontodevice/MagneticFluxDensityVector"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that measures magnetic field or magnetic dipole moment.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Magnetometer</rdfs:label>
@@ -653,6 +1021,18 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A portable telephone that can make and receive calls over a radio frequency link.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mobile phone</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/OccupiedState -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/OccupiedState">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/State"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The current state of something on whether it is occupied or not.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Occupied state</rdfs:label>
     </owl:Class>
     
 
@@ -717,13 +1097,14 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontodevice/Property -->
+    <!-- https://www.theworldavatar.com/kg/ontodevice/ProximitySensor -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Property">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An attribute of a device or space that is being measured by another device.</rdfs:comment>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/ProximitySensor">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Sensor"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that takes a continuous distance reading and returns a corresponding analog voltage.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Property</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Proximity sensor</rdfs:label>
     </owl:Class>
     
 
@@ -752,14 +1133,26 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontodevice/ScreenBrightness -->
+    <!-- https://www.theworldavatar.com/kg/ontodevice/RelativeBrightness -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/ScreenBrightness">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/RelativeBrightness">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The brightness of the screen of a device measured as a ratio.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Brightness measured as a ratio.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Screen brightness</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relative brightness</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/SashOpeningSensor -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/SashOpeningSensor">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Sensor"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that measures the sash opening of an object such as a fumehood.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sash opening sensor</rdfs:label>
     </owl:Class>
     
 
@@ -807,6 +1200,17 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that observes the status of another device.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Status sensor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Vector -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Vector">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A quantity that has magnitude and direction.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Vector</rdfs:label>
     </owl:Class>
     
 

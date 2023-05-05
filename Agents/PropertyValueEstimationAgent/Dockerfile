@@ -29,6 +29,8 @@ WORKDIR /app
 COPY ./README.md .
 COPY ./setup.py .
 COPY ./requirements.txt .
+# Add JDBC driver to allow for retrieval of JDBC connection properties from PostGIS client
+ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
 
 # Access build arguments from docker-compose.yml
 # (Use ENV instead of ARG for variable to be available in ENTRYPOINT command)
@@ -129,6 +131,7 @@ RUN sed -i "s|False|True|g" ./tests/mockutils/env_configs_mock.py
 # Overwrite/Mock all stack interactions with pre-defined settings from testing Docker stack
 RUN cp ./tests/mockutils/env_configs_mock.py ./$AGENTDIR/utils/env_configs.py
 RUN cp ./tests/mockutils/stack_configs_mock.py ./$AGENTDIR/utils/stack_configs.py
+RUN cp ./tests/mockutils/stackclients_mock.py ./$AGENTDIR/utils/stackclients.py
 # Adjust relative import statement
 RUN sed -i "s|env_configs_mock|env_configs |g" ./$AGENTDIR/utils/stack_configs.py
 
