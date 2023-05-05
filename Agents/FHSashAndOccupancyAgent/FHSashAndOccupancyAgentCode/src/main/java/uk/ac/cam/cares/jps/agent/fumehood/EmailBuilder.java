@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Class to construct an email content and send the email content to the email agent via the email sender
- * @author  */
+ **/
 public class EmailBuilder {
 	/**
      * Logger for reporting info/errors.
@@ -25,9 +25,9 @@ public class EmailBuilder {
         sb.append("Listed below are the fumehoods, walkin-fumehoods, their occupied state and sash opening values: <br> <br>");
         
         sb.append("<style>" +
-"td { padding: 6px; border: 1px solid #ccc; text-align: left; }" + 
-"th { background: #333; color: white; font-weight: bold; padding: 6px; border: 1px solid #ccc; text-align: left;}" +
-"</style>");
+        "td { padding: 6px; border: 1px solid #ccc; text-align: left; }" + 
+        "th { background: #333; color: white; font-weight: bold; padding: 6px; border: 1px solid #ccc; text-align: left;}" +
+        "</style>");
 
         //String emailMessages = "Listed below are the fumehoods, walkin-fumehoods, their occupied state and sash opening values: <br>";
         sb.append("<table>");
@@ -39,10 +39,7 @@ public class EmailBuilder {
         sb.append("<th>Sash Opening");
         sb.append("</th>");
         sb.append("</tr>");
-        //sb.append("</table>");
-        //emailMessages.concat("<table> <tr> <th>Devices</th> <th>Occupied State</th> <th>Sash Opening</th> </tr>");
         EmailSender sender = new EmailSender();
-
         
         for (int i = 0; i < map.get("FHandWFH").size(); i++){
             String occupiedStateData = map.get("OccupiedStateTsData").get(i);
@@ -57,7 +54,6 @@ public class EmailBuilder {
                 sb.append("<td> " + sashOpeningData);
                 sb.append("</td>");
                 sb.append("</tr>");
-                //emailMessages.concat("<tr> <td>" + map.get("Label").get(i) + "</td> <td>" + occupiedStateData + "</td> <td>" + sashOpeningData + "</td> </tr>");
             } else {
                 Double occupiedStateValue = Double.parseDouble(occupiedStateData);
                 Double sashOpeningValue = Double.parseDouble(sashOpeningData);
@@ -77,12 +73,10 @@ public class EmailBuilder {
                     sb.append("<td style=\"color:Red;\"> " + sashOpeningData);
                     sb.append("</td>");
                     sb.append("</tr>");
-                    //emailMessages.concat("<tr> <td> <font color=\"red\">" + map.get("Label").get(i) + "</font> </td> <td> <font color=\"red\">" + occupiedStateData + "</font> </td> <td> <font color=\"red\">" + sashOpeningData + "</font> </td> </tr>");
                 }
             }
         }
-        
-        
+
         try {
             sb.append("</table>");
             LOGGER.info("The email message is " + sb.toString());
