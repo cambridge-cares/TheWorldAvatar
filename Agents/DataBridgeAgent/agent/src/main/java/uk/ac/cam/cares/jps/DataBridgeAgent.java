@@ -95,6 +95,17 @@ public class DataBridgeAgent extends JPSAgent {
                     jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
                 }
                 break;
+            case "timeseries":
+                if (requestType.equals("POST")){
+                    //TODO change param name
+                    String[] config = requestParams.has("database") ? ConfigStore.retrieveSQLConfig(requestParams.get("database").toString()) : ConfigStore.retrieveSQLConfig();
+                    AGENT_IN_STACK = false;
+                    jsonMessage = updateTimeSeries(config);
+                }
+                else {
+                    LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept POST request.");
+                    jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept POST request.");
+                }
         }
         return jsonMessage;
     }
@@ -155,6 +166,14 @@ public class DataBridgeAgent extends JPSAgent {
         if(response.isEmpty()){
             response.put("Result", "Data have been successfully transferred from " + config[0] + " to " + config[3]);
         }
+        return response;
+    }
+
+    protected JSONObject updateTimeSeries(String[] config) {
+        JSONObject response = new JSONObject();
+        
+
+
         return response;
     }
 }
