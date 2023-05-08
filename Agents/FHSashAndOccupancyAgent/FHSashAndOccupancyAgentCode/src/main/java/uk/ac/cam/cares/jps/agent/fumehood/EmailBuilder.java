@@ -20,12 +20,19 @@ public class EmailBuilder {
     private static final Logger LOGGER = LogManager.getLogger(FHSashAndOccupancyAgent.class);
 
     public static final String SENDEMAIL_ERROR_MSG = "Unable to send email via the email agent!";
-
+    
+    /**
+     * Parses map to retrieve the relevant information, carry out post processing and craft the email content
+     * @param map map that consists of several keys where each key has its own List of Strings
+     * @param threshold threshold of sash opening
+     */
     public void parsesMapAndPostProcessing(Map<String, List<String>> map, Double threshold) {
         StringBuilder sb = new StringBuilder();
+        StringBuilder FullContent = new StringBuilder();
+        String firstLine;
         DecimalFormat df = new DecimalFormat("####0.00");
         sb.append("Listed below are the fumehoods, walkin-fumehoods, their occupied state and sash opening values: <br> <br>");
-        
+        firstLine = ("The following devices (");
         sb.append("<style>" +
         "td { padding: 6px; border: 1px solid #ccc; text-align: left; }" + 
         "th { background: #333; color: white; font-weight: bold; padding: 6px; border: 1px solid #ccc; text-align: left;}" +
@@ -106,6 +113,9 @@ public class EmailBuilder {
                     sb.append("<td style=\"color:Red;\"> " + df.format(sashOpeningValue) + " % since the following timestamp: " + sashOpeningTimeStamp);
                     sb.append("</td>");
                     sb.append("</tr>");
+
+                    firstLine = firstLine + map.get("Label").get(i) + " ,";
+                    LOGGER.info("The firstLine is " + firstLine);
                 } else {
                     sb.append("<tr>");
                     sb.append("<td> " + map.get("Label").get(i));
@@ -121,8 +131,12 @@ public class EmailBuilder {
 
         try {
             sb.append("</table>");
-            LOGGER.info("The email message is " + sb.toString());
-            sender.sendEmail("Fumehoods and WalkIn-Fumehoods Sash and Occupancy Alert!", sb.toString());
+            firstLine = firstLine.substring(0, firstLine.length() - 1);
+            firstLine = firstLine + " ) are unoccupied and have a sash opening above the threshold of " + threshold + "%. ";
+            FullContent.append(firstLine);
+            FullContent.append(sb.toString());
+            LOGGER.info("The email message is " + FullContent.toString());
+            sender.sendEmail("Fumehoods and WalkIn-Fumehoods Sash and Occupancy Alert!", FullContent.toString());
         } catch (Exception e) {
             throw new JPSRuntimeException(SENDEMAIL_ERROR_MSG, e);
         }
