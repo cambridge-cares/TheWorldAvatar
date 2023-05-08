@@ -35,6 +35,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
     public static final String LOADTSCLIENTCONFIG_ERROR_MSG = "Unable to load timeseries client configs!";
     public static final String QUERYSTORE_CONSTRUCTION_ERROR_MSG = "Unable to construct QueryStore!";
     public static final String GETLATESTDATA_ERROR_MSG = "Unable to get latest timeseries data for the following IRI: ";
+    private static final String GETFHANDWFHDEVICES_ERROR_MSG = "Unable to query for fumehood and/or walkin-fumehood devices and their labels!";
 
     String dbUrlForOccupiedState;
     String dbUsernameForOccupiedState;
@@ -115,7 +116,12 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
             throw new JPSRuntimeException(QUERYSTORE_CONSTRUCTION_ERROR_MSG, e);
         }
 
+        try {
         map = queryStore.queryForFHandWFHDevices();
+        } catch (Exception e) {
+            throw new JPSRuntimeException(GETFHANDWFHDEVICES_ERROR_MSG);
+        }
+        
         map.put("OccupancyIRIs", new ArrayList<>());
         map.put("SashOpeningIRIs", new ArrayList<>());
 
@@ -293,7 +299,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
      */
     private Map<String, List<String>> getOccupiedStateTsData (Map<String, List<String>> map) {
         map.put("OccupiedStateTsData", new ArrayList<>());
-
+        map.put("OccupiedStateTimeStamps", new ArrayList<>());
         for (int i = 0; i < map.get("FHandWFH").size(); i++) {
             String occupiedStateIRI = map.get("OccupancyIRIs").get(i);
 
@@ -301,11 +307,19 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
                 try (Connection conn = RDBClient.getConnection()) {
                     timeseries = tsClient.getLatestData(occupiedStateIRI, conn);
                     map.get("OccupiedStateTsData").add(timeseries.getValuesAsString(occupiedStateIRI).get(timeseries.getValuesAsString(occupiedStateIRI).size() - 1));
+
+                    OffsetDateTime latestTimeStamp = timeseries.getTimes().get(timeseries.getTimes().size() - 1);
+                    Date date = new java.util.Date(latestTimeStamp.toEpochSecond()*1000);
+                    SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss a z");
+                    sdf.setTimeZone(TimeZone.getDefault());
+                    Object ts = sdf.format(date);
+                    map.get("OccupiedStateTimeStamps").add(ts.toString());
                 } catch (Exception e) {
                     throw new JPSRuntimeException(GETLATESTDATA_ERROR_MSG + occupiedStateIRI);
                 }
             } else {
                 map.get("OccupiedStateTsData").add("This device does not have an occupied state.");
+                map.get("OccupiedStateTimeStamps").add("Not applicable");
             }
         }
         return map;
@@ -317,7 +331,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
      */
     private Map<String, List<String>> getSashOpeningTsData (Map<String, List<String>> map) {
         map.put("SashOpeningTsData", new ArrayList<>());
-
+        map.put("SashOpeningTimeStamps", new ArrayList<>());
         for (int i = 0; i < map.get("FHandWFH").size(); i++) {
             String sashOpeningIRI = map.get("SashOpeningIRIs").get(i);
 
@@ -325,11 +339,19 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
                 try (Connection conn = RDBClient.getConnection()) {
                     timeseries = tsClient.getLatestData(sashOpeningIRI, conn);
                     map.get("SashOpeningTsData").add(timeseries.getValuesAsString(sashOpeningIRI).get(timeseries.getValuesAsString(sashOpeningIRI).size() - 1));
+
+                    OffsetDateTime latestTimeStamp = timeseries.getTimes().get(timeseries.getTimes().size() - 1);
+                    Date date = new java.util.Date(latestTimeStamp.toEpochSecond()*1000);
+                    SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss a z");
+                    sdf.setTimeZone(TimeZone.getDefault());
+                    Object ts = sdf.format(date);
+                    map.get("SashOpeningTimeStamps").add(ts.toString());
                 } catch (Exception e) {
                     throw new JPSRuntimeException(GETLATESTDATA_ERROR_MSG + sashOpeningIRI);
                 }
             } else {
                 map.get("SashOpeningTsData").add("This device does not have a sash opening.");
+                map.get("SashOpeningTimeStamps").add("Not applicable");
             }
         }
         return map;
