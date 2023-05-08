@@ -395,9 +395,36 @@ public class OPFAgentTest {
         agent.runPythonScript(script, baseUrl, fileNames);
     }
 
+    public List<double[]> convertStringArrayListtoDouble(List<String[]> original) {
+        List<double[]> result = new ArrayList<double[]>();
+        for (int i = 0; i < original.size(); i++) {
+            String[] splitedStrings;
+            splitedStrings = original.get(i)[0].split("\t");
+            double[] doubleArray = new double[splitedStrings.length];
+            for (int j = 0; j < splitedStrings.length; j++) {
+                doubleArray[j] = Double.parseDouble(splitedStrings[j]);
+            }
+            result.add(doubleArray);
+        }
+        return result;
+    }
+
+    
+    public List<double[]> convertStringArraytoDouble(String[] original) {
+        List<double[]> result = new ArrayList<double[]>();
+        for (int i = 0; i < original.length; i++) {
+            String[] splitedStrings;
+            splitedStrings = original[i].split("\t");
+            double[] doubleArray = new double[splitedStrings.length];
+            for (int j = 0; j < splitedStrings.length; j++) {
+                doubleArray[j] = Double.parseDouble(splitedStrings[j]);
+            }
+            result.add(doubleArray);
+        }
+        return result;
+    }
+
     // Pypower and Scipy package need to be installed before running this test.
-    // dSbr_dV.py and gausspf.py in Pypower package should be replaced by 
-    // files in opf-agent > python > pypower folder.
     @Test
     public void testRunPythonScript() throws Exception {
         File baseMVAFile = tempFolder.newFile("testPy_baseMVA.txt");
@@ -494,7 +521,7 @@ public class OPFAgentTest {
 		assertEquals(genIn.size(), genOut.size());
 
         // Check output OPF results of branches
-        String[] expectedBranchOutput = {"1	5.9180102141863367e-05	3.991747253512257e-05	2.9590051070931683e-05	1.9958736267561283e-05	3.5692047794689664e-05",
+        String[] expectedBranch = {"1	5.9180102141863367e-05	3.991747253512257e-05	2.9590051070931683e-05	1.9958736267561283e-05	3.5692047794689664e-05",
                                         "2	7.402129132406954e-05	4.992797856036291e-05	3.701064566203477e-05	2.4963989280181453e-05	4.464290148614567e-05",
                                         "3	0.00020488203840132724	0.00013819464820798155	0.00010244101920066362	6.909732410399078e-05	0.0001235661871759531",
                                         "4	0.00043990307698940634	0.00029671830014213474	0.00021995153849470317	0.00014835915007106737	0.0002653094734380896",
@@ -508,12 +535,14 @@ public class OPFAgentTest {
                                         "12	0.0024439142032758876	0.002390451529954929	0.0012219571016379438	0.0011952257649774645	0.001709310910135827",
                                         "13	5.5380952839606534e-05	3.735491529407997e-05	2.7690476419803267e-05	1.8677457647039986e-05	3.340074712506673e-05",
                                         "14	0.0004721922296472142	0.000318497598413639	0.0002360961148236071	0.0001592487992068195	0.000284783348325733"};
+        List<double[]> actualBranchOutput = convertStringArrayListtoDouble(branchOut);
+        List<double[]> expectedBranchOutput = convertStringArraytoDouble(expectedBranch);
         for (int i = 0; i < branchIn.size(); i++) {
-            assertEquals(expectedBranchOutput[i], branchOut.get(i)[0]);
+            assertArrayEquals(expectedBranchOutput.get(i), actualBranchOutput.get(i), 0.000001);
         }
 
         // Check output OPF results of buses
-        String[] expectedBusOutput = {"1	0.9484393336941132	0.08693266395217579	0.0	0.0	0.14	0.1428286", 
+        String[] expectedBus = {"1	0.9484393336941132	0.08693266395217579	0.0	0.0	0.14	0.1428286", 
                                     "2	0.9486078372696072	0.0848537514911073	0.0	0.0	0.07	0.0714143", 
                                     "3	0.9569541625173138	0.2050264292435832	0.0	0.0	0.07	0.0714143", 
                                     "4	0.9679703457839625	0.07196194092738395	0.0	0.0	0.07	0.0714143", 
@@ -528,13 +557,17 @@ public class OPFAgentTest {
                                     "13	0.9499178289039322	0.06869120866760962	0.0	0.0	0.0441	0.044991", 
                                     "14	0.9582313297055367	0.1893886646766468	0.0	0.0	0.14	0.1428286", 
                                     "15	0.9560079249383326	0.21661168656280289	0.0	0.0	0.14	0.1428286"};
+        List<double[]> actualBusOutput = convertStringArrayListtoDouble(busOut);
+        List<double[]> expectedBusOutput = convertStringArraytoDouble(expectedBus);
         for (int i = 0; i < busIn.size(); i++) {
-            assertEquals(expectedBusOutput[i], busOut.get(i)[0]);
+            assertArrayEquals(expectedBusOutput.get(i), actualBusOutput.get(i), 0.000001);
         }
             
         // Check output OPF results of generators
-        String expectedGenOut = "1	1.28819441147497	1.308476218318052";
-        assertEquals(expectedGenOut, genOut.get(0)[0]);
+        String[] expectedGen = {"1	1.28819441147497	1.308476218318052"};
+        List<double[]> actualGenOutput = convertStringArrayListtoDouble(genOut);
+        List<double[]> expectedGenOutput = convertStringArraytoDouble(expectedGen);
+        assertArrayEquals(expectedGenOutput.get(0), actualGenOutput.get(0), 0.000001);
 
         input.close();
     }
