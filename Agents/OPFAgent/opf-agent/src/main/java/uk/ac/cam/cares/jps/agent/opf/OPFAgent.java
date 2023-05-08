@@ -1063,19 +1063,38 @@ public class OPFAgent extends JPSAgent{
 			}
 		}
 
-		String command = "python3 " + path + "/python/model/" + script 
-						+ " " + folder + fileNames[0] + " " + folder 
-						+ fileNames[1] + " " + folder + fileNames[2] + " " 
-						+ folder +fileNames[3] +" 1" + " " + folder 
-						+ fileNames[4] + " " + folder 
-						+ fileNames[5] + " " + folder 
-						+ fileNames[6] + " 1" + " 1" 
-						+ " " + folder + fileNames[7] + " " + folder 
-						+ fileNames[8] + " " + folder + fileNames[9];
-		System.out.println(command);
-		result = CommandHelper.executeSingleCommand(path, command);
-			
-		return result;
+		String commandContent = path + "/python/model/" + script 
+							+ " " + folder + fileNames[0] + " " + folder 
+							+ fileNames[1] + " " + folder + fileNames[2] + " " 
+							+ folder +fileNames[3] +" 1" + " " + folder 
+							+ fileNames[4] + " " + folder 
+							+ fileNames[5] + " " + folder 
+							+ fileNames[6] + " 1" + " 1" 
+							+ " " + folder + fileNames[7] + " " + folder 
+							+ fileNames[8] + " " + folder + fileNames[9];
+		String command = "python " + commandContent;
+
+		try {
+			result = CommandHelper.executeSingleCommand(path, command);
+			return result;
+		} catch (JPSRuntimeException e) {
+			if (e.getMessage().contains("Cannot run program \"python\"")) {
+				command = "python3 " + commandContent;
+			} else {
+				throw e;
+			}
+		}
+
+		try {
+			result = CommandHelper.executeSingleCommand(path, command);
+			return result;
+		} catch (JPSRuntimeException e) {
+			if (e.getMessage().contains("Cannot run program \"python3\"")) {
+				throw new JPSRuntimeException("Python3 not installed.\n");
+			} else {
+				throw e;
+			}
+		}	
 	}
 
 	/**
