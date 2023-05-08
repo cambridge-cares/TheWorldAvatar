@@ -23,13 +23,15 @@ import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.util.*;
+import java.util.regex.Pattern;
 
-@WebServlet(urlPatterns = {"/retrieve"})
+@WebServlet(urlPatterns = {"/status", "/retrieve"})
 public class FHSashAndOccupancyAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(FHSashAndOccupancyAgent.class);
 
 
     public static final String PARAMETERS_VALIDATION_ERROR_MSG = "Unable to validate request sent to the agent.";
+    public static final String THRESHOLD_ERROR_MSG = "Missing sash opening threshold value in request!";
     public static final String EMPTY_PARAMETER_ERROR_MSG = "Empty Request.";
     public static final String AGENT_CONSTRUCTION_ERROR_MSG = "The Agent could not be constructed.";
     public static final String LOADTSCLIENTCONFIG_ERROR_MSG = "Unable to load timeseries client configs!";
@@ -47,6 +49,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
     String sparqlUpdateEndpoint;
     String bgUsername;
     String bgPassword;
+    Double thresholdValue;
 
     TimeSeriesClient<OffsetDateTime> tsClient;
     RemoteRDBStoreClient RDBClient;
@@ -77,7 +80,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
         String datetime = dateFormat.format(new Date());
-        LOGGER.info("Request received at: {}", datetime);
+        LOGGER.info("Request received at: {" + datetime + "}");
 
         JSONObject msg = new JSONObject();
 
@@ -88,6 +91,11 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
         }
 
         if (url.contains("retrieve")) {
+            try {
+            thresholdValue = Double.parseDouble(requestParams.getString("sashThreshold"));
+            } catch (Exception e) {
+                throw new JPSRuntimeException(THRESHOLD_ERROR_MSG);
+            }
             msg = runAgent();
         }
 
@@ -121,7 +129,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
         } catch (Exception e) {
             throw new JPSRuntimeException(GETFHANDWFHDEVICES_ERROR_MSG);
         }
-        
+
         map.put("OccupancyIRIs", new ArrayList<>());
         map.put("SashOpeningIRIs", new ArrayList<>());
 
@@ -145,7 +153,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
 
         if (checkSashAndOccupancy(map)) {
         EmailBuilder emailBuilder = new EmailBuilder();
-        emailBuilder.parsesMapAndPostProcessing(map);
+        emailBuilder.parsesMapAndPostProcessing(map, thresholdValue);
         }
 
         LOGGER.info( map.get("FHandWFH").toString());
@@ -370,7 +378,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
             if (occupiedStateData.contains("This device does not have an occupied state.") | sashOpeningData.contains("This device does not have a sash opening.")) {
                 check = false;
             } else {
-                if (Double.parseDouble(occupiedStateData) == 0.0 && Double.parseDouble(sashOpeningData) > 50.0) {
+                if (Double.parseDouble(occupiedStateData) == 0.0 && Double.parseDouble(sashOpeningData) > thresholdValue) {
                     check = true;
                     return check;
                 }
