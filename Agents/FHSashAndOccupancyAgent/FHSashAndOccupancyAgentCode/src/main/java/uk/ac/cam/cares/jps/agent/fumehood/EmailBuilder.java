@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.fumehood;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.email.EmailSender;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
@@ -22,6 +23,7 @@ public class EmailBuilder {
 
     public void parsesMapAndPostProcessing(Map<String, List<String>> map) {
         StringBuilder sb = new StringBuilder();
+        DecimalFormat df = new DecimalFormat("####0.00");
         sb.append("Listed below are the fumehoods, walkin-fumehoods, their occupied state and sash opening values: <br> <br>");
         
         sb.append("<style>" +
@@ -36,7 +38,7 @@ public class EmailBuilder {
         sb.append("</th>");
         sb.append("<th>Occupied State");
         sb.append("</th>");
-        sb.append("<th>Sash Opening (%)");
+        sb.append("<th>Sash Opening");
         sb.append("</th>");
         sb.append("</tr>");
         EmailSender sender = new EmailSender();
@@ -44,8 +46,10 @@ public class EmailBuilder {
         for (int i = 0; i < map.get("FHandWFH").size(); i++){
             String occupiedStateData = map.get("OccupiedStateTsData").get(i);
             String sashOpeningData = map.get("SashOpeningTsData").get(i);
+            String occupiedStateTimeStamp = map.get("OccupiedStateTimeStamps").get(i);
+            String sashOpeningTimeStamp = map.get("SashOpeningTimeStamps").get(i);
 
-            if (occupiedStateData.contains("This device does not have an occupied state.") | sashOpeningData.contains("This device does not have a sash opening.")) {
+            if (occupiedStateData.contains("This device does not have an occupied state.") && sashOpeningData.contains("This device does not have a sash opening.")) {
                 sb.append("<tr>");
                 sb.append("<td> " + map.get("Label").get(i));
                 sb.append("</td>");
@@ -54,23 +58,52 @@ public class EmailBuilder {
                 sb.append("<td> " + sashOpeningData);
                 sb.append("</td>");
                 sb.append("</tr>");
-            } else {
+            }
+            else if (occupiedStateData.contains("This device does not have an occupied state.") && !sashOpeningData.contains("This device does not have a sash opening.")) {
+                Double sashOpeningValue = Double.parseDouble(sashOpeningData);
+                sb.append("<tr>");
+                sb.append("<td> " + map.get("Label").get(i));
+                sb.append("</td>");
+                sb.append("<td> " + occupiedStateData);
+                sb.append("</td>");
+                sb.append("<td> " + df.format(sashOpeningValue) + " % since the following timestamp: " + sashOpeningTimeStamp);
+                sb.append("</td>");
+                sb.append("</tr>");
+            }
+            else if (!occupiedStateData.contains("This device does not have an occupied state.") && sashOpeningData.contains("This device does not have a sash opening.")) {
+                Double occupiedStateValue = Double.parseDouble(occupiedStateData);
+                String occupiedState;
+                if (occupiedStateValue == 0.0) {
+                    occupiedState = "Not occupied";
+                } else {
+                    occupiedState = "Occupied";
+                }
+                sb.append("<tr>");
+                sb.append("<td> " + map.get("Label").get(i));
+                sb.append("</td>");
+                sb.append("<td> " + occupiedState + " since the following timestamp: " + occupiedStateTimeStamp);
+                sb.append("</td>");
+                sb.append("<td> " + sashOpeningData);
+                sb.append("</td>");
+                sb.append("</tr>");
+            } 
+            else {
                 Double occupiedStateValue = Double.parseDouble(occupiedStateData);
                 Double sashOpeningValue = Double.parseDouble(sashOpeningData);
                 String occupiedState;
                 
                 if (occupiedStateValue == 0.0) {
-                    occupiedState = "Not Occupied";
+                    occupiedState = "Not occupied";
                 } else {
                     occupiedState = "Occupied";
                 }
-                if (occupiedState.contains("Not Occupied") && sashOpeningValue > 50.0) {
+                if (occupiedState.contains("Not occupied") && sashOpeningValue > 50.0) {
                     sb.append("<tr>");
                     sb.append("<td style=\"color:Red;\"> " + map.get("Label").get(i));
                     sb.append("</td>");
-                    sb.append("<td style=\"color:Red;\"> " + occupiedState);
+                    sb.append("<td style=\"color:Red;\"> " + occupiedState + " since the following timestamp: " + occupiedStateTimeStamp);
                     sb.append("</td>");
-                    sb.append("<td style=\"color:Red;\"> " + sashOpeningData);
+                    sb.append("<td style=\"color:Red;\"> " + df.format(sashOpeningValue) + " % since the following timestamp: " + sashOpeningTimeStamp);
                     sb.append("</td>");
                     sb.append("</tr>");
                 }
