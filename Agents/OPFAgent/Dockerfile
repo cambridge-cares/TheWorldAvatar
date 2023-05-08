@@ -32,11 +32,7 @@ RUN apt-get install -y python3
 RUN curl https://bootstrap.pypa.io/get-pip.py --output get-pip.py
 RUN python3 get-pip.py
 RUN pip install scipy
-RUN pip install pypower
-
-# Replace outdated files in pypower
-COPY --from=builder /root/opf-agent/python/pypower/dSbr_dV.py /usr/local/lib/python3.10/dist-packages/pypower
-COPY --from=builder /root/opf-agent/python/pypower/gausspf.py /usr/local/lib/python3.10/dist-packages/pypower
+RUN pip install PYPOWER==5.1.16
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]
