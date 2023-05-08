@@ -21,7 +21,7 @@ public class EmailBuilder {
 
     public static final String SENDEMAIL_ERROR_MSG = "Unable to send email via the email agent!";
 
-    public void parsesMapAndPostProcessing(Map<String, List<String>> map) {
+    public void parsesMapAndPostProcessing(Map<String, List<String>> map, Double threshold) {
         StringBuilder sb = new StringBuilder();
         DecimalFormat df = new DecimalFormat("####0.00");
         sb.append("Listed below are the fumehoods, walkin-fumehoods, their occupied state and sash opening values: <br> <br>");
@@ -97,13 +97,22 @@ public class EmailBuilder {
                 } else {
                     occupiedState = "Occupied";
                 }
-                if (occupiedState.contains("Not occupied") && sashOpeningValue > 50.0) {
+                if (occupiedState.contains("Not occupied") && sashOpeningValue > threshold) {
                     sb.append("<tr>");
                     sb.append("<td style=\"color:Red;\"> " + map.get("Label").get(i));
                     sb.append("</td>");
                     sb.append("<td style=\"color:Red;\"> " + occupiedState + " since the following timestamp: " + occupiedStateTimeStamp);
                     sb.append("</td>");
                     sb.append("<td style=\"color:Red;\"> " + df.format(sashOpeningValue) + " % since the following timestamp: " + sashOpeningTimeStamp);
+                    sb.append("</td>");
+                    sb.append("</tr>");
+                } else {
+                    sb.append("<tr>");
+                    sb.append("<td> " + map.get("Label").get(i));
+                    sb.append("</td>");
+                    sb.append("<td> " + occupiedState + " since the following timestamp: " + occupiedStateTimeStamp);
+                    sb.append("</td>");
+                    sb.append("<td> "  + df.format(sashOpeningValue) + " % since the following timestamp: " + sashOpeningTimeStamp);
                     sb.append("</td>");
                     sb.append("</tr>");
                 }
