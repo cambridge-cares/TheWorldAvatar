@@ -325,12 +325,12 @@ class QAEngineNumerical:
                             required_value = self.input_dict.numerical_value
                             if self.input_dict.numerical_operator == "larger":
                                 if value > required_value:
-                                    predicted_tails.append(f"{value} | {tail_label}")
+                                    predicted_tails.append(f"{value}")
                             elif self.input_dict.numerical_operator == "smaller":
                                 if value < required_value:
-                                    predicted_tails.append(f"{value} | {tail_label}")
+                                    predicted_tails.append(f"{value}")
                             elif self.input_dict.numerical_operator == "about":
-                                predicted_tails.append(f"{value} | {tail_label}")
+                                predicted_tails.append(f"{value}")
                         else:
                             predicted_tails.append(tail_label)
 

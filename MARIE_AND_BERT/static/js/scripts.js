@@ -514,6 +514,9 @@ function toTable(valueSet) {
 			header = new_headers[header]
 		}
 
+		if (header === "node"){
+			header = "result"
+		}
 		html += "<th >" + header + "</th>";
 	});
 	html += "</tr></thead>";
@@ -531,8 +534,6 @@ function toTable(valueSet) {
 			if (value in global_label_dict){
 				value = global_label_dict[value]
 			}
-
-
 			html += "<td>";
 
 			if(isValidURL(String(value))) {

@@ -128,7 +128,7 @@ class QAEngine:
             self.marie_logger.info(f'-------------------------')
             if answer in self.value_dictionary:
                 value = self.value_dictionary[answer]
-                answer = f"{value} | {answer}"
+                answer = f"{value}"
 
             row = {"answer": answer, "from node": answer, "mention": mention_string,
                    "name": name, "confidence": combined_confidence}
