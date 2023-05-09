@@ -105,7 +105,7 @@ public class Aermod {
             String dateTime = String.valueOf(ldt.getYear()).substring(2) + 
             addLeadingZero(String.valueOf(ldt.getMonthValue()),2) + 
             addLeadingZero(String.valueOf(ldt.getDayOfMonth()),2) + 
-            addLeadingZero(String.valueOf(ldt.getHour()),2);
+            addLeadingZero(String.valueOf(ldt.getHour() + 1),2);
 
             if (dateTime.length() != 8) {
                 throw new JPSRuntimeException("dateTime is not in a format compatible with CD-144. " + dateTime);
@@ -475,7 +475,7 @@ public class Aermod {
 
         JSONObject group = new JSONObject();
         group.put("name", "Aermod Simulation"); // hardcoded
-        group.put("stack", "http://featureInfoAgent");
+        group.put("stack", "http://localhost:3838");
 
         // sources
         JSONArray sources = new JSONArray();

@@ -9,7 +9,8 @@
 			"aermod-agent-debug",
 			"python-service",
 			"emissions-agent",
-			"openmeteo-agent"
+			"openmeteo-agent",
+			"feature-info-agent"
         ]
     }
 }

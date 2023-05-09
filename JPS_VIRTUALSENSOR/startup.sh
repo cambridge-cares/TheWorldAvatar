@@ -9,6 +9,7 @@ docker pull docker.cmclinnovations.com/emissions-agent:1.0.0
 docker pull docker.cmclinnovations.com/ship-input-agent:1.0.0
 docker pull docker.cmclinnovations.com/weatheragent:1.1.1
 docker pull docker.cmclinnovations.com/file-server:1.0.0
+docker pull ghcr.io/cambridge-cares/feature-info-agent:2.0.1
 # starts up all required components of virtual sensor
 (cd stack-manager && ./stack.sh start ship-stack)
 # copy required files into containers

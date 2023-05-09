@@ -189,10 +189,10 @@ public class Buildings {
                 return 1;
             }
 
-            if (createVirtualSensorsGeoServerLayer() != 0) {
-                LOGGER.error("Failed to create GeoServer Layer for virtual sensors, terminating");
-                return 1;
-            }
+            // if (createVirtualSensorsGeoServerLayer() != 0) {
+            //     LOGGER.error("Failed to create GeoServer Layer for virtual sensors, terminating");
+            //     return 1;
+            // }
 
             boolean includeElev = Boolean.parseBoolean(EnvConfig.INCLUDE_ELEVATION) ;
 
@@ -1397,7 +1397,7 @@ public class Buildings {
 		LOGGER.info("Creating plant items layer in Geoserver");
 		GeoServerClient geoserverclient = new GeoServerClient();
 		geoserverclient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
-		geoserverclient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, EnvConfig.SOURCE_LAYER, new GeoServerVectorSettings());
+		geoserverclient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, "sensor_layer", new GeoServerVectorSettings());
 
         return 0;
 
@@ -1892,7 +1892,7 @@ public class Buildings {
             int month = ldt.getMonthValue();
             int day = ldt.getDayOfMonth();
             // Adding one because the hour value in the user specified timestamps ranges between 0 and 23. 
-            // Although this is ok for the weather_template.144 file, the values of hour in the hourlyEmissions.dat file
+            // However, the values of hour in the hourlyEmissions.dat and the weather_template.144 files
             // should range between 1 and 24. Otherwise, AERMOD reports a fatal date/time mismatch error. 
             int hour = ldt.getHour() + 1;
 
