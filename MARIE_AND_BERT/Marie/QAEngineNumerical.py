@@ -120,7 +120,8 @@ class QAEngineNumerical:
         if node in self.value_dictionary:
             return self.value_dictionary[node]
         else:
-            return "NODE HAS NO VALUE"
+            # return "NODE HAS NO VALUE"
+            return node
 
     def prepare_prediction_batch_numerical(self, heads, question_embedding):
         """
@@ -387,9 +388,13 @@ class QAEngineNumerical:
 
         labels_top_k = [self.idx2entity[candidates[index]] for index in indices_top_k]
 
+
+
+
         scores_top_k = [scores[index].item() for index in indices_top_k]
         targets_top_k = [head_key] * len(scores_top_k)
         numericals_top_k = [self.value_lookup(l) for l in labels_top_k]
+        labels_top_k = numericals_top_k
         # try:
         #     mention = self.nel.get_mention(question=question)
         #     if mention == "":
