@@ -100,7 +100,7 @@ class QAEngine:
         appended_value_list = []
         for label in label_list:
             if label in self.value_dictionary:
-                appended_value_list.append(f"{self.value_dictionary[label]} | {label}")
+                appended_value_list.append(f"{self.value_dictionary[label]}")
             else:
                 appended_value_list.append(label)
         return appended_value_list
