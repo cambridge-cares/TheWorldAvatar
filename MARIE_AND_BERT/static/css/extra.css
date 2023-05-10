@@ -34,8 +34,8 @@ background: #d0cccc;
 .tooltip .tooltiptext {
   visibility: hidden;
   width: 200px;
-  background-color: black;
-  color: #fff;
+  background-color: lightgrey;
+  color: black;
   text-align: left;
   padding: 5px;
   border-radius: 6px;
@@ -43,6 +43,7 @@ background: #d0cccc;
   /* Position the tooltip text - see examples below! */
   position: absolute;
   z-index: 1;
+  border: black;
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */
