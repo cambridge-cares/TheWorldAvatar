@@ -23,7 +23,6 @@ import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.regex.Pattern;
 
 @WebServlet(urlPatterns = {"/status", "/retrieve"})
 public class FHSashAndOccupancyAgent extends JPSAgent {
@@ -38,7 +37,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
     public static final String QUERYSTORE_CONSTRUCTION_ERROR_MSG = "Unable to construct QueryStore!";
     public static final String GETLATESTDATA_ERROR_MSG = "Unable to get latest timeseries data for the following IRI: ";
     private static final String GETFHANDWFHDEVICES_ERROR_MSG = "Unable to query for fumehood and/or walkin-fumehood devices and their labels!";
-
+    
     String dbUrlForOccupiedState;
     String dbUsernameForOccupiedState;
     String dbPasswordForOccupiedState;
@@ -114,8 +113,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
         try {
             loadTSClientConfigs(System.getenv("CLIENTPROPERTIES_01"),System.getenv("CLIENTPROPERTIES_02"));
         } catch (IOException e) {
-            LOGGER.info("Unable to read timeseries client configs from the properties files.");
-            LOGGER.info("Attempting to load configs via stack clients...");
+            throw new JPSRuntimeException(LOADTSCLIENTCONFIG_ERROR_MSG, e);
         }
 
         try {
@@ -151,7 +149,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
 
         map = getSashOpeningTsData(map);
 
-        if (checkSashAndOccupancy(map)) {
+        if (checkSashAndOccupancy(map, thresholdValue)) {
         EmailBuilder emailBuilder = new EmailBuilder();
         emailBuilder.parsesMapAndPostProcessing(map, thresholdValue);
         }
@@ -370,7 +368,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
      * @param map map that consists of several keys where each key has its own List of Strings
      * @return boolean of whether there exist a fumehood that is not occupied and have a sash opening value of more than 50
      */
-    private Boolean checkSashAndOccupancy(Map<String, List<String>> map) {
+    private Boolean checkSashAndOccupancy(Map<String, List<String>> map, Double thresholdValue) {
         Boolean check = false;
         for (int i = 0; i < map.get("FHandWFH").size(); i++){
             String occupiedStateData = map.get("OccupiedStateTsData").get(i);
