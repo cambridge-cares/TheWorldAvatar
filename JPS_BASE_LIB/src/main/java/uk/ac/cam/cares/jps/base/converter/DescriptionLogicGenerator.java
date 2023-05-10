@@ -39,7 +39,26 @@ public class DescriptionLogicGenerator {
 
     public static void main(String[] args) {
         try {
-            generateDL(args[0], args[1]);
+            if (args.length != 3) {
+                System.out.println(
+                    "Usage:\n\tjava -cp jps-base-lib.jar uk.ac.cam.cares.jps.base.converter.DescriptionLogicGenerator --url <ontologyURL> <texFilePath>" +
+                    "\nor:" +
+                    "\n\tjava -cp jps-base-lib.jar uk.ac.cam.cares.jps.base.converter.DescriptionLogicGenerator --file <ontologyFilePath> <texFilePath>"
+                );
+                System.exit(0);
+            }
+            if (args[0].equals("--url")) {
+                generateDL(args[1], args[2]);
+            } else if (args[0].equals("--file")) {
+                generateDL(new File(args[1]), args[2]);
+            } else {
+                System.out.println(
+                    "Usage:\n\tjava -cp jps-base-lib.jar uk.ac.cam.cares.jps.base.converter.DescriptionLogicGenerator --url <ontologyURL> <texFilePath>" +
+                    "\nor:" +
+                    "\n\tjava -cp jps-base-lib.jar uk.ac.cam.cares.jps.base.converter.DescriptionLogicGenerator --file <ontologyFilePath> <texFilePath>"
+                );
+                System.exit(0);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
