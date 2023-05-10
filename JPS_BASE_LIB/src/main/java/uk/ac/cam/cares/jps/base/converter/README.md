@@ -230,3 +230,5 @@ By default, the TBox Generator generates a `.tex` file containing the descriptio
     java -cp jps-base-lib.jar uk.ac.cam.cares.jps.base.converter.DescriptionLogicGenerator --file <ontologyFilePath> <texFilePath>
     ```
     e.g. `java -cp jps-base-lib.jar uk.ac.cam.cares.jps.base.converter.DescriptionLogicGenerator --file ../../JPS_Ontology/ontology/ontodoe/OntoDoE.owl ../../JPS_Ontology/ontology/ontodoe/OntoDoE.tex`
+
+**NOTE:** A list of namespaces are defined in `TheWorldAvatar/JPS_BASE_LIB/src/main/resources/ontology.namespaces.properties` to be used as short form of IRIs, one can modify this file before running the above commands to customise the LaTeX output.
