@@ -189,11 +189,6 @@ public class Buildings {
                 return 1;
             }
 
-            // if (createVirtualSensorsGeoServerLayer() != 0) {
-            //     LOGGER.error("Failed to create GeoServer Layer for virtual sensors, terminating");
-            //     return 1;
-            // }
-
             boolean includeElev = Boolean.parseBoolean(EnvConfig.INCLUDE_ELEVATION) ;
 
             if (includeElev) {
@@ -1362,46 +1357,6 @@ public class Buildings {
 
     }
     
-    public int createVirtualSensorsGeoServerLayer() {
-
-
-        List<List<Double>> LonLatCoords = new ArrayList<>();
-
-        for (int i = 0; i < sensorLatitude.size(); i++) {
-            double lat = sensorLatitude.get(i);
-            double lon = sensorLongitude.get(i);
-            LonLatCoords.add(Arrays.asList(lon, lat));
-        }
-
-        // create a JSONObject that represents a GeoJSON Feature Collection
-        JSONObject featureCollection = new JSONObject();
-        featureCollection.put("type", "FeatureCollection");
-        JSONArray features = new JSONArray();
-
-        // loop through the coordinates and add them as GeoJSON Points to the Feature Collection
-        for (List<Double> coordinate : LonLatCoords) {
-            JSONObject geometry = new JSONObject();
-            geometry.put("type", "Point");
-            geometry.put("coordinates", new JSONArray(coordinate));
-            JSONObject feature = new JSONObject();
-            feature.put("type", "Feature");
-            feature.put("geometry", geometry);
-            features.put(feature);
-        }
-        featureCollection.put("features", features);
-
-        LOGGER.info("Uploading virtual sensors GeoJSON to PostGIS");
-		GDALClient gdalclient = new GDALClient();
-		gdalclient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, "sensor_layer", featureCollection.toString(), new Ogr2OgrOptions(), true);
-
-		LOGGER.info("Creating plant items layer in Geoserver");
-		GeoServerClient geoserverclient = new GeoServerClient();
-		geoserverclient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
-		geoserverclient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, "sensor_layer", new GeoServerVectorSettings());
-
-        return 0;
-
-    } 
 
     public int createAERMAPInputFile() {
 
@@ -2024,7 +1979,8 @@ public class Buildings {
                 }
             }
             sb.append("RE GRIDCART "+ netid + " END");
-            String newContent = templateContent.replace("RE GRIDCART POL1 END", sb.toString());
+            String newContent = templateContent.replace("RE ELEVUNIT METERS", " ");
+            newContent = newContent.replace("RE GRIDCART POL1 END", sb.toString());
             newContent = newContent.replaceAll("POL1", netid);
             String fileName = "receptor_"+ height + ".dat";
             fileNames.add(fileName);
