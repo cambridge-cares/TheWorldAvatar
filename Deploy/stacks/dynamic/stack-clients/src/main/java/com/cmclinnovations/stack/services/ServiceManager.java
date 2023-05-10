@@ -152,8 +152,8 @@ public final class ServiceManager {
         final Service newService;
         try {
             newService = typeClass
-                    .getConstructor(String.class, ServiceManager.class, ServiceConfig.class)
-                    .newInstance(stackName, this, config);
+                    .getConstructor(String.class, ServiceConfig.class)
+                    .newInstance(stackName, config);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException | NoSuchMethodException | SecurityException ex) {
             throw new IllegalArgumentException("Service '" + serviceName + "', of type '" + type

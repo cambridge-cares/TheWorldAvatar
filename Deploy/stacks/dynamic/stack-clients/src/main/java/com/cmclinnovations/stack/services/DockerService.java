@@ -68,8 +68,8 @@ public class DockerService extends AbstractService
 
     protected Network network;
 
-    public DockerService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
-        super(serviceManager, config);
+    public DockerService(String stackName, ServiceConfig config) {
+        super(config);
 
         Connection endpoint = getEndpoint("dockerHost");
         URI dockerUri;
