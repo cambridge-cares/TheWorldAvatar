@@ -15,16 +15,16 @@ public class GeoObject3D {
     private PGgeometry geometry;
     private String name;
     private int objectClassid;
-    private int id;
+    private String gmlid;
     private String address;
 
     private static final Logger LOGGER = LogManager.getLogger(SpatialLink.class);
     private PostgresClient postgresClient;
 
     public GeoObject3D () {}
-    public GeoObject3D(String name, int id, int objectClassid, PGgeometry geometry){
+    public GeoObject3D(String name, String gmlid, int objectClassid, PGgeometry geometry){
         this.name = name;
-        this.id = id;
+        this.gmlid = gmlid;
         this.objectClassid = objectClassid;
         this.geometry = geometry;
     }
@@ -33,7 +33,7 @@ public class GeoObject3D {
         return this.name;
     }
 
-    public int getId() {return this.id;}
+    public String getGmlId() {return this.gmlid;}
 
     public PGgeometry getEnvelope(){
         return this.geometry;
@@ -43,8 +43,8 @@ public class GeoObject3D {
         this.name = name;
     }
 
-    public void setId (int id){
-        this.id = id;
+    public void setGmlid (String gmlid){
+        this.gmlid = gmlid;
     }
 
     public void setObjectClassid (int objectClassid) {
@@ -63,12 +63,12 @@ public class GeoObject3D {
         List<GeoObject3D> allObject3D = new ArrayList<>();
 
         try (Connection conn = postgresClient.getConnection()) {
-            String sql = "SELECT id, objectclass_id, name, envelope FROM cityobject";
+            String sql = "SELECT gmlid, objectclass_id, name, envelope FROM cityobject";
             try (Statement stmt = conn.createStatement()) {
                 ResultSet result = stmt.executeQuery(sql);
                 while (result.next()) {
                     GeoObject3D object3D = new GeoObject3D();
-                    object3D.setId(result.getInt("id"));
+                    object3D.setGmlid(result.getString("gmlid"));
                     object3D.setObjectClassid(result.getInt("objectclass_id"));
                     object3D.setName(result.getString("name"));
                     object3D.setGeometry((PGgeometry)result.getObject("envelope"));
@@ -91,7 +91,7 @@ public class GeoObject3D {
     public void updateName(GeoObject3D object3D){
         String upSql = "UPDATE cityobject SET ";
         if(object3D.name != null){
-            upSql = upSql + "name = '" + object3D.name + "' WHERE id = " + object3D.id + ";";
+            upSql = upSql + "name = '" + object3D.name + "' WHERE gmlid = " + object3D.gmlid + ";";
             try (Connection conn = postgresClient.getConnection()) {
                 try (Statement stmt = conn.createStatement()) {
                     stmt.executeUpdate(upSql);
