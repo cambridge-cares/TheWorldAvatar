@@ -57,6 +57,9 @@ $('document').ready(function(){
         }
     });
     google.charts.load('current', {packages: ['corechart', 'line']});
+
+
+
 });
 
 
@@ -506,6 +509,12 @@ function toTable(valueSet) {
 	// console.log("new headers", new_headers)
 	// Build into HTML table
 	let html = "<table class=\" table table-custom\"><thead><tr>";
+	let result_tip_text = "The result column shows the node or literal extracted from " +
+			"the KG according to user input"
+	let domain_tip_text = "The domain column shows source of the result, where each domain is an ontology with in the TWA KG."
+	let score_tip_text = "The score column shows the confidence score of the answer. The maximum value is 2.0."
+	let target_tip_text = "The target column shows the target recognized by the QA system from the question. "
+
 
 	// Headers
 	Object.keys(valueSet).forEach((header) => {
@@ -514,10 +523,43 @@ function toTable(valueSet) {
 			header = new_headers[header]
 		}
 
-		if (header === "node"){
-			header = "result"
+		if (header === "Result"){
+			header = "Index"
 		}
-		html += "<th >" + header + "</th>";
+
+		if (header === "node"){
+			header = "Result" +
+				"<div class='tooltip'>" +
+				"<img src='/static/img/info.png' style='height: 15px;width: 15px'>" +
+				"<span class='tooltiptext'>"+ result_tip_text + "</span>" +
+				"</div>"
+		}
+
+		if (header === "domain"){
+			header = "Domain" +
+				"<div class='tooltip'>" +
+				"<img src='/static/img/info.png' style='height: 15px;width: 15px'>" +
+				"<span class='tooltiptext'>"+ domain_tip_text + "</span>" +
+				"</div>"
+		}
+
+		if (header === "score"){
+			header = "Score" +
+				"<div class='tooltip'>" +
+				"<img src='/static/img/info.png' style='height: 15px;width: 15px'>" +
+				"<span class='tooltiptext'>"+ score_tip_text + "</span>" +
+				"</div>"
+		}
+
+		if (header === "target"){
+			header = "Target" +
+				"<div class='tooltip'>" +
+				"<img src='/static/img/info.png' style='height: 15px;width: 15px'>" +
+				"<span class='tooltiptext'>"+ target_tip_text + "</span>" +
+				"</div>"
+		}
+
+		html += "<th>" + header + "</th>";
 	});
 	html += "</tr></thead>";
 
