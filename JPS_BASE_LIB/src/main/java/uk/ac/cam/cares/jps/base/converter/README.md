@@ -214,3 +214,19 @@ jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.converter
 tbox_generation = jpsBaseLib_view.TBoxGeneration()
 tbox_generation.generateTBox('./<FILE_NAME>.csv')
 ```
+
+## Generating description logic in LaTeX format
+
+By default, the TBox Generator generates a `.tex` file containing the description logic of the ontology in LaTeX format in the same folder as the provided CSV file. If one wants to generate the `.tex` file for an existing OWL file, please follow below steps:
+1. Build the base lib by means of `mvn clean install -DskipTests` in the root folder of this project.
+2. Run the following command from within the `target` folder if the ontology is available online:
+    ```
+    java -cp jps-base-lib.jar uk.ac.cam.cares.jps.base.converter.DescriptionLogicGenerator --url <ontologyURL> <texFilePath>
+    ```
+    e.g. `java -cp jps-base-lib.jar uk.ac.cam.cares.jps.base.converter.DescriptionLogicGenerator --url https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl ../../JPS_Ontology/ontology/ontodoe/OntoDoE.tex`
+
+    or if the ontology is available in the local file system:
+    ```
+    java -cp jps-base-lib.jar uk.ac.cam.cares.jps.base.converter.DescriptionLogicGenerator --file <ontologyFilePath> <texFilePath>
+    ```
+    e.g. `java -cp jps-base-lib.jar uk.ac.cam.cares.jps.base.converter.DescriptionLogicGenerator --file ../../JPS_Ontology/ontology/ontodoe/OntoDoE.owl ../../JPS_Ontology/ontology/ontodoe/OntoDoE.tex`
