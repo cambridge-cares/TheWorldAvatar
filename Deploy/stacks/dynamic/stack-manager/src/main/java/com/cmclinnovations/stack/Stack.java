@@ -6,16 +6,24 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.services.ServiceManager;
+import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.dockerjava.api.model.ContainerSpec;
+import com.github.dockerjava.api.model.Mount;
+import com.github.dockerjava.api.model.MountType;
 
 public class Stack {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
+
+    private static final String VOLUME_POPULATOR_SERVICE_NAME = "volume-populator";
 
     public static Stack create(String stackName, URL hostURL, ServiceManager manager, Path stackConfigDir) {
         try (Stream<Path> stackConfigs = Files.find(stackConfigDir, 1,
@@ -71,7 +79,9 @@ public class Stack {
     }
 
     public void initialiseServices() {
-        List<String> defaultServices = List.of("blazegraph", "postgis", "adminer", "ontop", "gdal", "geoserver");
+        List<String> defaultServices = List.of(
+                VOLUME_POPULATOR_SERVICE_NAME, "blazegraph", "postgis", "adminer", "ontop",
+                "gdal", "geoserver");
 
         // Check to see if services have been specified through a config file
         if (null == config) {
@@ -81,28 +91,74 @@ public class Stack {
             // Load all user supplied services
             manager.initialiseAllUserServices(name);
         } else {
-            // Start with the defaults
-            List<String> selectedServices = new ArrayList<>(defaultServices);
+            List<String> selectedServices = calculateSelectedServicesFromConfig(defaultServices);
 
-            // Check that none of the defaults have been explicitly included.
-            String explicitDefaults = config.getIncludedServices().stream()
-                    .filter(defaultServices::contains)
-                    .collect(Collectors.joining(", "))
-                    // Replace the last comma delimiter with "and"
-                    .replaceFirst(", ([^, ]+)$", " and $1");
-            if (!explicitDefaults.isEmpty()) {
-                throw new IllegalStateException("Default service(s), " + explicitDefaults
-                        + ", explicitly included by user. Please remove them from the \"includes\" list in the stack config file.");
-            }
-
-            // Add user specified services
-            selectedServices.addAll(config.getIncludedServices());
-            // Remove any excluded services (default and user specified)
-            selectedServices.removeAll(config.getExcludedServices());
+            handleUserSuppliedData(selectedServices);
 
             // Initialise all of the selected services
             selectedServices.forEach(serviceName -> manager.initialiseService(name, serviceName));
         }
     }
 
+    private List<String> calculateSelectedServicesFromConfig(List<String> defaultServices) {
+        // Start with the defaults
+        List<String> selectedServices = new ArrayList<>(defaultServices);
+
+        // Check that none of the defaults have been explicitly included.
+        String explicitDefaults = config.getIncludedServices().stream()
+                .filter(defaultServices::contains)
+                .collect(Collectors.joining(", "))
+                // Replace the last comma delimiter with "and"
+                .replaceFirst(", ([^, ]+)$", " and $1");
+        if (!explicitDefaults.isEmpty()) {
+            throw new IllegalStateException("Default service(s), " + explicitDefaults
+                    + ", explicitly included by user. Please remove them from the \"includes\" list in the stack config file.");
+        }
+
+        // Add user specified services
+        selectedServices.addAll(config.getIncludedServices());
+        // Remove any excluded services (default and user specified)
+        selectedServices.removeAll(config.getExcludedServices());
+        return selectedServices;
+    }
+
+    private void handleUserSuppliedData(List<String> selectedServices) {
+
+        if (selectedServices.contains(VOLUME_POPULATOR_SERVICE_NAME)) {
+            Map<String, String> volumes = config.getVolumes();
+            if (volumes.isEmpty()) {
+                selectedServices.remove(VOLUME_POPULATOR_SERVICE_NAME);
+            } else {
+                ServiceConfig volumePopulator = manager.getServiceConfig(VOLUME_POPULATOR_SERVICE_NAME);
+
+                ContainerSpec containerSpec = volumePopulator.getContainerSpec();
+
+                List<Mount> existingMounts = containerSpec.getMounts();
+                final List<Mount> mounts;
+                if (null == existingMounts) {
+                    mounts = new ArrayList<>();
+                    containerSpec.withMounts(mounts);
+                } else {
+                    mounts = existingMounts;
+                }
+
+                List<String> args = containerSpec.getCommand();
+                Path internalHostDir = Path.of(args.get(args.size() - 2));
+                Path internalVolumeDir = Path.of(args.get(args.size() - 1));
+
+                Path dataDir = StackClient.getAbsDataPath();
+
+                volumes.forEach((volumeName, hostDir) -> {
+                    mounts.add(new Mount()
+                            .withType(MountType.BIND)
+                            .withSource(dataDir.resolve(hostDir).toString())
+                            .withTarget(internalHostDir.resolve(volumeName).toString()));
+                    mounts.add(new Mount()
+                            .withType(MountType.VOLUME)
+                            .withSource(volumeName)
+                            .withTarget(internalVolumeDir.resolve(volumeName).toString()));
+                });
+            }
+        }
+    }
 }

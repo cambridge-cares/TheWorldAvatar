@@ -61,4 +61,8 @@ public final class StackClient {
         return Path.of(System.getenv(STACK_BASE_DIR_KEY));
     }
 
+    public static Path getAbsDataPath() {
+        return getStackBaseDir().resolve("inputs").resolve("data");
+    }
+
 }

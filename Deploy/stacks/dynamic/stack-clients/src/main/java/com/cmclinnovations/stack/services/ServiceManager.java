@@ -131,7 +131,7 @@ public final class ServiceManager {
         }
     }
 
-    ServiceConfig getServiceConfig(String serviceName) {
+    public ServiceConfig getServiceConfig(String serviceName) {
         ServiceConfig serviceConfig = serviceConfigs.get(serviceName);
         if (null == serviceConfig) {
             throw new RuntimeException("No service config loaded with name '" + serviceName + "'.");
