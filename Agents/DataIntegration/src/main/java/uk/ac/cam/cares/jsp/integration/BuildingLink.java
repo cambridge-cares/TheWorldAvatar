@@ -71,7 +71,7 @@ public class BuildingLink extends HttpServlet {
         List<Document> documentList = new ArrayList<>();
         for (int j = 0; j < geoObject3Ds.size(); j++){
             if(geoObject3Ds.get(j).getName() != null){
-                Document preDocument = new Document.Builder(Integer.toString(geoObject3Ds.get(j).getId()))
+                Document preDocument = new Document.Builder(geoObject3Ds.get(j).getGmlId())
                         .addElement(new Element.Builder<String>().setValue(geoObject3Ds.get(j).getName()).setType(ElementType.NAME).createElement())
                         .createDocument();
                 documentList.add(preDocument);
