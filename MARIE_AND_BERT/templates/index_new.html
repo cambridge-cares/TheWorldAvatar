@@ -156,10 +156,11 @@ This is included inline, rather than as a separate script, for efficiency reason
                         <p>This website presents a proof-of-concept search engine system for accessing chemical data
                             from the World Avatar Knowledge Graph and the Wikidata Knowledge Graph. The Knowledge Graphs
                             offers inter-connected data from chemical kinetics to chemical and physical properties of
-                            species and many other domains. We trained a question type classification model and an
-                            entity extraction model to interpret chemistry-related questions of interest. The system has
-                            a novel design which applies a topic model to identify the question-to-ontology affiliation
-                            to improve its accuracy.</p>
+                            species and many other domains. We modelled the chemistry knowledge using various knowledge
+                            graph embedding techniques and leverage pre-trained BERT model to interpret questions posed
+                            by users. This website is a demonstration of the system described by the preprint <a>"Marie and BERT"</a>.
+                            Please note that this website is still in development. 
+                        </p>
                         <p>To use the Marie search engine, type a question into the field below, or select one of the
                             provided sample questions.</p>
                     </div>
@@ -191,47 +192,6 @@ This is included inline, rather than as a separate script, for efficiency reason
                 </div>
                 <h3>Example Questions</h3>
 
-
-
-                <button type="submit" class="accordion">MoPs Questions</button>
-                <div class="accordion-panel">
-                    MoPs questions
-                    <ul>
-                        <li>
-                            <div class="sample-question">List the Chemical Building Units with 2-linear as the Generic Building Unit</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">List the MOPs with (3-pyramidal)8(2-bent)12(Cs) as the assembly model</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">Give the assembly model types that can be created with [(C4H2S)(CO2)2] as the CBU</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">List the MOPs with assembly model (3-planar)4(3-pyramidal)4(Td)</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">List the Chemical Building Units with 2-linear as the Generic Building Unit</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">List the Chemical Building Units with 2-bent as the Generic Building Unit</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">Give the MOPs which are triangular</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">Give the MOPs which are Anticuboctahedron shaped</div>
-                        </li>
-
-                        <li>
-                            <div class="sample-question">List the MOPs with (3-pyramidal)8(2-bent)12(Cs) as the assembly model</div>
-                        </li>
-
-                        <li>
-                            <div class="sample-question">Show all the MOPs which have Cuboctahedron shape</div>
-                        </li>
-
-                    </ul>
-                </div>
 
                 <button type="submit" class="accordion">Agent Questions</button>
                 <div class="accordion-panel">
@@ -289,10 +249,19 @@ This is included inline, rather than as a separate script, for efficiency reason
                     </ul>
                 </div>
 
-                <button type="submit" class="accordion">Molecular properties (from Pubchem)</button>
+<!--                <button type="submit" class="accordion">Molecular properties (from Pubchem)</button>-->
+<!--                <div class="accordion-panel">-->
+<!--                    To search properties of molecules-->
+<!--                    <ul>-->
+
+<!--                    </ul>-->
+<!--                </div>-->
+
+                <button type="submit" class="accordion">Molecular properties</button>
                 <div class="accordion-panel">
                     To search properties of molecules
                     <ul>
+
                         <li>
                             <div class="sample-question">What is the charge of Benzene? </div>
                         </li>
@@ -329,13 +298,8 @@ This is included inline, rather than as a separate script, for efficiency reason
                         <li>
                             <div class="sample-question">What is the molecular weight of CH4?</div>
                         </li>
-                    </ul>
-                </div>
 
-                <button type="submit" class="accordion">Molecular properties</button>
-                <div class="accordion-panel">
-                    To search properties of molecules
-                    <ul>
+
                         <li>
                             <div class="sample-question">What is the dipole moment of Benzene? </div>
                         </li>
@@ -357,7 +321,45 @@ This is included inline, rather than as a separate script, for efficiency reason
                     </ul>
                 </div>
 
+                <button type="submit" class="accordion">Metal-Organic Polyhedra (MOPs) Questions</button>
+                <div class="accordion-panel">
+                    MoPs questions
+                    <ul>
+                        <li>
+                            <div class="sample-question">List the Chemical Building Units with 2-linear as the Generic Building Unit</div>
+                        </li>
+                        <li>
+                            <div class="sample-question">List the MOPs with (3-pyramidal)8(2-bent)12(Cs) as the assembly model</div>
+                        </li>
+                        <li>
+                            <div class="sample-question">Give the assembly model types that can be created with [(C4H2S)(CO2)2] as the CBU</div>
+                        </li>
+                        <li>
+                            <div class="sample-question">List the MOPs with assembly model (3-planar)4(3-pyramidal)4(Td)</div>
+                        </li>
+                        <li>
+                            <div class="sample-question">List the Chemical Building Units with 2-linear as the Generic Building Unit</div>
+                        </li>
+                        <li>
+                            <div class="sample-question">List the Chemical Building Units with 2-bent as the Generic Building Unit</div>
+                        </li>
+                        <li>
+                            <div class="sample-question">Give the MOPs which are triangular</div>
+                        </li>
+                        <li>
+                            <div class="sample-question">Give the MOPs which are Anticuboctahedron shaped</div>
+                        </li>
 
+                        <li>
+                            <div class="sample-question">List the MOPs with (3-pyramidal)8(2-bent)12(Cs) as the assembly model</div>
+                        </li>
+
+                        <li>
+                            <div class="sample-question">Show all the MOPs which have Cuboctahedron shape</div>
+                        </li>
+
+                    </ul>
+                </div>
 
                 <p><br></p>
                 <div style="padding-top: 10px; border-top: 1px solid LightGrey;">
