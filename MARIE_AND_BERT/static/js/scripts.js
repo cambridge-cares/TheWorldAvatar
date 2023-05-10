@@ -509,11 +509,11 @@ function toTable(valueSet) {
 	// console.log("new headers", new_headers)
 	// Build into HTML table
 	let html = "<table class=\" table table-custom\"><thead><tr>";
-	let result_tip_text = "The result column shows the node or literal extracted from " +
-			"the KG according to user input"
-	let domain_tip_text = "The domain column shows source of the result, where each domain is an ontology with in the TWA KG."
-	let score_tip_text = "The score column shows the confidence score of the answer. The maximum value is 2.0."
-	let target_tip_text = "The target column shows the target recognized by the QA system from the question. "
+	let result_tip_text = "The \"result\" column displays the node or literal extracted from " +
+			"the KG based on the user's input."
+	let domain_tip_text = "The \"domain\" column displays the origin of the result, where each domain corresponds to an ontology within the TWA KG."
+	let score_tip_text = "The \"score\" column represents the degree of confidence in the answer given, ranging from 0 to a maximum value of 2.0."
+	let target_tip_text = "The \"target\" column displays the entity or concept identified by the QA system in the question."
 
 
 	// Headers
