@@ -114,7 +114,7 @@ public class EmailBuilder {
                     sb.append("</td>");
                     sb.append("</tr>");
 
-                    firstLine = firstLine + map.get("Label").get(i) + " ,";
+                    firstLine = firstLine + map.get("Label").get(i) + " , ";
                     LOGGER.info("The firstLine is " + firstLine);
                 } else {
                     sb.append("<tr>");
@@ -131,7 +131,7 @@ public class EmailBuilder {
 
         try {
             sb.append("</table>");
-            firstLine = firstLine.substring(0, firstLine.length() - 1);
+            firstLine = firstLine.substring(0, firstLine.length() - 2);
             firstLine = firstLine + " ) are unoccupied and have a sash opening above the threshold of " + threshold + "%. ";
             FullContent.append(firstLine);
             FullContent.append(sb.toString());
