@@ -30,7 +30,6 @@ import com.github.dockerjava.api.command.ListTasksCmd;
 import com.github.dockerjava.api.command.PullImageCmd;
 import com.github.dockerjava.api.command.PullImageResultCallback;
 import com.github.dockerjava.api.command.RemoveServiceCmd;
-import com.github.dockerjava.api.command.StartContainerCmd;
 import com.github.dockerjava.api.model.Config;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.ContainerSpec;
@@ -247,32 +246,12 @@ public class DockerService extends AbstractService
         }
 
         final String containerId;
-        final String containerState;
 
         if (container.isPresent()) {
             // Get required details of the existing/new container
             containerId = container.get().getId();
-            containerState = container.get().getState();
         } else {
             throw new RuntimeException("Failed to start container for service with name '" + service.getName() + "'.");
-        }
-
-        switch (containerState) {
-            case "running":
-                // The container is already running, all is fine.
-                break;
-            case "created":
-            case "exited":
-                // The container is not running, start it.
-                try (StartContainerCmd startContainerCmd = dockerClient.getInternalClient()
-                        .startContainerCmd(containerId)) {
-                    startContainerCmd.exec();
-                }
-                break;
-            default:
-                // TODO Need to consider actions for other states
-                throw new IllegalStateException("Container '" + containerId + "' in a state (" + containerState
-                        + ") that is currently unsupported in the DockerService::startContainer method.");
         }
 
         service.setContainerId(containerId);
@@ -311,16 +290,18 @@ public class DockerService extends AbstractService
             }
         } while (null == taskState || TaskState.RUNNING.compareTo(taskState) > 0);
 
-        if (!TaskState.RUNNING.equals(taskState)) {
-            String errMessage = taskStatus.getErr();
-            if (null != errMessage) {
-                errMessage = taskStatus.getMessage();
-            }
-            throw new RuntimeException("Failed to start service '" + containerName
-                    + "'. Error message is:\n" + errMessage);
-        } else {
-            String containerId = taskStatus.getContainerStatus().getContainerID();
-            return getContainerFromID(containerId);
+        switch (taskState) {
+            case RUNNING:
+            case COMPLETE:
+                String containerId = taskStatus.getContainerStatus().getContainerID();
+                return getContainerFromID(containerId);
+            default:
+                String errMessage = taskStatus.getErr();
+                if (null != errMessage) {
+                    errMessage = taskStatus.getMessage();
+                }
+                throw new RuntimeException("Failed to start service '" + containerName
+                        + "'. Error message is:\n" + errMessage);
         }
     }
 
