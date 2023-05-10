@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.historicalntuenergy;
-import com.hp.hpl.jena.graph.Triple;
+import org.json.JSONObject;
+import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 
 import java.io.File;
@@ -45,17 +46,31 @@ public class HistoricalQueryBuilder {
     public static final String branch = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#UndergroundCable";
     public static final String absorbedActivePower = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#AbsorbedActivePower";
     public static final String absorbedReactivePower = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#AbsorbedReactivePower";
-    public static final String generatedActivePower = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#GeneratedActivePower";
-    public static final String generatedReactivePower = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#GeneratedReactivePower";
     public static final String voltageAngle = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#VoltageAngle";
     public static final String voltageMagnitude = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#VoltageMagnitude";
     public static final String SIDerivedUnit = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit";
-    public static final String photovoltaicGenerator = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PhotovoltaicGenerator";
+    public static final String photovoltaicPanel = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PhotovoltaicPanel";
+
+    public static final String BaseTestingIrradiance = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#BaseTestingIrradiance";
+    public static final String BaseTestingTemperature = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#BaseTestingTemperature";
+    public static final String NominalOperatingTemperature = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NominalOperatingTemperature";
+    public static final String PanelArea = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PanelArea";
+    public static final String PanelLength = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PanelLength";
+    public static final String PanelWidth = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PanelWidth";
+    public static final String RatedCurrent = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedCurrent";
+    public static final String RatedVoltage = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedVoltage";
+    public static final String RatedEfficiency = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedEfficiency";
+    public static final String RatedPower = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedPower";
+    public static final String TemperatureCoefficientOfPower = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#TemperatureCoefficientOfPower";
+    public static final String Tilt = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Tilt";
+    private static final String scalarValue = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue";
+
 
     /**
      * Model variables
      */
     public static final String PowerSystemModelPrefix = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#";
+    public static final String PowerSystemRealizaionPrefix = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#";
     public static final String modelVariableSpecification = "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification";
     public static final String Measure = "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure";
 
@@ -81,6 +96,20 @@ public class HistoricalQueryBuilder {
     private static final String hasUnitOfMeasure = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure";
     private static final String rdfsLabel = "http://www.w3.org/2000/01/rdf-schema#label";
     private static final String contains = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains";
+    private static final String hasBaseTestingIrradiance = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasBaseTestingIrradiance";
+    private static final String hasBaseTestingTemperature = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasBaseTestingTemperature";
+    private static final String hasNominalOperatingTemperature = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasNominalOperatingTemperature";
+    private static final String hasPanelLength = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasPanelLength";
+    private static final String hasPanelArea = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasPanelArea";
+    private static final String hasPanelWidth = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasPanelWidth";
+    private static final String hasRatedCurrent = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasRatedCurrent";
+    private static final String hasRatedVoltage = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasRatedVoltage";
+    private static final String hasRatedEfficiency = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasRatedEfficiency";
+    private static final String hasTemperatureCoeffOfPower = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasTemperatureCoeffOfPower";
+    private static final String hasRatedPower = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasRatedPower";
+    private static final String hasTiltAngle = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasTiltAngle";
+    private static final String hasOntoCityGML = "https://www.theworldavatar.com/kg/ontobuiltenv/hasOntoCityGMLRepresentation";
+
 
     /**
      * Individuals
@@ -89,7 +118,6 @@ public class HistoricalQueryBuilder {
     private static final String kilovoltamperereactive = OmPrefix + "kilovoltamperereactive";
     private static final String omDegree = OmPrefix + "degree";
     private static final String kilovolt = OmPrefix + "kilovolt";
-
     public static final String MW = OntoCapeUnitPrefix + "MW";
     public static final String Mvar = OntoCapeUnitPrefix + "Mvar";
     public static final String MVA = OntoCapeUnitPrefix + "MVA";
@@ -101,6 +129,7 @@ public class HistoricalQueryBuilder {
      * NTU building to Bus number mapping
      */
     HashMap<String, Integer> NTUBuildingToBusNum = new HashMap<>();
+    HashMap<String, Integer> NTUBuildingToGMLRepresentation = new HashMap<>();
 
     /**
      * Building abbreviations to full name mapping
@@ -115,6 +144,10 @@ public class HistoricalQueryBuilder {
      * Generator-related parameters stored in a hashmap
      */
     HashMap<String, List<String>> generatorParams = new HashMap<String, List<String>>();
+    /**
+     * PV-related parameters stored in a hashmap
+     */
+    HashMap<String, List<String>> pvParams = new HashMap<String, List<String>>();
 
     /**
      * Bus-related parameters stored in a hashmap
@@ -127,13 +160,14 @@ public class HistoricalQueryBuilder {
     HashMap<String, String> BusNodeModelVariables = new HashMap<>();
     HashMap<String, String> BranchModelVariables = new HashMap<>();
     HashMap<String, String> GeneratorModelVariables = new HashMap<>();
+    HashMap<String, String> PVModelVariables = new HashMap<>();
 
     RemoteStoreClient kbClient;
     public String agentProperties;
 
     private List<JSONKeyToIRIMapper> mappings;
 
-    public HistoricalQueryBuilder(String agentProp, RemoteStoreClient kbClient) throws IOException
+    public HistoricalQueryBuilder(String agentProp, RemoteStoreClient kbClient, JSONArray busNodeSpecs, JSONArray branchSpecs, JSONArray generatorSpecs, JSONArray pvSpecs) throws IOException
     {
         agentProperties = agentProp;
         loadproperties(agentProperties);
@@ -157,6 +191,21 @@ public class HistoricalQueryBuilder {
         NTUBuildingToBusNum.put("NEC", 14);
         NTUBuildingToBusNum.put("THE_WAVE", 15);
 
+        NTUBuildingToGMLRepresentation.put("N1_3", 40);
+        NTUBuildingToGMLRepresentation.put("NYA", 442);
+        NTUBuildingToGMLRepresentation.put("CANTEEN_2", 190);
+        NTUBuildingToGMLRepresentation.put("SBS", 120);
+        NTUBuildingToGMLRepresentation.put("EMB", 1);
+        NTUBuildingToGMLRepresentation.put("RTP", 92);
+        NTUBuildingToGMLRepresentation.put("N_2", 47);
+        NTUBuildingToGMLRepresentation.put("N_2_1", 454);
+        NTUBuildingToGMLRepresentation.put("SPMS", 488);
+        NTUBuildingToGMLRepresentation.put("HALL_4", 17);
+        NTUBuildingToGMLRepresentation.put("PIONEER_HALL", 387);
+        NTUBuildingToGMLRepresentation.put("NEC", 399);
+        NTUBuildingToGMLRepresentation.put("THE_WAVE", 277);
+
+
         // Specifies the relationship between building abbreviations and full names
         BuildingAbbrevToName.put("GENERATOR_NODE", "Generator Node");
         BuildingAbbrevToName.put("N1_3", "Block N1.3");
@@ -175,124 +224,69 @@ public class HistoricalQueryBuilder {
         BuildingAbbrevToName.put("THE_WAVE", "The Wave");
 
         // Specifies the bus node parameters
-        // This can be improved by importing a data file
-        busParams.put("bus_i", Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"));
-        busParams.put("type", Arrays.asList("3", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1"));
-        busParams.put("Gs", Arrays.asList("0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
-        busParams.put("Bs", Arrays.asList("0", "0", "1", "0", "0", "0", "0", "1", "1", "0", "0", "1", "0", "1", "0"));
-        busParams.put("area", Arrays.asList("1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1"));
-        busParams.put("Vm", Arrays.asList("1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1"));
-        busParams.put("Va", Arrays.asList("0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
-        busParams.put("baseKV", Arrays.asList("11", "11", "11", "11", "11", "11", "11", "11", "11", "11", "11", "11", "11", "11", "11"));
-        busParams.put("Zone", Arrays.asList("1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1"));
-        busParams.put("VmMax", Arrays.asList("1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1"));
-        busParams.put("VmMin", Arrays.asList("1", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9"));
+        for (int i = 0; i < busNodeSpecs.length(); i++) {
+            JSONObject jsonObject = busNodeSpecs.getJSONObject(i);
+            for (String key : jsonObject.keySet()) {
+                String value = jsonObject.getString(key);
+                if (!busParams.containsKey(key)) {
+                    busParams.put(key, new ArrayList<>());
+                }
+                busParams.get(key).add(value);
+            }
+        }
+        // Add BusNode model variables class URIs
+        for (String key : busParams.keySet()) {
+            BusNodeModelVariables.put(key, PowerSystemModelPrefix + key);
+        }
 
         // Specifies Branch model parameters
-        // This can be improved by importing a data file
-        branchParams.put("fbus", Arrays.asList("1", "2", "3", "4", "2", "9", "2", "6", "6", "3", "11", "12", "4", "4"));
-        branchParams.put("tbus", Arrays.asList("2", "3", "4", "5", "9", "10", "6", "7", "8", "11", "12", "13", "14", "15"));
-        branchParams.put("r", Arrays.asList("0.011182562", "0.009671405", "0.006951322", "0.012590744", "0.016637769", "0.013939752", "0.021134463", "0.008993388", "0.010342397", "0.014839091", "0.020235124", "0.016637769", "0.018436446", "0.009892727"));
-        branchParams.put("x", Arrays.asList("0.010937934", "0.009459835", "0.006799256", "0.008492562", "0.011222314", "0.009402479", "0.014255372", "0.006066116", "0.006976033", "0.010009091", "0.01364876", "0.011222314", "0.012435537", "0.006672727"));
-        branchParams.put("b", Arrays.asList("0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
-        branchParams.put("rateA", Arrays.asList("9900", "9900", "9900", "9900", "9900", "9900", "9900", "9900", "9900", "9900", "9900", "9900", "9900", "9900"));
-        branchParams.put("rateB", Arrays.asList("0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
-        branchParams.put("rateC", Arrays.asList("0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
-        branchParams.put("ratio", Arrays.asList("0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
-        branchParams.put("angle", Arrays.asList("0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
-        branchParams.put("status", Arrays.asList("1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1"));
-        branchParams.put("angmin", Arrays.asList("-360", "-360", "-360", "-360", "-360", "-360", "-360", "-360", "-360", "-360", "-360", "-360", "-360", "-360"));
-        branchParams.put("angmax", Arrays.asList("360", "360", "360", "360", "360", "360", "360", "360", "360", "360", "360", "360", "360", "360"));
+        for (int i = 0; i < branchSpecs.length(); i++) {
+            JSONObject jsonObject = branchSpecs.getJSONObject(i);
+            for (String key : jsonObject.keySet()) {
+                String value = jsonObject.getString(key);
+                if (!branchParams.containsKey(key)) {
+                    branchParams.put(key, new ArrayList<>());
+                }
+                branchParams.get(key).add(value);
+            }
+        }
+        // Add Branch model variables class URIs
+        for (String key : branchParams.keySet()) {
+            BranchModelVariables.put(key, PowerSystemModelPrefix + key);
+        }
 
+        // Specifies the power generator parameters
+        for (int i = 0; i < generatorSpecs.length(); i++) {
+            JSONObject jsonObject = generatorSpecs.getJSONObject(i);
+            for (String key : jsonObject.keySet()) {
+                String value = jsonObject.getString(key);
+                if (!generatorParams.containsKey(key)) {
+                    generatorParams.put(key, new ArrayList<>());
+                }
+                generatorParams.get(key).add(value);
+            }
+        }
+        // Add Generator model variables class URIs
+        for (String key : generatorParams.keySet()) {
+            GeneratorModelVariables.put(key, PowerSystemModelPrefix + key);
+        }
 
-        // Add BusNode model variables class URIs
-        BusNodeModelVariables.put("bus_i", PowerSystemModelPrefix + "BusNumber");
-        BusNodeModelVariables.put("type", PowerSystemModelPrefix + "BusType");
-        BusNodeModelVariables.put("area", PowerSystemModelPrefix + "Area");
-        BusNodeModelVariables.put("Bs", PowerSystemModelPrefix + "Bs");
-        BusNodeModelVariables.put("Gs", PowerSystemModelPrefix + "Gs");
-        BusNodeModelVariables.put("baseKV", PowerSystemModelPrefix + "baseKV");
-        BusNodeModelVariables.put("VmMin", PowerSystemModelPrefix + "VmMin");
-        BusNodeModelVariables.put("VmMax", PowerSystemModelPrefix + "VmMax");
-        BusNodeModelVariables.put("Zone", PowerSystemModelPrefix + "Zone");
-        BusNodeModelVariables.put("Vm", PowerSystemModelPrefix + "Vm");
-        BusNodeModelVariables.put("Va", PowerSystemModelPrefix + "Va");
+        // Specifies the PV parameters
+        for (int i = 0; i < pvSpecs.length(); i++) {
+            JSONObject jsonObject = pvSpecs.getJSONObject(i);
+            for (String key : jsonObject.keySet()) {
+                String value = jsonObject.getString(key);
+                if (!pvParams.containsKey(key)) {
+                    pvParams.put(key, new ArrayList<>());
+                }
+                pvParams.get(key).add(value);
+            }
+        }
+        // Add PV variables class URIs
+        for (String key : pvParams.keySet()) {
+            PVModelVariables.put(key, PowerSystemRealizaionPrefix + key);
+        }
 
-        // Add PowerGenerator model variables class URIs
-        GeneratorModelVariables.put("bus", PowerSystemModelPrefix + "BusNumber");
-        GeneratorModelVariables.put("Pg", PowerSystemModelPrefix + "Pg");
-        GeneratorModelVariables.put("Qg", PowerSystemModelPrefix + "Qg");
-        GeneratorModelVariables.put("Qmax", PowerSystemModelPrefix + "QMax");
-        GeneratorModelVariables.put("Qmin", PowerSystemModelPrefix + "QMin");
-        GeneratorModelVariables.put("Vg", PowerSystemModelPrefix + "Vg");
-        GeneratorModelVariables.put("mBase", PowerSystemModelPrefix + "mBase");
-        GeneratorModelVariables.put("status", PowerSystemModelPrefix + "Status");
-        GeneratorModelVariables.put("Pmax", PowerSystemModelPrefix + "PMax");
-        GeneratorModelVariables.put("Pmin", PowerSystemModelPrefix + "PMin");
-        GeneratorModelVariables.put("Pc1", PowerSystemModelPrefix + "Pc1");
-        GeneratorModelVariables.put("Pc2", PowerSystemModelPrefix + "Pc2");
-        GeneratorModelVariables.put("Qc1min", PowerSystemModelPrefix + "QC1Min");
-        GeneratorModelVariables.put("Qc1max", PowerSystemModelPrefix + "QC1Max");
-        GeneratorModelVariables.put("Qc2min", PowerSystemModelPrefix + "QC2Min");
-        GeneratorModelVariables.put("Qc2max", PowerSystemModelPrefix + "QC2Max");
-        GeneratorModelVariables.put("ramp_agc", PowerSystemModelPrefix + "Rampagc");
-        GeneratorModelVariables.put("ramp_10", PowerSystemModelPrefix + "Ramp10");
-        GeneratorModelVariables.put("ramp_30", PowerSystemModelPrefix + "Ramp30");
-        GeneratorModelVariables.put("ramp_q", PowerSystemModelPrefix + "Rampq");
-        GeneratorModelVariables.put("apf", PowerSystemModelPrefix + "APF");
-        GeneratorModelVariables.put("CostModel", PowerSystemModelPrefix + "CostModel");
-        GeneratorModelVariables.put("StartCost", PowerSystemModelPrefix + "StartCost");
-        GeneratorModelVariables.put("StopCost", PowerSystemModelPrefix + "StopCost");
-        GeneratorModelVariables.put("genCostn", PowerSystemModelPrefix + "genCostn");
-        GeneratorModelVariables.put("genCostcn-1", PowerSystemModelPrefix + "genCostcn-1");
-        GeneratorModelVariables.put("genCostcn-2", PowerSystemModelPrefix + "genCostcn-2");
-        GeneratorModelVariables.put("genCostc0", PowerSystemModelPrefix + "genCostc0");
-
-        //Add PowerGenerator model variables class URIs
-        generatorParams.put("bus", Arrays.asList("1"));
-        generatorParams.put("Pg", Arrays.asList("0"));
-        generatorParams.put("Qg", Arrays.asList("0"));
-        generatorParams.put("Qmax", Arrays.asList("10"));
-        generatorParams.put("Qmin", Arrays.asList("-10"));
-        generatorParams.put("Vg", Arrays.asList("1"));
-        generatorParams.put("mBase", Arrays.asList("100"));
-        generatorParams.put("status", Arrays.asList("1"));
-        generatorParams.put("Pmax", Arrays.asList("10"));
-        generatorParams.put("Pmin", Arrays.asList("0"));
-        generatorParams.put("Pc1", Arrays.asList("0"));
-        generatorParams.put("Pc2", Arrays.asList("0"));
-        generatorParams.put("Qc1min", Arrays.asList("0"));
-        generatorParams.put("Qc1max", Arrays.asList("0"));
-        generatorParams.put("Qc2min", Arrays.asList("0"));
-        generatorParams.put("Qc2max", Arrays.asList("0"));
-        generatorParams.put("ramp_agc", Arrays.asList("0"));
-        generatorParams.put("ramp_10", Arrays.asList("0"));
-        generatorParams.put("ramp_30", Arrays.asList("0"));
-        generatorParams.put("ramp_q", Arrays.asList("0"));
-        generatorParams.put("apf", Arrays.asList("0"));
-        //PowerGenerator model variables (cost data)
-        generatorParams.put("CostModel", Arrays.asList("2"));
-        generatorParams.put("StartCost", Arrays.asList("0"));
-        generatorParams.put("StopCost", Arrays.asList("0"));
-        generatorParams.put("genCostn", Arrays.asList("3"));
-        generatorParams.put("genCostcn-1", Arrays.asList("0"));
-        generatorParams.put("genCostcn-2", Arrays.asList("20"));
-        generatorParams.put("genCostc0", Arrays.asList("0"));
-
-        //Add Branch model variables class URIs
-        BranchModelVariables.put("rateB", PowerSystemModelPrefix + "RateB");
-        BranchModelVariables.put("rateC", PowerSystemModelPrefix + "RateC");
-        BranchModelVariables.put("ratio", PowerSystemModelPrefix + "RatioCoefficient");
-        BranchModelVariables.put("angmax", PowerSystemModelPrefix + "AngleMax");
-        BranchModelVariables.put("fbus", PowerSystemModelPrefix + "BusFrom");
-        BranchModelVariables.put("x", PowerSystemModelPrefix + "X");
-        BranchModelVariables.put("b", PowerSystemModelPrefix + "B");
-        BranchModelVariables.put("rateA", PowerSystemModelPrefix + "RateA");
-        BranchModelVariables.put("angle", PowerSystemModelPrefix + "Angle");
-        BranchModelVariables.put("angmin", PowerSystemModelPrefix + "AngleMin");
-        BranchModelVariables.put("r", PowerSystemModelPrefix + "R");
-        BranchModelVariables.put("tbus", PowerSystemModelPrefix + "BusTo");
-        BranchModelVariables.put("status", PowerSystemModelPrefix + "BranchStatus");
     }
 
     public void loadproperties(String propfile) throws IOException
@@ -382,6 +376,126 @@ public class HistoricalQueryBuilder {
         TriplePattern powerSysisType = iri(powerSystemIRI).isA(iri(powerSystem));
         InsertDataQuery powersysInsertion = Queries.INSERT_DATA(powerSysisType);
         kbClient.executeUpdate(powersysInsertion.getQueryString());
+
+        /**
+         * Instantiate PV-related triples
+         */
+        for (int entry=0; entry < pvParams.size(); entry++){
+            String buildingFullName = pvParams.get("BuildingName").get(entry);
+            String buildingIRI = null;
+            for (Map.Entry<String, String> buildingEntry : BuildingAbbrevToName.entrySet()) {
+                if (buildingEntry.getValue().equals(buildingFullName)) {
+                    buildingIRI = PowsysPrefix + "NTU_Building_" + buildingEntry.getKey();
+                }
+            }
+            if (buildingIRI == null) {
+                throw new NullPointerException("The building name in PV_specs cannot be found in the system");
+            }
+
+            String PVIRI = PowsysPrefix + "NTU_PV_" + String.valueOf(entry);
+            TriplePattern PVisType = iri(PVIRI).isA(iri(photovoltaicPanel));
+
+            String baseTestIrradianceIRI = PowsysPrefix + "NTU_PV_" + String.valueOf(entry) + "_BaseTestIrradiance";
+            TriplePattern baseTestIrradianceisType = iri(baseTestIrradianceIRI).isA(iri(BaseTestingIrradiance));
+            String baseTestTemperatureIRI = PowsysPrefix + "NTU_PV_" + String.valueOf(entry) + "_BaseTestTemperature";
+            TriplePattern baseTestTemperatureisType = iri(baseTestTemperatureIRI).isA(iri(BaseTestingTemperature));
+            String nominaltemperatureIRI = PowsysPrefix + "NTU_PV_" + String.valueOf(entry) + "_NominalTemperature";
+            TriplePattern nominaltemperatureisType = iri(nominaltemperatureIRI).isA(iri(NominalOperatingTemperature));
+            String panelareaIRI = PowsysPrefix + "NTU_PV_" + String.valueOf(entry) + "_PanelArea";
+            TriplePattern panelareaisType = iri(panelareaIRI).isA(iri(PanelArea));
+            String panellengthIRI = PowsysPrefix + "NTU_PV_" + String.valueOf(entry) + "_PanelLength";
+            TriplePattern panellengthisType = iri(panellengthIRI).isA(iri(PanelLength));
+            String panelwidthIRI = PowsysPrefix + "NTU_PV_" + String.valueOf(entry) + "_PanelWidth";
+            TriplePattern panelwidthisType = iri(panelwidthIRI).isA(iri(PanelWidth));
+            String ratedcurrentIRI = PowsysPrefix + "NTU_PV_" + String.valueOf(entry) + "_RatedCurrent";
+            TriplePattern ratedcurrentisType = iri(ratedcurrentIRI).isA(iri(RatedCurrent));
+            String ratedvoltageIRI = PowsysPrefix + "NTU_PV_" + String.valueOf(entry) + "_RatedVoltage";
+            TriplePattern ratedvoltageisType = iri(ratedvoltageIRI).isA(iri(RatedVoltage));
+            String ratedefficiencyIRI = PowsysPrefix + "NTU_PV_" + String.valueOf(entry) + "_RatedEfficiency";
+            TriplePattern ratedefficiencyisType = iri(ratedefficiencyIRI).isA(iri(RatedEfficiency));
+            String ratedpowerIRI = PowsysPrefix + "NTU_PV_" + String.valueOf(entry) + "_RatedPower";
+            TriplePattern ratedpowerisType = iri(ratedpowerIRI).isA(iri(RatedPower));
+            String temperaturecoefficientIRI = PowsysPrefix + "NTU_PV_" + String.valueOf(entry) + "_TemperatureCoefficient";
+            TriplePattern temperaturecoefficientisType = iri(temperaturecoefficientIRI).isA(iri(TemperatureCoefficientOfPower));
+            String tiltIRI = PowsysPrefix + "NTU_PV_" + String.valueOf(entry) + "_Tilt";
+            TriplePattern tiltisType = iri(tiltIRI).isA(iri(Tilt));
+
+            TriplePattern BuildingHasPV = iri(buildingIRI).has(iri(contains), iri(PVIRI));
+            TriplePattern PVHasBTR = iri(PVIRI).has(iri(hasBaseTestingIrradiance), iri(baseTestIrradianceIRI));
+            TriplePattern PVHasBTT = iri(PVIRI).has(iri(hasBaseTestingTemperature), iri(baseTestTemperatureIRI));
+            TriplePattern PVHasNT = iri(PVIRI).has(iri(hasNominalOperatingTemperature), iri(nominaltemperatureIRI));
+            TriplePattern PVHasPA = iri(PVIRI).has(iri(hasPanelArea), iri(panelareaIRI));
+            TriplePattern PVHasPL = iri(PVIRI).has(iri(hasPanelLength), iri(panellengthIRI));
+            TriplePattern PVHasPW = iri(PVIRI).has(iri(hasPanelWidth), iri(panelwidthIRI));
+            TriplePattern PVHasRC = iri(PVIRI).has(iri(hasRatedCurrent), iri(ratedcurrentIRI));
+            TriplePattern PVHasRV = iri(PVIRI).has(iri(hasRatedVoltage), iri(ratedvoltageIRI));
+            TriplePattern PVHasRE = iri(PVIRI).has(iri(hasRatedEfficiency), iri(ratedefficiencyIRI));
+            TriplePattern PVHasRP = iri(PVIRI).has(iri(hasRatedPower), iri(ratedpowerIRI));
+            TriplePattern PVHasTC = iri(PVIRI).has(iri(hasTemperatureCoeffOfPower), iri(temperaturecoefficientIRI));
+            TriplePattern PVHasT = iri(PVIRI).has(iri(hasTiltAngle), iri(tiltIRI));
+
+            String BTRScalarValueIRI = PowsysPrefix + "PV_" + String.valueOf(entry) + "_ScalarValue_" + "BaseTestIrradiance";
+            TriplePattern BTRHasValue = iri(baseTestIrradianceIRI).has(iri(OntoCapeHasValue), iri(BTRScalarValueIRI));
+            String BTTScalarValueIRI = PowsysPrefix + "PV_" + String.valueOf(entry) + "_ScalarValue_" + "BaseTestTemperature";
+            TriplePattern BTTHasValue = iri(baseTestTemperatureIRI).has(iri(OntoCapeHasValue), iri(BTTScalarValueIRI));
+            String NTScalarValueIRI = PowsysPrefix + "PV_" + String.valueOf(entry) + "_ScalarValue_" + "NominalTemperature";
+            TriplePattern NTHasValue = iri(nominaltemperatureIRI).has(iri(OntoCapeHasValue), iri(NTScalarValueIRI));
+            String PAScalarValueIRI = PowsysPrefix + "PV_" + String.valueOf(entry) + "_ScalarValue_" + "PanelArea";
+            TriplePattern PAHasValue = iri(panelareaIRI).has(iri(OntoCapeHasValue), iri(PAScalarValueIRI));
+            String PLScalarValueIRI = PowsysPrefix + "PV_" + String.valueOf(entry) + "_ScalarValue_" + "PanelLength";
+            TriplePattern PLHasValue = iri(panellengthIRI).has(iri(OntoCapeHasValue), iri(PLScalarValueIRI));
+            String PWScalarValueIRI = PowsysPrefix + "PV_" + String.valueOf(entry) + "_ScalarValue_" + "PanelWidth";
+            TriplePattern PWHasValue = iri(panelwidthIRI).has(iri(OntoCapeHasValue), iri(PWScalarValueIRI));
+            String RCScalarValueIRI = PowsysPrefix + "PV_" + String.valueOf(entry) + "_ScalarValue_" + "RatedCurrent";
+            TriplePattern RCHasValue = iri(ratedcurrentIRI).has(iri(OntoCapeHasValue), iri(RCScalarValueIRI));
+            String RVScalarValueIRI = PowsysPrefix + "PV_" + String.valueOf(entry) + "_ScalarValue_" + "RatedVoltage";
+            TriplePattern RVHasValue = iri(ratedvoltageIRI).has(iri(OntoCapeHasValue), iri(RVScalarValueIRI));
+            String REScalarValueIRI = PowsysPrefix + "PV_" + String.valueOf(entry) + "_ScalarValue_" + "RatedEfficiency";
+            TriplePattern REHasValue = iri(ratedefficiencyIRI).has(iri(OntoCapeHasValue), iri(REScalarValueIRI));
+            String RPScalarValueIRI = PowsysPrefix + "PV_" + String.valueOf(entry) + "_ScalarValue_" + "RatedPower";
+            TriplePattern RPHasValue = iri(ratedpowerIRI).has(iri(OntoCapeHasValue), iri(RPScalarValueIRI));
+            String TCScalarValueIRI = PowsysPrefix + "PV_" + String.valueOf(entry) + "_ScalarValue_" + "TemperatureCoefficient";
+            TriplePattern TCHasValue = iri(temperaturecoefficientIRI).has(iri(OntoCapeHasValue), iri(TCScalarValueIRI));
+            String TScalarValueIRI = PowsysPrefix + "PV_" + String.valueOf(entry) + "_ScalarValue_" + "Tilt";
+            TriplePattern THasValue = iri(tiltIRI).has(iri(OntoCapeHasValue), iri(TScalarValueIRI));
+
+            String BTRnumValue = pvParams.get("BaseTestingIrradiance").get(entry);
+            TriplePattern SpecNumericalValue = iri(BTRScalarValueIRI).has(iri(numericalValue), BTRnumValue);
+            String BTTnumValue = pvParams.get("BaseTestingTemperature").get(entry);
+            TriplePattern BTTSpecNumericalValue = iri(BTTScalarValueIRI).has(iri(numericalValue), BTTnumValue);
+            String NTnumValue = pvParams.get("NominalOperatingTemperature").get(entry);
+            TriplePattern NTSpecNumericalValue = iri(NTScalarValueIRI).has(iri(numericalValue), NTnumValue);
+            String PAnumValue = pvParams.get("PanelArea").get(entry);
+            TriplePattern PASpecNumericalValue = iri(PAScalarValueIRI).has(iri(numericalValue), PAnumValue);
+            String PLnumValue = pvParams.get("PanelLength").get(entry);
+            TriplePattern PLSpecNumericalValue = iri(PLScalarValueIRI).has(iri(numericalValue), PLnumValue);
+            String PWnumValue = pvParams.get("PanelWidth").get(entry);
+            TriplePattern PWSpecNumericalValue = iri(PWScalarValueIRI).has(iri(numericalValue), PWnumValue);
+            String RCnumValue = pvParams.get("RatedCurrent").get(entry);
+            TriplePattern RCSpecNumericalValue = iri(RCScalarValueIRI).has(iri(numericalValue), RCnumValue);
+            String RVnumValue = pvParams.get("RatedVoltage").get(entry);
+            TriplePattern RVSpecNumericalValue = iri(RVScalarValueIRI).has(iri(numericalValue), RVnumValue);
+            String REnumValue = pvParams.get("RatedEfficiency").get(entry);
+            TriplePattern RESpecNumericalValue = iri(REScalarValueIRI).has(iri(numericalValue), REnumValue);
+            String RPnumValue = pvParams.get("RatedPower").get(entry);
+            TriplePattern RPSpecNumericalValue = iri(RPScalarValueIRI).has(iri(numericalValue), RPnumValue);
+            String TCnumValue = pvParams.get("TemperatureCoefficientOfPower").get(entry);
+            TriplePattern TCSpecNumericalValue = iri(TCScalarValueIRI).has(iri(numericalValue), TCnumValue);
+            String TnumValue = pvParams.get("Tilt").get(entry);
+            TriplePattern TSpecNumericalValue = iri(TScalarValueIRI).has(iri(numericalValue), TnumValue);
+
+            InsertDataQuery pvInsertion = Queries.INSERT_DATA(BuildingHasPV, PVisType, baseTestIrradianceisType, baseTestTemperatureisType,
+                    nominaltemperatureisType, panelareaisType, panellengthisType, panelwidthisType, ratedcurrentisType, ratedvoltageisType,
+                    ratedefficiencyisType, ratedpowerisType, temperaturecoefficientisType, tiltisType, BuildingHasPV, PVHasBTR, PVHasBTT,
+                    PVHasNT, PVHasPA, PVHasPL, PVHasPW, PVHasRC, PVHasRV, PVHasRE, PVHasRP, PVHasTC, PVHasT, BTRHasValue, BTTHasValue,
+                    NTHasValue, PAHasValue, PLHasValue, PWHasValue, RCHasValue, RVHasValue, REHasValue, RPHasValue, TCHasValue, THasValue,
+                    SpecNumericalValue, BTTSpecNumericalValue, NTSpecNumericalValue, PASpecNumericalValue, PLSpecNumericalValue,
+                    PWSpecNumericalValue, RCSpecNumericalValue, RVSpecNumericalValue, RESpecNumericalValue, RPSpecNumericalValue,
+                    TCSpecNumericalValue, TSpecNumericalValue);
+            kbClient.executeUpdate(pvInsertion.getQueryString());
+        }
+
+
         /**
          * Instantiate GENERATOR-related triples
          */
@@ -560,6 +674,7 @@ public class HistoricalQueryBuilder {
                 kbClient.executeUpdate(BusNodeInsertion2.getQueryString());
             }
         }
+
         /**
          * Instantiate Timeseries-related triples
          */
@@ -573,48 +688,22 @@ public class HistoricalQueryBuilder {
                 InsertDataQuery insertion = Queries.INSERT_DATA(isTypeMeasure);
                 kbClient.executeUpdate(insertion.getQueryString());
                 if(iri.contains("KW")){
-                    if(iri.contains("_GP_")) {
-                        String photovoltaicGeneratorIRI = PowsysPrefix + "BusNode_" + String.valueOf(busNum) + "_PhotovoltaicGenerator";
-                        TriplePattern BNContainsPhotovoltaicGenerator = iri(busNodeIRI).has(iri(contains), iri(photovoltaicGeneratorIRI));
-                        TriplePattern PGisType = iri(photovoltaicGeneratorIRI).isA(iri(photovoltaicGenerator));
-                        String generatedActivePowerIRI = PowsysPrefix + "BusNode_" + String.valueOf(busNum) + "_GeneratedActivePower";
-                        TriplePattern PGHasActivePowerGenerated = iri(photovoltaicGeneratorIRI).has(iri(hasActivePowerGenerated), iri(generatedActivePowerIRI));
-                        TriplePattern omHasUnit = iri(iri).has(iri(hasUnit), iri(kilowatt));
-                        TriplePattern APHasValue = iri(generatedActivePowerIRI).has(iri(OMHasValue), iri(iri));
-                        TriplePattern typeAP = iri(generatedActivePowerIRI).isA(iri(generatedActivePower));
-                        InsertDataQuery insert = Queries.INSERT_DATA(omHasUnit, APHasValue, typeAP, BNContainsPhotovoltaicGenerator, PGisType, PGHasActivePowerGenerated);
-                        kbClient.executeUpdate(insert.getQueryString());
-                    }
-                    else{
-                        String absorbedActivePowerIRI = PowsysPrefix + "BusNode_" + String.valueOf(busNum) + "_AbsorbedActivePower";
-                        TriplePattern BNHasActivePowerAbsorbed = iri(busNodeIRI).has(iri(hasActivePowerAbsorbed), iri(absorbedActivePowerIRI));
-                        TriplePattern omHasUnit = iri(iri).has(iri(hasUnit), iri(kilowatt));
-                        TriplePattern APHasValue = iri(absorbedActivePowerIRI).has(iri(OMHasValue), iri(iri));
-                        TriplePattern typeAP = iri(absorbedActivePowerIRI).isA(iri(absorbedActivePower));
-                        InsertDataQuery insert = Queries.INSERT_DATA(omHasUnit, APHasValue, typeAP, BNHasActivePowerAbsorbed);
-                        kbClient.executeUpdate(insert.getQueryString());
-                    }
+                    String absorbedActivePowerIRI = PowsysPrefix + "BusNode_" + String.valueOf(busNum) + "_AbsorbedActivePower";
+                    TriplePattern BNHasActivePowerAbsorbed = iri(busNodeIRI).has(iri(hasActivePowerAbsorbed), iri(absorbedActivePowerIRI));
+                    TriplePattern omHasUnit = iri(iri).has(iri(hasUnit), iri(kilowatt));
+                    TriplePattern APHasValue = iri(absorbedActivePowerIRI).has(iri(OMHasValue), iri(iri));
+                    TriplePattern typeAP = iri(absorbedActivePowerIRI).isA(iri(absorbedActivePower));
+                    InsertDataQuery insert = Queries.INSERT_DATA(omHasUnit, APHasValue, typeAP, BNHasActivePowerAbsorbed);
+                    kbClient.executeUpdate(insert.getQueryString());
                 }
                 else if(iri.contains("KVAR")){
-                    if(iri.contains("_GQ_")){
-                        String photovoltaicGeneratorIRI = PowsysPrefix + "BusNode_" + String.valueOf(busNum) + "_PhotovoltaicGenerator";
-                        String generatedReactivePowerIRI = PowsysPrefix + "BusNode_" + String.valueOf(busNum) + "_GeneratedReactivePower";
-                        TriplePattern PGHasReactivePowerGenerated = iri(photovoltaicGeneratorIRI).has(iri(hasReactivePowerGenerated), iri(generatedReactivePowerIRI));
-                        TriplePattern omHasUnit = iri(iri).has(iri(hasUnit), iri(kilowatt));
-                        TriplePattern RPHasValue = iri(generatedReactivePowerIRI).has(iri(OMHasValue), iri(iri));
-                        TriplePattern typeAP = iri(generatedReactivePowerIRI).isA(iri(generatedReactivePower));
-                        InsertDataQuery insert = Queries.INSERT_DATA(omHasUnit, RPHasValue, typeAP, PGHasReactivePowerGenerated);
-                        kbClient.executeUpdate(insert.getQueryString());
-                    }
-                    else{
-                        String absorbedReactivePowerIRI = PowsysPrefix + "BusNode_" + String.valueOf(busNum) + "_AbsorbedReactivePower";
-                        TriplePattern BNHasReactivePowerAbsorbed = iri(busNodeIRI).has(iri(hasReactivePowerAbsorbed), iri(absorbedReactivePowerIRI));
-                        TriplePattern omHasUnit = iri(iri).has(iri(hasUnit), iri(kilovoltamperereactive));
-                        TriplePattern RAPHasValue = iri(absorbedReactivePowerIRI).has(iri(OMHasValue), iri(iri));
-                        TriplePattern typeRAP = iri(absorbedReactivePowerIRI).isA(iri(absorbedReactivePower));
-                        InsertDataQuery insert = Queries.INSERT_DATA(omHasUnit, RAPHasValue, typeRAP, BNHasReactivePowerAbsorbed);
-                        kbClient.executeUpdate(insert.getQueryString());
-                    }
+                    String absorbedReactivePowerIRI = PowsysPrefix + "BusNode_" + String.valueOf(busNum) + "_AbsorbedReactivePower";
+                    TriplePattern BNHasReactivePowerAbsorbed = iri(busNodeIRI).has(iri(hasReactivePowerAbsorbed), iri(absorbedReactivePowerIRI));
+                    TriplePattern omHasUnit = iri(iri).has(iri(hasUnit), iri(kilovoltamperereactive));
+                    TriplePattern RAPHasValue = iri(absorbedReactivePowerIRI).has(iri(OMHasValue), iri(iri));
+                    TriplePattern typeRAP = iri(absorbedReactivePowerIRI).isA(iri(absorbedReactivePower));
+                    InsertDataQuery insert = Queries.INSERT_DATA(omHasUnit, RAPHasValue, typeRAP, BNHasReactivePowerAbsorbed);
+                    kbClient.executeUpdate(insert.getQueryString());
                 }
                 else if(iri.contains("DEGREE")){
                     String voltageAngleIRI = PowsysPrefix + "BusNode_" + String.valueOf(busNum) + "_VoltageAngle";
@@ -635,6 +724,17 @@ public class HistoricalQueryBuilder {
                     kbClient.executeUpdate(insert.getQueryString());
                 }
             }
+        }
+
+        /**
+         * Instantiate the building GML Representations
+         */
+        for (Map.Entry<String, Integer> entry : NTUBuildingToGMLRepresentation.entrySet()) {
+            String building_abbrv = entry.getKey();
+            Integer GMLRepre = entry.getValue();
+            TriplePattern BdHasGML = iri(PowsysPrefix + "NTU_Building_" + building_abbrv).has(iri(hasOntoCityGML),GMLRepre.toString());
+            InsertDataQuery insert = Queries.INSERT_DATA(BdHasGML);
+            kbClient.executeUpdate(insert.getQueryString());
         }
     }
 }

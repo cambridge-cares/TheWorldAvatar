@@ -1,13 +1,15 @@
-prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-prefix om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+PREFIX powsys: <http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#>
+PREFIX powbehave: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#>
+PREFIX env: <http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX ts: <https://www.theworldavatar.com/kg/ontotimeseries/>
 
-SELECT ?Measurement ?Name ?Unit ?LastUpdate
+SELECT ?Measurement ?Name ?Unit
 WHERE {
-  {
-  # Observations/Measurements
-  [IRI] om:hasValue ?Measurement .
-  ?Measurement ^om:hasValue/rdf:type ?type ;
-               om:hasUnit/om:symbol ?Unit .
-  BIND (concat(replace(str(?type), ''), ' observation') as ?Name)
+  [IRI] powsys:hasBusNode ?busnode.
+  ?busnode powbehave:hasActivePowerAbsorbed ?activePower.
+  ?activePower om:hasValue ?Measurement.
+  BIND("Absorbed Active Power" AS ?Name).
+  BIND("kilowatt" AS ?Unit)
 }

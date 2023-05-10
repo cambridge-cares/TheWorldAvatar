@@ -1,13 +1,12 @@
 {
-  "queries":
-          [
-            {
-              "class": "https://www.theworldavatar.com/kg/ontopowsys/PowerSystem_NTU",
-              "metaFile": "energy_meta.sparql",
-              "timeFile": "energy_time.sparql",
-              "timeLimit": 48,
-              "databaseName": "ntuenergy"
-            }
+  "queries": [
+    {
+      "class": "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Building",
+      "metaFile": "energy_meta.sparql",
+      "timeFile": "energy_time.sparql",
+      "databaseName": "ntuenergy",
+      "timeLimit": -1
+    }
 
-          ]
+  ]
 }

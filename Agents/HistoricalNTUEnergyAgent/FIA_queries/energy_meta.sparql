@@ -6,14 +6,8 @@ prefix ontocapeMath: <http://www.theworldavatar.com/ontology/ontocape/model/math
 SELECT ?Property ?Value ?Unit
 WHERE {
 
-    <https://www.theworldavatar.com/kg/ontopowsys/NTU_BusNode_1> rdf:type ?IRI .
-
-    <https://www.theworldavatar.com/kg/ontopowsys/NTU_BusNode_1> ontocape:isModeledBy ?Model .
-
-    ?Model ontocapeMath:hasModelVariable ?Variable.
-
-    ?Variable ontocape:hasValue ?Property.
-
-    ?Property ontocape:numericalValue ?Value.
+  BIND("Property" AS ?Property).
+  BIND("Value" AS ?Value)
+  BIND("Unit" AS ?Unit)
 
 }
