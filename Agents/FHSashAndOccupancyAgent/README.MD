@@ -1,6 +1,6 @@
 # Fumehood Sash And Occupancy Agent
 
-This agent is designed to query for the sash opening percentage and occupied state of fumehoods and walkin-fumehoods, if any of the fumehoods and walkin-fumehoods is unoccupied and has a sash opening percentage higher than a certain threshold, an email will be sent to the relevant personnel via the [EmailSender class in the JPS Base Lib](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/email/EmailSender.java). The agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) and [remote store client](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/query/RemoteStoreClient.java) from the JPS_BASE_LIB to interact with both the KG and database.
+This agent is designed to query for the sash opening percentage and occupied state of fumehoods and walkin-fumehoods, if any of the fumehoods and walkin-fumehoods is unoccupied and has a sash opening percentage higher than a certain threshold, an email will be sent to the relevant personnel via the [EmailSender class in the JPS Base Lib](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/email/EmailSender.java) and the [Email Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/EmailAgent). The agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) and [remote store client](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/query/RemoteStoreClient.java) from the JPS_BASE_LIB to interact with both the KG and database.
 
 ## Usage 
 This part of the README describes the usage of the agent. The module itself can be packaged into an executable war, deployed as a web servlet on tomcat. Sending the appropriate request to the correct URL will initiate the agent. Since it uses the time-series client and remote store client to interact with the KG and database, the KG and database will be required to be set-up beforehand.  
@@ -31,13 +31,13 @@ An example of the instance can be found below:
      <http://www.ontology-of-units-of-measure.org/resource/om-2/hasDimension>	<http://www.ontology-of-units-of-measure.org/resource/om-2/dimensionOne> ;
      <http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue>	<https://www.theworldavatar.com/kg/ontobms/V_VAV_E7_08_FH02_Door>	.
 
-<https://www.theworldavatar.com/kg/ontobms/V_VAV_E7_08_FH02_Door> rdf:type 	<http://www.ontology-of-units-of-measure.org/resource/om-2/Measure> ;
+<https://www.theworldavatar.com/kg/ontobms/V_VAV_E7_08_FH02_Door> rdf:type <http://www.ontology-of-units-of-measure.org/resource/om-2/Measure> ;
      <http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit>	<http://www.ontology-of-units-of-measure.org/resource/om-2/percent> ;
      <https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries>	<https://www.theworldavatar.com/kg/ontotimeseries/Timeseries_98c31f56-667b-4f02-885e-b53df4d42550>	.
 ```
 
 ### Property file
-For running the agent, one or two property files is required depending on whether your tagged object is a chemical container:
+For running the agent, two properties files are required:
 - One [property file for the occupied state timeseries client](#occupied-state-timeseries-client-properties) defining how to access the database and SPARQL endpoints where the occupied state triples and timeseries data is located at.
 - One [property file for the sash opening timeseries client](#sash-opening-timeseries-client-properties) defining how to access the database and SPARQL endpoints where the sash opening triples and timeseries data is located at.
 
@@ -74,7 +74,7 @@ repo_username.txt should contain your github username, and repo_password.txt you
 which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
 
-Modify `tsClientForOccupiedState.properties` and `tsClientForSashOpening.properties` in the `config` folder accordingly. 
+Modify `tsClientForOccupiedState.properties` and `tsClientForSashOpening.properties` in the `config` folder accordingly. Do note that the properties files are mounted onto the agent's docker container thus any changes in the properties files does not require the docker container to be rebuilt.
 
 Modify the `Dockerfile` found in the same directory as this README and change `EMAIL_AGENT_URL` according to where your Email Agent instance is located at.
 
