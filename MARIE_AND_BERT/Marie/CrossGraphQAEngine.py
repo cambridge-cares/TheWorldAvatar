@@ -167,7 +167,7 @@ class CrossGraphQAEngine:
         for label, domain, score, target in zip(re_ranked_labels, re_ranked_domain_list, re_ranked_score_list,
                                                 re_ranked_target_list):
 
-            if "EMPTY" not in label:
+            if "EMPTY" not in str(label):
                 row = {"node": label, "domain": domain, "score": score, "target": target}
                 result.append(row)
 
