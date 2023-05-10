@@ -194,13 +194,13 @@ def initialise_hplc_digital_twin_triples(generate_random_hplc_digital_twin):
 @pytest.fixture(scope="module")
 def initialise_hplc_derivation_input_triples():
     def _initialise_hplc_derivation_input_triples(sparql_client):
-        chemical_solution_iri = 'http://www.example.com/placeholder/ChemicalSolution_' + str(uuid.uuid4())
+        chemical_amount_iri = 'http://www.example.com/placeholder/ChemicalAmount_' + str(uuid.uuid4())
         rxn_exp_iri = 'http://www.example.com/placeholder/ReactionExperiment_' + str(uuid.uuid4())
         g = Graph()
-        g.add((URIRef(chemical_solution_iri), RDF.type, URIRef(ONTOLAB_CHEMICALSOLUTION)))
+        g.add((URIRef(chemical_amount_iri), RDF.type, URIRef(ONTOLAB_CHEMICALAMOUNT)))
         g.add((URIRef(rxn_exp_iri), RDF.type, URIRef(ONTOREACTION_REACTIONEXPERIMENT)))
         sparql_client.uploadGraph(g)
-        return rxn_exp_iri, chemical_solution_iri
+        return rxn_exp_iri, chemical_amount_iri
     return _initialise_hplc_derivation_input_triples
 
 
