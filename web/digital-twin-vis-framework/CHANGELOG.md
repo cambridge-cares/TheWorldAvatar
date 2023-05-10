@@ -1,3 +1,5 @@
+[//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
+
 # 3.3.4
 ### Features:
 * Can now make use of SDF icons in Mapbox visualisations.
