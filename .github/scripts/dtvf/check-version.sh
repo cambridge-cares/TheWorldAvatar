@@ -16,6 +16,14 @@ fi
 echo "DTVF defined in file as: $VERSION"
 
 
+# Check that there's no -SNAPSHOT in the version
+TOKEN="-SNAPSHOT"
+if grep -q "$TOKEN" <<< "$VERSION"; then
+  echo "Version still contains the -SNAPSHOT qualifier!"
+  exit -1
+fi
+echo "Version does not contain -SNAPSHOT qualifier."
+
 # Check that the README has been updated
 README="./web/digital-twin-vis-framework/README.md"
 TOKEN="$VERSION"

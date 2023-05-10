@@ -30,10 +30,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         
-      # PRun bash script that checks the version
+      # Run bash script that checks the version
       - name: Run version check script
         working-directory: ./
         run: |
           chmod +x ./.github/scripts/dtvf/check-version.sh
-          ./check-version.sh
+          ./.github/scripts/dtvf/check-version.sh
   
