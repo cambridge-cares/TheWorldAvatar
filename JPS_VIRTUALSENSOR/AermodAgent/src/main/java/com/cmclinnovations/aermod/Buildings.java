@@ -192,24 +192,34 @@ public class Buildings {
             boolean includeElev = Boolean.parseBoolean(EnvConfig.INCLUDE_ELEVATION) ;
 
             if (includeElev) {
-                if (createAERMAPInputFile() != 0) {
-                    LOGGER.error("Failed to create AERMAP input file, terminating");
-                    return 1;
+
+                if (copyCachedAERMAPOutput() == 0) {
+                    LOGGER.info("Successfully copied user-supplied AERMAP output files.");
+                } else {
+                    // run AERMAP to generate elevation input for AERMOD
+                    if (createAERMAPInputFile() != 0) {
+                        LOGGER.error("Failed to create AERMAP input file, terminating");
+                        return 1;
+                    }
+        
+                    if (createAERMAPSourceInput() != 0) {
+                        LOGGER.error("Failed to create AERMAP source input, terminating");
+                        return 1;
+                    }
+                    if (createAERMAPReceptorInput(nx, ny) != 0) {
+                        LOGGER.error("Failed to create AERMAP receptor input, terminating");
+                        return 1;
+                    }
+        
+                    if (runAERMAP() != 0 ) {
+                        LOGGER.error("Failed to run AERMAP, terminating");
+                        return 1;
+                    }
+
                 }
-    
-                if (createAERMAPSourceInput() != 0) {
-                    LOGGER.error("Failed to create AERMAP source input, terminating");
-                    return 1;
-                }
-                if (createAERMAPReceptorInput(nx, ny) != 0) {
-                    LOGGER.error("Failed to create AERMAP receptor input, terminating");
-                    return 1;
-                }
-    
-                if (runAERMAP() != 0 ) {
-                    LOGGER.error("Failed to run AERMAP, terminating");
-                    return 1;
-                }
+
+                // Virtual sensors part is not cached because one might want to vary their locations. Also,
+                // this part will eventually be moved to a separate agent. 
 
                 if (createAERMAPVirtualSensorInputFiles() != 0) {
                     LOGGER.error("Failed to create AERMAP input for virtual sensors, terminating");
@@ -1356,6 +1366,27 @@ public class Buildings {
         return 0;
 
     }
+
+    public int copyCachedAERMAPOutput() {
+
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream("receptor.dat")) {
+            Files.copy(is, aermodDirectory.resolve("receptor.dat"));
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.info("Failed to copy receptor.dat. AERMAP will be run to generate this file.");
+            return 1;
+        }
+
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream("buildingSources.dat")) {
+            Files.copy(is, aermapDirectory.resolve("buildingSources.dat"));
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.info("Failed to copy buildingSources.dat. AERMAP will be run to generate this file.");
+            return 1;
+        }
+
+        return 0;
+    }
     
 
     public int createAERMAPInputFile() {
@@ -1581,6 +1612,46 @@ public class Buildings {
     }
 
     public int runAERMAPforVirtualSensors() {
+
+        // Need to copy elevation data files if using cached AERMAP output for regular receptors
+
+             // Read data file names from aermap input file. Assuming that there is no "CO" before the "DATAFILE" keyword.
+             List<String> dataFiles = new ArrayList<>();
+             Path filepath = aermapDirectory.resolve("aermapVirtualSensor.inp");
+     
+             try {
+                 BufferedReader reader = new BufferedReader(new FileReader(filepath.toString()));
+                 String line = reader.readLine();
+                 while (line != null) {
+                     if (line.contains("DATAFILE")) {
+                         line = line.trim();
+                         String [] linesplit = line.split("\\s+");
+                         dataFiles.add(linesplit[1]);
+     
+                     }
+                     if (line.contains("CO FINISHED")) break; 
+                     line = reader.readLine();
+                 }
+                 reader.close();
+             } catch (IOException e) {
+                 LOGGER.error(e.getMessage());
+                 return 1;
+             }
+     
+             if (dataFiles.size() == 0) {
+                 LOGGER.error("No elevation data files specified in aermapVirtualSensor.inp");
+                 return 1;
+             }
+     
+             for (int i = 0; i < dataFiles.size(); i++) {
+                 try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(dataFiles.get(i))) {
+                     Files.copy(inputStream, aermapDirectory.resolve(dataFiles.get(i)));
+                 } catch (IOException e) {
+                     LOGGER.error(e.getMessage());
+                     LOGGER.error("Failed to copy the data file" + dataFiles.get(i));
+                     return 1;
+                 }
+             }
 
         try {
             Process process = Runtime.getRuntime().exec(new String[]{EnvConfig.AERMAP_EXE, "aermapVirtualSensor.inp"}, null, aermapDirectory.toFile());
@@ -1863,10 +1934,11 @@ public class Buildings {
 
             for (int j = 0; j < StackProperties.size(); j++) {
                 String stkId = "Stk" + (j + 1);
-                Double emission = StackEmissionsTimeSeries.get(j).get(i);
+                Double massFlowRateInTonYr = StackEmissionsTimeSeries.get(j).get(i);
+                double massFlowrateInGs = massFlowRateInTonYr * 1000 * 1000 / (365 * 24 * 60 * 60);
                 double gasTemperatureKelvin = 533.15;
                 double velocityms = 10.0;
-                String newLine = line + " " + stkId + " " + emission + " " + gasTemperatureKelvin + " " + velocityms;
+                String newLine = line + " " + stkId + " " + massFlowrateInGs + " " + gasTemperatureKelvin + " " + velocityms;
                 sbe.append(newLine + "\n");
 
             }
@@ -1888,10 +1960,11 @@ public class Buildings {
             hour++;
             for (int j = 0; j < StackProperties.size(); j++) {
                 String stkId = "Stk" + (j + 1);
-                Double emission = 150.0;
+                Double massFlowRateInTonYr = 150.0;
+                double massFlowrateInGs = massFlowRateInTonYr * 1000 * 1000 / (365 * 24 * 60 * 60);
                 double gasTemperatureKelvin = 533.15;
                 double velocityms = 10.0;
-                String newLine = line + " " + hour + " " + stkId + " " + emission + " " + gasTemperatureKelvin + " " + velocityms;
+                String newLine = line + " " + hour + " " + stkId + " " + massFlowrateInGs + " " + gasTemperatureKelvin + " " + velocityms;
                 sbe.append(newLine + "\n");
 
             }
