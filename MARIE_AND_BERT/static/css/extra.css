@@ -50,3 +50,27 @@ background: #d0cccc;
 .tooltip:hover .tooltiptext {
   visibility: visible;
 }
+
+.result-container
+{
+  /*float:right;*/
+  height: 50%;
+  /*width:250px;*/
+  /*padding:3px;*/
+  /*background:#f00;*/
+}
+
+.results-scroll
+{
+  height:400px;
+  overflow:auto;
+  background:#fff;
+}
+
+/*tbody {*/
+
+/*  height:400px;*/
+/*  overflow:auto;*/
+/*  background:#fff;*/
+
+/*}*/
