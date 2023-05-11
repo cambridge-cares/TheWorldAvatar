@@ -8,13 +8,13 @@ retrieve timeseries power readings from Excel files and upload them into the ass
 This agent takes several Excel files as input. Each file contains configurations for a major power system component, including Bus Nodes, Branches, Generator, and Photovoltaic Generators.
 The  excel files are required to be placed in the `config` folder. The following shows the name and content of the required configuration files:
 -  `Bus_node_specs.xlsx`
-   ![Shows part of the excel file as an example.](docs/img/example_busnode_configs.png "Energy readings general")
+   ![Shows part of the excel file as an example.](docs/img/example_busnode_configs.jpg "Energy readings general")
 - `Branch_specs.xlsx`
-  ![Shows part of the excel file as an example.](docs/img/example_branch_configs.png "Energy readings general")
+  ![Shows part of the excel file as an example.](docs/img/example_branch_configs.jpg "Energy readings general")
 - `Generator_specs.xlsx`
-  ![Shows part of the excel file as an example.](docs/img/example_generator_configs.png "Energy readings general")
+  ![Shows part of the excel file as an example.](docs/img/example_generator_configs.jpg "Energy readings general")
 - `PV_specs.xlsx`
-  ![Shows part of the excel file as an example.](docs/img/example_pv_configs.png "Energy readings general")
+  ![Shows part of the excel file as an example.](docs/img/example_pv_configs.jpg "Energy readings general")
 
 
 ### 1.2  Energy Reading File
@@ -28,7 +28,7 @@ There are few things to take note for the energy reading file to be compatible w
 
 #### Example readings
 Readings are retreived from the Excel file in the form of a JSON array with one JSON object per timestamp. The following shows a single JSON object example for Energy readings:
-![Shows part of the response body of a successful energy readings request.](docs/img/example_energy_readings.png "Energy readings general")
+![Shows part of the response body of a successful energy readings request.](docs/img/example_energy_readings.jpg "Energy readings general")
 
 ```
 "GENERATOR_NODE_P_KW"=0
@@ -126,7 +126,7 @@ The NTUEnergyAgent is set up to use the Maven repository. You'll need to provide
 
 Then build image with:
 ```
-docker build -t historical-ntuenergy-agent .
+docker build -t historical-ntuenergy-agent:1.0.0 .
 ```
 The Dockerfile will automatically copy all properties files and mapping folder and set environment variables pointing to their location. Therefore, you do not need to shift the properties files and mapping folder nor add in environment variables manually.
 
@@ -150,8 +150,8 @@ A successful setup will result in 9 containers (optional 10):
 
 ##### Add Config to Stack Manager
 Before running the stack manager, you need to add the config files to the stack manager. The config files are located in `TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/`.
-- Copy `stack-manager-config/historical-ntuenergy-agent.json` to `TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/services/`.
-- Create `TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/<STACK NAME>.json` manually if it does not exist, following the below structure.
+- Copy `stack-manager-config/historical-ntuenergy-agent.json` to `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/`.
+- Create `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/<STACK NAME>.json` manually if it does not exist, following the below structure.
 ```json
 {
   "services": {

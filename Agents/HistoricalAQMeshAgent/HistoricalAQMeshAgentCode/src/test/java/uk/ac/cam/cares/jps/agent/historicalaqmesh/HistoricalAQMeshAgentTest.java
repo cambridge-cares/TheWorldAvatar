@@ -201,8 +201,10 @@ public class HistoricalAQMeshAgentTest {
         Method getClassFromJSONKey = HistoricalAQMeshAgent.class.getDeclaredMethod("getClassFromJSONKey", String.class);
         getClassFromJSONKey.setAccessible(true);
         // No specific key should return the string class
-        Assert.assertEquals(String.class, getClassFromJSONKey.invoke(testAgent, "TIME"));
-        // Readings should return double class
+        Assert.assertEquals(String.class, getClassFromJSONKey.invoke(testAgent, "key"));
+        // Interval should return integer class
+        Assert.assertEquals(Integer.class, getClassFromJSONKey.invoke(testAgent, "key_p1"));
+        // Voltage should return double class
         Assert.assertEquals(Double.class, getClassFromJSONKey.invoke(testAgent, "key_voltage"));
         // Environment conditions should be double class
         Assert.assertEquals(Double.class, getClassFromJSONKey.invoke(testAgent, "temperature"));
