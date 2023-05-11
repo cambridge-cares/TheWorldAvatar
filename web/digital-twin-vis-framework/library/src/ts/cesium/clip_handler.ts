@@ -537,7 +537,7 @@ class ClipHandler {
         let sliderLeft = document.getElementById("sliderLeft");
 
         // Reset content
-        sliderLeft.innerHTML = "";
+        if(sliderLeft != null) sliderLeft.innerHTML = "";
 
         // Iterate through labels
         for(let key in labels) {
