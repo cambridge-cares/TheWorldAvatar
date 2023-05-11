@@ -34,7 +34,7 @@ At the time of writing, the following 3D data formats are supported within the D
 
 Additional formats, provided they are supported by Cesium JS, can be added but will require development resource from the team at CMCL. Get in touch with them for details.
 
-At the time of writing, client-side styling is not implemented (i.e. you cannot specify styling in the JSON files as you can do for Mapbox visualisations). Style options for 3D data should be baked into the associated model files, whilst styling for 2D data (provided via WMS) should be carried out on the server (more information on server-side styling can be found [here](https://docs.geoserver.org/stable/en/user/styling/index.html)).
+At the time of writing, client-side styling is limited to 3D tilesets and must be expressed in literal JSON objects using [Cesium's styling API](https://cesium.com/learn/cesiumjs-learn/cesiumjs-3d-tiles-styling/). More complex style options for 3D data should be baked into the associated model files, whilst all styling for 2D data (provided via WMS) should be carried out on the server (more information on server-side styling can be found [here](https://docs.geoserver.org/stable/en/user/styling/index.html)).
 
 ## Configuration
 
@@ -80,6 +80,8 @@ Source nodes need to provide a unique `id` field, a `type` field (`kml|gltf|wms|
 Layer nodes also need to provide a unique `id` field, a `source` field (listing the id of the source to use), and an public facing `name` field to use within the selection tree. Note that the `name` field can be shared with other layers, these entries will be combined into a single tree selection. A `visibility` field with values of `visible|none` can also be added to change the default selection state of that layer.
 
 Layers can also optionally include an integer `order` field (which defaults to 0 if not specified). Before visualising, all layers (across all groups) are sorted by their order from lowest to highest; this allows users to specify the Z order of their data, regardless of grouping.
+
+Layer nodes for 3D tileset sources can also specify a `style` object defining a data-driven expression to change the visual look of features or to filter out specific ones. Note that this only supports a basic styling system that can be expressed within literal JSON keys & values, more complex styling should be carried out within the actual model files. For details on how to write a Cesium style expression, see their [web page](https://cesium.com/learn/cesiumjs-learn/cesiumjs-3d-tiles-styling/) detailing the process. In addition, the example TWA Cesium visualisation shows a style used to color buildings based on their distance from a point, and how to filter out a specific building based on one of its properties.
 
 Note that, at the time of writing, all `source` and `layer` nodes must be within a `group` (i.e. data cannot be loaded unless within a group), and a single top-level group must exist (i.e. the `data.json` file must be a JSON object, rather than a JSON array).
 
@@ -130,6 +132,8 @@ A small amount of sample data has been committed to demonstrate the power of the
   - Tiled 3D buildings, loaded from a remote CMCL server.
   - 2D river data from a WMS endpoint provided by Cornell University.
   - No metadata or timeseries present in this data set.
+  - Styling based on distance from Castle Clinton
+  - Filtering to hide the Whitehall Ferry terminal
 
 It's worth noting that with this sample data, no stack is running so no support for dynamic metadata or timeseries is available. This is something that we plan to work on in future, no true generic solution exists for this so far.
 
