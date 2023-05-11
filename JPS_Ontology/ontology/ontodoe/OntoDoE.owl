@@ -9,9 +9,9 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/"
      xmlns:ontodoe="https://www.theworldavatar.com/kg/ontodoe/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodoe/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">27 April 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">04 May 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for design of experiment.</rdfs:comment>
-        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.10</owl:versionInfo>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.11</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
@@ -118,7 +118,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodoe/refersToExperiment">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodoe/HistoricalData"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between previous experiment records/future experiment conditions and the reaction experiment it refers to. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -338,13 +338,6 @@
 
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
     
 
 
