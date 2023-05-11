@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections4.functors.CatchAndRethrowClosure;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -20,6 +22,9 @@ import com.cmclinnovations.mods.modssimpleagent.FileGenerator.FileGenerationExce
 import com.cmclinnovations.mods.modssimpleagent.MoDSBackend;
 import com.cmclinnovations.mods.modssimpleagent.simulations.Simulation;
 import com.cmclinnovations.mods.modssimpleagent.utils.ListUtils;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
 public class InputMetaData {
     private List<InputMetaDataRow> rows;
@@ -89,39 +94,14 @@ public class InputMetaData {
     }
 
     public void writeToCSV(Path path) throws FileGenerationException {
-
+        CsvMapper csvMapper = new CsvMapper();
+        CsvSchema csvschema = csvMapper.schemaFor(InputMetaDataRow.class).withHeader();
+        ObjectWriter writer = csvMapper.writerFor(InputMetaDataRow.class).with(csvschema);
         try {
-            if (!Files.exists(path)) {
-                Files.createFile(path);
-            }
-            writeDataLinesToCSV(path, toWritableStrings());
+            writer.writeValues(path.toFile()).writeAll(rows);
         } catch (IOException ex) {
             throw new FileGenerationException("Failed to generate data info file.", ex);
         }
-    }
-
-    private List<String[]> toWritableStrings() {
-        List<String[]> writableStrings = new ArrayList<>();
-        writableStrings.add(columnNames);
-
-        rows.stream().forEach(x -> writableStrings.add(x.toWritableStrings()));
-
-        return writableStrings;
-    }
-
-    private void writeDataLinesToCSV(Path directory, List<String[]> dataLines) throws IOException {
-        try (PrintWriter pw = new PrintWriter(directory.toFile())) {
-            dataLines.stream()
-                    .map(this::convertToCSV)
-                    .forEach(pw::println);
-        } catch (IOException ex) {
-            throw new IOException("Failed to write data info file.", ex);
-        }
-    }
-
-    private String convertToCSV(String[] data) {
-        return Stream.of(data)
-                .collect(Collectors.joining(","));
     }
 
     public Data meansToData() {
