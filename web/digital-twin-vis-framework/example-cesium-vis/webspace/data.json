@@ -5,7 +5,7 @@
         {
             "id": "3d-tiles-source",
             "type": "tiles",
-            "uri": "https://kg.cmclinnovations.com/cdn/buildings/nyc/tileset.json"
+            "uri": "https://kg.cmclinnovations.com/cdn/buildings/nyc/tileset.min.json"
         },
         {
             "id": "clip-example-one",
