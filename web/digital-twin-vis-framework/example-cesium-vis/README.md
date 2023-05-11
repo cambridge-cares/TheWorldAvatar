@@ -87,7 +87,9 @@ Note that, at the time of writing, all `source` and `layer` nodes must be within
 
 For developers creating their first visualisation, it is recommended to take a copy of this example and play around with the `data.json`, perhaps changing the hierarchy and/or getting comfortable with the Mapbox styling format. 
 
-<img src="readme-styling.JPG" alt="Example of 3D data with simple styling" width="75%"/>
+<p align="center">
+<img src="readme-styling.JPG" alt="Example of 3D data with simple styling" width="50%"/>
+</p>
 
 ### Global Settings & Advanced Features
 
