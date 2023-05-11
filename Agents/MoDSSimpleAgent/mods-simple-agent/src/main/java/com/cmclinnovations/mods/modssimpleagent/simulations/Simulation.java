@@ -86,7 +86,7 @@ public class Simulation {
 
         InputMetaData inputMetaData = InputMetaData.createInputMetaData(request, modsBackend);
 
-        return createSimulation(request, inputFile, modsBackend, inputMetaData);
+        return SimulationFactory.createSimulation(request, inputFile, modsBackend, inputMetaData);
     }
 
     public static Simulation retrieveSimulation(Request request) throws JAXBException, IOException {
@@ -100,30 +100,7 @@ public class Simulation {
 
         InputMetaData inputMetaData = InputMetaData.createInputMetaData(originalRequest, modsBackend);
 
-        return createSimulation(originalRequest, inputFile, modsBackend, inputMetaData);
-    }
-
-    private static Simulation createSimulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend,
-            InputMetaData inputMetaData)
-            throws IOException {
-
-        String simulationType = request.simulationType();
-        switch (simulationType) {
-            case "MOO":
-                return new MOO(request, inputFile, modsBackend, inputMetaData);
-            case "HDMR":
-                return new HDMR(request, inputFile, modsBackend, inputMetaData);
-            case "MOOonly":
-                return new MOOonly(request, inputFile, modsBackend, inputMetaData);
-            case "MCDM":
-                return new MCDM(request, inputFile, modsBackend, inputMetaData);
-            case "Evaluate":
-                return new Evaluate(request, inputFile, modsBackend, inputMetaData);
-            case "Sensitivity":
-                return new Sensitivity(request, inputFile, modsBackend, inputMetaData);
-            default:
-                throw new IllegalArgumentException("Unknown simulation type requested '" + simulationType + "'.");
-        }
+        return SimulationFactory.createSimulation(request, inputFile, modsBackend, inputMetaData);
     }
 
     private static File getRequestFilePath(MoDSBackend modsBackend) {
