@@ -226,13 +226,13 @@ public class OPFAgentIntegrationTest {
     public void testReadTimeSeriesData() {
         String[] busIRIsWithoutSolar = {"http://www.sampleIRI.org/sample_IRI_Pd", "http://www.sampleIRI.org/sample_IRI_Qd"};
         String[] busIRIsWithSolar = {"http://www.sampleIRI.org/sample_IRI_Pd", "http://www.sampleIRI.org/sample_IRI_Qd", 
-                                    "http://www.sampleIRI.org/sample_IRI_solarPd", "http://www.sampleIRI.org/sample_IRI_solarQd"};
+                                    "http://www.sampleIRI.org/sample_IRI_solarPd"};
         List<String[]> dataIRIsWithoutSolar = new ArrayList<String[]>();
         List<String[]> dataIRIsWithSolar = new ArrayList<String[]>();
         dataIRIsWithoutSolar.add(busIRIsWithoutSolar);
         dataIRIsWithSolar.add(busIRIsWithSolar);
         String[] expectedValuesWithoutSolar = {"0", "0"};
-        String[] expectedValuesWithSolar = {"0", "0", "3", null};
+        String[] expectedValuesWithSolar = {"0", "0", "3"};
 
         OffsetDateTime time = OffsetDateTime.parse("2020-01-01T08:00:00+00:00");
         List<String[]> actualValuesWithoutSolar = agent.readTimeSeriesData(dataIRIsWithoutSolar, time, 1, "false");

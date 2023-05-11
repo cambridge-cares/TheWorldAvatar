@@ -87,7 +87,7 @@ public class OPFAgent extends JPSAgent{
 			result = startSimulationWithAccessAgent(iriofnetwork, baseUrl, modeltype, baseMVA, time, hasSolar);
 			return result;
 		} catch (IOException e) {
-			throw new JPSRuntimeException("");
+			throw new JPSRuntimeException(e.getMessage());
 		}
 	}
 
@@ -142,7 +142,6 @@ public class OPFAgent extends JPSAgent{
 			}		
 		} else {
 			resjo.put("status", "Diverged");
-			//return null;
 		}
 		
 		logger.info("finished simulation for electrical network = " + targetResourceID + ", modeltype = " + modeltype + ", local data path=" + baseUrl);
@@ -191,11 +190,10 @@ public class OPFAgent extends JPSAgent{
 		List<String[]> busIRIs = new ArrayList<String[]>();
 		String[] oneBus;
 		for (int i = 0; i < busList.size(); i++) {
-			oneBus = new String[4];
+			oneBus = new String[3];
 			oneBus[0] = busList.get(i)[2]; // PdIri of bus i
 			oneBus[1] = busList.get(i)[3]; // QdIri of bus i
 			oneBus[2] = busList.get(i)[4]; // solarPdIri of bus i
-			oneBus[3] = busList.get(i)[5]; // solarQdIri of bus i
 			busIRIs.add(oneBus);
 		}
 
@@ -210,28 +208,23 @@ public class OPFAgent extends JPSAgent{
 		// replace dataIRIs with actual values
 		for (int i = 0; i < busList.size(); i++) {
 			if (busLoadValues.get(i).length > 2) {
-				// when the bus has solar PV, calculate actual load by subtracting power generated from power load
+				// when the bus has solar PV, calculate actual load by subtracting active power generated from active power load
 				if (busLoadValues.get(i)[2] != null) {
+					// If active solar power generated is not null
 					busList.get(i)[2] = String.format("%.9f", Double.parseDouble(busLoadValues.get(i)[0]) - Double.parseDouble(busLoadValues.get(i)[2]));
 				} else {
 					// If active solar power generated is null
 					busList.get(i)[2] = busLoadValues.get(i)[0];
 				}
-				if (busLoadValues.get(i)[3] != null) {
-					busList.get(i)[3] = String.format("%.9f", Double.parseDouble(busLoadValues.get(i)[1]) - Double.parseDouble(busLoadValues.get(i)[3]));
-				} else {
-					// If reactive solar power generated is null
-					busList.get(i)[3] = busLoadValues.get(i)[1];
-				}
 			} else {
 				// when the bus does not have solar PV
 				busList.get(i)[2] = busLoadValues.get(i)[0];
-				busList.get(i)[3] = busLoadValues.get(i)[1];
 			}
 
+			// Qd (reactive load) remains the same
+			busList.get(i)[3] = busLoadValues.get(i)[1];
 			// remove solar data from busList since they are not required for OPF calculation
 			List<String> list = new ArrayList<String>(Arrays.asList(busList.get(i)));
-			list.remove(4);
 			list.remove(4);
 			busInfoList.add(list.toArray(new String[0]));
 		}
@@ -267,7 +260,7 @@ public class OPFAgent extends JPSAgent{
 			} else if (hasSolar.equals("true")) {
 				// If we take solar PV into consideration for this system
 				for (int i = 0; i < numOfBus; i++) {
-					if (dataIRIs.get(i)[2] == null || dataIRIs.get(i)[3] == null) {
+					if (dataIRIs.get(i)[2] == null) {
 						// If this bus node does not have solar PV, only take Pd and Qd IRIs
 						busValues = new String[2];
 						String[] loadIRIs = new String[2];
@@ -278,9 +271,9 @@ public class OPFAgent extends JPSAgent{
 						busValues[1] = timeseries.getValuesAsString(dataIRIs.get(i)[1]).get(0); // Qd value of this bus
 					} else {
 						// If this bus node has solar PV
-						busValues = new String[4];
+						busValues = new String[3];
 						timeseries = tsClient.getTimeSeriesWithinBounds(Arrays.asList(dataIRIs.get(i)), time, time, conn);
-						for (int j = 0; j < 4; j++) {
+						for (int j = 0; j < 3; j++) {
 							busValues[j] = timeseries.getValuesAsString(dataIRIs.get(i)[j]).get(0);
 						}
 					}
@@ -288,7 +281,7 @@ public class OPFAgent extends JPSAgent{
 				}
 			}
         } catch (Exception e) {
-            throw new JPSRuntimeException(e);
+            throw new JPSRuntimeException("Failed to read timeseries data.\n");
         }
 
 		return busList;
@@ -354,8 +347,6 @@ public class OPFAgent extends JPSAgent{
 		+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
 		+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
 		+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-		+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-		+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
 		+ "SELECT ?entity ?BusNumbervalue ?activepowervalue ?reactivepowervalue ?Qmaxvalue ?Qminvalue ?Vgvalue ?mBasevalue ?Statusvalue ?Pmaxvalue " 
 		+ "?Pminvalue ?Pc1value ?Pc2value ?Qc1minvalue ?Qc1maxvalue ?Qc2minvalue ?Qc2maxvalue ?Rampagcvalue ?Ramp10value ?Ramp30value ?Rampqvalue ?apfvalue "
 
@@ -475,8 +466,6 @@ public class OPFAgent extends JPSAgent{
 		+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
 		+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
 		+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-		+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-		+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
 		+ "SELECT ?entity ?formatvalue ?startupcostvalue ?shutdowncostvalue ?gencostnvalue ?gencostn1value ?gencostn2value ?gencostcvalue "
 
 		+ "WHERE {?entity  a  j1:PowerGenerator  ." 
@@ -522,13 +511,11 @@ public class OPFAgent extends JPSAgent{
 		String busInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 		+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 		+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-		+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
 		+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
 		+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
-		+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-		+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+		+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#> "
 		+ "PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/> "
-		+ "SELECT ?BusNumbervalue ?typevalue ?PdIri ?QdIri ?solarPdIri ?solarQdIri ?Gsvalue ?Bsvalue ?areavalue ?VoltMagvalue ?VoltAnglevalue ?BaseKVvalue ?Zonevalue ?VMaxvalue ?VMinvalue "
+		+ "SELECT ?BusNumbervalue ?typevalue ?PdIri ?QdIri ?solarPdIri ?Gsvalue ?Bsvalue ?areavalue ?VoltMagvalue ?VoltAnglevalue ?BaseKVvalue ?Zonevalue ?VMaxvalue ?VMinvalue "
 
 		+ "WHERE {?entity  a  j1:BusNode  ." 
 		+ "?entity   j2:isModeledBy ?model ."
@@ -551,16 +538,15 @@ public class OPFAgent extends JPSAgent{
 		+ "?Qd  om:hasValue ?QdIri ."  // dataIRI of Qd
 
 		+ "OPTIONAL {"
-		+ "?entity	j2:contains	?solarPV ."
-		+ "?solarPV	a	j1:PhotovoltaicGenerator ."
+		+ "?building	j7:hasBusNode	?entity ."
+		+ "?building	a	j1:Building ."
 
-		+ "?solarPV	j6:hasActivePowerGenerated	?solarPd ."
-		+ "?solarPd	a	j6:GeneratedActivePower ."
+		+ "?building	j2:contains	?solarPV ."
+		+ "?solarPV	a	j1:PhotovoltaicPanel ."
+
+		+ "?solarPV	j6:hasGeneratedPower	?solarPd ."
+		+ "?solarPd	a	j6:GeneratedPower ."
 		+ "?solarPd	om:hasValue	?solarPdIri ."  // dataIRI of solarPd
-
-		+ "?solarPV	j6:hasReactivePowerGenerated	?solarQd ."
-		+ "?solarQd	a	j6:GeneratedReactivePower ."
-		+ "?solarQd	om:hasValue	?solarQdIri ."  // dataIRI of solarQd
 
 		+ "}"
 
@@ -617,8 +603,6 @@ public class OPFAgent extends JPSAgent{
 		+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
 		+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
 		+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-		+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-		+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
 		+ "SELECT ?entity ?BusNumber1value ?BusNumber2value ?resistancevalue ?reactancevalue ?susceptancevalue ?rateAvalue ?rateBvalue " 
 		+ "?rateCvalue ?ratiovalue ?anglevalue ?statusvalue ?angleminvalue ?anglemaxvalue "
 
@@ -694,11 +678,7 @@ public class OPFAgent extends JPSAgent{
 		String batteryInfo ="PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 		+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 		+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-		+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
 		+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-		+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-		+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-		+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
 		+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
 		+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
 		
@@ -715,7 +695,7 @@ public class OPFAgent extends JPSAgent{
 
 		String busKeys[] = new String[] {"BusNumbervalue", "typevalue", "PdIri", "QdIri", "Gsvalue",
 		"Bsvalue", "areavalue", "VoltMagvalue", "VoltAnglevalue", "BaseKVvalue", "Zonevalue", "VMaxvalue", "VMinvalue"};
-		String busKeysWithSolar[] = new String[] {"BusNumbervalue", "typevalue", "PdIri", "QdIri", "solarPdIri", "solarQdIri", "Gsvalue",
+		String busKeysWithSolar[] = new String[] {"BusNumbervalue", "typevalue", "PdIri", "QdIri", "solarPdIri", "Gsvalue",
 					 "Bsvalue", "areavalue", "VoltMagvalue", "VoltAnglevalue", "BaseKVvalue", "Zonevalue", "VMaxvalue", "VMinvalue"};
 		String genKeys[] = new String[] {"entity", "BusNumbervalue", "activepowervalue", "reactivepowervalue", "Qmaxvalue", "Qminvalue",
 					 "Vgvalue", "mBasevalue", "Statusvalue", "Pmaxvalue", "Pminvalue", "Pc1value", "Pc2value", "Qc1minvalue", "Qc1maxvalue",
@@ -729,10 +709,16 @@ public class OPFAgent extends JPSAgent{
 		List<String[]> busList = new ArrayList<String[]>();
 		if (hasSolar.toLowerCase().equals("false")) {
 			busList = extractTripleInArray(targetResourceID, busInfo, busKeys, "bus", baseUrl);
+			if (busList.isEmpty()) {
+				throw new JPSRuntimeException("Bus information does not exist or is not complete.\n");
+			}
 			// Replace Pd and Qd dataIRIs with their actual values at the given time
 			busList = processBusInput(busList, time);
 		} else if (hasSolar.toLowerCase().equals("true")) {
 			busList = extractTripleInArray(targetResourceID, busInfo, busKeysWithSolar, "bus", baseUrl);
+			if (busList.isEmpty()) {
+				throw new JPSRuntimeException("Bus information does not exist or is not complete.\n");
+			}
 			// Replace Pd and Qd dataIRIs with their actual values at the given time
 			busList = processBusInputWithSolar(busList, time);
 		} else {
@@ -743,6 +729,13 @@ public class OPFAgent extends JPSAgent{
 		List<String[]> genCostList = extractTripleInArray(targetResourceID, genCostInfo, genCostKeys, "generatorcost", baseUrl);
 		List<String[]> branchList = extractTripleInArray(targetResourceID, branchInfo, branchKeys, "branch", baseUrl);
 		List<String[]> batteryList = extractTripleInArray(targetResourceID, batteryInfo, batteryKeys, "battery", baseUrl);
+
+		if (genList.isEmpty() || genCostList.isEmpty()) {
+			throw new JPSRuntimeException("Generator information does not exist or is not complete.\n");
+		}
+		if (branchList.isEmpty()) {
+			throw new JPSRuntimeException("Branch information does not exist or is not complete.\n");
+		}
 
 		String content = createNewTSV(busList, baseUrl + "/mappingforbus.csv", baseUrl + "/mappingforbus.csv");
 		FileUtil.writeFileLocally(baseUrl + "/bus.txt", content);
@@ -892,7 +885,7 @@ public class OPFAgent extends JPSAgent{
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			tsClient.bulkaddTimeSeriesData(timeSeriesList, conn);
 		} catch (Exception e) {
-			throw new JPSRuntimeException(e);
+			throw new JPSRuntimeException("Failed to update timeseries data.\n");
 		}
 	}
 
@@ -1081,7 +1074,7 @@ public class OPFAgent extends JPSAgent{
 			if (e.getMessage().contains("Cannot run program \"python\"")) {
 				command = "python3 " + commandContent;
 			} else {
-				throw e;
+				throw new JPSRuntimeException("Failed to run Pypower script.\n");
 			}
 		}
 
@@ -1092,7 +1085,7 @@ public class OPFAgent extends JPSAgent{
 			if (e.getMessage().contains("Cannot run program \"python3\"")) {
 				throw new JPSRuntimeException("Python3 not installed.\n");
 			} else {
-				throw e;
+				throw new JPSRuntimeException("Failed to run Pypower script.\n");
 			}
 		}	
 	}

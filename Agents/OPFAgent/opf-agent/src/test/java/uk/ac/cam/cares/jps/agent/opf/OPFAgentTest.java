@@ -106,8 +106,7 @@ public class OPFAgentTest {
         String baseUrl = tempFolder.getRoot().getAbsolutePath();
         String[] expectedIRIs = {"http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_Pd", 
                                 "http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_Qd", 
-                                "http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_solarPd",
-                                "http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_solarQd"};
+                                "http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_solarPd"};
         OPFAgent agent = new OPFAgent(){
             @Override
             public JSONArray callAccessAgentToQuery(String targetResourceID, String sparqlQuery) {
@@ -117,7 +116,7 @@ public class OPFAgentTest {
             @Override
             public List<String[]> readTimeSeriesData(List<String[]> dataIRIs, OffsetDateTime time, int numOfBus, String hasSolar) {
                 assertArrayEquals(expectedIRIs, dataIRIs.get(0));
-                String[] busLoad = {"0", "0", null, "4"};
+                String[] busLoad = {"0", "0", null};
                 List<String[]> busList = new ArrayList<String[]>();
                 busList.add(busLoad);
                 return busList;
@@ -132,7 +131,7 @@ public class OPFAgentTest {
         assertTrue(file.exists());
         // Check bus input information
         String busOutput = FileUtil.readFileLocally(fileName);
-        String expectedBus = "1	3	0	-4.000000000	0	0	1	1.0	0	11	1	1	1\n";
+        String expectedBus = "1	3	0	0	0	0	1	1.0	0	11	1	1	1\n";
         assertEquals(expectedBus, busOutput);
 
         // Check branch inputs
@@ -210,7 +209,7 @@ public class OPFAgentTest {
 
             @Override
             public List<String[]> readTimeSeriesData(List<String[]> dataIRIs, OffsetDateTime time, int numOfBus, String hasSolar) {
-                String[] busLoad = {"1", "4", "3", "0"};
+                String[] busLoad = {"1", "4", "3"};
                 List<String[]> busList = new ArrayList<String[]>();
                 busList.add(busLoad);
                 return busList;
@@ -220,14 +219,13 @@ public class OPFAgentTest {
         String[] busInfo = {"1", "3", "http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_Pd", 
                             "http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_Qd", 
                             "http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_solarPd", 
-                            "http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_solarQd", 
                             "0", "0", "1", "1.0", "0", "11", "1", "1", "1"};
         List<String[]> busInput = new ArrayList<String[]>();
         busInput.add(busInfo);
         String time = "2020-01-01T08:00:00+00:00";
 
         List<String[]> expectedOutput = new ArrayList<String[]>();
-        String[] outputBusInfo = {"1", "3", "-2.000000000", "4.000000000", "0", "0", "1", "1.0", "0", "11", "1", "1", "1"};
+        String[] outputBusInfo = {"1", "3", "-2.000000000", "4", "0", "0", "1", "1.0", "0", "11", "1", "1", "1"};
         expectedOutput.add(outputBusInfo);
 
         List<String[]> actualOutput = agent.processBusInputWithSolar(busInput, time);
@@ -395,6 +393,8 @@ public class OPFAgentTest {
         agent.runPythonScript(script, baseUrl, fileNames);
     }
 
+    // This function is added to be used by the unit tests below 
+	// Convert list of string arrays to list of double arrays 
     public List<double[]> convertStringArrayListtoDouble(List<String[]> original) {
         List<double[]> result = new ArrayList<double[]>();
         for (int i = 0; i < original.size(); i++) {
@@ -409,7 +409,8 @@ public class OPFAgentTest {
         return result;
     }
 
-    
+    // This function is added to be used by the unit tests below 
+	// Convert string array to list of double arrays 
     public List<double[]> convertStringArraytoDouble(String[] original) {
         List<double[]> result = new ArrayList<double[]>();
         for (int i = 0; i < original.length; i++) {
@@ -793,34 +794,30 @@ public class OPFAgentTest {
                             "<http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_Pd>");
 
         // Solar PV
-        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#Ebus-001>", 
+        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#Building-001>", 
+                            "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", 
+                            "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Building>");
+        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#Building-001>", 
+                            "<http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#hasBusNode>", 
+                            "<http://localhost:8080/powernetwork/EBus-001.owl#Ebus-001>");
+
+        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#Building-001>", 
                             "<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains>", 
                             "<http://localhost:8080/powernetwork/EBus-001.owl#solarPV_EBus-001>");
         mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#solarPV_EBus-001>", 
                             "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", 
-                            "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PhotovoltaicGenerator>");
+                            "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PhotovoltaicPanel>");
 
         // solarPd IRI
         mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#solarPV_EBus-001>", 
-                            "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasActivePowerGenerated>", 
+                            "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasGeneratedPower>", 
                             "<http://localhost:8080/powernetwork/EBus-001.owl#solarPd_EBus-001>");
         mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#solarPd_EBus-001>", 
                             "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", 
-                            "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#GeneratedActivePower>");
+                            "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#GeneratedPower>");
         mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#solarPd_EBus-001>", 
                             "<http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue>", 
                             "<http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_solarPd>");
-        
-        // solarQd IRI
-        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#solarPV_EBus-001>", 
-                            "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasReactivePowerGenerated>", 
-                            "<http://localhost:8080/powernetwork/EBus-001.owl#solarQd_EBus-001>");
-        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#solarQd_EBus-001>", 
-                            "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", 
-                            "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#GeneratedReactivePower>");
-        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#solarQd_EBus-001>", 
-                            "<http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue>", 
-                            "<http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_solarQd>");
 
         // Gd IRI
         mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#Ebus-001>", 
