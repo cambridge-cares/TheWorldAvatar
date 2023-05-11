@@ -74,7 +74,7 @@ jobs:
         run: |
           chmod +x ./.github/scripts/dtvf/make-release-email.sh
           cp ./web/digital-twin-vis-framework/library/release.html $HOME/email.html                                                                                                    
-          ./.github/scripts/dtvf/make-release-email.sh >> $HOME/email.html
+          ./.github/scripts/dtvf/make-release-email.sh
           echo email=$HOME/email.html >> $GITHUB_ENV
       
       # Send a notification email
