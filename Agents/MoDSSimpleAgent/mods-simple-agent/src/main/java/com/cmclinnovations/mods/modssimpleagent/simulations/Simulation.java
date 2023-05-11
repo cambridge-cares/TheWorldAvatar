@@ -45,7 +45,7 @@ import com.cmclinnovations.mods.modssimpleagent.utils.ListUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Streams;
 
-public class Simulation {
+public abstract class Simulation {
 
     private static final Logger LOGGER = LogManager.getLogger(Simulation.class);
 
@@ -107,7 +107,7 @@ public class Simulation {
         return modsBackend.getSimDir().resolve(REQUEST_FILE_NAME).toFile();
     }
 
-    public Simulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend,
+    protected Simulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend,
             InputMetaData inputMetaData) {
         this.request = request;
         this.inputFile = inputFile;
