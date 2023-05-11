@@ -276,7 +276,7 @@ public class Simulation {
 
     protected final void generateInitialFileFromMetaData() throws FileGenerationException {
         Path path = modsBackend.getInitialDir().resolve(INITIAL_FILE_NAME);
-        new CSVDataFile(inputMetaData.meansToData()).marshal(path);
+        new CSVDataFile(inputMetaData.getMeansAsData()).marshal(path);
     }
 
     protected final void generateDataAlgFiles() throws FileGenerationException {

@@ -24,9 +24,20 @@ public class InputMetaData {
     private static final CsvSchema CSV_SCHEMA = CSV_MAPPER.typedSchemaFor(InputMetaDataRow.class).withHeader();
 
     public static final String DEFAULT_INPUT_INFO_FILE_NAME = "inputMetaData.csv";
+    private static final String DEFAULT_SCALING = "linear";
 
     public InputMetaData(List<InputMetaDataRow> rows) {
         this.rows = rows;
+    }
+
+    public InputMetaData(List<String> varNames, List<Double> minima, List<Double> maxima, List<Double> means,
+            List<String> scalings) {
+        List<InputMetaDataRow> dataInfoRows = new ArrayList<>();
+        for (int i = 0; i < varNames.size(); i++) {
+            dataInfoRows.add(
+                    new InputMetaDataRow(varNames.get(i), minima.get(i), maxima.get(i), means.get(i), scalings.get(i)));
+        }
+        this.rows = dataInfoRows;
     }
 
     public static InputMetaData createInputMetaData(Path inputMetaDataPath) throws IOException {
@@ -64,19 +75,9 @@ public class InputMetaData {
         List<Double> means = ListUtils.filterAndSort(inputs.getAverages().getColumns(), varNames,
                 DataColumn::getName, column -> column.getValues().get(0)).stream().collect(Collectors.toList());
 
-        List<String> scaling = Collections.nCopies(varNames.size(), "linear");
+        List<String> scalings = Collections.nCopies(varNames.size(), DEFAULT_SCALING);
 
-        return new InputMetaData(varNames, minima, maxima, means, scaling);
-    }
-
-    public InputMetaData(List<String> varNames, List<Double> minima, List<Double> maxima, List<Double> means,
-            List<String> scaling) {
-        List<InputMetaDataRow> dataInfoRows = new ArrayList<>();
-        for (int i = 0; i < varNames.size(); i++) {
-            dataInfoRows.add(
-                    new InputMetaDataRow(varNames.get(i), minima.get(i), maxima.get(i), means.get(i), scaling.get(i)));
-        }
-        this.rows = dataInfoRows;
+        return new InputMetaData(varNames, minima, maxima, means, scalings);
     }
 
     public void writeToCSV(Path path) throws FileGenerationException {
@@ -88,7 +89,7 @@ public class InputMetaData {
         }
     }
 
-    public Data meansToData() {
+    public Data getMeansAsData() {
         List<String> varNames = getVarNames();
         List<Double> means = getMeans();
 
@@ -117,7 +118,7 @@ public class InputMetaData {
         return rows.stream().map(InputMetaDataRow::mean).collect(Collectors.toList());
     }
 
-    public List<String> getScaling() {
+    public List<String> getScalings() {
         return rows.stream().map(InputMetaDataRow::scaling).collect(Collectors.toList());
     }
 
