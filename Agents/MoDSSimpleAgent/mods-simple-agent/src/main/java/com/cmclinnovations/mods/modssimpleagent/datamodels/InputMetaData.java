@@ -1,10 +1,6 @@
 package com.cmclinnovations.mods.modssimpleagent.datamodels;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -12,75 +8,65 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import org.apache.commons.collections4.functors.CatchAndRethrowClosure;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.cmclinnovations.mods.modssimpleagent.FileGenerator.FileGenerationException;
 import com.cmclinnovations.mods.modssimpleagent.MoDSBackend;
 import com.cmclinnovations.mods.modssimpleagent.simulations.Simulation;
 import com.cmclinnovations.mods.modssimpleagent.utils.ListUtils;
+import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
 public class InputMetaData {
     private List<InputMetaDataRow> rows;
-
-    private static final String[] columnNames = { "variable_name", "minimum", "maximum", "mean", "scaling" };
+    private static final CsvMapper CSV_MAPPER = new CsvMapper();
+    private static final CsvSchema CSV_SCHEMA = CSV_MAPPER.typedSchemaFor(InputMetaDataRow.class).withHeader();
 
     public static final String DEFAULT_INPUT_INFO_FILE_NAME = "inputMetaData.csv";
+
+    public InputMetaData(List<InputMetaDataRow> rows) {
+        this.rows = rows;
+    }
+
+    public static InputMetaData createInputMetaData(Path inputMetaDataPath) throws IOException {
+        if (!Files.exists(inputMetaDataPath)) {
+            throw new IOException("Input metadata file '" + inputMetaDataPath + "' not found.");
+        }
+        MappingIterator<InputMetaDataRow> rowIter = CSV_MAPPER.readerWithTypedSchemaFor(InputMetaDataRow.class)
+                .with(CSV_SCHEMA).readValues(inputMetaDataPath.toFile());
+
+        return new InputMetaData(rowIter.readAll());
+    }
 
     public static InputMetaData createInputMetaData(Request request, MoDSBackend modsBackend) throws IOException {
         Data inputs = request.inputs();
 
-        List<String> varNames = new ArrayList<>();
-        List<Double> minima = new ArrayList<>();
-        List<Double> maxima = new ArrayList<>();
-        List<Double> means = new ArrayList<>();
-        List<String> scaling = new ArrayList<>();
-
         if (request.getSurrogateToLoad() != null) {
-            Path path = Simulation.getSurrogateDirectory(modsBackend).resolve(DEFAULT_INPUT_INFO_FILE_NAME);
-
-            if (!Files.exists(path)) {
-                throw new IOException("Input Info '" + path + "' file not found in algorithm directory.");
-            }
-
-            try (BufferedReader br = new BufferedReader(new FileReader(path.toString()))) {
-                String line = br.readLine();
-                while ((line = br.readLine()) != null) {
-                    String[] values = line.split(",");
-                    varNames.add(values[0]);
-                    minima.add(Double.parseDouble(values[1]));
-                    maxima.add(Double.parseDouble(values[2]));
-                    means.add(Double.parseDouble(values[3]));
-                    scaling.add(values[4]);
-                }
-            } catch (IOException ex) {
-                throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Failed to read data info load file.", ex);
-            }
-            return new InputMetaData(varNames, minima, maxima, means, scaling);
+            return createInputMetaData(
+                    Simulation.getSurrogateDirectory(modsBackend).resolve(DEFAULT_INPUT_INFO_FILE_NAME));
         } else if (inputs != null) {
-            varNames = inputs.getHeaders().stream().collect(Collectors.toList());
-
-            minima = ListUtils.filterAndSort(inputs.getMinimums().getColumns(), varNames,
-                    DataColumn::getName, column -> column.getValues().get(0)).stream().collect(Collectors.toList());
-
-            maxima = ListUtils.filterAndSort(inputs.getMaximums().getColumns(), varNames,
-                    DataColumn::getName, column -> column.getValues().get(0)).stream().collect(Collectors.toList());
-
-            means = ListUtils.filterAndSort(inputs.getAverages().getColumns(), varNames,
-                    DataColumn::getName, column -> column.getValues().get(0)).stream().collect(Collectors.toList());
-
-            scaling = Collections.nCopies(varNames.size(), "linear");
-
-            return new InputMetaData(varNames, minima, maxima, means, scaling);
+            return createInputMetaData(inputs);
         } else {
             throw new IOException("No loaded surrogate or data provided.");
         }
+    }
+
+    private static InputMetaData createInputMetaData(Data inputs) {
+        List<String> varNames = inputs.getHeaders().stream().collect(Collectors.toList());
+
+        List<Double> minima = ListUtils.filterAndSort(inputs.getMinimums().getColumns(), varNames,
+                DataColumn::getName, column -> column.getValues().get(0)).stream().collect(Collectors.toList());
+
+        List<Double> maxima = ListUtils.filterAndSort(inputs.getMaximums().getColumns(), varNames,
+                DataColumn::getName, column -> column.getValues().get(0)).stream().collect(Collectors.toList());
+
+        List<Double> means = ListUtils.filterAndSort(inputs.getAverages().getColumns(), varNames,
+                DataColumn::getName, column -> column.getValues().get(0)).stream().collect(Collectors.toList());
+
+        List<String> scaling = Collections.nCopies(varNames.size(), "linear");
+
+        return new InputMetaData(varNames, minima, maxima, means, scaling);
     }
 
     public InputMetaData(List<String> varNames, List<Double> minima, List<Double> maxima, List<Double> means,
@@ -94,13 +80,11 @@ public class InputMetaData {
     }
 
     public void writeToCSV(Path path) throws FileGenerationException {
-        CsvMapper csvMapper = new CsvMapper();
-        CsvSchema csvschema = csvMapper.schemaFor(InputMetaDataRow.class).withHeader();
-        ObjectWriter writer = csvMapper.writerFor(InputMetaDataRow.class).with(csvschema);
+        ObjectWriter writer = CSV_MAPPER.writerFor(InputMetaDataRow.class).with(CSV_SCHEMA);
         try {
-            writer.writeValues(path.toFile()).writeAll(rows);
+            writer.writeValues(path.toFile()).writeAll(getRows());
         } catch (IOException ex) {
-            throw new FileGenerationException("Failed to generate data info file.", ex);
+            throw new FileGenerationException("Failed to write input metadata to a csv file.", ex);
         }
     }
 
