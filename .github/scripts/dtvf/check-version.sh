@@ -15,6 +15,12 @@ if [ "$VERSION" == "" ]; then
 fi
 echo "DTVF defined in file as: $VERSION"
 
+# Get the VERSION file from the main branch of the repo, check that this new version does not match
+MAIN_VERSION=$(curl -s "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/web/digital-twin-vis-framework/VERSION")
+if [ "$VERSION" == "$MAIN_VERSION" ]; then
+	echo "Contents of VERSION file on this branch match that on the main branch!"
+	exit -1
+fi
 
 # Check that there's no -SNAPSHOT in the version
 TOKEN="-SNAPSHOT"
@@ -63,12 +69,5 @@ if ! grep -q "$TOKEN" "$CESIUM_VIS"; then
 fi
 echo "Example Cesium visualisation has been updated."
 
-
-# Get the VERSION file from the main branch of the repo, check that this new version does not match
-MAIN_VERSION=$(curl -s "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/web/digital-twin-vis-framework/VERSION")
-if [ "$VERSION" == "$MAIN_VERSION" ]; then
-	echo "Contents of VERSION file on this branch match that on the main branch!"
-	exit -1
-fi
 
 exit 0

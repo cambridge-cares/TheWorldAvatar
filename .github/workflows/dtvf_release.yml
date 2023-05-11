@@ -54,7 +54,7 @@ jobs:
         working-directory: ./
         run: |
           chmod +x ./.github/scripts/dtvf/make-release-body.sh
-          ./.github/scripts/dtvf/make-release-body.sh >> $HOME/body.md
+          ./.github/scripts/dtvf/make-release-body.sh > $HOME/body.md
           echo body=$HOME/body.md >> $GITHUB_ENV
         
       # Make a release on the main branch
