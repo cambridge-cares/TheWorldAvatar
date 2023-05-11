@@ -1,0 +1,44 @@
+{
+	"type": "feature-info-agent",
+	"ServiceSpec": {
+		"Name": "feature-info-agent",
+		"TaskTemplate": {
+			"ContainerSpec": {
+				"Image": "ghcr.io/cambridge-cares/feature-info-agent:2.0.0",
+				"Env": [
+					"LOG4J_FORMAT_MSG_NO_LOOKUPS=true",
+					"FIA_CONFIG_FILE=/app/queries/fia-config.json"
+				],
+				"Mounts": [
+					{
+						"Type": "volume",
+						"Source": "fia-queries",
+						"Target": "/app/queries"
+					}
+				],
+				"Configs": [
+					{
+						"ConfigName": "postgis"
+					},
+					{
+						"ConfigName": "blazegraph"
+					},
+					{
+						"ConfigName": "ontop"
+					}
+				],
+				"Secrets": [
+					{
+						"SecretName": "postgis_password"
+					}
+				]
+			}
+		}
+	},
+	"endpoints": {
+		"ui": {
+			"url": "http://localhost:8080/feature-info-agent/",
+			"externalPath": "/feature-info-agent/"
+		}
+	}
+}
