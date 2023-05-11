@@ -1,6 +1,7 @@
 package com.cmclinnovations.mods.modssimpleagent.simulations;
 
-import java.io.IOException;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.cmclinnovations.mods.api.MoDSAPI;
 import com.cmclinnovations.mods.modssimpleagent.BackendInputFile;
@@ -10,13 +11,9 @@ import com.cmclinnovations.mods.modssimpleagent.datamodels.Algorithm;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.InputMetaData;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
-
 class HDMR extends Simulation {
 
-    public HDMR(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData)
-            throws IOException {
+    public HDMR(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData) {
         super(request, inputFile, modsBackend, inputMetaData);
     }
 

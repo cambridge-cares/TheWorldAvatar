@@ -1,6 +1,5 @@
 package com.cmclinnovations.mods.modssimpleagent.simulations;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,8 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cmclinnovations.mods.api.MoDSAPI;
-import com.cmclinnovations.mods.api.Options;
 import com.cmclinnovations.mods.api.MoDSAPI.DataType;
+import com.cmclinnovations.mods.api.Options;
 import com.cmclinnovations.mods.modssimpleagent.BackendInputFile;
 import com.cmclinnovations.mods.modssimpleagent.FileGenerator.FileGenerationException;
 import com.cmclinnovations.mods.modssimpleagent.MoDSBackend;
@@ -22,8 +21,7 @@ import com.google.common.collect.Streams;
 
 class Evaluate extends Simulation {
 
-    public Evaluate(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData)
-            throws IOException {
+    public Evaluate(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData) {
         super(request, inputFile, modsBackend, inputMetaData);
     }
 

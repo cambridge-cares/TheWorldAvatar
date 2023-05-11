@@ -12,8 +12,7 @@ import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
 
 public class MCDM extends Simulation {
 
-    public MCDM(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData)
-            throws IOException {
+    public MCDM(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData) {
         super(request, inputFile, modsBackend, inputMetaData);
     }
 

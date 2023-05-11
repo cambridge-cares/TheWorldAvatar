@@ -1,6 +1,5 @@
 package com.cmclinnovations.mods.modssimpleagent.simulations;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -18,8 +17,7 @@ import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
 class MOOonly extends Simulation {
 
     public MOOonly(Request request, BackendInputFile inputFile, MoDSBackend modsBackend,
-            InputMetaData inputMetaData)
-            throws IOException {
+            InputMetaData inputMetaData) {
         super(request, inputFile, modsBackend, inputMetaData);
     }
 
