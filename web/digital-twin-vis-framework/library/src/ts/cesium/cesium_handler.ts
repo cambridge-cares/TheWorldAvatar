@@ -164,6 +164,8 @@ class MapHandler_Cesium extends MapHandler {
                 let properties = {...feature.data.properties};
                 self.manager.showFeature(feature, properties);
             } else {
+                console.log(feature);
+                
                 // 3D feature
                 let properties = {};
                 let contentMetadata = feature?.content?.metadata;

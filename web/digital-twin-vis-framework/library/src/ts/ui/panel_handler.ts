@@ -119,6 +119,9 @@ class PanelHandler {
 		var rightButton = document.getElementById("expandButton");
         var attributions = document.getElementById("attributionContainer");
 
+        // Container for Cesium clipping plane slider
+        let sliderParent = document.getElementById("sliderParent");
+
 		if(sidePanel.classList.contains("small")) {
 			// Make large
 			sidePanel.classList.replace("small", "large");
@@ -129,6 +132,7 @@ class PanelHandler {
 			leftButton.style.visibility = "hidden";
             
             if(attributions != null) attributions.style.display = "none";
+            if(sliderParent != null) sliderParent.style.display = "none";
 
 		} else if(sidePanel.classList.contains("large")) {
 			// Make small
@@ -142,6 +146,8 @@ class PanelHandler {
             if(Manager.SETTINGS.getSetting("attribution") != null && attributions != null) {
                 attributions.style.display = "block";
             }
+
+            if(sliderParent != null) sliderParent.style.display = "flex";
 		}
 
         MapHandler.MAP.resize();
@@ -157,7 +163,6 @@ class PanelHandler {
         var rightButton = document.getElementById("expandButton");
 
         var finderContainer = document.getElementById("finderContainer");
-
 
         // Container for Cesium clipping plane slider
         let sliderParent = document.getElementById("sliderParent");

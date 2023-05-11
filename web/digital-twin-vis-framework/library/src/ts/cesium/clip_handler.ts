@@ -42,6 +42,11 @@ class ClipHandler {
     private maxValue;
     private startValue;
 
+    /**
+     * Custom levels within slider.
+     */
+    private labels;
+
     private static OFFSET = 0;
 
     /**
@@ -64,142 +69,180 @@ class ClipHandler {
      * and show/hide clipping plane geometries.
      */
     public addControls() {
-        // New container for controls
-        let controlContainer = document.createElement("div");
-        controlContainer.id = "clipControlContainer";
-        controlContainer.classList.add("controlBlock");
-        controlContainer.innerHTML = `
-            <div id="controlTitle" class="controlTitle">
-                <p style="width: 100%;">Clipping Planes</p>
-            </div>
-        `;
+        let self = this;
 
-        let controlContents = document.createElement("div");
-        controlContents.classList.add("controlContents");
-        controlContainer.appendChild(controlContents);
-        
-        // Insert into document
-        let controlParent = document.getElementById("controlContainer");
-        let helpIcon = document.getElementById("helpContainer");
-        controlParent.insertBefore(controlContainer, helpIcon);
+        if(document.getElementById("clipControlContainer") == null) {
+            //  Controls not defined in HTML file, generate here
 
-        // Enable clipping
-        let checkContainer = document.createElement("div");
-        checkContainer.id = "clipEnableContainer";
-        controlContents.appendChild(checkContainer);
+            // New container for controls
+            let controlContainer = document.createElement("div");
+            controlContainer.id = "clipControlContainer";
+            controlContainer.classList.add("controlBlock");
+            controlContainer.innerHTML = `
+                <div id="controlTitle" class="controlTitle">
+                    <p style="width: 100%;">Clipping Planes</p>
+                </div>
+            `;
 
-        let enableLabel = document.createElement("p");
-        enableLabel.innerHTML = "Enable clipping planes?";
-        checkContainer.appendChild(enableLabel);
+            let controlContents = document.createElement("div");
+            controlContents.classList.add("controlContents");
+            controlContainer.appendChild(controlContents);
+            
+            let controlParent = document.getElementById("controlContainer");
+            let helpIcon = document.getElementById("helpContainer");
+            controlParent.insertBefore(controlContainer, helpIcon);
 
-        let enableCheck = document.createElement("input");
-        enableCheck.type = "checkbox";
-        enableCheck.id = "clipEnableCheck"
-        checkContainer.appendChild(enableCheck);
+            // Enable clipping
+            let checkContainer = document.createElement("div");
+            checkContainer.id = "clipEnableContainer";
+            controlContents.appendChild(checkContainer);
 
-        enableCheck.addEventListener("change", function() {
-            let showContainer = document.getElementById("clipShowContainer");
-            let selectContainer = document.getElementById("clipSelectContainer");
+            let enableLabel = document.createElement("p");
+            enableLabel.innerHTML = "Enable clipping planes?";
+            checkContainer.appendChild(enableLabel);
 
-            if(showContainer != null) showContainer.style.display = (enableCheck.checked) ? "block" : "none";
-            if(selectContainer != null) selectContainer.style.display = (enableCheck.checked) ? "block" : "none";
+            let enableCheck = document.createElement("input");
+            enableCheck.type = "checkbox";
+            enableCheck.id = "clipEnableCheck"
+            checkContainer.appendChild(enableCheck);
 
-            if(!enableCheck.checked) {
-                // Remove slider control
-                let sliderParent = document.getElementById("sliderParent");
-                document.body.removeChild(sliderParent);
+            enableCheck.addEventListener("change", function() {
+                self.onEnableChange(enableCheck.checked);
+            });
 
-                // Turn off clipping plane
-                let layerID = ClipHandler.SELECTED_PLANE.id;
-                let tileset = CesiumUtils.getPrimitive(layerID);
-                if(tileset?.clippingPlanes != null) {
+            // Show geometry
+            let showContainer = document.createElement("div");
+            showContainer.id = "clipShowContainer";
+            showContainer.style.display = "none";
+            controlContents.appendChild(showContainer);
 
-                    // Disable clipping planes
-                    tileset.clippingPlanes.enabled = false;
+            let showLabel = document.createElement("p");
+            showLabel.innerHTML = "Show plane geometry?";
+            showContainer.appendChild(showLabel);
 
-                    // Turn off plane geometry
-                    let plane = ClipHandler.GEOMETRIES[layerID].plane;
-                    plane.show = false;
-                } 
+            let showCheck = document.createElement("input");
+            showCheck.type = "checkbox";
+            showCheck.checked = true;
+            showCheck.id = "clipShowCheck"
+            showContainer.appendChild(showCheck);
 
-                // Clear selection
-                ClipHandler.SELECTED_PLANE = null;
+            showCheck.addEventListener("change", function() {
+                self.onShowGeometryChange(showCheck.checked);
+            });
 
-            } else {
-                let showCombo = document.getElementById("clipSelectCombo") as HTMLSelectElement;
+            // Select layer
+            let selectContainer = document.createElement("div");
+            selectContainer.id = "clipSelectContainer";
+            selectContainer.style.display = "none";
+            controlContents.appendChild(selectContainer);
 
-                if(showCombo.selectedIndex !== 0) {
-                    // If there's already a selection
-                    self.changeTargetLayer(selectCombo.value);
+            let selectLabel = document.createElement("p");
+            selectLabel.innerHTML = "Target layer:";
+            selectContainer.appendChild(selectLabel);
 
-                } else if($("#clipSelectCombo option").length === 2){
-                    // If there's only one valid option
-                    showCombo.selectedIndex = 1;
-                    self.changeTargetLayer(selectCombo.value);
-                }
-            }
-        });
+            let selectCombo = document.createElement("select");
+            selectCombo.id = "clipSelectCombo"
+            selectContainer.appendChild(selectCombo);
 
-        // Show geometry
-        let showContainer = document.createElement("div");
-        showContainer.id = "clipShowContainer";
-        showContainer.style.display = "none";
-        controlContents.appendChild(showContainer);
+            let placeholder = document.createElement("option");
+            placeholder.selected = true;
+            placeholder.disabled = true;
+            placeholder.hidden = true;
+            placeholder.text = "Please select a layer...";
+            selectCombo.appendChild(placeholder);
 
-        let showLabel = document.createElement("p");
-        showLabel.innerHTML = "Show plane geometry?";
-        showContainer.appendChild(showLabel);
+            selectCombo.addEventListener("change", function() {
+                self.onTargetLayerChange(selectCombo.value);
+            });
 
-        let showCheck = document.createElement("input");
-        showCheck.type = "checkbox";
-        showCheck.checked = true;
-        showCheck.id = "clipShowCheck"
-        showContainer.appendChild(showCheck);
+        } else {
+            // Controls already defined in HTML, just add listeners
+            let enableCheck = document.getElementById("clipEnableCheck") as HTMLInputElement;
+            enableCheck.addEventListener("change", function() {
+                self.onEnableChange(enableCheck.checked);
+            });
 
-        showCheck.addEventListener("change", function() {
-            // Hide/show clipping plane geometry
-            if(ClipHandler.SELECTED_PLANE != null) {
-                let layerID = ClipHandler.SELECTED_PLANE.id;
-                let plane = ClipHandler.GEOMETRIES[layerID].plane;
-                plane.show = showCheck.checked;
-            }
-        });
+            let showCheck = document.getElementById("clipShowCheck") as HTMLInputElement;
+            showCheck.addEventListener("change", function() {
+                self.onShowGeometryChange(showCheck.checked);
+            });
 
-        // Select layer
-        let selectContainer = document.createElement("div");
-        selectContainer.id = "clipSelectContainer";
-        selectContainer.style.display = "none";
-        controlContents.appendChild(selectContainer);
+            let selectCombo = document.getElementById("clipSelectCombo") as HTMLSelectElement;
+            selectCombo.addEventListener("change", function() {
+                self.onTargetLayerChange(selectCombo.value);
+            });
+        }
 
-        let selectLabel = document.createElement("p");
-        selectLabel.innerHTML = "Target layer:";
-        selectContainer.appendChild(selectLabel);
-
-        let selectCombo = document.createElement("select");
-        selectCombo.id = "clipSelectCombo"
-        selectContainer.appendChild(selectCombo);
-
-        let placeholder = document.createElement("option");
-        placeholder.selected = true;
-        placeholder.disabled = true;
-        placeholder.hidden = true;
-        placeholder.text = "Please select a layer...";
-        selectCombo.appendChild(placeholder);
-
+        // Populate selection drop down with list of compatible layers
+        let selectCombo = document.getElementById("clipSelectCombo") as HTMLSelectElement;
         for(let name in this.layers) {
             let option = document.createElement("option");
             option.value = this.layers[name];
             option.text = name;
             selectCombo.appendChild(option);
         }
+    }
 
-        // Change selected clipping plane
-        let self = this;
-        selectCombo.addEventListener("change", function() {
-            // let showCombo = document.getElementById("clipShowCheck") as HTMLInputElement;
-            // if(showCombo != null) showCombo.checked = true;
-            self.changeTargetLayer(selectCombo.value);
-        });
+    /**
+     * Fires when the "Enable clipping planes?" check is changed.
+     * 
+     * @param {Boolean} value should planes be enabled.
+     */
+    private onEnableChange(value) {
+        let showContainer = document.getElementById("clipShowContainer");
+        let selectContainer = document.getElementById("clipSelectContainer");
+        let selectCombo = document.getElementById("clipSelectCombo") as HTMLSelectElement;
+
+        if(showContainer != null) showContainer.style.display = (value) ? "block" : "none";
+        if(selectContainer != null) selectContainer.style.display = (value) ? "block" : "none";
+
+        if(!value) {
+            // Remove slider control
+            let sliderParent = document.getElementById("sliderParent");
+            document.body.removeChild(sliderParent);
+
+            // Turn off clipping plane
+            let layerID = ClipHandler.SELECTED_PLANE.id;
+            let tileset = CesiumUtils.getPrimitive(layerID);
+            if(tileset?.clippingPlanes != null) {
+
+                // Disable clipping planes
+                tileset.clippingPlanes.enabled = false;
+
+                // Turn off plane geometry
+                let plane = ClipHandler.GEOMETRIES[layerID].plane;
+                plane.show = false;
+            } 
+
+            // Clear selection
+            ClipHandler.SELECTED_PLANE = null;
+
+        } else {
+            let showCombo = document.getElementById("clipSelectCombo") as HTMLSelectElement;
+
+            if(showCombo.selectedIndex !== 0) {
+                // If there's already a selection
+                this.onTargetLayerChange(selectCombo.value);
+
+            } else if($("#clipSelectCombo option").length === 2){
+                // If there's only one valid option
+                showCombo.selectedIndex = 1;
+                this.onTargetLayerChange(selectCombo.value);
+            }
+        }
+    }
+
+    /**
+     * Fires when the "Show plane geometry?" check is changed.
+     * 
+     * @param {Boolean} value should geometry be visible 
+     */
+    private onShowGeometryChange(value) {
+         if(ClipHandler.SELECTED_PLANE != null) {
+            let layerID = ClipHandler.SELECTED_PLANE.id;
+            let plane = ClipHandler.GEOMETRIES[layerID].plane;
+            plane.show = value;
+        }
     }
 
     /**
@@ -208,7 +251,7 @@ class ClipHandler {
      * @param layerIDs single string with all layer IDs behind the selected
      * layer name (separated by '|' character).
      */
-    private changeTargetLayer(layerIDs) {
+    private onTargetLayerChange(layerIDs) {
         console.log("Changing target layers for clipping planes to: " + layerIDs);
 
         // Turn clipping plane off on old layer (if needed)
@@ -255,6 +298,9 @@ class ClipHandler {
                     startHeight,
                     layerObj.definition["clipping"]["labels"]
                 );
+
+                // Cache labels
+                this.labels = layerObj.definition["clipping"]["labels"];
 
                 // Link the pre-created planes to the tileset
                 let tileset = CesiumUtils.getPrimitive(layerID);
@@ -472,6 +518,12 @@ class ClipHandler {
 
         // Build and add absolute value labels
         this.addLabels(labels);
+
+        // Listen for resize event on the slider
+        let self = this;
+        new ResizeObserver(function() {
+            self.addLabels(self.labels);
+        }).observe(sliderParent);
     }
 
     /**
@@ -483,6 +535,9 @@ class ClipHandler {
         let diff = this.maxValue - this.minValue;
         let sliderHeight = $("#sliderRight").height();
         let sliderLeft = document.getElementById("sliderLeft");
+
+        // Reset content
+        sliderLeft.innerHTML = "";
 
         // Iterate through labels
         for(let key in labels) {
@@ -515,9 +570,9 @@ class ClipHandler {
      */
     private updateInput() {
         let input = document.getElementById("sliderInput") as HTMLInputElement;
-        let value = $("#sliderRight").slider("value");
-        input.value = String(value);
+        let value = Number($("#sliderRight").slider("value")).toFixed(2);
 
+        input.value = String(value);
         ClipHandler.movePlane(Number(input.value) - ClipHandler.OFFSET);
     }
 
@@ -527,11 +582,11 @@ class ClipHandler {
      */
     private updateSlider() {
         let input = document.getElementById("sliderInput") as HTMLInputElement;
-        $("#sliderRight").slider("value", input.value);
+        let value = Number(input.value).toFixed(2);
 
-        ClipHandler.movePlane(Number(input.value) - ClipHandler.OFFSET);
+        $("#sliderRight").slider("value", value);
+        ClipHandler.movePlane(Number(value) - ClipHandler.OFFSET);
     }
-
 
     /**
      * Move the currently selected clipping plane to the input height.
@@ -539,15 +594,13 @@ class ClipHandler {
      * @param newHeight desired height (m)
      */
     public static movePlane(newHeight) {
-        console.log("New height is " + newHeight);
-
         if (Cesium.defined(ClipHandler.SELECTED_PLANE)) {
             let planeID = ClipHandler.SELECTED_PLANE.id._id;
 
             ClipHandler.HEIGHTS[planeID] = newHeight;
             ClipHandler.SELECTED_PLANE.distance = newHeight;
         } else {
-            console.log("CLIPPING PLANE IS NOT DEFINED!");
+            console.error("Clipping plane for this layer has not been defined.");
         }
     }
 
@@ -566,7 +619,6 @@ class ClipHandler {
                 if(tilesetID !== selectedID) return plane;
 
                 let height = ClipHandler.HEIGHTS[tilesetID];
-                //height += ClipHandler.OFFSET;
                 plane.distance = height;
             }
             return plane;
