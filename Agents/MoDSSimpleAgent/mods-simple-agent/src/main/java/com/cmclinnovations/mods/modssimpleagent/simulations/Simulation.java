@@ -42,6 +42,7 @@ import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityValues;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
 import com.cmclinnovations.mods.modssimpleagent.utils.FileUtils;
 import com.cmclinnovations.mods.modssimpleagent.utils.ListUtils;
+import com.cmclinnovations.mods.modssimpleagent.utils.SimulationSaver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Streams;
 
@@ -70,6 +71,7 @@ public abstract class Simulation {
     private final BackendInputFile inputFile;
     private final MoDSBackend modsBackend;
     private final InputMetaData inputMetaData;
+    private final SimulationSaver simulationSaver;
 
     public static Simulation createSimulation(Request request) throws JAXBException, IOException {
 
@@ -83,8 +85,9 @@ public abstract class Simulation {
         load(request, modsBackend);
 
         InputMetaData inputMetaData = InputMetaData.createInputMetaData(request, modsBackend);
+        SimulationSaver simulationSaver = new SimulationSaver(modsBackend, inputMetaData);
 
-        return SimulationFactory.createSimulation(request, inputFile, modsBackend, inputMetaData);
+        return SimulationFactory.createSimulation(request, inputFile, modsBackend, inputMetaData, simulationSaver);
     }
 
     public static Simulation retrieveSimulation(Request request) throws JAXBException, IOException {
@@ -97,8 +100,9 @@ public abstract class Simulation {
                 modsBackend.getWorkingDir().resolve(BackendInputFile.FILENAME));
 
         InputMetaData inputMetaData = InputMetaData.createInputMetaData(originalRequest, modsBackend);
+        SimulationSaver simulationSaver = new SimulationSaver(modsBackend, inputMetaData);
 
-        return SimulationFactory.createSimulation(request, inputFile, modsBackend, inputMetaData);
+        return SimulationFactory.createSimulation(request, inputFile, modsBackend, inputMetaData, simulationSaver);
     }
 
     private static File getRequestFilePath(MoDSBackend modsBackend) {
@@ -106,11 +110,12 @@ public abstract class Simulation {
     }
 
     protected Simulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend,
-            InputMetaData inputMetaData) {
+            InputMetaData inputMetaData, SimulationSaver simulationSaver) {
         this.request = request;
         this.inputFile = inputFile;
         this.modsBackend = modsBackend;
         this.inputMetaData = inputMetaData;
+        this.simulationSaver = simulationSaver;
     }
 
     protected final Request getRequest() {
@@ -282,10 +287,10 @@ public abstract class Simulation {
         populateInputFile();
         generateFiles();
         modsBackend.run();
-        saveWhenFinished();
+        saveWhenFinished(getSimulationSaver());
     }
 
-    public void saveWhenFinished() {
+    public void saveWhenFinished(SimulationSaver simulationSaver) {
         String simDir = getModsBackend().getSimDir().toString();
         String algorithmName = DEFAULT_SURROGATE_ALGORITHM_NAME;
 
@@ -300,7 +305,7 @@ public abstract class Simulation {
                     }
                     Thread.sleep(100);
                 }
-                save();
+                simulationSaver.saveSurrogate();
             } catch (InterruptedException ex) {
                 Thread.currentThread().interrupt();
             }
@@ -309,32 +314,8 @@ public abstract class Simulation {
         t.start();
     }
 
-    public void save() {
-        for (Algorithm algorithm : request.algorithms()) {
-            if (algorithm.saveSurrogate() != null && algorithm.saveSurrogate()) {
-                Path saveDirectory = getSaveDirectory();
-                Path surrogateDirectory = getSurrogateDirectory(modsBackend);
-
-                try {
-                    FileUtils.copyDirectory(surrogateDirectory, saveDirectory);
-                    inputMetaData.writeToCSV(saveDirectory.resolve(InputMetaData.DEFAULT_INPUT_INFO_FILE_NAME));
-                } catch (FileGenerationException ex) {
-                    throw new ResponseStatusException(HttpStatus.NO_CONTENT,
-                            "Job '" + getModsBackend().getJobID() + "' failed to save.", ex);
-                }
-
-                LOGGER.info("Job '{}' saved at '{}'.", getModsBackend().getJobID(), saveDirectory.toAbsolutePath());
-            }
-        }
-    }
-
     public static Path getSurrogateDirectory(MoDSBackend modsBackend) {
         return modsBackend.getSimDir().resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
-    }
-
-    private Path getSaveDirectory() {
-        return getSurrogateSaveDirectoryPath().resolve(modsBackend.getJobID())
-                .resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
     }
 
     public static void load(Request request, MoDSBackend modsBackend) {
@@ -428,6 +409,10 @@ public abstract class Simulation {
 
     public static Path getSurrogateSaveDirectoryPath() {
         return Path.of(System.getenv("MODS_SAVE_DIR"));
+    }
+
+    public SimulationSaver getSimulationSaver() {
+        return this.simulationSaver;
     }
 
     protected Request getMCDMResults() {

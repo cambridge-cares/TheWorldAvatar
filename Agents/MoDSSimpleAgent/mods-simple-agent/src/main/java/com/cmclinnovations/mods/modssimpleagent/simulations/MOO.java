@@ -5,11 +5,13 @@ import com.cmclinnovations.mods.modssimpleagent.FileGenerator.FileGenerationExce
 import com.cmclinnovations.mods.modssimpleagent.MoDSBackend;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.InputMetaData;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
+import com.cmclinnovations.mods.modssimpleagent.utils.SimulationSaver;
 
 class MOO extends MOOonly {
 
-        public MOO(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData) {
-                super(request, inputFile, modsBackend, inputMetaData);
+        public MOO(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData,
+                        SimulationSaver simulationSaver) {
+                super(request, inputFile, modsBackend, inputMetaData, simulationSaver);
         }
 
         @Override

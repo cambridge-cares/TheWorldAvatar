@@ -35,7 +35,7 @@ public class SensitivityTest {
                 Request.builder()
                         .algorithms(List.of(new Algorithm(null, "GenSurrogateAlg", null, null, null, null)))
                         .build(),
-                null, modsBackendMock, null);
+                null, modsBackendMock, null, null);
 
         List<SensitivityLabels> sensitivityLabelsList = List.of(
                 new SensitivityLabels(1, List.of("x1", "x2", "x3")),

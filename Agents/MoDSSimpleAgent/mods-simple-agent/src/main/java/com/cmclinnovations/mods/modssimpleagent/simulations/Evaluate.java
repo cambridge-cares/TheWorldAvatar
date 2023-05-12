@@ -17,12 +17,14 @@ import com.cmclinnovations.mods.modssimpleagent.datamodels.Data;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.DataColumn;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.InputMetaData;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
+import com.cmclinnovations.mods.modssimpleagent.utils.SimulationSaver;
 import com.google.common.collect.Streams;
 
 class Evaluate extends Simulation {
 
-    public Evaluate(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData) {
-        super(request, inputFile, modsBackend, inputMetaData);
+    public Evaluate(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData,
+            SimulationSaver simulationSaver) {
+        super(request, inputFile, modsBackend, inputMetaData, simulationSaver);
     }
 
     @Override
