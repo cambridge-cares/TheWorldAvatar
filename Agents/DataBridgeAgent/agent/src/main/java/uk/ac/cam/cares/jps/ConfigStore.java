@@ -190,4 +190,36 @@ public class ConfigStore {
         }
         return "";
     }
+
+    public static String[] retrieveTSClientConfig (String stackNamespace, String stackDatabase) {
+        String[] config = new String[7];
+        String[] dbConfig;
+        String[] kbConfig;
+        
+
+        if (stackDatabase == null) {
+            dbConfig = retrieveSQLConfig();
+        }
+        else{
+            dbConfig = retrieveSQLConfig(stackDatabase);
+        }
+
+        if (stackNamespace == null) {
+            kbConfig = retrieveSPARQLConfig();
+        }
+        else{
+            kbConfig = retrieveSPARQLConfig(stackNamespace);
+        }
+
+        config[0] = dbConfig[1]; //dbusrName
+        config[1] = dbConfig[2]; //dbPassword
+        config[2] = dbConfig[0]; //dbURL
+        config[3] = null; //bgUsrName -- is this needed?
+        config[4] = null; //bgPassword -- is this needed?
+        config[5] = kbConfig[1]; //updateEndpoiunt
+        config[6] = kbConfig[1]; //query Enpoint - Assume the same?
+        
+        return config;
+    }
+
 }
