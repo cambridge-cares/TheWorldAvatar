@@ -26,7 +26,7 @@ public class EmailBuilder {
      * @param map map that consists of several keys where each key has its own List of Strings
      * @param threshold threshold of sash opening
      */
-    public void parsesMapAndPostProcessing(Map<String, List<String>> map, Double threshold) {
+    public String parsesMapAndPostProcessing(Map<String, List<String>> map, Double threshold) {
         StringBuilder sb = new StringBuilder();
         StringBuilder FullContent = new StringBuilder();
         String firstLine;
@@ -48,7 +48,6 @@ public class EmailBuilder {
         sb.append("<th>Sash Opening");
         sb.append("</th>");
         sb.append("</tr>");
-        EmailSender sender = new EmailSender();
         
         for (int i = 0; i < map.get("FHandWFH").size(); i++){
             String occupiedStateData = map.get("OccupiedStateTsData").get(i);
@@ -128,15 +127,23 @@ public class EmailBuilder {
                 }
             }
         }
+        sb.append("</table>");
+        firstLine = firstLine.substring(0, firstLine.length() - 2);
+        firstLine = firstLine + " ) are unoccupied and have a sash opening above the threshold of " + threshold + "%. ";
+        FullContent.append(firstLine);
+        FullContent.append(sb.toString());
+        LOGGER.info("The email message is " + FullContent.toString());
+        return FullContent.toString();
+    }
 
+    /**
+     * Sent email
+     * @param emailContent email content to be sent
+     */
+    public void sendEmail(String emailContent) {
+        EmailSender sender = new EmailSender();
         try {
-            sb.append("</table>");
-            firstLine = firstLine.substring(0, firstLine.length() - 2);
-            firstLine = firstLine + " ) are unoccupied and have a sash opening above the threshold of " + threshold + "%. ";
-            FullContent.append(firstLine);
-            FullContent.append(sb.toString());
-            LOGGER.info("The email message is " + FullContent.toString());
-            sender.sendEmail("Fumehoods and WalkIn-Fumehoods Sash and Occupancy Alert!", FullContent.toString());
+            sender.sendEmail("Fumehoods and WalkIn-Fumehoods Sash and Occupancy Alert!", emailContent);
         } catch (Exception e) {
             throw new JPSRuntimeException(SENDEMAIL_ERROR_MSG, e);
         }
