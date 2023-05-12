@@ -289,6 +289,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
      * @param sparqlQueryEndpoint sparql endpoint for executing queries
      */
     private void setTsClientAndRDBClient(String dbUsername, String dbPassword, String dbUrl, String bgUsername, String bgPassword, String sparqlUpdateEndpoint, String sparqlQueryEndpoint) {
+        try {
         RemoteStoreClient kbClient = new RemoteStoreClient();
         kbClient.setQueryEndpoint(sparqlQueryEndpoint);
         kbClient.setUpdateEndpoint(sparqlUpdateEndpoint);
@@ -297,13 +298,16 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
 
         tsClient = new TimeSeriesClient<>(kbClient ,OffsetDateTime.class);
         RDBClient = new RemoteRDBStoreClient(dbUrl, dbUsername, dbPassword);
+    } catch (Exception e) {
+        throw new JPSRuntimeException(e);
+    }
     }
 
     /**
      * Retrieve timeseries data for occupied state
      * @param map map that consists of several keys where each key has its own List of Strings
      */
-    private Map<String, List<String>> getOccupiedStateTsData (Map<String, List<String>> map) {
+    public Map<String, List<String>> getOccupiedStateTsData (Map<String, List<String>> map) {
         map.put("OccupiedStateTsData", new ArrayList<>());
         map.put("OccupiedStateTimeStamps", new ArrayList<>());
         for (int i = 0; i < map.get("FHandWFH").size(); i++) {
@@ -335,7 +339,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
      * Retrieve timeseries data for sash opening
      * @param map map that consists of several keys where each key has its own List of Strings
      */
-    private Map<String, List<String>> getSashOpeningTsData (Map<String, List<String>> map) {
+    public Map<String, List<String>> getSashOpeningTsData (Map<String, List<String>> map) {
         map.put("SashOpeningTsData", new ArrayList<>());
         map.put("SashOpeningTimeStamps", new ArrayList<>());
         for (int i = 0; i < map.get("FHandWFH").size(); i++) {
