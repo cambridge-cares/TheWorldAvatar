@@ -358,22 +358,36 @@ public class DockerService extends AbstractService
         }
 
         for (Mount mount : mounts) {
-            if (MountType.VOLUME == mount.getType()) {
+            MountType mountType = mount.getType();
+            if (null == mountType) {
+                mountType = MountType.BIND;
+                mount.withType(mountType);
+            }
 
-                mount.withSource(StackClient.prependStackName(mount.getSource()));
-
-                VolumeOptions volumeOptions = mount.getVolumeOptions();
-                if (null == volumeOptions) {
-                    volumeOptions = new VolumeOptions().withLabels(StackClient.getStackNameLabelMap());
-                    mount.withVolumeOptions(volumeOptions);
-                } else {
-                    Map<String, String> labels = volumeOptions.getLabels();
-                    if (null == labels) {
-                        volumeOptions.withLabels(StackClient.getStackNameLabelMap());
-                    } else {
-                        labels.putAll(StackClient.getStackNameLabelMap());
+            switch (mountType) {
+                case BIND:
+                    String bindSource = mount.getSource();
+                    if (null != bindSource && !bindSource.startsWith("/")) {
+                        mount.withSource(StackClient.getAbsDataPath().resolve(bindSource).toString());
                     }
-                }
+                    break;
+                case VOLUME:
+                    mount.withSource(StackClient.prependStackName(mount.getSource()));
+
+                    VolumeOptions volumeOptions = mount.getVolumeOptions();
+                    if (null == volumeOptions) {
+                        volumeOptions = new VolumeOptions().withLabels(StackClient.getStackNameLabelMap());
+                        mount.withVolumeOptions(volumeOptions);
+                    } else {
+                        Map<String, String> labels = volumeOptions.getLabels();
+                        if (null == labels) {
+                            volumeOptions.withLabels(StackClient.getStackNameLabelMap());
+                        } else {
+                            labels.putAll(StackClient.getStackNameLabelMap());
+                        }
+                    }
+                    break;
+                default:
             }
         }
     }
