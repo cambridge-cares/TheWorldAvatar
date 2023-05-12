@@ -94,8 +94,24 @@ public class InstantiateTS {
                 List<Object> row = new ArrayList<>();
                 for (int j =0; j < valueArray.length(); j++) {
                     //Defaults class to String, convert to respective needed data type when TS data is used
-                    Object value = valueArray.getString(j);
-                    row.add(value);
+                    Object value = valueArray.get(j);
+
+                    if (value instanceof Integer || value instanceof Long) {
+                        long longValue = ((Number)value).longValue();
+                        row.add(longValue);
+                    } else if (value instanceof Boolean) {
+                        boolean boolValue = ((Boolean)value).booleanValue();
+                        row.add(boolValue);
+                    } else if (value instanceof Float || value instanceof Double) {
+                        double doubleValue = ((Number)value).doubleValue();
+                        row.add(doubleValue);
+                    } else if (JSONObject.NULL.equals(value)) {
+                        Object nullValue = null;
+                        row.add(nullValue);
+                    } else {
+                        String stringValue = valueArray.getString(j);
+                        row.add(stringValue);
+                    }
                 }
                 values.add(row);
             }
