@@ -546,7 +546,7 @@ public class Aermod {
         
         for (int i = 0; i < dispersionLayerNames.size(); i++) {
             JSONObject dispersionLayer = new JSONObject();
-            dispersionLayer.put("id", "dispersion-layer");
+            dispersionLayer.put("id", dispersionLayerNames.get(i));
             dispersionLayer.put("type", "raster");
             dispersionLayer.put("name", dispersionLayerNames.get(i));
             dispersionLayer.put("source", "dispersion-source_" + dispersionLayerNames.get(i));

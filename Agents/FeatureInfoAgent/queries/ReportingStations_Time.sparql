@@ -17,5 +17,6 @@ WHERE {
        ?Measurement om:hasUnit <http://www.ontology-of-units-of-measure.org/resource/om-2/microgramPerCubicmetre>;
                 <https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries> ?tsIRI.
         BIND("NO2 Concentration" AS ?Name).
+        BIND("micro-gram/m3" AS ?Unit).
        
       }
