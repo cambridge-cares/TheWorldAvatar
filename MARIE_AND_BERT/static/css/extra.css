@@ -35,7 +35,7 @@ background: #d0cccc;
 /* Tooltip text */
 .tooltip .tooltiptext {
   visibility: hidden;
-  width: 200px;
+  width: 180px;
   background-color: lightgrey;
   color: black;
   text-align: left;
@@ -44,9 +44,8 @@ background: #d0cccc;
 
   /* Position the tooltip text - see examples below! */
   position: absolute;
-  top: 50%;
-  left: 35px;
-  transform: translateY(-50%);
+  top: 100%;
+  left: 0;
   z-index: 1;
   border: black;
 }
