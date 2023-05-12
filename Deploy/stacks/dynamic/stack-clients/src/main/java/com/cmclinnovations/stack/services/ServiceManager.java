@@ -26,7 +26,7 @@ public final class ServiceManager {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static final URL DEFAULT_CONFIG_DIR = ServiceManager.class.getResource("defaults");
+    private static final URL BUILTIN_CONFIG_DIR = ServiceManager.class.getResource("built-ins");
     private static final Path USER_CONFIG_DIR = StackClient.STACK_CONFIG_DIR.resolve("services");
 
     @JsonProperty(value = "services")
@@ -35,7 +35,7 @@ public final class ServiceManager {
     @JsonIgnore
     private final Map<String, Service> services = new HashMap<>();
 
-    private final List<String> defaultServices;
+    private final List<String> builtinServices;
     private final List<String> userServices;
 
     public ServiceManager() {
@@ -44,7 +44,7 @@ public final class ServiceManager {
 
     public ServiceManager(boolean loadUserConfigs) {
         try {
-            defaultServices = loadConfigs(DEFAULT_CONFIG_DIR);
+            builtinServices = loadConfigs(BUILTIN_CONFIG_DIR);
         } catch (IOException | URISyntaxException ex) {
             throw new RuntimeException("Failed to load default service configs.", ex);
         }
@@ -52,7 +52,7 @@ public final class ServiceManager {
             try {
                 if (Files.exists(USER_CONFIG_DIR)) {
                     userServices = loadConfigs(USER_CONFIG_DIR);
-                    userServices.removeAll(defaultServices);
+                    userServices.removeAll(builtinServices);
                 } else {
                     userServices = Collections.emptyList();
                 }
@@ -96,9 +96,9 @@ public final class ServiceManager {
             return serviceConfigs.get(newServiceName);
         } else {
             ServiceConfig newServiceConfig;
-            if (defaultServices.contains(oldServiceName)) {
+            if (builtinServices.contains(oldServiceName)) {
                 try {
-                    Optional<URI> configFile = FileUtils.listFiles(DEFAULT_CONFIG_DIR).stream()
+                    Optional<URI> configFile = FileUtils.listFiles(BUILTIN_CONFIG_DIR).stream()
                             .filter(uri -> uri.toString().endsWith("/" + oldServiceName + ".json"))
                             .findFirst();
 
