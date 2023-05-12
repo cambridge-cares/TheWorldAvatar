@@ -27,11 +27,13 @@ public class EmailBuilderTest {
         map1.get("FHandWFH").add("test IRI 3");
         map1.get("FHandWFH").add("test IRI 4");
         map1.get("FHandWFH").add("test IRI 5");
+        
         map1.get("Label").add("FH01");
         map1.get("Label").add("FH02");
         map1.get("Label").add("FH03");
         map1.get("Label").add("FH04");
         map1.get("Label").add("FH05");
+
         map1.get("SashOpeningTsData").add("99.03234");
         map1.get("OccupiedStateTsData").add("This device does not have an occupied state.");
         map1.get("SashOpeningTsData").add("This device does not have a sash opening.");
@@ -42,6 +44,7 @@ public class EmailBuilderTest {
         map1.get("OccupiedStateTsData").add("This device does not have an occupied state.");
         map1.get("SashOpeningTsData").add("79.03234");
         map1.get("OccupiedStateTsData").add("0.0");
+
         map1.get("SashOpeningTimeStamps").add("2023-05-03 06:18:50 AM");
         map1.get("OccupiedStateTimeStamps").add("Not applicable");
         map1.get("SashOpeningTimeStamps").add("Not applicable");

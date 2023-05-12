@@ -35,6 +35,7 @@ public class FHSashAndOccupancyAgentTest {
         map1.get("FHandWFH").add("test IRI 3");
         map1.get("FHandWFH").add("test IRI 4");
         map1.get("FHandWFH").add("test IRI 5");
+
         map1.get("SashOpeningTsData").add("99.03234");
         map1.get("OccupiedStateTsData").add("This device does not have an occupied state.");
         map1.get("SashOpeningTsData").add("This device does not have a sash opening.");
@@ -154,6 +155,7 @@ public class FHSashAndOccupancyAgentTest {
         map1.get("SashOpeningTsData").remove(map1.get("SashOpeningTsData").size()-1);
         map1.get("OccupiedStateTsData").remove(map1.get("OccupiedStateTsData").size()-1);
         check = (Boolean) checkSashAndOccupancy.invoke(testAgent, map1, threshold);
+        Assert.assertTrue(map1.get("FHandWFH").size() == 4);
         Assert.assertFalse(check);
 
         //map1.get("SashOpeningTsData").add("0.0"); and map1.get("OccupiedStateTsData").add("0.0"); should return a false
@@ -161,6 +163,7 @@ public class FHSashAndOccupancyAgentTest {
         map1.get("SashOpeningTsData").remove(map1.get("SashOpeningTsData").size()-1);
         map1.get("OccupiedStateTsData").remove(map1.get("OccupiedStateTsData").size()-1);
         check = (Boolean) checkSashAndOccupancy.invoke(testAgent, map1, threshold);
+        Assert.assertTrue(map1.get("FHandWFH").size() == 3);
         Assert.assertFalse(check);
 
         //map1.get("SashOpeningTsData").add("This device does not have a sash opening."); and map1.get("OccupiedStateTsData").add("0.0"); should return a false
@@ -168,6 +171,7 @@ public class FHSashAndOccupancyAgentTest {
         map1.get("SashOpeningTsData").remove(map1.get("SashOpeningTsData").size()-1);
         map1.get("OccupiedStateTsData").remove(map1.get("OccupiedStateTsData").size()-1);
         check = (Boolean) checkSashAndOccupancy.invoke(testAgent, map1, threshold);
+        Assert.assertTrue(map1.get("FHandWFH").size() == 2);
         Assert.assertFalse(check);
 
         //map1.get("SashOpeningTsData").add("99.03234"); and map1.get("OccupiedStateTsData").add("This device does not have an occupied state."); should return a false
@@ -175,6 +179,7 @@ public class FHSashAndOccupancyAgentTest {
         map1.get("SashOpeningTsData").remove(map1.get("SashOpeningTsData").size()-1);
         map1.get("OccupiedStateTsData").remove(map1.get("OccupiedStateTsData").size()-1);
         check = (Boolean) checkSashAndOccupancy.invoke(testAgent, map1, threshold);
+        Assert.assertTrue(map1.get("FHandWFH").size() == 1);
         Assert.assertFalse(check);
         
     }
