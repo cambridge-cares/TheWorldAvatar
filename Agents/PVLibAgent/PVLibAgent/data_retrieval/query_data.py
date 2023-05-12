@@ -1,12 +1,13 @@
 from PVLibAgent.error_handling.exceptions import KGException
 from PVLibAgent.kg_utils.kgClient import KGClient
-from PVLibAgent.kg_utils.utils import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from PVLibAgent.kg_utils.utils import create_sparql_prefix
 import logging
 
+
+
 class QueryData:
 
-    def query_air_temperature(iri, query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
+    def query_air_temperature(iri, query_endpoint: str, update_endpoint: str):
         try:
             kg_client = KGClient(query_endpoint, update_endpoint)
             '''
@@ -66,7 +67,7 @@ class QueryData:
         except Exception as ex:
             raise KGException("Unable to query for any air temperature data IRI!") from ex
 
-    def query_wind_speed(iri, query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
+    def query_wind_speed(iri, query_endpoint: str, update_endpoint: str):
         try:
             kg_client = KGClient(query_endpoint, update_endpoint)
             '''
@@ -126,7 +127,7 @@ class QueryData:
         except Exception as ex:
             raise KGException("Unable to query for any wind speed data IRI!") from ex
 
-    def query_irradiance(iri, query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
+    def query_irradiance(iri, query_endpoint: str, update_endpoint: str):
         try:
             kg_client = KGClient(query_endpoint, update_endpoint)
             if iri == '':
@@ -167,7 +168,7 @@ class QueryData:
         except Exception as ex:
             raise KGException("Unable to query for any irradiance data IRI!") from ex
 
-    def query_global_horizontal_irradiance(iri, query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
+    def query_global_horizontal_irradiance(iri, query_endpoint: str, update_endpoint: str):
         try:
             kg_client = KGClient(query_endpoint, update_endpoint)
             '''
@@ -207,7 +208,7 @@ class QueryData:
         except Exception as ex:
             raise KGException("Unable to query for any global horizontal irradiance data IRI!")
 
-    def query_latitude(iri, query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
+    def query_latitude(iri, query_endpoint: str, update_endpoint: str):
         try:
             kg_client = KGClient(query_endpoint, update_endpoint)
             if iri == '':
@@ -248,7 +249,7 @@ class QueryData:
         except Exception as ex:
             raise KGException("Unable to query for any latitude value!") from ex
 
-    def query_longitude(iri, query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
+    def query_longitude(iri, query_endpoint: str, update_endpoint: str):
         try:
             kg_client = KGClient(query_endpoint, update_endpoint)
             if iri == '':
@@ -290,7 +291,7 @@ class QueryData:
             raise KGException("Unable to query for any longitude value!") from ex
 
 
-    def query_direct_normal_irradiance(iri, query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
+    def query_direct_normal_irradiance(iri, query_endpoint: str, update_endpoint: str):
         try:
             kg_client = KGClient(query_endpoint, update_endpoint)
 
@@ -314,7 +315,7 @@ class QueryData:
             raise KGException("Unable to query for any irradiance data IRI!") from ex
 
 
-    def query_busnode_iri(query_endpoint: str = QUERY_ENDPOINT):
+    def query_busnode_iri(query_endpoint: str):
         try:
             kg_client = KGClient(query_endpoint)
             query = create_sparql_prefix('powreal') + \
@@ -328,7 +329,7 @@ class QueryData:
         except Exception as ex:
             raise KGException("Unable to query for bus node IRI!") from ex
 
-    def query_PV_Panels(query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
+    def query_PV_Panels(query_endpoint: str):
         try:
             kg_client = KGClient(query_endpoint, update_endpoint)
 
@@ -344,7 +345,7 @@ class QueryData:
 
             response = kg_client.performQuery(query)
             if len(response) == 0:
-                raise KGException("Unable to query for any NTU PV panels!")
+                raise KGException("Unable to query for any PV panels!")
             for building in response:
                 print(building["name"])
                 print(building["PV"])

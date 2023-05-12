@@ -1,8 +1,6 @@
 from PVLibAgent.kg_utils.kgClient import KGClient
-from PVLibAgent.kg_utils.utils import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from PVLibAgent.kg_utils.tsClientForUpdate import TSClientForUpdate
 from PVLibAgent.error_handling.exceptions import TSException
-from PVLibAgent.kg_utils.utils import DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD
 from PVLibAgent.data_retrieval.query_data import QueryData
 from PVLibAgent.kg_utils.utils import create_sparql_prefix
 
@@ -12,9 +10,9 @@ import uuid
 class timeseries_instantiation:
 
     logging.basicConfig(level=logging.DEBUG)
-    def add_timeseries_data(timeseries):
-        kg_client = KGClient(query_endpoint=UPDATE_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
-        ts_client = TSClientForUpdate(kg_client=kg_client, rdb_url=DB_UPDATE_URL, rdb_user=DB_UPDATE_USER, rdb_password=DB_UPDATE_PASSWORD)
+    def add_timeseries_data(timeseries, query_endpoint: str, update_endpoint: str, db_query_url: str, db_query_user: str, db_query_password: str):
+        kg_client = KGClient(query_endpoint, update_endpoint)
+        ts_client = TSClientForUpdate(kg_client=kg_client, rdb_url=db_query_url, rdb_user=db_query_user, rdb_password=db_query_password)
         with ts_client.connect() as conn:
             try:
                 (ts_client.tsclient.addTimeSeriesData(timeseries, conn))
@@ -22,20 +20,19 @@ class timeseries_instantiation:
                 logging.error("Adding of timeseries data to knowledge graph was not successful.")
                 raise TSException("Adding of timeseries data to knowledge graph was not successful.") from ex
 
-    def init_timeseries(dataIRIs: list, dataClass: list, timeUnit):
-        kg_client = KGClient(query_endpoint=UPDATE_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
-        ts_client = TSClientForUpdate(kg_client=kg_client, rdb_url=DB_UPDATE_URL, rdb_user=DB_UPDATE_USER, rdb_password=DB_UPDATE_PASSWORD)
+    def init_timeseries(dataIRIs: list, dataClass: list, timeUnit, query_endpoint: str, update_endpoint: str, db_query_url: str, db_query_user: str, db_query_password: str):
+        kg_client = KGClient(query_endpoint, update_endpoint)
+        ts_client = TSClientForUpdate(kg_client=kg_client, rdb_url=db_query_url, rdb_user=db_query_user, rdb_password=db_query_password)
         with ts_client.connect() as conn:
             try:
-
                 (ts_client.tsclient.initTimeSeries(dataIRIs, dataClass, timeUnit, conn, TSClientForUpdate.jpsBaseLibView.TimeSeriesClient.Type.INSTANTANEOUS, None, None))
             except Exception as ex:
                 logging.error("Unable to initialise timeseries.")
                 raise TSException("Unable to initialise timeseries.") from ex
 
-    def check_data_has_timeseries(dataIRIs: list):
-        kg_client = KGClient(query_endpoint=UPDATE_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
-        ts_client = TSClientForUpdate(kg_client=kg_client, rdb_url=DB_UPDATE_URL, rdb_user=DB_UPDATE_USER, rdb_password=DB_UPDATE_PASSWORD)
+    def check_data_has_timeseries(dataIRIs: list, query_endpoint: str, update_endpoint: str, db_query_url: str, db_query_user: str, db_query_password: str):
+        kg_client = KGClient(query_endpoint=query_endpoint, update_endpoint=update_endpoint)
+        ts_client = TSClientForUpdate(kg_client=kg_client, rdb_url=db_query_url, rdb_user=db_query_user, rdb_password=db_query_password)
         with ts_client.connect() as conn:
             try:
                 for iri in dataIRIs:
@@ -49,10 +46,10 @@ class timeseries_instantiation:
 
             return response
 
-    def link_to_NTU_KG(dataIRIs: list):
-        kg_client = KGClient(query_endpoint=UPDATE_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
+    def link_to_NTU_KG(dataIRIs: list, query_endpoint: str, update_endpoint: str):
+        kg_client = KGClient(query_endpoint=query_endpoint, update_endpoint=update_endpoint)
 
-        NTU_PVs = QueryData.query_PV_Panels(query_endpoint=UPDATE_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
+        NTU_PVs = QueryData.query_PV_Panels(query_endpoint=query_endpoint, update_endpoint=update_endpoint)
 
         for PV_Panel in NTU_PVs:
             gpIRI = 'http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#' + 'GeneratedPower_' + str(uuid.uuid4())

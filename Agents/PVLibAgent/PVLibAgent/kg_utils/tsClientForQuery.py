@@ -7,7 +7,6 @@ from contextlib import contextmanager
 from .jpsSingletons import jpsBaseLibGW
 from .utils import TIME_FORMAT
 from .utils import TIMECLASS
-from .utils import DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD
 from PVLibAgent.error_handling.exceptions import TSException
 import logging
 
@@ -18,8 +17,7 @@ class TSClientForQuery:
     jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.query.*")
     jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
 
-    def __init__(self, kg_client, timeclass=TIMECLASS, rdb_url=DB_QUERY_URL,
-                 rdb_user=DB_QUERY_USER, rdb_password=DB_QUERY_PASSWORD):
+    def __init__(self, kg_client, rdb_url,rdb_user, rdb_password, timeclass=TIMECLASS):
         """
         Initialise TimeSeriesClient (default properties taken from environment variables)
         Arguments:
