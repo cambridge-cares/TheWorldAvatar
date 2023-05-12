@@ -59,8 +59,6 @@ public abstract class Simulation {
 
     public static final String DEFAULT_SURROGATE_MODEL_NAME = "SurrogateModel";
 
-    public static final Path SURROGATE_SAVE_DIRECTORY_PATH = Path.of(System.getenv("MODS_SAVE_DIR"));
-
     public static final String INITIAL_FILE_NAME = "initialFile.csv";
     public static final String SAMPLING_ALGORITHM_FILE_NAME = "SamplingAlg_data";
 
@@ -335,14 +333,14 @@ public abstract class Simulation {
     }
 
     private Path getSaveDirectory() {
-        return SURROGATE_SAVE_DIRECTORY_PATH.resolve(modsBackend.getJobID())
+        return getSurrogateSaveDirectoryPath().resolve(modsBackend.getJobID())
                 .resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
     }
 
     public static void load(Request request, MoDSBackend modsBackend) {
         if (request.getSurrogateToLoad() != null) {
             Path surrogateDirectory = getSurrogateDirectory(modsBackend);
-            Path loadDirectory = SURROGATE_SAVE_DIRECTORY_PATH.resolve(request.getSurrogateToLoad())
+            Path loadDirectory = getSurrogateSaveDirectoryPath().resolve(request.getSurrogateToLoad())
                     .resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
             try {
                 if (!Files.exists(loadDirectory)) {
@@ -377,7 +375,7 @@ public abstract class Simulation {
         return getResponse();
     }
 
-    public List<SensitivityResult> getSensitivity() {
+    protected List<SensitivityResult> getSensitivity() {
 
         String simDir = getModsBackend().getSimDir().toString();
         String surrogateName = DEFAULT_SURROGATE_ALGORITHM_NAME;
@@ -428,7 +426,11 @@ public abstract class Simulation {
         return inputMetaData;
     }
 
-    public Request getMCDMResults() {
+    public static Path getSurrogateSaveDirectoryPath() {
+        return Path.of(System.getenv("MODS_SAVE_DIR"));
+    }
+
+    protected Request getMCDMResults() {
 
         String simDir = getModsBackend().getSimDir().toString();
 
