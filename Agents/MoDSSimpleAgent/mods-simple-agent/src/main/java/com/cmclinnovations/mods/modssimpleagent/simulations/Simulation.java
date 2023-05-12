@@ -400,10 +400,10 @@ public abstract class Simulation {
         }
         termLabels.add(secondOrderTermLabels);
 
-        // /*
-        // * The number of orders shown is limited by both the data and the term
-        // * labels defined above
-        // */
+        /*
+         * The number of orders shown is limited by both the data and the term labels
+         * defined above
+         */
         int nOrdersToShow = Math.min(allSens.get(0).size(), termLabels.size());
 
         List<SensitivityResult> sensitivities = new ArrayList<>(nY);
