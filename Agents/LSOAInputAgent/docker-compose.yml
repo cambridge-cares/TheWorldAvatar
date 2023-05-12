@@ -10,7 +10,7 @@ services:
       # !!!! NO SPACING AFTER '='!!!!
       - YEAR=2020
       # Target Blazegraph namespace
-      - NAMESPACE=ontogasgrid
+      - NAMESPACE=heatpump
       # Target layer name in geoserver, also table name in PostGIS
       - LAYERNAME=lsoaagent
       # Target PostGIS/PostgreSQL database name

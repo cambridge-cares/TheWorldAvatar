@@ -1026,10 +1026,10 @@ def upload_hadUK_climate_to_KG (year: str = YEAR,
           # Initialise update query
           query = f"INSERT DATA" + "{"
           for var in range(len(LSOA_vars)):
-              meas_uuid = CLIMA + 'Measurement_' + str(uuid.uuid4())
+              meas_uuid = CLIMA + 'ClimateMeasurement_' + str(LSOA_code)
               clim_var = CLIMA + str(clim_vars[var])
-              temp_uuid = CLIMA + 'Temperature_' + str(uuid.uuid4())
-              val_uuid = CLIMA + 'Value_' + str(uuid.uuid4())
+              temp_uuid = CLIMA + 'Temperature_' + str(LSOA_code)
+              val_uuid = CLIMA + 'Value_' + str(LSOA_code)
               query += climate_temperature_update_template(LSOA_code,meas_uuid,clim_var,startUTC,endUTC,temp_uuid,val_uuid,LSOA_vars[var])
           query += "}"
 
