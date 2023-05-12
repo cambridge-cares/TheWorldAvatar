@@ -78,7 +78,7 @@ Modify `tsClientForOccupiedState.properties` and `tsClientForSashOpening.propert
 
 Modify the `Dockerfile` found in the same directory as this README and change `EMAIL_AGENT_URL` according to where your Email Agent instance is located at.
 
-The agent can be deployed both [out the stack](#Out-of-the-stack) and [in the stack](#In-the-stack). 
+The agent can be deployed both [out of the stack](#Out-of-the-stack) and [in the stack](#In-the-stack). 
 
 #### Out of the stack
 To build and start the agent, open up the command prompt in the same directory as this `README`, run
