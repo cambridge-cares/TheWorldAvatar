@@ -47,12 +47,9 @@ public class InstantiateTS {
      */
     public static final String timestampKey = "ts";
 
-    public InstantiateTS(Connection rdbConnection,TripleStoreClientInterface kbClient, JSONObject data) {
+    public InstantiateTS(Connection rdbConnection,TripleStoreClientInterface kbClient) {
         rdbConn = rdbConnection;
         client = new TimeSeriesClient(kbClient, OffsetDateTime.class);
-
-        timestamp = data.getJSONArray("time");
-        values = data.getJSONObject("data");
 
         for (String iri : values.keySet()){
             if (timestamp.length() != values.getJSONArray(iri).length()){
@@ -88,7 +85,6 @@ public class InstantiateTS {
             List<OffsetDateTime> times = new ArrayList<>();
             for (int i = 0; i < timesArray.length(); i++){
                 String tsString = timesArray.getString(i);
-                //TODO add convertToTimeClass
                 times.add(convertStringToOffsetDateTime(tsString));
             }
 
@@ -160,8 +156,14 @@ public class InstantiateTS {
     public void updateData(JSONObject data)throws IllegalArgumentException {
         // Transform readings in hashmap containing a list of objects for each JSON key,
         // will be empty if the JSON Object is empty
-    	//Map<String, List<?>> timeStampReadingsMap = jsonObjectToMapForTimeStamp(RFIDVariableReadings, keys);
-    	//Map<String, List<?>> RFIDVariableReadingsMap = jsonObjectToMap(RFIDVariableReadings, keys);
+        /*
+         * The format for the JSONObject from req param:
+         * {
+         *  "time" : [ts1, ts2, ...],
+         *  "values" : { "IRI1" : [data1, data2, ...]}
+         * }
+         * 
+         */
         timestamp = data.getJSONArray(timestampKey);
         values = data.getJSONObject("values");
 

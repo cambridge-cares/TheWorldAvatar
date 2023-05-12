@@ -4,9 +4,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import java.sql.Connection;
 
 /**
  * This class acts as the entry point of the agent that accepts parameter requests to specific routes and achieve its task.
@@ -97,10 +101,19 @@ public class DataBridgeAgent extends JPSAgent {
                 break;
             case "timeseries":
                 if (requestType.equals("POST")){
-                    //TODO change param name
-                    String[] config = requestParams.has("database") ? ConfigStore.retrieveSQLConfig(requestParams.get("database").toString()) : ConfigStore.retrieveSQLConfig();
+                    String namespace = null;
+                    String db = null;
+                    if(requestParams.has("database")){
+                        db = requestParams.getString("database");
+                    }
+
+                    if (requestParams.has("namespace")){
+                        namespace = requestParams.getString("namespace");
+                    }
+
+                    String[] config = ConfigStore.retrieveTSClientConfig(namespace, db);
                     AGENT_IN_STACK = false;
-                    jsonMessage = updateTimeSeries(config);
+                    jsonMessage = updateTimeSeries(config, requestParams);
                 }
                 else {
                     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept POST request.");
@@ -169,9 +182,47 @@ public class DataBridgeAgent extends JPSAgent {
         return response;
     }
 
-    protected JSONObject updateTimeSeries(String[] config) {
+    protected <T> JSONObject updateTimeSeries (String[] config, JSONObject data) {
         JSONObject response = new JSONObject();
+
+        RemoteStoreClient kbClient = new RemoteStoreClient();
+        kbClient.setQueryEndpoint(config[6]);
+        kbClient.setUpdateEndpoint(config[5]);
+        LOGGER.debug("Created kbClient");
+
+        RemoteRDBStoreClient RDBClient= new RemoteRDBStoreClient(config[2], config[0], config[1]);
+
+        try(Connection conn = RDBClient.getConnection()){
+            InstantiateTS tsInst = new InstantiateTS(conn, kbClient);
+
+            // Initialize time series'
+            try {
+                tsInst.initializeTimeSeriesIfNotExist();
+            }
+            catch (JPSRuntimeException e) {
+                LOGGER.error("Failed to init TS:",e);
+                throw new JPSRuntimeException("Failed to init TS:", e);
+            }
+
+            // If readings are not empty there is new data
+            if(!data.getJSONObject("data").isEmpty() && !data.getJSONArray("time").isEmpty()) {
+                // Update the data
+                tsInst.updateData(data);
+                LOGGER.info("Data updated with new readings.");
+                response.accumulate("Result", "Data updated with new readings.");
+            }
+            else{
+                LOGGER.info("No new data");
+                response.accumulate("Result", "No new data");
+            }
+        }
+        catch (Exception e) {
+            response.put("Result", "Failed to connect to RDB");
+            throw new JPSRuntimeException("Failed to connect to RDB");
+        }
         
+                
+
 
 
         return response;
