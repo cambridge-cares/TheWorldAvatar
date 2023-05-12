@@ -102,22 +102,174 @@ Spinning a container up via the stack-manager provides the following benefits:
 * The URLs, usernames and passwords of other containers in the stack can be retrieved using the `ContainerClient::readEndpointConfig` method at runtime, rather than having to provide them through environment variables or `.properties` files.
 * Allows the classes and methods available through the stack-clients library to be used to add new data (particularly geospatial data) into the stack in a clean an consistent way.
 
+### Mounting data into containers
+
+Some containers need application specific configuration files. There are several ways to mount these files into containers. These are summarised in the following table and described in more detail below.
+
+| Type       | Description                                                                               | Use case                                                                                                         | Location                                                                                                                                                                       |
+| ---------- | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Secret     | A single file that is stored encrypted in the stack and can be mounted into any container | Adding files that contain sensitive data like usernames and passwords                                            | [`stack-manager/inputs/secrets`](./inputs/secrets/)                                                                                                                            |
+| Volume     | A directory that is stored unencrypted in the stack and can be mounted into any container | Adding files to one or more containers that will persist if the containers are stopped                           | [`stack-manager/inputs/data`](./inputs/data/)                                                                                                                                  |
+| Bind mount | A file or directory that is directly mounted into a container from the host               | Useful for testing configurations when the container doesn't need to be restarted for the changes to take effect | Any absolute path, as seen in WSL (not Git Bash, CMD or PowerShell) when running in Windows, or a path relative to the [`stack-manager/inputs/data`](./inputs/data/) directory |
+
+#### Secrets
+
+Secrets are the best way to store sensitive information like usernames and passwords in a stack.
+
+The secret is added to the stack the first time the stack-manager is run.
+To modify the value of a secret the stack needs to be stopped and restarted.
+
+The source files should be put in the [`stack-manager/inputs/secrets`](./inputs/secrets/) directory.
+By default secrets are mounted inside the container in the `/run/secrets/` directory in a file with the same name as the secret.
+It is possible to specify a custom target path by adding the `File.Name` nodes.
+
+The example below shows a snippet of a service config file with a secret named `secret_with_default_path` that specifies that the content of the file `stack-manager/inputs/secrets/secret_with_default_path` should be mounted into the container at `/run/secrets/secret_with_default_path`.
+The other secret named `secret_with_custom_path` specifies that the file `stack-manager/inputs/secrets/secret_with_custom_path` should be mounted into the container at `/custom/secret/path`.
+
+```json
+{
+    "ServiceSpec": {
+        ...
+        "TaskTemplate": {
+            "ContainerSpec": {
+                ...
+                "Secrets": [
+                    {
+                        "SecretName": "secret_with_default_path"
+                    },
+                    {
+                        "SecretName": "secret_with_custom_path",
+                        "File": {
+                            "Name":"/custom/secret/path"
+                        }
+                    }
+                ]
+                ...
+```
+
+The corresponding `stack-manager/inputs` directory would then need the following files:
+
+```
+secrets/
+    secret_with_default_path
+    secret_with_custom_path
+```
+
+For more information on how secrets work in Docker see here, https://docs.docker.com/engine/swarm/secrets/.
+
+#### Volumes
+
+Volumes can be mounted into containers so that their code can access the files container within them.
+This is the preferred method for mounting non-sensitive data in production environments.
+
+See the [Stack configuration](#stack-configuration) section for instructions on how to automatically copy files into a volume when the stack-manager is run.
+
+The example below shows a snippet of a service config file with a volume named `vis-files` being mounted into the container at `/var/www/html`.
+The stack-manager will have copied the contents of the `stack-manager/inputs/data/vis-files` directory into that volume before starting the containers.
+
+```json
+{
+    "ServiceSpec": {
+       ...
+        "TaskTemplate": {
+            "ContainerSpec": {
+               ...
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "vis-files",
+                        "Target": "/var/www/html"
+                    }
+                ]
+                ...
+```
+
+The corresponding `stack-manager/inputs` directory would then need the following directories and the volume would need to be specified in the stack config file as described (here)[#file-format] :
+
+```
+data/
+    vis-files/
+```
+
+For more information on how volumes work in Docker see here, https://docs.docker.com/storage/volumes/.
+
+#### Bind mounts
+
+Bind mounts allow you to directly mount a file or directory on the host machine into a container.
+This is often useful when developing and debugging a container that doesn't need to be restarted if the file(s) change.
+
+The example below shows a snippet of a service config file where the contents of the `stack-manager/inputs/data/fia-queries` directory is mounted into the container at `/app/queries`.
+
+```json
+{
+    "ServiceSpec": {
+       ...
+        "TaskTemplate": {
+            "ContainerSpec": {
+               ...
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "fia-queries",
+                        "Target": "/app/queries"
+                    }
+                ]
+                ...
+```
+
+For more information on how bind mounts work in Docker see here, https://docs.docker.com/storage/bind-mounts/.
+
 ## Stack configuration
 
-By default the stack will start the default services and then all of the custom services.
-The list of services that are started can be modified by specifying a stack config file, with the same name as the stack being spun up, in the [stack-manager/inputs/config](./inputs/config/) directory.
+A stack config file, with the same name as the stack being spun up, can be placed in the [stack-manager/inputs/config](./inputs/config/) directory to control what is include when the stack-manager is run.
+
+### Custom and optional containers
+By default the stack will start the built-in default services and then all of the user-supplied custom services. There are also several optional built-in services
+
+The list of services that are started can be modified by adding them to the  .
 For example a stack called "test" could be configured by providing a file with the path `stack-manager/inputs/config/test.json`.
 
+### Volumes
+
+The stack config file also allows you to specify that the contents of certain directories get copied into volumes when the stack-manager is run.
+Changes to those files are copied into the volume each time the stack-manager is run.
+
+See the [Mounting data into containers](#mounting-data-into-containers) section for instructions on how to mount a volume into a container.
+
+To remove files or directories from a volume you either need to stop any container that are using it and then remove the volume, or attach a shell to a container that has the volume mounted and delete the files directly.
+
+### File format
 The format of the stack configuration file is as follows:
 ```json
 {
     "services": {
         "includes": [
-            # Non-default services to start in addition to the default ones. (Optional)
+            # List of non-default services to start in addition to the default ones. (Optional)
         ],
         "excludes": [
-            # Default and/or explicitly included services that should not be spun up. This will cause issues if another service requires one of the excluded ones. (Optional)
+            # List of default and/or explicitly included services that should not be spun up. This will cause issues if another service requires one of the excluded ones. (Optional)
         ]
+    },
+    "volumes": {
+        # Key-value pairs of volume name and source directory in the 'stack-manager/inputs/data' directory. (Optional)
+        "<volume name>": "<source directory>"
+    }
+}
+```
+
+### Example
+
+To spin up a DTVF base visualisation container, which uses the custom
+files placed in the `stack-manager/inputs/data/webspace` directory, you would require a stack config file with the following content:
+```json
+{
+    "services": {
+        "includes": [
+            "visualisation"
+        ]
+    },
+    "volumes": {
+        "vis-files": "webspace"
     }
 }
 ```
