@@ -338,17 +338,28 @@ public class DockerService extends AbstractService
     }
 
     protected void interpolateVolumes(ContainerSpec containerSpec) {
+        List<Mount> mounts = addDefaultMounts(containerSpec);
+
+        mounts.forEach(this::interpolateMount);
+    }
+
+    private List<Mount> addDefaultMounts(ContainerSpec containerSpec) {
         List<Mount> mounts = containerSpec.getMounts();
+
+        // Ensure that "mounts" is not "null"
         if (null == mounts) {
             mounts = new ArrayList<>();
             containerSpec.withMounts(mounts);
         }
 
+        // Add stack scratch volume to all containers
         mounts.add(new Mount()
                 .withType(MountType.VOLUME)
                 .withSource("scratch")
                 .withTarget(StackClient.SCRATCH_DIR));
 
+        // Add the Docker API socket as a bind mount
+        // This is required for a container to make Docker API calls
         Mount dockerSocketMount = new Mount()
                 .withType(MountType.BIND)
                 .withSource(System.getenv(API_SOCK))
@@ -356,39 +367,44 @@ public class DockerService extends AbstractService
         if (!mounts.contains(dockerSocketMount)) {
             mounts.add(dockerSocketMount);
         }
+        return mounts;
+    }
 
-        for (Mount mount : mounts) {
-            MountType mountType = mount.getType();
-            if (null == mountType) {
-                mountType = MountType.BIND;
-                mount.withType(mountType);
-            }
+    private void interpolateMount(Mount mount) {
+        // The default mount type is "bind" so set it explicitly if it is missing
+        MountType mountType = mount.getType();
+        if (null == mountType) {
+            mountType = MountType.BIND;
+            mount.withType(mountType);
+        }
 
-            switch (mountType) {
-                case BIND:
-                    String bindSource = mount.getSource();
-                    if (null != bindSource && !bindSource.startsWith("/")) {
-                        mount.withSource(StackClient.getAbsDataPath().resolve(bindSource).toString());
-                    }
-                    break;
-                case VOLUME:
-                    mount.withSource(StackClient.prependStackName(mount.getSource()));
+        switch (mountType) {
+            case BIND:
+                // Handle relative source paths for bind mounts
+                String bindSource = mount.getSource();
+                if (null != bindSource && !bindSource.startsWith("/")) {
+                    mount.withSource(StackClient.getAbsDataPath().resolve(bindSource).toString());
+                }
+                break;
+            case VOLUME:
+                // Append the stack name to the volume name
+                mount.withSource(StackClient.prependStackName(mount.getSource()));
 
-                    VolumeOptions volumeOptions = mount.getVolumeOptions();
-                    if (null == volumeOptions) {
-                        volumeOptions = new VolumeOptions().withLabels(StackClient.getStackNameLabelMap());
-                        mount.withVolumeOptions(volumeOptions);
+                // Add stack specific labels
+                VolumeOptions volumeOptions = mount.getVolumeOptions();
+                if (null == volumeOptions) {
+                    volumeOptions = new VolumeOptions().withLabels(StackClient.getStackNameLabelMap());
+                    mount.withVolumeOptions(volumeOptions);
+                } else {
+                    Map<String, String> labels = volumeOptions.getLabels();
+                    if (null == labels) {
+                        volumeOptions.withLabels(StackClient.getStackNameLabelMap());
                     } else {
-                        Map<String, String> labels = volumeOptions.getLabels();
-                        if (null == labels) {
-                            volumeOptions.withLabels(StackClient.getStackNameLabelMap());
-                        } else {
-                            labels.putAll(StackClient.getStackNameLabelMap());
-                        }
+                        labels.putAll(StackClient.getStackNameLabelMap());
                     }
-                    break;
-                default:
-            }
+                }
+                break;
+            default:
         }
     }
 
