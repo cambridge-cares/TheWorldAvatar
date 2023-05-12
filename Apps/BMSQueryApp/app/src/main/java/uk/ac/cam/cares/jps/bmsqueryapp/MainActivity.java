@@ -68,8 +68,12 @@ public class MainActivity extends AppCompatActivity {
         initZoneSpinner(binding.roomSpinner, getListenerClearViewsAndQueryEquipment(binding.roomSpinner));
         initTypeSpinner(null);    // attach click listener when getting the list of equipment
 
-        getZonesFromAgent();
         initEquipmentInstanceList();
+        getZonesFromAgent();
+
+        binding.refreshButton.setOnClickListener(view -> {
+            getZonesFromAgent();
+        });
 
     }
 
