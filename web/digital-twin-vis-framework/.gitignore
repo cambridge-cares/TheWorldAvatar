@@ -1,2 +1,4 @@
 *.log
-*.js
+
+mapbox_username
+mapbox_api_key
