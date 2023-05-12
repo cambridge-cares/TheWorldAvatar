@@ -1,6 +1,9 @@
 package com.cmclinnovations.stack;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,6 +23,8 @@ import com.github.dockerjava.api.model.Mount;
 import com.github.dockerjava.api.model.MountType;
 
 public class Stack {
+
+    private static final String DEFAULT_SERVICES_FILE = "defaults.txt";
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -79,9 +84,7 @@ public class Stack {
     }
 
     public void initialiseServices() {
-        List<String> defaultServices = List.of(
-                VOLUME_POPULATOR_SERVICE_NAME, "blazegraph", "postgis", "adminer", "ontop",
-                "gdal", "geoserver");
+        List<String> defaultServices = getDefaultServicesNames();
 
         // Check to see if services have been specified through a config file
         if (null == config) {
@@ -97,6 +100,17 @@ public class Stack {
 
             // Initialise all of the selected services
             selectedServices.forEach(serviceName -> manager.initialiseService(name, serviceName));
+        }
+    }
+
+    private List<String> getDefaultServicesNames() {
+        try (InputStream is = Stack.class.getResourceAsStream(DEFAULT_SERVICES_FILE);
+                InputStreamReader isr = new InputStreamReader(is);
+                BufferedReader reader = new BufferedReader(isr)) {
+            return reader.lines().collect(Collectors.toList());
+        } catch (IOException ex) {
+            throw new RuntimeException(
+                    "failed to read in list of default services from the file '" + DEFAULT_SERVICES_FILE + "'.", ex);
         }
     }
 
