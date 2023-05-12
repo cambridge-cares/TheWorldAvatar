@@ -9,7 +9,8 @@ from PVLibAgent.data_retrieval.query_timeseries import query_latest_timeseries, 
 from PVLibAgent.data_instantiation.create_data_iris import check_data_iris
 from PVLibAgent.data_instantiation.timeseries_instantiation import timeseries_instantiation
 
-from PVLibAgent.kg_utils.utils import DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT
+from PVLibAgent.kg_utils.utils import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from PVLibAgent.kg_utils.utils import DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD
 
 from pathlib import Path
 import os
@@ -26,9 +27,15 @@ def check_stack_status(request_arg):
     if 'stack' in request.args:
         try:
             if str(request.args['stack']).lower() in ['true', '1', 't', 'y', 'yes']:
-                from PVLibAgent.stack_utils.stack_configs import DB_URL_STACK, DB_USER_STACK, DB_PASSWORD_STACK, QUERY_ENDPOINT_STACK, UPDATE_ENDPOINT_STACK
-                DB_QUERY_URL = DB_URL_STACK
-                DB_QUERY_USER = DB_USER_STACK
+                from PVLibAgent.stack_utils.stack_configs import QUERY_ENDPOINT_STACK, UPDATE_ENDPOINT_STACK
+                from PVLibAgent.stack_utils.stack_configs import DB_UPDATE_URL_STACK, DB_UPDATE_USER_STACK, DB_UPDATE_PASSWORD_STACK
+                from PVLibAgent.stack_utils.stack_configs import DB_QUERY_URL_STACK, DB_QUERY_USER_STACK, DB_QUERY_PASSWORD_STACK
+                DB_QUERY_URL = DB_QUERY_URL_STACK
+                DB_QUERY_USER = DB_QUERY_USER_STACK
+                DB_QUERY_PASSWORD = DB_QUERY_PASSWORD_STACK
+                DB_UPDATE_URL = DB_UPDATE_URL_STACK
+                DB_UPDATE_USER = DB_UPDATE_USER_STACK
+                DB_UPDATE_PASSWORD = DB_UPDATE_PASSWORD_STACK
                 DB_QUERY_PASSWORD = DB_PASSWORD_STACK
                 QUERY_ENDPOINT = QUERY_ENDPOINT_STACK
                 UPDATE_ENDPOINT = UPDATE_ENDPOINT_STACK
@@ -214,7 +221,7 @@ def api():
                 logging.error("Unable to initialise timeseries")
                 raise TSException("Unable to initialise timeseries") from ex
             timeseries_object = TSClientForUpdate.create_timeseries(timestamp_list, iri_list, value_list)
-            timeseries_instantiation.add_timeseries_data(timeseries_object, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD)
+            timeseries_instantiation.add_timeseries_data(timeseries_object, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD)
             return results
         except ValueError as ex:
             return str(ex)
@@ -236,7 +243,7 @@ def api():
         try:
             wind_speed = query_all_timeseries(wind_speed_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD)
             air_temperature = query_all_timeseries(air_temperature_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD)
-            ghi = query_all_timeseries(dni_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD)
+            dni = query_all_timeseries(dni_iri, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD)
         except Exception as ex:
             logging.error("SPARQL query for air temperature/wind speed/direct irradiance timeseries not successful")
             raise KGException("SPARQL query for air temperature/wind speed/direct irradiance timeseries not successful.") from ex
@@ -280,9 +287,9 @@ def api():
         value_list = [ac_power_list, dc_power_list]
 
         try:
-            boolean_value = timeseries_instantiation.check_data_has_timeseries(iri_list)
+            boolean_value = timeseries_instantiation.check_data_has_timeseries(iri_list, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD)
             if not boolean_value:
-                timeseries_instantiation.init_timeseries(iri_list, [DATACLASS, DATACLASS], TIME_FORMAT, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD)
+                timeseries_instantiation.init_timeseries(iri_list, [DATACLASS, DATACLASS], TIME_FORMAT, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD)
                 timeseries_instantiation.link_to_NTU_KG(iri_list, QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
         except Exception as ex:
@@ -290,6 +297,6 @@ def api():
             raise TSException("Unable to initialise timeseries") from ex
 
         timeseries_object = TSClientForUpdate.create_timeseries(timestamp_list, iri_list, value_list)
-        timeseries_instantiation.add_timeseries_data(timeseries_object, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD)
+        timeseries_instantiation.add_timeseries_data(timeseries_object, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD)
 
         return results

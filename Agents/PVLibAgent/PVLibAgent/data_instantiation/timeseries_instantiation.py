@@ -49,12 +49,12 @@ class timeseries_instantiation:
     def link_to_NTU_KG(dataIRIs: list, query_endpoint: str, update_endpoint: str):
         kg_client = KGClient(query_endpoint=query_endpoint, update_endpoint=update_endpoint)
 
-        NTU_PVs = QueryData.query_PV_Panels(query_endpoint=query_endpoint, update_endpoint=update_endpoint)
+        NTU_PVs = QueryData.query_PV_Panels(update_endpoint=update_endpoint)
 
         for PV_Panel in NTU_PVs:
             gpIRI = 'http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#' + 'GeneratedPower_' + str(uuid.uuid4())
             measureIRI = 'http://www.ontology-of-units-of-measure.org/resource/om-2/' + 'Measure_' + str(uuid.uuid4())
-            query = create_sparql_prefix('powreal') + \
+            update = create_sparql_prefix('powreal') + \
                     create_sparql_prefix('powsys') + \
                     create_sparql_prefix('ontocape') + \
                     create_sparql_prefix('om') + \
@@ -67,5 +67,5 @@ class timeseries_instantiation:
                     <%s> rdf:type om:Measure . \
                     <%s> ts:hasTimeSeries <%s> . }\
                     ''' % (PV_Panel['PV'], gpIRI, gpIRI, gpIRI, measureIRI, measureIRI, measureIRI, dataIRIs[0])
-            kg_client.performUpdate(query)
+            kg_client.performUpdate(update)
 

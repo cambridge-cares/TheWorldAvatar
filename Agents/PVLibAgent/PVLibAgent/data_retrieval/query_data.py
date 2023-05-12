@@ -329,9 +329,9 @@ class QueryData:
         except Exception as ex:
             raise KGException("Unable to query for bus node IRI!") from ex
 
-    def query_PV_Panels(query_endpoint: str):
+    def query_PV_Panels(update_endpoint: str):
         try:
-            kg_client = KGClient(query_endpoint, update_endpoint)
+            kg_client = KGClient(update_endpoint, update_endpoint)
 
             query = create_sparql_prefix('powreal') + \
                     create_sparql_prefix('powsys') + \
