@@ -151,7 +151,8 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
 
         if (checkSashAndOccupancy(map, thresholdValue)) {
         EmailBuilder emailBuilder = new EmailBuilder();
-        emailBuilder.parsesMapAndPostProcessing(map, thresholdValue);
+        String emailContent = emailBuilder.parsesMapAndPostProcessing(map, thresholdValue);
+        emailBuilder.sendEmail(emailContent);
         }
 
         LOGGER.info( map.get("FHandWFH").toString());
