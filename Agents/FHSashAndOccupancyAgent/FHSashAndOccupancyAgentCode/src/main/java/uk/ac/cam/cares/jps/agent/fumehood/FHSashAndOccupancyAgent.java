@@ -289,7 +289,6 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
      * @param sparqlQueryEndpoint sparql endpoint for executing queries
      */
     private void setTsClientAndRDBClient(String dbUsername, String dbPassword, String dbUrl, String bgUsername, String bgPassword, String sparqlUpdateEndpoint, String sparqlQueryEndpoint) {
-        try {
         RemoteStoreClient kbClient = new RemoteStoreClient();
         kbClient.setQueryEndpoint(sparqlQueryEndpoint);
         kbClient.setUpdateEndpoint(sparqlUpdateEndpoint);
@@ -298,9 +297,6 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
 
         tsClient = new TimeSeriesClient<>(kbClient ,OffsetDateTime.class);
         RDBClient = new RemoteRDBStoreClient(dbUrl, dbUsername, dbPassword);
-    } catch (Exception e) {
-        throw new JPSRuntimeException(e);
-    }
     }
 
     /**
