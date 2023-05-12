@@ -186,16 +186,16 @@ public class FHSashAndOccupancyAgentIntegrationTest {
         map1 = new HashMap<>();
         map1.put("FHandWFH", new ArrayList<>());
         map1.put("SashOpeningIRIs", new ArrayList<>());
-        map1.put("OccupancyIRIs", new ArrayList<>());
+        map1.put("OccupiedStateIRIs", new ArrayList<>());
         map1.get("FHandWFH").add("FH01 test IRI 1");
         map1.get("FHandWFH").add("FH02 test IRI 2");
         map1.get("FHandWFH").add("FH03 test IRI 3");
         map1.get("SashOpeningIRIs").add(examplePrefix+sashOpeningKey1);
-        map1.get("OccupancyIRIs").add(examplePrefix+occupiedStateKey1);
+        map1.get("OccupiedStateIRIs").add(examplePrefix+occupiedStateKey1);
         map1.get("SashOpeningIRIs").add("This device does not have a Sash Opening Percentage.");
-        map1.get("OccupancyIRIs").add(examplePrefix+occupiedStateKey2);
+        map1.get("OccupiedStateIRIs").add(examplePrefix+occupiedStateKey2);
         map1.get("SashOpeningIRIs").add(examplePrefix+sashOpeningKey3);
-        map1.get("OccupancyIRIs").add("This device does not have a occupied state.");
+        map1.get("OccupiedStateIRIs").add("This device does not have a occupied state.");
     }
 
     // Cleaning up containers after each test, otherwise unused containers will first be killed when all tests finished

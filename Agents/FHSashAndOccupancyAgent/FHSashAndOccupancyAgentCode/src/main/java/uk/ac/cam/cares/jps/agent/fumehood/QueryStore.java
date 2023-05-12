@@ -130,19 +130,19 @@ public class QueryStore {
      * Query for the occupied state IRI
      * @param IRI subject IRI that has a occupied state attached to it via saref:hasState
      */
-    public String queryForOccupancyState(String IRI) {
+    public String queryForOccupiedState(String IRI) {
         String result = null;
-        Variable occupancyState = SparqlBuilder.var("OccupancyState");
+        Variable occupiedState = SparqlBuilder.var("OccupiedState");
         SelectQuery query = Queries.SELECT();
-        TriplePattern queryPattern = iri(IRI).has(hasState, occupancyState);
-        TriplePattern queryPattern2 = occupancyState.isA(OccupiedState);
-        query.prefix(PREFIX_ONTODEVICE, PREFIX_SAREF).select(occupancyState).where(queryPattern,queryPattern2);
+        TriplePattern queryPattern = iri(IRI).has(hasState, occupiedState);
+        TriplePattern queryPattern2 = occupiedState.isA(OccupiedState);
+        query.prefix(PREFIX_ONTODEVICE, PREFIX_SAREF).select(occupiedState).where(queryPattern,queryPattern2);
         kbClient.setQuery(query.getQueryString());
         try {
             JSONArray queryResult = kbClient.executeQuery();
             if(!queryResult.isEmpty()){
                 LOGGER.info(kbClient.executeQuery().getJSONObject(0));
-                result = kbClient.executeQuery().getJSONObject(0).getString("OccupancyState");      
+                result = kbClient.executeQuery().getJSONObject(0).getString("OccupiedState");      
             } else {
                 result = "This device does not have a occupied state.";
             }
@@ -153,7 +153,7 @@ public class QueryStore {
     }
 
     /**
-     * Query for the sash opening IRI
+     * Query for the sash opening measure IRI
      * @param IRI subject IRI that has a sash opening attached to it via ontobms:hasSashOpenPercentage
      */
     public String queryForSashOpening(String IRI) {

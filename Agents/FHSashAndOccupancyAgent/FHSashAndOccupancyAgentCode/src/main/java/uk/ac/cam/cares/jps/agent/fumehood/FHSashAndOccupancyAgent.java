@@ -70,7 +70,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
     }
 
     /**
-     * Handle GET request and route to different functions based on the path.
+     * Handle request and route to different functions based on the path.
      * @param requestParams Parameters sent with HTTP request
      * @param request HTTPServletRequest instance
      * @return result of the request
@@ -119,7 +119,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
         try {
             queryStore = new QueryStore(sparqlUpdateEndpoint, sparqlQueryEndpoint, bgUsername, bgPassword);
         } catch (IOException e) {
-            throw new JPSRuntimeException(QUERYSTORE_CONSTRUCTION_ERROR_MSG, e);
+            throw new JPSRuntimeException(QUERYSTORE_CONSTRUCTION_ERROR_MSG);
         }
 
         try {
@@ -128,12 +128,12 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
             throw new JPSRuntimeException(GETFHANDWFHDEVICES_ERROR_MSG);
         }
 
-        map.put("OccupancyIRIs", new ArrayList<>());
+        map.put("OccupiedStateIRIs", new ArrayList<>());
         map.put("SashOpeningIRIs", new ArrayList<>());
 
         for (int i = 0; i < map.get("FHandWFH").size(); i++){
-            String IRI = queryStore.queryForOccupancyState(map.get("FHandWFH").get(i));
-            map.get("OccupancyIRIs").add(IRI);
+            String IRI = queryStore.queryForOccupiedState(map.get("FHandWFH").get(i));
+            map.get("OccupiedStateIRIs").add(IRI);
         }
 
         for (int i = 0; i < map.get("FHandWFH").size(); i++){
@@ -157,7 +157,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
 
         LOGGER.info( map.get("FHandWFH").toString());
         LOGGER.info( map.get("Label").toString());
-        LOGGER.info( map.get("OccupancyIRIs").toString());
+        LOGGER.info( map.get("OccupiedStateIRIs").toString());
         LOGGER.info( map.get("SashOpeningIRIs").toString());
         LOGGER.info(map.get("OccupiedStateTsData").toString());
         LOGGER.info(map.get("SashOpeningTsData").toString());
@@ -308,7 +308,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
         map.put("OccupiedStateTsData", new ArrayList<>());
         map.put("OccupiedStateTimeStamps", new ArrayList<>());
         for (int i = 0; i < map.get("FHandWFH").size(); i++) {
-            String occupiedStateIRI = map.get("OccupancyIRIs").get(i);
+            String occupiedStateIRI = map.get("OccupiedStateIRIs").get(i);
 
             if (!occupiedStateIRI.contains("This device does not have a occupied state.")) {
                 try (Connection conn = RDBClient.getConnection()) {
@@ -367,7 +367,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
     /**
      * Check sash and occupancy values
      * @param map map that consists of several keys where each key has its own List of Strings
-     * @return boolean of whether there exist a fumehood that is not occupied and have a sash opening value of more than 50
+     * @return boolean of whether there exist a fumehood that is not occupied and have a sash opening value of more than the threshold
      */
     private Boolean checkSashAndOccupancy(Map<String, List<String>> map, Double thresholdValue) {
         Boolean check = false;

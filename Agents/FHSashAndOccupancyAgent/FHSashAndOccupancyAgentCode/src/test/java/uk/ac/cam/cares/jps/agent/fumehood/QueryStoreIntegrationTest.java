@@ -157,21 +157,21 @@ public class QueryStoreIntegrationTest {
     }
 
     @Test
-    public void testQueryForOccupancyState() throws IOException {
+    public void testQueryForOccupiedState() throws IOException {
         QueryStore queryStore = new QueryStore("Invalid endpoint", "Invalid endpoint", bgUsername, bgPassword);
         
-    	String result = queryStore.queryForOccupancyState("Invalid IRI");
+    	String result = queryStore.queryForOccupiedState("Invalid IRI");
         Assert.assertTrue(result.contains("This device does not have a occupied state."));
 
         queryStore = new QueryStore(endpoint, endpoint, bgUsername, bgPassword);
 
-        result = queryStore.queryForOccupancyState(examplePrefix + "FH01");
+        result = queryStore.queryForOccupiedState(examplePrefix + "FH01");
         Assert.assertTrue(result.contains("This device does not have a occupied state."));
 
-        result = queryStore.queryForOccupancyState(examplePrefix + "WFH02");
+        result = queryStore.queryForOccupiedState(examplePrefix + "WFH02");
         Assert.assertTrue(result.contains(examplePrefix + "WFH02_OccupiedState"));
 
-        result = queryStore.queryForOccupancyState(examplePrefix + "FH03");
+        result = queryStore.queryForOccupiedState(examplePrefix + "FH03");
         Assert.assertTrue(result.contains(examplePrefix + "FH03_OccupiedState"));
     }
 
