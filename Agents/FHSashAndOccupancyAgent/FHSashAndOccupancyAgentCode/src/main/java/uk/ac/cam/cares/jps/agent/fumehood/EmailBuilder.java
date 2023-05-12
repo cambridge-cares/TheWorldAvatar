@@ -129,7 +129,7 @@ public class EmailBuilder {
         }
         sb.append("</table>");
         firstLine = firstLine.substring(0, firstLine.length() - 2);
-        firstLine = firstLine + " ) are unoccupied and have a sash opening above the threshold of " + threshold + "%. ";
+        firstLine = firstLine + " ) are unoccupied and have a sash opening above the threshold of " + threshold + "%. Please close the sash for these fumehoods and walkin-fumehoods if they are unoccupied and not in use. ";
         FullContent.append(firstLine);
         FullContent.append(sb.toString());
         LOGGER.info("The email message is " + FullContent.toString());
