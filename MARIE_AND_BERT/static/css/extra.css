@@ -42,6 +42,9 @@ background: #d0cccc;
 
   /* Position the tooltip text - see examples below! */
   position: absolute;
+  top: 50%;
+  left: 35px;
+  transform: translateY(-50%);
   z-index: 1;
   border: black;
 }
