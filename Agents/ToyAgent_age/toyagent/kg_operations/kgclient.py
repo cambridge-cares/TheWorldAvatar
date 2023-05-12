@@ -12,7 +12,7 @@ from rdflib import URIRef, Literal
 
 from py4jps import agentlogging
 from pyderivationagent.kg_operations import PySparqlClient
-from toyagent.utils.stack_configs import QUERY_ENDPOINT
+from toyagent.utils.stack_configs import ONTOP_URL
 
 from toyagent.datamodel.iris import *
 from toyagent.datamodel.data import GBP_SYMBOL, TIME_FORMAT_LONG, TIME_FORMAT_SHORT
@@ -27,8 +27,7 @@ class KGClient(PySparqlClient):
     #
     
     def get_birthday(self, birthday_iri):
-        
-        ontop_url = QUERY_ENDPOINT.split('/blazegraph')[0] + '/ontop/ui/sparql'
+        ontop_url = ONTOP_URL
         service_expression = f'SERVICE <{ontop_url}> {{ '
         query_string = f"""
         SELECT ?personiri ?birth
@@ -42,6 +41,7 @@ class KGClient(PySparqlClient):
         """
         query_string = self.remove_unnecessary_whitespace(query_string)
         res = self.performQuery(query_string)
+        print(res)
         # An alternative way to query without the use of kg_client
         '''
         # sparql = SPARQLWrapper(ontop_url)
@@ -82,9 +82,10 @@ class KGClient(PySparqlClient):
         return res
 
     def instantiate_age(self, g, personiri, age_iri, age):
-        g.add((URIRef(personiri),URIRef('a'),URIRef(EX_PERSON)))
+        g.add((URIRef(personiri),URIRef(RDF_TYPE),URIRef(EX_PERSON)))
         g.add((URIRef(personiri),URIRef(EX_HASAGE),URIRef(age_iri)))
-        g.add((URIRef(age_iri),URIRef('a'),Literal(age, datatype=XSD_INTEGER)))
+        g.add((URIRef(age_iri),URIRef(RDF_TYPE),URIRef(XSD_INTEGER)))
+        g.add((URIRef(age_iri),URIRef(AGE_HASVALUE),Literal(age, datatype=XSD_INTEGER)))
         return g
 
     def remove_unnecessary_whitespace(self, query: str) -> str:
@@ -93,7 +94,7 @@ class KGClient(PySparqlClient):
 
         return query
 
-# ontop_url = QUERY_ENDPOINT.split('/blazegraph')[0] + '/ontop/ui/sparql'
-# a = KGClient(ontop_url,ontop_url)
+#ontop_url = QUERY_ENDPOINT.split('/blazegraph')[0] + '/ontop/ui/sparql'
+# a = KGClient(QUERY_ENDPOINT, QUERY_ENDPOINT)
 # res = a.get_birthday('http://example.org/birthday#Birthday_robot_1')
     

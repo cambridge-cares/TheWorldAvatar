@@ -22,13 +22,14 @@ def retrieve_settings():
     """
 
     # Define global scope for global variables
-    global DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT
+    global DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT, ONTOP_URL
     
     # Create module views to relevant Stack clients
     stackClientsView = stackClientsGw.createModuleView()
     stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.docker.ContainerClient")
     stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig")
     stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig")
+    stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig")
     # Ontop (at least for now) not required
     #stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig")
 
@@ -40,6 +41,9 @@ def retrieve_settings():
     # PostgreSQL/PostGIS
     pg = stackClientsView.PostGISEndpointConfig("","","","","")
     pg_conf = containerClient.readEndpointConfig("postgis", pg.getClass())
+    # Ontop
+    ont = stackClientsView.OntopEndpointConfig("","","","","")
+    ont_conf = containerClient.readEndpointConfig("ontop", ont.getClass())
 
     # Extract PostgreSQL/PostGIS database URL
     DB_URL = pg_conf.getJdbcURL(DATABASE)
@@ -51,10 +55,15 @@ def retrieve_settings():
     QUERY_ENDPOINT = bg_conf.getUrl(NAMESPACE)
     UPDATE_ENDPOINT = QUERY_ENDPOINT
 
+    # Extract ONTOP endpoint
+    ONTOP_URL = ont_conf.getUrl()
+    print(ONTOP_URL)
+
 
 # Run when module is imported
 retrieve_settings()
 # DB_URL = ''
 # DB_USER = ''
 # DB_PASSWORD = ''
-# QUERY_ENDPOINT = UPDATE_ENDPOINT = 'http://localhost:3846/blazegraph/namespace/test/sparql'
+# QUERY_ENDPOINT = UPDATE_ENDPOINT = 'http://figx-blazegraph:8080/blazegraph/namespace/buildings/sparql/'
+# ONTOP_URL = 'http://figx-ontop:8080/sparql/'

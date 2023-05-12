@@ -26,6 +26,8 @@ def create_app():
     #               agent_config = config_derivation_agent('./agent.env')
     agent_config = config_derivation_agent(env_file='./agent.env.example')
 
+    #run_markup()
+
     agent = AgeAgent(
         # Settings read from environment variables (.env file, docker-compose)
         register_agent=agent_config.REGISTER_AGENT,
@@ -40,9 +42,6 @@ def create_app():
         logger_name='dev',
         max_thread_monitor_async_derivations=1
     )
-
-    # Retrieve derivation client from derivation agent
-    deriv_client = agent.derivation_client
 
     agent.add_url_pattern('/', 'root', default, methods=['GET'])
 

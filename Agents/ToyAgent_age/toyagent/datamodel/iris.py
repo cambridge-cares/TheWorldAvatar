@@ -13,3 +13,8 @@ EX_BIRTHDAY = EX + 'Birthday'
 
 XSD_INTEGER = XSD + 'integer'
 BIRTHDAY_HAVE_DATE = BIRTHDAY + 'hasDate'
+
+RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+RDF_TYPE =  RDF + 'type'
+
+AGE_HASVALUE = AGE + 'hasValue'

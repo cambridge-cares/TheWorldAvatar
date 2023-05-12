@@ -37,6 +37,7 @@ services:
     configs:
       - blazegraph
       - postgis
+      - ontop
     secrets:
       - postgis_password
 

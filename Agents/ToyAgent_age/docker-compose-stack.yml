@@ -30,6 +30,9 @@ configs:
   postgis:
     name: ${STACK_NAME}_postgis
     external: true
+  ontop:
+    name: ${STACK_NAME}_ontop
+    external: true
 
 networks:
   stack:
