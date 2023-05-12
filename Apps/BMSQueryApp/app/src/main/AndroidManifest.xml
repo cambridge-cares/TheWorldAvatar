@@ -8,7 +8,7 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_cares_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.BMSQueryApp"
@@ -18,7 +18,8 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.BMSQueryApp.NoActionBar">
+            android:theme="@style/Theme.BMSQueryApp.NoActionBar"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,7 +29,8 @@
 
         <activity android:name=".EquipmentInstanceActivity"
             android:exported="false"
-            android:theme="@style/Theme.BMSQueryApp.NoActionBar"/>
+            android:theme="@style/Theme.BMSQueryApp.NoActionBar"
+            android:screenOrientation="portrait"/>
     </application>
 
 
