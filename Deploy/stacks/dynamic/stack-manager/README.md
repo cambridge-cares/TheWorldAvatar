@@ -51,6 +51,14 @@ To spin up the stack (with default settings) please follow the instructions belo
     * The Ontop GUI should be available at http://localhost:3838/ontop/ui.
     * The Blazegraph Workbench should be available at http://localhost:3838/blazegraph/ui.
 
+## Built-in containers
+
+There are several containers built into the stack-manager that perform common tasks such as uploading, storing, and visualising data.
+Their service config files can be found in the stack-client [resources directory].
+
+By default the services listed in the [defaults.txt](./src/main/resources/com/cmclinnovations/stack/defaults.txt) resource file.
+The other, optional, services can be started after the default ones by specifying them in the appropriate stack config file, as described in the [Custom and optional containers](#custom-and-optional-containers) section.
+
 ## Adding custom containers
 
 It is possible to spin up other containers in the stack using the stack-manager.
@@ -93,7 +101,7 @@ The three top-level nodes are:
 * `"endpoints"`: This is where mappings between the internal URLs and the externally accessible paths can be specified.
   The internal URL should be the one you would use if you were logged into the container and the external path is appended to `http://localhost:3838`
 
-Other, more complex, examples of configuration files can be seen in the stack-manager's [resources directory](./src/main/resources/com/cmclinnovations/stack/services/defaults/).
+Other, more complex, examples of configuration files can be seen in the stack-client's [resources directory].
 
 ### Benefits
 
@@ -315,3 +323,4 @@ You will need permission to push to the CMCL package repository to be able to bu
 
 <!-- Links -->
 [CMCL Docker Registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
+[resources directory]: ../stack-clients/src/main/resources/com/cmclinnovations/stack/services/built-ins/
