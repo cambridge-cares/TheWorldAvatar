@@ -38,7 +38,7 @@ class QAEngineNumerical:
         stop_words = ["find", "all", "species", "what", "is", "the",
                       "show", "give", "that", "can", "be", "which",
                       "list", "are", "shaped", "shape", "created", "give", "type", "types"]
-        stop_words_units = ["g/mol", "dalton", "degrees", "degree", "celsius", "g"]
+        stop_words_units = ["g/mol", "dalton", "degrees", "degree", "celsius", "g", "mn/m"]
         stop_words += stop_words_units
         question_tokens = [token for token in question.split(" ") if token.lower() not in stop_words]
         question = " ".join(question_tokens)
@@ -182,8 +182,8 @@ class QAEngineNumerical:
         else:
             return []
         # select the heads using the indices
-        if len(indices) > 20:
-            indices = indices[0:20]
+        # if len(indices) > 20:
+        #     indices = indices[0:20]
 
         heads = heads[indices]
         return heads.tolist(), numerical_values[indices].tolist()
