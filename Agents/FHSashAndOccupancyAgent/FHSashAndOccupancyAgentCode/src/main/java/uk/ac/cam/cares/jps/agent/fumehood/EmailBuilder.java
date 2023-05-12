@@ -38,7 +38,6 @@ public class EmailBuilder {
         "th { background: #333; color: white; font-weight: bold; padding: 6px; border: 1px solid #ccc; text-align: left;}" +
         "</style>");
 
-        //String emailMessages = "Listed below are the fumehoods, walkin-fumehoods, their occupied state and sash opening values: <br>";
         sb.append("<table>");
         sb.append("<tr>");
         sb.append("<th>Devices");
