@@ -243,7 +243,7 @@ public class OPFAgentTest {
 
         File busMapping = tempFolder.newFile("mappingforbus.csv");
         FileWriter mappingWriter = new FileWriter(busMapping);
-        mappingWriter.write("1,3,bus\n" + "4,2,bus\n");
+        mappingWriter.write("1.0,3,bus\n" + "4.0,2,bus\n");
         mappingWriter.close();
 
         String[] busResult = {"3", "1.0", "0.0", "1.2881944114750332", "1.3084762183180412", "123", "321"};
@@ -766,7 +766,7 @@ public class OPFAgentTest {
                             "<http://localhost:8080/powernetwork/EBus-001.owl#V_BusNumber_EBus-001>");
         mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#V_BusNumber_EBus-001>", 
                             "<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue>", 
-                            "\'1\'");
+                            "\'1.0\'");
 
         // Type
         mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#Model_Ebus-001>", 
@@ -998,7 +998,7 @@ public class OPFAgentTest {
                             "<http://localhost:8080/powernetwork/ELine-013.owl#V_FromBusNumber_ELine-013>");
         mockStore.addTriple("<http://localhost:8080/powernetwork/ELine-013.owl#V_FromBusNumber_ELine-013>", 
                             "<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue>", 
-                            "1");
+                            "\'1.0\'");
 
         // Tobus
         mockStore.addTriple("<http://localhost:8080/powernetwork/ELine-013.owl#Model_ELine-013>", 
@@ -1012,7 +1012,7 @@ public class OPFAgentTest {
                             "<http://localhost:8080/powernetwork/ELine-013.owl#V_ToBusNumber_ELine-013>");
         mockStore.addTriple("<http://localhost:8080/powernetwork/ELine-013.owl#V_ToBusNumber_ELine-013>", 
                             "<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue>", 
-                            "1");
+                            "\'1.0\'");
 
         // R
         mockStore.addTriple("<http://localhost:8080/powernetwork/ELine-013.owl#Model_ELine-013>", 
@@ -1188,7 +1188,7 @@ public class OPFAgentTest {
                             "<http://localhost:8080/powernetwork/EGen-001.owl#V_BusNumber_EGen-001>");
         mockStore.addTriple("<http://localhost:8080/powernetwork/EGen-001.owl#V_BusNumber_EGen-001>", 
                             "<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue>", 
-                            "1"); 
+                            "\'1.0\'"); 
 
         // Pg
         mockStore.addTriple("<http://localhost:8080/powernetwork/EGen-001.owl#Model_EGen-001>", 

@@ -996,11 +996,7 @@ public class OPFAgent extends JPSAgent{
 																					// file need to be mapped to the
 																					// mapped bus number
 
-							String ori = componentlist.get(x)[e].replace(".", "x").split("x")[0]; // remove the decimal
-																									// values queried
-																									// from the kb in
-																									// gen in the form
-																									// of string
+							String ori = componentlist.get(x)[e];
 							String content2 = map2.getIDFromMap(originalforbus, ori) + "\t";
 							bw.write(content2);
 						}
