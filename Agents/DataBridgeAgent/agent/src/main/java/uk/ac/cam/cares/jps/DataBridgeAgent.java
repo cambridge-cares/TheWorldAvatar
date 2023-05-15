@@ -113,7 +113,16 @@ public class DataBridgeAgent extends JPSAgent {
 
                     String[] config = ConfigStore.retrieveTSClientConfig(namespace, db);
                     AGENT_IN_STACK = false;
-                    jsonMessage = updateTimeSeries(config, requestParams);
+                    
+                    if (requestParams.has("timeClass")){
+                        String timeClass = requestParams.getString("timeClass");
+                        jsonMessage = updateTimeSeries(config, requestParams, timeClass);
+                    }
+                    else{
+                        throw new JPSRuntimeException("Missing key: timeClass");
+                    }
+                    
+                    
                 }
                 else {
                     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept POST request.");
@@ -182,7 +191,7 @@ public class DataBridgeAgent extends JPSAgent {
         return response;
     }
 
-    protected <T> JSONObject updateTimeSeries (String[] config, JSONObject data) {
+    protected <T> JSONObject updateTimeSeries (String[] config, JSONObject data, String timeClass) {
         JSONObject response = new JSONObject();
 
         RemoteStoreClient kbClient = new RemoteStoreClient();
@@ -193,7 +202,7 @@ public class DataBridgeAgent extends JPSAgent {
         RemoteRDBStoreClient RDBClient= new RemoteRDBStoreClient(config[2], config[0], config[1]);
 
         try(Connection conn = RDBClient.getConnection()){
-            InstantiateTS tsInst = new InstantiateTS(conn, kbClient);
+            InstantiateTS tsInst = new InstantiateTS(conn, kbClient, timeClass);
 
             // Initialize time series'
             try {

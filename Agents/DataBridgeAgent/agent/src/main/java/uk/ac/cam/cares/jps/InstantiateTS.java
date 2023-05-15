@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps;
 
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient.Type;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
@@ -38,16 +39,15 @@ public class InstantiateTS {
     /**
     * The time unit used for all time series maintained by the ThingsBoard agent
     */
-   public static final String timeUnit = OffsetDateTime.class.getSimpleName();
-
-    private String timeType;
+    public static final String timeUnit = OffsetDateTime.class.getSimpleName();
+    Type timeType;
 
     /**
      * The JSON key for the timestamp
      */
     public static final String timestampKey = "ts";
 
-    public InstantiateTS(Connection rdbConnection,TripleStoreClientInterface kbClient) {
+    public InstantiateTS(Connection rdbConnection,TripleStoreClientInterface kbClient, String timeClass) {
         rdbConn = rdbConnection;
         client = new TimeSeriesClient(kbClient, OffsetDateTime.class);
 
@@ -56,6 +56,26 @@ public class InstantiateTS {
                 throw new JPSRuntimeException("Timestamp size does not match data length for IRI:" + iri);
             }
         }
+
+        if (timeClass.equals("AVERAGE")){
+            timeType = Type.AVERAGE;
+        }
+        else if (timeClass.equals("STEPWISECUMULATIVE")){
+            timeType = Type.STEPWISECUMULATIVE;
+        }
+        else if (timeClass.equals("CUMULATIVETOTAL")){
+            timeType = Type.CUMULATIVETOTAL;
+        }
+        else if (timeClass.equals("INSTANTANEOUS")){
+            timeType = Type.INSTANTANEOUS;
+        }
+        else if (timeClass.equals("GENERAL")){
+            timeType = Type.GENERAL;
+        }
+        else{
+            throw new JPSRuntimeException("Type of timeseries is not allowed. Choose from: Type.AVERAGE, Type.INSTANTANEOUS, Type.STEPWISECUMULATIVE, Type.CUMULATIVETOTAL");
+        }
+
         
         
     }
