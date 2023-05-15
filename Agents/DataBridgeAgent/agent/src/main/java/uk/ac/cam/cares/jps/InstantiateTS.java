@@ -7,6 +7,9 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+
 import java.util.*;
 import org.jooq.exception.DataAccessException;
 import java.util.stream.Collectors;
@@ -31,7 +34,8 @@ public class InstantiateTS {
     TimeSeriesClient<OffsetDateTime> client;
     JSONObject values;
     JSONArray timestamp;
-    Connection rdbConn;
+    RemoteRDBStoreClient RDBClient;
+    
     /**
      * The Zone offset of the timestamp (https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZoneOffset.html)
      */
@@ -47,8 +51,9 @@ public class InstantiateTS {
      */
     public static final String timestampKey = "ts";
 
-    public InstantiateTS(Connection rdbConnection,TripleStoreClientInterface kbClient, String timeClass) {
-        rdbConn = rdbConnection;
+    public InstantiateTS(String[] config,TripleStoreClientInterface kbClient, String timeClass) {
+        RemoteRDBStoreClient RDBClient= new RemoteRDBStoreClient(config[2], config[0], config[1]);
+        LOGGER.info("Created RDBStoreClient");
         client = new TimeSeriesClient(kbClient, OffsetDateTime.class);
 
         for (String iri : values.keySet()){
@@ -175,7 +180,7 @@ public class InstantiateTS {
             List<Class<?>> classes = iris.stream().map(this::getClassFromJSONKey).collect(Collectors.toList());
             // Initialize the time series
             try {
-            client.initTimeSeries(iris, classes, timeUnit, rdbConn, timeType, null, null);
+            client.initTimeSeries(iris, classes, timeUnit, timeType, null, null);
             LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
         } catch (Exception e) {
             throw new JPSRuntimeException("Could not initialize timeseries!");
@@ -256,6 +261,38 @@ public class InstantiateTS {
         	}
         }
         return true;
+    }
+    
+    public JSONObject updateTimeSeriesData (JSONObject data) {
+        JSONObject response = new JSONObject();
+        try(Connection conn = RDBClient.getConnection()){
+            // Initialize time series'
+            try {
+                initializeTimeSeriesIfNotExist();
+            }
+            catch (JPSRuntimeException e) {
+                LOGGER.error("Failed to init TS:",e);
+                throw new JPSRuntimeException("Failed to init TS:", e);
+            }
+
+            // If readings are not empty there is new data
+            if(!data.getJSONObject("data").isEmpty() && !data.getJSONArray("time").isEmpty()) {
+                // Update the data
+                updateData(data);
+                LOGGER.info("Data updated with new readings.");
+                response.accumulate("Result", "Data updated with new readings.");
+            }
+            else{
+                LOGGER.info("No new data");
+                response.accumulate("Result", "No new data");
+            }
+        }
+        catch (Exception e) {
+            response.put("Result", "Failed to connect to RDB" + e);
+            throw new JPSRuntimeException("Failed to connect to RDB" + e);
+        }
+
+        return response;
     }
     
 }

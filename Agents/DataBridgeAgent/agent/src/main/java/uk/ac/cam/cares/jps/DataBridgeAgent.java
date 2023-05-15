@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import javax.servlet.annotation.WebServlet;
@@ -197,39 +196,18 @@ public class DataBridgeAgent extends JPSAgent {
         RemoteStoreClient kbClient = new RemoteStoreClient();
         kbClient.setQueryEndpoint(config[6]);
         kbClient.setUpdateEndpoint(config[5]);
-        LOGGER.debug("Created kbClient");
+        LOGGER.info("Created kbClient");
 
-        RemoteRDBStoreClient RDBClient= new RemoteRDBStoreClient(config[2], config[0], config[1]);
+        LOGGER.info("Created RDBStoreClient");
 
-        try(Connection conn = RDBClient.getConnection()){
-            InstantiateTS tsInst = new InstantiateTS(conn, kbClient, timeClass);
+        LOGGER.info("Instantiating Timeseries...");
+        InstantiateTS tsInst = new InstantiateTS(config, kbClient, timeClass);
 
-            // Initialize time series'
-            try {
-                tsInst.initializeTimeSeriesIfNotExist();
-            }
-            catch (JPSRuntimeException e) {
-                LOGGER.error("Failed to init TS:",e);
-                throw new JPSRuntimeException("Failed to init TS:", e);
-            }
-
-            // If readings are not empty there is new data
-            if(!data.getJSONObject("data").isEmpty() && !data.getJSONArray("time").isEmpty()) {
-                // Update the data
-                tsInst.updateData(data);
-                LOGGER.info("Data updated with new readings.");
-                response.accumulate("Result", "Data updated with new readings.");
-            }
-            else{
-                LOGGER.info("No new data");
-                response.accumulate("Result", "No new data");
-            }
+        try {
+            tsInst.updateTimeSeriesData(data);
+        } catch (Exception e) {
+            throw new JPSRuntimeException("Failed to instantiate TS: " + e);
         }
-        catch (Exception e) {
-            response.put("Result", "Failed to connect to RDB");
-            throw new JPSRuntimeException("Failed to connect to RDB");
-        }
-        
                 
 
 

@@ -192,6 +192,7 @@ public class ConfigStore {
     }
 
     public static String[] retrieveTSClientConfig (String stackNamespace, String stackDatabase) {
+        LOGGER.info("Retrieveing TS Client parameters");
         String[] config = new String[7];
         String[] dbConfig;
         String[] kbConfig;
@@ -218,6 +219,7 @@ public class ConfigStore {
         config[4] = null; //bgPassword -- is this needed?
         config[5] = kbConfig[1]; //updateEndpoiunt
         config[6] = kbConfig[1]; //query Enpoint - Assume the same?
+        LOGGER.debug("CONFIG: " + config);
         
         return config;
     }
