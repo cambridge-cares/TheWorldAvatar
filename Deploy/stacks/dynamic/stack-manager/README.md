@@ -59,7 +59,7 @@ Their service config files can be found in the stack-client [resources directory
 By default the services listed in the [defaults.txt](./src/main/resources/com/cmclinnovations/stack/defaults.txt) resource file.
 The other, optional, services can be started after the default ones by specifying them in the appropriate stack config file, as described in the [Custom and optional containers](#custom-and-optional-containers) section.
 
-## Adding custom containers
+## Specifying custom containers
 
 It is possible to spin up other containers in the stack using the stack-manager.
 This is particularly useful for adding agents into a stack.
@@ -71,9 +71,16 @@ To add a container after a stack has been spun up just add the configuration fil
 
 > :warning: **Warning:** The stack-manager does not attempt to build a container's image so all images need to be built prior to running the stack-manager.
 
-### Configuration Files
+### Benefits
 
-To do this add a `.json` file for each container into the [stack-manager/inputs/config/services](./inputs/config/services/) directory.
+Spinning a container up via the stack-manager provides the following benefits:
+* The container is added to the stack's Docker network, this allows the agent to connect to the other stack containers using their internal URLs.
+* The URLs, usernames and passwords of other containers in the stack can be retrieved using the `ContainerClient::readEndpointConfig` method at runtime, rather than having to provide them through environment variables or `.properties` files.
+* Allows the classes and methods available through the stack-clients library to be used to add new data (particularly geospatial data) into the stack in a clean an consistent way.
+
+### Service configuration files
+
+To add custom containers put a `.json` file for each container into the [stack-manager/inputs/config/services](./inputs/config/services/) directory.
 An example of the structure of this file, the one for the Ontop container, is as follows:
 ```json
 {
@@ -103,12 +110,6 @@ The three top-level nodes are:
 
 Other, more complex, examples of configuration files can be seen in the stack-client's [resources directory].
 
-### Benefits
-
-Spinning a container up via the stack-manager provides the following benefits:
-* The container is added to the stack's Docker network, this allows the agent to connect to the other stack containers using their internal URLs.
-* The URLs, usernames and passwords of other containers in the stack can be retrieved using the `ContainerClient::readEndpointConfig` method at runtime, rather than having to provide them through environment variables or `.properties` files.
-* Allows the classes and methods available through the stack-clients library to be used to add new data (particularly geospatial data) into the stack in a clean an consistent way.
 
 ### Mounting data into containers
 
