@@ -544,8 +544,8 @@ public class OPFAgent extends JPSAgent{
 		+ "?building	j2:contains	?solarPV ."
 		+ "?solarPV	a	j1:PhotovoltaicPanel ."
 
-		+ "?solarPV	j6:hasGeneratedPower	?solarPd ."
-		+ "?solarPd	a	j6:GeneratedPower ."
+		+ "?solarPV	j7:hasGeneratedPower	?solarPd ."
+		+ "?solarPd	a	j7:GeneratedPower ."
 		+ "?solarPd	om:hasValue	?solarPdIri ."  // dataIRI of solarPd
 
 		+ "}"

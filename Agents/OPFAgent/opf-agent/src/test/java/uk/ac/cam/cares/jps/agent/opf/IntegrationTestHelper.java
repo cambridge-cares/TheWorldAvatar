@@ -165,11 +165,11 @@ public class IntegrationTestHelper {
 
         // solarPd IRI
         triples.add("<http://localhost:8080/powernetwork/EBus-001.owl#solarPV_EBus-001> " 
-        + "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasGeneratedPower> " 
+        + "<http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#hasGeneratedPower> " 
         + "<http://localhost:8080/powernetwork/EBus-001.owl#solarPd_EBus-001>.");
         triples.add("<http://localhost:8080/powernetwork/EBus-001.owl#solarPd_EBus-001> " 
         + "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> " 
-        + "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#GeneratedPower>.");
+        + "<http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#GeneratedPower>.");
         triples.add("<http://localhost:8080/powernetwork/EBus-001.owl#solarPd_EBus-001> " 
         + "<http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue> " 
         + "<http://www.sampleIRI.org/sample_IRI_solarPd>.");
