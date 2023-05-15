@@ -26,7 +26,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
+import uk.ac.cam.cares.jps.bmsqueryapp.data.buildings.Instance;
 import uk.ac.cam.cares.jps.bmsqueryapp.databinding.ActivityMainBinding;
 import uk.ac.cam.cares.jps.bmsqueryapp.data.buildings.Building;
 import uk.ac.cam.cares.jps.bmsqueryapp.data.buildings.Room;
@@ -34,7 +36,6 @@ import uk.ac.cam.cares.jps.bmsqueryapp.adapter.list.EquipmentAdapter;
 import uk.ac.cam.cares.jps.bmsqueryapp.adapter.list.OnEquipmentClickedListener;
 import uk.ac.cam.cares.jps.bmsqueryapp.adapter.spinner.BaseArrayAdapter;
 import uk.ac.cam.cares.jps.bmsqueryapp.utils.Constants;
-import uk.ac.cam.cares.jps.bmsqueryapp.adapter.spinner.InstanceAdapter;
 import uk.ac.cam.cares.jps.bmsqueryapp.utils.SingletonConnection;
 
 public class MainActivity extends AppCompatActivity {
@@ -109,12 +110,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         LOGGER.info("Finished building. Created " + buildings.size() + "buildings.");
-        ((InstanceAdapter) binding.buildingSpinner.getAdapter()).addAll(buildings);
+        ((BaseArrayAdapter<Instance>) binding.buildingSpinner.getAdapter()).addAll(buildings);
         binding.refreshButton.setEnabled(true);
     }
 
     private void initZoneSpinner(Spinner spinner, OnItemSelectedListener listener) {
-        InstanceAdapter adapter = new InstanceAdapter(this, "Please select");
+        Instance placeholder = new Instance("Please select");
+        BaseArrayAdapter<Instance> adapter = new BaseArrayAdapter<>(this, placeholder);
+
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
@@ -131,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // remove instance lists
-        ((EquipmentAdapter) binding.equipInstanceList.getAdapter()).clear();
+        ((EquipmentAdapter) Objects.requireNonNull(binding.equipInstanceList.getAdapter())).clear();
     }
 
     private OnItemSelectedListener getListenerClearViewsAndLoadSubLevelChoices(Spinner spinner) {
@@ -144,8 +147,8 @@ public class MainActivity extends AppCompatActivity {
                     clearViewsInSubLevel(currentSpinnerIndex);
 
                     // add choices for spinner one level lower
-                    InstanceAdapter currentAdapter = (InstanceAdapter) spinners.get(currentSpinnerIndex).getAdapter();
-                    InstanceAdapter subLevelAdapter = (InstanceAdapter) spinners.get(currentSpinnerIndex + 1).getAdapter();
+                    BaseArrayAdapter<Instance> currentAdapter = (BaseArrayAdapter<Instance>) spinners.get(currentSpinnerIndex).getAdapter();
+                    BaseArrayAdapter<Instance> subLevelAdapter = (BaseArrayAdapter<Instance>) spinners.get(currentSpinnerIndex + 1).getAdapter();
                     subLevelAdapter.addAll(currentAdapter.getItem(i).getSortedSubLevelItems());
                 }
             }
@@ -163,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if (i > 0) {
                     int currentSpinnerIndex = spinners.indexOf(spinner);
-                    InstanceAdapter currentAdapter = (InstanceAdapter) spinners.get(currentSpinnerIndex).getAdapter();
+                    BaseArrayAdapter<Instance> currentAdapter = (BaseArrayAdapter<Instance>) spinners.get(currentSpinnerIndex).getAdapter();
 
                     clearViewsInSubLevel(currentSpinnerIndex);
 
@@ -188,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
                 LOGGER.info(selectedLabel + " is selected");
 
                 // build list
-                ((EquipmentAdapter) binding.equipInstanceList.getAdapter()).updateEquipments(currentRoom.getSortedSubLevelItemsOfGivenType(selectedLabel));
+                ((EquipmentAdapter) Objects.requireNonNull(binding.equipInstanceList.getAdapter())).updateEquipments(currentRoom.getSortedSubLevelItemsOfGivenType(selectedLabel));
             }
 
             @Override

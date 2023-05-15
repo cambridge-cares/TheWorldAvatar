@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.bmsqueryapp.data.buildings;
 
+import androidx.annotation.NonNull;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -39,4 +41,10 @@ public class Instance {
     }
 
     void generateSubLevelItemsFromJSON(JSONObject jsonObject) throws JSONException {}
+
+    @NonNull
+    @Override
+    public String toString() {
+        return label;
+    }
 }
