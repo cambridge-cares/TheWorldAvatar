@@ -17,7 +17,7 @@ import java.sql.Connection;
  *
  * @author qhouyee
  */
-@WebServlet(urlPatterns = {"/sql", "/sparql", "/status"})
+@WebServlet(urlPatterns = {"/sql", "/sparql", "/status", "/timeseries"})
 public class DataBridgeAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(DataBridgeAgent.class);
     // Agent starts off in valid state, and will be invalid when running into exceptions
