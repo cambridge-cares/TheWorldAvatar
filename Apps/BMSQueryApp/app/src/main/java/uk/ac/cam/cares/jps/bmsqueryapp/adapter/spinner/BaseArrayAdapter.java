@@ -52,6 +52,6 @@ public class BaseArrayAdapter<T> extends ArrayAdapter<T> {
     @Override
     public void clear() {
         super.clear();
-        this.add(placeholder);
+        add(placeholder);
     }
 }

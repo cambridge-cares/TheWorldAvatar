@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
     private final String BMS_RETRIEVE_ZONES = "bms-query-agent/retrieve/zones";
     private final String BMS_RETRIEVE_EQUIPMENT = "bms-query-agent/retrieve/equipment";
 
-    ArrayList<Building> buildings = new ArrayList<>();
+    final ArrayList<Building> buildings = new ArrayList<>();
     ArrayList<Spinner> spinners = new ArrayList<>();
 
     @Override
@@ -72,6 +72,8 @@ public class MainActivity extends AppCompatActivity {
         getZonesFromAgent();
 
         binding.refreshButton.setOnClickListener(view -> {
+            binding.refreshButton.setEnabled(false);
+            clearViewsInSubLevel(-1);
             getZonesFromAgent();
         });
 
@@ -90,7 +92,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void buildBuildingsList(String responseStr) {
-        JSONObject response = null;
+        buildings.clear();
+
+        JSONObject response;
         try {
             response = new JSONObject(responseStr).getJSONObject("buildings");
             Iterator<String> iter = response.keys();
@@ -106,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
         LOGGER.info("Finished building. Created " + buildings.size() + "buildings.");
         ((InstanceAdapter) binding.buildingSpinner.getAdapter()).addAll(buildings);
+        binding.refreshButton.setEnabled(true);
     }
 
     private void initZoneSpinner(Spinner spinner, OnItemSelectedListener listener) {
@@ -120,11 +125,9 @@ public class MainActivity extends AppCompatActivity {
         // remove all sub-levels spinner's content
         for (int j = currentSpinnerIndex + 1; j < spinners.size(); j++) {
             SpinnerAdapter currentAdapter = spinners.get(j).getAdapter();
-            if (currentAdapter instanceof InstanceAdapter) {
-                ((InstanceAdapter) currentAdapter).clear();
-            } else if (currentAdapter instanceof BaseArrayAdapter) {
-                ((BaseArrayAdapter<?>) currentAdapter).clear();
-            }
+
+            ((BaseArrayAdapter<?>) currentAdapter).clear();
+            spinners.get(j).setSelection(-1);
         }
 
         // remove instance lists
@@ -257,5 +260,6 @@ public class MainActivity extends AppCompatActivity {
     private void showFailureMessage(Exception response) {
         LOGGER.error(response.getMessage());
         Toast.makeText(getBaseContext(), "Unable to get the available equipment, please try again later", Toast.LENGTH_SHORT).show();
+        binding.refreshButton.setEnabled(true);
     }
 }
