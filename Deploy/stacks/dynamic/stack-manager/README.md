@@ -288,9 +288,9 @@ The final stack config file should contain the following content:
 }
 ```
 
-### Adding the feature information agent
+### Adding the Feature Info Agent
 
-To also include a feature information agent you should modify the stack config to something like the following:
+To also include a Feature Info Agent you should modify the stack config to something like the following:
 ```json
 {
     "services": {
@@ -306,7 +306,7 @@ To also include a feature information agent you should modify the stack config t
 }
 ```
 
-Which specifies that the feature information agent query files will be expected to be placed in the `stack-manager/inputs/data/fia-queries` directory.
+Which specifies that the Feature Info Agent query files will be expected to be placed in the `stack-manager/inputs/data/fia-queries` directory.
 
 ## Debugging the Stack Manager in VSCode
 
