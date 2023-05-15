@@ -877,8 +877,8 @@ public class OPFAgent extends JPSAgent{
 			dataValues.add(VmValues);
 			dataValues.add(VaValues);
 
-			List<String> busLoadIRIs = queryBusOutputIRIs(targetResourceID, busValues.get(i), baseUrl);
-			TimeSeries<OffsetDateTime> outputTimeSeries = new TimeSeries<OffsetDateTime>(timeValues, busLoadIRIs, dataValues);
+			List<String> busVoltIRIs = queryBusOutputIRIs(targetResourceID, busValues.get(i), baseUrl);
+			TimeSeries<OffsetDateTime> outputTimeSeries = new TimeSeries<OffsetDateTime>(timeValues, busVoltIRIs, dataValues);
 			timeSeriesList.add(outputTimeSeries);
 		}
 

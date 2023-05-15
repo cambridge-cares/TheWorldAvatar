@@ -36,7 +36,7 @@ docker build -t "opf-agent:1.0.0" .
 ```
 - In the `access-agent.json` file within the `stack-manager-input-config` folder, adjust the image version if applicable, and replace the placeholder for the stack name in the endpoint environment variables with the name of your stack. 
 - Copy the `access-agent.json` file and `opf-agent.json` file into the `inputs/config` folder of the stack manager.
-- Start the stack manager as usual. This should start an access agent container as part of your stack.
+- Start the stack manager as usual. This should start an access agent container and an OPFAgent container as part of your stack.
 
 ## Run the agent
 The OPFAgent is accessible at `localhost:39999`, or `host.docker.internal:39999` from inside a Docker container (on Windows/Mac), or, if running the agent within a stack, `localhost:3838` (by default) from outside the stack, `<STACK NAME>-opf-agent:8080` from within. To run the agent, a POST request must be sent to http://localhost:39999/opf-agent/startsimulationOPF (replace the host and port number if applicable) with a correct JSON Object. Follow the example request shown below.
