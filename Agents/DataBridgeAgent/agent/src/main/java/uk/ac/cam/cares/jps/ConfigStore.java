@@ -211,9 +211,9 @@ public class ConfigStore {
             kbConfig = retrieveSPARQLConfig(stackNamespace);
         }
 
-        config[0] = dbConfig[1]; //dbusrName
-        config[1] = dbConfig[2]; //dbPassword
-        config[2] = dbConfig[0]; //dbURL
+        config[0] = dbConfig[4]; //dbusrName
+        config[1] = dbConfig[5]; //dbPassword
+        config[2] = dbConfig[3]; //dbURL
         config[3] = null; //bgUsrName -- is this needed?
         config[4] = null; //bgPassword -- is this needed?
         config[5] = kbConfig[1]; //updateEndpoiunt
