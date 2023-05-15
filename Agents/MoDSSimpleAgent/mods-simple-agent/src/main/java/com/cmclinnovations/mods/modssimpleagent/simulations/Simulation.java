@@ -2,7 +2,6 @@ package com.cmclinnovations.mods.modssimpleagent.simulations;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,8 +39,8 @@ import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityLabels;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityResult;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityValues;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
-import com.cmclinnovations.mods.modssimpleagent.utils.FileUtils;
 import com.cmclinnovations.mods.modssimpleagent.utils.ListUtils;
+import com.cmclinnovations.mods.modssimpleagent.utils.SimulationLoader;
 import com.cmclinnovations.mods.modssimpleagent.utils.SimulationSaver;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Streams;
@@ -52,7 +51,6 @@ public abstract class Simulation {
 
     public static final String DATA_ALGORITHM_NAME = "Data_Algorithm";
     public static final String DEFAULT_MOO_ALGORITHM_NAME = "MOOAlg";
-    public static final String DEFAULT_SURROGATE_ALGORITHM_NAME = "GenSurrogateAlg";
     public static final String DEFAULT_SAMPLING_ALGORITHM_NAME = "SamplingAlg";
 
     public static final String DEFAULT_CASE_NAME = "Case";
@@ -72,6 +70,7 @@ public abstract class Simulation {
     private final MoDSBackend modsBackend;
     private final InputMetaData inputMetaData;
     private final SimulationSaver simulationSaver;
+    private final SimulationLoader simulationLoader;
 
     public static Simulation createSimulation(Request request) throws JAXBException, IOException {
 
@@ -82,12 +81,16 @@ public abstract class Simulation {
 
         OBJECT_MAPPER.writeValue(getRequestFilePath(modsBackend), request);
 
-        load(request, modsBackend);
+        SimulationLoader simulationLoader = new SimulationLoader(modsBackend);
+        if (request.getSurrogateToLoad() != null) {
+            simulationLoader.loadSurrogate(request.getSurrogateToLoad());
+        }
 
         InputMetaData inputMetaData = InputMetaData.createInputMetaData(request, modsBackend);
         SimulationSaver simulationSaver = new SimulationSaver(modsBackend, inputMetaData);
 
-        return SimulationFactory.createSimulation(request, inputFile, modsBackend, inputMetaData, simulationSaver);
+        return SimulationFactory.createSimulation(request, inputFile, modsBackend, inputMetaData, simulationSaver,
+                simulationLoader);
     }
 
     public static Simulation retrieveSimulation(Request request) throws JAXBException, IOException {
@@ -101,8 +104,10 @@ public abstract class Simulation {
 
         InputMetaData inputMetaData = InputMetaData.createInputMetaData(originalRequest, modsBackend);
         SimulationSaver simulationSaver = new SimulationSaver(modsBackend, inputMetaData);
+        SimulationLoader simulationLoader = new SimulationLoader(modsBackend);
 
-        return SimulationFactory.createSimulation(request, inputFile, modsBackend, inputMetaData, simulationSaver);
+        return SimulationFactory.createSimulation(originalRequest, inputFile, modsBackend, inputMetaData,
+                simulationSaver, simulationLoader);
     }
 
     private static File getRequestFilePath(MoDSBackend modsBackend) {
@@ -110,12 +115,13 @@ public abstract class Simulation {
     }
 
     protected Simulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend,
-            InputMetaData inputMetaData, SimulationSaver simulationSaver) {
+            InputMetaData inputMetaData, SimulationSaver simulationSaver, SimulationLoader simulationLoader) {
         this.request = request;
         this.inputFile = inputFile;
         this.modsBackend = modsBackend;
         this.inputMetaData = inputMetaData;
         this.simulationSaver = simulationSaver;
+        this.simulationLoader = simulationLoader;
     }
 
     protected final Request getRequest() {
@@ -292,7 +298,7 @@ public abstract class Simulation {
 
     public void saveWhenFinished(SimulationSaver simulationSaver) {
         String simDir = getModsBackend().getSimDir().toString();
-        String algorithmName = DEFAULT_SURROGATE_ALGORITHM_NAME;
+        String algorithmName = MoDSBackend.DEFAULT_SURROGATE_ALGORITHM_NAME;
 
         Thread t = new Thread(() -> {
             try {
@@ -314,36 +320,6 @@ public abstract class Simulation {
         t.start();
     }
 
-    public static Path getSurrogateDirectory(MoDSBackend modsBackend) {
-        return modsBackend.getSimDir().resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
-    }
-
-    public static void load(Request request, MoDSBackend modsBackend) {
-        if (request.getSurrogateToLoad() != null) {
-            Path surrogateDirectory = getSurrogateDirectory(modsBackend);
-            Path loadDirectory = getSurrogateSaveDirectoryPath().resolve(request.getSurrogateToLoad())
-                    .resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
-            try {
-                if (!Files.exists(loadDirectory)) {
-                    throw new IOException(
-                            "File '" + loadDirectory.toAbsolutePath() + "' could not be found to load.");
-                }
-
-                FileUtils.copyDirectory(loadDirectory, surrogateDirectory);
-
-                LOGGER.info("File '{}' loaded to '{}'.", loadDirectory.toAbsolutePath(),
-                        surrogateDirectory.toAbsolutePath());
-
-            } catch (IOException ex) {
-                LOGGER.error("Failed to load '{}' to '{}'.", loadDirectory.toAbsolutePath(),
-                        surrogateDirectory.toAbsolutePath(), ex);
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "Job '" + modsBackend.getJobID() + "' failed to load.", ex);
-            }
-        }
-
-    }
-
     public Request getResponse() {
         return getDefaultResponse();
     }
@@ -359,7 +335,7 @@ public abstract class Simulation {
     protected List<SensitivityResult> getSensitivity() {
 
         String simDir = getModsBackend().getSimDir().toString();
-        String surrogateName = DEFAULT_SURROGATE_ALGORITHM_NAME;
+        String surrogateName = MoDSBackend.DEFAULT_SURROGATE_ALGORITHM_NAME;
 
         String algName = getPrimaryAlgorithm().type();
         List<String> xVarNames = MoDSAPI.getXVarNames(simDir, algName);

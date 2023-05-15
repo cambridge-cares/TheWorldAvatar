@@ -26,8 +26,8 @@ public class SimulationSaver {
     public void saveSurrogate() {
 
         Path saveDirectory = Simulation.getSurrogateSaveDirectoryPath().resolve(modsBackend.getJobID())
-                .resolve(Simulation.DEFAULT_SURROGATE_ALGORITHM_NAME);
-        Path surrogateDirectory = modsBackend.getSimDir().resolve(Simulation.DEFAULT_SURROGATE_ALGORITHM_NAME);
+                .resolve(MoDSBackend.DEFAULT_SURROGATE_ALGORITHM_NAME);
+        Path surrogateDirectory = modsBackend.getSimDir().resolve(MoDSBackend.DEFAULT_SURROGATE_ALGORITHM_NAME);
 
         try {
             FileUtils.copyDirectory(surrogateDirectory, saveDirectory);

@@ -13,13 +13,14 @@ import com.cmclinnovations.mods.modssimpleagent.datamodels.Algorithm;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.InputMetaData;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
+import com.cmclinnovations.mods.modssimpleagent.utils.SimulationLoader;
 import com.cmclinnovations.mods.modssimpleagent.utils.SimulationSaver;
 
 class MOOonly extends Simulation {
 
-    public MOOonly(Request request, BackendInputFile inputFile, MoDSBackend modsBackend,
-            InputMetaData inputMetaData, SimulationSaver simulationSaver) {
-        super(request, inputFile, modsBackend, inputMetaData, simulationSaver);
+    public MOOonly(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData,
+            SimulationSaver simulationSaver, SimulationLoader simulationLoader) {
+        super(request, inputFile, modsBackend, inputMetaData, simulationSaver, simulationLoader);
     }
 
     @Override

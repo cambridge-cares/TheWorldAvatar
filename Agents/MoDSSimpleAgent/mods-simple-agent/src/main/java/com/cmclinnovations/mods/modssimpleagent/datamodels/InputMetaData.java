@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 import com.cmclinnovations.mods.modssimpleagent.FileGenerator.FileGenerationException;
 import com.cmclinnovations.mods.modssimpleagent.MoDSBackend;
-import com.cmclinnovations.mods.modssimpleagent.simulations.Simulation;
 import com.cmclinnovations.mods.modssimpleagent.utils.ListUtils;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -54,8 +53,7 @@ public class InputMetaData {
         Data inputs = request.inputs();
 
         if (request.getSurrogateToLoad() != null) {
-            return createInputMetaData(
-                    Simulation.getSurrogateDirectory(modsBackend).resolve(DEFAULT_INPUT_INFO_FILE_NAME));
+            return createInputMetaData(modsBackend.getSurrogateDirectory().resolve(DEFAULT_INPUT_INFO_FILE_NAME));
         } else if (inputs != null) {
             return createInputMetaData(inputs);
         } else {
