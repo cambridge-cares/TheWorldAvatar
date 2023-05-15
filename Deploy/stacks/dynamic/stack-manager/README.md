@@ -266,10 +266,15 @@ The format of the stack configuration file is as follows:
 }
 ```
 
-### Example
+## Example - including a visualisation
 
-To spin up a DTVF base visualisation container, which uses the custom
-files placed in the `stack-manager/inputs/data/webspace` directory, you would require a stack config file with the following content:
+This example explains how to spin up a DTVF base visualisation container within a stack. The visualisation container requires a volume called `vis-files` to be populated.
+The steps to configure the stack are as follows:
+* Enable the visualisation container by adding it to the `services` `includes` list in the stack config file.
+* Specify the sub-directory of the `stack-manager/inputs/data/` folder from which the custom files that configure the visualisation should be copied, in this example the sub-directory is called `webspace`.
+* Copy the custom files that configure the visualisation in to that directory, in this example `stack-manager/inputs/data/webspace`.
+
+The final stack config file should contain the following content:
 ```json
 {
     "services": {
