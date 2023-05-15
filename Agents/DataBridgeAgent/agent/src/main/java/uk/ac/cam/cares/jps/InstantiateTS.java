@@ -52,7 +52,7 @@ public class InstantiateTS {
     public static final String timestampKey = "ts";
 
     public InstantiateTS(String[] config,TripleStoreClientInterface kbClient, String timeClass) {
-        RemoteRDBStoreClient RDBClient= new RemoteRDBStoreClient(config[2], config[0], config[1]);
+        RDBClient= new RemoteRDBStoreClient(config[2], config[0], config[1]);
         LOGGER.info("Created RDBStoreClient");
         client = new TimeSeriesClient(kbClient, OffsetDateTime.class);
 
