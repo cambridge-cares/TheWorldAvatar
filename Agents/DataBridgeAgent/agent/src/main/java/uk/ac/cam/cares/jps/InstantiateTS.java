@@ -56,12 +56,6 @@ public class InstantiateTS {
         LOGGER.info("Created RDBStoreClient");
         client = new TimeSeriesClient(kbClient, OffsetDateTime.class);
 
-        for (String iri : values.keySet()){
-            if (timestamp.length() != values.getJSONArray(iri).length()){
-                throw new JPSRuntimeException("Timestamp size does not match data length for IRI:" + iri);
-            }
-        }
-
         if (timeClass.equals("AVERAGE")){
             timeType = Type.AVERAGE;
         }
@@ -208,7 +202,11 @@ public class InstantiateTS {
         timestamp = data.getJSONArray(timestampKey);
         values = data.getJSONObject("values");
 
-
+        for (String iri : values.keySet()){
+            if (timestamp.length() != values.getJSONArray(iri).length()){
+                throw new JPSRuntimeException("Timestamp size does not match data length for IRI:" + iri);
+            }
+        }
         
         // Only do something if all readings contain data
         if(!values.isEmpty() && !timestamp.isEmpty()) {
