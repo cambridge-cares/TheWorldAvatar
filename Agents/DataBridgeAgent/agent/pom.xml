@@ -74,7 +74,7 @@
         <dependency>
             <groupId>uk.ac.cam.cares.jps</groupId>
             <artifactId>jps-base-lib</artifactId>
-            <version>${jps.base.version}</version>
+            <version>1.37.0</version>
         </dependency>
         <!-- For interacting with TheStack -->
         <dependency>
