@@ -165,13 +165,15 @@ public class Aermod {
 
         String latSuffix = "N";
         String lonSuffix = "E";
+        int direction = -1;
         if (lat < 0 ) latSuffix = "S";
         if (lon < 0) {
             lonSuffix = "W";
+            direction = 1;
         }
         lat = Math.abs(lat);
         lon = Math.abs(lon);
-        int offset = (int)  Math.round(lon*24/360);
+        int offset = (int)  Math.round(direction*lon*24/360);
         String location = String.format("%f%s %f%s", lat, latSuffix, lon, lonSuffix);
         String locationOffset = String.format("%f%s %f%s %d", lat, latSuffix, lon, lonSuffix, offset);
         String newLine = System.getProperty("line.separator");

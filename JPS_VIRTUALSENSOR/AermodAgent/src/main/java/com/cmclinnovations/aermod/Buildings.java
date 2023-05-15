@@ -1909,6 +1909,34 @@ public class Buildings {
 
         StringBuilder sbe = new StringBuilder();
 
+        // Check if input timestamps start from an hour after midnight
+        // If so include additional timestamps in the hourlyEmissions.dat file to maintain consistency with 
+        // input file containing surface weather data. 
+
+        LocalDateTime ldp = LocalDateTime.parse(timeStamps.get(0),DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        int pyear = ldp.getYear();
+        int pmonth = ldp.getMonthValue();
+        int pday = ldp.getDayOfMonth();
+        int firstHour = ldp.getHour() ;
+        String pys = String.valueOf(pyear).substring(2);
+        String pline = "SO HOUREMIS " + pys + " " + pmonth + " " + pday ;
+
+        if (firstHour > 0) {
+            for (int i = 0; i < firstHour; i++) {
+                for (int j = 0; j < StackProperties.size(); j++) {
+                    String stkId = "Stk" + (j + 1);
+                    Double massFlowRateInTonYr = 150.0;
+                    double massFlowrateInGs = massFlowRateInTonYr * 1000 * 1000 / (365 * 24 * 60 * 60);
+                    double gasTemperatureKelvin = 533.15;
+                    double velocityms = 10.0;
+                    String newLine = pline + " " + (i + 1) + " " + stkId + " " + massFlowrateInGs + " " + gasTemperatureKelvin + " " + velocityms;
+                    sbe.append(newLine + "\n");
+    
+                }
+            }
+        }
+
+
         for (int i = 0; i < timeStamps.size(); i++) {
 
             String line = "SO HOUREMIS ";
