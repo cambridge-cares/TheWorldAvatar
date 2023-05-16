@@ -124,7 +124,7 @@ An example specification of terrain elevation is shown below. Note that in this 
 
 ## Sample Data
 
-A small amount of sample data has been committed to demonstrate the power of the DTVF to visualisate different data types. Please do not make changes to the sample data without consulting the original developer. At the time of writing, the sample data sets include:
+A small amount of sample data has been committed to demonstrate the power of the DTVF to visualise different data types. Please do not make changes to the sample data without consulting the original developer. At the time of writing, the sample data sets include:
 
 - **New York**:
   - Tiled 3D buildings, loaded from a remote CMCL server.
