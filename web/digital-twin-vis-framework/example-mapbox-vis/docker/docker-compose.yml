@@ -5,7 +5,7 @@ services:
 
   # Example DTVF implementation
   example-mapbox-vis:
-    image: dtvf-visualisation:latest
+    image: ghcr.io/cambridge-cares/dtvf-base-image:latest
     container_name: "example-mapbox-vis"
     ports:
       - "80:80"
