@@ -10,5 +10,4 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./webspace:/var/www/html
- 
+      - ../webspace:/var/www/html
