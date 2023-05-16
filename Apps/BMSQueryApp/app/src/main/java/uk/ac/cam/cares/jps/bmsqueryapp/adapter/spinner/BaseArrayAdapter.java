@@ -12,11 +12,11 @@ import androidx.annotation.Nullable;
 
 public class BaseArrayAdapter<T> extends ArrayAdapter<T> {
     T placeholder;
-    public BaseArrayAdapter(Context context) {
-        super(context, android.R.layout.simple_spinner_item);
-    }
+
     public BaseArrayAdapter(Context context, T placeholder) {
         super(context, android.R.layout.simple_spinner_item);
+        setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
         this.add(placeholder);
         this.placeholder = placeholder;
     }
@@ -32,8 +32,6 @@ public class BaseArrayAdapter<T> extends ArrayAdapter<T> {
         TextView view = (TextView) super.getView(position, convertView, parent);
         if (position == 0) {
             view.setTextColor(Color.GRAY);
-        } else {
-            view.setTextColor(Color.BLACK);
         }
         return view;
     }
@@ -43,8 +41,6 @@ public class BaseArrayAdapter<T> extends ArrayAdapter<T> {
         TextView view = (TextView) super.getDropDownView(position, convertView, parent);
         if (position == 0) {
             view.setTextColor(Color.GRAY);
-        } else {
-            view.setTextColor(Color.BLACK);
         }
         return view;
     }

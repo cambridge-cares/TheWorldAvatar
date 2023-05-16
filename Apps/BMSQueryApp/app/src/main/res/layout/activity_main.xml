@@ -25,11 +25,11 @@
                 android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintBottom_toBottomOf="parent" />
 
             <ImageButton
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:id="@+id/refresh_button"
                 android:background="@drawable/baseline_refresh_24"
                 app:layout_constraintTop_toTopOf="parent"
@@ -62,8 +62,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginTop="@dimen/component_margin"
-                android:textSize="@dimen/title_font_size"
-                android:textColor="@color/black"/>
+                android:textSize="@dimen/title_font_size" />
             <Spinner
                 android:id="@+id/building_spinner"
                 android:layout_width="match_parent"
@@ -72,7 +71,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 android:spinnerMode="dropdown"
                 android:layout_marginTop="@dimen/component_margin_small"
-                android:textSize="@dimen/font_size"/>
+                android:textSize="@dimen/font_size" />
 
             <TextView
                 android:id="@+id/facility_tv"
@@ -82,8 +81,7 @@
                 app:layout_constraintTop_toBottomOf="@id/building_spinner"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginTop="@dimen/component_margin"
-                android:textSize="@dimen/title_font_size"
-                android:textColor="@color/black"/>
+                android:textSize="@dimen/title_font_size" />
             <Spinner
                 android:id="@+id/facility_spinner"
                 android:layout_width="match_parent"
@@ -101,8 +99,7 @@
                 app:layout_constraintTop_toBottomOf="@id/facility_spinner"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginTop="@dimen/component_margin"
-                android:textSize="@dimen/title_font_size"
-                android:textColor="@color/black"/>
+                android:textSize="@dimen/title_font_size" />
             <Spinner
                 android:id="@+id/room_spinner"
                 android:layout_width="match_parent"
@@ -120,8 +117,7 @@
                 app:layout_constraintTop_toBottomOf="@id/room_spinner"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginTop="@dimen/component_margin"
-                android:textSize="@dimen/title_font_size"
-                android:textColor="@color/black"/>
+                android:textSize="@dimen/title_font_size" />
             <Spinner
                 android:id="@+id/equip_type_spinner"
                 android:layout_width="match_parent"
@@ -139,8 +135,7 @@
                 app:layout_constraintTop_toBottomOf="@id/equip_type_spinner"
                 app:layout_constraintStart_toStartOf="parent"
                 android:layout_marginTop="@dimen/component_margin"
-                android:textSize="@dimen/title_font_size"
-                android:textColor="@color/black"/>
+                android:textSize="@dimen/title_font_size" />
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/equip_instance_list"
                 android:layout_width="match_parent"
@@ -151,8 +146,5 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
-
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

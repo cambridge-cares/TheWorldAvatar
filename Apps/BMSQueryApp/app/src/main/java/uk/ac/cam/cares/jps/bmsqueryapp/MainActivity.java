@@ -118,7 +118,6 @@ public class MainActivity extends AppCompatActivity {
         Instance placeholder = new Instance("Please select");
         BaseArrayAdapter<Instance> adapter = new BaseArrayAdapter<>(this, placeholder);
 
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
         spinner.setOnItemSelectedListener(listener);
