@@ -49,8 +49,12 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
         String equipmentLabel = getIntent().getStringExtra(EQUIPMENT_LABEL);
         String equipmentIri = getIntent().getStringExtra(EQUIPMENT_IRI);
         String equipmentType = getIntent().getStringExtra(EQUIPMENT_TYPE);
+
         LOGGER.info(equipmentLabel);
         LOGGER.info(equipmentIri);
+
+        sendEquipmentIri(equipmentIri);
+
         binding.instanceTitle.setText(equipmentLabel);
         binding.returnButton.setOnClickListener(view -> {
             finish();
@@ -62,7 +66,6 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(Constants.statusArrayTemp[position])).attach();
 
-        sendEquipmentIri(equipmentIri);
     }
 
     private void sendEquipmentIri(String equipmentIri) {
