@@ -27,6 +27,7 @@ def check_stack_status(request_arg):
     if 'stack' in request.args:
         try:
             if str(request.args['stack']).lower() in ['true', '1', 't', 'y', 'yes']:
+                global DB_QUERY_URL, DB_QUERY_USER, DB_QUERY_PASSWORD, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT
                 from PVLibAgent.stack_utils.stack_configs import QUERY_ENDPOINT_STACK, UPDATE_ENDPOINT_STACK
                 from PVLibAgent.stack_utils.stack_configs import DB_UPDATE_URL_STACK, DB_UPDATE_USER_STACK, DB_UPDATE_PASSWORD_STACK
                 from PVLibAgent.stack_utils.stack_configs import DB_QUERY_URL_STACK, DB_QUERY_USER_STACK, DB_QUERY_PASSWORD_STACK
@@ -36,7 +37,6 @@ def check_stack_status(request_arg):
                 DB_UPDATE_URL = DB_UPDATE_URL_STACK
                 DB_UPDATE_USER = DB_UPDATE_USER_STACK
                 DB_UPDATE_PASSWORD = DB_UPDATE_PASSWORD_STACK
-                DB_QUERY_PASSWORD = DB_PASSWORD_STACK
                 QUERY_ENDPOINT = QUERY_ENDPOINT_STACK
                 UPDATE_ENDPOINT = UPDATE_ENDPOINT_STACK
             else:

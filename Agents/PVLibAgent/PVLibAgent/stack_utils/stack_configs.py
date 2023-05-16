@@ -14,7 +14,7 @@ def retrieve_settings():
     """
 
     # Define global scope for global variables
-    global DB_URL_STACK, DB_USER_STACK, DB_PASSWORD_STACK, QUERY_ENDPOINT_STACK, UPDATE_ENDPOINT_STACK, ONTOP_URL_STACK
+    global DB_UPDATE_URL_STACK, DB_UPDATE_USER_STACK, DB_UPDATE_PASSWORD_STACK, DB_QUERY_URL_STACK, DB_QUERY_USER_STACK, DB_QUERY_PASSWORD_STACK, QUERY_ENDPOINT_STACK, UPDATE_ENDPOINT_STACK, ONTOP_URL_STACK
     
     # Create module views to relevant Stack clients
     stackClientsView = stackClientsGw.createModuleView()
@@ -30,21 +30,26 @@ def retrieve_settings():
     bg_conf = containerClient.readEndpointConfig("blazegraph", bg.getClass())
     # PostgreSQL/PostGIS
     pg = stackClientsView.PostGISEndpointConfig("","","","","")
-    pg_conf = containerClient.readEndpointConfig("postgis", pg.getClass())
+    pg_conf_query = containerClient.readEndpointConfig("postgis", pg.getClass())
+    pg_conf_update = containerClient.readEndpointConfig("postgis", pg.getClass())
     # Ontop
     ont = stackClientsView.OntopEndpointConfig("","","","","")
     ont_conf = containerClient.readEndpointConfig("ontop", ont.getClass())
 
-    # Extract PostgreSQL/PostGIS database URL
-    DB_URL_STACK = pg_conf.getJdbcURL('postgres')
+    # Extract PostgreSQL database URL for querying weather data
+    DB_QUERY_URL_STACK = pg_conf_query.getJdbcURL('openmeteo')
     # Extract PostgreSQL database username and password
-    DB_USER_STACK = pg_conf.getUsername()
-    DB_PASSWORD_STACK = pg_conf.getPassword()
+    DB_QUERY_USER_STACK = pg_conf_query.getUsername()
+    DB_QUERY_PASSWORD_STACK = pg_conf_query.getPassword()
+    # Extract PostgreSQL database URL for updating computed power value
+    DB_UPDATE_URL_STACK = pg_conf_update.getJdbcURL('PVLib')
+    DB_UPDATE_USER_STACK = pg_conf_update.getUsername()
+    DB_UPDATE_PASSWORD_STACK = pg_conf_update.getPassword()
 
     # Extract SPARQL endpoints of KG 
     # (i.e. Query and Update endpoints are equivalent for Blazegraph)
     QUERY_ENDPOINT_STACK = bg_conf.getUrl('openmeteo')
-    UPDATE_ENDPOINT_STACK = QUERY_ENDPOINT
+    UPDATE_ENDPOINT_STACK = bg_conf.getUrl('ntuenergy')
 
     # Extract ONTOP endpoint
     ONTOP_URL_STACK = ont_conf.getUrl()

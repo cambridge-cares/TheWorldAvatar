@@ -25,8 +25,8 @@
   },
   "endpoints": {
     "ui": {
-      "url": "http://localhost:8080/pvlib-agent/",
-      "externalPath": "/pvlib-agent"
+      "url": "http://localhost:5000/",
+      "externalPath": "/pvlib-agent/"
     }
   }
 }
