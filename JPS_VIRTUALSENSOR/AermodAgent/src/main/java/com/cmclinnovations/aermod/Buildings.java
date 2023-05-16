@@ -22,10 +22,13 @@ import org.locationtech.jts.geom.CoordinateSequenceFilter;
 
 import org.locationtech.jts.io.WKTReader;
 import scala.Tuple2;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -1551,46 +1554,22 @@ public class Buildings {
         return writeToFile(aermapDirectory.resolve("aermapReceptors.dat"),sb.toString());
     }
 
-    public int getElevationRasterData() {
-
-        // Send GET request to Python service to perform the SQL query and return the elevation data in GeoTiff format.
+    public int getElevationRasterData() throws SQLException {
 
         EndpointConfig endpointConfig = new EndpointConfig(); 
-        URI httpGet;
+        RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
+        
+        List<byte[]> elevData = BuildingsQueryClient.getElevationData(rdbStoreClient.getConnection());
+
         try {
-            URIBuilder builder = new URIBuilder(EnvConfig.PYTHON_SERVICE_RASTER_URL);
-            builder.setParameter("drivername", endpointConfig.getDBDriver());
-            builder.setParameter("username", endpointConfig.getDbuser());
-            builder.setParameter("password", endpointConfig.getDbpassword());
-            String dbURL = endpointConfig.getDburl();
-            String urlSuffix = dbURL.substring(dbURL.indexOf("jdbc:postgresql://") + 18) ;
-            String pythonURL = "postgresql://" + endpointConfig.getDbuser() + ":" + endpointConfig.getDbpassword() + 
-            "@" + urlSuffix;
-            builder.setParameter("host", endpointConfig.getpythonDBURL());
-            httpGet = builder.build();
-        } catch (URISyntaxException e) {
-            LOGGER.error("Failed at building URL");
-            throw new RuntimeException(e);
-        }
-
-        try (CloseableHttpClient httpClient = HttpClients.createDefault();
-            CloseableHttpResponse httpResponse = httpClient.execute(new HttpGet(httpGet))) {
-            String result = EntityUtils.toString(httpResponse.getEntity());
-        } catch (IOException e) {
-            LOGGER.error("Failed at making connection with python service");
-            throw new RuntimeException(e);
-        } catch (JSONException e) {
-            LOGGER.error("Failed to parse result from python service for raster data");
-            throw new RuntimeException(e);
-        }
-
-        try{
-            Files.copy(Path.of("vis_data/PirmasensElevation.tiff"), aermapDirectory.resolve("PirmasensElevation.tiff"));
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(aermapDirectory.resolve("PirmasensElevation.tiff").toString()));
+            out.writeObject(elevData);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
-        }
-
+            LOGGER.info(e.getMessage());
+        }        
+        
         return 0;
+
     }
 
     public int runAERMAP() {
