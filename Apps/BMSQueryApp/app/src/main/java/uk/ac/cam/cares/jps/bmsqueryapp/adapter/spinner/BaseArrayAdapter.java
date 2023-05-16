@@ -10,12 +10,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import uk.ac.cam.cares.jps.bmsqueryapp.R;
+
 public class BaseArrayAdapter<T> extends ArrayAdapter<T> {
     T placeholder;
 
     public BaseArrayAdapter(Context context, T placeholder) {
-        super(context, android.R.layout.simple_spinner_item);
-        setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        super(context, R.layout.spinner_item);
+        setDropDownViewResource(R.layout.spinner_dropdown_item);
 
         this.add(placeholder);
         this.placeholder = placeholder;

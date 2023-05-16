@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
@@ -25,7 +26,6 @@ public class VisualizationFragment extends Fragment {
     private static final Logger LOGGER = LogManager.getLogger(VisualizationFragment.class);
 
     private String DTVFURI = Constants.HOST_PROD + ":1234";
-    private String TESTURI = "http://www.google.com";
 
     public int requestedStatus;
     private FragmentVisualizationBinding binding;
@@ -74,6 +74,11 @@ public class VisualizationFragment extends Fragment {
         LOGGER.info("view created");
 
         dtvfViz.setVisibility(View.VISIBLE);
+
+        WebSettings webSettings = binding.dtvfViz.getSettings();
+        if (webSettings.getTextZoom() > 150) {
+            webSettings.setTextZoom(150);
+        }
     }
 
 
