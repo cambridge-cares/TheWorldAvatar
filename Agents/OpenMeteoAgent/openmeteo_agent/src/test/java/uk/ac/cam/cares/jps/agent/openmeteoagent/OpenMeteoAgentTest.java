@@ -460,7 +460,7 @@ public class OpenMeteoAgentTest {
             JSONObject testJSONObject = new JSONObject();
             List<String> test = new ArrayList<>();
             String key = "time";
-            Integer offset = 360;
+            Integer offset = 3600;
             ZoneOffset zoneOffset = ZoneOffset.ofTotalSeconds(offset);
 
             test.add("2021-01-01T01:00");
