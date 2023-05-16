@@ -51,7 +51,7 @@
 
 <script>
     // var stack = "http://localhost:3838/";
-    var stack = "http://192.168.1.26:3838/";
+    var stack = "http://137.132.22.165:3838/";
 
     function visualiseTimeSeriesData(rawJSON) {
         $("#loaderAnimationWrapper").hide();
@@ -67,6 +67,16 @@
         document.getElementById("metaTimeContainer").innerHTML = "";
 
         if (time != null) {
+            // sort data based on the measurement's key
+            time_temp = {};
+            for (i = 0; i < time.length; i++) {
+                time_temp[time[i]["data"][0]] = time[i];
+            }
+
+            time_temp = Object.entries(time_temp).sort();
+            time = time_temp.map(([key, value]) => value);
+            console.log(time);
+
             // Plot data
             timeseriesHandler.parseData(time);
             // for (i = 0; i < timeseriesHandler._selectedData.length; i++) {
