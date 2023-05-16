@@ -5,6 +5,7 @@ import geotrellis.proj4.Transform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.geom.Geometry;
@@ -38,11 +39,24 @@ import java.util.stream.IntStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.io.parser.JSONParser;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import org.apache.http.client.utils.URIBuilder;
 
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
+
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 
 
@@ -192,6 +206,11 @@ public class Buildings {
             boolean includeElev = Boolean.parseBoolean(EnvConfig.INCLUDE_ELEVATION) ;
 
             if (includeElev) {
+
+                if (getElevationRasterData() != 0) {
+                    LOGGER.error("Failed to create raster file for elevation data.");
+                    return 1;
+                }
 
                 if (copyCachedAERMAPOutput() == 0) {
                     LOGGER.info("Successfully copied user-supplied AERMAP output files.");
@@ -1351,13 +1370,13 @@ public class Buildings {
         featureCollection.put("features", features);
 
         LOGGER.info("Uploading plant items GeoJSON to PostGIS");
-		GDALClient gdalclient = new GDALClient();
+		GDALClient gdalclient = GDALClient.getInstance();
 		gdalclient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.SOURCE_LAYER, featureCollection.toString(), new Ogr2OgrOptions(), true);
 
 		LOGGER.info("Creating plant items layer in Geoserver");
-		GeoServerClient geoserverclient = new GeoServerClient();
+		GeoServerClient geoserverclient = GeoServerClient.getInstance();
 		geoserverclient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
-		geoserverclient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, EnvConfig.SOURCE_LAYER, new GeoServerVectorSettings());
+		geoserverclient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, EnvConfig.SOURCE_LAYER, new GeoServerVectorSettings());
 
         // convert the Feature Collection to a JSON string
         // String geojsonString = featureCollection.toString();
@@ -1530,6 +1549,48 @@ public class Buildings {
         sb.append("RE GRIDCART POL1 END \n");
 
         return writeToFile(aermapDirectory.resolve("aermapReceptors.dat"),sb.toString());
+    }
+
+    public int getElevationRasterData() {
+
+        // Send GET request to Python service to perform the SQL query and return the elevation data in GeoTiff format.
+
+        EndpointConfig endpointConfig = new EndpointConfig(); 
+        URI httpGet;
+        try {
+            URIBuilder builder = new URIBuilder(EnvConfig.PYTHON_SERVICE_RASTER_URL);
+            builder.setParameter("drivername", endpointConfig.getDBDriver());
+            builder.setParameter("username", endpointConfig.getDbuser());
+            builder.setParameter("password", endpointConfig.getDbpassword());
+            String dbURL = endpointConfig.getDburl();
+            String urlSuffix = dbURL.substring(dbURL.indexOf("jdbc:postgresql://") + 18) ;
+            String pythonURL = "postgresql://" + endpointConfig.getDbuser() + ":" + endpointConfig.getDbpassword() + 
+            "@" + urlSuffix;
+            builder.setParameter("host", endpointConfig.getpythonDBURL());
+            httpGet = builder.build();
+        } catch (URISyntaxException e) {
+            LOGGER.error("Failed at building URL");
+            throw new RuntimeException(e);
+        }
+
+        try (CloseableHttpClient httpClient = HttpClients.createDefault();
+            CloseableHttpResponse httpResponse = httpClient.execute(new HttpGet(httpGet))) {
+            String result = EntityUtils.toString(httpResponse.getEntity());
+        } catch (IOException e) {
+            LOGGER.error("Failed at making connection with python service");
+            throw new RuntimeException(e);
+        } catch (JSONException e) {
+            LOGGER.error("Failed to parse result from python service for raster data");
+            throw new RuntimeException(e);
+        }
+
+        try{
+            Files.copy(Path.of("vis_data/PirmasensElevation.tiff"), aermapDirectory.resolve("PirmasensElevation.tiff"));
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        }
+
+        return 0;
     }
 
     public int runAERMAP() {

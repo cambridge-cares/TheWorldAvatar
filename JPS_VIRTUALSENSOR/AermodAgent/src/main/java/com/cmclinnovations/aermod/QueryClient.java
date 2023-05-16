@@ -496,13 +496,13 @@ public class QueryClient {
         featureCollection.put("features", features);
 
         LOGGER.info("Uploading virtual sensors GeoJSON to PostGIS");
-		GDALClient gdalclient = new GDALClient();
+		GDALClient gdalclient = GDALClient.getInstance();
 		gdalclient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, "sensor_layer", featureCollection.toString(), new Ogr2OgrOptions(), true);
 
 		LOGGER.info("Creating plant items layer in Geoserver");
-		GeoServerClient geoserverclient = new GeoServerClient();
+		GeoServerClient geoserverclient = GeoServerClient.getInstance();
 		geoserverclient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
-		geoserverclient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, "sensor_layer", new GeoServerVectorSettings());
+		geoserverclient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, "sensor_layer", new GeoServerVectorSettings());
 
 
         /* Offset not used for the time being */

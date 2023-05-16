@@ -10,7 +10,8 @@
 			"python-service",
 			"emissions-agent",
 			"openmeteo-agent",
-			"feature-info-agent"
+			"feature-info-agent",
+			"stack-data-uploader"
         ]
     }
 }
