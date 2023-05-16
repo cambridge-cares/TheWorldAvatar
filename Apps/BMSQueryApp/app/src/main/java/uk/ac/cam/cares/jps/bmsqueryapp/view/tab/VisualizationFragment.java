@@ -24,12 +24,11 @@ import uk.ac.cam.cares.jps.bmsqueryapp.utils.Constants;
 public class VisualizationFragment extends Fragment {
     private static final Logger LOGGER = LogManager.getLogger(VisualizationFragment.class);
 
-    private String DTVFURI = Constants.HOST + ":80";
+    private String DTVFURI = Constants.HOST_PROD + ":1234";
     private String TESTURI = "http://www.google.com";
 
     public int requestedStatus;
     private FragmentVisualizationBinding binding;
-    private ProgressBar progressBar;
 
     public VisualizationFragment() {
         super();
@@ -60,6 +59,7 @@ public class VisualizationFragment extends Fragment {
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 LOGGER.info("page finished loading");
+//                binding.progressBarWrapper.setVisibility(View.GONE);
             }
 
             @Override
@@ -69,12 +69,10 @@ public class VisualizationFragment extends Fragment {
             }
         });
 
-        dtvfViz.setWebViewClient(new WebViewClient());
         dtvfViz.getSettings().setJavaScriptEnabled(true);
         binding.dtvfViz.loadUrl(DTVFURI);
         LOGGER.info("view created");
 
-        binding.progressBarWrapper.setVisibility(View.GONE);
         dtvfViz.setVisibility(View.VISIBLE);
     }
 

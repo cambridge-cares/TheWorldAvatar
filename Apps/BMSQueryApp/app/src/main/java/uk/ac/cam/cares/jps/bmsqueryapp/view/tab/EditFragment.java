@@ -21,6 +21,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.HttpUrl;
@@ -33,8 +34,12 @@ import uk.ac.cam.cares.jps.bmsqueryapp.utils.SingletonConnection;
 public class EditFragment extends Fragment {
     private FragmentEditBinding binding;
 
-    private final HttpUrl.Builder ESPHOME_CONTROL_URL = Constants.constructUrlBuilder("bms-update-agent/set");
-    private List<EditableAttribute> editableAttributes;
+    private final HttpUrl.Builder ESPHOME_CONTROL_URL = Constants.constructUrlBuilder(Constants.HOST_LAB_WIFI, 3839, "bms-update-agent/set");
+    private List<EditableAttribute> editableAttributes = new ArrayList<>();
+
+    public EditFragment() {
+        super();
+    }
 
     public EditFragment(List<EditableAttribute> editableAttributes) {
         super();
@@ -74,7 +79,8 @@ public class EditFragment extends Fragment {
 
                 JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, ESPHOME_CONTROL_URL.build().toString(), params, response -> {
                     try {
-                        Toast.makeText(this.getContext(), response.getString("fanStatus"), Toast.LENGTH_LONG).show();
+                        String fanStatus = response.getString("fanStatus");
+                        Toast.makeText(this.getContext(), fanStatus.isEmpty() ? fanStatus : "Successfully updated.", Toast.LENGTH_LONG).show();
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
                     }
