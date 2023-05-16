@@ -193,15 +193,8 @@ public class DataBridgeAgent extends JPSAgent {
     protected <T> JSONObject updateTimeSeries (String[] config, JSONObject data, String timeClass) {
         JSONObject response = new JSONObject();
 
-        RemoteStoreClient kbClient = new RemoteStoreClient();
-        kbClient.setQueryEndpoint(config[6]);
-        kbClient.setUpdateEndpoint(config[5]);
-        LOGGER.info("Created kbClient");
-
-        LOGGER.info("Created RDBStoreClient");
-
         LOGGER.info("Instantiating Timeseries...");
-        InstantiateTS tsInst = new InstantiateTS(config, kbClient, timeClass);
+        InstantiateTS tsInst = new InstantiateTS(config, timeClass);
 
         try {
             tsInst.updateTimeSeriesData(data);

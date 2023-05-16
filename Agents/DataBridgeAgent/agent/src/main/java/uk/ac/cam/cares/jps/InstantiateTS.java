@@ -51,9 +51,15 @@ public class InstantiateTS {
      */
     public static final String timestampKey = "ts";
 
-    public InstantiateTS(String[] config,TripleStoreClientInterface kbClient, String timeClass) {
+    public InstantiateTS(String[] config, String timeClass) {
         RDBClient= new RemoteRDBStoreClient(config[2], config[0], config[1]);
         LOGGER.info("Created RDBStoreClient");
+
+        RemoteStoreClient kbClient = new RemoteStoreClient();
+        kbClient.setQueryEndpoint(config[6]);
+        kbClient.setUpdateEndpoint(config[5]);
+        LOGGER.info("Created kbClient");
+
         client = new TimeSeriesClient(kbClient, OffsetDateTime.class);
 
         if (timeClass.equals("AVERAGE")){
@@ -76,7 +82,7 @@ public class InstantiateTS {
         }
 
         
-        
+        LOGGER.debug("InstantiateTS class initialized");
     }
         /**
      * Converts a string into a datetime object with zone information using the zone globally define for the agent.
@@ -99,7 +105,7 @@ public class InstantiateTS {
     private List<TimeSeries<OffsetDateTime>> convertReadingsToTimeSeries(JSONObject data, JSONArray timesArray) {
             List<TimeSeries<OffsetDateTime>> timeSeries = new ArrayList<>();
             List<String> iris = new ArrayList<>();
-            List<List<?>> values = new ArrayList<>();
+            List<List<?>> col = new ArrayList<>();
             
             List<OffsetDateTime> times = new ArrayList<>();
             for (int i = 0; i < timesArray.length(); i++){
@@ -109,7 +115,7 @@ public class InstantiateTS {
 
             for (String iri : data.keySet()) {
                 iris.add(iri);
-                JSONArray valueArray = data.getJSONArray("values");
+                JSONArray valueArray = values.getJSONArray(iri);
                 List<Object> row = new ArrayList<>();
                 for (int j =0; j < valueArray.length(); j++) {
                     //Defaults class to String, convert to respective needed data type when TS data is used
@@ -132,18 +138,30 @@ public class InstantiateTS {
                         row.add(stringValue);
                     }
                 }
-                values.add(row);
+                col.add(row);
             }
             
 
-            TimeSeries<OffsetDateTime> currentTimeSeries = new TimeSeries<>(times, iris, values);
+            TimeSeries<OffsetDateTime> currentTimeSeries = new TimeSeries<>(times, iris, col);
             timeSeries.add(currentTimeSeries);
         
         
         return timeSeries;
     }
 
-
+    private Class<?> getClassFromValues(Object value){
+        if (value instanceof Integer || value instanceof Long) {
+            return Long.class;
+        } else if (value instanceof Boolean) {
+            return Boolean.class;
+        } else if (value instanceof Float || value instanceof Double) {
+            return Double.class;
+        } else if (JSONObject.NULL.equals(value)) {
+            return null;
+        } else {
+           return String.class;
+        }
+    }
 
     
 
@@ -153,12 +171,14 @@ public class InstantiateTS {
      * @return The corresponding class as Class<?> object.
      */
     private Class<?> getClassFromJSONKey(String jsonKey) {
-    	
-    	Class<?> a = null;
         if (jsonKey.contains(timestampKey)) {
-        	a = String.class;
+        	return String.class;
         }
-     return a;   
+     
+        else{
+            Object valueObject = values.getJSONArray(jsonKey).get(0);
+            return getClassFromValues(valueObject);
+        }   
     }
 
     /**
@@ -167,18 +187,24 @@ public class InstantiateTS {
      */
     public void initializeTimeSeriesIfNotExist() {
         List <String> iris = new ArrayList<>();
-        values.keys().forEachRemaining(iris::add); 
+        //values.keys().forEachRemaining(iris::add);
+        for(String iri: values.keySet()){
+            iris.add(iri);
+        }
+
         // Check whether IRIs have a time series linked and if not initialize the corresponding time series
         if(!timeSeriesExist(iris)) {
             // Get the classes (datatype) corresponding to each JSON key needed for initialization
+            LOGGER.debug("Time series does not exist for iri:" + iris);
             List<Class<?>> classes = iris.stream().map(this::getClassFromJSONKey).collect(Collectors.toList());
             // Initialize the time series
-            try {
-            client.initTimeSeries(iris, classes, timeUnit, timeType, null, null);
-            LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
-        } catch (Exception e) {
-            throw new JPSRuntimeException("Could not initialize timeseries!");
-        }
+            try (Connection conn = RDBClient.getConnection()){
+                LOGGER.debug("Init TS for iri: " + iris);
+                client.initTimeSeries(iris, classes, timeUnit, conn, timeType, null, null);
+                LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
+            } catch (Exception e) {
+                throw new JPSRuntimeException("Could not initialize timeseries! " + e);
+            }
         }
             
     }
@@ -199,9 +225,6 @@ public class InstantiateTS {
          * }
          * 
          */
-        timestamp = data.getJSONArray(timestampKey);
-        values = data.getJSONObject("values");
-
         for (String iri : values.keySet()){
             if (timestamp.length() != values.getJSONArray(iri).length()){
                 throw new JPSRuntimeException("Timestamp size does not match data length for IRI:" + iri);
@@ -216,10 +239,10 @@ public class InstantiateTS {
             
             // Update each time series
             for (TimeSeries<OffsetDateTime> ts : timeSeries) {
-                try {
+                try (Connection conn = RDBClient.getConnection()){
                 // Only update if there actually is data
                 if (!ts.getTimes().isEmpty()) {
-                    client.addTimeSeriesData(ts);
+                    client.addTimeSeriesData(ts, conn);
                     LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
                 }
                 } catch (Exception e) {
@@ -244,18 +267,16 @@ public class InstantiateTS {
     private boolean timeSeriesExist(List<String> iris) {
         // If any of the IRIs does not have a time series the time series does not exist
         for(String iri: iris) {
-        	try {
-	            if (!client.checkDataHasTimeSeries(iri)) {
+        	try (Connection conn = RDBClient.getConnection()){
+	            if (!client.checkDataHasTimeSeries(iri, conn)) {
 	                return false;
 	            }
 	        // If central RDB lookup table ("dbTable") has not been initialised, the time series does not exist
-        	} catch (DataAccessException e) {
+        	} catch (Exception e) {
         		if (e.getMessage().contains("ERROR: relation \"dbTable\" does not exist")) {
         			return false;
         		}
-        		else {
-        			throw e;
-        		}        		
+                throw new JPSRuntimeException(e);
         	}
         }
         return true;
@@ -263,18 +284,20 @@ public class InstantiateTS {
     
     public JSONObject updateTimeSeriesData (JSONObject data) {
         JSONObject response = new JSONObject();
-        try(Connection conn = RDBClient.getConnection()){
+        timestamp = data.getJSONArray(timestampKey);
+        values = data.getJSONObject("values");
+        try{
             // Initialize time series'
             try {
                 initializeTimeSeriesIfNotExist();
             }
             catch (JPSRuntimeException e) {
-                LOGGER.error("Failed to init TS:",e);
-                throw new JPSRuntimeException("Failed to init TS:", e);
+                LOGGER.error("Failed to init TS:" + e);
+                throw new JPSRuntimeException("Failed to init TS:" + e);
             }
 
             // If readings are not empty there is new data
-            if(!data.getJSONObject("data").isEmpty() && !data.getJSONArray("time").isEmpty()) {
+            if(!values.isEmpty() && !timestamp.isEmpty()) {
                 // Update the data
                 updateData(data);
                 LOGGER.info("Data updated with new readings.");
@@ -286,8 +309,8 @@ public class InstantiateTS {
             }
         }
         catch (Exception e) {
-            response.put("Result", "Failed to connect to RDB" + e);
-            throw new JPSRuntimeException("Failed to connect to RDB" + e);
+            response.put("Result", "Failed to Update timeseries: " + e);
+            throw new JPSRuntimeException("Failed to Update timeseries:" + e);
         }
 
         return response;
