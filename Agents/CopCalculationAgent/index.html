@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+</html>
+<html>
+
+<head>
+</head>
+
+<!------------------------------------------------------------------------------------------------------------------------------->
+
+
+    <!------------------------------------------------------------------------------------------------------------------------------->
+    <b>Basics:</b>
+    <p>
+        <div style="text-align:center;">
+          <table style="display: inline-block;">
+            <tr>
+                <td rowspan="3" style="text-align: center; padding: 0px 8px;">
+                    COP &nbsp;= 
+                </td>
+            </tr>
+            <tr>
+              <td rowspan="1" style="border-bottom: 1px solid black; padding: 0px 5px;">
+                (hp<sub><em>efficiency</em></sub> &times; T<sub>H</sub>)
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" style="text-align: center; padding: 0px 8px;">
+                (T<sub>H</sub> - T<sub>C</sub>)
+              </td>
+            </tr>
+          </table>
+        </div>
+      </p>
+      where the input temperature is represented as T<sub>C</sub>. T<sub>H</sub>(hot side temperature), hp<sub><em>efficiency</em></sub>(heat pump efficiency) are hypothesd as constant, which have default value as 318.15 and 0.35
+    respectfully. I suggest to check if that default value is up to date or if that hypothesis is 
+    valid in your case <br>
+    <b>NOTE:</b> builded python function to call this agent can be found on: <a href="https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-2/Agents/LSOAOutputAgent/agent/datacalculation/datacalculation.py">
+      call_cop_agent </a><br><br>
+    <!------------------------------------------------------------------------------------------------------------------------------->
+    <b>Example query:</b><br>
+    <div style="text-indent: 25px;"> <code>query = {<br> </code>
+        <div style="text-indent: 50px;"><code>       'query':{'temperature': [5] ,<br></code>
+            <div style="text-indent: 120px;">
+                <code>                 'unit':'http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius'<br></code>
+                <div style="text-indent: 50px;">
+                    <code>                 <em>(optional)</em>'t_h': 318.15<br></code>
+                    <div style="text-indent: 50px;">
+                        <code>                 <em>(optional)</em>'hp_efficiency': 0.35<br></code>
+                <div style="text-indent: 100px;"><code>               }<br></code>
+                    <div style="text-indent: 50px;"><code>       }</code><br>
+                        <!------------------------------------------------------------------------------------------------------------------------------->
+                        <div style="text-indent: 50px;"> <br><b>Arguments:</b><br>
+                            <div style="text-indent: 25px;">
+                                <li><b>temperature:</b> should be an array (np.ndarray), 1D or 2D or 3D are all fine.
+                                    The returned COP will have the exact same shape as the temperature you provided.
+                                    <div style="text-indent: 50px;"> Also I suppose you are not interested in
+                                        calculating single value but even if you do, still put them in an array
+                                        please...<br>
+                                        <div style="text-indent: 25px;"> </div>
+                                </li><br>
+                                <li><b>unit:</b> unit with respect to temperature, must be wrapped as a url
+                                    as per OntoMeasurement. Units below are available:<br>
+                                    
+                                    <div style="text-indent: 50px;">
+                                        <code>DegreeCelsius <span>℃</span>: &nbsp;&nbsp; <span style="text-decoration: underline;"> http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius</span>  <br></code>
+                                        <div style="text-indent: 50px;">
+                                            <code>                      DegreeFahrenheit <span>℉</span>: &nbsp;&nbsp; <span style="text-decoration: underline;"> http://www.ontology-of-units-of-measure.org/resource/om-2/degreeFahrenheit</span>  <br></code>
+                                            <div style="text-indent: 50px;">
+                                                <code>                      Kelvin K: &nbsp;&nbsp; <span style="text-decoration: underline;"> http://www.ontology-of-units-of-measure.org/resource/om-2/kelvin</span> </code><br>
+                                                <div style="text-indent: 25px;"> </div><br>
+                                                <li><b>t_h:</b> hot side temperature (see equation above), if not provided, 318.15 
+                                                    will be used as default value. <br><br>
+                                                    <li><b>hp_efficiency:</b> heat pump efficiency (see equation above), if not provided, 0.35 
+                                                        will be used as default value. <br>
+                                                <!------------------------------------------------------------------------------------------------------------------------------->
+                                                <div style="text-indent: 50px;"> <br><b>Example return:</b><br>
+                                                    <div style="text-indent: 50px;">
+                                                        <code>return = {'COP': [2.5] <br></code>
+                                                        <div style="text-indent: 120px;">
+                                                            <div style="text-indent: 100px;"><code>       }</code><br>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                </li>
+                            </div> <br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+</body>
+
+</html>
