@@ -479,7 +479,7 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
     public Optional<Container> getContainer(String containerName, boolean showAll) {
         try (ListContainersCmd listContainersCmd = internalClient.listContainersCmd()) {
             Pattern fullContainerNamePattern = Pattern
-                    .compile("/?" + StackClient.getStackName() + "-" + containerName + "(?:\\..*)?");
+                    .compile("/?" + StackClient.getStackNameForRegex() + "-" + containerName + "(?:\\..*)?");
             List<Container> possibleContainers = listContainersCmd.withNameFilter(List.of(containerName))
                     .withLabelFilter(StackClient.getStackNameLabelMap())
                     .withShowAll(showAll).exec();

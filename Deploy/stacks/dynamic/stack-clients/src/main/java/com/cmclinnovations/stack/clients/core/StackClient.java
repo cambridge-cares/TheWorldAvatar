@@ -41,12 +41,16 @@ public final class StackClient {
         return stackName;
     }
 
+    public static String getStackNameForRegex() {
+        return stackName.replace("_", "(?:-|_)");
+    }
+
     public static String prependStackName(String name) {
         return stackName + "_" + name;
     }
 
     public static String removeStackName(String name) {
-        return name.replaceFirst("^/?" + StackClient.getStackName() + "(?:-|_)", "");
+        return name.replaceFirst("^/?" + StackClient.getStackNameForRegex() + "(?:-|_)", "");
     }
 
     public static Map<String, String> getStackNameLabelMap() {
