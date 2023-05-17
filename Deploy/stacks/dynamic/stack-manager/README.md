@@ -218,7 +218,7 @@ The example below shows a snippet of a service config file where the contents of
                ...
                 "Mounts": [
                     {
-                        "Type": "volume",
+                        "Type": "bind",
                         "Source": "fia-queries",
                         "Target": "/app/queries"
                     }
