@@ -30,6 +30,9 @@
 				"Secrets": [
 					{
 						"SecretName": "postgis_password"
+					},
+					{
+						"SecretName": "blazegraph_password"
 					}
 				]
 			}
