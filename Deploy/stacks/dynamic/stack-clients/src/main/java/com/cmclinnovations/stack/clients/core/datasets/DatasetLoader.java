@@ -3,8 +3,10 @@ package com.cmclinnovations.stack.clients.core.datasets;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jgrapht.graph.DefaultEdge;
@@ -29,45 +31,57 @@ public class DatasetLoader {
     }
 
     public static void uploadInputDatasets() {
-        DirectedAcyclicGraph<Dataset, DefaultEdge> graph = new DirectedAcyclicGraph<>(
-                DefaultEdge.class);
 
         try (Stream<Path> files = Files.list(configPath)) {
-            // Add Datasets to a DAG as vertices
-            files.filter(Files::isRegularFile)
+            // Find all available datasets
+            Map<String, Dataset> allDatasets = files.filter(Files::isRegularFile)
                     .filter(path -> path.toString().endsWith(".json"))
                     .map(DatasetLoader::readInputDataset)
-                    .forEach(graph::addVertex);
+                    .collect(Collectors.toMap(Dataset::getName, dataset -> dataset));
+
+            Collection<Dataset> selectedDatasets;
 
             // Check to see if there is a Dataset with the same name as the Stack.
-            Optional<Dataset> stackSpecificDataset = graph.vertexSet().stream()
-                    .filter(dataset -> dataset.getName().equals(StackClient.getStackName()))
-                    .findAny();
-
-            if (stackSpecificDataset.isPresent()) {
-                // if so only load that one and its children.
-
-                // Add an edge when one Dataset references another in its "externalDatasets"
-                // node. Throw an exception if the referenced Dataset doesn't exist.
-                graph.vertexSet().forEach(parentDataset -> parentDataset.getExternalDatasets()
-                        .forEach(referencedDatasetName -> graph.vertexSet().stream()
-                                .filter(dataset -> dataset.getName().equals(referencedDatasetName))
-                                .findFirst().ifPresentOrElse(
-                                        childDataset -> graph.addEdge(parentDataset, childDataset),
-                                        () -> {
-                                            throw new RuntimeException("Failed to find external dataset '"
-                                                    + referencedDatasetName + "' referenced in dataset '"
-                                                    + parentDataset.getName() + "'.");
-                                        })));
-
-                loadData(stackSpecificDataset.get());
-                graph.getDescendants(stackSpecificDataset.get()).forEach(DatasetLoader::loadData);
+            Dataset stackSpecificDataset = allDatasets.get(StackClient.getStackName());
+            if (null != stackSpecificDataset) {
+                // If so only load that one and its children
+                selectedDatasets = List.of(stackSpecificDataset);
             } else {
-                // Otherwise load all of the Datasets.
-                graph.vertexSet().forEach(DatasetLoader::loadData);
+                // Otherwise load all of them
+                selectedDatasets = allDatasets.values();
             }
+
+            DirectedAcyclicGraph<Dataset, DefaultEdge> graph = new DirectedAcyclicGraph<>(
+                    DefaultEdge.class);
+
+            // Add an edge when one Dataset references another in its "externalDatasets"
+            // node. Throw an exception if the referenced Dataset doesn't exist.
+            selectedDatasets.forEach(dataset -> addToGraph(allDatasets, graph, dataset));
+
+            graph.iterator().forEachRemaining(DatasetLoader::loadData);
+
         } catch (IOException ex) {
             throw new RuntimeException("Failed to read in dataset config file(s).", ex);
+        }
+    }
+
+    // This ensures that datasets are loaded such that children are loaded before
+    // their parents so that things that can refer to multiple datasubsets, like
+    // OBDA mappings, can be specified in the parent config and are loaded in after
+    // all of the datasubsets have been loaded in.
+    private static void addToGraph(Map<String, Dataset> allDatasets, DirectedAcyclicGraph<Dataset, DefaultEdge> graph,
+            Dataset current) {
+        if (graph.addVertex(current)) {
+            current.getExternalDatasets().forEach(datasetName -> {
+                Dataset child = allDatasets.get(datasetName);
+                if (null == child) {
+                    throw new RuntimeException("Failed to find external dataset '"
+                            + datasetName + "' referenced in dataset '"
+                            + current.getName() + "'.");
+                }
+                addToGraph(allDatasets, graph, child);
+                graph.addEdge(child, current);
+            });
         }
     }
 
