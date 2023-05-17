@@ -748,42 +748,56 @@ public class FHAgent{
         //TODO Toggle fumehood here
     }
 
+    public JSONObject createJSONRequest (JSONObject data, String timeClass){
+        JSONObject result = new JSONObject();
+        result.put("timeClass", timeClass);
+        JSONArray timestamps = new JSONArray();
+        JSONArray tsCol = data.getJSONArray(data.keys().next());
+        for (int i = 0; i < tsCol.length(); i++) {
+            JSONObject row = tsCol.getJSONObject(i);
+            Long ts = row.getLong("ts");
+
+            //convert unix timestamp in milliseconds to date time format
+                	
+            Date date = new java.util.Date(ts);
+            SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            String tsString = sdf.format(date);
+            
+            timestamps.put(tsString);
+        }
+
+        JSONObject values = new JSONObject();
+        for(String key : data.keySet()) {
+            JSONKeyToIRIMapper mapping = varToMapping.get(key);
+            String iri = mapping.getIRI(key);
+
+            JSONArray col = data.getJSONArray(key);
+            //values.put("values", new JSONObject());
+
+            //values.getJSONObject(iri).put("values", new JSONArray());
+            JSONArray valArray = new JSONArray();
+            for (int i = 0; i < col.length(); i++){
+                JSONObject row = col.getJSONObject(i);
+                Double val = row.getDouble("value");
+                
+                valArray.put(val);
+            }
+            values.put(iri, valArray);
+        }
+        result.put("values", values);
+        result.put("ts", timestamps);
+
+        return result;
+    }
+
 
     public void sendToDataBridge (JSONObject Distance, List<String> keys) {
         for(String key: keys) {
             JSONObject latestOccState = TallyDist(Distance, key);
             LOGGER.debug("latestOccState for key " + key + ":" + latestOccState);
-            String resultString = "";
-
-            for(String occKey : latestOccState.keySet()) {
-                JSONKeyToIRIMapper mapping = varToMapping.get(occKey);
-                String iri = mapping.getIRI(occKey);
-
-                JSONObject result = new JSONObject();
-                JSONArray timestamps = new JSONArray();
-                JSONObject values = new JSONObject();
-
-                JSONArray col = latestOccState.getJSONArray(occKey);
-                values.put("class", Double.class);
-                //values.put("values", new JSONObject());
-
-                //values.getJSONObject(iri).put("values", new JSONArray());
-                JSONArray valArray = new JSONArray();
-                for (int i = 0; i < col.length(); i++){
-                    JSONObject row = col.getJSONObject(i);
-
-                    Double val = row.getDouble("value");
-                    Long ts = row.getLong("ts");
-
-                    timestamps.put(ts);
-                    valArray.put(val);
-
-                }
-                values.put("values", valArray);
-                result.put(iri, values);
-
-                resultString = result.toString();
-            }
+            JSONObject result = createJSONRequest(latestOccState, "INSTANTANEOUS");
+            String resultString = result.toString();
             sendPostRequest(resultString);
         }
 
