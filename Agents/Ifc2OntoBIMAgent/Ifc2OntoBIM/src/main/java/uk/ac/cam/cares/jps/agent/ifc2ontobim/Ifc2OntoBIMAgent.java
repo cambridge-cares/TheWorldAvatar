@@ -31,6 +31,7 @@ public class Ifc2OntoBIMAgent extends JPSAgent {
     private static final String INVALID_ROUTE_ERROR_MSG = "Invalid request type! Route ";
     private static final String IFCOWL_CONVERSION_ERROR_MSG = "Failed to convert to IfcOwl schema. ";
     private static final String KEY_BASEURI = "uri";
+    private static final String KEY_IS_IFCOWL = "isIfcOwl";
     private static final String ttlDir = Paths.get(System.getProperty("user.dir"), "data").toString();
 
     /**
@@ -84,8 +85,10 @@ public class Ifc2OntoBIMAgent extends JPSAgent {
                 if (validateInput(requestParams)) {
                     // Process request parameters
                     String baseURI = requestParams.getString(KEY_BASEURI);
+                    // Return false if the request does not have this parameter. Otherwise, return the parameter's value
+                    Boolean isIfcOwl = requestParams.has(KEY_IS_IFCOWL) && requestParams.getBoolean(KEY_IS_IFCOWL);
                     String[] args = (!baseURI.equals("default")) ? new String[]{baseURI} : new String[]{"default"};
-                    jsonMessage = this.runAgent(args, true);
+                    jsonMessage = this.runAgent(args, true, isIfcOwl);
                 } else if (!requestType.equals("POST")) {
                     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept POST request.");
                     jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept POST request.");
@@ -98,8 +101,10 @@ public class Ifc2OntoBIMAgent extends JPSAgent {
                 if (validateInput(requestParams)) {
                     // Process request parameters
                     String baseURI = requestParams.getString(KEY_BASEURI);
+                    // Return false if the request does not have this parameter. Otherwise, return the parameter's value
+                    Boolean isIfcOwl = requestParams.has(KEY_IS_IFCOWL) && requestParams.getBoolean(KEY_IS_IFCOWL);
                     String[] args = (!baseURI.equals("default")) ? new String[]{baseURI} : new String[]{"default"};
-                    jsonMessage = this.runAgent(args, false);
+                    jsonMessage = this.runAgent(args, false, isIfcOwl);
                 } else if (!requestType.equals("POST")) {
                     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept POST request.");
                     jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept POST request.");
@@ -172,20 +177,22 @@ public class Ifc2OntoBIMAgent extends JPSAgent {
      *
      * @return A response to the request called as a JSON Object.
      */
-    protected JSONObject runAgent(String[] args, Boolean isGeomRequired) {
+    protected JSONObject runAgent(String[] args, Boolean isGeomRequired, Boolean isIfcOwl) {
         JSONObject response = new JSONObject();
         Map<String, String> config = AccessClient.retrieveClientProperties();
-        // Convert the IFC files in the target directory to TTL using IfcOwl Schema
-        LOGGER.info("Sending POST request to IfcOwlConverterAgent...");
-        try {
-            NamespaceMapper.setBaseNameSpace(args[0]);
-            String inputJson = "{\"" + KEY_BASEURI + "\":\"" + args[0] + "\"}";
-            AccessClient.sendPostRequest(config.get(AccessClient.IFC_OWL_CONVERTER_API), inputJson);
-        } catch (Exception e) {
-            LOGGER.fatal(IFCOWL_CONVERSION_ERROR_MSG + e.getMessage());
-            throw new JPSRuntimeException(IFCOWL_CONVERSION_ERROR_MSG + e.getMessage());
+        if (isIfcOwl) {
+            // Convert the IFC files in the target directory to TTL using IfcOwl Schema
+            LOGGER.info("Sending POST request to IfcOwlConverterAgent...");
+            try {
+                NamespaceMapper.setBaseNameSpace(args[0]);
+                String inputJson = "{\"" + KEY_BASEURI + "\":\"" + args[0] + "\"}";
+                AccessClient.sendPostRequest(config.get(AccessClient.IFC_OWL_CONVERTER_API), inputJson);
+            } catch (Exception e) {
+                LOGGER.fatal(IFCOWL_CONVERSION_ERROR_MSG + e.getMessage());
+                throw new JPSRuntimeException(IFCOWL_CONVERSION_ERROR_MSG + e.getMessage());
+            }
+            LOGGER.info("All IFC files have been successfully instantiated as IfcOwl instances.");
         }
-        LOGGER.info("All IFC files have been successfully instantiated as IfcOwl instances.");
         // Generate a set of ttl files  in target directory
         Set<String> ttlFileList = AccessClient.listTTLFiles(ttlDir);
         // Validate file availability

@@ -98,7 +98,7 @@ class Ifc2OntoBIMAgentTest {
             // Stub the method to return the file list when it is running
             mockAccessClient.when(() -> AccessClient.listTTLFiles(Mockito.anyString())).thenAnswer((Answer<Set<String>>) invocation -> ttlFileSet);
             try (MockedConstruction<OntoBimConverter> mockBimConverter = Mockito.mockConstruction(OntoBimConverter.class)) {
-                JSONObject response = agent.runAgent(new String[]{"test"}, true);
+                JSONObject response = agent.runAgent(new String[]{"test"}, true, false);
                 // Verify methods was called
                 mockAccessClient.verify(() -> AccessClient.sendPostRequest(Mockito.anyString(), Mockito.anyString()));
                 mockAccessClient.verify(() -> AccessClient.listTTLFiles(Mockito.anyString()));
@@ -144,7 +144,7 @@ class Ifc2OntoBIMAgentTest {
             // Stub the method to return the file list when it is running
             mockAccessClient.when(() -> AccessClient.listTTLFiles(Mockito.anyString())).thenAnswer((Answer<Set<String>>) invocation -> ttlFileSet);
             try (MockedConstruction<OntoBimConverter> mockBimConverter = Mockito.mockConstruction(OntoBimConverter.class)) {
-                JSONObject response = agent.runAgent(new String[]{"test"}, true);
+                JSONObject response = agent.runAgent(new String[]{"test"}, true, false);
                 // Verify methods was called
                 mockAccessClient.verify(() -> AccessClient.sendPostRequest(Mockito.anyString(), Mockito.anyString()));
                 mockAccessClient.verify(() -> AccessClient.listTTLFiles(Mockito.anyString()));
@@ -235,7 +235,7 @@ class Ifc2OntoBIMAgentTest {
             // Stub the method to return the file list when it is running
             mockAccessClient.when(() -> AccessClient.listTTLFiles(Mockito.anyString())).thenAnswer((Answer<Set<String>>) invocation -> ttlFileSet);
             try (MockedConstruction<OntoBimConverter> mockBimConverter = Mockito.mockConstruction(OntoBimConverter.class)) {
-                JSONObject response = agent.runAgent(new String[]{"test"}, true);
+                JSONObject response = agent.runAgent(new String[]{"test"}, true, false);
                 // Verify methods was called
                 mockAccessClient.verify(() -> AccessClient.sendPostRequest(Mockito.anyString(), Mockito.anyString()));
                 mockAccessClient.verify(() -> AccessClient.listTTLFiles(Mockito.anyString()));
@@ -252,7 +252,7 @@ class Ifc2OntoBIMAgentTest {
             mockAccessClient.when(() -> AccessClient.sendPostRequest(Mockito.anyString(), Mockito.anyString())).thenAnswer((Answer<Void>) invocation -> null);
             // Stub the method to return the sample config when ran
             mockAccessClient.when(AccessClient::retrieveClientProperties).thenAnswer((Answer<Map<String, String>>) invocation -> sampleConfig);
-            JSONObject response = agent.runAgent(new String[]{"test"}, true);
+            JSONObject response = agent.runAgent(new String[]{"test"}, true, false);
             // Verify method was called
             mockAccessClient.verify(() -> AccessClient.sendPostRequest(Mockito.anyString(), Mockito.anyString()));
             mockAccessClient.verify(() -> AccessClient.listTTLFiles(Mockito.anyString()));
@@ -275,7 +275,7 @@ class Ifc2OntoBIMAgentTest {
             mockAccessClient.when(AccessClient::retrieveClientProperties).thenAnswer((Answer<Map<String, String>>) invocation -> sampleConfig);
             // Stub the method to return the file list when it is running
             mockAccessClient.when(() -> AccessClient.listTTLFiles(Mockito.anyString())).thenAnswer((Answer<Set<String>>) invocation -> ttlFileSet);
-            JSONObject response = agent.runAgent(new String[]{"test"}, true);
+            JSONObject response = agent.runAgent(new String[]{"test"}, true, false);
             // Verify method was called
             mockAccessClient.verify(() -> AccessClient.sendPostRequest(Mockito.anyString(), Mockito.anyString()));
             mockAccessClient.verify(() -> AccessClient.listTTLFiles(Mockito.anyString()));
