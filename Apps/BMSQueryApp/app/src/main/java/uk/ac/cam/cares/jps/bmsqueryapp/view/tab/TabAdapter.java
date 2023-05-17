@@ -15,30 +15,27 @@ public class TabAdapter extends FragmentStateAdapter {
     private final int NUM_TABS = 2;
     private VisualizationFragment dtvfTab;
     private List<EditableAttribute> editableAttributes;
+    private String equipmentIri;
 
-    public TabAdapter(FragmentManager manager, Lifecycle lifecycle, List<EditableAttribute> editableAttributes) {
+    public TabAdapter(FragmentManager manager, Lifecycle lifecycle, List<EditableAttribute> editableAttributes, String equipmentIri) {
         super(manager, lifecycle);
         this.editableAttributes = editableAttributes;
+        this.equipmentIri = equipmentIri;
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
         if (position == 0) {
-            dtvfTab = new VisualizationFragment();
+            dtvfTab = new VisualizationFragment(equipmentIri);
             return dtvfTab;
         } else {
             return new EditFragment(editableAttributes);
         }
-
     }
 
     @Override
     public int getItemCount() {
         return NUM_TABS;
-    }
-
-    public VisualizationFragment getDtvfTab() {
-        return dtvfTab;
     }
 }

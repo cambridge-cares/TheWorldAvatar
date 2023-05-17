@@ -36,8 +36,6 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
 
     TabAdapter adapter;
 
-    private final Builder ANDROID_STATUS_AGENT_URL = Constants.constructUrlBuilder("android-status-agent/set");
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,8 +51,6 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
         LOGGER.info(equipmentLabel);
         LOGGER.info(equipmentIri);
 
-        sendEquipmentIri(equipmentIri);
-
         binding.instanceTitle.setText(equipmentLabel);
         binding.returnButton.setOnClickListener(view -> {
             finish();
@@ -62,29 +58,9 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
 
         ViewPager2 viewPager = binding.viewPager;
         TabLayout tabLayout = binding.tabs;
-        adapter = new TabAdapter(getSupportFragmentManager(), getLifecycle(), getEditableAttributeList(equipmentType));
+        adapter = new TabAdapter(getSupportFragmentManager(), getLifecycle(), getEditableAttributeList(equipmentType), equipmentIri);
         viewPager.setAdapter(adapter);
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(Constants.statusArrayTemp[position])).attach();
-
-    }
-
-    private void sendEquipmentIri(String equipmentIri) {
-        String requestUri = ANDROID_STATUS_AGENT_URL.addQueryParameter(EQUIPMENT_IRI, equipmentIri).build().toString();
-        StringRequest jsonRequest = new StringRequest(Request.Method.POST, requestUri,
-                this::showGraph, this::showFailureMessage);
-
-        LOGGER.info("Sending POST request to " + jsonRequest);
-
-        SingletonConnection.getInstance(this.getBaseContext()).addToRequestQueue(jsonRequest);
-    }
-
-    private void showGraph(String response) {
-        adapter.getDtvfTab().loadDTVF();
-    }
-
-    private void showFailureMessage(Exception response) {
-        LOGGER.error(response.getMessage());
-        Toast.makeText(getBaseContext(), "Unable to get the available equipment, please try again later", Toast.LENGTH_SHORT).show();
     }
 
     private List<EditableAttribute> getEditableAttributeList(String type) {
@@ -99,10 +75,4 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
         return new ArrayList<>();
     }
 
-    // TODO: need to clear the android status agent?
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//
-//    }
 }

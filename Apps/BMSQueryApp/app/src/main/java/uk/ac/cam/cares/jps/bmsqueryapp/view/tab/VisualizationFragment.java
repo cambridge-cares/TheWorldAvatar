@@ -1,15 +1,16 @@
 package uk.ac.cam.cares.jps.bmsqueryapp.view.tab;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,6 +24,27 @@ import uk.ac.cam.cares.jps.bmsqueryapp.databinding.FragmentVisualizationBinding;
 import uk.ac.cam.cares.jps.bmsqueryapp.utils.Constants;
 
 public class VisualizationFragment extends Fragment {
+
+    /**
+     * A data class used to inject application data to the visualisation webpage
+     */
+    static class JsObject {
+        public String equipmentIri;
+        public JsObject(String equipmentIri) {
+            this.equipmentIri = equipmentIri;
+        }
+
+        /**
+         * This function is called in the visualisation webpage to get the user selected equipmentIri
+         * @return equipmentIri
+         */
+        @JavascriptInterface
+        public String getEquipmentIri() {
+            return equipmentIri;
+        }
+    }
+
+
     private static final Logger LOGGER = LogManager.getLogger(VisualizationFragment.class);
 
     private String DTVFURI = Constants.HOST_PROD + ":1234";
@@ -30,8 +52,11 @@ public class VisualizationFragment extends Fragment {
     public int requestedStatus;
     private FragmentVisualizationBinding binding;
 
-    public VisualizationFragment() {
+    private String equipmentIri;
+
+    public VisualizationFragment(String equipmentIri) {
         super();
+        this.equipmentIri = equipmentIri;
     }
 
     public void setPosition(int position) {
@@ -48,10 +73,12 @@ public class VisualizationFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        loadDTVF(equipmentIri);
     }
 
-    public void loadDTVF() {
+    public void loadDTVF(String equipmentIri) {
+        WebView.setWebContentsDebuggingEnabled(true);
+
         WebView dtvfViz = binding.dtvfViz;
         dtvfViz.setWebViewClient(new WebViewClient() {
 
@@ -69,8 +96,11 @@ public class VisualizationFragment extends Fragment {
             }
         });
 
+        JsObject jsObject = new JsObject(equipmentIri);
+
         dtvfViz.getSettings().setJavaScriptEnabled(true);
-        binding.dtvfViz.loadUrl(DTVFURI);
+        binding.dtvfViz.addJavascriptInterface(jsObject, "jsObject");
+        binding.dtvfViz.loadUrl("file:///android_asset/visualisation/index.html");
         LOGGER.info("view created");
 
         dtvfViz.setVisibility(View.VISIBLE);
