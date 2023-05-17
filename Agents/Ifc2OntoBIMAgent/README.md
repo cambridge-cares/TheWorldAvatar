@@ -1,8 +1,8 @@
 # Ifc2OntoBim Agent
 
-This agent instantiates IFC models using the OntoBIM ontology into the specified endpoint.
-It requires support from the [IfcOwlConverterAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/IfcOwlConverterAgent).
+The Ifc2OntoBim Agent is designed to convert Industry Foundation Classes (IFC) models into the OntoBIM ontology. This process allows for the semantic enrichment of building information models, making them more accessible and usable for various applications. This agent is designed to work within a Docker container and requires support from the [IfcOwlConverterAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/IfcOwlConverterAgent).
 
+Below is a flowchart that illustrates the overall workflow of the Ifc2OntoBim Agent. It shows how an IFC model is converted into the OntoBIM ontology and stored in a knowledge graph.
 ```mermaid
     %%{init: {'theme':'neutral', 'fontFamily':'verdana'}}%%
     flowchart LR
@@ -17,6 +17,9 @@ It requires support from the [IfcOwlConverterAgent](https://github.com/cambridge
 ```
 
 ## Instructions
+
+Before you can use the Ifc2OntoBim Agent, there are some requirements you need to meet. Follow the steps below to ensure you have everything you need to successfully run the agent.
+
 ### 1. Requirements
 #### 1.1 IFC File
 This agent is designed to work with the [IFC2x3 TC1 schema](https://technical.buildingsmart.org/standards/ifc/ifc-schema-specifications/). IFC4 schema are not yet included.
@@ -35,13 +38,12 @@ Otherwise, they will not be instantiated.
 - Triples related to the OntoBIM:Facility concept will have to be manually instantiated as there is no equivalent concept from IFC.
 
 #### 1.2 Technical Requirements
-- Java 11
-- Apache Maven 3.8+
-- Docker
-- At least 16GB of RAM
+
+To run the Ifc2OntoBim Agent, you'll need Java 11, Apache Maven 3.8+, Docker, and at least 16GB of RAM.
 
 ### 2. Building the Agent
-The agent is designed for execution through a Docker container. Other deployment workflows are beyond the scope of this document.
+
+The agent is designed for execution through a Docker container. Other deployment workflows are beyond the scope of this document. Follow the steps below to build and deploy the agent.
 
 #### 2.1 Preparation
 This agent is set up to use this [Maven repository](https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/) (in addition to Maven central).
