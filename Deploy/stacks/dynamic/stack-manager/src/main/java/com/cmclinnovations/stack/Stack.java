@@ -94,9 +94,9 @@ public class Stack {
             // Load all user supplied services
             manager.initialiseAllUserServices(name);
         } else {
-            List<String> selectedServices = calculateSelectedServicesFromConfig(defaultServices);
+            handleUserSuppliedData(defaultServices);
 
-            handleUserSuppliedData(selectedServices);
+            List<String> selectedServices = calculateSelectedServicesFromConfig(defaultServices);
 
             // Initialise all of the selected services
             selectedServices.forEach(serviceName -> manager.initialiseService(name, serviceName));
@@ -138,41 +138,41 @@ public class Stack {
 
     private void handleUserSuppliedData(List<String> selectedServices) {
 
-        if (selectedServices.contains(VOLUME_POPULATOR_SERVICE_NAME)) {
-            Map<String, String> volumes = config.getVolumes();
-            if (volumes.isEmpty()) {
-                selectedServices.remove(VOLUME_POPULATOR_SERVICE_NAME);
-            } else {
-                ServiceConfig volumePopulator = manager.getServiceConfig(VOLUME_POPULATOR_SERVICE_NAME);
-
-                ContainerSpec containerSpec = volumePopulator.getContainerSpec();
-
-                List<Mount> existingMounts = containerSpec.getMounts();
-                final List<Mount> mounts;
-                if (null == existingMounts) {
-                    mounts = new ArrayList<>();
-                    containerSpec.withMounts(mounts);
-                } else {
-                    mounts = existingMounts;
-                }
-
-                List<String> args = containerSpec.getCommand();
-                Path internalHostDir = Path.of(args.get(args.size() - 2));
-                Path internalVolumeDir = Path.of(args.get(args.size() - 1));
-
-                Path dataDir = StackClient.getAbsDataPath();
-
-                volumes.forEach((volumeName, hostDir) -> {
-                    mounts.add(new Mount()
-                            .withType(MountType.BIND)
-                            .withSource(dataDir.resolve(hostDir).toString())
-                            .withTarget(internalHostDir.resolve(volumeName).toString()));
-                    mounts.add(new Mount()
-                            .withType(MountType.VOLUME)
-                            .withSource(volumeName)
-                            .withTarget(internalVolumeDir.resolve(volumeName).toString()));
-                });
+        Map<String, String> volumes = config.getVolumes();
+        if (!volumes.isEmpty()) {
+            if (!selectedServices.contains(VOLUME_POPULATOR_SERVICE_NAME)) {
+                selectedServices.add(0, VOLUME_POPULATOR_SERVICE_NAME);
             }
+
+            ServiceConfig volumePopulator = manager.getServiceConfig(VOLUME_POPULATOR_SERVICE_NAME);
+
+            ContainerSpec containerSpec = volumePopulator.getContainerSpec();
+
+            List<Mount> existingMounts = containerSpec.getMounts();
+            final List<Mount> mounts;
+            if (null == existingMounts) {
+                mounts = new ArrayList<>();
+                containerSpec.withMounts(mounts);
+            } else {
+                mounts = existingMounts;
+            }
+
+            List<String> args = containerSpec.getCommand();
+            Path internalHostDir = Path.of(args.get(args.size() - 2));
+            Path internalVolumeDir = Path.of(args.get(args.size() - 1));
+
+            Path dataDir = StackClient.getAbsDataPath();
+
+            volumes.forEach((volumeName, hostDir) -> {
+                mounts.add(new Mount()
+                        .withType(MountType.BIND)
+                        .withSource(dataDir.resolve(hostDir).toString())
+                        .withTarget(internalHostDir.resolve(volumeName).toString()));
+                mounts.add(new Mount()
+                        .withType(MountType.VOLUME)
+                        .withSource(volumeName)
+                        .withTarget(internalVolumeDir.resolve(volumeName).toString()));
+            });
         }
     }
 }
