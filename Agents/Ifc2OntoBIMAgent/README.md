@@ -55,6 +55,11 @@ You'll need to provide  your credentials in a single-word text files located lik
 repo_username.txt should contain your Github username. repo_password.txt should contain your Github [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token),
 which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
+Please note that this agent will require at least 16GB RAM due to the large size of IFC models. This has been set in the `docker-compose.yml` files of both development and production environments.
+If you have less free RAM available, it is possible to set 8GB RAM for smaller IFC models. For much larger IFC models, please increase RAM allocation.
+To change the memory allocation to the JVM Heap, please open the respective `docker-compose.yml` files, and update the `-Xms16g -Xmx16g` options at line 11.
+`-Xms16g` refers to the minimum heap size while `-Xmx16g` represents the maximum heap size.
+
 #### 2.2 Docker Deployment
 **TEST ENVIRONMENT**
 - Deploy the agent to execute the unit and integration tests by running the following code in the CLI at the <root> directory. 
@@ -89,10 +94,6 @@ docker-compose up -d
 ```
 
 *WIP to transfer these Maven credentials over agents, instead of being implemented as Docker instructions
-
-*Both development and production environment have set the default JVM Heap size to use 8GB of RAM in their respective docker-compose files. 
-Check if you have sufficient technical specifications by ensuring agent is running after deployment. 
-If not, please remove the environment values or set it to use less RAM.
 
 #### 2.3 Running the Agent
 The agent currently offers three API routes:
