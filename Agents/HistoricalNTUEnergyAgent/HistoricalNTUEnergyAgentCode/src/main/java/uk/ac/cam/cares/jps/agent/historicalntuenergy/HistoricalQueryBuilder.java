@@ -522,11 +522,11 @@ public class HistoricalQueryBuilder {
                 TriplePattern SpecNumericalValue = iri(ModelVariableSpecificationIRI).has(iri(numericalValue), numValue);
                 TriplePattern SpecUnit = null;
                 TriplePattern SpecUnitIsType = null;
-                if(ModelVariableSpecificationIRI.contains("Qmax")){
+                if(ModelVariableSpecificationIRI.contains("QMax")){
                     SpecUnit = iri(ModelVariableSpecificationIRI).has(iri(hasUnitOfMeasure), iri(Mvar));
                     SpecUnitIsType = iri(Mvar).isA(iri(SIDerivedUnit));
                 }
-                if(ModelVariableSpecificationIRI.contains("Qmin")){
+                if(ModelVariableSpecificationIRI.contains("QMin")){
                     SpecUnit = iri(ModelVariableSpecificationIRI).has(iri(hasUnitOfMeasure), iri(Mvar));
                     SpecUnitIsType = iri(Mvar).isA(iri(SIDerivedUnit));
                 }

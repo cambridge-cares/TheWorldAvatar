@@ -1,0 +1,14 @@
+version: "3.8"
+
+# All Services
+services:
+
+  # Example DTVF implementation
+  example-cesium-vis:
+    image: ghcr.io/cambridge-cares/dtvf-base-image:latest
+    container_name: "example-cesium-vis"
+    ports:
+      - "80:80"
+    volumes:
+      - ./webspace:/var/www/html
+ 
