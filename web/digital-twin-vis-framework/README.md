@@ -29,8 +29,15 @@ Documentation for the DTVF is spread across a number of files, and is broken dow
 
 ## Examples
 
-<img align="center" src="./example-mapbox-vis/readme-example.JPG" alt="Example of 2D data on a Mapbox visualisation" width="75%"/>
-<p align="center">Example of a 2D data on a Mapbox visualisation.&nbsp;</p>
-
-<img align="center" src="./example-cesium-vis/readme-example.JPG" alt="Example of 3D data on a CesiumJS visualisation" width="75%"/>
-<p align="center">Example of a 3D data on a CesiumJS visualisation.</p>
+<p align="center">
+ <img src="./example-mapbox-vis/readme-example.JPG" alt="Example of 2D data on a Mapbox visualisation" width="75%"/>
+</p>
+<p align="center">
+ <em>Example of a 2D data on a Mapbox visualisation.</em><br/><br/><br/>
+</p>
+<p align="center">
+ <img src="./example-cesium-vis/readme-example.JPG" alt="Example of 3D data on a CesiumJS visualisation" width="75%"/>
+</p>
+<p align="center">
+ <em>Example of a 3D data on a CesiumJS visualisation.</em>
+</p>

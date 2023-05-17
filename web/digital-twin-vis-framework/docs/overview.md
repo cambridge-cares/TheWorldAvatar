@@ -1,43 +1,125 @@
-# Introduction
+# Overview
 
-A central framework for Digital Twin Visualisations (the Digital Twin Visualisation Framework, or DTVF) has been created so that in most cases, the process of creating a new visualisation to display pre-generated data is as simple as possible. The goal is that a developer that is inexperienced with Javascript (or the Javascript libraries we're using) can get a reasonable visualisation of the data by simply ensuring the data meets a set format and providing some basic configuration files.
+A central framework for Digital Twin Visualisations (the Digital Twin Visualisation Framework, or DTVF) has been created so that in most cases, the process of creating a new visualisation to display pre-generated data is as simple as possible. The goal is that a developer that is inexperienced with Typescript (or the JavaScript libraries we're using) can get a reasonable visualisation of the data by simply ensuring the data meets a set format and providing some basic configuration files.
 
-Please note that the DTVF can only plot data that is provided in the accepted formats (more on this below), restricts some features if the data isn't organised (again, more on this below), and only produces a basic visualisation. Developers that want to display non-standard data, or create more complex map interactions are free to use the DTVF as a base, but will likely need to handle these additions themselves.
+To avoid asking each visualisation user to write their own code interfacing with the mapping provider, the DTVF provides the functionality to read data source and layer definitions from a custom configuration file then automatically call the relevant library methods to display them on the map.
 
-The current, working version of the DTVF is **3.3.4**.
+Based on the structure of this configuration file, a Layer tree component is generated to allow users to show/hide individual (or groups of) layers at will. In addition, controls to change the camera location, base imagery, and 3D terrain are also generated.
 
-# Technical Overview
+Once displayed, a number of standard interaction handlers are also added. These add common functionality such as displaying the name of a feature on mouse-over, showing a feature's details in the side panel when clicked, and contacting the [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent) for more detailed metadata on a feature.
 
-The DTVF is written in [TypeScript](https://www.typescriptlang.org/) and compiled into a single minified JS file (and a single minified CSS file). These files are then hosted on a CMCL server that allows remote imports. These are then included within each visualisation's `index.html` file as client-side libraries. A number of abstract base classes exist within the DTVF library, with concrete implementations for each Mapping Provider.
+## Mapping providers
 
 At the time of writing the available mapping providers are [Mapbox](https://www.mapbox.com/) and [CesiumJS](https://cesium.com/platform/cesiumjs/). The core differences between providers is as follows.
 
 * Mapbox can only handle 2D data (with the option to extrude 2D polygons into basic 3D polyhedrons) from local files or from [WMS endpoints](https://en.wikipedia.org/wiki/Web_Map_Service). Unlike CesiumJS (see below), Mapbox can display 2D vector data (including use of SVGs for icons, under certain conditions) if the data is hosted using the [Mapbox Vector Tiles](https://docs.mapbox.com/data/tilesets/guides/vector-tiles-introduction/) format. It is however quite customisable and has relatively small performance overhead. Unless you're plotting 3D building data, it's advised to use this mapping provider.
 
-* CesiumJS can handle 2D data as well as 3D data. 2D data must be provided via a WMS endpoint and can only be styled on the server hosting it (rather than the client-side styling Mapbox provides); at the time of writing we have not implemented functionality to support the _display_ of 2D vector data (GeoServer can host vector data, but Cesium will rasterise this as a PNG upon visualisation). This provider also has a large performance overhead, a decent GPU is required for a smooth visualisation; we recommend only using it if 3D data is required.
+* CesiumJS can handle 2D raster data as well as 3D data. 2D data must be provided via a WMS endpoint and can only be styled on the server hosting it (rather than the client-side styling Mapbox provides); at the time of writing we have not implemented functionality to support the _display_ of 2D vector data (GeoServer can host vector data, but Cesium will rasterise this as a PNG upon visualisation). This provider also has a large performance overhead, a decent GPU is required for a smooth visualisation; we recommend only using it if 3D data is required.
 
-To use the DTVF, developers just need to provide some JSON configuration files and a `index.html` file that imports the remote DTVF library (along with other dependencies), adds some required HTML elements, then calls the startup routine. Template HTML files can be found within the visualisation examples (listed below).
+##  Writing the configuration file
 
-On startup, the DTVF reads a number of those JSON configuration files (all expected to be local to the visualisation, i.e. next to the `index.html` file), constructs internal, hierarchal representations of data sources and layers, then calls provider specific classes to handle adding those sources and layers to the map for visualisation.
+The first step for any prospective user of the DTVF is to understand how to structure the configuration file. At the time of writing, this file must be named `data.json` and reside within the root webspace (i.e. next to your visualisation's `index.html` file).
 
-Display of meta and timeseries data is also a feature offered by the DTVF (regardless of the chosen mapping provider), however this functionality is still under development and requires data to be hosted within a [stack instance](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager), with a specific agent running, and the geospatial data to meet certain standards. If these conditions are not met, any metadata baked directly into the geospatial data is shown instead; it's recommended to use this approach for now.
+The DTVF configuration file is a [JSON](https://en.wikipedia.org/wiki/JSON) file that specified the data sources (where and how the data is loaded) and data layers (how that data is visualised). These sources and layers are contained within hierarchal data groups, how these groups are nested is up to the writer of the configuration file.
 
-A brief list of these requirements is shown below, but as the current implementation is considered deprecated, it is not advised that developers use it. If absolutely required, more information can be found within the README of the FeatureInfoAgent.
+The following subsections detail how to generate your own configuration file. Please note however that whilst the majority of the config format is the same across all mapping library providers, some parameters are only supported for specific libraries (these are detailed in other documentation).
+
+### Defining a group
+
+Each data group contains a number of parameters (detailed below), and can house multiple sub-groups to form a custom hierarchy.
+
+* `name` (required): This is the user facing name of the data group.
+* `stack` (optional): This is the URL for the stack containing metadata on this group's data. Note that this should be the base URL of the stack (i.e. without "/geoserver"). If missing, dynamic metadata from a remote FeatureInfoAgent cannot be utilised.
+* `sources` (optional): This is an array of objects defining data sources (see below for info on sources).
+* `layers` (optional): This is an array of objects defining data layers (see below for info on layers).
+* `groups` (optional): This is an array of further data groups, used to build the data hierarchy.
+  
+Definitions of data sources and layers is optional within a data group so that groups can be added just to hierarchal purposes rather than _having_ to house data in every group.
+
+```json
+{
+    "name": "My Example Group",
+    "stack": "https://my-example-website.com/stack",
+    "sources": [
+        ...
+    ],
+    "layers": [
+        ...
+    ],
+    "groups": [
+        ...
+    ]
+}
+```
+
+### Defining a source
+
+Each group can contain a number of sources, representing individual data files or endpoints that will be loaded into memory by the chosen mapping library. Sources can also be defined in top-level groups, then utilised by layers further down the hierarchy.
+
+Definitions of sources vary depending on which mapping provider is chosen (as they all support different types of data). Specific parameters used for each mapping library are detailed in later parts of the DTVF documentation, the common parameters are detailed below.
+
+* `id` (required): This is the internal ID of the source. It needs to be unique within the current group, but is not required to be globally unique.
+* `type` (required): This is the type of the source. Acceptable values differ depending on the mapping library (see the library specific documentation for details).
+
+```json
+{
+    "id": "example-mapbox-source",
+    "type": "geojson",
+    "data": "./my-example-data.geojson
+}
+```
+
+### Defining a layer
+
+Each group can also contain a number of layers, defining how the data is visualised on screen. Layers can utilise sources defined in groups higher in the hierachy; additionally multiple layers can visualise data from the same source.
+
+As with sources, definitions of layers vary depending on which mapping provider is chosen (as they all support different styling options). Specific parameters used for each mapping library are detailed in later parts of the DTVF documentation, the common parameters are detailed below.
+
+* `id` (required): This is the internal ID of the layer. It needs to be unique within the current group, but is not reqiured to be globally unique.
+* `name` (required): This is the user facing name of the layer (that will appear in the tree). Multiple layers can use the same name, they'll be combined in a single entry in the tree.
+* `source` (required): This is the ID of the source used to populate the layer.
+
+```json
+{
+    "id": "example-mapbox-layer",
+    "name": "My Example Data",
+    "source": "example-mapbox-source"
+}
+```
+
+## Setting up the webspace
+
+The DTVF provides a base image that can be used to host visualisations (`ghcr.io/cambridge-cares/dtvf-base-image:latest`). Once pulled, the image simply needs to be connected to a bind mount at the `/var/www/html` location within the container.
+
+This webspace should house all the files needed to display your visualisation. This includes the `data.json` file as well as the main `index.html` file, any local data files, and any required images. Custom CSS and JS files can be added to provide bespoke functionality as needed.
+
+The example Mapbox and CesiumJS visualisation show how to create a container using the DTVF base image and a webspace bind mount.
+
+## Editing the HTML file
+
+Within the webspace, an `index.html` file should be provided to display the UI elements and import the required JS libraries (including which version of the DTVF is used).
+
+The `index.html` file of the example Mapbox & CesiumJS visualisations has been produced to act as a template for users creating their own visualisations. Once the template is copied, certain areas of it can be adjusted to add custom content; these sections are marked with "CUSTOMISABLE" comments.
+
+## Dynamic meta data
+
+Display of meta and timeseries data is also a feature offered by the DTVF (regardless of the chosen mapping provider). However, the processing of getting this system setup can be quite lengthy.
+
+To query for dynamic data, each selectable feature of your data also needs to contain `iri` and `endpoint` properties. Once selected, these are sent to a remote agent ([FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-feature-info-agent/Agents/FeatureInfoAgent)) running in a stack. Data is queried from the knowledge graph and/or relational database, then returned for display in the visualisation's side panel.
+
+A breakdown of the requirements to use this system are below, for more information check out the FeatureInfoAgent's documentation.
 
 * A stack instance needs to be running (at some location, can be remote), containing:
-  * A blazegraph instance holding metadata on the visualised features.
-  * An instance of the [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-feature-info-agent/Agents/FeatureInfoAgent) with a mapping of the possible feature classes to pre-written SPARQL queries. These queries must return data in a specific tabular format (i.e. columns of data titled "label", "value", and optionally, "unit").
-  * If applicable, a PostgreSQL instance containing timeseries data for the visualisation features.
-* Geospatial data needs to contain `name`, `iri`, and `endpoint` fields for each feature (regardless of how the data is served, i.e. locally or via WMS).
-  * The `name` field needs to contain the human readable name of the feature.
+  * A Blazegraph instance holding metadata on the visualised features.
+  * An instance of the [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-feature-info-agent/Agents/FeatureInfoAgent) with a mapping of the possible feature classes to pre-written SPARQL queries. These queries must return data in a specific tabular format.
+  * If applicable, a PostgreSQL instance containing time series data.
+* Geospatial data needs to contain `iri`, and `endpoint` fields for each feature (regardless of how the data is served, i.e. locally or via WMS).
   * The `iri` field needs to contain the full IRI of the feature as represented in the knowledge graph.
   * The `endpoint` field needs to contain the URL of the Blazegraph namespace containing data on the feature. Note that this can be absolute or relative to the FeatureInfoAgent's location.
 
 # Developing the DTVF
 
-Changes to the DTVF can be made by adjusting the TypeScript class files within the [library](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework/library) directory. These updated TypeScript classes can then be compiled into JavaScript and minified using the provided Docker containers. For other developers to use, the final JS and CSS file will then need to be uploaded to the CMCL server, ready for remote import.
-
-For more information on the DTVF library, see the associated README file within the [library](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework/library) directory.
+For more information on the technical aspects of the DTVF, and how to make changes, please see the [Development](../library/README.md) documentation.
 
 # Visualisation Examples
 
@@ -47,8 +129,8 @@ Before attempting to create their own visualisations, developers should try runn
 
 # Troubleshooting/FAQs
 
-Solutions to common issues, and answers to common questions, relating to the DTVF can be found on the [Troubleshooting](https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Troubleshooting) page.
+Solutions to common issues, and answers to common questions, relating to the DTVF can be found on the [Troubleshooting](./troubleshooting.md) page.
 
 # Support
 
-For support on using the visualisations, or to discuss any potential changes to the DTVF, please contact the technical team at [CMCL Innovations](https://cmclinnovations.com/).
+For support on using the visualisations, or to discuss any potential changes to the DTVF, please contact the technical team at [CMCL](mailto:support@cmclinnovations.com).
