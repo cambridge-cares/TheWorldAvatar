@@ -66,8 +66,8 @@ def retrieve_settings():
     HOTSIDE_TEMPERATURE = float(HOTSIDE_TEMPERATURE_STR)
 
 # Run when module is imported
-# retrieve_settings()
-DATABASE = 'buildings'
-NAMESPACE = 'heatpump'
-HEATPUMP_EFFICIENCY =  0.35
-HOTSIDE_TEMPERATURE = 318.15
+retrieve_settings()
+# DATABASE = 'buildings'
+# NAMESPACE = 'heatpump'
+# HEATPUMP_EFFICIENCY =  0.35
+# HOTSIDE_TEMPERATURE = 318.15
