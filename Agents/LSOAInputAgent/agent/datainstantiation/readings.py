@@ -962,80 +962,87 @@ def upload_hadUK_climate_to_KG (year: str = YEAR,
     logger.info('Computing associated points for each LSOA area...')
     logger.info('Be patient and get a cuppa tea, this will take long time to run...')
     for i in tqdm(range(0, int(len(LSOA)))):
-      assoc_mask = [full_grid.geoms[j].within(LSOA[i,1]) for j in range(len(grid_loc))]
-      if any(assoc_mask) == False:
-          assoc_point = nearest_points(full_grid,LSOA[i,2])[0]
-          for j in range(len(grid_loc)):
-              if assoc_point == grid_loc[j]:
-                  assoc_mask[j] = True 
-                  break
-      for month_it in range(len(months)):
-          LSOA_vars_full = nc_vars_full[month_it][assoc_mask,:]
+      query = climate_temperature_query_template(LSOA[i,0])
+      kg_client = KGClient(query_endpoint, update_endpoint)
+      res = kg_client.performQuery(query)
 
-          '''
-          (Comment from the creater of this code Tom Savage)
-          Following code is responsible for aggregating mean minimum and maximum temperature values
+      if len(res) == 36:
+          pass
+      else: 
+        assoc_mask = [full_grid.geoms[j].within(LSOA[i,1]) for j in range(len(grid_loc))]
+        if any(assoc_mask) == False:
+            assoc_point = nearest_points(full_grid,LSOA[i,2])[0]
+            for j in range(len(grid_loc)):
+                if assoc_point == grid_loc[j]:
+                    assoc_mask[j] = True 
+                    break
+        for month_it in range(len(months)):
+            LSOA_vars_full = nc_vars_full[month_it][assoc_mask,:]
 
-          LSOA_vars_full contains a matrix with columns of tasmin, tas and tasmax
-          and respective rows for every grid point that falls within a region.
+            '''
+            (Comment from the creater of this code Tom Savage)
+            Following code is responsible for aggregating mean minimum and maximum temperature values
 
-          if the variable is tasmin then the minimum of these values is taken, mean for tas and max for tasmax
+            LSOA_vars_full contains a matrix with columns of tasmin, tas and tasmax
+            and respective rows for every grid point that falls within a region.
 
-          [[tasmin ,  tas   , tasmax],
-          [tasmin ,  tas   , tasmax],
-          [tasmin ,  tas   , tasmax],
-          [tasmin ,  tas   , tasmax],
-          [tasmin ,  tas   , tasmax],
-          [tasmin ,  tas   , tasmax],
-          [tasmin ,  tas   , tasmax]]
+            if the variable is tasmin then the minimum of these values is taken, mean for tas and max for tasmax
 
-          [[   |   ,   |    ,   |   ],
-          [   |   ,   |    ,   |   ],
-          [   |   ,   |    ,   |   ],
-          [np.min ,np.mean , np.max],
-          [   |   ,   |    ,   |   ],
-          [   |   ,   |    ,   |   ],
-          [   |   ,   |    ,   |   ]]
+            [[tasmin ,  tas   , tasmax],
+            [tasmin ,  tas   , tasmax],
+            [tasmin ,  tas   , tasmax],
+            [tasmin ,  tas   , tasmax],
+            [tasmin ,  tas   , tasmax],
+            [tasmin ,  tas   , tasmax],
+            [tasmin ,  tas   , tasmax]]
+
+            [[   |   ,   |    ,   |   ],
+            [   |   ,   |    ,   |   ],
+            [   |   ,   |    ,   |   ],
+            [np.min ,np.mean , np.max],
+            [   |   ,   |    ,   |   ],
+            [   |   ,   |    ,   |   ],
+            [   |   ,   |    ,   |   ]]
 
 
-          [np.min ,np.mean , np.max]
-          (Comment from editor: yea well explained)
-          '''
-          post_proc_vars = np.zeros(3)
-          for k in range(3):
-          # Calculate tasmin, tas, tasmax of each LSOA area based on grid temperature
-              if clim_vars[k] == 'tasmin':
-                  post_proc_vars[k] = np.min(LSOA_vars_full[:,k])
-              elif clim_vars[k] == 'tas': 
-                  post_proc_vars[k] = np.mean(LSOA_vars_full[:,k])
-              else:
-                  post_proc_vars[k] = np.max(LSOA_vars_full[:,k])
+            [np.min ,np.mean , np.max]
+            (Comment from editor: yea well explained)
+            '''
+            post_proc_vars = np.zeros(3)
+            for k in range(3):
+            # Calculate tasmin, tas, tasmax of each LSOA area based on grid temperature
+                if clim_vars[k] == 'tasmin':
+                    post_proc_vars[k] = np.min(LSOA_vars_full[:,k])
+                elif clim_vars[k] == 'tas': 
+                    post_proc_vars[k] = np.mean(LSOA_vars_full[:,k])
+                else:
+                    post_proc_vars[k] = np.max(LSOA_vars_full[:,k])
 
-          LSOA_vars = post_proc_vars
-          LSOA_IRI = LSOA[i,0]
-          month_str = str(month_it+1)
-          month_str_len = len(month_str)
-          _, month_end = month_num(months[month_it])
-          if month_str_len == 1:
-              month_str = '0'+month_str
+            LSOA_vars = post_proc_vars
+            LSOA_IRI = LSOA[i,0]
+            month_str = str(month_it+1)
+            month_str_len = len(month_str)
+            _, month_end = month_num(months[month_it])
+            if month_str_len == 1:
+                month_str = '0'+month_str
 
-          LSOA_code = LSOA_IRI.split('/')[-1]
-          startUTC = datetime.strptime('2020-'+month_str+'-01T12:00:00.000Z', '%Y-%m-%dT%H:%M:%S.000Z')
-          endUTC = datetime.strptime('2020-'+month_str+'-'+str(month_end)+'T12:00:00.000Z', '%Y-%m-%dT%H:%M:%S.000Z')
+            LSOA_code = LSOA_IRI.split('/')[-1]
+            startUTC = datetime.strptime('2020-'+month_str+'-01T12:00:00.000Z', '%Y-%m-%dT%H:%M:%S.000Z')
+            endUTC = datetime.strptime('2020-'+month_str+'-'+str(month_end)+'T12:00:00.000Z', '%Y-%m-%dT%H:%M:%S.000Z')
 
-          # Initialise update query
-          query = f"INSERT DATA" + "{"
-          for var in range(len(LSOA_vars)):
-              meas_uuid = CLIMA + 'ClimateMeasurement_' + str(LSOA_code)
-              clim_var = CLIMA + str(clim_vars[var])
-              temp_uuid = CLIMA + 'Temperature_' + str(LSOA_code)
-              val_uuid = CLIMA + 'Value_' + str(LSOA_code)
-              query += climate_temperature_update_template(LSOA_code,meas_uuid,clim_var,startUTC,endUTC,temp_uuid,val_uuid,LSOA_vars[var])
-          query += "}"
+            # Initialise update query
+            query = f"INSERT DATA" + "{"
+            for var in range(len(LSOA_vars)):
+                meas_uuid = CLIMA + 'ClimateMeasurement_' + str(LSOA_code)
+                clim_var = CLIMA + str(clim_vars[var])
+                temp_uuid = CLIMA + 'Temperature_' + str(LSOA_code)
+                val_uuid = CLIMA + 'Value_' + str(LSOA_code)
+                query += climate_temperature_update_template(LSOA_code,meas_uuid,clim_var,startUTC,endUTC,temp_uuid,val_uuid,LSOA_vars[var])
+            query += "}"
 
-          # Instantiate all non-time series triples
-          kg_client = KGClient(query_endpoint, update_endpoint)
-          kg_client.performUpdate(query)
+            # Instantiate all non-time series triples
+            kg_client = KGClient(query_endpoint, update_endpoint)
+            kg_client.performUpdate(query)
 
     logger.info('Insert query for hadUK climate data successfully performed')
     return int(len(LSOA))
