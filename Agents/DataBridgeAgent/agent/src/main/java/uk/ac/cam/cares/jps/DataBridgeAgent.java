@@ -23,6 +23,9 @@ public class DataBridgeAgent extends JPSAgent {
     private static boolean VALID = true;
     private static boolean AGENT_IN_STACK = false;
     private static final String INVALID_ROUTE_ERROR_MSG = "Invalid request type! Route ";
+    private static final String KEY_NAMESPACE = "namespace";
+    private static final String KEY_DATABASE = "database ";
+    private static final String KEY_TIME_CLASS = "timeClass";
 
     /**
      * Perform required setup.
@@ -73,7 +76,7 @@ public class DataBridgeAgent extends JPSAgent {
         switch (route) {
             case "sparql":
                 if (requestType.equals("GET")) {
-                    String[] config = requestParams.has("namespace") ? ConfigStore.retrieveSPARQLConfig(requestParams.get("namespace").toString()) : ConfigStore.retrieveSPARQLConfig();
+                    String[] config = requestParams.has(KEY_NAMESPACE) ? ConfigStore.retrieveSPARQLConfig(requestParams.get(KEY_NAMESPACE).toString()) : ConfigStore.retrieveSPARQLConfig();
                     jsonMessage = sparqlRoute(config);
                 } else {
                     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
@@ -82,8 +85,8 @@ public class DataBridgeAgent extends JPSAgent {
                 break;
             case "sql":
                 if (requestType.equals("GET")) {
-                    String[] config = requestParams.has("database") ? ConfigStore.retrieveSQLConfig(requestParams.get("database").toString()) : ConfigStore.retrieveSQLConfig();
-                    AGENT_IN_STACK = requestParams.has("database") ? true : false;
+                    String[] config = requestParams.has(KEY_DATABASE) ? ConfigStore.retrieveSQLConfig(requestParams.get(KEY_DATABASE).toString()) : ConfigStore.retrieveSQLConfig();
+                    AGENT_IN_STACK = requestParams.has(KEY_DATABASE) ? true : false;
                     jsonMessage = sqlRoute(config);
                 } else {
                     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
@@ -102,19 +105,19 @@ public class DataBridgeAgent extends JPSAgent {
                 if (requestType.equals("POST")){
                     String namespace = null;
                     String db = null;
-                    if(requestParams.has("database")){
-                        db = requestParams.getString("database");
+                    if(requestParams.has(KEY_DATABASE)){
+                        db = requestParams.getString(KEY_DATABASE);
                     }
 
-                    if (requestParams.has("namespace")){
-                        namespace = requestParams.getString("namespace");
+                    if (requestParams.has(KEY_NAMESPACE)){
+                        namespace = requestParams.getString(KEY_NAMESPACE);
                     }
 
                     String[] config = ConfigStore.retrieveTSClientConfig(namespace, db);
                     AGENT_IN_STACK = false;
                     
-                    if (requestParams.has("timeClass")){
-                        String timeClass = requestParams.getString("timeClass");
+                    if (requestParams.has(KEY_TIME_CLASS)){
+                        String timeClass = requestParams.getString(KEY_TIME_CLASS);
                         jsonMessage = updateTimeSeries(config, requestParams, timeClass);
                     }
                     else{
