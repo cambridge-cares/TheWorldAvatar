@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-  ship-input-agent:
-    image: docker.cmclinnovations.com/ship-input-agent:1.0.0
+  jurong-island-input-agent:
+    image: ghcr.io/cambridge-cares/jurong-island-input-agent:1.0.0-SNAPSHOT
     deploy:
       mode: replicated
       replicas: 1
@@ -11,7 +11,8 @@ services:
     environment:
       - STACK_NAME=${STACK_NAME}
       - DATABASE=postgres # currently ontop reads from the default database
-      - namesapce=jibusinessunits
+      - QUERY_ENDPOINT=http://www.theworldavatar.com/blazegraph/namespace/jibusinessunits/sparql
+      - NUMBER_SOURCES=600
       - DATA_DIR=/data
       - LAST_READ_FILE=/misc/last_read_file # stores the last read json file, so that the agent chooses the next following file correctly
       - TIME_OFFSET_FILE=/misc/time_offset_file # when files in the data folder are exhausted, a time offset is added and the data is cycled through again

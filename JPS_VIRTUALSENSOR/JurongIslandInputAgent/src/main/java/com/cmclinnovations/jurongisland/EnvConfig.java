@@ -10,6 +10,8 @@ public class EnvConfig {
     public static final String EMISSIONS_AGENT_IRI = System.getenv("EMISSIONS_AGENT_IRI");
     public static final String PYTHON_SERVICE_URL = System.getenv("PYTHON_SERVICE_URL");
     public static final String PARALLELISE_CALCULATIONS = System.getenv("PARALLELISE_CALCULATIONS");
+    public static final String QUERY_ENDPOINT = System.getenv("QUERY_ENDPOINT");
+    public static final String NUMBER_SOURCES = System.getenv("NUMBER_SOURCES");
 
     private EnvConfig() {
         throw new IllegalStateException();
