@@ -372,29 +372,29 @@ class MapHandler_Cesium extends MapHandler {
     private addGLTFFile(source: Object,  layer: DataLayer) {
         // Check the position
         let position = source["position"];
-        if(position === null || position === undefined) {
+        if("position" in source) {
             console.error("Cannot plot a glTF/glB data source that has no 'position' parameter");
         }
 
         // Check the orientation
-        let orientation = [0, 0, 0];
-        if(source.hasOwnProperty("orientation")) {
-            orientation = source["orientation"];
+        let rotation = [0, 0, 0];
+        if("rotation" in source) {
+            rotation = source["orientation"];
         }
 
         // Generate final position
         let finalPosition = Cesium.Cartesian3.fromDegrees(position[0], position[1])
 
         // Generate final orientation
-        let finalOrientation = Cesium.Transforms.headingPitchRollQuaternion(
+        let finalRotation = Cesium.Transforms.headingPitchRollQuaternion(
             finalPosition,
-            new Cesium.HeadingPitchRoll(orientation[0], orientation[1], orientation[2])
+            new Cesium.HeadingPitchRoll(rotation[0], rotation[1], rotation[2])
         );
 
         // Define the entity before adding to the map
         let sourceEntity = {
             position: finalPosition,
-            orientation: finalOrientation,
+            orientation: finalRotation,
             model: {
                 uri: source["uri"],
                 scale: source.hasOwnProperty("scale") ? source["scale"] : 1.0

@@ -51,7 +51,7 @@ A layer provides the specifications on how to display a data source on a map. Ea
 Mapbox supports a number of different layer formats, use the table below to identify the best layer type to express your data.
 
 | Type      | Description |
-| ----------- | ----------- |
+| --------- | ----------- |
 | background | Covers the map with a background pattern. |
 | fill | Filled (optionally stroked) polygons. |
 | line | Stroked polylines. |
@@ -62,12 +62,13 @@ Mapbox supports a number of different layer formats, use the table below to iden
 | heatmap | Renders a range of colors to represent point density. |
 | hillshade | Renders DRM data on the client-side. |
 
-Specifying a layer within the `data.json` file closely follows the [Mapbox layer format](https://docs.mapbox.com/mapbox-gl-js/style-spec/layers/), with the addition of a few DTVF specific parameters. These specific parameters are detailed in the table below.
+Specifying a layer within the `data.json` file closely follows the [Mapbox layer format](https://docs.mapbox.com/mapbox-gl-js/style-spec/layers/), with the addition of a few DTVF specific parameters. Required parameters, and DTVF specific ones are detailed in the table below.
 
 | Parameter   | Purpose |
-| ----------- | ----------- |
+| ----------- | ------- |
 | id | (Required) Internal ID for the layer, must be unique within group. |
 | name | (Required) User facing name of the layer. When shared with other layers in the group, entries will be combined in the layer tree. |
+| source | (Required) ID of the source to pull data from. |
 | order | (Optional, default is 0) Integer for the layer's global order. Zero is closest to the map's base imagery. |
 | clickable | (Optional, default is true) Boolean for whether the layer should be interactable. |
 | treeable | (Optional, default is true) Boolean for whether the layer should be shown in the tree. |
@@ -95,3 +96,11 @@ The default location of the Mapbox map can be set using the below format in the 
 An example Mapbox visualisation has been committed to repository to act both as an example, and a template for users putting together new visualisations.
 
 You can find the visualisation, along with documentation of how it was put together, in the [example-mapbox-vis](../example-mapbox-vis/) directory.
+
+<br/>
+<p align="center">
+ <img src="../example-mapbox-vis/readme-example.JPG" alt="Part of the example Mapbox visualisation." width="75%"/>
+</p>
+<p align="center">
+ <em>Part of the example Mapbox visualisation.</em><br/><br/><br/>
+</p>
