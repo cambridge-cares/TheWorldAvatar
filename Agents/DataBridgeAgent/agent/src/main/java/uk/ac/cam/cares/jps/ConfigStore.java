@@ -41,26 +41,45 @@ public class ConfigStore {
      * @return An array of these endpoints.
      */
     protected static String[] retrieveSQLConfig() {
-        return retrieveSQLConfig(null);
+        return retrieveSQLConfig(null, "");
     }
 
     /**
-     * Retrieves SQL database properties stored in the properties file or construct it from the stack database url.
+     * Retrieves SQL database properties stored in the properties file or as a stack database.
      *
      * @param stackDatabase The stack database name passed as a parameter to the GET request.
      * @return An array of these endpoints.
      */
-    protected static String[] retrieveSQLConfig(String stackDatabase) {
+    protected static String[] retrieveSQLConfig(String stackDatabase, String transferKey) {
         StringBuilder missingPropertiesErrorMessage = new StringBuilder();
         try (InputStream input = new FileInputStream(PROPERTIES_FILEPATH)) {
             Properties prop = new Properties();
             String[] config = new String[6];
             LOGGER.debug("Retrieving configuration from " + PROPERTIES_FILEPATH + "...");
             prop.load(input);
-            config[0] = validateProperties(prop, SRC_DB_URL, missingPropertiesErrorMessage);
-            config[1] = validateProperties(prop, SRC_DB_USER, missingPropertiesErrorMessage);
-            config[2] = validateProperties(prop, SRC_DB_PASSWORD, missingPropertiesErrorMessage);
-            retrieveTargetDatabase(prop, stackDatabase, config);
+            if (transferKey.isEmpty()) {
+                LOGGER.info("Retrieving the details for source and target databases from file...");
+                config[0] = validateProperties(prop, SRC_DB_URL, missingPropertiesErrorMessage);
+                config[1] = validateProperties(prop, SRC_DB_USER, missingPropertiesErrorMessage);
+                config[2] = validateProperties(prop, SRC_DB_PASSWORD, missingPropertiesErrorMessage);
+                config[3] = validateProperties(prop, TARGET_DB_URL, missingPropertiesErrorMessage);
+                config[4] = validateProperties(prop, TARGET_DB_USER, missingPropertiesErrorMessage);
+                config[5] = validateProperties(prop, TARGET_DB_PASSWORD, missingPropertiesErrorMessage);
+            } else if (transferKey.equals(VAL_TRANSFER_IN)) {
+                LOGGER.info("Retrieving the details for source database from file...");
+                config[0] = validateProperties(prop, SRC_DB_URL, missingPropertiesErrorMessage);
+                config[1] = validateProperties(prop, SRC_DB_USER, missingPropertiesErrorMessage);
+                config[2] = validateProperties(prop, SRC_DB_PASSWORD, missingPropertiesErrorMessage);
+                LOGGER.info("Retrieving the details for the stack database to be targeted...");
+                retrieveDatabase(stackDatabase, config, false);
+            } else if (transferKey.equals(VAL_TRANSFER_OUT)) {
+                LOGGER.info("Retrieving the details for the stack database as a source...");
+                retrieveDatabase(stackDatabase, config, true);
+                LOGGER.info("Retrieving the details for target database from file...");
+                config[3] = validateProperties(prop, TARGET_DB_URL, missingPropertiesErrorMessage);
+                config[4] = validateProperties(prop, TARGET_DB_USER, missingPropertiesErrorMessage);
+                config[5] = validateProperties(prop, TARGET_DB_PASSWORD, missingPropertiesErrorMessage);
+            }
             String missingMessage = missingPropertiesErrorMessage.toString();
             if (!missingMessage.isEmpty()) {
                 LOGGER.error("Missing Properties:\n" + missingMessage);
@@ -78,36 +97,28 @@ public class ConfigStore {
     }
 
     /**
-     * Retrieves the target database from either the endpoint.properties if available, or defaults to the stack database otherwise.
+     * Retrieves the SQL database within this stack as either the source or target.
      *
-     * @param prop          A Properties object containing the required properties.
      * @param stackDatabase The stack database name passed as a parameter to the GET request.
      * @param config        The configuration array to store the results.
+     * @param isSource      Indicates if the stack database is the source or target.
      */
-    private static void retrieveTargetDatabase(Properties prop, String stackDatabase, String[] config) {
+    private static void retrieveDatabase(String stackDatabase, String[] config, boolean isSource) {
         ContainerClient client = new ContainerClient();
         if (stackDatabase != null) {
             PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
-            config[3] = postConfig.getJdbcURL(stackDatabase);
-            config[4] = postConfig.getUsername();
-            config[5] = postConfig.getPassword();
-            LOGGER.info("Detected database parameter. Target stack database is configured for: " + config[3]);
-        } else {
-            LOGGER.info("No database parameter is available. Configuring target database based on endpoint.properties...");
-            config[3] = prop.getProperty(TARGET_DB_URL);
-            config[4] = prop.getProperty(TARGET_DB_USER);
-            config[5] = prop.getProperty(TARGET_DB_PASSWORD);
-            if (config[3].isEmpty()) {
-                LOGGER.fatal("Target database url is empty in endpoint.properties. Please add an url or pass a database parameter to the GET request!");
-                throw new JPSRuntimeException("Target database url is empty in endpoint.properties. Please add an url or pass a database parameter to the GET request!");
-            } else if (config[4].isEmpty()) {
-                LOGGER.fatal("Target database user is empty in endpoint.properties. Please add an user!");
-                throw new JPSRuntimeException("Target database user is empty in endpoint.properties. Please add an user!");
-            } else if (config[5].isEmpty()) {
-                LOGGER.fatal("Target database password is empty in endpoint.properties. Please add the password!");
-                throw new JPSRuntimeException("Target database password is empty in endpoint.properties. Please add the password!");
+            if (isSource) {
+                config[0] = postConfig.getJdbcURL(stackDatabase);
+                config[1] = postConfig.getUsername();
+                config[2] = postConfig.getPassword();
+            } else {
+                config[3] = postConfig.getJdbcURL(stackDatabase);
+                config[4] = postConfig.getUsername();
+                config[5] = postConfig.getPassword();
             }
-            LOGGER.info("Target database has been configured to:" + config[3]);
+        } else {
+            LOGGER.fatal("Database name cannot be null for the stack's database!");
+            throw new IllegalArgumentException("Database name cannot be null for the stack's database!");
         }
     }
 
@@ -134,16 +145,16 @@ public class ConfigStore {
             String[] config = new String[2];
             LOGGER.debug("Retrieving configuration from " + PROPERTIES_FILEPATH + "...");
             prop.load(input);
-            if (transferKey.isEmpty()){
+            if (transferKey.isEmpty()) {
                 LOGGER.info("Retrieving source and target endpoints from file...");
                 config[0] = validateProperties(prop, SRC_SPARQL_ENDPOINT, missingPropertiesErrorMessage);
                 config[1] = validateProperties(prop, TARGET_SPARQL_ENDPOINT, missingPropertiesErrorMessage);
-            } else if (transferKey.equals("in")){
+            } else if (transferKey.equals(VAL_TRANSFER_IN)) {
                 LOGGER.info("Retrieving source endpoint from file...");
                 config[0] = validateProperties(prop, SRC_SPARQL_ENDPOINT, missingPropertiesErrorMessage);
                 LOGGER.info("Retrieving stack endpoint for target...");
                 config[1] = retrieveStackEndpoint(stackNamespace);
-            } else if (transferKey.equals("out")){
+            } else if (transferKey.equals(VAL_TRANSFER_OUT)) {
                 LOGGER.info("Retrieving stack endpoint for source...");
                 config[0] = retrieveStackEndpoint(stackNamespace);
                 LOGGER.info("Retrieving target endpoint from file...");
@@ -199,25 +210,23 @@ public class ConfigStore {
         return "";
     }
 
-    public static String[] retrieveTSClientConfig (String stackNamespace, String stackDatabase) {
+    public static String[] retrieveTSClientConfig(String stackNamespace, String stackDatabase) {
         LOGGER.info("Retrieveing TS Client parameters");
         String[] config = new String[7];
         String[] dbConfig;
         String[] kbConfig;
-        
+
 
         if (stackDatabase == null) {
             dbConfig = retrieveSQLConfig();
-        }
-        else{
-            dbConfig = retrieveSQLConfig(stackDatabase);
+        } else {
+            dbConfig = retrieveSQLConfig(stackDatabase, "in");
         }
 
         if (stackNamespace == null) {
             kbConfig = retrieveSPARQLConfig();
-        }
-        else{
-            kbConfig = retrieveSPARQLConfig(stackNamespace,"in");
+        } else {
+            kbConfig = retrieveSPARQLConfig(stackNamespace, "in");
         }
 
         config[0] = dbConfig[4]; //dbusrName
@@ -228,7 +237,7 @@ public class ConfigStore {
         config[5] = kbConfig[1]; //updateEndpoiunt
         config[6] = kbConfig[1]; //query Enpoint - Assume the same?
         LOGGER.debug("CONFIG: " + config);
-        
+
         return config;
     }
 

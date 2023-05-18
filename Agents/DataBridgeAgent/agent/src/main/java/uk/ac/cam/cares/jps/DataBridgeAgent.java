@@ -25,7 +25,7 @@ public class DataBridgeAgent extends JPSAgent {
     private static final String INVALID_PARAMETER_ERROR_MSG = "Parameters are invalid, please check logs for more details.";
     private static final String INVALID_ROUTE_ERROR_MSG = "Invalid request type! Route ";
     private static final String KEY_NAMESPACE = "namespace";
-    private static final String KEY_DATABASE = "database ";
+    private static final String KEY_DATABASE = "database";
     private static final String KEY_TRANSFER = "transfer";
     private static final String KEY_TIME_CLASS = "timeClass";
 
@@ -92,8 +92,8 @@ public class DataBridgeAgent extends JPSAgent {
                 break;
             case "sql":
                 if (requestType.equals("GET")) {
-                    String[] config = requestParams.has(KEY_DATABASE) ? ConfigStore.retrieveSQLConfig(requestParams.get(KEY_DATABASE).toString()) : ConfigStore.retrieveSQLConfig();
-                    AGENT_IN_STACK = requestParams.has(KEY_DATABASE) ? true : false;
+                    String[] config = requestParams.has(KEY_DATABASE) ? ConfigStore.retrieveSQLConfig(requestParams.get(KEY_DATABASE).toString(), requestParams.getString(KEY_TRANSFER)) : ConfigStore.retrieveSQLConfig();
+                    AGENT_IN_STACK = requestParams.has(KEY_DATABASE);
                     jsonMessage = sqlRoute(config);
                 } else {
                     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
@@ -150,9 +150,9 @@ public class DataBridgeAgent extends JPSAgent {
     public boolean validateInput(JSONObject requestParams) {
         boolean validate = true;
         // If there are `namespace` or `database` parameters passed for the sparql or sql route
-        if (requestParams.has(KEY_NAMESPACE) || requestParams.has(KEY_DATABASE)){
+        if (requestParams.has(KEY_NAMESPACE) || requestParams.has(KEY_DATABASE) ){
             LOGGER.info("Detected a namespace or database parameter...");
-            // Ensure that a `transfer` parameter is also pased
+            // Ensure that a `transfer` parameter is also passed
             if (requestParams.has(KEY_TRANSFER)){
                 LOGGER.info("Detected a transfer parameter and validating it...");
                 // The transfer parameter must only contain either `in` or `out`

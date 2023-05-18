@@ -78,14 +78,17 @@ curl -X GET 'localhost:3838/data-bridge-agent/sparql?namespace=kb&transfer=in'
 3. `<base>/sql` route:
    - Execute the agent's task through an HTTP `GET` request. This route will transfer data between the specified source and target databases.
    - If there are existing tables in the target/destination database with the same name, those will be dropped and recreated. Please do take note of this side effect if you wish to retain old data.
-   - Before sending the request, please update the source database url, user, and password, in the `<root>/config/endpoint.properties`.
-   - If transferring to any other database, please update the target jdbc url, user, and password, and send the simple `GET` request.
-     - The request will return a list of commands to be executed on a CLI to transfer between two remote endpoints.
-   - If transferring within the same stack's database, please leave the target database fields empty, and send the `GET` request with the following parameter.
-       - The `database` parameter refers to the target database name within the same stack.
+   - Before sending the request, please read the instructions.
+   - When transferring time series across non-stack database, please update the source and target jdbc url, user, and password in the `<root>/config/endpoint.properties`, and send the simple `GET` request.
+     - The request will return a list of commands to be executed on a CLI that must have `psql` installed to transfer between two remote databases.
+   - When transferring time series from or to the same stack's database, please send the `GET` request with the following parameters:
+       - The `database` parameter refers to the specified database name within the same stack.
+       - The `transfer` parameter indicates whether you wish to transfer time series into or outside the stack. `transfer=in` is for transferring time series from non-stack databases into the stack. `transfer=out` is for transferring time series from the stack to non-stack databases.
+       - Please ensure that the non-stack database credentials have been updated in the `<root>/config/endpoint.properties` at the right position. The source database must be populated for `transfer=in`, whereas target database must be populated for `transfer=out`.
+       - As the transfer may take some time, the agent may return a html response, but do kindly ignore it. The transfer is still occurring in the background.
 ```
-# For any target databases
+# For any non-stack databases
 curl -X GET localhost:3055/data-bridge-agent/sql
 # For databases within the stack
-curl -X GET localhost:3838/data-bridge-agent/sql?database=db
+curl -X GET 'localhost:3838/data-bridge-agent/sql?database=db&transfer=in'
 ```
