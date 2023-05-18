@@ -6,6 +6,13 @@
       "timeFile": "energy_time.sparql",
       "databaseName": "ntuenergy",
       "timeLimit": -1
+    },
+    {
+      "class": "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#UndergroundCable",
+      "metaFile": "branch_meta.sparql",
+      "timeFile": "branch_time.sparql",
+      "databaseName": "ntuenergy",
+      "timeLimit": -1
     }
 
   ]

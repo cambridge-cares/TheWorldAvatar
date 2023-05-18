@@ -1,0 +1,18 @@
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix ontocape: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+prefix powsys: <http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#>
+prefix powsysReal: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+prefix math: <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#>
+
+SELECT ?Property ?Value ?Unit
+WHERE {
+    {
+        BIND ("Branch From" AS ?Property)
+        [IRI] math:hasModelVariable ?modelVariable .
+        FILTER(STRENDS(STR(?modelVariable), "BusFrom>"))
+        ?modelVariable ontocape:hasValue ?v .
+        ?v ontocape:numericalValue ?Value .
+    }
+
+}
