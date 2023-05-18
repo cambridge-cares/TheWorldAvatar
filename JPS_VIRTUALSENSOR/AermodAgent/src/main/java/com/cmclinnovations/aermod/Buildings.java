@@ -1198,15 +1198,23 @@ public class Buildings {
 
         }
 
-        //TODO: This part of getProperties needs to be updated.
+        //TODO: This part of getProperties needs to be updated. The getBuildingsWithinBounds method may need to 
+        // be updated in order for it to work correctly for Jurong Island. 
 
         JSONArray BuildingIRIQueryResult = getBuildingsNearPollutantSources();
 
+        List<String> BuildingIRIString = new ArrayList<>();
+
+        // Remove IRIs of pollutant sources
+        for (int i = 0; i < BuildingIRIQueryResult.length(); i++){
+            String buildingIRI = BuildingIRIQueryResult.getJSONObject(i).getString("cityObject");
+            if (!StackIRIString.contains(buildingIRI.replace("cityobject", "building"))) {
+                BuildingIRIString.add(buildingIRI.replace("cityobject", "building"));
+            }
+        }
+
         // JSONArray BuildingIRIQueryResult = BuildingsQueryClient.BuildingQuery(StackQueryIRI);
-        List<String> BuildingIRIString = IntStream
-                .range(0,BuildingIRIQueryResult.length())
-                .mapToObj(i -> BuildingIRIQueryResult.getJSONObject(i).getString("IRI"))
-                .collect(Collectors.toList());
+       
         JSONArray BuildingGeometricQueryResult = BuildingsQueryClient.BuildingGeometricQuery(GeospatialQueryIRI,BuildingIRIString);
 
         objectIRIPrev = BuildingGeometricQueryResult.getJSONObject(0).getString("objectIRI");
