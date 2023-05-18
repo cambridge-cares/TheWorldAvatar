@@ -210,10 +210,10 @@ public class Buildings {
 
             if (includeElev) {
 
-                if (getElevationRasterData() != 0) {
-                    LOGGER.error("Failed to create raster file for elevation data.");
-                    return 1;
-                }
+                // if (getElevationRasterData() != 0) {
+                //     LOGGER.error("Failed to create raster file for elevation data.");
+                //     return 1;
+                // }
 
                 if (copyCachedAERMAPOutput() == 0) {
                     LOGGER.info("Successfully copied user-supplied AERMAP output files.");
@@ -1049,7 +1049,7 @@ public class Buildings {
     base surface which can be identified as the one which has a constant z-coordinate that is less than or equal to
     the z-coordinates of vertices on all other surfaces. 
     */
-    public void getProperties() {
+    public void getProperties() throws org.apache.jena.sparql.lang.sparql_11.ParseException {
 
         // Populate a list of chemical plant items (StackIRIString) for which geometric properties will be queried
         // from OCGML. Also determine the pollutant emissions rate in tons/yr for each plant item.
@@ -1198,9 +1198,11 @@ public class Buildings {
 
         }
 
-        
+        //TODO: This part of getProperties needs to be updated.
 
-        JSONArray BuildingIRIQueryResult = BuildingsQueryClient.BuildingQuery(StackQueryIRI);
+        JSONArray BuildingIRIQueryResult = getBuildingsNearPollutantSources();
+
+        // JSONArray BuildingIRIQueryResult = BuildingsQueryClient.BuildingQuery(StackQueryIRI);
         List<String> BuildingIRIString = IntStream
                 .range(0,BuildingIRIQueryResult.length())
                 .mapToObj(i -> BuildingIRIQueryResult.getJSONObject(i).getString("IRI"))
@@ -1393,7 +1395,7 @@ public class Buildings {
 
         try (InputStream is = getClass().getClassLoader().getResourceAsStream("receptor.dat")) {
             Files.copy(is, aermodDirectory.resolve("receptor.dat"));
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.error(e.getMessage());
             LOGGER.info("Failed to copy receptor.dat. AERMAP will be run to generate this file.");
             return 1;
@@ -1401,7 +1403,7 @@ public class Buildings {
 
         try (InputStream is = getClass().getClassLoader().getResourceAsStream("buildingSources.dat")) {
             Files.copy(is, aermapDirectory.resolve("buildingSources.dat"));
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.error(e.getMessage());
             LOGGER.info("Failed to copy buildingSources.dat. AERMAP will be run to generate this file.");
             return 1;
@@ -1554,15 +1556,12 @@ public class Buildings {
         return writeToFile(aermapDirectory.resolve("aermapReceptors.dat"),sb.toString());
     }
 
-    public int getElevationRasterData() throws SQLException {
-
-        EndpointConfig endpointConfig = new EndpointConfig(); 
-        RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
-        
-        List<byte[]> elevData = BuildingsQueryClient.getElevationData(rdbStoreClient.getConnection());
+    public int getElevationRasterData() {
+         
+        List<byte[]> elevData = BuildingsQueryClient.getElevationData();
 
         try {
-            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(aermapDirectory.resolve("PirmasensElevation.tiff").toString()));
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(aermapDirectory.resolve("elevation.tif").toString()));
             out.writeObject(elevData);
         } catch (Exception e) {
             LOGGER.info(e.getMessage());
@@ -1684,13 +1683,21 @@ public class Buildings {
              }
      
              for (int i = 0; i < dataFiles.size(); i++) {
-                 try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(dataFiles.get(i))) {
-                     Files.copy(inputStream, aermapDirectory.resolve(dataFiles.get(i)));
-                 } catch (IOException e) {
-                     LOGGER.error(e.getMessage());
-                     LOGGER.error("Failed to copy the data file" + dataFiles.get(i));
-                     return 1;
-                 }
+
+                Path filePath = aermapDirectory.resolve(dataFiles.get(i));
+                File dataFile = new File(filePath.toString());
+
+                if (dataFile.exists() && dataFile.isFile()) {
+                    continue;
+                } else {
+                    try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(dataFiles.get(i))) {
+                        Files.copy(inputStream, aermapDirectory.resolve(dataFiles.get(i)));
+                    } catch (IOException e) {
+                        LOGGER.error(e.getMessage());
+                        LOGGER.error("Failed to copy the data file" + dataFiles.get(i));
+                        return 1;
+                    }
+                } 
              }
 
         try {
