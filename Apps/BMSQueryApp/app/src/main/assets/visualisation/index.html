@@ -75,6 +75,12 @@
 
             time_temp = Object.entries(time_temp).sort();
             time = time_temp.map(([key, value]) => value);
+
+            // change locale
+            for (i = 0; i < time.length; i++) {
+                time[i]['time'] = time[i]['time'].map(dateString => timeZoneConversion(dateString));
+            }
+
             console.log(time);
 
             // Plot data
@@ -101,6 +107,13 @@
         } else {
             console.warn("No 'time' node found, skipping timeseries visualisation.");
         }
+    }
+
+    function timeZoneConversion(timeStamp) {
+        const date = new Date(timeStamp);
+        const localTimezoneOffset = date.getTimezoneOffset() * 60000;
+        const localTimestamp = new Date(date.getTime() - localTimezoneOffset);
+        return localTimestamp.toISOString().slice(0, -5) + "Z";
     }
 
     function refreshEquipmentSelect(rawJSON) {
