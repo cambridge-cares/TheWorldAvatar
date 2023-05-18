@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps;
 
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.util.ConfigStore;
 
 import java.io.File;
 import java.io.IOException;

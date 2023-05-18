@@ -1,10 +1,11 @@
-package uk.ac.cam.cares.jps;
+package uk.ac.cam.cares.jps.util;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.ac.cam.cares.jps.DataBridgeAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.FileInputStream;
@@ -40,7 +41,7 @@ public class ConfigStore {
      *
      * @return An array of these endpoints.
      */
-    protected static String[] retrieveSQLConfig() {
+    public static String[] retrieveSQLConfig() {
         return retrieveSQLConfig(null, "");
     }
 
@@ -50,7 +51,7 @@ public class ConfigStore {
      * @param stackDatabase The stack database name passed as a parameter to the GET request.
      * @return An array of these endpoints.
      */
-    protected static String[] retrieveSQLConfig(String stackDatabase, String transferKey) {
+    public static String[] retrieveSQLConfig(String stackDatabase, String transferKey) {
         StringBuilder missingPropertiesErrorMessage = new StringBuilder();
         try (InputStream input = new FileInputStream(PROPERTIES_FILEPATH)) {
             Properties prop = new Properties();
@@ -127,7 +128,7 @@ public class ConfigStore {
      *
      * @return An array of these endpoints.
      */
-    protected static String[] retrieveSPARQLConfig() {
+    public static String[] retrieveSPARQLConfig() {
         return retrieveSPARQLConfig(null, "");
     }
 
@@ -138,7 +139,7 @@ public class ConfigStore {
      * @param transferKey    The value of the transfer parameter to the GET request.
      * @return An array of these endpoints.
      */
-    protected static String[] retrieveSPARQLConfig(String stackNamespace, String transferKey) {
+    public static String[] retrieveSPARQLConfig(String stackNamespace, String transferKey) {
         StringBuilder missingPropertiesErrorMessage = new StringBuilder();
         try (InputStream input = new FileInputStream(PROPERTIES_FILEPATH)) {
             Properties prop = new Properties();

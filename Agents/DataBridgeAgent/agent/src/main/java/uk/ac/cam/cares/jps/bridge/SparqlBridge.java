@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps;
+package uk.ac.cam.cares.jps.bridge;
 
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;

@@ -1,34 +1,28 @@
-package uk.ac.cam.cares.jps;
+package uk.ac.cam.cares.jps.bridge;
 
+import uk.ac.cam.cares.jps.DataBridgeAgent;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient.Type;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import java.util.*;
-import org.jooq.exception.DataAccessException;
 import java.util.stream.Collectors;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import net.sf.jsqlparser.statement.select.Offset;
-
 import java.sql.Connection;
 import java.time.OffsetDateTime;
-import java.text.SimpleDateFormat;
 import java.time.*;
-import java.util.TimeZone;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class InstantiateTS {
+public class TimeSeriesBridge {
     
     private static final Logger LOGGER = LogManager.getLogger(DataBridgeAgent.class);
     TimeSeriesClient<OffsetDateTime> client;
@@ -51,7 +45,7 @@ public class InstantiateTS {
      */
     public static final String timestampKey = "ts";
 
-    public InstantiateTS(String[] config, String timeClass) {
+    public TimeSeriesBridge(String[] config, String timeClass) {
         RDBClient= new RemoteRDBStoreClient(config[2], config[0], config[1]);
         LOGGER.info("Created RDBStoreClient");
 

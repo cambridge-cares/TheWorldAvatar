@@ -5,11 +5,13 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.bridge.SparqlBridge;
+import uk.ac.cam.cares.jps.bridge.SqlBridge;
+import uk.ac.cam.cares.jps.bridge.TimeSeriesBridge;
+import uk.ac.cam.cares.jps.util.ConfigStore;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import java.sql.Connection;
 
 /**
  * This class acts as the entry point of the agent that accepts parameter requests to specific routes and achieve its task.
@@ -225,7 +227,7 @@ public class DataBridgeAgent extends JPSAgent {
         JSONObject response = new JSONObject();
 
         LOGGER.info("Instantiating Timeseries...");
-        InstantiateTS tsInst = new InstantiateTS(config, timeClass);
+        TimeSeriesBridge tsInst = new TimeSeriesBridge(config, timeClass);
 
         try {
             tsInst.updateTimeSeriesData(data);

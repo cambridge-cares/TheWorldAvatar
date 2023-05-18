@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.Mockito;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.bridge.SparqlBridge;
+import uk.ac.cam.cares.jps.bridge.SqlBridge;
 
 import java.io.File;
 import java.io.IOException;

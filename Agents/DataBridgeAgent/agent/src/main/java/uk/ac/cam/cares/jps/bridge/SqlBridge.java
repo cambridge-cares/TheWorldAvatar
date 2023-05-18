@@ -1,8 +1,9 @@
-package uk.ac.cam.cares.jps;
+package uk.ac.cam.cares.jps.bridge;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
+import uk.ac.cam.cares.jps.DataBridgeAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.sql.PostGISClient;
 import uk.ac.cam.cares.jps.sql.SqlConnectionPool;
