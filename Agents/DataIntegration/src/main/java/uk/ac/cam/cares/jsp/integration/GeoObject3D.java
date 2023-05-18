@@ -10,13 +10,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
+//cityobject table in postgresql
 public class GeoObject3D {
     private PGgeometry geometry;
     private String name;
     private int objectClassid;
     private String gmlid;
-    private String address;
+    private ObjectAddress address;
 
     private static final Logger LOGGER = LogManager.getLogger(SpatialLink.class);
     private PostgresClient postgresClient;
@@ -54,9 +54,11 @@ public class GeoObject3D {
     public void setGeometry (PGgeometry geometry) {
         this.geometry = geometry;
     }
-    public void setAddress(String address){
+    public void setAddress(ObjectAddress address){
         this.address = address;
     }
+
+    public ObjectAddress getAddress(){ return this.address;}
 
     public List<GeoObject3D> getObject3D (){
 
@@ -104,5 +106,10 @@ public class GeoObject3D {
             System.out.println("No Update");
         }
 
+    }
+
+    public void updateAddress(ObjectAddress address) throws SQLException {
+        this.address.setPostGISClient(this.postgresClient);
+        this.address.updateAddress(address);
     }
 }

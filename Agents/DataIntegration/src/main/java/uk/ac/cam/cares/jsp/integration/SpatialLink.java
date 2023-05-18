@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.*;
 @WebServlet(urlPatterns = {"/SpatialLink"})
 public class SpatialLink extends HttpServlet {
@@ -44,12 +45,14 @@ public class SpatialLink extends HttpServlet {
 
         String db3d;
         String db2d;
+        String db2d_table;
         GeoObject3D object3D = new GeoObject3D();
         GeoObject2D object2D = new GeoObject2D();
 
         try {
             db3d = req.getParameter("db3d");
             db2d = req.getParameter("db2d");
+            db2d_table = req.getParameter("db2d_table");
         } catch (Exception e) {
             LOGGER.error("Error parsing input, make sure database names are specified as parameters");
             LOGGER.error(e.getMessage());
@@ -60,18 +63,18 @@ public class SpatialLink extends HttpServlet {
         PostgresClient conn3 = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
 
         object2D.setPostGISClient(conn2);
-        this.allObject2D = object2D.getObject2D();
+        this.allObject2D = object2D.getObject2D(db2d_table);
         object3D.setPostGISClient(conn3);
         this.allObject3D = object3D.getObject3D();
         try {
             findMatchedObjects();
-        } catch (ParseException | FactoryException | TransformException e) {
+        } catch (ParseException | FactoryException | TransformException | SQLException e) {
             throw new RuntimeException(e);
         }
 
 
     }
-    public void findMatchedObjects() throws ParseException, FactoryException, TransformException {
+    public void findMatchedObjects() throws ParseException, FactoryException, TransformException, SQLException {
 
         GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
         WKTReader reader = new WKTReader( geometryFactory );
@@ -110,10 +113,15 @@ public class SpatialLink extends HttpServlet {
                     }
                 }else{
                     object3D.setName(object2D.getName());
+                    ObjectAddress address = new ObjectAddress(object3D.getGmlId(), object2D.getStreet(), object2D.getPostcode(),object2D.getCountry(),object2D.getCity());
+                    object3D.setAddress(address);
                 }
             }
             if (object3D.getName() != null){
                 object3D.updateName(object3D);
+            }
+            if (object3D.getAddress()!= null){
+                object3D.updateAddress(object3D.getAddress());
             }
         }
 
