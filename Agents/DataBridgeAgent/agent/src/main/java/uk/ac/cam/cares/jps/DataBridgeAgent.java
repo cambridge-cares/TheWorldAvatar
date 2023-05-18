@@ -22,9 +22,11 @@ public class DataBridgeAgent extends JPSAgent {
     // Agent starts off in valid state, and will be invalid when running into exceptions
     private static boolean VALID = true;
     private static boolean AGENT_IN_STACK = false;
+    private static final String INVALID_PARAMETER_ERROR_MSG = "Parameters are invalid, please check logs for more details.";
     private static final String INVALID_ROUTE_ERROR_MSG = "Invalid request type! Route ";
     private static final String KEY_NAMESPACE = "namespace";
     private static final String KEY_DATABASE = "database ";
+    private static final String KEY_TRANSFER = "transfer";
     private static final String KEY_TIME_CLASS = "timeClass";
 
     /**
@@ -66,6 +68,11 @@ public class DataBridgeAgent extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
         JSONObject jsonMessage = new JSONObject();
+        // Validate input and if it is false, do not continue with the task
+        if(!validateInput(requestParams)){
+            jsonMessage.put("Result", INVALID_PARAMETER_ERROR_MSG);
+            return jsonMessage;
+        }
         // Retrieve the request type and route
         String requestType = requestParams.get("method").toString();
         String route = requestParams.get("requestUrl").toString();
@@ -76,7 +83,7 @@ public class DataBridgeAgent extends JPSAgent {
         switch (route) {
             case "sparql":
                 if (requestType.equals("GET")) {
-                    String[] config = requestParams.has(KEY_NAMESPACE) ? ConfigStore.retrieveSPARQLConfig(requestParams.get(KEY_NAMESPACE).toString()) : ConfigStore.retrieveSPARQLConfig();
+                    String[] config = requestParams.has(KEY_NAMESPACE) ? ConfigStore.retrieveSPARQLConfig(requestParams.get(KEY_NAMESPACE).toString(), requestParams.getString(KEY_TRANSFER)) : ConfigStore.retrieveSPARQLConfig();
                     jsonMessage = sparqlRoute(config);
                 } else {
                     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
@@ -141,7 +148,28 @@ public class DataBridgeAgent extends JPSAgent {
      */
     @Override
     public boolean validateInput(JSONObject requestParams) {
-        return true;
+        boolean validate = true;
+        // If there are `namespace` or `database` parameters passed for the sparql or sql route
+        if (requestParams.has(KEY_NAMESPACE) || requestParams.has(KEY_DATABASE)){
+            LOGGER.info("Detected a namespace or database parameter...");
+            // Ensure that a `transfer` parameter is also pased
+            if (requestParams.has(KEY_TRANSFER)){
+                LOGGER.info("Detected a transfer parameter and validating it...");
+                // The transfer parameter must only contain either `in` or `out`
+                String transfer = requestParams.getString(KEY_TRANSFER);
+                validate = transfer.equals("in") || transfer.equals("out");
+                if (!validate){
+                    LOGGER.fatal("Invalid `transfer` value! The parameter must only be either in or out!");
+                }
+            } else {
+                LOGGER.fatal("Please include a `transfer` parameter with either in or out!");
+                return false;
+            }
+        } else if (requestParams.has(KEY_TRANSFER)){
+            LOGGER.fatal("`transfer` parameter is passed without a namespace or database parameter!");
+            return false;
+        }
+        return validate;
     }
 
     /**

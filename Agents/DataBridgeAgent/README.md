@@ -62,15 +62,17 @@ There are currently three routes available:
    - Returns the current status of the agent through an HTTP `GET` request.
 2. `<base>/sparql` route:
     - Execute the agent's task through an HTTP `GET` request. This route will transfer data between the specified source and target endpoints.
-    - Before sending the request, please update the source SPARQL endpoint in the `<root>/config/endpoint.properties`.
-    - If transferring to any other endpoint, please update the target SPARQL endpoint and send the simple `GET` request.
-    - If transferring within the same stack's endpoint, please leave the target SPARQL endpoint empty, and send the `GET` request with the following parameter.
-      - The `namespace` parameter refers to the target stack SPARQL namespace, which is by default `kb`.
+    - Before sending the request, please read the instructions.
+    - When transferring triples across non-stack endpoint, please update the source and target SPARQL endpoint in the `<root>/config/endpoint.properties` and send the simple `GET` request.
+    - When transferring triples from or to the same stack's endpoint, please send the `GET` request with the following parameters:
+      - The `namespace` parameter refers to the stack SPARQL namespace, which is by default `kb`.
+      - The `transfer` parameter indicates whether you wish to transfer triples into or outside the stack. `transfer=in` is for transferring triples from non-stack endpoints into the stack. `transfer=out` is for transferring triples from the stack to non-stack endpoints.
+      - Please ensure that the non-stack endpoint have been updated in the `<root>/config/endpoint.properties` at the right position. The source endpoint must be populated for `transfer=in`, whereas target endpoint must be populated for `transfer=out`. 
 ```
-# For any target endpoints
+# For any non-stack endpoints
 curl -X GET localhost:3055/data-bridge-agent/sparql
 # For namespaces within the stack
-curl -X GET localhost:3838/data-bridge-agent/sparql?namespace=kb
+curl -X GET 'localhost:3838/data-bridge-agent/sparql?namespace=kb&transfer=in'
 ```
 
 3. `<base>/sql` route:

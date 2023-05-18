@@ -23,6 +23,8 @@ public class ConfigStore {
     private static final String NO_PROPERTIES_MSG = "No endpoint.properties file detected! Please place the file in the config directory.";
     private static final String INACCESSIBLE_CLIENT_PROPERTIES_MSG = "File could not be accessed! See error message for more details: ";
     private static final String PROPERTIES_FILEPATH = System.getProperty("user.dir") + "/config/endpoint.properties";
+    private static final String VAL_TRANSFER_IN = "in";
+    private static final String VAL_TRANSFER_OUT = "out";
     private static final String SRC_SPARQL_ENDPOINT = "sparql.src.endpoint";
     private static final String SRC_DB_URL = "src.db.url";
     private static final String SRC_DB_USER = "src.db.user";
@@ -115,24 +117,38 @@ public class ConfigStore {
      * @return An array of these endpoints.
      */
     protected static String[] retrieveSPARQLConfig() {
-        return retrieveSPARQLConfig(null);
+        return retrieveSPARQLConfig(null, "");
     }
 
     /**
-     * Retrieves SPARQL endpoints stored in the properties file or construct the target from the stack endpoint.
+     * Retrieves SPARQL endpoints stored in the properties file or as a stack endpoint.
      *
      * @param stackNamespace The stack namespace endpoint passed as a parameter to the GET request.
+     * @param transferKey    The value of the transfer parameter to the GET request.
      * @return An array of these endpoints.
      */
-    protected static String[] retrieveSPARQLConfig(String stackNamespace) {
+    protected static String[] retrieveSPARQLConfig(String stackNamespace, String transferKey) {
         StringBuilder missingPropertiesErrorMessage = new StringBuilder();
         try (InputStream input = new FileInputStream(PROPERTIES_FILEPATH)) {
             Properties prop = new Properties();
             String[] config = new String[2];
             LOGGER.debug("Retrieving configuration from " + PROPERTIES_FILEPATH + "...");
             prop.load(input);
-            config[0] = validateProperties(prop, SRC_SPARQL_ENDPOINT, missingPropertiesErrorMessage);
-            configureTargetEndpoint(prop, stackNamespace, config);
+            if (transferKey.isEmpty()){
+                LOGGER.info("Retrieving source and target endpoints from file...");
+                config[0] = validateProperties(prop, SRC_SPARQL_ENDPOINT, missingPropertiesErrorMessage);
+                config[1] = validateProperties(prop, TARGET_SPARQL_ENDPOINT, missingPropertiesErrorMessage);
+            } else if (transferKey.equals("in")){
+                LOGGER.info("Retrieving source endpoint from file...");
+                config[0] = validateProperties(prop, SRC_SPARQL_ENDPOINT, missingPropertiesErrorMessage);
+                LOGGER.info("Retrieving stack endpoint for target...");
+                config[1] = retrieveStackEndpoint(stackNamespace);
+            } else if (transferKey.equals("out")){
+                LOGGER.info("Retrieving stack endpoint for source...");
+                config[0] = retrieveStackEndpoint(stackNamespace);
+                LOGGER.info("Retrieving target endpoint from file...");
+                config[1] = validateProperties(prop, TARGET_SPARQL_ENDPOINT, missingPropertiesErrorMessage);
+            }
             String missingMessage = missingPropertiesErrorMessage.toString();
             if (!missingMessage.isEmpty()) {
                 LOGGER.error("Missing Properties:\n" + missingMessage);
@@ -150,26 +166,18 @@ public class ConfigStore {
     }
 
     /**
-     * Retrieves the target SPARQL endpoint from the endpoint.properties if available, and defaults to the stack endpoint otherwise.
+     * Retrieves the SPARQL endpoint within this stack.
      *
-     * @param prop           A Properties object containing the required properties.
      * @param stackNamespace The stack namespace endpoint passed as a parameter to the GET request.
-     * @param config         The configuration array to store the results.
      */
-    private static void configureTargetEndpoint(Properties prop, String stackNamespace, String[] config) {
+    private static String retrieveStackEndpoint(String stackNamespace) {
         ContainerClient client = new ContainerClient();
         if (stackNamespace != null) {
             BlazegraphEndpointConfig blazeConfig = client.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class);
-            config[1] = blazeConfig.getServiceUrl() + "/namespace/" + stackNamespace + "/sparql";
-            LOGGER.info("Detected namespace parameter. Target endpoint is configured within the stack at: " + config[1]);
+            return blazeConfig.getServiceUrl() + "/namespace/" + stackNamespace + "/sparql";
         } else {
-            LOGGER.info("No namespace parameter is available. Configuring target endpoint based on endpoint.properties...");
-            config[1] = prop.getProperty(TARGET_SPARQL_ENDPOINT);
-            if (config[1].isEmpty()) {
-                LOGGER.fatal("Target SPARQL endpoint is empty in endpoint.properties. Please add an endpoint or pass a namespace parameter to the GET request!");
-                throw new JPSRuntimeException("Target SPARQL endpoint is empty in endpoint.properties. Please add an endpoint or pass a namespace parameter to the GET request!");
-            }
-            LOGGER.info("Target endpoint has been configured to:" + config[1]);
+            LOGGER.fatal("Namespace cannot be null for the stack's endpoint!");
+            throw new IllegalArgumentException("Namespace cannot be null for the stack's endpoint!");
         }
     }
 
@@ -209,7 +217,7 @@ public class ConfigStore {
             kbConfig = retrieveSPARQLConfig();
         }
         else{
-            kbConfig = retrieveSPARQLConfig(stackNamespace);
+            kbConfig = retrieveSPARQLConfig(stackNamespace,"in");
         }
 
         config[0] = dbConfig[4]; //dbusrName
