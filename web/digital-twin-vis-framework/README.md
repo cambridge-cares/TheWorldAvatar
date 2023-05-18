@@ -14,8 +14,6 @@ Documentation for the DTVF is spread across a number of files, and is broken dow
   * _Provides a high level overview on the DTVF._
 * [Development](./library/README.md)
   * _Information for developers of the DTVF._
-* [Specifying data](./docs/specifying-data.md)
-  * _How to get data into the framework._  
 * [Working with Mapbox](./docs/mapbox.md)
   * Generating layers and handling interactions with [Mapbox](https://www.mapbox.com/).
 * [Working with Cesium](./docs/cesium.md)

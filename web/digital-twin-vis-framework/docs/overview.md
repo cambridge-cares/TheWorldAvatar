@@ -10,13 +10,13 @@ Once displayed, a number of standard interaction handlers are also added. These 
 
 ## Mapping providers
 
-At the time of writing the available mapping providers are [Mapbox](https://www.mapbox.com/) and [CesiumJS](https://cesium.com/platform/cesiumjs/). The core differences between providers is as follows.
+At the time of writing the available mapping providers are [Mapbox](https://www.mapbox.com/) and [CesiumJS](https://cesium.com/platform/cesiumjs/). The core differences between providers is as follows:
 
 * Mapbox can only handle 2D data (with the option to extrude 2D polygons into basic 3D polyhedrons) from local files or from [WMS endpoints](https://en.wikipedia.org/wiki/Web_Map_Service). Unlike CesiumJS (see below), Mapbox can display 2D vector data (including use of SVGs for icons, under certain conditions) if the data is hosted using the [Mapbox Vector Tiles](https://docs.mapbox.com/data/tilesets/guides/vector-tiles-introduction/) format. It is however quite customisable and has relatively small performance overhead. Unless you're plotting 3D building data, it's advised to use this mapping provider.
 
 * CesiumJS can handle 2D raster data as well as 3D data. 2D data must be provided via a WMS endpoint and can only be styled on the server hosting it (rather than the client-side styling Mapbox provides); at the time of writing we have not implemented functionality to support the _display_ of 2D vector data (GeoServer can host vector data, but Cesium will rasterise this as a PNG upon visualisation). This provider also has a large performance overhead, a decent GPU is required for a smooth visualisation; we recommend only using it if 3D data is required.
 
-##  Writing the configuration file
+##  Writing the data configuration file
 
 The first step for any prospective user of the DTVF is to understand how to structure the configuration file. At the time of writing, this file must be named `data.json` and reside within the root webspace (i.e. next to your visualisation's `index.html` file).
 
@@ -65,17 +65,17 @@ Definitions of sources vary depending on which mapping provider is chosen (as th
 {
     "id": "example-mapbox-source",
     "type": "geojson",
-    "data": "./my-example-data.geojson
+    "data": "./my-example-data.geojson"
 }
 ```
 
 ### Defining a layer
 
-Each group can also contain a number of layers, defining how the data is visualised on screen. Layers can utilise sources defined in groups higher in the hierachy; additionally multiple layers can visualise data from the same source.
+Each group can also contain a number of layers, defining how the data is visualised on screen. Layers can utilise sources defined in groups higher in the hierarchy; additionally multiple layers can visualise data from the same source.
 
 As with sources, definitions of layers vary depending on which mapping provider is chosen (as they all support different styling options). Specific parameters used for each mapping library are detailed in later parts of the DTVF documentation, the common parameters are detailed below.
 
-* `id` (required): This is the internal ID of the layer. It needs to be unique within the current group, but is not reqiured to be globally unique.
+* `id` (required): This is the internal ID of the layer. It needs to be unique within the current group, but is not required to be globally unique.
 * `name` (required): This is the user facing name of the layer (that will appear in the tree). Multiple layers can use the same name, they'll be combined in a single entry in the tree.
 * `source` (required): This is the ID of the source used to populate the layer.
 
@@ -86,6 +86,24 @@ As with sources, definitions of layers vary depending on which mapping provider 
     "source": "example-mapbox-source"
 }
 ```
+## Writing the settings configuration file
+
+Whilst the `data.json` configuration file defines the data to be loaded into the visualisation, the `settings.json` configuration file defines global settings. These are often linked to the behaviour of the visualisation itself rather than the data present within it.
+
+The most common use of the settings configuration file is to define the state of the map when the visualisation first loads. This is done through the `start` parameter, the exact format for each mapping provider can be see in their respective "Working with..." documentation pages.
+
+More complex features can also be setup and configured using the settings file, these are detailed within the [Advanced features](./advanced.md) documentation.
+
+
+## Additional configuration
+
+In addition to the main `data.json` and `settings.json` configuration files, two optional files can also be added. These files are detailed below:
+
+* `icons.json`:
+  * This optional file is used to list any image files required by the mapping library. Each image is specified with a unique name and a URL to the image file (which can be local or remote). Adding "-sdf" to the icon's file name will ensure that the DTVF registers the image as an [SDF icon](https://docs.mapbox.com/help/troubleshooting/using-recolorable-images-in-mapbox-maps/) within Mapbox, enabling dynamic color changing (providing that the icon has been setup correctly).
+
+* `links.json`:
+  * This optional file is used to provide links to additional resources; if present these are shown in the side panel of the visualisation.
 
 ## Setting up the webspace
 
@@ -117,20 +135,3 @@ A breakdown of the requirements to use this system are below, for more informati
   * The `iri` field needs to contain the full IRI of the feature as represented in the knowledge graph.
   * The `endpoint` field needs to contain the URL of the Blazegraph namespace containing data on the feature. Note that this can be absolute or relative to the FeatureInfoAgent's location.
 
-# Developing the DTVF
-
-For more information on the technical aspects of the DTVF, and how to make changes, please see the [Development](../library/README.md) documentation.
-
-# Visualisation Examples
-
-To act as an example of how to use the DTVF, as well as a template upon which new visualisations can be based, two example visualisations have been produced. One to show the Mapbox implementation, and one to show CesiumJS.
-
-Before attempting to create their own visualisations, developers should try running the appropriate example visualisation and read its associated README. These examples can be found within the [DTVF](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework) directory.
-
-# Troubleshooting/FAQs
-
-Solutions to common issues, and answers to common questions, relating to the DTVF can be found on the [Troubleshooting](./troubleshooting.md) page.
-
-# Support
-
-For support on using the visualisations, or to discuss any potential changes to the DTVF, please contact the technical team at [CMCL](mailto:support@cmclinnovations.com).
