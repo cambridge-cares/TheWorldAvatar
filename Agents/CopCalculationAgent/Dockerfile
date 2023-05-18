@@ -1,4 +1,4 @@
-# Install the Property Market Value Estimation Agent in Docker container
+# Install the COP calculation Agent in Docker container
 #==================================================================================================
 
 #------------------------------------------------------
@@ -6,8 +6,8 @@
 #------------------------------------------------------
 FROM python:3.9.14-slim-buster as base
 # Meta data
-LABEL authors = "mh807@cam.ac.uk"
-LABEL description = "Assess market value estimate for instantiated properties (i.e. buildings, flats)."
+LABEL authors = "jx309@cam.ac.uk"
+LABEL description = "Calculation Agent to calculate the Coefficient of Performance of Lower Super Output Areas in the UK"
 
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1

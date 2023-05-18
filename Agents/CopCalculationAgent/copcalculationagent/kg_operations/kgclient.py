@@ -266,7 +266,8 @@ class KGClient(PySparqlClient):
         SELECT ?cop_iri
         WHERE {{
         <{region}> <{REGION_HASCOP}> ?cop_iri.
-        ?cop_iri <{OFP_VALIDFROM}> "{start}"^^<{XSD_DATETIME}> ;
+        ?cop_iri  <{RDF_TYPE}> <{REGION_COP}>.
+                 <{OFP_VALIDFROM}> "{start}"^^<{XSD_DATETIME}> ;
                  <{OFP_VALIDTO}> "{end}"^^<{XSD_DATETIME}> ;
                  <{REGION_MAX_VAL}> "{cop_max}"^^<{XSD_FLOAT}> ;
                  <{REGION_MEAN_VAL}> "{cop_mean}"^^<{XSD_FLOAT}> ;
@@ -287,6 +288,7 @@ class KGClient(PySparqlClient):
     
     def instantiate_COP(g, cop_iri, region, start, end, cop_max, cop_mean, cop_min):
         g.add((URIRef(region),URIRef(REGION_HASCOP),URIRef(cop_iri)))
+        g.add((URIRef(cop_iri),URIRef(RDF_TYPE),URIRef(REGION_COP)))
         g.add((URIRef(cop_iri),URIRef(OFP_VALIDFROM),Literal(start, datatype=XSD_DATETIME)))
         g.add((URIRef(cop_iri),URIRef(OFP_VALIDTO),Literal(end, datatype=XSD_DATETIME)))
         g.add((URIRef(cop_iri),URIRef(REGION_MAX_VAL),Literal(cop_max, datatype=XSD_DATETIME)))

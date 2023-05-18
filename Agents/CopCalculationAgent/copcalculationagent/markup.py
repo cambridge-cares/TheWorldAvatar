@@ -41,7 +41,7 @@ def retrieve_derivation_iri(
           agentIRI:str
 ):
         query = f"""
-            SELECT DISTINCT ?s ?entities
+            SELECT DISTINCT ?s
             WHERE {{
                 ?s <{pda_iris.ONTODERIVATION_ISDERIVEDFROM}> <{input_iri}>.
                 ?s <{pda_iris.ONTODERIVATION_ISDERIVEDUSING}> <{agentIRI}>.
@@ -54,8 +54,7 @@ def retrieve_derivation_iri(
             return None
         else:
             syn_derivation_iri = response[0].get('s')
-            entities = [response[0].get('entities'),response[1].get('entities')]
-            return syn_derivation_iri, entities
+            return syn_derivation_iri
 
 def retrieve_temperature_iri(sparql_client: PySparqlClient):
         
@@ -136,14 +135,21 @@ derivation_client = PyDerivationClient(derivation_instance_base_url=DERIVATION_I
 for i in range(len(temperature_iri_list)):
     time.sleep(1)
     temperature_iri = temperature_iri_list[i]
-    Synmarkup(
-        derivation_client=derivation_client,
-        temperature_iri=temperature_iri,
-        heatpumpefficiency_iri = heatpumpefficiency_iri,
-        hotsidetemperature_iri = hotsidetemperature_iri,
-        agentIRI = agentIRI,
-        agentURL = agentURL
-    )
+    try:
+        Synmarkup(
+            derivation_client=derivation_client,
+            temperature_iri=temperature_iri,
+            heatpumpefficiency_iri = heatpumpefficiency_iri,
+            hotsidetemperature_iri = hotsidetemperature_iri,
+            agentIRI = agentIRI,
+            agentURL = agentURL
+        )
+    except:
+         derivation_iri = retrieve_derivation_iri(sparql_client,temperature_iri, agentIRI)
+         if not derivation_iri :
+              raise KeyError('something wrong, contact Jieyang to fix this')
+         else:
+              print(f'InputIRI: {temperature_iri} already have derivation IRI: {derivation_iri}, skipped for now')
 
 # # Perform unified update
 # for i in range(len(inputIRI)):
