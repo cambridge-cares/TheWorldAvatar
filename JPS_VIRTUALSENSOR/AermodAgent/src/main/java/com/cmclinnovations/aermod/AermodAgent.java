@@ -223,7 +223,7 @@ public class AermodAgent extends DerivationAgent {
  
         // ships_ is hardcoded here and in ShipInputAgent
         queryClient.updateOutputs(derivationInputs.getDerivationIRI(), outputFileURL, dispLayerNames.get(0), shipLayerName, simulationTime);
-        if (aermod.createDataJson(shipLayerName, dispLayerNames, plantsLayerName,elevationLayerName,sensorLayerName) != 0) {
+        if (aermod.createDataJson(shipLayerName, dispLayerNames, plantsLayerName,elevationLayerName,sensorLayerName, bpi.getBuildingsGeoJSON()) != 0) {
             LOGGER.error("Failed to create data.json file for visualisation, terminating");
             return;
         }

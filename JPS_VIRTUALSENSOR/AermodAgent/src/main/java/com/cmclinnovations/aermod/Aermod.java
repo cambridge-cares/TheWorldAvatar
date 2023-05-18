@@ -456,7 +456,7 @@ public class Aermod {
     }
 
     int createDataJson(String shipLayerName, List<String> dispersionLayerNames, String plantsLayerName, 
-    String elevationLayerName, String sensorLayerName) {
+    String elevationLayerName, String sensorLayerName, JSONObject buildingsGeoJSON) {
         // wms endpoints template without the layer name
         String shipWms = EnvConfig.GEOSERVER_URL + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile" +
             "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, shipLayerName);
@@ -579,6 +579,33 @@ public class Aermod {
         } catch(IOException e) {
             LOGGER.error("Failed to delete file");
             return 1;
+        }
+
+        if (!buildingsGeoJSON.isEmpty()) {
+            String geoJsonFilename = "buildings.geojson";
+            Path buildingsGeoJSONPath = Paths.get(EnvConfig.VIS_FOLDER, "data", geoJsonFilename);
+            writeToFile(buildingsGeoJSONPath, buildingsGeoJSON.toString(4));
+            modifyFilePermissions(buildingsGeoJSONPath.toString());
+
+            JSONObject buildingsSource = new JSONObject();
+            buildingsSource.put("id", "buildings-source");
+            buildingsSource.put("type", "geojson");
+            buildingsSource.put("data", Paths.get("data", geoJsonFilename).toString());
+
+            JSONObject buildingsLayer = new JSONObject();
+            buildingsLayer.put("name", "Buildings");
+            buildingsLayer.put("type", "fill-extrusion");
+            buildingsLayer.put("source", "buildings-source");
+            buildingsLayer.put("layout", new JSONObject().put("visibility", "visible"));
+            JSONObject paint = new JSONObject();
+            paint.put("fill-extrusion-color", new JSONArray().put("get").put("color"));
+            paint.put("fill-extrusion-height", new JSONArray().put("get").put("height"));
+            paint.put("fill-extrusion-opacity", 0.66);
+            paint.put("fill-extrusion-base", new JSONArray().put("get").put("base"));
+            buildingsLayer.put("paint", paint);
+
+            sources.put(buildingsSource);
+            layers.put(buildingsLayer);
         }
 
         return writeToFile(dataJson.toPath(), data.toString(4));

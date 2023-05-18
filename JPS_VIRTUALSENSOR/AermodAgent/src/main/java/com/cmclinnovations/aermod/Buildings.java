@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.geom.Coordinate;
@@ -21,6 +22,8 @@ import org.locationtech.jts.geom.CoordinateSequenceFilter;
 
 import org.locationtech.jts.io.WKTReader;
 import scala.Tuple2;
+import uk.ac.cam.cares.jps.base.util.CRSTransformer;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -39,6 +42,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.io.parser.JSONParser;
 
+import com.cmclinnovations.aermod.objects.Building;
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
@@ -113,7 +117,7 @@ public class Buildings {
     public int ny;
 
     public boolean aermodInputCreated = false;
-    
+    private List<Building> buildings = new ArrayList<>();
 
     public void init(Path simulationDirectory, Polygon scope, int srid, int nx, int ny) throws ParseException {
 
@@ -478,12 +482,12 @@ public class Buildings {
      * @param results JSONArray of the query results for ground surface geometries
      * @return footprint as a string
      */
-    private String extractFootprint(JSONArray results){
+    private LinearRing extractFootprint(JSONArray results){
         double distance = 0.00001;
         double increment = 0.00001;
 
         Polygon footprintPolygon;
-        Geometry footprintRing;
+        LinearRing footprintRing;
         Coordinate[] footprintCoordinates;
         ArrayList<Geometry> geometries = new ArrayList<>();
         GeometryFactory geoFac = new GeometryFactory();
@@ -536,9 +540,7 @@ public class Buildings {
 
         footprintRing = footprintPolygon.getExteriorRing();
 
-        footprintCoordinates = footprintRing.getCoordinates();
-
-        return coordinatesToString(footprintCoordinates);
+        return footprintRing;
     }
 
     public JSONArray getBuildingsNearPollutantSources() throws org.apache.jena.sparql.lang.sparql_11.ParseException {
@@ -773,7 +775,9 @@ public class Buildings {
             aveRoofz /= numberRoofSurfaces;
             aveGroundz /= numberGroundSurfaces;
             height = aveRoofz - aveGroundz;
-            String exteriorGroundVertices = extractFootprint(groundSurfaces);
+            LinearRing footPrint = extractFootprint(groundSurfaces);
+            String exteriorGroundVertices = coordinatesToString(footPrint.getCoordinates());
+            buildings.add(new Building(footPrint, height, DatabaseCoordSys));
             String[] edgeCoordinates = exteriorGroundVertices.split("#");
             int numPoints = edgeCoordinates.length/3;
             double aveX = 0.0;
@@ -933,7 +937,9 @@ public class Buildings {
             aveRoofz /= numberRoofSurfaces;
             aveGroundz /= numberGroundSurfaces;
             height = aveRoofz - aveGroundz;
-            String exteriorGroundVertices = extractFootprint(groundSurfaces);
+            LinearRing footPrint = extractFootprint(groundSurfaces);
+            buildings.add(new Building(footPrint, height, DatabaseCoordSys));
+            String exteriorGroundVertices = coordinatesToString(footPrint.getCoordinates());
             String[] edgeCoordinates = exteriorGroundVertices.split("#");
             int numPoints = edgeCoordinates.length/3;
             double aveX = 0.0;
@@ -2117,6 +2123,46 @@ public class Buildings {
         return res;
     }
 
+    JSONObject getBuildingsGeoJSON() {
+        JSONObject featureCollection = new JSONObject();
+        featureCollection.put("type", "FeatureCollection");
+
+        JSONArray features = new JSONArray();
+        this.buildings.stream().forEach(building -> {
+            JSONObject feature = new JSONObject();
+            feature.put("type", "Feature");
+
+            JSONObject properties = new JSONObject();
+            properties.put("color", "#666666");
+            properties.put("opacity", 0.66);
+            properties.put("base", 0);
+            properties.put("height", building.getHeight());
+            feature.put("properties", properties);
+
+            JSONObject geometry = new JSONObject();
+            geometry.put("type", "Polygon");
+            JSONArray coordinates = new JSONArray();
+
+            JSONArray footprintPolygon = new JSONArray();
+            String srid = building.getSrid();
+            for (Coordinate coordinate : building.getFootprint().getCoordinates()) {
+                JSONArray point = new JSONArray();
+                double[] xyOriginal = {coordinate.getX(), coordinate.getY()};
+                double[] xyTransformed = CRSTransformer.transform(srid, "EPSG:4326", xyOriginal);
+                point.put(xyTransformed[0]).put(xyTransformed[1]);
+                footprintPolygon.put(point);
+            }
+            coordinates.put(footprintPolygon);
+            geometry.put("coordinates", coordinates);
+
+            feature.put("geometry", geometry);
+            features.put(feature);
+        });
+
+        featureCollection.put("features", features);
+        
+        return featureCollection;
+    }
 }
 
   // The following methods are deprecated.

@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   aermod-agent:
-    image: ghcr.io/cambridge-cares/aermod-agent:1.1.1-SNAPSHOT
+    image: ghcr.io/cambridge-cares/aermod-agent:1.1.2-dev-pirmasens-vis-SNAPSHOT
     deploy:
       mode: replicated
       replicas: 1
@@ -10,9 +10,9 @@ services:
         condition: none
     environment:
       - STACK_NAME=${STACK_NAME}
-      - PYTHON_SERVICE_URL=http://python-service:5000/getAermodGeoJSON
-      - PYTHON_SERVICE_ELEVATION_URL=http://python-service:5000/getElevationGeoJSON
-      - PYTHON_SERVICE_SENSOR_URL=http://python-service:5000/virtualSensor
+      - PYTHON_SERVICE_URL=http://${STACK_NAME}-python-service:5000/getAermodGeoJSON
+      - PYTHON_SERVICE_ELEVATION_URL=http://${STACK_NAME}-python-service:5000/getElevationGeoJSON
+      - PYTHON_SERVICE_SENSOR_URL=http://${STACK_NAME}-python-service:5000/virtualSensor
       - NUMBER_SOURCES=600
       - NUMBER_BUILDINGS=10
       - AERMAP_EXE=/root/aermod/aermap
