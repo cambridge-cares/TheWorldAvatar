@@ -195,7 +195,7 @@ public class AermodAgent extends DerivationAgent {
 
         // Get contour plots as geoJSON objects from PythonService and upload them to PostGIS using GDAL
         
-        GDALClient gdalClient = new GDALClient();
+        GDALClient gdalClient = GDALClient.getInstance();
         JSONObject geoJSON2 = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_ELEVATION_URL, outFileURL, srid,0.0);
         gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, elevationLayerName, geoJSON2.toString(), new Ogr2OgrOptions(), true);
 
@@ -207,7 +207,7 @@ public class AermodAgent extends DerivationAgent {
         }        
         
         // create geoserver layer based for that
-        GeoServerClient geoServerClient = new GeoServerClient();
+        GeoServerClient geoServerClient = GeoServerClient.getInstance();
 
         // make sure style is uploaded first
         uploadStyle(geoServerClient);
@@ -216,9 +216,9 @@ public class AermodAgent extends DerivationAgent {
         GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
         geoServerVectorSettings.setDefaultStyle("dispersion_style");
         for (int i = 0; i < dispLayerNames.size(); i++) {
-            geoServerClient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, dispLayerNames.get(i), geoServerVectorSettings);
+            geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, dispLayerNames.get(i), geoServerVectorSettings);
         }
-        geoServerClient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, elevationLayerName, geoServerVectorSettings);
+        geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, elevationLayerName, geoServerVectorSettings);
 
  
         // ships_ is hardcoded here and in ShipInputAgent

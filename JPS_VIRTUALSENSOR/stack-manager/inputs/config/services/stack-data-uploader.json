@@ -1,0 +1,62 @@
+{
+    "ServiceSpec": {
+        "Name": "stack-data-uploader",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "docker.cmclinnovations.com/stack-data-uploader${IMAGE_SUFFIX}:1.10.2",
+				"Env": [
+				],
+				"Configs": [
+					{
+						"ConfigName": "postgis"
+					},
+					{
+						"ConfigName": "blazegraph"
+					},
+					{
+						"ConfigName": "ontop"
+					},
+					{
+						"ConfigName": "geoserver"
+					}
+				],
+				"Secrets": [
+					{
+						"SecretName": "postgis_password"
+					},
+					{
+						"SecretName": "geoserver_password"
+					}
+				],
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "logs",
+                        "Target": "/root/.jps"
+                    },
+					{
+                        "Type": "volume",
+                        "Source": "misc",
+                        "Target": "/misc"
+                    },
+					{
+                        "Type": "volume",
+                        "Source": "/mnt/c/TheWorldAvatar/Deploy/stacks/dynamic/stack-data-uploader/inputs/data",
+                        "Target": "/inputs/data"
+                    },
+					{
+                        "Type": "volume",
+                        "Source": "/mnt/c/TheWorldAvatar/Deploy/stacks/dynamic/stack-data-uploader/inputs/config",
+                        "Target": "/inputs/config"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "ship-input-agent": {
+            "url": "http://localhost:8080/StackDataUploader/",
+            "externalPath": "/stack-data-uploader/"
+        }
+    }
+}

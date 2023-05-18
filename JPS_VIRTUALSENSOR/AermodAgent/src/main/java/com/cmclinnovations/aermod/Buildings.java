@@ -5,6 +5,7 @@ import geotrellis.proj4.Transform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.geom.Geometry;
@@ -22,12 +23,13 @@ import org.locationtech.jts.geom.CoordinateSequenceFilter;
 
 import org.locationtech.jts.io.WKTReader;
 import scala.Tuple2;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
-
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -41,12 +43,24 @@ import java.util.stream.IntStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.atlas.json.io.parser.JSONParser;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import com.cmclinnovations.aermod.objects.Building;
+import org.apache.http.client.utils.URIBuilder;
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
+
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 
 
 
@@ -196,6 +210,11 @@ public class Buildings {
             boolean includeElev = Boolean.parseBoolean(EnvConfig.INCLUDE_ELEVATION) ;
 
             if (includeElev) {
+
+                // if (getElevationRasterData() != 0) {
+                //     LOGGER.error("Failed to create raster file for elevation data.");
+                //     return 1;
+                // }
 
                 if (copyCachedAERMAPOutput() == 0) {
                     LOGGER.info("Successfully copied user-supplied AERMAP output files.");
@@ -1033,7 +1052,7 @@ public class Buildings {
     base surface which can be identified as the one which has a constant z-coordinate that is less than or equal to
     the z-coordinates of vertices on all other surfaces. 
     */
-    public void getProperties() {
+    public void getProperties() throws org.apache.jena.sparql.lang.sparql_11.ParseException {
 
         // Populate a list of chemical plant items (StackIRIString) for which geometric properties will be queried
         // from OCGML. Also determine the pollutant emissions rate in tons/yr for each plant item.
@@ -1182,9 +1201,11 @@ public class Buildings {
 
         }
 
-        
+        //TODO: This part of getProperties needs to be updated.
 
-        JSONArray BuildingIRIQueryResult = BuildingsQueryClient.BuildingQuery(StackQueryIRI);
+        JSONArray BuildingIRIQueryResult = getBuildingsNearPollutantSources();
+
+        // JSONArray BuildingIRIQueryResult = BuildingsQueryClient.BuildingQuery(StackQueryIRI);
         List<String> BuildingIRIString = IntStream
                 .range(0,BuildingIRIQueryResult.length())
                 .mapToObj(i -> BuildingIRIQueryResult.getJSONObject(i).getString("IRI"))
@@ -1357,13 +1378,13 @@ public class Buildings {
         featureCollection.put("features", features);
 
         LOGGER.info("Uploading plant items GeoJSON to PostGIS");
-		GDALClient gdalclient = new GDALClient();
+		GDALClient gdalclient = GDALClient.getInstance();
 		gdalclient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.SOURCE_LAYER, featureCollection.toString(), new Ogr2OgrOptions(), true);
 
 		LOGGER.info("Creating plant items layer in Geoserver");
-		GeoServerClient geoserverclient = new GeoServerClient();
+		GeoServerClient geoserverclient = GeoServerClient.getInstance();
 		geoserverclient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
-		geoserverclient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, EnvConfig.SOURCE_LAYER, new GeoServerVectorSettings());
+		geoserverclient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, EnvConfig.SOURCE_LAYER, new GeoServerVectorSettings());
 
         // convert the Feature Collection to a JSON string
         // String geojsonString = featureCollection.toString();
@@ -1377,7 +1398,7 @@ public class Buildings {
 
         try (InputStream is = getClass().getClassLoader().getResourceAsStream("receptor.dat")) {
             Files.copy(is, aermodDirectory.resolve("receptor.dat"));
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.error(e.getMessage());
             LOGGER.info("Failed to copy receptor.dat. AERMAP will be run to generate this file.");
             return 1;
@@ -1385,7 +1406,7 @@ public class Buildings {
 
         try (InputStream is = getClass().getClassLoader().getResourceAsStream("buildingSources.dat")) {
             Files.copy(is, aermapDirectory.resolve("buildingSources.dat"));
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.error(e.getMessage());
             LOGGER.info("Failed to copy buildingSources.dat. AERMAP will be run to generate this file.");
             return 1;
@@ -1538,6 +1559,21 @@ public class Buildings {
         return writeToFile(aermapDirectory.resolve("aermapReceptors.dat"),sb.toString());
     }
 
+    public int getElevationRasterData() {
+         
+        List<byte[]> elevData = BuildingsQueryClient.getElevationData();
+
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(aermapDirectory.resolve("elevation.tif").toString()));
+            out.writeObject(elevData);
+        } catch (Exception e) {
+            LOGGER.info(e.getMessage());
+        }        
+        
+        return 0;
+
+    }
+
     public int runAERMAP() {
 
         // Read data file names from aermap input file. Assuming that there is no "CO" before the "DATAFILE" keyword.
@@ -1650,13 +1686,21 @@ public class Buildings {
              }
      
              for (int i = 0; i < dataFiles.size(); i++) {
-                 try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(dataFiles.get(i))) {
-                     Files.copy(inputStream, aermapDirectory.resolve(dataFiles.get(i)));
-                 } catch (IOException e) {
-                     LOGGER.error(e.getMessage());
-                     LOGGER.error("Failed to copy the data file" + dataFiles.get(i));
-                     return 1;
-                 }
+
+                Path filePath = aermapDirectory.resolve(dataFiles.get(i));
+                File dataFile = new File(filePath.toString());
+
+                if (dataFile.exists() && dataFile.isFile()) {
+                    continue;
+                } else {
+                    try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(dataFiles.get(i))) {
+                        Files.copy(inputStream, aermapDirectory.resolve(dataFiles.get(i)));
+                    } catch (IOException e) {
+                        LOGGER.error(e.getMessage());
+                        LOGGER.error("Failed to copy the data file" + dataFiles.get(i));
+                        return 1;
+                    }
+                } 
              }
 
         try {

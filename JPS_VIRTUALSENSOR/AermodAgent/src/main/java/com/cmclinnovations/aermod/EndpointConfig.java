@@ -13,8 +13,10 @@ public class EndpointConfig {
     private String ontopurl;
 
     private String dburl;
+    private String pythonDBURL;
     private String dbuser;
     private String dbpassword;
+    private String dbDriver;
     
     public EndpointConfig() {
         ContainerClient containerClient = new ContainerClient();
@@ -29,6 +31,8 @@ public class EndpointConfig {
         this.dburl = postGISEndpointConfig.getJdbcURL(EnvConfig.DATABASE);
         this.dbuser = postGISEndpointConfig.getUsername();
         this.dbpassword = postGISEndpointConfig.getPassword();
+        this.pythonDBURL = postGISEndpointConfig.getSQLALchemyURL(EnvConfig.DATABASE);
+        this.dbDriver = postGISEndpointConfig.getJdbcDriver();
 
         OntopEndpointConfig ontopEndpointConfig = containerClient.readEndpointConfig("ontop", OntopEndpointConfig.class);
         this.ontopurl = ontopEndpointConfig.getUrl();
@@ -53,5 +57,11 @@ public class EndpointConfig {
     }
     public String getDbpassword() {
         return this.dbpassword;
-    } 
+    }
+    public String getpythonDBURL() {
+        return this.pythonDBURL;
+    }
+    public String getDBDriver() {
+        return this.dbDriver;
+    }
 }

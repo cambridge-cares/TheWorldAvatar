@@ -18,8 +18,14 @@ import org.json.JSONArray;
 import com.cmclinnovations.aermod.sparqlbuilder.ValuesPattern;
 import it.unibz.inf.ontop.model.vocabulary.GEO;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -257,5 +263,28 @@ public class BuildingsQueryClient {
 
         return GeometricQueryResult;
     }
+
+    public static List<byte[]> getElevationData() {
+
+        EndpointConfig endpointConfig = new EndpointConfig(); 
+        RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
+
+
+		String sql = "SELECT ST_AsGDALRaster(rast, 'GTiff') AS tiff FROM elevation";
+        List<byte[]> elevData = new ArrayList<>();
+		try (Statement stmt = rdbStoreClient.getConnection().createStatement()) {
+			ResultSet result = stmt.executeQuery(sql);
+			while (result.next()) {
+                byte[] rasterBytes = result.getBytes("raster_data");
+                elevData.add(rasterBytes);
+			}
+		} catch (SQLException e) {
+			LOGGER.error(e.getMessage());
+		}
+        return elevData;
+	}
+
+
+
  
 }
