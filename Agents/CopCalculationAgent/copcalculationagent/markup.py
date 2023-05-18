@@ -60,7 +60,7 @@ def retrieve_temperature_iri(sparql_client: PySparqlClient):
         
         query_string = f"""
         SELECT ?temperature_iri
-        WHERE {{?region <{CLIMB_HASMEASURE}>  ?m.
+        WHERE {{<http://statistics.data.gov.uk/id/statistical-geography/E01000001> <{CLIMB_HASMEASURE}>  ?m.
                 ?m <{COMP_HAS_STARTUTC}> ?start;
                     <{COMP_HAS_ENDUTC}> ?end ;
                     <{CLIMB_HASVAR}> "{CLIMA_TAS}"^^<{XSD_STRING}> .
