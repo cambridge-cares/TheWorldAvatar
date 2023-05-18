@@ -38,11 +38,12 @@ docker-compose up -d
 
 #### 2.4 **STACK ENVIRONMENT**
 - Follow the following instructions to deploy the agent within a stack.
-  1) Build the image with the following tag at the `<root>` directory:
+  1) If the image is not available on the repository, build the image with the following tag at the `<root>` directory. Please change version number for your needs.
 ```
 docker build -t data-bridge-agent:versionNo .
 ```
   2) Add the `<root>/docker/data-bridge-agent.json` to the [`stack-manager/inputs/config/services`](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services) directory
+     - Please ensure the version numbers are targeted at the right image. If you are building it, please update the version number accordingly.
   3) Modify the absolute path of the agent's `config` folder to your absolute file path
      - For Windows users using WSL on Docker, the file path should start with `/mnt/c/`, which is equivalent to `C://`
   4) Include this agent service into the stack configuration file at `stack-manager/inputs/config/<STACK-NAME>.json`
