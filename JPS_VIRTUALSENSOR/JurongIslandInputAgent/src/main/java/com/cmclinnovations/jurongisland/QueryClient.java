@@ -123,8 +123,10 @@ public class QueryClient {
             String ocgmlIRI = pollutantSourceData.getJSONObject(i).getString("IRI");
             Double emission = pollutantSourceData.getJSONObject(i).getDouble("emission");
             RdfLiteral.NumericLiteral emissionValue = Rdf.literalOf(emission);
-            RdfLiteral.NumericLiteral densityValue = Rdf.literalOf(1.0);
-            RdfLiteral.NumericLiteral tempValue = Rdf.literalOf(500.0);
+            double density = Double.parseDouble(EnvConfig.DENSITY);
+            RdfLiteral.NumericLiteral densityValue = Rdf.literalOf(density);
+            double temp = Double.parseDouble(EnvConfig.TEMPERATURE);
+            RdfLiteral.NumericLiteral tempValue = Rdf.literalOf(temp);
 
             String pollutantSourceIRI = PREFIX + "staticpointsource/" + UUID.randomUUID();
             String emissionIRI = PREFIX + "co2/" + UUID.randomUUID();

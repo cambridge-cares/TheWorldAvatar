@@ -13,6 +13,8 @@ services:
       - DATABASE=postgres
       - QUERY_ENDPOINT=http://www.theworldavatar.com/blazegraph/namespace/jibusinessunits/sparql
       - NUMBER_SOURCES=600
+      - DENSITY=1.0
+      - TEMPERATURE=500.0
     configs:
       - postgis
       - blazegraph
