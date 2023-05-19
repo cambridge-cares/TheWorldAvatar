@@ -46,14 +46,14 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 @WebServlet(urlPatterns = {"/update"})
 public class JurongIslandInputAgent extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(JurongIslandInputAgent.class);
-    private static final String JSON_EXT = ".json";
+    
     private QueryClient queryClient;
 
     @Override
     public void init() throws ServletException {
         EndpointConfig endpointConfig = new EndpointConfig(); 
-        RemoteStoreClient queryStoreClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
-        RemoteStoreClient updateStoreClient = new RemoteStoreClient(EnvConfig.QUERY_ENDPOINT);
+        RemoteStoreClient queryStoreClient = new RemoteStoreClient(EnvConfig.QUERY_ENDPOINT);
+        RemoteStoreClient updateStoreClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         queryClient = new QueryClient(queryStoreClient,updateStoreClient);
     }
 
@@ -68,13 +68,5 @@ public class JurongIslandInputAgent extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
         resp.getWriter().print(responseJson);
     }
-
-    
-
-
-
-
-
-
  
 }
