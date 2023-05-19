@@ -37,7 +37,7 @@ public class ConfigStore {
 
 
     /**
-     * An overloaded method to retrieve the SQL database properties stored in the properties file.
+     * An overloaded method for non-stack transfers to retrieve the SQL database properties stored in the properties file.
      *
      * @return An array of these endpoints.
      */
@@ -106,25 +106,20 @@ public class ConfigStore {
      */
     private static void retrieveDatabase(String stackDatabase, String[] config, boolean isSource) {
         ContainerClient client = new ContainerClient();
-        if (stackDatabase != null) {
-            PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
-            if (isSource) {
-                config[0] = postConfig.getJdbcURL(stackDatabase);
-                config[1] = postConfig.getUsername();
-                config[2] = postConfig.getPassword();
-            } else {
-                config[3] = postConfig.getJdbcURL(stackDatabase);
-                config[4] = postConfig.getUsername();
-                config[5] = postConfig.getPassword();
-            }
+        PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
+        if (isSource) {
+            config[0] = postConfig.getJdbcURL(stackDatabase);
+            config[1] = postConfig.getUsername();
+            config[2] = postConfig.getPassword();
         } else {
-            LOGGER.fatal("Database name cannot be null for the stack's database!");
-            throw new IllegalArgumentException("Database name cannot be null for the stack's database!");
+            config[3] = postConfig.getJdbcURL(stackDatabase);
+            config[4] = postConfig.getUsername();
+            config[5] = postConfig.getPassword();
         }
     }
 
     /**
-     * An overloaded method to retrieve SPARQL endpoints stored in the properties file.
+     * An overloaded method for non-stack transfers to retrieve SPARQL endpoints stored in the properties file.
      *
      * @return An array of these endpoints.
      */
@@ -184,13 +179,8 @@ public class ConfigStore {
      */
     private static String retrieveStackEndpoint(String stackNamespace) {
         ContainerClient client = new ContainerClient();
-        if (stackNamespace != null) {
-            BlazegraphEndpointConfig blazeConfig = client.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class);
-            return blazeConfig.getServiceUrl() + "/namespace/" + stackNamespace + "/sparql";
-        } else {
-            LOGGER.fatal("Namespace cannot be null for the stack's endpoint!");
-            throw new IllegalArgumentException("Namespace cannot be null for the stack's endpoint!");
-        }
+        BlazegraphEndpointConfig blazeConfig = client.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class);
+        return blazeConfig.getServiceUrl() + "/namespace/" + stackNamespace + "/sparql";
     }
 
     /**
@@ -217,7 +207,6 @@ public class ConfigStore {
         String[] dbConfig;
         String[] kbConfig;
 
-
         if (stackDatabase == null) {
             dbConfig = retrieveSQLConfig();
         } else {
@@ -238,8 +227,6 @@ public class ConfigStore {
         config[5] = kbConfig[1]; //updateEndpoiunt
         config[6] = kbConfig[1]; //query Enpoint - Assume the same?
         LOGGER.debug("CONFIG: " + config);
-
         return config;
     }
-
 }

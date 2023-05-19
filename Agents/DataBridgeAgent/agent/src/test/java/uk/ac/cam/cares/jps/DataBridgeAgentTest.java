@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps;
 
 import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
@@ -16,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DataBridgeAgentTest {
     private static DataBridgeAgent agent;
+    private static final JSONObject EXPECTED_RESPONSE = new JSONObject();
     private static final String KEY_METHOD = "method";
     private static final String GET_METHOD = "GET";
     private static final String POST_METHOD = "POST";
@@ -33,6 +35,11 @@ class DataBridgeAgentTest {
     private static final String tgtUser = "user";
     private static final String tgtPass = "pass2";
 
+    @BeforeAll
+    static void generateExpected() {
+        EXPECTED_RESPONSE.put("Result", "Successful transfer");
+    }
+
     @BeforeEach
     void setup() {
         agent = new DataBridgeAgent();
@@ -46,6 +53,7 @@ class DataBridgeAgentTest {
         JSONObject response = agent.processRequestParameters(requestParams);
         assertTrue(response.isEmpty());
     }
+
     @Test
     void testProcessRequestParametersForStatusRouteViaGET() {
         JSONObject requestParams = new JSONObject();
@@ -74,7 +82,7 @@ class DataBridgeAgentTest {
         requestParams.put(KEY_ROUTE, SPARQL_ROUTE);
         try {
             // Execute method should throw right error and response
-            JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, ()-> agent.processRequestParameters(requestParams));
+            JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> agent.processRequestParameters(requestParams));
             assertEquals("Missing Properties:\n" +
                     "sparql.src.endpoint is missing! Please add the input to endpoint.properties.\n", thrownError.getMessage());
         } finally {
@@ -125,9 +133,9 @@ class DataBridgeAgentTest {
         requestParams.put(KEY_ROUTE, SQL_ROUTE);
         try {
             // Execute method should throw right error and response
-            JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, ()-> agent.processRequestParameters(requestParams));
+            JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> agent.processRequestParameters(requestParams));
             assertEquals("Missing Properties:\n" +
-                    "src.db.user is missing! Please add the input to endpoint.properties.\n"+
+                    "src.db.user is missing! Please add the input to endpoint.properties.\n" +
                     "src.db.password is missing! Please add the input to endpoint.properties.\n", thrownError.getMessage());
         } finally {
             // Always delete generated config file
@@ -144,11 +152,15 @@ class DataBridgeAgentTest {
         requestParams.put(KEY_METHOD, GET_METHOD);
         requestParams.put(KEY_ROUTE, SQL_ROUTE);
         // Mock the bridge object, as it cannot be unit tested and requires integration test
-        try (MockedConstruction<SqlBridge> mockConnector = Mockito.mockConstruction(SqlBridge.class)) {
+        try (MockedConstruction<SqlBridge> mockConnector = Mockito.mockConstruction(SqlBridge.class,
+                (mock, context) -> {
+                    Mockito.when(mock.transfer(false)).thenReturn(EXPECTED_RESPONSE);
+                })
+        ) {
             // Execute method
             JSONObject response = agent.processRequestParameters(requestParams);
             // Verify response
-            assertEquals("Data have been successfully transferred from " + srcDb + " to " + tgtDb, response.getString("Result"));
+            assertEquals(EXPECTED_RESPONSE, response);
         } finally {
             // Always delete generated config file
             config.delete();

@@ -1,8 +1,8 @@
-package uk.ac.cam.cares.jps;
+package uk.ac.cam.cares.jps.util;
 
 import org.junit.jupiter.api.Test;
+import uk.ac.cam.cares.jps.TestConfigUtils;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.util.ConfigStore;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +27,7 @@ class ConfigStoreTest {
     }
 
     @Test
-    void testRetrieveSPARQLConfigMissingInputs() throws IOException {
+    void testOverloadedRetrieveSPARQLConfigMissingInputs() throws IOException {
         File config = TestConfigUtils.genSampleSPARQLConfigFile(true, srcSparql, targetSparql);
         try {
             // Execute method and ensure right error is thrown
@@ -41,12 +41,13 @@ class ConfigStoreTest {
     }
 
     @Test
-    void testRetrieveSPARQLConfigFromNonStackEndpointEmptyTargetProperties() throws IOException {
+    void testOverloadedRetrieveSPARQLConfigEmptyTargetProperties() throws IOException {
         File config = TestConfigUtils.genSampleSPARQLConfigFile(false, srcSparql, "");
         try {
             // Execute method and ensure right error is thrown
             JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, ConfigStore::retrieveSPARQLConfig);
-            assertEquals("Target SPARQL endpoint is empty in endpoint.properties. Please add an endpoint or pass a namespace parameter to the GET request!", thrownError.getMessage());
+            assertEquals("Missing Properties:\n" +
+                    "sparql.target.endpoint is missing! Please add the input to endpoint.properties.\n", thrownError.getMessage());
         } finally {
             // Always delete generated config file
             config.delete();
@@ -54,12 +55,13 @@ class ConfigStoreTest {
     }
 
     @Test
-    void testOverloadedRetrieveSPARQLConfigFromNonStackEndpointEmptyTargetProperties() throws IOException {
+    void testRetrieveSPARQLConfigEmptyTargetProperties() throws IOException {
         File config = TestConfigUtils.genSampleSPARQLConfigFile(false, srcSparql, "");
         try {
             // Execute method and ensure right error is thrown
-            JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> ConfigStore.retrieveSPARQLConfig(null));
-            assertEquals("Target SPARQL endpoint is empty in endpoint.properties. Please add an endpoint or pass a namespace parameter to the GET request!", thrownError.getMessage());
+            JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> ConfigStore.retrieveSPARQLConfig(null, ""));
+            assertEquals("Missing Properties:\n" +
+                    "sparql.target.endpoint is missing! Please add the input to endpoint.properties.\n", thrownError.getMessage());
         } finally {
             // Always delete generated config file
             config.delete();
@@ -67,7 +69,7 @@ class ConfigStoreTest {
     }
 
     @Test
-    void testRetrieveSPARQLConfigFromNonStackEndpoint() throws IOException {
+    void testOverloadedRetrieveSPARQLConfig() throws IOException {
         File config = TestConfigUtils.genSampleSPARQLConfigFile(false, srcSparql, targetSparql);
         try {
             // Execute method
@@ -89,7 +91,7 @@ class ConfigStoreTest {
     }
 
     @Test
-    void testRetrieveSQLConfigMissingSourceInputs() throws IOException {
+    void testOverloadedRetrieveSQLConfigMissingSourceInputs() throws IOException {
         File config = TestConfigUtils.genSampleSQLConfigFile(false, srcDb, srcUser, srcPass, tgtDb, tgtUser, tgtPass);
         try {
             // Execute method and ensure right error is thrown
@@ -104,12 +106,17 @@ class ConfigStoreTest {
     }
 
     @Test
-    void testOverloadedRetrieveSQLConfigFromNonStackDBEmptyTargetUrlProperties() throws IOException {
+    void testRetrieveSQLConfigEmptyTargetUrlProperties() throws IOException {
         File config = TestConfigUtils.genSampleSQLConfigFile(false, srcDb, srcUser, srcPass, "", "", "");
         try {
             // Execute method and ensure right error is thrown
-            JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> ConfigStore.retrieveSQLConfig(null));
-            assertEquals("Target database url is empty in endpoint.properties. Please add an url or pass a database parameter to the GET request!", thrownError.getMessage());
+            JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> ConfigStore.retrieveSQLConfig(null, ""));
+            assertEquals("Missing Properties:\n" +
+                    "src.db.user is missing! Please add the input to endpoint.properties.\n" +
+                    "src.db.password is missing! Please add the input to endpoint.properties.\n" +
+                    "target.db.url is missing! Please add the input to endpoint.properties.\n" +
+                    "target.db.user is missing! Please add the input to endpoint.properties.\n" +
+                    "target.db.password is missing! Please add the input to endpoint.properties.\n", thrownError.getMessage());
         } finally {
             // Always delete generated config file
             config.delete();
@@ -117,12 +124,16 @@ class ConfigStoreTest {
     }
 
     @Test
-    void testOverloadedRetrieveSQLConfigFromNonStackDBEmptyTargetUserProperties() throws IOException {
+    void testRetrieveSQLConfigEmptyTargetUserProperties() throws IOException {
         File config = TestConfigUtils.genSampleSQLConfigFile(false, srcDb, srcUser, srcPass, tgtDb, "", "");
         try {
             // Execute method and ensure right error is thrown
-            JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> ConfigStore.retrieveSQLConfig(null));
-            assertEquals("Target database user is empty in endpoint.properties. Please add an user!", thrownError.getMessage());
+            JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> ConfigStore.retrieveSQLConfig(null, ""));
+            assertEquals("Missing Properties:\n" +
+                    "src.db.user is missing! Please add the input to endpoint.properties.\n" +
+                    "src.db.password is missing! Please add the input to endpoint.properties.\n" +
+                    "target.db.user is missing! Please add the input to endpoint.properties.\n" +
+                    "target.db.password is missing! Please add the input to endpoint.properties.\n", thrownError.getMessage());
         } finally {
             // Always delete generated config file
             config.delete();
@@ -130,12 +141,15 @@ class ConfigStoreTest {
     }
 
     @Test
-    void testOverloadedRetrieveSQLConfigFromNonStackDBEmptyTargetPassProperties() throws IOException {
+    void testOverloadedRetrieveSQLConfigEmptyTargetPassProperties() throws IOException {
         File config = TestConfigUtils.genSampleSQLConfigFile(false, srcDb, srcUser, srcPass, tgtDb, tgtUser, "");
         try {
             // Execute method and ensure right error is thrown
-            JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> ConfigStore.retrieveSQLConfig(null));
-            assertEquals("Target database password is empty in endpoint.properties. Please add the password!", thrownError.getMessage());
+            JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> ConfigStore.retrieveSQLConfig(null, ""));
+            assertEquals("Missing Properties:\n" +
+                    "src.db.user is missing! Please add the input to endpoint.properties.\n" +
+                    "src.db.password is missing! Please add the input to endpoint.properties.\n" +
+                    "target.db.password is missing! Please add the input to endpoint.properties.\n", thrownError.getMessage());
         } finally {
             // Always delete generated config file
             config.delete();
@@ -143,7 +157,7 @@ class ConfigStoreTest {
     }
 
     @Test
-    void testRetrieveSQLConfig() throws IOException {
+    void testOverloadedRetrieveSQLConfig() throws IOException {
         File config = TestConfigUtils.genSampleSQLConfigFile(true, srcDb, srcUser, srcPass, tgtDb, tgtUser, tgtPass);
         try {
             // Execute method
