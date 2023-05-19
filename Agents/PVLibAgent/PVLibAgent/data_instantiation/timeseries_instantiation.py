@@ -64,8 +64,7 @@ class timeseries_instantiation:
                     <%s> powsys:hasGeneratedPower <%s> . \
                     <%s> rdf:type powsys:GeneratedPower . \
                     <%s> om:hasValue <%s> . \
-                    <%s> rdf:type om:Measure . \
-                    <%s> ts:hasTimeSeries <%s> . }\
-                    ''' % (PV_Panel['PV'], gpIRI, gpIRI, gpIRI, measureIRI, measureIRI, measureIRI, dataIRIs[0])
+                    <%s> rdf:type om:Measure .  }\
+                    ''' % (PV_Panel['PV'], gpIRI, gpIRI, gpIRI, dataIRIs[0], dataIRIs[0])
             kg_client.performUpdate(update)
 
