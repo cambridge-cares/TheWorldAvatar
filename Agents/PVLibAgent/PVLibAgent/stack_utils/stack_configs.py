@@ -42,7 +42,8 @@ def retrieve_settings():
     DB_QUERY_USER_STACK = pg_conf_query.getUsername()
     DB_QUERY_PASSWORD_STACK = pg_conf_query.getPassword()
     # Extract PostgreSQL database URL for updating computed power value
-    DB_UPDATE_URL_STACK = pg_conf_update.getJdbcURL('PVLib')
+    #DB_UPDATE_URL_STACK = pg_conf_update.getJdbcURL('PVLib')
+    DB_UPDATE_URL_STACK = pg_conf_update.getJdbcURL('ntuenergy')
     DB_UPDATE_USER_STACK = pg_conf_update.getUsername()
     DB_UPDATE_PASSWORD_STACK = pg_conf_update.getPassword()
 
