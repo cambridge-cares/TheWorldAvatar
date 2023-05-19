@@ -29,6 +29,21 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontobuildingstructure/compriseOf -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/compriseOf">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/RoofFacade"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/Roof"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/Wall"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation that denotes the subcomposition a roof or wall fa�ade and their individual roofs or walls. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">comprise of</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobuildingstructure/consistsOf -->
 
 
@@ -72,6 +87,26 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between the roof of a building and the area it covers.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has area of</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuildingstructure/hasFacade -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/hasFacade">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Building"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/RoofFacade"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation that links a building to their roof and wall facades.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has fa�ade</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -256,6 +291,13 @@
     
 
 
+    <!-- https://w3id.org/bot#Building -->
+
+
+    <owl:Class rdf:about="https://w3id.org/bot#Building"/>
+    
+
+
     <!-- https://w3id.org/bot#Element -->
 
 
@@ -435,6 +477,12 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/RoofFacade">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/compriseOf"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/Roof"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The visible surface of a building&apos;s roof at aerial view. It can comprise of several roofs.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Roof Fa�ade</rdfs:label>
@@ -558,6 +606,12 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/compriseOf"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/Wall"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The frontage  of a building. It can comprise of several walls.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall Fa�ade</rdfs:label>
