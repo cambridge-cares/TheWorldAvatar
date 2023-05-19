@@ -1,6 +1,6 @@
 ################################################
-# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 21 Oct 2022                            #
+# Authors: Jieyang Xu (jx309@cam.ac.uk)        #    
+# Date: 17 May 2023                            #
 ################################################
 
 # The purpose of this module is to provide functionality to execute KG queries

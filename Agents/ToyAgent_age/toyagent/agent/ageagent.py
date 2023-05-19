@@ -1,4 +1,7 @@
-
+################################################
+# Authors: Jieyang Xu (jx309@cam.ac.uk)        #    
+# Date: 17 May 2023                            #
+################################################
 import uuid
 from rdflib import Graph
 import datetime
