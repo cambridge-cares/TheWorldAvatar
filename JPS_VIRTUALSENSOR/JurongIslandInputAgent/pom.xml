@@ -90,16 +90,6 @@
 			<artifactId>javax.servlet-api</artifactId>
 		</dependency>
 
-		<!-- Testing, versions pulled from parent -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-        </dependency>
-
 		<!-- used to create sparql query strings -->
 		<dependency>
             <groupId>org.eclipse.rdf4j</groupId>

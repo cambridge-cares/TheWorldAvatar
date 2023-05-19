@@ -9,8 +9,8 @@ Start the agent by executing the following command from within this folder. Repl
 
 ./stack.sh start <STACK_NAME>
 
-Send a GET request to the agent as follows from an Ubuntu terminal:
+Send a POST request to the agent as follows from an Ubuntu terminal:
 
-curl -X GET http://localhost:8082/JurongIslandInputAgent/update
+curl -X POST http://localhost:8082/JurongIslandInputAgent/update
 
 If everything works correctly, the agent returns a JSON response with an "emissionsUpdate" parameter having a value of "done". 

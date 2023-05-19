@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   jurong-island-input-agent:
-    image: ghcr.io/cambridge-cares/jurong-island-input-agent:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/jurong-island-input-agent:1.0.0-1557-develop-jurong-island-input-agent-SNAPSHOT
     deploy:
       mode: replicated
       replicas: 1

@@ -66,11 +66,11 @@ public class QueryClient {
     // classes
     // Since there is only CO2 emissions data for Jurong Island, other pollutants like NO2 and PM are 
     // not listed here. 
-    private static final Iri StaticPointSource = P_DISP.iri("StaticPointSource");
+    private static final Iri STATIC_POINT_SOURCE = P_DISP.iri("StaticPointSource");
     private static final Iri CO2 = P_DISP.iri("CO2");
-    private static final Iri Density = P_OM.iri("Density");
-    private static final Iri MassFlow = P_OM.iri("MassFlow");
-    private static final Iri Temperature = P_OM.iri("Temperature");
+    private static final Iri DENSITY = P_OM.iri("Density");
+    private static final Iri MASS_FLOW = P_OM.iri("MassFlow");
+    private static final Iri TEMPERATURE = P_OM.iri("Temperature");
     private static final Iri OWL_THING = P_OWL.iri("Thing");
     private static final Iri DENSITY_UNIT = P_OM.iri("KilogramPerCubicMetre");
     private static final Iri MASS_FLOW_UNIT = iri("http://www.theworldavatar.com/kb/ontochemplant/TonsPerYear");
@@ -134,7 +134,7 @@ public class QueryClient {
             String massFlowIRI = PREFIX + "massflow/" + UUID.randomUUID();
             String temperatureIRI = PREFIX + "temperature/" + UUID.randomUUID();
 
-            modify.insert(iri(pollutantSourceIRI).isA(StaticPointSource).andHas(EMITS,iri(emissionIRI)));
+            modify.insert(iri(pollutantSourceIRI).isA(STATIC_POINT_SOURCE).andHas(EMITS,iri(emissionIRI)));
             modify.insert(iri(emissionIRI).isA(CO2).andHas(HAS_QUANTITY,iri(densityIRI))
             .andHas(HAS_QUANTITY,iri(massFlowIRI)).andHas(HAS_QUANTITY,iri(temperatureIRI)));
 
@@ -142,9 +142,9 @@ public class QueryClient {
             modify.insert(iri(ocgmlIRI).isA(OWL_THING));
 
             // Triples for density, mass flow rate and temperature
-            modify.insert(iri(densityIRI).isA(Density).andHas(HAS_NUMERICALVALUE,densityValue).andHas(HAS_UNIT,DENSITY_UNIT));
-            modify.insert(iri(massFlowIRI).isA(MassFlow).andHas(HAS_NUMERICALVALUE,emissionValue).andHas(HAS_UNIT,MASS_FLOW_UNIT));
-            modify.insert(iri(temperatureIRI).isA(Temperature).andHas(HAS_NUMERICALVALUE,tempValue).andHas(HAS_UNIT,TEMPERATURE_UNIT));
+            modify.insert(iri(densityIRI).isA(DENSITY).andHas(HAS_NUMERICALVALUE,densityValue).andHas(HAS_UNIT,DENSITY_UNIT));
+            modify.insert(iri(massFlowIRI).isA(MASS_FLOW).andHas(HAS_NUMERICALVALUE,emissionValue).andHas(HAS_UNIT,MASS_FLOW_UNIT));
+            modify.insert(iri(temperatureIRI).isA(TEMPERATURE).andHas(HAS_NUMERICALVALUE,tempValue).andHas(HAS_UNIT,TEMPERATURE_UNIT));
 
         }
 
