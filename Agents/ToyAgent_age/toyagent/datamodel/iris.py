@@ -1,4 +1,7 @@
-
+################################################
+# Authors: Jieyang Xu (jx309@cam.ac.uk)        #    
+# Date: 17 May 2023                            #
+################################################
 XSD = 'http://www.w3.org/2001/XMLSchema#'
 EX = 'http://example.org/people#'
 AGE = 'http://example.org/age#'
