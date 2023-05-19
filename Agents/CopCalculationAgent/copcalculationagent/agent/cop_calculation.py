@@ -19,6 +19,8 @@ class COPCalculationAgent(DerivationAgent):
         self.sparql_client = self.get_sparql_client(KGClient)
 
     def agent_input_concepts(self) -> list:
+        # Validate completeness of received HTTP request (i.e. non-empty HTTP request, 
+        # contains derivationIRI, etc.) -> only relevant for synchronous derivation
         return [OM_MEASURE, REGION_HEATPUMP_EFFICIENCY, REGION_HOTSIDE_TEMPERATURE]
     
     def agent_output_concepts(self) -> list:
@@ -51,7 +53,7 @@ class COPCalculationAgent(DerivationAgent):
             else: 
                 self.logger.info(f"Derivation {derivationIRI}: Insufficient set of inputs provided.")
             
-            return input_dict[OM_MEASURE],input_dict[REGION_HEATPUMP_EFFICIENCY],input_dict[REGION_HOTSIDE_TEMPERATURE]
+        return input_dict[OM_MEASURE], input_dict[REGION_HEATPUMP_EFFICIENCY], input_dict[REGION_HOTSIDE_TEMPERATURE]
         
     def process_request_parameters(self, derivation_inputs: DerivationInputs, 
                                    derivation_outputs: DerivationOutputs):
@@ -68,7 +70,7 @@ class COPCalculationAgent(DerivationAgent):
         # Collect the generated triples derivation_outputs
         derivation_outputs.addGraph(g)
 
-    def getCOPGraph(self, temperature_iri,heatpumpefficiency_iri,hotsidetemperature_iri):
+    def getCOPGraph(self, temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri):
         
         # Initialise COP and return triples
         cop_mean = None
@@ -76,9 +78,10 @@ class COPCalculationAgent(DerivationAgent):
         res = self.sparql_client.get_temperature(temperature_iri)
         heatpumpefficiency = self.sparql_client.get_heatpumpefficiency(heatpumpefficiency_iri)
         hotsidetemperature= self.sparql_client.get_hotsidetemperature(hotsidetemperature_iri)
-        cop_max = self.calculateCOP(res['maxtemperature'],heatpumpefficiency,hotsidetemperature)
-        cop_mean = self.calculateCOP(res['meantemperature'],heatpumpefficiency,hotsidetemperature)
-        cop_min = self.calculateCOP(res['mintemperature'],heatpumpefficiency,hotsidetemperature)
+      
+        cop_max = self.calculateCOP(res['maxtemperature'], heatpumpefficiency, hotsidetemperature)
+        cop_mean = self.calculateCOP(res['meantemperature'], heatpumpefficiency, hotsidetemperature)
+        cop_min = self.calculateCOP(res['mintemperature'], heatpumpefficiency, hotsidetemperature)
         
         if cop_mean:
             cop_iri = self.sparql_client.generate_cop_iri(res['region'], res['start'], res['end'], cop_max, cop_mean, cop_min)
@@ -89,7 +92,7 @@ class COPCalculationAgent(DerivationAgent):
 
         return g
     
-    def calculateCOP(temperature,heatpumpefficiency, hotsidetemperature):
+    def calculateCOP(self, temperature, heatpumpefficiency, hotsidetemperature):
         '''
         Based on a given temperature to calculate the COP
         Note: COP = (hp_efficiency * T_H) / (T_H - T_C), where the input temperature is represented as T_C
@@ -113,3 +116,4 @@ def default():
     msg += "<BR>"
     msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/CopCalculationAgent<BR>"
     return msg
+

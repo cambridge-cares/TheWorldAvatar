@@ -4,6 +4,7 @@ from pyderivationagent import PyDerivationClient
 from pyderivationagent.data_model import iris as pda_iris
 import time
 from copcalculationagent.datamodel.iris import *
+from tqdm import tqdm
 
 
 # ---------------------------- Configs ------------------------------ #
@@ -21,19 +22,25 @@ RDF_TYPE =  RDF + 'type'
 # ----------------------------- Funcs ------------------------------- #
 def Synmarkup(
     derivation_client: PyDerivationClient,
+    sparql_client:PySparqlClient,
     temperature_iri: str,
     heatpumpefficiency_iri: str,
     hotsidetemperature_iri: str,
     agentIRI,
     agentURL
 ):
-        input_iris = [temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri]
-        derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
-            agentIRI=agentIRI,
-            agentURL=agentURL,
-            inputsIRI=input_iris,
-            derivationType=pda_iris.ONTODERIVATION_DERIVATION,
-        )
+        derivation_iri = retrieve_derivation_iri(sparql_client,temperature_iri, agentIRI)
+        if not derivation_iri :
+            input_iris = [temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri]
+            derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
+                agentIRI=agentIRI,
+                agentURL=agentURL,
+                inputsIRI=input_iris,
+                derivationType=pda_iris.ONTODERIVATION_DERIVATION,
+            )
+        
+        else:
+              print(f'InputIRI: {temperature_iri} already have derivation IRI: {derivation_iri}, skipped for now')
 
 def retrieve_derivation_iri(
           sparql_client: PySparqlClient,
@@ -59,8 +66,8 @@ def retrieve_derivation_iri(
 def retrieve_temperature_iri(sparql_client: PySparqlClient):
         
         query_string = f"""
-        SELECT ?temperature_iri
-        WHERE {{<http://statistics.data.gov.uk/id/statistical-geography/E01000001> <{CLIMB_HASMEASURE}>  ?m.
+        SELECT DISTINCT ?temperature_iri ?start
+        WHERE {{?region <{CLIMB_HASMEASURE}>  ?m.
                 ?m <{COMP_HAS_STARTUTC}> ?start;
                     <{COMP_HAS_ENDUTC}> ?end ;
                     <{CLIMB_HASVAR}> "{CLIMA_TAS}"^^<{XSD_STRING}> .
@@ -132,12 +139,13 @@ derivation_client = PyDerivationClient(derivation_instance_base_url=DERIVATION_I
                                         update_endpoint=UPDATE_ENDPOINT)
 
 # Perform Syn markup
-for i in range(len(temperature_iri_list)):
+for i in tqdm(range(len(temperature_iri_list))):
     time.sleep(1)
     temperature_iri = temperature_iri_list[i]
     try:
         Synmarkup(
             derivation_client=derivation_client,
+            sparql_client = sparql_client,
             temperature_iri=temperature_iri,
             heatpumpefficiency_iri = heatpumpefficiency_iri,
             hotsidetemperature_iri = hotsidetemperature_iri,

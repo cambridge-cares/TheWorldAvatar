@@ -116,7 +116,7 @@ class KGClient(PySparqlClient):
         <{heatpumpefficiency_iri}> <{IS_A}> <{assumption_iri}> ;
                     <{RDF_TYPE}> <{REGION_HEATPUMP_EFFICIENCY}> ;
                 <{OM_HAS_NUMERICALVALUE}> "{HEATPUMP_EFFICIENCY}"^^<{XSD_FLOAT}> .
-        <{heatpumpefficiency_iri}> <{IS_A}> <{assumption_iri}> ;
+        <{hotsidetemperature_iri}> <{IS_A}> <{assumption_iri}> ;
                     <{RDF_TYPE}> <{REGION_HOTSIDE_TEMPERATURE}> ;
             <{OM_HAS_NUMERICALVALUE}> "{HOTSIDE_TEMPERATURE}"^^<{XSD_FLOAT}> .
         }}
@@ -148,16 +148,6 @@ class KGClient(PySparqlClient):
                 res['region'] = str(res['region'])
             except:
                 res['region'] = None
-
-            try:
-                res['start'] = datetime.strptime(res['start'], TIME_FORMAT_LONG)
-            except:
-                res['start'] = None
-
-            try:
-                res['end'] = datetime.strptime(res['end'], TIME_FORMAT_LONG)
-            except:
-                res['end'] = None
 
             try:
                 res['meantemperature'] = float(res['meantemperature'])
@@ -227,8 +217,8 @@ class KGClient(PySparqlClient):
         """
         res = self.performQuery(query_string)
         if not res:
-            # In case date or price (or both) are missing (i.e. empty SPARQL result), return Nones
-            res = dict(zip(['heatpumpefficiency'], (None,)))
+            logger.error("heatpumpefficiency result can not be found -- go check if it exist")
+            raise InvalidInput("heatpumpefficiency result can not be found -- go check if it exist")
         else:
             res = res[0]
             try:
@@ -249,8 +239,8 @@ class KGClient(PySparqlClient):
         """
         res = self.performQuery(query_string)
         if not res:
-            # In case date or price (or both) are missing (i.e. empty SPARQL result), return Nones
-            res = dict(zip(['hotsidetemperature'], (None,)))
+            logger.error("hotsidetemperature result can not be found -- go check if it exist")
+            raise InvalidInput("hotsidetemperature result can not be found -- go check if it exist")
         else:
             res = res[0]
             try:
@@ -259,14 +249,14 @@ class KGClient(PySparqlClient):
                 hotsidetemperature = None
 
         return hotsidetemperature
-
+   
     def generate_cop_iri(self, region, start, end, cop_max, cop_mean, cop_min):
 
         query_string = f"""
         SELECT ?cop_iri
         WHERE {{
         <{region}> <{REGION_HASCOP}> ?cop_iri.
-        ?cop_iri  <{RDF_TYPE}> <{REGION_COP}>.
+        ?cop_iri  <{RDF_TYPE}> <{REGION_COP}> ;
                  <{OFP_VALIDFROM}> "{start}"^^<{XSD_DATETIME}> ;
                  <{OFP_VALIDTO}> "{end}"^^<{XSD_DATETIME}> ;
                  <{REGION_MAX_VAL}> "{cop_max}"^^<{XSD_FLOAT}> ;
@@ -286,7 +276,7 @@ class KGClient(PySparqlClient):
         
         return cop_iri
     
-    def instantiate_COP(g, cop_iri, region, start, end, cop_max, cop_mean, cop_min):
+    def instantiate_COP(self, g, cop_iri, region, start, end, cop_max, cop_mean, cop_min):
         g.add((URIRef(region),URIRef(REGION_HASCOP),URIRef(cop_iri)))
         g.add((URIRef(cop_iri),URIRef(RDF_TYPE),URIRef(REGION_COP)))
         g.add((URIRef(cop_iri),URIRef(OFP_VALIDFROM),Literal(start, datatype=XSD_DATETIME)))
@@ -304,4 +294,7 @@ class KGClient(PySparqlClient):
 
 # QUERY_ENDPOINT= "http://localhost:3846/blazegraph/namespace/heatpump/sparql"
 # a = KGClient(QUERY_ENDPOINT, QUERY_ENDPOINT)
-# res = a.update_assumptions()
+# # inputs = {'http://www.ontology-of-units-of-measure.org/resource/om-2/Measure': ['http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/Value_a968837a-7624-4c43-978d-9a9348ef1f40'], 'http://www.theworldavatar.com/ontology/ontoregionalanalysis/HeatPumpEfficiency': ['http://www.theworldavatar.com/ontology/ontoregionalanalysis/HeatPumpEfficiency_fba248c2-050f-4323-bc55-f8fb2ba01566'], 'http://www.theworldavatar.com/ontology/ontoregionalanalysis/HotSideTemperature': ['http://www.theworldavatar.com/ontology/ontoregionalanalysis/HotSideTemperature_e69b38bf-7894-43e8-a318-41e378faed8d']}
+
+# res = a.get_temperature('http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/Value_a968837a-7624-4c43-978d-9a9348ef1f40')
+# print(res)
