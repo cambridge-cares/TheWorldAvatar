@@ -1,7 +1,6 @@
 package com.cmclinnovations.jurongisland;
 
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
-import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
@@ -12,13 +11,7 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 
-import uk.ac.cam.cares.jps.base.derivation.Derivation;
-import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
-import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
-import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,19 +21,7 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfLiteral;
 import it.unibz.inf.ontop.model.vocabulary.GEO;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-
-import org.postgis.Point;
 
 /**
  * Execute sparql queries to query and instantiate data
