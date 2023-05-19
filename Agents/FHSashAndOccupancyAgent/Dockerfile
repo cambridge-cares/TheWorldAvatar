@@ -11,12 +11,10 @@ WORKDIR /root/.m2
 RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|" settings-security.xml
 RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
-WORKDIR /root/openmeteo_agent/src/main/resources
-RUN sed -i "s|DBUSERNAME|$(cat ../../../../credentials/postgres_username.txt)|;s|DBPASSWORD|$(cat ../../../../credentials/postgres_password.txt)|" config.properties
+# Builddocker
+WORKDIR /root/FHSashAndOccupancyAgentCode
+RUN --mount=type=cache,target=/root/.m2/repository mvn clean package
 
-# Build
-WORKDIR /root/openmeteo_agent
-RUN --mount=type=cache,target=/root/.m2/repository mvn package
 #==================================================================================================
 
 # Second stage: copy the downloaded dependency into a new image and build into an app
@@ -25,7 +23,16 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
-COPY --from=builder /root/openmeteo_agent/output/openmeteo_agent##1.2.0.war $CATALINA_HOME/webapps/
+# Set the required environment variable
+ENV CLIENTPROPERTIES_01="/usr/local/tomcat/config/tsClientForOccupiedState.properties"
+
+# Set the required environment variable
+ENV CLIENTPROPERTIES_02="/usr/local/tomcat/config/tsClientForSashOpening.properties"
+
+# Set the environment variable that points to where the email agent is located at
+ENV EMAIL_AGENT_URL="http://host.docker.internal:8080/email_agent"
+
+COPY --from=builder /root/FHSashAndOccupancyAgentCode/output/fh-sash-and-occupancy-agent##1.0.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]
