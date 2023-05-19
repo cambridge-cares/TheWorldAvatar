@@ -133,6 +133,25 @@
             </div>
         </div>
 
+        <!--OPF Button (to be loaded by the dtvf.min.js -->
+        <button id="runOPFButton" class="custom-button" style="position: absolute">Run Optimal Power Flow Algorithm</button>
+        <style>
+            .custom-button {
+                font-size: 15px;
+                padding: 7px 15px;
+                color: white;
+                background-color: #4CAF50;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+            .custom-button:hover {
+                background-color: #45a049;
+            }
+        </style>
+
+
         <!-- Code entry point -->
         <script>
             $("#sidePanelInner").tabs();
