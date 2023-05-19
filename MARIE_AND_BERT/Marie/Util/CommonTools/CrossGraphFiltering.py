@@ -82,7 +82,7 @@ class CrossGraphFilter:
                            "under", "show", "me", "with",
                            "chemical species", "having", "that", "can", "be", "?", "give", "created", "waht", "chemical"
                            ]
-        self.global_stop_words = ["g/mol", "dalton", "celsius", "show", "give", "find", "all", "the", "species"]
+        self.global_stop_words = ["g/mol", "mn/m", "dalton", "celsius", "show", "give", "find", "all", "the", "species"]
         self.global_stop_words += COMPARISON_OPERATOR_LABEL_LIST
         self.global_stop_words += self.stop_words
         self.global_stop_words = list(set(self.global_stop_words))

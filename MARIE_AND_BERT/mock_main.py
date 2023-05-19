@@ -46,6 +46,9 @@ app = Flask(__name__)
 def hello_world():
     return render_template('index_new.html')
 
+@app.route('/ontospecies')
+def ontospecies():
+    return render_template('ontospecies.html')
 
 @app.route('/static/<path:path>')
 def send_js(path):
