@@ -21,6 +21,9 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfLiteral;
 import it.unibz.inf.ontop.model.vocabulary.GEO;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -130,6 +133,18 @@ public class QueryClient {
         }
 
         updateStoreClient.executeUpdate(modify.getQueryString());
+
+    }
+
+    public void updatePirmasensEmissions() {
+        List<String> ocgmlIRIs = Arrays.asList(
+            "http://www.theworldavatar.com:83/citieskg/namespace/pirmasensEPSG32633/sparql/cityobject/UUID_LOD2_Pirmasens_4f8d0f1a-3b21-40d4-8b90-89723e31a7ca/",
+            "http://www.theworldavatar.com:83/citieskg/namespace/pirmasensEPSG32633/sparql/cityobject/UUID_LOD2_Pirmasens_c38d038b-a677-4e0c-95d9-f02c09cf991c/");
+
+            List<Double> no2Emissions = Arrays.asList(100.0,100.0);
+
+            
+
 
     }
 

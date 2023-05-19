@@ -34,6 +34,9 @@ public class JurongIslandInputAgent extends HttpServlet {
         LOGGER.info("Received POST request to update pollutant source data for Jurong Island");
         JSONArray pollutantSourceData = queryClient.pollutantSourceQuery();
         queryClient.updateEmissionsData(pollutantSourceData);
+
+        // TODO: Remove this method later once the Pirmasens input agent is created. 
+        queryClient.updatePirmasensEmissions();
         JSONObject responseJson = new JSONObject();
         responseJson.put("emissionsUpdate: ","done");
         resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
