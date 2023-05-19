@@ -323,6 +323,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontobuildingstructure/EastWallFacade -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/EastWallFacade">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The easthern frontage  of a building. It can comprise of several walls.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">East Wall Fa�ade</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobuildingstructure/FlatRoof -->
 
 
@@ -371,6 +383,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontobuildingstructure/NorthWallFacade -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/NorthWallFacade">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The northern frontage  of a building. It can comprise of several walls.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">North Wall Fa�ade</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobuildingstructure/Railing -->
 
 
@@ -407,6 +431,17 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontobuildingstructure/RoofFacade -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/RoofFacade">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The visible surface of a building&apos;s roof at aerial view. It can comprise of several roofs.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Roof Fa�ade</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobuildingstructure/SolarSuitableRoofArea -->
 
 
@@ -415,6 +450,18 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The size of the roof area of a building that is suitable for solar use.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Solar Suitable Roof Area</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuildingstructure/SouthWallFacade -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/SouthWallFacade">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The southern frontage  of a building. It can comprise of several walls.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">South Wall Fa�ade</rdfs:label>
     </owl:Class>
     
 
@@ -503,6 +550,29 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Vertical construction usually in masonry or in concrete which bounds or subdivides a construction works and fulfills a load bearing or retaining function. It is also an assembly that can host doors and windows.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The frontage  of a building. It can comprise of several walls.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall Fa�ade</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuildingstructure/WestWallFacade -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/WestWallFacade">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The westhern frontage  of a building. It can comprise of several walls.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">West Wall Fa�ade</rdfs:label>
     </owl:Class>
     
 
