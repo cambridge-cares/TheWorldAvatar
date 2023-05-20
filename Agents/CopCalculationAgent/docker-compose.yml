@@ -16,7 +16,6 @@ services:
       # Host and port of ONTOAGENT_OPERATION_HTTP_URL should match port specified in `port` node below
       - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5150/COPCalculation
       - DERIVATION_INSTANCE_BASE_URL=https://www.theworldavatar.com/kg/derivation/
-      - DERIVATION_PERIODIC_TIMESCALE=604800
       - REGISTER_AGENT=true
       # Required inputs, although values retrieved from Stack clients actually used when initialising DerivationAgent
       - SPARQL_QUERY_ENDPOINT=''
@@ -27,10 +26,10 @@ services:
       - FILE_SERVER_ENDPOINT=''
       - FILE_SERVER_USERNAME=''
       - FILE_SERVER_PASSWORD=''
-      #--- Miscellaneous ---#
+      # --- Miscellaneous --- #
       #TODO: Check whether that's still needed
       - LOG4J_FORMAT_MSG_NO_LOOKUPS=true
-      # Add Assumption value here
+      # --- Assumption spaces --- #
       # !!!! NO SPACING AFTER '='!!!!
       - HEATPUMP_EFFICIENCY=0.35
       # In the unit of Kelvin 
