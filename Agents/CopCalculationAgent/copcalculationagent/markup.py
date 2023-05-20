@@ -130,6 +130,7 @@ sparql_client = PySparqlClient(
 
 # retrieve temperature_iri
 temperature_iri_list = retrieve_temperature_iri(sparql_client)
+print(f"A total number of {len(temperature_iri_list)} will be marked, meaning there is {len(temperature_iri_list)/12} regions will be marked")
 heatpumpefficiency_iri = retrieve_heatpumpefficiency_iri(sparql_client)
 hotsidetemperature_iri = retrieve_hotsidetemperature_iri(sparql_client)
 
