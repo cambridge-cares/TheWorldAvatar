@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+
+</html>
+<html>
+
+<head>
+</head>
+
+<!------------------------------------------------------------------------------------------------------------------------------->
+
+<body><b>Functionality: <br></b>
+
+    The <b>lsoacalculationagent_change_of_fuel</b> offers the following function via the specified API endpoints:<br><br>Request
+    to calculate the change of gas/electricity consumption based on a given uptake, gas consumption and cop and return in JSON format (GET request):<br>(request expects all
+    individual query parameter to be provided in a single nested JSON object with key 'query', see details
+    below):<br>&nbsp;&nbsp; <a href="/api/lsoacalculationagent_change_of_fuel/calculation/change_of_fuel">
+        /api/lsoacalculationagent_change_of_fuel/calculation/change_of_fuel </a> <br><br>
+
+    <!------------------------------------------------------------------------------------------------------------------------------->
+    <b>Basics:</b>
+    <p>
+        <div style="text-align:center;">
+          <table style="display: inline-block;">
+            <tr>
+                <td rowspan="1" colspan="2" style="text-align: center; padding: 0px 8px;">
+                    Change of gas &nbsp;= uptake &times; gas consumption &times; propotion of heating
+                </td>
+            </tr>
+            <tr>
+                <td rowspan="3" style="text-align: center; padding: 0px 8px;">
+                    Change of electricity &nbsp;= 
+                </td>
+            </tr>
+            <tr>
+              <td rowspan="1" style="border-bottom: 1px solid black; padding: 0px 5px;">
+                (boiler efficiency &times; change of gas)
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" style="text-align: center; padding: 0px 8px;">
+                COP
+              </td>
+            </tr>
+          </table>
+        </div>
+      </p>
+      <b>NOTE:</b> builded python function to call this agent can be found on: <a href="https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-2/Agents/LSOAOutputAgent/agent/datacalculation/datacalculation.py">
+        call_change_of_fuel_agent </a><br>
+    <!------------------------------------------------------------------------------------------------------------------------------->
+    <b>Example query:</b><br>
+    <div style="text-indent: 25px;"> <code>query = {<br> </code>
+        <div style="text-indent: 50px;"><code>       'query':{'uptake': 0.5 ,<br></code>
+            <div style="text-indent: 120px;">
+                <code>                 'gas consumption': [5]<br></code>
+                <div style="text-indent: 50px;">
+                    <code>                 <em>(optional)</em>'propotion of heating': 0.9 <br></code>
+                    <div style="text-indent: 50px;">
+                        <code>                 <em>(optional)</em>'cop': [2.5] <br></code>
+                    <div style="text-indent: 50px;">
+                        <code>                 <em>(optional)</em>'boiler efficiency': 0.8 <br></code>
+                <div style="text-indent: 100px;"><code>               }<br></code>
+                    <div style="text-indent: 50px;"><code>       }</code><br>
+                        <!------------------------------------------------------------------------------------------------------------------------------->
+                        <div style="text-indent: 50px;"> <br><b>Arguments:</b><br>
+                            <div style="text-indent: 25px;">
+                                <li><b>uptake:</b> a index which quantify the extent of the deployment of heat pump by measureing the gas being replaced by using heat pump comparing to conventional fossil fule heating system.<br>Defined as (change of gas / gas used for heating), or (change of gas / (total gas consumption * propotion of heating))
+                                    
+                                        <div style="text-indent: 25px;"> </div>
+                                </li><br>
+                                <li><b>gas consumption:</b> should be an array (np.ndarray), 1D or 2D or 3D are all fine. Value should be in unit of <b>kWh</b><br>
+                                    The calculated change of gas array will have the exactly same shape as the gas consumption you provided. The input COP (if applicable) should have the exact same shape as the gas consumption you provided.<br>
+                                    <br>
+                                                <li><b>propotion of heating:</b> the propotion of gas which is used for heating(see equation above), if not provided, 0.9 
+                                                    will be used as default value. <br><br>
+                                                    <li><b>cop:</b> Coefficient of Performance. should be an array (np.ndarray), and having the exactly same shape as the gas consumption you provided.<br>
+                                                        The value will only be used when calculating change of electricity. Therefore if not provided, only the change of gas array will be returned. If provided, both change of gas and electricity arrays will be returned.
+                                                        <br>Details about the COP can be found on builded python function to call this agent can be found on: <a href="https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-2/Agents/LSOACalculationAgent_cop/agent/flaskapp/templates/index.html">
+                                                            home page </a> of cop calculation agent, you may also use python function to call the cop calculation agent using available function <a href="https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-2/Agents/LSOAOutputAgent/agent/datacalculation/datacalculation.py">
+                                                                call_cop_agent </a> here<br><br>
+                                                    <li><b>boiler efficiency:</b> boiler efficiency (see equation above), if not provided, 0.8
+                                                        will be used as default value. <br>
+                                                <!------------------------------------------------------------------------------------------------------------------------------->
+                                                <div style="text-indent: 50px;"> <br><b>Example return:</b><br>
+                                                    <div style="text-indent: 50px;">
+                                                        <code>return = {'change of gas': [100] ,<br></code>
+                                                        <div style="text-indent: 120px;">
+                                                            <code> 'change of electricity': [100] <br></code>
+                                                        <div style="text-indent: 120px;">
+                                                            <div style="text-indent: 100px;"><code>       }</code><br>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                </li>
+                            </div> <br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+</body>
+
+</html>
