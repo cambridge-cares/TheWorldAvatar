@@ -177,6 +177,22 @@ public class FHAgent{
         return mappings.size();
     }
 
+    /*
+     * 
+     * 
+     */
+    public Map<String, String> getTimeseriesIRI () {
+        Map<String, String> keyToIRIMap = new HashMap<>();
+        for (JSONKeyToIRIMapper mapping: mappings) {
+            List<String> keys = mapping.getAllJSONKeys();
+            for(String key : keys){
+                String iri = mapping.getIRI(key);
+                keyToIRIMap.put(key, iri);
+            }
+        }
+        return keyToIRIMap;
+    }
+
     /**
      * Sends a POST request with requested parameters to the specified url.
      *

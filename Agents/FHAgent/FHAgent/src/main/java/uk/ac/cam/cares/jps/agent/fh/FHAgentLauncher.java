@@ -31,6 +31,8 @@ public class FHAgentLauncher extends JPSAgent {
 	 String agentProperties;
 	 String apiProperties;
 	 String clientProperties;
+
+    static String requestURL;
     /**
      * Logger for reporting info/errors.
      */
@@ -47,12 +49,12 @@ public class FHAgentLauncher extends JPSAgent {
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-        return processRequestParameters(requestParams);
+        requestURL = request.getServletPath();
+        return getRequestParameters(requestParams);
     } 
+
     
-    
-    @Override
-    public JSONObject processRequestParameters(JSONObject requestParams) {
+    public JSONObject getRequestParameters(JSONObject requestParams) {
     	JSONObject jsonMessage = new JSONObject();
       if (validateInput(requestParams)) {
         	LOGGER.info("Passing request to ThingsBoard Input Agent..");
@@ -129,14 +131,17 @@ public class FHAgentLauncher extends JPSAgent {
 
         // Create the agent
         FHAgent agent;
+        FHAgentDerivation derivator;
         try {
             agent = new FHAgent(args[0]);
+            derivator = new FHAgentDerivation(args[0], args[1], agent.getTimeseriesIRI());
         } catch (IOException e) {
             LOGGER.error(AGENT_ERROR_MSG, e);
             throw new JPSRuntimeException(AGENT_ERROR_MSG, e);
         }
         LOGGER.info("Input agent object initialized.");
         JSONObject jsonMessage = new JSONObject();
+
         jsonMessage.accumulate("Result", "Input agent object initialized.");
 
         // Create and set the time series client
@@ -150,6 +155,14 @@ public class FHAgentLauncher extends JPSAgent {
         }
         LOGGER.info("Time series client object initialized.");
         jsonMessage.accumulate("Result", "Time series client object initialized.");
+        //Instantiate agent and derivations
+        try{
+            derivator.instantiateAgent(args[0], requestURL);
+        } catch (Exception e) {
+            throw new JPSRuntimeException(AGENT_ERROR_MSG+ " Failed to instantiate derivations: " + e);
+        }
+
+
         // Initialize time series'
         try {
             agent.initializeTimeSeriesIfNotExist();
