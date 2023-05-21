@@ -140,7 +140,7 @@ class KGClient(PySparqlClient):
         res = self.performQuery(query_string)
         
         if not res:
-            # In case date or price (or both) are missing (i.e. empty SPARQL result), return Nones
+            # In case some var are missing (i.e. empty SPARQL result), return Nones
             res = dict(zip(['region', 'start', 'end', 'meantemperature','maxtemperature','mintemperature'], (None,)*6))
         else:
             res = res[0]
@@ -249,7 +249,7 @@ class KGClient(PySparqlClient):
                 hotsidetemperature = None
 
         return hotsidetemperature
-   
+
     def generate_cop_iri(self, region, start, end, cop_max, cop_mean, cop_min):
 
         query_string = f"""
@@ -281,9 +281,9 @@ class KGClient(PySparqlClient):
         g.add((URIRef(cop_iri),URIRef(RDF_TYPE),URIRef(REGION_COP)))
         g.add((URIRef(cop_iri),URIRef(OFP_VALIDFROM),Literal(start, datatype=XSD_DATETIME)))
         g.add((URIRef(cop_iri),URIRef(OFP_VALIDTO),Literal(end, datatype=XSD_DATETIME)))
-        g.add((URIRef(cop_iri),URIRef(REGION_MAX_VAL),Literal(cop_max, datatype=XSD_DATETIME)))
-        g.add((URIRef(cop_iri),URIRef(REGION_MEAN_VAL),Literal(cop_mean, datatype=XSD_DATETIME)))
-        g.add((URIRef(cop_iri),URIRef(REGION_MIN_VAL),Literal(cop_min, datatype=XSD_DATETIME)))
+        g.add((URIRef(cop_iri),URIRef(REGION_MAX_VAL),Literal(cop_max, datatype=XSD_FLOAT)))
+        g.add((URIRef(cop_iri),URIRef(REGION_MEAN_VAL),Literal(cop_mean, datatype=XSD_FLOAT)))
+        g.add((URIRef(cop_iri),URIRef(REGION_MIN_VAL),Literal(cop_min, datatype=XSD_FLOAT)))
         return g
 
     def remove_unnecessary_whitespace(self, query: str) -> str:

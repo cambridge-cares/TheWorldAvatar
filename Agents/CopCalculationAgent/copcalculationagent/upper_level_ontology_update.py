@@ -132,11 +132,12 @@ def initialize_assumptions(sparql_client):
         
         return hotsidetemperature_iri
     
-    # Assumptions for COP agent
     country_iri = get_country_iri(sparql_client)
     assumption_iri = get_assumption_iri(sparql_client,country_iri)
+    # Assumptions for COP agent
     heatpumpefficiency_iri = get_heatpumpefficiency_iri(sparql_client,assumption_iri)
     hotsidetemperature_iri = get_hotsidetemperature_iri(sparql_client,assumption_iri)
+    
     query_string = f"""
     INSERT DATA {{
     <{assumption_iri}> <{REGION_APPLICABLETO}> <{country_iri}> .
