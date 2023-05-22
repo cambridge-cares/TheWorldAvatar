@@ -18,6 +18,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class DataBridgeAgentTest {
     private static DataBridgeAgent agent;
     private static final JSONObject EXPECTED_RESPONSE = new JSONObject();
+    private static final String KEY_NAMESPACE = "namespace";
+    private static final String KEY_DATABASE = "database";
+    private static final String KEY_TRANSFER = "transfer";
+    private static final String VAL_NAMESPACE = "default";
+    private static final String VAL_DATABASE = "test";
+    private static final String VAL_TRANSFER = "in";
     private static final String KEY_METHOD = "method";
     private static final String GET_METHOD = "GET";
     private static final String POST_METHOD = "POST";
@@ -43,6 +49,47 @@ class DataBridgeAgentTest {
     @BeforeEach
     void setup() {
         agent = new DataBridgeAgent();
+    }
+
+    @Test
+    void testValidateInput() {
+        // For sparql route
+        JSONObject requestParams = new JSONObject();
+        requestParams.put(KEY_NAMESPACE, VAL_NAMESPACE);
+        requestParams.put(KEY_TRANSFER, VAL_TRANSFER);
+        assertTrue(agent.validateInput(requestParams));
+
+        // For sql route
+        requestParams = new JSONObject();
+        requestParams.put(KEY_DATABASE, VAL_DATABASE);
+        requestParams.put(KEY_TRANSFER, VAL_TRANSFER);
+        assertTrue(agent.validateInput(requestParams));
+    }
+
+    @Test
+    void testValidateInputInvalid() {
+        // Invalid for only transfer key provided
+        JSONObject requestParams = new JSONObject();
+        requestParams.put(KEY_TRANSFER, VAL_TRANSFER);
+        assertFalse(agent.validateInput(requestParams));
+        // Invalid for only namespace key provided
+        requestParams = new JSONObject();
+        requestParams.put(KEY_NAMESPACE, VAL_NAMESPACE);
+        assertFalse(agent.validateInput(requestParams));
+        // Invalid when 'transfer' value is not in or out
+        requestParams = new JSONObject();
+        requestParams.put(KEY_NAMESPACE, VAL_NAMESPACE);
+        requestParams.put(KEY_TRANSFER, "invalid");
+        assertFalse(agent.validateInput(requestParams));
+        // Invalid for only database key provided
+        requestParams = new JSONObject();
+        requestParams.put(KEY_DATABASE, VAL_DATABASE);
+        assertFalse(agent.validateInput(requestParams));
+        // Invalid when 'transfer' value is not in or out
+        requestParams = new JSONObject();
+        requestParams.put(KEY_DATABASE, VAL_DATABASE);
+        requestParams.put(KEY_TRANSFER, "invalid");
+        assertFalse(agent.validateInput(requestParams));
     }
 
     @Test
