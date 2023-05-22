@@ -18,6 +18,8 @@ class ConfigStoreTest {
     private static final String tgtDb = "jdbc:postgresql://host.docker.internal:5432/db";
     private static final String tgtUser = "user";
     private static final String tgtPass = "pass2";
+    private static final String securedSrcSparql = "http://" + srcUser + ":" + srcPass + "@localhost:9999/blazegraph/namespace/test/sparql";
+    private static final String securedTargetSparql = "http://" + tgtUser + ":" + tgtPass + "@host.docker.internal:9999/blazegraph/namespace/target/sparql";
 
     @Test
     void testRetrieveSPARQLConfigNoFile() {
@@ -55,6 +57,36 @@ class ConfigStoreTest {
     }
 
     @Test
+    void testOverloadedRetrieveSPARQLConfig() throws IOException {
+        File config = TestConfigUtils.genSampleSPARQLConfigFile(false, srcSparql, targetSparql);
+        try {
+            // Execute method
+            String[] result = ConfigStore.retrieveSPARQLConfig();
+            // Verify results are expected
+            assertEquals(srcSparql, result[0]);
+            assertEquals(targetSparql, result[1]);
+        } finally {
+            // Always delete generated config file
+            config.delete();
+        }
+    }
+
+    @Test
+    void testOverloadedRetrieveSPARQLConfigWithCredentials() throws IOException {
+        File config = TestConfigUtils.genSampleSPARQLConfigFile(false, srcSparql, targetSparql, srcUser, srcPass, tgtUser, tgtPass);
+        try {
+            // Execute method
+            String[] result = ConfigStore.retrieveSPARQLConfig();
+            // Verify results are expected
+            assertEquals(securedSrcSparql, result[0]);
+            assertEquals(securedTargetSparql, result[1]);
+        } finally {
+            // Always delete generated config file
+            config.delete();
+        }
+    }
+
+    @Test
     void testRetrieveSPARQLConfigEmptyTargetProperties() throws IOException {
         File config = TestConfigUtils.genSampleSPARQLConfigFile(false, srcSparql, "");
         try {
@@ -69,14 +101,29 @@ class ConfigStoreTest {
     }
 
     @Test
-    void testOverloadedRetrieveSPARQLConfig() throws IOException {
+    void testRetrieveSPARQLConfig() throws IOException {
         File config = TestConfigUtils.genSampleSPARQLConfigFile(false, srcSparql, targetSparql);
         try {
             // Execute method
-            String[] result = ConfigStore.retrieveSPARQLConfig();
+            String[] result = ConfigStore.retrieveSPARQLConfig(null, "");
             // Verify results are expected
             assertEquals(srcSparql, result[0]);
             assertEquals(targetSparql, result[1]);
+        } finally {
+            // Always delete generated config file
+            config.delete();
+        }
+    }
+
+    @Test
+    void testRetrieveSPARQLConfigWithCredentials() throws IOException {
+        File config = TestConfigUtils.genSampleSPARQLConfigFile(false, srcSparql, targetSparql, srcUser, srcPass, "", "");
+        try {
+            // Execute method
+            String[] result = ConfigStore.retrieveSPARQLConfig(null, "");
+            // Verify results are expected
+            assertEquals(securedSrcSparql, result[0]);
+            assertEquals(targetSparql, result[1]); // If no optional values are provided, it should return non-secured endpoint
         } finally {
             // Always delete generated config file
             config.delete();
@@ -99,6 +146,25 @@ class ConfigStoreTest {
             assertEquals("Missing Properties:\n" +
                     "src.db.user is missing! Please add the input to endpoint.properties.\n" +
                     "src.db.password is missing! Please add the input to endpoint.properties.\n", thrownError.getMessage());
+        } finally {
+            // Always delete generated config file
+            config.delete();
+        }
+    }
+
+    @Test
+    void testOverloadedRetrieveSQLConfig() throws IOException {
+        File config = TestConfigUtils.genSampleSQLConfigFile(true, srcDb, srcUser, srcPass, tgtDb, tgtUser, tgtPass);
+        try {
+            // Execute method
+            String[] result = ConfigStore.retrieveSQLConfig();
+            // Verify results are expected
+            assertEquals(srcDb, result[0]);
+            assertEquals(srcUser, result[1]);
+            assertEquals(srcPass, result[2]);
+            assertEquals(tgtDb, result[3]);
+            assertEquals(tgtUser, result[4]);
+            assertEquals(tgtPass, result[5]);
         } finally {
             // Always delete generated config file
             config.delete();
@@ -141,7 +207,7 @@ class ConfigStoreTest {
     }
 
     @Test
-    void testOverloadedRetrieveSQLConfigEmptyTargetPassProperties() throws IOException {
+    void testRetrieveSQLConfigEmptyTargetPassProperties() throws IOException {
         File config = TestConfigUtils.genSampleSQLConfigFile(false, srcDb, srcUser, srcPass, tgtDb, tgtUser, "");
         try {
             // Execute method and ensure right error is thrown
@@ -157,11 +223,11 @@ class ConfigStoreTest {
     }
 
     @Test
-    void testOverloadedRetrieveSQLConfig() throws IOException {
+    void testRetrieveSQLConfig() throws IOException {
         File config = TestConfigUtils.genSampleSQLConfigFile(true, srcDb, srcUser, srcPass, tgtDb, tgtUser, tgtPass);
         try {
             // Execute method
-            String[] result = ConfigStore.retrieveSQLConfig();
+            String[] result = ConfigStore.retrieveSQLConfig(null, "");
             // Verify results are expected
             assertEquals(srcDb, result[0]);
             assertEquals(srcUser, result[1]);
