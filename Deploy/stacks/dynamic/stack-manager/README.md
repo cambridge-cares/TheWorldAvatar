@@ -51,7 +51,15 @@ To spin up the stack (with default settings) please follow the instructions belo
     * The Ontop GUI should be available at http://localhost:3838/ontop/ui.
     * The Blazegraph Workbench should be available at http://localhost:3838/blazegraph/ui.
 
-## Adding custom containers
+## Built-in containers
+
+There are several containers built into the stack-manager that perform common tasks such as uploading, storing, and visualising data.
+Their service config files can be found in the stack-client [resources directory].
+
+By default the services listed in the [defaults.txt](./src/main/resources/com/cmclinnovations/stack/defaults.txt) resource file.
+The other, optional, services can be started after the default ones by specifying them in the appropriate stack config file, as described in the [Custom and optional containers](#custom-and-optional-containers) section.
+
+## Specifying custom containers
 
 It is possible to spin up other containers in the stack using the stack-manager.
 This is particularly useful for adding agents into a stack.
@@ -63,9 +71,16 @@ To add a container after a stack has been spun up just add the configuration fil
 
 > :warning: **Warning:** The stack-manager does not attempt to build a container's image so all images need to be built prior to running the stack-manager.
 
-### Configuration Files
+### Benefits
 
-To do this add a `.json` file for each container into the [stack-manager/inputs/config/services](./inputs/config/services/) directory.
+Spinning a container up via the stack-manager provides the following benefits:
+* The container is added to the stack's Docker network, this allows the agent to connect to the other stack containers using their internal URLs.
+* The URLs, usernames and passwords of other containers in the stack can be retrieved using the `ContainerClient::readEndpointConfig` method at runtime, rather than having to provide them through environment variables or `.properties` files.
+* Allows the classes and methods available through the stack-clients library to be used to add new data (particularly geospatial data) into the stack in a clean an consistent way.
+
+### Service configuration files
+
+To add custom containers put a `.json` file for each container into the [stack-manager/inputs/config/services](./inputs/config/services/) directory.
 An example of the structure of this file, the one for the Ontop container, is as follows:
 ```json
 {
@@ -93,34 +108,205 @@ The three top-level nodes are:
 * `"endpoints"`: This is where mappings between the internal URLs and the externally accessible paths can be specified.
   The internal URL should be the one you would use if you were logged into the container and the external path is appended to `http://localhost:3838`
 
-Other, more complex, examples of configuration files can be seen in the stack-manager's [resources directory](./src/main/resources/com/cmclinnovations/stack/services/defaults/).
+Other, more complex, examples of configuration files can be seen in the stack-client's [resources directory].
 
-### Benefits
 
-Spinning a container up via the stack-manager provides the following benefits:
-* The container is added to the stack's Docker network, this allows the agent to connect to the other stack containers using their internal URLs.
-* The URLs, usernames and passwords of other containers in the stack can be retrieved using the `ContainerClient::readEndpointConfig` method at runtime, rather than having to provide them through environment variables or `.properties` files.
-* Allows the classes and methods available through the stack-clients library to be used to add new data (particularly geospatial data) into the stack in a clean an consistent way.
+### Mounting data into containers
+
+Some containers need application specific configuration files. There are several ways to mount these files into containers. These are summarised in the following table and described in more detail below.
+
+| Type       | Description                                                                               | Use case                                                                                                         | Location                                                                                                                                                                       |
+| ---------- | ----------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Secret     | A single file that is stored encrypted in the stack and can be mounted into any container | Adding files that contain sensitive data like usernames and passwords                                            | [`stack-manager/inputs/secrets`](./inputs/secrets/)                                                                                                                            |
+| Volume     | A directory that is stored unencrypted in the stack and can be mounted into any container | Adding files to one or more containers that will persist if the containers are stopped                           | [`stack-manager/inputs/data`](./inputs/data/)                                                                                                                                  |
+| Bind mount | A file or directory that is directly mounted into a container from the host               | Useful for testing configurations when the container doesn't need to be restarted for the changes to take effect | Any absolute path, as seen in WSL (not Git Bash, CMD or PowerShell) when running in Windows, or a path relative to the [`stack-manager/inputs/data`](./inputs/data/) directory |
+
+#### Secrets
+
+Secrets are the best way to store sensitive information like usernames and passwords in a stack.
+
+The secret is added to the stack the first time the stack-manager is run.
+To modify the value of a secret the stack needs to be stopped and restarted.
+
+The source files should be put in the [`stack-manager/inputs/secrets`](./inputs/secrets/) directory.
+By default secrets are mounted inside the container in the `/run/secrets/` directory in a file with the same name as the secret.
+It is possible to specify a custom target path by adding the `File.Name` nodes.
+
+The example below shows a snippet of a service config file with a secret named `secret_with_default_path` that specifies that the content of the file `stack-manager/inputs/secrets/secret_with_default_path` should be mounted into the container at `/run/secrets/secret_with_default_path`.
+The other secret named `secret_with_custom_path` specifies that the file `stack-manager/inputs/secrets/secret_with_custom_path` should be mounted into the container at `/custom/secret/path`.
+
+```json
+{
+    "ServiceSpec": {
+        ...
+        "TaskTemplate": {
+            "ContainerSpec": {
+                ...
+                "Secrets": [
+                    {
+                        "SecretName": "secret_with_default_path"
+                    },
+                    {
+                        "SecretName": "secret_with_custom_path",
+                        "File": {
+                            "Name":"/custom/secret/path"
+                        }
+                    }
+                ]
+                ...
+```
+
+The corresponding `stack-manager/inputs` directory would then need the following files:
+
+```
+secrets/
+    secret_with_default_path
+    secret_with_custom_path
+```
+
+For more information on how secrets work in Docker see here, https://docs.docker.com/engine/swarm/secrets/.
+
+#### Volumes
+
+Volumes can be mounted into containers so that their code can access the files container within them.
+This is the preferred method for mounting non-sensitive data in production environments.
+
+See the [Stack configuration](#stack-configuration) section for instructions on how to automatically copy files into a volume when the stack-manager is run.
+
+The example below shows a snippet of a service config file with a volume named `vis-files` being mounted into the container at `/var/www/html`.
+The stack-manager will have copied the contents of the `stack-manager/inputs/data/vis-files` directory into that volume before starting the containers.
+
+```json
+{
+    "ServiceSpec": {
+       ...
+        "TaskTemplate": {
+            "ContainerSpec": {
+               ...
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "vis-files",
+                        "Target": "/var/www/html"
+                    }
+                ]
+                ...
+```
+
+The corresponding `stack-manager/inputs` directory would then need the following directories and the volume would need to be specified in the stack config file as described (here)[#file-format] :
+
+```
+data/
+    vis-files/
+```
+
+For more information on how volumes work in Docker see here, https://docs.docker.com/storage/volumes/.
+
+#### Bind mounts
+
+Bind mounts allow you to directly mount a file or directory on the host machine into a container.
+This is often useful when developing and debugging a container that doesn't need to be restarted if the file(s) change.
+
+The example below shows a snippet of a service config file where the contents of the `stack-manager/inputs/data/fia-queries` directory is mounted into the container at `/app/queries`.
+
+```json
+{
+    "ServiceSpec": {
+       ...
+        "TaskTemplate": {
+            "ContainerSpec": {
+               ...
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "fia-queries",
+                        "Target": "/app/queries"
+                    }
+                ]
+                ...
+```
+
+For more information on how bind mounts work in Docker see here, https://docs.docker.com/storage/bind-mounts/.
 
 ## Stack configuration
 
-By default the stack will start the default services and then all of the custom services.
-The list of services that are started can be modified by specifying a stack config file, with the same name as the stack being spun up, in the [stack-manager/inputs/config](./inputs/config/) directory.
+A stack config file, with the same name as the stack being spun up, can be placed in the [stack-manager/inputs/config](./inputs/config/) directory to control what is include when the stack-manager is run.
+
+### Custom and optional containers
+By default the stack will start the built-in default services and then all of the user-supplied custom services. There are also several optional built-in services
+
+The list of services that are started can be modified by adding them to the  .
 For example a stack called "test" could be configured by providing a file with the path `stack-manager/inputs/config/test.json`.
 
+### Volumes
+
+The stack config file also allows you to specify that the contents of certain directories get copied into volumes when the stack-manager is run.
+Changes to those files are copied into the volume each time the stack-manager is run.
+
+See the [Mounting data into containers](#mounting-data-into-containers) section for instructions on how to mount a volume into a container.
+
+To remove files or directories from a volume you either need to stop any container that are using it and then remove the volume, or attach a shell to a container that has the volume mounted and delete the files directly.
+
+### File format
 The format of the stack configuration file is as follows:
 ```json
 {
     "services": {
         "includes": [
-            # Non-default services to start in addition to the default ones. (Optional)
+            # List of non-default services to start in addition to the default ones. (Optional)
         ],
         "excludes": [
-            # Default and/or explicitly included services that should not be spun up. This will cause issues if another service requires one of the excluded ones. (Optional)
+            # List of default and/or explicitly included services that should not be spun up. This will cause issues if another service requires one of the excluded ones. (Optional)
         ]
+    },
+    "volumes": {
+        # Key-value pairs of volume name and source directory in the 'stack-manager/inputs/data' directory. (Optional)
+        "<volume name>": "<source directory>"
     }
 }
 ```
+
+## Example - including a visualisation
+
+This example explains how to spin up a DTVF based visualisation container within a stack. The visualisation container requires a volume called `vis-files` to be populated.
+The steps to configure the stack are as follows:
+* Enable the visualisation container by adding it to the `services` `includes` list in the stack config file.
+* Specify the sub-directory of the `stack-manager/inputs/data/` folder from which the custom files that configure the visualisation should be copied, in this example the sub-directory is called `webspace`.
+* Copy the custom files that configure the visualisation in to that directory, in this example `stack-manager/inputs/data/webspace`.
+
+The final stack config file should contain the following content:
+```json
+{
+    "services": {
+        "includes": [
+            "visualisation"
+        ]
+    },
+    "volumes": {
+        "vis-files": "webspace"
+    }
+}
+```
+
+### Adding the Feature Info Agent
+
+To also include a Feature Info Agent you should modify the stack config to something like the following:
+```json
+{
+    "services": {
+        "includes": [
+            "visualisation",
+            "feature-info-agent"
+        ]
+    },
+    "volumes": {
+        "vis-files": "webspace",
+        "fia-queries": "fia-queries"
+    }
+}
+```
+
+Which specifies that the Feature Info Agent query files will be expected to be placed in the `stack-manager/inputs/data/fia-queries` directory.
 
 ## Debugging the Stack Manager in VSCode
 
@@ -163,3 +349,4 @@ You will need permission to push to the CMCL package repository to be able to bu
 
 <!-- Links -->
 [CMCL Docker Registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
+[resources directory]: ../stack-clients/src/main/resources/com/cmclinnovations/stack/services/built-ins/
