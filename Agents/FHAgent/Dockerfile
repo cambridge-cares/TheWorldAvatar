@@ -41,6 +41,9 @@ COPY ./config/client.properties /root/client.properties
 # Set the required environment variable
 ENV THINGSBOARD_CLIENTPROPERTIES="/root/client.properties"
 
+# Set the required environment variable
+ENV IRI_MAPPINGSTORE="/root/iriMapping.txt"
+
 # Copy in the mapping folder
 COPY ./config/mappings /root/mappings
 

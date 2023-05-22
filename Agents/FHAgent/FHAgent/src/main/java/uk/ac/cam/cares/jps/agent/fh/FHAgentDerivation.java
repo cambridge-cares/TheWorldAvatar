@@ -8,10 +8,14 @@ import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
@@ -42,11 +46,11 @@ public class FHAgentDerivation {
     private static final String ONTOAGE = "https://www.theworldavatar.com/kg/ontoagent/";
     private static final String ONTODERIV = "https://www.theworldavatar.com/kg/ontoderivation/";
 
-    public FHAgentDerivation(String agentPropFile, String clientPropFile, Map<String, String> outputToIRIMap){
+    public FHAgentDerivation(String agentPropFile, String clientPropFile, String iriMappingFile, Map<String, String> outputToIRIMap){
         try{
             readBaseIRI(agentPropFile);
             readSparqlEndpoint(clientPropFile);
-            createIRI (agentPropFile, outputToIRIMap);
+            retrieveIRIMapping(agentPropFile, iriMappingFile, outputToIRIMap);
 
             storeClient = new RemoteStoreClient(endPoint[0], endPoint[1]);
             derivClient = new DerivationClient(storeClient, derivationInstanceBaseURL);
@@ -125,7 +129,47 @@ public class FHAgentDerivation {
             }
     }
 
-    public void instantiateAgent(String agentPropFile, String agentURL) {
+    private void saveIRIMapping (String mappingFile) throws IOException {
+
+        FileWriter fileWriter = new FileWriter(mappingFile);
+        PrintWriter printWriter = new PrintWriter(fileWriter);
+        
+        
+        for (String varName: iriMap.keySet()) {
+            printWriter.print(varName+"="+iriMap.get(varName));
+        }
+
+        printWriter.close();
+        
+    }
+
+    private void retrieveIRIMapping (String agentPropFile, String mappingFile, Map<String, String> outputToIRIMap){
+        File mapping = new File(mappingFile);
+        if(mapping.exists()) { 
+            try (FileReader fr = new FileReader(mapping);
+                BufferedReader br = new BufferedReader(fr);) {
+                String line;
+                while ((line = br.readLine()) != null) {
+                    String[] iriPair = line.split("=");
+                    iriMap.put(iriPair[0], iriPair[1]);
+                }
+            } catch (IOException e) {
+                throw new JPSRuntimeException("Failed to retrieve IRI map from mapping file: " + e);
+            }
+        }
+        else {
+            try{
+                createIRI(agentPropFile, outputToIRIMap);
+                saveIRIMapping(mappingFile);
+            }
+            catch (Exception e){
+                throw new JPSRuntimeException("Failed to create IRI mapping: " + e);
+            }
+            
+        }
+    }
+
+    public void instantiateAgent(String agentURL) {
         if (agentURL.equals(null)){
             agentURL = derivationInstanceBaseURL;
         }
