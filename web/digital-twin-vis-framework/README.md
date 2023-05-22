@@ -4,7 +4,7 @@ A central framework for Digital Twin Visualisations (the Digital Twin Visualisat
 
 Please note that the DTVF can only plot data that is provided in the accepted formats (more on this below), restricts some features if the data isn't organised (again, more on this below), and only produces a basic visualisation. Developers that want to display non-standard data, or create more complex map interactions are free to use the DTVF as a base, but will likely need to handle these additions themselves.
 
-The current, working version of the DTVF is **3.3.4**.
+The current, working version of the DTVF is **3.3.5**.
 
 # Technical Overview
 

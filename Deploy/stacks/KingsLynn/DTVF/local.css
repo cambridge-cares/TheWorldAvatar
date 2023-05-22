@@ -1,41 +1,72 @@
-#legend-entry {
-    width: 100%;
-    height: 32px;
-    margin-bottom: 4px;
-    display: block;
-    margin-right: 5px;
+/* Legend elements */
+#legend {
+	width: 100% !important;
+	height: 100% !important;
 }
-#legend-entry img {
-    width: 32px;
-    height: 32px;
+#legend h2 {
+	padding-bottom: 5px;
+}
+.legend-entry {
+	width: 100%;
+	height: 38px !important;
+	display: table;
+    margin-left: 10px;
+}
+.legend-entry img {
+    width: 40px;
+	margin-right: 10px;
+	float: left;
+    padding: 4px;
+}
+.legend-entry p {
+	height: 100%;
+    display: table;	
+	font-size: 13pt;
+	line-height: 38px;
+    margin: 0px !important;
+}
+.legend-section {
+    margin-bottom: 15px;
+}
+.legend-upper {
+    border-width: 0px 0px 1px 0px;
+    border-style: solid;
+    border-color: lightgray;  
+    height: 30px;
+    margin-bottom: 5px;
+}
+.legend-upper h3 {
+    line-height: 30px;
     float: left;
+    margin: 0px !important;
 }
-#legend-entry svg {
-    width: 32px;
-    height: 32px;
-    float: left;
+.legend-upper i {
+    width: 30px; 
+    height: 30px;
+    float: right;
+    line-height: 30px;
+    text-align: center;
+    cursor: pointer;
 }
-#legend-entry p {
-    line-height: 22pt;
-}
-
-.legendtable {
-    width: 100%;
-    margin-top: 10px;
-}
-.legendtable td {
-    width: 50% !important;
-    margin-bottom: 2px;
+.legend-upper i:hover {
+    color: grey;
 }
 
-.hummingbird-treeview span {
-    font-size: 8pt !important;
-}
-.hummingbird-treeview label {
-    font-size: 8pt !important;
-}
-
+/* Searching elements */
 #search-select {
     width: 200px;
     height: 40px;
+}
+
+/* Other stuff */
+.mapboxgl-popup-content {
+    min-width: 250px !important;
+}
+
+/* Timestep control */
+#timeSelect {
+    height: 30px;
+    width: 100%;
+    margin-bottom: 5px;
+    font-size: 9pt;
 }

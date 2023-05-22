@@ -10,25 +10,26 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.cmclinnovations.mods.modssimpleagent.MoDSBackend;
 import com.cmclinnovations.mods.modssimpleagent.FileGenerator.FileGenerationException;
+import com.cmclinnovations.mods.modssimpleagent.MoDSBackend;
 import com.cmclinnovations.mods.modssimpleagent.simulations.Simulation;
 import com.cmclinnovations.mods.modssimpleagent.utils.ListUtils;
 
 public class InputMetaData {
     private List<InputMetaDataRow> rows;
 
-    private static final String[] columnNames = { "variable_name", "minimum", "maximum", "mean","scaling" };
+    private static final String[] columnNames = { "variable_name", "minimum", "maximum", "mean", "scaling" };
 
     public static final String DEFAULT_INPUT_INFO_FILE_NAME = "inputMetaData.csv";
 
-    public static InputMetaData createInputMetaData(Request request, MoDSBackend modsBackend, Algorithm algorithm) throws IOException {
+    public static InputMetaData createInputMetaData(Request request, MoDSBackend modsBackend) throws IOException {
         Data inputs = request.getInputs();
 
         List<String> varNames = new ArrayList<>();
@@ -37,17 +38,22 @@ public class InputMetaData {
         List<Double> means = new ArrayList<>();
         List<String> scaling = new ArrayList<>();
 
-        if (algorithm.getSurrogateToLoad() != null) {
+        Algorithm algorithm;
 
-            Path path = Simulation.getSurrogateDirectory(modsBackend)
-                    .resolve(DEFAULT_INPUT_INFO_FILE_NAME);
+        try {
+            algorithm = request.getAlgorithmOfType("GenSurrogateAlg");
+        } catch (NoSuchElementException ex) {
+            throw new IOException("No algorithm of type GenSurrogateAlg provided.", ex);
+        }
+
+        if (algorithm.getSurrogateToLoad() != null) {
+            Path path = Simulation.getSurrogateDirectory(modsBackend).resolve(DEFAULT_INPUT_INFO_FILE_NAME);
 
             if (!Files.exists(path)) {
                 throw new IOException("Input Info '" + path + "' file not found in algorithm directory.");
             }
 
-            try (BufferedReader br = new BufferedReader(
-                    new FileReader(path.toString()))) {
+            try (BufferedReader br = new BufferedReader(new FileReader(path.toString()))) {
                 String line = br.readLine();
                 while ((line = br.readLine()) != null) {
                     String[] values = line.split(",");
@@ -58,13 +64,11 @@ public class InputMetaData {
                     scaling.add(values[4]);
                 }
             } catch (IOException ex) {
-                throw new ResponseStatusException(
-                        HttpStatus.NO_CONTENT,
-                        "Failed to read data info load file.", ex);
+                throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Failed to read data info load file.", ex);
             }
+            return new InputMetaData(varNames, minima, maxima, means, scaling);
         } else if (inputs != null) {
-            varNames = algorithm.getVariables().stream().map(Variable::getName)
-                    .collect(Collectors.toList());
+            varNames = inputs.getHeaders().stream().collect(Collectors.toList());
 
             minima = ListUtils.filterAndSort(inputs.getMinimums().getColumns(), varNames,
                     DataColumn::getName, column -> column.getValues().get(0)).stream().collect(Collectors.toList());
@@ -76,17 +80,19 @@ public class InputMetaData {
                     DataColumn::getName, column -> column.getValues().get(0)).stream().collect(Collectors.toList());
 
             scaling = Collections.nCopies(varNames.size(), "linear");
-        } else {
-            throw new IOException("No input data or load location provided.");
-        }
 
-        return new InputMetaData(varNames, minima, maxima, means, scaling);
+            return new InputMetaData(varNames, minima, maxima, means, scaling);
+        } else {
+            throw new IOException("No loaded surrogate or data provided.");
+        }
     }
 
-    public InputMetaData(List<String> varNames, List<Double> minima, List<Double> maxima, List<Double> means, List<String> scaling) {
+    public InputMetaData(List<String> varNames, List<Double> minima, List<Double> maxima, List<Double> means,
+            List<String> scaling) {
         List<InputMetaDataRow> dataInfoRows = new ArrayList<>();
         for (int i = 0; i < varNames.size(); i++) {
-            dataInfoRows.add(new InputMetaDataRow(varNames.get(i), minima.get(i), maxima.get(i), means.get(i), scaling.get(i)));
+            dataInfoRows.add(
+                    new InputMetaDataRow(varNames.get(i), minima.get(i), maxima.get(i), means.get(i), scaling.get(i)));
         }
         this.rows = dataInfoRows;
     }
@@ -133,7 +139,7 @@ public class InputMetaData {
 
         List<DataColumn> columns = new ArrayList<>();
 
-        for(int i=0; i<varNames.size(); i++){
+        for (int i = 0; i < varNames.size(); i++) {
             columns.add(new DataColumn(varNames.get(i), Arrays.asList(means.get(i))));
         }
 
@@ -152,8 +158,8 @@ public class InputMetaData {
         return rows.stream().map(InputMetaDataRow::getMaximum).collect(Collectors.toList());
     }
 
-    public List<Double> getMeans(){
-        return rows.stream().map(InputMetaDataRow::getMean).collect(Collectors.toList()); 
+    public List<Double> getMeans() {
+        return rows.stream().map(InputMetaDataRow::getMean).collect(Collectors.toList());
     }
 
     public List<String> getScaling() {

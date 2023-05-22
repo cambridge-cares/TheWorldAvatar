@@ -18,8 +18,8 @@ _sample_goal_request['deadline'] = str(datetime.fromtimestamp(int(time.time()) +
 # 0. MAKE SURE ALL THE HARDWARE SIDE IS READY (VAPOURTEC (REAGENT BOTTLE AND FLOW COMMANDER), HPLC SEQUENCE AND DATA OUTPUT FORMAT)
 # 1. the available labs should also be updated to only include the physical lab that to be tested
 # possible choice for available labs:
-# lab_to_test = 'http://example.com/blazegraph/namespace/testlab/lab1/Laboratory_Dummy'
-lab_to_test = 'http://example.com/blazegraph/namespace/testlab/lab2/Laboratory_Dummy'
+# lab_to_test = 'https://www.theworldavatar.com/kg/lab_auto/lab1/Laboratory_Dummy'
+lab_to_test = 'https://www.theworldavatar.com/kg/lab_auto/lab2/Laboratory_Dummy'
 _sample_goal_request['labs'] = [lab_to_test]
 # 2. the hplc_report_container_dir should be updated to the correct path
 # depending on if running in Windows or WSL2, choose the correct format, e.g.:
@@ -57,7 +57,7 @@ def test_rxn_rog_PHYSICAL(
     vapourtec_agent_env_file, vapourtec_ip_address, fcexp_file_container_folder, hplc_agent_env_file, hplc_report_target_folder, local_agent_test, goal_request,
 ):
     # endpoint = initialise_test_triples
-    sparql_client, derivation_client = initialise_blazegraph_fileserver_with_test_triples
+    sparql_client, derivation_client = initialise_blazegraph_fileserver_with_test_triples()
 
     # Create agent instances, this also register the agents to the KG
     # NOTE that this should be done by agent themselves at real deployment

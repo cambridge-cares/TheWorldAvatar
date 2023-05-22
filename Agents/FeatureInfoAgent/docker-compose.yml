@@ -5,7 +5,7 @@ services:
 
   # FeatureInfoAgent
   feature-info-agent:
-    image: ghcr.io/cambridge-cares/feature-info-agent:2.0.0
+    image: ghcr.io/cambridge-cares/feature-info-agent:2.0.1
     build: .
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"

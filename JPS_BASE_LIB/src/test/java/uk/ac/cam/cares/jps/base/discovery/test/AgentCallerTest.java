@@ -1,18 +1,11 @@
 package uk.ac.cam.cares.jps.base.discovery.test;
 
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.utils.URIBuilder;
-import org.json.JSONObject;
-import org.junit.Test;
-import org.mockito.MockedStatic;
-import org.mockito.stubbing.Answer;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mockStatic;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
@@ -20,9 +13,22 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.nio.charset.Charset;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mockStatic;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.utils.URIBuilder;
+import org.json.JSONObject;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 
 public class AgentCallerTest {
@@ -89,25 +95,27 @@ public class AgentCallerTest {
     }
 
 
-    @Test
-    public void testexecuteGetWithURL() {
-        String url = "https://httpbin.org/anything" ;
-        String res = AgentCaller.executeGetWithURL(url);
-        assertNotNull(res);
-        assertTrue(res.length() > 0);
-    }
+    // @Test
+    // @Ignore("Needs updates, unit tests should not rely on external resources")
+    // public void testexecuteGetWithURL() {
+    //     String url = "https://httpbin.org/anything" ;
+    //     String res = AgentCaller.executeGetWithURL(url);
+    //     assertNotNull(res);
+    //     assertTrue(res.length() > 0);
+    // }
 
-    @Test
-    public void testexecuteGetWithURLAndJSON() {
-        String url = "https://httpbin.org/anything" ;
-        JSONObject json = new JSONObject();
+    // @Test
+    // @Ignore("Needs updates, unit tests should not rely on external resources")
+    // public void testexecuteGetWithURLAndJSON() {
+    //     String url = "https://httpbin.org/anything" ;
+    //     JSONObject json = new JSONObject();
 
-        json.put("test1", "value1");
-        String strjson = json.toString();
-        String res = AgentCaller.executeGetWithURLAndJSON(url, strjson);
-        assertNotNull(res);
-        assertTrue(res.length() > 0);
-    }
+    //     json.put("test1", "value1");
+    //     String strjson = json.toString();
+    //     String res = AgentCaller.executeGetWithURLAndJSON(url, strjson);
+    //     assertNotNull(res);
+    //     assertTrue(res.length() > 0);
+    // }
 
     @Test
     public void testcreateURIWithURLandJSON() {
@@ -130,27 +138,32 @@ public class AgentCallerTest {
     }
 
 
+    /**
+     * Checks the executeGetWithJsonParameter() method in the AgentCaller class.
+     */
     @Test
-    public void testexecuteGetWithJsonParameter() {
+    public void testExecuteGetWithJsonParameter() {
 
-        String path = "https://httpbin.org/anything" ;
-        JSONObject json = new JSONObject();
-        json.put("test1", "value1");
-        String strjson = json.toString();
-        String res = AgentCaller.executeGetWithJsonParameter(path,strjson) ;
-        assertNotNull(res);
-        assertTrue(res.length() > 0);
+        // Build URL 
+        String url = "http://fake-website.com" ;
+        JSONObject parameters = new JSONObject();
+        parameters.put("key", "value");
 
-        try (MockedStatic<AgentCaller> aacMock = mockStatic(AgentCaller.class)) {
+        try(MockedStatic<AgentCaller> mockCaller = mockStatic(AgentCaller.class, Mockito.CALLS_REAL_METHODS)) {
+            
+            // Mock the static executeGet() method to return a set response.
+            mockCaller
+                .when(() -> AgentCaller.executeGet(ArgumentMatchers.any(HttpGet.class)))
+                .thenReturn("rosebud");
 
-            //Do not execute  the executeGet(HttpGet request) method of the AgentCaller class - it is tested separately
-            ((MockedStatic<?>) aacMock).when(() -> AgentCaller.executeGet((HttpGet) any(Object.class)))
-                    .thenAnswer((Answer<Void>) invocation -> null);
-            //Call method that invokes the executeGet method of AgentCaller inside
-            assertNull(AgentCaller.executeGetWithJsonParameter(path,strjson));
+            // This AgentCaller's executeGetWithJsonParameter will then call this mocked method.
+            String result = AgentCaller.executeGetWithJsonParameter(url, parameters.toString());
 
+            // Check results
+            assertNotNull("Expected a result, got null.", result);
+            assertTrue("Expected result content, none found.", result.length() > 0);
+            assertEquals("Result did not match expected one.", "rosebud", result);
         }
-
     }
 
     @Test
@@ -203,13 +216,14 @@ public class AgentCallerTest {
         assertNotNull(json);
     }
 
-    @Test
-    public void testExecuteGet() {
-        HttpGet request = new HttpGet("https://httpbin.org/get");
-        String res = AgentCaller.executeGet(request);
-        assertNotNull(res);
-        assertTrue(res.length() > 0);
-    }
+    // @Test
+    // @Ignore("Needs updates, unit tests should not rely on external resources")
+    // public void testExecuteGet() {
+    //     HttpGet request = new HttpGet("https://httpbin.org/get");
+    //     String res = AgentCaller.executeGet(request);
+    //     assertNotNull(res);
+    //     assertTrue(res.length() > 0);
+    // }
 
 
     @Test
