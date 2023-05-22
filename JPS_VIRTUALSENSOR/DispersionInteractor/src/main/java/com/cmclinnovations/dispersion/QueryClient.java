@@ -54,10 +54,12 @@ public class QueryClient {
     private static final Iri DISPERSION_MATRIX = P_DISP.iri("DispersionMatrix");
     private static final Iri DISPERSION_LAYER = P_DISP.iri("DispersionLayer");
     private static final Iri SHIPS_LAYER = P_DISP.iri("ShipsLayer");
+    private static final Iri CITIES_NAMESPACE = P_DISP.iri("CitiesNamespace");
 
     // properties
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
     private static final Iri HAS_NUMERICALVALUE = P_OM.iri("hasNumericalValue");
+    private static final Iri HAS_NAME = P_DISP.iri("hasName");
 
     public QueryClient(RemoteStoreClient storeClient, RemoteRDBStoreClient remoteRDBStoreClient, TimeSeriesClient<Long> tsClient) {
         this.storeClient = storeClient;
@@ -66,7 +68,7 @@ public class QueryClient {
         this.tsClient = tsClient;
     }
 
-    void initialiseAgent() {
+    void initialiseAgent(String citiesNamespace) {
         Iri service = iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service");
         Iri operation = iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Operation");
         Iri hasOperation = iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasOperation");
@@ -84,13 +86,16 @@ public class QueryClient {
         modify.insert(iri(Config.AERMOD_AGENT_IRI).isA(service).andHas(hasOperation, operationIri));
 		modify.insert(operationIri.isA(operation).andHas(hasHttpUrl, iri(Config.AERMOD_AGENT_URL)).andHas(hasInput, inputIri));
         modify.insert(inputIri.has(hasMandatoryPart, partIri));
+        // if (citiesNamespace != null) modify.insert(partIri.has(hasType, CITIES_NAMESPACE));
         modify.insert(partIri.has(hasType, SIMULATION_TIME)).insert(partIri.has(hasType, NX)).insert(partIri.has(hasType, NY)).insert(partIri.has(hasType, SCOPE))
         .insert(partIri.has(hasType, REPORTING_STATION)).prefix(P_DISP);
+
+        
 
         storeClient.executeUpdate(modify.getQueryString());
     }
 
-    String initialiseScopeDerivation(String scopeIri, String weatherStation, int nx, int ny) {
+    String initialiseScopeDerivation(String scopeIri, String weatherStation, int nx, int ny, String citiesNamespace) {
         ModifyQuery modify = Queries.MODIFY();
         modify.insert(iri(scopeIri).isA(SCOPE));
 
@@ -112,6 +117,12 @@ public class QueryClient {
         modify.insert(iri(nyIri).isA(NY).andHas(HAS_VALUE, iri(nyMeasureIri)));
         modify.insert(iri(nyMeasureIri).isA(MEASURE).andHas(HAS_NUMERICALVALUE, ny));
 
+        // cities namespace (optional input)
+        String citiesNamespaceIri = PREFIX + UUID.randomUUID();
+        if (citiesNamespace != null) {            
+            // modify.insert(iri(citiesNamespaceIri).isA(CITIES_NAMESPACE).andHas(HAS_NAME, citiesNamespace));
+        }
+ 
         // outputs (DispersionMatrix, DispersionLayer, ShipsLayer) as time series
         String matrixIri = PREFIX + UUID.randomUUID();
         modify.insert(iri(matrixIri).isA(DISPERSION_MATRIX));
@@ -139,6 +150,7 @@ public class QueryClient {
         inputs.add(scopeIri);
         inputs.add(nxIri);
         inputs.add(nyIri);
+        // if (citiesNamespace != null) inputs.add(citiesNamespaceIri);
 
         String derivation = derivationClient.createDerivationWithTimeSeries(List.of(matrixIri, dispLayerIri, shipsLayerIri), Config.AERMOD_AGENT_IRI, inputs);
         

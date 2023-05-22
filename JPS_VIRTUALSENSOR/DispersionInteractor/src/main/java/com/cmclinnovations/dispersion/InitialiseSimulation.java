@@ -57,6 +57,10 @@ public class InitialiseSimulation extends HttpServlet {
         String ewkt = req.getParameter("ewkt");
         int nx = Integer.parseInt(req.getParameter("nx"));
         int ny = Integer.parseInt(req.getParameter("ny"));
+        String citiesNamespace = null;
+        if (req.getParameter("citiesnamespace") != null){
+            citiesNamespace = req.getParameter("citiesnamespace");
+        }
 
         Polygon polygonProvided = null;
         try {
@@ -78,7 +82,7 @@ public class InitialiseSimulation extends HttpServlet {
                     new OntopClient().updateOBDA(obdaFile);
 
                     // adds OntoAgent instance
-                    queryClient.initialiseAgent();
+                    queryClient.initialiseAgent(citiesNamespace);
                 }
 
                 if (polygonProvided.getSrid() != 4326) {
@@ -106,7 +110,7 @@ public class InitialiseSimulation extends HttpServlet {
             if (scopeIri != null && polygon4326 != null) {
                 String weatherStation = createVirtualWeatherStation(polygon4326);
 
-                String derivation = queryClient.initialiseScopeDerivation(scopeIri, weatherStation, nx, ny);
+                String derivation = queryClient.initialiseScopeDerivation(scopeIri, weatherStation, nx, ny, citiesNamespace);
                 try {
                     resp.getWriter().print(new JSONObject().put("derivation",derivation));
                     resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());

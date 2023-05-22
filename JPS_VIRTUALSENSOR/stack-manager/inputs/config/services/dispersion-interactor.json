@@ -3,7 +3,7 @@
         "Name": "dispersion-interactor",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "docker.cmclinnovations.com/dispersion-interactor:1.0.0",
+                "Image": "ghcr.io/cambridge-cares/dispersion-interactor:1.1.0-1559-add-citieskg-namespace-as-derivation-input-SNAPSHOT",
 				"Env": [
 					"STACK_NAME=${STACK_NAME}",
 					"DATABASE=postgres",
