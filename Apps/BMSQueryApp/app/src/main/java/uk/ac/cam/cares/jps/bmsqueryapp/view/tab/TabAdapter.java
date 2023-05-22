@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.bmsqueryapp.view.tab;
 
+import android.webkit.WebViewClient;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -16,18 +18,26 @@ public class TabAdapter extends FragmentStateAdapter {
     private VisualizationFragment dtvfTab;
     private List<EditableAttribute> editableAttributes;
     private String equipmentIri;
+    private WebViewClient webViewClient;
 
-    public TabAdapter(FragmentManager manager, Lifecycle lifecycle, List<EditableAttribute> editableAttributes, String equipmentIri) {
+    public TabAdapter(FragmentManager manager, Lifecycle lifecycle) {
         super(manager, lifecycle);
-        this.editableAttributes = editableAttributes;
+    }
+
+    public void configDtvfTab(String equipmentIri, WebViewClient webViewClient) {
         this.equipmentIri = equipmentIri;
+        this.webViewClient = webViewClient;
+    }
+
+    public void configEditTab(List<EditableAttribute> editableAttributes) {
+        this.editableAttributes = editableAttributes;
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
         if (position == 0) {
-            dtvfTab = new VisualizationFragment(equipmentIri);
+            dtvfTab = new VisualizationFragment(equipmentIri, webViewClient);
             return dtvfTab;
         } else {
             return new EditFragment(editableAttributes);
@@ -37,5 +47,9 @@ public class TabAdapter extends FragmentStateAdapter {
     @Override
     public int getItemCount() {
         return NUM_TABS;
+    }
+
+    public VisualizationFragment getDtvfTab() {
+        return dtvfTab;
     }
 }

@@ -11,6 +11,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,16 +48,16 @@ public class VisualizationFragment extends Fragment {
 
     private static final Logger LOGGER = LogManager.getLogger(VisualizationFragment.class);
 
-    private String DTVFURI = Constants.HOST_PROD + ":1234";
-
     public int requestedStatus;
     private FragmentVisualizationBinding binding;
 
     private String equipmentIri;
+    private WebViewClient webViewClient;
 
-    public VisualizationFragment(String equipmentIri) {
+    public VisualizationFragment(String equipmentIri, WebViewClient webViewClient) {
         super();
         this.equipmentIri = equipmentIri;
+        this.webViewClient = webViewClient;
     }
 
     public void setPosition(int position) {
@@ -73,28 +74,15 @@ public class VisualizationFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        loadDTVF(equipmentIri);
+
+        binding.dtvfViz.setWebViewClient(webViewClient);
+        loadDTVF();
     }
 
-    public void loadDTVF(String equipmentIri) {
+    public void loadDTVF() {
         WebView.setWebContentsDebuggingEnabled(true);
 
         WebView dtvfViz = binding.dtvfViz;
-        dtvfViz.setWebViewClient(new WebViewClient() {
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                LOGGER.info("page finished loading");
-//                binding.progressBarWrapper.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-                super.onReceivedError(view, request, error);
-                LOGGER.error(error);
-            }
-        });
 
         JsObject jsObject = new JsObject(equipmentIri);
 
@@ -109,6 +97,10 @@ public class VisualizationFragment extends Fragment {
         if (webSettings.getTextZoom() > 150) {
             webSettings.setTextZoom(150);
         }
+    }
+
+    public void refreshDTVF() {
+        binding.dtvfViz.loadUrl( "javascript:window.location.reload( true )" );
     }
 
 

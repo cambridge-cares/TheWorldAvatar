@@ -1,6 +1,10 @@
 package uk.ac.cam.cares.jps.bmsqueryapp;
 
 import android.os.Bundle;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -56,11 +60,34 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
             finish();
         });
 
+        WebViewClient webViewClient = new WebViewClient() {
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                LOGGER.info("page finished loading");
+//                binding.progressBarWrapper.setVisibility(View.GONE);
+                binding.refreshButton.setEnabled(true);
+            }
+
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+                super.onReceivedError(view, request, error);
+                LOGGER.error(error);
+            }
+        };
+
         ViewPager2 viewPager = binding.viewPager;
         TabLayout tabLayout = binding.tabs;
-        adapter = new TabAdapter(getSupportFragmentManager(), getLifecycle(), getEditableAttributeList(equipmentType), equipmentIri);
+        adapter = new TabAdapter(getSupportFragmentManager(), getLifecycle());
+        adapter.configDtvfTab(equipmentIri, webViewClient);
+        adapter.configEditTab(getEditableAttributeList(equipmentType));
         viewPager.setAdapter(adapter);
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(Constants.statusArrayTemp[position])).attach();
+
+        binding.refreshButton.setOnClickListener(view -> {
+            adapter.getDtvfTab().refreshDTVF();
+            binding.refreshButton.setEnabled(false);
+        });
     }
 
     private List<EditableAttribute> getEditableAttributeList(String type) {
