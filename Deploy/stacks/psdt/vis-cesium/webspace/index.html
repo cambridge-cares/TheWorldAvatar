@@ -78,6 +78,30 @@
                     </div>
                 </div>
 
+                <!-- Clipping plane controls, listeners will be dynamically added later -->
+                <div id="clipControlContainer" class="controlBlock">
+                    <div id="controlTitle" class="controlTitle">
+                        <p style="width: 100%;">Schnittebenen</p>
+                    </div>
+                    <div class="controlContents">
+                        <div id="clipEnableContainer">
+                            <p>Schnittebenen einschalten?</p>
+                            <input type="checkbox" id="clipEnableCheck">
+                        </div>
+                        <div id="clipShowContainer" style="display: none;">
+                            <p>Schnittebenen anzeigen?</p>
+                            <input type="checkbox" id="clipShowCheck" checked>
+                        </div>
+                        <div id="clipSelectContainer" style="display: none;">
+                            <p>Gebäudeebene:</p>
+                            <select id="clipSelectCombo">
+                                <option disabled hidden selected>Gebäudeebene auswählen...</option>
+                                <!-- Other options will be dynamically generated here -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Help icon -->
                 <div id="helpContainer" class="controlBlock expanded" onclick="openHelpURL()">
                     <div class="tooltip" id="coordEditor">
