@@ -39,7 +39,7 @@ RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository2,sharing=locked 
 COPY /agent/src/test ./src/test
 
 # Execute test
-RUN mvn test
+CMD mvn test
 
 #==================================================================================================
 

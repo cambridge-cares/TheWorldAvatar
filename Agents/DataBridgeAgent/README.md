@@ -19,7 +19,7 @@ The agent is designed for execution through a Docker container. Other deployment
 
 #### 2.1 **TEST ENVIRONMENT**
 - Deploy the agent to execute the unit and integration tests by running the following code in the CLI at the <root> directory. 
-- If successful, the container will be created but shut down immediately. Otherwise, test errors will be printed to the CLI.
+- Do note that the success of all tests must be verified through the test container's Docker logs. This container will only start executing the tests after the test database containers and it are created.
 ```
 docker compose -f "./docker/docker-compose.test.yml" up -d --build
 ```
