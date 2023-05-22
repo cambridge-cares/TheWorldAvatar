@@ -9,6 +9,7 @@ services:
       restart_policy:
         condition: none
     environment:
+      - STACK_NAME=${STACK_NAME}
       - QUERY_ENDPOINT=http://www.theworldavatar.com/blazegraph/namespace/jibusinessunits/sparql
       - NUMBER_SOURCES=600
       - DENSITY=1.0
