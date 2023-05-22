@@ -48,10 +48,11 @@ public class QueryClient {
     private static final Prefix P_BUILD = SparqlBuilder.prefix("build",iri(ONTO_BUILD));
 
     // classes
-    // Since there is only CO2 emissions data for Jurong Island, other pollutants like NO2 and PM are 
-    // not listed here. 
     private static final Iri STATIC_POINT_SOURCE = P_DISP.iri("StaticPointSource");
     private static final Iri CO2 = P_DISP.iri("CO2");
+    private static final Iri NO2 = P_DISP.iri("NO2");
+    private static final Iri PM25 = P_DISP.iri("PM2.5");
+    private static final Iri PM10 = P_DISP.iri("PM10");
     private static final Iri DENSITY = P_OM.iri("Density");
     private static final Iri MASS_FLOW = P_OM.iri("MassFlow");
     private static final Iri TEMPERATURE = P_OM.iri("Temperature");
@@ -140,10 +141,83 @@ public class QueryClient {
         List<String> ocgmlIRIs = Arrays.asList(
             "http://www.theworldavatar.com:83/citieskg/namespace/pirmasensEPSG32633/sparql/cityobject/UUID_LOD2_Pirmasens_4f8d0f1a-3b21-40d4-8b90-89723e31a7ca/",
             "http://www.theworldavatar.com:83/citieskg/namespace/pirmasensEPSG32633/sparql/cityobject/UUID_LOD2_Pirmasens_c38d038b-a677-4e0c-95d9-f02c09cf991c/");
-
             List<Double> no2Emissions = Arrays.asList(100.0,100.0);
+            List<Double> pm25Emissions = Arrays.asList(100.0,100.0);
+            List<Double> pm10Emissions = Arrays.asList(100.0,100.0);
+
+            List<Double> no2Densities = Arrays.asList(1.0,1.0);
+            List<Double> pm25Densities = Arrays.asList(1.0,1.0);
+            List<Double> pm10Densities = Arrays.asList(1.0,1.0);
+
+
+            int numberSources = 2;
+
+            ModifyQuery modify = Queries.MODIFY().prefix(P_DISP,P_OWL,P_OM);
+
+            for (int i = 0; i < numberSources; i++) {
+
+                String ocgmlIRI = ocgmlIRIs.get(i);
+                Double no2Emission = no2Emissions.get(i);
+                RdfLiteral.NumericLiteral no2EmissionValue = Rdf.literalOf(no2Emission);
+                Double pm25Emission = pm25Emissions.get(i);
+                RdfLiteral.NumericLiteral pm25EmissionValue = Rdf.literalOf(pm25Emission);
+                Double pm10Emission = pm10Emissions.get(i);
+                RdfLiteral.NumericLiteral pm10EmissionValue = Rdf.literalOf(pm10Emission);
+
+                Double no2Density = no2Densities.get(i);
+                RdfLiteral.NumericLiteral no2DensityValue = Rdf.literalOf(no2Density);
+                Double pm25Density = pm25Densities.get(i);
+                RdfLiteral.NumericLiteral pm25DensityValue = Rdf.literalOf(pm25Density);
+                Double pm10Density = pm10Densities.get(i);
+                RdfLiteral.NumericLiteral pm10DensityValue = Rdf.literalOf(pm10Density);
+
+                double temp = Double.parseDouble(EnvConfig.TEMPERATURE);
+                RdfLiteral.NumericLiteral tempValue = Rdf.literalOf(temp);
+    
+                String pollutantSourceIRI = PREFIX + "staticpointsource/" + UUID.randomUUID();
+                String temperatureIRI = PREFIX + "temperature/" + UUID.randomUUID();
+                String no2EmissionIRI = PREFIX + "no2/" + UUID.randomUUID();
+                String pm25EmissionIRI = PREFIX + "pm25/" + UUID.randomUUID();
+                String pm10EmissionIRI = PREFIX + "pm10/" + UUID.randomUUID();
+                String no2DensityIRI = PREFIX + "no2density/" + UUID.randomUUID();
+                String no2MassFlowIRI = PREFIX + "no2massflow/" + UUID.randomUUID();
+                String pm25DensityIRI = PREFIX + "pm25density/" + UUID.randomUUID();
+                String pm25MassFlowIRI = PREFIX + "pm25massflow/" + UUID.randomUUID();
+                String pm10DensityIRI = PREFIX + "pm10density/" + UUID.randomUUID();
+                String pm10MassFlowIRI = PREFIX + "pm10massflow/" + UUID.randomUUID();
+    
+                // Generic set of triples for a single emission source. Assign same temperature to all pollutants.
+                // However, density and mass flow rate will vary. 
+                modify.insert(iri(ocgmlIRI).isA(OWL_THING));
+                modify.insert(iri(pollutantSourceIRI).isA(STATIC_POINT_SOURCE).andHas(EMITS,iri(no2EmissionIRI))
+                .andHas(EMITS, iri(pm25EmissionIRI)).andHas(EMITS,iri(pm10EmissionIRI)));
+                modify.insert(iri(temperatureIRI).isA(TEMPERATURE).andHas(HAS_NUMERICALVALUE,tempValue).andHas(HAS_UNIT,TEMPERATURE_UNIT));
+
+
+                // Triples for specific pollutants (NO2, PM2.5, PM10)
+                modify.insert(iri(no2EmissionIRI).isA(NO2).andHas(HAS_QUANTITY,iri(no2DensityIRI))
+                .andHas(HAS_QUANTITY,iri(no2MassFlowIRI)).andHas(HAS_QUANTITY,iri(temperatureIRI)));
+                modify.insert(iri(no2EmissionIRI).has(HAS_OCGML_OBJECT,iri(ocgmlIRI)));
+                modify.insert(iri(no2DensityIRI).isA(DENSITY).andHas(HAS_NUMERICALVALUE,no2DensityValue).andHas(HAS_UNIT,DENSITY_UNIT));          
+                modify.insert(iri(no2MassFlowIRI).isA(MASS_FLOW).andHas(HAS_NUMERICALVALUE,no2EmissionValue).andHas(HAS_UNIT,MASS_FLOW_UNIT));
+
+                modify.insert(iri(pm25EmissionIRI).isA(PM25).andHas(HAS_QUANTITY,iri(pm25DensityIRI))
+                .andHas(HAS_QUANTITY,iri(pm25MassFlowIRI)).andHas(HAS_QUANTITY,iri(temperatureIRI)));
+                modify.insert(iri(pm25EmissionIRI).has(HAS_OCGML_OBJECT,iri(ocgmlIRI)));
+                modify.insert(iri(pm25DensityIRI).isA(DENSITY).andHas(HAS_NUMERICALVALUE,pm25DensityValue).andHas(HAS_UNIT,DENSITY_UNIT));          
+                modify.insert(iri(pm25MassFlowIRI).isA(MASS_FLOW).andHas(HAS_NUMERICALVALUE,pm25EmissionValue).andHas(HAS_UNIT,MASS_FLOW_UNIT));
+
+                modify.insert(iri(pm10EmissionIRI).isA(PM10).andHas(HAS_QUANTITY,iri(pm10DensityIRI))
+                .andHas(HAS_QUANTITY,iri(pm10MassFlowIRI)).andHas(HAS_QUANTITY,iri(temperatureIRI)));
+                modify.insert(iri(pm10EmissionIRI).has(HAS_OCGML_OBJECT,iri(ocgmlIRI)));
+                modify.insert(iri(pm10DensityIRI).isA(DENSITY).andHas(HAS_NUMERICALVALUE,pm10DensityValue).andHas(HAS_UNIT,DENSITY_UNIT));          
+                modify.insert(iri(pm10MassFlowIRI).isA(MASS_FLOW).andHas(HAS_NUMERICALVALUE,pm10EmissionValue).andHas(HAS_UNIT,MASS_FLOW_UNIT));
+
+    
+            }
 
             
+            updateStoreClient.executeUpdate(modify.getQueryString());
 
 
     }
