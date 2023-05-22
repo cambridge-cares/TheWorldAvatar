@@ -2,15 +2,15 @@
 
 This example visualisation has been put together to demonstrate the intended use of the centralised Digital Twin Visualisation Framework (DTVF). This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.
 
-It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.3.4 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
+It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.3.5 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
 
-<img src="readme-example.JPG" alt="Example of 3D data on a Cesium JS visualisation" width="100%"/>
+<img src="readme-example.JPG" alt="Example of 3D data on a CesiumJS visualisation" width="100%"/>
 
 ## Restrictions
 
-It should be noted that this example uses the Cesium JS library, and makes no use of Cesium's premium offering, Cesium Ion. Use of Cesium Ion, or the features it offers, for commercial or funded educational use is prohibited without a paid-for licence.
+It should be noted that this example uses the CesiumJS library, and makes no use of Cesium's premium offering, Cesium ion. Use of Cesium ion, or the features it offers, for commercial or funded educational use is prohibited without a paid-for licence.
 
-At the time of writing, this means that anything that requires the use of a Cesium Ion API key should be avoided (this has been confirmed by Cesium's support team). To be fully sure no premium features are being used, it is suggested that no API key is even used within the code. Premium features to be avoided include the following:
+At the time of writing, this means that anything that requires the use of a Cesium ion API key should be avoided (this has been confirmed by Cesium's support team). To be fully sure no premium features are being used, it is suggested that no API key is even used within the code. Premium features to be avoided include the following:
 
 - Using the satellite imagery provided by Cesium
 - Using the terrain elevation provided by Cesium
@@ -19,7 +19,7 @@ Alternatives to this paid-for features are detailed below. For more details read
 
 ## Mapping Capabilities
 
-Unlike the DTVF capabilities with the 2D mapping provider (Mapbox), not all Cesium JS features are supported within the DTVF. This is because Cesium JS requires explicit method calls for each type of data, rather than the more generic approach of passing in JSON configuration objects.
+Unlike the DTVF capabilities with the 2D mapping provider (Mapbox), not all CesiumJS features are supported within the DTVF. This is because CesiumJS requires explicit method calls for each type of data, rather than the more generic approach of passing in JSON configuration objects.
 
 At the time of writing, the following 3D data formats are supported within the DTVF:
 
@@ -32,7 +32,7 @@ At the time of writing, the following 3D data formats are supported within the D
 - 3D tiles:
   - 3D tiles can be loaded via their JSON index file. See the [Cesium 3D Tiles page](https://cesium.com/why-cesium/3d-tiles/) for more details.
 
-Additional formats, provided they are supported by Cesium JS, can be added but will require development resource from the team at CMCL. Get in touch with them for details.
+Additional formats, provided they are supported by CesiumJS, can be added but will require development resource from the team at CMCL. Get in touch with them for details.
 
 At the time of writing, client-side styling is not implemented (i.e. you cannot specify styling in the JSON files as you can do for Mapbox visualisations). Style options for 3D data should be baked into the associated model files, whilst styling for 2D data (provided via WMS) should be carried out on the server (more information on server-side styling can be found [here](https://docs.geoserver.org/stable/en/user/styling/index.html)).
 
@@ -54,13 +54,13 @@ Configuration for the visualisation is provided via a number of local JSON files
 
 In addition to these JSON files, areas of the `index.html` file can also be adjusted to change the default side panel content of the visualisation. Please note however that not all areas of this file are configurable, some HTML elements are required by the framework and had to be setup here rather than dynamically injected by the framework itself. Areas that are considered configurable are clearly commented within the HTML file.
 
-Please note that the `index.html` file also required users to input their Mapbox API key, this is so that the terrain imagery can be pulled from Mapbox's free API rather than using imagery from Cesium Ion (which would require a licence).
+Please note that the `index.html` file also required users to input their Mapbox API key, this is so that the terrain imagery can be pulled from Mapbox's free API rather than using imagery from Cesium ion (which would require a licence).
 
 ### Data Specification File
 
 The `data.json` file is a core configuration file for the visualisation and defines what data is loaded and shown, so it's worth explaining its formatting a little. Each node represents a group of data. Each group can contain data sources and layers and/or sub-groups. The hierarchy of these groups is completely up to the writer of the file and is used to build the selection tree within the visualisation. The `name` parameter specifies the group's user-facing name, and the `stack` parameter is the base URL for the stack containing that group's metadata (note that if not using the metadata, this parameter can be any old URL).
 
-Each group can then contain a number of `sources`, representing individual data files/endpoints that will be loaded into memory/queried by the mapping library. Each source node requires a unique `id` parameter, this is used within the DTVF to keep track of sources. In addition to `sources`, each group can define a number of `layers`. These are the visual representations of the aforementioned sources. Whilst Cesium JS does not have a internal division between data sources and visual representations, this approach is still used within the configuration file for consistency with other mapping providers.
+Each group can then contain a number of `sources`, representing individual data files/endpoints that will be loaded into memory/queried by the mapping library. Each source node requires a unique `id` parameter, this is used within the DTVF to keep track of sources. In addition to `sources`, each group can define a number of `layers`. These are the visual representations of the aforementioned sources. Whilst CesiumJS does not have a internal division between data sources and visual representations, this approach is still used within the configuration file for consistency with other mapping providers.
 
 Each group can also (optionally) contain an `expanded` boolean field. If set to false, then this group (and all of its children) will be collapsed by default within the selectable layers tree; any other value, or no field at all, will default to expanded. Note that this does not affect the default selection state of individual layers.
 
@@ -97,7 +97,7 @@ These features currently include:
 
 #### Map Position
 
-The default position of the map can be specified via the start field of the settings file. The specific fields within this node differ depending on the map provider; an example the CesiumJS version can be seen below. Note that these settings represent the position of the camera itself, not what it is looking at. In this Cesium JS case, the opacity of the globe itself can also be set here.
+The default position of the map can be specified via the start field of the settings file. The specific fields within this node differ depending on the map provider; an example the CesiumJS version can be seen below. Note that these settings represent the position of the camera itself, not what it is looking at. In this CesiumJS case, the opacity of the globe itself can also be set here.
 
 ```json
 "start": {
@@ -124,7 +124,7 @@ An example specification of terrain elevation is shown below. Note that in this 
 
 ## Sample Data
 
-A small amount of sample data has been committed to demonstrate the power of the DTVF to visualisate different data types. Please do not make changes to the sample data without consulting the original developer. At the time of writing, the sample data sets include:
+A small amount of sample data has been committed to demonstrate the power of the DTVF to visualise different data types. Please do not make changes to the sample data without consulting the original developer. At the time of writing, the sample data sets include:
 
 - **New York**:
   - Tiled 3D buildings, loaded from a remote CMCL server.
@@ -150,4 +150,4 @@ Once the requirements have been addressed, the image can be built using the belo
 
 ## Troubleshooting
 
-For details on common issues/questions that may appear when using Cesium JS, please see the dedicated [Troubleshooting](https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Troubleshooting) page on the GitHub wiki.
+For details on common issues/questions that may appear when using CesiumJS, please see the dedicated [Troubleshooting](https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Troubleshooting) page on the GitHub wiki.

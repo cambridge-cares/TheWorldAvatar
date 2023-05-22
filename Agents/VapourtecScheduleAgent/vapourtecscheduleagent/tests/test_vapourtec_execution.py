@@ -9,13 +9,13 @@ import time
 import vapourtecscheduleagent.tests.utils as utils
 
 
-# NOTE the derivation_periodic_timescale (6, 7, 8) are chosen randomly for the test cases
+# NOTE the derivation_periodic_timescale (1, 2, 3) are chosen randomly for the test cases
 @pytest.mark.parametrize(
     "new_rxn_exp_iri,derivation_periodic_timescale",
     [
-        (utils.cf.NEW_RXN_EXP_1_IRI, 6),
-        (utils.cf.NEW_RXN_EXP_2_IRI, 7),
-        (utils.cf.NEW_RXN_EXP_3_IRI, 8),
+        (utils.cf.NEW_RXN_EXP_1_IRI, 1),
+        (utils.cf.NEW_RXN_EXP_2_IRI, 2),
+        (utils.cf.NEW_RXN_EXP_3_IRI, 3),
     ],
 )
 def test_monitor_derivation(
@@ -85,13 +85,13 @@ def test_monitor_derivation(
     vapourtec_schedule_agent.scheduler.shutdown()
 
 
-# NOTE the derivation_periodic_timescale (6, 7, 8) are chosen randomly for the test cases
+# NOTE the derivation_periodic_timescale (1, 2, 3) are chosen randomly for the test cases
 @pytest.mark.parametrize(
     "new_rxn_exp_iri,derivation_periodic_timescale",
     [
-        (utils.cf.NEW_RXN_EXP_1_IRI, 6),
-        (utils.cf.NEW_RXN_EXP_2_IRI, 7),
-        (utils.cf.NEW_RXN_EXP_3_IRI, 8),
+        (utils.cf.NEW_RXN_EXP_1_IRI, 1),
+        (utils.cf.NEW_RXN_EXP_2_IRI, 2),
+        (utils.cf.NEW_RXN_EXP_3_IRI, 3),
     ],
 )
 def test_docker_integration(
@@ -156,13 +156,13 @@ def test_docker_integration(
     assert placeholder_hplcreport == lst_derivation_outputs[0]
 
 
-# NOTE the derivation_periodic_timescale (6, 7, 8) are chosen randomly for the test cases
+# NOTE the derivation_periodic_timescale (1, 2, 3) are chosen randomly for the test cases
 @pytest.mark.parametrize(
     "new_rxn_exp_iri,derivation_periodic_timescale,fcexp_file_host_folder,hplc_report_wsl_folder",
     [
-        (utils.cf.NEW_RXN_EXP_1_IRI, 6, utils.cf.DOCKER_INTEGRATION_VAPOURTEC_DIR, utils.cf.DOCKER_INTEGRATION_HPLC_DIR),
-        (utils.cf.NEW_RXN_EXP_2_IRI, 7, utils.cf.DOCKER_INTEGRATION_VAPOURTEC_DIR, utils.cf.DOCKER_INTEGRATION_HPLC_DIR),
-        (utils.cf.NEW_RXN_EXP_3_IRI, 8, utils.cf.DOCKER_INTEGRATION_VAPOURTEC_DIR, utils.cf.DOCKER_INTEGRATION_HPLC_DIR),
+        (utils.cf.NEW_RXN_EXP_1_IRI, 1, utils.cf.DOCKER_INTEGRATION_VAPOURTEC_DIR, utils.cf.DOCKER_INTEGRATION_HPLC_DIR),
+        (utils.cf.NEW_RXN_EXP_2_IRI, 2, utils.cf.DOCKER_INTEGRATION_VAPOURTEC_DIR, utils.cf.DOCKER_INTEGRATION_HPLC_DIR),
+        (utils.cf.NEW_RXN_EXP_3_IRI, 3, utils.cf.DOCKER_INTEGRATION_VAPOURTEC_DIR, utils.cf.DOCKER_INTEGRATION_HPLC_DIR),
     ],
 )
 def test_three_agents_docker_integration(
@@ -251,24 +251,24 @@ def test_three_agents_docker_integration(
     rxn_exp_instance = sparql_client.getReactionExperiment(new_rxn_exp_iri)[0]
     assert all([condition.translateToParameterSetting is not None for condition in rxn_exp_instance.hasReactionCondition if condition.clz != utils.cf.ONTOREACTION_REACTIONPRESSURE])
 
-    # Third, check there is chemical solution instance
-    chemical_solution_iri = utils.get_chemical_solution_iri(vapourtec_derivation, sparql_client)
-    assert chemical_solution_iri is not None
+    # Third, check there is chemical amount instance
+    chemical_amount_iri = utils.get_chemical_amount_iri(vapourtec_derivation, sparql_client)
+    assert chemical_amount_iri is not None
     new_rs400_list = sparql_client.get_vapourtec_rs400(list_vapourtec_rs400_iri=[vapourtec_agent.vapourtec_digital_twin])
     assert len(new_rs400_list) == 1
     new_rs400 = new_rs400_list[0]
     new_autosampler = new_rs400.get_autosampler()
     new_autosampler_liquid_level = {s.holds.isFilledWith.instance_iri:s.holds.hasFillLevel.hasValue.hasNumericalValue for s in [site for site in new_autosampler.hasSite if site.holds.isFilledWith is not None]}
     # NOTE below is commented out as the reactor outlet is now send to the waste tank
-    # assert chemical_solution_iri in new_autosampler_liquid_level
-    # assert new_autosampler_liquid_level[chemical_solution_iri] >= 0
+    # assert chemical_amount_iri in new_autosampler_liquid_level
+    # assert new_autosampler_liquid_level[chemical_amount_iri] >= 0
 
     # Forth, check if the autosampler liquid level is changed
-    for chem_sol in old_autosampler_liquid_level:
+    for chem_amount in old_autosampler_liquid_level:
         # NOTE below is commented out as the reactor outlet is now send to the waste tank
-        # if chem_sol == chemical_solution_iri:
-        #     assert new_autosampler_liquid_level[chem_sol] >= old_autosampler_liquid_level[chem_sol]
-        assert new_autosampler_liquid_level[chem_sol] <= old_autosampler_liquid_level[chem_sol]
+        # if chem_amount == chemical_amount_iri:
+        #     assert new_autosampler_liquid_level[chem_amount] >= old_autosampler_liquid_level[chem_amount]
+        assert new_autosampler_liquid_level[chem_amount] <= old_autosampler_liquid_level[chem_amount]
 
     # NOTE additional check in docker integration
     # Fifth, check if the stateLastUpdatedAt of vapourtec state is changed
@@ -283,7 +283,7 @@ def test_three_agents_docker_integration(
     while currentTimestamp_derivation == 0:
         time.sleep(20)
         currentTimestamp_derivation = utils.get_timestamp(hplc_derivation, sparql_client)
-    lst_hplc_job_iri = utils.get_hplc_job(hplc_agent.hplc_digital_twin, new_rxn_exp_iri, chemical_solution_iri, sparql_client)
+    lst_hplc_job_iri = utils.get_hplc_job(hplc_agent.hplc_digital_twin, new_rxn_exp_iri, chemical_amount_iri, sparql_client)
     lst_derivation_outputs_iri = utils.get_derivation_outputs(hplc_derivation, sparql_client)
     assert len(lst_hplc_job_iri) == 1
     assert len(lst_derivation_outputs_iri) == 1

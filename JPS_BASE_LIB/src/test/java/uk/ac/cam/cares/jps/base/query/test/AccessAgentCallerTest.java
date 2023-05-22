@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.base.query.test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.After;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -24,6 +25,11 @@ public class AccessAgentCallerTest {
 	static void setAccessAgentHostUrl(){
 		//set default accessagent_host to value in jps.properties
 		AccessAgentCaller.accessAgentHost = KeyValueMap.getInstance().get(IKeys.URL_ACCESSAGENT_HOST);
+	}
+
+	@After
+	public void tearDown() {
+		JPSContext.removeJPSContext();
 	}
 	
 	@Test

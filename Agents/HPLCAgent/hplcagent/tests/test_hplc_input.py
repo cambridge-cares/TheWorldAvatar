@@ -97,8 +97,8 @@ def test_monitor_derivation(
     ))[0]['ASK']
 
     ## Instantiate derivation instance
-    rxn_exp_iri, chemical_solution_iri = initialise_hplc_derivation_input_triples(sparql_client)
-    derivation_inputs = [rxn_exp_iri, chemical_solution_iri]
+    rxn_exp_iri, chemical_amount_iri = initialise_hplc_derivation_input_triples(sparql_client)
+    derivation_inputs = [rxn_exp_iri, chemical_amount_iri]
     # Create derivation instance given above information, the timestamp of this derivation is 0
     derivation_iri = hplc_agent.derivation_client.createAsyncDerivationForNewInfo(hplc_agent.agentIRI, derivation_inputs)
     logger.info(f'Initialised successfully, created derivation instance: <{derivation_iri}>')
@@ -130,7 +130,7 @@ def test_monitor_derivation(
     while currentTimestamp_derivation == 0:
         time.sleep(20)
         currentTimestamp_derivation = utils.get_timestamp(derivation_iri, sparql_client)
-    lst_hplc_job_iri = utils.get_hplc_job(hplc_digital_twin, rxn_exp_iri, chemical_solution_iri, sparql_client)
+    lst_hplc_job_iri = utils.get_hplc_job(hplc_digital_twin, rxn_exp_iri, chemical_amount_iri, sparql_client)
     lst_derivation_outputs_iri = utils.get_derivation_outputs(derivation_iri, sparql_client)
     assert len(lst_hplc_job_iri) == 1
     assert len(lst_derivation_outputs_iri) == 1
@@ -174,8 +174,8 @@ def test_dry_run(
     hplc_agent.start_all_periodical_job()
 
     ## Instantiate derivation instance
-    rxn_exp_iri, chemical_solution_iri = initialise_hplc_derivation_input_triples(sparql_client)
-    derivation_inputs = [rxn_exp_iri, chemical_solution_iri]
+    rxn_exp_iri, chemical_amount_iri = initialise_hplc_derivation_input_triples(sparql_client)
+    derivation_inputs = [rxn_exp_iri, chemical_amount_iri]
     # Create derivation instance given above information, the timestamp of this derivation is 0
     derivation_iri = hplc_agent.derivation_client.createAsyncDerivationForNewInfo(hplc_agent.agentIRI, derivation_inputs)
     logger.info(f'Initialised successfully, created derivation instance: <{derivation_iri}>')
@@ -186,7 +186,7 @@ def test_dry_run(
     while currentTimestamp_derivation == 0:
         time.sleep(20)
         currentTimestamp_derivation = utils.get_timestamp(derivation_iri, sparql_client)
-    lst_hplc_job_iri = utils.get_hplc_job(hplc_digital_twin, rxn_exp_iri, chemical_solution_iri, sparql_client)
+    lst_hplc_job_iri = utils.get_hplc_job(hplc_digital_twin, rxn_exp_iri, chemical_amount_iri, sparql_client)
     lst_derivation_outputs_iri = utils.get_derivation_outputs(derivation_iri, sparql_client)
     assert len(lst_hplc_job_iri) == 1
     assert len(lst_derivation_outputs_iri) == 1
@@ -211,8 +211,8 @@ def test_docker_integration(
     ))[0]['ASK']
 
     ## Instantiate derivation instance
-    rxn_exp_iri, chemical_solution_iri = initialise_hplc_derivation_input_triples(sparql_client)
-    derivation_inputs = [rxn_exp_iri, chemical_solution_iri]
+    rxn_exp_iri, chemical_amount_iri = initialise_hplc_derivation_input_triples(sparql_client)
+    derivation_inputs = [rxn_exp_iri, chemical_amount_iri]
     # Create derivation instance given above information, the timestamp of this derivation is 0
     derivation_iri = hplc_agent.derivation_client.createAsyncDerivationForNewInfo(hplc_agent.agentIRI, derivation_inputs)
     logger.info(f'Initialised successfully, created derivation instance: <{derivation_iri}>')
@@ -251,7 +251,7 @@ def test_docker_integration(
     while currentTimestamp_derivation == 0:
         time.sleep(20)
         currentTimestamp_derivation = utils.get_timestamp(derivation_iri, sparql_client)
-    lst_hplc_job_iri = utils.get_hplc_job(hplc_digital_twin, rxn_exp_iri, chemical_solution_iri, sparql_client)
+    lst_hplc_job_iri = utils.get_hplc_job(hplc_digital_twin, rxn_exp_iri, chemical_amount_iri, sparql_client)
     lst_derivation_outputs_iri = utils.get_derivation_outputs(derivation_iri, sparql_client)
     assert len(lst_hplc_job_iri) == 1
     assert len(lst_derivation_outputs_iri) == 1
