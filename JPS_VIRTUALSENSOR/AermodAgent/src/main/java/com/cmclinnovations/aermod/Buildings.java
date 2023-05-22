@@ -1208,7 +1208,7 @@ public class Buildings {
         // Remove IRIs of pollutant sources
         for (int i = 0; i < BuildingIRIQueryResult.length(); i++){
             String buildingIRI = BuildingIRIQueryResult.getJSONObject(i).getString("cityObject");
-            if (!StackIRIString.contains(buildingIRI.replace("cityobject", "building"))) {
+            if (!StackIRIString.contains(buildingIRI.replace("cityobject", "cityfurniture"))) {
                 BuildingIRIString.add(buildingIRI.replace("cityobject", "building"));
             }
         }
