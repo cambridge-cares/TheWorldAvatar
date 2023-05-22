@@ -3,6 +3,8 @@ from pyderivationagent import PySparqlClient
 from pyderivationagent import PyDerivationClient
 from pyderivationagent.data_model import iris as pda_iris
 import time
+from resultedconsumptioncalculationagent.datamodel.iris import *
+from tqdm import tqdm
 
 
 # ---------------------------- Configs ------------------------------ #
@@ -16,22 +18,29 @@ UPDATE_ENDPOINT = QUERY_ENDPOINT
 DERIVATION_INSTANCE_BASE_URL = 'https://www.example.com/kg/derivation/'
 RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 RDF_TYPE =  RDF + 'type'
-EX = 'http://example.org/people#'
-EX_BIRTHDAY = EX + 'Birthday'
 
 # ----------------------------- Funcs ------------------------------- #
 def Synmarkup(
     derivation_client: PyDerivationClient,
-    bday_iri: str,
+    sparql_client:PySparqlClient,
+    temperature_iri: str,
+    heatpumpefficiency_iri: str,
+    hotsidetemperature_iri: str,
     agentIRI,
     agentURL
 ):
-        derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
-            agentIRI=agentIRI,
-            agentURL=agentURL,
-            inputsIRI=[bday_iri],
-            derivationType=pda_iris.ONTODERIVATION_DERIVATION,
-        )
+        derivation_iri = retrieve_derivation_iri(sparql_client,temperature_iri, agentIRI)
+        if not derivation_iri :
+            input_iris = [temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri]
+            derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
+                agentIRI=agentIRI,
+                agentURL=agentURL,
+                inputsIRI=input_iris,
+                derivationType=pda_iris.ONTODERIVATION_DERIVATION,
+            )
+        
+        else:
+              print(f'InputIRI: {temperature_iri} already have derivation IRI: {derivation_iri}, skipped for now')
 
 def retrieve_derivation_iri(
           sparql_client: PySparqlClient,
@@ -39,7 +48,7 @@ def retrieve_derivation_iri(
           agentIRI:str
 ):
         query = f"""
-            SELECT DISTINCT ?s ?entities
+            SELECT DISTINCT ?s
             WHERE {{
                 ?s <{pda_iris.ONTODERIVATION_ISDERIVEDFROM}> <{input_iri}>.
                 ?s <{pda_iris.ONTODERIVATION_ISDERIVEDUSING}> <{agentIRI}>.
@@ -52,27 +61,66 @@ def retrieve_derivation_iri(
             return None
         else:
             syn_derivation_iri = response[0].get('s')
-            entities = [response[0].get('entities'),response[1].get('entities')]
-            return syn_derivation_iri, entities
+            return syn_derivation_iri
+
+def retrieve_temperature_iri(sparql_client: PySparqlClient):
         
-def Asymarkup(
-        derivation_client: PyDerivationClient,
-        input_iri
-):
-        asyn_derivation_iri = derivation_client.createAsyncDerivationForNewInfo(
-              agentIRI,
-              [input_iri]
-        )
+        query_string = f"""
+        SELECT DISTINCT ?temperature_iri ?start
+        WHERE {{?region <{CLIMB_HASMEASURE}>  ?m.
+                ?m <{COMP_HAS_STARTUTC}> ?start;
+                    <{COMP_HAS_ENDUTC}> ?end ;
+                    <{CLIMB_HASVAR}> "{CLIMA_TAS}"^^<{XSD_STRING}> .
+                ?p <{OM_HAS_PHENO}> ?m.
+                ?p <{OM_HAS_VALUE}> ?temperature_iri.
+        ?temperature_iri <{OM_HAS_NUMERICALVALUE}> ?meantemperature.}}
+        """
 
+        res = sparql_client.performQuery(query_string)
+        
+        if not res:
+            raise IndexError('No temperature_iri found -- Are you sure you are using the correct namespace?')
+        else:
+            temperature_iri_list = [d['temperature_iri'] for d in res]
 
+            return temperature_iri_list
+
+def retrieve_heatpumpefficiency_iri(sparql_client: PySparqlClient):
+        
+        query_string = f"""
+        SELECT ?heatpumpefficiency_iri
+        WHERE {{
+        ?heatpumpefficiency_iri <{IS_A}> ?assumption_iri ;
+                    <{RDF_TYPE}> <{REGION_HEATPUMP_EFFICIENCY}> .
+        }}
+        """
+        res = sparql_client.performQuery(query_string)
+        if not res:
+            raise IndexError('No heatpumpefficiency_iri found -- Are you sure you are using the correct namespace?')
+        else:
+            res = res[0]
+            heatpumpefficiency_iri = res['heatpumpefficiency_iri']
+
+            return heatpumpefficiency_iri
+      
+def retrieve_hotsidetemperature_iri(sparql_client: PySparqlClient):
+        
+        query_string = f"""
+        SELECT ?hotsidetemperature_iri
+        WHERE {{
+        ?hotsidetemperature_iri <{IS_A}> ?assumption_iri ;
+                    <{RDF_TYPE}> <{REGION_HOTSIDE_TEMPERATURE}> .
+        }}
+        """
+        res = sparql_client.performQuery(query_string)
+        if not res:
+            raise IndexError('No hotsidetemperature_iri found -- Are you sure you are using the correct namespace?')
+        else:
+            res = res[0]
+            hotsidetemperature_iri = res['hotsidetemperature_iri']
+
+            return hotsidetemperature_iri
 # ----------------------------- Tasks ------------------------------- #
-
-# Define the input
-inputIRI = ['http://example.org/birthday#Birthday_R100001',
-            'http://example.org/birthday#Birthday_R100002',
-            'http://example.org/birthday#Birthday_R100003',
-            'http://example.org/birthday#Birthday_R100004',
-            'http://example.org/birthday#Birthday_R100005']
 
 # Create a PySparqlClient instance
 sparql_client = PySparqlClient(
@@ -80,38 +128,44 @@ sparql_client = PySparqlClient(
         update_endpoint=UPDATE_ENDPOINT,
     )
 
-# Back up the IRI in the Blazegraph
-for i in range(len(inputIRI)):
-    update_query = f'''
-    INSERT DATA {{
-    <{inputIRI[i]}> <{RDF_TYPE}> <{EX_BIRTHDAY}>.
-    }}
-    '''
-    sparql_client.performUpdate(update_query)
+# retrieve temperature_iri
+temperature_iri_list = retrieve_temperature_iri(sparql_client)
+print(f"A total number of {len(temperature_iri_list)} will be marked, meaning there is {len(temperature_iri_list)/12} regions will be marked")
+heatpumpefficiency_iri = retrieve_heatpumpefficiency_iri(sparql_client)
+hotsidetemperature_iri = retrieve_hotsidetemperature_iri(sparql_client)
 
 # Create a PyDerivationClient instance
 derivation_client = PyDerivationClient(derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
                                         query_endpoint=QUERY_ENDPOINT,
                                         update_endpoint=UPDATE_ENDPOINT)
 
-# # Perform Syn markup
+# Perform Syn markup
+for i in tqdm(range(len(temperature_iri_list))):
+    time.sleep(1)
+    temperature_iri = temperature_iri_list[i]
+    try:
+        Synmarkup(
+            derivation_client=derivation_client,
+            sparql_client = sparql_client,
+            temperature_iri=temperature_iri,
+            heatpumpefficiency_iri = heatpumpefficiency_iri,
+            hotsidetemperature_iri = hotsidetemperature_iri,
+            agentIRI = agentIRI,
+            agentURL = agentURL
+        )
+    except:
+         derivation_iri = retrieve_derivation_iri(sparql_client,temperature_iri, agentIRI)
+         if not derivation_iri :
+              raise KeyError('something wrong, contact Jieyang to fix this')
+         else:
+              print(f'InputIRI: {temperature_iri} already have derivation IRI: {derivation_iri}, skipped for now')
+
+# # Perform unified update
 # for i in range(len(inputIRI)):
 #     time.sleep(1)
 #     bday_iri = inputIRI[i]
-#     Synmarkup(
-#         derivation_client=derivation_client,
-#         bday_iri=bday_iri,
-#         agentIRI = agentIRI,
-#         agentURL = agentURL
-#     )
-
-# Perform Asy markup
-for i in range(len(inputIRI)):
-    time.sleep(1)
-    bday_iri = inputIRI[i]
-    derivation_iri, entities = retrieve_derivation_iri(sparql_client,
-                                                 bday_iri,
-                                                 agentIRI)
-    # Asymarkup(derivation_client,
-    #           bday_iri)
-    derivation_client.unifiedUpdateDerivation(derivation_iri)
+#     derivation_iri, entities = retrieve_derivation_iri(sparql_client,
+#                                                  bday_iri,
+#                                                  agentIRI)
+#     # Perform unified update
+#     derivation_client.unifiedUpdateDerivation(derivation_iri)

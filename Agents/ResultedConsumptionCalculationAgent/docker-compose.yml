@@ -32,9 +32,9 @@ services:
       - LOG4J_FORMAT_MSG_NO_LOOKUPS=true
       # --- Index / Assumptions Space --- #
       # !!!! NO SPACING AFTER '='!!!!
-      # (need to be a str!) A list containing 12 data represents the consumption value from Jan to Dec
-      - ELECTRICITY_CONSUMPTION_PROFILE='[28.19,26.08,26.82,20.73,20.48,20.36,21.38,21.95,22.39,25.14,25.91,27.89]'
-      - GAS_CONSUMPTION_PROFILE='[7.88,7.54,7.54,4.86,4.14,3.78,3.78,3.64,4.05,6.09,6.74,8.46]'
+      # A list containing 12 data represents the consumption value from Jan to Dec
+      - ELECTRICITY_CONSUMPTION_PROFILE=[28.19,26.08,26.82,20.73,20.48,20.36,21.38,21.95,22.39,25.14,25.91,27.89]
+      - GAS_CONSUMPTION_PROFILE=[7.88,7.54,7.54,4.86,4.14,3.78,3.78,3.64,4.05,6.09,6.74,8.46]
       # Select the variable of COP to use
       # Max / Mean / Min
       - COP_VAR=Mean

@@ -158,9 +158,9 @@ class KGClient(PySparqlClient):
          ?consumption_profile_iri <{RDF_TYPE}> <{REGION_ENERGYCONSUMPTION_PROFILE}> ;
                                 <{OFP_VALIDFROM}> "2020-01-01 12:00:00"^^<{XSD_DATETIME}> ;
                                 <{OFP_VALIDTO}> "2020-12-31 12:00:00"^^<{XSD_DATETIME}> .
-         ?elec_profile_iri <{IS_A} ?consumption_profile_iri;
+         ?elec_profile_iri <{IS_A}> ?consumption_profile_iri;
                           <{RDF_TYPE}>  <{REGION_ELECTRICITYCONSUMPTION_PROFILE}>.
-         ?gas_profile_iri <{IS_A} ?consumption_profile_iri;
+         ?gas_profile_iri <{IS_A}> ?consumption_profile_iri;
                           <{RDF_TYPE}>  <{REGION_GASCONSUMPTION_PROFILE}>.
         }}
         """
@@ -209,11 +209,11 @@ class KGClient(PySparqlClient):
          <{consumption_profile_iri}> <{RDF_TYPE}> <{REGION_ENERGYCONSUMPTION_PROFILE}> ;
                                 <{OFP_VALIDFROM}> "2020-01-01 12:00:00"^^<{XSD_DATETIME}> ;
                                 <{OFP_VALIDTO}> "2020-12-31 12:00:00"^^<{XSD_DATETIME}> .
-         <{elec_profile_iri}> <{IS_A} <{consumption_profile_iri}>;
+         <{elec_profile_iri}> <{IS_A}> <{consumption_profile_iri}>;
                           <{RDF_TYPE}>  <{REGION_ELECTRICITYCONSUMPTION_PROFILE}> ;
                         <{OM_HAS_NUMERICALVALUE}> "{ELECTRICITY_CONSUMPTION_PROFILE}"^^<{XSD_STRING}> .
 
-         <{gas_profile_iri}> <{IS_A} <{consumption_profile_iri}>;
+         <{gas_profile_iri}> <{IS_A}> <{consumption_profile_iri}>;
                           <{RDF_TYPE}>  <{REGION_GASCONSUMPTION_PROFILE}> ;
                          <{OM_HAS_NUMERICALVALUE}> "{GAS_CONSUMPTION_PROFILE}"^^<{XSD_STRING}> .
 
@@ -348,11 +348,11 @@ class KGClient(PySparqlClient):
          <{consumption_profile_iri}> <{RDF_TYPE}> <{REGION_ENERGYCONSUMPTION_PROFILE}> ;
                                 <{OFP_VALIDFROM}> "2020-01-01 12:00:00"^^<{XSD_DATETIME}> ;
                                 <{OFP_VALIDTO}> "2020-12-31 12:00:00"^^<{XSD_DATETIME}> .
-         ?elec_profile_iri <{IS_A} <{consumption_profile_iri}>;
+         ?elec_profile_iri <{IS_A}> <{consumption_profile_iri}>;
                           <{RDF_TYPE}>  <{REGION_ELECTRICITYCONSUMPTION_PROFILE}> ;
                         <{OM_HAS_NUMERICALVALUE}> ?elec_profile .
 
-         ?gas_profile_iri <{IS_A} <{consumption_profile_iri}> ;
+         ?gas_profile_iri <{IS_A}> <{consumption_profile_iri}> ;
                           <{RDF_TYPE}>  <{REGION_GASCONSUMPTION_PROFILE}> ;
                          <{OM_HAS_NUMERICALVALUE}> ?gas_profile .
         }}
@@ -456,7 +456,7 @@ class KGClient(PySparqlClient):
 
         return query
 
-#ontop_url = QUERY_ENDPOINT.split('/blazegraph')[0] + '/ontop/ui/sparql'
-# a = KGClient(QUERY_ENDPOINT, QUERY_ENDPOINT)
-# res = a.get_birthday('http://example.org/birthday#Birthday_robot_1')
+QUERY_ENDPOINT= "http://localhost:3846/blazegraph/namespace/heatpump/sparql"
+a = KGClient(QUERY_ENDPOINT, QUERY_ENDPOINT)
+res = a.update_consumption_profile()
     

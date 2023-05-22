@@ -122,7 +122,15 @@ class ResultedConsumptionAgent(DerivationAgent):
                                                                                                                           resulted_gas_consumption,
                                                                                                                           resulted_elec_consumption)
         # Instantisation
-        g = self.sparql_client.instantiate_age(g, res['personiri'], age_iri, age)
+        g = self.sparql_client.instantiate_resulted_consumptions(g, 
+                                                                consumption_iri, 
+                                                                elec_consumption_iri,
+                                                                gas_consumption_iri,
+                                                                res['region'],
+                                                                res['start'],
+                                                                res['end'],
+                                                                resulted_gas_consumption,
+                                                                resulted_elec_consumption)
         
         print('Resulted Consumption has been updated!')
 
@@ -156,7 +164,24 @@ def default():
         Instructional message at the app root.
     """
     # TODO: Update path to main upon merging
-    msg  = "This is an toy agent.<BR>"
+    msg  = "This is an resulted energy consumption calculation agent.<BR>"
     msg += "<BR>"
-    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent<BR>"
+    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ResultedConsumptionCalculationAgent<BR>"
     return msg
+
+agent_config = config_derivation_agent(env_file='./agent.env.example')
+
+agent = ResultedConsumptionAgent(
+    # Settings read from environment variables (.env file, docker-compose)
+    register_agent=agent_config.REGISTER_AGENT,
+    agent_iri=agent_config.ONTOAGENT_SERVICE_IRI, 
+    time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
+    derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
+    agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+    # Settings read from Stack Clients
+    kg_url=SPARQL_QUERY_ENDPOINT,
+    kg_update_url=SPARQL_QUERY_ENDPOINT,      
+    # Miscellaneous settings
+    logger_name='dev',
+    max_thread_monitor_async_derivations=1
+)
