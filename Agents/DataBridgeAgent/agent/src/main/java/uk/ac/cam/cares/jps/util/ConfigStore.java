@@ -26,11 +26,17 @@ public class ConfigStore {
     private static final String PROPERTIES_FILEPATH = System.getProperty("user.dir") + "/config/endpoint.properties";
     private static final String VAL_TRANSFER_IN = "in";
     private static final String VAL_TRANSFER_OUT = "out";
+    private static final String HTTP_URL = "http://";
+    private static final String HTTPS_URL = "https://";
     private static final String SRC_SPARQL_ENDPOINT = "sparql.src.endpoint";
+    private static final String SRC_SPARQL_USER = "sparql.src.user";
+    private static final String SRC_SPARQL_PASSWORD = "sparql.src.password";
     private static final String SRC_DB_URL = "src.db.url";
     private static final String SRC_DB_USER = "src.db.user";
     private static final String SRC_DB_PASSWORD = "src.db.password";
     private static final String TARGET_SPARQL_ENDPOINT = "sparql.target.endpoint";
+    private static final String TARGET_SPARQL_USER = "sparql.target.user";
+    private static final String TARGET_SPARQL_PASSWORD = "sparql.target.password";
     private static final String TARGET_DB_URL = "target.db.url";
     private static final String TARGET_DB_USER = "target.db.user";
     private static final String TARGET_DB_PASSWORD = "target.db.password";
@@ -143,18 +149,18 @@ public class ConfigStore {
             prop.load(input);
             if (transferKey.isEmpty()) {
                 LOGGER.info("Retrieving source and target endpoints from file...");
-                config[0] = validateProperties(prop, SRC_SPARQL_ENDPOINT, missingPropertiesErrorMessage);
-                config[1] = validateProperties(prop, TARGET_SPARQL_ENDPOINT, missingPropertiesErrorMessage);
+                config[0] = retrieveSparqlEndpoint(true, prop, missingPropertiesErrorMessage, "");
+                config[1] = retrieveSparqlEndpoint(false, prop, missingPropertiesErrorMessage, "");
             } else if (transferKey.equals(VAL_TRANSFER_IN)) {
                 LOGGER.info("Retrieving source endpoint from file...");
-                config[0] = validateProperties(prop, SRC_SPARQL_ENDPOINT, missingPropertiesErrorMessage);
+                config[0] = retrieveSparqlEndpoint(true, prop, missingPropertiesErrorMessage, "");
                 LOGGER.info("Retrieving stack endpoint for target...");
-                config[1] = retrieveStackEndpoint(stackNamespace);
+                config[1] = retrieveSparqlEndpoint(false, prop, missingPropertiesErrorMessage, stackNamespace);
             } else if (transferKey.equals(VAL_TRANSFER_OUT)) {
                 LOGGER.info("Retrieving stack endpoint for source...");
-                config[0] = retrieveStackEndpoint(stackNamespace);
+                config[0] = retrieveSparqlEndpoint(true, prop, missingPropertiesErrorMessage, stackNamespace);
                 LOGGER.info("Retrieving target endpoint from file...");
-                config[1] = validateProperties(prop, TARGET_SPARQL_ENDPOINT, missingPropertiesErrorMessage);
+                config[1] = retrieveSparqlEndpoint(false, prop, missingPropertiesErrorMessage, "");
             }
             String missingMessage = missingPropertiesErrorMessage.toString();
             if (!missingMessage.isEmpty()) {
@@ -170,6 +176,44 @@ public class ConfigStore {
             LOGGER.error(INACCESSIBLE_CLIENT_PROPERTIES_MSG + e);
             throw new JPSRuntimeException(INACCESSIBLE_CLIENT_PROPERTIES_MSG + e);
         }
+    }
+
+    /**
+     * Retrieves the SPARQL endpoint in the required format.
+     *
+     * @param isSource                      A boolean indicating whether to retrieve the source or target endpoint.
+     * @param prop                          A Properties object containing the required properties.
+     * @param missingPropertiesErrorMessage An error message that will be written if there is no property.
+     * @param stackNamespace                The stack namespace endpoint passed as a parameter to the GET request.
+     * @return the endpoint as "http://user:password@server:port/url" format.
+     */
+    private static String retrieveSparqlEndpoint(boolean isSource, Properties prop, StringBuilder missingPropertiesErrorMessage, String stackNamespace) {
+        // Generate prop values for source and target depending on indicator
+        String propEndpoint = isSource ? SRC_SPARQL_ENDPOINT : TARGET_SPARQL_ENDPOINT;
+        String propUser = isSource ? SRC_SPARQL_USER : TARGET_SPARQL_USER;
+        String propPass = isSource ? SRC_SPARQL_PASSWORD : TARGET_SPARQL_PASSWORD;
+        // Retrieve credentials in the format "user@password" if it exists. Otherwise, return empty string
+        String credentials = prop.getProperty(propUser) == null || prop.getProperty(propUser).isEmpty() ?
+                "" : prop.getProperty(propUser) + ":" + prop.getProperty(propPass) + "@";
+        // Retrieve endpoint from properties if it is not a stack, otherwise, retrieve from the stack
+        String endpoint = stackNamespace.isEmpty() ? validateProperties(prop, propEndpoint, missingPropertiesErrorMessage) :
+                retrieveStackEndpoint(stackNamespace);
+        // Return endpoint directly if there is no need to include credentials
+        if (credentials.isEmpty()) return endpoint;
+        // If credentials are required, there is a need to slot them in
+        String httpProtocol;
+        // Remove the http:// or https://
+        if (endpoint.startsWith(HTTP_URL)) {
+            httpProtocol = HTTP_URL;
+            endpoint = endpoint.substring(7);
+        } else if (endpoint.startsWith(HTTPS_URL)) {
+            httpProtocol = HTTPS_URL;
+            endpoint = endpoint.substring(8);
+        } else {
+            endpoint = null;
+            httpProtocol = null;
+        }
+        return httpProtocol + credentials + endpoint;
     }
 
     /**
