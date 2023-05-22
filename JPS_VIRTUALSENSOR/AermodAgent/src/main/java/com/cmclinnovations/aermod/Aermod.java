@@ -583,14 +583,14 @@ public class Aermod {
 
         if (!buildingsGeoJSON.isEmpty()) {
             String geoJsonFilename = "buildings.geojson";
-            Path buildingsGeoJSONPath = Paths.get(EnvConfig.VIS_FOLDER, "data", geoJsonFilename);
+            Path buildingsGeoJSONPath = Paths.get(EnvConfig.VIS_FOLDER, geoJsonFilename);
             writeToFile(buildingsGeoJSONPath, buildingsGeoJSON.toString(4));
             modifyFilePermissions(buildingsGeoJSONPath.toString());
 
             JSONObject buildingsSource = new JSONObject();
             buildingsSource.put("id", "buildings-source");
             buildingsSource.put("type", "geojson");
-            buildingsSource.put("data", Paths.get("data", geoJsonFilename).toString());
+            buildingsSource.put("data", Paths.get(geoJsonFilename).toString());
 
             JSONObject buildingsLayer = new JSONObject();
             buildingsLayer.put("name", "Buildings");
