@@ -16,7 +16,7 @@
         ]
       }
     }
-  },,
+  },
   "endpoints": {
     "ui": {
       "url": "http://localhost:8080/bms-query-agent/",
