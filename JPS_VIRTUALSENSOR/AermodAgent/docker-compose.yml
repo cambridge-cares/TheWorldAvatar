@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   aermod-agent:
-    image: ghcr.io/cambridge-cares/aermod-agent:1.1.4-SNAPSHOT
+    image: ghcr.io/cambridge-cares/aermod-agent:1.1.5-dev-aermod-agent-cleanup-SNAPSHOT
     deploy:
       mode: replicated
       replicas: 1
