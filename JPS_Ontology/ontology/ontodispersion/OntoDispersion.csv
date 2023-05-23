@@ -36,7 +36,7 @@ Speed,Class,ShipDynamicProperty,IS-A,,,,,https://www.theworldavatar.com/kg/ontod
 CourseOverGround,Class,ShipDynamicProperty,IS-A,,,,,https://www.theworldavatar.com/kg/ontodispersion/,
 Location,Class,ShipDynamicProperty,IS-A,,,,,https://www.theworldavatar.com/kg/ontodispersion/,
 OntoCityGMLNamespace,Class,,,,,,The blazegraph namespace to query buildings data from http://www.theworldavatar.com:83/citieskg,https://www.theworldavatar.com/kg/ontodispersion/,
-associatedOntoCityGMLCityObject,Object Property,,,StaticPointSource,http://www.w3.org/2002/07/owl#Thing,,"The range should be an OntoCityGML object, using owl:Thing because there is no type declarations",https://www.theworldavatar.com/kg/ontodispersion/,
+hasOntoCityGMLCityObject,Object Property,,,StaticPointSource,http://www.w3.org/2002/07/owl#Thing,,"The range should be an OntoCityGML object, using owl:Thing because there is no type declarations",https://www.theworldavatar.com/kg/ontodispersion/,
 emits,Object Property,,,PointSource,Emission,,,https://www.theworldavatar.com/kg/ontodispersion/,
 simulatedAt,Object Property,,,DispersionLayer,z,,A relation to link a dispersion output to a particular height,https://www.theworldavatar.com/kg/ontodispersion/,
 simulatedAt,Object Property,,,DispersionMatrix,z,,,https://www.theworldavatar.com/kg/ontodispersion/,
