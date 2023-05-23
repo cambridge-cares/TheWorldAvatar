@@ -8,10 +8,15 @@
           {
             "ConfigName": "blazegraph"
           }
+        ],
+        "Secrets": [
+          {
+            "SecretName": "blazegraph_password"
+          }
         ]
       }
     }
-  },
+  },,
   "endpoints": {
     "ui": {
       "url": "http://localhost:8080/bms-query-agent/",
