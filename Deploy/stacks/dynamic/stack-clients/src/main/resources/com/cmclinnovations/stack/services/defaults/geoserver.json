@@ -48,6 +48,11 @@
                         "Type": "volume",
                         "Source": "geoserver_netcdf_data",
                         "Target": "/var/geoserver/netcdf_data_dir"
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "geoserver_static_data",
+                        "Target": "/var/geoserver/datadir/www/static_data"
                     }
                 ],
                 "Configs": [
