@@ -14,14 +14,13 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.List;
-import java.util.Map;
 
 import uk.ac.cam.cares.jps.bmsqueryapp.R;
 import uk.ac.cam.cares.jps.bmsqueryapp.data.attribtue.EditableAttribute;
 
 public class EditableAttributesAdapter extends RecyclerView.Adapter<EditableAttributesAdapter.EditableAttributeInputView> {
 
-    static class EditableAttributeInputView extends RecyclerView.ViewHolder {
+    public static class EditableAttributeInputView extends RecyclerView.ViewHolder {
 
         TextInputEditText textInputEditText;
         TextInputLayout layout;
@@ -43,6 +42,10 @@ public class EditableAttributesAdapter extends RecyclerView.Adapter<EditableAttr
 
         void disableTextWatcher() {
             textInputEditText.removeTextChangedListener(listener);
+        }
+
+        public void remvoeInput() {
+            textInputEditText.setText("");
         }
     }
 
@@ -110,5 +113,11 @@ public class EditableAttributesAdapter extends RecyclerView.Adapter<EditableAttr
     @Override
     public void onViewDetachedFromWindow(@NonNull EditableAttributeInputView holder) {
         holder.disableTextWatcher();
+    }
+
+    public void clearInputData() {
+        for (EditableAttribute editableAttribute : editableAttributes) {
+            editableAttribute.setValue("");
+        }
     }
 }

@@ -17,6 +17,7 @@ public class TabAdapter extends FragmentStateAdapter {
 
     private final int NUM_TABS = 2;
     private VisualizationFragment dtvfTab;
+    private EditFragment editTab;
     private List<EditableAttribute> editableAttributes;
     private String equipmentIri;
     private WebViewClient webViewClient;
@@ -43,7 +44,8 @@ public class TabAdapter extends FragmentStateAdapter {
             dtvfTab = new VisualizationFragment(equipmentIri, webViewClient, reloadCallback);
             return dtvfTab;
         } else {
-            return new EditFragment(editableAttributes);
+            editTab = new EditFragment(editableAttributes);
+            return editTab;
         }
     }
 
@@ -54,5 +56,9 @@ public class TabAdapter extends FragmentStateAdapter {
 
     public VisualizationFragment getDtvfTab() {
         return dtvfTab;
+    }
+
+    public EditFragment getEditTab() {
+        return editTab;
     }
 }

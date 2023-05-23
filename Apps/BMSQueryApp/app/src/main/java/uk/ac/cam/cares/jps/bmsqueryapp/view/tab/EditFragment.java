@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.HttpUrl;
 import uk.ac.cam.cares.jps.bmsqueryapp.adapter.list.EditableAttributesAdapter;
@@ -101,5 +103,18 @@ public class EditFragment extends Fragment {
     private void hideKeyboardFrom(Context context, View view) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    public void clearInputs() {
+        ((EditableAttributesAdapter) Objects.requireNonNull(binding.editableAttributeRv.getAdapter())).clearInputData();
+
+        LinearLayoutManager layoutManager = ((LinearLayoutManager) Objects.requireNonNull(binding.editableAttributeRv.getLayoutManager()));
+        int firstVisiblePosition = layoutManager.findFirstVisibleItemPosition();
+        int lastVisiblePosition = layoutManager.findLastVisibleItemPosition();
+        for (int i = firstVisiblePosition; i <= lastVisiblePosition; i++) {
+            EditableAttributesAdapter.EditableAttributeInputView viewHolder = (EditableAttributesAdapter.EditableAttributeInputView) binding.editableAttributeRv.findViewHolderForAdapterPosition(i);
+            assert viewHolder != null;
+            viewHolder.remvoeInput();
+        }
     }
 }

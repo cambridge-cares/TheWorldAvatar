@@ -24,6 +24,7 @@ import java.util.List;
 
 import uk.ac.cam.cares.jps.bmsqueryapp.data.attribtue.EditableAttribute;
 import uk.ac.cam.cares.jps.bmsqueryapp.databinding.ActivityEquipmentInstanceBinding;
+import uk.ac.cam.cares.jps.bmsqueryapp.view.tab.EditFragment;
 import uk.ac.cam.cares.jps.bmsqueryapp.view.tab.TabAdapter;
 import uk.ac.cam.cares.jps.bmsqueryapp.utils.Constants;
 
@@ -36,6 +37,7 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
     public static final String EQUIPMENT_TYPE = "equipmentType";
 
     TabAdapter adapter;
+    int tabPosition;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -84,11 +86,31 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
         adapter.configEditTab(getEditableAttributeList(equipmentType));
         viewPager.setAdapter(adapter);
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(Constants.statusArrayTemp[position])).attach();
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                tabPosition = tab.getPosition();
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {;}
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {;}
+        });
 
         binding.refreshButton.setOnClickListener(view -> {
-            Toast.makeText(this.getBaseContext(), "Loading new data", Toast.LENGTH_SHORT).show();
-            adapter.getDtvfTab().refreshDTVF();
-            binding.refreshButton.setEnabled(false);
+            if (tabPosition == 0) {
+                Toast.makeText(this.getBaseContext(), "Loading new data", Toast.LENGTH_SHORT).show();
+                if (adapter.getDtvfTab() != null) {
+                    adapter.getDtvfTab().refreshDTVF();
+                    binding.refreshButton.setEnabled(false);
+                }
+            } else if (tabPosition == 1) {
+                if (adapter.getEditTab() != null) {
+                    ((EditFragment) adapter.getEditTab()).clearInputs();
+                }
+            }
         });
     }
 
