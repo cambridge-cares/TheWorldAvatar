@@ -76,83 +76,54 @@ public class Aermod {
 
     int create144File(WeatherData weatherData) {
 
-        List<String> timeStamps = weatherData.timeStamps;
+        String windSpeed = String.valueOf(weatherData.getWindSpeedInKnots());
+        windSpeed = addLeadingZero(windSpeed, 2);
+        if (windSpeed.length() != 2) {
+            LOGGER.error("Invalid wind speed value {}", windSpeed);
+            return 1;
+        }
 
-        List<Long> windSpeed = weatherData.getWindSpeedInKnots();
-        List<Long> windDirection = weatherData.getWindDirectionInTensOfDegrees();
-        List<Long> temperature = weatherData.getTemperatureInFahrenheit();
-        List<Long> humidity = weatherData.getHumidityAsPercentage();
-        List<Long> cloudCover = weatherData.getCloudCoverAsInteger();
+        String windDirection = String.valueOf(weatherData.getWindDirectionInTensOfDegrees());
+        windDirection = addLeadingZero(windDirection, 2);
+        if (windDirection.length() != 2) {
+            LOGGER.error("Invalid wind direction value {}", windDirection);
+            return 1;
+        }
 
-        String templateLine;
+        // unsure how strict the format is, just follow blindly at the moment
+        String temperature = String.valueOf(weatherData.getTemperatureInFahrenheit());
+        temperature = addLeadingZero(temperature, 3);
+        if (temperature.length() < 3) {
+            temperature = "0" + temperature;
+        }
+        if (temperature.length() != 3) {
+            LOGGER.error("Invalid temperature value {}", temperature);
+            return 1;
+        }
+
+        String humidity = String.valueOf(weatherData.getHumidityAsPercentage());
+        humidity = addLeadingZero(humidity, 3);
+        if (humidity.length() != 3) {
+            LOGGER.error("Invalid humidity value {}", humidity);
+            return 1;
+        }
+
+        String cloudCover = String.valueOf(weatherData.getCloudCoverAsInteger());
+        if (cloudCover.length() != 1) {
+            LOGGER.error("Invalid cloud cover value {}", cloudCover);
+        }
+
+        String templateContent;
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("weather_template.144")) {
-            templateLine = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+            templateContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+
+            templateContent = templateContent.replace("WS", windSpeed).replace("WD", windDirection)
+                    .replace("TEM", temperature)
+                    .replace("HUM", humidity).replace("C", cloudCover);
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
             LOGGER.error("Failed to read weather_template.144 file");
             return 1;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        // Determine start index
-        LocalDateTime ldi = LocalDateTime.parse(timeStamps.get(0), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        int start = ldi.getHour();
-
-        for (int i = start; i < start + timeStamps.size(); i++) {
-
-            LocalDateTime ldt = LocalDateTime.parse(timeStamps.get(i - start),
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            String dateTime = String.valueOf(ldt.getYear()).substring(2) +
-                    addLeadingZero(String.valueOf(ldt.getMonthValue()), 2) +
-                    addLeadingZero(String.valueOf(ldt.getDayOfMonth()), 2) +
-                    addLeadingZero(String.valueOf(ldt.getHour() + 1), 2);
-
-            if (dateTime.length() != 8) {
-                throw new JPSRuntimeException("dateTime is not in a format compatible with CD-144. " + dateTime);
-            }
-
-            String ws = String.valueOf(windSpeed.get(i));
-            ws = addLeadingZero(ws, 2);
-            if (ws.length() != 2) {
-                LOGGER.error("Invalid wind speed value {}", ws);
-                return 1;
-            }
-
-            String wd = String.valueOf(windDirection.get(i));
-            wd = addLeadingZero(wd, 2);
-            if (wd.length() != 2) {
-                LOGGER.error("Invalid wind direction value {}", windDirection);
-                return 1;
-            }
-
-            String temp = String.valueOf(temperature.get(i));
-            temp = addLeadingZero(temp, 3);
-
-            if (temp.length() < 3) {
-                temp = "0" + temperature;
-            }
-
-            if (temp.length() != 3) {
-                LOGGER.error("Invalid temperature value {}", temperature);
-                return 1;
-            }
-
-            String hmd = String.valueOf(humidity.get(i));
-            hmd = addLeadingZero(hmd, 3);
-            if (hmd.length() != 3) {
-                LOGGER.error("Invalid humidity value {}", hmd);
-                return 1;
-            }
-
-            String ccvr = String.valueOf(cloudCover.get(i));
-            if (ccvr.length() != 1) {
-                LOGGER.error("Invalid cloud cover value {}", ccvr);
-            }
-
-            String dataLine = templateLine.replace("yymmddhh", dateTime).replace("WS", ws).replace("WD", wd)
-                    .replace("TEM", temp)
-                    .replace("HUM", hmd).replace("C", ccvr);
-            sb.append(dataLine + " \n");
         }
 
         return writeToFile(aermetDirectory.resolve("weather_template.144"), sb.toString());
@@ -219,6 +190,7 @@ public class Aermod {
      * @return
      */
     int runAermet(Polygon scope) {
+
         // first copy soundings and FSL files
         // try (InputStream is =
         // getClass().getClassLoader().getResourceAsStream(AERMET_INPUT)) {
@@ -433,38 +405,8 @@ public class Aermod {
         }
     }
 
-    /**
-     * Send request to PythonService to plot virtual sensor data. Also get the
-     * concentration values at each sensor location.
-     */
-    public JSONArray plotVirtualSensorData(String endPoint, String outputFileURL, int srid) {
-        URI httpGet;
-        try {
-            URIBuilder builder = new URIBuilder(endPoint);
-            builder.setParameter("dispersionMatrix", outputFileURL);
-            builder.setParameter("srid", String.valueOf(srid));
-            httpGet = builder.build();
-        } catch (URISyntaxException e) {
-            LOGGER.error("Failed at building URL");
-            throw new RuntimeException(e);
-        }
-
-        try (CloseableHttpClient httpClient = HttpClients.createDefault();
-                CloseableHttpResponse httpResponse = httpClient.execute(new HttpGet(httpGet))) {
-            String result = EntityUtils.toString(httpResponse.getEntity());
-            return new JSONArray(result);
-        } catch (IOException e) {
-            LOGGER.error("Failed at making connection with python service");
-            throw new RuntimeException(e);
-        } catch (JSONException e) {
-            LOGGER.error("Failed to parse result from python service for aermod geojson");
-            LOGGER.error(outputFileURL);
-            throw new RuntimeException(e);
-        }
-    }
-
     int createDataJson(String shipLayerName, List<String> dispersionLayerNames, String plantsLayerName,
-            String elevationLayerName, String sensorLayerName, JSONObject buildingsGeoJSON) {
+            String elevationLayerName, JSONObject buildingsGeoJSON) {
         // wms endpoints template without the layer name
         String shipWms = EnvConfig.GEOSERVER_URL
                 + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
@@ -488,12 +430,6 @@ public class Aermod {
                 "&bbox={bbox-epsg-3857}"
                 + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, elevationLayerName);
 
-        String sensorWms = EnvConfig.GEOSERVER_URL
-                + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-                +
-                "&bbox={bbox-epsg-3857}"
-                + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, sensorLayerName);
-
         JSONObject group = new JSONObject();
         group.put("name", "Aermod Simulation"); // hardcoded
         group.put("stack", "http://localhost:3838");
@@ -510,11 +446,6 @@ public class Aermod {
         plantSource.put("type", "vector");
         plantSource.put("tiles", new JSONArray().put(plantWms));
 
-        JSONObject sensorSource = new JSONObject();
-        sensorSource.put("id", "sensor-source");
-        sensorSource.put("type", "vector");
-        sensorSource.put("tiles", new JSONArray().put(sensorWms));
-
         for (int i = 0; i < dispersionLayerNames.size(); i++) {
             JSONObject dispersionSource = new JSONObject();
             dispersionSource.put("id", "dispersion-source_" + dispersionLayerNames.get(i));
@@ -529,7 +460,7 @@ public class Aermod {
         elevationSource.put("type", "raster");
         elevationSource.put("tiles", new JSONArray().put(elevWms));
 
-        sources.put(shipSource).put(plantSource).put(sensorSource).put(elevationSource);
+        sources.put(shipSource).put(plantSource).put(elevationSource);
         group.put("sources", sources);
 
         // layers
@@ -552,15 +483,6 @@ public class Aermod {
         plantsLayer.put("minzoom", 4);
         plantsLayer.put("layout", new JSONObject().put("visibility", "visible"));
 
-        JSONObject sensorLayer = new JSONObject();
-        sensorLayer.put("id", "sensor-layer");
-        sensorLayer.put("type", "circle");
-        sensorLayer.put("name", "Virtual Sensors");
-        sensorLayer.put("source", "sensor-source");
-        sensorLayer.put("source-layer", sensorLayerName);
-        sensorLayer.put("minzoom", 4);
-        sensorLayer.put("layout", new JSONObject().put("visibility", "visible"));
-
         for (int i = 0; i < dispersionLayerNames.size(); i++) {
             JSONObject dispersionLayer = new JSONObject();
             dispersionLayer.put("id", dispersionLayerNames.get(i));
@@ -582,7 +504,7 @@ public class Aermod {
         elevationLayer.put("minzoom", 4);
         elevationLayer.put("layout", new JSONObject().put("visibility", "visible"));
 
-        layers.put(shipLayer).put(plantsLayer).put(elevationLayer).put(sensorLayer);
+        layers.put(shipLayer).put(plantsLayer).put(elevationLayer);
         group.put("layers", layers);
 
         JSONObject data = new JSONObject();

@@ -90,15 +90,10 @@ public class AermodAgent extends DerivationAgent {
         LOGGER.info("Querying emission values");
         queryClient.setEmissions(ships);
 
-        /*
-         * The next two lines of code are for use with the Weather Agent.
-         * // update weather station with simulation time
-         * updateWeatherStation(weatherStationIri, simulationTime);
-         * 
-         * // get weather data from station
-         * WeatherData weatherData = queryClient.getWeatherData(weatherStationIri,
-         * simulationTime);
-         */
+        // update weather station with simulation time
+        updateWeatherStation(weatherStationIri, simulationTime);
+        // get weather data from station
+        WeatherData weatherData = queryClient.getWeatherData(weatherStationIri, simulationTime);
 
         // making directory for simulation
         LOGGER.info("Creating directory for simulation files");
@@ -140,26 +135,6 @@ public class AermodAgent extends DerivationAgent {
             bpi.createAERMODReceptorInput(nx, ny);
         }
 
-        // Send POST request to OpenMeteo Agent to update OpenMeteo Station
-
-        double lat = scope.getCentroid().getCoordinate().getY();
-        double lon = scope.getCentroid().getCoordinate().getX();
-        String StartTS = bpi.timeStamps.get(0);
-        String EndTS = bpi.timeStamps.get(bpi.timeStamps.size() - 1);
-        LocalDateTime ldt = LocalDateTime.parse(StartTS, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        String StartDate = ldt.getYear() + "-" + getDayMonthAsTwoDigitString(ldt.getMonthValue()) + "-"
-                + getDayMonthAsTwoDigitString(ldt.getDayOfMonth());
-        ldt = LocalDateTime.parse(EndTS, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        String EndDate = ldt.getYear() + "-" + getDayMonthAsTwoDigitString(ldt.getMonthValue()) + "-"
-                + getDayMonthAsTwoDigitString(ldt.getDayOfMonth());
-        String stationIRI = updateOpenMeteoStation(lat, lon, StartDate, EndDate);
-        WeatherData weatherData = queryClient.getOpenMeteoData(stationIRI);
-        deleteOpenMeteoStation(scope);
-
-        // Number of weather data values will be >= number of timestamps. The correct
-        // range of values is retrieved within the
-        // create144File method in the Aermod class.
-        weatherData.timeStamps = bpi.timeStamps;
         aermod.create144File(weatherData);
 
         // run aermet (weather preprocessor)
@@ -177,23 +152,10 @@ public class AermodAgent extends DerivationAgent {
         if (!bpi.aermodInputCreated)
             aermod.createAermodInputFile(scope, nx, ny, srid);
         aermod.runAermod("aermod.inp");
-        aermod.runAermod("aermodVirtualSensor.inp");
 
         // Upload files used by scripts within Python Service to file server.
         String outputFileURL = aermod.uploadToFileServer("averageConcentration.dat");
         String outFileURL = aermod.uploadToFileServer("receptor.dat");
-        String sensorFileURL = aermod.uploadToFileServer("virtualSensorConcentrations.dat");
-
-        // Call virtualSensor.py to plot the temporal variation of concentrations
-        JSONArray virtualSensorConcentrations = aermod.plotVirtualSensorData(EnvConfig.PYTHON_SERVICE_SENSOR_URL,
-                sensorFileURL, srid);
-        // Instantiate concentrations at virtual sensor locations as time series
-
-        String startTS = bpi.timeStamps.get(0);
-        LocalDateTime ldr = LocalDateTime.parse(StartTS, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        List<String> timeSteps = bpi.timeStamps;
-
-        queryClient.updateVirtualSensorData(timeSteps, virtualSensorConcentrations);
 
         List<Double> receptorHeights = bpi.receptorHeights;
         // Set GeoServer layer names
@@ -206,7 +168,6 @@ public class AermodAgent extends DerivationAgent {
         String shipLayerName = "ships_" + simulationTime; // hardcoded in ShipInputAgent
         String plantsLayerName = "source_layer";
         String elevationLayerName = "elevation_layer";
-        String sensorLayerName = "sensor_layer";
 
         // Get contour plots as geoJSON objects from PythonService and upload them to
         // PostGIS using GDAL
@@ -243,7 +204,7 @@ public class AermodAgent extends DerivationAgent {
         // ships_ is hardcoded here and in ShipInputAgent
         queryClient.updateOutputs(derivationInputs.getDerivationIRI(), outputFileURL, dispLayerNames.get(0),
                 shipLayerName, simulationTime);
-        if (aermod.createDataJson(shipLayerName, dispLayerNames, plantsLayerName, elevationLayerName, sensorLayerName,
+        if (aermod.createDataJson(shipLayerName, dispLayerNames, plantsLayerName, elevationLayerName,
                 bpi.getBuildingsGeoJSON()) != 0) {
             LOGGER.error("Failed to create data.json file for visualisation, terminating");
             return;
@@ -343,85 +304,6 @@ public class AermodAgent extends DerivationAgent {
 
         queryClient = new QueryClient(storeClient, ontopStoreClient, rdbStoreClient);
         super.devClient = new DerivationClient(storeClient, QueryClient.PREFIX_DISP);
-    }
-
-    /**
-     * Send PUT request to OpenMeteo Agent to create a weather station and
-     * instantiate the weather data at one hour intervals
-     * between the start and end dates.
-     * 
-     * @param polygon
-     * @return stationIRI
-     */
-    String updateOpenMeteoStation(double lat, double lon, String StartDate, String EndDate) {
-
-        String stationIRI = null;
-
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            URIBuilder builder = new URIBuilder(EnvConfig.OPENMETEO_AGENT_RUN);
-            builder.addParameter("longitude", String.valueOf(lon));
-            builder.addParameter("latitude", String.valueOf(lat));
-            builder.addParameter("start_date", StartDate);
-            builder.addParameter("end_date", EndDate);
-            HttpPut httpPut = new HttpPut(builder.build());
-
-            CloseableHttpResponse response = httpClient.execute(httpPut);
-            if (response.getStatusLine().getStatusCode() != 200) {
-                LOGGER.fatal("Status code = {}", response.getStatusLine().getStatusCode());
-            }
-
-            JSONTokener tokener = new JSONTokener(response.getEntity().getContent());
-            JSONObject json = new JSONObject(tokener);
-            stationIRI = json.getString("station");
-
-        } catch (URISyntaxException e) {
-            LOGGER.error("Failed to build URI for OpenMeteo agent post request");
-            LOGGER.error(e.getMessage());
-        } catch (IOException e) {
-            LOGGER.error("Http PUT request failed for OpenMeteo agent");
-            LOGGER.error(e.getMessage());
-        }
-
-        return stationIRI;
-
-    }
-
-    private String getDayMonthAsTwoDigitString(int day) {
-        String dayString = String.valueOf(day);
-        if (day < 10)
-            dayString = "0" + dayString;
-        return dayString;
-    }
-
-    /**
-     * Send PUT request to OpenMeteo Agent to delete the weather station
-     * 
-     * @param polygon
-     * @return
-     */
-    void deleteOpenMeteoStation(Polygon scope) {
-
-        double lat = scope.getCentroid().getCoordinate().getY();
-        double lon = scope.getCentroid().getCoordinate().getX();
-
-        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-            URIBuilder builder = new URIBuilder(EnvConfig.OPENMETEO_AGENT_DELETE);
-            builder.addParameter("longitude", String.valueOf(lon));
-            builder.addParameter("latitude", String.valueOf(lat));
-            HttpPut httpPut = new HttpPut(builder.build());
-
-            CloseableHttpResponse response = httpClient.execute(httpPut);
-            if (response.getStatusLine().getStatusCode() != 200) {
-                LOGGER.fatal("Status code = {}", response.getStatusLine().getStatusCode());
-            }
-        } catch (URISyntaxException e) {
-            LOGGER.error("Failed to build URI for OpenMeteo agent post request");
-            LOGGER.error(e.getMessage());
-        } catch (IOException e) {
-            LOGGER.error("Http PUT request failed for OpenMeteo agent");
-            LOGGER.error(e.getMessage());
-        }
-
     }
 
 }
