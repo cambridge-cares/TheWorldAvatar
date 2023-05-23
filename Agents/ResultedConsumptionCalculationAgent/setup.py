@@ -4,7 +4,7 @@ setup(
     name='resultedconsumptioncalculation',
     version='0.0.1',
     author='Jieyang Xu',
-    author_email='mh807@cam.ac.uk',
+    author_email='jx309@cam.ac.uk',
     license='MIT',
     python_requires='>=3.8',
     description="The `resultedconsumptioncalculation` agent calculates the latest market value estimation for a particular property and populates the result to knowledge graph as part of The World Avatar project.",
@@ -14,6 +14,9 @@ setup(
     packages=find_namespace_packages(exclude=['tests','tests.*']),
     include_package_data=True,
     install_requires= [
+        'numpy==1.21.6',
+        'uuid==1.30',
+        'datetime==4.7',
         'flask==2.1.0',
         'JayDeBeApi==1.2.3',
         'pandas==1.5.1',
