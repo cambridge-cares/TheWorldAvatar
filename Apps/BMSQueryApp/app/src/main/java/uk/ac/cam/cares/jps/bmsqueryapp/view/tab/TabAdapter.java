@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.bmsqueryapp.view.tab;
 
+import android.webkit.ValueCallback;
 import android.webkit.WebViewClient;
 
 import androidx.annotation.NonNull;
@@ -19,14 +20,16 @@ public class TabAdapter extends FragmentStateAdapter {
     private List<EditableAttribute> editableAttributes;
     private String equipmentIri;
     private WebViewClient webViewClient;
+    private ValueCallback<String> reloadCallback;
 
     public TabAdapter(FragmentManager manager, Lifecycle lifecycle) {
         super(manager, lifecycle);
     }
 
-    public void configDtvfTab(String equipmentIri, WebViewClient webViewClient) {
+    public void configDtvfTab(String equipmentIri, WebViewClient webViewClient, ValueCallback<String> reloadCallback) {
         this.equipmentIri = equipmentIri;
         this.webViewClient = webViewClient;
+        this.reloadCallback = reloadCallback;
     }
 
     public void configEditTab(List<EditableAttribute> editableAttributes) {
@@ -37,7 +40,7 @@ public class TabAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         if (position == 0) {
-            dtvfTab = new VisualizationFragment(equipmentIri, webViewClient);
+            dtvfTab = new VisualizationFragment(equipmentIri, webViewClient, reloadCallback);
             return dtvfTab;
         } else {
             return new EditFragment(editableAttributes);

@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -53,11 +54,13 @@ public class VisualizationFragment extends Fragment {
 
     private String equipmentIri;
     private WebViewClient webViewClient;
+    private ValueCallback<String> reloadCallback;
 
-    public VisualizationFragment(String equipmentIri, WebViewClient webViewClient) {
+    public VisualizationFragment(String equipmentIri, WebViewClient webViewClient, ValueCallback<String> reloadCallback) {
         super();
         this.equipmentIri = equipmentIri;
         this.webViewClient = webViewClient;
+        this.reloadCallback = reloadCallback;
     }
 
     public void setPosition(int position) {
@@ -100,7 +103,7 @@ public class VisualizationFragment extends Fragment {
     }
 
     public void refreshDTVF() {
-        binding.dtvfViz.loadUrl( "javascript:window.location.reload( true )" );
+        binding.dtvfViz.evaluateJavascript("refreshChart();", reloadCallback);
     }
 
 

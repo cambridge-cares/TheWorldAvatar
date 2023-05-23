@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
     final ArrayList<Building> buildings = new ArrayList<>();
     ArrayList<Spinner> spinners = new ArrayList<>();
 
+    boolean isRefreshFinished = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,9 +75,12 @@ public class MainActivity extends AppCompatActivity {
         getZonesFromAgent();
 
         binding.refreshButton.setOnClickListener(view -> {
-            binding.refreshButton.setEnabled(false);
-            clearViewsInSubLevel(-1);
-            getZonesFromAgent();
+            Toast.makeText(this.getBaseContext(), "Loading data", Toast.LENGTH_SHORT).show();
+            if (isRefreshFinished) {
+                isRefreshFinished = false;
+                clearViewsInSubLevel(-1);
+                getZonesFromAgent();
+            }
         });
 
     }
@@ -111,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
 
         LOGGER.info("Finished building. Created " + buildings.size() + "buildings.");
         ((BaseArrayAdapter<Instance>) binding.buildingSpinner.getAdapter()).addAll(buildings);
-        binding.refreshButton.setEnabled(true);
+        isRefreshFinished = true;
     }
 
     private void initZoneSpinner(Spinner spinner, OnItemSelectedListener listener) {

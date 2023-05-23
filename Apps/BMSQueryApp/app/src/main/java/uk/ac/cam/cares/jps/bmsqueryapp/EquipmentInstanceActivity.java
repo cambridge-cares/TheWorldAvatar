@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.bmsqueryapp;
 
 import android.os.Bundle;
+import android.webkit.ValueCallback;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -11,8 +12,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.android.volley.Request;
-import com.android.volley.toolbox.StringRequest;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -27,8 +26,6 @@ import uk.ac.cam.cares.jps.bmsqueryapp.data.attribtue.EditableAttribute;
 import uk.ac.cam.cares.jps.bmsqueryapp.databinding.ActivityEquipmentInstanceBinding;
 import uk.ac.cam.cares.jps.bmsqueryapp.view.tab.TabAdapter;
 import uk.ac.cam.cares.jps.bmsqueryapp.utils.Constants;
-import okhttp3.HttpUrl.Builder;
-import uk.ac.cam.cares.jps.bmsqueryapp.utils.SingletonConnection;
 
 public class EquipmentInstanceActivity extends AppCompatActivity {
     ActivityEquipmentInstanceBinding binding;
@@ -66,7 +63,6 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
                 super.onPageFinished(view, url);
                 LOGGER.info("page finished loading");
 //                binding.progressBarWrapper.setVisibility(View.GONE);
-                binding.refreshButton.setEnabled(true);
             }
 
             @Override
@@ -76,15 +72,21 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
             }
         };
 
+        ValueCallback<String> reloadCallback = (ValueCallback<String>) o -> {
+            LOGGER.info("New data loaded");
+            binding.refreshButton.setEnabled(true);
+        };
+
         ViewPager2 viewPager = binding.viewPager;
         TabLayout tabLayout = binding.tabs;
         adapter = new TabAdapter(getSupportFragmentManager(), getLifecycle());
-        adapter.configDtvfTab(equipmentIri, webViewClient);
+        adapter.configDtvfTab(equipmentIri, webViewClient, reloadCallback);
         adapter.configEditTab(getEditableAttributeList(equipmentType));
         viewPager.setAdapter(adapter);
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(Constants.statusArrayTemp[position])).attach();
 
         binding.refreshButton.setOnClickListener(view -> {
+            Toast.makeText(this.getBaseContext(), "Loading new data", Toast.LENGTH_SHORT).show();
             adapter.getDtvfTab().refreshDTVF();
             binding.refreshButton.setEnabled(false);
         });
