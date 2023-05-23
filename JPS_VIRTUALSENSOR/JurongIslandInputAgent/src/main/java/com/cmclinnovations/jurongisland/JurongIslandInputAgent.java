@@ -15,18 +15,19 @@ import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-@WebServlet(urlPatterns = {"/update"})
+@WebServlet(urlPatterns = { "/update" })
 public class JurongIslandInputAgent extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(JurongIslandInputAgent.class);
-    
+
     private QueryClient queryClient;
 
     @Override
     public void init() throws ServletException {
-        EndpointConfig endpointConfig = new EndpointConfig(); 
+        EndpointConfig endpointConfig = new EndpointConfig();
         RemoteStoreClient queryStoreClient = new RemoteStoreClient(EnvConfig.QUERY_ENDPOINT);
-        RemoteStoreClient updateStoreClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
-        queryClient = new QueryClient(queryStoreClient,updateStoreClient);
+        RemoteStoreClient updateStoreClient = new RemoteStoreClient(endpointConfig.getKgurl(),
+                endpointConfig.getKgurl());
+        queryClient = new QueryClient(queryStoreClient, updateStoreClient);
     }
 
     @Override
@@ -35,13 +36,13 @@ public class JurongIslandInputAgent extends HttpServlet {
         JSONArray pollutantSourceData = queryClient.pollutantSourceQuery();
         queryClient.updateEmissionsData(pollutantSourceData);
 
-        // TODO: Remove this method later once the Pirmasens input agent is created. 
+        // TODO: Remove this method later once the Pirmasens input agent is created.
         queryClient.updatePirmasensEmissions();
         JSONObject responseJson = new JSONObject();
-        responseJson.put("emissionsUpdate: ","done");
+        responseJson.put("emissionsUpdate: ", "done");
         resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
         resp.setCharacterEncoding("UTF-8");
         resp.getWriter().print(responseJson);
     }
- 
+
 }
