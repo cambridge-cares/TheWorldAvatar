@@ -82,7 +82,7 @@ public class InitialiseSimulation extends HttpServlet {
                     new OntopClient().updateOBDA(obdaFile);
 
                     // adds OntoAgent instance
-                    queryClient.initialiseAgent(citiesNamespace);
+                    queryClient.initialiseAgent();
                 }
 
                 if (polygonProvided.getSrid() != 4326) {

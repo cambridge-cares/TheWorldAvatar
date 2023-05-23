@@ -68,7 +68,7 @@ public class QueryClient {
         this.tsClient = tsClient;
     }
 
-    void initialiseAgent(String citiesNamespace) {
+    void initialiseAgent() {
         Iri service = iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service");
         Iri operation = iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Operation");
         Iri hasOperation = iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasOperation");
@@ -87,7 +87,7 @@ public class QueryClient {
 		modify.insert(operationIri.isA(operation).andHas(hasHttpUrl, iri(Config.AERMOD_AGENT_URL)).andHas(hasInput, inputIri));
         modify.insert(inputIri.has(hasMandatoryPart, partIri));
         
-        if (citiesNamespace != null) modify.insert(partIri.has(hasType, CITIES_NAMESPACE));
+        modify.insert(partIri.has(hasType, CITIES_NAMESPACE));
         modify.insert(partIri.has(hasType, SIMULATION_TIME)).insert(partIri.has(hasType, NX)).insert(partIri.has(hasType, NY)).insert(partIri.has(hasType, SCOPE))
         .insert(partIri.has(hasType, REPORTING_STATION)).prefix(P_DISP);
 
