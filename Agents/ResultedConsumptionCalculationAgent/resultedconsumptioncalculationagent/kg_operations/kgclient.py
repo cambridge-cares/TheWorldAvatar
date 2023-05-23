@@ -229,9 +229,9 @@ class KGClient(PySparqlClient):
         SELECT ?comsumption
         WHERE {{
         {service_expression}
-        {comsumption_iri} <{RDF_TYPE}> <{OM_MEASURE}> ;
+        <{comsumption_iri}> <{RDF_TYPE}> <{OM_MEASURE}> ;
         <{OM_HAS_NUMERICALVALUE}>  ?comsumption .
-        }}
+        }}}}
         """
         query_string = self.remove_unnecessary_whitespace(query_string)
         res = self.performQuery(query_string)
@@ -255,7 +255,7 @@ class KGClient(PySparqlClient):
         ?cop_iri  <{RDF_TYPE}> <{REGION_COP}> ;
                  <{OFP_VALIDFROM}> ?start ;
                  <{OFP_VALIDTO}> ?end ;
-                 <{REGION + 'has' + COP_VAR + 'Value'}> ?value .
+                 <{REGION + 'has' + COP_VAR + 'Value'}> ?value .}}
         """
         query_string = self.remove_unnecessary_whitespace(query_string)
         res = self.performQuery(query_string)
@@ -273,7 +273,9 @@ class KGClient(PySparqlClient):
                 res['value'] = float(res['value'])
             except:
                 res['value'] = None
-
+        
+        return res
+    
     def get_proportion_of_heating(self, proportion_of_heating_iri):
         query_string = f"""
         SELECT ?proportion_of_heating
@@ -458,5 +460,7 @@ class KGClient(PySparqlClient):
 
 QUERY_ENDPOINT= "http://localhost:3846/blazegraph/namespace/heatpump/sparql"
 a = KGClient(QUERY_ENDPOINT, QUERY_ENDPOINT)
-res = a.update_consumption_profile()
+res = a.get_consumption("http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/ElectricityConsumptionMeasure_E01000001")
+print(res)
+# res = a.update_consumption_profile()
     

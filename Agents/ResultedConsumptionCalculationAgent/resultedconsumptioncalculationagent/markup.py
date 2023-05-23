@@ -4,6 +4,7 @@ from pyderivationagent import PyDerivationClient
 from pyderivationagent.data_model import iris as pda_iris
 import time
 from resultedconsumptioncalculationagent.datamodel.iris import *
+from resultedconsumptioncalculationagent.utils.stack_configs import COP_VAR
 from tqdm import tqdm
 
 
@@ -20,27 +21,28 @@ RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 RDF_TYPE =  RDF + 'type'
 
 # ----------------------------- Funcs ------------------------------- #
-def Synmarkup(
-    derivation_client: PyDerivationClient,
-    sparql_client:PySparqlClient,
-    temperature_iri: str,
-    heatpumpefficiency_iri: str,
-    hotsidetemperature_iri: str,
-    agentIRI,
-    agentURL
-):
-        derivation_iri = retrieve_derivation_iri(sparql_client,temperature_iri, agentIRI)
+def Asynmarkup(
+            derivation_client: PyDerivationClient,
+            sparql_client: PySparqlClient,
+            cop_iri: str,
+            elec_consumption_iri : str,
+            gas_consumption_iri : str,
+            consumption_profile_iri : str,
+            boiler_efficiency_iri : str,
+            proportion_of_heating_iri : str,
+            uptake_iri : str,
+            agentIRI : str
+        ):
+        derivation_iri = retrieve_derivation_iri(sparql_client,cop_iri, agentIRI)
         if not derivation_iri :
-            input_iris = [temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri]
-            derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
+            input_iris = [cop_iri, elec_consumption_iri, gas_consumption_iri, proportion_of_heating_iri, boiler_efficiency_iri, uptake_iri, consumption_profile_iri]
+            derivation = derivation_client.createAsyncDerivationForNewInfo(
                 agentIRI=agentIRI,
-                agentURL=agentURL,
-                inputsIRI=input_iris,
-                derivationType=pda_iris.ONTODERIVATION_DERIVATION,
+                inputsIRI=input_iris
             )
         
         else:
-              print(f'InputIRI: {temperature_iri} already have derivation IRI: {derivation_iri}, skipped for now')
+            print(f'InputIRI: {cop_iri} already have derivation IRI: {derivation_iri}, skipped for now')
 
 def retrieve_derivation_iri(
           sparql_client: PySparqlClient,
@@ -63,63 +65,110 @@ def retrieve_derivation_iri(
             syn_derivation_iri = response[0].get('s')
             return syn_derivation_iri
 
-def retrieve_temperature_iri(sparql_client: PySparqlClient):
+def retrieve_cop_iri(sparql_client: PySparqlClient):
         
         query_string = f"""
-        SELECT DISTINCT ?temperature_iri ?start
-        WHERE {{?region <{CLIMB_HASMEASURE}>  ?m.
-                ?m <{COMP_HAS_STARTUTC}> ?start;
-                    <{COMP_HAS_ENDUTC}> ?end ;
-                    <{CLIMB_HASVAR}> "{CLIMA_TAS}"^^<{XSD_STRING}> .
-                ?p <{OM_HAS_PHENO}> ?m.
-                ?p <{OM_HAS_VALUE}> ?temperature_iri.
-        ?temperature_iri <{OM_HAS_NUMERICALVALUE}> ?meantemperature.}}
+        SELECT DISTINCT ?region ?cop_iri ?start
+        WHERE {{
+        <http://statistics.data.gov.uk/id/statistical-geography/E01000001> <{REGION_HASCOP}> ?cop_iri.
+        ?cop_iri  <{RDF_TYPE}> <{REGION_COP}> ;
+                 <{OFP_VALIDFROM}> ?start ;
+                 <{OFP_VALIDTO}> ?end ;
+                 <{REGION + 'has' + COP_VAR + 'Value'}> ?value .}}
         """
 
         res = sparql_client.performQuery(query_string)
         
         if not res:
-            raise IndexError('No temperature_iri found -- Are you sure you are using the correct namespace?')
+            raise IndexError('No cop_iri found -- Are you sure you are using the correct namespace?')
         else:
-            temperature_iri_list = [d['temperature_iri'] for d in res]
+            cop_iri_list = []
+            elec_consumption_iri_list = []
+            gas_consumption_iri_list = []
+            for d in res:
+                cop_iri_list.append(d['cop_iri'])
+                #region_code = d["region"].split("/")[-1]
+                region_code = "E01000001"
+                elec_consumption_iri = ONTOGASGRID + "ElectricityConsumptionMeasure_" + region_code
+                gas_consumption_iri  = ONTOGASGRID + "GasConsumptionMeasure_" + region_code
+                elec_consumption_iri_list.append(elec_consumption_iri)
+                gas_consumption_iri_list.append(gas_consumption_iri)
 
-            return temperature_iri_list
+            return cop_iri_list, elec_consumption_iri_list, gas_consumption_iri_list
 
-def retrieve_heatpumpefficiency_iri(sparql_client: PySparqlClient):
+def retrieve_boiler_efficiency_iri(sparql_client: PySparqlClient):
         
         query_string = f"""
-        SELECT ?heatpumpefficiency_iri
+        SELECT DISTINCT ?boiler_efficiency_iri
         WHERE {{
-        ?heatpumpefficiency_iri <{IS_A}> ?assumption_iri ;
-                    <{RDF_TYPE}> <{REGION_HEATPUMP_EFFICIENCY}> .
+        ?boiler_efficiency_iri <{IS_A}> ?assumption_iri ;
+                    <{RDF_TYPE}> <{REGION_BOILER_EFFICIENCY}> .
         }}
         """
         res = sparql_client.performQuery(query_string)
         if not res:
-            raise IndexError('No heatpumpefficiency_iri found -- Are you sure you are using the correct namespace?')
+            raise IndexError('No boiler_efficiency_iri found -- Are you sure you are using the correct namespace?')
         else:
             res = res[0]
-            heatpumpefficiency_iri = res['heatpumpefficiency_iri']
+            boiler_efficiency_iri = res['boiler_efficiency_iri']
 
-            return heatpumpefficiency_iri
+            return boiler_efficiency_iri
       
-def retrieve_hotsidetemperature_iri(sparql_client: PySparqlClient):
+def retrieve_proportion_of_heating_iri(sparql_client: PySparqlClient):
         
         query_string = f"""
-        SELECT ?hotsidetemperature_iri
+        SELECT ?proportion_of_heating_iri
         WHERE {{
-        ?hotsidetemperature_iri <{IS_A}> ?assumption_iri ;
-                    <{RDF_TYPE}> <{REGION_HOTSIDE_TEMPERATURE}> .
+        ?proportion_of_heating_iri <{IS_A}> ?assumption_iri ;
+                    <{RDF_TYPE}> <{REGION_PROPORTION_OF_HEATING}> .
         }}
         """
         res = sparql_client.performQuery(query_string)
         if not res:
-            raise IndexError('No hotsidetemperature_iri found -- Are you sure you are using the correct namespace?')
+            raise IndexError('No proportion_of_heating_iri found -- Are you sure you are using the correct namespace?')
         else:
             res = res[0]
-            hotsidetemperature_iri = res['hotsidetemperature_iri']
+            proportion_of_heating_iri = res['proportion_of_heating_iri']
 
-            return hotsidetemperature_iri
+            return proportion_of_heating_iri
+
+def retrieve_uptake_iri(sparql_client: PySparqlClient):
+        
+        query_string = f"""
+        SELECT ?uptake_iri
+        WHERE {{
+        ?uptake_iri <{IS_A}> ?assumption_iri ;
+                    <{RDF_TYPE}> <{REGION_UPTAKE}> .
+        }}
+        """
+        res = sparql_client.performQuery(query_string)
+        if not res:
+            raise IndexError('No uptake_iri found -- Are you sure you are using the correct namespace?')
+        else:
+            res = res[0]
+            uptake_iri = res['uptake_iri']
+
+            return uptake_iri
+        
+def retrieve_consumption_profile_iri(sparql_client: PySparqlClient):
+        
+        query_string = f"""
+        SELECT ?consumption_profile_iri 
+        WHERE {{
+         ?country_iri <{REGION_HAS_ENERGYCONSUMPTION_PROFILE}> ?consumption_profile_iri .
+         ?consumption_profile_iri <{RDF_TYPE}> <{REGION_ENERGYCONSUMPTION_PROFILE}> ;
+                                <{OFP_VALIDFROM}> "2020-01-01 12:00:00"^^<{XSD_DATETIME}> ;
+                                <{OFP_VALIDTO}> "2020-12-31 12:00:00"^^<{XSD_DATETIME}> .
+        }}
+        """
+        res = sparql_client.performQuery(query_string)
+        if not res:
+            raise IndexError('No consumption_profile_iri found -- Are you sure you are using the correct namespace?')
+        else:
+            res = res[0]
+            consumption_profile_iri = res['consumption_profile_iri']
+
+            return consumption_profile_iri
 # ----------------------------- Tasks ------------------------------- #
 
 # Create a PySparqlClient instance
@@ -128,11 +177,13 @@ sparql_client = PySparqlClient(
         update_endpoint=UPDATE_ENDPOINT,
     )
 
-# retrieve temperature_iri
-temperature_iri_list = retrieve_temperature_iri(sparql_client)
-print(f"A total number of {len(temperature_iri_list)} will be marked, meaning there is {len(temperature_iri_list)/12} regions will be marked")
-heatpumpefficiency_iri = retrieve_heatpumpefficiency_iri(sparql_client)
-hotsidetemperature_iri = retrieve_hotsidetemperature_iri(sparql_client)
+# retrieve cop_iri
+cop_iri_list, elec_consumption_iri_list, gas_consumption_iri_list = retrieve_cop_iri(sparql_client)
+print(f"A total number of {len(cop_iri_list)} will be marked, meaning there is {len(cop_iri_list)/12} regions will be marked")
+consumption_profile_iri = retrieve_consumption_profile_iri(sparql_client)
+boiler_efficiency_iri = retrieve_boiler_efficiency_iri(sparql_client)
+proportion_of_heating_iri = retrieve_proportion_of_heating_iri(sparql_client)
+uptake_iri = retrieve_uptake_iri(sparql_client)
 
 # Create a PyDerivationClient instance
 derivation_client = PyDerivationClient(derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
@@ -140,25 +191,30 @@ derivation_client = PyDerivationClient(derivation_instance_base_url=DERIVATION_I
                                         update_endpoint=UPDATE_ENDPOINT)
 
 # Perform Syn markup
-for i in tqdm(range(len(temperature_iri_list))):
-    time.sleep(1)
-    temperature_iri = temperature_iri_list[i]
+for i in tqdm(range(len(cop_iri_list))):
+    cop_iri = cop_iri_list[i]
+    elec_consumption_iri = elec_consumption_iri_list[i]
+    gas_consumption_iri = gas_consumption_iri_list
     try:
-        Synmarkup(
+        Asynmarkup(
             derivation_client=derivation_client,
             sparql_client = sparql_client,
-            temperature_iri=temperature_iri,
-            heatpumpefficiency_iri = heatpumpefficiency_iri,
-            hotsidetemperature_iri = hotsidetemperature_iri,
+            cop_iri=cop_iri,
+            elec_consumption_iri = elec_consumption_iri,
+            gas_consumption_iri = gas_consumption_iri,
+            consumption_profile_iri = consumption_profile_iri,
+            boiler_efficiency_iri = boiler_efficiency_iri,
+            proportion_of_heating_iri = proportion_of_heating_iri,
+            uptake_iri = uptake_iri,
             agentIRI = agentIRI,
             agentURL = agentURL
         )
     except:
-         derivation_iri = retrieve_derivation_iri(sparql_client,temperature_iri, agentIRI)
+         derivation_iri = retrieve_derivation_iri(sparql_client, cop_iri, agentIRI)
          if not derivation_iri :
               raise KeyError('something wrong, contact Jieyang to fix this')
          else:
-              print(f'InputIRI: {temperature_iri} already have derivation IRI: {derivation_iri}, skipped for now')
+              print(f'InputIRI: {cop_iri} already have derivation IRI: {derivation_iri}, skipped for now')
 
 # # Perform unified update
 # for i in range(len(inputIRI)):

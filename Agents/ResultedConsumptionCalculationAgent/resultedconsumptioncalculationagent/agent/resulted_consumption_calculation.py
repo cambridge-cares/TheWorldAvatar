@@ -29,7 +29,7 @@ class ResultedConsumptionAgent(DerivationAgent):
                 REGION_UPTAKE, REGION_ENERGYCONSUMPTION_PROFILE]
     
     def agent_output_concepts(self) -> list:
-        return [REGION_RESULTED_CONSUMPTION]
+        return [REGION_RESULTED_ENERGYCONSUMPTION]
     
     def validate_inputs(self, http_request) -> bool:
         # Validate completeness of received HTTP request (i.e. non-empty HTTP request, 
@@ -39,7 +39,7 @@ class ResultedConsumptionAgent(DerivationAgent):
     def validate_input_values(self, inputs, derivationIRI=None):
         
         # Create dict between input concepts and return values
-        input_dict = {OM_MEASURE:[None,None,None], 
+        input_dict = {OM_MEASURE:[None, None, None],
                       REGION_PROPORTION_OF_HEATING:None, 
                       REGION_BOILER_EFFICIENCY:None, 
                       REGION_UPTAKE:None, 
@@ -55,12 +55,14 @@ class ResultedConsumptionAgent(DerivationAgent):
                 if len(inp) == 1:
                     input_dict[i] = inp[0]
                 else:
-                    inp_name = i[i.rfind('/')+1:]
-                    self.logger.error(f"Derivation {derivationIRI}: More than one '{inp_name}' IRI provided.")
-                    raise Exception(f"Derivation {derivationIRI}: More than one '{inp_name}' IRI provided.")
+                    input_dict[i] = inp
+                    # inp_name = i[i.rfind('/')+1:]
+                    # self.logger.error(f"Derivation {derivationIRI}: More than one '{inp_name}' IRI provided.")
+                    # raise Exception(f"Derivation {derivationIRI}: More than one '{inp_name}' IRI provided.")
             else: 
                 self.logger.info(f"Derivation {derivationIRI}: Insufficient set of inputs provided.")
-            return input_dict[OM_MEASURE][0],input_dict[OM_MEASURE][1],input_dict[OM_MEASURE][2], 
+            
+            return input_dict[OM_MEASURE][0],input_dict[OM_MEASURE][1],input_dict[OM_MEASURE][2],
         input_dict[REGION_PROPORTION_OF_HEATING],input_dict[REGION_BOILER_EFFICIENCY],
         input_dict[REGION_UPTAKE],input_dict[REGION_ENERGYCONSUMPTION_PROFILE]
         
@@ -75,6 +77,7 @@ class ResultedConsumptionAgent(DerivationAgent):
         derivIRI = derivation_inputs.getDerivationIRI()
         cop_iri, elec_consumption_iri, gas_consumption_iri, proportion_of_heating_iri, boiler_efficiency_iri, uptake_iri, consumption_profile_iri= self.validate_input_values(inputs=inputs,
                                                     derivationIRI=derivIRI)
+        
         
         g = self.getconsumptionprofile_Graph(cop_iri, elec_consumption_iri, gas_consumption_iri, proportion_of_heating_iri, boiler_efficiency_iri, uptake_iri, consumption_profile_iri)
         
@@ -169,19 +172,19 @@ def default():
     msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ResultedConsumptionCalculationAgent<BR>"
     return msg
 
-agent_config = config_derivation_agent(env_file='./agent.env.example')
+# agent_config = config_derivation_agent(env_file='./agent.env.example')
 
-agent = ResultedConsumptionAgent(
-    # Settings read from environment variables (.env file, docker-compose)
-    register_agent=agent_config.REGISTER_AGENT,
-    agent_iri=agent_config.ONTOAGENT_SERVICE_IRI, 
-    time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
-    derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
-    agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
-    # Settings read from Stack Clients
-    kg_url=SPARQL_QUERY_ENDPOINT,
-    kg_update_url=SPARQL_QUERY_ENDPOINT,      
-    # Miscellaneous settings
-    logger_name='dev',
-    max_thread_monitor_async_derivations=1
-)
+# agent = ResultedConsumptionAgent(
+#     # Settings read from environment variables (.env file, docker-compose)
+#     register_agent=agent_config.REGISTER_AGENT,
+#     agent_iri=agent_config.ONTOAGENT_SERVICE_IRI, 
+#     time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
+#     derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
+#     agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+#     # Settings read from Stack Clients
+#     kg_url=SPARQL_QUERY_ENDPOINT,
+#     kg_update_url=SPARQL_QUERY_ENDPOINT,      
+#     # Miscellaneous settings
+#     logger_name='dev',
+#     max_thread_monitor_async_derivations=1
+# )
