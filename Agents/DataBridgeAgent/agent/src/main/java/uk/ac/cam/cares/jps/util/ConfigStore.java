@@ -66,26 +66,18 @@ public class ConfigStore {
             prop.load(input);
             if (transferKey.isEmpty()) {
                 LOGGER.info("Retrieving the details for source and target databases from file...");
-                config[0] = validateProperties(prop, SRC_DB_URL, missingPropertiesErrorMessage);
-                config[1] = validateProperties(prop, SRC_DB_USER, missingPropertiesErrorMessage);
-                config[2] = validateProperties(prop, SRC_DB_PASSWORD, missingPropertiesErrorMessage);
-                config[3] = validateProperties(prop, TARGET_DB_URL, missingPropertiesErrorMessage);
-                config[4] = validateProperties(prop, TARGET_DB_USER, missingPropertiesErrorMessage);
-                config[5] = validateProperties(prop, TARGET_DB_PASSWORD, missingPropertiesErrorMessage);
+                retrieveDatabase(true, config, prop, missingPropertiesErrorMessage, "");
+                retrieveDatabase(false, config, prop, missingPropertiesErrorMessage, "");
             } else if (transferKey.equals(VAL_TRANSFER_IN)) {
                 LOGGER.info("Retrieving the details for source database from file...");
-                config[0] = validateProperties(prop, SRC_DB_URL, missingPropertiesErrorMessage);
-                config[1] = validateProperties(prop, SRC_DB_USER, missingPropertiesErrorMessage);
-                config[2] = validateProperties(prop, SRC_DB_PASSWORD, missingPropertiesErrorMessage);
+                retrieveDatabase(true, config, prop, missingPropertiesErrorMessage, "");
                 LOGGER.info("Retrieving the details for the stack database to be targeted...");
-                retrieveDatabase(stackDatabase, config, false);
+                retrieveDatabase(false, config, prop, missingPropertiesErrorMessage, stackDatabase);
             } else if (transferKey.equals(VAL_TRANSFER_OUT)) {
                 LOGGER.info("Retrieving the details for the stack database as a source...");
-                retrieveDatabase(stackDatabase, config, true);
+                retrieveDatabase(true, config, prop, missingPropertiesErrorMessage, stackDatabase);
                 LOGGER.info("Retrieving the details for target database from file...");
-                config[3] = validateProperties(prop, TARGET_DB_URL, missingPropertiesErrorMessage);
-                config[4] = validateProperties(prop, TARGET_DB_USER, missingPropertiesErrorMessage);
-                config[5] = validateProperties(prop, TARGET_DB_PASSWORD, missingPropertiesErrorMessage);
+                retrieveDatabase(false, config, prop, missingPropertiesErrorMessage, "");
             }
             String missingMessage = missingPropertiesErrorMessage.toString();
             if (!missingMessage.isEmpty()) {
@@ -104,13 +96,39 @@ public class ConfigStore {
     }
 
     /**
+     * Retrieves the Database url, username and password, which will be stored in the config input.
+     *
+     * @param isSource                      A boolean indicating whether to retrieve the source or target endpoint.
+     * @param config                        An array to hold the database details.
+     * @param prop                          A Properties object containing the required properties.
+     * @param missingPropertiesErrorMessage An error message that will be written if there is no property.
+     * @param stackDatabase                 The stack namespace endpoint passed as a parameter to the GET request.
+     */
+    private static void retrieveDatabase(boolean isSource, String[] config, Properties prop, StringBuilder missingPropertiesErrorMessage, String stackDatabase) {
+        // If the code does not need to be executed on a stack, retrieve the configs for source or target database from the properties file
+        if (stackDatabase.isEmpty()) {
+            if (isSource) {
+                config[0] = validateProperties(prop, SRC_DB_URL, missingPropertiesErrorMessage);
+                config[1] = validateProperties(prop, SRC_DB_USER, missingPropertiesErrorMessage);
+                config[2] = validateProperties(prop, SRC_DB_PASSWORD, missingPropertiesErrorMessage);
+            } else {
+                config[3] = validateProperties(prop, TARGET_DB_URL, missingPropertiesErrorMessage);
+                config[4] = validateProperties(prop, TARGET_DB_USER, missingPropertiesErrorMessage);
+                config[5] = validateProperties(prop, TARGET_DB_PASSWORD, missingPropertiesErrorMessage);
+            }
+        } else {
+            retrieveStackDatabase(stackDatabase, config, isSource);
+        }
+    }
+
+    /**
      * Retrieves the SQL database within this stack as either the source or target.
      *
      * @param stackDatabase The stack database name passed as a parameter to the GET request.
      * @param config        The configuration array to store the results.
      * @param isSource      Indicates if the stack database is the source or target.
      */
-    private static void retrieveDatabase(String stackDatabase, String[] config, boolean isSource) {
+    private static void retrieveStackDatabase(String stackDatabase, String[] config, boolean isSource) {
         ContainerClient client = new ContainerClient();
         PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
         if (isSource) {
