@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   ResultedConsumptionCalculation:
-    image: ghcr.io/cambridge-cares/resultedconsumptionagent_debug:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/resultedconsumptioncalculationagent_debug:1.0.0-SNAPSHOT
     build:
       context: .
       target: debug
@@ -10,4 +10,4 @@ services:
       - ${DEBUG_PORT}:5678
     volumes:
       # repository name needs to match "agentdir" build arg in docker-compose-build.yml
-      - ./resultedconsumptionagent:/app/resultedconsumptionagent
+      - ./resultedconsumptioncalculationagent:/app/resultedconsumptioncalculationagent

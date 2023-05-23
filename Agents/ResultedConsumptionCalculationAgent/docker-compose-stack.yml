@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  resultedconsumptionagent:
+  resultedconsumptioncalculationagent:
     deploy:
       mode: replicated
       replicas: 1

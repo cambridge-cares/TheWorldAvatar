@@ -458,9 +458,9 @@ class KGClient(PySparqlClient):
 
         return query
 
-QUERY_ENDPOINT= "http://localhost:3846/blazegraph/namespace/heatpump/sparql"
-a = KGClient(QUERY_ENDPOINT, QUERY_ENDPOINT)
-res = a.get_consumption("http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/ElectricityConsumptionMeasure_E01000001")
-print(res)
-# res = a.update_consumption_profile()
+# QUERY_ENDPOINT= "http://localhost:3846/blazegraph/namespace/heatpump/sparql"
+# a = KGClient(QUERY_ENDPOINT, QUERY_ENDPOINT)
+# res = a.get_consumption("http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/ElectricityConsumptionMeasure_E01000001")
+# print(res)
+# # res = a.update_consumption_profile()
     

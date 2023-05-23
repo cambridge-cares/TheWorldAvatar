@@ -53,6 +53,18 @@ def region_within_country_update_template(region, country_iri):
 
      return triple
 
+def ontop_data_backup_template(region):
+
+    elec_consumption_iri = ONTOGASGRID + "ElectricityConsumptionMeasure_" + region
+    gas_consumption_iri  = ONTOGASGRID + "GasConsumptionMeasure_" + region
+    
+    triple = f"""
+     <{elec_consumption_iri}> <{RDF_TYPE}> <{OM_MEASURE}>.
+     <{gas_consumption_iri}> <{RDF_TYPE}> <{OM_MEASURE}>.
+     """
+
+    return triple
+
 def initialize_assumptions(sparql_client):
 
     def get_assumption_iri(sparql_client, country_iri):
@@ -195,7 +207,7 @@ def initialize_assumptions(sparql_client):
     <{boiler_efficiency_iri}> <{IS_A}> <{assumption_iri}> ;
                 <{RDF_TYPE}> <{REGION_BOILER_EFFICIENCY}> .
     <{proportion_of_heating_iri}> <{IS_A}> <{assumption_iri}> ;
-                <{RDF_TYPE}> <{REGION_HOTSIDE_TEMPERATURE}> .
+                <{RDF_TYPE}> <{REGION_PROPORTION_OF_HEATING}> .
     <{uptake_iri}> <{IS_A}> <{assumption_iri}> ;
                 <{RDF_TYPE}> <{REGION_UPTAKE}> .
     }}
@@ -314,6 +326,46 @@ def initialize_indecies(sparql_client):
     }}
     """
     res = sparql_client.performUpdate(query_string)
+
+def ontop_data_backup(sparql_client: PySparqlClient):
+    # A source file 'LSOA_codes_IRIs.csv' file is needed to get all the IRI for regions
+    data = pd.read_csv('LSOA_codes_IRIs.csv')
+
+    # Access the data in the DataFrame
+    LSOA_codes = data['LSOA code'].tolist()
+    
+
+    # Split the queries into Batches
+    # Perform SPARQL update query in chunks to avoid heap size/memory issues
+    total = len(LSOA_codes)
+    n_compile = total / 10
+    remainder = total % 10
+    n_compile = int(n_compile)
+    len_query = np.zeros(n_compile + 2)
+    if remainder == 0:
+        len_query = np.zeros(n_compile + 1)
+
+    for i in range(1, len(len_query) - 1):
+            len_query[i] = len_query[i - 1] + 10
+            len_query[-1] = len_query[-2] + remainder
+
+    for g in tqdm(range(len(len_query) - 1)):
+
+        i = int(len_query[g])
+        region = LSOA_codes[i]
+        # Initialise update query
+        query = f"INSERT DATA" + "{"
+        region = LSOA_codes[i]
+        triple = ontop_data_backup_template(region)
+        middle_num = int(len_query[g + 1] - len_query[g]) - 2
+        for j in range(middle_num):
+            region = LSOA_codes[i + j + 1]
+            triple += ontop_data_backup_template(region)
+
+        region = LSOA_codes[int(len_query[g + 1]) - 1]
+        triple += ontop_data_backup_template(region)
+        query +=triple + "}"
+        sparql_client.performUpdate(query)
 # ----------------------------- Tasks ------------------------------- #
 
 
@@ -324,6 +376,8 @@ initialize_assumptions(sparql_client)
 
 initialize_indecies(sparql_client)
 
-update_regions_within_country(sparql_client)
+ontop_data_backup(sparql_client)
+
+#update_regions_within_country(sparql_client)
 
 

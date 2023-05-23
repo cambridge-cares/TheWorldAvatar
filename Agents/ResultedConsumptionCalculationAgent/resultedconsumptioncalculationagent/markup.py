@@ -36,9 +36,10 @@ def Asynmarkup(
         derivation_iri = retrieve_derivation_iri(sparql_client,cop_iri, agentIRI)
         if not derivation_iri :
             input_iris = [cop_iri, elec_consumption_iri, gas_consumption_iri, proportion_of_heating_iri, boiler_efficiency_iri, uptake_iri, consumption_profile_iri]
+            #print(input_iris)
             derivation = derivation_client.createAsyncDerivationForNewInfo(
                 agentIRI=agentIRI,
-                inputsIRI=input_iris
+                inputsAndDerivations=input_iris
             )
         
         else:
@@ -54,7 +55,6 @@ def retrieve_derivation_iri(
             WHERE {{
                 ?s <{pda_iris.ONTODERIVATION_ISDERIVEDFROM}> <{input_iri}>.
                 ?s <{pda_iris.ONTODERIVATION_ISDERIVEDUSING}> <{agentIRI}>.
-                ?entities <{pda_iris.ONTODERIVATION_BELONGSTO}> ?s.
             }}"""
      
         query = ' '.join(query.split())
@@ -169,6 +169,8 @@ def retrieve_consumption_profile_iri(sparql_client: PySparqlClient):
             consumption_profile_iri = res['consumption_profile_iri']
 
             return consumption_profile_iri
+
+
 # ----------------------------- Tasks ------------------------------- #
 
 # Create a PySparqlClient instance
@@ -194,7 +196,7 @@ derivation_client = PyDerivationClient(derivation_instance_base_url=DERIVATION_I
 for i in tqdm(range(len(cop_iri_list))):
     cop_iri = cop_iri_list[i]
     elec_consumption_iri = elec_consumption_iri_list[i]
-    gas_consumption_iri = gas_consumption_iri_list
+    gas_consumption_iri = gas_consumption_iri_list[i]
     try:
         Asynmarkup(
             derivation_client=derivation_client,
@@ -206,8 +208,7 @@ for i in tqdm(range(len(cop_iri_list))):
             boiler_efficiency_iri = boiler_efficiency_iri,
             proportion_of_heating_iri = proportion_of_heating_iri,
             uptake_iri = uptake_iri,
-            agentIRI = agentIRI,
-            agentURL = agentURL
+            agentIRI = agentIRI
         )
     except:
          derivation_iri = retrieve_derivation_iri(sparql_client, cop_iri, agentIRI)

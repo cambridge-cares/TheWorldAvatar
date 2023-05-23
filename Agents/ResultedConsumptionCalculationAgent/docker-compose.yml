@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-  resultedconsumptionagent:
-    image: ghcr.io/cambridge-cares/resultedconsumptionagent:1.0.0-SNAPSHOT
+  resultedconsumptioncalculationagent:
+    image: ghcr.io/cambridge-cares/resultedconsumptioncalculationagent:1.0.0-SNAPSHOT
     environment:
       #--- Stack & Stack Client parameters ---#
       - STACK_NAME=${STACK_NAME}

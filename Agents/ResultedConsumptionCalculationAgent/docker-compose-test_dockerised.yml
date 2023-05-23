@@ -1,14 +1,14 @@
 version: '3.8'
 
 services:
-  resultedconsumptionagent:
-    image: ghcr.io/cambridge-cares/resultedconsumptionagent_test:1.0.0-SNAPSHOT
+  resultedconsumptioncalculationagent:
+    image: ghcr.io/cambridge-cares/resultedconsumptioncalculationagent_test:1.0.0-SNAPSHOT
     build:
       context: .
       target: test
       args:
         # Build argument used to construct paths in Dockerfile (needs to match name in setup.py)
-        agentdir: resultedconsumptionagent
+        agentdir: resultedconsumptioncalculationagent
     environment:
       # The following environment variables are required for the agent Docker container to start
       # Similar to the `agent_test.env` file for local testing, triple store endpoints are just 
