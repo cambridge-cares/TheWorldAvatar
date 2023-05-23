@@ -41,7 +41,7 @@ For the Agent to detect outdated information, a proper mark up of the relevant d
 Jieyang Xu (jx309@cam.ac.uk), May 2023
 <!-- Links -->
 [markup.py]:./copcalculationagent/markup.py
-[home page]:https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-2/Agents/COPCalculationAgent/index.html
+[home page]:https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-2/Agents/CopCalculationAgent/index.html
 [LSOAInputAgent]:https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-heat-pump-migration-to-stack-2/Agents/LSOAInputAgent
 <!-- websites -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
