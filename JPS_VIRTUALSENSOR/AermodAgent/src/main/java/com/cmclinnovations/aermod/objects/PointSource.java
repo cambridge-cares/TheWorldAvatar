@@ -1,6 +1,9 @@
 package com.cmclinnovations.aermod.objects;
 
+import org.postgis.Point;
+
 public class PointSource {
+    private Point location;
     private double diameter; // m
     private double height; // m
 
@@ -18,6 +21,14 @@ public class PointSource {
     private double flowrateCO2;
     private double pm25; // pm 2.5
     private double pm10; // pm 10
+
+    public void setLocation(Point location) {
+        this.location = location;
+    }
+
+    public Point getLocation() {
+        return this.location;
+    }
 
     public void setFlowrateCO2InTonsPerYear(double flowrateCO2InTonsPerYear) {
         flowrateCO2 = flowrateCO2InTonsPerYear * 1000 * 1000 / (365 * 24 * 60 * 60);
