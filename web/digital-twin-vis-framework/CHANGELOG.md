@@ -11,6 +11,12 @@
 * Minor CSS tweaks to UI components.
 * Minor formatting tweaks to automated release email.
 
+# 3.3.5
+### Features:
+* _No features present._
+### Bug Fixes:
+* Fixed issue when using numerical digits in searching feature.
+
 # 3.3.4
 ### Features:
 * Can now make use of SDF icons in Mapbox visualisations.

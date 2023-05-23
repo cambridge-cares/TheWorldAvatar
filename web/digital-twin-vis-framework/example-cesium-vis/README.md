@@ -8,9 +8,9 @@ It is recommended that you read the [Digital Twin Visualisations](https://github
 
 ## Restrictions
 
-It should be noted that this example uses the Cesium JS library, and makes no use of Cesium's premium offering, Cesium Ion. Use of Cesium Ion, or the features it offers, for commercial or funded educational use is prohibited without a paid-for licence.
+It should be noted that this example uses the CesiumJS library, and makes no use of Cesium's premium offering, Cesium ion. Use of Cesium ion, or the features it offers, for commercial or funded educational use is prohibited without a paid-for licence.
 
-At the time of writing, this means that anything that requires the use of a Cesium Ion API key should be avoided (this has been confirmed by Cesium's support team). To be fully sure no premium features are being used, it is suggested that no API key is even used within the code. Premium features to be avoided include the following:
+At the time of writing, this means that anything that requires the use of a Cesium ion API key should be avoided (this has been confirmed by Cesium's support team). To be fully sure no premium features are being used, it is suggested that no API key is even used within the code. Premium features to be avoided include the following:
 
 - Using the satellite imagery provided by Cesium
 - Using the terrain elevation provided by Cesium
@@ -54,7 +54,7 @@ Configuration for the visualisation is provided via a number of local JSON files
 
 In addition to these JSON files, areas of the `index.html` file can also be adjusted to change the default side panel content of the visualisation. Please note however that not all areas of this file are configurable, some HTML elements are required by the framework and had to be setup here rather than dynamically injected by the framework itself. Areas that are considered configurable are clearly commented within the HTML file.
 
-Please note that the `index.html` file also required users to input their Mapbox API key, this is so that the terrain imagery can be pulled from Mapbox's free API rather than using imagery from Cesium Ion (which would require a licence).
+Please note that the `index.html` file also required users to input their Mapbox API key, this is so that the terrain imagery can be pulled from Mapbox's free API rather than using imagery from Cesium ion (which would require a licence).
 
 ### Data Specification File
 
@@ -156,7 +156,7 @@ There are a few caveats to mention however:
 
 ## Sample Data
 
-A small amount of sample data has been committed to demonstrate the power of the DTVF to visualisate different data types. Please do not make changes to the sample data without consulting the original developer. At the time of writing, the sample data sets include:
+A small amount of sample data has been committed to demonstrate the power of the DTVF to visualise different data types. Please do not make changes to the sample data without consulting the original developer. At the time of writing, the sample data sets include:
 
 - **New York**:
   - Tiled 3D buildings, loaded from a remote CMCL server.
