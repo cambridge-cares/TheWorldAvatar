@@ -612,5 +612,30 @@ public class FHAgentTest {
 
     }
 
+    @Test
+    public void testCreateJSONRequest() {
+        JSONObject expected = new JSONObject();
+        expected.put("timeClass", "INSTANTANEOUS");
+        JSONArray testTimestamps = new JSONArray(new String[]{"2009-02-13T21:20:00", "2009-02-13T21:20:01", "2009-02-13T21:20:02"});
+        expected.put("ts", testTimestamps);
+        JSONArray testValues = new JSONArray(new Double[]{1.,2.,3.});
+        String testIRI = "example:prefix/api_"+keys[0];
+        JSONObject testValPair = new JSONObject();
+        testValPair.put(testIRI, testValues);
+        expected.put("values", testValPair);
+
+        Long actualTime = 1234560000000L;
+        JSONObject input = new JSONObject();
+        JSONArray col = new JSONArray();
+        for(int i = 0; i < testTimestamps.length(); i++){
+            JSONObject row = new JSONObject();
+            row.put("ts", actualTime + 1000 * i);
+            row.put("value", testValues.getDouble(i));
+            col.put(row);
+        }
+        input.put(keys[0], col);
+
+        JSONAssert.assertEquals(expected, testAgent.createJSONRequest(input, "INSTANTANEOUS"), true);
+    }
 
 }
