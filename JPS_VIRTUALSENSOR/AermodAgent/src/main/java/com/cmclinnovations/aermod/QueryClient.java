@@ -89,6 +89,7 @@ public class QueryClient {
     public static final String NX = PREFIX_DISP + "nx";
     public static final String NY = PREFIX_DISP + "ny";
     public static final String SCOPE = PREFIX_DISP + "Scope";
+    public static final String CITIES_NAMESPACE = "https://www.theworldavatar.com/kg/ontodispersion/OntoCityGMLNamespace";
     public static final String SIMULATION_TIME = PREFIX_DISP + "SimulationTime";
     public static final String NO_X = PREFIX_DISP + "NOx";
     public static final String UHC = PREFIX_DISP + "uHC";
@@ -136,6 +137,7 @@ public class QueryClient {
     private static final Iri IS_DERIVED_FROM = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
     private static final Iri BELONGS_TO = iri(DerivationSparql.derivednamespace + "belongsTo");
     private static final Iri REPORTS = P_EMS.iri("reports");
+    private static final Iri HAS_NAME = P_DISP.iri("hasName");
 
     
     // fixed units for each measured property
@@ -154,6 +156,15 @@ public class QueryClient {
         this.tsClientLong = new TimeSeriesClient<>(storeClient, Long.class);
         this.tsClientInstant = new TimeSeriesClient<>(storeClient, Instant.class);
         this.rdbStoreClient = rdbStoreClient;
+    }
+
+    String getCitiesNamespace(String citiesNamespaceIri) {
+        SelectQuery query = Queries.SELECT().prefix(P_DISP);
+        Variable citiesNamespace = query.var();
+        GraphPattern gp = iri(citiesNamespaceIri).has(HAS_NAME, citiesNamespace);
+        query.where(gp);
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+        return queryResult.getJSONObject(0).getString(citiesNamespace.getQueryString().substring(1));
     }
 
     int getMeasureValueAsInt(String instance) {
