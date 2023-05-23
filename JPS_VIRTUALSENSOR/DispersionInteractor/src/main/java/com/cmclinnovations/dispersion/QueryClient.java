@@ -54,7 +54,7 @@ public class QueryClient {
     private static final Iri DISPERSION_MATRIX = P_DISP.iri("DispersionMatrix");
     private static final Iri DISPERSION_LAYER = P_DISP.iri("DispersionLayer");
     private static final Iri SHIPS_LAYER = P_DISP.iri("ShipsLayer");
-    private static final Iri CITIES_NAMESPACE = P_DISP.iri("CitiesNamespace");
+    private static final Iri CITIES_NAMESPACE = iri("https://www.theworldavatar.com/kg/ontodispersion/CitiesNamespace");
 
     // properties
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
@@ -86,7 +86,8 @@ public class QueryClient {
         modify.insert(iri(Config.AERMOD_AGENT_IRI).isA(service).andHas(hasOperation, operationIri));
 		modify.insert(operationIri.isA(operation).andHas(hasHttpUrl, iri(Config.AERMOD_AGENT_URL)).andHas(hasInput, inputIri));
         modify.insert(inputIri.has(hasMandatoryPart, partIri));
-        // if (citiesNamespace != null) modify.insert(partIri.has(hasType, CITIES_NAMESPACE));
+        
+        if (citiesNamespace != null) modify.insert(partIri.has(hasType, CITIES_NAMESPACE));
         modify.insert(partIri.has(hasType, SIMULATION_TIME)).insert(partIri.has(hasType, NX)).insert(partIri.has(hasType, NY)).insert(partIri.has(hasType, SCOPE))
         .insert(partIri.has(hasType, REPORTING_STATION)).prefix(P_DISP);
 
@@ -120,7 +121,7 @@ public class QueryClient {
         // cities namespace (optional input)
         String citiesNamespaceIri = PREFIX + UUID.randomUUID();
         if (citiesNamespace != null) {            
-            // modify.insert(iri(citiesNamespaceIri).isA(CITIES_NAMESPACE).andHas(HAS_NAME, citiesNamespace));
+            modify.insert(iri(citiesNamespaceIri).isA(CITIES_NAMESPACE).andHas(HAS_NAME, citiesNamespace));
         }
  
         // outputs (DispersionMatrix, DispersionLayer, ShipsLayer) as time series
@@ -150,7 +151,7 @@ public class QueryClient {
         inputs.add(scopeIri);
         inputs.add(nxIri);
         inputs.add(nyIri);
-        // if (citiesNamespace != null) inputs.add(citiesNamespaceIri);
+        if (citiesNamespace != null) inputs.add(citiesNamespaceIri);
 
         String derivation = derivationClient.createDerivationWithTimeSeries(List.of(matrixIri, dispLayerIri, shipsLayerIri), Config.AERMOD_AGENT_IRI, inputs);
         
