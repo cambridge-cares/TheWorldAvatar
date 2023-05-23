@@ -74,7 +74,7 @@ public class QueryClient {
 
     // prefixes
     private static final String ONTO_EMS = "https://www.theworldavatar.com/kg/ontoems/";
-    public static final String PREFIX_DISP = "http://www.theworldavatar.com/kg/ontodispersion/";
+    public static final String PREFIX_DISP = "http://www.theworldavatar.com/kg/dispersion/";
     static final String OM_STRING = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
     public static final String CHEM = "http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#" ;
     public static final String ONTO_CITYGML = "http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#";
@@ -89,7 +89,7 @@ public class QueryClient {
     public static final String NX = PREFIX_DISP + "nx";
     public static final String NY = PREFIX_DISP + "ny";
     public static final String SCOPE = PREFIX_DISP + "Scope";
-    public static final String CITIES_NAMESPACE = PREFIX_DISP + "CitiesNamespace";
+    public static final String CITIES_NAMESPACE = "https://www.theworldavatar.com/kg/ontodispersion/CitiesNamespace";
     public static final String SIMULATION_TIME = PREFIX_DISP + "SimulationTime";
     public static final String NO_X = PREFIX_DISP + "NOx";
     public static final String UHC = PREFIX_DISP + "uHC";
