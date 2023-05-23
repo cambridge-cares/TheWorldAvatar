@@ -279,18 +279,18 @@ public class Aermod {
             double[] xyOriginal = { ship.getLocation().getX(), ship.getLocation().getY() };
             double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
 
-            double area = Math.PI * Math.pow(ship.getChimney().getDiameter() / 2, 2); // m2
-            double density = ship.getChimney().getMixtureDensityInKgm3(); // kg/m3
-            double velocity = ship.getChimney().getFlowrateSO2InKgs() / area / density; // m/s
+            double area = Math.PI * Math.pow(ship.getDiameter() / 2, 2); // m2
+            double density = ship.getMixtureDensityInKgm3(); // kg/m3
+            double velocity = ship.getFlowrateSO2InGramsPerS() / 1000 / area / density; // m/s
 
-            double massFlowrateInGs = ship.getChimney().getFlowrateSO2InKgs() * 1000;
+            double massFlowrateInGs = ship.getFlowrateSO2InGramsPerS();
 
             sb.append(String.format("SO LOCATION %s POINT %f %f %f", stkId, xyTransformed[0], xyTransformed[1],
-                    ship.getChimney().getHeight()));
+                    ship.getHeight()));
             sb.append(System.lineSeparator());
             sb.append(String.format("SO SRCPARAM %s %f %f %f %f %f", stkId,
-                    massFlowrateInGs, ship.getChimney().getHeight(), ship.getChimney().getMixtureTemperatureInKelvin(),
-                    velocity, ship.getChimney().getDiameter()));
+                    massFlowrateInGs, ship.getHeight(), ship.getMixtureTemperatureInKelvin(),
+                    velocity, ship.getDiameter()));
             sb.append(System.lineSeparator());
         }
         return writeToFile(aermodDirectory.resolve("shipSources.dat"), sb.toString());

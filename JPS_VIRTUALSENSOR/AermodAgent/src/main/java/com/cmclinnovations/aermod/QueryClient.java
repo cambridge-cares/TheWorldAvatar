@@ -310,21 +310,21 @@ public class QueryClient {
 
             if (entityTypeIri.contentEquals(PM10) && quantityTypeIri.contentEquals(MASS_FLOW)) {
                 // PM10 flowrate
-                shipObject.getChimney().setPM10(literalValue);
+                shipObject.setPM10(literalValue);
             } else if (entityTypeIri.contentEquals(PM25) && quantityTypeIri.contentEquals(MASS_FLOW)) {
                 // PM2.5 flowrate
-                shipObject.getChimney().setPM25(literalValue);
+                shipObject.setPM25(literalValue);
             } else if (entityTypeIri.contentEquals(PM25) && quantityTypeIri.contentEquals(DENSITY)) {
                 // particle density
-                shipObject.getChimney().setParticleDensity(literalValue);
+                shipObject.setParticleDensity(literalValue);
             } else if (entityTypeIri.contentEquals(SO2) && quantityTypeIri.contentEquals(TEMPERATURE)) {
                 // all gas mixtures share the same temperature
-                shipObject.getChimney().setMixtureTemperatureInKelvin(literalValue);
+                shipObject.setMixtureTemperatureInKelvin(literalValue);
             } else if (entityTypeIri.contentEquals(SO2) && quantityTypeIri.contentEquals(DENSITY)) {
                 // all gas mixtures share the same density
-                shipObject.getChimney().setMixtureDensityInKgm3(literalValue);
+                shipObject.setMixtureDensityInKgm3(literalValue);
             } else if (entityTypeIri.contentEquals(SO2) && quantityTypeIri.contentEquals(MASS_FLOW)) {
-                shipObject.getChimney().setFlowrateSO2(literalValue);
+                shipObject.setFlowrateSO2InKgPerS(literalValue);
             }
         }
     }
