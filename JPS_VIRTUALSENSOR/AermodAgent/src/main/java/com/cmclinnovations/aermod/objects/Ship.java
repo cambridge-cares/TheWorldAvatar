@@ -6,8 +6,8 @@ public class Ship {
     private String iri;
     private Chimney chimney;
     private Point location;
-    
-    public Ship (String iri) {
+
+    public Ship(String iri) {
         this.iri = iri;
         this.chimney = new Chimney();
     }
@@ -23,6 +23,7 @@ public class Ship {
     public void setLocation(Point location) {
         this.location = location;
     }
+
     public Point getLocation() {
         return this.location;
     }

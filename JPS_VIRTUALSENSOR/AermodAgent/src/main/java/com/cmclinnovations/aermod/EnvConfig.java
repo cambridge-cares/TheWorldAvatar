@@ -29,4 +29,3 @@ public class EnvConfig {
         throw new IllegalStateException();
     }
 }
-

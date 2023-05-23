@@ -61,8 +61,6 @@ import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 
-
-
 public class QueryClient {
     private static final Logger LOGGER = LogManager.getLogger(QueryClient.class);
 
@@ -76,10 +74,10 @@ public class QueryClient {
     private static final String ONTO_EMS = "https://www.theworldavatar.com/kg/ontoems/";
     public static final String PREFIX_DISP = "http://www.theworldavatar.com/kg/dispersion/";
     static final String OM_STRING = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
-    public static final String CHEM = "http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#" ;
+    public static final String CHEM = "http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#";
     public static final String ONTO_CITYGML = "http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#";
 
-    private static final Prefix P_OM = SparqlBuilder.prefix("om",iri(OM_STRING));
+    private static final Prefix P_OM = SparqlBuilder.prefix("om", iri(OM_STRING));
     private static final Prefix P_DISP = SparqlBuilder.prefix("disp", iri(PREFIX_DISP));
     private static final Prefix P_GEO = SparqlBuilder.prefix("geo", iri(GEO.PREFIX));
     private static final Prefix P_GEOF = SparqlBuilder.prefix("geof", iri(GEOF.NAMESPACE));
@@ -139,18 +137,18 @@ public class QueryClient {
     private static final Iri REPORTS = P_EMS.iri("reports");
     private static final Iri HAS_NAME = P_DISP.iri("hasName");
 
-    
     // fixed units for each measured property
-	private static final Map<String, Iri> UNIT_MAP = new HashMap<>(); 
-	static {
-    	UNIT_MAP.put(CLOUD_COVER, UNIT_PERCENTAGE);
-    	UNIT_MAP.put(AIR_TEMPERATURE, UNIT_CELCIUS);
-    	UNIT_MAP.put(RELATIVE_HUMIDITY, UNIT_PERCENTAGE);
-    	UNIT_MAP.put(WIND_SPEED, UNIT_MS);
-    	UNIT_MAP.put(WIND_DIRECTION, UNIT_DEGREE);
+    private static final Map<String, Iri> UNIT_MAP = new HashMap<>();
+    static {
+        UNIT_MAP.put(CLOUD_COVER, UNIT_PERCENTAGE);
+        UNIT_MAP.put(AIR_TEMPERATURE, UNIT_CELCIUS);
+        UNIT_MAP.put(RELATIVE_HUMIDITY, UNIT_PERCENTAGE);
+        UNIT_MAP.put(WIND_SPEED, UNIT_MS);
+        UNIT_MAP.put(WIND_DIRECTION, UNIT_DEGREE);
     }
 
-    public QueryClient(RemoteStoreClient storeClient, RemoteStoreClient ontopStoreClient, RemoteRDBStoreClient rdbStoreClient) {
+    public QueryClient(RemoteStoreClient storeClient, RemoteStoreClient ontopStoreClient,
+            RemoteRDBStoreClient rdbStoreClient) {
         this.storeClient = storeClient;
         this.ontopStoreClient = ontopStoreClient;
         this.tsClientLong = new TimeSeriesClient<>(storeClient, Long.class);
@@ -189,13 +187,14 @@ public class QueryClient {
         long simTimeUpperBound = simulationTime + 1800; // +30 minutes
         long simTimeLowerBound = simulationTime - 1800; // -30 minutes
 
-        Map<String,String> measureToShipMap = getMeasureToShipMap();
+        Map<String, String> measureToShipMap = getMeasureToShipMap();
         List<String> measures = new ArrayList<>(measureToShipMap.keySet());
 
         List<Ship> ships = new ArrayList<>();
         try (Connection conn = rdbStoreClient.getConnection()) {
             measures.stream().forEach(measure -> {
-                TimeSeries<Long> ts = tsClientLong.getTimeSeriesWithinBounds(List.of(measure), simTimeLowerBound, simTimeUpperBound, conn);
+                TimeSeries<Long> ts = tsClientLong.getTimeSeriesWithinBounds(List.of(measure), simTimeLowerBound,
+                        simTimeUpperBound, conn);
                 if (ts.getValuesAsPoint(measure).size() > 1) {
                     LOGGER.warn("More than 1 point within this time inverval");
                 } else if (ts.getValuesAsPoint(measure).isEmpty()) {
@@ -208,7 +207,7 @@ public class QueryClient {
                     String wktLiteral = postgisPoint.getTypeString() + postgisPoint.getValue();
 
                     Geometry point = new org.locationtech.jts.io.WKTReader().read(wktLiteral);
-                    
+
                     if (scope.covers(point)) {
                         // measureToShipMap.get(measure) gives the iri
                         Ship ship = new Ship(measureToShipMap.get(measure));
@@ -220,7 +219,7 @@ public class QueryClient {
                     LOGGER.error(e.getMessage());
                     return;
                 }
-                
+
             });
         } catch (SQLException e) {
             LOGGER.error("Probably failed at closing connection");
@@ -232,13 +231,14 @@ public class QueryClient {
 
     /**
      * the result is the geo:wktLiteral type with IRI of SRID in front
+     * 
      * @param scopeIri
      * @return
      */
     Polygon getScopeFromOntop(String scopeIri) {
         SelectQuery query = Queries.SELECT();
         Variable scope = query.var();
-        
+
         query.prefix(P_GEO).where(iri(scopeIri).has(PropertyPaths.path(HAS_GEOMETRY, AS_WKT), scope));
 
         JSONArray queryResult = ontopStoreClient.executeQuery(query.getQueryString());
@@ -248,7 +248,7 @@ public class QueryClient {
         return (Polygon) scopePolygon;
     }
 
-    Map<String,String> getMeasureToShipMap() {
+    Map<String, String> getMeasureToShipMap() {
         SelectQuery query = Queries.SELECT();
 
         Variable ship = query.var();
@@ -256,15 +256,16 @@ public class QueryClient {
         Variable property = query.var();
 
         GraphPattern gp = GraphPatterns.and(ship.isA(SHIP).andHas(HAS_PROPERTY, property),
-        property.isA(LOCATION).andHas(HAS_VALUE, locationMeasure));
+                property.isA(LOCATION).andHas(HAS_VALUE, locationMeasure));
 
-        query.where(gp).prefix(P_OM,P_DISP);
+        query.where(gp).prefix(P_OM, P_DISP);
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
-        Map<String,String> locationMeasureToShipMap = new HashMap<>();
+        Map<String, String> locationMeasureToShipMap = new HashMap<>();
         for (int i = 0; i < queryResult.length(); i++) {
-            String locationMeasureIri = queryResult.getJSONObject(i).getString(locationMeasure.getQueryString().substring(1));
+            String locationMeasureIri = queryResult.getJSONObject(i)
+                    .getString(locationMeasure.getQueryString().substring(1));
             String shipIri = queryResult.getJSONObject(i).getString(ship.getQueryString().substring(1));
             locationMeasureToShipMap.put(locationMeasureIri, shipIri);
         }
@@ -283,12 +284,15 @@ public class QueryClient {
         Variable quantityType = query.var();
         Variable numericalValue = query.var();
 
-        ValuesPattern<Iri> shipValues = new ValuesPattern<>(ship, ships.stream().map(s -> iri(s.getIri())).collect(Collectors.toList()), Iri.class);
-        
-        GraphPattern gp = GraphPatterns.and(derivation.has(IS_DERIVED_FROM, ship), entity.has(BELONGS_TO, derivation).andIsA(entityType)
-        .andHas(HAS_QUANTITY, quantity), quantity.isA(quantityType).andHas(PropertyPaths.path(HAS_VALUE, HAS_NUMERICALVALUE),numericalValue));
+        ValuesPattern<Iri> shipValues = new ValuesPattern<>(ship,
+                ships.stream().map(s -> iri(s.getIri())).collect(Collectors.toList()), Iri.class);
 
-        query.where(gp,shipValues).prefix(P_OM);
+        GraphPattern gp = GraphPatterns.and(derivation.has(IS_DERIVED_FROM, ship),
+                entity.has(BELONGS_TO, derivation).andIsA(entityType)
+                        .andHas(HAS_QUANTITY, quantity),
+                quantity.isA(quantityType).andHas(PropertyPaths.path(HAS_VALUE, HAS_NUMERICALVALUE), numericalValue));
+
+        query.where(gp, shipValues).prefix(P_OM);
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
@@ -328,6 +332,7 @@ public class QueryClient {
     /**
      * returns derivation IRIs for each ship by querying
      * <derivation> isDerivedFrom <ship>
+     * 
      * @param ships
      * @return
      */
@@ -337,13 +342,14 @@ public class QueryClient {
         Variable derivation = query.var();
         Variable ship = query.var();
         Iri isDerivedFrom = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
-        ValuesPattern<Iri> vp = new ValuesPattern<>(ship, ships.stream().map(s -> iri(s.getIri())).collect(Collectors.toList()), Iri.class);
+        ValuesPattern<Iri> vp = new ValuesPattern<>(ship,
+                ships.stream().map(s -> iri(s.getIri())).collect(Collectors.toList()), Iri.class);
         GraphPattern gp = derivation.has(isDerivedFrom, ship);
 
-        query.where(gp,vp);
+        query.where(gp, vp);
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-        
+
         List<String> derivations = new ArrayList<>();
         for (int i = 0; i < queryResult.length(); i++) {
             derivations.add(queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1)));
@@ -352,9 +358,11 @@ public class QueryClient {
         return derivations;
     }
 
-       // SPARQL query for weather data instantiated by OpenMeteo agent as a timeseries. Each parameter has multiple values.
-       // The weather data is stored as one timeseries per parameter. Hence, the values for each parameter are in separate postgres tables.
-       WeatherData getOpenMeteoData(String stationIRI) {
+    // SPARQL query for weather data instantiated by OpenMeteo agent as a
+    // timeseries. Each parameter has multiple values.
+    // The weather data is stored as one timeseries per parameter. Hence, the values
+    // for each parameter are in separate postgres tables.
+    WeatherData getOpenMeteoData(String stationIRI) {
         SelectQuery query = Queries.SELECT();
 
         Variable weatherType = query.var();
@@ -363,20 +371,21 @@ public class QueryClient {
         Variable weatherUnit = query.var();
         Variable station = query.var();
 
-
         // RDF types for weather data
-        List<String> weatherTypeList = List.of(CLOUD_COVER, AIR_TEMPERATURE, RELATIVE_HUMIDITY, WIND_SPEED, WIND_DIRECTION);
+        List<String> weatherTypeList = List.of(CLOUD_COVER, AIR_TEMPERATURE, RELATIVE_HUMIDITY, WIND_SPEED,
+                WIND_DIRECTION);
 
-        ValuesPattern<Iri> vp = new ValuesPattern<>(weatherType, weatherTypeList.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
+        ValuesPattern<Iri> vp = new ValuesPattern<>(weatherType,
+                weatherTypeList.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
 
-        GraphPattern gp = GraphPatterns.and(iri(stationIRI).has(RDF.TYPE,iri(REPORTING_STATION)).andHas(REPORTS, quantity),
-        quantity.isA(weatherType).andHas(HAS_VALUE, measure), measure.has(HAS_UNIT, weatherUnit));
+        GraphPattern gp = GraphPatterns.and(
+                iri(stationIRI).has(RDF.TYPE, iri(REPORTING_STATION)).andHas(REPORTS, quantity),
+                quantity.isA(weatherType).andHas(HAS_VALUE, measure), measure.has(HAS_UNIT, weatherUnit));
 
-        query.prefix(P_OM, P_EMS).where(gp,vp);
+        query.prefix(P_OM, P_EMS).where(gp, vp);
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
         WeatherData weatherData = new WeatherData();
-
 
         for (int i = 0; i < queryResult.length(); i++) {
             String measureIri = queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1));
@@ -419,13 +428,13 @@ public class QueryClient {
         // Create OntoEMS stations
         LOGGER.info("Instantiating pollutant concentrations of timeseries for virtual sensors");
 
-        // valuesListForTimeSeries cannot be of type List<List<Double>>> to be used with TimeSeries.  
+        // valuesListForTimeSeries cannot be of type List<List<Double>>> to be used with
+        // TimeSeries.
         List<String> dataListForTimeSeries = new ArrayList<>();
         List<List<?>> valuesListForTimeSeries = new ArrayList<>();
 
         ModifyQuery modify = Queries.MODIFY();
-        modify.prefix(P_EMS,P_OM);
-
+        modify.prefix(P_EMS, P_OM);
 
         // create a JSONObject that represents a GeoJSON Feature Collection
         JSONObject featureCollection = new JSONObject();
@@ -437,48 +446,45 @@ public class QueryClient {
             String stationIRI = ONTO_EMS + "sensorstation_" + UUID.randomUUID();
             Iri station = iri(stationIRI);
 
-            
             double lat = sensorProperties.getDouble("latitude");
             double lon = sensorProperties.getDouble("longitude");
 
             // Create POSTGIS and GeoServer feature for this OntoEMS station
             JSONObject geometry = new JSONObject();
             geometry.put("type", "Point");
-            List<Double> coordinate = Arrays.asList(lon,lat);
+            List<Double> coordinate = Arrays.asList(lon, lat);
             geometry.put("coordinates", new JSONArray(coordinate));
             JSONObject feature = new JSONObject();
             feature.put("type", "Feature");
             feature.put("geometry", geometry);
-            feature.put("iri",stationIRI);
-            feature.put("name", "VirtualSensor_"+(i+1));
-            feature.put("endpoint",storeClient.getUpdateEndpoint());
+            feature.put("iri", stationIRI);
+            feature.put("name", "VirtualSensor_" + (i + 1));
+            feature.put("endpoint", storeClient.getUpdateEndpoint());
             features.put(feature);
-
 
             // Update triples for station in blazegraph
             String locString = String.valueOf(lat) + "#" + String.valueOf(lon);
             modify.insert(station.isA(iri(REPORTING_STATION)).andHas(OBSERVATION_LOCATION, locString));
 
             Iri quantity = P_EMS.iri("quantity_" + UUID.randomUUID());
-			String measureIri = ONTO_EMS + "measure_" + UUID.randomUUID();
-    		Iri measure = iri(measureIri);
+            String measureIri = ONTO_EMS + "measure_" + UUID.randomUUID();
+            Iri measure = iri(measureIri);
 
-                      // triples to insert for each station
-    		modify.insert(station.has(REPORTS,quantity));
-    		modify.insert(quantity.isA(iri(NO2_CONC)).andHas(HAS_VALUE,measure));
-    		modify.insert(measure.isA(MEASURE).andHas(HAS_UNIT,UNIT_POLLUTANT_CONC)); 
+            // triples to insert for each station
+            modify.insert(station.has(REPORTS, quantity));
+            modify.insert(quantity.isA(iri(NO2_CONC)).andHas(HAS_VALUE, measure));
+            modify.insert(measure.isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
 
-            dataListForTimeSeries.add(measureIri);           
-  
-            
+            dataListForTimeSeries.add(measureIri);
+
             JSONArray concentrationTimeSeries = sensorProperties.getJSONArray("concentrations");
             List<Double> concentrationValues = new ArrayList<>();
 
-            for (int j = 0; j < timeStamps.size(); j++){
+            for (int j = 0; j < timeStamps.size(); j++) {
                 concentrationValues.add(concentrationTimeSeries.getDouble(j));
             }
 
-            List<?> tmp = (List<?>) concentrationValues ;
+            List<?> tmp = (List<?>) concentrationValues;
             valuesListForTimeSeries.add(tmp);
 
         }
@@ -486,52 +492,52 @@ public class QueryClient {
         storeClient.executeUpdate(modify.getQueryString());
 
         List<Class<?>> classListForTimeSeries = Collections.nCopies(dataListForTimeSeries.size(), Double.class);
-        TimeSeriesClient<LocalDateTime> tsClientLocalDateTime = new TimeSeriesClient<>(storeClient, LocalDateTime.class);
+        TimeSeriesClient<LocalDateTime> tsClientLocalDateTime = new TimeSeriesClient<>(storeClient,
+                LocalDateTime.class);
 
-        List<LocalDateTime> timesList =  timeStamps.stream().
-        map(i -> LocalDateTime.parse(i, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).collect(Collectors.toList());
+        List<LocalDateTime> timesList = timeStamps.stream()
+                .map(i -> LocalDateTime.parse(i, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .collect(Collectors.toList());
 
-        TimeSeries<LocalDateTime> ts = new TimeSeries<>(timesList, dataListForTimeSeries, valuesListForTimeSeries);   
-        
+        TimeSeries<LocalDateTime> ts = new TimeSeries<>(timesList, dataListForTimeSeries, valuesListForTimeSeries);
 
         try (Connection conn = rdbStoreClient.getConnection()) {
-            tsClientLocalDateTime.initTimeSeries(dataListForTimeSeries, classListForTimeSeries, LocalDateTime.class.getSimpleName(),conn);
-            tsClientLocalDateTime.addTimeSeriesData(ts,conn); 
+            tsClientLocalDateTime.initTimeSeries(dataListForTimeSeries, classListForTimeSeries,
+                    LocalDateTime.class.getSimpleName(), conn);
+            tsClientLocalDateTime.addTimeSeriesData(ts, conn);
         } catch (SQLException e) {
             LOGGER.error("SQL exception when updating virtual sensor data.");
             LOGGER.error(e.getMessage());
         }
 
-        // Upload virtual sensor layer to POSTGIS and GeoServer for visualization purposes
+        // Upload virtual sensor layer to POSTGIS and GeoServer for visualization
+        // purposes
 
         featureCollection.put("features", features);
 
         LOGGER.info("Uploading virtual sensors GeoJSON to PostGIS");
-		GDALClient gdalclient = GDALClient.getInstance();
-		gdalclient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, "sensor_layer", featureCollection.toString(), new Ogr2OgrOptions(), true);
+        GDALClient gdalclient = GDALClient.getInstance();
+        gdalclient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, "sensor_layer", featureCollection.toString(),
+                new Ogr2OgrOptions(), true);
 
-		LOGGER.info("Creating plant items layer in Geoserver");
-		GeoServerClient geoserverclient = GeoServerClient.getInstance();
-		geoserverclient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
-		geoserverclient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, "sensor_layer", new GeoServerVectorSettings());
-
+        LOGGER.info("Creating plant items layer in Geoserver");
+        GeoServerClient geoserverclient = GeoServerClient.getInstance();
+        geoserverclient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
+        geoserverclient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, "sensor_layer",
+                new GeoServerVectorSettings());
 
         /* Offset not used for the time being */
         // List<OffsetDateTime> offsetTimesList = new ArrayList<>();
         // for (int i = 0; i < timesList.size(); i++) {
-        //     LocalDateTime ldt = timesList.get(i);
-        //     OffsetDateTime odt = OffsetDateTime.of(ldt, ZoneOffset.UTC);
-        //     offsetTimesList.add(odt);
+        // LocalDateTime ldt = timesList.get(i);
+        // OffsetDateTime odt = OffsetDateTime.of(ldt, ZoneOffset.UTC);
+        // offsetTimesList.add(odt);
         // }
-        
+
     }
 
-
-
-
-
-
-    // SPARQL query for weather data instantiated by weather agent as a timeseries. Each parameter has a single value.
+    // SPARQL query for weather data instantiated by weather agent as a timeseries.
+    // Each parameter has a single value.
     WeatherData getWeatherData(String station, long timestamp) {
         SelectQuery query = Queries.SELECT();
 
@@ -541,17 +547,20 @@ public class QueryClient {
         Variable weatherUnit = query.var();
 
         // RDF types for weather data
-        List<String> weatherTypeList = List.of(CLOUD_COVER, AIR_TEMPERATURE, RELATIVE_HUMIDITY, WIND_SPEED, WIND_DIRECTION);
+        List<String> weatherTypeList = List.of(CLOUD_COVER, AIR_TEMPERATURE, RELATIVE_HUMIDITY, WIND_SPEED,
+                WIND_DIRECTION);
 
-        ValuesPattern<Iri> vp = new ValuesPattern<>(weatherType, weatherTypeList.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
+        ValuesPattern<Iri> vp = new ValuesPattern<>(weatherType,
+                weatherTypeList.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
 
         // ValuesPattern vp = new ValuesPattern(weatherType, weatherUnit);
-        // weatherTypeList.stream().forEach(type -> vp.addValuePairForMultipleVariables(iri(type), UNIT_MAP.get(type)));
+        // weatherTypeList.stream().forEach(type ->
+        // vp.addValuePairForMultipleVariables(iri(type), UNIT_MAP.get(type)));
 
         GraphPattern gp = GraphPatterns.and(iri(station).has(REPORTS, quantity),
-        quantity.isA(weatherType).andHas(HAS_VALUE, measure), measure.has(HAS_UNIT, weatherUnit));
+                quantity.isA(weatherType).andHas(HAS_VALUE, measure), measure.has(HAS_UNIT, weatherUnit));
 
-        query.prefix(P_OM, P_EMS).where(gp,vp);
+        query.prefix(P_OM, P_EMS).where(gp, vp);
 
         Map<String, String> typeToMeasureMap = new HashMap<>();
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
@@ -565,7 +574,9 @@ public class QueryClient {
         TimeSeries<Instant> ts;
         try (Connection conn = rdbStoreClient.getConnection()) {
             Instant timestampAsInstant = Instant.ofEpochSecond(timestamp);
-            ts = tsClientInstant.getTimeSeriesWithinBounds(typeToMeasureMap.values().stream().collect(Collectors.toList()), timestampAsInstant, timestampAsInstant, conn);
+            ts = tsClientInstant.getTimeSeriesWithinBounds(
+                    typeToMeasureMap.values().stream().collect(Collectors.toList()), timestampAsInstant,
+                    timestampAsInstant, conn);
         } catch (SQLException e) {
             String errmsg = "Failed to obtain time series from weather station";
             LOGGER.fatal(errmsg);
@@ -599,7 +610,8 @@ public class QueryClient {
         return weatherData;
     }
 
-    void updateOutputs(String derivation, String dispersionMatrix, String dispersionLayer, String shipLayer, long timeStamp) {
+    void updateOutputs(String derivation, String dispersionMatrix, String dispersionLayer, String shipLayer,
+            long timeStamp) {
         // first query the IRIs
         SelectQuery query = Queries.SELECT();
 
@@ -608,7 +620,8 @@ public class QueryClient {
 
         Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
 
-        query.where(entity.has(belongsTo, iri(derivation)).andIsA(entityType)).prefix(P_DISP).select(entity,entityType).distinct();
+        query.where(entity.has(belongsTo, iri(derivation)).andIsA(entityType)).prefix(P_DISP).select(entity, entityType)
+                .distinct();
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
@@ -644,7 +657,8 @@ public class QueryClient {
         values.add(List.of(dispersionLayer));
         values.add(List.of(shipLayer));
 
-        TimeSeries<Long> timeSeries = new TimeSeries<>(List.of(timeStamp), List.of(dispersionMatrixIri, dispersionLayerIri, shipLayerIri), values);
+        TimeSeries<Long> timeSeries = new TimeSeries<>(List.of(timeStamp),
+                List.of(dispersionMatrixIri, dispersionLayerIri, shipLayerIri), values);
 
         try (Connection conn = rdbStoreClient.getConnection()) {
             tsClientLong.addTimeSeriesData(timeSeries, conn);
@@ -660,24 +674,26 @@ public class QueryClient {
         long simTimeUpperBound = simulationTime + 1800; // +30 minutes
         long simTimeLowerBound = simulationTime - 1800; // -30 minutes
 
-        Map<String,String> measureToShipMap = getMeasureToShipMap();
+        Map<String, String> measureToShipMap = getMeasureToShipMap();
         List<String> locationMeasures = new ArrayList<>(measureToShipMap.keySet());
 
         Map<String, String> geometryToMeasureMap = getGeometryToMeasureMap(locationMeasures);
-        List<String> geometryIrisWithinTimeBounds = getGeometriesWithinTimeBounds(new ArrayList<>(geometryToMeasureMap.keySet()), simTimeLowerBound, simTimeUpperBound);
+        List<String> geometryIrisWithinTimeBounds = getGeometriesWithinTimeBounds(
+                new ArrayList<>(geometryToMeasureMap.keySet()), simTimeLowerBound, simTimeUpperBound);
         String scopeGeometry = getScopeGeometry(scopeIri);
-        List<String> geometriesWithinScopeAndTime = getGeometriesWithinScope(scopeGeometry, geometryIrisWithinTimeBounds);
+        List<String> geometriesWithinScopeAndTime = getGeometriesWithinScope(scopeGeometry,
+                geometryIrisWithinTimeBounds);
 
         List<String> shipsWithinTimeAndScope = new ArrayList<>();
-        geometriesWithinScopeAndTime.forEach(g -> 
-            shipsWithinTimeAndScope.add(measureToShipMap.get(geometryToMeasureMap.get(g)))
-        );
+        geometriesWithinScopeAndTime
+                .forEach(g -> shipsWithinTimeAndScope.add(measureToShipMap.get(geometryToMeasureMap.get(g))));
 
         return shipsWithinTimeAndScope;
     }
 
     /**
      * to ontop
+     * 
      * @param scopeIri
      */
     @Deprecated
@@ -692,6 +708,7 @@ public class QueryClient {
 
     /**
      * from ontop
+     * 
      * @param locationMeasures
      * @return
      */
@@ -701,10 +718,11 @@ public class QueryClient {
         Variable locationMeasure = query.var();
         Variable geometry = query.var();
 
-        ValuesPattern<Iri> vp = new ValuesPattern<>(locationMeasure, locationMeasures.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
-        GraphPattern gp = locationMeasure.has(HAS_GEOMETRY,geometry);
+        ValuesPattern<Iri> vp = new ValuesPattern<>(locationMeasure,
+                locationMeasures.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
+        GraphPattern gp = locationMeasure.has(HAS_GEOMETRY, geometry);
 
-        query.prefix(P_GEO).where(vp,gp);
+        query.prefix(P_GEO).where(vp, gp);
 
         JSONArray queryResult = ontopStoreClient.executeQuery(query.getQueryString());
 
@@ -720,29 +738,32 @@ public class QueryClient {
 
     /**
      * from ontop
+     * 
      * @param geometryIris
      * @param simTimeLowerBound
      * @param simTimeUpperBound
      */
     @Deprecated
-    List<String> getGeometriesWithinTimeBounds(List<String> geometryIris, long simTimeLowerBound, long simTimeUpperBound) {
+    List<String> getGeometriesWithinTimeBounds(List<String> geometryIris, long simTimeLowerBound,
+            long simTimeUpperBound) {
         SelectQuery query = Queries.SELECT();
 
         Variable shipTime = query.var();
         Variable geometry = query.var();
 
-        ValuesPattern<Iri> vp = new ValuesPattern<>(geometry, geometryIris.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
-        GraphPattern gp = GraphPatterns.and(vp,geometry.has(P_DISP.iri("hasTime"), shipTime));
+        ValuesPattern<Iri> vp = new ValuesPattern<>(geometry,
+                geometryIris.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
+        GraphPattern gp = GraphPatterns.and(vp, geometry.has(P_DISP.iri("hasTime"), shipTime));
 
-        query.prefix(P_GEO,P_GEOF,P_OM,P_DISP).
-        where(gp.filter
-        (Expressions.and(Expressions.gt(shipTime, simTimeLowerBound), Expressions.lt(shipTime, simTimeUpperBound))));
+        query.prefix(P_GEO, P_GEOF, P_OM, P_DISP).where(gp.filter(Expressions
+                .and(Expressions.gt(shipTime, simTimeLowerBound), Expressions.lt(shipTime, simTimeUpperBound))));
 
         JSONArray queryResult = ontopStoreClient.executeQuery(query.getQueryString());
         List<String> geometriesWithinTimeBounds = new ArrayList<>();
 
         for (int i = 0; i < queryResult.length(); i++) {
-            geometriesWithinTimeBounds.add(queryResult.getJSONObject(i).getString(geometry.getQueryString().substring(1)));
+            geometriesWithinTimeBounds
+                    .add(queryResult.getJSONObject(i).getString(geometry.getQueryString().substring(1)));
         }
 
         return geometriesWithinTimeBounds;
@@ -755,16 +776,19 @@ public class QueryClient {
         Variable scopeWkt = query.var();
         Variable shipWkt = query.var();
 
-        ValuesPattern<Iri> vp = new ValuesPattern<>(shipGeometry, shipGeometriesWithinTimeBounds.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
+        ValuesPattern<Iri> vp = new ValuesPattern<>(shipGeometry,
+                shipGeometriesWithinTimeBounds.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
 
-        GraphPattern gp = GraphPatterns.and(vp, shipGeometry.has(AS_WKT, shipWkt), iri(scopeGeometry).has(AS_WKT, scopeWkt));
+        GraphPattern gp = GraphPatterns.and(vp, shipGeometry.has(AS_WKT, shipWkt),
+                iri(scopeGeometry).has(AS_WKT, scopeWkt));
 
-        query.where(gp.filter(Expressions.and(GeoSPARQL.sfIntersects(shipWkt, scopeWkt)))).prefix(P_GEO,P_GEOF);
+        query.where(gp.filter(Expressions.and(GeoSPARQL.sfIntersects(shipWkt, scopeWkt)))).prefix(P_GEO, P_GEOF);
 
         JSONArray queryResult = ontopStoreClient.executeQuery(query.getQueryString());
         List<String> geometriesWithinScope = new ArrayList<>();
         for (int i = 0; i < queryResult.length(); i++) {
-            geometriesWithinScope.add(queryResult.getJSONObject(i).getString(shipGeometry.getQueryString().substring(1)));
+            geometriesWithinScope
+                    .add(queryResult.getJSONObject(i).getString(shipGeometry.getQueryString().substring(1)));
         }
         return geometriesWithinScope;
     }

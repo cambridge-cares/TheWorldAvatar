@@ -44,30 +44,30 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-@WebServlet(urlPatterns = {"/"})
+@WebServlet(urlPatterns = { "/" })
 public class AermodAgent extends DerivationAgent {
     private static final Logger LOGGER = LogManager.getLogger(AermodAgent.class);
     private QueryClient queryClient;
 
     @Override
-	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {   
+    public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
         String weatherStationIri = derivationInputs.getIris(QueryClient.REPORTING_STATION).get(0);
         String nxIri = derivationInputs.getIris(QueryClient.NX).get(0);
         String nyIri = derivationInputs.getIris(QueryClient.NY).get(0);
         String scopeIri = derivationInputs.getIris(QueryClient.SCOPE).get(0);
         String simulationTimeIri = derivationInputs.getIris(QueryClient.SIMULATION_TIME).get(0);
-        // citiesNamespaceIri will be null if this parameter was excluded from the POST request sent to DispersionInteractor
+        // citiesNamespaceIri will be null if this parameter was excluded from the POST
+        // request sent to DispersionInteractor
 
-        String citiesNamespace= null;
+        String citiesNamespace = null;
         if (derivationInputs.getIris(QueryClient.CITIES_NAMESPACE) != null) {
             String citiesNamespaceIri = derivationInputs.getIris(QueryClient.CITIES_NAMESPACE).get(0);
             citiesNamespace = queryClient.getCitiesNamespace(citiesNamespaceIri);
         } else {
-            LOGGER.info("No citieskg namespace was specified in the POST request to Dispersion Interactor." + 
-            "Static point sources will not be included in this AERMOD run.");
+            LOGGER.info("No citieskg namespace was specified in the POST request to Dispersion Interactor." +
+                    "Static point sources will not be included in this AERMOD run.");
         }
 
-        
         long simulationTime = queryClient.getMeasureValueAsLong(simulationTimeIri);
 
         if (simulationTime == 0) {
@@ -90,16 +90,16 @@ public class AermodAgent extends DerivationAgent {
         LOGGER.info("Querying emission values");
         queryClient.setEmissions(ships);
 
-        
-        /*The next two lines of code are for use with the Weather Agent. 
-        // update weather station with simulation time
-        updateWeatherStation(weatherStationIri, simulationTime);
+        /*
+         * The next two lines of code are for use with the Weather Agent.
+         * // update weather station with simulation time
+         * updateWeatherStation(weatherStationIri, simulationTime);
+         * 
+         * // get weather data from station
+         * WeatherData weatherData = queryClient.getWeatherData(weatherStationIri,
+         * simulationTime);
+         */
 
-        // get weather data from station
-        WeatherData weatherData = queryClient.getWeatherData(weatherStationIri, simulationTime);
-        */
-
-        
         // making directory for simulation
         LOGGER.info("Creating directory for simulation files");
         Path simulationDirectory = Paths.get(EnvConfig.SIMULATION_DIR, UUID.randomUUID().toString());
@@ -107,23 +107,23 @@ public class AermodAgent extends DerivationAgent {
         // create input files
         Aermod aermod = new Aermod(simulationDirectory);
 
-        //compute srid
-        int centreZoneNumber = (int) Math.ceil((scope.getCentroid().getCoordinate().getX() + 180)/6);
+        // compute srid
+        int centreZoneNumber = (int) Math.ceil((scope.getCentroid().getCoordinate().getX() + 180) / 6);
         int srid;
         if (scope.getCentroid().getCoordinate().getY() < 0) {
-        	srid = Integer.valueOf("327" + centreZoneNumber);
-            
+            srid = Integer.valueOf("327" + centreZoneNumber);
+
         } else {
-        	srid = Integer.valueOf("326" + centreZoneNumber);
+            srid = Integer.valueOf("326" + centreZoneNumber);
         }
 
         // Query buildings and plant items.
-        //Run BPIPPRM
- 
+        // Run BPIPPRM
+
         Buildings bpi;
         try {
             bpi = new Buildings();
-            bpi.init(simulationDirectory,scope, srid, nx, ny);
+            bpi.init(simulationDirectory, scope, srid, nx, ny);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -145,20 +145,22 @@ public class AermodAgent extends DerivationAgent {
         double lat = scope.getCentroid().getCoordinate().getY();
         double lon = scope.getCentroid().getCoordinate().getX();
         String StartTS = bpi.timeStamps.get(0);
-        String EndTS = bpi.timeStamps.get(bpi.timeStamps.size()-1);
-        LocalDateTime ldt = LocalDateTime.parse(StartTS,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        String StartDate = ldt.getYear() + "-" + getDayMonthAsTwoDigitString(ldt.getMonthValue()) + "-" + getDayMonthAsTwoDigitString(ldt.getDayOfMonth());
-        ldt = LocalDateTime.parse(EndTS,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        String EndDate = ldt.getYear() + "-" + getDayMonthAsTwoDigitString(ldt.getMonthValue()) + "-" + getDayMonthAsTwoDigitString(ldt.getDayOfMonth());
+        String EndTS = bpi.timeStamps.get(bpi.timeStamps.size() - 1);
+        LocalDateTime ldt = LocalDateTime.parse(StartTS, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        String StartDate = ldt.getYear() + "-" + getDayMonthAsTwoDigitString(ldt.getMonthValue()) + "-"
+                + getDayMonthAsTwoDigitString(ldt.getDayOfMonth());
+        ldt = LocalDateTime.parse(EndTS, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        String EndDate = ldt.getYear() + "-" + getDayMonthAsTwoDigitString(ldt.getMonthValue()) + "-"
+                + getDayMonthAsTwoDigitString(ldt.getDayOfMonth());
         String stationIRI = updateOpenMeteoStation(lat, lon, StartDate, EndDate);
         WeatherData weatherData = queryClient.getOpenMeteoData(stationIRI);
         deleteOpenMeteoStation(scope);
 
-        // Number of weather data values will be >= number of timestamps. The correct range of values is retrieved within the 
-        // create144File method in the Aermod class. 
+        // Number of weather data values will be >= number of timestamps. The correct
+        // range of values is retrieved within the
+        // create144File method in the Aermod class.
         weatherData.timeStamps = bpi.timeStamps;
         aermod.create144File(weatherData);
-
 
         // run aermet (weather preprocessor)
         if (aermod.runAermet(scope) != 0) {
@@ -172,7 +174,8 @@ public class AermodAgent extends DerivationAgent {
             return;
         }
 
-        if (!bpi.aermodInputCreated) aermod.createAermodInputFile(scope, nx, ny, srid);
+        if (!bpi.aermodInputCreated)
+            aermod.createAermodInputFile(scope, nx, ny, srid);
         aermod.runAermod("aermod.inp");
         aermod.runAermod("aermodVirtualSensor.inp");
 
@@ -181,42 +184,46 @@ public class AermodAgent extends DerivationAgent {
         String outFileURL = aermod.uploadToFileServer("receptor.dat");
         String sensorFileURL = aermod.uploadToFileServer("virtualSensorConcentrations.dat");
 
-        // Call virtualSensor.py to plot the temporal variation of concentrations 
-        JSONArray virtualSensorConcentrations = aermod.plotVirtualSensorData(EnvConfig.PYTHON_SERVICE_SENSOR_URL, sensorFileURL, srid);
+        // Call virtualSensor.py to plot the temporal variation of concentrations
+        JSONArray virtualSensorConcentrations = aermod.plotVirtualSensorData(EnvConfig.PYTHON_SERVICE_SENSOR_URL,
+                sensorFileURL, srid);
         // Instantiate concentrations at virtual sensor locations as time series
 
         String startTS = bpi.timeStamps.get(0);
-        LocalDateTime ldr = LocalDateTime.parse(StartTS,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime ldr = LocalDateTime.parse(StartTS, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         List<String> timeSteps = bpi.timeStamps;
 
         queryClient.updateVirtualSensorData(timeSteps, virtualSensorConcentrations);
 
         List<Double> receptorHeights = bpi.receptorHeights;
         // Set GeoServer layer names
-        List<String> dispLayerNames = new ArrayList <>();
-        for (int i = 0; i <receptorHeights.size(); i++) {
-            int receptorHeightInt = (int) Math.round(receptorHeights.get(i)) ;
-            String dispLayerName = "dispersion_height_"+ String.valueOf(receptorHeightInt) + "_meters";
+        List<String> dispLayerNames = new ArrayList<>();
+        for (int i = 0; i < receptorHeights.size(); i++) {
+            int receptorHeightInt = (int) Math.round(receptorHeights.get(i));
+            String dispLayerName = "dispersion_height_" + String.valueOf(receptorHeightInt) + "_meters";
             dispLayerNames.add(dispLayerName);
         }
         String shipLayerName = "ships_" + simulationTime; // hardcoded in ShipInputAgent
-        String plantsLayerName = "source_layer" ;
+        String plantsLayerName = "source_layer";
         String elevationLayerName = "elevation_layer";
         String sensorLayerName = "sensor_layer";
 
-        // Get contour plots as geoJSON objects from PythonService and upload them to PostGIS using GDAL
-        
+        // Get contour plots as geoJSON objects from PythonService and upload them to
+        // PostGIS using GDAL
+
         GDALClient gdalClient = GDALClient.getInstance();
-        JSONObject geoJSON2 = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_ELEVATION_URL, outFileURL, srid,0.0);
-        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, elevationLayerName, geoJSON2.toString(), new Ogr2OgrOptions(), true);
+        JSONObject geoJSON2 = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_ELEVATION_URL, outFileURL, srid, 0.0);
+        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, elevationLayerName, geoJSON2.toString(),
+                new Ogr2OgrOptions(), true);
 
         for (int i = 0; i < dispLayerNames.size(); i++) {
             double height = receptorHeights.get(i);
-            JSONObject geoJSON = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_URL, outputFileURL, srid,height);
+            JSONObject geoJSON = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_URL, outputFileURL, srid, height);
             String dispLayerName = dispLayerNames.get(i);
-            gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, dispLayerName, geoJSON.toString(), new Ogr2OgrOptions(), true);
-        }        
-        
+            gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, dispLayerName, geoJSON.toString(),
+                    new Ogr2OgrOptions(), true);
+        }
+
         // create geoserver layer based for that
         GeoServerClient geoServerClient = GeoServerClient.getInstance();
 
@@ -227,14 +234,17 @@ public class AermodAgent extends DerivationAgent {
         GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
         geoServerVectorSettings.setDefaultStyle("dispersion_style");
         for (int i = 0; i < dispLayerNames.size(); i++) {
-            geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, dispLayerNames.get(i), geoServerVectorSettings);
+            geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, dispLayerNames.get(i),
+                    geoServerVectorSettings);
         }
-        geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, elevationLayerName, geoServerVectorSettings);
+        geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, elevationLayerName,
+                geoServerVectorSettings);
 
- 
         // ships_ is hardcoded here and in ShipInputAgent
-        queryClient.updateOutputs(derivationInputs.getDerivationIRI(), outputFileURL, dispLayerNames.get(0), shipLayerName, simulationTime);
-        if (aermod.createDataJson(shipLayerName, dispLayerNames, plantsLayerName,elevationLayerName,sensorLayerName, bpi.getBuildingsGeoJSON()) != 0) {
+        queryClient.updateOutputs(derivationInputs.getDerivationIRI(), outputFileURL, dispLayerNames.get(0),
+                shipLayerName, simulationTime);
+        if (aermod.createDataJson(shipLayerName, dispLayerNames, plantsLayerName, elevationLayerName, sensorLayerName,
+                bpi.getBuildingsGeoJSON()) != 0) {
             LOGGER.error("Failed to create data.json file for visualisation, terminating");
             return;
         }
@@ -254,20 +264,21 @@ public class AermodAgent extends DerivationAgent {
         }
 
     }
-    
+
     void updateDerivations(List<String> derivationsToUpdate) {
         CompletableFuture<String> getAsync = null;
         for (String derivation : derivationsToUpdate) {
             getAsync = CompletableFuture.supplyAsync(() -> {
                 try {
                     devClient.updatePureSyncDerivation(derivation);
-                    return null; // need to return something, could not get it to work with CompletableFuture<Void>
+                    return null; // need to return something, could not get it to work with
+                                 // CompletableFuture<Void>
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage());
                     LOGGER.error("Error occured while updating ship derivations");
                     return null;
                 }
-            });   
+            });
         }
         if (getAsync != null) {
             getAsync.join();
@@ -276,6 +287,7 @@ public class AermodAgent extends DerivationAgent {
 
     /**
      * sends a PUT request to the weather agent
+     * 
      * @param weatherStationIri
      */
     void updateWeatherStation(String weatherStationIri, long simulationTime) {
@@ -291,22 +303,25 @@ public class AermodAgent extends DerivationAgent {
             }
         } catch (IOException e) {
             LOGGER.fatal(e.getMessage());
-            throw new JPSRuntimeException("Failed at closing connection",e);
+            throw new JPSRuntimeException("Failed at closing connection", e);
         } catch (URISyntaxException e) {
             LOGGER.fatal(e.getMessage());
-            throw new JPSRuntimeException("Failed at building URL for update request",e);
+            throw new JPSRuntimeException("Failed at building URL for update request", e);
         }
     }
 
     void uploadStyle(GeoServerClient geoServerClient) {
-        RESTEndpointConfig geoserverEndpointConfig = geoServerClient.readEndpointConfig("geoserver", RESTEndpointConfig.class);
-        GeoServerRESTManager manager = new GeoServerRESTManager(geoserverEndpointConfig.getUrl(), geoserverEndpointConfig.getUserName(), geoserverEndpointConfig.getPassword());
+        RESTEndpointConfig geoserverEndpointConfig = geoServerClient.readEndpointConfig("geoserver",
+                RESTEndpointConfig.class);
+        GeoServerRESTManager manager = new GeoServerRESTManager(geoserverEndpointConfig.getUrl(),
+                geoserverEndpointConfig.getUserName(), geoserverEndpointConfig.getPassword());
 
         if (!manager.getReader().existsStyle(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DISPERSION_STYLE_NAME)) {
             try {
                 File sldFile = new File(getClass().getClassLoader().getResource("dispersion.sld").toURI());
 
-                if (manager.getPublisher().publishStyleInWorkspace(EnvConfig.GEOSERVER_WORKSPACE, sldFile, EnvConfig.DISPERSION_STYLE_NAME)) {
+                if (manager.getPublisher().publishStyleInWorkspace(EnvConfig.GEOSERVER_WORKSPACE, sldFile,
+                        EnvConfig.DISPERSION_STYLE_NAME)) {
                     LOGGER.info("GeoServer style created");
                 } else {
                     throw new RuntimeException("GeoServer style cannot be created");
@@ -319,30 +334,33 @@ public class AermodAgent extends DerivationAgent {
 
     @Override
     public void init() throws ServletException {
-        EndpointConfig endpointConfig = new EndpointConfig(); 
+        EndpointConfig endpointConfig = new EndpointConfig();
 
         RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         RemoteStoreClient ontopStoreClient = new RemoteStoreClient(endpointConfig.getOntopurl());
-        RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
+        RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(),
+                endpointConfig.getDbuser(), endpointConfig.getDbpassword());
 
         queryClient = new QueryClient(storeClient, ontopStoreClient, rdbStoreClient);
         super.devClient = new DerivationClient(storeClient, QueryClient.PREFIX_DISP);
     }
 
-     /**
-     * Send PUT request to OpenMeteo Agent to create a weather station and instantiate the weather data at one hour intervals
-     * between the start and end dates. 
+    /**
+     * Send PUT request to OpenMeteo Agent to create a weather station and
+     * instantiate the weather data at one hour intervals
+     * between the start and end dates.
+     * 
      * @param polygon
-     * @return stationIRI 
+     * @return stationIRI
      */
     String updateOpenMeteoStation(double lat, double lon, String StartDate, String EndDate) {
 
         String stationIRI = null;
-        
+
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             URIBuilder builder = new URIBuilder(EnvConfig.OPENMETEO_AGENT_RUN);
-            builder.addParameter("longitude",String.valueOf(lon));
-            builder.addParameter("latitude",String.valueOf(lat));
+            builder.addParameter("longitude", String.valueOf(lon));
+            builder.addParameter("latitude", String.valueOf(lat));
             builder.addParameter("start_date", StartDate);
             builder.addParameter("end_date", EndDate);
             HttpPut httpPut = new HttpPut(builder.build());
@@ -370,12 +388,14 @@ public class AermodAgent extends DerivationAgent {
 
     private String getDayMonthAsTwoDigitString(int day) {
         String dayString = String.valueOf(day);
-        if (day < 10) dayString = "0" + dayString;
-        return dayString ;
+        if (day < 10)
+            dayString = "0" + dayString;
+        return dayString;
     }
 
-      /**
+    /**
      * Send PUT request to OpenMeteo Agent to delete the weather station
+     * 
      * @param polygon
      * @return
      */
@@ -383,11 +403,11 @@ public class AermodAgent extends DerivationAgent {
 
         double lat = scope.getCentroid().getCoordinate().getY();
         double lon = scope.getCentroid().getCoordinate().getX();
-        
+
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             URIBuilder builder = new URIBuilder(EnvConfig.OPENMETEO_AGENT_DELETE);
-            builder.addParameter("longitude",String.valueOf(lon));
-            builder.addParameter("latitude",String.valueOf(lat));
+            builder.addParameter("longitude", String.valueOf(lon));
+            builder.addParameter("latitude", String.valueOf(lat));
             HttpPut httpPut = new HttpPut(builder.build());
 
             CloseableHttpResponse response = httpClient.execute(httpPut);
@@ -403,10 +423,5 @@ public class AermodAgent extends DerivationAgent {
         }
 
     }
-
-
-
-
-
 
 }

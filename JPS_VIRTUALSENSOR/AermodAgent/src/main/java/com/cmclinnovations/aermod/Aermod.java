@@ -68,7 +68,7 @@ public class Aermod {
     }
 
     String addLeadingZero(String variable, int length) {
-        while (variable.length()<length) {
+        while (variable.length() < length) {
             variable = "0" + variable;
         }
         return variable;
@@ -84,7 +84,6 @@ public class Aermod {
         List<Long> humidity = weatherData.getHumidityAsPercentage();
         List<Long> cloudCover = weatherData.getCloudCoverAsInteger();
 
-
         String templateLine;
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("weather_template.144")) {
             templateLine = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
@@ -96,21 +95,21 @@ public class Aermod {
 
         StringBuilder sb = new StringBuilder();
         // Determine start index
-        LocalDateTime ldi = LocalDateTime.parse(timeStamps.get(0),DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime ldi = LocalDateTime.parse(timeStamps.get(0), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         int start = ldi.getHour();
 
         for (int i = start; i < start + timeStamps.size(); i++) {
 
-            LocalDateTime ldt = LocalDateTime.parse(timeStamps.get(i-start),DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            String dateTime = String.valueOf(ldt.getYear()).substring(2) + 
-            addLeadingZero(String.valueOf(ldt.getMonthValue()),2) + 
-            addLeadingZero(String.valueOf(ldt.getDayOfMonth()),2) + 
-            addLeadingZero(String.valueOf(ldt.getHour() + 1),2);
+            LocalDateTime ldt = LocalDateTime.parse(timeStamps.get(i - start),
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            String dateTime = String.valueOf(ldt.getYear()).substring(2) +
+                    addLeadingZero(String.valueOf(ldt.getMonthValue()), 2) +
+                    addLeadingZero(String.valueOf(ldt.getDayOfMonth()), 2) +
+                    addLeadingZero(String.valueOf(ldt.getHour() + 1), 2);
 
             if (dateTime.length() != 8) {
                 throw new JPSRuntimeException("dateTime is not in a format compatible with CD-144. " + dateTime);
             }
-
 
             String ws = String.valueOf(windSpeed.get(i));
             ws = addLeadingZero(ws, 2);
@@ -139,7 +138,7 @@ public class Aermod {
             }
 
             String hmd = String.valueOf(humidity.get(i));
-            hmd = addLeadingZero(hmd,3);
+            hmd = addLeadingZero(hmd, 3);
             if (hmd.length() != 3) {
                 LOGGER.error("Invalid humidity value {}", hmd);
                 return 1;
@@ -150,11 +149,12 @@ public class Aermod {
                 LOGGER.error("Invalid cloud cover value {}", ccvr);
             }
 
-            String dataLine = templateLine.replace("yymmddhh",dateTime).replace("WS", ws).replace("WD", wd).replace("TEM", temp)
-            .replace("HUM", hmd).replace("C", ccvr);
+            String dataLine = templateLine.replace("yymmddhh", dateTime).replace("WS", ws).replace("WD", wd)
+                    .replace("TEM", temp)
+                    .replace("HUM", hmd).replace("C", ccvr);
             sb.append(dataLine + " \n");
         }
- 
+
         return writeToFile(aermetDirectory.resolve("weather_template.144"), sb.toString());
     }
 
@@ -166,14 +166,15 @@ public class Aermod {
         String latSuffix = "N";
         String lonSuffix = "E";
         int direction = -1;
-        if (lat < 0 ) latSuffix = "S";
+        if (lat < 0)
+            latSuffix = "S";
         if (lon < 0) {
             lonSuffix = "W";
             direction = 1;
         }
         lat = Math.abs(lat);
         lon = Math.abs(lon);
-        int offset = (int)  Math.round(direction*lon*24/360);
+        int offset = (int) Math.round(direction * lon * 24 / 360);
         String location = String.format("%f%s %f%s", lat, latSuffix, lon, lonSuffix);
         String locationOffset = String.format("%f%s %f%s %d", lat, latSuffix, lon, lonSuffix, offset);
         String newLine = System.getProperty("line.separator");
@@ -207,24 +208,25 @@ public class Aermod {
                 .append("   SECTOR 1 0 360 \n")
                 .append("   SITE_CHAR 1 1 0.16 2.0 1.5 \n");
 
-        return writeToFile(aermetDirectory.resolve("aermet.inp"),sb.toString());
+        return writeToFile(aermetDirectory.resolve("aermet.inp"), sb.toString());
 
     }
-
 
     /**
      * return value 0 = success
      * 1 = possible error
+     * 
      * @return
      */
     int runAermet(Polygon scope) {
         // first copy soundings and FSL files
-        // try (InputStream is = getClass().getClassLoader().getResourceAsStream(AERMET_INPUT)) {
-        //     Files.copy(is, aermetDirectory.resolve(AERMET_INPUT));
+        // try (InputStream is =
+        // getClass().getClassLoader().getResourceAsStream(AERMET_INPUT)) {
+        // Files.copy(is, aermetDirectory.resolve(AERMET_INPUT));
         // } catch (IOException e) {
-        //     LOGGER.error(e.getMessage());
-        //     LOGGER.error("Failed to copy {}", AERMET_INPUT);
-        //     return 1;
+        // LOGGER.error(e.getMessage());
+        // LOGGER.error("Failed to copy {}", AERMET_INPUT);
+        // return 1;
         // }
 
         createAermetInput(scope);
@@ -238,7 +240,8 @@ public class Aermod {
         }
 
         try {
-            Process process = Runtime.getRuntime().exec(new String[]{EnvConfig.AERMET_EXE, AERMET_INPUT}, null, aermetDirectory.toFile());
+            Process process = Runtime.getRuntime().exec(new String[] { EnvConfig.AERMET_EXE, AERMET_INPUT }, null,
+                    aermetDirectory.toFile());
             if (process.waitFor() != 0) {
                 return 1;
             }
@@ -273,24 +276,26 @@ public class Aermod {
             String stkId = "S" + i;
 
             String originalSrid = "EPSG:" + ship.getLocation().getSrid();
-            double[] xyOriginal = {ship.getLocation().getX(), ship.getLocation().getY()};
+            double[] xyOriginal = { ship.getLocation().getX(), ship.getLocation().getY() };
             double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
 
-            double area = Math.PI * Math.pow(ship.getChimney().getDiameter()/2, 2); // m2
+            double area = Math.PI * Math.pow(ship.getChimney().getDiameter() / 2, 2); // m2
             double density = ship.getChimney().getMixtureDensityInKgm3(); // kg/m3
             double velocity = ship.getChimney().getFlowrateSO2InKgs() / area / density; // m/s
 
             double massFlowrateInGs = ship.getChimney().getFlowrateSO2InKgs() * 1000;
 
-            sb.append(String.format("SO LOCATION %s POINT %f %f %f",stkId, xyTransformed[0], xyTransformed[1], ship.getChimney().getHeight()));
+            sb.append(String.format("SO LOCATION %s POINT %f %f %f", stkId, xyTransformed[0], xyTransformed[1],
+                    ship.getChimney().getHeight()));
             sb.append(System.lineSeparator());
-            sb.append(String.format("SO SRCPARAM %s %f %f %f %f %f", stkId, 
-            massFlowrateInGs, ship.getChimney().getHeight(), ship.getChimney().getMixtureTemperatureInKelvin(), velocity, ship.getChimney().getDiameter()));
+            sb.append(String.format("SO SRCPARAM %s %f %f %f %f %f", stkId,
+                    massFlowrateInGs, ship.getChimney().getHeight(), ship.getChimney().getMixtureTemperatureInKelvin(),
+                    velocity, ship.getChimney().getDiameter()));
             sb.append(System.lineSeparator());
         }
         return writeToFile(aermodDirectory.resolve("shipSources.dat"), sb.toString());
     }
-    
+
     private int writeToFile(Path path, String content) {
         try (BufferedWriter writer = Files.newBufferedWriter(path)) {
             LOGGER.info("Writing file: {}", path);
@@ -309,9 +314,10 @@ public class Aermod {
         List<Double> yDoubles = new ArrayList<>();
 
         String originalSRID = "EPSG:" + scope.getSRID();
-        
+
         for (int i = 0; i < scope.getCoordinates().length; i++) {
-            double[] xyTransformed = CRSTransformer.transform(originalSRID, "EPSG:" + srid, scope.getCoordinates()[i].x, scope.getCoordinates()[i].y);
+            double[] xyTransformed = CRSTransformer.transform(originalSRID, "EPSG:" + srid, scope.getCoordinates()[i].x,
+                    scope.getCoordinates()[i].y);
 
             xDoubles.add(xyTransformed[0]);
             yDoubles.add(xyTransformed[1]);
@@ -324,7 +330,7 @@ public class Aermod {
 
         double dy = (yMax - yMin) / ny;
         double dx = (xMax - xMin) / nx;
-        
+
         String templateContent;
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("aermod.inp")) {
             templateContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
@@ -353,9 +359,9 @@ public class Aermod {
             }
         }
 
-
         try {
-            Process process = Runtime.getRuntime().exec(new String[]{EnvConfig.AERMOD_EXE, aermodInputFile}, null, aermodDirectory.toFile());
+            Process process = Runtime.getRuntime().exec(new String[] { EnvConfig.AERMOD_EXE, aermodInputFile }, null,
+                    aermodDirectory.toFile());
             if (process.waitFor() != 0) {
                 return 1;
             }
@@ -381,7 +387,8 @@ public class Aermod {
         String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
         httpPost.setHeader("Authorization", "Basic " + encodedAuth);
 
-        try (CloseableHttpClient httpClient = HttpClients.createDefault(); CloseableHttpResponse response = httpClient.execute(httpPost);) {
+        try (CloseableHttpClient httpClient = HttpClients.createDefault();
+                CloseableHttpResponse response = httpClient.execute(httpPost);) {
             if (response.getFirstHeader("dispersionMatrix") == null) {
                 throw new RuntimeException("Header from file server is null");
             } else {
@@ -413,7 +420,7 @@ public class Aermod {
         }
 
         try (CloseableHttpClient httpClient = HttpClients.createDefault();
-            CloseableHttpResponse httpResponse = httpClient.execute(new HttpGet(httpGet))) {
+                CloseableHttpResponse httpResponse = httpClient.execute(new HttpGet(httpGet))) {
             String result = EntityUtils.toString(httpResponse.getEntity());
             return new JSONObject(result);
         } catch (IOException e) {
@@ -426,8 +433,9 @@ public class Aermod {
         }
     }
 
-      /**
-     * Send request to PythonService to plot virtual sensor data. Also get the concentration values at each sensor location. 
+    /**
+     * Send request to PythonService to plot virtual sensor data. Also get the
+     * concentration values at each sensor location.
      */
     public JSONArray plotVirtualSensorData(String endPoint, String outputFileURL, int srid) {
         URI httpGet;
@@ -442,7 +450,7 @@ public class Aermod {
         }
 
         try (CloseableHttpClient httpClient = HttpClients.createDefault();
-            CloseableHttpResponse httpResponse = httpClient.execute(new HttpGet(httpGet))) {
+                CloseableHttpResponse httpResponse = httpClient.execute(new HttpGet(httpGet))) {
             String result = EntityUtils.toString(httpResponse.getEntity());
             return new JSONArray(result);
         } catch (IOException e) {
@@ -455,23 +463,36 @@ public class Aermod {
         }
     }
 
-    int createDataJson(String shipLayerName, List<String> dispersionLayerNames, String plantsLayerName, 
-    String elevationLayerName, String sensorLayerName, JSONObject buildingsGeoJSON) {
+    int createDataJson(String shipLayerName, List<String> dispersionLayerNames, String plantsLayerName,
+            String elevationLayerName, String sensorLayerName, JSONObject buildingsGeoJSON) {
         // wms endpoints template without the layer name
-        String shipWms = EnvConfig.GEOSERVER_URL + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile" +
-            "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, shipLayerName);
+        String shipWms = EnvConfig.GEOSERVER_URL
+                + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                +
+                "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, shipLayerName);
 
-        String dispWms = EnvConfig.GEOSERVER_URL + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true" +
-            "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, "PLACEHOLDER");
-        
-        String plantWms = EnvConfig.GEOSERVER_URL + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile" +
-            "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, plantsLayerName);
+        String dispWms = EnvConfig.GEOSERVER_URL
+                + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                +
+                "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, "PLACEHOLDER");
 
-        String elevWms = EnvConfig.GEOSERVER_URL + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true" +
-            "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, elevationLayerName);
+        String plantWms = EnvConfig.GEOSERVER_URL
+                + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                +
+                "&bbox={bbox-epsg-3857}"
+                + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, plantsLayerName);
 
-        String sensorWms = EnvConfig.GEOSERVER_URL + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile" +
-            "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, sensorLayerName);
+        String elevWms = EnvConfig.GEOSERVER_URL
+                + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                +
+                "&bbox={bbox-epsg-3857}"
+                + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, elevationLayerName);
+
+        String sensorWms = EnvConfig.GEOSERVER_URL
+                + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                +
+                "&bbox={bbox-epsg-3857}"
+                + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, sensorLayerName);
 
         JSONObject group = new JSONObject();
         group.put("name", "Aermod Simulation"); // hardcoded
@@ -494,13 +515,12 @@ public class Aermod {
         sensorSource.put("type", "vector");
         sensorSource.put("tiles", new JSONArray().put(sensorWms));
 
-
-
         for (int i = 0; i < dispersionLayerNames.size(); i++) {
             JSONObject dispersionSource = new JSONObject();
-            dispersionSource.put("id", "dispersion-source_"+dispersionLayerNames.get(i));
+            dispersionSource.put("id", "dispersion-source_" + dispersionLayerNames.get(i));
             dispersionSource.put("type", "raster");
-            dispersionSource.put("tiles", new JSONArray().put(dispWms.replace("PLACEHOLDER", dispersionLayerNames.get(i))));
+            dispersionSource.put("tiles",
+                    new JSONArray().put(dispWms.replace("PLACEHOLDER", dispersionLayerNames.get(i))));
             sources.put(dispersionSource);
         }
 
@@ -523,7 +543,6 @@ public class Aermod {
         shipLayer.put("minzoom", 4);
         shipLayer.put("layout", new JSONObject().put("visibility", "visible"));
 
-
         JSONObject plantsLayer = new JSONObject();
         plantsLayer.put("id", "plants-layer");
         plantsLayer.put("type", "circle");
@@ -542,8 +561,6 @@ public class Aermod {
         sensorLayer.put("minzoom", 4);
         sensorLayer.put("layout", new JSONObject().put("visibility", "visible"));
 
-
-        
         for (int i = 0; i < dispersionLayerNames.size(); i++) {
             JSONObject dispersionLayer = new JSONObject();
             dispersionLayer.put("id", dispersionLayerNames.get(i));
@@ -573,10 +590,10 @@ public class Aermod {
         data.put("groups", new JSONArray().put(group));
 
         File dataJson = Paths.get(EnvConfig.VIS_FOLDER, "data.json").toFile();
-        
+
         try {
             Files.deleteIfExists(dataJson.toPath());
-        } catch(IOException e) {
+        } catch (IOException e) {
             LOGGER.error("Failed to delete file");
             return 1;
         }
@@ -612,13 +629,16 @@ public class Aermod {
     }
 
     /**
-     * required for current way of writing into a volume shared by visualisation container
+     * required for current way of writing into a volume shared by visualisation
+     * container
      * without this the visualisation container cannot access the file
+     * 
      * @return
      */
     int modifyFilePermissions(String filename) {
         try {
-            Process process = Runtime.getRuntime().exec(new String[]{"chmod", "a+rwx", filename}, null, new File(EnvConfig.VIS_FOLDER));
+            Process process = Runtime.getRuntime().exec(new String[] { "chmod", "a+rwx", filename }, null,
+                    new File(EnvConfig.VIS_FOLDER));
             if (process.waitFor() != 0) {
                 return 1;
             }
@@ -638,7 +658,7 @@ public class Aermod {
         JSONObject start = new JSONObject();
         start.put("center", new JSONArray().put(centroid.getX()).put(centroid.getY()));
         start.put("zoom", 10.5);
-        
+
         JSONObject search = new JSONObject();
         search.put("Name", "name");
         search.put("ID", "id");
@@ -650,7 +670,7 @@ public class Aermod {
         File settingsJson = Paths.get(EnvConfig.VIS_FOLDER, "settings.json").toFile();
         try {
             Files.deleteIfExists(settingsJson.toPath());
-        } catch(IOException e) {
+        } catch (IOException e) {
             LOGGER.error("Failed to delete settings.json");
             return 1;
         }
