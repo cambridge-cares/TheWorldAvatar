@@ -46,12 +46,12 @@ public class TimeSeriesBridge {
     public static final String timestampKey = "timestamp";
 
     public TimeSeriesBridge(String[] config, String timeClass) {
-        RDBClient= new RemoteRDBStoreClient(config[2], config[0], config[1]);
+        RDBClient= new RemoteRDBStoreClient(config[0], config[1], config[2]);
         LOGGER.info("Created RDBStoreClient");
 
         RemoteStoreClient kbClient = new RemoteStoreClient();
-        kbClient.setQueryEndpoint(config[6]);
-        kbClient.setUpdateEndpoint(config[5]);
+        kbClient.setQueryEndpoint(config[3]);
+        kbClient.setUpdateEndpoint(config[3]);
         LOGGER.info("Created kbClient");
 
         client = new TimeSeriesClient(kbClient, OffsetDateTime.class);

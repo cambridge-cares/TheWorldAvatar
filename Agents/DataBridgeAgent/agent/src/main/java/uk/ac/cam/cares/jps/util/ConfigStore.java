@@ -263,32 +263,38 @@ public class ConfigStore {
         return "";
     }
 
+    /**
+     * Retrieves the TSClient configuration as an array. If the stack parameters are available, the stack endpoints will be retrieved.
+     * Otherwise, the configuration will be retrieved based on the source database and namespace of the properties file.
+     *
+     * @param stackDatabase The stack database name passed as a parameter to the GET request.
+     * @param stackNamespace The stack namespace endpoint passed as a parameter to the GET request.
+     * @return An array containing the database url, username, password, and the sparql endpoint.
+     */
     public static String[] retrieveTSClientConfig(String stackNamespace, String stackDatabase) {
-        LOGGER.info("Retrieveing TS Client parameters");
-        String[] config = new String[7];
-        String[] dbConfig;
-        String[] kbConfig;
-
-        if (stackDatabase == null) {
-            dbConfig = retrieveSQLConfig();
-        } else {
-            dbConfig = retrieveSQLConfig(stackDatabase, "in");
+        try (InputStream input = new FileInputStream(PROPERTIES_FILEPATH)) {
+            String[] config = new String[4];
+            StringBuilder missingPropertiesErrorMessage = new StringBuilder();
+            Properties prop = new Properties();
+            LOGGER.debug("Retrieving configuration from " + PROPERTIES_FILEPATH + "...");
+            prop.load(input);
+            LOGGER.info("Retrieving rdb database credentials...");
+            retrieveDatabase(true, config, prop, missingPropertiesErrorMessage, stackDatabase);
+            LOGGER.info("Retrieving sparql endpoint...");
+            config[3] = retrieveSparqlEndpoint(true, prop, missingPropertiesErrorMessage, stackNamespace);
+            String missingMessage = missingPropertiesErrorMessage.toString();
+            if (!missingMessage.isEmpty()) {
+                LOGGER.error("Missing Properties:\n" + missingMessage);
+                throw new JPSRuntimeException("Missing Properties:\n" + missingMessage);
+            }
+            LOGGER.info("All required configurations have been retrieved!");
+            return config;
+        } catch (FileNotFoundException e) {
+            LOGGER.error(NO_PROPERTIES_MSG);
+            throw new JPSRuntimeException(NO_PROPERTIES_MSG);
+        } catch (IOException e) {
+            LOGGER.error(INACCESSIBLE_CLIENT_PROPERTIES_MSG + e);
+            throw new JPSRuntimeException(INACCESSIBLE_CLIENT_PROPERTIES_MSG + e);
         }
-
-        if (stackNamespace == null) {
-            kbConfig = retrieveSPARQLConfig();
-        } else {
-            kbConfig = retrieveSPARQLConfig(stackNamespace, "in");
-        }
-
-        config[0] = dbConfig[4]; //dbusrName
-        config[1] = dbConfig[5]; //dbPassword
-        config[2] = dbConfig[3]; //dbURL
-        config[3] = null; //bgUsrName -- is this needed?
-        config[4] = null; //bgPassword -- is this needed?
-        config[5] = kbConfig[1]; //updateEndpoiunt
-        config[6] = kbConfig[1]; //query Enpoint - Assume the same?
-        LOGGER.debug("CONFIG: " + config);
-        return config;
     }
 }

@@ -114,25 +114,11 @@ public class DataBridgeAgent extends JPSAgent {
                 break;
             case "timeseries":
                 if (requestType.equals("POST")){
-                    String namespace = null;
-                    String db = null;
-                    if(requestParams.has(KEY_DATABASE)){
-                        db = requestParams.getString(KEY_DATABASE);
-                    }
-
-                    if (requestParams.has(KEY_NAMESPACE)){
-                        namespace = requestParams.getString(KEY_NAMESPACE);
-                    }
-
+                    String db = requestParams.has(KEY_DATABASE) ? requestParams.getString(KEY_DATABASE) : "";
+                    String namespace = requestParams.has(KEY_NAMESPACE) ? requestParams.getString(KEY_NAMESPACE) : "";
                     String[] config = ConfigStore.retrieveTSClientConfig(namespace, db);
-                    AGENT_IN_STACK = false;
-                    if (requestParams.has(KEY_TIME_CLASS)){
-                        String timeClass = requestParams.getString(KEY_TIME_CLASS);
-                        jsonMessage = updateTimeSeries(config, requestParams, timeClass);
-                    }
-                    else{
-                        throw new JPSRuntimeException("Missing key: timeClass");
-                    }
+                    String timeClass = requestParams.getString(KEY_TIME_CLASS);
+                    jsonMessage = updateTimeSeries(config, requestParams, timeClass);
                 }
                 else {
                     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept POST request.");
