@@ -66,15 +66,20 @@ jobs:
           commit: "main"
           bodyFile: "${{ env.body }}"
           artifacts: "${{ env.zip }}"
-         
+       
+      # Setup Python installation
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10' 
+          
       # Generate the release email content
       - name: Generate release email
         id: generate-email
         working-directory: ./
         run: |
-          chmod +x ./.github/scripts/dtvf/make-release-email.sh
-          cp ./web/digital-twin-vis-framework/library/release.html $HOME/email.html                                                                                                    
-          ./.github/scripts/dtvf/make-release-email.sh
+          pip install markdown
+          python ./.github/scripts/dtvf/make-release-email.py
           echo email=$HOME/email.html >> $GITHUB_ENV
       
       # Send a notification email
