@@ -56,6 +56,17 @@ public class AermodAgent extends DerivationAgent {
         String nyIri = derivationInputs.getIris(QueryClient.NY).get(0);
         String scopeIri = derivationInputs.getIris(QueryClient.SCOPE).get(0);
         String simulationTimeIri = derivationInputs.getIris(QueryClient.SIMULATION_TIME).get(0);
+        // citiesNamespaceIri will be null if this parameter was excluded from the POST request sent to DispersionInteractor
+
+        String citiesNamespace= null;
+        if (derivationInputs.getIris(QueryClient.CITIES_NAMESPACE) != null) {
+            String citiesNamespaceIri = derivationInputs.getIris(QueryClient.CITIES_NAMESPACE).get(0);
+            citiesNamespace = queryClient.getCitiesNamespace(citiesNamespaceIri);
+        } else {
+            LOGGER.info("No citieskg namespace was specified in the POST request to Dispersion Interactor." + 
+            "Static point sources will not be included in this AERMOD run.");
+        }
+
         
         long simulationTime = queryClient.getMeasureValueAsLong(simulationTimeIri);
 

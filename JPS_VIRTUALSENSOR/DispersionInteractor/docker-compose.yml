@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   dispersion-interactor:
-    image: docker.cmclinnovations.com/dispersion-interactor:1.0.0
+    image: ghcr.io/cambridge-cares/dispersion-interactor:1.1.0-SNAPSHOT
     deploy:
       mode: replicated
       replicas: 1
