@@ -57,10 +57,7 @@ public class InitialiseSimulation extends HttpServlet {
         String ewkt = req.getParameter("ewkt");
         int nx = Integer.parseInt(req.getParameter("nx"));
         int ny = Integer.parseInt(req.getParameter("ny"));
-        String citiesNamespace = null;
-        if (req.getParameter("citiesnamespace") != null){
-            citiesNamespace = req.getParameter("citiesnamespace");
-        }
+        String citiesNamespace = req.getParameter("citiesnamespace");
 
         Polygon polygonProvided = null;
         try {
