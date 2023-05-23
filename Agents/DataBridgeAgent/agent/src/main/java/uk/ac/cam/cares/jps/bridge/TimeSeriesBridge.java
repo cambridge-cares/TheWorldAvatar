@@ -43,7 +43,7 @@ public class TimeSeriesBridge {
     /**
      * The JSON key for the timestamp
      */
-    public static final String timestampKey = "ts";
+    public static final String timestampKey = "timestamp";
 
     public TimeSeriesBridge(String[] config, String timeClass) {
         RDBClient= new RemoteRDBStoreClient(config[2], config[0], config[1]);
