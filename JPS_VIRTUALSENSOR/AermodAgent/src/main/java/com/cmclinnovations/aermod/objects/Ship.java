@@ -1,14 +1,8 @@
 package com.cmclinnovations.aermod.objects;
 
 public class Ship extends PointSource {
-    private String iri;
-
     public Ship(String iri) {
-        this.iri = iri;
-    }
-
-    public String getIri() {
-        return this.iri;
+        super(iri);
     }
 
     @Override
@@ -19,5 +13,10 @@ public class Ship extends PointSource {
     @Override
     public double getHeight() {
         return 20;
+    }
+
+    @Override
+    public double getMixtureMassFlux() {
+        return 0.0192143028723584;
     }
 }
