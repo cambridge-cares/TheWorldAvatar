@@ -30,6 +30,8 @@ public class DataBridgeAgent extends JPSAgent {
     private static final String KEY_DATABASE = "database";
     private static final String KEY_TRANSFER = "transfer";
     private static final String KEY_TIME_CLASS = "timeClass";
+    private static final String KEY_TIMESTAMP = "timestamp";
+    private static final String KEY_VALUES = "values";
 
     /**
      * Perform required setup.
@@ -124,7 +126,6 @@ public class DataBridgeAgent extends JPSAgent {
 
                     String[] config = ConfigStore.retrieveTSClientConfig(namespace, db);
                     AGENT_IN_STACK = false;
-                    
                     if (requestParams.has(KEY_TIME_CLASS)){
                         String timeClass = requestParams.getString(KEY_TIME_CLASS);
                         jsonMessage = updateTimeSeries(config, requestParams, timeClass);
@@ -132,8 +133,6 @@ public class DataBridgeAgent extends JPSAgent {
                     else{
                         throw new JPSRuntimeException("Missing key: timeClass");
                     }
-                    
-                    
                 }
                 else {
                     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept POST request.");
@@ -144,32 +143,52 @@ public class DataBridgeAgent extends JPSAgent {
     }
 
     /**
-     * Validates the request parameter.
+     * Validates the request parameters.
      *
      * @return true or false depending on valid parameter status.
      */
     @Override
     public boolean validateInput(JSONObject requestParams) {
-        boolean validate = true;
-        // If there are `namespace` or `database` parameters passed for the sparql or sql route
-        if (requestParams.has(KEY_NAMESPACE) || requestParams.has(KEY_DATABASE) ){
-            LOGGER.info("Detected a namespace or database parameter...");
-            // Ensure that a `transfer` parameter is also passed
-            if (requestParams.has(KEY_TRANSFER)){
-                LOGGER.info("Detected a transfer parameter and validating it...");
-                // The transfer parameter must only contain either `in` or `out`
-                String transfer = requestParams.getString(KEY_TRANSFER);
-                validate = transfer.equals("in") || transfer.equals("out");
-                if (!validate){
-                    LOGGER.fatal("Invalid `transfer` value! The parameter must only be either in or out!");
-                }
+        boolean validate = false;
+        // If request is sent to status route, there are no parameters to validate
+        if (requestParams.get("requestUrl").toString().contains("status")) return true;
+        // For the time series route, these parameters must be passed, and the validation will end
+        if (requestParams.has(KEY_TIME_CLASS) || requestParams.has(KEY_TIMESTAMP) || requestParams.has(KEY_VALUES)) {
+            validate = requestParams.has(KEY_TIME_CLASS) && requestParams.has(KEY_TIMESTAMP) && requestParams.has(KEY_VALUES);
+            if (validate) {
+                LOGGER.info("Detected time series parameters...");
+                String timeClass = requestParams.getString(KEY_TIME_CLASS);
+                LOGGER.info("Validating the timeClass parameter...");
+                return timeClass.equals("AVERAGE") || timeClass.equals("STEPWISECUMULATIVE") || timeClass.equals("CUMULATIVETOTAL") || timeClass.equals("INSTANTANEOUS") || timeClass.equals("GENERAL");
             } else {
-                LOGGER.fatal("Please include a `transfer` parameter with either in or out!");
+                LOGGER.fatal("The request is missing at least one of these parameters: " + KEY_TIME_CLASS + " " + KEY_TIMESTAMP + " " + KEY_VALUES);
                 return false;
             }
-        } else if (requestParams.has(KEY_TRANSFER)){
-            LOGGER.fatal("`transfer` parameter is passed without a namespace or database parameter!");
-            return false;
+        }
+        // Note that the validation must not continue here for the time series route, as these parameters are optional
+        // If there are `namespace` or `database` parameters passed for the sparql or sql route
+        if (requestParams.get("requestUrl").toString().contains("sql") || requestParams.get("requestUrl").toString().contains("sparql")) {
+            validate = true;
+            if (requestParams.has(KEY_NAMESPACE) || requestParams.has(KEY_DATABASE)) {
+                LOGGER.info("Detected a namespace or database parameter...");
+                // Ensure that a `transfer` parameter is also passed
+                if (requestParams.has(KEY_TRANSFER)) {
+                    LOGGER.info("Detected a transfer parameter and validating it...");
+                    // The transfer parameter must only contain either `in` or `out`
+                    String transfer = requestParams.getString(KEY_TRANSFER);
+                    validate = transfer.equals("in") || transfer.equals("out");
+                    if (!validate) {
+                        LOGGER.fatal("Invalid `transfer` value! The parameter must only be either in or out!");
+                    }
+                } else {
+                    LOGGER.fatal("Please include a `transfer` parameter with either in or out!");
+                    return false;
+                }
+            } else if (requestParams.has(KEY_TRANSFER)) {
+                LOGGER.fatal("`transfer` parameter is passed without a namespace or database parameter!");
+                return false;
+            }
+            return validate;
         }
         return validate;
     }
@@ -234,7 +253,7 @@ public class DataBridgeAgent extends JPSAgent {
         } catch (Exception e) {
             throw new JPSRuntimeException("Failed to instantiate TS: " + e);
         }
-                
+
 
 
 

@@ -24,6 +24,14 @@ class DataBridgeAgentTest {
     private static final String VAL_NAMESPACE = "default";
     private static final String VAL_DATABASE = "test";
     private static final String VAL_TRANSFER = "in";
+    private static final String KEY_TIME_CLASS = "timeClass";
+    private static final String KEY_TIMESTAMP = "timestamp";
+    private static final String KEY_VALUES = "values";
+    private static final String VAL_TIME_CLASS = "INSTANTANEOUS";
+    private static final String[] VAL_TIMESTAMP = {"2022-11-09T03:05:18", "2022-11-19T03:05:18", "2022-11-29T03:05:18"};
+    private static final JSONObject VAL_VALUES = new JSONObject();
+    private static final String KEY_VALUE_IRI = "iri1";
+    private static final Integer[] VAL_VALUE_IRI = {1, 2, 3};
     private static final String KEY_METHOD = "method";
     private static final String GET_METHOD = "GET";
     private static final String POST_METHOD = "POST";
@@ -32,6 +40,7 @@ class DataBridgeAgentTest {
     private static final String STATUS_ROUTE = BASE_ROUTE + "status";
     private static final String SPARQL_ROUTE = BASE_ROUTE + "sparql";
     private static final String SQL_ROUTE = BASE_ROUTE + "sql";
+    private static final String TIME_SERIES_ROUTE = BASE_ROUTE + "timeseries";
     private static final String sparqlSrc = "http://www.example.org/blazegraph/namespace/test/sparql";
     private static final String sparqlTarget = "http://www.target.org:9999/blazegraph/namespace/target/sparql";
     private static final String srcDb = "jdbc:postgresql://localhost:5432/db";
@@ -44,6 +53,7 @@ class DataBridgeAgentTest {
     @BeforeAll
     static void generateExpected() {
         EXPECTED_RESPONSE.put("Result", "Successful transfer");
+        VAL_VALUES.put(KEY_VALUE_IRI, VAL_VALUE_IRI);
     }
 
     @BeforeEach
@@ -53,17 +63,58 @@ class DataBridgeAgentTest {
 
     @Test
     void testValidateInput() {
-        // For sparql route
+        // For status route
         JSONObject requestParams = new JSONObject();
+        requestParams.put(KEY_ROUTE, STATUS_ROUTE);
+        assertTrue(agent.validateInput(requestParams));
+
+        // For time series route
+        requestParams = new JSONObject();
+        // Optional parameter should not invalidate the outcome
+        requestParams.put(KEY_NAMESPACE, VAL_NAMESPACE);
+        requestParams.put(KEY_TIME_CLASS, VAL_TIME_CLASS);
+        requestParams.put(KEY_TIMESTAMP, VAL_TIMESTAMP);
+        requestParams.put(KEY_VALUES, VAL_VALUES);
+        requestParams.put(KEY_ROUTE, TIME_SERIES_ROUTE);
+        assertTrue(agent.validateInput(requestParams));
+
+        // For sparql route
+        requestParams = new JSONObject();
         requestParams.put(KEY_NAMESPACE, VAL_NAMESPACE);
         requestParams.put(KEY_TRANSFER, VAL_TRANSFER);
+        requestParams.put(KEY_ROUTE, SPARQL_ROUTE);
         assertTrue(agent.validateInput(requestParams));
 
         // For sql route
         requestParams = new JSONObject();
         requestParams.put(KEY_DATABASE, VAL_DATABASE);
         requestParams.put(KEY_TRANSFER, VAL_TRANSFER);
+        requestParams.put(KEY_ROUTE, SQL_ROUTE);
         assertTrue(agent.validateInput(requestParams));
+    }
+
+    @Test
+    void testValidateInputInvalidWithNoParameters() {
+        JSONObject requestParams = new JSONObject();
+        requestParams.put(KEY_ROUTE, "");
+        assertFalse(agent.validateInput(requestParams));
+    }
+
+    @Test
+    void testValidateInputInvalidForTimeSeriesRoute() {
+        // Invalid when missing one of three parameters
+        JSONObject requestParams = new JSONObject();
+        requestParams.put(KEY_TIME_CLASS, VAL_TIME_CLASS);
+        requestParams.put(KEY_TIMESTAMP, VAL_TIMESTAMP);
+        requestParams.put(KEY_ROUTE, TIME_SERIES_ROUTE);
+        assertFalse(agent.validateInput(requestParams));
+        // Invalid for invalid time class
+        requestParams = new JSONObject();
+        requestParams.put(KEY_TIME_CLASS, "timezone");
+        requestParams.put(KEY_TIMESTAMP, VAL_TIMESTAMP);
+        requestParams.put(KEY_VALUES, VAL_VALUES);
+        requestParams.put(KEY_ROUTE, TIME_SERIES_ROUTE);
+        assertFalse(agent.validateInput(requestParams));
     }
 
     @Test
@@ -71,24 +122,29 @@ class DataBridgeAgentTest {
         // Invalid for only transfer key provided
         JSONObject requestParams = new JSONObject();
         requestParams.put(KEY_TRANSFER, VAL_TRANSFER);
+        requestParams.put(KEY_ROUTE, SQL_ROUTE);
         assertFalse(agent.validateInput(requestParams));
         // Invalid for only namespace key provided
         requestParams = new JSONObject();
         requestParams.put(KEY_NAMESPACE, VAL_NAMESPACE);
+        requestParams.put(KEY_ROUTE, SPARQL_ROUTE);
         assertFalse(agent.validateInput(requestParams));
         // Invalid when 'transfer' value is not in or out
         requestParams = new JSONObject();
         requestParams.put(KEY_NAMESPACE, VAL_NAMESPACE);
         requestParams.put(KEY_TRANSFER, "invalid");
+        requestParams.put(KEY_ROUTE, SPARQL_ROUTE);
         assertFalse(agent.validateInput(requestParams));
         // Invalid for only database key provided
         requestParams = new JSONObject();
         requestParams.put(KEY_DATABASE, VAL_DATABASE);
+        requestParams.put(KEY_ROUTE, SQL_ROUTE);
         assertFalse(agent.validateInput(requestParams));
         // Invalid when 'transfer' value is not in or out
         requestParams = new JSONObject();
         requestParams.put(KEY_DATABASE, VAL_DATABASE);
         requestParams.put(KEY_TRANSFER, "invalid");
+        requestParams.put(KEY_ROUTE, SQL_ROUTE);
         assertFalse(agent.validateInput(requestParams));
     }
 
@@ -98,7 +154,7 @@ class DataBridgeAgentTest {
         requestParams.put(KEY_METHOD, GET_METHOD);
         requestParams.put(KEY_ROUTE, BASE_ROUTE);
         JSONObject response = agent.processRequestParameters(requestParams);
-        assertTrue(response.isEmpty());
+        assertEquals("Parameters are invalid, please check logs for more details.", response.getString("Result"));
     }
 
     @Test
