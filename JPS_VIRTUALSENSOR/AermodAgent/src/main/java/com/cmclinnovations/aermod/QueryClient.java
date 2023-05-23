@@ -89,7 +89,7 @@ public class QueryClient {
     public static final String NX = PREFIX_DISP + "nx";
     public static final String NY = PREFIX_DISP + "ny";
     public static final String SCOPE = PREFIX_DISP + "Scope";
-    public static final String CITIES_NAMESPACE = "https://www.theworldavatar.com/kg/ontodispersion/CitiesNamespace";
+    public static final String CITIES_NAMESPACE = "https://www.theworldavatar.com/kg/ontodispersion/OntoCityGMLNamespace";
     public static final String SIMULATION_TIME = PREFIX_DISP + "SimulationTime";
     public static final String NO_X = PREFIX_DISP + "NOx";
     public static final String UHC = PREFIX_DISP + "uHC";

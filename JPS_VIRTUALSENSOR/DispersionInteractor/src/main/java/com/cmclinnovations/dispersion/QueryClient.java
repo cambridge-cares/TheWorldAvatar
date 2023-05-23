@@ -54,7 +54,7 @@ public class QueryClient {
     private static final Iri DISPERSION_MATRIX = P_DISP.iri("DispersionMatrix");
     private static final Iri DISPERSION_LAYER = P_DISP.iri("DispersionLayer");
     private static final Iri SHIPS_LAYER = P_DISP.iri("ShipsLayer");
-    private static final Iri CITIES_NAMESPACE = iri("https://www.theworldavatar.com/kg/ontodispersion/CitiesNamespace");
+    private static final Iri CITIES_NAMESPACE = iri("https://www.theworldavatar.com/kg/ontodispersion/OntoCityGMLNamespace");
 
     // properties
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
