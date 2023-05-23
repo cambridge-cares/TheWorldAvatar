@@ -22,6 +22,16 @@ public class PointSource {
     private double pm25; // pm 2.5
     private double pm10; // pm 10
 
+    private String iri;
+
+    public PointSource(String iri) {
+        this.iri = iri;
+    }
+
+    public String getIri() {
+        return iri;
+    }
+
     public void setLocation(Point location) {
         this.location = location;
     }
