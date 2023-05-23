@@ -1,6 +1,6 @@
 {
-    "services": {
-        "includes": [
+	"services": {
+		"includes": [
 			"file-server",
 			"weather-agent",
 			"ship-input-agent",
@@ -9,8 +9,7 @@
 			"aermod-agent-debug",
 			"python-service",
 			"emissions-agent",
-			"openmeteo-agent",
 			"feature-info-agent"
-        ]
-    }
+		]
+	}
 }

@@ -4,7 +4,6 @@ docker pull ghcr.io/cambridge-cares/dispersion-interactor:1.1.0-SNAPSHOT
 docker pull ghcr.io/cambridge-cares/aermod-agent:1.1.4-dev-pirmasens-vis-SNAPSHOT
 docker pull ghcr.io/cambridge-cares/dispersion-vis:1.1.1-SNAPSHOT
 docker pull ghcr.io/cambridge-cares/python-service:1.1.1-SNAPSHOT
-docker pull ghcr.io/cambridge-cares/openmeteo-agent:1.0.0
 docker pull ghcr.io/cambridge-cares/emissions-agent:1.0.1-SNAPSHOT
 docker pull docker.cmclinnovations.com/ship-input-agent:1.0.0
 docker pull docker.cmclinnovations.com/weatheragent:1.1.1
