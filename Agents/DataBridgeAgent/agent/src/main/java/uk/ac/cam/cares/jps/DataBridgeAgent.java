@@ -229,20 +229,13 @@ public class DataBridgeAgent extends JPSAgent {
     }
 
     protected <T> JSONObject updateTimeSeries (String[] config, JSONObject data, String timeClass) {
-        JSONObject response = new JSONObject();
-
         LOGGER.info("Instantiating Timeseries...");
         TimeSeriesBridge tsInst = new TimeSeriesBridge(config, timeClass);
-
         try {
-            tsInst.updateTimeSeriesData(data);
+            JSONObject response = tsInst.updateTimeSeriesData(data);
+            return response;
         } catch (Exception e) {
             throw new JPSRuntimeException("Failed to instantiate TS: " + e);
         }
-
-
-
-
-        return response;
     }
 }

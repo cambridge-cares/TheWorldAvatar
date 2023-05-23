@@ -240,4 +240,60 @@ class ConfigStoreTest {
             config.delete();
         }
     }
+
+    @Test
+    void testRetrieveTSClientConfigNoFile() {
+        // Verify right exception is thrown
+        JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> ConfigStore.retrieveTSClientConfig("", ""));
+        assertEquals("No endpoint.properties file detected! Please place the file in the config directory.", thrownError.getMessage());
+    }
+
+    @Test
+    void testRetrieveTSClientConfigMissingProperties() throws IOException {
+        File config = TestConfigUtils.genSampleTimeSeriesConfigFile(false, srcDb, srcUser, srcPass, srcSparql, "", "");
+        try {
+            // Execute method and ensure right error is thrown
+            JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> ConfigStore.retrieveTSClientConfig("", ""));
+            assertEquals("Missing Properties:\n" +
+                    "src.db.user is missing! Please add the input to endpoint.properties.\n" +
+                    "src.db.password is missing! Please add the input to endpoint.properties.\n", thrownError.getMessage());
+        } finally {
+            // Always delete generated config file
+            config.delete();
+        }
+    }
+
+    @Test
+    void testRetrieveTSClientConfigOptionalSparqlCredentials() throws IOException {
+        File config = TestConfigUtils.genSampleTimeSeriesConfigFile(true, srcDb, srcUser, srcPass, srcSparql, "", "");
+        try {
+            // Execute method
+            String[] result = ConfigStore.retrieveTSClientConfig("", "");
+            // Verify results are expected
+            assertEquals(srcDb, result[0]);
+            assertEquals(srcUser, result[1]);
+            assertEquals(srcPass, result[2]);
+            assertEquals(srcSparql, result[3]);
+        } finally {
+            // Always delete generated config file
+            config.delete();
+        }
+    }
+
+    @Test
+    void testRetrieveTSClientConfig() throws IOException {
+        File config = TestConfigUtils.genSampleTimeSeriesConfigFile(true, srcDb, srcUser, srcPass, srcSparql, srcUser, srcPass);
+        try {
+            // Execute method
+            String[] result = ConfigStore.retrieveTSClientConfig("", "");
+            // Verify results are expected
+            assertEquals(srcDb, result[0]);
+            assertEquals(srcUser, result[1]);
+            assertEquals(srcPass, result[2]);
+            assertEquals(securedSrcSparql, result[3]);
+        } finally {
+            // Always delete generated config file
+            config.delete();
+        }
+    }
 }

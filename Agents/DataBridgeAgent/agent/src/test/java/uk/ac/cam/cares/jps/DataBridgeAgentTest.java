@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.bridge.SparqlBridge;
 import uk.ac.cam.cares.jps.bridge.SqlBridge;
+import uk.ac.cam.cares.jps.bridge.TimeSeriesBridge;
 
 import java.io.File;
 import java.io.IOException;
@@ -280,5 +281,70 @@ class DataBridgeAgentTest {
         JSONObject response = agent.processRequestParameters(requestParams);
         // Verify response
         assertEquals("Invalid request type! Route sql can only accept GET request.", response.getString("Result"));
+    }
+
+    @Test
+    void testProcessRequestParametersForTimeSeriesRouteViaPOSTIncompleteProperties() throws IOException {
+        // Generate sample config file
+        File config = TestConfigUtils.genSampleTimeSeriesConfigFile(false, srcDb, srcUser, srcPass, sparqlSrc, "", "");
+        // Set up request parameters
+        JSONObject requestParams = new JSONObject();
+        requestParams.put(KEY_METHOD, POST_METHOD);
+        requestParams.put(KEY_TIME_CLASS, VAL_TIME_CLASS);
+        requestParams.put(KEY_TIMESTAMP, VAL_TIMESTAMP);
+        requestParams.put(KEY_VALUES, VAL_VALUES);
+        requestParams.put(KEY_ROUTE, TIME_SERIES_ROUTE);
+        try {
+            // Execute method should throw right error and response
+            JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> agent.processRequestParameters(requestParams));
+            assertEquals("Missing Properties:\n" +
+                    "src.db.user is missing! Please add the input to endpoint.properties.\n" +
+                    "src.db.password is missing! Please add the input to endpoint.properties.\n", thrownError.getMessage());
+        } finally {
+            // Always delete generated config file
+            config.delete();
+        }
+    }
+
+    @Test
+    void testProcessRequestParametersForTimeSeriesRouteViaPOST() throws IOException {
+        // Generate sample config file
+        File config = TestConfigUtils.genSampleTimeSeriesConfigFile(true, srcDb, srcUser, srcPass, sparqlSrc, "", "");
+        // Set up request parameters
+        JSONObject requestParams = new JSONObject();
+        requestParams.put(KEY_METHOD, POST_METHOD);
+        requestParams.put(KEY_TIME_CLASS, VAL_TIME_CLASS);
+        requestParams.put(KEY_TIMESTAMP, VAL_TIMESTAMP);
+        requestParams.put(KEY_VALUES, VAL_VALUES);
+        requestParams.put(KEY_ROUTE, TIME_SERIES_ROUTE);
+        // Mock the bridge object, as it cannot be unit tested and requires integration test
+        try (MockedConstruction<TimeSeriesBridge> mockConnector = Mockito.mockConstruction(TimeSeriesBridge.class,
+                (mock, context) -> {
+                    Mockito.when(mock.updateTimeSeriesData(Mockito.any())).thenReturn(EXPECTED_RESPONSE);
+                })
+        ) {
+            // Execute method
+            JSONObject response = agent.processRequestParameters(requestParams);
+            // Verify response
+            assertEquals(EXPECTED_RESPONSE, response);
+        } finally {
+            // Always delete generated config file
+            config.delete();
+        }
+    }
+
+    @Test
+    void testProcessRequestParametersForTimeSeriesRouteViaInvalidGet() {
+        // Set up request parameters
+        JSONObject requestParams = new JSONObject();
+        requestParams.put(KEY_METHOD, GET_METHOD); // Wrong method
+        requestParams.put(KEY_TIME_CLASS, VAL_TIME_CLASS);
+        requestParams.put(KEY_TIMESTAMP, VAL_TIMESTAMP);
+        requestParams.put(KEY_VALUES, VAL_VALUES);
+        requestParams.put(KEY_ROUTE, TIME_SERIES_ROUTE);
+        // Execute method
+        JSONObject response = agent.processRequestParameters(requestParams);
+        // Verify response
+        assertEquals("Invalid request type! Route timeseries can only accept POST request.", response.getString("Result"));
     }
 }

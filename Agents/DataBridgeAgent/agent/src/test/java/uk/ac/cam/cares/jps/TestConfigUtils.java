@@ -14,13 +14,14 @@ public class TestConfigUtils {
     private static final String srcDBUrl = "src.db.url";
     private static final String srcDBUser = "src.db.user";
     private static final String srcDBPass = "src.db.password";
-    private static final String targetDBUrl  = "target.db.url";
+    private static final String targetDBUrl = "target.db.url";
     private static final String targetDBUser = "target.db.user";
     private static final String targetDBPass = "target.db.password";
 
     public static File genSampleSPARQLConfigFile(boolean isEmpty, String srcSparql, String tgtSparql) throws IOException {
-        return genSampleSPARQLConfigFile(isEmpty, srcSparql, tgtSparql, "", "" , "", "");
+        return genSampleSPARQLConfigFile(isEmpty, srcSparql, tgtSparql, "", "", "", "");
     }
+
     public static File genSampleSPARQLConfigFile(boolean isEmpty, String srcSparql, String tgtSparql, String srcUser, String srcPass, String tgtUser, String tgtPass) throws IOException {
         File file = new File(System.getProperty("user.dir") + "/config/endpoint.properties");
         // Check if the directory exists, create it if it doesn't
@@ -61,6 +62,28 @@ public class TestConfigUtils {
             writer.println(srcDBUser + "=" + srcDbUser);
             writer.println(srcDBPass + "=" + srcDbPass);
         }
+        writer.close();
+        return file;
+    }
+
+    public static File genSampleTimeSeriesConfigFile(boolean isComplete, String srcDb, String srcDbUser, String srcDbPass,
+                                                     String srcSparql, String srcUser, String srcPass) throws IOException {
+        File file = new File(System.getProperty("user.dir") + "/config/endpoint.properties");
+        // Check if the directory exists, create it if it doesn't
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
+        }
+        file.createNewFile();
+        PrintWriter writer = new PrintWriter(file);
+        writer.println(srcDBUrl + "=" + srcDb);
+        writer.println(srcSparqlKey + "=" + srcSparql);
+        if (isComplete) {
+            writer.println(srcDBUser + "=" + srcDbUser);
+            writer.println(srcDBPass + "=" + srcDbPass);
+        }
+        // Optional sparql credential properties
+        if (!srcUser.isEmpty()) writer.println(srcSparqlUser + "=" + srcUser);
+        if (!srcUser.isEmpty()) writer.println(srcSparqlPass + "=" + srcPass);
         writer.close();
         return file;
     }
