@@ -57,8 +57,19 @@ public class AermodAgent extends DerivationAgent {
         String scopeIri = derivationInputs.getIris(QueryClient.SCOPE).get(0);
         String simulationTimeIri = derivationInputs.getIris(QueryClient.SIMULATION_TIME).get(0);
         // citiesNamespaceIri will be null if this parameter was excluded from the POST request sent to DispersionInteractor
-        String citiesNamespaceIri = derivationInputs.getIris(QueryClient.CITIES_NAMESPACE).get(0);
+        String citiesNamespaceIri = null;
+
+        try {
+            citiesNamespaceIri = derivationInputs.getIris(QueryClient.CITIES_NAMESPACE).get(0);
+        } catch (Exception e) {
+            LOGGER.info("No value has been specified for the citieskg namespace in dispersion interactor." +
+            "AERMOD will be run for ships only.");
+        }
+
+
         String citiesNamespace = null;
+
+
         if (citiesNamespaceIri != null) {
             citiesNamespace = queryClient.getCitiesNamespace(citiesNamespaceIri);
         } else {
