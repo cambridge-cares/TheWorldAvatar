@@ -20,6 +20,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -27,7 +28,9 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.locationtech.jts.geom.Polygon;
 
+import com.cmclinnovations.aermod.objects.PointSource;
 import com.cmclinnovations.aermod.objects.Ship;
+import com.cmclinnovations.aermod.objects.StaticPointSource;
 import com.cmclinnovations.aermod.objects.WeatherData;
 import com.cmclinnovations.stack.clients.core.RESTEndpointConfig;
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
@@ -80,15 +83,32 @@ public class AermodAgent extends DerivationAgent {
 
         // get ships within a scope and time
         Polygon scope = queryClient.getScopeFromOntop(scopeIri);
+
+        List<StaticPointSource> staticPointSources = null;
+        if (citiesNamespace != null) {
+            String namespaceCRS = queryClient.getNamespaceCRS(citiesNamespace);
+            try {
+                staticPointSources = queryClient.getStaticPointSourcesWithinScope(scope, citiesNamespace,
+                        namespaceCRS);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+        }
         List<Ship> ships = queryClient.getShipsWithinTimeAndScopeViaTsClient(simulationTime, scope);
 
+        List<PointSource> allSources = new ArrayList<>();
+        if (citiesNamespace != null)
+            allSources.addAll(staticPointSources);
+        allSources.addAll(ships);
+
         // update derivation of ships (on demand)
-        List<String> derivationsToUpdate = queryClient.getDerivationsOfShips(ships);
+        List<String> derivationsToUpdate = queryClient.getDerivationsOfPointSources(allSources);
         updateDerivations(derivationsToUpdate);
 
         // get emissions and set the values in the ships
         LOGGER.info("Querying emission values");
-        queryClient.setEmissions(ships);
+        queryClient.setEmissions(allSources);
 
         // update weather station with simulation time
         updateWeatherStation(weatherStationIri, simulationTime);

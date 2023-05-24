@@ -16,6 +16,7 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.geom.Polygon;
@@ -24,15 +25,19 @@ import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
 
 import com.cmclinnovations.aermod.sparqlbuilder.GeoSPARQL;
 import com.cmclinnovations.aermod.sparqlbuilder.ValuesPattern;
+import com.cmclinnovations.aermod.objects.PointSource;
 import com.cmclinnovations.aermod.objects.Ship;
+import com.cmclinnovations.aermod.objects.StaticPointSource;
 import com.cmclinnovations.aermod.objects.WeatherData;
 
 import it.unibz.inf.ontop.model.vocabulary.GEO;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
@@ -61,6 +66,14 @@ import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.WhereBuilder;
+import org.apache.jena.arq.querybuilder.handlers.WhereHandler;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.query.Query;
+import org.apache.jena.sparql.syntax.ElementGroup;
+import org.apache.jena.sparql.syntax.ElementService;
+
 public class QueryClient {
     private static final Logger LOGGER = LogManager.getLogger(QueryClient.class);
 
@@ -73,21 +86,24 @@ public class QueryClient {
     // prefixes
     private static final String ONTO_EMS = "https://www.theworldavatar.com/kg/ontoems/";
     public static final String PREFIX_DISP = "http://www.theworldavatar.com/kg/dispersion/";
+    public static final String PREFIX_DISP_2 = "https://www.theworldavatar.com/kg/ontodispersion/";
     static final String OM_STRING = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
     public static final String CHEM = "http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#";
     public static final String ONTO_CITYGML = "http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#";
 
     private static final Prefix P_OM = SparqlBuilder.prefix("om", iri(OM_STRING));
     private static final Prefix P_DISP = SparqlBuilder.prefix("disp", iri(PREFIX_DISP));
+    private static final Prefix P_DISP2 = SparqlBuilder.prefix("disp2", iri(PREFIX_DISP_2));
     private static final Prefix P_GEO = SparqlBuilder.prefix("geo", iri(GEO.PREFIX));
     private static final Prefix P_GEOF = SparqlBuilder.prefix("geof", iri(GEOF.NAMESPACE));
     private static final Prefix P_EMS = SparqlBuilder.prefix("ems", iri(ONTO_EMS));
+    private static final Prefix P_OCGML = SparqlBuilder.prefix("ocgml", iri(ONTO_CITYGML));
     // classes
     public static final String REPORTING_STATION = "https://www.theworldavatar.com/kg/ontoems/ReportingStation";
     public static final String NX = PREFIX_DISP + "nx";
     public static final String NY = PREFIX_DISP + "ny";
     public static final String SCOPE = PREFIX_DISP + "Scope";
-    public static final String CITIES_NAMESPACE = "https://www.theworldavatar.com/kg/ontodispersion/OntoCityGMLNamespace";
+    public static final String CITIES_NAMESPACE = PREFIX_DISP_2 + "OntoCityGMLNamespace";
     public static final String SIMULATION_TIME = PREFIX_DISP + "SimulationTime";
     public static final String NO_X = PREFIX_DISP + "NOx";
     public static final String UHC = PREFIX_DISP + "uHC";
@@ -95,11 +111,20 @@ public class QueryClient {
     public static final String SO2 = PREFIX_DISP + "SO2";
     public static final String PM10 = PREFIX_DISP + "PM10";
     public static final String PM25 = PREFIX_DISP + "PM2.5";
+    public static final String NO_X_2 = PREFIX_DISP_2 + "NOx";
+    public static final String UHC_2 = PREFIX_DISP_2 + "uHC";
+    public static final String CO_2 = PREFIX_DISP_2 + "CO";
+    public static final String SO2_2 = PREFIX_DISP_2 + "SO2";
+    public static final String PM10_2 = PREFIX_DISP_2 + "PM10";
+    public static final String PM25_2 = PREFIX_DISP_2 + "PM2.5";
+    public static final String CO2_2 = PREFIX_DISP_2 + "CO2";
     public static final String DENSITY = OM_STRING + "Density";
     public static final String TEMPERATURE = OM_STRING + "Temperature";
     public static final String MASS_FLOW = OM_STRING + "MassFlow";
     private static final Iri SHIP = P_DISP.iri("Ship");
     private static final Iri MEASURE = P_OM.iri("Measure");
+    private static final Iri STATIC_POINT_SOURCE = P_DISP2.iri("StaticPointSource");
+
     // weather types
     private static final String CLOUD_COVER = ONTO_EMS + "CloudCover";
     private static final String AIR_TEMPERATURE = ONTO_EMS + "AirTemperature";
@@ -136,6 +161,10 @@ public class QueryClient {
     private static final Iri BELONGS_TO = iri(DerivationSparql.derivednamespace + "belongsTo");
     private static final Iri REPORTS = P_EMS.iri("reports");
     private static final Iri HAS_NAME = P_DISP.iri("hasName");
+    private static final Iri HAS_OCGML_OBJECT = P_DISP2.iri("hasOntoCityGMLCityObject");
+    private static final Iri EMITS = P_DISP2.iri("emits");
+    private static final Iri HAS_SRS_NAME = P_OCGML.iri("srsname");
+    private static final Iri HAS_QTY = P_DISP2.iri("hasQuantity");
 
     // fixed units for each measured property
     private static final Map<String, Iri> UNIT_MAP = new HashMap<>();
@@ -181,6 +210,217 @@ public class QueryClient {
         query.where(gp);
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
         return Long.parseLong(queryResult.getJSONObject(0).getString(value.getQueryString().substring(1)));
+    }
+
+    private JSONArray queryStaticPointSources() {
+        SelectQuery query = Queries.SELECT().prefix(P_DISP2);
+        Variable sps = query.var();
+        Variable emissionIRI = query.var();
+        Variable ocgmlIRI = query.var();
+        GraphPattern gp = GraphPatterns.and(sps.isA(STATIC_POINT_SOURCE).andHas(EMITS, emissionIRI),
+                emissionIRI.has(HAS_OCGML_OBJECT, ocgmlIRI));
+        query.select(ocgmlIRI).where(gp);
+        return storeClient.executeQuery(query.getQueryString());
+    }
+
+    String getNamespaceCRS(String namespace) {
+        SelectQuery query = Queries.SELECT().prefix(P_OCGML);
+        Variable crs = query.var();
+        Variable test = query.var();
+        GraphPattern gp = test.has(HAS_SRS_NAME, crs);
+        query.select(crs).where(gp);
+        JSONArray queryResult = AccessAgentCaller.queryStore(namespace, query.getQueryString());
+        return queryResult.getJSONObject(0).getString(crs.getQueryString().substring(1));
+    }
+
+    private List<String> getIRIofStaticPointSourcesWithinScope(Polygon scope, String citiesNamespace,
+            String namespaceCRS) throws org.apache.jena.sparql.lang.sparql_11.ParseException {
+
+        JSONArray pointSourceIRI = queryStaticPointSources();
+        List<String> pointSourceIRIList = IntStream.range(0, pointSourceIRI.length())
+                .mapToObj(j -> pointSourceIRI.getString(j).replace("cityfurniture", "cityobject"))
+                .collect(Collectors.toList());
+        Coordinate[] scopeCoordinates = scope.getCoordinates();
+        double xMin = scopeCoordinates[0].x;
+        double yMin = scopeCoordinates[0].y;
+        double xMax = xMin;
+        double yMax = yMin;
+        for (int i = 0; i < scopeCoordinates.length; i++) {
+            double xc = scopeCoordinates[i].x;
+            double yc = scopeCoordinates[i].y;
+            xMin = Math.min(xMin, xc);
+            yMin = Math.min(yMin, yc);
+            xMax = Math.max(xMax, xc);
+            yMax = Math.max(yMax, yc);
+        }
+
+        // Convert coordinates to the CRS used in the namespace
+
+        String scopeSrid = "EPSG:" + scope.getSRID();
+        double[] xyMin = { xMin, yMin };
+        double[] xyMax = { xMax, yMax };
+        double[] xyMinCRS = CRSTransformer.transform(scopeSrid, "EPSG:" + namespaceCRS, xyMin);
+        double[] xyMaxCRS = CRSTransformer.transform(scopeSrid, "EPSG:" + namespaceCRS, xyMax);
+
+        // Perform geospatial SPARQL query to get IRIs of emitting points within scope.
+        // This query only works correctly in the Pirmasens namespace where emitting
+        // points are
+        // instantiated in the cityobject graph.
+        // The values of zMin and zMax are arbitrary.
+        double zMin = 0.0;
+        double zMax = 50.0;
+        String lowerPoints = xyMinCRS[0] + "#" + xyMinCRS[1] + "#" + zMin + "#";
+        String lowerBounds = lowerPoints + lowerPoints + lowerPoints + lowerPoints + lowerPoints;
+        lowerBounds = lowerBounds.substring(0, lowerBounds.length() - 1);
+
+        String upperPoints = xyMaxCRS[0] + "#" + xyMaxCRS[1] + "#" + zMax + "#";
+        String upperBounds = upperPoints + upperPoints + upperPoints + upperPoints + upperPoints;
+        upperBounds = upperBounds.substring(0, upperBounds.length() - 1);
+
+        String geoUri = "http://www.bigdata.com/rdf/geospatial#";
+        // where clause for geospatial search
+        WhereBuilder wb = new WhereBuilder()
+                .addPrefix("ocgml", ONTO_CITYGML)
+                .addPrefix("geo", geoUri)
+                .addWhere("?cityObject", "geo:predicate", "ocgml:EnvelopeType")
+                .addWhere("?cityObject", "geo:searchDatatype", "<http://localhost/blazegraph/literals/POLYGON-3-15>")
+                .addWhere("?cityObject", "geo:customFields", "X0#Y0#Z0#X1#Y1#Z1#X2#Y2#Z2#X3#Y3#Z3#X4#Y4#Z4")
+                // PLACEHOLDER because lowerBounds and upperBounds would be otherwise added as
+                // doubles, not strings
+                .addWhere("?cityObject", "geo:customFieldsLowerBounds", "PLACEHOLDER" + lowerBounds)
+                .addWhere("?cityObject", "geo:customFieldsUpperBounds", "PLACEHOLDER" + upperBounds);
+
+        // where clause to check that the city object is a building
+        WhereBuilder wb2 = new WhereBuilder()
+                .addPrefix("ocgml", ONTO_CITYGML)
+                .addWhere("?cityObject", "ocgml:objectClassId", "?id")
+                .addFilter("?id=26");
+
+        WhereBuilder wb3 = new WhereBuilder().addValueVar("?cityobject").addValueRow(pointSourceIRIList)
+                .addBind("?cityobject", "?cityObject");
+
+        SelectBuilder sb = new SelectBuilder()
+                .addVar("?cityObject");
+
+        Query query = sb.build();
+        // add geospatial service
+        ElementGroup body = new ElementGroup();
+        body.addElement(wb3.build().getQueryPattern());
+        body.addElement(new ElementService(geoUri + "search", wb.build().getQueryPattern()));
+        // body.addElement(wb2.build().getQueryPattern());
+        query.setQueryPattern(body);
+
+        // add city object graph. Not sure if this part is needed. Comment out for now.
+        // WhereHandler wh = new WhereHandler(query.cloneQuery());
+        // String cityObjectGraph =
+        // "http://www.theworldavatar.com:83/citieskg/namespace/" + citiesNamespace
+        // + "/sparql/cityobject/";
+        // WhereHandler wh2 = new WhereHandler(sb.build());
+        // wh2.addGraph(NodeFactory.createURI(cityObjectGraph), wh);
+
+        String queryString = query.toString().replace("PLACEHOLDER", "");
+        JSONArray buildingIRIQueryResult = AccessAgentCaller.queryStore(citiesNamespace, queryString);
+
+        List<String> pointSourceIRIWithinScope = IntStream.range(0, buildingIRIQueryResult.length())
+                .mapToObj(j -> buildingIRIQueryResult.getString(j))
+                .collect(Collectors.toList());
+
+        // If cityfurniture was replaced with cityobject for the geosparql query, it
+        // must be changed back to cityfurniture before
+        // returning the list of static point sources within the scope to Aermod agent.
+        if ("jriEPSG24500".equals(citiesNamespace)) {
+            for (int i = 0; i < pointSourceIRIWithinScope.size(); i++) {
+                String sourceIRI = pointSourceIRIWithinScope.get(i).replace("cityobject", "cityfurniture");
+                pointSourceIRIWithinScope.set(i, sourceIRI);
+            }
+        }
+
+        return pointSourceIRIWithinScope;
+
+    }
+
+    public List<StaticPointSource> getStaticPointSourcesWithinScope(Polygon scope, String citiesNamespace,
+            String namespaceCRS) throws org.apache.jena.sparql.lang.sparql_11.ParseException {
+
+        List<String> pointSourceOCGMLIRIWithinScope = getIRIofStaticPointSourcesWithinScope(scope, citiesNamespace,
+                namespaceCRS);
+        SelectQuery query = Queries.SELECT();
+        Variable ocgmlIRI = query.var();
+        Variable sps = query.var();
+        Variable emissionIRI = query.var();
+        Variable pollutant = query.var();
+        Variable massFlowIRI = query.var();
+        Variable densityIRI = query.var();
+        Variable temperatureIRI = query.var();
+        Variable emissionValue = query.var();
+        Variable densityValue = query.var();
+        Variable temperatureValue = query.var();
+        GraphPattern gp = GraphPatterns.and(sps.isA(STATIC_POINT_SOURCE).andHas(EMITS, emissionIRI),
+                emissionIRI.isA(pollutant).andHas(HAS_OCGML_OBJECT, ocgmlIRI).andHas(HAS_QTY, massFlowIRI)
+                        .andHas(HAS_QTY, densityIRI).andHas(HAS_QTY, temperatureIRI),
+                massFlowIRI.isA(iri(MASS_FLOW)).andHas(HAS_NUMERICALVALUE, emissionValue),
+                densityIRI.isA(iri(DENSITY)).andHas(HAS_NUMERICALVALUE, densityValue),
+                temperatureIRI.isA(iri(TEMPERATURE)).andHas(HAS_NUMERICALVALUE, temperatureValue));
+        ValuesPattern<Iri> vp = new ValuesPattern<>(ocgmlIRI,
+                pointSourceOCGMLIRIWithinScope.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
+        query.select(sps, ocgmlIRI, pollutant, emissionValue, densityValue, temperatureValue).where(gp, vp);
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        Map<String, StaticPointSource> iriToPointSourceMap = new HashMap<>();
+
+        for (int i = 0; i < queryResult.length(); i++) {
+            String spsIRI = queryResult.getJSONObject(i).getString(sps.getQueryString().substring(1));
+            String pollutantID = queryResult.getJSONObject(i).getString(pollutant.getQueryString().substring(1));
+            String ontoCityGMLIRI = queryResult.getJSONObject(i).getString(ocgmlIRI.getQueryString().substring(1));
+            double emission = queryResult.getJSONObject(i).getDouble(emissionValue.getQueryString().substring(1));
+            double density = queryResult.getJSONObject(i).getDouble(densityValue.getQueryString().substring(1));
+            double temperature = queryResult.getJSONObject(i).getDouble(temperatureValue.getQueryString().substring(1));
+
+            StaticPointSource pointSource;
+
+            // Check the units when setting the flow rates, density and temperature.
+
+            if (iriToPointSourceMap.containsKey(spsIRI)) {
+                pointSource = iriToPointSourceMap.get(spsIRI);
+            } else {
+                pointSource = new StaticPointSource(spsIRI);
+                pointSource.setOcgmlIri(ontoCityGMLIRI);
+                pointSource.setMixtureDensityInKgm3(density);
+                pointSource.setMixtureTemperatureInKelvin(temperature);
+                iriToPointSourceMap.put(spsIRI, pointSource);
+            }
+
+            switch (pollutantID) {
+                case CO2_2:
+                    pointSource.setFlowrateCO2InTonsPerYear(emission);
+                    break;
+                case NO_X_2:
+                    pointSource.setFlowrateNOxInKgPerS(emission);
+                    break;
+                case SO2_2:
+                    pointSource.setFlowrateSO2InKgPerS(emission);
+                    break;
+                case CO_2:
+                    pointSource.setFlowrateCOInKgPerS(emission);
+                    break;
+                case UHC_2:
+                    pointSource.setFlowrateHCInKgPerS(emission);
+                    break;
+                case PM10_2:
+                    pointSource.setPM10(emission);
+                    break;
+                case PM25_2:
+                    pointSource.setPM25(emission);
+                    break;
+                default:
+                    LOGGER.info("Unknown pollutant ID encountered in AermodAgent/QueryClient class: " + pollutantID);
+
+            }
+
+        }
+
+        return iriToPointSourceMap.values().stream().collect(Collectors.toList());
+
     }
 
     List<Ship> getShipsWithinTimeAndScopeViaTsClient(long simulationTime, Geometry scope) {
@@ -273,58 +513,58 @@ public class QueryClient {
         return locationMeasureToShipMap;
     }
 
-    void setEmissions(List<Ship> ships) {
+    void setEmissions(List<PointSource> allSources) {
         SelectQuery query = Queries.SELECT();
 
         Variable derivation = query.var();
-        Variable ship = query.var();
+        Variable pointSource = query.var();
         Variable entity = query.var();
         Variable entityType = query.var();
         Variable quantity = query.var();
         Variable quantityType = query.var();
         Variable numericalValue = query.var();
 
-        ValuesPattern<Iri> shipValues = new ValuesPattern<>(ship,
-                ships.stream().map(s -> iri(s.getIri())).collect(Collectors.toList()), Iri.class);
+        ValuesPattern<Iri> sourceValues = new ValuesPattern<>(pointSource,
+                allSources.stream().map(s -> iri(s.getIri())).collect(Collectors.toList()), Iri.class);
 
-        GraphPattern gp = GraphPatterns.and(derivation.has(IS_DERIVED_FROM, ship),
+        GraphPattern gp = GraphPatterns.and(derivation.has(IS_DERIVED_FROM, pointSource),
                 entity.has(BELONGS_TO, derivation).andIsA(entityType)
                         .andHas(HAS_QUANTITY, quantity),
                 quantity.isA(quantityType).andHas(PropertyPaths.path(HAS_VALUE, HAS_NUMERICALVALUE), numericalValue));
 
-        query.where(gp, shipValues).prefix(P_OM);
+        query.where(gp, sourceValues).prefix(P_OM);
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         // create a look up map to get ship object based on IRI
-        Map<String, Ship> iriToShipMap = new HashMap<>();
-        ships.stream().forEach(s -> iriToShipMap.put(s.getIri(), s));
+        Map<String, PointSource> iriToSourceMap = new HashMap<>();
+        allSources.stream().forEach(s -> iriToSourceMap.put(s.getIri(), s));
 
         for (int i = 0; i < queryResult.length(); i++) {
-            String shipIri = queryResult.getJSONObject(i).getString(ship.getQueryString().substring(1));
+            String sourceIri = queryResult.getJSONObject(i).getString(pointSource.getQueryString().substring(1));
             double literalValue = queryResult.getJSONObject(i).getDouble(numericalValue.getQueryString().substring(1));
-            Ship shipObject = iriToShipMap.get(shipIri);
+            PointSource sourceObject = iriToSourceMap.get(sourceIri);
 
             String entityTypeIri = queryResult.getJSONObject(i).getString(entityType.getQueryString().substring(1));
             String quantityTypeIri = queryResult.getJSONObject(i).getString(quantityType.getQueryString().substring(1));
 
             if (entityTypeIri.contentEquals(PM10) && quantityTypeIri.contentEquals(MASS_FLOW)) {
                 // PM10 flowrate
-                shipObject.setPM10(literalValue);
+                sourceObject.setPM10(literalValue);
             } else if (entityTypeIri.contentEquals(PM25) && quantityTypeIri.contentEquals(MASS_FLOW)) {
                 // PM2.5 flowrate
-                shipObject.setPM25(literalValue);
+                sourceObject.setPM25(literalValue);
             } else if (entityTypeIri.contentEquals(PM25) && quantityTypeIri.contentEquals(DENSITY)) {
                 // particle density
-                shipObject.setParticleDensity(literalValue);
+                sourceObject.setParticleDensity(literalValue);
             } else if (entityTypeIri.contentEquals(SO2) && quantityTypeIri.contentEquals(TEMPERATURE)) {
                 // all gas mixtures share the same temperature
-                shipObject.setMixtureTemperatureInKelvin(literalValue);
+                sourceObject.setMixtureTemperatureInKelvin(literalValue);
             } else if (entityTypeIri.contentEquals(SO2) && quantityTypeIri.contentEquals(DENSITY)) {
                 // all gas mixtures share the same density
-                shipObject.setMixtureDensityInKgm3(literalValue);
+                sourceObject.setMixtureDensityInKgm3(literalValue);
             } else if (entityTypeIri.contentEquals(SO2) && quantityTypeIri.contentEquals(MASS_FLOW)) {
-                shipObject.setFlowrateSO2InKgPerS(literalValue);
+                sourceObject.setFlowrateSO2InKgPerS(literalValue);
             }
         }
     }
@@ -336,15 +576,15 @@ public class QueryClient {
      * @param ships
      * @return
      */
-    List<String> getDerivationsOfShips(List<Ship> ships) {
+    List<String> getDerivationsOfPointSources(List<PointSource> allSources) {
         SelectQuery query = Queries.SELECT();
 
         Variable derivation = query.var();
-        Variable ship = query.var();
+        Variable pointSource = query.var();
         Iri isDerivedFrom = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
-        ValuesPattern<Iri> vp = new ValuesPattern<>(ship,
-                ships.stream().map(s -> iri(s.getIri())).collect(Collectors.toList()), Iri.class);
-        GraphPattern gp = derivation.has(isDerivedFrom, ship);
+        ValuesPattern<Iri> vp = new ValuesPattern<>(pointSource,
+                allSources.stream().map(s -> iri(s.getIri())).collect(Collectors.toList()), Iri.class);
+        GraphPattern gp = derivation.has(isDerivedFrom, pointSource);
 
         query.where(gp, vp);
 
