@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">19 May 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">24 May 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ontology for urban building energy modelling (UBEM) and master planning (MP) data</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -535,10 +535,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVPanels -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVPanel -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVPanels">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVPanel">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Photovoltaic panel: converts solar radiation into usable electrical energy</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
@@ -546,12 +546,41 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVPanelsArea -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVPanelArea -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVPanelsArea">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVPanelArea">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total area of photovoltaic panels</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The area of a photovoltaic panel</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVPanels -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVPanels"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTCollector -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollector">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Photovoltaic thermal hybrid solar collector: converts solar radiation into usable thermal and electrical energy</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectorArea -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectorArea">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The area of a photovoltaic thermal collector</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -560,29 +589,14 @@
     <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectors -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Photovoltaic thermal hybrid solar collector: converts solar radiation into usable thermal and electrical energy</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectors"/>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectorsArea -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTPlateCollector -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectorsArea">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total area of photovoltaic thermal collectors</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTPlateCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTPlateCollectors">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTPlateCollector">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectors"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Photovoltaic thermal hybrid solar collector with thermal plate collector</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
@@ -590,10 +604,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTPlateCollectorsArea -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTPlateCollectorArea -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTPlateCollectorsArea">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTPlateCollectorArea">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total area of photovoltaic thermal collectors with thermal plate collectors</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
@@ -601,10 +615,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTTubeCollectors -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTTubeCollector -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTTubeCollectors">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTTubeCollector">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectors"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Photovoltaic thermal hybrid solar collector with thermal tube collector</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
@@ -612,10 +626,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTTubeCollectorsArea -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTTubeCollectorArea -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTTubeCollectorsArea">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTTubeCollectorArea">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total area of photovoltaic thermal collectors with thermal tube collectors</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
@@ -634,10 +648,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectors -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/SolarCollector -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectors">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollector">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Solar collector: converts solar radiation into usable thermal energy</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
@@ -645,14 +659,21 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectorsArea -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectorArea -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectorsArea">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectorArea">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total area of solar collectors</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The area of a solar collector</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectors -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectors"/>
     
 
 
@@ -689,45 +710,45 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/ThermalPlateCollectors -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/ThermalPlateCollector -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/ThermalPlateCollectors">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/ThermalPlateCollector">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Plate solar collectors</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Plate solar collector</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/ThermalPlateCollectorsArea -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/ThermalPlateCollectorArea -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/ThermalPlateCollectorsArea">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/ThermalPlateCollectorArea">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total area of thermal plate collectors</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The area of a thermal plate collector</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/ThermalTubeCollectors -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/ThermalTubeCollector -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/ThermalTubeCollectors">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/ThermalTubeCollector">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tube solar collectors</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tube solar collector</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/ThermalTubeCollectorsArea -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/ThermalTubeCollectorArea -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/ThermalTubeCollectorsArea">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/ThermalTubeCollectorArea">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total area of thermal tube collectors</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The area of a thermal tube collector</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
