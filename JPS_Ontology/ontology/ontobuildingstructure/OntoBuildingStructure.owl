@@ -49,7 +49,7 @@
                 </owl:unionOf>
             </owl:Class>
         </rdfs:range>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation that denotes the subcomposition a roof or wall facade and their individual roofs or walls.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a facade and its comprising components. Each facade comprises of one or more instances of their corresponding component type, such as a roof or a wall.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">comprises of</rdfs:label>
     </owl:ObjectProperty>
