@@ -6,16 +6,13 @@ import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
-import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
-import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.json.JSONArray;
-import org.json.JSONObject;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
@@ -44,32 +41,16 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.cmclinnovations.stack.clients.gdal.GDALClient;
-import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
-
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
-import org.apache.jena.arq.querybuilder.handlers.WhereHandler;
-import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.query.Query;
 import org.apache.jena.sparql.syntax.ElementGroup;
 import org.apache.jena.sparql.syntax.ElementService;
@@ -212,7 +193,7 @@ public class QueryClient {
         return Long.parseLong(queryResult.getJSONObject(0).getString(value.getQueryString().substring(1)));
     }
 
-    private JSONArray queryStaticPointSources() {
+    private List<String> queryStaticPointSources() {
         SelectQuery query = Queries.SELECT().prefix(P_DISP2);
         Variable sps = query.var();
         Variable emissionIRI = query.var();
@@ -220,7 +201,15 @@ public class QueryClient {
         GraphPattern gp = GraphPatterns.and(sps.isA(STATIC_POINT_SOURCE).andHas(EMITS, emissionIRI),
                 emissionIRI.has(HAS_OCGML_OBJECT, ocgmlIRI));
         query.select(ocgmlIRI).where(gp);
-        return storeClient.executeQuery(query.getQueryString());
+        JSONArray pointSourceIRI = storeClient.executeQuery(query.getQueryString());
+        List<String> pointSourceIRIList = new ArrayList<>();
+        for (int i = 0; i < pointSourceIRI.length(); i++) {
+            String ontoCityGMLIRI = pointSourceIRI.getJSONObject(i).getString(ocgmlIRI.getQueryString().substring(1));
+            pointSourceIRIList.add(ontoCityGMLIRI);
+        }
+
+        return pointSourceIRIList;
+
     }
 
     String getNamespaceCRS(String namespace) {
@@ -236,10 +225,8 @@ public class QueryClient {
     private List<String> getIRIofStaticPointSourcesWithinScope(Polygon scope, String citiesNamespace,
             String namespaceCRS) throws org.apache.jena.sparql.lang.sparql_11.ParseException {
 
-        JSONArray pointSourceIRI = queryStaticPointSources();
-        List<String> pointSourceIRIList = IntStream.range(0, pointSourceIRI.length())
-                .mapToObj(j -> pointSourceIRI.getString(j).replace("cityfurniture", "cityobject"))
-                .collect(Collectors.toList());
+        List<String> pointSourceIRIList = queryStaticPointSources();
+
         Coordinate[] scopeCoordinates = scope.getCoordinates();
         double xMin = scopeCoordinates[0].x;
         double yMin = scopeCoordinates[0].y;
@@ -259,8 +246,8 @@ public class QueryClient {
         String scopeSrid = "EPSG:" + scope.getSRID();
         double[] xyMin = { xMin, yMin };
         double[] xyMax = { xMax, yMax };
-        double[] xyMinCRS = CRSTransformer.transform(scopeSrid, "EPSG:" + namespaceCRS, xyMin);
-        double[] xyMaxCRS = CRSTransformer.transform(scopeSrid, "EPSG:" + namespaceCRS, xyMax);
+        double[] xyMinCRS = CRSTransformer.transform(scopeSrid, namespaceCRS, xyMin);
+        double[] xyMaxCRS = CRSTransformer.transform(scopeSrid, namespaceCRS, xyMax);
 
         // Perform geospatial SPARQL query to get IRIs of emitting points within scope.
         // This query only works correctly in the Pirmasens namespace where emitting
@@ -296,7 +283,7 @@ public class QueryClient {
                 .addWhere("?cityObject", "ocgml:objectClassId", "?id")
                 .addFilter("?id=26");
 
-        WhereBuilder wb3 = new WhereBuilder().addValueVar("?cityobject").addValueRow(pointSourceIRIList)
+        WhereBuilder wb3 = new WhereBuilder().addValueVar("?cityobject", pointSourceIRIList.toArray(new String[0]))
                 .addBind("?cityobject", "?cityObject");
 
         SelectBuilder sb = new SelectBuilder()
@@ -321,9 +308,12 @@ public class QueryClient {
         String queryString = query.toString().replace("PLACEHOLDER", "");
         JSONArray buildingIRIQueryResult = AccessAgentCaller.queryStore(citiesNamespace, queryString);
 
-        List<String> pointSourceIRIWithinScope = IntStream.range(0, buildingIRIQueryResult.length())
-                .mapToObj(j -> buildingIRIQueryResult.getString(j))
-                .collect(Collectors.toList());
+        List<String> pointSourceIRIWithinScope = new ArrayList<>();
+
+        for (int i = 0; i < buildingIRIQueryResult.length(); i++) {
+            String pointSourceIRI = buildingIRIQueryResult.getJSONObject(i).getString("cityObject");
+            pointSourceIRIWithinScope.add(pointSourceIRI);
+        }
 
         // If cityfurniture was replaced with cityobject for the geosparql query, it
         // must be changed back to cityfurniture before
@@ -344,7 +334,7 @@ public class QueryClient {
 
         List<String> pointSourceOCGMLIRIWithinScope = getIRIofStaticPointSourcesWithinScope(scope, citiesNamespace,
                 namespaceCRS);
-        SelectQuery query = Queries.SELECT();
+        SelectQuery query = Queries.SELECT().prefix(P_DISP2, P_OM);
         Variable ocgmlIRI = query.var();
         Variable sps = query.var();
         Variable emissionIRI = query.var();
