@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">19 May 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">24 May 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Building Structure ontology (OntoBuildingStructure) is an ontology developed to represent the building structural components (walls, doors, slabs, roofs, stairs) and their individual characteristics such as dimensions and qualities.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -37,7 +37,7 @@
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/Roof"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/Wall"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation that denotes the subcomposition a roof or wall fa�ade and their individual roofs or walls. </rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation that denotes the subcomposition a roof or wall Facade and their individual roofs or walls. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">comprise of</rdfs:label>
     </owl:ObjectProperty>
@@ -106,7 +106,7 @@
         </rdfs:range>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation that links a building to their roof and wall facades.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has fa�ade</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has facade</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -372,7 +372,7 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The easthern frontage  of a building. It can comprise of several walls.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">East Wall Fa�ade</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">East Wall Facade</rdfs:label>
     </owl:Class>
     
 
@@ -432,7 +432,7 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The northern frontage  of a building. It can comprise of several walls.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">North Wall Fa�ade</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">North Wall Facade</rdfs:label>
     </owl:Class>
     
 
@@ -485,7 +485,7 @@
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The visible surface of a building&apos;s roof at aerial view. It can comprise of several roofs.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Roof Fa�ade</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Roof Facade</rdfs:label>
     </owl:Class>
     
 
@@ -509,7 +509,7 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The southern frontage  of a building. It can comprise of several walls.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">South Wall Fa�ade</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">South Wall Facade</rdfs:label>
     </owl:Class>
     
 
@@ -614,7 +614,7 @@
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The frontage  of a building. It can comprise of several walls.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall Fa�ade</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall Facade</rdfs:label>
     </owl:Class>
     
 
@@ -626,7 +626,7 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The westhern frontage  of a building. It can comprise of several walls.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">West Wall Fa�ade</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">West Wall Facade</rdfs:label>
     </owl:Class>
     
 
