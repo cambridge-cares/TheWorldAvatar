@@ -16,7 +16,7 @@ public class GeoObject3D {
     private String name;
     private int objectClassid;
     private String gmlid;
-    private ObjectAddress address;
+    private ObjectAddress address = new ObjectAddress();
 
     private static final Logger LOGGER = LogManager.getLogger(SpatialLink.class);
     private PostgresClient postgresClient;
@@ -65,7 +65,7 @@ public class GeoObject3D {
         List<GeoObject3D> allObject3D = new ArrayList<>();
 
         try (Connection conn = postgresClient.getConnection()) {
-            String sql = "SELECT gmlid, objectclass_id, name, envelope FROM cityobject";
+            String sql = "SELECT id, gmlid, objectclass_id, name, envelope FROM cityobject";
             try (Statement stmt = conn.createStatement()) {
                 ResultSet result = stmt.executeQuery(sql);
                 while (result.next()) {
@@ -75,6 +75,7 @@ public class GeoObject3D {
                     object3D.setName(result.getString("name"));
                     object3D.setGeometry((PGgeometry)result.getObject("envelope"));
                     object3D.setPostGISClient(postgresClient);
+                    object3D.setAddress(this.address.queryAddress(result.getInt("id"), conn));
                     allObject3D.add(object3D);
                 }
                 return allObject3D;

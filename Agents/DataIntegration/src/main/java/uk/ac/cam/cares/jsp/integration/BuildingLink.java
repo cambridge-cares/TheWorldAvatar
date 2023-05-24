@@ -63,10 +63,19 @@ public class BuildingLink extends HttpServlet {
             LOGGER.error(e.getMessage());
             throw new RuntimeException(e);
         }
+        switch(req.getParameter("mode")) {
+            case "1":
+                fuzzyMatchName(this.geoObject3Ds,this.kgObjects);
+                break;
+            case "2":
+                fuzzyMatchAddress(this.geoObject3Ds,this.kgObjects);
+                break;
+            default:
+                // code block
+        }
 
-        fuzzyMatch(this.geoObject3Ds,this.kgObjects);
     }
-    public void fuzzyMatch(List<GeoObject3D> geoObject3Ds, List<KGObjects> kgObjects){
+    public void fuzzyMatchName(List<GeoObject3D> geoObject3Ds, List<KGObjects> kgObjects){
         MatchService matchService = new MatchService();
         List<Document> documentList = new ArrayList<>();
         for (int j = 0; j < geoObject3Ds.size(); j++){
@@ -83,6 +92,44 @@ public class BuildingLink extends HttpServlet {
                 double score = 0.0;
                 Document matchDoc = new Document.Builder(kgObjects.get(i).getObjectIri())
                         .addElement(new Element.Builder<String>().setValue(kgObjects.get(i).getObjectName()).setType(ElementType.NAME).createElement())
+                        .createDocument();
+
+                Map<String, List<Match<Document>>> result = matchService.applyMatchByDocId(matchDoc,documentList);
+
+                for (Map.Entry<String, List<Match<Document>>> entry : result.entrySet()) {
+                    for (Match<Document> match : entry.getValue()) {
+                        System.out.println("Data: " + match.getData() + " Matched With: " + match.getMatchedWith() + " Score: " + match.getScore().getResult());
+                        if(match.getScore().getResult()>score && match.getScore().getResult()>0.5){
+                            score = match.getScore().getResult();
+                            kgObjects.get(i).setObjectId(match.getMatchedWith().getKey());
+                        }
+                    }
+                }
+                kgObjects.get(i).updateOntoCityGML();
+            }
+        }
+
+
+    }
+
+    public void fuzzyMatchAddress(List<GeoObject3D> geoObject3Ds, List<KGObjects> kgObjects){
+        MatchService matchService = new MatchService();
+        List<Document> documentList = new ArrayList<>();
+        for (int j = 0; j < geoObject3Ds.size(); j++){
+            if(geoObject3Ds.get(j).getAddress() != null){
+                String address = geoObject3Ds.get(j).getAddress().getStreet() + "," + geoObject3Ds.get(j).getAddress().getZipCode();
+                Document preDocument = new Document.Builder(geoObject3Ds.get(j).getGmlId())
+                        .addElement(new Element.Builder<String>().setValue(address).setType(ElementType.ADDRESS).createElement())
+                        .createDocument();
+                documentList.add(preDocument);
+            }
+        }
+
+        for(int i = 0; i < kgObjects.size(); i++){
+            if(kgObjects.get(i).getObjectName() != null){
+                double score = 0.0;
+                Document matchDoc = new Document.Builder(kgObjects.get(i).getObjectIri())
+                        .addElement(new Element.Builder<String>().setValue(kgObjects.get(i).getObjectName()).setType(ElementType.ADDRESS).createElement())
                         .createDocument();
 
                 Map<String, List<Match<Document>>> result = matchService.applyMatchByDocId(matchDoc,documentList);

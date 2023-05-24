@@ -31,13 +31,19 @@ import java.util.*;
 public class SpatialLink extends HttpServlet {
 
     private static final Logger LOGGER = LogManager.getLogger(SpatialLink.class);
-    private PostgresClient postgresClient;
+    private PostgresClient postgresClient2d;
+    private PostgresClient postgresClient3d;
 
     List<GeoObject3D> allObject3D = new ArrayList<>();
     List<GeoObject2D> allObject2D = new ArrayList<>();
 
     public SpatialLink() {}
-
+    void setPostGISClient2d(PostgresClient postgisClient) {
+        this.postgresClient2d = postgisClient;
+    }
+    void setPostGISClient3d(PostgresClient postgisClient) {
+        this.postgresClient3d = postgisClient;
+    }
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         new Config().initProperties();
         LOGGER.info("Received POST request to build spatial linking");
@@ -59,12 +65,17 @@ public class SpatialLink extends HttpServlet {
             throw new RuntimeException(e);
         }
 
-        PostgresClient conn2 = new PostgresClient(Config.dburl + "/" + db2d, Config.dbuser, Config.dbpassword);
-        PostgresClient conn3 = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
+        if (postgresClient2d == null) {
+            postgresClient2d = new PostgresClient(Config.dburl + "/" + db2d, Config.dbuser, Config.dbpassword);
+            PostgresClient postgresClient3d = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
+        }
+        if (postgresClient3d == null) {
+            postgresClient3d = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
+        }
 
-        object2D.setPostGISClient(conn2);
+        object2D.setPostGISClient(postgresClient2d);
         this.allObject2D = object2D.getObject2D(db2d_table);
-        object3D.setPostGISClient(conn3);
+        object3D.setPostGISClient(postgresClient3d);
         this.allObject3D = object3D.getObject3D();
         try {
             findMatchedObjects();
@@ -106,7 +117,14 @@ public class SpatialLink extends HttpServlet {
                         System.out.println("ratio: "+areaRatio + "%");
                         if(areaRatio>60){
                             if((refAreaRation !=0 && refAreaRation<areaRatio) || refAreaRation==0){
+                                ObjectAddress address = new ObjectAddress();
                                 object3D.setName(object2D.getName());
+                                address.setStreet(object2D.getStreet());
+                                address.setZipCode(object2D.getPostcode());
+                                address.setCity(object2D.getCity());
+                                address.setCountry(object2D.getCountry());
+                                address.setGmlid(object3D.getGmlId());
+                                object3D.setAddress(address);
                                 refAreaRation = areaRatio;
                             }
                         }
@@ -120,7 +138,7 @@ public class SpatialLink extends HttpServlet {
             if (object3D.getName() != null){
                 object3D.updateName(object3D);
             }
-            if (object3D.getAddress()!= null){
+            if (object3D.getAddress().getStreet()!= null){
                 object3D.updateAddress(object3D.getAddress());
             }
         }

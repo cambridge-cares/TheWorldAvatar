@@ -73,7 +73,7 @@ public class GeoObject2D {
         List<GeoObject2D> allObject2D = new ArrayList<>();
 
         try (Connection conn = postgresClient.getConnection()) {
-            String sql = "SELECT name, addr_postc, addr_stree, addr_count, addr_city, wkb_geometry FROM " + tableName;
+            String sql = "SELECT name, addr_postc, addr_stree, addr_count, addr_city, wkb_geometry FROM " + tableName + " WHERE name is not null or addr_stree is not null";
             try (Statement stmt = conn.createStatement()) {
                 ResultSet result = stmt.executeQuery(sql);
                 while (result.next()) {
