@@ -81,33 +81,55 @@ def generate_temp_rdf():
     temp_dict = call_pickle('./Data/temp_dict in function get_all_data')
     #g = Graph()
     for key_1, value_1 in tqdm(temp_dict.items()):
-        for key, value in temp_dict[key_1].items():
-            for key_3, value_3 in temp_dict[key_1][key].items():
-                region = key_1
-                clim_var = key_3
-                meas_uuid = CLIMA + 'ClimateMeasurement_' + str(uuid.uuid4())
-                temp_uuid = CLIMA + 'Temperature_' + str(uuid.uuid4())
-                val_uuid = CLIMA + 'Value_' + str(uuid.uuid4())
-                start_time = key[0:10] + "T"+ key[11:19] + "Z"
-                end_time = start_end_dict[start_time]
+        region = key_1
+        query_string = f""" 
+                SELECT DISTINCT ?meas_uuid ?start_time
+                WHERE {{
+                        <{region}> <{CLIMB_HASMEASURE}>  ?meas_uuid .
+                        ?meas_uuid <{RDF_TYPE}>  <{CLIMB_CLIMATEMEASUREMENT}> ;
+                                <{COMP_HAS_STARTUTC}> ?start_time ;
+                                    <{COMP_HAS_ENDUTC}>  ?end_time ;
+                                    <{CLIMB_HASVAR}>   ?var ;
+                                    <{OM_HAS_NUMERICALVALUE}> ?value .
+                         }}
+        """
+        DEF_NAMESPACE = "heatpump"
+        LOCAL_KG = "http://localhost:3846/blazegraph"
+        LOCAL_KG_SPARQL = LOCAL_KG + "/namespace/" + DEF_NAMESPACE + "/sparql"
+        sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
+        sparql.setMethod(POST)  # POST query, not GET
+        sparql.setReturnFormat(JSON)
+        sparql.setQuery(query_string)
+        ret = sparql.query().convert()
+        # parsing JSON into an array
+        values = ret["results"]["bindings"]
+        if len(values) == 36:
+            #print(f"{region} skipped")
+            pass
+        else: 
+            for key, value in temp_dict[key_1].items():
+                for key_3, value_3 in temp_dict[key_1][key].items():
+                    clim_var = key_3
+                    meas_uuid = CLIMA + 'ClimateMeasurement_' + str(uuid.uuid4())
+                    temp_uuid = CLIMA + 'Temperature_' + str(uuid.uuid4())
+                    val_uuid = CLIMA + 'Value_' + str(uuid.uuid4())
+                    start_time = key[0:10] + "T"+ key[11:19] + "Z"
+                    end_time = start_end_dict[start_time]
 
-                query_string = f"""
-                    INSERT DATA {{<{region}> <{CLIMB_HASMEASURE}>  <{meas_uuid}> .
-                        <{meas_uuid}> <{COMP_HAS_STARTUTC}> "{start_time}"^^<{XSD_DATETIME}>;
-                                       <{RDF_TYPE}> <{CLIMB_CLIMATEMEASUREMENT}> ;
-                            <{COMP_HAS_ENDUTC}> "{end_time}"^^<{XSD_DATETIME}>;
-                            <{CLIMB_HASVAR}> "{clim_var}"^^<{XSD_STRING}> ;
-                            <{OM_HAS_NUMERICALVALUE}> "{value_3}"^^<{XSD_FLOAT}>.
-                                }}
-                """
-                DEF_NAMESPACE = "heatpump"
-                LOCAL_KG = "http://localhost:3846/blazegraph"
-                LOCAL_KG_SPARQL = LOCAL_KG + "/namespace/" + DEF_NAMESPACE + "/sparql"
+                    query_string = f"""
+                        INSERT DATA {{<{region}> <{CLIMB_HASMEASURE}>  <{meas_uuid}> .
+                            <{meas_uuid}> <{COMP_HAS_STARTUTC}> "{start_time}"^^<{XSD_DATETIME}>;
+                                        <{RDF_TYPE}> <{CLIMB_CLIMATEMEASUREMENT}> ;
+                                <{COMP_HAS_ENDUTC}> "{end_time}"^^<{XSD_DATETIME}>;
+                                <{CLIMB_HASVAR}> "{clim_var}"^^<{XSD_STRING}> ;
+                                <{OM_HAS_NUMERICALVALUE}> "{value_3}"^^<{XSD_FLOAT}>.
+                                    }}
+                    """
 
-                sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
-                sparql.setMethod(POST)  # POST query, not GET
-                sparql.setQuery(query_string)
-                ret = sparql.query()
+                    sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
+                    sparql.setMethod(POST)  # POST query, not GET
+                    sparql.setQuery(query_string)
+                    ret = sparql.query()
 
                 ## region = URIRef(region)
                 # clim_var = URIRef(clim_var)
