@@ -38,7 +38,9 @@ public class GeoServerClient extends ContainerClient {
     private final PostGISEndpointConfig postgreSQLEndpoint;
 
     private static GeoServerClient instance = null;
-    private static final String STATIC_DATA_DIRECTORY = "/var/geoserver/datadir/www/static_data";
+    private static final Path SERVING_DIRECTORY = Path.of("/var/geoserver/datadir/www");
+    private static final String STATIC_DATA_DIRECTORY = SERVING_DIRECTORY.resolve("static_data").toString();
+    private static final String ICONS_DIRECTORY = SERVING_DIRECTORY.resolve("icons").toString();
 
     public static GeoServerClient getInstance() {
         if (null == instance) {
@@ -110,17 +112,25 @@ public class GeoServerClient extends ContainerClient {
         }
     }
 
-    public void loadStaticData(Path directory, String file) {
+    public void loadOtherFiles(Path baseDirectory, String file) {
+        loadData(baseDirectory, file, STATIC_DATA_DIRECTORY);
+    }
+
+    public void loadIcons(Path baseDirectory, String file) {
+        loadData(baseDirectory, file, ICONS_DIRECTORY);
+    }
+
+    public void loadData(Path baseDirectory, String file, String baseDestinationDirectory) {
         String containerId = getContainerId("geoserver");
-        Path filePath = directory.resolve(file);
+        Path filePath = baseDirectory.resolve(file);
 
         if (!Files.exists(filePath)) {
             throw new RuntimeException(
                     "Static GeoServer data '" + filePath + "' does not exist and could not be loaded.");
         } else if (Files.isRegularFile(filePath)) {
-            sendFiles(containerId, directory.toString(), List.of(file), STATIC_DATA_DIRECTORY);
+            sendFiles(containerId, baseDirectory.toString(), List.of(file), baseDestinationDirectory);
         } else if (Files.isDirectory(filePath)) {
-            Path destinationDirectory = Path.of(STATIC_DATA_DIRECTORY).resolve(filePath.getFileName());
+            Path destinationDirectory = Path.of(baseDestinationDirectory).resolve(filePath.getFileName());
 
             if (!directoryExists(containerId, destinationDirectory.toString())) {
                 makeDir(containerId, destinationDirectory.toString());

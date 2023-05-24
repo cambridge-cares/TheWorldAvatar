@@ -53,6 +53,11 @@
                         "Type": "volume",
                         "Source": "geoserver_static_data",
                         "Target": "/var/geoserver/datadir/www/static_data"
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "geoserver_icons",
+                        "Target": "/var/geoserver/datadir/www/icons"
                     }
                 ],
                 "Configs": [

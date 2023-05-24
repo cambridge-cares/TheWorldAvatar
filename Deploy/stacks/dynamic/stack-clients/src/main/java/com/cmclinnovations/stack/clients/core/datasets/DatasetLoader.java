@@ -121,8 +121,12 @@ public class DatasetLoader {
 
             if (dataset.getStaticGeoServerData() != null) {
                 GeoServerClient geoServerClient = GeoServerClient.getInstance();
+                String iconsDir = dataset.getStaticGeoServerData().getIconsDir();
+                if (iconsDir != null) {
+                    geoServerClient.loadOtherFiles(directory, iconsDir);
+                }
                 dataset.getStaticGeoServerData().getOtherFiles()
-                        .forEach(file -> geoServerClient.loadStaticData(directory, file));
+                        .forEach(file -> geoServerClient.loadOtherFiles(directory, file));
             }
 
             dataSubsets.forEach(subset -> subset.load(dataset));
