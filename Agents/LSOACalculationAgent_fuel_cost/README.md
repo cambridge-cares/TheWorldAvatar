@@ -15,11 +15,11 @@ ONTOP_FILE            # Path to ontop mapping file (i.e. within Docker container
 
 
 ### How to deploy this agent on stack
-Details about the routes on the stack establishment, and how to deploy the agent on the stack can be found [here](https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-2/Agents/LSOAInputAgent/deploy_agent_on_stack.html)
+Details about the routes on the stack establishment, and how to deploy the agent on the stack can be found [here](https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-3/Agents/LSOAInputAgent/deploy_agent_on_stack.html)
 ### How to use this agent
 An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root http://localhost:5020/. All requests are to be sent as GET requests 
 
-Details about how to use the agent please see the [home page](https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-2/Agents/LSOACalculationAgent_fuel_cost/agent/flaskapp/templates/index.html) of this agent
+Details about how to use the agent please see the [home page](https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-3/Agents/LSOACalculationAgent_fuel_cost/agent/flaskapp/templates/index.html) of this agent
 
 
 <!-- files -->

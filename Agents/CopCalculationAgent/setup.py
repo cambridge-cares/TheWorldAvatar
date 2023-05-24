@@ -9,7 +9,7 @@ setup(
     python_requires='>=3.8',
     description="The `copcalculation` agent calculates the coefficient of performance for a particular month in a Lower Super Output Area in the UK \
                 and populates the result to knowledge graph as part of The World Avatar project.",
-    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-heat-pump-migration-to-stack-2/Agents/CopCalculationAgent",
+    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-heat-pump-migration-to-stack-3/Agents/CopCalculationAgent",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_namespace_packages(exclude=['tests','tests.*']),

@@ -39,7 +39,7 @@ BOILER_EFFICIENCY             # Assumed the efficiency of the gas boiler
 
 
 ### How to deploy this agent on stack
-Details about the routes on the stack establishment, and how to deploy the agent on the stack can be found [here](https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-2/Agents/LSOAInputAgent/deploy_agent_on_stack.html)
+Details about the routes on the stack establishment, and how to deploy the agent on the stack can be found [here](https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-3/Agents/LSOAInputAgent/deploy_agent_on_stack.html)
 
 ### Use the agent
 The Resulted Consumption Calculation Agent is intended to use the `Asychronous mode` of the Derivation Framework to detect changes in instantiated [OntoRegionalAnalysis] properties (i.e. `COP`, `Electricity consumption`, `Gas Consumption`,`Boiler Efficiency`,`Proportion of Heating`,`Heat Pump Uptake`,`Energy Consumption Profile`.) and automatically updates associated `Resulted Energy Consumption`  instances in the KG. As the agent adopts the `pyderivationagent`, it also serves HTTP requests to handle synchronous derivations. However, it is (strongly) discouraged to invoke such HTTP request by ONESELF. 
@@ -69,8 +69,8 @@ py ./resultedconsumptioncalculationagent/markup.py
 Jieyang Xu (jx309@cam.ac.uk), May 2023
 <!-- Links -->
 [markup.py]:./resultedconsumptioncalculationagent/markup.py
-[home page]:https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-2/Agents/ResultedConsumptionCalculationAgent/index.html
-[CopCalculationAgent]:https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-heat-pump-migration-to-stack-2/Agents/CopCalculationAgent
+[home page]:https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-3/Agents/ResultedConsumptionCalculationAgent/index.html
+[CopCalculationAgent]:https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-heat-pump-migration-to-stack-3/Agents/CopCalculationAgent
 <!-- websites -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
 [Container registry on Github]: https://ghcr.io
