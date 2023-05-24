@@ -23,8 +23,7 @@ from datamodel.iris import *
 import csv
 import geopandas as gpd
 import pandas as pd
-
-logging.basicConfig(filename='rasterio.log', level=logging.DEBUG)
+from SPARQLWrapper import SPARQLWrapper, CSV, JSON, POST
 
 def reformat_dates(input_dict):
     '''
@@ -65,52 +64,87 @@ def call_pickle(pathname):
 # parse_to_file(update,'sample_temp_update')
 
 def generate_temp_rdf():
+    start_end_dict = {
+        "2020-01-01T12:00:00Z":"2020-01-31T12:00:00Z",
+        "2020-02-01T12:00:00Z":"2020-02-28T12:00:00Z",
+        "2020-03-01T12:00:00Z":"2020-03-31T12:00:00Z",
+        "2020-04-01T12:00:00Z":"2020-04-30T12:00:00Z",
+        "2020-05-01T12:00:00Z":"2020-05-31T12:00:00Z",
+        "2020-06-01T12:00:00Z":"2020-06-30T12:00:00Z",
+        "2020-07-01T12:00:00Z":"2020-07-31T12:00:00Z",
+        "2020-08-01T12:00:00Z":"2020-08-31T12:00:00Z",
+        "2020-09-01T12:00:00Z":"2020-09-30T12:00:00Z",
+        "2020-10-01T12:00:00Z":"2020-10-31T12:00:00Z",
+        "2020-11-01T12:00:00Z":"2020-11-30T12:00:00Z",
+        "2020-12-01T12:00:00Z":"2020-12-31T12:00:00Z"
+    }
     temp_dict = call_pickle('./Data/temp_dict in function get_all_data')
-    g = Graph()
+    #g = Graph()
     for key_1, value_1 in tqdm(temp_dict.items()):
         for key, value in temp_dict[key_1].items():
             for key_3, value_3 in temp_dict[key_1][key].items():
                 region = key_1
                 clim_var = key_3
-                meas_uuid = CLIMA + 'Measurement_' + str(uuid.uuid4())
+                meas_uuid = CLIMA + 'ClimateMeasurement_' + str(uuid.uuid4())
                 temp_uuid = CLIMA + 'Temperature_' + str(uuid.uuid4())
                 val_uuid = CLIMA + 'Value_' + str(uuid.uuid4())
-                start_time = key
-                region = URIRef(region)
-                clim_var = URIRef(clim_var)
-                temp_uuid = URIRef(temp_uuid)
-                val_uuid = URIRef(val_uuid)
-                meas_uuid = URIRef(meas_uuid)
+                start_time = key[0:10] + "T"+ key[11:19] + "Z"
+                end_time = start_end_dict[start_time]
 
-                CLIMB_HASMEASURE_a = URIRef(CLIMB_HASMEASURE)
-                RDF_TYPE_a = URIRef(RDF_TYPE)
-                CLIMB_CLIMBVARIABLE_a = URIRef(CLIMB_CLIMBVARIABLE)
-                CLIMB_CLIMATEMEASUREMENT_a = URIRef(CLIMB_CLIMATEMEASUREMENT)
-                COMP_HAS_STARTUTC_a = URIRef(COMP_HAS_STARTUTC)
-                CLIMB_HASVAR_a = URIRef(CLIMB_HASVAR)
-                OM_HAS_PHENO_a = URIRef(OM_HAS_PHENO)
-                OM_HAS_VALUE_a = URIRef(OM_HAS_VALUE)
-                OM_MEASURE_a = URIRef(OM_MEASURE)
-                OM_HAS_UNIT_a = URIRef(OM_HAS_UNIT)
-                OM_DEGREE_C_a = URIRef(OM_DEGREE_C)
-                OM_HAS_NUMERICALVALUE_a = URIRef(OM_HAS_NUMERICALVALUE)
-                OM_TEMPERATURE_a = URIRef(OM_TEMPERATURE)
+                query_string = f"""
+                    INSERT DATA {{<{region}> <{CLIMB_HASMEASURE}>  <{meas_uuid}> .
+                        <{meas_uuid}> <{COMP_HAS_STARTUTC}> "{start_time}"^^<{XSD_DATETIME}>;
+                                       <{RDF_TYPE}> <{CLIMB_CLIMATEMEASUREMENT}> ;
+                            <{COMP_HAS_ENDUTC}> "{end_time}"^^<{XSD_DATETIME}>;
+                            <{CLIMB_HASVAR}> "{clim_var}"^^<{XSD_STRING}> ;
+                            <{OM_HAS_NUMERICALVALUE}> "{value_3}"^^<{XSD_FLOAT}>.
+                                }}
+                """
+                DEF_NAMESPACE = "heatpump"
+                LOCAL_KG = "http://localhost:3846/blazegraph"
+                LOCAL_KG_SPARQL = LOCAL_KG + "/namespace/" + DEF_NAMESPACE + "/sparql"
 
-                # Add triples to the graph
-                g.add((region, CLIMB_HASMEASURE_a, meas_uuid))
-                g.add((clim_var, RDF_TYPE_a, CLIMB_CLIMBVARIABLE_a))
-                g.add((meas_uuid, RDF_TYPE_a, CLIMB_CLIMATEMEASUREMENT_a))
-                g.add((meas_uuid, COMP_HAS_STARTUTC_a, Literal(start_time, datatype=XSD_DATETIME)))
-                # g.add((meas_uuid, COMP_HAS_ENDUTC, Literal(end_time, datatype=XSD.DATETIME)))
-                g.add((meas_uuid, CLIMB_HASVAR_a, Literal(clim_var, datatype=XSD_STRING)))
-                g.add((temp_uuid, RDF_TYPE_a, OM_TEMPERATURE_a))
-                g.add((temp_uuid, OM_HAS_PHENO_a, meas_uuid))
-                g.add((temp_uuid, OM_HAS_VALUE_a, val_uuid))
-                g.add((val_uuid, RDF_TYPE_a, OM_MEASURE_a))
-                g.add((val_uuid, OM_HAS_UNIT_a, OM_DEGREE_C_a))
-                g.add((val_uuid, OM_HAS_NUMERICALVALUE_a, Literal(value_3, datatype=XSD_FLOAT)))
+                sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
+                sparql.setMethod(POST)  # POST query, not GET
+                sparql.setQuery(query_string)
+                ret = sparql.query()
 
-    g.serialize(destination='./Data/temp.rdf',format="application/rdf+xml")
+                ## region = URIRef(region)
+                # clim_var = URIRef(clim_var)
+                # temp_uuid = URIRef(temp_uuid)
+                # val_uuid = URIRef(val_uuid)
+                # meas_uuid = URIRef(meas_uuid)
+
+                # CLIMB_HASMEASURE_a = URIRef(CLIMB_HASMEASURE)
+                # RDF_TYPE_a = URIRef(RDF_TYPE)
+                # CLIMB_CLIMBVARIABLE_a = URIRef(CLIMB_CLIMBVARIABLE)
+                # CLIMB_CLIMATEMEASUREMENT_a = URIRef(CLIMB_CLIMATEMEASUREMENT)
+                # COMP_HAS_STARTUTC_a = URIRef(COMP_HAS_STARTUTC)
+                # COMP_HAS_ENDUTC_a = URIRef(COMP_HAS_ENDUTC)
+                # CLIMB_HASVAR_a = URIRef(CLIMB_HASVAR)
+                # OM_HAS_PHENO_a = URIRef(OM_HAS_PHENO)
+                # OM_HAS_VALUE_a = URIRef(OM_HAS_VALUE)
+                # OM_MEASURE_a = URIRef(OM_MEASURE)
+                # OM_HAS_UNIT_a = URIRef(OM_HAS_UNIT)
+                # OM_DEGREE_C_a = URIRef(OM_DEGREE_C)
+                # OM_HAS_NUMERICALVALUE_a = URIRef(OM_HAS_NUMERICALVALUE)
+                # OM_TEMPERATURE_a = URIRef(OM_TEMPERATURE)
+
+                # # Add triples to the graph
+                # g.add((region, CLIMB_HASMEASURE_a, meas_uuid))
+                # g.add((clim_var, RDF_TYPE_a, CLIMB_CLIMBVARIABLE_a))
+                # g.add((meas_uuid, RDF_TYPE_a, CLIMB_CLIMATEMEASUREMENT_a))
+                # g.add((meas_uuid, COMP_HAS_STARTUTC_a, Literal(start_time, datatype=XSD_DATETIME)))
+                # g.add((meas_uuid, COMP_HAS_ENDUTC_a, Literal(end_time, datatype=XSD_DATETIME)))
+                # g.add((meas_uuid, CLIMB_HASVAR_a, Literal(clim_var, datatype=XSD_STRING)))
+                # g.add((temp_uuid, RDF_TYPE_a, OM_TEMPERATURE_a))
+                # g.add((temp_uuid, OM_HAS_PHENO_a, meas_uuid))
+                # g.add((temp_uuid, OM_HAS_VALUE_a, val_uuid))
+                # g.add((val_uuid, RDF_TYPE_a, OM_MEASURE_a))
+                # g.add((val_uuid, OM_HAS_UNIT_a, OM_DEGREE_C_a))
+                # g.add((val_uuid, OM_HAS_NUMERICALVALUE_a, Literal(value_3, datatype=XSD_FLOAT)))
+                # for subj, pred, obj in g:
+                #     print(subj, pred, obj)
 
 def consump_figure_using_tom_code():
     def standard_query(query, namespace, limit):
@@ -404,7 +438,7 @@ def New_convert_NetCDF_to_GeoTiff():
 #############################################################################
 #get_the_metadat_of_nc_file()
 #convert_NetCDF_to_GeoTiff()
-convert_NetCDF_to_GeoTiff()
-#generate_temp_rdf()
+#convert_NetCDF_to_GeoTiff()
+generate_temp_rdf()
 #consump_figure_using_tom_code()
 #make_geometry_valid()

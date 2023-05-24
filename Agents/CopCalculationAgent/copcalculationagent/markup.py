@@ -66,9 +66,9 @@ def retrieve_derivation_iri(
 def retrieve_temperature_iri(sparql_client: PySparqlClient):
         
         query_string = f"""
-        SELECT DISTINCT ?temperature_iri ?start
-        WHERE {{?region <{CLIMB_HASMEASURE}>  ?temperature_iri.
-                ?temperature_iri <{COMP_HAS_STARTUTC}> ?start;
+        SELECT DISTINCT ?temperature_iri 
+        WHERE {{<http://statistics.data.gov.uk/id/statistical-geography/E01000001> <{CLIMB_HASMEASURE}>  ?temperature_iri.
+                ?temperature_iri <{COMP_HAS_STARTUTC}> "2020-01-01T12:00:00.000Z"^^<{XSD_DATETIME}>;
                     <{COMP_HAS_ENDUTC}> ?end ;
                     <{CLIMB_HASVAR}> "{CLIMA_TAS}"^^<{XSD_STRING}> ;
                     <{OM_HAS_NUMERICALVALUE}> ?meantemperature.}}

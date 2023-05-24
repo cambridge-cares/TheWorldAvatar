@@ -6,7 +6,6 @@
 # The purpose of this module is to provide functionality to execute KG queries
 # and updates using the PySparqlClient module from pyderivationagent
 
-from datetime import datetime
 from rdflib import URIRef, Literal
 import uuid
 
@@ -14,7 +13,6 @@ from py4jps import agentlogging
 from pyderivationagent.kg_operations import PySparqlClient
 
 from copcalculationagent.datamodel.iris import *
-from copcalculationagent.datamodel.data import GBP_SYMBOL, TIME_FORMAT_LONG, TIME_FORMAT_SHORT
 from copcalculationagent.utils.env_configs import HEATPUMP_EFFICIENCY, HOTSIDE_TEMPERATURE
 from copcalculationagent.errorhandling.exceptions import *
 

@@ -69,7 +69,7 @@ class COPCalculationAgent(DerivationAgent):
         #                                              derivationIRI=derivIRI)
         for i in tqdm(range(len(temperature_iri_list))):
             temperature_iri = temperature_iri_list[i]
-            g = self.getCOPGraph(temperature_iri,heatpumpefficiency_iri,hotsidetemperature_iri)
+            g = self.getCOPGraph(temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri)
 
             # Collect the generated triples derivation_outputs
             derivation_outputs.addGraph(g)
