@@ -5,7 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -36,6 +38,7 @@ public class GeoServerClient extends ContainerClient {
     private final PostGISEndpointConfig postgreSQLEndpoint;
 
     private static GeoServerClient instance = null;
+    private static final String STATIC_DATA_DIRECTORY = "/var/geoserver/datadir/www/static_data";
 
     public static GeoServerClient getInstance() {
         if (null == instance) {
@@ -104,6 +107,29 @@ public class GeoServerClient extends ContainerClient {
                 throw new RuntimeException("GeoServer style '" + workspaceName + ":" + name
                         + "' does not exist and could not be created.");
             }
+        }
+    }
+
+    public void loadStaticData(Path directory, String file) {
+        String containerId = getContainerId("geoserver");
+        Path filePath = directory.resolve(file);
+
+        if (!Files.exists(filePath)) {
+            throw new RuntimeException(
+                    "Static GeoServer data '" + filePath + "' does not exist and could not be loaded.");
+        } else if (Files.isRegularFile(filePath)) {
+            sendFiles(containerId, directory.toString(), List.of(file), STATIC_DATA_DIRECTORY);
+        } else if (Files.isDirectory(filePath)) {
+            Path destinationDirectory = Path.of(STATIC_DATA_DIRECTORY).resolve(filePath.getFileName());
+
+            if (!directoryExists(containerId, destinationDirectory.toString())) {
+                makeDir(containerId, destinationDirectory.toString());
+            }
+            sendFolder(containerId, filePath.toString(), destinationDirectory.toString());
+        } else {
+            throw new RuntimeException(
+                    "Static GeoServer data '" + filePath
+                            + "' exists but is neither a regular file or a directory and could not be loaded.");
         }
     }
 
