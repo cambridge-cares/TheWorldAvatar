@@ -29,17 +29,29 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuildingstructure/compriseOf -->
+    <!-- https://www.theworldavatar.com/kg/ontobuildingstructure/comprisesOf -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/compriseOf">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/RoofFacade"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/Roof"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/Wall"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation that denotes the subcomposition a roof or wall Facade and their individual roofs or walls. </rdfs:comment>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/comprisesOf">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/RoofFacade"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/Roof"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/Wall"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation that denotes the subcomposition a roof or wall facade and their individual roofs or walls. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">comprise of</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">comprises of</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -49,23 +61,23 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/consistsOf">
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/Stair"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/Wall"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/Stair"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/Wall"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/Door"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/Window"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/Landing"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/Railing"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/StairFlight"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/StairStructuralComponent"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/Window"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:range>
@@ -479,7 +491,7 @@
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/RoofFacade">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/compriseOf"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/comprisesOf"/>
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/Roof"/>
             </owl:Restriction>
         </rdfs:subClassOf>
@@ -608,7 +620,7 @@
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/compriseOf"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/comprisesOf"/>
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontobuildingstructure/Wall"/>
             </owl:Restriction>
         </rdfs:subClassOf>
