@@ -24,7 +24,7 @@ class ResultedConsumptionAgent(DerivationAgent):
         self.sparql_client = self.get_sparql_client(KGClient)
 
     def agent_input_concepts(self) -> list:
-        return [OM_MEASURE, OM_MEASURE, OM_MEASURE, 
+        return [REGION_COP, OM_MEASURE, OM_MEASURE, 
                 REGION_PROPORTION_OF_HEATING, REGION_BOILER_EFFICIENCY, 
                 REGION_UPTAKE, REGION_ENERGYCONSUMPTION_PROFILE]
     
@@ -39,7 +39,8 @@ class ResultedConsumptionAgent(DerivationAgent):
     def validate_input_values(self, inputs, derivationIRI=None):
         
         # Create dict between input concepts and return values
-        input_dict = {OM_MEASURE:[None, None, None],
+        input_dict = {REGION_COP:None,
+                      OM_MEASURE:[None, None],
                       REGION_PROPORTION_OF_HEATING:None, 
                       REGION_BOILER_EFFICIENCY:None, 
                       REGION_UPTAKE:None, 
@@ -62,7 +63,7 @@ class ResultedConsumptionAgent(DerivationAgent):
             else: 
                 self.logger.info(f"Derivation {derivationIRI}: Insufficient set of inputs provided.")
             
-            return input_dict[OM_MEASURE][0],input_dict[OM_MEASURE][1],input_dict[OM_MEASURE][2],
+            return input_dict[REGION_COP],input_dict[OM_MEASURE][0],input_dict[OM_MEASURE][1],
         input_dict[REGION_PROPORTION_OF_HEATING],input_dict[REGION_BOILER_EFFICIENCY],
         input_dict[REGION_UPTAKE],input_dict[REGION_ENERGYCONSUMPTION_PROFILE]
         
@@ -172,19 +173,3 @@ def default():
     msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ResultedConsumptionCalculationAgent<BR>"
     return msg
 
-# agent_config = config_derivation_agent(env_file='./agent.env.example')
-
-# agent = ResultedConsumptionAgent(
-#     # Settings read from environment variables (.env file, docker-compose)
-#     register_agent=agent_config.REGISTER_AGENT,
-#     agent_iri=agent_config.ONTOAGENT_SERVICE_IRI, 
-#     time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
-#     derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
-#     agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
-#     # Settings read from Stack Clients
-#     kg_url=SPARQL_QUERY_ENDPOINT,
-#     kg_update_url=SPARQL_QUERY_ENDPOINT,      
-#     # Miscellaneous settings
-#     logger_name='dev',
-#     max_thread_monitor_async_derivations=1
-# )

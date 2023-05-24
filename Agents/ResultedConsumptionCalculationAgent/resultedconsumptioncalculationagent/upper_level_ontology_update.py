@@ -30,6 +30,7 @@ def check_country(sparql_client):
     if not res:
         country_iri = ONTOCAPE + "Country_" + str(uuid.uuid4())
         print(f'No existed country iri, created {country_iri}')
+        update_country(sparql_client, country_iri)
     else: 
         res = res[0]
         country_iri = str(res["country"])
@@ -54,9 +55,9 @@ def region_within_country_update_template(region, country_iri):
      return triple
 
 def ontop_data_backup_template(region):
-
-    elec_consumption_iri = ONTOGASGRID + "ElectricityConsumptionMeasure_" + region
-    gas_consumption_iri  = ONTOGASGRID + "GasConsumptionMeasure_" + region
+    region_code = region.split("/")[-1]
+    elec_consumption_iri = ONTOGASGRID + "ElectricityConsumptionMeasure_" + region_code
+    gas_consumption_iri  = ONTOGASGRID + "GasConsumptionMeasure_" + region_code
     
     triple = f"""
      <{elec_consumption_iri}> <{RDF_TYPE}> <{OM_MEASURE}>.
@@ -328,6 +329,7 @@ def initialize_indecies(sparql_client):
     res = sparql_client.performUpdate(query_string)
 
 def ontop_data_backup(sparql_client: PySparqlClient):
+    
     # A source file 'LSOA_codes_IRIs.csv' file is needed to get all the IRI for regions
     data = pd.read_csv('LSOA_codes_IRIs.csv')
 
@@ -368,7 +370,6 @@ def ontop_data_backup(sparql_client: PySparqlClient):
         sparql_client.performUpdate(query)
 # ----------------------------- Tasks ------------------------------- #
 
-
 # Create a PySparqlClient instance
 sparql_client = PySparqlClient(query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
 
@@ -378,6 +379,6 @@ initialize_indecies(sparql_client)
 
 ontop_data_backup(sparql_client)
 
-#update_regions_within_country(sparql_client)
+update_regions_within_country(sparql_client)
 
 
