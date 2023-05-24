@@ -15,7 +15,7 @@ Emission,Class,,,,,,Superclass of emission,https://www.theworldavatar.com/kg/ont
 nx,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,Number of cells in x direction,https://www.theworldavatar.com/kg/ontodispersion/,
 ny,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,Number of cells in y direction,https://www.theworldavatar.com/kg/ontodispersion/,
 z,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Height,IS-A,,,,Height to simulate,https://www.theworldavatar.com/kg/ontodispersion/,
-SimulationTime,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,Exact timestamp to run the simulation,https://www.theworldavatar.com/kg/ontodispersion/,
+SimulationTime,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,Unix timestamp to run the simulation,https://www.theworldavatar.com/kg/ontodispersion/,
 NO2,Class,Emission,IS-A,,,,Nitrogen dioxide,https://www.theworldavatar.com/kg/ontodispersion/,
 NOx,Class,Emission,IS-A,,,,Nitrogen oxides,https://www.theworldavatar.com/kg/ontodispersion/,
 uHC,Class,Emission,IS-A,,,,Unburned hydrocarbon,https://www.theworldavatar.com/kg/ontodispersion/,
