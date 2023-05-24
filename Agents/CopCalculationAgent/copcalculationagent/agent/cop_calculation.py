@@ -1,5 +1,6 @@
 from rdflib import Graph
 import numpy as np
+from tqdm import tqdm
 
 from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
@@ -21,7 +22,7 @@ class COPCalculationAgent(DerivationAgent):
     def agent_input_concepts(self) -> list:
         # Validate completeness of received HTTP request (i.e. non-empty HTTP request, 
         # contains derivationIRI, etc.) -> only relevant for synchronous derivation
-        return [OM_MEASURE, REGION_HEATPUMP_EFFICIENCY, REGION_HOTSIDE_TEMPERATURE]
+        return [CLIMB_CLIMATEMEASUREMENT, REGION_HEATPUMP_EFFICIENCY, REGION_HOTSIDE_TEMPERATURE]
     
     def agent_output_concepts(self) -> list:
         return [REGION_COP]
@@ -58,17 +59,20 @@ class COPCalculationAgent(DerivationAgent):
     def process_request_parameters(self, derivation_inputs: DerivationInputs, 
                                    derivation_outputs: DerivationOutputs):
         # Update assumptions provided
-        self.sparql_client.update_assumptions()
+        heatpumpefficiency_iri, hotsidetemperature_iri = self.sparql_client.update_assumptions()
         
         inputs = derivation_inputs.getInputs()
         derivIRI = derivation_inputs.getDerivationIRI()
-        temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri = self.validate_input_values(inputs=inputs,
-                                                     derivationIRI=derivIRI)
+        temperature_iri_list = self.sparql_client.retrieve_temperature_iri()
         
-        g = self.getCOPGraph(temperature_iri,heatpumpefficiency_iri,hotsidetemperature_iri)
+        # temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri = self.validate_input_values(inputs=inputs,
+        #                                              derivationIRI=derivIRI)
+        for i in tqdm(range(len(temperature_iri_list))):
+            temperature_iri = temperature_iri_list[i]
+            g = self.getCOPGraph(temperature_iri,heatpumpefficiency_iri,hotsidetemperature_iri)
 
-        # Collect the generated triples derivation_outputs
-        derivation_outputs.addGraph(g)
+            # Collect the generated triples derivation_outputs
+            derivation_outputs.addGraph(g)
 
     def getCOPGraph(self, temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri):
         

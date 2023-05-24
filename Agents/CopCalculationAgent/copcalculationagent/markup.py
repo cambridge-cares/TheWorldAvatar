@@ -67,13 +67,11 @@ def retrieve_temperature_iri(sparql_client: PySparqlClient):
         
         query_string = f"""
         SELECT DISTINCT ?temperature_iri ?start
-        WHERE {{?region <{CLIMB_HASMEASURE}>  ?m.
-                ?m <{COMP_HAS_STARTUTC}> ?start;
+        WHERE {{?region <{CLIMB_HASMEASURE}>  ?temperature_iri.
+                ?temperature_iri <{COMP_HAS_STARTUTC}> ?start;
                     <{COMP_HAS_ENDUTC}> ?end ;
-                    <{CLIMB_HASVAR}> "{CLIMA_TAS}"^^<{XSD_STRING}> .
-                ?p <{OM_HAS_PHENO}> ?m.
-                ?p <{OM_HAS_VALUE}> ?temperature_iri.
-        ?temperature_iri <{OM_HAS_NUMERICALVALUE}> ?meantemperature.}}
+                    <{CLIMB_HASVAR}> "{CLIMA_TAS}"^^<{XSD_STRING}> ;
+                    <{OM_HAS_NUMERICALVALUE}> ?meantemperature.}}
         """
 
         res = sparql_client.performQuery(query_string)

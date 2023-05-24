@@ -123,18 +123,17 @@ class KGClient(PySparqlClient):
         """
         query_string = self.remove_unnecessary_whitespace(query_string)
         self.performUpdate(query_string)
+        return heatpumpefficiency_iri, hotsidetemperature_iri
 
     def get_temperature(self, temperature_iri):
         # By using temperature_iri (from mean temperature) to retieve region & month
         query_string = f"""
         SELECT ?region ?start ?end ?meantemperature
-        WHERE {{?region <{CLIMB_HASMEASURE}>  ?m.
-                ?m <{COMP_HAS_STARTUTC}> ?start;
+        WHERE {{?region <{CLIMB_HASMEASURE}>  <{temperature_iri}> .
+                <{temperature_iri}> <{COMP_HAS_STARTUTC}> ?start;
                     <{COMP_HAS_ENDUTC}> ?end ;
-                    <{CLIMB_HASVAR}> "{CLIMA_TAS}"^^<{XSD_STRING}> .
-                ?p <{OM_HAS_PHENO}> ?m.
-                ?p <{OM_HAS_VALUE}> <{temperature_iri}>.
-        <{temperature_iri}> <{OM_HAS_NUMERICALVALUE}> ?meantemperature.}}
+                    <{CLIMB_HASVAR}> "{CLIMA_TAS}"^^<{XSD_STRING}> ;
+                    <{OM_HAS_NUMERICALVALUE}> ?meantemperature . }}
         """
         query_string = self.remove_unnecessary_whitespace(query_string)
         res = self.performQuery(query_string)
@@ -160,10 +159,8 @@ class KGClient(PySparqlClient):
             WHERE {{<{res['region']}> <{CLIMB_HASMEASURE}>  ?m.
                     ?m <{COMP_HAS_STARTUTC}> "{res['start']}"^^<{XSD_DATETIME}>;
                         <{COMP_HAS_ENDUTC}> "{res['end']}"^^<{XSD_DATETIME}>;
-                        <{CLIMB_HASVAR}> "{CLIMA_TASMAX}"^^<{XSD_STRING}> .
-                    ?p <{OM_HAS_PHENO}> ?m.
-                    ?p <{OM_HAS_VALUE}> ?t_iri.
-            ?t_iri <{OM_HAS_NUMERICALVALUE}> ?maxtemperature.}}
+                        <{CLIMB_HASVAR}> "{CLIMA_TASMAX}"^^<{XSD_STRING}> ;
+                        <{OM_HAS_NUMERICALVALUE}> ?maxtemperature .}}
             """
         
         query_string = self.remove_unnecessary_whitespace(query_string)
@@ -185,10 +182,8 @@ class KGClient(PySparqlClient):
             WHERE {{<{res['region']}> <{CLIMB_HASMEASURE}>  ?m.
                     ?m <{COMP_HAS_STARTUTC}> "{res['start']}"^^<{XSD_DATETIME}>;
                         <{COMP_HAS_ENDUTC}> "{res['end']}"^^<{XSD_DATETIME}>;
-                        <{CLIMB_HASVAR}> "{CLIMA_TASMIN}"^^<{XSD_STRING}> .
-                    ?p <{OM_HAS_PHENO}> ?m.
-                    ?p <{OM_HAS_VALUE}> ?t_iri.
-            ?t_iri <{OM_HAS_NUMERICALVALUE}> ?mintemperature.}}
+                        <{CLIMB_HASVAR}> "{CLIMA_TASMIN}"^^<{XSD_STRING}> ;
+                        <{OM_HAS_NUMERICALVALUE}> ?mintemperature .}}
             """
         
         query_string = self.remove_unnecessary_whitespace(query_string)
@@ -292,6 +287,25 @@ class KGClient(PySparqlClient):
 
         return query
 
+    def retrieve_temperature_iri(self):
+            
+            query_string = f"""
+            SELECT DISTINCT ?temperature_iri ?start
+            WHERE {{?region <{CLIMB_HASMEASURE}>  ?temperature_iri.
+                    ?temperature_iri <{COMP_HAS_STARTUTC}> ?start;
+                        <{COMP_HAS_ENDUTC}> ?end ;
+                        <{CLIMB_HASVAR}> "{CLIMA_TAS}"^^<{XSD_STRING}> ;
+                        <{OM_HAS_NUMERICALVALUE}> ?meantemperature. }}
+            """
+
+            res = self.performQuery(query_string)
+            
+            if not res:
+                raise IndexError('No temperature_iri found -- Are you sure you are using the correct namespace?')
+            else:
+                temperature_iri_list = [d['temperature_iri'] for d in res]
+
+                return temperature_iri_list
 # QUERY_ENDPOINT= "http://localhost:3846/blazegraph/namespace/heatpump/sparql"
 # a = KGClient(QUERY_ENDPOINT, QUERY_ENDPOINT)
 # # inputs = {'http://www.ontology-of-units-of-measure.org/resource/om-2/Measure': ['http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/Value_a968837a-7624-4c43-978d-9a9348ef1f40'], 'http://www.theworldavatar.com/ontology/ontoregionalanalysis/HeatPumpEfficiency': ['http://www.theworldavatar.com/ontology/ontoregionalanalysis/HeatPumpEfficiency_fba248c2-050f-4323-bc55-f8fb2ba01566'], 'http://www.theworldavatar.com/ontology/ontoregionalanalysis/HotSideTemperature': ['http://www.theworldavatar.com/ontology/ontoregionalanalysis/HotSideTemperature_e69b38bf-7894-43e8-a318-41e378faed8d']}

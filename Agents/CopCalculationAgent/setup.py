@@ -15,6 +15,7 @@ setup(
     packages=find_namespace_packages(exclude=['tests','tests.*']),
     include_package_data=True,
     install_requires= [
+        'tqdm==4.64.1',
         'numpy==1.21.6',
         'uuid==1.30',
         'datetime==4.7',
