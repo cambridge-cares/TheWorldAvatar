@@ -32,7 +32,7 @@ public class QueryClient {
     private TimeSeriesClient<Long> tsClient;
     private RemoteRDBStoreClient remoteRDBStoreClient;
 
-    static final String PREFIX = "http://www.theworldavatar.com/kg/ontodispersion/";
+    static final String PREFIX = "https://www.theworldavatar.com/kg/ontodispersion/";
     private static final Prefix P_DISP = SparqlBuilder.prefix("disp", iri(PREFIX));
     static final String OM_STRING = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
     private static final Prefix P_OM = SparqlBuilder.prefix("om", iri(OM_STRING));
