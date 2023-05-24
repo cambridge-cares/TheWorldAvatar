@@ -78,8 +78,8 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVPanels"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectors"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVPanel"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollector"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -116,8 +116,8 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVPanels"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectors"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVPanel"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollector"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -557,13 +557,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVPanels -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVPanels"/>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTCollector -->
 
 
@@ -586,18 +579,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectors"/>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTPlateCollector -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTPlateCollector">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectors"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollector"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Photovoltaic thermal hybrid solar collector with thermal plate collector</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
@@ -619,7 +605,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTTubeCollector">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectors"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollector"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Photovoltaic thermal hybrid solar collector with thermal tube collector</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
@@ -670,13 +656,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectors"/>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice -->
 
 
@@ -714,7 +693,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/ThermalPlateCollector">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectors"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollector"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Plate solar collector</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
@@ -736,7 +715,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/ThermalTubeCollector">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectors"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollector"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tube solar collector</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
