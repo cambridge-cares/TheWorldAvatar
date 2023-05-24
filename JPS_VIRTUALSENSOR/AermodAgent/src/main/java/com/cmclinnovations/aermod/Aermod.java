@@ -126,7 +126,7 @@ public class Aermod {
             return 1;
         }
 
-        return writeToFile(aermetDirectory.resolve("weather_template.144"), sb.toString());
+        return writeToFile(aermetDirectory.resolve("weather_template.144"), templateContent);
     }
 
     public int createAermetInput(Polygon scope) {
