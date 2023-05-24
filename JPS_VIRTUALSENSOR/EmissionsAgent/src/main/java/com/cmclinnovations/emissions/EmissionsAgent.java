@@ -56,7 +56,7 @@ public class EmissionsAgent extends DerivationAgent {
         }
         JSONObject emissions = getSurogateValues(speedRpm, 250);
         Chimney chimney = new Chimney(emissions);
-        addEmissionTriples(chimney, derivationOutputs);
+        addEmissionTriples(chimney, derivationOutputs, shipIri);
     }
 
     private JSONObject getSurogateValues(double speedRpm, double torqueNm) {
@@ -94,7 +94,7 @@ public class EmissionsAgent extends DerivationAgent {
      * @param chimney
      * @param derivationOutputs
      */
-    void addEmissionTriples(Chimney chimney, DerivationOutputs derivationOutputs) {
+    void addEmissionTriples(Chimney chimney, DerivationOutputs derivationOutputs, String shipIri) {
         // common IRIs
         String hasQuantity = QueryClient.OM_STRING + "hasQuantity";
         String hasValue = QueryClient.OM_STRING + "hasValue";
@@ -157,6 +157,7 @@ public class EmissionsAgent extends DerivationAgent {
                 QueryClient.MEASURE_STRING);
 
         // nox
+        derivationOutputs.addTriple(shipIri, QueryClient.EMITS, noxEmission);
         derivationOutputs.addTriple(noxEmission, hasQuantity, density);
         derivationOutputs.addTriple(noxEmission, hasQuantity, temperature);
         derivationOutputs.addTriple(noxEmission, hasQuantity, noxFlow);
@@ -165,6 +166,7 @@ public class EmissionsAgent extends DerivationAgent {
         derivationOutputs.addTriple(noxMeasure, hasUnit, kgs);
 
         // hc
+        derivationOutputs.addTriple(shipIri, QueryClient.EMITS, uhcEmission);
         derivationOutputs.addTriple(uhcEmission, hasQuantity, density);
         derivationOutputs.addTriple(uhcEmission, hasQuantity, temperature);
         derivationOutputs.addTriple(uhcEmission, hasQuantity, uhcFlow);
@@ -173,6 +175,7 @@ public class EmissionsAgent extends DerivationAgent {
         derivationOutputs.addTriple(uhcMeasure, hasUnit, kgs);
 
         // co
+        derivationOutputs.addTriple(shipIri, QueryClient.EMITS, coEmission);
         derivationOutputs.addTriple(coEmission, hasQuantity, density);
         derivationOutputs.addTriple(coEmission, hasQuantity, temperature);
         derivationOutputs.addTriple(coEmission, hasQuantity, coFlow);
@@ -181,6 +184,7 @@ public class EmissionsAgent extends DerivationAgent {
         derivationOutputs.addTriple(coMeasure, hasUnit, kgs);
 
         // so2
+        derivationOutputs.addTriple(shipIri, QueryClient.EMITS, so2Emission);
         derivationOutputs.addTriple(so2Emission, hasQuantity, density);
         derivationOutputs.addTriple(so2Emission, hasQuantity, temperature);
         derivationOutputs.addTriple(so2Emission, hasQuantity, so2Flow);
@@ -189,6 +193,7 @@ public class EmissionsAgent extends DerivationAgent {
         derivationOutputs.addTriple(so2Measure, hasUnit, kgs);
 
         // pm10
+        derivationOutputs.addTriple(shipIri, QueryClient.EMITS, pm10Emission);
         derivationOutputs.addTriple(pm10Emission, hasQuantity, particleDensity);
         derivationOutputs.addTriple(pm10Emission, hasQuantity, pm10Flow);
         derivationOutputs.addTriple(pm10Flow, hasValue, pm10Measure);
@@ -196,6 +201,7 @@ public class EmissionsAgent extends DerivationAgent {
         derivationOutputs.addTriple(pm10Measure, hasUnit, kgs);
 
         // pm25
+        derivationOutputs.addTriple(shipIri, QueryClient.EMITS, pm25Emission);
         derivationOutputs.addTriple(pm25Emission, hasQuantity, particleDensity);
         derivationOutputs.addTriple(pm25Emission, hasQuantity, pm25Flow);
         derivationOutputs.addTriple(pm25Flow, hasValue, pm25Measure);
