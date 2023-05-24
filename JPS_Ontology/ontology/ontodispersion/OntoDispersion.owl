@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodispersion/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">17 May 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">24 May 2023</dc:date>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
@@ -51,12 +51,13 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontodispersion/emitsEmissionsAt -->
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/hasOntoCityGMLCityObject -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodispersion/emitsEmissionsAt">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodispersion/hasOntoCityGMLCityObject">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/StaticPointSource"/>
         <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The range should be an OntoCityGML object, using owl:Thing because there is no type declarations</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -91,8 +92,10 @@
 
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontodispersion/hasName">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/CitiesNamespace"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/OntoCityGMLNamespace"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">To store the literal of the namespace</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
@@ -113,6 +116,13 @@
 
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Density"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Height -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
     
 
 
@@ -137,10 +147,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service -->
+    <!-- http://www.opengis.net/ont/geosparql#Feature -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service"/>
+    <owl:Class rdf:about="http://www.opengis.net/ont/geosparql#Feature"/>
     
 
 
@@ -149,16 +159,19 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/CO">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/Emission"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carbon monoxide</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontodispersion/CitiesNamespace -->
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/CO2 -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/CitiesNamespace">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cities namespace to query buildings data</rdfs:comment>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/CO2">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/Emission"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carbon dioxide</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
 
@@ -168,15 +181,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/CourseOverGround">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipDynamicProperty"/>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontodispersion/DispersionAgent -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/DispersionAgent">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Course in degrees</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -186,7 +191,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/DispersionLayer">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Name of the dispersion matrix layer in GeoServer</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Name of the dispersion matrix layer in GeoServer stored as time series</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -196,7 +201,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/DispersionMatrix">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">URL to download the raw output file</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">URL to download the raw output file stored as time series</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -207,6 +212,8 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/Draught">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipProperty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Physical dimension of the ship</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
 
@@ -237,6 +244,8 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/Length">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipProperty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Physical dimension of the ship</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
 
@@ -246,6 +255,8 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/Location">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipDynamicProperty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PostGIS point object stored as time series</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
 
@@ -255,6 +266,8 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/MMSI">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipProperty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Maritime mobile service identity</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
 
@@ -264,6 +277,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/NO2">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/Emission"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nitrogen dioxide</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -274,6 +288,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/NOx">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/Emission"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nitrogen oxides</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -284,6 +299,17 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/Name">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipProperty"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/OntoCityGMLNamespace -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/OntoCityGMLNamespace">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The blazegraph namespace to query buildings data from http://www.theworldavatar.com:83/citieskg</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
 
@@ -293,6 +319,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/PM10">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/Emission"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Particulate matter less than 10 micrometer</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -303,6 +330,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/PM2.5">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/Emission"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Particulate matter less than 2.5 micrometer</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -323,6 +351,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/SO2">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/Emission"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sulphur dioxide</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -332,7 +361,8 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/Scope">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rectangle that defines the simulation box</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="http://www.opengis.net/ont/geosparql#Feature"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Geospatial extend defining the simulation box as rectangle</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -354,6 +384,7 @@
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/ShipDynamicProperty">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipProperty"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ship properties that contain time series </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
 
@@ -374,6 +405,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/ShipType">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipProperty"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
 
@@ -382,7 +414,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/ShipsLayer">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Name of the ships layer in GeoServer</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Name of the ships layer in GeoServer stored as time series</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -404,6 +436,8 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/Speed">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipDynamicProperty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Knots x 10</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
 
@@ -424,6 +458,8 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/Width">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/ShipProperty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Physical dimension of the ship</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
 
@@ -455,6 +491,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/uHC">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodispersion/Emission"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unburned hydrocarbon</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -464,7 +501,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/z">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Height to simulate</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
     </owl:Class>
