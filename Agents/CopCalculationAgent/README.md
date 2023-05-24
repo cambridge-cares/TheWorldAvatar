@@ -32,9 +32,18 @@ The COP Calculation Agent is intended to use the `sychronous mode` of the Deriva
 After successful agent start-up, an instructional page shall become available at the root (i.e. `/`) of the port specified in the [docker compose file]. The exact address depends on where the agent container is deployed (i.e. localhost, remote VM, ...), but takes a form like http://localhost:5150/
 
 Details about how to use the agent please see the [home page] of this agent
-## Prior derivation markup
 
-For the Agent to detect outdated information, a proper mark up of the relevant derivation inputs (i.e. *pure* inputs) is required. (Please note, that another pre-requisite for detecting derivation inputs is the registration of the agent in the KG, i.e. `REGISTER_AGENT=true` in the [docker compose file].) The [markup.py] example from the `pyderivationagent` package shall be used to mark up derivation inputs within the KG (for illustration purposes only)
+## Upper level instances instatiation
+If you started from an empty namespace, or have not instantiate upper level instances such as `country` or `assumption`, the result would not be able to be associated with them. Therefore it is required to run the [upper_level_ontology_update.py](./copcalculationagent/upper_level_ontology_update.py), simply run this command in the poweshell terminal:
+```bash
+py ./copcalculationagent/upper_level_ontology_update.py
+```
+
+## Prior derivation markup
+For the Agent to detect outdated information, a proper mark up of the relevant derivation inputs (i.e. *pure* inputs) is required. (Please note, that another pre-requisite for detecting derivation inputs is the registration of the agent in the KG, i.e. `REGISTER_AGENT=true` in the [docker compose file].) The [markup.py] example from the `pyderivationagent` package shall be used to mark up derivation inputs within the KG (for illustration purposes only), simply run this command in the poweshell terminal:
+```bash
+py ./copcalculationagent/markup.py
+```
 
 &nbsp;
 # Authors #

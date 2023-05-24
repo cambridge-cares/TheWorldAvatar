@@ -32,7 +32,7 @@ def create_app():
         # Settings read from environment variables (.env file, docker-compose)
         register_agent=agent_config.REGISTER_AGENT,
         agent_iri=agent_config.ONTOAGENT_SERVICE_IRI, 
-        #time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
+        time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         # Settings read from Stack Clients
@@ -46,7 +46,7 @@ def create_app():
     agent.add_url_pattern('/', 'root', default, methods=['GET'])
 
     # USE when asyn-mode
-    #agent.start_all_periodical_job()
+    agent.start_all_periodical_job()
 
     # Expose flask app of agent
     return agent.app
