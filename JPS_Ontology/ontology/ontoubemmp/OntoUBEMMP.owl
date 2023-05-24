@@ -141,7 +141,7 @@
             </owl:Class>
         </rdfs:domain>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship linking the building&apos;s roof or wall fa�ade to their theoretical energy produced from a specified solar device. Energy production is dependent on  both the solar device type and solar suitable area available.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship linking the building&apos;s roof or wall facade to their theoretical energy produced from a specified solar device. Energy production is dependent on  both the solar device type and solar suitable area available.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
