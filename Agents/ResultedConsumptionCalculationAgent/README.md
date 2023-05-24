@@ -50,15 +50,25 @@ After successful agent start-up, an instructional page shall become available at
 Once the Agent is deployed, it periodically (defined by `DERIVATION_PERIODIC_TIMESCALE`) checks the derivation that `isDerivedUsing` itself (parameter `ONTOAGENT_SERVICE_IRI`) and acts based on the status associated with that derivation. Although the [Derivation Agent] suggests the use of `.env` files to specify environment variables for agent configurations, this approach does not work properly with Docker stacks, i.e. `docker stack deploy`. Hence, the agent configuration is moved into the [docker compose file] instead.
 
 Details about how to use the agent please see the [home page] of this agent
+
+## Upper level instances instatiation
+If you started from an empty namespace, or have not instantiate upper level instances such as `country` or `assumption`, the result would not be able to be associated with them. Therefore it is required to run the [upper_level_ontology_update.py](./resultedconsumptioncalculationagent/upper_level_ontology_update.py), simply run this command in the poweshell terminal:
+
+```bash
+py ./resultedconsumptioncalculationagent/upper_level_ontology_update.py
+```
 ## Prior derivation markup
 
-For the Agent to detect outdated information, a proper mark up of the relevant derivation inputs (i.e. *pure* inputs) is required. (Please note, that another pre-requisite for detecting derivation inputs is the registration of the agent in the KG, i.e. `REGISTER_AGENT=true` in the [docker compose file].) The [markup.py] example from the `pyderivationagent` package shall be used to mark up derivation inputs within the KG (for illustration purposes only)
+For the Agent to detect outdated information, a proper mark up of the relevant derivation inputs (i.e. *pure* inputs) is required. (Please note, that another pre-requisite for detecting derivation inputs is the registration of the agent in the KG, i.e. `REGISTER_AGENT=true` in the [docker compose file].) The [markup.py] example from the `pyderivationagent` package shall be used to mark up derivation inputs within the KG (for illustration purposes only), simply run this command in the poweshell terminal:
+```bash
+py ./resultedconsumptioncalculationagent/markup.py
+```
 
 &nbsp;
 # Authors #
 Jieyang Xu (jx309@cam.ac.uk), May 2023
 <!-- Links -->
-[markup.py]:./copcalculationagent/markup.py
+[markup.py]:./resultedconsumptioncalculationagent/markup.py
 [home page]:https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-2/Agents/ResultedConsumptionCalculationAgent/index.html
 [CopCalculationAgent]:https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-heat-pump-migration-to-stack-2/Agents/CopCalculationAgent
 <!-- websites -->
