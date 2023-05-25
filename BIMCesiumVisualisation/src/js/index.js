@@ -2,8 +2,15 @@ import "../css/assetInfoBox.css"
 import "../css/viewerElements.css"
 var Cesium = require("cesium/Cesium");
 import "cesium/Widgets/widgets.css";
-import { addTileset, addModel, addKml, addWMSLayer, addWMTSLayer } from './functions/cesium_data_handler.js';
-import { addDiv, addCloseButton, createMetadataHtml } from './functions/html-elements.js';
+import {
+  addTileset,
+  addModel,
+  addKml,
+  addWMSLayer,
+  addWMTSLayer,
+  computeCircle, getRoof
+} from './functions/cesium_data_handler.js';
+import {addDiv, addCloseButton, createMetadataHtml} from './functions/html-elements.js';
 
 // Create a new viewer object
 const viewer = new Cesium.Viewer("cesiumContainer",{
@@ -45,13 +52,14 @@ const offset = new Cesium.HeadingPitchRange(
   Cesium.Math.toRadians(-45.0),
   80.0
 );
-viewer.zoomTo(tileset_bim, offset);
+// viewer.zoomTo(tileset_bim, offset);
 
-/* 
+
 // Adding KML models to the viewer
-const kmlpath = './data/model.kml';
+const kmlpath = './data/test_Tile_46_42_extruded.kml';
 const kmlmodel =  addKml(viewer, kmlpath);
 
+/*
 // Adding WMS imagery layer to the viewer
 const wmsurl = 'url';
 const wmslayer = 'layername';
@@ -61,11 +69,11 @@ addWMSLayer(viewer,wmsurl,wmslayer);
 const wmtsurl = 'url';
 const wmtslayer = 'layername';
 addWMTSLayer(viewer, wmtsurl,wmtslayer); 
-
+*/
 // Zoom to the KML models, WMS or WMTS imagery
 viewer.camera.flyTo({
-  destination: Cesium.Cartesian3.fromDegrees(latitude, longitude, elevation),
-}); */
+  destination: Cesium.Cartesian3.fromDegrees(7.588534, 49.205952, 500),
+});
 
 // Creating a metadata overlay element when mouse moves over an asset
 const promptOverlay = addDiv("backdrop");
@@ -75,12 +83,33 @@ const metadataBox = addDiv("biminfobox");
 const closeElement = addCloseButton("close");
 
 // Hides the ceiling and roof when checked
-const checkBox = document.getElementById("toggleFeature");
-checkBox.onclick = () => {
-  if (checkBox.checked == true) {
+const checkBox1 = document.getElementById("toggleFeature");
+checkBox1.onclick = () =>{
+  if (checkBox1.checked == true) {
     tileset_ceiling.show = false;
   } else {
     tileset_ceiling.show = true;
+  }
+};
+
+const checkBox2 = document.getElementById("solar");
+var isSolar = false;
+checkBox2.onclick = () =>{
+  if (checkBox2.checked == true) {
+    isSolar = true;
+  } else {
+    isSolar = false;
+  }
+};
+
+const checkBox3 = document.getElementById("customsolar");
+var drawSolar = false;
+var arrayOfCartesian = [];
+checkBox3.onclick = () =>{
+  if (checkBox3.checked == true) {
+    drawSolar = true;
+  } else {
+    drawSolar = false;
   }
 };
 
@@ -136,4 +165,46 @@ handler.setInputAction(function (movement) {
     handler.setInputAction(function (movement) {
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
   }
+
+    handler.setInputAction(function (movement) {
+
+      if(drawSolar){
+
+        // Find a way to get the position.
+        var position = viewer.scene.pickPosition(movement.position);
+        console.log(position);
+        // var cartographic = Cesium.Ellipsoid.WGS84.cartesianToCartographic(position);
+        // console.log(cartographic);
+        arrayOfCartesian.push( position );
+      } else {
+        arrayOfCartesian = [];
+        getRoof(viewer, pickedFeature, isSolar);
+      }
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+
+      handler.setInputAction(function (movement) {
+        if(drawSolar) {
+          // var getSelectorLocation = new Cesium.CallbackProperty(function () {
+          //   return Cesium.Ellipsoid.WGS84.cartographicArrayToCartesianArray(arrayOfCartesian);
+          // }, false);
+          console.log(arrayOfCartesian);
+          viewer.entities.add({
+            polygon: {
+              hierarchy: arrayOfCartesian,
+              perPositionHeight: true,
+              material: new Cesium.ImageMaterialProperty({
+                image : './data/solarpanel.png',
+                color: Cesium.Color.WHITE.withAlpha(1)
+            }),
+              zindex : 1
+            }
+          });
+        }
+      }, Cesium.ScreenSpaceEventType.RIGHT_CLICK);
+
+
 }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+
+
+

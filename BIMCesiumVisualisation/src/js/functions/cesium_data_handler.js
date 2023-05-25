@@ -1,3 +1,6 @@
+import {Cartesian3, ColorMaterialProperty} from "cesium";
+import {hierarchy} from "../../../../JPS/WebContent/javascript/d3.v4";
+
 var Cesium = require("cesium/Cesium");
 /**
  * Add the tileset to the viewer and set its model matrix for geolocation
@@ -58,7 +61,9 @@ export function addKml(cesiumviewer, kmlfilepath) {
       canvas: cesiumviewer.scene.canvas,
       clampToGround: true,
     })
-  );
+  ).then(function (dataSources){
+        // parseElements(cesiumviewer, dataSources.entities)
+    });
 }
 
 /**
@@ -101,3 +106,120 @@ export function addWMTSLayer(cesiumviewer, wmts_url, wmts_layer) {
     })
   );
 }
+
+/**
+ * compute shape of polylineVolume
+ * @param radius
+ * @return    object location
+ */
+function computeCircle(radius) {
+    const positions = [];
+    for (let i = 0; i < 360; i++) {
+        const radians = Cesium.Math.toRadians(i);
+        positions.push(
+            new Cesium.Cartesian2(
+                radius * Math.cos(radians),
+                radius * Math.sin(radians)
+            )
+        );
+    }
+    return positions;
+}
+
+/**
+ * Read data from KML to draw 3d geometric objects: line to polylineVolume, point to cylinder
+ * @param cesiumviewer    Cesium viewer object
+ * @param entities     data entity from kml
+ */
+function parseElements(cesiumviewer, entities) {
+    var e;
+    var pointCount = 0;
+    var lineCount = 0;
+    var values = entities.values;
+    // console.dir(values); // debug the array
+    var arrayPositions = [];
+    for (var i = 0; i < values.length; i++) {
+        e = values[i];
+        var data = e.kml.extendedData;
+        var width = 0;
+        if (Cesium.defined(data)) {
+            console.log("value=", data.sewWidth.value);
+            if (data.sewWidth.value != null){ //get width from kml, if the data is empty, set a fake value to it
+                width = data.sewWidth.value/100;
+            }else{
+                width = 0.5;
+            }
+        }
+
+        if (Cesium.defined(e.position)) {
+            // Placemark with Point geometry
+            // pointCount++;
+            var pointPosition = e.position;
+            cesiumviewer.entities.add({
+                position: pointPosition,
+                cylinder: {
+                    length: 5.0,
+                    topRadius: width,
+                    bottomRadius: width,
+                    material: Cesium.Color.RED.withAlpha(0.5),
+                    outline: true,
+                    outlineColor: Cesium.Color.RED,
+                },
+            })
+        } else if (Cesium.defined(e.polyline)) {
+            // Placemark with LineString geometry
+            // lineCount++;
+            var linePosition = e.polyline.positions;
+            // console.dir("position1:" + linePosition.getValue(Cesium.JulianDate.now()));
+            cesiumviewer.entities.add({
+                polylineVolume:{
+                    positions : linePosition,
+                    shape : computeCircle(width),
+                    material: Cesium.Color.GREEN.withAlpha(0.5),
+                    outline: true,
+                    outlineColor: Cesium.Color.GREEN,
+                },
+            })
+        } else if (Cesium.defined(e.polygon)) {
+            // Placemark with Polygon geometry
+        }
+        // check for other conditions
+    }
+
+
+    // console.dir("point:" + pointCount);
+    // console.dir("line:" + lineCount);
+}
+
+export function getRoof (cesiumviewer, entities, isSolar) {
+    var id = entities.id.id; //depends on construction of kml in exporter
+
+    if(id.includes("Roof")){
+        var roofGeo =  entities.id.polygon;
+        // console.dir(roofGeo.hierarchy.valueOf());
+        if(isSolar){
+            addTexture(roofGeo, id);
+        }else{
+            removeTexture(roofGeo, id);
+        }
+    }
+}
+
+var changeMap = new Map();
+function addTexture(polygon, id){
+
+
+    if(! changeMap.has(id)){
+        changeMap.set(id, polygon.material);
+    }
+    polygon.material = './data/solarpanel.png';
+}
+
+function removeTexture(polygon, id){
+    if(changeMap.has(id)){
+        polygon.material = changeMap.get(id);
+        changeMap.delete(id);
+    }
+}
+
+
