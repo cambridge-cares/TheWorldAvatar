@@ -61,8 +61,8 @@ public class TBoxGenerationTest {
 			throw new JPSRuntimeException("The requested reference ontology could not be read from the provided path.");
 		}
 		
-		assertEquals(generatedOntology.getAxiomCount(), referenceOntology.getAxiomCount());
-		assertEquals(generatedOntology.getAxioms(), referenceOntology.getAxioms());
+		assertEquals(referenceOntology.getAxiomCount(), generatedOntology.getAxiomCount());
+		assertEquals(referenceOntology.getAxioms(), generatedOntology.getAxioms());
 	}
 	
 	/**
@@ -80,8 +80,8 @@ public class TBoxGenerationTest {
 			throw new JPSRuntimeException("The requested reference ontology could not be read from the provided path.");
 		}
 		
-		assertEquals(generatedOntology.getAxiomCount(), referenceOntology.getAxiomCount());
-		assertEquals(generatedOntology.getAxioms(), referenceOntology.getAxioms());		
+		assertEquals(referenceOntology.getAxiomCount(), generatedOntology.getAxiomCount());
+		assertEquals(referenceOntology.getAxioms(), generatedOntology.getAxioms());		
 	}
 
 	/**
@@ -99,8 +99,8 @@ public class TBoxGenerationTest {
 			throw new JPSRuntimeException("The requested reference ontology could not be read from the provided path.");
 		}
 		
-		assertEquals(generatedOntology.getAxiomCount(), referenceOntology.getAxiomCount());
-		assertEquals(generatedOntology.getAxioms(), referenceOntology.getAxioms());
+		assertEquals(referenceOntology.getAxiomCount(), generatedOntology.getAxiomCount());
+		assertEquals(referenceOntology.getAxioms(), generatedOntology.getAxioms());
 	}
 	
 	/**
@@ -118,8 +118,8 @@ public class TBoxGenerationTest {
 			throw new JPSRuntimeException("The requested reference ontology could not be read from the provided path.");
 		}
 		
-		assertEquals(generatedOntology.getAxiomCount(), referenceOntology.getAxiomCount());
-		assertEquals(generatedOntology.getAxioms(), referenceOntology.getAxioms());
+		assertEquals(referenceOntology.getAxiomCount(), generatedOntology.getAxiomCount());
+		assertEquals(referenceOntology.getAxioms(), generatedOntology.getAxioms());
 	}
 
 	/**
@@ -137,8 +137,8 @@ public class TBoxGenerationTest {
 			throw new JPSRuntimeException("The requested reference ontology could not be read from the provided path.");
 		}
 		
-		assertEquals(generatedOntology.getAxiomCount(), referenceOntology.getAxiomCount());
-		assertEquals(generatedOntology.getAxioms(), referenceOntology.getAxioms());		
+		assertEquals(referenceOntology.getAxiomCount(), generatedOntology.getAxiomCount());
+		assertEquals(referenceOntology.getAxioms(), generatedOntology.getAxioms());		
 	}
 	
 	/**

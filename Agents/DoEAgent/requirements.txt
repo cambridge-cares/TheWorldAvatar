@@ -1,10 +1,16 @@
-git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils
-git+https://github.com/cambridge-cares/TheWorldAvatar@134-dev-lab-equipment-digital-twin#subdirectory=Agents/utils/chemistry-and-robots
-pyderivationagent
-summit
-pandas
-pydantic
-testcontainers
-pytest
-pytest-docker-compose
-pytest-rerunfailures
+#######################################
+## The World Avatar related packages ##
+#######################################
+pyderivationagent==1.4.4
+chemistry_and_robots==1.6.1
+
+##########################
+## Third-party packages ##
+##########################
+summit==0.8.9
+pandas==1.3.5
+pydantic==1.9.0
+testcontainers==3.4.2
+pytest==6.2.5
+pytest-docker-compose==3.2.1
+pytest-rerunfailures==10.2

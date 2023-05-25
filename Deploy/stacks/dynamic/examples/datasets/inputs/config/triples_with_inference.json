@@ -1,0 +1,16 @@
+{
+    "datasetDirectory": "rdf",
+    "namespace": {
+        "name": "triples_with_inference",
+        "properties": {
+            "com.bigdata.rdf.store.AbstractTripleStore.triplesMode": true
+        }
+    },
+    "dataSubsets": [
+        {
+            "type": "rdf",
+            "subdirectory": "triples",
+            "skip": false
+        }
+    ]
+}

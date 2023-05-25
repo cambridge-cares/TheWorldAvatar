@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.base.scenario.test;
 
 import org.json.JSONObject;
+import org.junit.After;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 
 import org.junit.Test;
@@ -8,6 +9,11 @@ import static org.junit.Assert.*;
 
 
 public class JPSContextTest{
+
+	@After
+	public void tearDown() {
+		JPSContext.removeJPSContext();
+	}
 
 	// Test get(JSONObject jo, String key) and put(JSONObject jo, String key, String value)
 	@Test

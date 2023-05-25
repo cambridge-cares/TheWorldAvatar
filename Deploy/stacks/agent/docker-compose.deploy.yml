@@ -33,13 +33,26 @@ services:
     mem_limit: 2g
     pull_policy: if_not_present
     restart: unless-stopped
+    environment:
+      - EMAIL_AGENT_URL=http://kg.cmclinnovations.com:81/agent/email/email
+      
 
   # Flood Agent
   flood-agent:
-    image: docker.cmclinnovations.com/flood-agent-$MODE:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/river-data-updater:1.1
     container_name: "flood-agent${CONTAINER_NAME_SUFFIX}"
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      OUTPUT_DIR: "/~/"
+      POSTGRES_DBNAME: "flood"
+      POSTGRES_USER: "USER"
+      POSTGRES_PASSWORD: "USER"
+      POSTGRES_HOST: "kg.cmclinnovations.com"
+      POSTGRES_PORT: 45432
+      KG_HOST: "kg.cmclinnovations.com"
+      KG_PORT: 81
+      KG_PATH: "blazegraph_geo/namespace/flood/sparql/flood/sparql"
+      KG_PROTOCOL: "http"
     pull_policy: if_not_present
     restart: unless-stopped
 

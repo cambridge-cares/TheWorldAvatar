@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient.Type;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 
@@ -43,7 +44,7 @@ public class NUSDavisWeatherStationInputAgent {
     /**
      * The prefix to use when no IRI exists for a JSON key originally
      */
-    public static final String generatedIRIPrefix = TimeSeriesSparql.ns_kb + "nusDavisWeatherStation";
+    public static final String generatedIRIPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + "nusDavisWeatherStation";
     /**
      * The time unit used for all time series maintained by the nusDavisWeatherStation input agent
      */
@@ -138,8 +139,12 @@ public class NUSDavisWeatherStationInputAgent {
                 // Get the classes (datatype) corresponding to each JSON key needed for initialization
                 List<Class<?>> classes = iris.stream().map(this::getClassFromJSONKey).collect(Collectors.toList());
                 // Initialize the time series
-                tsClient.initTimeSeries(iris, classes, timeUnit);
+                try {
+                tsClient.initTimeSeries(iris, classes, timeUnit, Type.INSTANTANEOUS, null, null);
                 LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
+            } catch (Exception e) {
+            	throw new JPSRuntimeException("Could not initialize timeseries!");
+            } 
             }
         }
     }
@@ -165,7 +170,7 @@ public class NUSDavisWeatherStationInputAgent {
                 else {
                     throw e;
                 }
-            }
+            } 
         }
         return true;
     }
@@ -199,7 +204,12 @@ public class NUSDavisWeatherStationInputAgent {
             // Update each time series
             for (TimeSeries<OffsetDateTime> ts : timeSeries) {
                 // Retrieve current maximum time to avoid duplicate entries (can be null if no data is in the database yet)
-                OffsetDateTime endDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
+                OffsetDateTime endDataTime;
+                try {
+                	endDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
+                } catch (Exception e) {
+                	throw new JPSRuntimeException("Could not get max time!");
+                } 
                 OffsetDateTime startCurrentTime = ts.getTimes().get(0);
                 // If there is already a maximum time
                 if (endDataTime != null) {
@@ -210,8 +220,12 @@ public class NUSDavisWeatherStationInputAgent {
                 }
                 // Only update if there actually is data
                 if (!ts.getTimes().isEmpty()) {
+                	try {
                     tsClient.addTimeSeriesData(ts);
                     LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
+                } catch (Exception e) {
+                	throw new JPSRuntimeException("Could not add timeseries data!");
+                }
                 }
             }
         }

@@ -1,0 +1,25 @@
+*.jar
+*.war
+
+*.pyc
+__pycache__/
+.mypy_cache/
+build/
+dist/
+*~*
+.idea/
+*venv/
+
+.vscode/
+
+# Miscellaneous files/folders:
+.pytest_cache
+*.env
+
+# FlowCommander related files
+FCRemote.dll
+FCRemoteCSV.dll
+*.fcexp
+
+# email_auth
+email_auth.json

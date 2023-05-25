@@ -2,6 +2,9 @@ package uk.ac.cam.cares.derivation.asynexample;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -17,7 +20,10 @@ import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.derivation.Derivation;
+import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
+import uk.ac.cam.cares.jps.base.derivation.StatusType;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
@@ -27,8 +33,6 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * running
  * Please refer to TheWorldAvatar/Agents/DerivationAsynExample/README.md for
  * more details.
- * For information regarding the Docker registry, see:
- * https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
  * 
  * @author Jiaru Bai (jb2197@cam.ac.uk)
  * 
@@ -37,6 +41,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 public class DockerIntegrationTest extends TestCase {
 	// static JSONObject response;
 	static RemoteStoreClient storeClient;
+	static DerivationClient devClient;
 	static DerivationSparql devSparql;
 	static Method getTimestamp;
 	static Method getStatusType;
@@ -72,6 +77,7 @@ public class DockerIntegrationTest extends TestCase {
 		// Config.sparqlEndpoint is the endpoint that used within the docker container
 		// here we need to initialise RemoteStoreClient with the url outside docker
 		storeClient = new RemoteStoreClient(kgUrl, kgUrl, Config.kgUser, Config.kgPassword);
+		devClient = new DerivationClient(storeClient, Config.derivationInstanceBaseURL);
 		devSparql = new DerivationSparql(storeClient, Config.derivationInstanceBaseURL);
 		sparqlClient = new SparqlClient(storeClient);
 		getTimestamp = devSparql.getClass().getDeclaredMethod("getTimestamp", String.class);
@@ -210,6 +216,61 @@ public class DockerIntegrationTest extends TestCase {
 
 		// stage 3: call UpdateDerivations
 		executeAndTestUpdateDerivations(response);
+	}
+
+	@Test
+	@Timeout(value = 180, unit = TimeUnit.SECONDS)
+	@Order(7)
+	public void testMultipleAsyncDerivations() throws InterruptedException {
+		// create five DifferenceReverseDerivation
+		String maxvalue_instance = sparqlClient.getMaxValueIRI();
+        String minvalue_instance = sparqlClient.getMinValueIRI();
+		String difference_instance = sparqlClient.getDifferenceIRI();
+		String diff_dev_1 = devClient.createAsyncDerivationForNewInfo(Config.agentIriDiffReverse, Arrays.asList(maxvalue_instance, minvalue_instance));
+        String diff_dev_2 = devClient.createAsyncDerivationForNewInfo(Config.agentIriDiffReverse, Arrays.asList(maxvalue_instance, minvalue_instance));
+		String diff_dev_3 = devClient.createAsyncDerivationForNewInfo(Config.agentIriDiffReverse, Arrays.asList(maxvalue_instance, minvalue_instance));
+        String diff_dev_4 = devClient.createAsyncDerivationForNewInfo(Config.agentIriDiffReverse, Arrays.asList(maxvalue_instance, minvalue_instance));
+        String diff_dev_5 = devClient.createAsyncDerivationForNewInfo(Config.agentIriDiffReverse, Arrays.asList(maxvalue_instance, minvalue_instance));
+        // wait for all derivations to be completed
+		TimeUnit.SECONDS.sleep(6 * Config.periodAgentDiffReverse);
+		Map<String, StatusType> diffReverseDerivations = devClient.getDerivationsAndStatusType(Config.agentIriDiffReverse);
+        Assert.assertEquals(5, diffReverseDerivations.size());
+		// NOTE below check is likely to fail if the agent is not thread-safe
+		// as the same derivation is likely to be processed by multiple threads
+		// therefore, produce more DiffReverse instances than the amount of derivations created
+		// (as observed in several testing runs before the changes made to the uuidLock)
+        Assert.assertEquals(5, countNumberOfDerivationsGivenStatusType(diffReverseDerivations, StatusType.NOSTATUS));
+		// also all values should be the same and they are the difference of min and max
+		Map<String, Integer> diffReverseValues = sparqlClient.getDiffReverseValues();
+        Assert.assertEquals(5, diffReverseValues.size());
+        int difference = sparqlClient.getValue(difference_instance);
+        diffReverseValues.values().stream().forEach(val -> Assert.assertEquals(0, val + difference));
+	}
+
+	@Test
+	@Timeout(value = 180, unit = TimeUnit.SECONDS)
+	@Order(8)
+	public void testErrorStatus() throws InterruptedException {
+		// initialise all triples for exception throw test
+		JSONObject response = new JSONObject(AgentCaller.executeGet(host + InitialiseInstances.API_PATTERN_EXC_THROW));
+		String inputPlaceholderExceptionThrowIri = response.getString(InitialiseInstances.input_placeholder_exc_throw_key);
+		// create three derivations and wait for the status to be changed to Error
+		String exceptionThrowDerivation1 = devClient.createAsyncDerivationForNewInfo(Config.agentIriExceptionThrow, Arrays.asList(inputPlaceholderExceptionThrowIri));
+		String exceptionThrowDerivation2 = devClient.createAsyncDerivationForNewInfo(Config.agentIriExceptionThrow, Arrays.asList(inputPlaceholderExceptionThrowIri));
+		String exceptionThrowDerivation3 = devClient.createAsyncDerivationForNewInfo(Config.agentIriExceptionThrow, Arrays.asList(inputPlaceholderExceptionThrowIri));
+		// wait for init delay and five periods, which should be sufficient for agent to iterate through all derivations
+		TimeUnit.SECONDS.sleep(Config.initDelayAgentExceptionThrow + 5 * Config.periodAgentExceptionThrow);
+		// if the amount of derivations in Error status matches the amount of total derivations got marked up
+		// then it implies the agent was able to catch the exception and proceed to next derivation without getting stuck
+		Map<String, StatusType> excThrowDerivations = devClient.getDerivationsAndStatusType(Config.agentIriExceptionThrow);
+		Assert.assertEquals(3, excThrowDerivations.size());
+		Assert.assertEquals(3, countNumberOfDerivationsGivenStatusType(excThrowDerivations, StatusType.ERROR));
+		// also all of the error message recorded in rdfs:comment should have the error message defined in the ExceptionThrowAgent
+		List<Derivation> errDerivations = devClient.getDerivationsInErrorStatus(Config.agentIriExceptionThrow);
+        Assert.assertEquals(3, errDerivations.size());
+        errDerivations.stream().forEach(d -> {
+            Assert.assertTrue(d.getErrMsg().contains(ExceptionThrowAgent.EXCEPTION_MESSAGE));
+        });
 	}
 
 	////////////////////////////////////////////////////////////
@@ -384,4 +445,8 @@ public class DockerIntegrationTest extends TestCase {
 		// now all information in the KG should be up-to-date
 		assertAllInfoUpdateToDate(response, false);
 	}
+
+	public int countNumberOfDerivationsGivenStatusType(Map<String, StatusType> derivationsAndStatusType, StatusType statusType) {
+        return (int) derivationsAndStatusType.values().stream().filter(status -> status.equals(statusType)).count();
+    }
 }

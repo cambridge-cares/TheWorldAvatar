@@ -15,7 +15,8 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 WORKDIR /root/DerivationAsynExample
 # change this line to force maven to rebuild the war file
 RUN echo abcd
-RUN --mount=type=cache,target=/root/.m2/repository mvn clean install -DskipTests
+# -U flag is set to force maven to pull the lastest packages from the remote repositories if it's SNAPSHOT version
+RUN --mount=type=cache,target=/root/.m2/repository mvn clean install -U -DskipTests
 #==================================================================================================
 
 # Second stage: copy the downloaded dependency into a new image and build into an app
@@ -24,7 +25,7 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
-COPY --from=builder /root/DerivationAsynExample/output/DerivationAsynExample##1.1.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/DerivationAsynExample/output/DerivationAsynExample##1.3.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

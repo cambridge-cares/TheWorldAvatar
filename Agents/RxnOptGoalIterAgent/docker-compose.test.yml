@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  rxn_opt_goal_iter_agent:
+    image: ghcr.io/cambridge-cares/rxn_opt_goal_iter_agent:1.2.0-SNAPSHOT
+    container_name: rxn_opt_goal_iter_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    ports:
+      - 7060:5000
+    env_file:
+      - ./rxnoptgoaliteragent/tests/agent.goal.iter.env.test
+    secrets:
+      - email_auth
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "rxnoptgoaliteragent:create_app()", "--preload"]
+
+  # Blazegraph
+  blazegraph:
+    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
+    container_name: "blazegraph_rogi_test"
+    ports:
+      - 48082:8080
+    environment:
+      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    # Add a secret to set the password for BASIC authentication
+    secrets:
+      - blazegraph_password
+
+  # File server
+  fileserver:
+    image: ghcr.io/cambridge-cares/fileserver:1.1.0
+    container_name: "fileserver_rogi_test"
+    ports:
+      - 48086:8080
+    # Add secret to set BASIC authentication password
+    secrets:
+      - file_server_password
+
+# Secrets used to set runtime passwords
+secrets:
+  blazegraph_password:
+    file: ./rxnoptgoaliteragent/tests/dummy_services_secrets/blazegraph_passwd.txt
+  file_server_password:
+    file: ./rxnoptgoaliteragent/tests/dummy_services_secrets/fileserver_passwd.txt
+  email_auth:
+    file: ./rxnoptgoaliteragent/tests/dummy_services_secrets/email_auth.json

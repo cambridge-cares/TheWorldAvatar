@@ -1,0 +1,10 @@
+# URL to connect to postgreSQL database
+db.url=jdbc:postgresql://<STACK NAME>-postgis:5432/timeseries_solarsensor
+# Username to connect to postgreSQL database
+db.user=postgres
+# Password to connect to postgreSQL database
+db.password=postgres
+#SPARQL Query endpoint of triple store
+sparql.query.endpoint=http://<STACK NAME>-blazegraph:8080/blazegraph/namespace/solarsensor/sparql
+#SPARQL Update endpoint of triple store 
+sparql.update.endpoint=http://<STACK NAME>-blazegraph:8080/blazegraph/namespace/solarsensor/sparql

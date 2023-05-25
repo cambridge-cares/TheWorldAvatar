@@ -5,7 +5,7 @@
 # Requirements
 
 - You need Python >=3.5 to run the py4jps. You can install Python by going to the official Python [download page](https://www.python.org/getit/)
-- You also need to install a [Java Runtime Environment version 8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot)
+- You also need to install a [Java Runtime Environment version 11](https://adoptopenjdk.net/?variant=openjdk11&jvmVariant=hotspot)
 
 # Installation
 
@@ -418,6 +418,22 @@ def doTask2():
     return FileUtil.readFileLocally('<your_absolute_file_path>')
 #============================================================
 ```
+
+## Package `agentlogging`:
+
+As of `py4jps==1.0.29`, `agentlogging`, which originally placed [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/f290fb98ce746b591d8b8c93cca1e89a409c959e/Agents/utils/python-utils), is also packaged and released as part of this python wrapper. One can import and use as below:
+```python
+from py4jps import agentlogging
+
+dev_logger = agentlogging.get_logger("dev")
+dev_logger.debug("This is a DEBUG statement")
+dev_logger.info("This is an INFO statement")
+
+prod_logger = agentlogging.get_logger("prod")
+prod_logger.debug("This is a DEBUG statement")
+prod_logger.info("This is an INFO statement")
+```
+For more details, see the [Logging](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Logging) page on the Wiki.
 
 # Note to developers
 

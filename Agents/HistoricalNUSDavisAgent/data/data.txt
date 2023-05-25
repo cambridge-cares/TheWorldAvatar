@@ -1,0 +1,3 @@
+data.xlsx file required to run HistoricalNUSDavisXLSXConnectorTest.
+the file must be in the correct format and contain readings for 3 timestamps.
+data.xlsx must be placed in this data folder.

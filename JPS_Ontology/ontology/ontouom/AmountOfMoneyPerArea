@@ -28,16 +28,16 @@
 
   <!-- Amount Of Money Per Area Upper Ontology -->
 
-  <owl:Class rdf:about="http://theworldavatar.com/resource/ontouom/AmountOfMoneyPerArea">
+  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/AmountOfMoneyPerArea">
     <rdfs:label xml:lang="en">Specific amount of money per area, e.g. cost or value per sqm of land</rdfs:label>
     <rdfs:subClassOf rdf:resource="&om;Quantity"/>
   </owl:Class>
 
-  <owl:Class rdf:about="http://theworldavatar.com/resource/ontouom/AmountOfMoneyPerArea">
-    <om:commonlyHasUnit rdf:resource="http://theworldavatar.com/resource/ontouom/pound_sterling_per_sqm"/>
+  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/AmountOfMoneyPerArea">
+    <om:commonlyHasUnit rdf:resource="https://www.theworldavatar.com/kg/ontouom/pound_sterling_per_sqm"/>
   </owl:Class>
 
-  <owl:Class rdf:about="http://theworldavatar.com/resource/ontouom/AmountOfMoneyPerArea">
+  <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/AmountOfMoneyPerArea">
     <rdfs:subClassOf>
       <owl:Restriction>
         <owl:onProperty rdf:resource="&om;hasValue"/>
@@ -45,7 +45,7 @@
           <owl:Restriction>
             <owl:onProperty rdf:resource="&om;hasUnit"/>
             <owl:allValuesFrom>
-              <owl:Class rdf:about="http://theworldavatar.com/resource/ontouom/AmountOfMoneyPerAreaUnit"/>
+              <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/AmountOfMoneyPerAreaUnit"/>
             </owl:allValuesFrom>
           </owl:Restriction>	
         </owl:allValuesFrom>

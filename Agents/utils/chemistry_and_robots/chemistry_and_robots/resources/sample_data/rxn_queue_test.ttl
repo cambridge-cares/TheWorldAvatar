@@ -1,0 +1,258 @@
+@prefix ontodoe:		<https://www.theworldavatar.com/kg/ontodoe/> .
+@prefix ontorxn:		<https://www.theworldavatar.com/kg/ontoreaction/> .
+@prefix ontoderivation: <https://www.theworldavatar.com/kg/ontoderivation/> .
+@prefix : <https://example.com/blazegraph/namespace/test_temp/> .
+@prefix doeagent: <https://www.theworldavatar.com/kg/agents/Service__DoE/> .
+@prefix exeagent: <https://www.theworldavatar.com/kg/agents/Service__Execution/> .
+@prefix postprocagent: <https://www.theworldavatar.com/kg/agents/Service__PostProc/> .
+@prefix time: <http://www.w3.org/2006/time#> .
+
+:postproc_derivation_6 ontoderivation:isDerivedFrom :exe_6 ;
+	ontoderivation:isDerivedUsing postprocagent:Service ;
+	a ontoderivation:DerivationAsyn .
+
+:postproc_derivation_7 ontoderivation:isDerivedFrom :exe_7 ;
+	ontoderivation:isDerivedUsing postprocagent:Service ;
+	a ontoderivation:DerivationAsyn .
+
+:doe_derivation_1 ontoderivation:isDerivedUsing doeagent:Service ;
+	time:hasTime :time_dd_1 ;
+	a ontoderivation:DerivationAsyn .
+
+:time_dd_1 a time:Instant ;
+	time:inTimePosition :time_unix_dd_1 .
+
+:time_unix_dd_1 a time:TimePosition ;
+	time:numericPosition 1 ;
+	time:hasTRS <http://dbpedia.org/resource/Unix_time> .
+
+:doe_derivation_2 ontoderivation:isDerivedUsing doeagent:Service ;
+	time:hasTime :time_dd_2 ;
+	a ontoderivation:DerivationAsyn .
+
+:time_dd_2 a time:Instant ;
+	time:inTimePosition :time_unix_dd_2 .
+
+:time_unix_dd_2 a time:TimePosition ;
+	time:numericPosition 2 ;
+	time:hasTRS <http://dbpedia.org/resource/Unix_time> .
+
+:doe_derivation_3 ontoderivation:isDerivedUsing doeagent:Service ;
+	time:hasTime :time_dd_3 ;
+	a ontoderivation:DerivationAsyn .
+
+:time_dd_3 a time:Instant ;
+	time:inTimePosition :time_unix_dd_3 .
+
+:time_unix_dd_3 a time:TimePosition ;
+	time:numericPosition 3 ;
+	time:hasTRS <http://dbpedia.org/resource/Unix_time> .
+
+:doe_derivation_4 ontoderivation:isDerivedUsing doeagent:Service ;
+	time:hasTime :time_dd_4 ;
+	a ontoderivation:DerivationAsyn .
+
+:time_dd_4 a time:Instant ;
+	time:inTimePosition :time_unix_dd_4 .
+
+:time_unix_dd_4 a time:TimePosition ;
+	time:numericPosition 4 ;
+	time:hasTRS <http://dbpedia.org/resource/Unix_time> .
+
+:doe_derivation_5 ontoderivation:isDerivedUsing doeagent:Service ;
+	time:hasTime :time_dd_5 ;
+	a ontoderivation:DerivationAsyn .
+
+:time_dd_5 a time:Instant ;
+	time:inTimePosition :time_unix_dd_5 .
+
+:time_unix_dd_5 a time:TimePosition ;
+	time:numericPosition 5 ;
+	time:hasTRS <http://dbpedia.org/resource/Unix_time> .
+
+:doe_derivation_6 ontoderivation:isDerivedUsing doeagent:Service ;
+	time:hasTime :time_dd_6 ;
+	a ontoderivation:DerivationAsyn .
+
+:time_dd_6 a time:Instant ;
+	time:inTimePosition :time_unix_dd_6 .
+
+:time_unix_dd_6 a time:TimePosition ;
+	time:numericPosition 6 ;
+	time:hasTRS <http://dbpedia.org/resource/Unix_time> .
+
+:doe_derivation_7 ontoderivation:isDerivedUsing doeagent:Service ;
+	time:hasTime :time_dd_7 ;
+	a ontoderivation:DerivationAsyn .
+
+:time_dd_7 a time:Instant ;
+	time:inTimePosition :time_unix_dd_7 .
+
+:time_unix_dd_7 a time:TimePosition ;
+	time:numericPosition 7 ;
+	time:hasTRS <http://dbpedia.org/resource/Unix_time> .
+
+:exe_1 ontoderivation:belongsTo :exe_derivation_1 .
+
+:exe_2 ontoderivation:belongsTo :exe_derivation_2 .
+
+:exe_3 ontoderivation:belongsTo :exe_derivation_3 .
+
+:exe_4 ontoderivation:belongsTo :exe_derivation_4 .
+
+:exe_5 ontoderivation:belongsTo :exe_derivation_5 .
+
+:exe_6 ontoderivation:belongsTo :exe_derivation_6 .
+
+:exe_7 ontoderivation:belongsTo :exe_derivation_7 .
+
+:exe_derivation_1 ontoderivation:hasStatus :status_1 ;
+	ontoderivation:isDerivedFrom :exp_1 ;
+	ontoderivation:isDerivedUsing exeagent:Service ;
+	time:hasTime :time_ed_1 ;
+	a ontoderivation:DerivationAsyn .
+
+:time_ed_1 a time:Instant ;
+	time:inTimePosition :time_unix_ed_1 .
+
+:time_unix_ed_1 a time:TimePosition ;
+	time:numericPosition 0 ;
+	time:hasTRS <http://dbpedia.org/resource/Unix_time> .
+
+:exe_derivation_2 ontoderivation:hasStatus :status_2 ;
+	ontoderivation:isDerivedFrom :exp_2 ;
+	ontoderivation:isDerivedUsing exeagent:Service ;
+	time:hasTime :time_ed_2 ;
+	a ontoderivation:DerivationAsyn .
+
+:time_ed_2 a time:Instant ;
+	time:inTimePosition :time_unix_ed_2 .
+
+:time_unix_ed_2 a time:TimePosition ;
+	time:numericPosition 0 ;
+	time:hasTRS <http://dbpedia.org/resource/Unix_time> .
+
+:exe_derivation_3 ontoderivation:hasStatus :status_3 ;
+	ontoderivation:isDerivedFrom :exp_3 ;
+	ontoderivation:isDerivedUsing exeagent:Service ;
+	time:hasTime :time_ed_3 ;
+	a ontoderivation:DerivationAsyn .
+
+:time_ed_3 a time:Instant ;
+	time:inTimePosition :time_unix_ed_3 .
+
+:time_unix_ed_3 a time:TimePosition ;
+	time:numericPosition 0 ;
+	time:hasTRS <http://dbpedia.org/resource/Unix_time> .
+
+:exe_derivation_4 ontoderivation:hasStatus :status_4 ;
+	ontoderivation:isDerivedFrom :exp_4 ;
+	ontoderivation:isDerivedUsing exeagent:Service ;
+	time:hasTime :time_ed_4 ;
+	a ontoderivation:DerivationAsyn .
+
+:time_ed_4 a time:Instant ;
+	time:inTimePosition :time_unix_ed_4 .
+
+:time_unix_ed_4 a time:TimePosition ;
+	time:numericPosition 0 ;
+	time:hasTRS <http://dbpedia.org/resource/Unix_time> .
+
+:exe_derivation_5 ontoderivation:isDerivedFrom :exp_5 ;
+	ontoderivation:isDerivedUsing exeagent:Service ;
+	time:hasTime :time_ed_5 ;
+	a ontoderivation:DerivationAsyn .
+
+:time_ed_5 a time:Instant ;
+	time:inTimePosition :time_unix_ed_5 .
+
+:time_unix_ed_5 a time:TimePosition ;
+	time:numericPosition 15 ;
+	time:hasTRS <http://dbpedia.org/resource/Unix_time> .
+
+:exe_derivation_6 ontoderivation:isDerivedFrom :exp_6 ;
+	ontoderivation:isDerivedUsing exeagent:Service ;
+	time:hasTime :time_ed_6 ;
+	a ontoderivation:DerivationAsyn .
+
+:time_ed_6 a time:Instant ;
+	time:inTimePosition :time_unix_ed_6 .
+
+:time_unix_ed_6 a time:TimePosition ;
+	time:numericPosition 16 ;
+	time:hasTRS <http://dbpedia.org/resource/Unix_time> .
+
+:exe_derivation_7 ontoderivation:isDerivedFrom :exp_7 ;
+	ontoderivation:isDerivedUsing exeagent:Service ;
+	time:hasTime :time_ed_7 ;
+	a ontoderivation:DerivationAsyn .
+
+:time_ed_7 a time:Instant ;
+	time:inTimePosition :time_unix_ed_7 .
+
+:time_unix_ed_7 a time:TimePosition ;
+	time:numericPosition 17 ;
+	time:hasTRS <http://dbpedia.org/resource/Unix_time> .
+
+:status_1 a ontoderivation:Finished .
+
+:status_2 a ontoderivation:Finished .
+
+:status_3 a ontoderivation:InProgress .
+
+:status_4 a ontoderivation:Requested .
+
+:exp_1 ontoderivation:belongsTo :doe_derivation_1 ;
+	a ontorxn:ReactionExperiment .
+
+:exp_2 ontoderivation:belongsTo :doe_derivation_2 ;
+	a ontorxn:ReactionExperiment .
+
+:exp_3 ontoderivation:belongsTo :doe_derivation_3 ;
+	a ontorxn:ReactionVariation .
+
+:exp_4 ontoderivation:belongsTo :doe_derivation_4 ;
+	a ontorxn:ReactionExperiment .
+
+:exp_5 ontoderivation:belongsTo :doe_derivation_5 ;
+	a ontorxn:ReactionExperiment .
+
+:exp_6 ontoderivation:belongsTo :doe_derivation_6 ;
+	a ontorxn:ReactionVariation .
+
+:exp_7 ontoderivation:belongsTo :doe_derivation_7 ;
+	a ontorxn:ReactionVariation .
+
+:postproc_1 ontoderivation:belongsTo :postproc_derivation_1 .
+
+:postproc_2 ontoderivation:belongsTo :postproc_derivation_2 .
+
+:postproc_3 ontoderivation:belongsTo :postproc_derivation_3 .
+
+:postproc_4 ontoderivation:belongsTo :postproc_derivation_4 .
+
+:postproc_5 ontoderivation:belongsTo :postproc_derivation_5 .
+
+:postproc_6 ontoderivation:belongsTo :postproc_derivation_6 .
+
+:postproc_7 ontoderivation:belongsTo :postproc_derivation_7 .
+
+:postproc_derivation_1 ontoderivation:isDerivedFrom :exe_1 ;
+	ontoderivation:isDerivedUsing postprocagent:Service ;
+	a ontoderivation:DerivationAsyn .
+
+:postproc_derivation_2 ontoderivation:isDerivedFrom :exe_2 ;
+	ontoderivation:isDerivedUsing postprocagent:Service ;
+	a ontoderivation:DerivationAsyn .
+
+:postproc_derivation_3 ontoderivation:isDerivedFrom :exe_3 ;
+	ontoderivation:isDerivedUsing postprocagent:Service ;
+	a ontoderivation:DerivationAsyn .
+
+:postproc_derivation_4 ontoderivation:isDerivedFrom :exe_4 ;
+	ontoderivation:isDerivedUsing postprocagent:Service ;
+	a ontoderivation:DerivationAsyn .
+
+:postproc_derivation_5 ontoderivation:isDerivedFrom :exe_5 ;
+	ontoderivation:isDerivedUsing postprocagent:Service ;
+	a ontoderivation:DerivationAsyn .

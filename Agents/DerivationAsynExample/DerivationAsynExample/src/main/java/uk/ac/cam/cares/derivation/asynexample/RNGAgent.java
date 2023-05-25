@@ -53,7 +53,7 @@ public class RNGAgent extends DerivationAgent {
 	
 	@Override
 	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
-		LOGGER.debug("RNGAgent received derivationInputs: " + derivationInputs.toString());
+		LOGGER.debug("RNGAgent received derivationInputs: " + derivationInputs.toString() + "for derivation: " + derivationInputs.getDerivationIRI());
 
 		// get the input from the KG
 		String upperLimitIRI = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.UpperLimit)).get(0);
@@ -118,7 +118,7 @@ public class RNGAgent extends DerivationAgent {
 		
 		exeService.scheduleAtFixedRate(() -> {
 			try {
-				rngAgent.monitorAsyncDerivations(Config.agentIriRNG);
+				rngAgent.monitorAsyncDerivations(Config.agentIriRNG, Config.periodAgentRNG);
 			} catch (JPSRuntimeException e) {
 				e.printStackTrace();
 			}

@@ -635,22 +635,41 @@ public class FileBasedStoreClient extends LocalStoreClient {
 	//// JSONArray executeQuery(String sparql) in super class
 	
 	//// JSONArray executeQuery() in super class
-			
+
+	/**
+	 * Performs ASK query execution
+	 * @param sparql
+	 * @return
+	 */
+	@Override
+	protected boolean executeAsk(String sparql) {
+		LOGGER.debug("Performing SPARQL ASK QUERY.");
+		
+		//Attempt to load files if the dataset is empty.
+		if(isEmpty()) {load();} 
+		
+		if (conn != null) {
+			return super.executeAsk(sparql); //call method in LocalStoreClient
+		} else {
+			throw new JPSRuntimeException("FileBasedStoreClient: client not initialised.");
+		}
+	}
+	
 	/**
 	 * Performs sparql query execution.
 	 * @param sparql
 	 * @return
 	 */
 	@Override
-	protected ResultSet performExecuteQuery(String sparql) {
+	protected ResultSet executeSelect(String sparql) {
 		
-		LOGGER.debug("Performing SPARQL QUERY.");
+		LOGGER.debug("Performing SPARQL SELECT QUERY.");
 		
 		//Attempt to load files if the dataset is empty.
 		if(isEmpty()) {load();} 
 		
 		if (conn != null) {
-			return super.performExecuteQuery(sparql); //call method in LocalStoreClient
+			return super.executeSelect(sparql); //call method in LocalStoreClient
 		} else {
 			throw new JPSRuntimeException("FileBasedStoreClient: client not initialised.");
 		}
