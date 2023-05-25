@@ -26,22 +26,7 @@ For the BMSQueryAgent to return results, it is assumed that there is already kno
 BMSQueryAgent does not depend on [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent), but they are used together to create time series visualisation in the [BMS Query App](https://github.com/cambridge-cares/TheWorldAvatar/tree/1502-android-app-for-data-visualisation/Apps/BMSQueryApp).
 
 ## 1.1 Config BMSQueryAgent in Stack
-### 1) Build Docker Image
-The BMSQueryAgent is set up to use the Maven repository. You'll need to provide your credentials in single-word text files located like this:
-```
-./credentials/
-    repo_username.txt
-    repo_password.txt
-```
-repo_username.txt should contain your github username, and repo_password.txt your github [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token),
-which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
-Then build image with:
-```
-docker build . -t bms-query-agent:1.1.0
-```
-
-### 2) Add Config to Stack Manager
 Copy `stack-manager-input-config-service/bms-query-agent.json` to `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/`.
 
 Create `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/<STACK NAME>.json` manually if it doesn't exist. If it exists already, append the agent to the file as follows:
