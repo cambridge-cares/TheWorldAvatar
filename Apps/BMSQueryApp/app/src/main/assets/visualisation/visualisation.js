@@ -1,4 +1,3 @@
-// var stack = "http://localhost:3838/";
 var stack = "http://137.132.22.165:3838/";
 
 function visualiseTimeSeriesData(rawJSON) {
@@ -7,10 +6,8 @@ function visualiseTimeSeriesData(rawJSON) {
     let meta = rawJSON["meta"];
     let time = rawJSON["time"];
 
-    if (meta != null) console.log("Got a meta object!");
+    if (meta != null) console.log("Got a meta object!");        // meta is ignored for now
     if (time != null) console.log("Got a time object!");
-
-    // TODO: ignore meta for now
 
     document.getElementById("metaTimeContainer").innerHTML = "";
 
@@ -33,13 +30,6 @@ function visualiseTimeSeriesData(rawJSON) {
 
         // Plot data
         timeseriesHandler.parseData(time);
-        // for (i = 0; i < timeseriesHandler._selectedData.length; i++) {
-        //     console.log(i);
-        //     start = timeseriesHandler._selectedData[i].times.length - 20;
-        //     end = timeseriesHandler._selectedData[i].times.length;
-        //     timeseriesHandler._selectedData[i].times = timeseriesHandler._selectedData[i].times.slice(start, end);
-        //     timeseriesHandler._selectedData[i].values = timeseriesHandler._selectedData[i].values.slice(start, end);
-        // }
 
         timeseriesHandler.showData("metaTimeContainer");
 
@@ -47,7 +37,6 @@ function visualiseTimeSeriesData(rawJSON) {
         $("#time-series-select").val(prevSelected);
         timeseriesHandler.update(prevSelected);
 
-        // $("#time-series-select").off("change");
         $("#time-series-select").change(function() {
             console.log("selection is " + $("#time-series-select").val());
             timeseriesHandler.update($("#time-series-select").val());
