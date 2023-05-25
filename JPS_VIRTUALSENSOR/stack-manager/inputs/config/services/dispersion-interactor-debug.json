@@ -1,0 +1,64 @@
+{
+    "ServiceSpec": {
+        "Name": "dispersion-interactor",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/dispersion-interactor:1.1.1-dev-aermod-agent-cleanup-SNAPSHOT",
+                "Env": [
+                    "STACK_NAME=${STACK_NAME}",
+                    "DATABASE=postgres",
+                    "SCOPE_TABLE_NAME=scopes",
+                    "AERMOD_AGENT_IRI=http://theworldavatar.com/kg/dispersion/AermodAgent",
+                    "AERMOD_AGENT_URL=http://ship-stack-aermod-agent:8080/AermodAgent/",
+                    "WEATHER_AGENT_URL=http://ship-stack-weather-agent:8080/WeatherAgent/CreateStation",
+                    "SHIP_INPUT_AGENT=http://ship-stack-ship-input-agent:8080/ShipInputAgent/update",
+                    "JPDA_ADDRESS=0.0.0.0:5005",
+                    "JPDA_TRANSPORT=dt_socket",
+                    "DEBUG=ON"
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "geoserver"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    },
+                    {
+                        "SecretName": "geoserver_password"
+                    }
+                ],
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "logs",
+                        "Target": "/root/.jps"
+                    }
+                ]
+            }
+        },
+        "EndpointSpec": {
+            "Ports": [
+                {
+                    "Name": "web",
+                    "Protocol": "tcp",
+                    "TargetPort": "5005",
+                    "PublishedPort": "5005"
+                }
+            ]
+        }
+    },
+    "endpoints": {
+        "dispersion-interactor": {
+            "url": "http://localhost:8080/DispersionInteractor/",
+            "externalPath": "/dispersion-interactor/"
+        }
+    }
+}
