@@ -56,6 +56,11 @@ async function loadHTML(htmlFile: string) {
  */
 function getDefaultImagery() {
     let imagerySettings = Manager.SETTINGS.getSetting("imagery");
+    if(imagerySettings == null && Manager.PROVIDER === MapProvider.MAPBOX) {
+        MapboxUtils.generateDefaultImagery();
+        imagerySettings = Manager.SETTINGS.getSetting("imagery");
+    }
+
     let defaultSetting = imagerySettings["default"];
     return imagerySettings[defaultSetting];
 }
