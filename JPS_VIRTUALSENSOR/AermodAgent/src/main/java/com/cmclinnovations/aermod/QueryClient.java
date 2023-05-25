@@ -54,6 +54,7 @@ import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.query.Query;
 import org.apache.jena.sparql.syntax.ElementGroup;
 import org.apache.jena.sparql.syntax.ElementService;
+import org.apache.jena.graph.Node;
 
 public class QueryClient {
     private static final Logger LOGGER = LogManager.getLogger(QueryClient.class);
@@ -193,7 +194,8 @@ public class QueryClient {
         GraphPattern gp = GraphPatterns.and(sps.isA(STATIC_POINT_SOURCE).andHas(EMITS, emissionIRI),
                 emissionIRI.has(HAS_OCGML_OBJECT, ocgmlIRI));
         query.select(ocgmlIRI).where(gp);
-        JSONArray pointSourceIRI = storeClient.executeQuery(query.getQueryString());
+        JSONArray pointSourceIRI = storeClient
+                .executeQuery(query.getQueryString().replace("SELECT", "SELECT DISTINCT"));
         List<String> pointSourceIRIList = new ArrayList<>();
         for (int i = 0; i < pointSourceIRI.length(); i++) {
             String ontoCityGMLIRI = pointSourceIRI.getJSONObject(i).getString(ocgmlIRI.getQueryString().substring(1));
@@ -217,7 +219,9 @@ public class QueryClient {
     private List<String> getIRIofStaticPointSourcesWithinScope(Polygon scope, String citiesNamespace,
             String namespaceCRS) throws org.apache.jena.sparql.lang.sparql_11.ParseException {
 
-        List<String> pointSourceIRIList = queryStaticPointSources();
+        List<String> pointSourceIRIListString = queryStaticPointSources();
+        List<Node> pointSourceIRIList = pointSourceIRIListString.stream().map(i -> new WhereBuilder().makeNode(i))
+                .collect(Collectors.toList());
 
         Coordinate[] scopeCoordinates = scope.getCoordinates();
         double xMin = scopeCoordinates[0].x;
@@ -247,7 +251,7 @@ public class QueryClient {
         // instantiated in the cityobject graph.
         // The values of zMin and zMax are arbitrary.
         double zMin = 0.0;
-        double zMax = 50.0;
+        double zMax = 800.0;
         String lowerPoints = xyMinCRS[0] + "#" + xyMinCRS[1] + "#" + zMin + "#";
         String lowerBounds = lowerPoints + lowerPoints + lowerPoints + lowerPoints + lowerPoints;
         lowerBounds = lowerBounds.substring(0, lowerBounds.length() - 1);
@@ -269,8 +273,9 @@ public class QueryClient {
                 .addWhere("?cityObject", "geo:customFieldsLowerBounds", "PLACEHOLDER" + lowerBounds)
                 .addWhere("?cityObject", "geo:customFieldsUpperBounds", "PLACEHOLDER" + upperBounds);
 
-        WhereBuilder wb3 = new WhereBuilder().addValueVar("?cityobject", pointSourceIRIList.toArray(new String[0]))
-                .addBind("?cityobject", "?cityObject");
+        WhereBuilder wb3 = new WhereBuilder().addWhereValueVar("?cityobject", pointSourceIRIList.toArray(new Node[0]));
+
+        WhereBuilder wb4 = new WhereBuilder().addBind("?cityobject", "?cityObject");
 
         SelectBuilder sb = new SelectBuilder()
                 .addVar("?cityObject");
@@ -279,10 +284,13 @@ public class QueryClient {
         // add geospatial service
         ElementGroup body = new ElementGroup();
         body.addElement(wb3.build().getQueryPattern());
+        body.addElement(wb4.build().getQueryPattern());
         body.addElement(new ElementService(geoUri + "search", wb.build().getQueryPattern()));
         query.setQueryPattern(body);
 
         String queryString = query.toString().replace("PLACEHOLDER", "");
+        queryString = queryString.replace("\"http", "<http");
+        queryString = queryString.replace("/\"", "/>");
         JSONArray buildingIRIQueryResult = AccessAgentCaller.queryStore(citiesNamespace, queryString);
 
         List<String> pointSourceIRIWithinScope = new ArrayList<>();
