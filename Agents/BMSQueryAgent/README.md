@@ -38,7 +38,7 @@ which must have a 'scope' that [allows you to publish and install packages](http
 
 Then build image with:
 ```
-docker build . -t bms-query-agent:1.0.0
+docker build . -t bms-query-agent:1.1.0
 ```
 
 ### 2) Add Config to Stack Manager

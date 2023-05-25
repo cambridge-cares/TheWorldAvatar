@@ -3,7 +3,7 @@
     "Name": "bms-query-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "docker.io/library/bms-query-agent:1.0.0",
+        "Image": "docker.io/library/bms-query-agent:1.1.0",
         "Configs": [
           {
             "ConfigName": "blazegraph"
