@@ -1,6 +1,9 @@
 # BIM Cesium Visualisation
 
 ## Description
+
+IMPORTANT NOTE: This project has been superseded by the DTVF and the various IFC agents. Do not use - only for reference.
+
 This repository is a web application for the visualisation of BIM/IFC models in Cesium. Based on this [example](https://github.com/CesiumGS/cesium-webpack-example), the app uses the [CesiumJS](https://github.com/CesiumGS/cesium) library and [Webpack](https://github.com/webpack/webpack) bundling tool. 
 
 The required `tileset.json` files in the [3D Tiles Next](https://github.com/CesiumGS/3d-tiles/tree/main/next) specifications can be obtained through the conversion tool in the `ifcto3Dtilesnext` module. Please note that this module is only for IFC conversion, and is not intended for converting other data types.
