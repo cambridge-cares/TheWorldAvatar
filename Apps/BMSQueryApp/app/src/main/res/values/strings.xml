@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">BMSQueryApp</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="sash_opening">Sash Opening</string>
+    <string name="status_of_WFH">Status</string>
+    <string name="air_flow">Air Flow</string>
+    <string name="damper_state">Damper State</string>
+    <string name="refresh">Refresh</string>
+    <string name="request_failed_try_again">Fail to get update. Please try again later.</string>
+    <string name="current_value_label">The current value is :</string>
+    <string name="data_collection_time_label">Data is collected at:</string>
+    <string name="submit">Submit</string>
+    <string name="building">Building</string>
+    <string name="facility">Facility</string>
+    <string name="room">Room</string>
+    <string name="equipment_type">Equipment Type</string>
+    <string name="equipment">Equipment</string>
+    <string name="no_editable_attribute">There is no editable attribute available for this equipment.</string>
+</resources>
