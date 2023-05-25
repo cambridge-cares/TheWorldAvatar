@@ -40,27 +40,27 @@ public class PointSource {
         return this.location;
     }
 
-    public void setFlowrateCO2InTonsPerYear(double flowrateCO2InTonsPerYear) {
-        flowrateCO2 = flowrateCO2InTonsPerYear * 1000 * 1000 / (365 * 24 * 60 * 60);
+    public void setFlowRateCO2InKgPerS(double flowrateCO2InKgPerS) {
+        flowrateCO2 = flowrateCO2InKgPerS * 1000;
     }
 
     public double getFlowrateCO2InGramsPerSecond() {
         return flowrateCO2;
     }
 
-    public void setFlowrateNOxInKgPerS(double flowrateNOxInKgPerS) {
+    public void setFlowRateNOxInKgPerS(double flowrateNOxInKgPerS) {
         this.flowrateNOx = flowrateNOxInKgPerS * 1000;
     }
 
-    public void setFlowrateSO2InKgPerS(double flowrateSO2InKgPerS) {
+    public void setFlowRateSO2InKgPerS(double flowrateSO2InKgPerS) {
         this.flowrateSO2 = flowrateSO2InKgPerS * 1000;
     }
 
-    public void setFlowrateHCInKgPerS(double flowrateHCInKgPerS) {
+    public void setFlowRateHCInKgPerS(double flowrateHCInKgPerS) {
         this.flowrateHC = flowrateHCInKgPerS * 1000;
     }
 
-    public void setFlowrateCOInKgPerS(double flowrateCOInKgPerS) {
+    public void setFlowRateCOInKgPerS(double flowrateCOInKgPerS) {
         this.flowrateCO = flowrateCOInKgPerS * 1000;
     }
 
@@ -100,16 +100,16 @@ public class PointSource {
         return this.flowrateHC;
     }
 
-    public void setPM25(double pm25) {
-        this.pm25 = pm25;
+    public void setFlowRatePM25InKgPerS(double flowratepm25InKgPerS) {
+        this.pm25 = flowratepm25InKgPerS;
     }
 
     public double getPm25() {
         return this.pm25;
     }
 
-    public void setPM10(double pm10) {
-        this.pm10 = pm10;
+    public void setFlowRatePM10InKgPerS(double flowratepm10InKgPerS) {
+        this.pm10 = flowratepm10InKgPerS;
     }
 
     public double getPm10() {

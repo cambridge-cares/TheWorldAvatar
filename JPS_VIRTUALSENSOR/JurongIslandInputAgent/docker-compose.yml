@@ -12,7 +12,7 @@ services:
       - STACK_NAME=${STACK_NAME}
       - QUERY_ENDPOINT=http://www.theworldavatar.com/blazegraph/namespace/jibusinessunits/sparql
       - NUMBER_SOURCES=600
-      - DENSITY=1.0
+      - DENSITY=1.293
       - TEMPERATURE=500.0
     configs:
       - blazegraph
