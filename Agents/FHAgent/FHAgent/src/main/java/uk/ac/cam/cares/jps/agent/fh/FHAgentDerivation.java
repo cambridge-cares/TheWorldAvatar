@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.agent.fh;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import net.jini.jeri.Endpoint;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -31,12 +30,12 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 public class FHAgentDerivation {
     private static final Logger LOGGER = LogManager.getLogger(FHAgentLauncher.class);
 
-    public static String derivationInstanceBaseURL;
+    public String derivationInstanceBaseURL;
     private String[] endPoint;
     private final String ERROR_INIT = "Error on initialising derivation instantiation. ";
 
-    public static DerivationClient derivClient;
-    public static RemoteStoreClient storeClient;
+    public DerivationClient derivClient;
+    public RemoteStoreClient storeClient;
 
     public String agentIRI;
     public Map<String, String> iriMap = new HashMap<>();
@@ -70,9 +69,12 @@ public class FHAgentDerivation {
             try {
             // Read the mappings folder from the properties file
             derivationInstanceBaseURL = prop.getProperty("derivation.baseurl");
+                if (derivationInstanceBaseURL == null){
+                    throw new IOException("derivation.baseurl does not exist in properties file or is empty.");
+                }
             }
             catch (Exception e) {
-            	throw new IOException ("Error parsing derivation base URL from properties file.");
+            	throw new IOException ("Error parsing derivation base URL from properties file.", e);
             }
         }
     }
@@ -136,7 +138,7 @@ public class FHAgentDerivation {
         
         
         for (String varName: iriMap.keySet()) {
-            printWriter.print(varName+"="+iriMap.get(varName));
+            printWriter.print(varName+"="+iriMap.get(varName)+"\r\n");
         }
 
         printWriter.close();
@@ -197,7 +199,7 @@ public class FHAgentDerivation {
         }
         
         catch(Exception e){
-            throw new JPSRuntimeException("Failed to instantiate agent instances: " + e);
+            throw new JPSRuntimeException("Failed to instantiate agent instances: ", e);
         }
     }
 
