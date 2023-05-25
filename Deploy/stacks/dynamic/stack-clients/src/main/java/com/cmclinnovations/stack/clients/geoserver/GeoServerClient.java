@@ -112,34 +112,40 @@ public class GeoServerClient extends ContainerClient {
         }
     }
 
-    public void loadOtherFiles(Path baseDirectory, String file) {
-        loadData(baseDirectory, file, STATIC_DATA_DIRECTORY);
+    public void loadOtherFiles(Path baseDirectory, List<GeoserverOtherStaticFile> files) {
+        files.forEach(file -> {
+            loadStaticFile(baseDirectory, file);
+        });
+
     }
 
-    public void loadIcons(Path baseDirectory, String file) {
-        loadData(baseDirectory, file, ICONS_DIRECTORY);
-    }
+    private void loadStaticFile(Path baseDirectory, GeoserverOtherStaticFile file) {
+        Path filePath = baseDirectory.resolve(file.getSource());
+        String sourceParentDir = filePath.getParent().toString();
+        String fileName = filePath.getFileName().toString();
+        String absTargetDir = Path.of(STATIC_DATA_DIRECTORY).resolve(Path.of(file.getTarget())).toString();
 
-    public void loadData(Path baseDirectory, String file, String baseDestinationDirectory) {
         String containerId = getContainerId("geoserver");
-        Path filePath = baseDirectory.resolve(file);
 
         if (!Files.exists(filePath)) {
             throw new RuntimeException(
                     "Static GeoServer data '" + filePath + "' does not exist and could not be loaded.");
-        } else if (Files.isRegularFile(filePath)) {
-            sendFiles(containerId, baseDirectory.toString(), List.of(file), baseDestinationDirectory);
         } else if (Files.isDirectory(filePath)) {
-            Path destinationDirectory = Path.of(baseDestinationDirectory).resolve(filePath.getFileName());
-
-            if (!directoryExists(containerId, destinationDirectory.toString())) {
-                makeDir(containerId, destinationDirectory.toString());
-            }
-            sendFolder(containerId, filePath.toString(), destinationDirectory.toString());
+            sendFolder(containerId, filePath.toString(), Path.of(absTargetDir).resolve(fileName).toString());
         } else {
+            sendFiles(containerId, sourceParentDir, List.of(fileName), absTargetDir);
+        }
+    }
+
+    public void loadIcons(Path baseDirectory, String iconDir) {
+        if (!Files.exists(baseDirectory.resolve(iconDir))) {
             throw new RuntimeException(
-                    "Static GeoServer data '" + filePath
-                            + "' exists but is neither a regular file or a directory and could not be loaded.");
+                    "Static GeoServer data '" + baseDirectory.resolve(iconDir)
+                            + "' does not exist and could not be loaded.");
+        } else if (Files.isDirectory(baseDirectory.resolve(iconDir))) {
+            sendFolder(getContainerId("geoserver"), baseDirectory.resolve(iconDir).toString(), ICONS_DIRECTORY);
+        } else {
+            throw new RuntimeException("Geoserver icon directory " + iconDir + "does not exist or is not a directory.");
         }
     }
 
