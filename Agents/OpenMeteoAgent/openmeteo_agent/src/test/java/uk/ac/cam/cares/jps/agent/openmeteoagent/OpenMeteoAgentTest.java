@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.agent.openmeteoagent;
 
 import org.apache.jena.arq.querybuilder.WhereBuilder;
-import org.apache.zookeeper.Op;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -20,9 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,9 +64,9 @@ public class OpenMeteoAgentTest {
             Field api_elevation = agent.getClass().getDeclaredField("API_ELEVATION");
             assertNotNull(api_elevation);
             api_elevation.setAccessible(true);
-            Field api_timezone = agent.getClass().getDeclaredField("API_TIMEZONE");
-            assertNotNull(api_timezone);
-            api_timezone.setAccessible(true);
+            Field api_offset = agent.getClass().getDeclaredField("API_OFFSET");
+            assertNotNull(api_offset);
+            api_offset.setAccessible(true);
 
             Field latitude = agent.getClass().getDeclaredField("latitude");
             latitude.setAccessible(true);
@@ -129,7 +126,7 @@ public class OpenMeteoAgentTest {
             testWeatherData.put(api_time.get(agent).toString(), new JSONArray(testTimes));
 
             JSONObject testWeatherResponse = new JSONObject()
-                    .put(api_timezone.get(agent).toString(), timezone)
+                    .put(api_offset.get(agent).toString(), 1)
                     .put(api_hourly.get(agent).toString(), testWeatherData)
                     .put(api_hourly_units.get(agent).toString(), testWeatherUnit)
                     .put(api_elevation.get(agent).toString(), 3.00);
@@ -456,27 +453,27 @@ public class OpenMeteoAgentTest {
                     .thenReturn(new JSONObject().put(JPSConstants.QUERY_ENDPOINT, "").put(JPSConstants.UPDATE_ENDPOINT, ""));
 
             OpenMeteoAgent agent = new OpenMeteoAgent();
-            Method getTimesList = agent.getClass().getDeclaredMethod("getTimesList", JSONObject.class, String.class, String.class);
+            Method getTimesList = agent.getClass().getDeclaredMethod("getTimesList", JSONObject.class, String.class, Integer.class);
             assertNotNull(getTimesList);
             getTimesList.setAccessible(true);
 
             JSONObject testJSONObject = new JSONObject();
             List<String> test = new ArrayList<>();
             String key = "time";
-            String timezone = "Europe/Berlin";
-            ZoneId zoneID = ZoneId.of(timezone);
+            Integer offset = 3600;
+            ZoneOffset zoneOffset = ZoneOffset.ofTotalSeconds(offset);
 
             test.add("2021-01-01T01:00");
             test.add("2021-01-01T02:00");
 
             testJSONObject.put(key, new JSONArray(test));
 
-            List<OffsetDateTime> result = (List<OffsetDateTime>) getTimesList.invoke(agent, testJSONObject, key, timezone);
+            List<OffsetDateTime> result = (List<OffsetDateTime>) getTimesList.invoke(agent, testJSONObject, key, offset);
 
             assertEquals(test.size(), result.size());
 
             for (int i = 0; i < test.size(); i++) {
-                assertEquals(LocalDateTime.parse(test.get(i)).atZone(zoneID).toOffsetDateTime(), result.get(i));
+                assertEquals(LocalDateTime.parse(test.get(i)).atOffset(zoneOffset), result.get(i));
             }
         }
     }

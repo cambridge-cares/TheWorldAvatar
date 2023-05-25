@@ -103,7 +103,7 @@ An example snippet of the `settings.json` file defining search parameters is sho
 
 ## Sample Data
 
-A small amount of sample data has been committed to demonstrate the power of the DTVF to visualisate different data types. Please do not make changes to the sample data without consulting the original developer. At the time of writing, the sample data sets include:
+A small amount of sample data has been committed to demonstrate the power of the DTVF to visualise different data types. Please do not make changes to the sample data without consulting the original developer. At the time of writing, the sample data sets include:
 
 - **Cambridge**:
   - Based in and around Cambridge, this data set mimics a single stack that contains data on college locations and buildings.

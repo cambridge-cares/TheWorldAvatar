@@ -5,7 +5,20 @@
         {
             "id": "3d-tiles-source",
             "type": "tiles",
-            "uri": "https://kg.cmclinnovations.com/cdn/buildings/nyc/tileset.json"
+            "uri": "https://kg.cmclinnovations.com/cdn/buildings/nyc/tileset.min.json"
+        },
+        {
+            "id": "clip-example-one",
+            "type": "tiles",
+            "uri": "https://kg.cmclinnovations.com/cdn/buildings/clip-example/tileset.json",
+            "position": [-74.01515, 40.70276, 0]
+        },
+        {
+            "id": "clip-example-two",
+            "type": "tiles",
+            "uri": "https://kg.cmclinnovations.com/cdn/buildings/dragon/tileset.json",
+            "position": [-74.01521, 40.703300, 5],
+            "rotation": [0, 0, 315]
         },
         {
             "id": "sample-2d-data",
@@ -42,6 +55,32 @@
                     ]
                 }
             }
+        },
+        {
+            "id": "clip-example-one-layer",
+			"name": "Clipping Example #1", 
+            "source": "clip-example-one",
+            "clipping": {
+                "min": 0,
+                "max": 10,
+                "start": 5.78,
+                "labels": {
+                    "0": "Ground level",
+                    "2.9": "Bottom floor",
+                    "5.78": "Top floor",
+                    "9.14": "Roof"
+                }
+            }    
+        },
+        {
+            "id": "clip-example-two-layer",
+			"name": "Clipping Example #2", 
+            "source": "clip-example-two",
+            "clipping": {
+                "min": 0,
+                "max": 10,
+                "start": 5
+            }    
         },
         {
             "id": "sample-2d-layer",
