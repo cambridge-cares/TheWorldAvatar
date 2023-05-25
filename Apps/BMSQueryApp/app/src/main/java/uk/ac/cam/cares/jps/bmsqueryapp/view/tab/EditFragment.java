@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,7 +27,7 @@ import java.util.Objects;
 
 import okhttp3.HttpUrl;
 import uk.ac.cam.cares.jps.bmsqueryapp.adapter.list.EditableAttributesAdapter;
-import uk.ac.cam.cares.jps.bmsqueryapp.data.attribtue.EditableAttribute;
+import uk.ac.cam.cares.jps.bmsqueryapp.data.attribute.EditableAttribute;
 import uk.ac.cam.cares.jps.bmsqueryapp.databinding.FragmentEditBinding;
 import uk.ac.cam.cares.jps.bmsqueryapp.utils.Constants;
 import uk.ac.cam.cares.jps.bmsqueryapp.utils.SingletonConnection;

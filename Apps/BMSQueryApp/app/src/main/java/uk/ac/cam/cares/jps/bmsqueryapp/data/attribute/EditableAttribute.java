@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.bmsqueryapp.data.attribtue;
+package uk.ac.cam.cares.jps.bmsqueryapp.data.attribute;
 
 import android.text.InputType;
 

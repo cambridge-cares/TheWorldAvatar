@@ -22,7 +22,7 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
-import uk.ac.cam.cares.jps.bmsqueryapp.data.attribtue.EditableAttribute;
+import uk.ac.cam.cares.jps.bmsqueryapp.data.attribute.EditableAttribute;
 import uk.ac.cam.cares.jps.bmsqueryapp.databinding.ActivityEquipmentInstanceBinding;
 import uk.ac.cam.cares.jps.bmsqueryapp.view.tab.EditFragment;
 import uk.ac.cam.cares.jps.bmsqueryapp.view.tab.TabAdapter;

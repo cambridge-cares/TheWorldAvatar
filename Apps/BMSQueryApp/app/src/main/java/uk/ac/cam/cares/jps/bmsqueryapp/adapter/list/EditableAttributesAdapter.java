@@ -16,7 +16,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.util.List;
 
 import uk.ac.cam.cares.jps.bmsqueryapp.R;
-import uk.ac.cam.cares.jps.bmsqueryapp.data.attribtue.EditableAttribute;
+import uk.ac.cam.cares.jps.bmsqueryapp.data.attribute.EditableAttribute;
 
 public class EditableAttributesAdapter extends RecyclerView.Adapter<EditableAttributesAdapter.EditableAttributeInputView> {
 

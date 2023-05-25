@@ -11,7 +11,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import java.util.List;
 
-import uk.ac.cam.cares.jps.bmsqueryapp.data.attribtue.EditableAttribute;
+import uk.ac.cam.cares.jps.bmsqueryapp.data.attribute.EditableAttribute;
 
 public class TabAdapter extends FragmentStateAdapter {
 
