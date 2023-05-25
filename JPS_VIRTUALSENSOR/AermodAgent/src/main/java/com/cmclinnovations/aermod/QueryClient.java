@@ -222,7 +222,28 @@ public class QueryClient {
     private List<String> getIRIofStaticPointSourcesWithinScope(Polygon scope, String citiesNamespace,
             String namespaceCRS) throws org.apache.jena.sparql.lang.sparql_11.ParseException {
 
-        List<String> pointSourceIRIList = queryStaticPointSources();
+        List<String> pointSourceIRIAll = queryStaticPointSources();
+        List<String> pointSourceIRIList = new ArrayList<>();
+        Map<String, String> pointSourceIRIMap = new HashMap<>();
+
+        for (int i = 0; i < pointSourceIRIAll.size(); i++) {
+            String psIRI = pointSourceIRIAll.get(i);
+            if (psIRI.contains("cityfurniture")) {
+                String coIRI = psIRI.replace("cityfurniture", "cityobject");
+                pointSourceIRIList.add(coIRI);
+                pointSourceIRIMap.put(coIRI, psIRI);
+            } else if (psIRI.contains("building")) {
+                String coIRI = psIRI.replace("building", "cityobject");
+                pointSourceIRIList.add(coIRI);
+                pointSourceIRIMap.put(coIRI, psIRI);
+            } else {
+                LOGGER.warn(
+                        "The following OCGML IRI of a static point source does not reference a cityfurniture or building object: "
+                                +
+                                psIRI);
+            }
+
+        }
 
         Coordinate[] scopeCoordinates = scope.getCoordinates();
         double xMin = scopeCoordinates[0].x;
@@ -299,17 +320,7 @@ public class QueryClient {
 
         for (int i = 0; i < buildingIRIQueryResult.length(); i++) {
             String pointSourceIRI = buildingIRIQueryResult.getJSONObject(i).getString("cityObject");
-            pointSourceIRIWithinScope.add(pointSourceIRI);
-        }
-
-        // If cityfurniture was replaced with cityobject for the geosparql query, it
-        // must be changed back to cityfurniture before
-        // returning the list of static point sources within the scope to Aermod agent.
-        if ("jriEPSG24500".equals(citiesNamespace)) {
-            for (int i = 0; i < pointSourceIRIWithinScope.size(); i++) {
-                String sourceIRI = pointSourceIRIWithinScope.get(i).replace("cityobject", "cityfurniture");
-                pointSourceIRIWithinScope.set(i, sourceIRI);
-            }
+            pointSourceIRIWithinScope.add(pointSourceIRIMap.get(pointSourceIRI));
         }
 
         return pointSourceIRIWithinScope;
