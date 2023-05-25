@@ -157,8 +157,8 @@ def retrieve_consumption_profile_iri(sparql_client: PySparqlClient):
         WHERE {{
          ?country_iri <{REGION_HAS_ENERGYCONSUMPTION_PROFILE}> ?consumption_profile_iri .
          ?consumption_profile_iri <{RDF_TYPE}> <{REGION_ENERGYCONSUMPTION_PROFILE}> ;
-                                <{OFP_VALIDFROM}> "2020-01-01 12:00:00"^^<{XSD_DATETIME}> ;
-                                <{OFP_VALIDTO}> "2020-12-31 12:00:00"^^<{XSD_DATETIME}> .
+                                <{OFP_VALIDFROM}> "2020-01-01T12:00:00.000Z"^^<{XSD_DATETIME}> ;
+                                <{OFP_VALIDTO}> "2020-12-31T12:00:00.000Z"^^<{XSD_DATETIME}> .
         }}
         """
         res = sparql_client.performQuery(query_string)

@@ -64,7 +64,7 @@ class COPCalculationAgent(DerivationAgent):
         inputs = derivation_inputs.getInputs()
         derivIRI = derivation_inputs.getDerivationIRI()
         temperature_iri_list = self.sparql_client.retrieve_temperature_iri()
-        
+        print(f"A total number of {len(temperature_iri_list)} will be marked, meaning there is {len(temperature_iri_list)/12} regions will be marked")
         # temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri = self.validate_input_values(inputs=inputs,
         #                                              derivationIRI=derivIRI)
         for i in tqdm(range(len(temperature_iri_list))):

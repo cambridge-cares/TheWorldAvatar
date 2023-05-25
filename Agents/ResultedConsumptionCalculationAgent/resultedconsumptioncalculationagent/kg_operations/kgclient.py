@@ -156,8 +156,8 @@ class KGClient(PySparqlClient):
         WHERE {{
          <{country_iri}> <{REGION_HAS_ENERGYCONSUMPTION_PROFILE}> ?consumption_profile_iri .
          ?consumption_profile_iri <{RDF_TYPE}> <{REGION_ENERGYCONSUMPTION_PROFILE}> ;
-                                <{OFP_VALIDFROM}> "2020-01-01 12:00:00"^^<{XSD_DATETIME}> ;
-                                <{OFP_VALIDTO}> "2020-12-31 12:00:00"^^<{XSD_DATETIME}> .
+                                <{OFP_VALIDFROM}> "2020-01-01T12:00:00.000Z"^^<{XSD_DATETIME}> ;
+                                <{OFP_VALIDTO}> "2020-12-31T12:00:00.000Z"^^<{XSD_DATETIME}> .
          ?elec_profile_iri <{IS_A}> ?consumption_profile_iri;
                           <{RDF_TYPE}>  <{REGION_ELECTRICITYCONSUMPTION_PROFILE}>.
          ?gas_profile_iri <{IS_A}> ?consumption_profile_iri;
@@ -207,8 +207,8 @@ class KGClient(PySparqlClient):
         INSERT DATA {{
          <{country_iri}> <{REGION_HAS_ENERGYCONSUMPTION_PROFILE}> <{consumption_profile_iri}> .
          <{consumption_profile_iri}> <{RDF_TYPE}> <{REGION_ENERGYCONSUMPTION_PROFILE}> ;
-                                <{OFP_VALIDFROM}> "2020-01-01 12:00:00"^^<{XSD_DATETIME}> ;
-                                <{OFP_VALIDTO}> "2020-12-31 12:00:00"^^<{XSD_DATETIME}> .
+                                <{OFP_VALIDFROM}> "2020-01-01T12:00:00.000Z"^^<{XSD_DATETIME}> ;
+                                <{OFP_VALIDTO}> "2020-12-31T12:00:00.000Z"^^<{XSD_DATETIME}> .
          <{elec_profile_iri}> <{IS_A}> <{consumption_profile_iri}>;
                           <{RDF_TYPE}>  <{REGION_ELECTRICITYCONSUMPTION_PROFILE}> ;
                         <{OM_HAS_NUMERICALVALUE}> "{ELECTRICITY_CONSUMPTION_PROFILE}"^^<{XSD_STRING}> .
@@ -348,8 +348,8 @@ class KGClient(PySparqlClient):
         WHERE {{
          ?country_iri <{REGION_HAS_ENERGYCONSUMPTION_PROFILE}> <{consumption_profile_iri}> .
          <{consumption_profile_iri}> <{RDF_TYPE}> <{REGION_ENERGYCONSUMPTION_PROFILE}> ;
-                                <{OFP_VALIDFROM}> "2020-01-01 12:00:00"^^<{XSD_DATETIME}> ;
-                                <{OFP_VALIDTO}> "2020-12-31 12:00:00"^^<{XSD_DATETIME}> .
+                                <{OFP_VALIDFROM}> "2020-01-01T12:00:00.000Z"^^<{XSD_DATETIME}> ;
+                                <{OFP_VALIDTO}> "2020-12-31T12:00:00.000Z"^^<{XSD_DATETIME}> .
          ?elec_profile_iri <{IS_A}> <{consumption_profile_iri}>;
                           <{RDF_TYPE}>  <{REGION_ELECTRICITYCONSUMPTION_PROFILE}> ;
                         <{OM_HAS_NUMERICALVALUE}> ?elec_profile .
