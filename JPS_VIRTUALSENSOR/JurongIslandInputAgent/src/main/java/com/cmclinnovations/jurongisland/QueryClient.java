@@ -56,9 +56,9 @@ public class QueryClient {
         private static final Iri MASS_FLOW = P_OM.iri("MassFlow");
         private static final Iri TEMPERATURE = P_OM.iri("Temperature");
         private static final Iri OWL_THING = P_OWL.iri("Thing");
-        private static final Iri DENSITY_UNIT = P_OM.iri("KilogramPerCubicMetre");
-        private static final Iri MASS_FLOW_UNIT = iri("http://www.theworldavatar.com/kb/ontochemplant/TonsPerYear");
-        private static final Iri TEMPERATURE_UNIT = P_OM.iri("Kelvin");
+        private static final Iri DENSITY_UNIT = P_OM.iri("kilogramPerCubicmetre");
+        private static final Iri MASS_FLOW_UNIT = P_OM.iri("kilogramPerSecond-Time");
+        private static final Iri TEMPERATURE_UNIT = P_OM.iri("kelvin");
         private static final Iri CHEMICALPLANT = P_CHEM.iri("ChemicalPlant");
         private static final Iri PLANTITEM = iri(
                         "http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#PlantItem");
@@ -103,10 +103,13 @@ public class QueryClient {
 
                 ModifyQuery modify = Queries.MODIFY().prefix(P_DISP, P_OWL, P_OM);
 
+                double convertTonsYrtoKgS = 1000.0 / (365 * 24 * 60 * 60);
+
                 for (int i = 0; i < pollutantSourceData.length(); i++) {
 
                         String ocgmlIRI = pollutantSourceData.getJSONObject(i).getString("IRI");
                         Double emission = pollutantSourceData.getJSONObject(i).getDouble("emission");
+                        emission *= convertTonsYrtoKgS;
                         RdfLiteral.NumericLiteral emissionValue = Rdf.literalOf(emission);
                         double density = Double.parseDouble(EnvConfig.DENSITY);
                         RdfLiteral.NumericLiteral densityValue = Rdf.literalOf(density);
@@ -146,28 +149,31 @@ public class QueryClient {
 
         public void updatePirmasensEmissions() {
                 List<String> ocgmlIRIs = Arrays.asList(
-                                "http://www.theworldavatar.com:83/citieskg/namespace/pirmasensEPSG32633/sparql/cityobject/UUID_LOD2_Pirmasens_4f8d0f1a-3b21-40d4-8b90-89723e31a7ca/",
-                                "http://www.theworldavatar.com:83/citieskg/namespace/pirmasensEPSG32633/sparql/cityobject/UUID_LOD2_Pirmasens_c38d038b-a677-4e0c-95d9-f02c09cf991c/");
+                                "http://www.theworldavatar.com:83/citieskg/namespace/pirmasensEPSG32633/sparql/building/UUID_LOD2_Pirmasens_4f8d0f1a-3b21-40d4-8b90-89723e31a7ca/",
+                                "http://www.theworldavatar.com:83/citieskg/namespace/pirmasensEPSG32633/sparql/building/UUID_LOD2_Pirmasens_c38d038b-a677-4e0c-95d9-f02c09cf991c/");
                 List<Double> no2Emissions = Arrays.asList(100.0, 100.0);
                 List<Double> pm25Emissions = Arrays.asList(100.0, 100.0);
                 List<Double> pm10Emissions = Arrays.asList(100.0, 100.0);
 
-                List<Double> no2Densities = Arrays.asList(1.0, 1.0);
-                List<Double> pm25Densities = Arrays.asList(1.0, 1.0);
-                List<Double> pm10Densities = Arrays.asList(1.0, 1.0);
+                double gasDensity = Double.parseDouble(EnvConfig.DENSITY);
+
+                List<Double> no2Densities = Arrays.asList(gasDensity, gasDensity);
+                List<Double> pm25Densities = Arrays.asList(gasDensity, gasDensity);
+                List<Double> pm10Densities = Arrays.asList(gasDensity, gasDensity);
 
                 int numberSources = 2;
+                double convertTonsYrtoKgS = 1000.0 / (365 * 24 * 60 * 60);
 
                 ModifyQuery modify = Queries.MODIFY().prefix(P_DISP, P_OWL, P_OM);
 
                 for (int i = 0; i < numberSources; i++) {
 
                         String ocgmlIRI = ocgmlIRIs.get(i);
-                        Double no2Emission = no2Emissions.get(i);
+                        Double no2Emission = no2Emissions.get(i) * convertTonsYrtoKgS;
                         RdfLiteral.NumericLiteral no2EmissionValue = Rdf.literalOf(no2Emission);
-                        Double pm25Emission = pm25Emissions.get(i);
+                        Double pm25Emission = pm25Emissions.get(i) * convertTonsYrtoKgS;
                         RdfLiteral.NumericLiteral pm25EmissionValue = Rdf.literalOf(pm25Emission);
-                        Double pm10Emission = pm10Emissions.get(i);
+                        Double pm10Emission = pm10Emissions.get(i) * convertTonsYrtoKgS;
                         RdfLiteral.NumericLiteral pm10EmissionValue = Rdf.literalOf(pm10Emission);
 
                         Double no2Density = no2Densities.get(i);

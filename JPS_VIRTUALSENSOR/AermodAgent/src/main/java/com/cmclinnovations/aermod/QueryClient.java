@@ -113,6 +113,9 @@ public class QueryClient {
     private static final Iri UNIT_MS = P_OM.iri("metrePerSecond-Time");
     private static final Iri UNIT_PERCENTAGE = P_OM.iri("PercentageUnit");
     private static final Iri UNIT_POLLUTANT_CONC = P_OM.iri("microgramPerCubicmetre");
+    private static final String UNIT_KG_S = OM_STRING + "kilogramPerSecond-Time";
+    private static final String UNIT_KELVIN = OM_STRING + "kelvin";
+    private static final String UNIT_KG_M3 = OM_STRING + "kilogramPerCubicmetre";
 
     // Location type
     private static final Iri LOCATION = P_DISP.iri("Location");
@@ -219,9 +222,28 @@ public class QueryClient {
     private List<String> getIRIofStaticPointSourcesWithinScope(Polygon scope, String citiesNamespace,
             String namespaceCRS) throws org.apache.jena.sparql.lang.sparql_11.ParseException {
 
-        List<String> pointSourceIRIListString = queryStaticPointSources();
-        List<Node> pointSourceIRIList = pointSourceIRIListString.stream().map(i -> new WhereBuilder().makeNode(i))
-                .collect(Collectors.toList());
+        List<String> pointSourceIRIAll = queryStaticPointSources();
+        List<String> pointSourceIRIList = new ArrayList<>();
+        Map<String, String> pointSourceIRIMap = new HashMap<>();
+
+        for (int i = 0; i < pointSourceIRIAll.size(); i++) {
+            String psIRI = pointSourceIRIAll.get(i);
+            if (psIRI.contains("cityfurniture")) {
+                String coIRI = psIRI.replace("cityfurniture", "cityobject");
+                pointSourceIRIList.add(coIRI);
+                pointSourceIRIMap.put(coIRI, psIRI);
+            } else if (psIRI.contains("building")) {
+                String coIRI = psIRI.replace("building", "cityobject");
+                pointSourceIRIList.add(coIRI);
+                pointSourceIRIMap.put(coIRI, psIRI);
+            } else {
+                LOGGER.warn(
+                        "The following OCGML IRI of a static point source does not reference a cityfurniture or building object: "
+                                +
+                                psIRI);
+            }
+
+        }
 
         Coordinate[] scopeCoordinates = scope.getCoordinates();
         double xMin = scopeCoordinates[0].x;
@@ -273,7 +295,8 @@ public class QueryClient {
                 .addWhere("?cityObject", "geo:customFieldsLowerBounds", "PLACEHOLDER" + lowerBounds)
                 .addWhere("?cityObject", "geo:customFieldsUpperBounds", "PLACEHOLDER" + upperBounds);
 
-        WhereBuilder wb3 = new WhereBuilder().addWhereValueVar("?cityobject", pointSourceIRIList.toArray(new Node[0]));
+        WhereBuilder wb3 = new WhereBuilder().addWhereValueVar("?cityobject",
+                pointSourceIRIList.toArray(new String[0]));
 
         WhereBuilder wb4 = new WhereBuilder().addBind("?cityobject", "?cityObject");
 
@@ -297,17 +320,7 @@ public class QueryClient {
 
         for (int i = 0; i < buildingIRIQueryResult.length(); i++) {
             String pointSourceIRI = buildingIRIQueryResult.getJSONObject(i).getString("cityObject");
-            pointSourceIRIWithinScope.add(pointSourceIRI);
-        }
-
-        // If cityfurniture was replaced with cityobject for the geosparql query, it
-        // must be changed back to cityfurniture before
-        // returning the list of static point sources within the scope to Aermod agent.
-        if ("jriEPSG24500".equals(citiesNamespace)) {
-            for (int i = 0; i < pointSourceIRIWithinScope.size(); i++) {
-                String sourceIRI = pointSourceIRIWithinScope.get(i).replace("cityobject", "cityfurniture");
-                pointSourceIRIWithinScope.set(i, sourceIRI);
-            }
+            pointSourceIRIWithinScope.add(pointSourceIRIMap.get(pointSourceIRI));
         }
 
         return pointSourceIRIWithinScope;
@@ -330,15 +343,22 @@ public class QueryClient {
         Variable emissionValue = query.var();
         Variable densityValue = query.var();
         Variable temperatureValue = query.var();
+        Variable emissionUnit = query.var();
+        Variable densityUnit = query.var();
+        Variable temperatureUnit = query.var();
+
         GraphPattern gp = GraphPatterns.and(sps.isA(STATIC_POINT_SOURCE).andHas(EMITS, emissionIRI),
                 emissionIRI.isA(pollutant).andHas(HAS_OCGML_OBJECT, ocgmlIRI).andHas(HAS_QTY, massFlowIRI)
                         .andHas(HAS_QTY, densityIRI).andHas(HAS_QTY, temperatureIRI),
-                massFlowIRI.isA(iri(MASS_FLOW)).andHas(HAS_NUMERICALVALUE, emissionValue),
-                densityIRI.isA(iri(DENSITY)).andHas(HAS_NUMERICALVALUE, densityValue),
-                temperatureIRI.isA(iri(TEMPERATURE)).andHas(HAS_NUMERICALVALUE, temperatureValue));
+                massFlowIRI.isA(iri(MASS_FLOW)).andHas(HAS_NUMERICALVALUE, emissionValue).andHas(HAS_UNIT,
+                        emissionUnit),
+                densityIRI.isA(iri(DENSITY)).andHas(HAS_NUMERICALVALUE, densityValue).andHas(HAS_UNIT, densityUnit),
+                temperatureIRI.isA(iri(TEMPERATURE)).andHas(HAS_NUMERICALVALUE, temperatureValue).andHas(HAS_UNIT,
+                        temperatureUnit));
         ValuesPattern<Iri> vp = new ValuesPattern<>(ocgmlIRI,
                 pointSourceOCGMLIRIWithinScope.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
-        query.select(sps, ocgmlIRI, pollutant, emissionValue, densityValue, temperatureValue).where(gp, vp);
+        query.select(sps, ocgmlIRI, pollutant, emissionValue, emissionUnit, densityValue, densityUnit, temperatureValue,
+                temperatureUnit).where(gp, vp);
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         Map<String, StaticPointSource> iriToPointSourceMap = new HashMap<>();
@@ -350,10 +370,44 @@ public class QueryClient {
             double emission = queryResult.getJSONObject(i).getDouble(emissionValue.getQueryString().substring(1));
             double density = queryResult.getJSONObject(i).getDouble(densityValue.getQueryString().substring(1));
             double temperature = queryResult.getJSONObject(i).getDouble(temperatureValue.getQueryString().substring(1));
+            String emissionUnitString = queryResult.getJSONObject(i)
+                    .getString(emissionUnit.getQueryString().substring(1));
+            String densityUnitString = queryResult.getJSONObject(i)
+                    .getString(densityUnit.getQueryString().substring(1));
+            String temperatureUnitString = queryResult.getJSONObject(i)
+                    .getString(temperatureUnit.getQueryString().substring(1));
 
             StaticPointSource pointSource;
 
             // Check the units when setting the flow rates, density and temperature.
+            boolean correctUnits = true;
+
+            if (!emissionUnitString.equals(UNIT_KG_S)) {
+                String msg1 = "Unexpected emission units for static point source with IRI " + spsIRI;
+                String msg2 = "Pollutant type is " + pollutantID;
+                String msg = msg1 + msg2;
+                LOGGER.warn(msg);
+                correctUnits = false;
+            }
+
+            if (!densityUnitString.equals(UNIT_KG_M3)) {
+                String msg1 = "Unexpected density units for static point source with IRI " + spsIRI;
+                String msg2 = "Pollutant type is " + pollutantID;
+                String msg = msg1 + msg2;
+                LOGGER.warn(msg);
+                correctUnits = false;
+            }
+
+            if (!temperatureUnitString.equals(UNIT_KELVIN)) {
+                String msg1 = "Unexpected temperature units for static point source with IRI " + spsIRI;
+                String msg2 = "Pollutant type is " + pollutantID;
+                String msg = msg1 + msg2;
+                LOGGER.warn(msg);
+                correctUnits = false;
+            }
+
+            if (!correctUnits)
+                continue;
 
             if (iriToPointSourceMap.containsKey(spsIRI)) {
                 pointSource = iriToPointSourceMap.get(spsIRI);
@@ -367,25 +421,25 @@ public class QueryClient {
 
             switch (pollutantID) {
                 case CO2:
-                    pointSource.setFlowrateCO2InTonsPerYear(emission);
+                    pointSource.setFlowRateCO2InKgPerS(emission);
                     break;
                 case NO_X:
-                    pointSource.setFlowrateNOxInKgPerS(emission);
+                    pointSource.setFlowRateNOxInKgPerS(emission);
                     break;
                 case SO2:
-                    pointSource.setFlowrateSO2InKgPerS(emission);
+                    pointSource.setFlowRateSO2InKgPerS(emission);
                     break;
                 case CO:
-                    pointSource.setFlowrateCOInKgPerS(emission);
+                    pointSource.setFlowRateCOInKgPerS(emission);
                     break;
                 case UHC:
-                    pointSource.setFlowrateHCInKgPerS(emission);
+                    pointSource.setFlowRateHCInKgPerS(emission);
                     break;
                 case PM10:
-                    pointSource.setPM10(emission);
+                    pointSource.setFlowRatePM10InKgPerS(emission);
                     break;
                 case PM25:
-                    pointSource.setPM25(emission);
+                    pointSource.setFlowRatePM25InKgPerS(emission);
                     break;
                 default:
                     LOGGER.info("Unknown pollutant ID encountered in AermodAgent/QueryClient class: " + pollutantID);
@@ -511,7 +565,7 @@ public class QueryClient {
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
-        // create a look up map to get ship object based on IRI
+        // create a look up map to get point source object based on IRI
         Map<String, PointSource> iriToSourceMap = new HashMap<>();
         allSources.stream().forEach(s -> iriToSourceMap.put(s.getIri(), s));
 
@@ -525,10 +579,10 @@ public class QueryClient {
 
             if (entityTypeIri.contentEquals(PM10) && quantityTypeIri.contentEquals(MASS_FLOW)) {
                 // PM10 flowrate
-                sourceObject.setPM10(literalValue);
+                sourceObject.setFlowRatePM10InKgPerS(i);(literalValue);
             } else if (entityTypeIri.contentEquals(PM25) && quantityTypeIri.contentEquals(MASS_FLOW)) {
                 // PM2.5 flowrate
-                sourceObject.setPM25(literalValue);
+                sourceObject.setFlowRatePM25InKgPerS(literalValue);
             } else if (entityTypeIri.contentEquals(PM25) && quantityTypeIri.contentEquals(DENSITY)) {
                 // particle density
                 sourceObject.setParticleDensity(literalValue);
@@ -539,8 +593,11 @@ public class QueryClient {
                 // all gas mixtures share the same density
                 sourceObject.setMixtureDensityInKgm3(literalValue);
             } else if (entityTypeIri.contentEquals(SO2) && quantityTypeIri.contentEquals(MASS_FLOW)) {
-                sourceObject.setFlowrateSO2InKgPerS(literalValue);
+                sourceObject.setFlowRateSO2InKgPerS(literalValue);
+            } else if (entityTypeIri.contentEquals(NO_X) && quantityTypeIri.contentEquals(MASS_FLOW)) {
+                sourceObject.setFlowRateNOxInKgPerS(literalValue);
             }
+
         }
     }
 
