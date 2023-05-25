@@ -211,11 +211,11 @@ class KGClient(PySparqlClient):
                                 <{OFP_VALIDTO}> "2020-12-31T12:00:00.000Z"^^<{XSD_DATETIME}> .
          <{elec_profile_iri}> <{IS_A}> <{consumption_profile_iri}>;
                           <{RDF_TYPE}>  <{REGION_ELECTRICITYCONSUMPTION_PROFILE}> ;
-                        <{OM_HAS_NUMERICALVALUE}> "{ELECTRICITY_CONSUMPTION_PROFILE}"^^<{XSD_STRING}> .
+                        <{REGION_HASPROFILEVALUE}> "{ELECTRICITY_CONSUMPTION_PROFILE}"^^<{XSD_STRING}> .
 
          <{gas_profile_iri}> <{IS_A}> <{consumption_profile_iri}>;
                           <{RDF_TYPE}>  <{REGION_GASCONSUMPTION_PROFILE}> ;
-                         <{OM_HAS_NUMERICALVALUE}> "{GAS_CONSUMPTION_PROFILE}"^^<{XSD_STRING}> .
+                         <{REGION_HASPROFILEVALUE}> "{GAS_CONSUMPTION_PROFILE}"^^<{XSD_STRING}> .
 
         }}
         """
