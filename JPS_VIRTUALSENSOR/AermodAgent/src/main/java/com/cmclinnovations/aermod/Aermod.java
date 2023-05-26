@@ -42,6 +42,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
+import com.cmclinnovations.aermod.objects.PointSource;
 import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.WeatherData;
 
@@ -241,28 +242,29 @@ public class Aermod {
         }
     }
 
-    int createPointsFile(List<Ship> ships, int simulationSrid) {
+    int createPointsFile(List<PointSource> pointSources, int simulationSrid) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < ships.size(); i++) {
-            Ship ship = ships.get(i);
+        for (int i = 0; i < pointSources.size(); i++) {
+
+            PointSource ps = pointSources.get(i);
             String stkId = "S" + i;
 
             String originalSrid = "EPSG:" + ship.getLocation().getSrid();
-            double[] xyOriginal = { ship.getLocation().getX(), ship.getLocation().getY() };
+            double[] xyOriginal = { ps.getLocation().getX(), ps.getLocation().getY() };
             double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
 
-            double area = Math.PI * Math.pow(ship.getDiameter() / 2, 2); // m2
-            double density = ship.getMixtureDensityInKgm3(); // kg/m3
-            double velocity = ship.getFlowrateSO2InGramsPerS() / 1000 / area / density; // m/s
+            double area = Math.PI * Math.pow(ps.getDiameter() / 2, 2); // m2
+            double density = ps.getMixtureDensityInKgm3(); // kg/m3
+            double velocity = ps.getFlowrateSO2InGramsPerS() / 1000 / area / density; // m/s
 
-            double massFlowrateInGs = ship.getFlowrateSO2InGramsPerS();
+            double massFlowrateInGs = ps.getFlowrateNOxInGramsPerS();
 
             sb.append(String.format("SO LOCATION %s POINT %f %f %f", stkId, xyTransformed[0], xyTransformed[1],
-                    ship.getHeight()));
+                    ps.getHeight()));
             sb.append(System.lineSeparator());
             sb.append(String.format("SO SRCPARAM %s %f %f %f %f %f", stkId,
-                    massFlowrateInGs, ship.getHeight(), ship.getMixtureTemperatureInKelvin(),
-                    velocity, ship.getDiameter()));
+                    massFlowrateInGs, ps.getHeight(), ps.getMixtureTemperatureInKelvin(),
+                    velocity, ps.getDiameter()));
             sb.append(System.lineSeparator());
         }
         return writeToFile(aermodDirectory.resolve("shipSources.dat"), sb.toString());

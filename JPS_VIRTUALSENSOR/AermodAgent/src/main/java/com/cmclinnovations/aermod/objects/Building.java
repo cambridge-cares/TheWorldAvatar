@@ -1,9 +1,11 @@
 package com.cmclinnovations.aermod.objects;
 
 import org.locationtech.jts.geom.LinearRing;
+import org.postgis.Polygon;
 
 public class Building {
     private LinearRing footPrint;
+    private Polygon footprint;
     private double height;
     private String srid;
 

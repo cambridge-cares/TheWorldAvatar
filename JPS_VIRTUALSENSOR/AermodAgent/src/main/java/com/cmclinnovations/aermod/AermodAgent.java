@@ -84,7 +84,7 @@ public class AermodAgent extends DerivationAgent {
         // get ships within a scope and time
         Polygon scope = queryClient.getScopeFromOntop(scopeIri);
 
-        List<StaticPointSource> staticPointSources = null;
+        List<StaticPointSource> staticPointSources = new ArrayList<>();
         if (citiesNamespace != null) {
             String namespaceCRS = queryClient.getNamespaceCRS(citiesNamespace);
             try {
@@ -98,8 +98,7 @@ public class AermodAgent extends DerivationAgent {
         List<Ship> ships = queryClient.getShipsWithinTimeAndScopeViaTsClient(simulationTime, scope);
 
         List<PointSource> allSources = new ArrayList<>();
-        if (citiesNamespace != null)
-            allSources.addAll(staticPointSources);
+        allSources.addAll(staticPointSources);
         allSources.addAll(ships);
 
         // update derivation of ships (on demand)
