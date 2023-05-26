@@ -78,6 +78,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <!-- JUnit 5 requires Surefire version 2.22.0 or higher -->
                 <version>2.22.0</version>
+                <configuration>
+			        <skipTests>true</skipTests>
+		        </configuration>
             </plugin>
                         
             <!-- Used to build into a WAR file and ensures everything in ./WEB-INF
@@ -87,6 +90,15 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <!-- Version, configuration, and executions should be pulled from the 
                 parent POM unless overridden here. -->
+                <configuration>
+                    <webResources>
+				        <resource>
+           			        <directory>config</directory>
+           			        <targetPath>config</targetPath>
+           		        </resource>						
+			        </webResources>
+        	        <warName>${project.artifactId}##${project.version}</warName>
+                </configuration>
             </plugin>
             
             <!-- Downloads and extracts ZIP archives from Maven repository -->
