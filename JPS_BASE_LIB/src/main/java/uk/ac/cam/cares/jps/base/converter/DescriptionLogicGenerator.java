@@ -143,27 +143,27 @@ public class DescriptionLogicGenerator {
     public static String convertToLatex(String dlSyntax) {
         initNamespaces();
         String latexFormat = "% add \\usepackage{seqsplit} to your preamble \n\\seqsplit{" + dlSyntax
-        .replace("⊓", "$\\sqcap$")
-        .replace("⊔", "$\\sqcup$")
-        .replace("¬", "$\\neg$")
-        .replace("≡", "$\\equiv$")
-        .replace(">", "$>$")
-        .replace("<", "$<$")
-        .replace("=", "$=$")
-        .replace("⊑", "$\\sqsubseteq$")
-        .replace("⊒", "$\\sqsupseteq$")
-        .replace("⊤", "$\\top$")
-        .replace("⊥", "$\\bot$")
-        .replace("∀", "$\\forall$")
-        .replace("∃", "$\\exists$")
-        .replace("→", "$\\rightarrow$")
-        .replace("⇒", "$\\Rightarrow$")
-        .replace("⇔", "$\\Leftrightarrow$")
+        .replace("⊓", "{$\\sqcap$")
+        .replace("⊔", "{$\\sqcup$}")
+        .replace("¬", "{$\\neg$}")
+        .replace("≡", "{$\\equiv$}")
+        .replace(">", "{$>$}")
+        .replace("<", "{$<$}")
+        .replace("=", "{$=$}")
+        .replace("⊑", "{$\\sqsubseteq$}")
+        .replace("⊒", "{$\\sqsupseteq$}")
+        .replace("⊤", "{$\\top$}")
+        .replace("⊥", "{$\\bot$}")
+        .replace("∀", "{$\\forall$}")
+        .replace("∃", "{$\\exists$}")
+        .replace("→", "{$\\rightarrow$}")
+        .replace("⇒", "{$\\Rightarrow$}")
+        .replace("⇔", "{$\\Leftrightarrow$}")
         .replace("⁻", "{$^\\text{--}$}")
         .replace(" ", "~")
         .replace("\n", "} \\\\\n\\seqsplit{")
-        .replace("≤", "$\\leq$")
-        .replace("≥", "$\\geq$") + "}";
+        .replace("≤", "{$\\leq$}")
+        .replace("≥", "{$\\geq$}") + "}";
         latexFormat = latexFormat.replace("\\seqsplit{}", "");
         // iterate over the namespaces and replace the namespace with the prefix
         for (Map.Entry<String, String> entry : ns.entrySet()) {
