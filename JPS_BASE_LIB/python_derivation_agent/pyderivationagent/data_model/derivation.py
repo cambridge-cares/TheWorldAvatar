@@ -1,5 +1,41 @@
 import ast
+from typing import List
 from rdflib import Graph, RDF, Literal
+
+
+class Derivation():
+    """This is a wrapper class for uk.ac.cam.cares.jps.base.derivation.Derivation.java.
+    Only two methods are provided here for developers to use in their python code when
+    handling the Derivation object returned when creating synchronous derivation for
+    new information. The methods are getIri() and getBelongsToIris(outputRdfType).
+    All other methods in Java can be accessed via self.derivation.javaMethod(args).
+    """
+
+    def __init__(
+        self,
+        derivation_java
+    ):
+        self.derivation = derivation_java
+
+    def getIri(self) -> str:
+        """Returns the IRI of the Derivation instance.
+
+        Returns:
+            str: IRI of the Derivation instance
+        """
+        return self.derivation.getIri()
+
+    def getBelongsToIris(self, outputRdfType: str) -> List[str]:
+        """Returns the IRIs of the entities that belongsTo the Derivation instance.
+
+        Args:
+            outputRdfType (str): IRI of the rdf:type of the entities that belongsTo the Derivation instance
+
+        Returns:
+            List[str]: List of IRIs of the entities that belongsTo the Derivation instance
+        """
+        return self.derivation.getBelongsToIris(outputRdfType)
+
 
 class DerivationInputs():
     """This is a warpper class for uk.ac.cam.cares.jps.base.derivation.DerivationInputs.java.
@@ -9,11 +45,15 @@ class DerivationInputs():
     def __init__(self, derivationInputs) -> None:
         self.derivation_inputs = derivationInputs
 
+    def getDerivationIRI(self):
+        return self.derivation_inputs.getDerivationIRI()
+
     def getInputs(self):
         return ast.literal_eval(str(self.derivation_inputs.getInputs()))
 
     def getIris(self, rdfType):
         return list(self.derivation_inputs.getIris(rdfType))
+
 
 class DerivationOutputs():
     """This is a warpper class for uk.ac.cam.cares.jps.base.derivation.DerivationOutputs.java.

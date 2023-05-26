@@ -3,16 +3,16 @@
      xml:base="https://www.theworldavatar.com/kg/ontoubemmp/"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:ontoubemmp="https://www.theworldavatar.com/kg/ontoubemmp/"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:OntoUBEMMP="https://www.theworldavatar.com/kg/ontoubemmp/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">06 October 2022</dc:date>
-        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">24 May 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ontology for urban building energy modelling (UBEM) and master planning (MP) data</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
 
@@ -29,52 +29,20 @@
     
 
 
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasDimension -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/consumesEnergy -->
 
 
-    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasDimension">
-        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Dimension"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit -->
-
-
-    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit">
-        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
-        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue -->
-
-
-    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue">
-        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.purl.org/oema/enaeq/consumesEnergy -->
-
-
-    <owl:ObjectProperty rdf:about="http://www.purl.org/oema/enaeq/consumesEnergy">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/consumesEnergy">
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.purl.org/oema/enaeq/EnergyConsumptionDevice"/>
-                    <rdf:Description rdf:about="http://www.purl.org/oema/infrastructure/Building"/>
+                    <rdf:Description rdf:about="https://w3id.org/bot#Building"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontodevice/Device"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/EnergyConsumption"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a facility and its consumed energy</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -84,7 +52,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/consumesUtilities">
-        <rdfs:domain rdf:resource="http://www.purl.org/oema/infrastructure/Building"/>
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/UtilitiesConsumption"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a facility and its consumed utilities</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
@@ -96,19 +64,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/hasArea">
-        <rdfs:domain rdf:resource="http://www.purl.org/oema/enaeq/Device"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/hasDevice -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/hasDevice">
-        <rdfs:domain rdf:resource="http://www.purl.org/oema/infrastructure/Building"/>
-        <rdfs:range rdf:resource="http://www.purl.org/oema/enaeq/Device"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -121,13 +78,32 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVPanels"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectors"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVPanel"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollector"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Power"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an electricity generating device and the peak power it can generate</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/hasSolarSuitableArea -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/hasSolarSuitableArea">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/RoofFacade"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship linking the building&apos;s roof or wall fa�ade with their area that is suitable for receiving solar energy.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -140,13 +116,32 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVPanels"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectors"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVPanel"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollector"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
-        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship beteween a solar device capable of generating electricity and its specific yield, which is given by dividing the amount of energy generated by the device&apos;s peak power over the course of a year</rdfs:comment>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/SpecificYield"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a solar device capable of generating electricity and its specific yield, which is given by dividing the amount of energy generated by the device&apos;s peak power over the course of a year</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/hasTheoreticalEnergyProduction -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/hasTheoreticalEnergyProduction">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/RoofFacade"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship linking the building&apos;s roof or wall facade to their theoretical energy produced from a specified solar device. Energy production is dependent on  both the solar device type and solar suitable area available.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -156,9 +151,21 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/producesCO2Savings">
-        <rdfs:domain rdf:resource="http://www.purl.org/oema/enaeq/EnergyGenerator"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/CO2Savings"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an energy generating device and the amount of carbond dioxide that it could save</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/producesEnergy -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/producesEnergy">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/EnergySupply"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that links the solar device to the energy it produces</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -171,10 +178,10 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.purl.org/oema/infrastructure/Building"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarEnergyGenerator"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Wall"/>
+                    <rdf:Description rdf:about="https://w3id.org/bot#Building"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/Roof"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/Wall"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -192,39 +199,6 @@
     
 
 
-    <!-- https://saref.etsi.org/core/hasFunction -->
-
-
-    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/hasFunction">
-        <rdfs:domain rdf:resource="https://saref.etsi.org/core/Meter"/>
-        <rdfs:range rdf:resource="https://saref.etsi.org/core/MeteringFunction"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://saref.etsi.org/core/hasMeterReading -->
-
-
-    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/hasMeterReading">
-        <rdfs:domain rdf:resource="https://saref.etsi.org/core/MeteringFunction"/>
-        <rdfs:range rdf:resource="https://saref.etsi.org/core/Measurement"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/EnergyResourceOntology.owl#producesEnergy -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/EnergyResourceOntology.owl#producesEnergy">
-        <rdfs:domain rdf:resource="http://www.purl.org/oema/enaeq/EnergyGenerator"/>
-        <rdfs:range rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/EnergyResourceOntology.owl#EnergySupply"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -234,17 +208,6 @@
      -->
 
 
-    
-
-
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue -->
-
-
-    <owl:DatatypeProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue">
-        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-    </owl:DatatypeProperty>
     
 
 
@@ -275,142 +238,98 @@
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Area -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Area">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Dimension -->
-
-
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Dimension">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Energy -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Energy">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Energy"/>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Measure -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Power -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Power">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Power"/>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity">
-        <owl:equivalentClass rdf:resource="https://saref.etsi.org/core/Measurement"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
     
 
 
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Unit -->
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/SpecificYield -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/SpecificYield"/>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Volume -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
     
 
 
-    <!-- http://www.purl.org/oema/enaeq/Device -->
+    <!-- https://w3id.org/bot#Building -->
 
 
-    <owl:Class rdf:about="http://www.purl.org/oema/enaeq/Device">
-        <owl:equivalentClass rdf:resource="https://saref.etsi.org/core/Device"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An instrumentality invented for a particular purpose</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
+    <owl:Class rdf:about="https://w3id.org/bot#Building"/>
     
 
 
-    <!-- http://www.purl.org/oema/enaeq/EnergyConsumptionDevice -->
+    <!-- https://w3id.org/bot#Zone -->
 
 
-    <owl:Class rdf:about="http://www.purl.org/oema/enaeq/EnergyConsumptionDevice">
-        <rdfs:subClassOf rdf:resource="http://www.purl.org/oema/enaeq/Device"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Any device that consumes energy</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
+    <owl:Class rdf:about="https://w3id.org/bot#Zone"/>
     
 
 
-    <!-- http://www.purl.org/oema/enaeq/EnergyGenerator -->
+    <!-- https://www.theworldavatar.com/kg/ontobuildingstructure/Roof -->
 
 
-    <owl:Class rdf:about="http://www.purl.org/oema/enaeq/EnergyGenerator">
-        <rdfs:subClassOf rdf:resource="http://www.purl.org/oema/enaeq/Device"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Any device that produces energy</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/Roof"/>
     
 
 
-    <!-- http://www.purl.org/oema/enaeq/HVAC -->
+    <!-- https://www.theworldavatar.com/kg/ontobuildingstructure/RoofFacade -->
 
 
-    <owl:Class rdf:about="http://www.purl.org/oema/enaeq/HVAC">
-        <rdfs:subClassOf rdf:resource="http://www.purl.org/oema/enaeq/EnergyConsumptionDevice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heating, Ventilation and Air Conditioning (HVAC) device that provides indoor environmental comfort</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/RoofFacade"/>
     
 
 
-    <!-- http://www.purl.org/oema/enaeq/HeatingSystem -->
+    <!-- https://www.theworldavatar.com/kg/ontobuildingstructure/Wall -->
 
 
-    <owl:Class rdf:about="http://www.purl.org/oema/enaeq/HeatingSystem">
-        <rdfs:subClassOf rdf:resource="http://www.purl.org/oema/enaeq/HVAC"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Utility to warm a building (space and water)</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/Wall"/>
     
 
 
-    <!-- http://www.purl.org/oema/infrastructure/Building -->
+    <!-- https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade -->
 
 
-    <owl:Class rdf:about="http://www.purl.org/oema/infrastructure/Building">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A structure that has a roof and walls and stands more or less permanently in one place</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/WallFacade"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Device -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Device"/>
     
 
 
@@ -444,6 +363,16 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/AnnualGasConsumption -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/AnnualGasConsumption">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/GasConsumption"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoubemmp/AnnualGridConsumption -->
 
 
@@ -454,11 +383,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/AnnualHeatSuppy -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/AnnualHeatSupply -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/AnnualHeatSuppy">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/HeatSuppy"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/AnnualHeatSupply">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/HeatSupply"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -515,72 +444,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/CoolingSystem -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/CoolingSystem">
-        <rdfs:subClassOf rdf:resource="http://www.purl.org/oema/enaeq/HVAC"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Utility to cool a building</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/EastWallPVPanels -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/EastWallPVPanels">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WallPVPanels"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall PV Panels with east orientation</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/EastWallPVTCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/EastWallPVTCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WallPVTCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall PVT Collectors with east orientation</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/EastWallSolarCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/EastWallSolarCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WallSolarCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall Solar Collectors with east orientation</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/EastWallThermalPlateCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/EastWallThermalPlateCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WallThermalPlateCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall thermal plate collectors with east orientation</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/EastWallThermalTubeCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/EastWallThermalTubeCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WallThermalTubeCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall thermal tube collectors with east orientation</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoubemmp/ElectricityConsumption -->
 
 
@@ -596,7 +459,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/ElectricitySupply">
-        <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/EnergyResourceOntology.owl#EnergySupply"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/EnergySupply"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of electricity energy produced</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
@@ -609,7 +472,30 @@
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/EnergyConsumption">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Energy"/>
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/UtilitiesConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of energy produced by an energy facility</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of energy consumed by an energy consuming facility</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/EnergySupply -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/EnergySupply">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Energy"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of energy produced by an energy generating facility or device</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/GasConsumption -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/GasConsumption">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/UtilitiesConsumption"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of gas consumed by a facility</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -626,67 +512,12 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/HeatSuppy -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/HeatSupply -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/HeatSuppy">
-        <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/EnergyResourceOntology.owl#EnergySupply"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/HeatSupply">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/EnergySupply"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of heat energy produced</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/NorthWallPVPanels -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/NorthWallPVPanels">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WallPVPanels"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall PV Panels with north orientation</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/NorthWallPVTCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/NorthWallPVTCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WallPVTCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall PVT Collectors with north orientation</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/NorthWallSolarCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/NorthWallSolarCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WallSolarCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall Solar Collectors with north orientation</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/NorthWallThermalPlateCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/NorthWallThermalPlateCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WallThermalPlateCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall thermal plate collectors with north orientation</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/NorthWallThermalTubeCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/NorthWallThermalTubeCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WallThermalTubeCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall thermal tube collectors with north orientation</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -704,45 +535,89 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVPanels -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVPanel -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVPanels">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarEnergyGenerator"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVPanel">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Photovoltaic panel: converts solar radiation into usable electrical energy</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVPanelsArea -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVPanelArea -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVPanelsArea">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVPanelArea">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total area of photovoltaic panels</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The area of a photovoltaic panel</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectors -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTCollector -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarEnergyGenerator"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollector">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Photovoltaic thermal hybrid solar collector: converts solar radiation into usable thermal and electrical energy</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectorsArea -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectorArea -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectorsArea">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectorArea">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total area of photovoltaic thermal collectors</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The area of a photovoltaic thermal collector</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTPlateCollector -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTPlateCollector">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Photovoltaic thermal hybrid solar collector with thermal plate collector</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTPlateCollectorArea -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTPlateCollectorArea">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total area of photovoltaic thermal collectors with thermal plate collectors</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTTubeCollector -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTTubeCollector">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Photovoltaic thermal hybrid solar collector with thermal tube collector</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/PVTTubeCollectorArea -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTTubeCollectorArea">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total area of photovoltaic thermal collectors with thermal tube collectors</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -759,89 +634,34 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/RoofPVPanels -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/SolarCollector -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/RoofPVPanels">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/PVPanels"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PV Panels with roof type</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/RoofPVTCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/RoofPVTCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PVT Collectors with roof type</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/RoofSolarCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/RoofSolarCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Solar Collectors with roof type</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/RoofThermalPlateCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/RoofThermalPlateCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/ThermalPlateCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Thermal plate collectors with roof type</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/RoofThermalTubeCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/RoofThermalTubeCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/ThermalTubeCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Thermal tube collectors with roof type</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarEnergyGenerator"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollector">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Solar collector: converts solar radiation into usable thermal energy</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectorsArea -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectorArea -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectorsArea">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectorArea">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total area of solar collectors</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The area of a solar collector</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/SolarEnergyGenerator -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarEnergyGenerator">
-        <rdfs:subClassOf rdf:resource="http://www.purl.org/oema/enaeq/EnergyGenerator"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Device that generate energy by receiving solar radiation</rdfs:comment>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An energy generator that converts solar radiation into usable energy.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -858,61 +678,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/SouthWallPVPanels -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SouthWallPVPanels">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WallPVPanels"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall PV Panels with south orientation</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/SouthWallPVTCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SouthWallPVTCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WallPVTCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall PVT Collectors with south orientation</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/SouthWallSolarCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SouthWallSolarCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WallSolarCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall Solar Collectors with south orientation</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/SouthWallThermalPlateCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SouthWallThermalPlateCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WallThermalPlateCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall thermal plate collectors with south orientation</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/SouthWallThermalTubeCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SouthWallThermalTubeCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WallThermalTubeCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall thermal tube collectors with south orientation</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoubemmp/ThermalConsumption -->
 
 
@@ -924,45 +689,45 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/ThermalPlateCollectors -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/ThermalPlateCollector -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/ThermalPlateCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Plate solar collectors</rdfs:comment>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/ThermalPlateCollector">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Plate solar collector</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/ThermalPlateCollectorsArea -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/ThermalPlateCollectorArea -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/ThermalPlateCollectorsArea">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/ThermalPlateCollectorArea">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total area of thermal plate collectors</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The area of a thermal plate collector</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/ThermalTubeCollectors -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/ThermalTubeCollector -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/ThermalTubeCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tube solar collectors</rdfs:comment>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/ThermalTubeCollector">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollector"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tube solar collector</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/ThermalTubeCollectorsArea -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/ThermalTubeCollectorArea -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/ThermalTubeCollectorsArea">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/ThermalTubeCollectorArea">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total area of thermal tube collectors</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The area of a thermal tube collector</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -978,61 +743,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/WallPVPanels -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/WallPVPanels">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/PVPanels"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PV Panels with wall type</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/WallPVTCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/WallPVTCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PVT Collectors with wall type</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/WallSolarCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/WallSolarCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Solar Collectors with wall type</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/WallThermalPlateCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/WallThermalPlateCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/ThermalPlateCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Thermal plate collectors with wall type</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/WallThermalTubeCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/WallThermalTubeCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/ThermalTubeCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Thermal tube collectors with wall type</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoubemmp/WaterConsumption -->
 
 
@@ -1040,123 +750,6 @@
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/UtilitiesConsumption"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of water consumed by an water consuming facility</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/WestWallPVPanels -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/WestWallPVPanels">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WallPVPanels"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall PV Panels with west orientation</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/WestWallPVTCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/WestWallPVTCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WallPVTCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall PVT Collectors with west orientation</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/WestWallSolarCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/WestWallSolarCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WallSolarCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall Solar Collectors with west orientation</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/WestWallThermalPlateCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/WestWallThermalPlateCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WallThermalPlateCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall thermal plate collectors with west orientation</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/WestWallThermalTubeCollectors -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/WestWallThermalTubeCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/WallThermalTubeCollectors"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wall thermal tube collectors with west orientation</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Wall -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Wall"/>
-    
-
-
-    <!-- https://saref.etsi.org/core/Device -->
-
-
-    <owl:Class rdf:about="https://saref.etsi.org/core/Device">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://saref.etsi.org/core/Measurement -->
-
-
-    <owl:Class rdf:about="https://saref.etsi.org/core/Measurement">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://saref.etsi.org/core/Meter -->
-
-
-    <owl:Class rdf:about="https://saref.etsi.org/core/Meter">
-        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://saref.etsi.org/core/MeteringFunction -->
-
-
-    <owl:Class rdf:about="https://saref.etsi.org/core/MeteringFunction">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/EnergyResourceOntology.owl#EnergySupply -->
-
-
-    <owl:Class rdf:about="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/EnergyResourceOntology.owl#EnergySupply">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Energy"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of energy consumed by an energy consuming facility</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
 </rdf:RDF>

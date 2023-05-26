@@ -2,7 +2,7 @@
 
 This example visualisation has been put together to demonstrate the intended use of the centralised Digital Twin Visualisation Framework (DTVF). This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.
 
-It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.2.0 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
+It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.4.0 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
 
 <img src="readme-example.JPG" alt="Example of 2D data on a Mapbox visualisation" width="100%"/>
 
@@ -22,7 +22,7 @@ Configuration for the visualisation is provided via a number of local JSON files
   - This required file contains a hierarchal specification of data groups. Each group can either house sub-groups, or individual data sources and layers for display. The structure of these groups defines the layer selection tree to the left of the visualisation. The required format for this file is listed below.
 
 - `icons.json`:
-  - This optional file is used to list any image files required by the mapping library. Each image is specified with a unique name and a URL to the image file (which can be local or remote).
+  - This optional file is used to list any image files required by the mapping library. Each image is specified with a unique name and a URL to the image file (which can be local or remote). Adding "-sdf" to the icon's file name will ensure that the DTVF registers the image as an [SDF icon](https://docs.mapbox.com/help/troubleshooting/using-recolorable-images-in-mapbox-maps/) within Mapbox, enabling dynamic color changing (providing that the icon has been setup correctly).
 
 - `links.json`:
   - This optional file is used to provide links to additional resources; if present these are shown in the side panel of the visualisation.
@@ -71,9 +71,39 @@ The default position of the map can be specified via the start field of the sett
 }
 ```
 
+#### Feature Filtering
+
+When using the Mapbox implementation, a rudimentary ability to filter/search for individual locations has been added. Accessed via the CTRL+F keyboard shortcut, this feature allows users to hide all locations that do not match some input search term. Properties from the geospatial data (i.e. not any dynamically loaded metadata) can be used as targets for the search; the example Mapbox visualisation contains an example of this (primarily focussed on the Cambridge Colleges data set).
+
+It is worth noting that, at the time of writing, the filter will apply to all locations across all layers currently available on the map. Additionally, any clustering of locations (normally enabled by configuring the source object within the data configuration file) will be temporarily disabled whilst the search controls are active; this is to avoid the situation in which matching locations are hidden because they were clustered (and clustered locations will almost always fail the filter match as they contain very little information on what individual features they contain).
+
+To enable this functionality within your visualisation, a special `search` node needs to be added to your `settings.json` file. This node should be a JSON array of objects, each object defining: `description`, the user facing name of the parameter that can be filtered on/searched for; `property`, the name of the actual property within the geospatial data; and `type`, which must be `string|number|boolean` and represents the type of property.
+
+An example snippet of the `settings.json` file defining search parameters is shown below.
+
+```json
+"search": [
+    {
+        "description": "Name",
+        "property": "name",
+        "type": "string"
+    },
+    {
+        "description": "Year Founded",
+        "property": "founded",
+        "type": "number"
+    },
+    {
+        "description": "Undergraduates Admitted?",
+        "property": "undergraduates",
+        "type": "boolean"
+    }  
+]
+```
+
 ## Sample Data
 
-A small amount of sample data has been committed to demonstrate the power of the DTVF to visualisate different data types. Please do not make changes to the sample data without consulting the original developer. At the time of writing, the sample data sets include:
+A small amount of sample data has been committed to demonstrate the power of the DTVF to visualise different data types. Please do not make changes to the sample data without consulting the original developer. At the time of writing, the sample data sets include:
 
 - **Cambridge**:
   - Based in and around Cambridge, this data set mimics a single stack that contains data on college locations and buildings.
@@ -92,9 +122,9 @@ In most deployed visualisations, an online stack of microservices will provide d
 
 ## Building the Image
 
-The `docker` folder contains the required files to build a Docker Image for the example visualisation; the `Dockerfile` file contains the instructions to build an Image. Please note the caveats below before attempting to build the service using Docker:
+The `docker` folder contains the required files to build a Docker Image for the example visualisation. This uses the `dtvf-base-image` image as a base then adds the contents of the `webspace` directory to a volume mounted at `/var/www/html` within the container.
 
-- The example visualisation installed within the Docker image will be based on the current commit of this repository, please ensure it is the correct one.
+- Files to be hosted must be contained within the `webspace` directory.
 - A valid Mapbox API token must be provided in your `index.html` file.
 - A connection to the internet is required to contact remote resources and use the mapping libraries.
 

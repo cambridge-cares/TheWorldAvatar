@@ -6,6 +6,7 @@ public interface JPSConstants {
 	static String KNOWLEDGE_BASE_PATH_JPS_DATASET = "/jps/dataset";
 	
 	static String ACCESS_AGENT_PATH = "/access-agent/access";
+	static String RDB_ACCESS_AGENT_PATH = "/access-agent/rdbaccess";
 			
 	static String SCENARIO_NAME_BASE = "base";
 	static String SCENARIO_SUBDIR_KB = "kb";
@@ -38,6 +39,15 @@ public interface JPSConstants {
 	
 	static String RESULT_KEY = "result";
 	static String ASK_RESULT_KEY = "ASK";
+	
+	/**
+	 * Key to retrieve SPARQL query endpoint
+	 */
+	static String QUERY_ENDPOINT = "queryendpoint";
+	/**
+	 * Key to retrieve SPARQL update endpoint
+	 */
+	static String UPDATE_ENDPOINT = "updateendpoint";
 	
 	/**
 	 * If true then all read files are copied into the scenario bucket.

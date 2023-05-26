@@ -2,15 +2,15 @@
 
 This example visualisation has been put together to demonstrate the intended use of the centralised Digital Twin Visualisation Framework (DTVF). This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.
 
-It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.2.0 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
+It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.4.0 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
 
 <img src="readme-example.JPG" alt="Example of 3D data on a Cesium JS visualisation" width="100%"/>
 
 ## Restrictions
 
-It should be noted that this example uses the Cesium JS library, and makes no use of Cesium's premium offering, Cesium Ion. Use of Cesium Ion, or the features it offers, for commercial or funded educational use is prohibited without a paid-for licence.
+It should be noted that this example uses the CesiumJS library, and makes no use of Cesium's premium offering, Cesium ion. Use of Cesium ion, or the features it offers, for commercial or funded educational use is prohibited without a paid-for licence.
 
-At the time of writing, this means that anything that requires the use of a Cesium Ion API key should be avoided (this has been confirmed by Cesium's support team). To be fully sure no premium features are being used, it is suggested that no API key is even used within the code. Premium features to be avoided include the following:
+At the time of writing, this means that anything that requires the use of a Cesium ion API key should be avoided (this has been confirmed by Cesium's support team). To be fully sure no premium features are being used, it is suggested that no API key is even used within the code. Premium features to be avoided include the following:
 
 - Using the satellite imagery provided by Cesium
 - Using the terrain elevation provided by Cesium
@@ -54,7 +54,7 @@ Configuration for the visualisation is provided via a number of local JSON files
 
 In addition to these JSON files, areas of the `index.html` file can also be adjusted to change the default side panel content of the visualisation. Please note however that not all areas of this file are configurable, some HTML elements are required by the framework and had to be setup here rather than dynamically injected by the framework itself. Areas that are considered configurable are clearly commented within the HTML file.
 
-Please note that the `index.html` file also required users to input their Mapbox API key, this is so that the terrain imagery can be pulled from Mapbox's free API rather than using imagery from Cesium Ion (which would require a licence).
+Please note that the `index.html` file also required users to input their Mapbox API key, this is so that the terrain imagery can be pulled from Mapbox's free API rather than using imagery from Cesium ion (which would require a licence).
 
 ### Data Specification File
 
@@ -68,9 +68,12 @@ Each group can also (optionally) contain an `expanded` boolean field. If set to 
 
 Source nodes need to provide a unique `id` field, a `type` field (`kml|gltf|wms|tiles`), and a `uri` field pointing towards the data file to be loaded. Some types of sources also require additional parameters:
 
-- For `gltf` sources, an additional `position` field is required (array of [lng, lat, height] values).
+- For `gltf` sources, an additional `position` field is required.
+  - The `position` field is a three value array of the form `[longitude, latitude, height]`.
 - For `wms` sources, additional `wmsLayer`, `transparency`, and `format` fields are required.
-- For `tiles` sources, an optional `position` field can also be set.
+- For `tiles` sources, optional `position` and `rotation` fields can also be set.
+  - The `position` field is a three value array of the form `[longitude, latitude, height]`.
+  - The `rotation` field requires the `position` field to be present, and is a three value array of the form `[roll, pitch, heading]`. Cesium defines Roll as the rotation about the positive X axis, Pitch as the rotation about the negative Y axis, and Heading as the rotation about the negative Z axis
 
 #### Layers
 
@@ -119,9 +122,41 @@ An example specification of terrain elevation is shown below. Note that in this 
 }
 ```
 
+#### Clipping Planes
+
+For 3D tileset sources, clipping planes can also be added that allow the user to effectively slice the model, revealing its interior at a specific height; Cesium has an online example of this [here](https://sandcastle.cesium.com/?src=3D%20Tiles%20Clipping%20Planes.html); a demonstration of this feature has also been added to this example visualisation.
+
+To enable clipping planes, within the specification of a 3D tileset layer in the `data.json` file, add a `clipping` object to specify the height range (above sea level, in metres), and an optional array of labelled increments; this can be done for as many tilesets as the developer requires. An example of the specification format is shown below:
+
+```json
+  "clipping": {
+        "min": 0,
+        "max": 10,
+        "start": 10,
+        "labels": {
+            "0": "Ground level",
+            "2.9": "Bottom floor",
+            "5.78": "Top floor",
+            "9.14": "Roof"
+        }
+    }    
+```
+
+There are a few caveats to mention however:
+- This feature is only supported on 3D tileset sources.
+- Cesium only seems to support clipping planes on the _entire_ tileset.
+- The size of the clipping plane is based on the bounds of the tileset itself.
+- The feature can currently only be active on one tileset at any given time.
+- If adding planes to an existing visualisation, ensure the version of DTVF JS and CSS files used in the `index.html` file are _at least_ 3.4.0.
+- If adding planes to an existing visualisation, ensure the version of Cesium JS and CSS files used in the `index.html` file are _at least_ 1.105.
+
+<p align="center">
+    <img src="readme-clipping.JPG" alt="Example of a clipping plane on a 3D tileset" width="75%"/>
+</p>
+
 ## Sample Data
 
-A small amount of sample data has been committed to demonstrate the power of the DTVF to visualisate different data types. Please do not make changes to the sample data without consulting the original developer. At the time of writing, the sample data sets include:
+A small amount of sample data has been committed to demonstrate the power of the DTVF to visualise different data types. Please do not make changes to the sample data without consulting the original developer. At the time of writing, the sample data sets include:
 
 - **New York**:
   - Tiled 3D buildings, loaded from a remote CMCL server.
@@ -132,9 +167,9 @@ It's worth noting that with this sample data, no stack is running so no support 
 
 ## Building the Image
 
-The `docker` folder contains the required files to build a Docker Image for the example visualisation; the `Dockerfile` file contains the instructions to build an Image. Please note the caveats below before attempting to build the service using Docker:
+The `docker` folder contains the required files to build a Docker Image for the example visualisation. This uses the `dtvf-base-image` image as a base then adds the contents of the `webspace` directory to a volume mounted at `/var/www/html` within the container.
 
-- The example visualisation installed within the Docker image will be based on the current commit of this repository, please ensure it is the correct one.
+- Files to be hosted must be contained within the `webspace` directory.
 - A valid Mapbox API token must be provided in your `index.html` file.
 - A connection to the internet is required to contact remote resources and use the mapping libraries.
 

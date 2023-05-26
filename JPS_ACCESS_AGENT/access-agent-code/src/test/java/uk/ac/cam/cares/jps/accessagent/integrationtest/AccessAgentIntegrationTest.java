@@ -27,9 +27,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.query.StoreRouter;
 
 /**
- * Integration tests for the Access Agent.
- * This uses the AccessAgentCaller methods in JPS_BASE_LIB 
- * to call the AccessAgent inside a Docker container.
+ * Integration tests for the (triple store) Access Agent using Test containers.
  *  
  * To test a new version of the AccessAgent:
  * 1. Build the new AccessAgent Docker image 
@@ -48,12 +46,12 @@ class AccessAgentIntegrationTest {
 	
 	//User defined variables
 	//set the desired access agent version number here
-	static final String ACCESS_AGENT_VERSION = "1.5.0";
+	static final String ACCESS_AGENT_VERSION = "1.7.0";
 	
 	//////////////////////////////////////////////////
 	
 	static final String ACCESS_AGENT_IMAGE ="ghcr.io/cambridge-cares/access-agent:"+ACCESS_AGENT_VERSION; 
-	static final String BLAZEGRAPH_IMAGE = "docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"; 
+	static final String BLAZEGRAPH_IMAGE = "ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0"; 
 	static final int BLAZEGRAPH_INTERNAL_PORT = 9999;
 	static final String TEST_NAMESPACE = "kb";
 	
@@ -88,6 +86,7 @@ class AccessAgentIntegrationTest {
 	RemoteStoreClient targetStoreClient;
 	String targetStoreLabel;
 	String targetResourceID;
+	String targetStoreEndpointInternal;
 	
 	//////////////////////////////////////////////////
 	
@@ -111,7 +110,7 @@ class AccessAgentIntegrationTest {
 		}
 		
 		//Upload routing information
-		String targetStoreEndpointInternal = "http://" + TARGET_STORE_CONTAINER_ALIAS 
+		targetStoreEndpointInternal = "http://" + TARGET_STORE_CONTAINER_ALIAS 
 				+ ":" + BLAZEGRAPH_INTERNAL_PORT
 				+ "/blazegraph/namespace/"+TEST_NAMESPACE+"/sparql";
 		
@@ -187,15 +186,12 @@ class AccessAgentIntegrationTest {
 	
 	@Test
 	void testGet() {
+		JSONObject result = AccessAgentCaller.getEndpoints(targetResourceID);
+		String query = result.getString(JPSConstants.QUERY_ENDPOINT);
+		String update = result.getString(JPSConstants.UPDATE_ENDPOINT);
 		
-		//insert test data 
-		targetStoreClient.insert(null, testContent, testContentType);
-		
-		//test Get
-		String result = AccessAgentCaller.get(targetResourceID, null, testContentType);
-		JSONObject jo = new JSONObject(result);
-		String result2 = jo.getString("result");
-		assertEquals(IntegrationTestHelper.removeWhiteSpace(testContent), IntegrationTestHelper.removeWhiteSpace(result2));
+		assertEquals(IntegrationTestHelper.removeWhiteSpace(targetStoreEndpointInternal),IntegrationTestHelper.removeWhiteSpace(query));
+		assertEquals(IntegrationTestHelper.removeWhiteSpace(targetStoreEndpointInternal),IntegrationTestHelper.removeWhiteSpace(update));
 	}
 	
 	@Test

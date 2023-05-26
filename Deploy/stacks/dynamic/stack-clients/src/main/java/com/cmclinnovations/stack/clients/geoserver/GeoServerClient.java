@@ -35,7 +35,16 @@ public class GeoServerClient extends ContainerClient {
 
     private final PostGISEndpointConfig postgreSQLEndpoint;
 
-    public GeoServerClient() {
+    private static GeoServerClient instance = null;
+
+    public static GeoServerClient getInstance() {
+        if (null == instance) {
+            instance = new GeoServerClient();
+        }
+        return instance;
+    }
+
+    private GeoServerClient() {
         this(null, null, null);
     }
 
@@ -67,6 +76,18 @@ public class GeoServerClient extends ContainerClient {
             } else {
                 throw new RuntimeException(
                         "GeoServer workspace '" + workspaceName + "' does not exist and could not be created.");
+            }
+        }
+    }
+
+    public void deleteWorkspace(String workspaceName) {
+        if (!manager.getReader().existsWorkspace(workspaceName)) {
+            logger.info("GeoServer workspace '{}' does not exists and cannot be deleted.", workspaceName);
+        } else {
+            if (manager.getPublisher().removeWorkspace(workspaceName, true)) {
+                logger.info("GeoServer workspace '{}'' removed", workspaceName);
+            } else {
+                throw new RuntimeException("GeoServer workspace " + workspaceName + "' could not be deleted.");
             }
         }
     }
@@ -109,8 +130,8 @@ public class GeoServerClient extends ContainerClient {
         }
     }
 
-    public void createPostGISLayer(String dataSubsetDir, String workspaceName,
-            String database, String layerName, GeoServerVectorSettings geoServerSettings) {
+    public void createPostGISLayer(String workspaceName, String database, String layerName,
+            GeoServerVectorSettings geoServerSettings) {
         // Need to include the "Util.DEFAULT_QUIET_ON_NOT_FOUND" argument because the
         // 2-arg version of "existsLayer" incorrectly calls the 3-arg version of the
         // "existsLayerGroup" method.
@@ -148,7 +169,7 @@ public class GeoServerClient extends ContainerClient {
         if (manager.getReader().existsCoveragestore(workspaceName, name)) {
             logger.info("GeoServer coveragestore '{}' already exists.", name);
         } else {
-            new PostGISClient().createDatabase(database);
+            PostGISClient.getInstance().createDatabase(database);
 
             String containerId = getContainerId("geoserver");
 

@@ -38,7 +38,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 @Disabled
 public class TestUpdateStations {
 	@Container
-	private GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
+	private GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0"))
 													 .withExposedPorts(9999);
 	
 	// Create Docker container with postgres 13.3 image from Docker Hub
@@ -128,8 +128,8 @@ public class TestUpdateStations {
 		api = mock(APIConnector.class);
 		when(api.getData(httpClient)).thenReturn(entity);
 		
-		ProcessedData processed_data = UpdateStations.processAPIResponse(api);
-		UpdateStations.uploadDataToRDB(tsClient, sparqlClient, processed_data);
+		// ProcessedData processed_data = UpdateStations.processAPIResponse(api);
+		// UpdateStations.uploadDataToRDB(tsClient, sparqlClient, processed_data);
 	}
 	
 	@AfterEach

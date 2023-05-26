@@ -1,0 +1,71 @@
+{
+	"name": "Sample Data",
+    "stack": "http://localhost",
+	"sources": [
+        {
+            "id": "3d-tiles-source",
+            "type": "tiles",
+            "uri": "https://kg.cmclinnovations.com/cdn/buildings/nyc/tileset.min.json"
+        },
+        {
+            "id": "clip-example-one",
+            "type": "tiles",
+            "uri": "https://kg.cmclinnovations.com/cdn/buildings/clip-example/tileset.json",
+            "position": [-74.01515, 40.70276, 0]
+        },
+        {
+            "id": "clip-example-two",
+            "type": "tiles",
+            "uri": "https://kg.cmclinnovations.com/cdn/buildings/dragon/tileset.json",
+            "position": [-74.01521, 40.703300, 5],
+            "rotation": [0, 0, 315]
+        },
+        {
+            "id": "sample-2d-data",
+            "type": "wms",
+            "uri": "https://cugir.library.cornell.edu/geoserver/cugir/ows?SERVICE=WMS&",
+            "wmsLayer": "cugir007884",
+            "transparency": true,
+            "format": "image/png"
+        }
+	], 
+	"layers": [
+        {
+            "id": "3d-tiles-layer",
+			"name": "Buildings of New York", 
+            "source": "3d-tiles-source"
+        },
+        {
+            "id": "clip-example-one-layer",
+			"name": "Clipping Example #1", 
+            "source": "clip-example-one",
+            "clipping": {
+                "min": 0,
+                "max": 10,
+                "start": 5.78,
+                "labels": {
+                    "0": "Ground level",
+                    "2.9": "Bottom floor",
+                    "5.78": "Top floor",
+                    "9.14": "Roof"
+                }
+            }    
+        },
+        {
+            "id": "clip-example-two-layer",
+			"name": "Clipping Example #2", 
+            "source": "clip-example-two",
+            "clipping": {
+                "min": 0,
+                "max": 10,
+                "start": 5
+            }    
+        },
+        {
+            "id": "sample-2d-layer",
+			"name": "Hudson River Sediment", 
+            "source": "sample-2d-data",
+            "visibility": "none"
+        }
+	]
+}

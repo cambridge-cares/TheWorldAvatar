@@ -5,7 +5,7 @@ In the commands below placeholders are shown as `<STACK NAME>`, you will need to
 ## Prerequisites
 
 ### Hardware
-* A total RAM size of 32GB is recommended for smooth execution, particualry in Microsoft Windows.
+* A total RAM size of 32GB is recommended for smooth execution, particularly in Microsoft Windows.
 
 ### Software
 * Building and running a stack has been tested in Microsoft Windows and to some degree Linux, it has not been tested within a MacOS environment.
@@ -31,7 +31,8 @@ To spin up the stack (with default settings) please follow the instructions belo
 
 2. Open the Workspace in the `Deploy/stacks/dynamic` directory in VSCode (or go to the `stack-manager` subdirectory within it in a `bash` terminal).
 
-3. Create two files called `postgis_password` and `geoserver_password` in the `stack-manager/inputs/secrets/` directory. Populate the files with the intended passwords for postgis and geoserver, respectively.
+3. Create two files called `postgis_password` and `geoserver_password` in the `stack-manager/inputs/secrets/` directory. Populate the files with the intended passwords for PostGIS and GeoServer, respectively.
+    It is also possible to add a `blazegraph_password` file to initialise the Blazegraph container with authentication enabled but this is currently incompatible with most agents, a future update to the `stack-client` library will help resolve this issue.
 
 4. From a terminal in the `stack-manager` directory, start the `stack-manager` container by running the following:
     ```console
@@ -45,10 +46,82 @@ To spin up the stack (with default settings) please follow the instructions belo
         ```console
         docker service ls --filter name=<STACK NAME>-nginx
         ```
-    * The Geoserver GUI should be available at http://localhost:3838/geoserver/. Log in using the username `admin` and the password specified in the `geoserver_pasword` file.
-    * The Adminer (PostgreSQL GUI) at http://localhost:3838/adminer/ui/?username=postgres&pgsql=. Enter `<STACK NAME>-postgis:5432` as the `Server` and the value from the `postgis_pasword` file as the `Password`. The `Database` slot can be left blank if you don't know what it should be.
+    * The Geoserver GUI should be available at http://localhost:3838/geoserver/. Log in using the username `admin` and the password specified in the `geoserver_password` file.
+    * The Adminer (PostgreSQL GUI) at http://localhost:3838/adminer/ui/?username=postgres&pgsql=. Enter `<STACK NAME>-postgis:5432` as the `Server` and the value from the `postgis_password` file as the `Password`. The `Database` slot can be left blank if you don't know what it should be.
     * The Ontop GUI should be available at http://localhost:3838/ontop/ui.
     * The Blazegraph Workbench should be available at http://localhost:3838/blazegraph/ui.
+
+## Adding custom containers
+
+It is possible to spin up other containers in the stack using the stack-manager.
+This is particularly useful for adding agents into a stack.
+
+The stack-manager will handle creating the containers so there is no need to create the containers using `docker` or `docker compose` before running the stack-manager.
+
+If the configuration file for a container is present when a stack is initially spun up then it will be added then.
+To add a container after a stack has been spun up just add the configuration file and run the stack-manager again, the previously started containers will be unaffected.
+
+> :warning: **Warning:** The stack-manager does not attempt to build a container's image so all images need to be built prior to running the stack-manager.
+
+### Configuration Files
+
+To do this add a `.json` file for each container into the [stack-manager/inputs/config/services](./inputs/config/services/) directory.
+An example of the structure of this file, the one for the Ontop container, is as follows:
+```json
+{
+    "ServiceSpec": {
+        "Name": "adminer",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "adminer:latest"
+            }
+        }
+    },
+    "endpoints": {
+        "ui": {
+            "url": "http://localhost:8080",
+            "externalPath": "/adminer/ui"
+        }
+    }
+}
+```
+
+The three top-level nodes are:
+* `"type"`(not used in the example above): This is used to run container specific Java code when the container is started and should be ignored for user-specified containers.
+* `"ServiceSpec"`: This is based on the Docker API container creation request format documented [here]("ServiceSpec").
+  To specification of `"Configs"` and `"Secrets"` has been simplified so that only the name is required.
+* `"endpoints"`: This is where mappings between the internal URLs and the externally accessible paths can be specified.
+  The internal URL should be the one you would use if you were logged into the container and the external path is appended to `http://localhost:3838`
+
+Other, more complex, examples of configuration files can be seen in the stack-manager's [resources directory](./src/main/resources/com/cmclinnovations/stack/services/defaults/).
+
+### Benefits
+
+Spinning a container up via the stack-manager provides the following benefits:
+* The container is added to the stack's Docker network, this allows the agent to connect to the other stack containers using their internal URLs.
+* The URLs, usernames and passwords of other containers in the stack can be retrieved using the `ContainerClient::readEndpointConfig` method at runtime, rather than having to provide them through environment variables or `.properties` files.
+* Allows the classes and methods available through the stack-clients library to be used to add new data (particularly geospatial data) into the stack in a clean an consistent way.
+
+## Stack configuration
+
+By default the stack will start the default services and then all of the custom services.
+The list of services that are started can be modified by specifying a stack config file, with the same name as the stack being spun up, in the [stack-manager/inputs/config](./inputs/config/) directory.
+For example a stack called "test" could be configured by providing a file with the path `stack-manager/inputs/config/test.json`.
+
+The format of the stack configuration file is as follows:
+```json
+{
+    "services": {
+        "includes": [
+            # Non-default services to start in addition to the default ones. (Optional)
+        ],
+        "excludes": [
+            # Default and/or explicitly included services that should not be spun up. This will cause issues if another service requires one of the excluded ones. (Optional)
+        ]
+    }
+}
+```
+
 ## Debugging the Stack Manager in VSCode
 
 1. Add the following entry into top level node the JSON file `stack-manager/.vscode/settings.json`, creating the file if it doesn't exist.
@@ -63,7 +136,7 @@ To spin up the stack (with default settings) please follow the instructions belo
 
 You will need permission to push to the CMCL package repository to be able to build the stack-manager project
 
-1. Follow the instuctions in step 1. of [Debugging the Stack Manager in VSCode](#debugging-the-stack-manager-in-vscode)
+1. Follow the instructions in step 1. of [Debugging the Stack Manager in VSCode](#debugging-the-stack-manager-in-vscode)
 
 2. Create two files called `repo_username.txt` and `repo_password.txt` in the `stack-manager/docker/credentials` directory. Populate the files with your GitHub username and access token (with scope to write packages), respectively.
 

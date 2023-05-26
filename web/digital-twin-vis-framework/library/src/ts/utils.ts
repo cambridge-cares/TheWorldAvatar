@@ -1,4 +1,27 @@
 /**
+ * 
+ * @returns 
+ */
+function openHelpURL() {
+    let scriptURL = null;
+
+    var scripts = document.getElementsByTagName('script');
+    for(let i = 0; i < scripts.length; i++) {
+        if(scripts[i].src.endsWith("dtvf.min.js")) scriptURL = scripts[i].src;
+    };
+
+    if(scriptURL !== null)  {
+        // Split the URL by slash
+        let parts = scriptURL.toString().split("/");
+        parts[parts.length - 1] = "help";
+        
+        // Open in a new tab
+        let finalURL = parts.join("/") + "/";
+        window.open(finalURL, "_blank");
+    }
+}
+
+/**
  * Get the geographical center of the input feature.
  * 
  * @param feature
@@ -45,24 +68,7 @@ function getDefaultImagery() {
  * @returns 
  */
 function updateURL(originalURL: string): string {
-    if(!originalURL.includes("localhost") && !originalURL.includes("127.0.0.1")) {
-        return originalURL;
-    }
-
-    // Get the URL that the visualisation is currently accessed from
-    let winURL = window.location;
-	let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
-
-    originalURL = originalURL.replace("http://", "");
-    originalURL = originalURL.replace("https://", "");
-    originalURL = originalURL.replace("localhost", "");
-    originalURL = originalURL.replace("127.0.0.1", "");
-
-    if(originalURL.startsWith("/")) {
-        return baseURL + originalURL;
-    } else {
-        return baseURL + "/" + originalURL;
-    }
+    return originalURL;
 }
 
 /**
@@ -90,11 +96,17 @@ function filterNulls(dictionary: Object) {
  * @returns name (or null) 
  */
 function getName(properties: Object): string {
+    if(properties === null || properties === undefined) return null;
+
     let fieldSettings = Manager.SETTINGS.getSetting("fields");
-    if(fieldSettings == null) return properties["name"];
+    if(fieldSettings === null || fieldSettings === undefined) {
+        return properties["name"];
+    }
 
     let nameField = fieldSettings["name"];
-    if(nameField == null) return properties["name"];
+    if(nameField === null || nameField === undefined) {
+        return properties["name"];
+    }
     
     return properties[nameField];
 }
@@ -153,5 +165,20 @@ function showAttributions() {
                 title.innerHTML = "<span>Attributions</span><i class='fas fa-chevron-up'></i>";
             }
         });
+    }
+}
+
+/**
+ * Shows the relevant help page.
+ */
+function showHelpPage() {
+    switch(Manager.PROVIDER) {
+        case MapProvider.CESIUM:
+            // TODO
+        break;
+
+        case MapProvider.MAPBOX:
+            // TODO
+        break;
     }
 }

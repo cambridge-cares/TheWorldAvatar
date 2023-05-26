@@ -13,8 +13,8 @@
             "preLaunchTask": "compose-deploy",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/metoffice",
-                    "remoteRoot": "/app/metoffice"
+                    "localRoot": "${workspaceFolder}/agent",
+                    "remoteRoot": "/app/agent"
                 }
             ]
         },
@@ -27,22 +27,8 @@
             "preLaunchTask": "compose-build-deploy",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/metoffice",
-                    "remoteRoot": "/app/metoffice"
-                }
-            ]
-        },
-        {
-            "type": "python",
-            "name": "Update JPSRM and Build and Debug",
-            "request": "attach",
-            "host": "localhost",
-            "port": "${input:debug.port}",
-            "preLaunchTask": "update-compose-build-deploy",
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}/metoffice",
-                    "remoteRoot": "/app/metoffice"
+                    "localRoot": "${workspaceFolder}/agent",
+                    "remoteRoot": "/app/agent"
                 }
             ]
         },
@@ -54,8 +40,8 @@
             "port": "${input:debug.port.read}",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/metoffice",
-                    "remoteRoot": "/app/metoffice"
+                    "localRoot": "${workspaceFolder}/agent",
+                    "remoteRoot": "/app/agent"
                 }
             ]
         }

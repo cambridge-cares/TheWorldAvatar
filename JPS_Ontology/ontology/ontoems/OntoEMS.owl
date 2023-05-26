@@ -4,15 +4,16 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
-     xmlns:OntoEMS="https://www.theworldavatar.com/kg/ontoems/"
+     xmlns:om="http://www.ontology-of-units-of-measure.org/resource/om-2/"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:ontoems="https://www.theworldavatar.com/kg/ontoems/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoems/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">12 September 2022</dc:date>
-        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">17 March 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Environmental Measurement Station ontology (OntoEMS) is an ontology developed for representing environmental measurement stations, reported quantities, and time series of associated readings.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
 
@@ -130,7 +131,7 @@
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoems/DiffuseHorizontalIrradiance"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoems/DirectHorizontalIrradiance"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoems/DirectNormalIrradiance"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -386,10 +387,10 @@
     
 
 
-    <!-- https://www.w3.org/2000/01/rdf-schema#label -->
+    <!-- http://www.w3.org/2000/01/rdf-schema#label -->
 
 
-    <owl:DatatypeProperty rdf:about="https://www.w3.org/2000/01/rdf-schema#label">
+    <owl:DatatypeProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#label">
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
@@ -439,6 +440,15 @@
 
     <owl:Class rdf:about="http://purl.org/iot/vocab/m3-lite#AtmosphericPressure">
         <owl:equivalentClass rdf:resource="https://www.theworldavatar.com/kg/ontoems/AtmosphericPressure"/>
+    </owl:Class>
+    
+
+
+    <!-- http://purl.org/iot/vocab/m3-lite#CloudCover -->
+
+
+    <owl:Class rdf:about="http://purl.org/iot/vocab/m3-lite#CloudCover">
+        <owl:equivalentClass rdf:resource="https://www.theworldavatar.com/kg/ontoems/CloudCover"/>
     </owl:Class>
     
 
@@ -497,14 +507,7 @@
     <owl:Class rdf:about="http://purl.org/iot/vocab/m3-lite#WindSpeed">
         <owl:equivalentClass rdf:resource="https://www.theworldavatar.com/kg/ontoems/WindSpeed"/>
     </owl:Class>
-    
 
-
-    <!-- http://theworldavatar.com/resource/ontouom/MassOfSubstanceConcentration -->
-
-
-    <owl:Class rdf:about="http://theworldavatar.com/resource/ontouom/MassOfSubstanceConcentration"/>
-    
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Angle -->
@@ -622,6 +625,17 @@
     
 
 
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/VolumeFraction -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumeFraction">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontouom/Concentration"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Volume fraction</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRate -->
 
 
@@ -636,11 +650,75 @@
     
 
 
+    <!-- http://semanticscience.org/resource/SIO_000638 -->
+
+
+    <owl:Class rdf:about="http://semanticscience.org/resource/SIO_000638"/>
+    
+
+
+    <!-- https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#AirPollution -->
+
+
+    <owl:Class rdf:about="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#AirPollution"/>
+    
+
+
+    <!-- https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#AtmosphericPressure -->
+
+
+    <owl:Class rdf:about="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#AtmosphericPressure">
+        <owl:equivalentClass rdf:resource="https://www.theworldavatar.com/kg/ontoems/AtmosphericPressure"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#DewPointTemperature -->
+
+
+    <owl:Class rdf:about="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#DewPointTemperature">
+        <owl:equivalentClass rdf:resource="https://www.theworldavatar.com/kg/ontoems/DewPoint"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Humidity -->
+
+
+    <owl:Class rdf:about="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Humidity">
+        <owl:equivalentClass rdf:resource="https://www.theworldavatar.com/kg/ontoems/RelativeHumidity"/>
+    </owl:Class>
+    
+
+
+    <!-- https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Precipitation -->
+
+
+    <owl:Class rdf:about="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Precipitation"/>
+    
+
+
+    <!-- https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#SolarIrradiance -->
+
+
+    <owl:Class rdf:about="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#SolarIrradiance"/>
+    
+
+
+    <!-- https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Temperature -->
+
+
+    <owl:Class rdf:about="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Temperature">
+        <owl:equivalentClass rdf:resource="https://www.theworldavatar.com/kg/ontoems/AirTemperature"/>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/resource/ontouom/MassOfSubstanceConcentration"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontouom/Concentration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of a specific air pollutant as amount of material per unit volume of air (e.g. mass concentration).</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Air pollutant concentration</rdfs:label>
@@ -671,6 +749,42 @@
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Atmospheric pressure</rdfs:label>
     </owl:Class>
+
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoems/CarbonDioxideConcentration -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/CarbonDioxideConcentration">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of carbon dioxide in the ambient air.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carbon dioxide concentration</rdfs:label>
+    </owl:Class>
+
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoems/CarbonMonoxideConcentration -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/CarbonMonoxideConcentration">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of carbon monoxide in the ambient air.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carbon monoxide concentration</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoems/CloudCover -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/CloudCover">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Number"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fraction of sky obscured by clouds.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cloud cover</rdfs:label>
+    </owl:Class>
     
 
 
@@ -694,23 +808,23 @@
         <rdfs:subClassOf rdf:resource="http://purl.org/iot/vocab/m3-lite#SolarRadiation"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Irradiance"/>
         <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#SolarIrradiance"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The horizontal component of diffuse solar irradiance (irradiance that is scattered by the atmosphere).</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Diffuse horizontal irradiance (DHI) is the horizontal component of diffuse solar irradiance (irradiance that is scattered by the atmosphere). GHI = DHI + DNI * cos(z), where z = solar zenith angle.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Diffuse horizontal irradiance</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoems/DirectHorizontalIrradiance -->
+    <!-- https://www.theworldavatar.com/kg/ontoems/DirectNormalIrradiance -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/DirectHorizontalIrradiance">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/DirectNormalIrradiance">
         <rdfs:subClassOf rdf:resource="http://purl.org/iot/vocab/m3-lite#SolarRadiation"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Irradiance"/>
         <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#SolarIrradiance"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The horizontal component of direct normal solar irradiance (irradiance arriving in a direct line from the sun as measured on a surface held perpendicular to the sun).</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Direct normal irradiance (DNI) is the irradiance arriving in a direct line from the sun as measured on a surface held perpendicular to the sun. GHI = DHI + DNI * cos(z), where z = solar zenith angle.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Direct horizontal irradiance</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Direct normal irradiance</rdfs:label>
     </owl:Class>
     
 
@@ -771,7 +885,7 @@
         <rdfs:subClassOf rdf:resource="http://purl.org/iot/vocab/m3-lite#SolarRadiation"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Irradiance"/>
         <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#SolarIrradiance"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total solar irradiance received on a horizontal surface. It is the sum of the horizontal components of direct (beam) and diffuse irradiance.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Global horizontal irradiance (GHI) is the total solar irradiance received on a horizontal surface. GHI = DHI + DNI * cos(z), where z = solar zenith angle.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Global horizontal irradiance</rdfs:label>
     </owl:Class>
@@ -835,7 +949,7 @@
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nitrogen oxides concentration</rdfs:label>
     </owl:Class>
-    
+
 
 
     <!-- https://www.theworldavatar.com/kg/ontoems/NormalRange -->
@@ -903,7 +1017,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/PrecipitationProbability">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Number"/>
-        <rdfs:subClassOf rdf:resource="https://semanticscience.org/resource/SIO_000638"/>
+        <rdfs:subClassOf rdf:resource="http://semanticscience.org/resource/SIO_000638"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The likelihood of occurrence of precipitation.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Precipitation probability</rdfs:label>
@@ -974,6 +1088,19 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Current water level has been rising over last 12 hours</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rising trend</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoems/SnowFall -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/SnowFall">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+        <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Precipitation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The depth of snow that accumulated over a measurement time quantity.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Snowfall</rdfs:label>
     </owl:Class>
     
 
@@ -1146,62 +1273,24 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries"/>
+
+
+
+    <!-- https://www.theworldavatar.com/kg/ontouom/Concentration -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/Concentration"/>
     
 
 
-    <!-- https://semanticscience.org/resource/SIO_000638 -->
+    <!-- https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration -->
 
 
-    <owl:Class rdf:about="https://semanticscience.org/resource/SIO_000638"/>
-    
-
-
-    <!-- https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#AirPollution -->
-
-
-    <owl:Class rdf:about="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#AirPollution"/>
-    
-
-
-    <!-- https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#AtmosphericPressure -->
-
-
-    <owl:Class rdf:about="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#AtmosphericPressure"/>
-    
-
-
-    <!-- https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#DewPointTemperature -->
-
-
-    <owl:Class rdf:about="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#DewPointTemperature"/>
-    
-
-
-    <!-- https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Humidity -->
-
-
-    <owl:Class rdf:about="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Humidity"/>
-    
-
-
-    <!-- https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Precipitation -->
-
-
-    <owl:Class rdf:about="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Precipitation"/>
-    
-
-
-    <!-- https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#SolarIrradiance -->
-
-
-    <owl:Class rdf:about="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#SolarIrradiance"/>
-    
-
-
-    <!-- https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Temperature -->
-
-
-    <owl:Class rdf:about="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Temperature"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/MassOfSubstanceConcentration">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontouom/Concentration"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontouom/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mass concentration</rdfs:label>
+    </owl:Class>
 </rdf:RDF>
 
 

@@ -9,6 +9,11 @@ class PanelHandler {
     _defaultHTML: string;
 
     /**
+     * 
+     */
+    manager: Manager;
+
+    /**
      * Handles plotting time series data.
      */
     timeseriesHandler: TimeseriesHandler;
@@ -16,7 +21,8 @@ class PanelHandler {
     /**
      * Constructor
      */
-    constructor() {
+    constructor(manager) {
+        this.manager = manager;
         this.timeseriesHandler = new TimeseriesHandler();
     }
 
@@ -111,6 +117,10 @@ class PanelHandler {
 		var sidePanel = document.getElementById("sidePanel");
 		var leftButton = document.getElementById("slideButton");
 		var rightButton = document.getElementById("expandButton");
+        var attributions = document.getElementById("attributionContainer");
+
+        // Container for Cesium clipping plane slider
+        let sliderParent = document.getElementById("sliderParent");
 
 		if(sidePanel.classList.contains("small")) {
 			// Make large
@@ -119,12 +129,10 @@ class PanelHandler {
 
 			document.getElementById("map").style.width = "100%";
 			document.getElementById("controlsContainer").style.visibility = "hidden";
-
 			leftButton.style.visibility = "hidden";
-
-			// Stop keyboard events
-			// MapHandler.MAP["keyboard"].disable();
-			// MapHandler.MAP.resize();
+            
+            if(attributions != null) attributions.style.display = "none";
+            if(sliderParent != null) sliderParent.style.display = "none";
 
 		} else if(sidePanel.classList.contains("large")) {
 			// Make small
@@ -133,13 +141,16 @@ class PanelHandler {
 
 			document.getElementById("map").style.width = "calc(100% - 500px)";
 			document.getElementById("controlsContainer").style.visibility = "visible";
-
 			leftButton.style.visibility = "visible";
 
-			// Allow keyboard events
-			// MapHandler.MAP["keyboard"].enable();
-			// MapHandler.MAP.resize();
+            if(Manager.SETTINGS.getSetting("attribution") != null && attributions != null) {
+                attributions.style.display = "block";
+            }
+
+            if(sliderParent != null) sliderParent.style.display = "flex";
 		}
+
+        MapHandler.MAP.resize();
 	}
 
     /**
@@ -150,7 +161,11 @@ class PanelHandler {
 		var sidePanelInner = document.getElementById("sidePanelInner");
 		var leftButton = document.getElementById("slideButton");
         var rightButton = document.getElementById("expandButton");
+
         var finderContainer = document.getElementById("finderContainer");
+
+        // Container for Cesium clipping plane slider
+        let sliderParent = document.getElementById("sliderParent");
 
 		if(sidePanel.classList.contains("small")) {
 
@@ -164,7 +179,8 @@ class PanelHandler {
 				rightButton.style.visibility = "visible";
 				sidePanelInner.style.visibility = "visible";
 
-                //finderContainer.classList.replace("collapsed", "expanded");
+                if(finderContainer != null) finderContainer.style.width = "calc(100% - 540px)";
+                if(sliderParent != null) sliderParent.classList.replace("collapsed", "expanded");
 				
 			} else if(sidePanel.classList.contains("expanded")) {
 				// Collapse
@@ -176,7 +192,8 @@ class PanelHandler {
 				rightButton.style.visibility = "hidden";
 				sidePanelInner.style.visibility = "hidden";
 
-                //finderContainer.classList.replace("expanded", "collapsed");
+                if(finderContainer != null) finderContainer.style.width = "calc(100% - 80px)";
+                if(sliderParent != null) sliderParent.classList.replace("expanded", "collapsed");
 			}
 		} 
 
@@ -197,53 +214,81 @@ class PanelHandler {
 
         // Get required details
         let iri = properties["iri"];
+        let endpoint = properties["endpoint"];
+
         let stack = Manager.findStack(feature, properties);
+        console.log("Attempting to contact agent with stack at '" + stack + "'...");
+        console.log("   ...will submit IRI for query '" + iri + "'");
 
         if(iri == null || stack == null) {
-            console.warn("Feature is missing required information to get metadata/timeseries, will show in-model content instead...");
-
-            // Render metadata tree
-            this.prepareMetaContainers(true, false);
-            document.getElementById("metaTreeContainer").innerHTML = "";
-
-            // @ts-ignore
-            let metaTree = JsonView.renderJSON(properties, document.getElementById("metaTreeContainer"));
-            // @ts-ignore
-            JsonView.expandChildren(metaTree);
-            // @ts-ignore
-            JsonView.selectiveCollapse(metaTree);
+            console.warn("Feature is missing required information to get metadata/timeseries, will show any in-model content instead...");
+            this.showBuiltInData(properties);
             return;
         }
 
         // Proceed to contact agent for metadata and timeseries
         this.prepareMetaContainers(true, true);
-
+        document.getElementById("metaTreeContainer").innerHTML = "<i>Retrieving data...</i>";
+        
         // Build the request to the FeatureInfoAgent
         let agentURL = stack + "/feature-info-agent/get";
-        let params = { "iri": iri };
+        let params = { 
+            "iri": iri,
+            "endpoint": endpoint
+        };
 
         let self = this;
-        var promise = $.getJSON(agentURL, params, function(json) {
+        var promise = $.getJSON(agentURL, params, function(rawJSON) {
+            if(rawJSON === null || rawJSON === undefined) {
+                self.showBuiltInData(properties);
+                return;
+            }
+            if(Array.isArray(rawJSON) && rawJSON.length == 0) {
+                self.showBuiltInData(properties);
+                return;
+            }
+            if(Object.keys(rawJSON).length == 0) {
+                self.showBuiltInData(properties);
+                return;
+            }
+
             // Get results
-            let meta = json["meta"];
-            let time = json["time"];
+            let meta = rawJSON["meta"];
+            let time = rawJSON["time"];
+
+            if (meta != null) console.log("Got a meta object!");
+            if (time != null) console.log("Got a time object!");
 
             // Render metadata tree
             document.getElementById("metaTreeContainer").innerHTML = "";
 
-            if(meta !== null && meta !== undefined) {
-                // @ts-ignore
-                let metaTree = JsonView.renderJSON(meta, document.getElementById("metaTreeContainer"));
-                // @ts-ignore
-                JsonView.expandChildren(metaTree);
-                // @ts-ignore
-                JsonView.selectiveCollapse(metaTree);
+            if(meta != null) {
+                // Formatting
+                meta = JSONFormatter.formatJSON(meta);
+
+                let treeContainer = document.getElementById("metaTreeContainer");
+                if(treeContainer == null) console.log("TREE CONTAINER IS NULL, WHAT?!");
+
+                if(Array.isArray(meta) && meta.length === 0) {
+                    this.showBuiltInData(properties);
+                } else if (typeof meta === "string" && meta === "") {
+                    this.showBuiltInData(properties);
+                } else {
+                    // @ts-ignore
+                    let metaTree = JsonView.renderJSON(meta, document.getElementById("metaTreeContainer"));
+                    // @ts-ignore
+                    JsonView.expandChildren(metaTree);
+                    // @ts-ignore
+                    JsonView.selectiveCollapse(metaTree);
+                }
+            } else {
+                self.showBuiltInData(properties);
             }
 
             // Render timeseries
             document.getElementById("metaTimeContainer").innerHTML = "";
 
-            if(time !== null && time !== undefined) {
+            if(time != null) {
                 // Plot data
                 self.timeseriesHandler.parseData(time);
                 self.timeseriesHandler.showData("metaTimeContainer");
@@ -251,9 +296,43 @@ class PanelHandler {
                 // Auto-select the first option in the dropdown
                 let select = document.getElementById("time-series-select") as HTMLInputElement;
                 select.onchange(null);
+            } else {
+                console.warn("No 'time' node found, skipping timeseries visualisation.");
             }
+
+            // Set visibility of UI containers
+            self.prepareMetaContainers(true, time != null);
+
+        })
+        .fail(function() {
+            console.warn("Could not get valid response from the agent, will show any in-model content instead...");
+            self.showBuiltInData(properties);
+            return;
         });
         return promise;
+    }
+
+    /**
+     * Show properties from the feature as metadata rather than something returned
+     * from the remote FeatureInfoAgent.
+     * 
+     * @param properties feature properties
+     */
+    public showBuiltInData(properties) {
+        this.prepareMetaContainers(true, false);
+        document.getElementById("metaTreeContainer").innerHTML = "";
+
+        if(Object.keys(properties).length > 0) {
+            let formattedProps = JSONFormatter.formatJSON(properties);
+            // @ts-ignore
+            let metaTree = JsonView.renderJSON(formattedProps, document.getElementById("metaTreeContainer"));
+            // @ts-ignore
+            JsonView.expandChildren(metaTree);
+            // @ts-ignore
+            JsonView.selectiveCollapse(metaTree);
+        } else {
+            document.getElementById("metaTreeContainer").innerHTML = "<i>No available data.</i>";
+        }
     }
 
     public updateTimeseries(setName) {
@@ -272,34 +351,52 @@ class PanelHandler {
             this.appendContent("<div id='metaContainer'></div>");
         }
 
+        let treeButton = document.getElementById("treeButton");
+        let timeButton = document.getElementById("timeButton");
+
         if(addMeta) {
-            if(document.getElementById("treeButton") === null) {
+            if(treeButton === null) {
                 document.getElementById("metaTabs").innerHTML += `
                     <button id="treeButton" class="tablinks" onclick="manager.openMetaTab(this.id, 'metaTreeContainer')">Metadata</button>
                 `;
+                treeButton = document.getElementById("treeButton");
             }
             if(document.getElementById("metaTreeContainer") === null) {
                 document.getElementById("metaContainer").innerHTML += "<div id='metaTreeContainer' class='tabcontent'></div>"
             }
         }
-
         if(addTime) {
-            if(document.getElementById("timeButton") === null) {
+            if(timeButton === null) {
                 document.getElementById("metaTabs").innerHTML += `
                     <button id="timeButton" class="tablinks" onclick="manager.openMetaTab(this.id, 'metaTimeContainer')">Time Series</button>
                 `;
+                timeButton = document.getElementById("timeButton");
             }
             if(document.getElementById("metaTimeContainer") === null) {
                 document.getElementById("metaContainer").innerHTML += "<div id='metaTimeContainer' style='display: none;' class='tabcontent'></div>"
             }
         }
 
+        if(treeButton != null) treeButton.style.display = (addMeta) ? "block" : "none"; 
+        if(timeButton != null) timeButton.style.display = (addTime) ? "block" : "none"; 
+
         if(addMeta && !addTime) {
-            document.getElementById("treeButton").style.width = "100%";
-            document.getElementById("treeButton").style.borderRadius = "10px";
+            treeButton.style.width = "100%";
+            treeButton.style.borderRadius = "10px";
+
+            this.manager.openMetaTab("treeButton", "metaTreeContainer");
+
+        } else if (!addMeta && addTime) {
+            timeButton.style.width = "100%";
+            timeButton.style.borderRadius = "10px";
+            
+            this.manager.openMetaTab("timeButton", "metaTimeContainer");
+
         } else if(addMeta && addTime) {
-            document.getElementById("treeButton").style.width = "50%";
-            document.getElementById("treeButton").style.borderRadius = "10px 0 0 10px";
+            treeButton.style.width = "50%";
+            treeButton.style.borderRadius = "10px 0 0 10px";
+
+            this.manager.openMetaTab("treeButton", "metaTreeContainer");
         }
 
         let footerContent = document.getElementById("footerContainer");

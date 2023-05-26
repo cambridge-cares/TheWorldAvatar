@@ -26,7 +26,6 @@ h6 {
     font-weight: 700;
 }
 
-/* Mapbox Elements */
 #map {
     width: calc(100% - 500px);
     height: 100%;
@@ -35,28 +34,73 @@ h6 {
     background-color: #cad2d3;
 }
 
+
 .mapboxgl-popup-content {
     text-align: left;
-    font-size: 8pt;
-    width: auto;
-    max-width: 400px;
+    width: min-content;
+    min-width: 175px;
+    min-height: 20px;
     pointer-events: none;
-    background: linear-gradient(180deg,
-            rgba(245, 245, 255, 1) 80%,
-            rgba(230, 230, 240, 1) 100%);
+    background: linear-gradient(180deg,#f5f5ff 80%,#e6e6f0 100%);
+    font-family: Inter,sans-serif !important;
+    font-size: 10pt;
+    padding: 5px;
 }
 
-.mapboxgl-popup-content p {
-    font-style: italic;
-    color: grey;
+.mapboxgl-popup-content h3 {
+    width: max-content !important;
+    min-width: calc(100% - 10px);
+    
+    padding: 5px !important;
+    margin: 0px !important;
+    
+    white-space: nowrap;
+    display: inline-block;
 }
+
+.mapboxgl-popup-content .long-popup {
+    min-width: 400px;
+}
+
+#cesiumMetaBox {
+    width: min-content;
+    min-width: 175px;
+    min-height: 20px;
+    pointer-events: none;
+
+    background: linear-gradient(180deg,#f5f5ff 80%,#e6e6f0 100%);
+    font-family: Inter,sans-serif!important;
+    font-size: 10pt;
+    padding: 5px;
+        
+    position: absolute;
+    bottom: 100px;
+    left: 100px;
+
+    border-radius: 3px;
+    box-shadow: 3px 3px 3px gray;
+}
+#cesiumMetaBox h3 {
+    width: max-content !important;
+    min-width: calc(100% - 10px);
+    padding: 5px!important;
+    margin: 0!important;
+    white-space: nowrap;
+    display: inline-block;
+}
+#cesiumMetaBox .desc-popup {
+    margin-top: 20px;
+}
+#cesiumMetaBox .long-popup {
+    min-width: 400px;
+}
+
 .thumbnail {
     margin-left: 40px;
     width: 300px;
     height: 200px;
     object-fit: cover;
 }
-
 
 /* Side Panel */
 #sidePanel {
@@ -274,7 +318,7 @@ h6 {
 .tooltip .tooltiptext {
     visibility: hidden;
     width: 120px;
-    background-color: #808080;
+    background-color: #232323;
     color: #fff;
     text-align: center;
     padding: 5px 0;
@@ -476,7 +520,6 @@ h6 {
 }
 #metaTreeContainer {
     height: 100%;
-    overflow-x: hidden;
     overflow-y: scroll;
 }
 #metaTimeContainer {
@@ -1138,37 +1181,77 @@ label[for="select-feature"] {
 
 
 #finderContainer {
+    display: table;
     position: absolute;
     bottom: 30;
     left: 20;
     height: 40px;
-}
-#finderContainer.expanded {
-    width: calc(100% - 560px);
-}
-#finderContainer.collapsed {
-    width: calc(100% - 90px);
-}
+    width: calc(100% - 540px);
 
-#cesiumMetaBox {
-    width: 200px;
-    min-height: 30px;
-    bottom: 100px;
-    left: 100px;
-
-    font-family: "Inter", sans-serif !important;
+    background-color: rgba(0,0,0,.4);
+    border-radius: 8px;
+}
+#finderContainer label {
+    color: #fff;
+    padding-left: 10px;
+    font-weight: 700;
+    font-size: 12pt;
+    display: table-cell;
+    height: 40px;
+    width: 15%;
+    min-width: 175px;
+    vertical-align: middle;
+}
+.finderSelectClass {
+    height: 30px;
     font-size: 10pt;
+    background-color: rgba(0, 0, 0, 0.25);
+    color: white;
     text-align: center;
-    line-height: 30px;
-
-    border-radius: 3px;
-    background-color: rgb(235, 235, 245);
-    color: black;
-    position: absolute;
-    box-shadow: 3px 3px 3px black;
-  
-    display: none;
+    display: table-cell;
+    width: 20%;
+    margin-top: 5px;
 }
+.finderSelectClass option {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+#finderRangeSelect {
+    margin-left: 10px;
+}
+#finderField {
+    display: table-cell;
+    height: 30px;
+    margin-top: 5px;
+    margin-left: 10px;
+    width: 54%;
+    padding-left: 10px;
+}
+
+.searchButton {
+    color: #fff;
+    float: right;
+    height: 40px;
+    margin-right: 10px;
+    cursor: pointer;
+    line-height: 40px;
+    text-align: center;
+    display: table-cell;
+    width: 20px;
+}
+.searchButton i {
+    line-height: 40px;  
+}
+.tooltiptext.lower {
+    position: absolute;
+    z-index: 1;
+    top: -100%;
+    right: 50%;
+    width: 175px;
+    height: 20px;
+    line-height: 20px;
+}
+
 
 .cesium-viewer-bottom {
     display: none;
@@ -1216,3 +1299,145 @@ label[for="select-feature"] {
     font-size: 10pt !important;
 }
 
+#helpContainer {
+    width: 20px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.tooltiptext.right {
+    position: absolute;
+    z-index: 1;
+    right: -75px;
+    width: 75px;
+    height: 20px;
+    line-height: 20px;
+}
+
+.mapboxgl-ctrl-bottom-left {
+    top: 5px !important;
+    right: 5px !important;
+    left: revert;
+    bottom: revert;
+}
+
+#sliderParent {
+    width: 125px;
+    height: calc(100% - 80px);
+    position: absolute;
+    top: 20px;
+
+    display: flex;
+    flex-direction: column;
+
+    color: white;
+    background-color: rgba(0,0,0,.4);
+    border-radius: 8px;
+    padding: 20px;
+}
+#sliderParent.expanded {
+    right: 520px;
+}
+#sliderParent.collapsed {
+    right: 50px;
+}
+
+#sliderTop {
+    flex-grow: 1;
+    
+    display: flex;
+    flex-direction: row;
+}
+#sliderLeft {
+    flex-grow: 1;
+}
+#sliderRight {
+    flex-grow: 0;
+    height: calc(100% - 20px);
+    width: 12px;
+}
+#sliderBottom {
+    height: 40px;
+    flex-grow: 0;
+}
+.sliderStep {
+    position: absolute;
+    width: 70%;
+    height: 20px;
+
+    right: 30px;
+    margin-left: 20px;
+    padding-top: 2px;
+
+    font-size: 10pt;
+    border: 1px solid white;
+    border-width: 1px 0px 0px 0px;
+    cursor: pointer;
+}
+.sliderStep:hover {
+    text-decoration: underline;
+}
+#sliderInput {
+    width: calc(100% - 20px);
+    height: calc(100% - 10px);
+    float: left;
+    text-align: right;
+    margin-top: 10px;
+}
+
+#clipControlContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+#clipEnableContainer {
+    width: 100%;
+    height: 30px;
+}
+#clipEnableContainer p {
+    font-size: 9pt;
+    font-weight: normal;
+    float: left;
+    line-height: 30px;
+}
+#clipEnableContainer input {
+    float: right;
+    margin-top: 8px;
+}
+
+#clipShowContainer {
+    width: 100%;
+    height: 30px;
+}
+#clipShowContainer p {
+    font-size: 9pt;
+    font-weight: normal;
+    float: left;
+    line-height: 30px;
+}
+#clipShowContainer input {
+    float: right;
+    margin-top: 8px;
+}
+
+#clipSelectContainer {
+    width: 100%;
+    height: 60px;
+    margin-top: 10px;
+}
+#clipSelectContainer p {
+    font-size: 9pt;
+    font-weight: normal;
+    line-height: 30px;
+}
+#clipSelectContainer select {
+    width: 100%;
+    height: 25px;
+    font-size: 9pt;
+}
+
+.ui-slider-handler {
+    border-radius: 50%!important;
+    background: #B8B8B8;
+    background-color: #B8B8B8;
+}

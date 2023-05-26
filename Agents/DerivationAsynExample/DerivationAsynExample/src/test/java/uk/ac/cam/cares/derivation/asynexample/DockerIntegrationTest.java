@@ -3,6 +3,7 @@ package uk.ac.cam.cares.derivation.asynexample;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.derivation.Derivation;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
 import uk.ac.cam.cares.jps.base.derivation.StatusType;
@@ -31,8 +33,6 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * running
  * Please refer to TheWorldAvatar/Agents/DerivationAsynExample/README.md for
  * more details.
- * For information regarding the Docker registry, see:
- * https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
  * 
  * @author Jiaru Bai (jb2197@cam.ac.uk)
  * 
@@ -245,6 +245,32 @@ public class DockerIntegrationTest extends TestCase {
         Assert.assertEquals(5, diffReverseValues.size());
         int difference = sparqlClient.getValue(difference_instance);
         diffReverseValues.values().stream().forEach(val -> Assert.assertEquals(0, val + difference));
+	}
+
+	@Test
+	@Timeout(value = 180, unit = TimeUnit.SECONDS)
+	@Order(8)
+	public void testErrorStatus() throws InterruptedException {
+		// initialise all triples for exception throw test
+		JSONObject response = new JSONObject(AgentCaller.executeGet(host + InitialiseInstances.API_PATTERN_EXC_THROW));
+		String inputPlaceholderExceptionThrowIri = response.getString(InitialiseInstances.input_placeholder_exc_throw_key);
+		// create three derivations and wait for the status to be changed to Error
+		String exceptionThrowDerivation1 = devClient.createAsyncDerivationForNewInfo(Config.agentIriExceptionThrow, Arrays.asList(inputPlaceholderExceptionThrowIri));
+		String exceptionThrowDerivation2 = devClient.createAsyncDerivationForNewInfo(Config.agentIriExceptionThrow, Arrays.asList(inputPlaceholderExceptionThrowIri));
+		String exceptionThrowDerivation3 = devClient.createAsyncDerivationForNewInfo(Config.agentIriExceptionThrow, Arrays.asList(inputPlaceholderExceptionThrowIri));
+		// wait for init delay and five periods, which should be sufficient for agent to iterate through all derivations
+		TimeUnit.SECONDS.sleep(Config.initDelayAgentExceptionThrow + 5 * Config.periodAgentExceptionThrow);
+		// if the amount of derivations in Error status matches the amount of total derivations got marked up
+		// then it implies the agent was able to catch the exception and proceed to next derivation without getting stuck
+		Map<String, StatusType> excThrowDerivations = devClient.getDerivationsAndStatusType(Config.agentIriExceptionThrow);
+		Assert.assertEquals(3, excThrowDerivations.size());
+		Assert.assertEquals(3, countNumberOfDerivationsGivenStatusType(excThrowDerivations, StatusType.ERROR));
+		// also all of the error message recorded in rdfs:comment should have the error message defined in the ExceptionThrowAgent
+		List<Derivation> errDerivations = devClient.getDerivationsInErrorStatus(Config.agentIriExceptionThrow);
+        Assert.assertEquals(3, errDerivations.size());
+        errDerivations.stream().forEach(d -> {
+            Assert.assertTrue(d.getErrMsg().contains(ExceptionThrowAgent.EXCEPTION_MESSAGE));
+        });
 	}
 
 	////////////////////////////////////////////////////////////

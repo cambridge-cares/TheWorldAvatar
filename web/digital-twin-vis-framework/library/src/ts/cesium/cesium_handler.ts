@@ -15,25 +15,29 @@ class MapHandler_Cesium extends MapHandler {
     public static DATA_SOURCES = {};
 
     /**
+     * Handles generation and control of clipping planes.
+     */
+    private clipHandler: ClipHandler;
+
+    /**
      * Constructor.
      */
     constructor(manager: Manager) {
         super(manager);
+        this.clipHandler = new ClipHandler();
+
+        let layers = CesiumUtils.getLayersWithClipping(Manager.DATA_STORE);
+        this.clipHandler.setLayers(layers);
     }
 
     /**
      * Initialise and store a new map object.
      */
     public initialiseMap(mapOptions: Object) {
+
         MapHandler.MAP_OPTIONS = mapOptions;
 
         if(MapHandler.MAP === null || MapHandler.MAP === undefined) {
-
-            // Build the URL to pull tile imagery from Mapbox (defaults to dark theme)
-            var tileURL = getDefaultImagery();
-            if(tileURL.endsWith("access_token=")) {
-                tileURL = tileURL + MapHandler.MAP_API;
-            }
 
             // Initialize the Cesium Viewer in the HTML element with the `cesiumContainer` ID.
             MapHandler.MAP = new Cesium.Viewer('map', {
@@ -62,9 +66,14 @@ class MapHandler_Cesium extends MapHandler {
                         new Cesium.NearFarScalar(1000.0, Math.abs(value), 2000.0, 1.0);
             }
 
-            // Include terrain in Z-index rendering (otherwise we'll be able
-            // to see other entities through it).
+            // Include terrain in Z-index rendering (otherwise we'll be able to see other entities through it).
             MapHandler.MAP.scene.globe.depthTestAgainstTerrain = true
+
+            // Build the URL to pull tile imagery from Mapbox (defaults to dark theme)
+            var tileURL = getDefaultImagery();
+            if(tileURL.endsWith("access_token=")) {
+                tileURL = tileURL + MapHandler.MAP_API;
+            }
 
             // Remove any existing imagery providers and add our own
             MapHandler.MAP.imageryLayers.removeAll(true);
@@ -105,6 +114,11 @@ class MapHandler_Cesium extends MapHandler {
 
             // Enable terrain elevations (if set)
             this.addTerrain();
+
+            // Build clipping controls
+            let layersWithClipping = CesiumUtils.getLayersWithClipping(Manager.DATA_STORE);
+            this.clipHandler.setLayers(layersWithClipping);
+            this.clipHandler.addControls();
 
         } else {
             MapHandler.MAP.camera.setView({
@@ -150,19 +164,27 @@ class MapHandler_Cesium extends MapHandler {
                 let properties = {...feature.data.properties};
                 self.manager.showFeature(feature, properties);
             } else {
+                console.log(feature);
+                
                 // 3D feature
                 let properties = {};
                 let contentMetadata = feature?.content?.metadata;
     
                 // Transform properties for compatability with manager code
                 if (Cesium.defined(contentMetadata)) {
-                    contentMetadata.getPropertyIds().forEach(id => {
-                        properties[id] = contentMetadata.getProperty(id);
-                    });
+                    properties = {...contentMetadata["_properties"]};
+
+                } else if(typeof feature.getPropertyIds === "function") {
+                    // No metadata refined, try to get properties via id
+                    let ids = feature.getPropertyIds();
+                    if(ids != null) {
+                        ids.forEach(id => {
+                            properties[id] = feature.getProperty(id);
+                        });
+                    }
                 } else {
-                    feature.getPropertyIds().forEach(id => {
-                        properties[id] = feature.getProperty(id);
-                    });
+                    // Unknown data type
+                    return;
                 }
                 
                 self.manager.showFeature(feature, properties);
@@ -203,9 +225,7 @@ class MapHandler_Cesium extends MapHandler {
     
                 // Transform properties for compatability with manager code
                 if (Cesium.defined(contentMetadata)) {
-                    contentMetadata.getPropertyIds().forEach(id => {
-                        properties[id] = contentMetadata.getProperty(id);
-                    });
+                    properties = {...contentMetadata["_properties"]};
                 } else {
                     // Do nothing, there's no data?
                 }
@@ -340,16 +360,11 @@ class MapHandler_Cesium extends MapHandler {
     private addKMLFile(source: Object, layer: DataLayer) {
         let sourceKML = Cesium.KmlDataSource.load(source["uri"]);
         sourceKML.then((result) => {
+            
             result["show"] = layer.definition["visibility"] == undefined || layer.definition["visibility"] === "visible";
+            result["layerID"] = layer.id;
 
-            // TODO: Investigate if camera and canvas options are actually required here.
-            MapHandler.MAP.dataSources.add(
-                result,
-                {
-                    camera: MapHandler.MAP.camera,
-                    canvas: MapHandler.MAP.canvas
-                }
-            );
+            MapHandler.MAP.dataSources.add(result);
             console.info("Added KML source to map with layer ID: "+ layer.id);
     
             // Cache knowledge of this source, keyed by layer id
@@ -415,26 +430,64 @@ class MapHandler_Cesium extends MapHandler {
      * @param source JSON definition of source data. 
      * @param layerID ID of layer upon the map.
      */
-    private addTileset(source: Object,  layer: DataLayer) {
+    private async addTileset(source: Object, layer: DataLayer) {
         // Check the position (if set)
-        let position = source["position"];
-        if(position !== null && position !== undefined) {
-            let centerCartesian = Cesium.Cartesian3.fromDegrees(position[0], position[1], position[2]);
+        let position = Cesium.Matrix4.IDENTITY;
+        if("position" in source) {
+            let setting = source["position"];
+            let centerCartesian = Cesium.Cartesian3.fromDegrees(setting[0], setting[1], setting[2]);
             position = Cesium.Transforms.eastNorthUpToFixedFrame(centerCartesian);
+        }
+
+        // Check the scale (if set)
+        if("scale" in source) {
+            let setting = source["scale"];
+
+            Cesium.Matrix4.setScale(
+                position,
+                new Cesium.Cartesian3(1, 1, setting),
+                position
+            );
+        }
+
+        // Check the rotation (if set)
+        if("rotation" in source) {
+            let setting = source["rotation"];
+
+            // Create a heading-pitch-roll object
+            let hpr = new Cesium.HeadingPitchRoll(setting[2], setting[1], setting[0]);
+
+            // Create a rotation matrix
+            let rotationMatrix = Cesium.Matrix3.fromHeadingPitchRoll(hpr, new Cesium.Matrix3());
+
+            // And multiply the model matrix (position) by this rotation matrix
+            Cesium.Matrix4.multiplyByMatrix3(position, rotationMatrix, position);
         }
 
         // Define tileset options
         let options = {
-            url: source["uri"],
+            modelMatrix: position,
             show: layer.definition["visibility"] == undefined || layer.definition["visibility"] === "visible"
         };
 
-        if(position !== null && position !== undefined) {
-            options["modelMatrix"] = position;
+        // If clipping is enabled, pre-generate a clipping plane
+        if(layer.definition.hasOwnProperty("clipping")) {
+            this.clipHandler.initialiseClippingPlane(
+                layer.id,
+                layer.definition["clipping"]["start"]
+            );
         }
 
+        // Create tileset object
+        let tileset = await Cesium.Cesium3DTileset.fromUrl(
+            source["uri"],
+            options
+        );
+
+        // Cache custom layerID for later use
+        tileset["layerID"] = layer.id;
+       
         // Add the tileset to the map
-        let tileset = new Cesium.Cesium3DTileset(options);
         MapHandler.MAP.scene.primitives.add(tileset);
         console.info("Added 3D tileset source to map with layer ID: "+ layer.id);
 
@@ -443,6 +496,9 @@ class MapHandler_Cesium extends MapHandler {
             MapHandler_Cesium.DATA_SOURCES[layer.id] = [];
         }
         MapHandler_Cesium.DATA_SOURCES[layer.id].push(tileset);
+
+        // Return the loaded tileset
+        return tileset;
     }
 
     /**
@@ -467,6 +523,7 @@ class MapHandler_Cesium extends MapHandler {
             },
             credit: layer.id,
         });
+        provider["layerID"] = layer.id;
 
         let layers = MapHandler.MAP.imageryLayers;
         layers.addImageryProvider(provider);

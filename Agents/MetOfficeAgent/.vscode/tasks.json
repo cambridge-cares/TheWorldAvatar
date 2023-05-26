@@ -65,24 +65,6 @@
                 "compose-deploy"
             ],
             "dependsOrder": "sequence"
-        },
-        {
-            "type": "shell",
-            "label": "update-compose-build-deploy",
-            "dependsOn": [
-                "update-py4jps",
-                "compose-build",
-                "compose-deploy"
-            ],
-            "dependsOrder": "sequence"
-        },
-        {
-            "type": "shell",
-            "label": "update-py4jps",
-            // Linux (n/a option to be commented out):
-            "command": "bash ./build_py4jps_resources.sh",   
-            // Windows (n/a option to be commented out): 
-            // "command": "build_py4jps_resources.sh",      
         }
     ],
     "inputs": [
