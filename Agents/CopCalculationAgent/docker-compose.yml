@@ -17,7 +17,7 @@ services:
       - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5150/COPCalculation
       - DERIVATION_INSTANCE_BASE_URL=https://www.theworldavatar.com/kg/derivation/
       - REGISTER_AGENT=true
-      - DERIVATION_PERIODIC_TIMESCALE=600
+      - DERIVATION_PERIODIC_TIMESCALE=2592000
       # Required inputs, although values retrieved from Stack clients actually used when initialising DerivationAgent
       - SPARQL_QUERY_ENDPOINT=''
       - SPARQL_UPDATE_ENDPOINT=''

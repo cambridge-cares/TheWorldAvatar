@@ -69,6 +69,10 @@ WORKDIR /app
 COPY ./$AGENTDIR ./$AGENTDIR
 COPY  ./agent.env.example ./agent.env.example
 
+# NOTE Workaround for unstable Java-python connection when handling sync HTTP request and monitoring async derivation at the same time
+# Disable async derivation handling by shutdown the scheduler
+RUN sed -i "/agent.start_all_periodical_job()/a \ \ \ \ agent.scheduler.shutdown()" ./copcalculationagent/entry_point.py
+
 # Set the entrypoint
 # Use shell form to enable variable substitution (https://stackoverflow.com/a/37904830)
 ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "${AGENTDIR}:create_app()" --preload

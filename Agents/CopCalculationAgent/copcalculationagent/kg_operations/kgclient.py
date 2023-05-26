@@ -243,31 +243,26 @@ class KGClient(PySparqlClient):
 
         return hotsidetemperature
 
-    def generate_cop_iri(self, region, start, end, cop_max, cop_mean, cop_min):
+    def verify_cop_iri(self, region):
 
         query_string = f"""
         SELECT ?cop_iri
         WHERE {{
         <{region}> <{REGION_HASCOP}> ?cop_iri.
-        ?cop_iri  <{RDF_TYPE}> <{REGION_COP}> ;
-                 <{OFP_VALIDFROM}> "{start}"^^<{XSD_DATETIME}> ;
-                 <{OFP_VALIDTO}> "{end}"^^<{XSD_DATETIME}> ;
-                 <{REGION_MAX_VAL}> "{cop_max}"^^<{XSD_FLOAT}> ;
-                 <{REGION_MEAN_VAL}> "{cop_mean}"^^<{XSD_FLOAT}> ;
-                 <{REGION_MIN_VAL}> "{cop_min}"^^<{XSD_FLOAT}> .
+        ?cop_iri  <{RDF_TYPE}> <{REGION_COP}> .
         }}
         """
         res = self.performQuery(query_string)
 
-        if not res:
-            cop_iri = REGION + "COP_" + str(uuid.uuid4())
-            logger.info(f'No existed cop_iri, created {cop_iri}')
-        else: 
-            res = res[0]
-            cop_iri = str(res["cop_iri"])
-            logger.info(f'cop_iri: {cop_iri} will be used')
+        # if not res:
+        #     cop_iri = REGION + "COP_" + str(uuid.uuid4())
+        #     logger.info(f'No existed cop_iri, created {cop_iri}')
+        # else: 
+        #     res = res[0]
+        #     cop_iri = str(res["cop_iri"])
+        #     logger.info(f'cop_iri: {cop_iri} will be used')
         
-        return cop_iri
+        return res
     
     def instantiate_COP(self, g, cop_iri, region, start, end, cop_max, cop_mean, cop_min):
         g.add((URIRef(region),URIRef(REGION_HASCOP),URIRef(cop_iri)))
@@ -304,6 +299,7 @@ class KGClient(PySparqlClient):
                 temperature_iri_list = [d['temperature_iri'] for d in res]
 
                 return temperature_iri_list
+
 # QUERY_ENDPOINT= "http://localhost:3846/blazegraph/namespace/heatpump/sparql"
 # a = KGClient(QUERY_ENDPOINT, QUERY_ENDPOINT)
 # # inputs = {'http://www.ontology-of-units-of-measure.org/resource/om-2/Measure': ['http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/Value_a968837a-7624-4c43-978d-9a9348ef1f40'], 'http://www.theworldavatar.com/ontology/ontoregionalanalysis/HeatPumpEfficiency': ['http://www.theworldavatar.com/ontology/ontoregionalanalysis/HeatPumpEfficiency_fba248c2-050f-4323-bc55-f8fb2ba01566'], 'http://www.theworldavatar.com/ontology/ontoregionalanalysis/HotSideTemperature': ['http://www.theworldavatar.com/ontology/ontoregionalanalysis/HotSideTemperature_e69b38bf-7894-43e8-a318-41e378faed8d']}
@@ -312,3 +308,8 @@ class KGClient(PySparqlClient):
 # for i in range(len(temperature_iri_list)):
 #     res = a.get_temperature(temperature_iri_list[i])
 #     print(res["end"])
+# res = a.verify_cop_iri("http://statistics.data.gov.uk/id/statistical-geography/E01001001")
+# if res:
+#     print(res)
+# else:
+#     print("No Result")
