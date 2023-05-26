@@ -1,0 +1,18 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoNHS,TBox, http://theworldavatar.com/ontology/health/nhs.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoNHS,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoNHS,TBox,Sample ontology for representing GP data from the NHS.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+Asset,Class,,,,,,Generic asset., http://theworldavatar.com/ontology/health/nhs.owl,NHS asset
+hasID,DataProperty,,,,String,,Unique ID for asset., http://theworldavatar.com/ontology/health/nhs.owl,ID
+hasName,DataProperty,,,,String,,User facing name of asset., http://theworldavatar.com/ontology/health/nhs.owl,Name
+Site,Class,Asset,IS-A,,,,Generic site., http://theworldavatar.com/ontology/health/nhs.owl,NHS site
+hasLocation,ObjectProperty,,,,,,Point location., http://theworldavatar.com/ontology/health/nhs.owl,Location
+GP_Practice,Class,Site,IS-A,,,,GP Practice., http://theworldavatar.com/ontology/health/nhs.owl,GP practice
+hasCode,DataProperty,,,,String,,Has practice code., http://theworldavatar.com/ontology/health/nhs.owl,Practice code
+isPIMSManaged,DataProperty,,,,Boolean,,Is PIMS managed?, http://theworldavatar.com/ontology/health/nhs.owl,PIMS managed
+hasSubtype,DataProperty,,,,String,,Has subtype., http://theworldavatar.com/ontology/health/nhs.owl,Subtype
+hasStatus,DataProperty,,,,String,,Has status., http://theworldavatar.com/ontology/health/nhs.owl,Status
+hasPractitioner,ObjectProperty,fromPractice,INVERSE-OF,,Practitioner,,Practitioners., http://theworldavatar.com/ontology/health/nhs.owl,Practitioners
+Practitioner,Class,Asset,IS-A,,,,Practitioner., http://theworldavatar.com/ontology/health/nhs.owl,Practitioner
+hasParentCode,DataProperty,,,,String,,Parent code., http://theworldavatar.com/ontology/health/nhs.owl,Parent code
+fromPractice,ObjectProperty,hasPractitioner,INVERSE-OF,,GP_Practice,,Parent GP Practice., http://theworldavatar.com/ontology/health/nhs.owl,Parent GP pratice

@@ -2,9 +2,11 @@
 
 This `/library` directory houses the Typescript, CSS, and HTML files that make up the framework along with some configuration files for compilation. When creating visualisations, the pre-compiled, hosted version of this framework should be used; files from this directory should not be copied into/directly linked to visualisation implementations.
 
+<br/>
+
 ## Requirements
 
-To develop the DTVF the following sofware is required on the local machine:
+To develop the DTVF the following software is required on the local machine:
 
 * A working Docker installation.
 * An installation of a [Typescript](https://www.typescriptlang.org/) compiler.
@@ -13,6 +15,8 @@ To develop the DTVF the following sofware is required on the local machine:
   * A docker image containing a configured compiler has been provided (see below).
   * 
 In addition, developers should have a solid understanding of Docker, Typescript, and the mapping provider libraries (Mapbox & Cesium) before attempting to make any changes to the DTVF.
+
+<br/>
 
 ### Runtime Requirements
 
@@ -31,11 +35,15 @@ To function correctly, visualisations using this framework also needs to include
 * [Hummingbird Treeview](https://github.com/hummingbird-dev/hummingbird-treeview)
   * Builds collapsible tree controls
 
+<br/>
+
 ## Architecture
 
 The DTVF has been developed to use an architecture agnostic to any specific mapping provider wherever possible. To that end, a central `Manager` class is used as point of access, generic `DataGroup`, `DataSource`, and `DataLayer` classes define the data to be displayed by the visualisation, and a variety of UI handlers generate and control the custom visualisation controls.
 
 Where mapping provider specific behaviour is required, concrete instances of the `MapHandler` class are used to directly interface with the JavaScript libraries provided by those providers. At the time of writing, these are the `MapHandler_Mapbox` and `MapHandler_Cesium` classes.
+
+<br/>
 
 ## Process
 
@@ -52,6 +60,8 @@ When launched from a correctly integrated HTML file, the DTVF follows a set patt
 * New sources and layers are added to the map for display
 * Event handlers are registered to capture mouse movement/clicks
 
+<br/>
+
 ## Environment
 
 A number of configuration files are also present that allow the generation of a Docker container that can be used as a live development environment. The container houses [TypeScript](https://www.typescriptlang.org/) and [Grunt](https://gruntjs.com/) installations. These can be used for active development, compile-time checks/linting, or generation of deployable files.
@@ -65,6 +75,8 @@ To spin up the container and use it as a development environment via VSCode...
 - Once a new VSCode window appears (and the loading completes), you can now open a file/folder within the container and begin development.
 - The entire `library` directory has been set up to share between your local machine and the container. This means that any changes you make within the container, will persist to your local filesystem.
 
+<br/>
+
 ## Compilation
 
 To compile and combine the DTVF library into deployable files:
@@ -75,6 +87,8 @@ To compile and combine the DTVF library into deployable files:
     - In addition, a `help` directory is created housing the user-facing manual files. 
   - These can then be uploaded to a web server to make them publicly available.
     - To upload these to the KG website server, please contact the support team at CMCL.
+
+<br/>
 
 ## Deployment of Base Image
 
@@ -88,6 +102,8 @@ To build and deploy the base DTVF image, so that others can use it to create vis
   - This requires having set up a GitHub token and storing it using the `docker login` command. 
 
 Note that the DTVF base image is simply a pre-configured web server, with a convenient location for a volume. It does not contain the compiled versions of the DTVF (although these _can_ be added if desired).
+
+<br/>
 
 ## Support
 

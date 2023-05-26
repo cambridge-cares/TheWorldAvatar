@@ -1,0 +1,409 @@
+# Creating a Mapbox visualisation
+
+This document is a step-by-step tutorial for the entire process of gathering, hosting, and displaying data within a DTVF Mapbox visualisation. It is **highly** recommended that users new to the DTVF run through the entire tutorial before attempting to create their own visualisation.
+
+Any issues with the tutorial, questions, or suggestions, should be send via email to the CMCL team.
+
+<br/>
+
+## Identifying a data source
+
+The first step in creating any visualisation is to identify the data relevant to the use case. In this tutorial, we don't have a predetermined use case, so we're just going to go with the loosely defined goal of "plotting data related to the environment/climate change, infrastructure, or public health".
+
+The UK's National Health Service (NHS) offers a wide range of data on the latter that is free to use for commercial use.
+
+<br/>
+
+## Gathering data
+
+In this case, we'll be grabbing the following data sets from the [NHS Website Datasets](https://www.nhs.uk/about-us/nhs-website-datasets/) and [NHS Digital](https://digital.nhs.uk/services/organisation-data-service/export-data-files/csv-downloads) sites.
+
+* `NHS Website Datasets` -> `GP and GP practice related data` -> `GP Practices`
+* `NHS Digital` -> `GP and GP practice related data` -> `GP Practitioners`
+  
+Download these and save/extract them on your local machine. The `GP Practices` data set should include a headered CSV file, and the `GP Practitioners` ZIP of an unheadered CSV and a PDF.
+
+If this data is no longer available on the NHS websites, please contact CMCL for an archived version.
+
+<br/>
+
+## Processing the raw data
+
+Before we can use the data we've downloaded, we need to clean it up a little to ensure it is consistent, and supports the use of Ontop. Carry out these steps to get the data into a reasonable shape:
+
+**1. Change the delimiter:**<br/>
+* The `GP Practices` CSV uses the `¬` character as the delimiter, we'll need to change this to use a standard comma (`,`).
+* We'll also want to ensure that each token in the CSV is surrounded by double-quote characters (`"`).
+
+**2. Add headings to CSV file:**<br/>
+* The CSV from the NHS Digital website does not contain headers, so we'll also need to add those.
+* Note that you'll need to be careful that your CSV editing software doesn't remote the double-quotes (MS Excel is notorious for this).
+* For convenience's sake, the headings used when testing this tutorial were as follows:
+
+```json
+"OrganisationCode","Name","NationalGrouping","HighLevelHealthGeography","AddressOne","AddressTwo","AddressThree","AddressFour","AddressFive","Postcode","OpenDate","CloseDate","StatusCode","OrganisationSubTypeCode","ParentOrganisationCode","JoinParentDate","LeftParentDate","Telephone","","","","AmendedRecordIndicator","","CurrentCareOrganisation","","",""
+```
+
+**3. Fix funky characters:**<br/>
+These raw CSV files also contain some strange characters that aren't supported in UTF-8. You'll need to run the [provided bash script](./resources/nhs.sh) with the locations of the files as arguments to replace the strange characters with supported ones and encoded the files as UTF-8.
+
+    ./nhs.sh GPPractices.csv egpcur.csv
+
+<br/>
+
+## Writing a data mapping
+
+In theory, we _could_ now write an agent to read these CSVs, convert them into triples, then push them into a Knowledge Graph like [Blazegraph](https://blazegraph.com/).
+
+However, this is a significant amount of work for data that is static, and we have no current plans to add to. Instead, we can use a service called [Ontop](https://ontop-vkg.org/) along with a mapping file to create a Virtual Knowledge Graph. This will allow us to query the data in the CSVs directly with SPARQL as if it had been loaded into a Triplestore.
+
+In addition to skipping the development of an agent, this tutorial also skips the development of an Ontology. For our purposes here, developing one would be overkill; in the mapping file shown below, all references to ontologies or ontological concepts are synthetic and don't actually correspond to an on-file ontology. Information on how to create an ontology can be found elsewhere in TheWorldAvatar documentation.
+
+An example mapping file that covers all three CSVs used in tutorial, can be seen below and also found in the TWA repository [here](./resources/nhs.obda).
+
+```
+[PrefixDeclaration]
+nhs:        http://theworldavatar.com/ontology/health/nhs/
+geo:        http://www.opengis.net/ont/geosparql#
+
+[MappingDeclaration] @collection [[
+mappingId       nhs-gp-practice-site
+target          nhs:gp/{id} a nhs:Site ;
+                    nhs:hasId {id}^^xsd:string ;
+                    nhs:hasName {name}^^xsd:string ;
+                    nhs:hasLocation nhs:asset/{id}/location ;
+					nhs:isPIMSManaged {is_pims_managed}^^xsd:boolean ;
+                    nhs:hasType {type}^^xsd:string ;
+					nhs:hasSubtype {subtype}^^xsd:string ;
+					nhs:hasStatus {status}^^xsd:string .
+                nhs:asset/{id}/location a geo:Location ;
+                    geo:hasJSON {loc}^^xsd:string ;
+                    geo:hasWKT "<http://www.opengis.net/def/crs/EPSG/0/4326> {wkt}"^^geo:wktLiteral ;
+                    geo:hasEasting {loc_easting}^^xsd:string ;
+                    geo:hasNorthing {loc_northing}^^xsd:string ;
+                    geo:hasLat {loc_lat}^^xsd:string ;
+                    geo:hasLon {loc_lon}^^xsd:string .
+source          SELECT "OrganisationID" AS id , 
+                "OrganisationName" as name ,
+				"SubType" as subtype ,
+				"OrganisationStatus" as status ,
+				"IsPimsManaged" as is_pims_managed ,				
+                ST_AsGeoJSON(geom) as loc ,
+                ST_AsText(geom) as wkt ,
+                ST_X(ST_Transform(geom,27700)) as loc_easting ,
+                ST_Y(ST_Transform(geom,27700)) as loc_northing ,
+                "Longitude" as loc_lon ,
+                "Latitude" as loc_lat ,
+                'GPPractice' AS type 
+                FROM "nhs_gp_practices"
+
+mappingId       nhs-gp-practitoner
+target          nhs:practitoner/{id} a nhs:Person ;
+                    nhs:hasId {id}^^xsd:string ;
+                    nhs:hasName {name}^^xsd:string ;
+                    nhs:hasType {type}^^xsd:string ;
+					nhs:hasGrouping {grouping}^^xsd:string ;
+                    nhs:hasHighLevelHealthGeography {high_level_health_geography}^^xsd:string ;
+                    nhs:hasParent {parent_code}^^xsd:string .
+source          SELECT "OrganisationCode" AS id , 
+                "Name" as name ,
+				"NationalGrouping" as grouping ,
+				"HighLevelHealthGeography" as high_level_health_geography ,		
+                "ParentOrganisationCode" as parent_code ,		
+                'Practitioner' AS type 
+                FROM "nhs_gp_practitioners"                       
+]]
+```
+
+<br/>
+
+## Uploading the data
+
+To upload the data so that I can be accessed as a Virtual Knowledge Graph, and stored as geospatial data in PostGIS, we first need to write a configuration file for [The Stack Data Uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader). Information on how to write the file, where to place it, then upload the data can be see on the data uploader's page.
+
+An example configuration file that covers all three CSVs used in tutorial, can be found in the TWA repository [here](./resources/nhs.json).
+
+<br/>
+
+## Testing the upload
+
+Once the stack-data-uploader has run, without reporting any errors, we should check that the data has reached all the places we need it to.
+
+### Previewing in GeoServer
+
+Firstly, we can check that the geospatial data has reached GeoServer by accessing its web login (`[WHEREVER-YOUR-STACK-IS]/geoserver/web`). After logging in, you _should_ then be able to see the locations of GP Practices in England via the Layer Preview function.
+
+### Running a sample SPARQL query
+
+We can also check that the data has reached the Virtual Knowledge Graph created by Ontop. After accessing the Ontop web page (`[WHEREVER-YOUR-STACK-IS]/ontop/ui`), run the following queries to check that the data is all present.
+
+**Counting GP Practices:**
+```
+PREFIX nhs:	<http://theworldavatar.com/ontology/health/nhs/>
+SELECT (COUNT(?s) as ?practices) WHERE {
+  ?s nhs:hasType "GPPractice" .
+} 
+```
+This counts the number of sites with the type `GPPractice`; the returned number _should_ match the number of rows in the previously downloaded CSV (in testing, this was ~6800).
+
+**Counting GP Practitioners:**
+```
+PREFIX nhs:	<http://theworldavatar.com/ontology/health/nhs/>
+SELECT (COUNT(?s) as ?practitioners) WHERE {
+  ?s nhs:hasType "Practitioner" .
+} 
+```
+This counts the number of sites with the type `Practitioner`; the returned number _should_ match the number of rows in the previously downloaded CSV (in testing, this was ~110,000).
+
+</br>
+
+## Creating a visualisation
+
+At this point, all the data we require should be hosted online either in geospatial form (via GeoServer and PostGIS), or in triples (queryable via Ontop). We should now be able to create a simple visualisation.
+
+If you haven't already, it's worth reading through the [Overview](./overview.md) and [Working with Mapbox](./mapbox.md) sections of the DTVF documentation before continuing past this point.
+
+**1. Spinning up a blank visualisation:**<br/>
+The first step here is to spin up an empty visualisation. When creating a new visualisation, it is recommended that the committed example visualisation is used.
+
+To that end, copy the [example Mapbox visualisation](../example-mapbox-vis/) to a new directory on your local machine. Using the README file within, you should be able to then spin up a docker container hosting the visualisation.
+
+If you then access the visualisation (usually at `localhost`), you should see the example visualisation along with its sample data in Cambridge, India, and Singapore.
+
+**2. Updating the configuration file:**<br/>
+
+To show our new NHS data, we'll need to clear the visualisation's `data.json` file of its contents before we work on it.
+
+Within the `data.json` file, we'll add a single group named "NHS Sites" with no sources and no layers. Within this group, we'll then nest another group named "England" with a single source and a single layer.
+
+The source node will pull the locations of GP practices from Geoserver as vector data using the WMTS standard. The [Working with Mapbox](./mapbox.md) section contains details on how to build the correct URL to get this data.
+
+The layer we will give the user-facing name "GP Practices" and for the time being, will simply link to the source and draw a blue circle at each of the GP practice locations.
+
+At this point, your `data.json` should look something like the below.
+
+```json
+{
+    "name": "NHS Sites",
+    "groups": [
+        {
+            "name": "England",
+            "sources": [
+                {
+                    "id": "gp-source",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=twa:nhs_gp_practices&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "gp-layer",
+                    "name": "GP Practices", 
+                    "source": "gp-source",
+                    "source-layer": "nhs_gp_practices",
+                    "type": "circle",
+                    "paint": {
+                        "circle-radius": 5,
+                        "circle-color": "#005EB8",
+                        "circle-stroke-color": "#231f20",
+                        "circle-stroke-width": 1
+                    }
+                }
+            ]
+        }
+    ]
+}
+```
+
+**3. Updating the settings file:**<br/>
+
+At the point, you may also want to update the visualisation's `setting.json` file to start the visualisation in a better location and at an appropriate zoom level to see all of England. Copy and paste the below into the `settings.json` file before refreshing the visualisation.
+
+```json
+{
+    "start": {
+        "center": [-2, 53],
+        "zoom": 6,
+        "bearing": 0,
+        "pitch": 0
+    }
+}
+```
+
+**4. Checking the visualisation:**<br/>
+
+At this point, you should have a visualisation that looks like the below image. Note that even at this stage, you can hover over a location to show its name and click on it to view some of the static, in-built data from the PostGIS table.
+
+<br/>
+<p align="center">
+ <img src="./img/mapbox-tutorial-1.JPG" alt="First stage of a Mapbox visualisation." width="75%"/>
+</p>
+<p align="center">
+ <em>First stage of a Mapbox visualisation.</em><br/><br/><br/>
+</p>
+
+**5. Adding some icons:**<br/>
+
+To add a little pizzazz, let's update the visualisation to use some pre-created icons for the GP Practices rather than a boring circle.
+
+Before Mapbox can make use of icons, they need to be registered. With the DTVF, this is as easy as updating the `icons.json` file to add the name of the icon and its URL.
+
+Copy the sample [GP icon file](./img/gp-icon.png) into the visualisation's `data` directory, then empty the existing `icons.json` file and register it as a new image.
+
+```json
+{
+	"gp-icon": "data/gp-icon.png"
+}
+```
+
+We'll then need to update the `gp-layer` layer in our `data.json` file to change it from drawing circles to loading icons. An in-depth look at the styling format Mapbox uses can be seen in [their documentation](https://docs.mapbox.com/mapbox-gl-js/style-spec/layers/#symbol).
+
+```json
+{
+    "id": "gp-layer",
+    "name": "GP Practices", 
+    "source": "gp-source",
+    "source-layer": "nhs_gp_practices",
+    "type": "symbol",
+    "layout": {
+        "icon-size": 0.33,
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+        "icon-image": "gp-icon"
+    }
+}
+```
+
+**6. Data driven styling:**<br/>
+
+For the sake of demonstrating the feature, we can also update the layer to use some data-driven styling. Just to show off, we'll update the layer to use a slightly different icon (green rather than blue) for any GP Practice with the word "practice" (regardless of case) in its name.
+
+Copy the sample [GP Practice icon file](./img/gp-icon-practice.png) into the visualisation's `data` directory, then update the icon registry to register the icon under the name `gp-icon-practice`.
+
+```json
+  {
+    "id": "gp-layer",
+    "name": "GP Practices", 
+    "source": "gp-source",
+    "source-layer": "nhs_gp_practices",
+    "type": "symbol",
+    "layout": {
+        "icon-size": 0.33,
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+        "icon-image": [
+            "case",
+            ["in", "practice", ["downcase", ["get", "name"]]],
+            "gp-icon-practice",
+            "gp-icon"
+        ]
+    }
+}
+```
+
+**7. Updating the default content:**<br/>
+
+We can also update the default content in the side panel to better explain the purpose of our new visualisation. This can be done by updating the sections marked as `CUSTOMISABLE` in our visualisation's `index.html` file.
+
+Feel free to update the side panel content, saving the `index.html` file, then refreshing the visualisation to see the changes.
+
+**8. Reviewing the visualisation:**<br/>
+
+At the point, we've shown how to acquire, clean, map, upload, then visualise a new data set using The Stack and the DTVF. This constitutes the envisioned, basic use of the TWA tools to display data. By reading more of the available TWA documentation, users can learn how to add more data sets, produce more complex styling, and build more interactive visualisations.
+
+<br/>
+<p align="center">
+ <img src="./img/mapbox-tutorial-2.JPG" alt="Mapbox visualisation with data-driven styling." width="75%"/>
+</p>
+<p align="center">
+ <em>Mapbox visualisation with data-driven styling.</em><br/><br/><br/>
+</p>
+
+## Enabling some advanced features
+
+### Using the FeatureInfoAgent
+
+The optional [FeatureInfoAgent (FIA)](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent) acts as a single access point for the DTVF to query for both meta and time series data of an individual feature (i.e. a single geographical location) before displaying the response within the side panel of the visualisation.
+
+We'll now show how to use the FIA to allow the retrieval of additional metadata when selecting an individual GP Practice from our tutorial map. Before carrying out this stage, it is recommended to read the FIA documentation.
+
+**1. Configuring the FIA:**<br/>
+
+First we'll need to update the FIA's `fia-config.json` file to add a mapped query for the `	
+http://theworldavatar.com/ontology/health/nhs/Site` class (which is what we've listed GP Practices under). We'll only need an entry for the `metaFile` in this case, for now we can name the file `gp-practices.sparql`.
+
+Within this `gp-practices.sparql` file, we'll need to write a SPARQL query to get whatever metadata we want to display for the selected GP Practices. This could be anything we've uploaded to Ontop, from more data on the GP Practices, or a list of the practitioners working there. 
+
+Read the FIA documentation, along with the training material on writing SPARQL queries before constructing your query as FIA queries need to return their data in a set format. For brevity's sake, the query used when testing this tutorial is written below, but can also be downloaded as a [file here](./resources/gp-practices.sparql).
+
+```
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix nhs:  <http://theworldavatar.com/ontology/health/nhs/>
+
+SELECT ?Property (GROUP_CONCAT(?Value; separator=", ") AS ?Values) WHERE {
+    SERVICE [ONTOP] {
+        {
+            BIND("Name" AS ?Property )
+            [IRI] nhs:hasName ?Value .
+        } UNION {
+            BIND("ID" AS ?Property )
+            [IRI] nhs:hasId ?Value .
+        } UNION {
+            BIND("Type" AS ?Property )
+            [IRI] nhs:hasType ?Value .
+        } UNION {
+            BIND("Subtype" AS ?Property )
+            [IRI] nhs:hasSubtype ?Value .
+        } UNION {
+            BIND("Status" AS ?Property )
+            [IRI] nhs:hasStatus ?Value .
+        } UNION {
+            BIND("Is PIMS managed?" AS ?Property )
+            [IRI] nhs:isPIMSManaged ?Value .
+        } UNION {
+            BIND("Practitioners" AS ?Property )
+            [IRI] nhs:hasCode ?parent_code .
+            ?practitoner nhs:hasParentCode ?parent_code .
+            ?practitoner nhs:hasName ?Value .
+        }
+    }
+} GROUP BY ?Property
+```
+
+**2. Running the FIA:**<br/>
+
+Now that we've configured the FIA to register a metadata query for IRIs with the `http://theworldavatar.com/ontology/health/nhs/Site` class, we can spin the agent up within our stack.
+
+For information on how to restart the stack with the FIA agent, please see the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) documentation.
+
+
+**3. Configuring the visualisation:**<br/>
+
+We should now have the FIA configured and running within our stack, ready to serve metadata. First however, we need to make a small change to our visualisation's `data.json` file to point it towards our FIA instance.
+
+Within the "NHS Sites" group, we can add a `stack` parameter with the base URL of our stack (this is usually `http://localhost:3838` if running locally). The DTVF will then append the information required by the FIA when the user selects a location anywhere within that group's data (or within the data of its sub-groups).
+
+```json
+{
+    "name": "NHS Sites",
+    "stack": "http://localhost:3838",
+    "groups": [
+        ...
+    ]
+}
+```
+
+**4. Viewing the metadata:**<br/>
+
+
+
+	
+
+
+### Clustering locations
+
+### Searching for locations

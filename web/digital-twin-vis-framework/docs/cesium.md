@@ -1,4 +1,4 @@
-# Working with Cesium
+# Working with CesiumJS
 
 The DTVF supports a number of different data formats and representations; in the case of 3D data, a range of features offered by [CesiumJS](https://cesium.com/platform/cesiumjs/) are supported through the DTVF. 
 
@@ -6,18 +6,20 @@ Unlike the Mapbox library, the CesiumJS library does not support specification o
 
 CesiumJS is the primary visualisation provider for 3D building data within The World Avatar. It has a number of useful features, but can be difficult to get to groups with. If possible, it's recommended that users create DTVF visualisations using Mapbox, rather than CesiumJS, unless display of 3D building data is required.
 
+<br/>
+
 ## Cesium offerings
 
 It's worth noting that the Cesium company provide a number of different product offerings. To avoid a common misunderstanding, the difference between "CesiumJS" and "Cesium ion" is detailed below.
 
-CesiumJS:
+**CesiumJS:**
 * Used by the DTVF.
 * Free, client-side, JavaScript library.
 * Does not require any API key or authentication.
 * Provides basic functionality to display and style 3D data.
 * Provides no map imagery or terrain elevation data.
 
-Cesium ion:
+**Cesium ion:**
 * Not used by the DTVF or the wider TWA.
 * Extension to the CesiumJS library.
 * Premium offering, requires payment for commercial or funded-education use.
@@ -29,6 +31,8 @@ Cesium ion:
 At the time of writing, anything that requires the use of a Cesium ion API key should be avoided (this has been confirmed by Cesium's support team). To be fully sure no premium features are being used, it is suggested that no API key is even used within the code.
 
 Alternatives to these paid-for features (such as how to get map imagery and terrain elevations) are detailed below or in the [Advanced features](./advanced.md) section.
+
+<br/>
 
 ## Features and restrictions
 
@@ -44,6 +48,8 @@ CesiumJS makes a wide range of features available through the DTVF, the native v
 * Very GPU intensive.
 * Cannot plot 2D vector data.
 * Elevation & map imagery locked behind pay-wall.
+
+<br/>
 
 ## Cesium sources
 
@@ -77,6 +83,8 @@ Note for the optional `position` and `rotation` parameters: All heights in Cesiu
 
 Additional parameters can be added to sources to enable some advanced features, these will be detailed in the [Advanced Features](./advanced.md) section of the documentation.
 
+<br/>
+
 ## Cesium layers
 
 A layer provides the specifications on how to display a data source on a map. Each layer can only draw data from a single source, but a multiple layers can connect to the same source.
@@ -95,6 +103,8 @@ CesiumJS has no concept of the separation between sources and layers, but this d
 
 Advanced features can be enabled through the use of layer styling. These will be detailed in the [Advanced Features](./advanced.md) section of the documentation.
 
+<br/>
+
 ## Settings
 
 The `settings.json` configuration file defines global settings. These are often linked to the behaviour of the visualisation itself rather than the data present within it.
@@ -109,6 +119,8 @@ The default location of the Cesium map can be set using the below format in the 
     "roll": 0.0
 }
 ```
+
+<br/>
 
 ## Example visualisation
 

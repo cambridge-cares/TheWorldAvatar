@@ -194,7 +194,15 @@ class MapboxUtils {
         if(url == null) return;
         
         if(url.endsWith("_token=")) url += MapHandler.MAP_API;
+
+        console.log("USING URL...")
+        console.log(url);
+
         MapHandler.MAP.setStyle(url);
+
+        MapHandler.MAP.setProjection({
+            name: 'mercator'
+        });
 
         // Store the current terrain as a global variable
         window.terrain = mode;
@@ -203,7 +211,7 @@ class MapboxUtils {
         MapboxUtils.hideBuildings();
     }
 
-     /**
+    /**
      * Generates a JSON object defining the default imagery options if none is provided
      * by the developer in the settings.json file.
      */
@@ -211,8 +219,8 @@ class MapboxUtils {
         let imagerySettings = {};
 
         // Add possible imagery options
-        imagerySettings["Light"] = "mapbox://styles/mapbox/light-v10?optimize=true";
-        imagerySettings["Dark"] = "mapbox://styles/mapbox/dark-v10?optimize=true";
+        imagerySettings["Light"] = "mapbox://styles/mapbox/light-v11?optimize=true";
+        imagerySettings["Dark"] = "mapbox://styles/mapbox/dark-v11?optimize=true";
         imagerySettings["Outdoors"] = "mapbox://styles/mapbox/outdoors-v11?optimize=true";
         imagerySettings["Satellite"] = "mapbox://styles/mapbox/satellite-streets-v11?optimize=true";
 

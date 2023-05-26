@@ -6,6 +6,8 @@ As the Mapbox API is primarily configured via JSON objects, the DTVF supports pa
 
 Mapbox is the primary visualisation provider for 2D geographic data within The World Avatar. It has a number of useful features, and is very easy to customise. As such, it's recommended that users create DTVF visualisations using Mapbox, rather than CesiumJS, unless display of 3D data is required.
 
+<br/>
+
 ## Features and restrictions
 
 Mapbox makes a wide range of features available through the DTVF, the native version of many of these can be see through their extensive [Examples](https://docs.mapbox.com/mapbox-gl-js/example/) page. However, as with any tool, a number of restrictions can also be found.
@@ -22,6 +24,8 @@ Mapbox makes a wide range of features available through the DTVF, the native ver
 * Cannot plot true 3D data.
 * Learning curve on customisation.
 * Not necessarily free.
+
+<br/>
 
 ## Mapbox sources
 
@@ -43,6 +47,27 @@ Specifying a Mapbox source in the `data.json` file is relatively easy, simply ad
 The `id` parameter is used as an internal ID for the source. Note that it should be unique within the source's group, but does not need to be unique across all groups.
 
 Additional parameters can be added to sources to enable some advanced features, these will be detailed in the [Advanced Features](./advanced.md) section of the documentation.
+
+### Building the WMS URL
+
+To pull data directly from [GeoServer](https://geoserver.org/), users will need to able to set the source's target as the URL of a WMS endpoint provided by Geoserver.
+
+These URLs take the following form:
+
+```
+https://[GEOSERVER]/[WORKSPACE]/wms?service=WMS&request=GetMap&layers=[LAYER]&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=[FORMAT]
+```
+
+Parameters are detailed in the following table, elements in braces are automatically populated by Mapbox at runtime. Note that the projection here is the projection for display, rather than the original data (in this case it's Web Mercator).
+
+| Parameter | Description | Example |
+| --------- | ----------- | ------- |  
+| [GEOSERVER] | Location of GeoServer instance. | `my-website.com/geoserver` |
+| [WORKSPACE] | Name of the GeoServer workspace containing the target data. | `my-workspace` |
+| [LAYER] | Full name of the GeoServer layer. | `my-workspace:my-layer` |
+| [FORMAT] | Display format for the data. | `image/png` |
+
+<br/>
 
 ## Mapbox layers
 
@@ -76,6 +101,8 @@ Specifying a layer within the `data.json` file closely follows the [Mapbox layer
 
 Advanced features can be enabled through the use of layer styling, multiple layers, or layer filters. These will be detailed in the [Advanced Features](./advanced.md) section of the documentation.
 
+<br/>
+
 ## Settings
 
 The `settings.json` configuration file defines global settings. These are often linked to the behaviour of the visualisation itself rather than the data present within it.
@@ -90,6 +117,8 @@ The default location of the Mapbox map can be set using the below format in the 
     "pitch": 45
 }
 ```
+
+<br/>
 
 ## Example visualisation
 

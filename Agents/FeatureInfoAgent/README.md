@@ -60,7 +60,7 @@ Follow the below configuration steps within the local `queries` directory.
       - `class`: Full IRI of the class.
       - `metaFile`: Name of the file (inc. extension) that contains the query to run when gathering metadata.
       - `timeFile`: Optional, name of the file (inc. extension) that contains the query to run when gathering timeseries measurement details.
-      - `timeLimit`: Optonal, this is an integer parameter that defaults to 24. When set, timeseries data from the last N hours will be pulled (or all data if the value is set to below 0).
+      - `timeLimit`: Optional, this is an integer parameter that defaults to 24. When set, timeseries data from the last N hours will be pulled (or all data if the value is set to below 0).
       - `databaseName`: Optional, but **required** if setting a timeFile. It should match the PostGreSQL database name that contains your timeseries data.
   - Add the aforementioned metadata and timeseries query files.
 

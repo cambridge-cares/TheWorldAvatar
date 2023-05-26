@@ -1,0 +1,32 @@
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix nhs:  <http://theworldavatar.com/ontology/health/nhs/>
+
+SELECT ?Property (GROUP_CONCAT(?Value; separator=", ") AS ?Values) WHERE {
+    SERVICE [ONTOP] {
+        {
+            BIND("Name" AS ?Property )
+            [IRI] nhs:hasName ?Value .
+        } UNION {
+            BIND("ID" AS ?Property )
+            [IRI] nhs:hasId ?Value .
+        } UNION {
+            BIND("Type" AS ?Property )
+            [IRI] nhs:hasType ?Value .
+        } UNION {
+            BIND("Subtype" AS ?Property )
+            [IRI] nhs:hasSubtype ?Value .
+        } UNION {
+            BIND("Status" AS ?Property )
+            [IRI] nhs:hasStatus ?Value .
+        } UNION {
+            BIND("Is PIMS managed?" AS ?Property )
+            [IRI] nhs:isPIMSManaged ?Value .
+        } UNION {
+            BIND("Practitioners" AS ?Property )
+            [IRI] nhs:hasCode ?parent_code .
+            ?practitoner nhs:hasParentCode ?parent_code .
+            ?practitoner nhs:hasName ?Value .
+        }
+    }
+} GROUP BY ?Property

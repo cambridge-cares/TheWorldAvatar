@@ -13,11 +13,10 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" ></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
-        <script src="https://kg.cmclinnovations.com/cdn/dtvf/3.3.4/dtvf.min.js" charset="UTF-8"></script>
+        <script src="https://kg.cmclinnovations.com/cdn/dtvf/test/dtvf.min.js" charset="UTF-8"></script>
 
         <!-- ===== CUSTOMISABLE ===== -->
         <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
-        <script src="./local.js"></script>
         <!-- ===== CUSTOMISABLE ===== -->
 
         <!-- CSS -->
@@ -146,8 +145,8 @@
 
             // ===== CUSTOMISABLE =====
             // Enter Mapbox account name and API key here!
-			MapHandler.MAP_USER = "";
-            MapHandler.MAP_API = "";
+			MapHandler.MAP_USER = "cmclinnovations";
+            MapHandler.MAP_API = "pk.eyJ1IjoiY21jbGlubm92YXRpb25zIiwiYSI6ImNrbGdqa3RoNDFnanIyem1nZXR3YzVhcmwifQ.hVk983r6YYlmFE8kSMbzhA";
             // ===== CUSTOMISABLE =====
 
             // Create a new manager instance
@@ -167,19 +166,14 @@
                
                 // ===== CUSTOMISABLE =====
                 // Set the default content in the "General" tab of the side panel
-                manager.getPanelHandler().setTitle("<h1>Example Visualisation</h1>");
+                manager.getPanelHandler().setTitle("<h1>NHS GP Practices</h1>");
                 manager.getPanelHandler().setContent(`
-                    <p>This example visualisation has been put together to demonstrate the intended use of the centralised Digital Twin Visualisation Framework (DTVF).
-                    This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put 
-                    together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF 
-                    before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.</p>
-                    <p>Note that this example has no version number as it is not intended for release; instead it should be updated to reflect version 3.3.4 of
-                    the framework itself hosted on a remote CMCL server not the files within the repository.</p>
-                    <p>For more information, please see the associated README file within the TWA repository or contact the CMCL technical team.</p>
+                    <p>This sample visualisation has been produced as part of a tutorial on creating Mapbox visualisations with the Digital Twin Visualisation Framework (DTVF).</p>
+                    <p>It utilises publically accessible data from NHS England and shows the locations of all active GP Practices within the country.</p>
+                    <p>For more details on this data set, please see the NHS England website.</p>
                 `);
                 
                 // Use the local.js file to build the legend
-                buildLegend();
 
                 manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
                 // ===== CUSTOMISABLE =====

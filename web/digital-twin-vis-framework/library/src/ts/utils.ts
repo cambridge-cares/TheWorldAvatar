@@ -57,7 +57,11 @@ async function loadHTML(htmlFile: string) {
 function getDefaultImagery() {
     let imagerySettings = Manager.SETTINGS.getSetting("imagery");
     let defaultSetting = imagerySettings["default"];
-    return imagerySettings[defaultSetting];
+
+    let url = imagerySettings[defaultSetting];
+    if(url.endsWith("_token=")) url += MapHandler.MAP_API;
+
+    return url;
 }
 
 /**

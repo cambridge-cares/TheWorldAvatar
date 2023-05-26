@@ -1,0 +1,55 @@
+{
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "nhs",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "tboxcsv",
+            "name": "nhs_tbox",
+            "skip": false,
+            "subdirectory": "tboxes"
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "nhs_gp_practices",
+            "subdirectory": "vector",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "geom",
+                    "SEPARATOR": "TAB"
+                },
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326",
+                "inputDatasetOpenOptions": {
+                    "X_POSSIBLE_NAMES": "Longitude",
+                    "Y_POSSIBLE_NAMES": "Latitude"
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "nhs_gp_practices_extended",
+                    "sql": "SELECT geom, 'gp' AS type, \"OrganisationName\" as name, CONCAT('http://theworldavatar.com/ontology/health/nhs/gp/', \"OrganisationID\") as iri FROM nhs_gp_practices",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "Point",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "type": "tabular",
+            "skip": false,
+            "schema": "public",
+            "table": "nhs_gp_practitioners",
+            "subdirectory": "tabular/practitioners"
+        }
+    ],
+    "mappings": [
+        "nhs.obda"
+    ]
+}

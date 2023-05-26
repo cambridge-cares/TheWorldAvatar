@@ -1,0 +1,50 @@
+[PrefixDeclaration]
+nhs:        http://theworldavatar.com/ontology/health/nhs/
+geo:        http://www.opengis.net/ont/geosparql#
+rdf:        http://www.w3.org/1999/02/22-rdf-syntax-ns#
+rdfs:       http://www.w3.org/2000/01/rdf-schema#
+owl:        http://www.w3.org/2002/07/owl#
+
+[MappingDeclaration] @collection [[
+mappingId       nhs-gp-practice
+target          nhs:gp/{id} a nhs:GP_Practice ;
+                    nhs:hasId {id}^^xsd:string ;
+                    nhs:hasName {name}^^xsd:string ;
+                    nhs:hasLocation nhs:asset/{id}/location ;
+                    nhs:hasCode {code}^^xsd:string ;
+					nhs:isPIMSManaged {is_pims_managed}^^xsd:boolean ;
+					nhs:hasSubtype {subtype}^^xsd:string ;
+					nhs:hasStatus {status}^^xsd:string ;
+                    nhs:hasPractitioner ??? .
+                nhs:asset/{id}/location a geo:Location ;
+                    geo:hasJSON {loc}^^xsd:string ;
+                    geo:hasWKT "<http://www.opengis.net/def/crs/EPSG/0/4326> {wkt}"^^geo:wktLiteral ;
+                    geo:hasEasting {loc_easting}^^xsd:string ;
+                    geo:hasNorthing {loc_northing}^^xsd:string ;
+                    geo:hasLat {loc_lat}^^xsd:string ;
+                    geo:hasLon {loc_lon}^^xsd:string .
+source          SELECT "OrganisationID" AS id , 
+                    "OrganisationName" as name ,
+                    ST_AsGeoJSON(geom) as loc ,
+                    ST_AsText(geom) as wkt ,
+                    ST_X(ST_Transform(geom,27700)) as loc_easting ,
+                    ST_Y(ST_Transform(geom,27700)) as loc_northing ,
+                    "Longitude" as loc_lon ,
+                    "Latitude" as loc_lat ,
+                    "OrganisationCode" as code ,
+                    "IsPimsManaged" as is_pims_managed ,		
+                    "SubType" as subtype ,
+                    "OrganisationStatus" as status 
+                FROM "nhs_gp_practices"
+
+mappingId       nhs-gp-practitoner
+target          nhs:practitoner/{id} a nhs:Practitioner ;
+                    nhs:hasId {id}^^xsd:string ;
+                    nhs:hasName {name}^^xsd:string ;
+                    nhs:hasParentCode {parent_code}^^xsd:string ;
+                    nhs:fromPractice ??? .
+source          SELECT "OrganisationCode" AS id , 
+                    "Name" as name ,
+                    "ParentOrganisationCode" as parent_code 	
+                FROM "nhs_gp_practitioners"                       
+]]
