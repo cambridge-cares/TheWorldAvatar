@@ -272,8 +272,8 @@ class KGClient(PySparqlClient):
     def instantiate_COP(self, g, cop_iri, region, start, end, cop_max, cop_mean, cop_min):
         g.add((URIRef(region),URIRef(REGION_HASCOP),URIRef(cop_iri)))
         g.add((URIRef(cop_iri),URIRef(RDF_TYPE),URIRef(REGION_COP)))
-        g.add((URIRef(cop_iri),URIRef(OFP_VALIDFROM),Literal(start, datatype=XSD_DATETIME)))
-        g.add((URIRef(cop_iri),URIRef(OFP_VALIDTO),Literal(end, datatype=XSD_DATETIME)))
+        g.add((URIRef(cop_iri),URIRef(OFP_VALIDFROM),Literal(start, datatype=XSD_STRING)))
+        g.add((URIRef(cop_iri),URIRef(OFP_VALIDTO),Literal(end, datatype=XSD_STRING)))
         g.add((URIRef(cop_iri),URIRef(REGION_MAX_VAL),Literal(cop_max, datatype=XSD_FLOAT)))
         g.add((URIRef(cop_iri),URIRef(REGION_MEAN_VAL),Literal(cop_mean, datatype=XSD_FLOAT)))
         g.add((URIRef(cop_iri),URIRef(REGION_MIN_VAL),Literal(cop_min, datatype=XSD_FLOAT)))
@@ -285,11 +285,11 @@ class KGClient(PySparqlClient):
 
         return query
 
-    def retrieve_temperature_iri(self):
+    def retrieve_temperature_iri(self, region_iri):
             
             query_string = f"""
             SELECT DISTINCT ?temperature_iri ?start
-            WHERE {{?region <{CLIMB_HASMEASURE}>  ?temperature_iri.
+            WHERE {{<{region_iri}> <{CLIMB_HASMEASURE}>  ?temperature_iri.
                     ?temperature_iri <{COMP_HAS_STARTUTC}> ?start;
                         <{COMP_HAS_ENDUTC}> ?end ;
                         <{CLIMB_HASVAR}> "{CLIMA_TAS}"^^<{XSD_STRING}> ;
@@ -308,5 +308,7 @@ class KGClient(PySparqlClient):
 # a = KGClient(QUERY_ENDPOINT, QUERY_ENDPOINT)
 # # inputs = {'http://www.ontology-of-units-of-measure.org/resource/om-2/Measure': ['http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/Value_a968837a-7624-4c43-978d-9a9348ef1f40'], 'http://www.theworldavatar.com/ontology/ontoregionalanalysis/HeatPumpEfficiency': ['http://www.theworldavatar.com/ontology/ontoregionalanalysis/HeatPumpEfficiency_fba248c2-050f-4323-bc55-f8fb2ba01566'], 'http://www.theworldavatar.com/ontology/ontoregionalanalysis/HotSideTemperature': ['http://www.theworldavatar.com/ontology/ontoregionalanalysis/HotSideTemperature_e69b38bf-7894-43e8-a318-41e378faed8d']}
 
-# res = a.get_temperature('http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/Value_a968837a-7624-4c43-978d-9a9348ef1f40')
-# print(res)
+# temperature_iri_list = a.retrieve_temperature_iri()
+# for i in range(len(temperature_iri_list)):
+#     res = a.get_temperature(temperature_iri_list[i])
+#     print(res["end"])
