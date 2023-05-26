@@ -3,8 +3,8 @@
 	"seed": 1
 },
 "dataset":{
-	"src": "./data/power_plant_DEU/kwl.pkl",
-	"tgt": "./data/power_plant_DEU/gppd_DEU.pkl"
+	"src": "./tests/data/KWL-GPPDdeu/tableA.csv",
+	"tgt": "./tests/data/KWL-GPPDdeu/tableB.csv"
 },
 "pre_processing":{
 	"add_knowledge": null
@@ -15,7 +15,7 @@
 		"min_token_length": 3,
 		"max_token_occurrences_src": 20,
 		"max_token_occurrences_tgt": 20,
-		"blocking_properties": ["name", "isOwnedBy/hasName", "address/addressLocality"],
+		"blocking_properties": ["name", "owner"],
 		"reset_index": false
 	}
 },
@@ -31,10 +31,10 @@
 	],
 	"triples": [
 		{"prop1": "name", "prop2": "name", "sim": 4},
-		{"prop1": "isOwnedBy/hasName", "prop2": "isOwnedBy/hasName", "sim": 4},
-		{"prop1": "hasYearOfBuilt/hasValue/numericalValue", "prop2": "hasYearOfBuilt/hasValue/numericalValue", "sim": 1},
-		{"prop1": "designCapacity/hasValue/numericalValue", "prop2": "designCapacity/hasValue/numericalValue", "sim": 2},
-		{"prop1": "realizes/consumesPrimaryFuel", "prop2": "realizes/consumesPrimaryFuel", "sim": 3}
+		{"prop1": "owner", "prop2": "owner", "sim": 4},
+		{"prop1": "year", "prop2": "year", "sim": 1},
+		{"prop1": "capacity", "prop2": "capacity", "sim": 2},
+		{"prop1": "fuel", "prop2": "fuel", "sim": 3}
 	]
 },
 "matching":{
@@ -45,6 +45,6 @@
 },
 "post_processing":{
 	"dump": null,
-	"evaluation_file": "./tests/data/matches_power_plant_DEU.csv"
+	"evaluation_file": "./tests/data/KWL-GPPDdeu/test.csv"
 }
 }
