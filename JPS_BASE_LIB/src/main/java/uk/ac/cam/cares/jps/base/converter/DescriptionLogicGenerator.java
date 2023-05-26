@@ -145,6 +145,11 @@ public class DescriptionLogicGenerator {
         String latexFormat = "% add \\usepackage{seqsplit} to your preamble \n\\seqsplit{" + dlSyntax
         .replace("⊓", "$\\sqcap$")
         .replace("⊔", "$\\sqcup$")
+        .replace("¬", "$\\neg$")
+        .replace("≡", "$\\equiv$")
+        .replace(">", "$>$")
+        .replace("<", "$<$")
+        .replace("=", "$=$")
         .replace("⊑", "$\\sqsubseteq$")
         .replace("⊒", "$\\sqsupseteq$")
         .replace("⊤", "$\\top$")
