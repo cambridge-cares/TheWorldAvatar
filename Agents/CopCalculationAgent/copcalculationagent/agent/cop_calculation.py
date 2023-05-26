@@ -1,6 +1,7 @@
 from rdflib import Graph
 import numpy as np
 from tqdm import tqdm
+import uuid
 
 from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
@@ -22,7 +23,7 @@ class COPCalculationAgent(DerivationAgent):
     def agent_input_concepts(self) -> list:
         # Validate completeness of received HTTP request (i.e. non-empty HTTP request, 
         # contains derivationIRI, etc.) -> only relevant for synchronous derivation
-        return [ONS_ID, REGION_HEATPUMP_EFFICIENCY, REGION_HOTSIDE_TEMPERATURE]
+        return [ONS_DEF_STAT, REGION_HEATPUMP_EFFICIENCY, REGION_HOTSIDE_TEMPERATURE]
     
     def agent_output_concepts(self) -> list:
         return [REGION_COP]
@@ -59,21 +60,28 @@ class COPCalculationAgent(DerivationAgent):
     def process_request_parameters(self, derivation_inputs: DerivationInputs, 
                                    derivation_outputs: DerivationOutputs):
         # Update assumptions provided
-        heatpumpefficiency_iri, hotsidetemperature_iri = self.sparql_client.update_assumptions()
+        #heatpumpefficiency_iri, hotsidetemperature_iri = self.sparql_client.update_assumptions()
         
         inputs = derivation_inputs.getInputs()
         derivIRI = derivation_inputs.getDerivationIRI()
 
-        region = inputs[ONS_ID]
-        temperature_iri_list = self.sparql_client.retrieve_temperature_iri(region)
-        # temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri = self.validate_input_values(inputs=inputs,
-        #                                              derivationIRI=derivIRI)
-        for i in tqdm(range(len(temperature_iri_list))):
-            temperature_iri = temperature_iri_list[i]
-            g = self.getCOPGraph(temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri)
+        region = inputs[ONS_DEF_STAT][0]
+        res = self.sparql_client.verify_cop_iri(region)
+        if res:
+            return
+        else:
+            heatpumpefficiency_iri = inputs[REGION_HEATPUMP_EFFICIENCY][0]
+            hotsidetemperature_iri = inputs[REGION_HOTSIDE_TEMPERATURE][0]
 
-            # Collect the generated triples derivation_outputs
-            derivation_outputs.addGraph(g)
+            temperature_iri_list = self.sparql_client.retrieve_temperature_iri(region)
+            # temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri = self.validate_input_values(inputs=inputs,
+            #                                              derivationIRI=derivIRI)
+            for i in tqdm(range(len(temperature_iri_list))):
+                temperature_iri = temperature_iri_list[i]
+                g = self.getCOPGraph(temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri)
+
+                # Collect the generated triples derivation_outputs
+                derivation_outputs.addGraph(g)
 
         print('COP has been updated!')
 
@@ -91,7 +99,7 @@ class COPCalculationAgent(DerivationAgent):
         cop_min = self.calculateCOP(res['mintemperature'], heatpumpefficiency, hotsidetemperature)
         
         if cop_mean:
-            cop_iri = self.sparql_client.generate_cop_iri(res['region'], res['start'], res['end'], cop_max, cop_mean, cop_min)
+            cop_iri = REGION + "COP_" + str(uuid.uuid4())
 
         g = self.sparql_client.instantiate_COP(g, cop_iri, res['region'], res['start'], res['end'], cop_max, cop_mean, cop_min)
         
