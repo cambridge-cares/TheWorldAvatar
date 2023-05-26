@@ -159,6 +159,7 @@ public class DescriptionLogicGenerator {
         .replace("→", "$\\rightarrow$")
         .replace("⇒", "$\\Rightarrow$")
         .replace("⇔", "$\\Leftrightarrow$")
+        .replace("⁻", "{$^\\text{--}$}")
         .replace(" ", "~")
         .replace("\n", "} \\\\\n\\seqsplit{")
         .replace("≤", "$\\leq$")
