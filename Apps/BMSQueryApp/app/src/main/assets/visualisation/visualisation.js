@@ -43,6 +43,7 @@ function visualiseTimeSeriesData(rawJSON) {
         });
 
     } else {
+        $("#notAvailaleP").show();
         console.warn("No 'time' node found, skipping timeseries visualisation.");
     }
 }
