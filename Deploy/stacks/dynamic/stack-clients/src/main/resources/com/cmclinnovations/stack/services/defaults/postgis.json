@@ -7,7 +7,8 @@
                 "Image": "3dcitydb/3dcitydb-pg:15-3.3-4.4.0",
                 "Env": [
                     "POSTGRES_HOST_AUTH_METHOD=scram-sha-256",
-                    "POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256"
+                    "POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256",
+                    "POSTGIS_SFCGAL=true"
                 ],
                 "Command": [
                     "sh",
