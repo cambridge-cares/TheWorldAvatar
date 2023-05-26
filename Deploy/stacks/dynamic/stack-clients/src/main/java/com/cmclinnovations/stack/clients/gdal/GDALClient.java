@@ -228,7 +228,7 @@ public class GDALClient extends ContainerClient {
                 "(which raster2pgsql || (apt update && apt install -y postgis && rm -rf /var/lib/apt/lists/*)) && " +
                 // https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader
                 "raster2pgsql " + mode + " -C -t auto -R -F -I -M -Y"
-                        + geotiffFiles.stream().collect(Collectors.joining(" ", " ", " "))
+                        + geotiffFiles.stream().collect(Collectors.joining("' '", " '", "' "))
                         + layerName
                         + " | psql -U " + postgreSQLEndpoint.getUsername() + " -d " + database + " -w")
                 .withOutputStream(outputStream)
