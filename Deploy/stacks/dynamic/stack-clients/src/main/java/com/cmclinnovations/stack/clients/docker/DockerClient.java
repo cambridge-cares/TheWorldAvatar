@@ -142,6 +142,8 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
         private long initialisationTimeout = 10;
         private long evaluationTimeout = 60;
 
+        private String user;
+
         public ComplexCommand(String containerId, String... cmd) {
             execCreateCmd = internalClient.execCreateCmd(containerId);
             this.cmd = cmd;
@@ -192,6 +194,11 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
             return this;
         }
 
+        public ComplexCommand withUser(String user) {
+            this.user = user;
+            return this;
+        }
+
         public String exec() {
             boolean attachStdin = null != inputStream;
             boolean attachStdout = null != outputStream;
@@ -215,6 +222,7 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
                     .withAttachStdin(attachStdin)
                     .withAttachStdout(attachStdout)
                     .withAttachStderr(attachStderr)
+                    .withUser(user)
                     .exec().getId();
 
             try (ExecStartCmd execStartCmd = internalClient.execStartCmd(execId)) {
@@ -291,7 +299,7 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
     }
 
     public void makeDir(String containerId, String directoryPath) {
-        executeSimpleCommand(containerId, "mkdir", "-p", directoryPath);
+        createComplexCommand(containerId, "mkdir", "-p", directoryPath).withUser("root").exec();
     }
 
     private final class RemoteTempDir extends TempDir {
