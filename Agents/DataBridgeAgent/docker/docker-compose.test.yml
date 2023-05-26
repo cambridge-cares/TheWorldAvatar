@@ -11,16 +11,25 @@ services:
       - "3055:8080"
     depends_on:
       - blazegraph_test
+      - blazegraph_sec_test
     networks:
         - my-network
       # Blazegraph
   blazegraph_test:
-    image: nawer/blazegraph:2.1.5
+    image: docker.cmclinnovations.com/blazegraph:1.1.0
     container_name: blazegraph_test
     restart: unless-stopped
     ports:
-      - "9999:9999"
+      - "9998:8080"
     networks:
       - my-network
+  blazegraph_sec_test:
+      image: docker.cmclinnovations.com/blazegraph:1.1.0
+      container_name: blazegraph_sec_test
+      restart: unless-stopped
+      ports:
+        - "9997:8080"
+      networks:
+        - my-network
 networks:
   my-network:
