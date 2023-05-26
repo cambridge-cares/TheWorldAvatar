@@ -143,7 +143,7 @@ public class DescriptionLogicGenerator {
     public static String convertToLatex(String dlSyntax) {
         initNamespaces();
         String latexFormat = "% add \\usepackage{seqsplit} to your preamble \n\\seqsplit{" + dlSyntax
-        .replace("⊓", "{$\\sqcap$")
+        .replace("⊓", "{$\\sqcap$}")
         .replace("⊔", "{$\\sqcup$}")
         .replace("¬", "{$\\neg$}")
         .replace("≡", "{$\\equiv$}")
