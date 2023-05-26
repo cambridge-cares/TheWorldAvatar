@@ -22,7 +22,7 @@ class COPCalculationAgent(DerivationAgent):
     def agent_input_concepts(self) -> list:
         # Validate completeness of received HTTP request (i.e. non-empty HTTP request, 
         # contains derivationIRI, etc.) -> only relevant for synchronous derivation
-        return [CLIMB_CLIMATEMEASUREMENT, REGION_HEATPUMP_EFFICIENCY, REGION_HOTSIDE_TEMPERATURE]
+        return [ONS_ID, REGION_HEATPUMP_EFFICIENCY, REGION_HOTSIDE_TEMPERATURE]
     
     def agent_output_concepts(self) -> list:
         return [REGION_COP]
@@ -63,8 +63,9 @@ class COPCalculationAgent(DerivationAgent):
         
         inputs = derivation_inputs.getInputs()
         derivIRI = derivation_inputs.getDerivationIRI()
-        temperature_iri_list = self.sparql_client.retrieve_temperature_iri()
-        print(f"A total number of {len(temperature_iri_list)} will be marked, meaning there is {len(temperature_iri_list)/12} regions will be marked")
+
+        region = inputs[ONS_ID]
+        temperature_iri_list = self.sparql_client.retrieve_temperature_iri(region)
         # temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri = self.validate_input_values(inputs=inputs,
         #                                              derivationIRI=derivIRI)
         for i in tqdm(range(len(temperature_iri_list))):
@@ -73,6 +74,8 @@ class COPCalculationAgent(DerivationAgent):
 
             # Collect the generated triples derivation_outputs
             derivation_outputs.addGraph(g)
+
+        print('COP has been updated!')
 
     def getCOPGraph(self, temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri):
         
@@ -92,7 +95,6 @@ class COPCalculationAgent(DerivationAgent):
 
         g = self.sparql_client.instantiate_COP(g, cop_iri, res['region'], res['start'], res['end'], cop_max, cop_mean, cop_min)
         
-        print('COP has been updated!')
 
         return g
     
