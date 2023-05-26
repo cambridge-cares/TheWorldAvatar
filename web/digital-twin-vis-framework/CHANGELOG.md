@@ -1,5 +1,16 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
+# 3.4.0
+### Features:
+* New clippling planes feature to allow `vertical` slicing of 3D tile sets.
+* Added new sample data to example Cesium visualisation.
+### Bug Fixes:
+* Reduced size of sample NYC data loaded into example Cesium visualisation.
+* Added missing `moment.js` library to example visualisations.
+* Moved Pylon visualisation out of DTVF directory.
+* Minor CSS tweaks to UI components.
+* Minor formatting tweaks to automated release email.
+
 # 3.3.5
 ### Features:
 * _No features present._

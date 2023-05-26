@@ -2,9 +2,9 @@
 
 This example visualisation has been put together to demonstrate the intended use of the centralised Digital Twin Visualisation Framework (DTVF). This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.
 
-It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.3.5 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
+It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.4.0 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
 
-<img src="readme-example.JPG" alt="Example of 3D data on a CesiumJS visualisation" width="100%"/>
+<img src="readme-example.JPG" alt="Example of 3D data on a Cesium JS visualisation" width="100%"/>
 
 ## Restrictions
 
@@ -19,7 +19,7 @@ Alternatives to this paid-for features are detailed below. For more details read
 
 ## Mapping Capabilities
 
-Unlike the DTVF capabilities with the 2D mapping provider (Mapbox), not all CesiumJS features are supported within the DTVF. This is because CesiumJS requires explicit method calls for each type of data, rather than the more generic approach of passing in JSON configuration objects.
+Unlike the DTVF capabilities with the 2D mapping provider (Mapbox), not all Cesium JS features are supported within the DTVF. This is because Cesium JS requires explicit method calls for each type of data, rather than the more generic approach of passing in JSON configuration objects.
 
 At the time of writing, the following 3D data formats are supported within the DTVF:
 
@@ -32,7 +32,7 @@ At the time of writing, the following 3D data formats are supported within the D
 - 3D tiles:
   - 3D tiles can be loaded via their JSON index file. See the [Cesium 3D Tiles page](https://cesium.com/why-cesium/3d-tiles/) for more details.
 
-Additional formats, provided they are supported by CesiumJS, can be added but will require development resource from the team at CMCL. Get in touch with them for details.
+Additional formats, provided they are supported by Cesium JS, can be added but will require development resource from the team at CMCL. Get in touch with them for details.
 
 At the time of writing, client-side styling is not implemented (i.e. you cannot specify styling in the JSON files as you can do for Mapbox visualisations). Style options for 3D data should be baked into the associated model files, whilst styling for 2D data (provided via WMS) should be carried out on the server (more information on server-side styling can be found [here](https://docs.geoserver.org/stable/en/user/styling/index.html)).
 
@@ -60,7 +60,7 @@ Please note that the `index.html` file also required users to input their Mapbox
 
 The `data.json` file is a core configuration file for the visualisation and defines what data is loaded and shown, so it's worth explaining its formatting a little. Each node represents a group of data. Each group can contain data sources and layers and/or sub-groups. The hierarchy of these groups is completely up to the writer of the file and is used to build the selection tree within the visualisation. The `name` parameter specifies the group's user-facing name, and the `stack` parameter is the base URL for the stack containing that group's metadata (note that if not using the metadata, this parameter can be any old URL).
 
-Each group can then contain a number of `sources`, representing individual data files/endpoints that will be loaded into memory/queried by the mapping library. Each source node requires a unique `id` parameter, this is used within the DTVF to keep track of sources. In addition to `sources`, each group can define a number of `layers`. These are the visual representations of the aforementioned sources. Whilst CesiumJS does not have a internal division between data sources and visual representations, this approach is still used within the configuration file for consistency with other mapping providers.
+Each group can then contain a number of `sources`, representing individual data files/endpoints that will be loaded into memory/queried by the mapping library. Each source node requires a unique `id` parameter, this is used within the DTVF to keep track of sources. In addition to `sources`, each group can define a number of `layers`. These are the visual representations of the aforementioned sources. Whilst Cesium JS does not have a internal division between data sources and visual representations, this approach is still used within the configuration file for consistency with other mapping providers.
 
 Each group can also (optionally) contain an `expanded` boolean field. If set to false, then this group (and all of its children) will be collapsed by default within the selectable layers tree; any other value, or no field at all, will default to expanded. Note that this does not affect the default selection state of individual layers.
 
@@ -97,7 +97,7 @@ These features currently include:
 
 #### Map Position
 
-The default position of the map can be specified via the start field of the settings file. The specific fields within this node differ depending on the map provider; an example the CesiumJS version can be seen below. Note that these settings represent the position of the camera itself, not what it is looking at. In this CesiumJS case, the opacity of the globe itself can also be set here.
+The default position of the map can be specified via the start field of the settings file. The specific fields within this node differ depending on the map provider; an example the CesiumJS version can be seen below. Note that these settings represent the position of the camera itself, not what it is looking at. In this Cesium JS case, the opacity of the globe itself can also be set here.
 
 ```json
 "start": {
@@ -121,6 +121,38 @@ An example specification of terrain elevation is shown below. Note that in this 
     "requestVertexNormals": true
 }
 ```
+
+#### Clipping Planes
+
+For 3D tileset sources, clipping planes can also be added that allow the user to effectively slice the model, revealing its interior at a specific height; Cesium has an online example of this [here](https://sandcastle.cesium.com/?src=3D%20Tiles%20Clipping%20Planes.html); a demonstration of this feature has also been added to this example visualisation.
+
+To enable clipping planes, within the specification of a 3D tileset layer in the `data.json` file, add a `clipping` object to specify the height range (above sea level, in metres), and an optional array of labelled increments; this can be done for as many tilesets as the developer requires. An example of the specification format is shown below:
+
+```json
+  "clipping": {
+        "min": 0,
+        "max": 10,
+        "start": 10,
+        "labels": {
+            "0": "Ground level",
+            "2.9": "Bottom floor",
+            "5.78": "Top floor",
+            "9.14": "Roof"
+        }
+    }    
+```
+
+There are a few caveats to mention however:
+- This feature is only supported on 3D tileset sources.
+- Cesium only seems to support clipping planes on the _entire_ tileset.
+- The size of the clipping plane is based on the bounds of the tileset itself.
+- The feature can currently only be active on one tileset at any given time.
+- If adding planes to an existing visualisation, ensure the version of DTVF JS and CSS files used in the `index.html` file are _at least_ 3.4.0.
+- If adding planes to an existing visualisation, ensure the version of Cesium JS and CSS files used in the `index.html` file are _at least_ 1.105.
+
+<p align="center">
+    <img src="readme-clipping.JPG" alt="Example of a clipping plane on a 3D tileset" width="75%"/>
+</p>
 
 ## Sample Data
 
@@ -150,4 +182,4 @@ Once the requirements have been addressed, the image can be built using the belo
 
 ## Troubleshooting
 
-For details on common issues/questions that may appear when using CesiumJS, please see the dedicated [Troubleshooting](https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Troubleshooting) page on the GitHub wiki.
+For details on common issues/questions that may appear when using Cesium JS, please see the dedicated [Troubleshooting](https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Troubleshooting) page on the GitHub wiki.
