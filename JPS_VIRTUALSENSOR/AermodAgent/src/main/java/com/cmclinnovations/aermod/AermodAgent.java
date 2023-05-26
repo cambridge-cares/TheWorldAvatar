@@ -87,9 +87,11 @@ public class AermodAgent extends DerivationAgent {
         List<StaticPointSource> staticPointSources = new ArrayList<>();
         if (citiesNamespace != null) {
             String namespaceCRS = queryClient.getNamespaceCRS(citiesNamespace);
+            queryClient.setcitiesNamespaceCRS(citiesNamespace, namespaceCRS);
             try {
-                staticPointSources = queryClient.getStaticPointSourcesWithinScope(scope, citiesNamespace,
-                        namespaceCRS);
+                staticPointSources = queryClient.getStaticPointSourcesWithinScope(scope);
+                BuildingsData bd = new BuildingsData(citiesNamespace, namespaceCRS, queryClient);
+                bd.setStaticPointSourceProperties(staticPointSources);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -100,6 +102,8 @@ public class AermodAgent extends DerivationAgent {
         List<PointSource> allSources = new ArrayList<>();
         allSources.addAll(staticPointSources);
         allSources.addAll(ships);
+
+        List<String> buildingOCGMLIRIs = queryClient.getBuildingsNearPollutantSources(allSources);
 
         // update derivation of ships (on demand)
         List<String> derivationsToUpdate = queryClient.getDerivationsOfPointSources(allSources);

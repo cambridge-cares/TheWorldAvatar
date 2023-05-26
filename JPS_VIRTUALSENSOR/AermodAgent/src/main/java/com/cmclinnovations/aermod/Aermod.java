@@ -249,7 +249,7 @@ public class Aermod {
             PointSource ps = pointSources.get(i);
             String stkId = "S" + i;
 
-            String originalSrid = "EPSG:" + ship.getLocation().getSrid();
+            String originalSrid = "EPSG:" + ps.getLocation().getSRID();
             double[] xyOriginal = { ps.getLocation().getX(), ps.getLocation().getY() };
             double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
 
