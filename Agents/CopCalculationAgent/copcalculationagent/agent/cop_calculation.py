@@ -66,22 +66,18 @@ class COPCalculationAgent(DerivationAgent):
         derivIRI = derivation_inputs.getDerivationIRI()
 
         region = inputs[ONS_DEF_STAT][0]
-        res = self.sparql_client.verify_cop_iri(region)
-        if res:
-            return
-        else:
-            heatpumpefficiency_iri = inputs[REGION_HEATPUMP_EFFICIENCY][0]
-            hotsidetemperature_iri = inputs[REGION_HOTSIDE_TEMPERATURE][0]
+        heatpumpefficiency_iri = inputs[REGION_HEATPUMP_EFFICIENCY][0]
+        hotsidetemperature_iri = inputs[REGION_HOTSIDE_TEMPERATURE][0]
 
-            temperature_iri_list = self.sparql_client.retrieve_temperature_iri(region)
-            # temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri = self.validate_input_values(inputs=inputs,
-            #                                              derivationIRI=derivIRI)
-            for i in tqdm(range(len(temperature_iri_list))):
-                temperature_iri = temperature_iri_list[i]
-                g = self.getCOPGraph(temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri)
+        temperature_iri_list = self.sparql_client.retrieve_temperature_iri(region)
+        # temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri = self.validate_input_values(inputs=inputs,
+        #                                              derivationIRI=derivIRI)
+        for i in tqdm(range(len(temperature_iri_list))):
+            temperature_iri = temperature_iri_list[i]
+            g = self.getCOPGraph(temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri)
 
-                # Collect the generated triples derivation_outputs
-                derivation_outputs.addGraph(g)
+            # Collect the generated triples derivation_outputs
+            derivation_outputs.addGraph(g)
 
         print('COP has been updated!')
 
@@ -99,7 +95,7 @@ class COPCalculationAgent(DerivationAgent):
         cop_min = self.calculateCOP(res['mintemperature'], heatpumpefficiency, hotsidetemperature)
         
         if cop_mean:
-            cop_iri = REGION + "COP_" + str(uuid.uuid4())
+            cop_iri = self.sparql_client.verify_cop_iri(res['region'], res['start'])
 
         g = self.sparql_client.instantiate_COP(g, cop_iri, res['region'], res['start'], res['end'], cop_max, cop_mean, cop_min)
         
