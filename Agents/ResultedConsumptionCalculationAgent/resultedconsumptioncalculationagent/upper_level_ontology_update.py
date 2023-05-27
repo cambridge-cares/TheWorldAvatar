@@ -50,7 +50,7 @@ def region_within_country_update_template(region, country_iri):
      
      triple = f'''
      <{region}> <{REGION_ISWITHIN}> <{country_iri}>;
-                <{RDF_TYPE}> <{ONS_ID}> .
+                <{RDF_TYPE}> <{ONS_DEF_STAT}> .
      
      '''
 

@@ -385,8 +385,8 @@ class KGClient(PySparqlClient):
         WHERE {{
         <{region}> <{REGION_HAS_ENERGYCONSUMPTION_PROFILE}> ?consumption_iri.
         ?consumption_iri  <{RDF_TYPE}> <{REGION_RESULTED_ENERGYCONSUMPTION}> ;
-                 <{OFP_VALIDFROM}> "{start}"^^<{XSD_DATETIME}> ;
-                 <{OFP_VALIDTO}> "{end}"^^<{XSD_DATETIME}> .
+                 <{OFP_VALIDFROM}> "{start}"^^<{XSD_STRING}> ;
+                 <{OFP_VALIDTO}> "{end}"^^<{XSD_STRING}> .
         }}
         """
         res = self.performQuery(query_string)
@@ -441,8 +441,8 @@ class KGClient(PySparqlClient):
                                           region, start, end, resulted_gas_consumption, resulted_elec_consumption):
         g.add((URIRef(region),URIRef(REGION_HAS_ENERGYCONSUMPTION_PROFILE),URIRef(consumption_iri)))
         g.add((URIRef(consumption_iri),URIRef(RDF_TYPE),URIRef(REGION_RESULTED_ENERGYCONSUMPTION)))
-        g.add((URIRef(consumption_iri),URIRef(OFP_VALIDFROM),Literal(start, datatype=XSD_DATETIME)))
-        g.add((URIRef(consumption_iri),URIRef(OFP_VALIDTO),Literal(end, datatype=XSD_DATETIME)))
+        g.add((URIRef(consumption_iri),URIRef(OFP_VALIDFROM),Literal(start, datatype=XSD_STRING)))
+        g.add((URIRef(consumption_iri),URIRef(OFP_VALIDTO),Literal(end, datatype=XSD_STRING)))
         g.add((URIRef(elec_consumption_iri),URIRef(IS_A),URIRef(consumption_iri)))
         g.add((URIRef(elec_consumption_iri),URIRef(RDF_TYPE),URIRef(REGION_RESULTED_ELECTRICITY_CONSUMPTION)))
         g.add((URIRef(elec_consumption_iri),URIRef(OM_HAS_NUMERICALVALUE),Literal(resulted_elec_consumption, datatype=XSD_FLOAT)))
@@ -458,9 +458,25 @@ class KGClient(PySparqlClient):
 
         return query
 
-# QUERY_ENDPOINT= "http://localhost:3846/blazegraph/namespace/heatpump/sparql"
-# a = KGClient(QUERY_ENDPOINT, QUERY_ENDPOINT)
+QUERY_ENDPOINT= "http://localhost:3846/blazegraph/namespace/heatpump/sparql"
+a = KGClient(QUERY_ENDPOINT, QUERY_ENDPOINT)
+
 # res = a.get_consumption("http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/ElectricityConsumptionMeasure_E01000001")
 # print(res)
 # # res = a.update_consumption_profile()
+
+query_string = f"""
+SELECT * 
+WHERE {{
+<http://statistics.data.gov.uk/id/statistical-geography/E01000001> <{RDF_TYPE}> ?o .
+}}
+"""
+res = a.performQuery(query_string)
+print(res)
+# """
+# WHERE {{
+# <http://www.theworldavatar.com/resource/agents/Service__KL_COPCalculation/MessageContent_a7d49fa2-0a92-464b-93ba-439b36f72a9d> <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasMandatoryPart> <http://www.theworldavatar.com/resource/agents/Service__KL_COPCalculation/MessagePart_ed4201c4-8aa1-4fcc-b770-ea9f3038cef6> .
+# <http://www.theworldavatar.com/resource/agents/Service__KL_COPCalculation/MessagePart_ed4201c4-8aa1-4fcc-b770-ea9f3038cef6> <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasType>	?S.
+# }}
+# """
     
