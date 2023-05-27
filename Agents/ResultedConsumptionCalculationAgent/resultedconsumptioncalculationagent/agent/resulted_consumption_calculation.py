@@ -94,7 +94,7 @@ class ResultedConsumptionAgent(DerivationAgent):
                                     uptake_iri, 
                                     consumption_profile_iri):
         
-        # Initialise COP and return triples
+        # Initialise results and return triples
         resulted_gas_consumption = None
         resulted_elec_consumption = None
         g = Graph()

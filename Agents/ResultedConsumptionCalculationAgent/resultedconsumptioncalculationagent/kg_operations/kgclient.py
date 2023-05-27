@@ -9,6 +9,7 @@
 import uuid
 from rdflib import URIRef, Literal
 import ast
+from tqdm import tqdm
 
 from py4jps import agentlogging
 from pyderivationagent.kg_operations import PySparqlClient
@@ -458,21 +459,46 @@ class KGClient(PySparqlClient):
 
         return query
 
-QUERY_ENDPOINT= "http://localhost:3846/blazegraph/namespace/heatpump/sparql"
-a = KGClient(QUERY_ENDPOINT, QUERY_ENDPOINT)
+# QUERY_ENDPOINT= "http://localhost:3846/blazegraph/namespace/heatpump/sparql"
+# a = KGClient(QUERY_ENDPOINT, QUERY_ENDPOINT)
 
-# res = a.get_consumption("http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/ElectricityConsumptionMeasure_E01000001")
-# print(res)
-# # res = a.update_consumption_profile()
+# # res = a.get_consumption("http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/ElectricityConsumptionMeasure_E01000001")
+# # print(res)
+# # # res = a.update_consumption_profile()
 
-query_string = f"""
-SELECT * 
-WHERE {{
-<http://statistics.data.gov.uk/id/statistical-geography/E01000001> <{RDF_TYPE}> ?o .
-}}
-"""
-res = a.performQuery(query_string)
-print(res)
+# query_string = f"""
+# SELECT DISTINCT ?m ?var
+# WHERE {{?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography>;   
+#          <http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#hasClimateMeasurement>  ?m.
+#     ?m <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasStartUTC> ?start;
+#         <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasEndUTC> ?end;
+#        <http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#hasClimateVariable> ?var;
+#        <http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue> ?t.
+       
+# FILTER (?var != 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas' &&
+#           ?var != 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax' &&
+#           ?var != "http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin")
+# }}
+# """
+# res = a.performQuery(query_string)
+# for i in tqdm(range(len(res))):
+    if len(res[i]['var']) < 8:
+        query_string = f"""
+        INSERT DATA {{
+        <{res[i]['m']}> <http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#hasClimateVariable> "{"http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/"+res[i]['var']}"^^<{XSD_STRING}> .
+        }}
+        """
+        #print(query_string)
+        a.performUpdate(query_string)
+        query_string = f"""
+        DELETE DATA {{
+        <{res[i]['m']}> <http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#hasClimateVariable> "{res[i]['var']}"^^<{XSD_STRING}> .
+        }}
+        """
+        #print(query_string)
+        a.performUpdate(query_string)
+    else:
+        pass
 # """
 # WHERE {{
 # <http://www.theworldavatar.com/resource/agents/Service__KL_COPCalculation/MessageContent_a7d49fa2-0a92-464b-93ba-439b36f72a9d> <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasMandatoryPart> <http://www.theworldavatar.com/resource/agents/Service__KL_COPCalculation/MessagePart_ed4201c4-8aa1-4fcc-b770-ea9f3038cef6> .

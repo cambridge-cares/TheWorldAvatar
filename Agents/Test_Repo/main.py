@@ -464,3 +464,8 @@ def New_convert_NetCDF_to_GeoTiff():
 generate_temp_rdf()
 #consump_figure_using_tom_code()
 #make_geometry_valid()
+
+
+# temp_dict = call_pickle('./Data/temp_dict in function get_all_data')
+# print(len(temp_dict))
+# print(temp_dict)
