@@ -243,26 +243,27 @@ class KGClient(PySparqlClient):
 
         return hotsidetemperature
 
-    def verify_cop_iri(self, region):
+    def verify_cop_iri(self, region, start):
 
         query_string = f"""
         SELECT ?cop_iri
         WHERE {{
         <{region}> <{REGION_HASCOP}> ?cop_iri.
-        ?cop_iri  <{RDF_TYPE}> <{REGION_COP}> .
+        ?cop_iri  <{RDF_TYPE}> <{REGION_COP}> ;
+                  <{OFP_VALIDFROM}>  "{start}"^^<{XSD_DATETIME}> .
         }}
         """
         res = self.performQuery(query_string)
 
-        # if not res:
-        #     cop_iri = REGION + "COP_" + str(uuid.uuid4())
-        #     logger.info(f'No existed cop_iri, created {cop_iri}')
-        # else: 
-        #     res = res[0]
-        #     cop_iri = str(res["cop_iri"])
-        #     logger.info(f'cop_iri: {cop_iri} will be used')
+        if not res:
+            cop_iri = REGION + "COP_" + str(uuid.uuid4())
+            logger.info(f'No existed cop_iri, created {cop_iri}')
+        else: 
+            res = res[0]
+            cop_iri = str(res["cop_iri"])
+            logger.info(f'cop_iri: {cop_iri} will be used')
         
-        return res
+        return cop_iri
     
     def instantiate_COP(self, g, cop_iri, region, start, end, cop_max, cop_mean, cop_min):
         g.add((URIRef(region),URIRef(REGION_HASCOP),URIRef(cop_iri)))
