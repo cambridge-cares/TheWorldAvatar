@@ -41,14 +41,11 @@ public class DevInstQueryBuilder {
 
     //classes
     /*
-     * Each smart sensor is composed of 1 microcontrller
-     * Each microcontroller can be composed of several sensor
+     * Each smart sensor is composed of 1 microcontroller
+     * Each microcontroller can be composed of several sensor (main sensor)
      * Each sensor can be a collective of several sensor (Composition Sensor)
      * (eg. a temperature sensor composed of several thermometer)
      * Each Composition Sensor measures 1 raw reading type (a thermometer only measures temperture)
-     * Each reading can be derived to other variable.
-     *  - several types of readings can be derived to 1 variable
-     *  - several derived variable can be derived from 1 reading type
      */
     private static String sensLabel;
     private static Iri SmartSensor_UUID;
@@ -57,11 +54,8 @@ public class DevInstQueryBuilder {
     private static Map<String, Iri> SensorComp_UUID_Map = new HashMap<>();
     private static Map<String, String> SensorCompToSensorMap = new HashMap<>();
 
-    private static Map<String, Iri> Measurement_UUID_Map; //Can one sensor have more than one measurement type?
+    private static Map<String, Iri> Measurement_UUID_Map;
     private static List<String> AdditionalQuery;
-
-    //TODO Implement iterator(?) for Composition sensor and measurement units
-    //TODO This includes changing the tmeplate .json file, add unts, unitsIRI, sensorType, sensorTypeIRI
 
     private static Map<String, String> SensorTypeMap;
     private static Map<String, Iri> SensorTypeIRIMap;
@@ -91,14 +85,23 @@ public class DevInstQueryBuilder {
     }
 
     void InsertDevice(JSONObject desc) {
+        LOGGER.info("Instantiating devices...");
         //Get data from descriptor
         parseJSON(desc);
 
         //Write query & Update DB   
         InstantiateDevices();
+        LOGGER.info("Instantiation success!");
     }
 
+    /*
+     * Parses JSON data and obtain IRI for each instances.
+     * Takes in the JSON template from request
+     * 
+     * @param desc: The device descriptor
+     */
     void parseJSON (JSONObject desc) {
+        LOGGER.info("Parsing device descriptor...");
         JSONObject MicroController = desc.getJSONObject("MicroController");
         IRIMap = desc.getJSONObject("IRIMapper");
         
@@ -119,9 +122,6 @@ public class DevInstQueryBuilder {
                 JSONObject Sensor = MainSensor.getJSONObject(SensorName);
                 SensorCompToSensorMap.put(SensorName, MainSensorName);
 
-                //String Sensor_UUID_String = Sensor.getString("name");
-                //TODO Check IRIMAp first, then if its null, default to oontodevice
-                //Iri Sensor_UUID = P_DEV.iri(Sensor_UUID_String);
                 Iri Sensor_UUID = getIri(SensorName);
                 SensorComp_UUID_Map.put(SensorName, Sensor_UUID);
                 
@@ -134,21 +134,19 @@ public class DevInstQueryBuilder {
                 MeasurementTypeMap.put(SensorName, MeasurementType_UUID);
 
                 String SensorCompType_String = Sensor.getString("type");
-                //TODO Check IRIMAp first, then if its null, default to oontodevice
                 SensorTypeMap.put(SensorName, SensorCompType_String);
                 Iri SensorType_IRI = iri(IRIMap.getString(SensorCompType_String));
                 SensorTypeIRIMap.put(SensorCompType_String, SensorType_IRI);
 
                 String unit = Sensor.getJSONObject("output").getString("unit");
                 MeasurementToUnitMap.put(Measurement_ID_String, unit);
-                //TODO Check IRIMAp first, then if its null, default to oontodevice OR OM
                 Iri unit_IRI = getIri(unit);
                 UnitIRIMap.put(unit, unit_IRI);
 
             }
         }
 
-
+        //Additional Queries
         JSONArray additional = desc.getJSONArray("AdditionalQuery");
         for(int i = 0; i < additional.length(); i++) {
             String query = additional.getString(i);
@@ -158,6 +156,11 @@ public class DevInstQueryBuilder {
 
     }
 
+
+    /*
+     * Creates the update queries and send update request to triple store.
+     * 
+     */
     void InstantiateDevices() {
         ModifyQuery modify = Queries.MODIFY();
         modify.prefix(P_AGENT, P_DEV, P_OM, P_SAREF);
@@ -183,9 +186,6 @@ public class DevInstQueryBuilder {
             Iri MeasurementType_IRI = MeasurementTypeMap.get(SensorCompName);
             modify.insert(Measurement_UUID.isA(MeasurementType_IRI));
         }
-
-
-        //TODO Add agent instantiation
 
         //Connect properties
         //Connect the microcontroller and sensor instances
@@ -225,11 +225,53 @@ public class DevInstQueryBuilder {
     }
 
     /*
+     * Find/generate the IRI
+     * 
+     * IRIMapper takes priority, if IRIMapper has IRI, use the specified IRI
+     * If String "find" is provided, agent will search for possible IRI match
+     * If String "gen" is provided, agent will generate a UUID
+     * 
+     * If IRIMapper is empty, then throw error
+     * Check is done by ID in the json file
+     * All IRI generated should contain the same ID name, but different UUID
+     * 
+     * @param ID: The ID specified in the device descriptor
+     * 
+     */
+    private Iri getIri(String ID) {
+        if (IRIMap.has(ID)){
+            String iriString = IRIMap.getString(ID);
+            
+            if (iriString.toLowerCase().equals("gen")){
+                //Defaults to Ontodevice
+                return genIRI(ID, P_DEV);
+            }
+            else if (iriString.toLowerCase().equals("find")){
+                return findIriMatch(ID);
+            }
+            else {
+                return iri(iriString);
+            }
+        }
+        else{
+            throw new JPSRuntimeException("IRI is not in IRIMapper. Please provide either the IRI or the following keyword:" +
+            "find : Find the IRI in the knowledge graph with the same ID. " + 
+            "gen: Generate new IRI ending with random UUID. Based on ontodevice."
+            );
+        }
+
+    }
+
+    /*
      * Find the IRI containing the same ID in the KG
      * If more than 1 is found throws error
-     * IF none is find, throws error
+     * If none is find, throws error
+     * 
+     * @param ID: The ID from the device decriptor file
+     * @returns Iri : The IRI found in knowledge graph
      */
     private Iri findIriMatch (String ID){
+        //TODO Currently pulls the whowl database on call. Is there a way to simplify this?
         SelectQuery query = Queries.SELECT();
         JSONArray queryResult = new JSONArray();
         List<String> result = new ArrayList<>();
@@ -269,40 +311,5 @@ public class DevInstQueryBuilder {
     private Iri genIRI (String ID, Prefix prefix) {
         return prefix.iri(ID + "_" + UUID.randomUUID());
     }
-
-    /*
-     * Find/generate the IRI
-     * IRIMapper takes priority, if IRIMapper has IRI, use the specified IRI
-     * If IRIMapper is empty, then check if IRI exist
-     * Check is done by ID in the json file
-     * All IRI generated should contain the same ID name, but different UUID
-     * IF IRI exist, throw error, tell user to specify IRI in IRIMapper if IRI found is not the same object
-     * Generate IRI if no IRI is found in mapper and KG
-     * 
-     */
-    private Iri getIri(String ID) {
-        if (IRIMap.has(ID)){
-            String iriString = IRIMap.getString(ID);
-            
-            if (iriString.toLowerCase().equals("gen")){
-                //Defaults to Ontodevice
-                return genIRI(ID, P_DEV);
-            }
-            else if (iriString.toLowerCase().equals("find")){
-                return findIriMatch(ID);
-            }
-            else {
-                return iri(iriString);
-            }
-        }
-        else{
-            throw new JPSRuntimeException("IRI is not in IRIMapper. Please provide either the IRI or the following keyword:" +
-            "find : Find the IRI in the knowledge graph with the same ID. " + 
-            "gen: Generate new IRI ending with random UUID. Based on ontodevice."
-            );
-        }
-
-    }
-
 
 }
