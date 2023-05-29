@@ -8,6 +8,7 @@ public class Building {
     private LinearRing footPrint;
     private double height;
     private Point location;
+    private double baseElevation;
 
     public Building(LinearRing footPrint, double height) {
         this.footPrint = footPrint;
@@ -25,6 +26,14 @@ public class Building {
 
     public String getSrid() {
         return "EPSG:" + footPrint.getSRID();
+    }
+
+    public void setElevation(double elevation) {
+        this.baseElevation = elevation;
+    }
+
+    public double getElevation() {
+        return baseElevation;
     }
 
 }

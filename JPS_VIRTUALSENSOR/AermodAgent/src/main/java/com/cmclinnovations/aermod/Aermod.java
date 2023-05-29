@@ -38,10 +38,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
+import com.cmclinnovations.aermod.objects.Building;
 import com.cmclinnovations.aermod.objects.PointSource;
 import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.WeatherData;
@@ -51,6 +53,9 @@ import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 public class Aermod {
     private static final Logger LOGGER = LogManager.getLogger(Aermod.class);
+
+    private Path aermapDirectory;
+    private Path bpipprmDirectory;
     private Path aermetDirectory;
     private Path aermodDirectory;
     private Path simulationDirectory;
@@ -60,6 +65,12 @@ public class Aermod {
         this.simulationDirectory = simulationDirectory;
         LOGGER.info("Creating directory for simulation files");
         simulationDirectory.toFile().mkdirs();
+
+        this.aermapDirectory = simulationDirectory.resolve("aermap");
+        aermapDirectory.toFile().mkdir();
+
+        this.bpipprmDirectory = simulationDirectory.resolve("bpipprm");
+        bpipprmDirectory.toFile().mkdir();
 
         this.aermetDirectory = simulationDirectory.resolve("aermet");
         aermetDirectory.toFile().mkdir();
@@ -405,6 +416,47 @@ public class Aermod {
             LOGGER.error(outputFileURL);
             throw new RuntimeException(e);
         }
+    }
+
+    JSONObject getBuildingsGeoJSON(List<Building> buildings) {
+        JSONObject featureCollection = new JSONObject();
+        featureCollection.put("type", "FeatureCollection");
+
+        JSONArray features = new JSONArray();
+        buildings.stream().forEach(building -> {
+            JSONObject feature = new JSONObject();
+            feature.put("type", "Feature");
+
+            JSONObject properties = new JSONObject();
+            properties.put("color", "#666666");
+            properties.put("opacity", 0.66);
+            properties.put("base", 0);
+            properties.put("height", building.getHeight());
+            feature.put("properties", properties);
+
+            JSONObject geometry = new JSONObject();
+            geometry.put("type", "Polygon");
+            JSONArray coordinates = new JSONArray();
+
+            JSONArray footprintPolygon = new JSONArray();
+            String srid = building.getSrid();
+            for (Coordinate coordinate : building.getFootprint().getCoordinates()) {
+                JSONArray point = new JSONArray();
+                double[] xyOriginal = { coordinate.getX(), coordinate.getY() };
+                double[] xyTransformed = CRSTransformer.transform(srid, "EPSG:4326", xyOriginal);
+                point.put(xyTransformed[0]).put(xyTransformed[1]);
+                footprintPolygon.put(point);
+            }
+            coordinates.put(footprintPolygon);
+            geometry.put("coordinates", coordinates);
+
+            feature.put("geometry", geometry);
+            features.put(feature);
+        });
+
+        featureCollection.put("features", features);
+
+        return featureCollection;
     }
 
     int createDataJson(String shipLayerName, List<String> dispersionLayerNames, String plantsLayerName,

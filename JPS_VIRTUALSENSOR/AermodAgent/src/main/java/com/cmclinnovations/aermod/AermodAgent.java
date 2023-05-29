@@ -114,10 +114,6 @@ public class AermodAgent extends DerivationAgent {
         LOGGER.info("Querying emission values");
         queryClient.setEmissions(allSources);
 
-        // Stop here for testing purposes.
-        if (citiesNamespace != null)
-            return;
-
         // update weather station with simulation time
         updateWeatherStation(weatherStationIri, simulationTime);
         // get weather data from station
@@ -140,28 +136,9 @@ public class AermodAgent extends DerivationAgent {
             srid = Integer.valueOf("326" + centreZoneNumber);
         }
 
-        // Query buildings and plant items.
-        // Run BPIPPRM
-
-        Buildings bpi;
-        try {
-            bpi = new Buildings();
-            bpi.init(simulationDirectory, scope, srid, nx, ny);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
-
-        if (bpi.locindex >= 0) {
-            int buildRes = bpi.run();
-            if (buildRes != 0) {
-                LOGGER.error("Failed to run BPIPPRM, terminating");
-                throw new RuntimeException();
-            }
-        } else {
-            bpi.createAERMODBuildingsInput();
-            bpi.createAERMODSourceInput();
-            bpi.createAERMODReceptorInput(nx, ny);
-        }
+        // Stop here for testing purposes.
+        if (citiesNamespace != null)
+            return;
 
         aermod.create144File(weatherData);
 
@@ -177,15 +154,15 @@ public class AermodAgent extends DerivationAgent {
             return;
         }
 
-        if (!bpi.aermodInputCreated)
-            aermod.createAermodInputFile(scope, nx, ny, srid);
+        aermod.createAermodInputFile(scope, nx, ny, srid);
         aermod.runAermod("aermod.inp");
 
         // Upload files used by scripts within Python Service to file server.
         String outputFileURL = aermod.uploadToFileServer("averageConcentration.dat");
         String outFileURL = aermod.uploadToFileServer("receptor.dat");
 
-        List<Double> receptorHeights = bpi.receptorHeights;
+        List<Double> receptorHeights = new ArrayList<>();
+        receptorHeights.add(1.0);
         // Set GeoServer layer names
         List<String> dispLayerNames = new ArrayList<>();
         for (int i = 0; i < receptorHeights.size(); i++) {
@@ -233,7 +210,7 @@ public class AermodAgent extends DerivationAgent {
         queryClient.updateOutputs(derivationInputs.getDerivationIRI(), outputFileURL, dispLayerNames.get(0),
                 shipLayerName, simulationTime);
         if (aermod.createDataJson(shipLayerName, dispLayerNames, plantsLayerName, elevationLayerName,
-                bpi.getBuildingsGeoJSON()) != 0) {
+                aermod.getBuildingsGeoJSON(buildings)) != 0) {
             LOGGER.error("Failed to create data.json file for visualisation, terminating");
             return;
         }
