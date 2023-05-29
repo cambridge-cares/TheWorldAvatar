@@ -31,5 +31,16 @@ services:
         - "9997:8080"
       networks:
         - my-network
+  postgis_test:
+    image: postgis/postgis:15-3.3-alpine
+    container_name: postgis_test
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pg123
+    ports:
+      - "5431:5432"
+    networks:
+      - my-network
 networks:
   my-network:
