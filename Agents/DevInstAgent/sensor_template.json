@@ -39,23 +39,6 @@
                     }
                 }
             }
-        },
-
-        "derivation" :{
-            "derivVar1":{
-                "derivedFromSensor":[],
-                "derviedBy":null,
-                "type": null,
-                "unit" : null,
-                "IRI" : null
-            },
-            "derivVar2":{
-                "derivedFromSensor":[],
-                "derviedBy":null,
-                "type": null,
-                "unit" : null,
-                "IRI" : null
-            }            
         }
     },
     "IRIMapper":{

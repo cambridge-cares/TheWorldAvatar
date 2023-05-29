@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.agent.devinst;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
+
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
@@ -27,13 +29,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class DevInstQueryBuilder {
-    private RemoteStoreClient storeClient; 
+    private RemoteStoreClient storeClient;
+    private JSONObject IRIMap;
     
     // prefix
 	private static final String ONTODEV = "https://www.theworldavatar.com/kg/ontodevice/";
     private static final Prefix P_DEV = SparqlBuilder.prefix("ontodevice",iri(ONTODEV));
     private static final Prefix P_SAREF = SparqlBuilder.prefix("saref", iri("https://saref.etsi.org/core/"));
-    private static final Prefix P_DERIV = SparqlBuilder.prefix("saref", iri("https://www.theworldavatar.com/kg/ontoderivation/"));
     private static final Prefix P_AGENT = SparqlBuilder.prefix("ontoagent",iri("https://www.theworldavatar.com/kg/ontoagent/"));
     private static final Prefix P_OM = SparqlBuilder.prefix("om", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/"));
 
@@ -56,11 +58,6 @@ public class DevInstQueryBuilder {
     private static Map<String, String> SensorCompToSensorMap = new HashMap<>();
 
     private static Map<String, Iri> Measurement_UUID_Map; //Can one sensor have more than one measurement type?
-    private static Map<String, List<Iri>> DerivedToRawMap = new HashMap<>();
-    private static Map<String, Iri> Derived_UUID_Map = new HashMap<>();
-    private static Map<String, Iri> DerivedType_UUID_Map = new HashMap<>();
-    private static Map<String, Iri> DerivationWithTimeSeries_UUID_Map = new HashMap<>();
-    private static Map<String, String> DerivedToUnitMap;
     private static List<String> AdditionalQuery;
 
     //TODO Implement iterator(?) for Composition sensor and measurement units
@@ -76,16 +73,11 @@ public class DevInstQueryBuilder {
     private static final Iri SmartSensor = P_DEV.iri("SmartSensor");
     private static final Iri MicroController = P_DEV.iri("MicroController");
     private static final Iri Sensor = P_SAREF.iri("Sensor");
-    private static final Iri Service = P_AGENT.iri("Service");
-    private static final Iri DerivationWithTimeSeries = P_DERIV.iri("DerivationWithTimeSeries");
 
     //properties
     private static final Iri consistsOf = P_SAREF.iri("consistsOf");
     private static final Iri sendsSignalTo = P_DEV.iri("sendsSignalTo");
     private static final Iri measures = P_DEV.iri("measures");
-    private static final Iri belongsTo = P_DERIV.iri("belongsTo");
-    private static final Iri isDerivedUsing = P_DERIV.iri("isDerivedUsing");
-    private static final Iri isDerivedFrom = P_DERIV.iri("isDerivedFrom");
     private static final Iri hasUnit = P_OM.iri("hasUnit");
     private static final Iri symbol = P_OM.iri("symbol");
     
@@ -108,21 +100,18 @@ public class DevInstQueryBuilder {
 
     void parseJSON (JSONObject desc) {
         JSONObject MicroController = desc.getJSONObject("MicroController");
-        JSONObject IRIMap = desc.getJSONObject("IRIMapper");
+        IRIMap = desc.getJSONObject("IRIMapper");
         
         //smartSensor data
         sensLabel = MicroController.getString("label");
         
-        String SmartSensor_UUID_String = genUUID(IRIMap.getString(MicroController.getString("name")));
-        SmartSensor_UUID = P_DEV.iri(SmartSensor_UUID_String);
-
-        String MicroController_UUID_String = genUUID(IRIMap.getString(MicroController.getString("type")));
-        MicroController_UUID = P_DEV.iri(MicroController_UUID_String);
+        SmartSensor_UUID = getIri(IRIMap.getString(MicroController.getString("name")));
+        
+        MicroController_UUID =  getIri(IRIMap.getString(MicroController.getString("type")));
 
         JSONObject MainSensorMap = desc.getJSONObject("MainSensorMap");
         for (String MainSensorName : MainSensorMap.keySet()) {
-            String MainSensor_UUID_String = genUUID(MainSensorName);
-            Iri MainSensor_UUID = P_DEV.iri(MainSensor_UUID_String);
+            Iri MainSensor_UUID = getIri(MainSensorName);
             Sensor_UUID_Map.put(MainSensorName, MainSensor_UUID);
 
             JSONObject MainSensor = MainSensorMap.getJSONObject(MainSensorName);
@@ -133,15 +122,15 @@ public class DevInstQueryBuilder {
                 //String Sensor_UUID_String = Sensor.getString("name");
                 //TODO Check IRIMAp first, then if its null, default to oontodevice
                 //Iri Sensor_UUID = P_DEV.iri(Sensor_UUID_String);
-                Iri Sensor_UUID = P_DEV.iri(genUUID(SensorName));
+                Iri Sensor_UUID = getIri(SensorName);
                 SensorComp_UUID_Map.put(SensorName, Sensor_UUID);
                 
-                String Measurement_UUID_String = Sensor.getJSONObject("output").getString("fieldname");
-                Iri Measurement_UUID = P_DEV.iri(genUUID(Measurement_UUID_String));
+                String Measurement_ID_String = Sensor.getJSONObject("output").getString("fieldname");
+                Iri Measurement_UUID = getIri(Measurement_ID_String);
                 Measurement_UUID_Map.put(SensorName, Measurement_UUID);
 
-                String MeasurementType_UUID_String = Sensor.getJSONObject("output").getString("type");
-                Iri MeasurementType_UUID = iri(IRIMap.getString(MeasurementType_UUID_String));
+                String MeasurementType_ID_String = Sensor.getJSONObject("output").getString("type");
+                Iri MeasurementType_UUID = getIri(MeasurementType_ID_String);
                 MeasurementTypeMap.put(SensorName, MeasurementType_UUID);
 
                 String SensorCompType_String = Sensor.getString("type");
@@ -151,52 +140,14 @@ public class DevInstQueryBuilder {
                 SensorTypeIRIMap.put(SensorCompType_String, SensorType_IRI);
 
                 String unit = Sensor.getJSONObject("output").getString("unit");
-                MeasurementToUnitMap.put(Measurement_UUID_String, unit);
+                MeasurementToUnitMap.put(Measurement_ID_String, unit);
                 //TODO Check IRIMAp first, then if its null, default to oontodevice OR OM
-                Iri unit_IRI = iri(IRIMap.getString(unit));
+                Iri unit_IRI = getIri(unit);
                 UnitIRIMap.put(unit, unit_IRI);
 
             }
         }
 
-        JSONObject Derivation = desc.getJSONObject("derivation");
-        for(String derivVarKey : Derivation.keySet()){
-            JSONObject deriv = Derivation.getJSONObject(derivVarKey);
-
-            //Iri derivVar_IRI = P_DEV.iri(genUUID(derivVarKey));
-            String DerivedIRI_String = deriv.getString("IRI");
-            Iri derivVar_IRI = iri(DerivedIRI_String);
-            Derived_UUID_Map.put(derivVarKey, derivVar_IRI);
-
-            //Takes in SensorComp names instead as its 1:1 correspondene with the measured var.
-            //This is to take into account of multiple sensorComp with the same measured var name.
-            JSONArray derivFromArray = deriv.getJSONArray("derivedFromSensor");
-            List<Iri> derivFromList = new ArrayList<Iri>();
-            for(int i = 0; i < derivFromArray.length(); i ++){
-                String varName = derivFromArray.getString(i);
-                Iri measurementIRI = Measurement_UUID_Map.get(varName);
-                derivFromList.add(measurementIRI);
-                
-
-            }
-            DerivedToRawMap.put(derivVarKey, derivFromList);
-
-
-            String derivVarType= deriv.getString("type");
-            Iri derivVarType_IRI= iri(IRIMap.getString(derivVarType));
-            DerivedType_UUID_Map.put(derivVarKey, derivVarType_IRI);
-
-            String derivVarUnit= deriv.getString("unit");
-            DerivedToUnitMap.put(derivVarKey, derivVarUnit);
-            Iri unit_IRI = iri(IRIMap.getString(derivVarUnit));
-            UnitIRIMap.put(derivVarUnit, unit_IRI);
-
-            String derivationWithTimeSeries = derivVarKey + "DerivationWithTimeSeries";
-            String derivationWithTimeSeries_UUID_String = genUUID(derivationWithTimeSeries);
-            Iri derivationWithTimeSeries_UUID = P_DEV.iri(derivationWithTimeSeries_UUID_String);
-            DerivationWithTimeSeries_UUID_Map.put(derivVarKey, derivationWithTimeSeries_UUID);
-
-        }
 
         JSONArray additional = desc.getJSONArray("AdditionalQuery");
         for(int i = 0; i < additional.length(); i++) {
@@ -207,17 +158,9 @@ public class DevInstQueryBuilder {
 
     }
 
-    //TODO Make UUID generator method
-    //TODO Add UUID to IRI strings
-
-    String genUUID(String name){
-
-        return name + UUID.randomUUID();
-    }
-
     void InstantiateDevices() {
         ModifyQuery modify = Queries.MODIFY();
-        modify.prefix(P_AGENT, P_DERIV, P_DEV, P_OM, P_SAREF);
+        modify.prefix(P_AGENT, P_DEV, P_OM, P_SAREF);
 
         //Instantiate the microcontroller, sensors, variable instances
 
@@ -241,14 +184,6 @@ public class DevInstQueryBuilder {
             modify.insert(Measurement_UUID.isA(MeasurementType_IRI));
         }
 
-        for (String DerivedName : Derived_UUID_Map.keySet()){
-            Iri Derivation_UUID = Derived_UUID_Map.get(DerivedName);
-            Iri DerivationTypeIRI = DerivedType_UUID_Map.get(DerivedName);
-            modify.insert(Derivation_UUID.isA(DerivationTypeIRI));
-
-            Iri DerivationWithTimeSeries_UUID = DerivationWithTimeSeries_UUID_Map.get(DerivedName);
-            modify.insert(DerivationWithTimeSeries_UUID.isA(DerivationWithTimeSeries));
-        }
 
         //TODO Add agent instantiation
 
@@ -273,20 +208,6 @@ public class DevInstQueryBuilder {
             modify.insert(CompSensor_UUID.has(measures, Measurement_UUID));
 
         }
-
-        //Connect the Derived state instances
-
-        for(String derivedKey: Derived_UUID_Map.keySet()){
-            Iri DerivedIRI = Derived_UUID_Map.get(derivedKey);
-            Iri DerivationWithTimeSeries_UUID = DerivationWithTimeSeries_UUID_Map.get(derivedKey);
-            modify.insert(DerivedIRI.has(belongsTo, DerivationWithTimeSeries_UUID));
-
-            List<Iri> RawList = DerivedToRawMap.get(derivedKey);
-            for (Iri rawIRI : RawList) {
-                modify.insert(DerivedIRI.has(isDerivedFrom, rawIRI));
-            }
-
-        }
         
         //Add aditional query
         for(String query: AdditionalQuery){
@@ -301,6 +222,86 @@ public class DevInstQueryBuilder {
         }
 
         storeClient.executeUpdate(modify.getQueryString());
+    }
+
+    /*
+     * Find the IRI containing the same ID in the KG
+     * If more than 1 is found throws error
+     * IF none is find, throws error
+     */
+    private Iri findIriMatch (String ID){
+        SelectQuery query = Queries.SELECT();
+        JSONArray queryResult = new JSONArray();
+        List<String> result = new ArrayList<>();
+        query.where(query.var().has(query.var(), query.var()) );
+        try{
+            queryResult = storeClient.executeQuery(query.getQueryString());
+        }catch (Exception e) {
+            throw new JPSRuntimeException("Failed to execute query.", e);
+        }
+
+        for(int i =0 ; i < queryResult.length(); i++){
+            JSONObject row = queryResult.getJSONObject(i);
+            for (String key : row.keySet()){
+                String iriFound = row.getString(key);
+                if (iriFound.contains(ID) && !result.contains(iriFound)){
+                    result.add(iriFound);
+                }
+            }
+        }
+
+
+        if (result.size() > 1) {
+            throw new JPSRuntimeException("More than 1 possible IRI match is found: " + result + ". Resolve by specifying in IRIMapper.");
+        }
+
+        if (result.size() == 0) {
+            throw new JPSRuntimeException("No possible match found for ID: " + ID + ". Resolve by specifying in IRIMapper.");
+        }
+        
+        return iri(result.get(0));
+
+    }
+
+    /*
+     * Generate new IRI
+     */
+    private Iri genIRI (String ID, Prefix prefix) {
+        return prefix.iri(ID + "_" + UUID.randomUUID());
+    }
+
+    /*
+     * Find/generate the IRI
+     * IRIMapper takes priority, if IRIMapper has IRI, use the specified IRI
+     * If IRIMapper is empty, then check if IRI exist
+     * Check is done by ID in the json file
+     * All IRI generated should contain the same ID name, but different UUID
+     * IF IRI exist, throw error, tell user to specify IRI in IRIMapper if IRI found is not the same object
+     * Generate IRI if no IRI is found in mapper and KG
+     * 
+     */
+    private Iri getIri(String ID) {
+        if (IRIMap.has(ID)){
+            String iriString = IRIMap.getString(ID);
+            
+            if (iriString.toLowerCase().equals("gen")){
+                //Defaults to Ontodevice
+                return genIRI(ID, P_DEV);
+            }
+            else if (iriString.toLowerCase().equals("find")){
+                return findIriMatch(ID);
+            }
+            else {
+                return iri(iriString);
+            }
+        }
+        else{
+            throw new JPSRuntimeException("IRI is not in IRIMapper. Please provide either the IRI or the following keyword:" +
+            "find : Find the IRI in the knowledge graph with the same ID. " + 
+            "gen: Generate new IRI ending with random UUID. Based on ontodevice."
+            );
+        }
+
     }
 
 
