@@ -135,7 +135,14 @@
             <version>20230227</version>
             <type>jar</type>
         </dependency>
-        
+
+        <!-- Connecting to SQLite database -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.42.0.0</version>
+        </dependency>
+
         <!-- Logging, versions pulled from parent -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

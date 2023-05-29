@@ -118,10 +118,10 @@ public class SmartMeterAgent extends JPSAgent {
         // find previous readings with all devices: 1/2/3 mins ago -> 1/2/3 hrs ago -> 1/2/3 days ago...
 
         // Assuming time readings in smart meter database is UTC time
-        String query = "SELECT to_char(MAX(ts), 'YYYY-MM-DD HH:MI:00+00:00') as time, \"data_source\" as device, " 
+        String query = "SELECT strftime('%Y-%m-%dT%H:%M:00+00:00', MAX(ts)) as time, \"data_source\" as device, " 
         + "(\"ch1Watt\" + \"ch2Watt\" + \"ch3Watt\")/3 as pd, (\"ch1Current\" + \"ch2Current\" + \"ch3Current\")/3 as current, " 
         + "(\"ch1Voltage\" + \"ch2Voltage\" + \"ch3Voltage\")/3 as voltage, (\"ch1Hz\" + \"ch2Hz\" + \"ch3Hz\")/3 as frequency " 
-        + "FROM public.\"Measurement\" " 
+        + "FROM \"Measurement\" " 
         
         + "WHERE " 
         + "\"ch1Watt\" <> 0 AND \"ch2Watt\" <> 0 AND \"ch3Watt\" <> 0 AND " 
@@ -156,7 +156,7 @@ public class SmartMeterAgent extends JPSAgent {
     }
 
     public void uploadLatestSmartMeterData(JSONArray queryResult, String targetResourceID, List<String[]> mappings) {
-        OffsetDateTime time = OffsetDateTime.parse("2000-01-01 00:00:00+00:00".replace(' ', 'T'));
+        OffsetDateTime time = OffsetDateTime.parse("2000-01-01T00:00:00+00:00");
         List<OffsetDateTime> timeValues = new ArrayList<OffsetDateTime>();
         List<List<?>> allValues = new ArrayList<>();
         List<String> dataIRIs = new ArrayList<>();
@@ -193,7 +193,7 @@ public class SmartMeterAgent extends JPSAgent {
             for (int j = 0; j < queryResult.length() ; j++) {
                 // TODO check if time is the same, if not, query for the next latest time 
                 // (ts <= the lowest one in previous attempt)
-                time = OffsetDateTime.parse(queryResult.getJSONObject(j).getString("time").replace(' ', 'T'));
+                time = OffsetDateTime.parse(queryResult.getJSONObject(j).getString("time"));
                 if (!queryResult.getJSONObject(j).getString("device").toLowerCase().equals(device.toLowerCase())) {
                     continue;
                 }
@@ -201,7 +201,8 @@ public class SmartMeterAgent extends JPSAgent {
                 // Check if bus load time series are instantiated
                 if (oneBusIRIs.has("PdIri") && oneBusIRIs.has("QdIri")) {
                     List<String> oneDevicePd = new ArrayList<String>();
-                    oneDevicePd.add(Double.toString(queryResult.getJSONObject(j).getDouble("pd")));
+                    // Change the sign of active load
+                    oneDevicePd.add(Double.toString(-queryResult.getJSONObject(j).getDouble("pd")));
                     allValues.add(oneDevicePd);
                     dataIRIs.add(oneBusIRIs.getString("PdIri"));
                     List<String> oneDeviceQd = new ArrayList<String>();                            
