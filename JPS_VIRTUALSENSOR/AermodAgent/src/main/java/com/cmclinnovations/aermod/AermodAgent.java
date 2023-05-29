@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.locationtech.jts.geom.Polygon;
 
+import com.cmclinnovations.aermod.objects.Building;
 import com.cmclinnovations.aermod.objects.PointSource;
 import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
@@ -85,6 +86,7 @@ public class AermodAgent extends DerivationAgent {
         Polygon scope = queryClient.getScopeFromOntop(scopeIri);
 
         List<StaticPointSource> staticPointSources = new ArrayList<>();
+        List<Building> buildings = new ArrayList<>();
         if (citiesNamespace != null) {
             String namespaceCRS = queryClient.getNamespaceCRS(citiesNamespace);
             queryClient.setcitiesNamespaceCRS(citiesNamespace, namespaceCRS);
@@ -92,6 +94,7 @@ public class AermodAgent extends DerivationAgent {
                 staticPointSources = queryClient.getStaticPointSourcesWithinScope(scope);
                 BuildingsData bd = new BuildingsData(citiesNamespace, namespaceCRS, queryClient);
                 bd.setStaticPointSourceProperties(staticPointSources);
+                buildings = bd.getBuildings(staticPointSources);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -103,8 +106,6 @@ public class AermodAgent extends DerivationAgent {
         allSources.addAll(staticPointSources);
         allSources.addAll(ships);
 
-        List<String> buildingOCGMLIRIs = queryClient.getBuildingsNearPollutantSources(allSources);
-
         // update derivation of ships (on demand)
         List<String> derivationsToUpdate = queryClient.getDerivationsOfPointSources(allSources);
         updateDerivations(derivationsToUpdate);
@@ -112,6 +113,10 @@ public class AermodAgent extends DerivationAgent {
         // get emissions and set the values in the ships
         LOGGER.info("Querying emission values");
         queryClient.setEmissions(allSources);
+
+        // Stop here for testing purposes.
+        if (citiesNamespace != null)
+            return;
 
         // update weather station with simulation time
         updateWeatherStation(weatherStationIri, simulationTime);
@@ -167,7 +172,7 @@ public class AermodAgent extends DerivationAgent {
         }
 
         // create emissions input
-        if (aermod.createPointsFile(ships, srid) != 0) {
+        if (aermod.createPointsFile(allSources, srid) != 0) {
             LOGGER.error("Failed to create points emissions file, terminating");
             return;
         }

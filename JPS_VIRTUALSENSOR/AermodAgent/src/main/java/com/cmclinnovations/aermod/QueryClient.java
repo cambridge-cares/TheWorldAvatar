@@ -58,6 +58,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -325,14 +327,25 @@ public class QueryClient {
 
         WhereBuilder wb4 = new WhereBuilder().addBind("?cityobject", "?cityObject");
 
+        WhereBuilder wb5 = new WhereBuilder()
+                .addPrefix("ocgml", ONTO_CITYGML)
+                .addWhere("?cityObject", "ocgml:objectClassId", "?id")
+                .addFilter("?id IN (21,26)");
+
         SelectBuilder sb = new SelectBuilder()
                 .addVar("?cityObject");
 
         Query query = sb.build();
         // add geospatial service
         ElementGroup body = new ElementGroup();
-        body.addElement(wb3.build().getQueryPattern());
-        body.addElement(wb4.build().getQueryPattern());
+        // Filtering of IRIs in scope but not in pointSourceIRIList will be done within
+        // the code.
+        // It is very slow to do this step in SPARQL. Including a values valuse with
+        // hundreds of elements
+        // results in the query taking several minutes to complete.
+        // body.addElement(wb3.build().getQueryPattern());
+        // body.addElement(wb4.build().getQueryPattern());
+        body.addElement(wb5.build().getQueryPattern());
         body.addElement(new ElementService(geoUri + "search", wb.build().getQueryPattern()));
         query.setQueryPattern(body);
 
@@ -345,7 +358,8 @@ public class QueryClient {
 
         for (int i = 0; i < buildingIRIQueryResult.length(); i++) {
             String pointSourceIRI = buildingIRIQueryResult.getJSONObject(i).getString("cityObject");
-            pointSourceIRIWithinScope.add(pointSourceIRIMap.get(pointSourceIRI));
+            if (pointSourceIRIList.contains(pointSourceIRI))
+                pointSourceIRIWithinScope.add(pointSourceIRIMap.get(pointSourceIRI));
         }
 
         return pointSourceIRIWithinScope;
@@ -496,15 +510,15 @@ public class QueryClient {
 
                 try {
                     // this is to convert from org.postgis.Point to the Geometry class
-                    Point postgisPoint = ts.getValuesAsPoint(measure).get(0);
+                    org.postgis.Point postgisPoint = ts.getValuesAsPoint(measure).get(0);
                     String wktLiteral = postgisPoint.getTypeString() + postgisPoint.getValue();
 
-                    Geometry point = new org.locationtech.jts.io.WKTReader().read(wktLiteral);
+                    Point point = (Point) new org.locationtech.jts.io.WKTReader().read(wktLiteral);
 
                     if (scope.covers(point)) {
                         // measureToShipMap.get(measure) gives the iri
                         Ship ship = new Ship(measureToShipMap.get(measure));
-                        ship.setLocation(postgisPoint);
+                        ship.setLocation(point);
                         ships.add(ship);
                     }
                 } catch (ParseException e) {
@@ -603,7 +617,7 @@ public class QueryClient {
 
             if (entityTypeIri.contentEquals(PM10) && quantityTypeIri.contentEquals(MASS_FLOW)) {
                 // PM10 flowrate
-                sourceObject.setFlowRatePM10InKgPerS(i);(literalValue);
+                sourceObject.setFlowRatePM10InKgPerS(literalValue);
             } else if (entityTypeIri.contentEquals(PM25) && quantityTypeIri.contentEquals(MASS_FLOW)) {
                 // PM2.5 flowrate
                 sourceObject.setFlowRatePM25InKgPerS(literalValue);
@@ -858,9 +872,8 @@ public class QueryClient {
                 iriToPolygonMap.put(ontoCityGMLIRI, polyList);
             } else {
                 List<List<Polygon>> polyList = new ArrayList<>();
-                List<Polygon> tmp = new ArrayList<>();
-                polyList.add(tmp);
-                polyList.add(tmp);
+                polyList.add(new ArrayList<>());
+                polyList.add(new ArrayList<>());
                 if (objectClass == 35)
                     polyList.get(0).add(toPolygon(ignoreHole(polygonString, dataString)));
                 else if (objectClass == 33)
@@ -872,8 +885,12 @@ public class QueryClient {
         return iriToPolygonMap;
     }
 
-    List<String> getBuildingsNearPollutantSources(List<PointSource> allSources)
+    public Map<String, List<List<Polygon>>> getBuildingsNearPollutantSources(List<StaticPointSource> allSources)
             throws org.apache.jena.sparql.lang.sparql_11.ParseException {
+
+        List<String> cityObjectIRIList = allSources.stream()
+                .map(i -> i.getOcgmlIri().replace("building", "cityobject").replace("cityfurniture", "cityobject"))
+                .collect(Collectors.toList());
 
         List<String> boxBounds = getBoundingBoxofPointSources(allSources);
 
@@ -912,13 +929,21 @@ public class QueryClient {
         String queryString = query.toString().replace("PLACEHOLDER", "");
         JSONArray buildingIRIQueryResult = AccessAgentCaller.queryStore(citiesNamespace, queryString);
 
-        for (int i = 0; i < allSources.size(); i++) {
-            PointSource ps = allSources.get(i);
+        List<String> buildingOCGMLIRIList = new ArrayList<>();
+
+        for (int i = 0; i < buildingIRIQueryResult.length(); i++) {
+            String cityObjectIRI = buildingIRIQueryResult.getJSONObject(i).getString("cityObject");
+            if (!cityObjectIRIList.contains(cityObjectIRI))
+                buildingOCGMLIRIList.add(cityObjectIRI.replace("cityobject", "building"));
         }
+
+        Map<String, List<List<Polygon>>> iriToPolygonMap = buildingsQuery(buildingOCGMLIRIList);
+
+        return iriToPolygonMap;
 
     }
 
-    private List<String> getBoundingBoxofPointSources(List<PointSource> allSources) {
+    private List<String> getBoundingBoxofPointSources(List<StaticPointSource> allSources) {
         // Determine bounding box for geospatial query by finding the minimum and
         // maximum x and y coordinates of pollutant sources
         // in the original coordinate system.

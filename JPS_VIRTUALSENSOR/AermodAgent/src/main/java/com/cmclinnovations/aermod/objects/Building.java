@@ -6,7 +6,6 @@ import org.postgis.Polygon;
 
 public class Building {
     private LinearRing footPrint;
-    private Polygon footprint;
     private double height;
     private Point location;
 
@@ -22,6 +21,10 @@ public class Building {
 
     public double getHeight() {
         return height;
+    }
+
+    public String getSrid() {
+        return "EPSG:" + footPrint.getSRID();
     }
 
 }
