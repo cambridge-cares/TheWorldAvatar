@@ -1,11 +1,14 @@
 package com.cmclinnovations.aermod;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -15,6 +18,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
@@ -40,12 +44,14 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
 import com.cmclinnovations.aermod.objects.Building;
 import com.cmclinnovations.aermod.objects.PointSource;
 import com.cmclinnovations.aermod.objects.Ship;
+import com.cmclinnovations.aermod.objects.StaticPointSource;
 import com.cmclinnovations.aermod.objects.WeatherData;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -77,6 +83,182 @@ public class Aermod {
 
         this.aermodDirectory = simulationDirectory.resolve("aermod");
         aermodDirectory.toFile().mkdir();
+    }
+
+    /* Write out data to BPIPPRM input file and run this program. */
+    public int createBPIPPRMInput(List<StaticPointSource> pointSources, List<Building> buildings, int simulationSrid) {
+
+        List<String> frontmatter = new ArrayList<>();
+        frontmatter.add("\'BPIPPRM test run\' \n");
+        frontmatter.add("\'p\' \n");
+        frontmatter.add("\' METERS    \'  1.0  \n");
+        frontmatter.add("\'UTMY \'  0.0 \n");
+
+        StringBuilder sb = new StringBuilder();
+
+        for (String st : frontmatter) {
+            sb.append(st);
+        }
+
+        int numberBuildings = buildings.size();
+        sb.append(numberBuildings + " \n");
+        for (int i = 0; i < numberBuildings; i++) {
+            Building build = buildings.get(i);
+            String inputLine = "\'Build" + i + "\' " + "1 " + build.getElevation() + " \n";
+            sb.append(inputLine);
+            LinearRing base = build.getFootprint();
+            String originalSrid = "EPSG:" + base.getSRID();
+            inputLine = base.getNumPoints() + " " + build.getHeight() + " \n";
+            sb.append(inputLine);
+
+            Coordinate[] baseCoords = base.getCoordinates();
+            for (Coordinate coord : baseCoords) {
+                double[] xyOriginal = { coord.x, coord.y };
+                double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
+                inputLine = xyTransformed[0] + " " + xyTransformed[1] + " \n";
+                sb.append(inputLine);
+
+            }
+        }
+
+        int numberSources = pointSources.size();
+        sb.append(numberSources + " \n");
+        for (int i = 0; i < numberSources; i++) {
+            StaticPointSource ps = pointSources.get(i);
+            String originalSrid = "EPSG:" + ps.getLocation().getSRID();
+            double[] xyOriginal = { ps.getLocation().getX(), ps.getLocation().getY() };
+            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
+            String inputLine = "\'S" + i + "\'" + " " + ps.getElevation() + " " +
+                    ps.getHeight() + " " + xyTransformed[0] + " " + xyTransformed[1] + " \n";
+            sb.append(inputLine);
+        }
+        return writeToFile(bpipprmDirectory.resolve("bpipprm.inp"), sb.toString());
+
+    }
+
+    public int runBPIPPRM() {
+        try {
+            Process process = Runtime.getRuntime().exec(
+                    new String[] { EnvConfig.BPIPPRM_EXE, "bpipprm.inp", "building.dat", "buildings_summary.dat" },
+                    null, bpipprmDirectory.toFile());
+            if (process.waitFor() != 0) {
+                return 1;
+            }
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+            // Read the output from the command
+            LOGGER.info("Here is the standard output of BPIPPRM:\n");
+            String s = null;
+            while ((s = stdInput.readLine()) != null) {
+                LOGGER.info(s);
+            }
+
+            // Read any errors from the attempted command
+            LOGGER.info("Here is the standard error of BPIPPRM (if any):\n");
+            while ((s = stdError.readLine()) != null) {
+                LOGGER.info(s);
+            }
+        } catch (IOException e) {
+            return 0;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return 0;
+        }
+        return 0;
+    }
+
+    public int createAERMODBuildingsInput() {
+
+        StringBuilder sb = new StringBuilder();
+
+        Path filepath = bpipprmDirectory.resolve("building.dat");
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(filepath.toString()));
+            String line = reader.readLine();
+            while (line != null) {
+                line = line.stripLeading();
+                if (line.length() > 2 && line.substring(0, 2).equals("SO"))
+                    sb.append(line + "\n");
+                line = reader.readLine();
+            }
+            reader.close();
+            LOGGER.info(sb.toString());
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+        }
+
+        return writeToFile(aermodDirectory.resolve("buildings.dat"), sb.toString());
+    }
+
+    public JSONObject createStaticPointSourcesJSON(List<StaticPointSource> pointSources) {
+
+        // define a list of (longitude, latitude) coordinates
+        List<List<Double>> lonlatCoordinates = new ArrayList<>();
+
+        for (int i = 0; i < pointSources.size(); i++) {
+            StaticPointSource sps = pointSources.get(i);
+            String originalSrid = "EPSG:" + sps.getLocation().getSRID();
+            double[] xyOriginal = { sps.getLocation().getX(), sps.getLocation().getY() };
+            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:4326", xyOriginal);
+            List<Double> tmp = Arrays.asList(xyTransformed[0], xyTransformed[1]);
+            lonlatCoordinates.add(tmp);
+        }
+
+        // create a JSONObject that represents a GeoJSON Feature Collection
+        JSONObject featureCollection = new JSONObject();
+        featureCollection.put("type", "FeatureCollection");
+        JSONArray features = new JSONArray();
+
+        // loop through the coordinates and add them as GeoJSON Points to the Feature
+        // Collection
+        for (List<Double> coordinate : lonlatCoordinates) {
+            JSONObject geometry = new JSONObject();
+            geometry.put("type", "Point");
+            geometry.put("coordinates", new JSONArray(coordinate));
+            JSONObject feature = new JSONObject();
+            feature.put("type", "Feature");
+            feature.put("geometry", geometry);
+            features.put(feature);
+        }
+        featureCollection.put("features", features);
+
+        LOGGER.info("Uploading plant items GeoJSON to PostGIS");
+        return featureCollection;
+
+    }
+
+    public int createAERMODReceptorInput(Polygon scope, int nx, int ny, int simulationSrid) {
+
+        List<Double> xDoubles = new ArrayList<>();
+        List<Double> yDoubles = new ArrayList<>();
+
+        for (int i = 0; i < scope.getCoordinates().length; i++) {
+
+            String originalSrid = "EPSG:4326";
+            double[] xyOriginal = { scope.getCoordinates()[i].x, scope.getCoordinates()[i].y };
+            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
+
+            xDoubles.add(xyTransformed[0]);
+            yDoubles.add(xyTransformed[1]);
+        }
+
+        double xlo = Collections.min(xDoubles);
+        double xhi = Collections.max(xDoubles);
+        double ylo = Collections.min(yDoubles);
+        double yhi = Collections.max(yDoubles);
+
+        double dx = (xhi - xlo) / nx;
+        double dy = (yhi - ylo) / ny;
+
+        StringBuilder sb = new StringBuilder("RE GRIDCART POL1 STA \n");
+        String rec = String.format("                 XYINC %f %d %f %f %d %f", xlo, nx, dx, ylo, ny, dy);
+        sb.append(rec + " \n");
+        sb.append("RE GRIDCART POL1 END \n");
+
+        return writeToFile(aermodDirectory.resolve("receptor.dat"), sb.toString());
     }
 
     String addLeadingZero(String variable, int length) {
@@ -278,7 +460,7 @@ public class Aermod {
                     velocity, ps.getDiameter()));
             sb.append(System.lineSeparator());
         }
-        return writeToFile(aermodDirectory.resolve("shipSources.dat"), sb.toString());
+        return writeToFile(aermodDirectory.resolve("points.so"), sb.toString());
     }
 
     private int writeToFile(Path path, String content) {

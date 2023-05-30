@@ -8,7 +8,7 @@ public class Building {
     private LinearRing footPrint;
     private double height;
     private Point location;
-    private double baseElevation;
+    private double baseElevation = 0.0;
 
     public Building(LinearRing footPrint, double height) {
         this.footPrint = footPrint;
@@ -34,6 +34,10 @@ public class Building {
 
     public double getElevation() {
         return baseElevation;
+    }
+
+    public Point getLocation() {
+        return location;
     }
 
 }

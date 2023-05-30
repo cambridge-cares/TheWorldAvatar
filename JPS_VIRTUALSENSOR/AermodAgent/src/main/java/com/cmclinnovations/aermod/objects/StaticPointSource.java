@@ -2,7 +2,7 @@ package com.cmclinnovations.aermod.objects;
 
 public class StaticPointSource extends PointSource {
     private String ocgmlIri;
-    private double baseElevation;
+    private double baseElevation = 0.0;
 
     public StaticPointSource(String iri) {
         super(iri);

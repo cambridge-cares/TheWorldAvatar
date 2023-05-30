@@ -62,7 +62,6 @@ public class AermodAgent extends DerivationAgent {
         String simulationTimeIri = derivationInputs.getIris(QueryClient.SIMULATION_TIME).get(0);
         // citiesNamespaceIri will be null if this parameter was excluded from the POST
         // request sent to DispersionInteractor
-
         String citiesNamespace = null;
         if (derivationInputs.getIris(QueryClient.CITIES_NAMESPACE) != null) {
             String citiesNamespaceIri = derivationInputs.getIris(QueryClient.CITIES_NAMESPACE).get(0);
@@ -136,9 +135,13 @@ public class AermodAgent extends DerivationAgent {
             srid = Integer.valueOf("326" + centreZoneNumber);
         }
 
-        // Stop here for testing purposes.
-        if (citiesNamespace != null)
-            return;
+        if (citiesNamespace != null) {
+            // AERMOD will be run for flat terrain in the dev-aermod-agent-cleanup branch.
+            // queryClient.setElevation(staticPointSources, buildings, srid);
+            aermod.createBPIPPRMInput(staticPointSources, buildings, srid);
+            aermod.runBPIPPRM();
+            aermod.createAERMODBuildingsInput();
+        }
 
         aermod.create144File(weatherData);
 
@@ -155,6 +158,7 @@ public class AermodAgent extends DerivationAgent {
         }
 
         aermod.createAermodInputFile(scope, nx, ny, srid);
+        aermod.createAERMODReceptorInput(scope, nx, ny, srid);
         aermod.runAermod("aermod.inp");
 
         // Upload files used by scripts within Python Service to file server.
@@ -162,22 +166,30 @@ public class AermodAgent extends DerivationAgent {
         String outFileURL = aermod.uploadToFileServer("receptor.dat");
 
         List<Double> receptorHeights = new ArrayList<>();
-        receptorHeights.add(1.0);
+        receptorHeights.add(0.0);
         // Set GeoServer layer names
         List<String> dispLayerNames = new ArrayList<>();
         for (int i = 0; i < receptorHeights.size(); i++) {
             int receptorHeightInt = (int) Math.round(receptorHeights.get(i));
-            String dispLayerName = "dispersion_height_" + String.valueOf(receptorHeightInt) + "_meters";
+            String dispLayerName = "dispersion_" + "_height_"
+                    + String.valueOf(receptorHeightInt) + "_meters";
             dispLayerNames.add(dispLayerName);
         }
         String shipLayerName = "ships_" + simulationTime; // hardcoded in ShipInputAgent
-        String plantsLayerName = "source_layer";
+        String sourceLayerName = "source_layer";
         String elevationLayerName = "elevation_layer";
 
         // Get contour plots as geoJSON objects from PythonService and upload them to
         // PostGIS using GDAL
 
+        JSONObject pointSourceFeatures = aermod.createStaticPointSourcesJSON(staticPointSources);
+
         GDALClient gdalClient = GDALClient.getInstance();
+
+        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.SOURCE_LAYER,
+                pointSourceFeatures.toString(),
+                new Ogr2OgrOptions(), true);
+
         JSONObject geoJSON2 = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_ELEVATION_URL, outFileURL, srid, 0.0);
         gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, elevationLayerName, geoJSON2.toString(),
                 new Ogr2OgrOptions(), true);
@@ -206,10 +218,13 @@ public class AermodAgent extends DerivationAgent {
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, elevationLayerName,
                 geoServerVectorSettings);
 
+        geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, EnvConfig.SOURCE_LAYER,
+                new GeoServerVectorSettings());
+
         // ships_ is hardcoded here and in ShipInputAgent
         queryClient.updateOutputs(derivationInputs.getDerivationIRI(), outputFileURL, dispLayerNames.get(0),
                 shipLayerName, simulationTime);
-        if (aermod.createDataJson(shipLayerName, dispLayerNames, plantsLayerName, elevationLayerName,
+        if (aermod.createDataJson(shipLayerName, dispLayerNames, sourceLayerName, elevationLayerName,
                 aermod.getBuildingsGeoJSON(buildings)) != 0) {
             LOGGER.error("Failed to create data.json file for visualisation, terminating");
             return;

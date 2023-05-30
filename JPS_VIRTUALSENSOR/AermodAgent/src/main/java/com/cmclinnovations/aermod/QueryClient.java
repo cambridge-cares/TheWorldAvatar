@@ -34,6 +34,7 @@ import com.cmclinnovations.aermod.sparqlbuilder.ValuesPattern;
 import java.util.Arrays;
 import java.util.Collections;
 
+import com.cmclinnovations.aermod.objects.Building;
 import com.cmclinnovations.aermod.objects.PointSource;
 import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
@@ -51,15 +52,15 @@ import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -1115,6 +1116,50 @@ public class QueryClient {
                 return false;
             }
         });
+    }
+
+    public void setElevation(List<StaticPointSource> pointSources, List<Building> buildings, int simulationSrid) {
+
+        for (int i = 0; i < pointSources.size(); i++) {
+            StaticPointSource ps = pointSources.get(i);
+            String originalSrid = "EPSG:" + ps.getLocation().getSRID();
+            double[] xyOriginal = { ps.getLocation().getX(), ps.getLocation().getY() };
+            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
+            String sqlString = String.format("SELECT ST_Value(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d)) AS val " +
+                    "FROM elevation " + "WHERE ST_Intersects(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d));",
+                    xyTransformed[0], xyTransformed[1], simulationSrid, xyTransformed[0], xyTransformed[1],
+                    simulationSrid);
+
+            try (Statement stmt = rdbStoreClient.getConnection().createStatement()) {
+                ResultSet result = stmt.executeQuery(sqlString);
+                double elevation = result.getDouble("val");
+                ps.setElevation(elevation);
+            } catch (SQLException e) {
+                LOGGER.error(e.getMessage());
+            }
+
+        }
+
+        for (int i = 0; i < buildings.size(); i++) {
+            Building building = buildings.get(i);
+            String originalSrid = building.getSrid();
+            double[] xyOriginal = { building.getLocation().getX(), building.getLocation().getY() };
+            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
+            String sqlString = String.format("SELECT ST_Value(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d)) AS val" +
+                    "FROM elevation" + "WHERE ST_Intersects(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d));",
+                    xyTransformed[0], xyTransformed[1], simulationSrid, xyTransformed[0], xyTransformed[1],
+                    simulationSrid);
+
+            try (Statement stmt = rdbStoreClient.getConnection().createStatement()) {
+                ResultSet result = stmt.executeQuery(sqlString);
+                double elevation = result.getDouble("val");
+                building.setElevation(elevation);
+            } catch (SQLException e) {
+                LOGGER.error(e.getMessage());
+            }
+
+        }
+
     }
 
     void updateOutputs(String derivation, String dispersionMatrix, String dispersionLayer, String shipLayer,
