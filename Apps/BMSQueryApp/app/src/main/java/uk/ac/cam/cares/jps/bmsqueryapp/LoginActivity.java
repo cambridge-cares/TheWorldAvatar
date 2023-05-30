@@ -84,6 +84,10 @@ public class LoginActivity extends AppCompatActivity {
             finish();
         }
 
+        if (configuration.hasConfigurationChanged()) {
+            configuration.acceptConfiguration();
+        }
+
         executor.submit(this::initializeAppAuth);
 
         binding.signInOrUpButton.setOnClickListener(view -> executor.submit(this::doAuth));
