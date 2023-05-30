@@ -1,7 +1,9 @@
 package com.cmclinnovations.aermod;
 
 import org.eclipse.rdf4j.model.vocabulary.GEOF;
+import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
+import org.eclipse.rdf4j.sparqlbuilder.constraint.SparqlFunction;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
@@ -14,14 +16,25 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
 import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequenceFilter;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.operation.buffer.BufferOp;
+import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.geom.Polygon;
-import org.postgis.Point;
+import org.locationtech.jts.geom.util.GeometryFixer;
+import org.locationtech.jts.geom.Point;
 import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
 
 import com.cmclinnovations.aermod.sparqlbuilder.GeoSPARQL;
 import com.cmclinnovations.aermod.sparqlbuilder.ValuesPattern;
+
+import java.util.Arrays;
+import java.util.Collections;
+
+import com.cmclinnovations.aermod.objects.Building;
 import com.cmclinnovations.aermod.objects.PointSource;
 import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
@@ -39,7 +52,9 @@ import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -64,6 +79,8 @@ public class QueryClient {
     private RemoteRDBStoreClient rdbStoreClient;
     private TimeSeriesClient<Long> tsClientLong;
     private TimeSeriesClient<Instant> tsClientInstant;
+    private String citiesNamespace;
+    private String namespaceCRS;
 
     // prefixes
     private static final String ONTO_EMS = "https://www.theworldavatar.com/kg/ontoems/";
@@ -142,6 +159,12 @@ public class QueryClient {
     private static final Iri EMITS = P_DISP.iri("emits");
     private static final Iri HAS_SRS_NAME = P_OCGML.iri("srsname");
     private static final Iri HAS_QTY = P_DISP.iri("hasQuantity");
+    private static final Iri OCGML_GEOM = P_OCGML.iri("GeometryType");
+    private static final Iri OCGML_CITYOBJECT = P_OCGML.iri("cityObjectId");
+    private static final Iri OCGML_OBJECTCLASSID = P_OCGML.iri("objectClassId");
+    private static final Iri OCGML_LOD2MULTISURFACEID = P_OCGML.iri("lod2MultiSurfaceId");
+    private static final Iri OCGML_BUILDINGID = P_OCGML.iri("buildingId");
+    private static final Iri OCGML_ENVELOPETYPE = P_OCGML.iri("EnvelopeType");
 
     // fixed units for each measured property
     private static final Map<String, Iri> UNIT_MAP = new HashMap<>();
@@ -219,8 +242,13 @@ public class QueryClient {
         return queryResult.getJSONObject(0).getString(crs.getQueryString().substring(1));
     }
 
-    private List<String> getIRIofStaticPointSourcesWithinScope(Polygon scope, String citiesNamespace,
-            String namespaceCRS) throws org.apache.jena.sparql.lang.sparql_11.ParseException {
+    public void setcitiesNamespaceCRS(String citiesNamespace, String namespaceCRS) {
+        this.citiesNamespace = citiesNamespace;
+        this.namespaceCRS = namespaceCRS;
+    }
+
+    private List<String> getIRIofStaticPointSourcesWithinScope(Polygon scope)
+            throws org.apache.jena.sparql.lang.sparql_11.ParseException {
 
         List<String> pointSourceIRIAll = queryStaticPointSources();
         List<String> pointSourceIRIList = new ArrayList<>();
@@ -300,14 +328,25 @@ public class QueryClient {
 
         WhereBuilder wb4 = new WhereBuilder().addBind("?cityobject", "?cityObject");
 
+        WhereBuilder wb5 = new WhereBuilder()
+                .addPrefix("ocgml", ONTO_CITYGML)
+                .addWhere("?cityObject", "ocgml:objectClassId", "?id")
+                .addFilter("?id IN (21,26)");
+
         SelectBuilder sb = new SelectBuilder()
                 .addVar("?cityObject");
 
         Query query = sb.build();
         // add geospatial service
         ElementGroup body = new ElementGroup();
-        body.addElement(wb3.build().getQueryPattern());
-        body.addElement(wb4.build().getQueryPattern());
+        // Filtering of IRIs in scope but not in pointSourceIRIList will be done within
+        // the code.
+        // It is very slow to do this step in SPARQL. Including a values valuse with
+        // hundreds of elements
+        // results in the query taking several minutes to complete.
+        // body.addElement(wb3.build().getQueryPattern());
+        // body.addElement(wb4.build().getQueryPattern());
+        body.addElement(wb5.build().getQueryPattern());
         body.addElement(new ElementService(geoUri + "search", wb.build().getQueryPattern()));
         query.setQueryPattern(body);
 
@@ -320,18 +359,18 @@ public class QueryClient {
 
         for (int i = 0; i < buildingIRIQueryResult.length(); i++) {
             String pointSourceIRI = buildingIRIQueryResult.getJSONObject(i).getString("cityObject");
-            pointSourceIRIWithinScope.add(pointSourceIRIMap.get(pointSourceIRI));
+            if (pointSourceIRIList.contains(pointSourceIRI))
+                pointSourceIRIWithinScope.add(pointSourceIRIMap.get(pointSourceIRI));
         }
 
         return pointSourceIRIWithinScope;
 
     }
 
-    public List<StaticPointSource> getStaticPointSourcesWithinScope(Polygon scope, String citiesNamespace,
-            String namespaceCRS) throws org.apache.jena.sparql.lang.sparql_11.ParseException {
+    public List<StaticPointSource> getStaticPointSourcesWithinScope(Polygon scope)
+            throws org.apache.jena.sparql.lang.sparql_11.ParseException {
 
-        List<String> pointSourceOCGMLIRIWithinScope = getIRIofStaticPointSourcesWithinScope(scope, citiesNamespace,
-                namespaceCRS);
+        List<String> pointSourceOCGMLIRIWithinScope = getIRIofStaticPointSourcesWithinScope(scope);
         SelectQuery query = Queries.SELECT().prefix(P_DISP, P_OM);
         Variable ocgmlIRI = query.var();
         Variable sps = query.var();
@@ -472,15 +511,15 @@ public class QueryClient {
 
                 try {
                     // this is to convert from org.postgis.Point to the Geometry class
-                    Point postgisPoint = ts.getValuesAsPoint(measure).get(0);
+                    org.postgis.Point postgisPoint = ts.getValuesAsPoint(measure).get(0);
                     String wktLiteral = postgisPoint.getTypeString() + postgisPoint.getValue();
 
-                    Geometry point = new org.locationtech.jts.io.WKTReader().read(wktLiteral);
+                    Point point = (Point) new org.locationtech.jts.io.WKTReader().read(wktLiteral);
 
                     if (scope.covers(point)) {
                         // measureToShipMap.get(measure) gives the iri
                         Ship ship = new Ship(measureToShipMap.get(measure));
-                        ship.setLocation(postgisPoint);
+                        ship.setLocation(point);
                         ships.add(ship);
                     }
                 } catch (ParseException e) {
@@ -579,7 +618,7 @@ public class QueryClient {
 
             if (entityTypeIri.contentEquals(PM10) && quantityTypeIri.contentEquals(MASS_FLOW)) {
                 // PM10 flowrate
-                sourceObject.setFlowRatePM10InKgPerS(i);(literalValue);
+                sourceObject.setFlowRatePM10InKgPerS(literalValue);
             } else if (entityTypeIri.contentEquals(PM25) && quantityTypeIri.contentEquals(MASS_FLOW)) {
                 // PM2.5 flowrate
                 sourceObject.setFlowRatePM25InKgPerS(literalValue);
@@ -701,6 +740,426 @@ public class QueryClient {
             }
         });
         return weatherData;
+    }
+
+    /**
+     * Create a polygon with the given points
+     * 
+     * @param points points of the polygon as a string
+     * @return a polygon
+     */
+    private Polygon toPolygon(String points) {
+        int ind = 0;
+        GeometryFactory gF = new GeometryFactory();
+
+        String[] arr = points.split("#");
+
+        Coordinate[] coordinates = new Coordinate[(arr.length) / 3];
+
+        for (int i = 0; i < arr.length; i += 3) {
+            coordinates[ind] = new Coordinate(Double.valueOf(arr[i]), Double.valueOf(arr[i + 1]),
+                    Double.valueOf(arr[i + 2]));
+            ind++;
+        }
+
+        return gF.createPolygon(coordinates);
+    }
+
+    public Map<String, List<Polygon>> cityFurnitureQuery(List<String> ocgmlIRI) {
+
+        SelectQuery query = Queries.SELECT().prefix(P_OCGML);
+        Variable geometricIRI = SparqlBuilder.var("geometricIRI");
+        Variable polygonData = SparqlBuilder.var("polygonData");
+        Variable objectIRI = SparqlBuilder.var("objectIRI");
+
+        GraphPattern gp = GraphPatterns
+                .and(geometricIRI.has(OCGML_GEOM, polygonData).andHas(OCGML_CITYOBJECT, objectIRI))
+                .filter(Expressions.not(Expressions.function(SparqlFunction.IS_BLANK, polygonData)));
+        ValuesPattern<Iri> vp = new ValuesPattern<>(objectIRI,
+                ocgmlIRI.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
+        query.select(polygonData, objectIRI).where(gp, vp).orderBy(objectIRI);
+        JSONArray queryResult = AccessAgentCaller.queryStore(citiesNamespace, query.getQueryString());
+
+        Map<String, List<Polygon>> iriToPolygonMap = new HashMap<>();
+
+        for (int i = 0; i < queryResult.length(); i++) {
+            String ontoCityGMLIRI = queryResult.getJSONObject(i).getString(objectIRI.getQueryString().substring(1));
+            String polygonString = queryResult.getJSONObject(i).getString(polygonData.getQueryString().substring(1));
+            if (iriToPolygonMap.containsKey(ontoCityGMLIRI)) {
+                List<Polygon> polyList = iriToPolygonMap.get(ontoCityGMLIRI);
+                polyList.add(toPolygon(polygonString));
+                iriToPolygonMap.put(ontoCityGMLIRI, polyList);
+            } else {
+                List<Polygon> polyList = new ArrayList<>();
+                polyList.add(toPolygon(polygonString));
+                iriToPolygonMap.put(ontoCityGMLIRI, polyList);
+            }
+        }
+
+        return iriToPolygonMap;
+    }
+
+    /**
+     * Returns the ground geometry's exterior ring
+     * 
+     * @param geometry    ground geometry
+     * @param polygonType polygon datatype, such as "<...\POLYGON-3-45-15>"
+     * @return ground geometry with no holes
+     */
+    private String ignoreHole(String geometry, String polygonType) {
+        int num;
+        int ind;
+        int count = 1;
+
+        String[] split = polygonType.split("-");
+
+        if (split.length < 4) {
+            return geometry;
+        }
+
+        num = Integer.parseInt(split[2]);
+
+        ind = geometry.indexOf("#");
+
+        while (count != num) {
+            ind = geometry.indexOf("#", ind + 1);
+            count++;
+        }
+        return geometry.substring(0, ind);
+    }
+
+    public Map<String, List<List<Polygon>>> buildingsQuery(List<String> ocgmlIRI) {
+
+        SelectQuery query = Queries.SELECT().prefix(P_OCGML);
+        Variable geometricIRI = SparqlBuilder.var("geometricIRI");
+        Variable polygonData = SparqlBuilder.var("polygonData");
+        Variable objectIRI = SparqlBuilder.var("objectIRI");
+        Variable surfaceIRI = SparqlBuilder.var("surfaceIRI");
+        Variable datatype = SparqlBuilder.var("datatype");
+        Variable objectClassId = SparqlBuilder.var("objectClassId");
+
+        // RdfLiteral.NumericLiteral objectClassId = Rdf.literalOf(35);
+        List<Integer> objectClassIdValues = new ArrayList<>(Arrays.asList(33, 35));
+
+        Expression dataType = Expressions.function(SparqlFunction.DATATYPE, polygonData);
+
+        GraphPattern gp = GraphPatterns
+                .and(surfaceIRI.has(OCGML_GEOM, polygonData).andHas(OCGML_CITYOBJECT, geometricIRI),
+                        geometricIRI.has(OCGML_OBJECTCLASSID, objectClassId).andHas(OCGML_BUILDINGID, objectIRI))
+                .filter(Expressions.not(Expressions.function(SparqlFunction.IS_BLANK, polygonData)));
+        ValuesPattern<Iri> vp = new ValuesPattern<>(objectIRI,
+                ocgmlIRI.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
+        ValuesPattern<Integer> vp2 = new ValuesPattern<>(objectClassId, objectClassIdValues, Integer.class);
+
+        query.select(polygonData, objectIRI, dataType.as(datatype), objectClassId).where(gp, vp, vp2).orderBy(objectIRI,
+                objectClassId);
+        JSONArray queryResult = AccessAgentCaller.queryStore(citiesNamespace, query.getQueryString());
+
+        Map<String, List<List<Polygon>>> iriToPolygonMap = new HashMap<>();
+
+        for (int i = 0; i < queryResult.length(); i++) {
+            String ontoCityGMLIRI = queryResult.getJSONObject(i).getString(objectIRI.getQueryString().substring(1));
+            String polygonString = queryResult.getJSONObject(i).getString(polygonData.getQueryString().substring(1));
+            String objectClassString = queryResult.getJSONObject(i)
+                    .getString(objectClassId.getQueryString().substring(1));
+            int objectClass = Integer.parseInt(objectClassString);
+            String dataString = queryResult.getJSONObject(i).getString(datatype.getQueryString().substring(1));
+            if (iriToPolygonMap.containsKey(ontoCityGMLIRI)) {
+                List<List<Polygon>> polyList = iriToPolygonMap.get(ontoCityGMLIRI);
+                if (objectClass == 35)
+                    polyList.get(0).add(toPolygon(ignoreHole(polygonString, dataString)));
+                else if (objectClass == 33)
+                    polyList.get(1).add(toPolygon(polygonString));
+                iriToPolygonMap.put(ontoCityGMLIRI, polyList);
+            } else {
+                List<List<Polygon>> polyList = new ArrayList<>();
+                polyList.add(new ArrayList<>());
+                polyList.add(new ArrayList<>());
+                if (objectClass == 35)
+                    polyList.get(0).add(toPolygon(ignoreHole(polygonString, dataString)));
+                else if (objectClass == 33)
+                    polyList.get(1).add(toPolygon(polygonString));
+                iriToPolygonMap.put(ontoCityGMLIRI, polyList);
+            }
+        }
+
+        return iriToPolygonMap;
+    }
+
+    public Map<String, List<List<Polygon>>> getBuildingsNearPollutantSources(List<StaticPointSource> allSources)
+            throws org.apache.jena.sparql.lang.sparql_11.ParseException {
+
+        List<String> cityObjectIRIList = allSources.stream()
+                .map(i -> i.getOcgmlIri().replace("building", "cityobject").replace("cityfurniture", "cityobject"))
+                .collect(Collectors.toList());
+
+        List<String> boxBounds = getBoundingBoxofPointSources(allSources);
+
+        String lowerBounds = boxBounds.get(0);
+        String upperBounds = boxBounds.get(1);
+
+        String geoUri = "http://www.bigdata.com/rdf/geospatial#";
+        // where clause for geospatial search
+        WhereBuilder wb = new WhereBuilder()
+                .addPrefix("ocgml", ONTO_CITYGML)
+                .addPrefix("geo", geoUri)
+                .addWhere("?cityObject", "geo:predicate", "ocgml:EnvelopeType")
+                .addWhere("?cityObject", "geo:searchDatatype", "<http://localhost/blazegraph/literals/POLYGON-3-15>")
+                .addWhere("?cityObject", "geo:customFields", "X0#Y0#Z0#X1#Y1#Z1#X2#Y2#Z2#X3#Y3#Z3#X4#Y4#Z4")
+                // PLACEHOLDER because lowerBounds and upperBounds would be otherwise added as
+                // doubles, not strings
+                .addWhere("?cityObject", "geo:customFieldsLowerBounds", "PLACEHOLDER" + lowerBounds)
+                .addWhere("?cityObject", "geo:customFieldsUpperBounds", "PLACEHOLDER" + upperBounds);
+
+        // where clause to check that the city object is a building
+        WhereBuilder wb2 = new WhereBuilder()
+                .addPrefix("ocgml", ONTO_CITYGML)
+                .addWhere("?cityObject", "ocgml:objectClassId", "?id")
+                .addFilter("?id=26");
+
+        SelectBuilder sb = new SelectBuilder()
+                .addVar("?cityObject");
+
+        Query query = sb.build();
+        // add geospatial service
+        ElementGroup body = new ElementGroup();
+        body.addElement(new ElementService(geoUri + "search", wb.build().getQueryPattern()));
+        body.addElement(wb2.build().getQueryPattern());
+        query.setQueryPattern(body);
+
+        String queryString = query.toString().replace("PLACEHOLDER", "");
+        JSONArray buildingIRIQueryResult = AccessAgentCaller.queryStore(citiesNamespace, queryString);
+
+        List<String> buildingOCGMLIRIList = new ArrayList<>();
+
+        for (int i = 0; i < buildingIRIQueryResult.length(); i++) {
+            String cityObjectIRI = buildingIRIQueryResult.getJSONObject(i).getString("cityObject");
+            if (!cityObjectIRIList.contains(cityObjectIRI))
+                buildingOCGMLIRIList.add(cityObjectIRI.replace("cityobject", "building"));
+        }
+
+        Map<String, List<List<Polygon>>> iriToPolygonMap = buildingsQuery(buildingOCGMLIRIList);
+
+        return iriToPolygonMap;
+
+    }
+
+    private List<String> getBoundingBoxofPointSources(List<StaticPointSource> allSources) {
+        // Determine bounding box for geospatial query by finding the minimum and
+        // maximum x and y coordinates of pollutant sources
+        // in the original coordinate system.
+        double xMin = 0.0;
+        double xMax = 0.0;
+        double yMin = 0.0;
+        double yMax = 0.0;
+
+        for (int i = 0; i < allSources.size(); i++) {
+            PointSource ps = allSources.get(i);
+            Point location = ps.getLocation();
+            double[] xyOriginal = { location.getX(), location.getY() };
+            double[] xyTransformed = CRSTransformer.transform("EPSG:" + location.getSRID(), namespaceCRS, xyOriginal);
+
+            if (i == 0) {
+                xMin = xyTransformed[0];
+                xMax = xMin;
+                yMin = xyTransformed[1];
+                yMax = yMin;
+            } else {
+                xMin = Math.min(xMin, xyTransformed[0]);
+                xMax = Math.max(xMax, xyTransformed[0]);
+                yMin = Math.min(yMin, xyTransformed[1]);
+                yMax = Math.max(yMax, xyTransformed[1]);
+            }
+        }
+
+        if (allSources.size() == 1) {
+            double expandRange = 10.0;
+            xMin -= expandRange;
+            xMax += expandRange;
+            yMin -= expandRange;
+            yMax += expandRange;
+        }
+
+        double zMax = 800.0;
+
+        String polygonPoints = String.valueOf(xMin) + "#" + String.valueOf(yMin) + "#" + String.valueOf(zMax) +
+                "#" + String.valueOf(xMax) + "#" + String.valueOf(yMin) + "#" + String.valueOf(zMax) + "#"
+                + String.valueOf(xMax) +
+                "#" + String.valueOf(yMax) + String.valueOf("#") + String.valueOf(zMax) + "#" + String.valueOf(xMin) +
+                "#" + String.valueOf(yMax) + "#" + String.valueOf(zMax) + "#" + String.valueOf(xMin) + "#"
+                + String.valueOf(yMin) + "#" +
+                String.valueOf(zMax);
+
+        double buffer = 200.0;
+
+        Polygon envelopePolygon = (Polygon) toPolygon(polygonPoints);
+
+        Geometry surroundingRing = ((Polygon) inflatePolygon(envelopePolygon, buffer)).getExteriorRing();
+
+        Coordinate[] surroundingCoordinates = surroundingRing.getCoordinates();
+
+        String boundingBox = coordinatesToString(surroundingCoordinates);
+
+        String[] points = boundingBox.split("#");
+
+        String lowerPoints = points[0] + "#" + points[1] + "#" + 0 + "#";
+
+        String lowerBounds = lowerPoints + lowerPoints + lowerPoints + lowerPoints + lowerPoints;
+        lowerBounds = lowerBounds.substring(0, lowerBounds.length() - 1);
+
+        String upperPoints = points[6] + "#" + points[7] + "#" + String.valueOf(Double.parseDouble(points[8]) + 100)
+                + "#";
+
+        String upperBounds = upperPoints + upperPoints + upperPoints + upperPoints + upperPoints;
+        upperBounds = upperBounds.substring(0, upperBounds.length() - 1);
+
+        return Arrays.asList(lowerBounds, upperBounds);
+
+    }
+
+    /**
+     * Inflates a polygon
+     * 
+     * @param geom     polygon geometry
+     * @param distance buffer distance
+     * @return inflated polygon
+     */
+    private Geometry inflatePolygon(Geometry geom, Double distance) {
+        ArrayList<Double> zCoordinate = getPolygonZ(geom);
+        BufferParameters bufferParameters = new BufferParameters();
+        bufferParameters.setEndCapStyle(BufferParameters.CAP_ROUND);
+        bufferParameters.setJoinStyle(BufferParameters.JOIN_MITRE);
+        Geometry buffered = BufferOp.bufferOp(geom, distance, bufferParameters);
+        buffered.setUserData(geom.getUserData());
+        setPolygonZ(buffered, zCoordinate);
+        return buffered;
+    }
+
+    /**
+     * Converts an array of coordinates into a string
+     * 
+     * @param coordinates array of footprint coordinates
+     * @return coordinates as a string
+     */
+    private String coordinatesToString(Coordinate[] coordinates) {
+        String output = "";
+
+        for (int i = 0; i < coordinates.length; i++) {
+            output = output + "#" + Double.toString(coordinates[i].getX()) + "#"
+                    + Double.toString(coordinates[i].getY()) + "#" + Double.toString(coordinates[i].getZ());
+        }
+
+        return output.substring(1, output.length());
+    }
+
+    /**
+     * Extract the z coordinates of the polygon vertices
+     * 
+     * @param geom polygon geometry
+     * @return the z coordinates of the polygon vertices
+     */
+    private static ArrayList<Double> getPolygonZ(Geometry geom) {
+        Coordinate[] coordinates = geom.getCoordinates();
+        ArrayList<Double> output = new ArrayList<>();
+
+        for (int i = 0; i < coordinates.length; i++) {
+            output.add(coordinates[i].getZ());
+        }
+
+        return output;
+    }
+
+    /**
+     * Sets a polygon's z coordinates to the values from zInput
+     * 
+     * @param geom   polygon geometry
+     * @param zInput ArrayList of values representing z coordinates
+     */
+    private void setPolygonZ(Geometry geom, ArrayList<Double> zInput) {
+        Double newZ = Double.NaN;
+
+        for (int i = 0; i < zInput.size(); i++) {
+            if (!zInput.get(i).isNaN()) {
+                newZ = zInput.get(i);
+                break;
+            }
+        }
+
+        if (newZ.isNaN()) {
+            newZ = 10.0;
+        }
+
+        if (geom.getNumPoints() < zInput.size()) {
+            while (geom.getNumPoints() != zInput.size()) {
+                zInput.remove(zInput.size() - 1);
+            }
+        } else {
+            while (geom.getNumPoints() != zInput.size()) {
+                zInput.add(1, newZ);
+            }
+        }
+
+        Collections.replaceAll(zInput, Double.NaN, newZ);
+        geom.apply(new CoordinateSequenceFilter() {
+            @Override
+            public void filter(CoordinateSequence cSeq, int i) {
+                cSeq.getCoordinate(i).setZ(zInput.get(i));
+            }
+
+            @Override
+            public boolean isDone() {
+                return false;
+            }
+
+            @Override
+            public boolean isGeometryChanged() {
+                return false;
+            }
+        });
+    }
+
+    public void setElevation(List<StaticPointSource> pointSources, List<Building> buildings, int simulationSrid) {
+
+        for (int i = 0; i < pointSources.size(); i++) {
+            StaticPointSource ps = pointSources.get(i);
+            String originalSrid = "EPSG:" + ps.getLocation().getSRID();
+            double[] xyOriginal = { ps.getLocation().getX(), ps.getLocation().getY() };
+            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
+            String sqlString = String.format("SELECT ST_Value(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d)) AS val " +
+                    "FROM elevation " + "WHERE ST_Intersects(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d));",
+                    xyTransformed[0], xyTransformed[1], simulationSrid, xyTransformed[0], xyTransformed[1],
+                    simulationSrid);
+
+            try (Statement stmt = rdbStoreClient.getConnection().createStatement()) {
+                ResultSet result = stmt.executeQuery(sqlString);
+                double elevation = result.getDouble("val");
+                ps.setElevation(elevation);
+            } catch (SQLException e) {
+                LOGGER.error(e.getMessage());
+            }
+
+        }
+
+        for (int i = 0; i < buildings.size(); i++) {
+            Building building = buildings.get(i);
+            String originalSrid = building.getSrid();
+            double[] xyOriginal = { building.getLocation().getX(), building.getLocation().getY() };
+            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
+            String sqlString = String.format("SELECT ST_Value(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d)) AS val" +
+                    "FROM elevation" + "WHERE ST_Intersects(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d));",
+                    xyTransformed[0], xyTransformed[1], simulationSrid, xyTransformed[0], xyTransformed[1],
+                    simulationSrid);
+
+            try (Statement stmt = rdbStoreClient.getConnection().createStatement()) {
+                ResultSet result = stmt.executeQuery(sqlString);
+                double elevation = result.getDouble("val");
+                building.setElevation(elevation);
+            } catch (SQLException e) {
+                LOGGER.error(e.getMessage());
+            }
+
+        }
+
     }
 
     void updateOutputs(String derivation, String dispersionMatrix, String dispersionLayer, String shipLayer,

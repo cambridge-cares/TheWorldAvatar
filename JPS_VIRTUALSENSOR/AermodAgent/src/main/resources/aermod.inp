@@ -14,8 +14,7 @@ CO FINISHED
 
 ** AERMOD Source Pathway
 SO STARTING
-SO INCLUDED shipSources.dat
-SO INCLUDED plantSources.dat
+SO INCLUDED points.so
    INCLUDED buildings.dat
 SO SRCGROUP ALL
 SO FINISHED

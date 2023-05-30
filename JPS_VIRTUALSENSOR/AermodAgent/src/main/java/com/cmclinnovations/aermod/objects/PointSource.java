@@ -1,6 +1,6 @@
 package com.cmclinnovations.aermod.objects;
 
-import org.postgis.Point;
+import org.locationtech.jts.geom.Point;
 
 public class PointSource {
     private Point location;
@@ -120,8 +120,16 @@ public class PointSource {
         return this.diameter;
     }
 
+    public void setDiameter(double diameter) {
+        this.diameter = diameter;
+    }
+
     public double getHeight() {
         return this.height;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
     }
 
     public double getMixtureMolWeight() {

@@ -817,7 +817,9 @@ public class Buildings {
             height = aveRoofz - aveGroundz;
             LinearRing footPrint = extractFootprint(groundSurfaces);
             String exteriorGroundVertices = coordinatesToString(footPrint.getCoordinates());
-            buildings.add(new Building(footPrint, height, DatabaseCoordSys));
+            int srid = Integer.parseInt(DatabaseCoordSys.substring(5));
+            footPrint.setSRID(srid);
+            buildings.add(new Building(footPrint, height));
             String[] edgeCoordinates = exteriorGroundVertices.split("#");
             int numPoints = edgeCoordinates.length / 3;
             double aveX = 0.0;
@@ -974,7 +976,9 @@ public class Buildings {
             aveGroundz /= numberGroundSurfaces;
             height = aveRoofz - aveGroundz;
             LinearRing footPrint = extractFootprint(groundSurfaces);
-            buildings.add(new Building(footPrint, height, DatabaseCoordSys));
+            int srid = Integer.parseInt(DatabaseCoordSys.substring(5));
+            footPrint.setSRID(srid);
+            buildings.add(new Building(footPrint, height));
             String exteriorGroundVertices = coordinatesToString(footPrint.getCoordinates());
             String[] edgeCoordinates = exteriorGroundVertices.split("#");
             int numPoints = edgeCoordinates.length / 3;

@@ -28,6 +28,7 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.locationtech.jts.geom.Polygon;
 
+import com.cmclinnovations.aermod.objects.Building;
 import com.cmclinnovations.aermod.objects.PointSource;
 import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
@@ -61,7 +62,6 @@ public class AermodAgent extends DerivationAgent {
         String simulationTimeIri = derivationInputs.getIris(QueryClient.SIMULATION_TIME).get(0);
         // citiesNamespaceIri will be null if this parameter was excluded from the POST
         // request sent to DispersionInteractor
-
         String citiesNamespace = null;
         if (derivationInputs.getIris(QueryClient.CITIES_NAMESPACE) != null) {
             String citiesNamespaceIri = derivationInputs.getIris(QueryClient.CITIES_NAMESPACE).get(0);
@@ -84,12 +84,16 @@ public class AermodAgent extends DerivationAgent {
         // get ships within a scope and time
         Polygon scope = queryClient.getScopeFromOntop(scopeIri);
 
-        List<StaticPointSource> staticPointSources = null;
+        List<StaticPointSource> staticPointSources = new ArrayList<>();
+        List<Building> buildings = new ArrayList<>();
         if (citiesNamespace != null) {
             String namespaceCRS = queryClient.getNamespaceCRS(citiesNamespace);
+            queryClient.setcitiesNamespaceCRS(citiesNamespace, namespaceCRS);
             try {
-                staticPointSources = queryClient.getStaticPointSourcesWithinScope(scope, citiesNamespace,
-                        namespaceCRS);
+                staticPointSources = queryClient.getStaticPointSourcesWithinScope(scope);
+                BuildingsData bd = new BuildingsData(citiesNamespace, namespaceCRS, queryClient);
+                bd.setStaticPointSourceProperties(staticPointSources);
+                buildings = bd.getBuildings(staticPointSources);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -98,8 +102,7 @@ public class AermodAgent extends DerivationAgent {
         List<Ship> ships = queryClient.getShipsWithinTimeAndScopeViaTsClient(simulationTime, scope);
 
         List<PointSource> allSources = new ArrayList<>();
-        if (citiesNamespace != null)
-            allSources.addAll(staticPointSources);
+        allSources.addAll(staticPointSources);
         allSources.addAll(ships);
 
         // update derivation of ships (on demand)
@@ -132,27 +135,12 @@ public class AermodAgent extends DerivationAgent {
             srid = Integer.valueOf("326" + centreZoneNumber);
         }
 
-        // Query buildings and plant items.
-        // Run BPIPPRM
-
-        Buildings bpi;
-        try {
-            bpi = new Buildings();
-            bpi.init(simulationDirectory, scope, srid, nx, ny);
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
-
-        if (bpi.locindex >= 0) {
-            int buildRes = bpi.run();
-            if (buildRes != 0) {
-                LOGGER.error("Failed to run BPIPPRM, terminating");
-                throw new RuntimeException();
-            }
-        } else {
-            bpi.createAERMODBuildingsInput();
-            bpi.createAERMODSourceInput();
-            bpi.createAERMODReceptorInput(nx, ny);
+        if (citiesNamespace != null) {
+            // AERMOD will be run for flat terrain in the dev-aermod-agent-cleanup branch.
+            // queryClient.setElevation(staticPointSources, buildings, srid);
+            aermod.createBPIPPRMInput(staticPointSources, buildings, srid);
+            aermod.runBPIPPRM();
+            aermod.createAERMODBuildingsInput();
         }
 
         aermod.create144File(weatherData);
@@ -164,35 +152,44 @@ public class AermodAgent extends DerivationAgent {
         }
 
         // create emissions input
-        if (aermod.createPointsFile(ships, srid) != 0) {
+        if (aermod.createPointsFile(allSources, srid) != 0) {
             LOGGER.error("Failed to create points emissions file, terminating");
             return;
         }
 
-        if (!bpi.aermodInputCreated)
-            aermod.createAermodInputFile(scope, nx, ny, srid);
+        aermod.createAermodInputFile(scope, nx, ny, srid);
+        aermod.createAERMODReceptorInput(scope, nx, ny, srid);
         aermod.runAermod("aermod.inp");
 
         // Upload files used by scripts within Python Service to file server.
         String outputFileURL = aermod.uploadToFileServer("averageConcentration.dat");
         String outFileURL = aermod.uploadToFileServer("receptor.dat");
 
-        List<Double> receptorHeights = bpi.receptorHeights;
+        List<Double> receptorHeights = new ArrayList<>();
+        receptorHeights.add(0.0);
         // Set GeoServer layer names
         List<String> dispLayerNames = new ArrayList<>();
         for (int i = 0; i < receptorHeights.size(); i++) {
             int receptorHeightInt = (int) Math.round(receptorHeights.get(i));
-            String dispLayerName = "dispersion_height_" + String.valueOf(receptorHeightInt) + "_meters";
+            String dispLayerName = "dispersion_" + "_height_"
+                    + String.valueOf(receptorHeightInt) + "_meters";
             dispLayerNames.add(dispLayerName);
         }
         String shipLayerName = "ships_" + simulationTime; // hardcoded in ShipInputAgent
-        String plantsLayerName = "source_layer";
+        String sourceLayerName = "source_layer";
         String elevationLayerName = "elevation_layer";
 
         // Get contour plots as geoJSON objects from PythonService and upload them to
         // PostGIS using GDAL
 
+        JSONObject pointSourceFeatures = aermod.createStaticPointSourcesJSON(staticPointSources);
+
         GDALClient gdalClient = GDALClient.getInstance();
+
+        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.SOURCE_LAYER,
+                pointSourceFeatures.toString(),
+                new Ogr2OgrOptions(), true);
+
         JSONObject geoJSON2 = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_ELEVATION_URL, outFileURL, srid, 0.0);
         gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, elevationLayerName, geoJSON2.toString(),
                 new Ogr2OgrOptions(), true);
@@ -221,11 +218,14 @@ public class AermodAgent extends DerivationAgent {
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, elevationLayerName,
                 geoServerVectorSettings);
 
+        geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, EnvConfig.SOURCE_LAYER,
+                new GeoServerVectorSettings());
+
         // ships_ is hardcoded here and in ShipInputAgent
         queryClient.updateOutputs(derivationInputs.getDerivationIRI(), outputFileURL, dispLayerNames.get(0),
                 shipLayerName, simulationTime);
-        if (aermod.createDataJson(shipLayerName, dispLayerNames, plantsLayerName, elevationLayerName,
-                bpi.getBuildingsGeoJSON()) != 0) {
+        if (aermod.createDataJson(shipLayerName, dispLayerNames, sourceLayerName, elevationLayerName,
+                aermod.getBuildingsGeoJSON(buildings)) != 0) {
             LOGGER.error("Failed to create data.json file for visualisation, terminating");
             return;
         }
