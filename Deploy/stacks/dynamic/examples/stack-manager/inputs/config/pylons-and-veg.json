@@ -1,0 +1,10 @@
+{
+    "services": {
+        "includes": [
+            "visualisation"
+        ]
+    },
+    "volumes": {
+        "vis-files": "pylon-vis"
+    }
+}
