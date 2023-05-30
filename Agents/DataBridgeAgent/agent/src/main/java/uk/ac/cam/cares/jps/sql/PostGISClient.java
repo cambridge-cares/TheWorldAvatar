@@ -81,7 +81,7 @@ public class PostGISClient extends ContainerClient {
      * @param jdbcUrl A input JDBC url.
      * @return a string array containing the server, port, and database name.
      */
-    public String[] retrieveComponentsFromUrl(String jdbcUrl) {
+    private String[] retrieveComponentsFromUrl(String jdbcUrl) {
         String[] components = new String[3];
         // An intermediate temp string to store the retrieved portion
         String tmp;
