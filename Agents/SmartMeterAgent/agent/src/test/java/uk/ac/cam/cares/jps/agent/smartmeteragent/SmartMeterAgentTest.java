@@ -7,12 +7,12 @@ public class SmartMeterAgentTest {
 
     @Test
     public void tempTest() {
-        SmartMeterAgent agent = new SmartMeterAgent();
+        SmartMeterAgentLauncher agent = new SmartMeterAgentLauncher();
         JSONObject requestParams = new JSONObject()
                                 .put("dataSource", "database")
                                 .put("dataRequired", "latest")
                                 .put("microgrid", "http://localhost:48888/microgrid")
-                                .put("dataBefore", "2022-11-08 12:33:00");
+                                .put("dataBefore", "2022-11-08 14:18:00");
         JSONObject result = agent.processRequestParameters(requestParams);
         return;
     }

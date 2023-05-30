@@ -7,22 +7,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.BadRequestException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
@@ -32,8 +26,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
-@WebServlet(urlPatterns = { "/upload" })
-public class SmartMeterAgent extends JPSAgent {
+public class SmartMeterAgent {
 
     private static final Logger LOGGER = LogManager.getLogger(SmartMeterAgent.class);
     protected RemoteStoreClient kbClient = new RemoteStoreClient();
@@ -44,68 +37,16 @@ public class SmartMeterAgent extends JPSAgent {
     protected String sparqlQueryEndpoint;
     protected String sparqlUpdateEndpoint;
 
-    @Override
-    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-        return processRequestParameters(requestParams);
-    }
-
-    @Override
-    public JSONObject processRequestParameters(JSONObject requestParams) {
-        LOGGER.info("Request received.");
-
-        if (!validateInput(requestParams)) {
-            LOGGER.error("Invalid request.");
-            throw new JPSRuntimeException("Invalid request.");
-        }
-
-        // Data source: database "database" or csv file "csv"
-        String dataSource = requestParams.getString("dataSource");
-        // Data required: only latest data "latest" or all historical data "historical"
-        String dataRequired = requestParams.getString("dataRequired");
-        // Microgrid: targetResourceID of the microgrid blazegraph for Access Agent to query
-        String targetResourceID = requestParams.getString("microgrid");
-
-        // Data before: date time in "yyyy-MM-dd HH:mm:ss" format (optional, use current UTC time if not given)
-        String dataBefore;
-        if (requestParams.has("dataBefore")) {
-            dataBefore = requestParams.getString("dataBefore");
-        } else {
-            LOGGER.info("dataBefore not given, using current datetime instead...");
-            OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            dataBefore = now.format(formatter);
-        }
-        // TODO add dataAfter for historical input
-
-        if (dataSource.toLowerCase().equals("database")) {
-            readDataFromDatabase(dataRequired, targetResourceID, dataBefore);
-        } else if (dataSource.toLowerCase().equals("csv")) {
-            List<String[]> mappings = getDataMappings();
-            readDataFromCsvFile(mappings, dataRequired, dataBefore);
-        } else {
-            throw new JPSRuntimeException("Invalid data source: dataSource should be database or csv.\n");
-        }
-
-        LOGGER.info("Upload complete.");
-        return new JSONObject().put("uploadStatus", "Data uploaded successfully!");
-    }
-
-    public void readDataFromDatabase(String dataRequired, String targetResourceID, String dataBefore) {
-        LOGGER.info("Reading from database...");
-        if (dataRequired.toLowerCase().equals("latest")) {
-            List<String[]> mappings = getDataMappings();
-            JSONArray result = queryLatestDataFromDb(dataBefore, mappings);
-            uploadLatestSmartMeterData(result, targetResourceID, mappings);
-            return;
-        } else if (dataRequired.toLowerCase().equals("historical")) {
-            // TODO read historical data
-        } else {
-            throw new JPSRuntimeException("Invalid data requirement: dataRequired should be latest or historical.\n");
-        }
-    }
-
-    public JSONArray queryLatestDataFromDb(String beforeTime, List<String[]> mappings) {
-        // All devices that may have smart meter readings
+    /**
+     * Query for latest valid data from smart meter database.
+     * (All devices in the mapping file should be switched on, and 
+     * all data should be non-zero in order for the reading to be valid)
+     * @param currentTime
+     * @param mappings
+     * @return
+     */
+    public JSONArray queryLatestDataFromDb(String currentTime, List<String[]> mappings) {
+        // All devices that should have smart meter readings
         List<String> devices = new ArrayList<>();
         for (int i = 0; i < mappings.size(); i++) {
             if (mappings.get(i).length > 1) {
@@ -113,16 +54,54 @@ public class SmartMeterAgent extends JPSAgent {
             }
         }
 
-        // TODO check all devices are in selected readings
-        // if not, it means that not all devices are switched on at this time point
-        // find previous readings with all devices: 1/2/3 mins ago -> 1/2/3 hrs ago -> 1/2/3 days ago...
+        try {
+            loadConfigs(AgentLocator.getCurrentJpsAppDirectory(this) + "/config/db.properties");
+        } catch (IOException e) {
+            throw new JPSRuntimeException("Failed to read smart meter RDB info from config file.");
+        }
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e) {
+            throw new JPSRuntimeException("SQLite JDBC driver class not found.", e);
+        }
+        RemoteRDBStoreClient rdbClient = new RemoteRDBStoreClient(dbUrl, dbUsername, dbPassword);
+        String query = getSqlQuery(devices, currentTime);
+        LOGGER.info("Executing SQL query: " + query);
+        JSONArray result = rdbClient.executeQuery(query);
 
+        // when not all devices are switched on:
+        // minus one minutes until valid results are found, maximum 10 attempts
+        int numberOfAttempt = 0;
+        while (!validateResult(devices, result)) {
+            LOGGER.info("Not all devices are switched on, finding previous valid readings...");
+            currentTime = OffsetDateTime.parse(currentTime.replace(" ", "T") + "+00:00")
+                            .minusMinutes(1).toString().replace("T", " ").replace("Z", "");
+            query = getSqlQuery(devices, currentTime);
+            LOGGER.info("Executing SQL query: " + query);
+            result = rdbClient.executeQuery(query);
+            numberOfAttempt += 1;
+            if (numberOfAttempt >= 10) {
+                throw new JPSRuntimeException("Failed to find valid readings within the last 10 minutes. " 
+                                        + "Please check that all devices in the mapping file are switched on.");
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Structure SQL query to retrieve smart meter readings.
+     * (Average values are used instead of values in 3 phases)
+     * @param devices
+     * @param beforeTime
+     * @return
+     */
+    public String getSqlQuery(List<String> devices, String beforeTime) {
         // Assuming time readings in smart meter database is UTC time
         String query = "SELECT strftime('%Y-%m-%dT%H:%M:00+00:00', MAX(ts)) as time, \"data_source\" as device, " 
         + "(\"ch1Watt\" + \"ch2Watt\" + \"ch3Watt\")/3 as pd, (\"ch1Current\" + \"ch2Current\" + \"ch3Current\")/3 as current, " 
         + "(\"ch1Voltage\" + \"ch2Voltage\" + \"ch3Voltage\")/3 as voltage, (\"ch1Hz\" + \"ch2Hz\" + \"ch3Hz\")/3 as frequency " 
         + "FROM \"Measurement\" " 
-        
+        // Make sure there is no data package lost (some values are 0)
         + "WHERE " 
         + "\"ch1Watt\" <> 0 AND \"ch2Watt\" <> 0 AND \"ch3Watt\" <> 0 AND " 
         + "\"ch1Current\" <> 0 AND \"ch2Current\" <> 0 AND \"ch3Current\" <> 0 AND " 
@@ -139,22 +118,43 @@ public class SmartMeterAgent extends JPSAgent {
         }
 
         query += ") "
-        + "AND ts < '" + beforeTime + "' "
+        + "AND ts <= '" + beforeTime + "' "
         + "GROUP BY device, id " 
         + "ORDER BY ts DESC "
         + "LIMIT " + devices.size() + ";";
-
-        try {
-            loadConfigs(AgentLocator.getCurrentJpsAppDirectory(this) + "/config/db.properties");
-        } catch (IOException e) {
-            throw new JPSRuntimeException("Failed to read smart meter RDB info from config file.\n");
-        }
-        RemoteRDBStoreClient rdbClient = new RemoteRDBStoreClient(dbUrl, dbUsername, dbPassword);
-        LOGGER.info("Executing SQL query: " + query);
-        JSONArray result = rdbClient.executeQuery(query);
-        return result;
+        return query;
     }
 
+    /**
+     * Check if result readings are valid: all devices have readings.
+     * @param devices devices required
+     * @param result  query result from smart meter database
+     * @return
+     */
+    public boolean validateResult(List<String> devices, JSONArray result) {
+        boolean found = false;
+        for (int i = 0; i < devices.size(); i++) {
+            found = false;
+            for (int j = 0; j < result.length(); j++) {
+                if (result.getJSONObject(j).getString("device").toLowerCase().equals(devices.get(i).toLowerCase())) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Query for instantiated timeseries dataIRIs of bus values, 
+     * map the IRIs to devices in the readings, and upload readings to KG.
+     * @param queryResult
+     * @param targetResourceID
+     * @param mappings
+     */
     public void uploadLatestSmartMeterData(JSONArray queryResult, String targetResourceID, List<String[]> mappings) {
         OffsetDateTime time = OffsetDateTime.parse("2000-01-01T00:00:00+00:00");
         List<OffsetDateTime> timeValues = new ArrayList<OffsetDateTime>();
@@ -191,8 +191,6 @@ public class SmartMeterAgent extends JPSAgent {
             boolean hasReadings = false;
             // when the bus has smart meter readings
             for (int j = 0; j < queryResult.length() ; j++) {
-                // TODO check if time is the same, if not, query for the next latest time 
-                // (ts <= the lowest one in previous attempt)
                 time = OffsetDateTime.parse(queryResult.getJSONObject(j).getString("time"));
                 if (!queryResult.getJSONObject(j).getString("device").toLowerCase().equals(device.toLowerCase())) {
                     continue;
@@ -210,7 +208,7 @@ public class SmartMeterAgent extends JPSAgent {
                     allValues.add(oneDeviceQd);
                     dataIRIs.add(oneBusIRIs.getString("QdIri"));
                 } else {
-                    throw new JPSRuntimeException("Bus load time series not initialized.\n");
+                    throw new JPSRuntimeException("Bus load time series not initialized.");
                 }
 
                 // Current, Voltage and Frequency (optional) may not be instantiated
@@ -238,7 +236,7 @@ public class SmartMeterAgent extends JPSAgent {
 
             if (!hasReadings) {
                 throw new JPSRuntimeException("Bus mapping exist but smart meter reading is not available. "
-                                                + "Delete mapping for device " + device + " and try again.\n");
+                                                + "Delete mapping for device " + device + " and try again.");
             }
         }
         timeValues.add(time);
@@ -253,10 +251,16 @@ public class SmartMeterAgent extends JPSAgent {
         } else if (dataRequired.toLowerCase().equals("historical")) {
 
         } else {
-            throw new JPSRuntimeException("Invalid data requirement: dataRequired should be latest or historical.\n");
+            throw new JPSRuntimeException("Invalid data requirement: dataRequired should be latest or historical.");
         }
     }
 
+    /**
+     * Query for dataIRIs of bus values
+     * @param targetResourceID
+     * @param mappings
+     * @return
+     */
     public JSONArray getDataIris(String targetResourceID, List<String[]> mappings) {
         // query the triple store for data IRIs
         LOGGER.info("Querying triple store for time series data IRIs...");
@@ -284,12 +288,16 @@ public class SmartMeterAgent extends JPSAgent {
             }
             if (!hasMapping) {
                 throw new JPSRuntimeException("Mapping file not complete, bus " 
-                        + busNumber + " does not have mapping information.\n");
+                        + busNumber + " does not have mapping information.");
             }
         }
         return busArray;
     }
 
+    /**
+     * Read mappings between buses and devices from mapping file.
+     * @return
+     */
     public List<String[]> getDataMappings() {
         String baseUrl = AgentLocator.getCurrentJpsAppDirectory(this) + "/config";
         String csvString = FileUtil.readFileLocally(baseUrl + "/mappings.csv");
@@ -297,6 +305,11 @@ public class SmartMeterAgent extends JPSAgent {
         return mappings;
     }
 
+    /**
+     * Read csv file to List of string arrays
+     * @param s
+     * @return
+     */
     public List<String[]> fromCsvToArray(String s) {
         List<String[]> result = new ArrayList<String[]>();		
         StringTokenizer tokenizer = new StringTokenizer(s, "\n");
@@ -313,6 +326,12 @@ public class SmartMeterAgent extends JPSAgent {
         return queryResult;
     }
 
+    /**
+     * Connect to timeseries rdb and upload timeseries data.
+     * @param timeValues
+     * @param dataIRIs
+     * @param dataValues
+     */
     public void uploadTimeSeriesData(List<OffsetDateTime> timeValues, List<String> dataIRIs, List<List<?>> dataValues) {
         try {
             loadConfigs(AgentLocator.getCurrentJpsAppDirectory(this) + "/config/client.properties");
@@ -327,7 +346,7 @@ public class SmartMeterAgent extends JPSAgent {
 		try (Connection conn = rdbStoreClient.getConnection()) {
 			tsClient.bulkaddTimeSeriesData(timeSeriesList, conn);
 		} catch (Exception e) {
-			throw new JPSRuntimeException("Failed to upload timeseries data.\n");
+			throw new JPSRuntimeException("Failed to upload timeseries data.");
 		}
     }
 
@@ -375,24 +394,6 @@ public class SmartMeterAgent extends JPSAgent {
                 throw new IOException("Properties file is missing \"sparql.update.endpoint=<sparql_update_endpoint>\"");
             }
         }
-    }
-
-    @Override
-    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-        if (requestParams.isEmpty()) {
-            LOGGER.error("Empty request.");
-            return false;
-        } else if (!requestParams.has("dataSource")) {
-            LOGGER.error("Input should contain data source: database or csv .");
-            return false;
-        } else if (!requestParams.has("dataRequired")) {
-            LOGGER.error("Input should contain upload method: latest or historical .");
-            return false;
-        } else if (!requestParams.has("microgrid")) {
-            LOGGER.error("Input should contain microgrid targetResourceID.");
-            return false;
-        }
-        return true;
     }
 
     // SPARQL query for bus number and time series data IRIs
