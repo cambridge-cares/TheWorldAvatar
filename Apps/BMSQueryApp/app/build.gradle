@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
 }
+apply from: '../config/keystore.gradle'
 
 android {
     namespace 'uk.ac.cam.cares.jps.bmsqueryapp'
@@ -15,6 +16,10 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        manifestPlaceholders = [
+                'appAuthRedirectScheme': 'uk.ac.cam.cares.jps.bmsqueryapp'
+        ]
     }
 
     buildTypes {
@@ -41,10 +46,12 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.1'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
-//    implementation ('uk.ac.cam.cares.jps:jps-base-lib:1.32.0')
+
     implementation 'com.android.volley:volley:1.2.1'
     implementation 'log4j:log4j:1.2.17'
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+
+    implementation 'net.openid:appauth:0.11.1'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

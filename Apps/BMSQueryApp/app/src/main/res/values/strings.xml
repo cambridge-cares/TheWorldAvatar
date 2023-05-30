@@ -17,4 +17,7 @@
     <string name="equipment_type">Equipment Type</string>
     <string name="equipment">Equipment</string>
     <string name="no_editable_attribute">There is no editable attribute available for this equipment.</string>
+    <string name="fail_to_login">Fail to login, please try again</string>
+    <string name="sign_in_or_create">Sign in or Create</string>
+    <string name="product_intro">Sign in to monitor and control your lab devices.</string>
 </resources>

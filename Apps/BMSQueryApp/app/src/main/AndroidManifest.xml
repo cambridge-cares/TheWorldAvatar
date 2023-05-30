@@ -14,23 +14,26 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BMSQueryApp"
         tools:targetApi="31"
-        android:usesCleartextTraffic="true">
-        <activity
-            android:name=".MainActivity"
+        android:usesCleartextTraffic="true"
+        android:screenOrientation="portrait">
+
+        <activity android:name=".LoginActivity"
             android:exported="true"
-            android:theme="@style/Theme.BMSQueryApp.NoActionBar"
-            android:screenOrientation="portrait">
+            android:theme="@style/LoginTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/Theme.BMSQueryApp.NoActionBar">
+        </activity>
+
         <activity android:name=".EquipmentInstanceActivity"
             android:exported="false"
-            android:theme="@style/Theme.BMSQueryApp.NoActionBar"
-            android:screenOrientation="portrait"/>
+            android:theme="@style/Theme.BMSQueryApp.NoActionBar" />
     </application>
 
 
