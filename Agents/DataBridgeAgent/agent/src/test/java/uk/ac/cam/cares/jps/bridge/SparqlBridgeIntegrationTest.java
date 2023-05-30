@@ -15,6 +15,7 @@ class SparqlBridgeIntegrationTest {
     @BeforeEach
     void setupData() {
         IntegrationTestUtils.updateEndpoint(IntegrationTestUtils.SRC_SPARQL_ENDPOINT, IntegrationTestUtils.SPARQL_INSERT);
+        IntegrationTestUtils.createNamespace("test");
     }
 
     @AfterEach

@@ -11,7 +11,7 @@ services:
       - "3055:8080"
     depends_on:
       - blazegraph_test
-      - blazegraph_sec_test
+      - postgis_test
     networks:
         - my-network
       # Blazegraph
@@ -23,14 +23,6 @@ services:
       - "9998:8080"
     networks:
       - my-network
-  blazegraph_sec_test:
-      image: docker.cmclinnovations.com/blazegraph:1.1.0
-      container_name: blazegraph_sec_test
-      restart: unless-stopped
-      ports:
-        - "9997:8080"
-      networks:
-        - my-network
   postgis_test:
     image: postgis/postgis:15-3.3-alpine
     container_name: postgis_test
