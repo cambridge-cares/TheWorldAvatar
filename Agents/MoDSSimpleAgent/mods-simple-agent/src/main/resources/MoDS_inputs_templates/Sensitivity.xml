@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mods xsi:schemaLocation="http://como.cheng.cam.ac.uk/MoDS MoDS_inputs.xsd" xmlns="http://como.cheng.cam.ac.uk/MoDS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <algorithms>
+        <algorithm name="Data_Algorithm" display_name="Base data for surrogate model">
+            <details>
+                <detail name="algorithm_type">Read_previous</detail>
+                <detail name="output_values">false</detail>
+                <detail name="previous_algorithm">Data_Algorithm</detail>
+            </details>
+        </algorithm>
+        <algorithm name="GenSurrogateAlg" display_name="Surrogate model">
+            <details>
+                <detail name="algorithm_type">Surrogate</detail>
+                <detail name="global">false</detail>
+                <detail name="surrogate_type">HDMR</detail>
+                <detail name="fit_to_coded_responses">false</detail>
+                <detail name="order">6</detail>
+                <detail name="HDMRorder">2</detail>
+                <detail name="r_squared_tol">0.99999</detail>
+                <detail name="previous_algorithm">Data_Algorithm</detail>
+            </details>
+        </algorithm>
+    </algorithms>
+    <models></models>
+    <cases></cases>
+    <files></files>
+    <parameters></parameters>
+</mods>

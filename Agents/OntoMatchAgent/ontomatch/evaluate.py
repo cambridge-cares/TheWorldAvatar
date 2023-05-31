@@ -63,7 +63,12 @@ def getID(iri):
     return strs[0]
 
 def read_match_file_as_index_set(filename, linktypes):
-    dframe = pd.read_csv(filename)
+    dframe = pd.read_csv(filename) 
+
+    # check whether the Magellan / Ditto CSV format is used
+    if 'ltable_id' in [ str(c) for c in dframe.columns ]:
+        dframe.rename(columns={'ltable_id': 'idx_1', 'rtable_id': 'idx_2', 'label': 'link'}, inplace=True)
+
     dframe['idx_1'] = dframe['idx_1'].astype(str)
     dframe['idx_2'] = dframe['idx_2'].astype(str)
     fct = lambda s : s.replace('http://www.google.com/base/feeds/snippets/', '')
@@ -118,46 +123,31 @@ def get_max_f1score(result):
             recall = r[2]
     return max_t, max_f1score, precision, recall
 
-def get_area_under_curve(result):
-    area_under_curve = 0.
-    last_recall = 0.
-
-    for r in result:
-        current_precision = r[1]
-        current_recall = r[2]
-        assert last_recall <= current_recall
-        area_under_curve += (current_recall - last_recall) * current_precision
-        last_recall = current_recall
-
-    return area_under_curve
-
-def log_result(result, hint='evaluation result', count_matches=None, estimated_threshold=None):
+def log_result(result, hint='evaluation result', count_matches=None, threshold=None):
     max_t, max_f1score, precision, recall = get_max_f1score(result)
-    area_under_curve = get_area_under_curve(result)
-    logging.info('%s: max f1=%s for t=%s, p=%s, r=%s, area under curve=%s', hint, max_f1score, max_t, precision, recall, area_under_curve)
-    res = get_f1_by_threshold(result, threshold=0.5)
-    logging.info('%s - by threshold 0.5: max f1=%s for t=%s, p=%s, r=%s, TP=%s, FP=%s, FN=%s',
-                hint, res[6], res[0], res[1], res[2], res[3], res[4], res[5])
+    logging.info('%s - maximum: t=%s, f1=%s, p=%s, r=%s', hint, max_t, max_f1score,  precision, recall)
 
-    if count_matches is not None:
-        res = get_f1_by_predicted_match_count(result, count_matches)
+    #if count_matches is not None:
+    #    res = get_f1_by_predicted_match_count(result, count_matches)
+    #    if res:
+    #        logging.info('%s - by match count: max f1=%s for t=%s, p=%s, r=%s, TP=%s, FP=%s, FN=%s',
+    #            hint, res[6], res[0], res[1], res[2], res[3], res[4], res[5])
+    #    else:
+    #        logging.warning('%s - by match count: not found', hint)
+    if threshold is not None:
+        res = get_f1_by_threshold(result, threshold)
         if res:
-            logging.info('%s - by match count: max f1=%s for t=%s, p=%s, r=%s, TP=%s, FP=%s, FN=%s',
-                hint, res[6], res[0], res[1], res[2], res[3], res[4], res[5])
+            logging.info('%s - estimated: t=%s, f1=%s, p=%s, r=%s, TP=%s, FP=%s, FN=%s',
+                hint, round(threshold, 5), res[6], res[1], res[2], res[3], res[4], res[5])
         else:
-            logging.warning('%s - by match count: not found', hint)
-    if estimated_threshold is not None:
-        res = get_f1_by_threshold(result, estimated_threshold)
-        if res:
-            logging.info('%s - by estimated threshold: max f1=%s for t=%s (estimated=%s), p=%s, r=%s, TP=%s, FP=%s, FN=%s',
-                hint, res[6], res[0], round(estimated_threshold, 5), res[1], res[2], res[3], res[4], res[5])
-        else:
-            logging.warning('%s - by estimated threshold: not found', hint)
+            logging.warning('%s - by threshold: not found', hint)
 
-    logging.info('threshold, precision, recall, TP, FP, FN, f1score:\n%s', result)
+    logging.debug('threshold, precision, recall, TP, FP, FN, f1score:\n%s', result)
 
 def evaluate(df_scores, index_matches, number_of_thresholds=201, hint='evaluation result', estimated_threshold=None):
-
+    # This methods evaluates precision, recall and f1 score 
+    # under consideration of indices in (index_matches - df_scores.index).
+    # This means that matches outside df_scores are counted as false negatives. 
     result = []
     thresholds = [ round(t,5) for t in np.linspace(1, 0, num=number_of_thresholds, endpoint=True)]
     for t in thresholds:

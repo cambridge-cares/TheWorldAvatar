@@ -2,7 +2,7 @@
 
 This example visualisation has been put together to demonstrate the intended use of the centralised Digital Twin Visualisation Framework (DTVF). This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.
 
-It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.3.4 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
+It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.4.0 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
 
 <img src="readme-example.JPG" alt="Example of 2D data on a Mapbox visualisation" width="100%"/>
 
@@ -103,7 +103,7 @@ An example snippet of the `settings.json` file defining search parameters is sho
 
 ## Sample Data
 
-A small amount of sample data has been committed to demonstrate the power of the DTVF to visualisate different data types. Please do not make changes to the sample data without consulting the original developer. At the time of writing, the sample data sets include:
+A small amount of sample data has been committed to demonstrate the power of the DTVF to visualise different data types. Please do not make changes to the sample data without consulting the original developer. At the time of writing, the sample data sets include:
 
 - **Cambridge**:
   - Based in and around Cambridge, this data set mimics a single stack that contains data on college locations and buildings.
