@@ -7,7 +7,7 @@
 
   <groupId>uk.ac.cam.cares.jps</groupId>
   <artifactId>bms-update-agent</artifactId>
-  <version>1.0.0</version>
+  <version>1.1.0</version>
   <packaging>war</packaging>
 
   <properties>
@@ -113,7 +113,6 @@
       <scope>test</scope>
     </dependency>
 
-
     <!-- Logging -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
@@ -132,6 +131,13 @@
       <artifactId>mockito-core</artifactId>
       <version>3.5.7</version>
       <scope>test</scope>
+    </dependency>
+
+    <!-- Keycloak -->
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-servlet-filter-adapter</artifactId>
+      <version>21.1.1</version>
     </dependency>
   </dependencies>
 

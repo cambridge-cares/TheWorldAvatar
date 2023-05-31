@@ -3,7 +3,7 @@
     "Name": "bms-update-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "bms-update-agent:1.0.0",
+        "Image": "bms-update-agent:1.1.0",
         "Env": [
           "CLIENT_PROPERTIES=/app/config/client.properties"
         ],

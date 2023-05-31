@@ -33,7 +33,7 @@ which must have a 'scope' that [allows you to publish and install packages](http
 
 Then build image with:
 ```
-docker build . -t bms-update-agent:1.0.0
+docker build . -t bms-update-agent:1.1.0
 ```
 
 ### 3) Add Agent Config to Stack Manager

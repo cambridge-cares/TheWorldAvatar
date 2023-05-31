@@ -23,7 +23,7 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
-COPY --from=builder /root/BMSUpdateAgent/output/bms-update-agent##1.0.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/BMSUpdateAgent/output/bms-update-agent##1.1.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]
