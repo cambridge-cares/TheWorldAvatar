@@ -170,5 +170,8 @@
             "name": "overhead-lines",
             "file": "overhead-lines.sld"
         }
-    ]
+    ],
+    "staticGeoServerData": {
+        "iconsDir": "icons"
+    }
 }

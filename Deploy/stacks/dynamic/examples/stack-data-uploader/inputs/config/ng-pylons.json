@@ -103,5 +103,8 @@
             "name": "underground-cables",
             "file": "underground-cables.sld"
         }
-    ]
+    ],
+    "staticGeoServerData": {
+        "iconsDir": "icons"
+    }
 }
