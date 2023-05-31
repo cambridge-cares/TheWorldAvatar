@@ -32,8 +32,11 @@ public class VisualizationFragment extends Fragment {
      */
     static class JsObject {
         public String equipmentIri;
-        public JsObject(String equipmentIri) {
+        private VisualizationFragment fragment;
+
+        public JsObject(String equipmentIri, VisualizationFragment fragment) {
             this.equipmentIri = equipmentIri;
+            this.fragment = fragment;
         }
 
         /**
@@ -43,6 +46,11 @@ public class VisualizationFragment extends Fragment {
         @JavascriptInterface
         public String getEquipmentIri() {
             return equipmentIri;
+        }
+
+        @JavascriptInterface
+        public void notifyChartReady() {
+            fragment.finishLoading();
         }
     }
 
@@ -87,14 +95,12 @@ public class VisualizationFragment extends Fragment {
 
         WebView dtvfViz = binding.dtvfViz;
 
-        JsObject jsObject = new JsObject(equipmentIri);
+        JsObject jsObject = new JsObject(equipmentIri, this);
 
         dtvfViz.getSettings().setJavaScriptEnabled(true);
         binding.dtvfViz.addJavascriptInterface(jsObject, "jsObject");
         binding.dtvfViz.loadUrl("file:///android_asset/visualisation/index.html");
         LOGGER.info("view created");
-
-        dtvfViz.setVisibility(View.VISIBLE);
 
         WebSettings webSettings = binding.dtvfViz.getSettings();
         if (webSettings.getTextZoom() > 150) {
@@ -106,5 +112,9 @@ public class VisualizationFragment extends Fragment {
         binding.dtvfViz.evaluateJavascript("refreshChart();", reloadCallback);
     }
 
+    public void finishLoading() {
+        requireActivity().runOnUiThread(() -> binding.progressBarWrapper.setVisibility(View.GONE));
+        requireActivity().runOnUiThread(() -> binding.dtvfViz.setVisibility(View.VISIBLE));
+    }
 
 }

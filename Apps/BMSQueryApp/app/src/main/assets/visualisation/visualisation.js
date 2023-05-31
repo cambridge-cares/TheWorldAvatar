@@ -42,10 +42,13 @@ function visualiseTimeSeriesData(rawJSON) {
             timeseriesHandler.update($("#time-series-select").val());
         });
 
+        console.info("chart is ready");
+
     } else {
         $("#notAvailaleP").show();
         console.warn("No 'time' node found, skipping timeseries visualisation.");
     }
+    jsObject.notifyChartReady();
 }
 
 function timeZoneConversion(timeStamp) {
