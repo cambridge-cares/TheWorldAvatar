@@ -1,0 +1,10 @@
+version: "1.0"
+
+services:
+  fh-agent:
+    image: fh-agent:1.0.1
+    build: .
+    container_name: fh-agent
+    pull_policy: if_not_present
+    ports:
+      - "1010:8080"
