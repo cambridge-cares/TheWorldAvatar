@@ -32,14 +32,10 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 public class BuildingsData {
 
     private static final Logger LOGGER = LogManager.getLogger(BuildingsData.class);
-    private String citiesNamespace;
-    private String namespaceCRS;
     private int srid;
     private QueryClient queryClient;
 
-    public BuildingsData(String citiesNamespace, String namespaceCRS, QueryClient queryClient) {
-        this.citiesNamespace = citiesNamespace;
-        this.namespaceCRS = namespaceCRS;
+    public BuildingsData(String namespaceCRS, QueryClient queryClient) {
         this.queryClient = queryClient;
         this.srid = Integer.parseInt(namespaceCRS.substring(namespaceCRS.indexOf("EPSG:") + 5));
     }
@@ -52,10 +48,17 @@ public class BuildingsData {
 
         StaticPointSource firstSource = staticPointSources.get(0);
 
-        if (firstSource.getOcgmlIri().contains("cityfurniture")) {
+        String cityFurniture = "cityfurniture";
+
+        if (firstSource.getOcgmlIri().contains(cityFurniture)) {
             objectType = "cityfurniture";
         } else if (firstSource.getOcgmlIri().contains("building")) {
             objectType = "building";
+        } else {
+            LOGGER.error("Static point source with IRI {} has invalid OntoCityGML IRI. The OntoCityGML IRI is {}",
+                    firstSource.getIri(), firstSource.getOcgmlIri());
+            throw new JPSRuntimeException(
+                    "Invalid OCGML IRI encountered when calculating static point source properties.");
         }
         iriToPointSourceMap.put(firstSource.getOcgmlIri(), firstSource);
 
@@ -65,14 +68,14 @@ public class BuildingsData {
             if (ontoCityGMLIRI.contains(objectType)) {
                 iriToPointSourceMap.put(ontoCityGMLIRI, ps);
             } else {
-                LOGGER.error("Static point source with IRI " + staticPointSources.get(i).getIri()
-                        + " has invalid OntoCityGML IRI. The OntoCityGML IRI is " + ontoCityGMLIRI);
+                LOGGER.error("Static point source with IRI {} has invalid OntoCityGML IRI. The OntoCityGML IRI is {} ",
+                        staticPointSources.get(i).getIri(), ontoCityGMLIRI);
                 throw new JPSRuntimeException(
-                        "Invalid OCGML IRI encountered when calculating static point source prperties.");
+                        "Invalid OCGML IRI encountered when calculating static point source properties.");
             }
         }
 
-        if (objectType.equals("cityfurniture")) {
+        if (objectType.equals(cityFurniture)) {
             setCityFurnitureProperties(iriToPointSourceMap);
         } else {
             setBuildingProperties(iriToPointSourceMap);
@@ -94,46 +97,25 @@ public class BuildingsData {
             // 1. maximum and minimum z-coordinates of all vertices across all polygons
             // (minZ & maxZ).
             // 2. base polygon
-            double minZ = 0.0;
-            double maxZ = 0.0;
-            double minAveZ = 0.0;
+
             Polygon basePolygon = null;
+            final double minZ = polygonData.stream().flatMap(polygon -> Arrays.stream(polygon.getCoordinates()))
+                    .mapToDouble(Coordinate::getZ).min().orElse(0.0);
+            final double maxZ = polygonData.stream().flatMap(polygon -> Arrays.stream(polygon.getCoordinates()))
+                    .mapToDouble(Coordinate::getZ).max().orElse(0.0);
 
-            for (int i = 0; i < polygonData.size(); i++) {
-                Polygon poly = polygonData.get(i);
-                Coordinate[] coord = poly.getCoordinates();
+            List<Polygon> basePolygons = polygonData.stream().filter(polygon -> {
+                double polyMinZ = Arrays.stream(polygon.getCoordinates()).mapToDouble(Coordinate::getZ).min()
+                        .orElse(minZ);
+                double polyMaxZ = Arrays.stream(polygon.getCoordinates()).mapToDouble(Coordinate::getZ).max()
+                        .orElse(maxZ);
+                return (polyMinZ == polyMaxZ) && (minZ == polyMinZ);
+            }).collect(Collectors.toList());
 
-                double polyMinZ = coord[0].z;
-                double polyMaxZ = coord[0].z;
-                double polyAveZ = 0;
-
-                for (int j = 0; j < coord.length; j++) {
-                    double zc = coord[j].z;
-                    polyMinZ = Math.min(polyMinZ, zc);
-                    polyMaxZ = Math.max(polyMaxZ, zc);
-                    polyAveZ += zc;
-                }
-
-                polyAveZ /= coord.length;
-
-                if (i == 0) {
-                    minZ = polyMinZ;
-                    maxZ = polyMaxZ;
-                    minAveZ = polyAveZ;
-                } else {
-                    minZ = Math.min(minZ, polyMinZ);
-                    maxZ = Math.max(maxZ, polyMaxZ);
-                    minAveZ = Math.min(minAveZ, polyAveZ);
-                }
-
-                if (polyMinZ == polyMaxZ && minZ == polyMinZ) {
-                    basePolygon = poly;
-                }
-
-            }
-
-            if (basePolygon == null) {
-                LOGGER.error("Could not identify base polygon for city furniture object with OCGML IRI " + ocgmlIRI);
+            if (basePolygons.size() == 1)
+                basePolygon = basePolygons.get(0);
+            else {
+                LOGGER.error("Could not identify base polygon for city furniture object with OCGML IRI {}", ocgmlIRI);
                 throw new JPSRuntimeException("Error in BuildingsData class.");
             }
 
@@ -144,15 +126,8 @@ public class BuildingsData {
             centre.setSRID(srid);
             Coordinate[] baseCoords = basePolygon.getCoordinates();
 
-            double radius = 0.0;
-
-            for (int i = 0; i < baseCoords.length; i++) {
-                double dx = baseCoords[i].getX() - centre.getX();
-                double dy = baseCoords[i].getY() - centre.getY();
-                radius += Math.sqrt(dx * dx + dy * dy);
-            }
-
-            radius /= baseCoords.length;
+            double radius = Arrays.stream(baseCoords)
+                    .mapToDouble(d -> centre.distance(new GeometryFactory().createPoint(d))).average().orElse(0.0);
 
             StaticPointSource ps = iriToPointSourceMap.get(ocgmlIRI);
             ps.setLocation(centre);
@@ -176,94 +151,28 @@ public class BuildingsData {
 
             StaticPointSource ps = iriToPointSourceMap.get(ocgmlIRI);
 
-            if (groundPolygons.size() == 1) {
-                Polygon basePolygon = groundPolygons.get(0);
-                basePolygon.setSRID(srid);
-                Coordinate[] baseCoords = basePolygon.getCoordinates();
-                Point centre = basePolygon.getCentroid();
-                centre.setSRID(srid);
-                double radius = 0.0;
-                double aveGroundZ = 0.0;
+            LinearRing basePolygon = extractFootprint(groundPolygons);
+            basePolygon.setSRID(srid);
+            Coordinate[] baseCoords = basePolygon.getCoordinates();
+            Point centre = basePolygon.getCentroid();
+            centre.setSRID(srid);
 
-                for (int i = 0; i < baseCoords.length; i++) {
-                    double dx = baseCoords[i].getX() - centre.getX();
-                    double dy = baseCoords[i].getY() - centre.getY();
-                    radius += Math.sqrt(dx * dx + dy * dy);
-                    aveGroundZ += baseCoords[i].getZ();
-                }
+            double radius = Arrays.stream(baseCoords)
+                    .mapToDouble(d -> centre.distance(new GeometryFactory().createPoint(d))).average().orElse(0.0);
 
-                radius /= baseCoords.length;
-                aveGroundZ /= baseCoords.length;
+            double aveGroundZ = groundPolygons.stream()
+                    .flatMap(polygon -> Arrays.stream(polygon.getCoordinates()))
+                    .mapToDouble(Coordinate::getZ).average().orElse(0.0);
 
-                if (roofPolygons.size() == 1) {
-                    Polygon roofPolygon = roofPolygons.get(0);
-                    Coordinate[] roofCoords = roofPolygon.getCoordinates();
-                    double aveRoofZ = 0.0;
-                    for (int i = 0; i < roofCoords.length; i++) {
-                        aveRoofZ += roofCoords[i].getZ();
-                    }
-                    aveRoofZ /= roofCoords.length;
-                    double height = aveRoofZ - aveGroundZ;
-                    ps.setLocation(centre);
-                    ps.setDiameter(2.0 * radius);
-                    ps.setHeight(height);
-                } else {
-                    // Not sure if this scenario may arise. Not allowing it for now.
-                    LOGGER.error("Building with OCGML IRI" + ocgmlIRI
-                            + " has a single ground surface but multiple roof surfaces. ");
-                    throw new JPSRuntimeException(
-                            "Error in BuildingsData class. Found building with single ground surface but multiple roof surfaces.");
-                }
+            double aveRoofZ = roofPolygons.stream()
+                    .flatMap(polygon -> Arrays.stream(polygon.getCoordinates()))
+                    .mapToDouble(Coordinate::getZ).average().orElse(0.0);
+            double height = aveRoofZ - aveGroundZ;
 
-            } else {
-                // Multiple roof and ground polygons.
+            ps.setLocation(centre);
+            ps.setDiameter(2.0 * radius);
+            ps.setHeight(height);
 
-                LinearRing basePolygon = extractFootprint(groundPolygons);
-                basePolygon.setSRID(srid);
-                Coordinate[] baseCoords = basePolygon.getCoordinates();
-                Point centre = basePolygon.getCentroid();
-                centre.setSRID(srid);
-                double radius = 0.0;
-
-                for (int i = 0; i < baseCoords.length; i++) {
-                    double dx = baseCoords[i].getX() - centre.getX();
-                    double dy = baseCoords[i].getY() - centre.getY();
-                    radius += Math.sqrt(dx * dx + dy * dy);
-                }
-
-                radius /= baseCoords.length;
-
-                double aveGroundZ = 0.0;
-                for (int i = 0; i < groundPolygons.size(); i++) {
-                    Coordinate[] groundCoordinates = groundPolygons.get(i).getCoordinates();
-                    double polyAveZ = 0.0;
-                    for (int j = 0; j < groundCoordinates.length; j++) {
-                        polyAveZ += groundCoordinates[j].getZ();
-                    }
-                    polyAveZ /= groundCoordinates.length;
-                    aveGroundZ += polyAveZ;
-                }
-                aveGroundZ /= groundPolygons.size();
-
-                double aveRoofZ = 0.0;
-                for (int i = 0; i < roofPolygons.size(); i++) {
-                    Coordinate[] roofCoordinates = roofPolygons.get(i).getCoordinates();
-                    double polyAveZ = 0.0;
-                    for (int j = 0; j < roofCoordinates.length; j++) {
-                        polyAveZ += roofCoordinates[j].getZ();
-                    }
-                    polyAveZ /= roofCoordinates.length;
-                    aveRoofZ += polyAveZ;
-                }
-                aveRoofZ /= roofPolygons.size();
-
-                double height = aveRoofZ - aveGroundZ;
-
-                ps.setLocation(centre);
-                ps.setDiameter(2.0 * radius);
-                ps.setHeight(height);
-
-            }
         }
 
     }
@@ -285,103 +194,32 @@ public class BuildingsData {
         for (String ocgmlIRI : ocgmlIRList) {
             List<Polygon> groundPolygons = iriToPolygonMap.get(ocgmlIRI).get(0);
             List<Polygon> roofPolygons = iriToPolygonMap.get(ocgmlIRI).get(1);
+            LinearRing basePolygon = extractFootprint(groundPolygons);
+            basePolygon.setSRID(srid);
 
-            if (groundPolygons.size() == 1) {
-                Polygon basePolygon = groundPolygons.get(0);
-                basePolygon.setSRID(srid);
-                // Check if this building is to be included
-                Point centre = basePolygon.getCentroid();
-                boolean includeBuilding = false;
-                for (int i = 0; i < staticPointSources.size(); i++) {
-                    Point psLocation = staticPointSources.get(i).getLocation();
-                    double distance = centre.distance(psLocation);
-                    if (distance <= maxDistance) {
-                        includeBuilding = true;
-                        break;
-                    }
-                }
+            // Check if this building is to be included
+            Point centre = basePolygon.getCentroid();
 
-                if (!includeBuilding)
-                    continue;
+            int numSources = (int) staticPointSources.stream()
+                    .filter(s -> centre.distance(s.getLocation()) <= maxDistance)
+                    .count();
 
-                Coordinate[] baseCoords = basePolygon.getCoordinates();
-                double aveGroundZ = 0.0;
+            if (numSources == 0)
+                continue;
 
-                for (int i = 0; i < baseCoords.length; i++) {
-                    aveGroundZ += baseCoords[i].getZ();
-                }
-                aveGroundZ /= baseCoords.length;
+            double aveGroundZ = groundPolygons.stream()
+                    .flatMap(polygon -> Arrays.stream(polygon.getCoordinates()))
+                    .mapToDouble(Coordinate::getZ).average().orElse(0.0);
 
-                if (roofPolygons.size() == 1) {
-                    Polygon roofPolygon = roofPolygons.get(0);
-                    Coordinate[] roofCoords = roofPolygon.getCoordinates();
-                    double aveRoofZ = 0.0;
-                    for (int i = 0; i < roofCoords.length; i++) {
-                        aveRoofZ += roofCoords[i].getZ();
-                    }
-                    aveRoofZ /= roofCoords.length;
-                    double height = aveRoofZ - aveGroundZ;
-                    Building bd = new Building(basePolygon.getExteriorRing(), height);
-                    buildings.add(bd);
-                } else {
-                    // Not sure if this scenario may arise. Not allowing it for now.
-                    LOGGER.error("Building with OCGML IRI" + ocgmlIRI
-                            + " has a single ground surface but multiple roof surfaces. ");
-                    throw new JPSRuntimeException(
-                            "Error in BuildingsData class. Found building with single ground surface but multiple roof surfaces.");
-                }
+            double aveRoofZ = roofPolygons.stream()
+                    .flatMap(polygon -> Arrays.stream(polygon.getCoordinates()))
+                    .mapToDouble(Coordinate::getZ).average().orElse(0.0);
 
-            } else {
-                // Multiple roof and ground polygons.
+            double height = aveRoofZ - aveGroundZ;
 
-                LinearRing basePolygon = extractFootprint(groundPolygons);
-                basePolygon.setSRID(srid);
+            Building bd = new Building(basePolygon, height);
+            buildings.add(bd);
 
-                // Check if this building is to be included
-                Point centre = basePolygon.getCentroid();
-                boolean includeBuilding = false;
-                for (int i = 0; i < staticPointSources.size(); i++) {
-                    Point psLocation = staticPointSources.get(i).getLocation();
-                    double distance = centre.distance(psLocation);
-                    if (distance <= maxDistance) {
-                        includeBuilding = true;
-                        break;
-                    }
-                }
-
-                if (!includeBuilding)
-                    continue;
-
-                double aveGroundZ = 0.0;
-                for (int i = 0; i < groundPolygons.size(); i++) {
-                    Coordinate[] groundCoordinates = groundPolygons.get(i).getCoordinates();
-                    double polyAveZ = 0.0;
-                    for (int j = 0; j < groundCoordinates.length; j++) {
-                        polyAveZ += groundCoordinates[j].getZ();
-                    }
-                    polyAveZ /= groundCoordinates.length;
-                    aveGroundZ += polyAveZ;
-                }
-                aveGroundZ /= groundPolygons.size();
-
-                double aveRoofZ = 0.0;
-                for (int i = 0; i < roofPolygons.size(); i++) {
-                    Coordinate[] roofCoordinates = roofPolygons.get(i).getCoordinates();
-                    double polyAveZ = 0.0;
-                    for (int j = 0; j < roofCoordinates.length; j++) {
-                        polyAveZ += roofCoordinates[j].getZ();
-                    }
-                    polyAveZ /= roofCoordinates.length;
-                    aveRoofZ += polyAveZ;
-                }
-                aveRoofZ /= roofPolygons.size();
-
-                double height = aveRoofZ - aveGroundZ;
-
-                Building bd = new Building(basePolygon, height);
-                buildings.add(bd);
-
-            }
         }
 
         return buildings;
@@ -493,47 +331,21 @@ public class BuildingsData {
     }
 
     /**
-     * Returns the ground geometry's exterior ring
-     * 
-     * @param geometry    ground geometry
-     * @param polygonType polygon datatype, such as "<...\POLYGON-3-45-15>"
-     * @return ground geometry with no holes
-     */
-    private String ignoreHole(String geometry, String polygonType) {
-        int num;
-        int ind;
-        int count = 1;
-
-        String[] split = polygonType.split("-");
-
-        if (split.length < 4) {
-            return geometry;
-        }
-
-        num = Integer.parseInt(split[2]);
-
-        ind = geometry.indexOf("#");
-
-        while (count != num) {
-            ind = geometry.indexOf("#", ind + 1);
-            count++;
-        }
-        return geometry.substring(0, ind);
-    }
-
-    /**
      * Extracts the footprint of the building from its ground surface geometries
      * 
      * @param results JSONArray of the query results for ground surface geometries
      * @return footprint as a string
      */
     private LinearRing extractFootprint(List<Polygon> polygonList) {
+
+        if (polygonList.size() == 1)
+            return polygonList.get(0).getExteriorRing();
+
         double distance = 0.00001;
         double increment = 0.00001;
 
         Polygon footprintPolygon;
         LinearRing footprintRing;
-        Coordinate[] footprintCoordinates;
         ArrayList<Geometry> geometries = new ArrayList<>();
         GeometryFactory geoFac = new GeometryFactory();
         GeometryCollection geoCol;
@@ -555,7 +367,7 @@ public class BuildingsData {
 
         geoType = merged.getGeometryType();
 
-        while (geoType != "Polygon" || deflatePolygon(merged, distance).getGeometryType() != "Polygon") {
+        while (!geoType.equals("Polygon") || !deflatePolygon(merged, distance).getGeometryType().equals("Polygon")) {
             distance += increment;
 
             for (int i = 0; i < geometries.size(); i++) {

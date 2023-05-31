@@ -2,7 +2,6 @@ package com.cmclinnovations.aermod.objects;
 
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Point;
-import org.postgis.Polygon;
 
 public class Building {
     private LinearRing footPrint;
