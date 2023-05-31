@@ -95,3 +95,25 @@ curl -X GET localhost:3055/data-bridge-agent/sql
 # For databases within the stack
 curl -X GET 'localhost:3838/data-bridge-agent/sql?database=db&transfer=in'
 ```
+
+4. `<base>/timeseries` route:
+    - Execute the agent's task through an HTTP `POST` request using the [time series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries). This route will instantiate the time series inputs sent in the request into the stack's knowledge graph.
+    - The request will require the following parameters:
+        - `timeClass` : Refers to the time series classes as written in the [time series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries#instantiation-in-kg).
+        - `timestamp` : A JSONArray containing the time stamp as strings in the format of `YYYY-MM-DD'T'HH:MM:SS`.
+        - `values` : A JSONObject containing the time series values. A data IRI is inserted as the key and paired with their values as a JSONArray. For example: `{"dataIRI": [1, 2, 3]}`.
+        - `database` (OPTIONAL) : Specifies the database name within the same stack. If not specified, the agent will instantiate the time series into the source JDBC url and credentials indicated in the `<root>/config/endpoint.properties` file.
+        - `namespace` (OPTIONAL) : Specifies the SPARQL endpoint within the same stack. If not specified, the agent will instantiate the time series into the source endpoint indicated in the `<root>/config/endpoint.properties` file. If you are using an authenticated blazegraph, the source username and password in the properties file must be populated.
+    - A sample `POST` request using curl on a CLI:
+```
+curl -X POST --header "Content-Type: application/json" -d "{
+    'timeClass':'INSTANTANEOUS',
+    'timestamp': ['2022-11-09T03:05:18', '2022-11-19T03:05:18', '2022-11-29T03:05:18'],
+    'values':{
+        'electricity': [1,2,3],
+       'energy': [4,5,6]
+     },
+     'database' = 'time',
+     'namespace' ='time'
+     }" localhost:3838/data-bridge-agent/timeseries 
+   ```
