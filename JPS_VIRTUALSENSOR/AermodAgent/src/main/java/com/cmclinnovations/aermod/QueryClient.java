@@ -273,19 +273,14 @@ public class QueryClient {
 
         }
 
-        Coordinate[] scopeCoordinates = scope.getCoordinates();
-        double xMin = scopeCoordinates[0].x;
-        double yMin = scopeCoordinates[0].y;
-        double xMax = xMin;
-        double yMax = yMin;
-        for (int i = 0; i < scopeCoordinates.length; i++) {
-            double xc = scopeCoordinates[i].x;
-            double yc = scopeCoordinates[i].y;
-            xMin = Math.min(xMin, xc);
-            yMin = Math.min(yMin, yc);
-            xMax = Math.max(xMax, xc);
-            yMax = Math.max(yMax, yc);
-        }
+        List<Coordinate> coordinateList = Arrays.asList(scope.getCoordinates());
+        List<Double> xCoordinates = coordinateList.stream().map(c -> c.getX()).collect(Collectors.toList());
+        List<Double> yCoordinates = coordinateList.stream().map(c -> c.getY()).collect(Collectors.toList());
+
+        double xMin = Collections.min(xCoordinates);
+        double yMin = Collections.min(yCoordinates);
+        double xMax = Collections.max(xCoordinates);
+        double yMax = Collections.max(yCoordinates);
 
         // Convert coordinates to the CRS used in the namespace
 
