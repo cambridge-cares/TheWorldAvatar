@@ -18,8 +18,8 @@
             "subdirectory": "vector",
             "geoServerSettings": {
                 "virtualTable": {
-                    "name": "forestry_colour",
-                    "sql": "SELECT forestry.ogc_fid, \"OBJECTID_1\", \"CATEGORY\", forestry.\"IFT_IOA\", \"Area_ha\", wkb_geometry, colour\nFROM forestry, forestry_colours\nWHERE forestry.\"IFT_IOA\" = forestry_colours.\"ift_ioa\"\n",
+                    "name": "forestry",
+                    "sql": "@/inputs/config/forestry.sql",
                     "escapeSql": true,
                     "keyColumn": "ogc_fid",
                     "geometry": {
