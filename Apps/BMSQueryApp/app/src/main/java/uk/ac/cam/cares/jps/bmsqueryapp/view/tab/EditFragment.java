@@ -18,6 +18,7 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import net.openid.appauth.AuthorizationException;
 
@@ -34,6 +35,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import okhttp3.HttpUrl;
+import uk.ac.cam.cares.jps.bmsqueryapp.R;
 import uk.ac.cam.cares.jps.bmsqueryapp.adapter.list.EditableAttributesAdapter;
 import uk.ac.cam.cares.jps.bmsqueryapp.authorization.AuthorizationHelper;
 import uk.ac.cam.cares.jps.bmsqueryapp.data.attribute.EditableAttribute;
@@ -156,8 +158,12 @@ public class EditFragment extends Fragment {
         if (response instanceof AuthFailureError) {
             if (response.networkResponse.statusCode == 403) {
                 LOGGER.warn("Permission deny");
-                // todo: do it in dialogue
-                Toast.makeText(requireActivity(), "You don't have the permission to do this operation. Please check with the admin or login with another account.", Toast.LENGTH_SHORT).show();
+                new MaterialAlertDialogBuilder(requireActivity())
+                        .setTitle(R.string.permission_deny)
+                        .setMessage(R.string.permission_deny_explain)
+                        .setPositiveButton(R.string.change_account, (dialogInterface, i) -> requireActivity().getSupportFragmentManager().setFragmentResult("startLogin", new Bundle()))
+                        .setNegativeButton(R.string.cancel, null)
+                        .show();
             }
         } else {
             Toast.makeText(requireActivity(), "Failed to submit the change, please resubmit later.", Toast.LENGTH_SHORT).show();

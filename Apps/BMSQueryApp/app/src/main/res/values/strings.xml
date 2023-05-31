@@ -20,4 +20,8 @@
     <string name="fail_to_login">Fail to login, please try again</string>
     <string name="sign_in_or_create">Sign in or Create</string>
     <string name="product_intro">Sign in to monitor and control your lab devices.</string>
+    <string name="permission_deny">Permission Deny</string>
+    <string name="permission_deny_explain">You don\'t have the permission to do this operation. Please check with the admin or login with another account.</string>
+    <string name="change_account">Change Account</string>
+    <string name="cancel">Cancel</string>
 </resources>

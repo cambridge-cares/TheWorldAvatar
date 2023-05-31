@@ -9,10 +9,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
@@ -27,11 +25,10 @@ import java.util.List;
 
 import uk.ac.cam.cares.jps.bmsqueryapp.data.attribute.EditableAttribute;
 import uk.ac.cam.cares.jps.bmsqueryapp.databinding.ActivityEquipmentInstanceBinding;
-import uk.ac.cam.cares.jps.bmsqueryapp.view.tab.EditFragment;
-import uk.ac.cam.cares.jps.bmsqueryapp.view.tab.TabAdapter;
 import uk.ac.cam.cares.jps.bmsqueryapp.utils.Constants;
+import uk.ac.cam.cares.jps.bmsqueryapp.view.tab.TabAdapter;
 
-public class EquipmentInstanceActivity extends AppCompatActivity {
+public class EquipmentInstanceActivity extends AppCompatActivity{
     ActivityEquipmentInstanceBinding binding;
     private static final Logger LOGGER = LogManager.getLogger(EquipmentInstanceActivity.class);
 
@@ -111,7 +108,7 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
                 }
             } else if (tabPosition == 1) {
                 if (adapter.getEditTab() != null) {
-                    ((EditFragment) adapter.getEditTab()).clearInputs();
+                    adapter.getEditTab().clearInputs();
                 }
             }
         });
