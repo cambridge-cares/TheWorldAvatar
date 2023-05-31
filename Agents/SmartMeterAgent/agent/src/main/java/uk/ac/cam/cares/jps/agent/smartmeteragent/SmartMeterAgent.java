@@ -53,7 +53,6 @@ public class SmartMeterAgent {
                 devices.add(mappings.get(i)[1]);
             }
         }
-
         try {
             loadConfigs(AgentLocator.getCurrentJpsAppDirectory(this) + "/config/db.properties");
         } catch (IOException e) {
@@ -65,7 +64,7 @@ public class SmartMeterAgent {
             throw new JPSRuntimeException("SQLite JDBC driver class not found.", e);
         }
         RemoteRDBStoreClient rdbClient = new RemoteRDBStoreClient(dbUrl, dbUsername, dbPassword);
-        String query = getSqlQuery(devices, currentTime);
+        String query = getSqlQueryForData(devices, currentTime, "2000-01-01 00:00:00");
         LOGGER.info("Executing SQL query: " + query);
         JSONArray result = rdbClient.executeQuery(query);
 
@@ -76,7 +75,7 @@ public class SmartMeterAgent {
             LOGGER.info("Not all devices are switched on, finding previous valid readings...");
             currentTime = OffsetDateTime.parse(currentTime.replace(" ", "T") + "+00:00")
                             .minusMinutes(1).toString().replace("T", " ").replace("Z", "");
-            query = getSqlQuery(devices, currentTime);
+            query = getSqlQueryForData(devices, currentTime, "2000-01-01 00:00:00");
             LOGGER.info("Executing SQL query: " + query);
             result = rdbClient.executeQuery(query);
             numberOfAttempt += 1;
@@ -89,13 +88,73 @@ public class SmartMeterAgent {
     }
 
     /**
-     * Structure SQL query to retrieve smart meter readings.
-     * (Average values are used instead of values in 3 phases)
-     * @param devices
+     * Retrieve historical valid readings from smart meter database,
+     * and upload the data to instantiated timeseries.
+     * (All devices in the mapping file should be switched on, and 
+     * all data should be non-zero in order for the reading to be valid)
      * @param beforeTime
+     * @param afterTime
+     * @param mappings
+     * @param targetResourceID
      * @return
      */
-    public String getSqlQuery(List<String> devices, String beforeTime) {
+    public int uploadHistoricalDataFromDb(String beforeTime, String afterTime, List<String[]> mappings, String targetResourceID) {
+        // All devices that should have smart meter readings
+        List<String> devices = new ArrayList<>();
+        for (int i = 0; i < mappings.size(); i++) {
+            if (mappings.get(i).length > 1) {
+                devices.add(mappings.get(i)[1]);
+            }
+        }
+        try {
+            loadConfigs(AgentLocator.getCurrentJpsAppDirectory(this) + "/config/db.properties");
+        } catch (IOException e) {
+            throw new JPSRuntimeException("Failed to read smart meter RDB info from config file.");
+        }
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e) {
+            throw new JPSRuntimeException("SQLite JDBC driver class not found.", e);
+        }
+
+        // Select possible time points in this period
+        String timeQuery = "SELECT DISTINCT strftime('%Y-%m-%d %H:%M:00', ts) as time "
+                        + "FROM \"Measurement\" " 
+                        + "WHERE time <= '" + beforeTime + "' " 
+                        + "AND time >= '" + afterTime + "';";
+                        
+        RemoteRDBStoreClient rdbClient = new RemoteRDBStoreClient(dbUrl, dbUsername, dbPassword);
+        LOGGER.info("Executing SQL query: " + timeQuery);
+        JSONArray timeArray = rdbClient.executeQuery(timeQuery);        
+        JSONArray result = new JSONArray();
+        int numOfReadings = 0;
+        JSONArray dataIRIArray = getDataIris(targetResourceID, mappings);
+        for (int i = 0; i < timeArray.length(); i++) {
+            JSONArray previousResult = result;
+            String query = getSqlQueryForData(devices, timeArray.getJSONObject(i).getString("time"), afterTime);
+            LOGGER.info("Executing SQL query: " + query);
+            result = rdbClient.executeQuery(query);
+            if (!result.similar(previousResult) && validateResult(devices, result)) {
+                LOGGER.info("Valid readings found. Uploading data...");
+                uploadSmartMeterData(result, targetResourceID, dataIRIArray);
+                numOfReadings += 1;
+            } else {
+                LOGGER.info("No new valid readings, checking next time point...");
+            }
+        }
+        return numOfReadings;
+    }
+
+    /**
+     * Structure SQL query to retrieve smart meter readings.
+     * (Average values are used instead of values in 3 phases)
+     * (Assuming the update frequency of all smart meters is the same under normal conditions)
+     * @param devices
+     * @param beforeTime
+     * @param afterTime
+     * @return
+     */
+    public String getSqlQueryForData(List<String> devices, String beforeTime, String afterTime) {
         // Assuming time readings in smart meter database is UTC time
         String query = "SELECT strftime('%Y-%m-%dT%H:%M:00+00:00', MAX(ts)) as time, \"data_source\" as device, " 
         + "(\"ch1Watt\" + \"ch2Watt\" + \"ch3Watt\")/3 as pd, (\"ch1Current\" + \"ch2Current\" + \"ch3Current\")/3 as current, " 
@@ -119,6 +178,7 @@ public class SmartMeterAgent {
 
         query += ") "
         + "AND ts <= '" + beforeTime + "' "
+        + "AND ts >= '" + afterTime + "' "
         + "GROUP BY device, id " 
         + "ORDER BY ts DESC "
         + "LIMIT " + devices.size() + ";";
@@ -126,18 +186,25 @@ public class SmartMeterAgent {
     }
 
     /**
-     * Check if result readings are valid: all devices have readings.
+     * Check if result readings are valid: 
+     * all devices have readings and all selected readings have the same time.
      * @param devices devices required
      * @param result  query result from smart meter database
-     * @return
+     * @return        whether the query result is valid
      */
     public boolean validateResult(List<String> devices, JSONArray result) {
+        String time = "";
         boolean found = false;
         for (int i = 0; i < devices.size(); i++) {
             found = false;
             for (int j = 0; j < result.length(); j++) {
                 if (result.getJSONObject(j).getString("device").toLowerCase().equals(devices.get(i).toLowerCase())) {
                     found = true;
+                    if (i == 0) {
+                        time = result.getJSONObject(j).getString("time");
+                    } else if (!result.getJSONObject(j).getString("time").equals(time)) {
+                        return false;
+                    }
                     break;
                 }
             }
@@ -153,14 +220,13 @@ public class SmartMeterAgent {
      * map the IRIs to devices in the readings, and upload readings to KG.
      * @param queryResult
      * @param targetResourceID
-     * @param mappings
+     * @param dataIRIArray
      */
-    public void uploadLatestSmartMeterData(JSONArray queryResult, String targetResourceID, List<String[]> mappings) {
+    public void uploadSmartMeterData(JSONArray queryResult, String targetResourceID, JSONArray dataIRIArray) {
         OffsetDateTime time = OffsetDateTime.parse("2000-01-01T00:00:00+00:00");
         List<OffsetDateTime> timeValues = new ArrayList<OffsetDateTime>();
         List<List<?>> allValues = new ArrayList<>();
         List<String> dataIRIs = new ArrayList<>();
-        JSONArray dataIRIArray = getDataIris(targetResourceID, mappings);
 
         for (int i = 0; i < dataIRIArray.length(); i++) {
             JSONObject oneBusIRIs = dataIRIArray.getJSONObject(i);

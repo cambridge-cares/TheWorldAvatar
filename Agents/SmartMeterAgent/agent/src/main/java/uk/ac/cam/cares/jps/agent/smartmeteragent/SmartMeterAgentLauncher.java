@@ -46,35 +46,54 @@ public class SmartMeterAgentLauncher extends JPSAgent {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String currentTime = now.format(formatter);
 
-        // Data before: date time in "yyyy-MM-dd HH:mm:ss" format (optional, use current UTC time if not given)
-        // for historical data reading
+        // Parameters for historical data reading
+        // Data before (inclusive): date time in "yyyy-MM-dd HH:mm:ss" format 
+        // (optional, use current UTC time if not given)
         String dataBefore;
+        String dataAfter;
         if (requestParams.has("dataBefore")) {
             dataBefore = requestParams.getString("dataBefore");
         } else {
             LOGGER.info("dataBefore not given, using current datetime instead...");
             dataBefore = currentTime;
         }
+        // Data after (inclusive): date time in "yyyy-MM-dd HH:mm:ss" format 
+        // (optional, use default time if not given)
+        if (requestParams.has("dataAfter")) {
+            dataAfter = requestParams.getString("dataAfter");
+        } else {
+            LOGGER.info("dataAfter not given, using default value: 2000-01-01 00:00:00 ...");
+            dataAfter = "2000-01-01 00:00:00";
+        }
 
         SmartMeterAgent agent = new SmartMeterAgent();
+        List<String[]> mappings = agent.getDataMappings();
         if (dataSource.toLowerCase().equals("database") && dataRequired.toLowerCase().equals("latest")) {
             while (true) {
                 LOGGER.info("Reading latest data from database...");
-                List<String[]> mappings = agent.getDataMappings();
                 JSONArray result = agent.queryLatestDataFromDb(currentTime, mappings);
+                JSONArray dataIRIArray = agent.getDataIris(targetResourceID, mappings);
                 LOGGER.info("Uploading data...");
-                agent.uploadLatestSmartMeterData(result, targetResourceID, mappings);
+                agent.uploadSmartMeterData(result, targetResourceID, dataIRIArray);
                 LOGGER.info("Upload complete. Sleeping...");
                 try {
                     TimeUnit.SECONDS.sleep(60);
                 } catch (InterruptedException ie) {
-                    break;
+                    Thread.currentThread().interrupt();
                 }
             }
         } else if (dataSource.toLowerCase().equals("csv") && dataRequired.toLowerCase().equals("latest")) {
             throw new JPSRuntimeException("dataRequired should be historical if reading from csv files.");
-        }else if (dataSource.toLowerCase().equals("database") && dataRequired.toLowerCase().equals("historical")) {
-            // TODO historical readings from db
+        } else if (dataSource.toLowerCase().equals("database") && dataRequired.toLowerCase().equals("historical")) {
+            LOGGER.info("Reading historical data from database...");
+            int numOfReadings = agent.uploadHistoricalDataFromDb(dataBefore, dataAfter, mappings, targetResourceID);
+            if (numOfReadings == 0) {
+                LOGGER.info("No valid reading found in this period of time.");
+                return new JSONObject().put("uploadStatus", "No valid reading found.");
+            } else {
+                LOGGER.info(numOfReadings + " readings uploaded.");
+                return new JSONObject().put("uploadStatus", numOfReadings + " readings uploaded successfully.");
+            }
         } else if (dataSource.toLowerCase().equals("csv") && dataRequired.toLowerCase().equals("historical")) {
             // TODO historical readings from csv
         } else {
