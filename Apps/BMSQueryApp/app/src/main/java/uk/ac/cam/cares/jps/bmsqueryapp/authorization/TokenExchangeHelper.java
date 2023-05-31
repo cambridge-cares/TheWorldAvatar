@@ -1,4 +1,4 @@
 package uk.ac.cam.cares.jps.bmsqueryapp.authorization;
 
-public class TokenExchange {
+public class TokenExchangeHelper {
 }

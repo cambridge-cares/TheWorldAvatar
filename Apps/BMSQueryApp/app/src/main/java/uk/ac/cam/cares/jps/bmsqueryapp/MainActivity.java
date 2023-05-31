@@ -126,7 +126,6 @@ public class MainActivity extends AppCompatActivity {
                 buildings.add(building);
             }
         } catch (JSONException e) {
-            // todo: test with empty json
             throw new RuntimeException("Unable to parse the JSONObject returned from the BMSQueryAgent");
         }
 

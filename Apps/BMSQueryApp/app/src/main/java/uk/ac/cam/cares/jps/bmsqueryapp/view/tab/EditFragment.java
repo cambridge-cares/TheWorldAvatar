@@ -14,29 +14,43 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 
+import net.openid.appauth.AuthorizationException;
+
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import okhttp3.HttpUrl;
 import uk.ac.cam.cares.jps.bmsqueryapp.adapter.list.EditableAttributesAdapter;
+import uk.ac.cam.cares.jps.bmsqueryapp.authorization.AuthorizationHelper;
 import uk.ac.cam.cares.jps.bmsqueryapp.data.attribute.EditableAttribute;
 import uk.ac.cam.cares.jps.bmsqueryapp.databinding.FragmentEditBinding;
 import uk.ac.cam.cares.jps.bmsqueryapp.utils.Constants;
 import uk.ac.cam.cares.jps.bmsqueryapp.utils.SingletonConnection;
 
 public class EditFragment extends Fragment {
+
+    private static final Logger LOGGER = LogManager.getLogger(EditFragment.class);
+
     private FragmentEditBinding binding;
 
     private final HttpUrl.Builder ESPHOME_CONTROL_URL = Constants.constructUrlBuilder(Constants.HOST_LAB_WIFI, 3839, "bms-update-agent/set");
     private List<EditableAttribute> editableAttributes = new ArrayList<>();
+
+    private AuthorizationHelper authHelper;
 
     public EditFragment() {
         super();
@@ -51,6 +65,8 @@ public class EditFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         binding = FragmentEditBinding.inflate(inflater, container, false);
         BasicConfigurator.configure();
+
+        authHelper = AuthorizationHelper.getInstance(this.getContext());
 
         EditableAttributesAdapter attributeListAdapter = new EditableAttributesAdapter(editableAttributes);
         binding.editableAttributeRv.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -69,34 +85,52 @@ public class EditFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         binding.submitButton.setOnClickListener(view1 -> {
-//            String temperature = binding.temperatureEdit.getText().toString().trim();
-            // TODO: backend not able to handle multiple attributes
-            try {
-//                Double temperatureDouble = Double.parseDouble(temperature);
-                JSONObject params = new JSONObject();
-                params.put("dataIRI", editableAttributes.get(0).getIri());
-                params.put("temperature", Double.parseDouble(editableAttributes.get(0).getValue()));
-                params.put("clientProperties", "CLIENT_PROPERTIES");
-
-                JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, ESPHOME_CONTROL_URL.build().toString(), params, response -> {
-                    try {
-                        String fanStatus = response.getString("fanStatus");
-                        Toast.makeText(this.getContext(), fanStatus.isEmpty() ? fanStatus : "Successfully updated.", Toast.LENGTH_LONG).show();
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
-                }, error -> Toast.makeText(this.getContext(), "Failed to submit the change, please resubmit later.", Toast.LENGTH_SHORT).show());
-                SingletonConnection.getInstance(this.getContext()).addToRequestQueue(jsonObjectRequest);
-
-//                binding.temperatureEdit.clearFocus();
-                hideKeyboardFrom(view.getContext(), view);
-            } catch (NumberFormatException e) {
-                Toast.makeText(this.getContext(), "The input value should be number.", Toast.LENGTH_SHORT).show();
-            } catch (JSONException e) {
-                Toast.makeText(this.getContext(), "Failed to submit the change, please resubmit later.", Toast.LENGTH_SHORT).show();
-            }
-
+            authHelper.performActionWithFreshTokens(this::createEditRequest);
+            hideKeyboardFrom(view.getContext(), view);
         });
+    }
+
+    private void createEditRequest(String accessToken, String idToken, AuthorizationException ex) {
+        if (ex != null) {
+            LOGGER.error("Failed to refresh access token. Reauthorization is needed.");
+            Toast.makeText(this.getContext(), "Login information expired. Please login again.", Toast.LENGTH_SHORT).show();
+            requireActivity().getSupportFragmentManager().setFragmentResult("startLogin", new Bundle());
+            return;
+        }
+
+        try {
+            JSONObject params = new JSONObject();
+            params.put("dataIRI", editableAttributes.get(0).getIri());
+            params.put("temperature", Double.parseDouble(editableAttributes.get(0).getValue()));
+            params.put("clientProperties", "CLIENT_PROPERTIES");
+
+            JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, ESPHOME_CONTROL_URL.build().toString(), params, response -> {
+                try {
+                    if (!response.has("fanStatus")) {
+                        handleRequestFailure(new VolleyError(response.getString("message")));
+                        return;
+                    }
+
+                    String fanStatus = response.getString("fanStatus");
+                    Toast.makeText(this.getContext(), fanStatus.isEmpty() ? fanStatus : "Successfully updated.", Toast.LENGTH_LONG).show();
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }, this::handleRequestFailure) {
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("Content-Type", "application/json");
+                    params.put("Authorization", "Bearer " + accessToken);
+                    return params;
+                }
+            };
+            SingletonConnection.getInstance(this.getContext()).addToRequestQueue(jsonObjectRequest);
+        } catch (NumberFormatException e) {
+            Toast.makeText(this.getContext(), "The input value should be number.", Toast.LENGTH_SHORT).show();
+        } catch (JSONException e) {
+            Toast.makeText(this.getContext(), "Failed to submit the change, please resubmit later.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void hideKeyboardFrom(Context context, View view) {
@@ -114,6 +148,19 @@ public class EditFragment extends Fragment {
             EditableAttributesAdapter.EditableAttributeInputView viewHolder = (EditableAttributesAdapter.EditableAttributeInputView) binding.editableAttributeRv.findViewHolderForAdapterPosition(i);
             assert viewHolder != null;
             viewHolder.remvoeInput();
+        }
+    }
+
+    private void handleRequestFailure(VolleyError response) {
+        LOGGER.error(response.getMessage());
+        if (response instanceof AuthFailureError) {
+            if (response.networkResponse.statusCode == 403) {
+                LOGGER.warn("Permission deny");
+                // todo: do it in dialogue
+                Toast.makeText(requireActivity(), "You don't have the permission to do this operation. Please check with the admin or login with another account.", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(requireActivity(), "Failed to submit the change, please resubmit later.", Toast.LENGTH_SHORT).show();
         }
     }
 }

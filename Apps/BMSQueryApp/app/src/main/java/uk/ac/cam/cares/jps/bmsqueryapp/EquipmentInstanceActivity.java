@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.bmsqueryapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.webkit.ValueCallback;
 import android.webkit.WebResourceError;
@@ -8,8 +9,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
@@ -112,6 +115,12 @@ public class EquipmentInstanceActivity extends AppCompatActivity {
                 }
             }
         });
+
+        getSupportFragmentManager().setFragmentResultListener("startLogin", this,
+                (requestKey, result) -> {
+                    startActivity(new Intent(this, LoginActivity.class));
+                    finish();
+                });
     }
 
     private List<EditableAttribute> getEditableAttributeList(String type) {

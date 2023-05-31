@@ -30,6 +30,8 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -78,10 +80,10 @@ public class LoginActivity extends AppCompatActivity {
 
         if (authStateManager.getCurrent().isAuthorized()
                 && !configuration.hasConfigurationChanged()) {
-            LOGGER.info("User is already authenticated, proceeding to token activity");
-//            Toast.makeText(this, "Welcome back " + "username", Toast.LENGTH_SHORT).show();
+            LOGGER.info("User is already authenticated, proceeding to main activity");
             startActivity(new Intent(this, MainActivity.class));
             finish();
+            return;
         }
 
         if (configuration.hasConfigurationChanged()) {
