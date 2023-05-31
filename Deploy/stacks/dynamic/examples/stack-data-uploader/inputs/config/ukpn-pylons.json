@@ -7,8 +7,8 @@
         {
             "type": "vector",
             "skip": false,
-            "table": "ukpn_overhead_lines_low",
-            "sql": "ALTER TABLE ukpn_overhead_lines_low ADD COLUMN IF NOT EXISTS voltage_level VARCHAR ; update ukpn_overhead_lines_low SET voltage_level = 'L' ;",
+            "table": "ukpn_overhead_lines_high_distribution",
+            "sql": "ALTER TABLE ukpn_overhead_lines_high_distribution ADD COLUMN IF NOT EXISTS voltage_level VARCHAR ; update ukpn_overhead_lines_high_distribution SET voltage_level = 'DH' ;",
             "subdirectory": "vector/ukpn-hv-overhead-lines-shapefile",
             "ogr2ogrOptions": {
                 "otherOptions": {
@@ -20,7 +20,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "ukpn_overhead_lines_low_extended",
-                    "sql": "SELECT wkb_geometry, line_colour, line_width, ukpn_overhead_lines_low.voltage_level FROM ukpn_overhead_lines_low, ukpn_line_styling WHERE ukpn_overhead_lines_low.voltage_level = ukpn_line_styling.voltage_level",
+                    "sql": "SELECT wkb_geometry, line_colour, line_width FROM ukpn_overhead_lines_high_distribution, ukpn_line_styling WHERE ukpn_overhead_lines_high_distribution.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
                     "keyColumn": "voltage_level",
                     "geometry": {
@@ -47,7 +47,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "ukpn_poles_towers_medium_extended",
-                    "sql": "SELECT wkb_geometry, pylon_icon, icon_size, ukpn_poles_towers_medium.voltage_level FROM ukpn_poles_towers_medium, ukpn_line_styling WHERE ukpn_poles_towers_medium.voltage_level = ukpn_line_styling.voltage_level",
+                    "sql": "SELECT wkb_geometry, pylon_icon, icon_size FROM ukpn_poles_towers_medium, ukpn_line_styling WHERE ukpn_poles_towers_medium.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
                     "keyColumn": "voltage_level",
                     "geometry": {
@@ -75,7 +75,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "ukpn_overhead_lines_medium_extended",
-                    "sql": "SELECT wkb_geometry, line_colour, line_width, ukpn_overhead_lines_medium.voltage_level FROM ukpn_overhead_lines_medium, ukpn_line_styling WHERE ukpn_overhead_lines_medium.voltage_level = ukpn_line_styling.voltage_level",
+                    "sql": "SELECT wkb_geometry, line_colour, line_width FROM ukpn_overhead_lines_medium, ukpn_line_styling WHERE ukpn_overhead_lines_medium.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
                     "keyColumn": "voltage_level",
                     "geometry": {
@@ -96,7 +96,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "ukpn_poles_towers_high_extended",
-                    "sql": "SELECT wkb_geometry, pylon_icon, icon_size, ukpn_poles_towers_high.voltage_level FROM ukpn_poles_towers_high, ukpn_line_styling WHERE ukpn_poles_towers_high.voltage_level = ukpn_line_styling.voltage_level",
+                    "sql": "SELECT wkb_geometry, pylon_icon, icon_size FROM ukpn_poles_towers_high, ukpn_line_styling WHERE ukpn_poles_towers_high.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
                     "keyColumn": "voltage_level",
                     "geometry": {
@@ -124,7 +124,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "ukpn_overhead_lines_high_extended",
-                    "sql": "SELECT wkb_geometry, line_colour, line_width, ukpn_overhead_lines_high.voltage_level FROM ukpn_overhead_lines_high, ukpn_line_styling WHERE ukpn_overhead_lines_high.voltage_level = ukpn_line_styling.voltage_level",
+                    "sql": "SELECT wkb_geometry, line_colour, line_width FROM ukpn_overhead_lines_high, ukpn_line_styling WHERE ukpn_overhead_lines_high.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
                     "keyColumn": "voltage_level",
                     "geometry": {
