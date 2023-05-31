@@ -5,6 +5,12 @@
     "skip": false,
     "dataSubsets": [
         {
+            "type": "tabular",
+            "skip": false,
+            "table": "ukpn_line_styling",
+            "subdirectory": "tabular"
+        },
+        {
             "type": "vector",
             "skip": false,
             "table": "ukpn_overhead_lines_high_distribution",
@@ -33,10 +39,25 @@
             }
         },
         {
-            "type": "tabular",
+            "type": "vector",
             "skip": false,
-            "table": "ukpn_line_styling",
-            "subdirectory": "tabular"
+            "table": "ukpn_overhead_lines_low_distribution",
+            "sql": "ALTER TABLE ukpn_overhead_lines_low_distribution ADD COLUMN IF NOT EXISTS voltage_level VARCHAR ; update ukpn_overhead_lines_low_distribution SET voltage_level = 'DL' ;",
+            "subdirectory": "vector/ukpn-lv-overhead-lines-shapefile",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "ukpn_overhead_lines_low_distribution_extended",
+                    "sql": "SELECT wkb_geometry, line_colour, line_width FROM ukpn_overhead_lines_low_distribution, ukpn_line_styling WHERE ukpn_overhead_lines_low_distribution.voltage_level = ukpn_line_styling.voltage_level",
+                    "escapeSql": false,
+                    "keyColumn": "voltage_level",
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    }
+                },
+                "defaultStyle": "the_world_avatar:overhead-lines"
+            }
         },
         {
             "type": "vector",
