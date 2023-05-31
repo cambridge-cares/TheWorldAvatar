@@ -24,33 +24,10 @@ FROM tomcat:9.0 as agent
 WORKDIR /app
 
 # Copy in the properties file
-COPY ./config/agent.properties /root/agent.properties
-
-# Set the required environment variable
-ENV RFIDUPDATE_AGENTPROPERTIES="/root/agent.properties"
-
-# Copy in the properties file
-COPY ./config/api.properties /root/api.properties
-
-# Set the required environment variable
-ENV RFIDUPDATE_APIPROPERTIES="/root/api.properties"
-
-# Copy in the properties file
 COPY ./config/client.properties /root/client.properties
 
 # Set the required environment variable
-ENV RFIDUPDATE_CLIENTPROPERTIES="/root/client.properties"
-
-COPY ./config/launcher.properties /root/launcher.properties
-
-# Set the required environment variable
-ENV RFIDUPDATE_LAUNCHERPROPERTIES="/root/launcher.properties"
-
-# Copy in the mapping folder
-COPY ./config/mappings /root/mappings
-
-# Set the required environment variable
-ENV RFIDUPDATE_AGENT_MAPPINGS="/root/mappings"
+ENV CLIENTPROPERTIES="/root/client.properties"
 
 COPY --from=builder /root/RFIDUpdateAgentCode/output/dev-inst-agent##1.0.0.war $CATALINA_HOME/webapps/
 
