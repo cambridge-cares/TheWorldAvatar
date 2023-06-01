@@ -33,7 +33,6 @@ public class BMSQueryAgent {
 
     private static final Logger LOGGER = LogManager.getLogger(BMSQueryAgent.class);
     RemoteStoreClient rsClient;
-    List<String> kgUrls;
 
     private final String BOT_STR = "https://w3id.org/bot#";
     private final Prefix P_BOT = SparqlBuilder.prefix("bot", iri(BOT_STR));
@@ -44,11 +43,9 @@ public class BMSQueryAgent {
     /**
      * Setter for RemoteStoreClient and Knowledge graph namespace urls
      * @param rsClient RemoteStoreClient instance
-     * @param kgUrls Knowledge graph namespace urls
      */
-    public void setRSClient(RemoteStoreClient rsClient, List<String> kgUrls) {
+    public void setRSClient(RemoteStoreClient rsClient) {
         this.rsClient = rsClient;
-        this.kgUrls = kgUrls;
     }
 
     /**
@@ -93,10 +90,10 @@ public class BMSQueryAgent {
 
         JSONArray jsonResult;
         try {
-            LOGGER.info("Sending federated request...");
-            jsonResult = rsClient.executeFederatedQuery(kgUrls, query.getQueryString());
+            LOGGER.info("Sending request...");
+            jsonResult = rsClient.executeQuery(query.getQueryString());
         } catch (Exception e) {
-            LOGGER.error("Fail to run federated query to get everything in buildings");
+            LOGGER.error("Fail to run query to get everything in buildings");
             throw new JPSRuntimeException("Unable to get everything in buildings");
         }
 
@@ -165,11 +162,11 @@ public class BMSQueryAgent {
 
         JSONArray jsonResult;
         try {
-            LOGGER.info("Sending federated request with query: ");
+            LOGGER.info("Sending request with query: ");
             LOGGER.info(query.getQueryString());
-            jsonResult = rsClient.executeFederatedQuery(kgUrls, query.getQueryString());
+            jsonResult = rsClient.executeQuery(query.getQueryString());
         } catch (Exception e) {
-            LOGGER.error("Fail to run federated query to get equipment in the room: " + roomStr);
+            LOGGER.error("Fail to run query to get equipment in the room: " + roomStr);
             throw new JPSRuntimeException("Unable to get equipment in the room: " + roomStr);
         }
 

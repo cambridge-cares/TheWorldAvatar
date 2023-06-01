@@ -214,3 +214,25 @@ jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.converter
 tbox_generation = jpsBaseLib_view.TBoxGeneration()
 tbox_generation.generateTBox('./<FILE_NAME>.csv')
 ```
+
+## Generating description logic in LaTeX format
+
+By default, the TBox Generator generates a `.tex` file containing the description logic of the ontology in LaTeX format in the same folder as the provided CSV file. If one wants to generate the `.tex` file for an existing OWL file, please follow below steps:
+1. Build the base lib by means of `mvn clean install -DskipTests` in the root folder of this project.
+2. Run the following command from within the `target` folder if the ontology is available online:
+    ```
+    java -cp jps-base-lib.jar uk.ac.cam.cares.jps.base.converter.DescriptionLogicGenerator --url <ontologyURL> <texFilePath>
+    ```
+    e.g. `java -cp jps-base-lib.jar uk.ac.cam.cares.jps.base.converter.DescriptionLogicGenerator --url https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl ../../JPS_Ontology/ontology/ontodoe/OntoDoE.tex`
+
+    or if the ontology is available in the local file system:
+    ```
+    java -cp jps-base-lib.jar uk.ac.cam.cares.jps.base.converter.DescriptionLogicGenerator --file <ontologyFilePath> <texFilePath>
+    ```
+    e.g. `java -cp jps-base-lib.jar uk.ac.cam.cares.jps.base.converter.DescriptionLogicGenerator --file ../../JPS_Ontology/ontology/ontodoe/OntoDoE.owl ../../JPS_Ontology/ontology/ontodoe/OntoDoE.tex`
+
+**NOTE:**
+- A list of namespaces are defined in `TheWorldAvatar/JPS_BASE_LIB/src/main/resources/ontology.namespaces.properties` to be used as short form of IRIs, one can modify this file before running the above commands to customise the LaTeX output.
+- If `ontology.namespaces.properties` is modified, the `jps-base-lib.jar` file needs to be rebuilt in order for the changes to take effect.
+- If a namespace is not found in that file, the full IRI will appear in the LaTeX output. If the IRI contains a `#` character, as is often the case, this causes errors in LaTeX. Please consider to add the namespace to `ontology.namespaces.properties` or manually replace it with `\#`.
+- The LaTeX output may contain characters that are not supported, neither in `\usepackage[latin1]{inputenc}` nor `\usepackage[utf8]{inputenc}` encoding (which is the default in the CoMo preprint template). In this case, one would need to replace these in the LaTeX by hand and please report this error as a GitHub issue. Or preferably, one could add the symbol replacement to `DescriptionLogicGenerator::convertToLatex(String)` and open a PR.
