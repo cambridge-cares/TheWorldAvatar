@@ -930,9 +930,8 @@ public class QueryClient {
 
         GeometryFactory geometryFactory = new GeometryFactory();
         Polygon boundingBox = geometryFactory.createPolygon(coordinates);
-        boundingBox.buffer(buffer);
 
-        return boundingBox;
+        return (Polygon) boundingBox.buffer(buffer);
     }
 
     private List<String> getCornersForCitiesQuery(Polygon boundingBox) {
