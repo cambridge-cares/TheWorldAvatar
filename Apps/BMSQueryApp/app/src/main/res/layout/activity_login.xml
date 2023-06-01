@@ -30,7 +30,7 @@
 
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -40,6 +40,8 @@
         android:text="@string/sign_in_or_create"
         android:textSize="@dimen/title_font_size"
         android:padding="@dimen/component_margin_small"
+        android:layout_marginStart="@dimen/component_margin"
+        android:layout_marginEnd="@dimen/component_margin"
         />
 
     <com.google.android.material.progressindicator.LinearProgressIndicator
