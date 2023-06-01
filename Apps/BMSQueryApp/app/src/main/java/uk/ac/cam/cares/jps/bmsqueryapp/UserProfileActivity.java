@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.res.ResourcesCompat;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.StringRequest;
@@ -55,11 +56,13 @@ public class UserProfileActivity extends AppCompatActivity {
         authHelper.performActionWithFreshTokens(this::retrieveUserInfo);
 
         binding.logout.content.setText(R.string.logout);
+        binding.logout.getRoot().setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.ripple_item_background, null));
         binding.logout.getRoot().setOnClickListener(v -> {
             startActivityForResult(authHelper.getLogOutIntent(), END_SESSION_REQUEST_CODE);
         });
 
         binding.updatePw.content.setText(R.string.updatePassword);
+        binding.updatePw.getRoot().setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.ripple_item_background, null));
         binding.updatePw.getRoot().setOnClickListener(v -> {
             // todo: trigger update password
         });
