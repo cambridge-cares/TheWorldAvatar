@@ -1,6 +1,5 @@
 package com.cmclinnovations.aermod;
 
-import org.eclipse.rdf4j.model.vocabulary.GEOF;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.SparqlFunction;
@@ -14,7 +13,6 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
-import org.hamcrest.core.IsNull;
 import org.json.JSONArray;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
@@ -28,7 +26,6 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Point;
 import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
 
-import com.cmclinnovations.aermod.sparqlbuilder.GeoSPARQL;
 import com.cmclinnovations.aermod.sparqlbuilder.ValuesPattern;
 
 import java.util.Arrays;
@@ -92,7 +89,7 @@ public class QueryClient {
     private static final Prefix P_OM = SparqlBuilder.prefix("om", iri(OM_STRING));
     private static final Prefix P_DISP = SparqlBuilder.prefix("disp", iri(PREFIX_DISP));
     private static final Prefix P_GEO = SparqlBuilder.prefix("geo", iri(GEO.PREFIX));
-    private static final Prefix P_GEOF = SparqlBuilder.prefix("geof", iri(GEOF.NAMESPACE));
+
     private static final Prefix P_EMS = SparqlBuilder.prefix("ems", iri(ONTO_EMS));
     private static final Prefix P_OCGML = SparqlBuilder.prefix("ocgml", iri(ONTO_CITYGML));
     // classes
@@ -114,7 +111,6 @@ public class QueryClient {
     public static final String MASS_FLOW = OM_STRING + "MassFlow";
     private static final Iri SHIP = P_DISP.iri("Ship");
 
-    private static final Iri POINT_SOURCE = P_DISP.iri("PointSource");
     private static final Iri STATIC_POINT_SOURCE = P_DISP.iri("StaticPointSource");
 
     // weather types
