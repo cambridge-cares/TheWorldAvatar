@@ -12,6 +12,6 @@ hasLotType,Object Property,,,Carpark,LotType,,A relationship between a carpark a
 hasAvailableLots,Object Property,,,LotType,AvailableLots,,A relationship between a type of parking lot and it's availability.,https://www.theworldavatar.com/kg/ontocarpark/,has available lots
 hasID,Data Property,,,Carpark,String,,A relationship that describes the ID assigned to a carpark.,https://www.theworldavatar.com/kg/ontocarpark/,has ID
 hasAgency,Data Property,,,Carpark,String,,A relationship that describes the agency that manages the carpark.,https://www.theworldavatar.com/kg/ontocarpark/,has agency
-hasWeekdayRates,Data Property,,,Carpark,String,,A relationship that describes theweekday rates of a carpark.,https://www.theworldavatar.com/kg/ontocarpark/,has weekday rates
+hasWeekdayRates,Data Property,,,Carpark,String,,A relationship that describes the weekday rates of a carpark.,https://www.theworldavatar.com/kg/ontocarpark/,has weekday rates
 hasSaturdayRates,Data Property,,,Carpark,String,,A relationship that describes the Saturday rates of a carpark.,https://www.theworldavatar.com/kg/ontocarpark/,has Saturday rates
 hasSundayAndPHRates,Data Property,,,Carpark,String,,A relationship that describes the Sunday and Public Holidays rates of a carpark.,https://www.theworldavatar.com/kg/ontocarpark/,has Sunday and PH rates
