@@ -845,6 +845,8 @@ public class QueryClient {
                 .collect(Collectors.toList());
 
         List<String> boxBounds = getBoundingBoxofPointSources(allSources);
+        Polygon boundingBox = getBoundingBoxOfPointSources(allSources);
+        List<String> newBoxBounds = getCornersForCitiesQuery(boundingBox);
 
         String lowerBounds = boxBounds.get(0);
         String upperBounds = boxBounds.get(1);
@@ -891,6 +893,81 @@ public class QueryClient {
 
         return buildingsQuery(buildingOCGMLIRIList);
 
+    }
+
+    /**
+     * creates a rectangle from min/max of coordinates from allSources
+     * then adds a buffer
+     */
+    private Polygon getBoundingBoxOfPointSources(List<PointSource> allSources) {
+        double buffer = 200;
+        GeometryFactory geoFactory = new GeometryFactory();
+        List<Point> convertedPoints = allSources.stream().map(s -> {
+            double[] xyOriginal = { s.getLocation().getX(), s.getLocation().getY() };
+            double[] xyTransformed = CRSTransformer.transform("EPSG:" + s.getLocation().getSRID(), namespaceCRS,
+                    xyOriginal);
+            return geoFactory.createPoint(new Coordinate(xyTransformed[0], xyTransformed[1]));
+        }).collect(Collectors.toList());
+
+        List<Double> xCoordinates = convertedPoints.stream().map(Point::getX).collect(Collectors.toList());
+        List<Double> yCoordinates = convertedPoints.stream().map(Point::getY).collect(Collectors.toList());
+
+        double xMin = Collections.min(xCoordinates);
+        double yMin = Collections.min(yCoordinates);
+        double xMax = Collections.max(xCoordinates);
+        double yMax = Collections.max(yCoordinates);
+
+        if (allSources.size() == 1) {
+            double expandRange = 10.0;
+            xMin -= expandRange;
+            xMax += expandRange;
+            yMin -= expandRange;
+            yMax += expandRange;
+        }
+
+        Coordinate[] coordinates = { new Coordinate(xMin, yMin), new Coordinate(xMax, yMin),
+                new Coordinate(xMax, yMax), new Coordinate(xMin, yMax), new Coordinate(xMin, yMin) };
+
+        GeometryFactory geometryFactory = new GeometryFactory();
+        Polygon boundingBox = geometryFactory.createPolygon(coordinates);
+        boundingBox.buffer(buffer);
+
+        return boundingBox;
+    }
+
+    private List<String> getCornersForCitiesQuery(Polygon boundingBox) {
+        double zMax = 800.0;
+
+        List<Coordinate> coordinatesList = List.of(boundingBox.getCoordinates());
+        List<Double> xCoordinates = coordinatesList.stream().map(c -> c.getX()).collect(Collectors.toList());
+        List<Double> yCoordinates = coordinatesList.stream().map(c -> c.getY()).collect(Collectors.toList());
+        double xMin = Collections.min(xCoordinates);
+        double yMin = Collections.min(yCoordinates);
+        double xMax = Collections.max(xCoordinates);
+        double yMax = Collections.max(yCoordinates);
+
+        GeometryFactory geoFactory = new GeometryFactory();
+        Point lowerCorner = geoFactory.createPoint(new Coordinate(xMin, yMin));
+        Point upperCorner = geoFactory.createPoint(new Coordinate(xMax, yMax));
+
+        List<String> lowerCornerSequence = new ArrayList<>();
+        List<String> upperCornerSequence = new ArrayList<>();
+
+        for (int i = 0; i < 5; i++) {
+            lowerCornerSequence.add(String.valueOf(lowerCorner.getX()));
+            lowerCornerSequence.add(String.valueOf(lowerCorner.getY()));
+            lowerCornerSequence.add(String.valueOf(0));
+
+            upperCornerSequence.add(String.valueOf(upperCorner.getX()));
+            upperCornerSequence.add(String.valueOf(upperCorner.getY()));
+            upperCornerSequence.add(String.valueOf(zMax));
+        }
+
+        List<String> corners = new ArrayList<>();
+        corners.add(String.join("#", lowerCornerSequence));
+        corners.add(String.join("#", upperCornerSequence));
+
+        return corners;
     }
 
     private List<String> getBoundingBoxofPointSources(List<PointSource> allSources) {
