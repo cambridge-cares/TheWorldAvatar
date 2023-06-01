@@ -24,4 +24,8 @@
     <string name="permission_deny_explain">You don\'t have the permission to do this operation. Please check with the admin or login with another account.</string>
     <string name="change_account">Change Account</string>
     <string name="cancel">Cancel</string>
+    <string name="profile">Profile</string>
+    <string name="email">Email</string>
+    <string name="firstname">Firstname</string>
+    <string name="lastname">Lastname</string>
 </resources>

@@ -34,6 +34,10 @@
         <activity android:name=".EquipmentInstanceActivity"
             android:exported="false"
             android:theme="@style/Theme.BMSQueryApp.NoActionBar" />
+
+        <activity android:name=".UserProfileActivity"
+            android:exported="false"
+            android:theme="@style/Theme.BMSQueryApp.NoActionBar" />
     </application>
 
 

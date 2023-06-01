@@ -5,6 +5,17 @@
     android:layout_marginHorizontal="@dimen/component_margin_small"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     >
+
+    <TextView
+        android:layout_width="130dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="@dimen/component_margin_small"
+        android:textSize="@dimen/font_size"
+        android:textAlignment="textStart"
+        android:textColor="@color/dark_grey"
+        android:id="@+id/label"/>
     <TextView
         android:id="@+id/content"
         android:layout_width="0dp"
@@ -12,23 +23,14 @@
         android:textSize="@dimen/font_size"
         android:layout_marginBottom="@dimen/component_margin_small"
         android:textAlignment="center"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/icon" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/baseline_keyboard_arrow_right_24"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="@dimen/component_margin_small"
-        android:id="@+id/icon"/>
+        app:layout_constraintStart_toEndOf="@id/label" />
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="#CCCCCC"
         app:layout_constraintBottom_toBottomOf="parent"/>
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -62,6 +62,10 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        binding.profileBt.setOnClickListener(v -> {
+            startActivity(new Intent(this, UserProfileActivity.class));
+        });
+
         // create spinner levels with arraylist
         spinners.add(binding.buildingSpinner);
         spinners.add(binding.facilitySpinner);

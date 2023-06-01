@@ -16,7 +16,6 @@ package uk.ac.cam.cares.jps.bmsqueryapp.authorization;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
@@ -28,6 +27,8 @@ import net.openid.appauth.AuthorizationResponse;
 import net.openid.appauth.RegistrationResponse;
 import net.openid.appauth.TokenResponse;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 
 import java.lang.ref.WeakReference;
@@ -44,8 +45,7 @@ public class AuthStateManager {
     private static final AtomicReference<WeakReference<AuthStateManager>> INSTANCE_REF =
             new AtomicReference<>(new WeakReference<>(null));
 
-    private static final String TAG = "AuthStateManager";
-
+    private static final Logger LOGGER = LogManager.getLogger(AuthStateManager.class);
     private static final String STORE_NAME = "AuthState";
     private static final String KEY_STATE = "state";
 
@@ -140,7 +140,7 @@ public class AuthStateManager {
             try {
                 return AuthState.jsonDeserialize(currentState);
             } catch (JSONException ex) {
-                Log.w(TAG, "Failed to deserialize stored auth state - discarding");
+                LOGGER.warn("Failed to deserialize stored auth state - discarding");
                 return new AuthState();
             }
         } finally {

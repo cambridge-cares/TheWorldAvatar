@@ -1,13 +1,25 @@
 package uk.ac.cam.cares.jps.bmsqueryapp.authorization;
 
 import android.content.Context;
+import android.net.Uri;
+
+import com.android.volley.Request;
+import com.android.volley.toolbox.StringRequest;
 
 import net.openid.appauth.AppAuthConfiguration;
 import net.openid.appauth.AuthState;
 import net.openid.appauth.AuthorizationService;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
+
+import uk.ac.cam.cares.jps.bmsqueryapp.utils.SingletonConnection;
 
 public class AuthorizationHelper {
     private AuthStateManager authStateManager;
@@ -16,6 +28,8 @@ public class AuthorizationHelper {
 
     private final Context context;
     private static AuthorizationHelper instance;
+
+    private static final Logger LOGGER = LogManager.getLogger(AuthorizationHelper.class);
 
     private AuthorizationHelper(Context context) {
         this.context = context.getApplicationContext();
@@ -43,6 +57,13 @@ public class AuthorizationHelper {
         instance.authStateManager.getCurrent().performActionWithFreshTokens(instance.authService, action);
     }
 
-
+    public String getUserInfoEndPoint() {
+        try {
+            return authStateManager.getCurrent().getAuthorizationServiceConfiguration().discoveryDoc.getUserinfoEndpoint().toString();
+        } catch (NullPointerException e) {
+            // todo: should call initializeAppAuth, need refactoring
+            return "";
+        }
+    }
 
 }

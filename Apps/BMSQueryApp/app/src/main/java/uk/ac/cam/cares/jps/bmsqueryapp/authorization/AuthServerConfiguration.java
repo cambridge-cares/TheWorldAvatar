@@ -41,13 +41,15 @@ import uk.ac.cam.cares.jps.bmsqueryapp.R;
 
 
 /**
- * Reads and validates the demo app configuration from `res/raw/auth_config.json`. Configuration
+ * Reads and validates the app configuration from `res/raw/auth_config.json`. Configuration
  * changes are detected by comparing the hash of the last known configuration to the read
  * configuration. When a configuration change is detected, the app state is reset.
+ *
+ * All endpoints are retrieved by discovery and will be stored in AuthState. This server
+ * configuration is only used when initializing the AuthorizationServiceConfiguration. All the
+ * endpoints should be retrieved from AuthState at runtime.
  */
 public final class AuthServerConfiguration {
-
-    private static final String TAG = "Configuration";
 
     private static final String PREFS_NAME = "config";
     private static final String KEY_LAST_HASH = "lastHash";
@@ -65,20 +67,14 @@ public final class AuthServerConfiguration {
     private String mClientId;
     private String mScope;
     private Uri mRedirectUri;
-    private Uri mEndSessionRedirectUri;
     private Uri mDiscoveryUri;
-    private Uri mAuthEndpointUri;
-    private Uri mTokenEndpointUri;
-    private Uri mEndSessionEndpoint;
-    private Uri mRegistrationEndpointUri;
-    private Uri mUserInfoEndpointUri;
     private boolean mHttpsRequired;
 
     public static AuthServerConfiguration getInstance(Context context) {
         AuthServerConfiguration config = sInstance.get();
         if (config == null) {
             config = new AuthServerConfiguration(context);
-            sInstance = new WeakReference<AuthServerConfiguration>(config);
+            sInstance = new WeakReference<>(config);
         }
 
         return config;
@@ -147,34 +143,6 @@ public final class AuthServerConfiguration {
         return mDiscoveryUri;
     }
 
-    @Nullable
-    public Uri getEndSessionRedirectUri() { return mEndSessionRedirectUri; }
-
-    @Nullable
-    public Uri getAuthEndpointUri() {
-        return mAuthEndpointUri;
-    }
-
-    @Nullable
-    public Uri getTokenEndpointUri() {
-        return mTokenEndpointUri;
-    }
-
-    @Nullable
-    public Uri getEndSessionEndpoint() {
-        return mEndSessionEndpoint;
-    }
-
-    @Nullable
-    public Uri getRegistrationEndpointUri() {
-        return mRegistrationEndpointUri;
-    }
-
-    @Nullable
-    public Uri getUserInfoEndpointUri() {
-        return mUserInfoEndpointUri;
-    }
-
     public boolean isHttpsRequired() {
         return mHttpsRequired;
     }
@@ -209,7 +177,6 @@ public final class AuthServerConfiguration {
         mClientId = getConfigString("client_id");
         mScope = getRequiredConfigString("authorization_scope");
         mRedirectUri = getRequiredConfigUri("redirect_uri");
-        mEndSessionRedirectUri = getRequiredConfigUri("end_session_redirect_uri");
 
         if (!isRedirectUriRegistered()) {
             throw new InvalidConfigurationException(
@@ -219,19 +186,7 @@ public final class AuthServerConfiguration {
                             + "exists in your app manifest.");
         }
 
-        if (getConfigString("discovery_uri") == null) {
-            mAuthEndpointUri = getRequiredConfigWebUri("authorization_endpoint_uri");
-
-            mTokenEndpointUri = getRequiredConfigWebUri("token_endpoint_uri");
-            mUserInfoEndpointUri = getRequiredConfigWebUri("user_info_endpoint_uri");
-            mEndSessionEndpoint = getRequiredConfigUri("end_session_endpoint");
-
-            if (mClientId == null) {
-                mRegistrationEndpointUri = getRequiredConfigWebUri("registration_endpoint_uri");
-            }
-        } else {
-            mDiscoveryUri = getRequiredConfigWebUri("discovery_uri");
-        }
+        mDiscoveryUri = getRequiredConfigWebUri("discovery_uri");
 
         mHttpsRequired = mConfigJson.optBoolean("https_required", true);
     }

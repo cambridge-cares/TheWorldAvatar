@@ -21,7 +21,8 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginStart="@dimen/appbar_padding"/>
+                android:layout_marginStart="@dimen/appbar_padding"
+                android:id="@+id/profile_bt"/>
 
             <TextView
                 android:id="@+id/instance_title"

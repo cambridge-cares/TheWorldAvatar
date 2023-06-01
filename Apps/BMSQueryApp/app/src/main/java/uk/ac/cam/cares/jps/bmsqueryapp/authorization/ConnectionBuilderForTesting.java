@@ -24,6 +24,9 @@ import androidx.annotation.Nullable;
 import net.openid.appauth.Preconditions;
 import net.openid.appauth.connectivity.ConnectionBuilder;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -49,7 +52,7 @@ public final class ConnectionBuilderForTesting implements ConnectionBuilder {
 
     public static final ConnectionBuilderForTesting INSTANCE = new ConnectionBuilderForTesting();
 
-    private static final String TAG = "ConnBuilder";
+    private static final Logger LOGGER = LogManager.getLogger(ConnectionBuilderForTesting.class);
 
     private static final int CONNECTION_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(15);
     private static final int READ_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(10);
@@ -95,7 +98,7 @@ public final class ConnectionBuilderForTesting implements ConnectionBuilder {
                 context.init(null, ANY_CERT_MANAGER, new java.security.SecureRandom());
                 initializedContext = context;
             } catch (KeyManagementException e) {
-                Log.e(TAG, "Failed to initialize trusting SSL context");
+                LOGGER.error("Failed to initialize trusting SSL context");
             }
         }
 

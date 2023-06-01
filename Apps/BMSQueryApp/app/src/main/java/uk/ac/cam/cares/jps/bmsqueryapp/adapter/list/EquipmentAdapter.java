@@ -23,7 +23,7 @@ public class EquipmentAdapter extends RecyclerView.Adapter<EquipmentAdapter.Equi
             super(view);
             // Define click listener for the ViewHolder's View
 
-            textView = view.findViewById(R.id.label_tv);
+            textView = view.findViewById(R.id.content);
             this.view = view;
         }
 
@@ -48,7 +48,7 @@ public class EquipmentAdapter extends RecyclerView.Adapter<EquipmentAdapter.Equi
     @Override
     public EquipmentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.equip_instance_row_view, parent, false);
+                .inflate(R.layout.item_with_divider_and_arrow_view, parent, false);
 
         EquipmentViewHolder viewHolder = new EquipmentViewHolder(view);
 
