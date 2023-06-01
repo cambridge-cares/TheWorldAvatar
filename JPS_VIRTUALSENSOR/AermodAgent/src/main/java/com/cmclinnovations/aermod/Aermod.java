@@ -77,49 +77,47 @@ public class Aermod {
     /* Write out data to BPIPPRM input file and run this program. */
     public int createBPIPPRMInput(List<StaticPointSource> pointSources, List<Building> buildings, int simulationSrid) {
 
-        List<String> frontmatter = new ArrayList<>();
-        frontmatter.add("\'BPIPPRM test run\' \n");
-        frontmatter.add("\'p\' \n");
-        frontmatter.add("\' METERS    \'  1.0  \n");
-        frontmatter.add("\'UTMY \'  0.0 \n");
-
         StringBuilder sb = new StringBuilder();
-
-        for (String st : frontmatter) {
-            sb.append(st);
-        }
+        sb.append("\'BPIPPRM test run\' ");
+        sb.append(System.lineSeparator());
+        sb.append("\'p\' ");
+        sb.append(System.lineSeparator());
+        sb.append("\' METERS    \'  1.0  ");
+        sb.append(System.lineSeparator());
+        sb.append("\'UTMY \'  0.0 ");
+        sb.append(System.lineSeparator());
 
         int numberBuildings = buildings.size();
-        sb.append(numberBuildings + " \n");
+        sb.append(numberBuildings).append(System.lineSeparator());
         for (int i = 0; i < numberBuildings; i++) {
             Building build = buildings.get(i);
-            String inputLine = "\'Build" + i + "\' " + "1 " + build.getElevation() + " \n";
-            sb.append(inputLine);
+            String inputLine = "\'Build" + i + "\' " + "1 " + build.getElevation();
+            sb.append(inputLine).append(System.lineSeparator());
             LinearRing base = build.getFootprint();
             String originalSrid = "EPSG:" + base.getSRID();
-            inputLine = base.getNumPoints() + " " + build.getHeight() + " \n";
-            sb.append(inputLine);
+            inputLine = base.getNumPoints() + " " + build.getHeight();
+            sb.append(inputLine).append(System.lineSeparator());
 
             Coordinate[] baseCoords = base.getCoordinates();
             for (Coordinate coord : baseCoords) {
                 double[] xyOriginal = { coord.x, coord.y };
                 double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
-                inputLine = xyTransformed[0] + " " + xyTransformed[1] + " \n";
-                sb.append(inputLine);
+                inputLine = xyTransformed[0] + " " + xyTransformed[1];
+                sb.append(inputLine).append(System.lineSeparator());
 
             }
         }
 
         int numberSources = pointSources.size();
-        sb.append(numberSources + " \n");
+        sb.append(numberSources).append(System.lineSeparator());
         for (int i = 0; i < numberSources; i++) {
             StaticPointSource ps = pointSources.get(i);
             String originalSrid = "EPSG:" + ps.getLocation().getSRID();
             double[] xyOriginal = { ps.getLocation().getX(), ps.getLocation().getY() };
             double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
             String inputLine = "\'S" + i + "\'" + " " + ps.getElevation() + " " +
-                    ps.getHeight() + " " + xyTransformed[0] + " " + xyTransformed[1] + " \n";
-            sb.append(inputLine);
+                    ps.getHeight() + " " + xyTransformed[0] + " " + xyTransformed[1];
+            sb.append(inputLine).append(System.lineSeparator());
         }
         return writeToFile(bpipprmDirectory.resolve("bpipprm.inp"), sb.toString());
 
@@ -138,14 +136,14 @@ public class Aermod {
             BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 
             // Read the output from the command
-            LOGGER.info("Here is the standard output of BPIPPRM:\n");
+            LOGGER.info("Here is the standard output of BPIPPRM:");
             String s = null;
             while ((s = stdInput.readLine()) != null) {
                 LOGGER.info(s);
             }
 
             // Read any errors from the attempted command
-            LOGGER.info("Here is the standard error of BPIPPRM (if any):\n");
+            LOGGER.info("Here is the standard error of BPIPPRM (if any):");
             while ((s = stdError.readLine()) != null) {
                 LOGGER.info(s);
             }
@@ -170,7 +168,7 @@ public class Aermod {
             while (line != null) {
                 line = line.stripLeading();
                 if (line.length() > 2 && line.substring(0, 2).equals("SO"))
-                    sb.append(line + "\n");
+                    sb.append(line).append(System.lineSeparator());
                 line = reader.readLine();
             }
             reader.close();
@@ -242,10 +240,11 @@ public class Aermod {
         double dx = (xhi - xlo) / nx;
         double dy = (yhi - ylo) / ny;
 
-        StringBuilder sb = new StringBuilder("RE GRIDCART POL1 STA \n");
+        StringBuilder sb = new StringBuilder("RE GRIDCART POL1 STA ");
+        sb.append(System.lineSeparator());
         String rec = String.format("                 XYINC %f %d %f %f %d %f", xlo, nx, dx, ylo, ny, dy);
-        sb.append(rec + " \n");
-        sb.append("RE GRIDCART POL1 END \n");
+        sb.append(rec).append(System.lineSeparator());
+        sb.append("RE GRIDCART POL1 END ").append(System.lineSeparator());
 
         return writeToFile(aermodDirectory.resolve("receptor.dat"), sb.toString());
     }
@@ -333,36 +332,19 @@ public class Aermod {
         String locationOffset = String.format("%f%s %f%s %d", lat, latSuffix, lon, lonSuffix, offset);
         String newLine = System.getProperty("line.separator");
 
-        StringBuilder sb = new StringBuilder("JOB \n");
-        sb.append("   REPORT aermet_report.txt \n")
-                .append("   MESSAGES aermet_message.txt \n")
-                .append(newLine)
-                .append("UPPERAIR \n")
-                .append("   DATA raob_soundings15747.FSL FSL \n")
-                .append("   EXTRACT  UAIR_EXTRACT.TXT \n")
-                .append("   QAOUT    UAIR_QAOUT.TXT \n")
-                .append("   XDATES    2022/9/23 TO 2022/9/23 \n")
-                .append("   LOCATION  99999  " + locationOffset + " \n")
-                .append(newLine)
-                .append("SURFACE \n")
-                .append("   DATA      weather_template.144 CD144 \n")
-                .append("   EXTRACT   SURFACE_EXTRACT.TXT \n")
-                .append("   QAOUT   SURFACE_QAOUT.TXT \n")
-                .append("   XDATES    2022/9/23 TO 2022/9/23 \n")
-                .append("   LOCATION  99999  " + location + "\n")
-                .append(newLine)
-                .append("METPREP \n")
-                .append("   OUTPUT ../aermod/AERMET_SURF.SFC \n")
-                .append("   PROFILE ../aermod/AERMET_UPPER.PFL \n")
-                .append("   NWS_HGT WIND 6.7 \n")
-                .append("   METHOD REFLEVEL SUBNWS \n")
-                .append("   METHOD WIND_DIR RANDOM \n")
-                .append("   XDATES    2022/9/23 TO 2022/9/23 \n")
-                .append("   FREQ_SECT ANNUAL 1 \n")
-                .append("   SECTOR 1 0 360 \n")
-                .append("   SITE_CHAR 1 1 0.16 2.0 1.5 \n");
+        // Get AERMET template
+        String templateContent;
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream(AERMET_INPUT)) {
+            templateContent = IOUtils.toString(is, StandardCharsets.UTF_8);
+            templateContent = templateContent.replace("REPLACED_1", locationOffset);
+            templateContent = templateContent.replace("REPLACED_2", location);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Failed to copy {}", AERMET_INPUT);
+            return 1;
+        }
 
-        return writeToFile(aermetDirectory.resolve("aermet.inp"), sb.toString());
+        return writeToFile(aermetDirectory.resolve(AERMET_INPUT), templateContent);
 
     }
 
@@ -373,16 +355,6 @@ public class Aermod {
      * @return
      */
     int runAermet(Polygon scope) {
-
-        // first copy soundings and FSL files
-        // try (InputStream is =
-        // getClass().getClassLoader().getResourceAsStream(AERMET_INPUT)) {
-        // Files.copy(is, aermetDirectory.resolve(AERMET_INPUT));
-        // } catch (IOException e) {
-        // LOGGER.error(e.getMessage());
-        // LOGGER.error("Failed to copy {}", AERMET_INPUT);
-        // return 1;
-        // }
 
         createAermetInput(scope);
 
@@ -400,6 +372,23 @@ public class Aermod {
             if (process.waitFor() != 0) {
                 return 1;
             }
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+            // Read the output from the command
+            LOGGER.info("Here is the standard output of AERMET:");
+            String s = null;
+            while ((s = stdInput.readLine()) != null) {
+                LOGGER.info(s);
+            }
+
+            // Read any errors from the attempted command
+            LOGGER.info("Here is the standard error of AERMET (if any):");
+            while ((s = stdError.readLine()) != null) {
+                LOGGER.info(s);
+            }
+
         } catch (IOException e) {
             LOGGER.error("Error executing aermet");
             LOGGER.error(e.getMessage());
@@ -415,8 +404,10 @@ public class Aermod {
         File surfaceFile = aermodDirectory.resolve("AERMET_SURF.SFC").toFile();
         File upperFile = aermodDirectory.resolve("AERMET_UPPER.PFL").toFile();
 
-        if (surfaceFile.exists() && upperFile.exists()) {
-            LOGGER.info("aermet is executed successfully");
+        // Even if the output files were generated, they may be blank if AERMET did not
+        // complete successfully.
+        if (surfaceFile.exists() && surfaceFile.length() > 0 && upperFile.exists() && upperFile.length() > 0) {
+            LOGGER.info("AERMET has completed successfully. ");
             return 0;
         } else {
             LOGGER.error("aermet may not have completed successfully");
@@ -510,7 +501,7 @@ public class Aermod {
                 Files.copy(inputStream, aermodDirectory.resolve(aermodInputFile));
             } catch (IOException e) {
                 LOGGER.error(e.getMessage());
-                LOGGER.error("Failed to copy the data file" + aermodInputFile);
+                LOGGER.error("Failed to copy the AERMOD input file {}", aermodInputFile);
                 return 1;
             }
         }
@@ -521,6 +512,24 @@ public class Aermod {
             if (process.waitFor() != 0) {
                 return 1;
             }
+
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+            // Read the output from the command
+            LOGGER.info("Here is the standard output of AERMOD:");
+            String s = null;
+            while ((s = stdInput.readLine()) != null) {
+                LOGGER.info(s);
+            }
+
+            // Read any errors from the attempted command
+            LOGGER.info("Here is the standard error of AERMOD (if any):");
+            while ((s = stdError.readLine()) != null) {
+                LOGGER.info(s);
+            }
+
         } catch (IOException e) {
             return 0;
         } catch (InterruptedException e) {

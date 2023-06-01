@@ -81,17 +81,18 @@ public class AermodAgent extends DerivationAgent {
         Polygon scope = queryClient.getScopeFromOntop(scopeIri);
 
         List<StaticPointSource> staticPointSources = new ArrayList<>();
-        List<Building> buildings = new ArrayList<>();
+        BuildingsData bd = null;
+
         if (citiesNamespace != null) {
             String namespaceCRS = queryClient.getNamespaceCRS(citiesNamespace);
             queryClient.setcitiesNamespaceCRS(citiesNamespace, namespaceCRS);
             try {
                 staticPointSources = queryClient.getStaticPointSourcesWithinScope(scope);
-                BuildingsData bd = new BuildingsData(namespaceCRS, queryClient);
+                bd = new BuildingsData(namespaceCRS, queryClient);
                 bd.setStaticPointSourceProperties(staticPointSources);
-                buildings = bd.getBuildings(staticPointSources);
             } catch (ParseException e) {
                 e.printStackTrace();
+                throw new JPSRuntimeException("Could not set static point source properties.");
             }
 
         }
@@ -100,6 +101,17 @@ public class AermodAgent extends DerivationAgent {
         List<PointSource> allSources = new ArrayList<>();
         allSources.addAll(staticPointSources);
         allSources.addAll(ships);
+
+        List<Building> buildings = new ArrayList<>();
+        if (bd != null) {
+            try {
+                buildings = bd.getBuildings(allSources);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                throw new JPSRuntimeException("Could not set building properties.");
+
+            }
+        }
 
         // update derivation of ships (on demand)
         List<String> derivationsToUpdate = queryClient.getDerivationsOfPointSources(allSources);
@@ -168,7 +180,7 @@ public class AermodAgent extends DerivationAgent {
         for (int i = 0; i < receptorHeights.size(); i++) {
             int receptorHeightInt = (int) Math.round(receptorHeights.get(i));
             String dispLayerName = "dispersion_" + "_height_"
-                    + String.valueOf(receptorHeightInt) + "_meters";
+                    + receptorHeightInt + "_meters";
             dispLayerNames.add(dispLayerName);
         }
         String shipLayerName = "ships_" + simulationTime; // hardcoded in ShipInputAgent

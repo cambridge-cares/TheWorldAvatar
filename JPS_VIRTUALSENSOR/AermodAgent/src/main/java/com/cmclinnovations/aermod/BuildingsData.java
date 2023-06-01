@@ -25,6 +25,7 @@ import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 
 import com.cmclinnovations.aermod.objects.Building;
+import com.cmclinnovations.aermod.objects.PointSource;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -42,45 +43,19 @@ public class BuildingsData {
 
     public void setStaticPointSourceProperties(
             List<StaticPointSource> staticPointSources) {
+
         Map<String, StaticPointSource> iriToPointSourceMap = new HashMap<>();
 
-        String objectType = null;
+        staticPointSources.stream()
+                .filter(s -> s.getCityObjectType() == StaticPointSource.CityObjectType.CITY_FURNITURE)
+                .forEach(s -> iriToPointSourceMap.put(s.getOcgmlIri(), s));
 
-        StaticPointSource firstSource = staticPointSources.get(0);
-
-        String cityFurniture = "cityfurniture";
-
-        if (firstSource.getOcgmlIri().contains(cityFurniture)) {
-            objectType = "cityfurniture";
-        } else if (firstSource.getOcgmlIri().contains("building")) {
-            objectType = "building";
-        } else {
-            LOGGER.error("Static point source with IRI {} has invalid OntoCityGML IRI. The OntoCityGML IRI is {}",
-                    firstSource.getIri(), firstSource.getOcgmlIri());
-            throw new JPSRuntimeException(
-                    "Invalid OCGML IRI encountered when calculating static point source properties.");
-        }
-        iriToPointSourceMap.put(firstSource.getOcgmlIri(), firstSource);
-
-        for (int i = 1; i < staticPointSources.size(); i++) {
-            StaticPointSource ps = staticPointSources.get(i);
-            String ontoCityGMLIRI = ps.getOcgmlIri();
-            if (ontoCityGMLIRI.contains(objectType)) {
-                iriToPointSourceMap.put(ontoCityGMLIRI, ps);
-            } else {
-                LOGGER.error("Static point source with IRI {} has invalid OntoCityGML IRI. The OntoCityGML IRI is {} ",
-                        staticPointSources.get(i).getIri(), ontoCityGMLIRI);
-                throw new JPSRuntimeException(
-                        "Invalid OCGML IRI encountered when calculating static point source properties.");
-            }
-        }
-
-        if (objectType.equals(cityFurniture)) {
-            setCityFurnitureProperties(iriToPointSourceMap);
-        } else {
-            setBuildingProperties(iriToPointSourceMap);
-        }
-
+        setCityFurnitureProperties(iriToPointSourceMap);
+        iriToPointSourceMap.clear();
+        staticPointSources.stream()
+                .filter(s -> s.getCityObjectType() == StaticPointSource.CityObjectType.BUILDING)
+                .forEach(s -> iriToPointSourceMap.put(s.getOcgmlIri(), s));
+        setBuildingProperties(iriToPointSourceMap);
     }
 
     // This method is called for static point sources whose OCGML representation is
@@ -180,10 +155,10 @@ public class BuildingsData {
     // This method is called to set properties of buildings that are near static
     // point sources but are not emitting
     // points.
-    public List<Building> getBuildings(List<StaticPointSource> staticPointSources) throws ParseException {
+    public List<Building> getBuildings(List<PointSource> allSources) throws ParseException {
 
         Map<String, List<List<Polygon>>> iriToPolygonMap = queryClient
-                .getBuildingsNearPollutantSources(staticPointSources);
+                .getBuildingsNearPollutantSources(allSources);
 
         List<String> ocgmlIRList = new ArrayList<>(iriToPolygonMap.keySet());
 
@@ -200,7 +175,7 @@ public class BuildingsData {
             // Check if this building is to be included
             Point centre = basePolygon.getCentroid();
 
-            int numSources = (int) staticPointSources.stream()
+            int numSources = (int) allSources.stream()
                     .filter(s -> centre.distance(s.getLocation()) <= maxDistance)
                     .count();
 
