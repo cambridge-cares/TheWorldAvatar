@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.bmsqueryapp;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.MainThread;
@@ -30,8 +31,6 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -236,7 +235,7 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.fail_to_login, Toast.LENGTH_SHORT).show();
         } else {
             // process authorizaiton code
-            progressDialog.show();
+            showLoading();
             processAuthorizationResponse(data);
         }
     }
@@ -283,7 +282,7 @@ public class LoginActivity extends AppCompatActivity {
             @Nullable AuthorizationException authException) {
 
         authStateManager.updateAfterTokenResponse(tokenResponse, authException);
-        progressDialog.dismiss();
+        hideLoading();
         if (!authStateManager.getCurrent().isAuthorized()) {
             final String message = "Authorization Code exchange failed"
                     + ((authException != null) ? authException.error : "");
@@ -292,6 +291,16 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         }
+    }
+
+    private void showLoading() {
+        binding.progressBar.setVisibility(View.VISIBLE);
+        binding.signInOrUpButton.setVisibility(View.GONE);
+    }
+
+    private void hideLoading() {
+        binding.progressBar.setVisibility(View.GONE);
+        binding.signInOrUpButton.setVisibility(View.VISIBLE);
     }
 
 
