@@ -164,7 +164,7 @@ secrets/
     secret_with_custom_path
 ```
 
-For more information on how secrets work in Docker see here, https://docs.docker.com/engine/swarm/secrets/.
+For more information on how secrets work in Docker see [here](https://docs.docker.com/engine/swarm/secrets).
 
 #### Volumes
 
@@ -200,7 +200,7 @@ data/
     vis-files/
 ```
 
-For more information on how volumes work in Docker see here, https://docs.docker.com/storage/volumes/.
+For more information on how volumes work in Docker see [here](https://docs.docker.com/storage/volumes).
 
 #### Bind mounts
 
@@ -226,7 +226,7 @@ The example below shows a snippet of a service config file where the contents of
                 ...
 ```
 
-For more information on how bind mounts work in Docker see here, https://docs.docker.com/storage/bind-mounts/.
+For more information on how bind mounts work in Docker see [here](https://docs.docker.com/storage/bind-mounts).
 
 ## Stack configuration
 
