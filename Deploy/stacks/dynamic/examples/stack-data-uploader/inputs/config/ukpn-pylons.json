@@ -28,7 +28,6 @@
                     "name": "ukpn_overhead_lines_low",
                     "sql": "SELECT wkb_geometry, line_colour, line_width FROM ukpn_overhead_lines_high_distribution, ukpn_line_styling WHERE ukpn_overhead_lines_high_distribution.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
-                    "keyColumn": "voltage_level",
                     "geometry": {
                         "name": "wkb_geometry",
                         "type": "MultiLineString",
@@ -49,7 +48,6 @@
                     "name": "ukpn_overhead_lines_low_distribution",
                     "sql": "SELECT wkb_geometry, line_colour, line_width FROM ukpn_overhead_lines_low_distribution, ukpn_line_styling WHERE ukpn_overhead_lines_low_distribution.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
-                    "keyColumn": "voltage_level",
                     "geometry": {
                         "name": "wkb_geometry",
                         "type": "MultiLineString",
@@ -70,7 +68,6 @@
                     "name": "ukpn_poles_towers_medium",
                     "sql": "SELECT wkb_geometry, pylon_icon, icon_size FROM ukpn_poles_towers_medium, ukpn_line_styling WHERE ukpn_poles_towers_medium.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
-                    "keyColumn": "voltage_level",
                     "geometry": {
                         "name": "wkb_geometry",
                         "type": "Point",
@@ -98,7 +95,6 @@
                     "name": "ukpn_overhead_lines_medium",
                     "sql": "SELECT wkb_geometry, line_colour, line_width FROM ukpn_overhead_lines_medium, ukpn_line_styling WHERE ukpn_overhead_lines_medium.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
-                    "keyColumn": "voltage_level",
                     "geometry": {
                         "name": "wkb_geometry",
                         "type": "MultiLineString",
@@ -119,7 +115,6 @@
                     "name": "ukpn_poles_towers_high",
                     "sql": "SELECT wkb_geometry, pylon_icon, icon_size FROM ukpn_poles_towers_high, ukpn_line_styling WHERE ukpn_poles_towers_high.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
-                    "keyColumn": "voltage_level",
                     "geometry": {
                         "name": "wkb_geometry",
                         "type": "Point",
@@ -147,7 +142,6 @@
                     "name": "ukpn_overhead_lines_high",
                     "sql": "SELECT wkb_geometry, line_colour, line_width FROM ukpn_overhead_lines_high, ukpn_line_styling WHERE ukpn_overhead_lines_high.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
-                    "keyColumn": "voltage_level",
                     "geometry": {
                         "name": "wkb_geometry",
                         "type": "MultiLineString",
