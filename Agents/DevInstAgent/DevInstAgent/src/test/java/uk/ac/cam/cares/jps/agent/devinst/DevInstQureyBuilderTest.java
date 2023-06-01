@@ -12,6 +12,7 @@ import org.apache.jena.sparql.function.library.print;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
@@ -55,6 +56,20 @@ import java.time.ZoneOffset;
 import java.util.*;
 
 public class DevInstQureyBuilderTest {
+    private static final String ONTODEV = "https://www.theworldavatar.com/kg/ontodevice/";
+    private static final Prefix P_DEV = SparqlBuilder.prefix("ontodevice",iri(ONTODEV));
+    private static final Prefix P_SAREF = SparqlBuilder.prefix("saref", iri("https://saref.etsi.org/core/"));
+    private static final Prefix P_AGENT = SparqlBuilder.prefix("ontoagent",iri("https://www.theworldavatar.com/kg/ontoagent/"));
+    private static final Prefix P_OM = SparqlBuilder.prefix("om", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/"));
+
+    private static final Iri SmartSensor = P_DEV.iri("SmartSensor");
+    private static final Iri MicroController = P_DEV.iri("MicroController");
+    private static final Iri Sensor = P_SAREF.iri("Sensor");
+    private static final Iri ProximitySensor = P_DEV.iri("ProximitySensor");
+
+    private static final Iri consistsOf = P_SAREF.iri("consistsOf");
+    private static final Iri sendsSignalTo = P_DEV.iri("sendsSignalTo");
+    private static final Iri measures = P_DEV.iri("measures");
     // Temporary folder to place a properties file
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
@@ -169,19 +184,82 @@ public class DevInstQureyBuilderTest {
     }
 
     @Test
-    public void testIRIGeneration () {
-        
+    public void testEmptyMapper () {
+        queryBuilder.InsertDevice(exampleEmptyMap);
+        Assert.fail("Device Instantiation succeed despite entpy IRI Mapper");
     }
 
     @Test
     public void testInstantiation () {
-        
+        queryBuilder.InsertDevice(exampleRequest);
+
+        SelectQuery query = Queries.SELECT();
+        //Has to have: Microcontroller
+        query.where(query.var().isA(MicroController));
+        JSONArray result = storeClient.executeQuery(query.getQueryString());
+        Assert.assertTrue(result.length() == 1);
+        String obtainedIRI = result.getJSONObject(0).getString("x0");
+        Assert.assertTrue(obtainedIRI.contains("ESP32"));
+
+        //SmartSensor
+        query = Queries.SELECT();
+        query.where(query.var().isA(SmartSensor));
+        result = storeClient.executeQuery(query.getQueryString());
+        Assert.assertTrue(result.length() == 1);
+        obtainedIRI = result.getJSONObject(0).getString("x0");
+        Assert.assertTrue(obtainedIRI.contains("ProximitySensor_FH-02"));
+
+
+        //Sensor
+        query = Queries.SELECT();
+        query.where(query.var().isA(Sensor));
+        result = storeClient.executeQuery(query.getQueryString());
+        Assert.assertTrue(result.length() == 1);
+        obtainedIRI = result.getJSONObject(0).getString("x0");
+        Assert.assertTrue(obtainedIRI.contains("HCSR04") && !obtainedIRI.contains("HCSR04_ProximitySensor"));
+
+        //Proximity Sensor
+        query = Queries.SELECT();
+        query.where(query.var().isA(ProximitySensor));
+        result = storeClient.executeQuery(query.getQueryString());
+        Assert.assertTrue(result.length() == 1);
+        obtainedIRI = result.getJSONObject(0).getString("x0");
+        Assert.assertTrue(obtainedIRI.contains("HCSR04_ProximitySensor"));
+
+        //Raw Readings
+        query = Queries.SELECT();
+        query.where(query.var().has(measures, query.var()));
+        result = storeClient.executeQuery(query.getQueryString());
+        Assert.assertTrue(result.length() == 1);
+        obtainedIRI = result.getJSONObject(0).getString("x1");
+        Assert.assertTrue(obtainedIRI.contains("AvgDist_FH02"));
+
     }
 
     @Test
     public void testFindIRI(){
+        //Add dummyraw var here
+        ModifyQuery modify = Queries.MODIFY();
+        Iri exampleRaw = iri("example:prefix/api_AvgDist_FH02");
+        Iri Length = iri("http://www.ontology-of-units-of-measure.org/resource/om-2/Length");
+        modify.insert(exampleRaw.isA(Length));
 
+        //Check if IRI is consistent
+        queryBuilder.InsertDevice(exampleFind);
+
+        SelectQuery query = Queries.SELECT();
+        query.where(query.var().has(measures, query.var()));
+        JSONArray result = storeClient.executeQuery(query.getQueryString());
+        Assert.assertTrue(result.length() == 1);
+        String obtainedIRI = result.getJSONObject(0).getString("x0");
+        Assert.assertTrue(obtainedIRI.equals(exampleRaw.toString()));
     }
 
+    @After
+	public void cleanUp() {
+		if (blazegraph.isRunning()) {
+			blazegraph.stop();
+		}
+	}
     
 }
