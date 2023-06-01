@@ -1,9 +1,8 @@
 package uk.ac.cam.cares.jps.bmsqueryapp;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -22,7 +21,6 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 import uk.ac.cam.cares.jps.bmsqueryapp.authorization.AuthorizationHelper;
 import uk.ac.cam.cares.jps.bmsqueryapp.databinding.ActivityUserProfileBinding;
@@ -37,6 +35,8 @@ public class UserProfileActivity extends AppCompatActivity {
     private String KEY_EMAIL = "email";
     private String KEY_GIVEN_NAME = "given_name";
     private String KEY_FAMILY_NAME = "family_name";
+
+    private static final int END_SESSION_REQUEST_CODE = 911;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -54,9 +54,12 @@ public class UserProfileActivity extends AppCompatActivity {
 
         authHelper.performActionWithFreshTokens(this::retrieveUserInfo);
 
+        binding.logout.content.setText(R.string.logout);
         binding.logout.getRoot().setOnClickListener(v -> {
-            // todo: end session
+            startActivityForResult(authHelper.getLogOutIntent(), END_SESSION_REQUEST_CODE);
         });
+
+        binding.updatePw.content.setText(R.string.updatePassword);
         binding.updatePw.getRoot().setOnClickListener(v -> {
             // todo: trigger update password
         });
@@ -104,5 +107,17 @@ public class UserProfileActivity extends AppCompatActivity {
         SingletonConnection.getInstance(this).addToRequestQueue(request);
     }
 
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == END_SESSION_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            authHelper.clearSharedPref();
+            Intent loginIntent = new Intent(this, LoginActivity.class);
+            loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(loginIntent);
+            finish();
+        } else {
+            Toast.makeText(this, R.string.cancel_logout, Toast.LENGTH_SHORT).show();
+        }
+    }
 }

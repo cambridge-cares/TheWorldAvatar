@@ -67,6 +67,7 @@ public final class AuthServerConfiguration {
     private String mClientId;
     private String mScope;
     private Uri mRedirectUri;
+    private Uri mEndSessionRedirectUri;
     private Uri mDiscoveryUri;
     private boolean mHttpsRequired;
 
@@ -143,6 +144,9 @@ public final class AuthServerConfiguration {
         return mDiscoveryUri;
     }
 
+    @Nullable
+    public Uri getEndSessionRedirectUri() { return mEndSessionRedirectUri; }
+
     public boolean isHttpsRequired() {
         return mHttpsRequired;
     }
@@ -177,6 +181,7 @@ public final class AuthServerConfiguration {
         mClientId = getConfigString("client_id");
         mScope = getRequiredConfigString("authorization_scope");
         mRedirectUri = getRequiredConfigUri("redirect_uri");
+        mEndSessionRedirectUri = getRequiredConfigUri("end_session_redirect_uri");
 
         if (!isRedirectUriRegistered()) {
             throw new InvalidConfigurationException(

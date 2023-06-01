@@ -1,25 +1,19 @@
 package uk.ac.cam.cares.jps.bmsqueryapp.authorization;
 
 import android.content.Context;
-import android.net.Uri;
-
-import com.android.volley.Request;
-import com.android.volley.toolbox.StringRequest;
+import android.content.Intent;
 
 import net.openid.appauth.AppAuthConfiguration;
 import net.openid.appauth.AuthState;
 import net.openid.appauth.AuthorizationService;
+import net.openid.appauth.AuthorizationServiceConfiguration;
+import net.openid.appauth.EndSessionRequest;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicReference;
-
-import uk.ac.cam.cares.jps.bmsqueryapp.utils.SingletonConnection;
 
 public class AuthorizationHelper {
     private AuthStateManager authStateManager;
@@ -29,12 +23,15 @@ public class AuthorizationHelper {
     private final Context context;
     private static AuthorizationHelper instance;
 
+    private AuthServerConfiguration configuration;
+
     private static final Logger LOGGER = LogManager.getLogger(AuthorizationHelper.class);
 
     private AuthorizationHelper(Context context) {
         this.context = context.getApplicationContext();
 
         authStateManager = AuthStateManager.getInstance(this.context);
+        configuration = AuthServerConfiguration.getInstance(this.context);
 
         executor = Executors.newSingleThreadExecutor();
 
@@ -64,6 +61,31 @@ public class AuthorizationHelper {
             // todo: should call initializeAppAuth, need refactoring
             return "";
         }
+    }
+
+    public Intent getLogOutIntent() {
+        AuthorizationServiceConfiguration config = authStateManager.getCurrent().getAuthorizationServiceConfiguration();
+        if (config.endSessionEndpoint != null) {
+            Intent endSessionIntent = authService.getEndSessionRequestIntent(
+                    new EndSessionRequest.Builder(config)
+                            .setIdTokenHint(authStateManager.getCurrent().getIdToken())
+                            .setPostLogoutRedirectUri(configuration.getEndSessionRedirectUri())
+                            .build());
+            return endSessionIntent;
+        }
+        return null;
+    }
+
+    public void clearSharedPref() {
+        // discard the authorization and token state, but retain the configuration and
+        // dynamic client registration (if applicable), to save from retrieving them again.
+        AuthState currentState = authStateManager.getCurrent();
+        AuthState clearedState =
+                new AuthState(currentState.getAuthorizationServiceConfiguration());
+        if (currentState.getLastRegistrationResponse() != null) {
+            clearedState.update(currentState.getLastRegistrationResponse());
+        }
+        authStateManager.replace(clearedState);
     }
 
 }

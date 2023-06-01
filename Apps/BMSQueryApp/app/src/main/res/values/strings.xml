@@ -28,4 +28,7 @@
     <string name="email">Email</string>
     <string name="firstname">Firstname</string>
     <string name="lastname">Lastname</string>
+    <string name="cancel_logout">\"Sign out canceled\"</string>
+    <string name="logout">Logout</string>
+    <string name="updatePassword">Update password</string>
 </resources>
