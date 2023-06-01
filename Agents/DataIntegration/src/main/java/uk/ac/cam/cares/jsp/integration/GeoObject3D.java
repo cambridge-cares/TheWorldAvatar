@@ -94,7 +94,7 @@ public class GeoObject3D {
     public void updateName(GeoObject3D object3D){
         String upSql = "UPDATE cityobject SET ";
         if(object3D.name != null){
-            upSql = upSql + "name = '" + object3D.name + "' WHERE gmlid = " + object3D.gmlid + ";";
+            upSql = upSql + "name = '" + object3D.name + "' WHERE gmlid = '" + object3D.gmlid + "';";
             try (Connection conn = postgresClient.getConnection()) {
                 try (Statement stmt = conn.createStatement()) {
                     stmt.executeUpdate(upSql);

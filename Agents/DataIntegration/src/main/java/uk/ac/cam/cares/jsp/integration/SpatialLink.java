@@ -89,6 +89,7 @@ public class SpatialLink extends HttpServlet {
 
         GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
         WKTReader reader = new WKTReader( geometryFactory );
+        ObjectAddress address = new ObjectAddress();
 
         for (int i = 0; i < this.allObject3D.size(); i++) {
             GeoObject3D object3D = this.allObject3D.get(i);
@@ -96,30 +97,31 @@ public class SpatialLink extends HttpServlet {
             String coord3D = object3D.getEnvelope().getGeometry().getValue();
             Geometry envelope = createGeometry(coord3D);
             double refAreaRation = 0;
+            int srid2D = this.allObject2D.get(0).getGeometry2D().getGeometry().getSrid();
+            if(srid3D != srid2D){
+                Geometry transGeom3D = Transform(envelope, srid3D, srid2D);
+                srid3D = transGeom3D.getSRID();
+                Coordinate[] reversedCoordinates = getReversedCoordinates(transGeom3D);
+                envelope = geometryFactory.createPolygon(reversedCoordinates);
+            }
+
             for (int j = 0; j < this.allObject2D.size(); j++) {
                 GeoObject2D object2D = this.allObject2D.get(j);
-                int srid2D = object2D.getGeometry2D().getGeometry().getSrid();
+
                 String geom2D = object2D.getGeometry2D().toString();
                 geom2D = geom2D.split(";")[1];
                 MultiPolygon polys2D = (MultiPolygon) reader.read(geom2D);
-
-                if(srid3D != srid2D){
-                    Geometry transGeom3D = Transform(envelope, srid3D, srid2D);
-                    srid3D = transGeom3D.getSRID();
-                    Coordinate[] reversedCoordinates = getReversedCoordinates(transGeom3D);
-                    envelope = geometryFactory.createPolygon(reversedCoordinates);
-                }
-
                 if ((!polys2D.within(envelope)) || (!envelope.within(polys2D))){
                     if(envelope.intersects(polys2D)){
                         Geometry intersect = envelope.intersection(polys2D);
                         double areaRatio = 100.0*intersect.getArea() / polys2D.getArea();
-                        System.out.println("ratio: "+areaRatio + "%");
+//                        System.out.println("ratio: "+areaRatio + "%");
                         if(areaRatio>60){
                             if((refAreaRation !=0 && refAreaRation<areaRatio) || refAreaRation==0){
-                                ObjectAddress address = new ObjectAddress();
+
                                 object3D.setName(object2D.getName());
                                 address.setStreet(object2D.getStreet());
+                                address.setHouse(object2D.getHouse());
                                 address.setZipCode(object2D.getPostcode());
                                 address.setCity(object2D.getCity());
                                 address.setCountry(object2D.getCountry());
@@ -131,7 +133,7 @@ public class SpatialLink extends HttpServlet {
                     }
                 }else{
                     object3D.setName(object2D.getName());
-                    ObjectAddress address = new ObjectAddress(object3D.getGmlId(), object2D.getStreet(), object2D.getPostcode(),object2D.getCountry(),object2D.getCity());
+                    address = new ObjectAddress(object3D.getGmlId(), object2D.getStreet(), object2D.getHouse(), object2D.getPostcode(),object2D.getCountry(),object2D.getCity());
                     object3D.setAddress(address);
                 }
             }

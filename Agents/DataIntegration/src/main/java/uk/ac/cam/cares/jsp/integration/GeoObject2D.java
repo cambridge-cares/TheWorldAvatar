@@ -18,14 +18,16 @@ public class GeoObject2D {
     private String postcode;
     private String country;
     private String city;
+    private String house;
 
     private static final Logger LOGGER = LogManager.getLogger(SpatialLink.class);
     private PostgresClient postgresClient;
 
     public GeoObject2D () {}
-    public GeoObject2D(String name, String street, String postcode, String country, String city, PGgeometry geometry){
+    public GeoObject2D(String name, String street, String house, String postcode, String country, String city, PGgeometry geometry){
         this.name = name;
         this.street = street;
+        this.house = house;
         this.postcode = postcode;
         this.geometry2D = geometry;
         this.country = country;
@@ -43,6 +45,7 @@ public class GeoObject2D {
     public String getStreet(){
         return this.street;
     }
+    public String getHouse() {return this.house;}
     public String getPostcode() {return  this.postcode; }
     public String getCountry() {return this.country;}
     public String getCity() { return this.city; }
@@ -57,6 +60,7 @@ public class GeoObject2D {
     public void setAddress(String street){
         this.street =  street;
     }
+    public void setHouse(String house) {this.house = house;}
 
     public void setPostcode(String postcode){
         this.postcode =  postcode;
@@ -73,7 +77,7 @@ public class GeoObject2D {
         List<GeoObject2D> allObject2D = new ArrayList<>();
 
         try (Connection conn = postgresClient.getConnection()) {
-            String sql = "SELECT name, addr_postc, addr_stree, addr_count, addr_city, wkb_geometry FROM " + tableName + " WHERE name is not null or addr_stree is not null";
+            String sql = "SELECT name, addr_postc, addr_stree, addr_hou_1, addr_count, addr_city, wkb_geometry FROM " + tableName + " WHERE name is not null or addr_stree is not null";
             try (Statement stmt = conn.createStatement()) {
                 ResultSet result = stmt.executeQuery(sql);
                 while (result.next()) {
@@ -81,6 +85,7 @@ public class GeoObject2D {
                     object2D.setName(result.getString("name"));
                     object2D.setGeometry2D((PGgeometry)result.getObject("wkb_geometry"));
                     object2D.setAddress(result.getString("addr_stree"));
+                    object2D.setHouse(result.getString("addr_hou_1"));
                     object2D.setPostcode(result.getString("addr_postc"));
                     object2D.setCity(result.getString("addr_city"));
                     object2D.setCountry(result.getString("addr_count"));

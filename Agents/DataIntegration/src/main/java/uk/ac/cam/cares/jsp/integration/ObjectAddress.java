@@ -13,15 +13,17 @@ public class ObjectAddress {
     private static final Logger LOGGER = LogManager.getLogger(KGObjects.class);
     private String gmlid;
     private String street;
+    private String house;
     private String zip_code;
     private String country;
     private String city;
     private PostgresClient postgresClient;
 
     ObjectAddress() {}
-    ObjectAddress(String gmlid, String street, String zip_code, String country, String city) {
+    ObjectAddress(String gmlid, String street, String house, String zip_code, String country, String city) {
         this.gmlid = gmlid;
         this.street = street;
+        this.house = house;
         this.zip_code = zip_code;
         this.country = country;
         this.city = city;
@@ -29,10 +31,12 @@ public class ObjectAddress {
 
     public String getGmlId() {return this.gmlid;}
     public String getStreet() {return this.street;}
+    public String getHouse() {return this.house;}
     public String getZipCode() {return this.zip_code;}
     public String getCountry() {return this.country;}
     public String getCity() {return this.city;}
     public void setStreet(String street) {this.street = street;}
+    public void setHouse(String house) {this.house = house;}
     public void setGmlid (String gmlid) {this.gmlid = gmlid;}
     public void setCity (String city) {this.city = city;}
     public void setCountry (String country) {this.country = country;}
@@ -48,7 +52,7 @@ public class ObjectAddress {
             try (Statement stmt = conn.createStatement()) {
                 ResultSet result = stmt.executeQuery(sql);
                 if (!result.next()) {
-                    String upSql1 = "INSERT INTO address (gmlid, street, zip_code, city, country) VALUES (";
+                    String upSql1 = "INSERT INTO address (gmlid, street, house_number, zip_code, city, country) VALUES (";
                     if(gmlid != null) {
                         upSql1 = upSql1 + "'" + gmlid + "', ";
                     }else{
@@ -56,6 +60,11 @@ public class ObjectAddress {
                     }
                     if(address.street != null) {
                         upSql1 = upSql1  + "'" + address.street + "', ";
+                    }else{
+                        upSql1 = upSql1 + "null, ";
+                    }
+                    if(address.house != null) {
+                        upSql1 = upSql1  + "'" + address.house + "', ";
                     }else{
                         upSql1 = upSql1 + "null, ";
                     }
@@ -118,6 +127,7 @@ public class ObjectAddress {
                     while (resAddress.next()){
                         objAddress.gmlid = resAddress.getString("gmlid");
                         objAddress.street = resAddress.getString("street");
+                        objAddress.house = resAddress.getString("house_number");
                         objAddress.zip_code = resAddress.getString("zip_code");
                         objAddress.country = resAddress.getString("country");
                         objAddress.city = resAddress.getString("city");
