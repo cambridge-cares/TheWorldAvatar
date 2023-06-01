@@ -25,7 +25,7 @@
             },
             "geoServerSettings": {
                 "virtualTable": {
-                    "name": "ukpn_overhead_lines_low_extended",
+                    "name": "ukpn_overhead_lines_low",
                     "sql": "SELECT wkb_geometry, line_colour, line_width FROM ukpn_overhead_lines_high_distribution, ukpn_line_styling WHERE ukpn_overhead_lines_high_distribution.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
                     "keyColumn": "voltage_level",
@@ -46,7 +46,7 @@
             "subdirectory": "vector/ukpn-lv-overhead-lines-shapefile",
             "geoServerSettings": {
                 "virtualTable": {
-                    "name": "ukpn_overhead_lines_low_distribution_extended",
+                    "name": "ukpn_overhead_lines_low_distribution",
                     "sql": "SELECT wkb_geometry, line_colour, line_width FROM ukpn_overhead_lines_low_distribution, ukpn_line_styling WHERE ukpn_overhead_lines_low_distribution.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
                     "keyColumn": "voltage_level",
@@ -67,7 +67,7 @@
             "subdirectory": "vector/ukpn-33kv-poles-towers",
             "geoServerSettings": {
                 "virtualTable": {
-                    "name": "ukpn_poles_towers_medium_extended",
+                    "name": "ukpn_poles_towers_medium",
                     "sql": "SELECT wkb_geometry, pylon_icon, icon_size FROM ukpn_poles_towers_medium, ukpn_line_styling WHERE ukpn_poles_towers_medium.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
                     "keyColumn": "voltage_level",
@@ -95,7 +95,7 @@
             },
             "geoServerSettings": {
                 "virtualTable": {
-                    "name": "ukpn_overhead_lines_medium_extended",
+                    "name": "ukpn_overhead_lines_medium",
                     "sql": "SELECT wkb_geometry, line_colour, line_width FROM ukpn_overhead_lines_medium, ukpn_line_styling WHERE ukpn_overhead_lines_medium.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
                     "keyColumn": "voltage_level",
@@ -116,7 +116,7 @@
             "subdirectory": "vector/132kv-poles-towers",
             "geoServerSettings": {
                 "virtualTable": {
-                    "name": "ukpn_poles_towers_high_extended",
+                    "name": "ukpn_poles_towers_high",
                     "sql": "SELECT wkb_geometry, pylon_icon, icon_size FROM ukpn_poles_towers_high, ukpn_line_styling WHERE ukpn_poles_towers_high.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
                     "keyColumn": "voltage_level",
@@ -144,7 +144,7 @@
             },
             "geoServerSettings": {
                 "virtualTable": {
-                    "name": "ukpn_overhead_lines_high_extended",
+                    "name": "ukpn_overhead_lines_high",
                     "sql": "SELECT wkb_geometry, line_colour, line_width FROM ukpn_overhead_lines_high, ukpn_line_styling WHERE ukpn_overhead_lines_high.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
                     "keyColumn": "voltage_level",
