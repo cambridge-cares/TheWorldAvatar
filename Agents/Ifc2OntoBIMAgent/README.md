@@ -35,6 +35,9 @@ Notes:
 Other elements are always linked to their Storey, even if there is a Space defined. 
 - For all elements that are not the building structure components like walls, floors, doors, windows, roofs etc, please export them as IfcFurnishingElement or IfcBuildingElementProxy.
 Otherwise, they will not be instantiated.
+- In instantiating the address, please ensure the `Location` set in the Revit file follows the format: `<City, State PostalCode, Country>`. 
+  - Address lines should be added to the `Project Address` field on the `Project Information` settings in Revit.
+  - Feel free to omit the terms as necessary for the location. Do note that if state is omitted, postal code will always be generated as state.
 - Triples related to the OntoBIM:Facility concept will have to be manually instantiated as there is no equivalent concept from IFC.
 
 #### 1.2 Technical Requirements
