@@ -38,7 +38,7 @@ class COPCalculationAgent(DerivationAgent):
     def process_request_parameters(self, derivation_inputs: DerivationInputs, 
                                    derivation_outputs: DerivationOutputs):
         # Update assumptions provided
-        #heatpumpefficiency_iri, hotsidetemperature_iri = self.sparql_client.update_assumptions()
+        heatpumpefficiency_iri, hotsidetemperature_iri = self.sparql_client.update_assumptions()
         
         inputs = derivation_inputs.getInputs()
         derivIRI = derivation_inputs.getDerivationIRI()
@@ -49,7 +49,7 @@ class COPCalculationAgent(DerivationAgent):
 
         # Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
         temperature_iri_list = self.sparql_client.retrieve_temperature_iri(region)
-        g, mean_cop_iri, max_cop_iri, min_cop_iri = self.getCOPGraph(temperature_iri_list[0], heatpumpefficiency_iri, hotsidetemperature_iri)
+        g, mean_cop_iri, max_cop_iri, min_cop_iri = self.getCOPGraph(temperature_iri_list[0])
         # Collect the generated triples derivation_outputs
         derivation_outputs.addGraph(g)
         
@@ -65,7 +65,7 @@ class COPCalculationAgent(DerivationAgent):
         for i in tqdm(range(len(temperature_iri_list))):
             temperature_iri = temperature_iri_list[i]
             res = self.sparql_client.get_temperature(temperature_iri)
-            cop_max, cop_mean, cop_min = self.bulk_calculateCOP(temperature_iri)
+            cop_max, cop_mean, cop_min = self.bulk_calculateCOP(temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri)
             dates.append(res["start"])
             maxvalues.append(cop_max)
             meanvalues.append(cop_mean)

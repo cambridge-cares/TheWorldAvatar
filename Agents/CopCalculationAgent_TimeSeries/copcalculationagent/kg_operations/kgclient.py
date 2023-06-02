@@ -340,9 +340,10 @@ class KGClient(PySparqlClient):
 
                 return temperature_iri_list
 
-# QUERY_ENDPOINT= "http://localhost:3846/blazegraph/namespace/ts_example/sparql"
-# a = KGClient(QUERY_ENDPOINT, QUERY_ENDPOINT)
-
+QUERY_ENDPOINT= "http://localhost:3846/blazegraph/namespace/ts_example/sparql"
+a = KGClient(QUERY_ENDPOINT, QUERY_ENDPOINT)
+res = a.get_temperature("http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/Test_meana72a36ac-24e5-48ed-b754-bd1ace069489")
+print(res)
 # # inputs = {'http://www.ontology-of-units-of-measure.org/resource/om-2/Measure': ['http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/Value_a968837a-7624-4c43-978d-9a9348ef1f40'], 'http://www.theworldavatar.com/ontology/ontoregionalanalysis/HeatPumpEfficiency': ['http://www.theworldavatar.com/ontology/ontoregionalanalysis/HeatPumpEfficiency_fba248c2-050f-4323-bc55-f8fb2ba01566'], 'http://www.theworldavatar.com/ontology/ontoregionalanalysis/HotSideTemperature': ['http://www.theworldavatar.com/ontology/ontoregionalanalysis/HotSideTemperature_e69b38bf-7894-43e8-a318-41e378faed8d']}
 
 # temperature_iri_list = a.retrieve_temperature_iri()
