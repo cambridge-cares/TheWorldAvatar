@@ -12,7 +12,7 @@
               <ExternalGraphic xmlns="http://www.opengis.net/sld"
                 xmlns:xlink="http://www.w3.org/1999/xlink">
                 <OnlineResource xlink:type="simple"
-                  xlink:href="http://localhost:8080/geoserver/www/icons/${pylon_icon}.png" />
+                  xlink:href="http://localhost:8080/geoserver/www/icons/${icon}.png" />
                 <Format>image/png</Format>
               </ExternalGraphic>
               <sld:Size>

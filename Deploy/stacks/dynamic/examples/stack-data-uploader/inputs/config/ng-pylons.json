@@ -16,14 +16,21 @@
             "schema": "public",
             "table": "ng_poles_towers",
             "subdirectory": "vector/towers",
-            "sql": "ALTER TABLE ng_poles_towers ADD COLUMN IF NOT EXISTS voltage_level VARCHAR ; UPDATE ng_poles_towers SET voltage_level = 'S' ;",
             "ogr2ogrOptions": {
-                "sridOut": "EPSG:4326"
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "wkb_geometry"
+                },
+                "sridOut": "EPSG:4326",
+                "otherOptions": {
+                    "-sql": [
+                        "SELECT *, 'S' AS voltage_level, 400.0 AS max_voltage_kv, CONCAT('National Grid Tower (', \"TOWER_ASSE\", '-S)') AS name FROM \"towers\""
+                    ]
+                }
             },
             "geoServerSettings": {
                 "virtualTable": {
-                    "name": "ng_poles_towers_extended",
-                    "sql": "SELECT wkb_geometry, icon_size, pylon_icon FROM ng_poles_towers, ng_line_styling WHERE ng_poles_towers.voltage_level = ng_line_styling.voltage_level",
+                    "name": "ng_poles_towers",
+                    "sql": "SELECT wkb_geometry, name, icon_size, pylon_icon AS icon FROM ng_poles_towers, ng_line_styling WHERE ng_poles_towers.voltage_level = ng_line_styling.voltage_level",
                     "geometry": {
                         "name": "wkb_geometry",
                         "type": "Point",
@@ -38,7 +45,7 @@
             "skip": false,
             "schema": "public",
             "table": "ng_underground_cables",
-            "sql": "ALTER TABLE ng_underground_cables ADD COLUMN IF NOT EXISTS voltage INT , ADD COLUMN IF NOT EXISTS voltage_level VARCHAR ; UPDATE ng_underground_cables SET voltage = CAST(\"OPERATING_\" AS INT) ; UPDATE ng_underground_cables SET voltage_level = (CASE WHEN voltage >= 230 THEN 'S' WHEN voltage < 230 and voltage >= 35 THEN 'H' WHEN voltage < 35 and voltage >= 1 THEN 'M' end) ;",
+            "sql": "ALTER TABLE ng_underground_cables ADD COLUMN IF NOT EXISTS max_voltage_kv FLOAT , ADD COLUMN IF NOT EXISTS voltage_level VARCHAR , ADD COLUMN IF NOT EXISTS name VARCHAR ; UPDATE ng_underground_cables SET max_voltage_kv = CAST(\"OPERATING_\" AS FLOAT) ; UPDATE ng_underground_cables SET voltage_level = (CASE WHEN max_voltage_kv >= 230 THEN 'S' WHEN max_voltage_kv < 230 and max_voltage_kv >= 35 THEN 'H' WHEN max_voltage_kv < 35 and max_voltage_kv >= 1 THEN 'M' end) ; UPDATE ng_underground_cables SET name = CONCAT('National Grid Underground Cable (', \"GDO_GID\", '-', voltage_level, ')') ;",
             "subdirectory": "vector/cables",
             "ogr2ogrOptions": {
                 "sridOut": "EPSG:4326",
@@ -50,8 +57,8 @@
             },
             "geoServerSettings": {
                 "virtualTable": {
-                    "name": "ng_underground_cables_extended",
-                    "sql": "SELECT wkb_geometry, line_colour, line_width, outline_colour, outline_width FROM ng_underground_cables, ng_line_styling WHERE ng_underground_cables.voltage_level = ng_line_styling.voltage_level",
+                    "name": "ng_underground_cables",
+                    "sql": "SELECT wkb_geometry, name, line_colour, line_width, outline_colour, outline_width FROM ng_underground_cables, ng_line_styling WHERE ng_underground_cables.voltage_level = ng_line_styling.voltage_level",
                     "geometry": {
                         "name": "wkb_geometry",
                         "type": "LineString",
@@ -66,9 +73,12 @@
             "skip": false,
             "schema": "public",
             "table": "ng_overhead_lines",
-            "sql": "ALTER TABLE ng_overhead_lines ADD COLUMN IF NOT EXISTS voltage INT , ADD COLUMN IF NOT EXISTS voltage_level VARCHAR ; UPDATE ng_overhead_lines SET voltage = CAST(\"OPERATING_\" AS INT) ; UPDATE ng_overhead_lines SET voltage_level = (CASE WHEN voltage >= 230 THEN 'S' WHEN voltage < 230 and voltage >= 35 THEN 'H' WHEN voltage < 35 and voltage >= 1 THEN 'M' end) ;",
+            "sql": "ALTER TABLE ng_overhead_lines ADD COLUMN IF NOT EXISTS max_voltage_kv FLOAT , ADD COLUMN IF NOT EXISTS voltage_level VARCHAR , ADD COLUMN IF NOT EXISTS name VARCHAR ; UPDATE ng_overhead_lines SET max_voltage_kv = CAST(\"OPERATING_\" AS FLOAT) ; UPDATE ng_overhead_lines SET voltage_level = (CASE WHEN max_voltage_kv >= 230 THEN 'S' WHEN max_voltage_kv < 230 and max_voltage_kv >= 35 THEN 'H' WHEN max_voltage_kv < 35 and max_voltage_kv >= 1 THEN 'M' end) ; UPDATE ng_overhead_lines SET name = CONCAT('National Grid Overhead Line (', \"GDO_GID\", '-', voltage_level, ')') ;",
             "subdirectory": "vector/ohls",
             "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "wkb_geometry"
+                },
                 "sridOut": "EPSG:4326",
                 "otherOptions": {
                     "-nlt": [
@@ -78,8 +88,8 @@
             },
             "geoServerSettings": {
                 "virtualTable": {
-                    "name": "ng_overhead_lines_extended",
-                    "sql": "SELECT wkb_geometry, line_colour, line_width FROM ng_overhead_lines, ng_line_styling WHERE ng_overhead_lines.voltage_level = ng_line_styling.voltage_level",
+                    "name": "ng_overhead_lines",
+                    "sql": "SELECT wkb_geometry, name, line_colour, line_width FROM ng_overhead_lines, ng_line_styling WHERE ng_overhead_lines.voltage_level = ng_line_styling.voltage_level",
                     "geometry": {
                         "name": "wkb_geometry",
                         "type": "MultiLineString",

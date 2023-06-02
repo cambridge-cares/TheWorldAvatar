@@ -115,7 +115,7 @@
                     "treeable": false,
                     "minzoom": 11,
                     "layout": {
-                        "icon-image": ["get", "pylon_icon"],
+                        "icon-image": ["get", "icon"],
                         "icon-size": ["interpolate", ["linear"], ["zoom"], 11, ["*", 0.003125, ["to-number", ["slice", ["get", "icon_size"], 0, -1]]], 30, ["*", 0.0375, ["to-number", ["slice", ["get", "icon_size"], 0, -1]]]],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true
@@ -232,7 +232,7 @@
                     "treeable": false,
                     "minzoom": 12,
                     "layout": {
-                        "icon-image": ["get", "pylon_icon"],
+                        "icon-image": ["get", "icon"],
                         "icon-size": ["interpolate", ["linear"], ["zoom"], 11, ["*", 0.003125, ["to-number", ["slice", ["get", "icon_size"], 0, -1]]], 30, ["*", 0.0375, ["to-number", ["slice", ["get", "icon_size"], 0, -1]]]],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true
@@ -247,7 +247,7 @@
                     "treeable": false,
                     "minzoom": 13,
                     "layout": {
-                        "icon-image": ["get", "pylon_icon"],
+                        "icon-image": ["get", "icon"],
                         "icon-size": ["interpolate", ["linear"], ["zoom"], 11, ["*", 0.003125, ["to-number", ["slice", ["get", "icon_size"], 0, -1]]], 30, ["*", 0.0375, ["to-number", ["slice", ["get", "icon_size"], 0, -1]]]],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true
