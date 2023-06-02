@@ -267,8 +267,8 @@ def initialize_indecies(sparql_client):
         WHERE {{
          <{country_iri}> <{REGION_HAS_ENERGYCONSUMPTION_PROFILE}> ?consumption_profile_iri .
          ?consumption_profile_iri <{RDF_TYPE}> <{REGION_ENERGYCONSUMPTION_PROFILE}> ;
-                                <{OFP_VALIDFROM}> "2020-01-01T12:00:00.000Z"^^<{XSD_DATETIME}> ;
-                                <{OFP_VALIDTO}> "2020-12-31T12:00:00.000Z"^^<{XSD_DATETIME}> .
+                                <{OFP_VALIDFROM}> "2020-01-01T12:00:00.000Z"^^<{XSD_STRING}> ;
+                                <{OFP_VALIDTO}> "2020-12-31T12:00:00.000Z"^^<{XSD_STRING}> .
          ?elec_profile_iri <{IS_A}> ?consumption_profile_iri;
                           <{RDF_TYPE}>  <{REGION_ELECTRICITYCONSUMPTION_PROFILE}>.
          ?gas_profile_iri <{IS_A}> ?consumption_profile_iri;
@@ -315,8 +315,8 @@ def initialize_indecies(sparql_client):
         WHERE {{
          <{country_iri}> <{ONTOHEATNETWORK_HASUNITRATE}> ?unit_rate_iri .
          ?unit_rate_iri <{RDF_TYPE}> <{ONTOHEATNETWORK_UNITRATE}> ;
-                                <{OFP_VALIDFROM}> "2020-01-01T12:00:00.000Z"^^<{XSD_DATETIME}> ;
-                                <{OFP_VALIDTO}> "2020-12-31T12:00:00.000Z"^^<{XSD_DATETIME}> .
+                                <{OFP_VALIDFROM}> "2020-01-01T12:00:00.000Z"^^<{XSD_STRING}> ;
+                                <{OFP_VALIDTO}> "2020-12-31T12:00:00.000Z"^^<{XSD_STRING}> .
          ?elec_unit_rate_iri <{IS_A}> ?unit_rate_iri;
                           <{RDF_TYPE}>  <{REGION_ELECTRICITYUNITCOST}>.
          ?fuel_unit_rate_iri <{IS_A}> ?unit_rate_iri;
@@ -371,14 +371,15 @@ def initialize_indecies(sparql_client):
     country_iri = check_country(sparql_client)
     # Initialize consumption profiles
     consumption_profile_iri, elec_profile_iri, gas_profile_iri = get_consumption_profile_iri(sparql_client, country_iri)
-    unit_rate_iri, elec_unit_rate_iri, fuel_unit_rate_iri, gas_unit_rate_iri = get_unit_rate_iri(country_iri)
+    unit_rate_iri, elec_unit_rate_iri, fuel_unit_rate_iri, gas_unit_rate_iri = get_unit_rate_iri(sparql_client, country_iri)
     query_string = f"""
     INSERT DATA {{
         <{country_iri}> <{REGION_HAS_ENERGYCONSUMPTION_PROFILE}> <{consumption_profile_iri}> ;
                         <{ONTOHEATNETWORK_HASUNITRATE}> <{unit_rate_iri}>  .
         <{consumption_profile_iri}> <{RDF_TYPE}> <{REGION_ENERGYCONSUMPTION_PROFILE}> ;
-                            <{OFP_VALIDFROM}> "2020-01-01T12:00:00.000Z"^^<{XSD_DATETIME}> ;
-                            <{OFP_VALIDTO}> "2020-12-31T12:00:00.000Z"^^<{XSD_DATETIME}> .
+                            <{OFP_VALIDFROM}> "2020-01-01T12:00:00.000Z"^^<{XSD_STRING}> ;
+                            <{OFP_VALIDTO}> "2020-12-31T12:00:00.000Z"^^<{XSD_STRING}> .
+
         <{elec_profile_iri}> <{IS_A}> <{consumption_profile_iri}>;
                         <{RDF_TYPE}>  <{REGION_ELECTRICITYCONSUMPTION_PROFILE}> .
 
@@ -386,13 +387,14 @@ def initialize_indecies(sparql_client):
                         <{RDF_TYPE}>  <{REGION_GASCONSUMPTION_PROFILE}> .
 
         <{unit_rate_iri}>  <{RDF_TYPE}> <{ONTOHEATNETWORK_UNITRATE}> ;
-                                <{OFP_VALIDFROM}> "2020-01-01T12:00:00.000Z"^^<{XSD_DATETIME}> ;
-                                <{OFP_VALIDTO}> "2020-12-31T12:00:00.000Z"^^<{XSD_DATETIME}> .
+                                <{OFP_VALIDFROM}> "2020-01-01T12:00:00.000Z"^^<{XSD_STRING}> ;
+                                <{OFP_VALIDTO}> "2020-12-31T12:00:00.000Z"^^<{XSD_STRING}> .
+
          <{elec_unit_rate_iri}> <{IS_A}> <{unit_rate_iri}> ;
                           <{RDF_TYPE}>  <{REGION_ELECTRICITYUNITCOST}>.
          <{fuel_unit_rate_iri}> <{IS_A}> <{unit_rate_iri}> ;
                           <{RDF_TYPE}>  <{ONTOHEATNETWORK_FUELUNITCOST}>.
-         <{gas_unit_rate_iri}> <{IS_A}> ?fuel_unit_rate_iri;
+         <{gas_unit_rate_iri}> <{IS_A}> <{unit_rate_iri}>;
                           <{RDF_TYPE}>  <{ONTOHEATNETWORK_GASUNITCOST}>.
 
     }}
