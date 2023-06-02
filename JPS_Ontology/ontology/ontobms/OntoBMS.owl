@@ -10,7 +10,7 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobms/">
         <owl:imports rdf:resource="https://saref.etsi.org/saref4bldg/"/>
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">28 March 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">02 June 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoBMS is an ontology for Building Management Systems.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.5</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -267,13 +267,6 @@
 
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Percentage"/>
-    
-
-
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Power -->
-
-
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Power"/>
     
 
 
