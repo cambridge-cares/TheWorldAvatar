@@ -35,6 +35,7 @@ COP_VAR                       # Select the variable of COP to use: Max / Mean / 
 UPTAKE                        # Assumed uptake of the heat pump in the hypothesis
 PROPORTION_OF_HEATING         # Assumed proportion of the gas being used for heating
 BOILER_EFFICIENCY             # Assumed the efficiency of the gas boiler
+YEAR                          # The year of the index, will be used to instantiate the indecies in the KG
 ```
 
 
