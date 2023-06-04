@@ -13,7 +13,7 @@ from tqdm import tqdm
 
 from py4jps import agentlogging
 from pyderivationagent.kg_operations import PySparqlClient
-from resultedconsumptioncalculationagent.utils.stack_configs import ONTOP_URL, COP_VAR, BOILER_EFFICIENCY, PROPORTION_OF_HEATING, UPTAKE, ELECTRICITY_CONSUMPTION_PROFILE, GAS_CONSUMPTION_PROFILE
+from resultedconsumptioncalculationagent.utils.stack_configs import ONTOP_URL, COP_VAR, BOILER_EFFICIENCY, PROPORTION_OF_HEATING, UPTAKE, ELECTRICITY_CONSUMPTION_PROFILE, GAS_CONSUMPTION_PROFILE, YEAR
 
 from resultedconsumptioncalculationagent.datamodel.iris import *
 from resultedconsumptioncalculationagent.datamodel.data import GBP_SYMBOL, TIME_FORMAT_LONG, TIME_FORMAT_SHORT
@@ -157,8 +157,8 @@ class KGClient(PySparqlClient):
         WHERE {{
          <{country_iri}> <{REGION_HAS_ENERGYCONSUMPTION_PROFILE}> ?consumption_profile_iri .
          ?consumption_profile_iri <{RDF_TYPE}> <{REGION_ENERGYCONSUMPTION_PROFILE}> ;
-                                <{OFP_VALIDFROM}> "2020-01-01T12:00:00.000Z"^^<{XSD_DATETIME}> ;
-                                <{OFP_VALIDTO}> "2020-12-31T12:00:00.000Z"^^<{XSD_DATETIME}> .
+                                <{OFP_VALIDFROM}> "{YEAR}-01-01T12:00:00.000Z"^^<{XSD_DATETIME}> ;
+                                <{OFP_VALIDTO}> "{YEAR}-12-31T12:00:00.000Z"^^<{XSD_DATETIME}> .
          ?elec_profile_iri <{IS_A}> ?consumption_profile_iri;
                           <{RDF_TYPE}>  <{REGION_ELECTRICITYCONSUMPTION_PROFILE}>.
          ?gas_profile_iri <{IS_A}> ?consumption_profile_iri;
