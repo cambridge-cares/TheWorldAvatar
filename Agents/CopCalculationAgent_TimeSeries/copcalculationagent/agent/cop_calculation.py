@@ -70,10 +70,16 @@ class COPCalculationAgent(DerivationAgent):
             maxvalues.append(cop_max)
             meanvalues.append(cop_mean)
             minvalues.append(cop_min)
+        dataIRIs = [min_cop_iri,mean_cop_iri,max_cop_iri]
+        values = [minvalues, meanvalues, maxvalues]
         
+        # Create Time Series
+        self.create_timeseries(self, ts_client, dates, dataIRIs, values)
+        
+        print('COP has been updated!')
+
+    def create_timeseries(self, ts_client, dates, dataIRIs, values):
         try:
-            dataIRIs = [min_cop_iri,mean_cop_iri,max_cop_iri]
-            values = [minvalues, meanvalues, maxvalues]
             # Create time series from test data                        
             ts = TSClient.create_timeseries(dates, dataIRIs, values)
             with ts_client.connect() as conn:
@@ -85,9 +91,7 @@ class COPCalculationAgent(DerivationAgent):
         except Exception as ex:
             self.logger.error('Error wrapping COP data time series')
             raise TSException('Error wrapping COP data time series') from ex
-
-        print('COP has been updated!')
-
+        
     def getCOPGraph(self, temperature_iri):
         
         # Initialise COP and return triples

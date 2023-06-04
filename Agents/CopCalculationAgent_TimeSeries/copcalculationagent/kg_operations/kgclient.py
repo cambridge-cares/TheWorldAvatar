@@ -340,7 +340,7 @@ class KGClient(PySparqlClient):
 
                 return temperature_iri_list
 
-# QUERY_ENDPOINT= "http://localhost:3846/blazegraph/namespace/ts_example/sparql"
+# QUERY_ENDPOINT= "http://localhost:3846/blazegraph/namespace/heatpump/sparql"
 # a = KGClient(QUERY_ENDPOINT, QUERY_ENDPOINT)
 # res = a.get_temperature("http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/Test_meana72a36ac-24e5-48ed-b754-bd1ace069489")
 # print(res)

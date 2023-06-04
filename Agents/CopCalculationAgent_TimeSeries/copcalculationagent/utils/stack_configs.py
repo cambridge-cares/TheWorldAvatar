@@ -24,52 +24,54 @@ def retrieve_settings():
     # Define global scope for global variables
     global DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT, ONTOP_URL
     
-    # Create module views to relevant Stack clients
-    stackClientsView = stackClientsGw.createModuleView()
-    stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.docker.ContainerClient")
-    stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig")
-    stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig")
-    stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig")
-    # Ontop (at least for now) not required
-    #stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig")
+    try: 
+        # Create module views to relevant Stack clients
+        stackClientsView = stackClientsGw.createModuleView()
+        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.docker.ContainerClient")
+        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig")
+        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig")
+        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig")
+        # Ontop (at least for now) not required
+        #stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig")
 
-    # Retrieve endpoint configurations from Stack clients
-    containerClient = stackClientsView.ContainerClient()
-    # Blazegraph
-    bg = stackClientsView.BlazegraphEndpointConfig("","","","","")
-    bg_conf = containerClient.readEndpointConfig("blazegraph", bg.getClass())
-    # PostgreSQL/PostGIS
-    pg = stackClientsView.PostGISEndpointConfig("","","","","")
-    pg_conf = containerClient.readEndpointConfig("postgis", pg.getClass())
-    # Ontop
-    ont = stackClientsView.OntopEndpointConfig("","","","","")
-    ont_conf = containerClient.readEndpointConfig("ontop", ont.getClass())
+        # Retrieve endpoint configurations from Stack clients
+        containerClient = stackClientsView.ContainerClient()
+        # Blazegraph
+        bg = stackClientsView.BlazegraphEndpointConfig("","","","","")
+        bg_conf = containerClient.readEndpointConfig("blazegraph", bg.getClass())
+        # PostgreSQL/PostGIS
+        pg = stackClientsView.PostGISEndpointConfig("","","","","")
+        pg_conf = containerClient.readEndpointConfig("postgis", pg.getClass())
+        # Ontop
+        ont = stackClientsView.OntopEndpointConfig("","","","","")
+        ont_conf = containerClient.readEndpointConfig("ontop", ont.getClass())
 
-    # Extract PostgreSQL/PostGIS database URL
-    DB_URL = pg_conf.getJdbcURL(DATABASE)
-    # Extract PostgreSQL database username and password
-    DB_USER = pg_conf.getUsername()
-    DB_PASSWORD = pg_conf.getPassword()
+        # Extract PostgreSQL/PostGIS database URL
+        DB_URL = pg_conf.getJdbcURL(DATABASE)
+        # Extract PostgreSQL database username and password
+        DB_USER = pg_conf.getUsername()
+        DB_PASSWORD = pg_conf.getPassword()
 
-    # Extract SPARQL endpoints of KG (Query and Update endpoints are equivalent for Blazegraph)
-    QUERY_ENDPOINT = bg_conf.getUrl(NAMESPACE)
-    UPDATE_ENDPOINT = QUERY_ENDPOINT
+        # Extract SPARQL endpoints of KG (Query and Update endpoints are equivalent for Blazegraph)
+        QUERY_ENDPOINT = bg_conf.getUrl(NAMESPACE)
+        UPDATE_ENDPOINT = QUERY_ENDPOINT
 
-    # Extract ONTOP endpoint
-    ONTOP_URL = ont_conf.getUrl()
-    print(ONTOP_URL)
+        # Extract ONTOP endpoint
+        ONTOP_URL = ont_conf.getUrl()
+    # TODO
+    except:
+        ONTOP_URL = 'http://figx-ontop:8080/sparql/'
+        DB_USER = 'postgres'
+
+        #DB_URL = 'jdbc:postgresql://figx-postgis:5432/postgres'
+        #DB_PASSWORD = '1111'
+        #QUERY_ENDPOINT = UPDATE_ENDPOINT = 'http://figx-blazegraph:8080/blazegraph/namespace/heatpump/sparql/'
+
+        QUERY_ENDPOINT = UPDATE_ENDPOINT = 'http://localhost:3846/blazegraph/namespace/heatpump/sparql'
+        DB_URL = 'jdbc:postgresql:postgres'
+        DB_PASSWORD = 'postgres'
+
 
 
 # Run when module is imported
 retrieve_settings()
-
-# ONTOP_URL = 'http://figx-ontop:8080/sparql/'
-# DB_USER = 'postgres'
-
-# #DB_URL = 'jdbc:postgresql://figx-postgis:5432/postgres'
-# #DB_PASSWORD = '1111'
-# #QUERY_ENDPOINT = UPDATE_ENDPOINT = 'http://figx-blazegraph:8080/blazegraph/namespace/ts_example/sparql/'
-
-# QUERY_ENDPOINT = UPDATE_ENDPOINT = 'http://localhost:3846/blazegraph/namespace/ts_example/sparql'
-# DB_URL = 'jdbc:postgresql:postgres'
-# DB_PASSWORD = 'postgres'

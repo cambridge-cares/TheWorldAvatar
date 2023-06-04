@@ -9,7 +9,7 @@ services:
       # Specify PostGIS/PostgreSQL database name
       - DATABASE=postgres
       # Specify Blazegraph namespace
-      - NAMESPACE=ts_example
+      - NAMESPACE=heatpump
       #--- Derivation Agent parameters ---#
       # For details, see: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_derivation_agent/pyderivationagent/conf/agent_conf.py
       - ONTOAGENT_SERVICE_IRI=http://www.theworldavatar.com/resource/agents/Service__KL_COPCalculation/Service

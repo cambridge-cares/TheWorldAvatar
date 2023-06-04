@@ -12,11 +12,11 @@ def instantiate_data(ts_client):
 
     #dates = [(dt.datetime.now() - dt.timedelta(minutes=30*i)).strftime(TIME_FORMAT) for i in range(3)]
     dates = [
-        "2020-01-01T12:00:00Z",
-        "2020-02-01T12:00:00Z",
-        "2020-03-01T12:00:00Z", ]
+        "2020-01-01T12:00:00.000Z",
+        "2020-02-01T12:00:00.000Z",
+        "2020-03-01T12:00:00.000Z", ]
 
-    code = '008'
+    code = '009'
     min_cop_iri = "http://statistics.data.gov.uk/id/statistical-geography/Test_min_" + code
     mean_cop_iri = "http://statistics.data.gov.uk/id/statistical-geography/Test_mean_" + code
     max_cop_iri = "http://statistics.data.gov.uk/id/statistical-geography/Test_max_" + code
@@ -63,11 +63,11 @@ agent = COPCalculationAgent(
     logger_name='dev',
     max_thread_monitor_async_derivations=1
 )
-  
+
 # Initialise TS client
 ts_client = TSClient(kg_client=agent.sparql_client)
 
-query_data(["http://statistics.data.gov.uk/id/statistical-geography/Test_mean_008",],ts_client)
+query_data(["http://statistics.data.gov.uk/id/statistical-geography/Test_mean_009",],ts_client)
 
 #instantiate_data(ts_client=ts_client)
 
