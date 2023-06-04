@@ -65,3 +65,6 @@ def retrieve_settings():
         DB_PASSWORD = ''
         QUERY_ENDPOINT = UPDATE_ENDPOINT = 'http://figx-blazegraph:8080/blazegraph/namespace/heatpump/sparql/'
         ONTOP_URL = 'http://figx-ontop:8080/sparql/'
+
+# Run when module is imported
+retrieve_settings()
