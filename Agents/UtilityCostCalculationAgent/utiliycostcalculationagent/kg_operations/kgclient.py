@@ -12,7 +12,7 @@ from rdflib import URIRef, Literal
 
 from py4jps import agentlogging
 from pyderivationagent.kg_operations import PySparqlClient
-from utiliycostcalculationagent.utils.stack_configs import ELECTRICITY_UNIT_COST, GAS_UNIT_COST
+from utiliycostcalculationagent.utils.stack_configs import ELECTRICITY_UNIT_COST, GAS_UNIT_COST, YEAR
 
 from utiliycostcalculationagent.datamodel.iris import *
 from utiliycostcalculationagent.errorhandling.exceptions import *
@@ -136,8 +136,8 @@ class KGClient(PySparqlClient):
         WHERE {{
          ?country_iri <{ONTOHEATNETWORK_HASUNITRATE}> <{unit_rate_iri}>  .
         <{unit_rate_iri}>  <{RDF_TYPE}> <{ONTOHEATNETWORK_UNITRATE}> ;
-                                <{OFP_VALIDFROM}> "2020-01-01T12:00:00.000Z"^^<{XSD_DATETIME}> ;
-                                <{OFP_VALIDTO}> "2020-12-31T12:00:00.000Z"^^<{XSD_DATETIME}> .
+                                <{OFP_VALIDFROM}> "{YEAR}-01-01T12:00:00.000Z"^^<{XSD_DATETIME}> ;
+                                <{OFP_VALIDTO}> "{YEAR}-12-31T12:00:00.000Z"^^<{XSD_DATETIME}> .
          ?elec_unit_rate_iri  <{IS_A}> <{unit_rate_iri}> ;
                           <{RDF_TYPE}>  <{REGION_ELECTRICITYUNITCOST}> ;
                           <{OM_HAS_NUMERICALVALUE}> ?electricity_unit_cost .

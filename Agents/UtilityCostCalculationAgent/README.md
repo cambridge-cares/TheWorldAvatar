@@ -25,6 +25,7 @@ REGISTER_AGENT                # Boolean flag whether to register agent in KG (`t
 # --- Index / Assumptions Space --- #
 ELECTRICITY_UNIT_COST         # Prices in the Unit of £/kWh
 GAS_UNIT_COST                 # Prices in the Unit of £/kWh
+YEAR                          # The year of the index, will be used to instantiate the indecies in the KG
 ```
 
 

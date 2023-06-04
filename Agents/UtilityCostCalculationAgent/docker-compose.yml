@@ -32,6 +32,9 @@ services:
       - LOG4J_FORMAT_MSG_NO_LOOKUPS=true
       # --- Index / Assumptions Space --- #
       # !!!! NO SPACING AFTER '='!!!!
+      
+      # The year of the index, will be used to instantiate the indecies in the KG
+      - YEAR=2020
       # Prices in the Unit of £/kWh
       - ELECTRICITY_UNIT_COST=0.172
       - GAS_UNIT_COST=0.0355
