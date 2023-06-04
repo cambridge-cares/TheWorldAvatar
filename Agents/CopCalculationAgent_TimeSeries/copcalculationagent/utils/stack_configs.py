@@ -62,8 +62,11 @@ def retrieve_settings():
 
 # Run when module is imported
 #retrieve_settings()
-DB_URL = 'jdbc:postgresql://figx-postgis:5432/postgres'
+
+#DB_URL = 'jdbc:postgresql://figx-postgis:5432/postgres'
+#DB_PASSWORD = '1111'
+DB_URL = 'jdbc:postgresql:postgres'
 DB_USER = 'postgres'
-DB_PASSWORD = '1111'
+DB_PASSWORD = 'postgres'
 QUERY_ENDPOINT = UPDATE_ENDPOINT = 'http://figx-blazegraph:8080/blazegraph/namespace/ts_example/sparql/'
 ONTOP_URL = 'http://figx-ontop:8080/sparql/'

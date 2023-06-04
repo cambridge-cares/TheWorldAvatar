@@ -30,6 +30,7 @@ def Synmarkup(
     agentURL
 ):
         derivation_iri = retrieve_derivation_iri(sparql_client, region_iri, agentIRI)
+        #derivation_iri = None
         if not derivation_iri :
             input_iris = [region_iri, heatpumpefficiency_iri, hotsidetemperature_iri]
             derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
@@ -157,7 +158,7 @@ for i in tqdm(range(len(region_iri_list))):
          if not derivation_iri :
               raise KeyError('something wrong, contact Jieyang to fix this')
          else:
-              print(f'InputIRI: {region_iri} already have derivation IRI: {derivation_iri}, skipped for now')
+              print(f'False: InputIRI: {region_iri} already have derivation IRI: {derivation_iri}, skipped for now')
 
 # # Perform unified update
 # for i in range(len(inputIRI)):

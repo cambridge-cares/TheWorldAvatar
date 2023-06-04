@@ -82,7 +82,6 @@ class COPCalculationAgent(DerivationAgent):
                 # Add test time series data
                 ts_client.tsclient.addTimeSeriesData(ts, conn)
 
-                
         except Exception as ex:
             self.logger.error('Error wrapping COP data time series')
             raise TSException('Error wrapping COP data time series') from ex

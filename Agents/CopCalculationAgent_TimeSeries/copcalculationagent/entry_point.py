@@ -4,6 +4,7 @@ from pyderivationagent.conf import config_derivation_agent
 from copcalculationagent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from copcalculationagent.agent import COPCalculationAgent
 from copcalculationagent.agent import default
+from copcalculationagent.kg_operations.tsclient import TSClient
 
 def create_app():
     # Depending on the deployment environment, different ways to retrieve/set the 
