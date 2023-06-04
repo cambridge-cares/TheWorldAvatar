@@ -116,6 +116,9 @@ def generate_temp_rdf():
                     start_time = key[0:10] + "T"+ key[11:19] + "Z"
                     end_time = start_end_dict[start_time]
 
+                    if len(clim_var) < 7:
+                        clim_var = CLIMA + clim_var
+
                     query_string = f"""
                         INSERT DATA {{<{region}> <{CLIMB_HASMEASURE}>  <{meas_uuid}> .
                             <{meas_uuid}> <{COMP_HAS_STARTUTC}> "{start_time}"^^<{XSD_DATETIME}>;
@@ -450,21 +453,90 @@ def New_convert_NetCDF_to_GeoTiff():
                     dst_crs=tgt_crs,
                     resampling=Resampling.nearest)
 
+def perform_update():
+    start_time_dict = [
+        "2020-01-01T12:00:00Z",
+        "2020-02-01T12:00:00Z",
+        "2020-03-01T12:00:00Z",
+        "2020-04-01T12:00:00Z",
+        "2020-05-01T12:00:00Z",
+        "2020-06-01T12:00:00Z",
+        "2020-07-01T12:00:00Z",
+        "2020-08-01T12:00:00Z",
+        "2020-09-01T12:00:00Z",
+        "2020-10-01T12:00:00Z",
+        "2020-11-01T12:00:00Z",
+        "2020-12-01T12:00:00Z"]
 
+    start_end_dict = {
+        "2020-01-01T12:00:00Z":"2020-01-31T12:00:00Z",
+        "2020-02-01T12:00:00Z":"2020-02-28T12:00:00Z",
+        "2020-03-01T12:00:00Z":"2020-03-31T12:00:00Z",
+        "2020-04-01T12:00:00Z":"2020-04-30T12:00:00Z",
+        "2020-05-01T12:00:00Z":"2020-05-31T12:00:00Z",
+        "2020-06-01T12:00:00Z":"2020-06-30T12:00:00Z",
+        "2020-07-01T12:00:00Z":"2020-07-31T12:00:00Z",
+        "2020-08-01T12:00:00Z":"2020-08-31T12:00:00Z",
+        "2020-09-01T12:00:00Z":"2020-09-30T12:00:00Z",
+        "2020-10-01T12:00:00Z":"2020-10-31T12:00:00Z",
+        "2020-11-01T12:00:00Z":"2020-11-30T12:00:00Z",
+        "2020-12-01T12:00:00Z":"2020-12-31T12:00:00Z"
+    }
+
+    for i in range(len(start_time_dict)):
+        measure_min_uuid = CLIMA + "Test_min" + str(uuid.uuid4())
+        measure_mean_uuid = CLIMA + "Test_mean" + str(uuid.uuid4())
+        measure_max_uuid = CLIMA + "Test_max" + str(uuid.uuid4())
+
+        query_string = f"""
+            INSERT DATA {{
+              
+                <http://statistics.data.gov.uk/id/statistical-geography/Test_000001> <{CLIMB_HASMEASURE}>  <{measure_min_uuid}> ;
+                                                                                     <{RDF_TYPE}> <{ONS_DEF_STAT}> .
+                                                                                
+                <{measure_min_uuid}> <{COMP_HAS_STARTUTC}> "{start_time_dict[i]}"^^<{XSD_DATETIME}>;
+                                     <{COMP_HAS_ENDUTC}> "{start_end_dict[start_time_dict[i]]}"^^<{XSD_DATETIME}>;
+                            <{RDF_TYPE}> <{CLIMB_CLIMATEMEASUREMENT}> ;
+                    <{CLIMB_HASVAR}> "{CLIMA_TASMIN}"^^<{XSD_STRING}> ;
+                    <{OM_HAS_NUMERICALVALUE}> "3"^^<{XSD_FLOAT}>.
+                    
+                <http://statistics.data.gov.uk/id/statistical-geography/Test_000001> <{CLIMB_HASMEASURE}>  <{measure_mean_uuid}> .
+                <{measure_mean_uuid}> <{COMP_HAS_STARTUTC}> "{start_time_dict[i]}"^^<{XSD_DATETIME}>;
+                                     <{COMP_HAS_ENDUTC}> "{start_end_dict[start_time_dict[i]]}"^^<{XSD_DATETIME}>;
+                            <{RDF_TYPE}> <{CLIMB_CLIMATEMEASUREMENT}> ;
+                    <{CLIMB_HASVAR}> "{CLIMA_TAS}"^^<{XSD_STRING}> ;
+                    <{OM_HAS_NUMERICALVALUE}> "5"^^<{XSD_FLOAT}>.
+
+                <http://statistics.data.gov.uk/id/statistical-geography/Test_000001> <{CLIMB_HASMEASURE}>  <{measure_max_uuid}> .
+                <{measure_max_uuid}> <{COMP_HAS_STARTUTC}> "{start_time_dict[i]}"^^<{XSD_DATETIME}>;
+                                     <{COMP_HAS_ENDUTC}> "{start_end_dict[start_time_dict[i]]}"^^<{XSD_DATETIME}>;
+                            <{RDF_TYPE}> <{CLIMB_CLIMATEMEASUREMENT}> ;
+                    <{CLIMB_HASVAR}> "{CLIMA_TASMAX}"^^<{XSD_STRING}> ;
+                    <{OM_HAS_NUMERICALVALUE}> "7"^^<{XSD_FLOAT}>.
+                        }}
+        """
+        DEF_NAMESPACE = "ts_example"
+        LOCAL_KG = "http://localhost:3846/blazegraph"
+        LOCAL_KG_SPARQL = LOCAL_KG + "/namespace/" + DEF_NAMESPACE + "/sparql"
+
+        sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
+        sparql.setMethod(POST)  # POST query, not GET
+        sparql.setQuery(query_string)
+        ret = sparql.query()
 #############################################################################
 #                                                                           #
 #                                                                           #
-# ----------------------------- Work Board -------------------------------- #
+# ----------------------------- Play Board -------------------------------- #
 #                                                                           #
 #                                                                           #
 #############################################################################
 #get_the_metadat_of_nc_file()
 #convert_NetCDF_to_GeoTiff()
 #convert_NetCDF_to_GeoTiff()
-generate_temp_rdf()
+#generate_temp_rdf()
 #consump_figure_using_tom_code()
 #make_geometry_valid()
-
+perform_update()
 
 # temp_dict = call_pickle('./Data/temp_dict in function get_all_data')
 # print(len(temp_dict))

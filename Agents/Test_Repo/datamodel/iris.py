@@ -116,3 +116,6 @@ GEO_ASWKT = GEO + "asWKT"
 # OWL
 OWL_VERSION = OWL + "versionInfo"
 OWL_SAMEAS = OWL + "sameAs"
+CLIMA_TAS = CLIMA + "tas"
+CLIMA_TASMAX = CLIMA + "tasmax"
+CLIMA_TASMIN = CLIMA + "tasmin"
