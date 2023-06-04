@@ -1,14 +1,12 @@
 from rdflib import Graph
 import numpy as np
-from tqdm import tqdm
-import uuid
 
 from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
 from pyderivationagent import DerivationOutputs
 
 from copcalculationagent.datamodel.iris import *
-from copcalculationagent.kg_operations.kgclient import KGClient, HEATPUMP_EFFICIENCY, HOTSIDE_TEMPERATURE
+from copcalculationagent.kg_operations.kgclient import KGClient
 from copcalculationagent.kg_operations.tsclient import TSClient
 from copcalculationagent.errorhandling.exceptions import TSException
 from copcalculationagent.datamodel.data import DATACLASS, TIME_FORMAT
@@ -38,10 +36,21 @@ class COPCalculationAgent(DerivationAgent):
     def process_request_parameters(self, derivation_inputs: DerivationInputs, 
                                    derivation_outputs: DerivationOutputs):
         # Update assumptions provided
-        heatpumpefficiency_iri, hotsidetemperature_iri = self.sparql_client.update_assumptions()
+        try: 
+            with open('state.txt', "r") as file:
+                has_function_run = file.read().strip() == "True"
+        except:
+            has_function_run = False
+            with open('state.txt', "w") as file:
+                file.write("False")  # Initialize the file with "False"
+                print("Assumptions has been updated!")
+
+        if not has_function_run:
+            heatpumpefficiency_iri, hotsidetemperature_iri = self.sparql_client.update_assumptions()
+            with open('state.txt', "w") as file:
+                file.write("True")
         
         inputs = derivation_inputs.getInputs()
-        derivIRI = derivation_inputs.getDerivationIRI()
 
         region = inputs[ONS_DEF_STAT][0]
         heatpumpefficiency_iri = inputs[REGION_HEATPUMP_EFFICIENCY][0]
@@ -62,7 +71,7 @@ class COPCalculationAgent(DerivationAgent):
         ts_client = TSClient(kg_client=self.sparql_client)
 
         # Calculate COP and append to lists
-        for i in tqdm(range(len(temperature_iri_list))):
+        for i in range(len(temperature_iri_list)):
             temperature_iri = temperature_iri_list[i]
             res = self.sparql_client.get_temperature(temperature_iri)
             cop_max, cop_mean, cop_min = self.bulk_calculateCOP(temperature_iri, heatpumpefficiency_iri, hotsidetemperature_iri)
@@ -74,7 +83,7 @@ class COPCalculationAgent(DerivationAgent):
         values = [minvalues, meanvalues, maxvalues]
         
         # Create Time Series
-        self.create_timeseries(self, ts_client, dates, dataIRIs, values)
+        self.create_timeseries(ts_client, dates, dataIRIs, values)
         
         print('COP has been updated!')
 

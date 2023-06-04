@@ -305,13 +305,13 @@ class KGClient(PySparqlClient):
     def instantiate_COP(self, g, mean_cop_iri, max_cop_iri, min_cop_iri, region):
         g.add((URIRef(region),URIRef(REGION_HASCOP),URIRef(mean_cop_iri)))
         g.add((URIRef(mean_cop_iri),URIRef(RDF_TYPE),URIRef(REGION_COP)))
-        g.add((URIRef(mean_cop_iri),URIRef(REGION_HASVAR),Literal(CLIMA_TAS, datatype=XSD_STRING)))
+        g.add((URIRef(mean_cop_iri),URIRef(CLIMB_HASVAR),Literal(CLIMA_TAS, datatype=XSD_STRING)))
         g.add((URIRef(region),URIRef(REGION_HASCOP),URIRef(max_cop_iri)))
         g.add((URIRef(max_cop_iri),URIRef(RDF_TYPE),URIRef(REGION_COP)))
-        g.add((URIRef(max_cop_iri),URIRef(REGION_HASVAR),Literal(CLIMA_TASMAX, datatype=XSD_STRING)))
+        g.add((URIRef(max_cop_iri),URIRef(CLIMB_HASVAR),Literal(CLIMA_TASMAX, datatype=XSD_STRING)))
         g.add((URIRef(region),URIRef(REGION_HASCOP),URIRef(min_cop_iri)))
         g.add((URIRef(min_cop_iri),URIRef(RDF_TYPE),URIRef(REGION_COP)))
-        g.add((URIRef(min_cop_iri),URIRef(REGION_HASVAR),Literal(CLIMA_TASMIN, datatype=XSD_STRING)))
+        g.add((URIRef(min_cop_iri),URIRef(CLIMB_HASVAR),Literal(CLIMA_TASMIN, datatype=XSD_STRING)))
         return g
 
     def remove_unnecessary_whitespace(self, query: str) -> str:
