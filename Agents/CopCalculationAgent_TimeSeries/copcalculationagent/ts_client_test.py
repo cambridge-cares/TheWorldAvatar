@@ -6,13 +6,20 @@ from pyderivationagent.conf import config_derivation_agent
 from copcalculationagent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from copcalculationagent.agent import COPCalculationAgent
 
+import datetime as dt
+
 def instantiate_data(ts_client):
 
-    dates = ['2020-04-01T12:00:00.000Z', "2020-03-01T12:00:00.000Z", "2020-02-01T12:00:00.000Z"]
+    #dates = [(dt.datetime.now() - dt.timedelta(minutes=30*i)).strftime(TIME_FORMAT) for i in range(3)]
+    dates = [
+        "2020-01-01T12:00:00Z",
+        "2020-02-01T12:00:00Z",
+        "2020-03-01T12:00:00Z", ]
 
-    min_cop_iri = "http://statistics.data.gov.uk/id/statistical-geography/Test_min_001"
-    mean_cop_iri = "http://statistics.data.gov.uk/id/statistical-geography/Test_mean_001"
-    max_cop_iri = "http://statistics.data.gov.uk/id/statistical-geography/Test_max_001"
+    code = '008'
+    min_cop_iri = "http://statistics.data.gov.uk/id/statistical-geography/Test_min_" + code
+    mean_cop_iri = "http://statistics.data.gov.uk/id/statistical-geography/Test_mean_" + code
+    max_cop_iri = "http://statistics.data.gov.uk/id/statistical-geography/Test_max_" + code
 
     minvalues = [1,2,3]
     meanvalues = [4,5,6]
@@ -31,9 +38,9 @@ def instantiate_data(ts_client):
 
 def query_data(data_iri, ts_client):
     with ts_client.connect() as conn:
-        ts = ts_client.tsclient.getTimeSeries([data_iri], conn)
+        ts = ts_client.tsclient.getTimeSeries(data_iri, conn)
     dates = [d.toString() for d in ts.getTimes()]
-    values = [v for v in ts.getValues(data_iri)]
+    values = [v for v in ts.getValues(data_iri[0])]
     print(ts)
     print(dates)
     print(values)
@@ -60,5 +67,7 @@ agent = COPCalculationAgent(
 # Initialise TS client
 ts_client = TSClient(kg_client=agent.sparql_client)
 
-instantiate_data(ts_client=ts_client)
+query_data(["http://statistics.data.gov.uk/id/statistical-geography/Test_mean_008",],ts_client)
+
+#instantiate_data(ts_client=ts_client)
 
