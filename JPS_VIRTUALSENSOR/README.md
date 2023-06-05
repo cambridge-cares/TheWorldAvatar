@@ -45,6 +45,7 @@ curl -X POST "http://localhost:3838/dispersion-interactor/TriggerUpdateDispersio
 
 4) Visualisation can be accessed on the browser at
 ```
-http://localhost:8090
+http://localhost:3838/dispersion-vis
+
 ```
 The updated version of the agent also displays the legend for the contour plot in the sidebar. It may be necessary to open an incognito browser window to view it. 
