@@ -1,6 +1,6 @@
 ################################################
-# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 23 Oct 2022                            #
+# Authors: Jieyang Xu (jx309@cam.ac.uk)        #    
+# Date: 17 May 2023                            #
 ################################################
 
 # The purpose of this module is to provide functionality to use
@@ -13,6 +13,8 @@ from copcalculationagent.errorhandling.exceptions import TSException
 from copcalculationagent.kg_operations.javagateway import jpsBaseLibGW
 from copcalculationagent.datamodel.data import TIMECLASS
 from copcalculationagent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
+from copcalculationagent.errorhandling.exceptions import TSException
+from copcalculationagent.datamodel.data import DATACLASS, TIME_FORMAT
 
 # Initialise logger instance (ensure consistent logger level with `entrypoint.py`)
 logger = agentlogging.get_logger('prod')
@@ -89,3 +91,30 @@ class TSClient:
             
         
         return timeseries
+
+
+    def add_timeseries(self, dates, dataIRIs, values):
+        try:
+            # Create time series from test data                        
+            ts = TSClient.create_timeseries(dates, dataIRIs, values)
+            
+            with self.connect() as conn:
+                # Initialise time series in Blazegraph and PostgreSQL
+                self.tsclient.initTimeSeries(dataIRIs, [DATACLASS]*len(dataIRIs), TIME_FORMAT, conn)
+                # Add test time series data
+                self.tsclient.addTimeSeriesData(ts, conn)
+
+        except Exception as ex:
+            logger.error('Error wrapping COP data time series')
+            raise TSException('Error wrapping COP data time series') from ex
+
+
+    def delete_timeseries(self, dataIRI:str):
+        try:
+            with self.connect() as conn:
+                # Initialise time series in Blazegraph and PostgreSQL
+                self.tsclient.deleteIndividualTimeSeries(dataIRI, conn)
+
+        except Exception as ex:
+            logger.error('Error deleting COP data time series')
+            raise TSException('Error deleting COP data time series') from ex

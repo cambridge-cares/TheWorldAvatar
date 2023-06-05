@@ -8,8 +8,6 @@ from pyderivationagent import DerivationOutputs
 from copcalculationagent.datamodel.iris import *
 from copcalculationagent.kg_operations.kgclient import KGClient
 from copcalculationagent.kg_operations.tsclient import TSClient
-from copcalculationagent.errorhandling.exceptions import TSException
-from copcalculationagent.datamodel.data import DATACLASS, TIME_FORMAT
 
 class COPCalculationAgent(DerivationAgent):
 
@@ -46,7 +44,7 @@ class COPCalculationAgent(DerivationAgent):
                 print("Assumptions has been updated!")
 
         if not has_function_run:
-            heatpumpefficiency_iri, hotsidetemperature_iri = self.sparql_client.update_assumptions()
+            self.sparql_client.update_assumptions()
             with open('state.txt', "w") as file:
                 file.write("True")
         
@@ -56,9 +54,7 @@ class COPCalculationAgent(DerivationAgent):
         heatpumpefficiency_iri = inputs[REGION_HEATPUMP_EFFICIENCY][0]
         hotsidetemperature_iri = inputs[REGION_HOTSIDE_TEMPERATURE][0]
 
-        # Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
-        temperature_iri_list = self.sparql_client.retrieve_temperature_iri(region)
-        g, mean_cop_iri, max_cop_iri, min_cop_iri = self.getCOPGraph(temperature_iri_list[0])
+        g, mean_cop_iri, max_cop_iri, min_cop_iri = self.getCOPGraph(region)
         # Collect the generated triples derivation_outputs
         derivation_outputs.addGraph(g)
         
@@ -70,6 +66,8 @@ class COPCalculationAgent(DerivationAgent):
         # Initialise TS client
         ts_client = TSClient(kg_client=self.sparql_client)
 
+        # Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
+        temperature_iri_list = self.sparql_client.retrieve_temperature_iri(region)
         # Calculate COP and append to lists
         for i in range(len(temperature_iri_list)):
             temperature_iri = temperature_iri_list[i]
@@ -83,33 +81,27 @@ class COPCalculationAgent(DerivationAgent):
         values = [minvalues, meanvalues, maxvalues]
         
         # Create Time Series
-        self.create_timeseries(ts_client, dates, dataIRIs, values)
+        ts_client.add_timeseries(dates, dataIRIs, values)
         
         print('COP has been updated!')
 
-    def create_timeseries(self, ts_client, dates, dataIRIs, values):
-        try:
-            # Create time series from test data                        
-            ts = TSClient.create_timeseries(dates, dataIRIs, values)
-            with ts_client.connect() as conn:
-                # Initialise time series in Blazegraph and PostgreSQL
-                ts_client.tsclient.initTimeSeries(dataIRIs, [DATACLASS]*len(dataIRIs), TIME_FORMAT, conn)
-                # Add test time series data
-                ts_client.tsclient.addTimeSeriesData(ts, conn)
-
-        except Exception as ex:
-            self.logger.error('Error wrapping COP data time series')
-            raise TSException('Error wrapping COP data time series') from ex
-        
-    def getCOPGraph(self, temperature_iri):
+    def getCOPGraph(self, region):
         
         # Initialise COP and return triples
         g = Graph()
-        res = self.sparql_client.get_temperature(temperature_iri)
-        mean_cop_iri, max_cop_iri, min_cop_iri = self.sparql_client.verify_cop_iri(res['region'])
-
+        mean_cop_iri, max_cop_iri, min_cop_iri, deletion = self.sparql_client.verify_cop_iri(region)
+        
+        if deletion:
+            # Initialise TS client
+            ts_client = TSClient(kg_client=self.sparql_client)
+            # Remove TimeSeries
+            ts_client.delete_timeseries(mean_cop_iri)
+            ts_client.delete_timeseries(max_cop_iri)
+            ts_client.delete_timeseries(min_cop_iri)
+            self.sparql_client.clear_cop_iris_triples(mean_cop_iri, max_cop_iri, min_cop_iri)
+        
         # Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
-        g = self.sparql_client.instantiate_COP(g, mean_cop_iri, max_cop_iri, min_cop_iri, res['region'])
+        g = self.sparql_client.instantiate_COP(g, mean_cop_iri, max_cop_iri, min_cop_iri, region)
         
         return g, mean_cop_iri, max_cop_iri, min_cop_iri
     

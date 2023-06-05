@@ -15,6 +15,7 @@ from pyderivationagent.kg_operations import PySparqlClient
 from copcalculationagent.datamodel.iris import *
 from copcalculationagent.utils.env_configs import HEATPUMP_EFFICIENCY, HOTSIDE_TEMPERATURE
 from copcalculationagent.errorhandling.exceptions import *
+from copcalculationagent.kg_operations.tsclient import TSClient
 
 # Initialise logger instance (ensure consistent logger level with `entrypoint.py`)
 logger = agentlogging.get_logger('prod')
@@ -80,6 +81,16 @@ class KGClient(PySparqlClient):
             res = res[0]
             heatpumpefficiency_iri = str(res["heatpumpefficiency_iri"])
             logger.info(f'heatpumpefficiency_iri: {heatpumpefficiency_iri} will be used')
+
+            # Remove originial triples
+            query_string = f"""
+            DELETE
+            WHERE {{
+            <{heatpumpefficiency_iri}> ?p ?o .
+            }}
+            """
+            query_string = self.remove_unnecessary_whitespace(query_string)
+            self.performUpdate(query_string)
         
         return heatpumpefficiency_iri
     
@@ -101,6 +112,16 @@ class KGClient(PySparqlClient):
             hotsidetemperature_iri = str(res["hotsidetemperature_iri"])
             logger.info(f'hotsidetemperature_iri: {hotsidetemperature_iri} will be used')
         
+            # Remove originial triples
+            query_string = f"""
+            DELETE
+            WHERE {{
+            <{hotsidetemperature_iri}> ?p ?o .
+            }}
+            """
+            query_string = self.remove_unnecessary_whitespace(query_string)
+            self.performUpdate(query_string)
+
         return hotsidetemperature_iri
     
     def update_assumptions(self):
@@ -121,7 +142,6 @@ class KGClient(PySparqlClient):
         """
         query_string = self.remove_unnecessary_whitespace(query_string)
         self.performUpdate(query_string)
-        return heatpumpefficiency_iri, hotsidetemperature_iri
 
     def get_temperature(self, temperature_iri):
         # By using temperature_iri (from mean temperature) to retieve region & month
@@ -246,11 +266,17 @@ class KGClient(PySparqlClient):
     def verify_cop_iri(self, region):
 
         query_string = f"""
-        SELECT ?mean_cop_iri
+        SELECT ?mean_cop_iri ?min_cop_iri ?max_cop_iri
         WHERE {{
         <{region}> <{REGION_HASCOP}> ?mean_cop_iri.
         ?mean_cop_iri  <{RDF_TYPE}> <{REGION_COP}> ;
-                   <{REGION_HASVAR}> "{CLIMA_TAS}"
+                   <{CLIMB_HASVAR}> "{CLIMA_TAS}".
+        <{region}> <{REGION_HASCOP}> ?min_cop_iri.
+        ?min_cop_iri  <{RDF_TYPE}> <{REGION_COP}> ;
+                   <{CLIMB_HASVAR}> "{CLIMA_TASMIN}" .
+        <{region}> <{REGION_HASCOP}> ?max_cop_iri.
+        ?max_cop_iri  <{RDF_TYPE}> <{REGION_COP}> ;
+                   <{CLIMB_HASVAR}> "{CLIMA_TASMAX}" .
         }}
         """
         res = self.performQuery(query_string)
@@ -258,50 +284,88 @@ class KGClient(PySparqlClient):
         if not res:
             mean_cop_iri = REGION + "COPmean_" + str(uuid.uuid4())
             logger.info(f'No existed mean_cop_iri, created {mean_cop_iri}')
+            max_cop_iri = REGION + "COPmax_" + str(uuid.uuid4())
+            logger.info(f'No existed max_cop_iri, created {max_cop_iri}')
+            min_cop_iri = REGION + "COPmin_" + str(uuid.uuid4())
+            logger.info(f'No existed min_cop_iri, created {min_cop_iri}')
+            deletion = False
+
         else: 
             res = res[0]
             mean_cop_iri = str(res["mean_cop_iri"])
-            logger.info(f'mean_cop_iri: {mean_cop_iri} will be used')
-        
-        query_string = f"""
-        SELECT ?max_cop_iri
-        WHERE {{
-        <{region}> <{REGION_HASCOP}> ?max_cop_iri.
-        ?max_cop_iri  <{RDF_TYPE}> <{REGION_COP}> ;
-                   <{REGION_HASVAR}> "{CLIMA_TASMAX}"
-        }}
-        """
-        res = self.performQuery(query_string)
-
-        if not res:
-            max_cop_iri = REGION + "COPmax_" + str(uuid.uuid4())
-            logger.info(f'No existed max_cop_iri, created {max_cop_iri}')
-        else: 
-            res = res[0]
+            logger.info(f'mean_cop_iri: {mean_cop_iri} will be reused')
             max_cop_iri = str(res["max_cop_iri"])
-            logger.info(f'max_cop_iri: {max_cop_iri} will be used')
-        
-        
-        query_string = f"""
-        SELECT ?min_cop_iri
-        WHERE {{
-        <{region}> <{REGION_HASCOP}> ?min_cop_iri.
-        ?min_cop_iri  <{RDF_TYPE}> <{REGION_COP}> ;
-                   <{REGION_HASVAR}> "{CLIMA_TASMIN}"
-        }}
-        """
-        res = self.performQuery(query_string)
-
-        if not res:
-            min_cop_iri = REGION + "COPmin_" + str(uuid.uuid4())
-            logger.info(f'No existed min_cop_iri, created {min_cop_iri}')
-        else: 
-            res = res[0]
+            logger.info(f'max_cop_iri: {max_cop_iri} will be reused')
             min_cop_iri = str(res["min_cop_iri"])
-            logger.info(f'min_cop_iri: {min_cop_iri} will be used')
+            logger.info(f'min_cop_iri: {min_cop_iri} will be reused')
+            deletion = True
 
-        return mean_cop_iri, max_cop_iri, min_cop_iri
-    
+        return mean_cop_iri, max_cop_iri, min_cop_iri, deletion
+
+    def clear_cop_iris_triples(self,mean_cop_iri, max_cop_iri, min_cop_iri):
+            
+            # Remove originial triples
+            query_string = f"""
+            DELETE
+            WHERE {{
+            <{mean_cop_iri}> ?p ?o .
+            }}
+            """
+            query_string = self.remove_unnecessary_whitespace(query_string)
+            self.performUpdate(query_string)
+
+            # Remove originial triples
+            query_string = f"""
+            DELETE
+            WHERE {{
+            ?s ?p <{mean_cop_iri}> .
+            }}
+            """
+            query_string = self.remove_unnecessary_whitespace(query_string)
+            self.performUpdate(query_string)
+
+
+            # Remove originial triples
+            query_string = f"""
+            DELETE
+            WHERE {{
+            <{max_cop_iri}> ?p ?o .
+            }}
+            """
+            query_string = self.remove_unnecessary_whitespace(query_string)
+            self.performUpdate(query_string)
+
+            # Remove originial triples
+            query_string = f"""
+            DELETE
+            WHERE {{
+            ?s ?p <{max_cop_iri}> .
+            }}
+            """
+            query_string = self.remove_unnecessary_whitespace(query_string)
+            self.performUpdate(query_string)
+
+
+            # Remove originial triples
+            query_string = f"""
+            DELETE
+            WHERE {{
+            <{min_cop_iri}> ?p ?o .
+            }}
+            """
+            query_string = self.remove_unnecessary_whitespace(query_string)
+            self.performUpdate(query_string)
+
+            # Remove originial triples
+            query_string = f"""
+            DELETE
+            WHERE {{
+            ?s ?p <{min_cop_iri}> .
+            }}
+            """
+            query_string = self.remove_unnecessary_whitespace(query_string)
+            self.performUpdate(query_string)
+
     def instantiate_COP(self, g, mean_cop_iri, max_cop_iri, min_cop_iri, region):
         g.add((URIRef(region),URIRef(REGION_HASCOP),URIRef(mean_cop_iri)))
         g.add((URIRef(mean_cop_iri),URIRef(RDF_TYPE),URIRef(REGION_COP)))
