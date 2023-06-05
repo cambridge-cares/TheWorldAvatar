@@ -1,0 +1,39 @@
+{
+  "ServiceSpec": {
+    "Name": "carpark-agent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "docker.io/library/carpark-agent:1.0.0",
+        "Mounts": [
+          {
+            "Type": "bind",
+            "Source": "/mnt/c/Users/WANG01/Documents/GitHub/TheWorldAvatar/Agents/CarparkAgent/config",
+            "Target": "/usr/local/tomcat/config"
+          }
+        ],
+        "Configs": [
+          {
+            "ConfigName": "blazegraph"
+          },
+          {
+              "ConfigName": "postgis"
+          }
+      ],
+      "Secrets": [
+          {
+              "SecretName": "blazegraph_password"
+          },
+          {
+              "SecretName": "postgis_password"
+          }
+      ]
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:8080/carpark-agent/",
+      "externalPath": "/carpark-agent/"
+    }
+  }
+}
