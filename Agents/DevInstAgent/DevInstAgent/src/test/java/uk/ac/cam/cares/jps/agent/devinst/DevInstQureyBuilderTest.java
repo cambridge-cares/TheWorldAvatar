@@ -8,6 +8,7 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.jena.base.Sys;
 import org.apache.jena.sparql.function.library.print;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
@@ -15,9 +16,12 @@ import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
+import static org.mockito.ArgumentMatchers.isA;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,6 +40,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import wiremock.com.jayway.jsonpath.internal.function.text.Length;
 import wiremock.org.eclipse.jetty.util.ajax.JSON;
 
 import org.testcontainers.containers.GenericContainer;
@@ -84,6 +89,7 @@ public class DevInstQureyBuilderTest {
     JSONObject exampleRequest;
     JSONObject exampleFind;
     JSONObject exampleEmptyMap;
+    JSONObject exampleAddQuery;
 
     //Blazegraph endpoint
     private String sparql_endpoint;
@@ -184,7 +190,7 @@ public class DevInstQureyBuilderTest {
         exampleRequest = parseJSONFile("./src/test/java/uk/ac/cam/cares/jps/agent/devinst/exampleRequests/exampleRequest.json");
         exampleFind = parseJSONFile("./src/test/java/uk/ac/cam/cares/jps/agent/devinst/exampleRequests/exampleRequest_Find.json");
         exampleEmptyMap = parseJSONFile("./src/test/java/uk/ac/cam/cares/jps/agent/devinst/exampleRequests/exampleRequest_EmptyMapper.json");
-
+        exampleAddQuery = parseJSONFile("./src/test/java/uk/ac/cam/cares/jps/agent/devinst/exampleRequests/exampleRequest_AdditionalQ.json");
 
     }
 
@@ -268,6 +274,49 @@ public class DevInstQureyBuilderTest {
         String obtainedIRI = result.getJSONObject(0).getString("x1");
         //System.out.println(obtainedIRI);
         Assert.assertEquals(obtainedIRI, exampleRawString);
+    }
+
+    @Test
+    public void testAdditionalQuery() {
+        queryBuilder.InsertDevice(exampleAddQuery);
+
+        //Check all triples is instantiated from additional queries
+        SelectQuery query = Queries.SELECT();
+        TriplePattern triple = GraphPatterns.tp(iri("http://example.com/prefix/OPENLABAREA"), iri("https://w3id.org/bot#containsElement"), query.var());
+        query.where(triple);
+        JSONArray result = storeClient.executeQuery(query.getQueryString());
+        Assert.assertEquals(2, result.length());
+
+        Boolean hasProxSens = false;
+        Boolean hasWFH = false;
+
+        for(int i =0; i < 2; i++){
+            String obtainedIRI = result.getJSONObject(i).getString("x0");
+            if (obtainedIRI.contains("ProximitySensor_FH-02")){
+                hasProxSens = true;
+            }
+
+            if (obtainedIRI.equals("http://example.com/prefix/WFH")){
+                hasWFH = true;
+            }
+        }
+
+        Assert.assertTrue(hasProxSens && hasWFH);
+
+        query = Queries.SELECT();
+        triple = GraphPatterns.tp(query.var(), iri("https://www.theworldavatar.com/kg/ontodevice/isAttachedTo"), iri("http://example.com/prefix/WFH"));
+        query.where(triple);
+        result = storeClient.executeQuery(query.getQueryString());
+        String obtainedIRI = result.getJSONObject(0).getString("x0");
+        Assert.assertTrue(obtainedIRI.contains("ProximitySensor_FH-02"));
+
+        query = Queries.SELECT();
+        query.where(query.var().isA(iri("http://www.ontology-of-units-of-measure.org/resource/om-2/Length")));
+        result = storeClient.executeQuery(query.getQueryString());
+        obtainedIRI = result.getJSONObject(1).getString("x0");
+        //System.out.println(result);
+        Assert.assertTrue(obtainedIRI.contains("http://example.com/prefix/testingGen"));
+
     }
 
     @After

@@ -1,0 +1,43 @@
+{   "MicroController":{
+        "type": "ESP32",
+        "name": "ProximitySensor_FH-02",
+        "label" : "Occupancy detection sensor for fumehood FH_02",
+
+        "MainSensorMap":{
+            "HCSR04":{
+                "HCSR04_ProximitySensor": {
+                    "type": "ProximitySensor",
+                    "ext_lib":[],
+                    "description":"",
+                    "pin":[
+                        {"pinnum":null, "pintype":null, "label": null, "isIO": false},
+                        {"pinnum":null, "pintype":null, "label": null, "isIO": false}
+                    ],
+                    "output" : {
+                        "datatype" : "Double",
+                        "fieldname" : "AvgDist_FH02",
+                        "defval" : 350,
+                        "type": "Length",
+                        "unit" : "cm"
+                    }
+                }
+            }
+        }
+    },
+    "IRIMapper":{
+        "ESP32": "gen",
+        "ProximitySensor_FH-02":"gen",
+        "HCSR04":"gen",
+        "HCSR04_ProximitySensor":"gen",
+        "ProximitySensor":"https://www.theworldavatar.com/kg/ontodevice/ProximitySensor",
+        "AvgDist_FH02" : "example:prefix/api_AvgDist_FH02",
+        "Length" : "http://www.ontology-of-units-of-measure.org/resource/om-2/Length",
+        "cm" : "http://www.ontology-of-units-of-measure.org/resource/om-2/centimetre"
+    },
+    "AdditionalQuery":[
+        "http://example.com/prefix/OPENLABAREA https://w3id.org/bot#containsElement IRIMapper=find;ProximitySensor_FH-02",
+        "http://example.com/prefix/OPENLABAREA https://w3id.org/bot#containsElement http://example.com/prefix/WFH",
+        "IRIMapper=find;ProximitySensor_FH-02 https://www.theworldavatar.com/kg/ontodevice/isAttachedTo http://example.com/prefix/WFH",
+        "IRIMapper=gen;testingGen;http://example.com/prefix/ http://www.w3.org/1999/02/22-rdf-syntax-ns#type IRIMapper=Length"
+    ]
+}

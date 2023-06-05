@@ -215,22 +215,65 @@ public class DevInstQueryBuilder {
             modify.insert(CompSensor_UUID.has(measures, Measurement_UUID));
 
         }
+
+        storeClient.executeUpdate(modify.getQueryString());
+
+        
         
         //Add aditional query
         if (AdditionalQuery.size() > 0){
+            LOGGER.info("Executing additional queries...");
+            modify = Queries.MODIFY();
             for(String query: AdditionalQuery){
                 String[] splits = query.split("\\s+");
                 List<Iri> listIRI = new ArrayList<>();
                 for(int i=0; i < 3; i++){
-                    Iri component = iri(splits[i]);
+                    Iri component;
+                    if (splits[i].contains("IRIMapper=")){
+                        String componentString = splits[i].split("=")[1];
+                        if (componentString.contains(";") ){
+                            String[] keywordIdPair = componentString.split(";");
+                            
+                            if(keywordIdPair[0].toLowerCase().equals("gen")){
+                                if (keywordIdPair.length == 3){
+                                    component = genIRI(keywordIdPair[1], keywordIdPair[2]);
+                                }
+                                else{
+                                    throw new JPSRuntimeException("gen keyword in Additional query requires 3 sections separated by ';' : gen;ID;prefix.", null);
+                                }
+                                
+                            }
+                            
+                            else if(keywordIdPair[0].toLowerCase().equals("find")){
+                                if (keywordIdPair.length == 2){
+                                    component = findIriMatch(keywordIdPair[1]);
+                                }
+                                else{
+                                    throw new JPSRuntimeException("find keyword in Additional query requires 2 sections separated by ';' : find;ID", null);
+                                }
+                                
+                            }
+                            else {
+                                throw new JPSRuntimeException("Unrecognised pattern in addtional queries: " + query, null);
+                            }
+                            
+                        }
+                        else{
+                            component = getIri(componentString);
+                        }
+                    }
+                    else{
+                        component = iri(splits[i]);
+                    }
+                    
                     listIRI.add(component);
                 }
                 TriplePattern triple = GraphPatterns.tp(listIRI.get(0), listIRI.get(1), listIRI.get(2));
                 modify.insert(triple);
             }
+            //System.out.println(modify.getQueryString());
+            storeClient.executeUpdate(modify.getQueryString());
         }
-        //System.out.println(modify.getQueryString());
-        storeClient.executeUpdate(modify.getQueryString());
     }
 
     /*
@@ -319,6 +362,10 @@ public class DevInstQueryBuilder {
      */
     private Iri genIRI (String ID, Prefix prefix) {
         return prefix.iri(ID + "_" + UUID.randomUUID());
+    }
+
+    private Iri genIRI (String ID, String prefix) {
+        return iri(prefix + ID + "_" + UUID.randomUUID());
     }
 
 }
