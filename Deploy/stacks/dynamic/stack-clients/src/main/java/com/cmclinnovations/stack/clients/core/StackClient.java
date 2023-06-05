@@ -15,6 +15,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 public final class StackClient {
 
     public static final String STACK_NAME_KEY = "STACK_NAME";
+    private static final String STACK_BASE_DIR_KEY = "STACK_BASE_DIR";
     public static final String STACK_NAME_LABEL = "com.docker.stack.namespace";
     public static final String PROJECT_NAME_LABEL = "com.docker.compose.project";
     public static final String SCRATCH_DIR = "/stack_scratch";
@@ -67,6 +68,14 @@ public final class StackClient {
 
     public static String getContainerEngineName() {
         return System.getenv().getOrDefault("EXECUTABLE", "docker");
+    }
+
+    private static Path getStackBaseDir() {
+        return Path.of(System.getenv(STACK_BASE_DIR_KEY));
+    }
+
+    public static Path getAbsDataPath() {
+        return getStackBaseDir().resolve("inputs").resolve("data");
     }
 
     /**

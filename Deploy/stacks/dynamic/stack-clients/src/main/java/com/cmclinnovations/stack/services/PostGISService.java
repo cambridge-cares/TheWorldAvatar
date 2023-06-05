@@ -25,8 +25,8 @@ public final class PostGISService extends ContainerService {
 
     private final PostGISEndpointConfig endpointConfig;
 
-    public PostGISService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
-        super(stackName, serviceManager, config);
+    public PostGISService(String stackName, ServiceConfig config) {
+        super(stackName, config);
 
         setEnvironmentVariableIfAbsent(POSTGRES_USER_KEY, DEFAULT_USERNAME);
         setEnvironmentVariableIfAbsent("PGUSER", getEnvironmentVariable(POSTGRES_USER_KEY));

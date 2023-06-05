@@ -1,0 +1,8 @@
+blazegraph
+postgis
+adminer
+ontop
+citydbimpexp
+citytiler
+gdal
+geoserver

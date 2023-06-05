@@ -1,4 +1,4 @@
- /**
+/**
  * Utilities specific to Mapbox implementations
  */
 class CesiumUtils {
@@ -54,6 +54,15 @@ class CesiumUtils {
                 } else {
                     // 3D data
                     dataSource.show = visible;
+
+                    if(dataSource instanceof Cesium.Cesium3DTileset) {
+                        let clippingPlanes = dataSource["clippingPlanes"];
+                        if(clippingPlanes == null) return;
+
+                        // clippingPlanes.enabled = visible;
+                        // let planeEntity = ClipHandler.PLANES[layerID];
+                        // planeEntity.show = visible;
+                    }
                 }
             }
         } 
@@ -243,11 +252,29 @@ class CesiumUtils {
             throw "Callback function is required!";
         }
 
-        // Get the feature at the click point
-        const feature = MapHandler.MAP.scene.pick((!event.position) ? event.endPosition : event.position);
+        // Get (up to 2) features at the mouse position
+        let features = MapHandler.MAP.scene.drillPick(
+            (!event.position) ? event.endPosition : event.position,
+            2
+        );
 
+        // Find the first feature that isn't a clipping plane
+        let feature = null;
+
+        if(features != null) {
+            features.forEach(f => {
+                if(f?.id?._name != null) {
+                    if(f.id._name !== "clipping-plane") {
+                        feature = f;
+                    }
+                } else {
+                    feature = f;
+                }
+            });
+        }
+
+        // Probably a WMS feature, need to get info differently
         if(feature === null || feature === undefined) {
-            // Probably a WMS feature, need to get info differently
             var pickRay = MapHandler.MAP.camera.getPickRay((!event.position) ? event.endPosition : event.position);
             var featuresPromise = MapHandler.MAP.imageryLayers.pickImageryLayerFeatures(pickRay, MapHandler.MAP.scene);
 
@@ -427,4 +454,60 @@ class CesiumUtils {
         Cesium.Cartesian3.multiplyByScalar(offset, range, offset);
         return offset;
     }
+
+    /**
+     * 
+     */
+    public static getLayersWithClipping(dataStore: DataStore) {
+        let matches = {};
+
+        dataStore.dataGroups.forEach(group => {
+            this.recurseLayersWithClipping(group, matches);
+        })
+        return matches;
+    }
+
+    /**
+     * 
+     * @param dataGroup 
+     * @param matches 
+     */
+    private static recurseLayersWithClipping(dataGroup: DataGroup, matches) {
+        dataGroup.dataLayers.forEach(layer => {
+            if(layer.definition.hasOwnProperty("clipping")) {
+                let layerID = layer.id;
+                let layerName = layer.definition["name"];
+
+                if(matches.hasOwnProperty(layerName)) {
+                    matches[layerName] = matches[layerName] + "|" + layerID;
+                } else {
+                    matches[layerName] = layerID;
+                }
+            }
+        });
+
+        if(dataGroup.subGroups.length > 0) {
+            dataGroup.subGroups.forEach(subGroup => {
+                this.recurseLayersWithClipping(subGroup, matches);
+            });
+        }
+    }
+
+    /**
+     * 
+     * @param layerID 
+     * @returns 
+     */
+    public static getPrimitive(layerID) {
+        let primitives = MapHandler.MAP.scene.primitives;
+
+        for(let i = 0; i < primitives.length; i++) {
+            if(primitives.get(i)?.layerID === layerID) {
+                return primitives.get(i);
+            }
+        }
+
+        return null;
+    }
 }
+// End of class.
