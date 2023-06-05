@@ -21,6 +21,7 @@ import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.InputStream;
 import java.util.*;
@@ -54,15 +55,15 @@ public class DevInstQueryBuilder {
     private static Map<String, Iri> SensorComp_UUID_Map = new HashMap<>();
     private static Map<String, String> SensorCompToSensorMap = new HashMap<>();
 
-    private static Map<String, Iri> Measurement_UUID_Map;
-    private static List<String> AdditionalQuery;
+    private static Map<String, Iri> Measurement_UUID_Map = new HashMap<>();
+    private static List<String> AdditionalQuery = new ArrayList<>();
 
-    private static Map<String, String> SensorTypeMap;
-    private static Map<String, Iri> SensorTypeIRIMap;
+    private static Map<String, String> SensorTypeMap = new HashMap<>();
+    private static Map<String, Iri> SensorTypeIRIMap = new HashMap<>();
     
-    private static Map<String, Iri> MeasurementTypeMap;
-    private static Map<String, String> MeasurementToUnitMap;
-    private static Map<String, Iri> UnitIRIMap;
+    private static Map<String, Iri> MeasurementTypeMap = new HashMap<>();
+    private static Map<String, String> MeasurementToUnitMap = new HashMap<>();
+    private static Map<String, Iri> UnitIRIMap = new HashMap<>();
 
     private static final Iri SmartSensor = P_DEV.iri("SmartSensor");
     private static final Iri MicroController = P_DEV.iri("MicroController");
@@ -80,8 +81,8 @@ public class DevInstQueryBuilder {
     
     
     //Methods
-    public DevInstQueryBuilder (RemoteStoreClient storeClient) {
-        this.storeClient = storeClient;
+    public DevInstQueryBuilder (RemoteStoreClient sparqlClient) {
+        this.storeClient = sparqlClient;
     }
 
     void InsertDevice(JSONObject desc) {
@@ -105,54 +106,60 @@ public class DevInstQueryBuilder {
         JSONObject MicroController = desc.getJSONObject("MicroController");
         IRIMap = desc.getJSONObject("IRIMapper");
         
-        //smartSensor data
-        sensLabel = MicroController.getString("label");
-        
-        SmartSensor_UUID = getIri(IRIMap.getString(MicroController.getString("name")));
-        
-        MicroController_UUID =  getIri(IRIMap.getString(MicroController.getString("type")));
+        try{
+            //smartSensor data
+            sensLabel = MicroController.getString("label");
+            
+            SmartSensor_UUID = getIri(MicroController.getString("name"));
+            
+            MicroController_UUID =  getIri(MicroController.getString("type"));
 
-        JSONObject MainSensorMap = desc.getJSONObject("MainSensorMap");
-        for (String MainSensorName : MainSensorMap.keySet()) {
-            Iri MainSensor_UUID = getIri(MainSensorName);
-            Sensor_UUID_Map.put(MainSensorName, MainSensor_UUID);
+            JSONObject MainSensorMap = MicroController.getJSONObject("MainSensorMap");
+            for (String MainSensorName : MainSensorMap.keySet()) {
+                Iri MainSensor_UUID = getIri(MainSensorName);
+                Sensor_UUID_Map.put(MainSensorName, MainSensor_UUID);
 
-            JSONObject MainSensor = MainSensorMap.getJSONObject(MainSensorName);
-            for(String SensorName: MainSensor.keySet()){
-                JSONObject Sensor = MainSensor.getJSONObject(SensorName);
-                SensorCompToSensorMap.put(SensorName, MainSensorName);
+                JSONObject MainSensor = MainSensorMap.getJSONObject(MainSensorName);
+                for(String SensorName: MainSensor.keySet()){
+                    JSONObject Sensor = MainSensor.getJSONObject(SensorName);
+                    SensorCompToSensorMap.put(SensorName, MainSensorName);
 
-                Iri Sensor_UUID = getIri(SensorName);
-                SensorComp_UUID_Map.put(SensorName, Sensor_UUID);
-                
-                String Measurement_ID_String = Sensor.getJSONObject("output").getString("fieldname");
-                Iri Measurement_UUID = getIri(Measurement_ID_String);
-                Measurement_UUID_Map.put(SensorName, Measurement_UUID);
+                    Iri Sensor_UUID = getIri(SensorName);
+                    SensorComp_UUID_Map.put(SensorName, Sensor_UUID);
+                    
+                    String Measurement_ID_String = Sensor.getJSONObject("output").getString("fieldname");
+                    Iri Measurement_UUID = getIri(Measurement_ID_String);
+                    Measurement_UUID_Map.put(SensorName, Measurement_UUID);
 
-                String MeasurementType_ID_String = Sensor.getJSONObject("output").getString("type");
-                Iri MeasurementType_UUID = getIri(MeasurementType_ID_String);
-                MeasurementTypeMap.put(SensorName, MeasurementType_UUID);
+                    String MeasurementType_ID_String = Sensor.getJSONObject("output").getString("type");
+                    Iri MeasurementType_UUID = getIri(MeasurementType_ID_String);
+                    MeasurementTypeMap.put(SensorName, MeasurementType_UUID);
 
-                String SensorCompType_String = Sensor.getString("type");
-                SensorTypeMap.put(SensorName, SensorCompType_String);
-                Iri SensorType_IRI = iri(IRIMap.getString(SensorCompType_String));
-                SensorTypeIRIMap.put(SensorCompType_String, SensorType_IRI);
+                    String SensorCompType_String = Sensor.getString("type");
+                    SensorTypeMap.put(SensorName, SensorCompType_String);
+                    Iri SensorType_IRI = getIri(SensorCompType_String);
+                    SensorTypeIRIMap.put(SensorCompType_String, SensorType_IRI);
 
-                String unit = Sensor.getJSONObject("output").getString("unit");
-                MeasurementToUnitMap.put(Measurement_ID_String, unit);
-                Iri unit_IRI = getIri(unit);
-                UnitIRIMap.put(unit, unit_IRI);
+                    String unit = Sensor.getJSONObject("output").getString("unit");
+                    MeasurementToUnitMap.put(Measurement_ID_String, unit);
+                    Iri unit_IRI = getIri(unit);
+                    UnitIRIMap.put(unit, unit_IRI);
 
+                }
             }
-        }
 
-        //Additional Queries
-        JSONArray additional = desc.getJSONArray("AdditionalQuery");
-        for(int i = 0; i < additional.length(); i++) {
-            String query = additional.getString(i);
-            AdditionalQuery.add(query);
-        }
+            //Additional Queries
+            JSONArray additional = desc.getJSONArray("AdditionalQuery");
 
+            for(int i = 0; i < additional.length(); i++) {
+                String query = additional.getString(i);
+                AdditionalQuery.add(query);
+            }
+            
+        }
+        catch( JSONException e) {
+            throw new JPSRuntimeException("Failed to obtain IRI from IRI Mapper.", e);
+        }
 
     }
 
@@ -161,7 +168,7 @@ public class DevInstQueryBuilder {
      * Creates the update queries and send update request to triple store.
      * 
      */
-    void InstantiateDevices() {
+    public void InstantiateDevices() {
         ModifyQuery modify = Queries.MODIFY();
         modify.prefix(P_AGENT, P_DEV, P_OM, P_SAREF);
 
@@ -210,17 +217,19 @@ public class DevInstQueryBuilder {
         }
         
         //Add aditional query
-        for(String query: AdditionalQuery){
-            String[] splits = query.split("\\s+");
-            List<Iri> listIRI = new ArrayList<>();
-            for(int i=0; i < 3; i++){
-                Iri component = iri(splits[i]);
-                listIRI.add(component);
+        if (AdditionalQuery.size() > 0){
+            for(String query: AdditionalQuery){
+                String[] splits = query.split("\\s+");
+                List<Iri> listIRI = new ArrayList<>();
+                for(int i=0; i < 3; i++){
+                    Iri component = iri(splits[i]);
+                    listIRI.add(component);
+                }
+                TriplePattern triple = GraphPatterns.tp(listIRI.get(0), listIRI.get(1), listIRI.get(2));
+                modify.insert(triple);
             }
-            TriplePattern triple = GraphPatterns.tp(listIRI.get(0), listIRI.get(1), listIRI.get(2));
-            modify.insert(triple);
         }
-
+        //System.out.println(modify.getQueryString());
         storeClient.executeUpdate(modify.getQueryString());
     }
 
@@ -254,9 +263,9 @@ public class DevInstQueryBuilder {
             }
         }
         else{
-            throw new JPSRuntimeException("IRI is not in IRIMapper. Please provide either the IRI or the following keyword:" +
-            "find : Find the IRI in the knowledge graph with the same ID. " + 
-            "gen: Generate new IRI ending with random UUID. Based on ontodevice."
+            throw new JPSRuntimeException("IRI ID: " + ID +" is not in IRIMapper. Please provide either the IRI or the following keyword:\n" +
+            "find : Find the IRI in the knowledge graph with the same ID. \n" + 
+            "gen: Generate new IRI ending with random UUID. Based on ontodevice.\n"
             );
         }
 
