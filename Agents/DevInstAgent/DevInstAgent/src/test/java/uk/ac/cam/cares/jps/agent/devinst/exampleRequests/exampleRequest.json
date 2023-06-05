@@ -31,7 +31,8 @@
         "HCSR04_ProximitySensor":"gen",
         "ProximitySensor":"https://www.theworldavatar.com/kg/ontodevice/ProximitySensor",
         "AvgDist_FH02" : "example:prefix/api_AvgDist_FH02",
-        "Length" : "http://www.ontology-of-units-of-measure.org/resource/om-2/Length"
+        "Length" : "http://www.ontology-of-units-of-measure.org/resource/om-2/Length",
+        "cm" : "http://www.ontology-of-units-of-measure.org/resource/om-2/centimetre"
     },
     "AdditionalQuery":[]
 }

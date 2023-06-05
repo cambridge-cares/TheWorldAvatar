@@ -149,6 +149,10 @@ public class DevInstQureyBuilderTest {
         
         String[] clientPropParam = {"sparql.query.endpoint="+sparql_endpoint, "sparql.update.endpoint="+sparql_endpoint};
         writePropertyFile(clientPropFile, Arrays.asList(clientPropParam));
+
+        //Set the RemoteStoreClient
+        storeClient =  new RemoteStoreClient(sparql_endpoint, sparql_endpoint);
+        //storeClient = queryBuilder.storeClient;
         // To create testAgent without an exception being thrown, SystemLambda is used to mock an environment variable
         // To mock the environment variable, a try catch need to be used
         try {
@@ -164,9 +168,7 @@ public class DevInstQureyBuilderTest {
         // Set the mocked time series client
         //testAgent.setTsClient(mockTSClient);
 
-        //Set the RemoteStoreClient
-        storeClient =  new RemoteStoreClient(sparql_endpoint, sparql_endpoint);
-        //storeClient = queryBuilder.storeClient;
+        
     }
 
     public static JSONObject parseJSONFile(String filename) throws JSONException, IOException {
@@ -176,17 +178,27 @@ public class DevInstQureyBuilderTest {
 
     @Before
     public void createExampleData () throws IOException{
-        exampleRequest = parseJSONFile("./exampleRequests/exampleRequest.json");
-        exampleFind = parseJSONFile("./exampleRequests/exampleRequest_Find.json");
-        exampleEmptyMap = parseJSONFile("./exampleRequests/exampleRequest_EmptyMapper.json");
+        File file = new File("./src/test/java/uk/ac/cam/cares/jps/agent/devinst/exampleRequests/exampleRequest.json");
+        //for(String fileNames : file.list()) System.out.println(fileNames);
+        //System.out.println(file.exists());
+        exampleRequest = parseJSONFile("./src/test/java/uk/ac/cam/cares/jps/agent/devinst/exampleRequests/exampleRequest.json");
+        exampleFind = parseJSONFile("./src/test/java/uk/ac/cam/cares/jps/agent/devinst/exampleRequests/exampleRequest_Find.json");
+        exampleEmptyMap = parseJSONFile("./src/test/java/uk/ac/cam/cares/jps/agent/devinst/exampleRequests/exampleRequest_EmptyMapper.json");
 
 
     }
 
     @Test
     public void testEmptyMapper () {
-        queryBuilder.InsertDevice(exampleEmptyMap);
-        Assert.fail("Device Instantiation succeed despite entpy IRI Mapper");
+        try{
+            queryBuilder.InsertDevice(exampleEmptyMap);
+            Assert.fail("Device Instantiation succeed despite entpy IRI Mapper");
+        }
+        catch (Exception e) {
+            Assert.assertTrue(e.toString().contains("Please provide either the IRI or the following keyword:"));
+        }
+        
+        
     }
 
     @Test
@@ -195,7 +207,7 @@ public class DevInstQureyBuilderTest {
 
         SelectQuery query = Queries.SELECT();
         //Has to have: Microcontroller
-        query.where(query.var().isA(MicroController));
+        query.where(query.var().isA(MicroController)).prefix(P_DEV);
         JSONArray result = storeClient.executeQuery(query.getQueryString());
         Assert.assertTrue(result.length() == 1);
         String obtainedIRI = result.getJSONObject(0).getString("x0");
@@ -203,7 +215,7 @@ public class DevInstQureyBuilderTest {
 
         //SmartSensor
         query = Queries.SELECT();
-        query.where(query.var().isA(SmartSensor));
+        query.where(query.var().isA(SmartSensor)).prefix(P_DEV);
         result = storeClient.executeQuery(query.getQueryString());
         Assert.assertTrue(result.length() == 1);
         obtainedIRI = result.getJSONObject(0).getString("x0");
@@ -212,7 +224,7 @@ public class DevInstQureyBuilderTest {
 
         //Sensor
         query = Queries.SELECT();
-        query.where(query.var().isA(Sensor));
+        query.where(query.var().isA(Sensor)).prefix(P_DEV, P_SAREF);
         result = storeClient.executeQuery(query.getQueryString());
         Assert.assertTrue(result.length() == 1);
         obtainedIRI = result.getJSONObject(0).getString("x0");
@@ -220,7 +232,7 @@ public class DevInstQureyBuilderTest {
 
         //Proximity Sensor
         query = Queries.SELECT();
-        query.where(query.var().isA(ProximitySensor));
+        query.where(query.var().isA(ProximitySensor)).prefix(P_DEV);
         result = storeClient.executeQuery(query.getQueryString());
         Assert.assertTrue(result.length() == 1);
         obtainedIRI = result.getJSONObject(0).getString("x0");
@@ -228,7 +240,7 @@ public class DevInstQureyBuilderTest {
 
         //Raw Readings
         query = Queries.SELECT();
-        query.where(query.var().has(measures, query.var()));
+        query.where(query.var().has(measures, query.var())).prefix(P_DEV);
         result = storeClient.executeQuery(query.getQueryString());
         Assert.assertTrue(result.length() == 1);
         obtainedIRI = result.getJSONObject(0).getString("x1");
@@ -240,19 +252,22 @@ public class DevInstQureyBuilderTest {
     public void testFindIRI(){
         //Add dummyraw var here
         ModifyQuery modify = Queries.MODIFY();
-        Iri exampleRaw = iri("example:prefix/api_AvgDist_FH02");
+        String exampleRawString = "http://www.example.com/prefix/api_AvgDist_FH02";
+        Iri exampleRaw = iri(exampleRawString);
         Iri Length = iri("http://www.ontology-of-units-of-measure.org/resource/om-2/Length");
         modify.insert(exampleRaw.isA(Length));
+        storeClient.executeUpdate(modify.getQueryString());
 
         //Check if IRI is consistent
         queryBuilder.InsertDevice(exampleFind);
 
         SelectQuery query = Queries.SELECT();
-        query.where(query.var().has(measures, query.var()));
+        query.where(query.var().has(measures, query.var())).prefix(P_DEV);
         JSONArray result = storeClient.executeQuery(query.getQueryString());
         Assert.assertTrue(result.length() == 1);
-        String obtainedIRI = result.getJSONObject(0).getString("x0");
-        Assert.assertTrue(obtainedIRI.equals(exampleRaw.toString()));
+        String obtainedIRI = result.getJSONObject(0).getString("x1");
+        //System.out.println(obtainedIRI);
+        Assert.assertEquals(obtainedIRI, exampleRawString);
     }
 
     @After
