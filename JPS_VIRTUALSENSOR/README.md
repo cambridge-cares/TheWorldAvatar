@@ -3,11 +3,9 @@ Prerequisites
 2) Ship data needs to be present in ShipInputAgent/data. If the agent is being run for chemical plants instead of ships, 
 it is still necessary to define one ship in a .json file in this folder. In this case, the ship should be placed outside the region for which AERMOD will be run, which is specified in WKT format in the POST request to the DispersionInteractor class. The longitude of each coordinate must be specified before the latitude.  
 
-    The pollutant emitting points located within chemical plants need to be instantiated in TheWorldAvatar blazegraph with an rdf:type of PlantItem. See https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontochemplant/OntoChemPlant.owl for details of the ontology. There must be at least one pollutant source (either ship or chemical plant item) located within the region of interest. 
-
-
 3) Set openweather API key in ../Agents/WeatherAgent, more details in that folder
 
+4) Input agent that instantiates the input data required for AERMOD Agent according to OntoDispersion (https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodispersion). See the JurongIslandInputAgent folder for an example of such an agent.
 
 
 Stack needs to be up and running:
