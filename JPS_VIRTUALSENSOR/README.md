@@ -8,9 +8,7 @@ it is still necessary to define one ship in a .json file in this folder. In this
 
 3) Set openweather API key in ../Agents/WeatherAgent, more details in that folder
 
-4) Set the values of the following in the AermodAgent/docker-compose.yml file: NUMBER_SOURCES, NUMBER_BUILDINGS, INCLUDE_ELEVATION. Note that setting NUMBER_BUILDINGS to a value greater than 500 may result in the buildings pre-processor,  BPIPPRM, taking a long time to complete. The terrain pre-processor, AERMAP, may also take a long time to run for large numbers of receptors. As elevation data is an optional input for AERMOD, the user has the option of not running AERMAP by specifying INCLUDE_ELEVATION=false.
 
-5) Download the required elevation data files from https://www.eorc.jaxa.jp/ALOS/en/dataset/aw3d30/aw3d30_e.htm. It is necessary to register for a free account first. The data files required by AERMAP as input end in "_DSM.tif". Each such data file obtained from JAXA spans a region that is 1 degree by 1 degree in terms of longitude and latitude. The latitude and longitude corresponding to the corner of minimum longitude and latitude is included in the filename. For example, the file 'ALPSMLC30_N001E103_DSM.tif' contains the elevation data for all points whose longitude is between 103 and 104 degrees and whose latitude is between 1 and 2 degrees. If running AERMAP for a large region, it may be necessary to supply multiple elevation data files as input. Each data file should be placed in the directory JPS_VIRTUALSENSOR/AermodAgent/src/main/resources/. The name of each data file should be specified in a new line following the 'DATATYPE NED' line in aermap.inp as per the format 'DATAFILE NAME_DATA_FILE', where 'NAME_DATA_FILE' should be replaced by the actual filename.
 
 Stack needs to be up and running:
 1) execute
