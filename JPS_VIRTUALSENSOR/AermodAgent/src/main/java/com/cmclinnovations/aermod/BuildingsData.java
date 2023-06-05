@@ -326,7 +326,6 @@ public class BuildingsData {
         GeometryCollection geoCol;
         Geometry merged;
         Geometry temp;
-        String geoType;
 
         for (int i = 0; i < polygonList.size(); i++) {
             temp = polygonList.get(i);
@@ -340,9 +339,8 @@ public class BuildingsData {
 
         merged = geoCol.union();
 
-        geoType = merged.getGeometryType();
-
-        while (!geoType.equals("Polygon") || !deflatePolygon(merged, distance).getGeometryType().equals("Polygon")) {
+        while ((merged.getClass() != Polygon.class)
+                || (deflatePolygon(merged, distance).getClass() != Polygon.class)) {
             distance += increment;
 
             for (int i = 0; i < geometries.size(); i++) {
@@ -355,7 +353,6 @@ public class BuildingsData {
 
             geoCol = (GeometryCollection) geoFac.buildGeometry(geometries);
             merged = geoCol.union();
-            geoType = merged.getGeometryType();
         }
 
         footprintPolygon = (Polygon) deflatePolygon(merged, distance);
