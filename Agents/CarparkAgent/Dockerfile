@@ -22,23 +22,17 @@ RUN --mount=type=cache,target=/root/.m2/repository mvn package
 FROM tomcat:9.0 as agent
 WORKDIR /app
 
-# Copy in the properties file
-COPY ./config/agent.properties /root/agent.properties
 # Set the required environment variable
-ENV Carpark_AGENTPROPERTIES="/root/agent.properties"
-# Copy in the properties file
-COPY ./config/api.properties /root/api.properties
-# Set the required environment variable
-ENV Carpark_APIPROPERTIES="/root/api.properties"
-# Copy in the properties file
-COPY ./config/client.properties /root/client.properties
-# Set the required environment variable
-ENV Carpark_CLIENTPROPERTIES="/root/client.properties"
-# Copy in the mapping folder
-COPY ./config/mappings /root/mappings
+ENV Carpark_AGENTPROPERTIES="/usr/local/tomcat/config/agent.properties"
 
 # Set the required environment variable
-ENV Carpark_AGENT_MAPPINGS="/root/mappings"
+ENV Carpark_APIPROPERTIES="/usr/local/tomcat/config/api.properties"
+
+# Set the required environment variable
+ENV Carpark_CLIENTPROPERTIES="/usr/local/tomcat/config/client.properties"
+
+# Set the required environment variable
+ENV Carpark_AGENT_MAPPINGS="/usr/local/tomcat/config/mappings"
 
 COPY --from=builder /root/CarparkAPIInputAgent/output/carpark-agent##1.0.0.war $CATALINA_HOME/webapps/
 

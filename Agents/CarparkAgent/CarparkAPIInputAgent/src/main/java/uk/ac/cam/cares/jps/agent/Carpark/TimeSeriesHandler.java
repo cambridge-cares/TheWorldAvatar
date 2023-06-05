@@ -23,9 +23,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
-public class APIInputAgent
+public class TimeSeriesHandler
 {
-    public static final Logger Log = LogManager.getLogger(APIAgentLauncher.class);
+    public static final Logger Log = LogManager.getLogger(CarparkAgent.class);
     private TimeSeriesClient<OffsetDateTime> tsclient;
     private List<JSONKeyToIRIMapper> mappings;
     public static final String generatedIRIPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + "Carpark";
@@ -36,7 +36,7 @@ public class APIInputAgent
  
 
 
-    public APIInputAgent(String propertiesFile) throws IOException
+    public TimeSeriesHandler(String propertiesFile) throws IOException
     {
 
         try(InputStream input = new FileInputStream(propertiesFile))
@@ -95,7 +95,7 @@ public class APIInputAgent
         {
             for( File mappingFile: mappingFiles)
             {
-                JSONKeyToIRIMapper mapper = new JSONKeyToIRIMapper(APIInputAgent.generatedIRIPrefix, mappingFile.getAbsolutePath());
+                JSONKeyToIRIMapper mapper = new JSONKeyToIRIMapper(TimeSeriesHandler.generatedIRIPrefix, mappingFile.getAbsolutePath());
                 mappings.add(mapper);
                 mapper.saveToFile(mappingFile.getAbsolutePath());
             }
@@ -276,7 +276,7 @@ public class APIInputAgent
        // Extract the timestamps by mapping the private conversion method on the list items
        // that are supposed to be string (toString() is necessary as the map contains lists of different types)
 
-       List<OffsetDateTime> carparkTimestamps = carparkReadings.get(APIInputAgent.timestampKey).stream().map(timestamp -> (convertStringToOffsetDateTime(timestamp.toString()))).collect(Collectors.toList());
+       List<OffsetDateTime> carparkTimestamps = carparkReadings.get(TimeSeriesHandler.timestampKey).stream().map(timestamp -> (convertStringToOffsetDateTime(timestamp.toString()))).collect(Collectors.toList());
        try{
         // Construct a time series object for each mapping
         List<TimeSeries<OffsetDateTime>> timeSeries = new ArrayList<>();

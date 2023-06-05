@@ -10,14 +10,8 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
-
 import java.io.*;
 import java.util.Properties;
-
-import javax.print.attribute.standard.JobHoldUntil;
 
 
 
@@ -29,7 +23,7 @@ public class APIConnector
     private String accountKey;
 
     private static final String ERRORMSG = "Carpark data could not be retrieved";
-    private static final Logger LOG = LogManager.getLogger(APIAgentLauncher.class);
+    private static final Logger LOG = LogManager.getLogger(CarparkAgent.class);
   
 
     //Standard Constructor to initialise the instance variables

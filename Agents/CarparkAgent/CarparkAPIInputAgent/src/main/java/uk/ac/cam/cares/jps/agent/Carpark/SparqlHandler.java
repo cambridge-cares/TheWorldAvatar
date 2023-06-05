@@ -29,12 +29,14 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.InsertDataQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 
-public class APIQueryBuilder
+public class SparqlHandler
 {
-    public static final Logger Log = LogManager.getLogger(APIAgentLauncher.class);
+    public static final Logger Log = LogManager.getLogger(CarparkAgent.class);
 
     public String queryEndpoint;
     public String updateEndpoint;
+    public String sparqlUsername;
+    public String sparqlPassword;
 
     RemoteStoreClient kbClient;
 
@@ -103,7 +105,7 @@ public class APIQueryBuilder
 
     private List<JSONKeyToIRIMapper> mappings;
 
-    public APIQueryBuilder(String agentProp, String clientProp) throws IOException
+    public SparqlHandler(String agentProp, String clientProp) throws IOException
     {
         agentProperties = agentProp;
         clientProperties = clientProp;
@@ -118,6 +120,8 @@ public class APIQueryBuilder
 
         kbClient.setUpdateEndpoint(updateEndpoint);
         kbClient.setQueryEndpoint(queryEndpoint);
+        kbClient.setUser(sparqlUsername);
+        kbClient.setPassword(sparqlPassword);
 
 
     }
@@ -198,6 +202,12 @@ public class APIQueryBuilder
             else
             {
                 throw new IOException("The file is missing: \"sparql.update.endpoint=<updateEndpoint>\"");
+            }
+            if (prop.containsKey("sparql.username")) {
+                this.sparqlUsername = prop.getProperty("sparql.username");
+            }
+            if (prop.containsKey("sparql.password")) {
+                this.sparqlPassword = prop.getProperty("sparql.password");
             }
         }
     }

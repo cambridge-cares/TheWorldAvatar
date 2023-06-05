@@ -11,7 +11,7 @@
 
 	<servlet>
 		<servlet-name>CarparkAgentServlet</servlet-name>
-		<servlet-class>uk.ac.cam.cares.jps.agent.Carpark.APIAgentLauncher</servlet-class>
+		<servlet-class>uk.ac.cam.cares.jps.agent.Carpark.CarparkAgent</servlet-class>
 	</servlet>
 
 	<servlet-mapping>

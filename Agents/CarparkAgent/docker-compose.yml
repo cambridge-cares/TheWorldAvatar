@@ -3,8 +3,11 @@ version: "3.8"
 services:
   carpark-agent:
     image: carpark-agent:1.0.0
-    build: .
     container_name: carpark-agent
-    pull_policy: if_not_present
+    build:
+      context: .
+      target: agent
+    volumes:
+      - ./config:/usr/local/tomcat/config
     ports:
       - "1080:8080"
