@@ -177,12 +177,10 @@ public class AermodAgent extends DerivationAgent {
         receptorHeights.add(0.0);
         // Set GeoServer layer names
         List<String> dispLayerNames = new ArrayList<>();
-        String simDir = simulationDirectory.getFileName().toString().replace("-", "");
         for (int i = 0; i < receptorHeights.size(); i++) {
             int receptorHeightInt = (int) Math.round(receptorHeights.get(i));
 
-            String dispLayerName = "dispersion_" + simDir + "_height_"
-                    + receptorHeightInt + "_meters";
+            String dispLayerName = "dispersion_height_" + receptorHeightInt + "_meters";
             dispLayerNames.add(dispLayerName);
         }
         String shipLayerName = "ships_" + simulationTime; // hardcoded in ShipInputAgent
