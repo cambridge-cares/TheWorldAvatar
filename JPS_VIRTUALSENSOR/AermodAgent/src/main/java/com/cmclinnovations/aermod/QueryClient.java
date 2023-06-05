@@ -926,9 +926,8 @@ public class QueryClient {
 
         GeometryFactory geometryFactory = new GeometryFactory();
         Polygon boundingBox = geometryFactory.createPolygon(coordinates);
-        boundingBox.buffer(buffer);
 
-        return boundingBox;
+        return (Polygon) boundingBox.buffer(buffer);
     }
 
     private List<String> getCornersForCitiesQuery(Polygon boundingBox) {
@@ -942,20 +941,16 @@ public class QueryClient {
         double xMax = Collections.max(xCoordinates);
         double yMax = Collections.max(yCoordinates);
 
-        GeometryFactory geoFactory = new GeometryFactory();
-        Point lowerCorner = geoFactory.createPoint(new Coordinate(xMin, yMin));
-        Point upperCorner = geoFactory.createPoint(new Coordinate(xMax, yMax));
-
         List<String> lowerCornerSequence = new ArrayList<>();
         List<String> upperCornerSequence = new ArrayList<>();
 
         for (int i = 0; i < 5; i++) {
-            lowerCornerSequence.add(String.valueOf(lowerCorner.getX()));
-            lowerCornerSequence.add(String.valueOf(lowerCorner.getY()));
+            lowerCornerSequence.add(String.valueOf(xMin));
+            lowerCornerSequence.add(String.valueOf(yMin));
             lowerCornerSequence.add(String.valueOf(0));
 
-            upperCornerSequence.add(String.valueOf(upperCorner.getX()));
-            upperCornerSequence.add(String.valueOf(upperCorner.getY()));
+            upperCornerSequence.add(String.valueOf(xMax));
+            upperCornerSequence.add(String.valueOf(yMax));
             upperCornerSequence.add(String.valueOf(zMax));
         }
 
