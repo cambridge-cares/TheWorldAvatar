@@ -32,7 +32,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "ukpn_overhead_lines_low",
-                    "sql": "SELECT wkb_geometry, name, line_colour, line_width FROM ukpn_overhead_lines_high_distribution, ukpn_line_styling WHERE ukpn_overhead_lines_high_distribution.voltage_level = ukpn_line_styling.voltage_level",
+                    "sql": "SELECT wkb_geometry, name, CONCAT('http://theworldavatar.com/ontology/ontopower/ontopower.owl#ukpn_overhead_lines_high_distribution/', ukpn_overhead_lines_high_distribution.ogc_fid) as iri, line_colour, line_width FROM ukpn_overhead_lines_high_distribution, ukpn_line_styling WHERE ukpn_overhead_lines_high_distribution.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
                     "geometry": {
                         "name": "wkb_geometry",
@@ -62,7 +62,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "ukpn_overhead_lines_low_distribution",
-                    "sql": "SELECT wkb_geometry, name, line_colour, line_width FROM ukpn_overhead_lines_low_distribution, ukpn_line_styling WHERE ukpn_overhead_lines_low_distribution.voltage_level = ukpn_line_styling.voltage_level",
+                    "sql": "SELECT wkb_geometry, name, CONCAT('http://theworldavatar.com/ontology/ontopower/ontopower.owl#ukpn_overhead_lines_low_distribution/', ukpn_overhead_lines_low_distribution.ogc_fid) as iri, line_colour, line_width FROM ukpn_overhead_lines_low_distribution, ukpn_line_styling WHERE ukpn_overhead_lines_low_distribution.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
                     "geometry": {
                         "name": "wkb_geometry",
@@ -91,7 +91,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "ukpn_poles_towers_medium",
-                    "sql": "SELECT wkb_geometry, name, pylon_icon AS icon, icon_size FROM ukpn_poles_towers_medium, ukpn_line_styling WHERE ukpn_poles_towers_medium.voltage_level = ukpn_line_styling.voltage_level",
+                    "sql": "SELECT wkb_geometry, name, CONCAT('http://theworldavatar.com/ontology/ontopower/ontopower.owl#ukpn_poles_towers_medium/', ukpn_poles_towers_medium.ogc_fid) as iri, pylon_icon AS icon, icon_size FROM ukpn_poles_towers_medium, ukpn_line_styling WHERE ukpn_poles_towers_medium.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
                     "geometry": {
                         "name": "wkb_geometry",
@@ -123,7 +123,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "ukpn_overhead_lines_medium",
-                    "sql": "SELECT wkb_geometry, name, line_colour, line_width FROM ukpn_overhead_lines_medium, ukpn_line_styling WHERE ukpn_overhead_lines_medium.voltage_level = ukpn_line_styling.voltage_level",
+                    "sql": "SELECT wkb_geometry, name, CONCAT('http://theworldavatar.com/ontology/ontopower/ontopower.owl#ukpn_overhead_lines_medium/', ukpn_overhead_lines_medium.ogc_fid) as iri, line_colour, line_width FROM ukpn_overhead_lines_medium, ukpn_line_styling WHERE ukpn_overhead_lines_medium.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
                     "geometry": {
                         "name": "wkb_geometry",
@@ -152,7 +152,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "ukpn_poles_towers_high",
-                    "sql": "SELECT wkb_geometry, name, pylon_icon AS icon, icon_size FROM ukpn_poles_towers_high, ukpn_line_styling WHERE ukpn_poles_towers_high.voltage_level = ukpn_line_styling.voltage_level",
+                    "sql": "SELECT wkb_geometry, name, CONCAT('http://theworldavatar.com/ontology/ontopower/ontopower.owl#ukpn_poles_towers_high/', ukpn_poles_towers_high.ogc_fid) as iri, pylon_icon AS icon, icon_size FROM ukpn_poles_towers_high, ukpn_line_styling WHERE ukpn_poles_towers_high.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
                     "geometry": {
                         "name": "wkb_geometry",
@@ -184,7 +184,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "ukpn_overhead_lines_high",
-                    "sql": "SELECT wkb_geometry, name, line_colour, line_width FROM ukpn_overhead_lines_high, ukpn_line_styling WHERE ukpn_overhead_lines_high.voltage_level = ukpn_line_styling.voltage_level",
+                    "sql": "SELECT wkb_geometry, name, CONCAT('http://theworldavatar.com/ontology/ontopower/ontopower.owl#ukpn_overhead_lines_high/', ukpn_overhead_lines_high.ogc_fid) as iri, line_colour, line_width FROM ukpn_overhead_lines_high, ukpn_line_styling WHERE ukpn_overhead_lines_high.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
                     "geometry": {
                         "name": "wkb_geometry",
