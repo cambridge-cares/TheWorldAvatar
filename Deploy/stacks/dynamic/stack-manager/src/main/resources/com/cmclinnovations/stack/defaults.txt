@@ -2,7 +2,7 @@ blazegraph
 postgis
 adminer
 ontop
+gdal
 citydbimpexp
 citytiler
-gdal
 geoserver
