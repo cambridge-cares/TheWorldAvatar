@@ -330,8 +330,6 @@ public class Aermod {
         int offset = (int) Math.round(direction * lon * 24 / 360);
         String location = String.format("%f%s %f%s", lat, latSuffix, lon, lonSuffix);
         String locationOffset = String.format("%f%s %f%s %d", lat, latSuffix, lon, lonSuffix, offset);
-        String newLine = System.getProperty("line.separator");
-
         // Get AERMET template
         String templateContent;
         try (InputStream is = getClass().getClassLoader().getResourceAsStream(AERMET_INPUT)) {

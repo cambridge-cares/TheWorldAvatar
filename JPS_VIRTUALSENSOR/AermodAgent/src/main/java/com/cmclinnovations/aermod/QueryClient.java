@@ -15,13 +15,9 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateSequence;
-import org.locationtech.jts.geom.CoordinateSequenceFilter;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.operation.buffer.BufferOp;
-import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.Point;
 import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
@@ -840,7 +836,6 @@ public class QueryClient {
                         .replace("cityfurniture", "cityobject"))
                 .collect(Collectors.toList());
 
-        List<String> boxBounds = getBoundingBoxofPointSources(allSources);
         Polygon boundingBox = getBoundingBoxOfPointSources(allSources);
         List<String> newBoxBounds = getCornersForCitiesQuery(boundingBox);
 
@@ -959,180 +954,6 @@ public class QueryClient {
         corners.add(String.join("#", upperCornerSequence));
 
         return corners;
-    }
-
-    private List<String> getBoundingBoxofPointSources(List<PointSource> allSources) {
-        // Determine bounding box for geospatial query by finding the minimum and
-        // maximum x and y coordinates of pollutant sources
-        // in the original coordinate system.
-        double xMin = 0.0;
-        double xMax = 0.0;
-        double yMin = 0.0;
-        double yMax = 0.0;
-
-        for (int i = 0; i < allSources.size(); i++) {
-            PointSource ps = allSources.get(i);
-            Point location = ps.getLocation();
-            double[] xyOriginal = { location.getX(), location.getY() };
-            double[] xyTransformed = CRSTransformer.transform("EPSG:" + location.getSRID(), namespaceCRS, xyOriginal);
-
-            if (i == 0) {
-                xMin = xyTransformed[0];
-                xMax = xMin;
-                yMin = xyTransformed[1];
-                yMax = yMin;
-            } else {
-                xMin = Math.min(xMin, xyTransformed[0]);
-                xMax = Math.max(xMax, xyTransformed[0]);
-                yMin = Math.min(yMin, xyTransformed[1]);
-                yMax = Math.max(yMax, xyTransformed[1]);
-            }
-        }
-
-        if (allSources.size() == 1) {
-            double expandRange = 10.0;
-            xMin -= expandRange;
-            xMax += expandRange;
-            yMin -= expandRange;
-            yMax += expandRange;
-        }
-
-        double zMax = 800.0;
-
-        String polygonPoints = String.valueOf(xMin) + "#" + yMin + "#" + zMax +
-                "#" + xMax + "#" + yMin + "#" + zMax + "#"
-                + xMax +
-                "#" + yMax + "#" + zMax + "#" + xMin +
-                "#" + yMax + "#" + zMax + "#" + xMin + "#"
-                + yMin + "#" +
-                zMax;
-
-        double buffer = 200.0;
-
-        Polygon envelopePolygon = toPolygon(polygonPoints);
-
-        Geometry surroundingRing = ((Polygon) inflatePolygon(envelopePolygon, buffer)).getExteriorRing();
-
-        Coordinate[] surroundingCoordinates = surroundingRing.getCoordinates();
-
-        String boundingBox = coordinatesToString(surroundingCoordinates);
-
-        String[] points = boundingBox.split("#");
-
-        String lowerPoints = points[0] + "#" + points[1] + "#" + 0 + "#";
-
-        String lowerBounds = lowerPoints + lowerPoints + lowerPoints + lowerPoints + lowerPoints;
-        lowerBounds = lowerBounds.substring(0, lowerBounds.length() - 1);
-
-        String upperPoints = points[6] + "#" + points[7] + "#" + String.valueOf(Double.parseDouble(points[8]) + 100)
-                + "#";
-
-        String upperBounds = upperPoints + upperPoints + upperPoints + upperPoints + upperPoints;
-        upperBounds = upperBounds.substring(0, upperBounds.length() - 1);
-
-        return Arrays.asList(lowerBounds, upperBounds);
-
-    }
-
-    /**
-     * Inflates a polygon
-     * 
-     * @param geom     polygon geometry
-     * @param distance buffer distance
-     * @return inflated polygon
-     */
-    private Geometry inflatePolygon(Geometry geom, Double distance) {
-        ArrayList<Double> zCoordinate = getPolygonZ(geom);
-        BufferParameters bufferParameters = new BufferParameters();
-        bufferParameters.setEndCapStyle(BufferParameters.CAP_ROUND);
-        bufferParameters.setJoinStyle(BufferParameters.JOIN_MITRE);
-        Geometry buffered = BufferOp.bufferOp(geom, distance, bufferParameters);
-        buffered.setUserData(geom.getUserData());
-        setPolygonZ(buffered, zCoordinate);
-        return buffered;
-    }
-
-    /**
-     * Converts an array of coordinates into a string
-     * 
-     * @param coordinates array of footprint coordinates
-     * @return coordinates as a string
-     */
-    private String coordinatesToString(Coordinate[] coordinates) {
-        String output = "";
-
-        for (int i = 0; i < coordinates.length; i++) {
-            output = output + "#" + Double.toString(coordinates[i].getX()) + "#"
-                    + Double.toString(coordinates[i].getY()) + "#" + Double.toString(coordinates[i].getZ());
-        }
-
-        return output.substring(1, output.length());
-    }
-
-    /**
-     * Extract the z coordinates of the polygon vertices
-     * 
-     * @param geom polygon geometry
-     * @return the z coordinates of the polygon vertices
-     */
-    private static ArrayList<Double> getPolygonZ(Geometry geom) {
-        Coordinate[] coordinates = geom.getCoordinates();
-        ArrayList<Double> output = new ArrayList<>();
-
-        for (int i = 0; i < coordinates.length; i++) {
-            output.add(coordinates[i].getZ());
-        }
-
-        return output;
-    }
-
-    /**
-     * Sets a polygon's z coordinates to the values from zInput
-     * 
-     * @param geom   polygon geometry
-     * @param zInput ArrayList of values representing z coordinates
-     */
-    private void setPolygonZ(Geometry geom, ArrayList<Double> zInput) {
-        Double newZ = Double.NaN;
-
-        for (int i = 0; i < zInput.size(); i++) {
-            if (!zInput.get(i).isNaN()) {
-                newZ = zInput.get(i);
-                break;
-            }
-        }
-
-        if (newZ.isNaN()) {
-            newZ = 10.0;
-        }
-
-        if (geom.getNumPoints() < zInput.size()) {
-            while (geom.getNumPoints() != zInput.size()) {
-                zInput.remove(zInput.size() - 1);
-            }
-        } else {
-            while (geom.getNumPoints() != zInput.size()) {
-                zInput.add(1, newZ);
-            }
-        }
-
-        Collections.replaceAll(zInput, Double.NaN, newZ);
-        geom.apply(new CoordinateSequenceFilter() {
-            @Override
-            public void filter(CoordinateSequence cSeq, int i) {
-                cSeq.getCoordinate(i).setZ(zInput.get(i));
-            }
-
-            @Override
-            public boolean isDone() {
-                return false;
-            }
-
-            @Override
-            public boolean isGeometryChanged() {
-                return false;
-            }
-        });
     }
 
     public void setElevation(List<StaticPointSource> pointSources, List<Building> buildings, int simulationSrid) {
