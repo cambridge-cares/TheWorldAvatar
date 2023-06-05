@@ -24,7 +24,7 @@ import org.apache.logging.log4j.Logger;
  * data from the API and write it into the database.
  * @author 
  */
-@WebServlet(urlPatterns = {"/retrieve"})
+@WebServlet(urlPatterns = {"/instantiate"})
 public class DevInstAgentLauncher extends JPSAgent {
     
     public static final String KEY_DESCRIPTOR = "Descriptor";
