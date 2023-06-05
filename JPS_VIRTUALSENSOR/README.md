@@ -5,7 +5,7 @@ it is still necessary to define one ship in a .json file in this folder. In this
 
 3) Set openweather API key in ../Agents/WeatherAgent, more details in that folder
 
-4) Input agent that instantiates the input data required for AERMOD Agent according to OntoDispersion (https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodispersion). See the JurongIslandInputAgent folder for an example of such an agent.
+4) If running AERMOD for static point sources, it is necessary to instantiate the input data required for AERMOD Agent according to OntoDispersion (https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodispersion). See the JurongIslandInputAgent folder for an example of an agent that does this.
 
 
 Stack needs to be up and running:
