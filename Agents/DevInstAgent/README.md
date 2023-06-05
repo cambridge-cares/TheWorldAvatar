@@ -8,16 +8,17 @@ Instantiation is based on ontodevice ontology.
 
 ### Device Instantiation framework
 The device instantiation framework is a framework to allow fast and consistent sensor instantiation on the knowledge graph to allow faster deployment and development. It can be summarised in the following figure:
+![Device instantiation framework](./readme_img/framework.png)
 
-
-Sensors will be connected to a microcontroller and it will send data to an IoT database. For this agent Thingsboard is used for the development of the agent. The Post-Processing agent will pull the data from the database and instantiate a timeseries of the dataon the knowledge grap. THis wirk with and without the use of the stack. If the stack is usedm the agent will send the data to the [data bridge agent]() for instantiation. The post processing agent will also be responsible for instantiating agent and derivation instances when needed. It is assumed that the post processing agent will be run first before the device instantiation agent.
+Sensors will be connected to a microcontroller and it will send data to an IoT database. For this agent Thingsboard is used for the development of the agent. The Post-Processing agent will pull the data from the database and instantiate a timeseries of the data on the knowledge graph. This agent work with and without the use of the stack. If the stack is used, the agent will send the data to the [data bridge agent]() for instantiation. The post processing agent will also be responsible for instantiating agent and derivation instances when needed. 
 
  The device instantiaion agent will be responsible for instantiating the sensors and devices in the knowledge graph using a device descrpitor file written by the user.  
 
-### Descriptor files
-The agent require a description of the device instantiated. This description must be written in a `.json` file for the agent to take in. A template of the file is provided in the repository.
+### Descriptors
+The agent require a description of the device instantiated. This description must be written in a `.json` format for the agent to take in. A template of the file is provided in the repository. The file is composed of IDs which will be used to find the IRI in the IRI Mapper in the json file.
 
-Each device will require 1 descriptor file. A descriptor file can be composed of 1 microcontroller and several sensor modules. Each sensor modules can be composed of several sensors. Each sensor will have 1 type of sensor reading. The diagram of the json file structure is shown in image below.
+Each device will require 1 descriptor. A descriptor can be composed of 1 microcontroller and several sensor modules. Each sensor modules can be composed of several sensors. Each sensor will have 1 type of sensor reading. The diagram of the json structure is shown in image below.
+![Sensor instantiation design](./readme_img/sensor_conn.png)
 
 THe file can be sparated into 3 different main keys, namely: 
 - MicroController: The descriptor of the device. Contains informations of the sensors and readings.
@@ -25,19 +26,44 @@ THe file can be sparated into 3 different main keys, namely:
     - name : The unique id of the mictontorller
     - label: The rdf:Label of the microcontroller 
     - MainSensorMap: The map of the sensor modules connected to the microcontroller.  Composed of a JSONObject that maps the sensor names and their respective information. Each sensor map is composed of (relevant to the device instantiation agent): sensor type, output, output datatype and unit, Thingsboard field name
-    -  derivation: Maps the derivation of the raw readings ot the derived variables. The content of the key is optional as some use cases, no derivation will be done by the agent and raw readings will be instantiated instad.
+    -  derivation: Maps the derivation of the raw readings ot the derived variables. The content of the key is optional as some use cases, no derivation will be done by the agent and raw readings will be instantiated instead.
 
-- IRIMapper: Map of specfic IRI. As the agent will default to ontodevice for the instantiation, in the case an IRI from a custom ontology is needed, the IRI will need to be specified here.
+- IRIMapper: Map of all IRIs. An IRI can be readily provided by the user. However, in case the user want a new IRI to be generated, the user can provide a keyword `gen`. This will create a new IRI for the given ID in the device descrpitor, with default prefix of ontodevice. The IRI will also have a UUID v4 attached in the patter of `prefix:ID_UUID`. If the IRI already exist containgin a unique string pattern, the keyword `find` can be used. THe agent will search the graph for instance containg the ID. If more than one is found, an error will be thrown and please provide the IRI manually or generate one instead. 
 
-- AdditionalQuery: For update queries that are not automatically ran by the agent. Instances created automatically by the agent can be found in the following section.
+- AdditionalQuery: For update queries that are not automatically ran by the agent. Instances created automatically by the agent can be found in the following section. *Please do not use prefixes in the additional queries.* The use of the `gen` and `find` pattern could also be used with the following format in the triples: 
 
-The file also contain informations such as the pin connections of the sensors and as the json file is also used in the template maker to make the arcuino script for the microcontorller. However these inforamtions are not vital to the device instantiation agent and can be ignored if the user does not plan to use the template maker for their microcontroller scripts. 
+  - For gen: `IRIMapper=gen;ID;prefix`
+  - For find: `IRIMapper=find;ID`
+
+  - For examples:
+```
+"IRIMapper=find;ProximitySensor_FH-02 https://www.theworldavatar.com/kg/ontodevice/isAttachedTo http://example.com/prefix/WFH",
+"IRIMapper=gen;testingGen;http://example.com/prefix/ http://www.w3.org/1999/02/22-rdf-syntax-ns#type IRIMapper=Length"
+```
+
+An important note: update query for additional queries are done **after** the normal queries. Therefore, use the `find` keyword for the finding the IRI generated by the agent otside the additional query. For example:
+We are trying to instantiate a microconroller instance and generate an instance for it. We then want to us the generated IRI for a different triple in the additional query.
+```
+...
+IRIMapper:{
+    "ESP32": "gen",
+    ...
+},
+"AdditionalQuery": {
+    "http://example.com/prefix/OPENLABAREA https://w3id.org/bot#containsElement IRIMapper=find;ESP32",
+    ...
+}
+
+```
+The ESP32 instance will be generated by the agent first. The additional query triples will then be executed. To find the previously generated IRI, we use the `find` keyword.
+
+The file also contain informations such as the pin connections of the sensors and as the json file is also used in the template maker to make the arduino script for the microcontorller. However these inforamtions are not vital to the device instantiation agent and can be ignored if the user does not plan to use the template maker for their microcontroller scripts. 
 
 ### Instantiation format
 
 Generally the following instances are created by the agent without any additional queries:
 
-[Image here]
+![Instantiation without additional queries](./readme_img/normal_instantiation.png)
 
 ## Running the agent
 
@@ -46,11 +72,60 @@ The agent could be build using the following command in the folder of the repo:
 docker-compose up -d
 ```
 
-The agent will be available at port `1017/retrieve`. 
+The agent will be available at port `1017/instantiate`. 
 The agent accepts a POST request containing:
-- `CLIENTPROPERTIES` : The location of the client proiperties file containing the SPARQL endpoint of the KG. File location is stored in an environment variable `CLIENTPROPERTIES`.
-- The device descriptor.
+- `CLIENTPROPERTIES` : The location of the client properties file containing the SPARQL endpoint of the KG. File location is stored in an environment variable `CLIENTPROPERTIES`.
+- `Descriptor`: The device descriptor.
 
 An example of the request:
-[PUT EXAMPLE HERE]
+```
+POST http://localhost:1017/dev-inst-agent/instantiate
+Content-Type: application/json
+{
+  "CLIENTPROPERTIES" = "CLIENTPROPERTIES",
+  "Descriptor" = {"MicroController":{
+          "type": "ESP32",
+          "name": "ProximitySensor_FH-02",
+          "label" : "Occupancy detection sensor for fumehood FH_02",
+
+          "MainSensorMap":{
+              "HCSR04":{
+                  "HCSR04_ProximitySensor": {
+                      "type": "ProximitySensor",
+                      "ext_lib":[],
+                      "description":"",
+                      "pin":[
+                          {"pinnum":null, "pintype":null, "label": null, "isIO": false},
+                          {"pinnum":null, "pintype":null, "label": null, "isIO": false}
+                      ],
+                      "output" : {
+                          "datatype" : "Double",
+                          "fieldname" : "AvgDist_FH02",
+                          "defval" : 350,
+                          "type": "Length",
+                          "unit" : "cm"
+                      }
+                  }
+              }
+          }
+      },
+      "IRIMapper":{
+          "ESP32": "gen",
+          "ProximitySensor_FH-02":"gen",
+          "HCSR04":"gen",
+          "HCSR04_ProximitySensor":"gen",
+          "ProximitySensor":"https://www.theworldavatar.com/kg/ontodevice/ProximitySensor",
+          "AvgDist_FH02" : "find",
+          "Length" : "http://www.ontology-of-units-of-measure.org/resource/om-2/Length",
+          "cm" : "http://www.ontology-of-units-of-measure.org/resource/om-2/centimetre"
+      },
+      "AdditionalQuery":[
+          "http://example.com/prefix/OPENLABAREA https://w3id.org/bot#containsElement IRIMapper=find;ProximitySensor_FH-02",
+          "http://example.com/prefix/OPENLABAREA https://w3id.org/bot#containsElement http://example.com/prefix/WFH",
+          "IRIMapper=find;ProximitySensor_FH-02 https://www.theworldavatar.com/kg/ontodevice/isAttachedTo http://example.com/prefix/WFH"
+      ]
+  }
+}
+
+```
 
