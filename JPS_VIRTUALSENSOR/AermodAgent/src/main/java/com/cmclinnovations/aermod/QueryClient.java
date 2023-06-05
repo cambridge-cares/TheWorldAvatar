@@ -844,8 +844,8 @@ public class QueryClient {
         Polygon boundingBox = getBoundingBoxOfPointSources(allSources);
         List<String> newBoxBounds = getCornersForCitiesQuery(boundingBox);
 
-        String lowerBounds = boxBounds.get(0);
-        String upperBounds = boxBounds.get(1);
+        String lowerBounds = newBoxBounds.get(0);
+        String upperBounds = newBoxBounds.get(1);
 
         String geoUri = "http://www.bigdata.com/rdf/geospatial#";
         // where clause for geospatial search
