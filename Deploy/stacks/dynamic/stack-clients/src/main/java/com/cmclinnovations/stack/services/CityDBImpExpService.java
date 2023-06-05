@@ -19,8 +19,8 @@ public final class CityDBImpExpService extends ContainerService {
 
     private static final String DEFAULT_USERNAME = "postgres";
 
-    public CityDBImpExpService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
-        super(stackName, serviceManager, config);
+    public CityDBImpExpService(String stackName, ServiceConfig config) {
+        super(stackName, config);
     }
 
     @Override

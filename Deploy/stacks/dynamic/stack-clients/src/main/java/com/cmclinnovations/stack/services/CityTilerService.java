@@ -8,8 +8,8 @@ public final class CityTilerService extends ContainerService {
 
     public static final String TYPE = "citytiler";
 
-    public CityTilerService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
-        super(stackName, serviceManager, config);
+    public CityTilerService(String stackName, ServiceConfig config) {
+        super(stackName, config);
     }
 
     @Override
