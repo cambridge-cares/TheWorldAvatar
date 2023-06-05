@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.smartmeteragent;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -14,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 @WebServlet(urlPatterns = { "/upload" })
@@ -47,7 +49,7 @@ public class SmartMeterAgentLauncher extends JPSAgent {
         String currentTime = now.format(formatter);
 
         // Parameters for historical data reading
-        // Data before (inclusive): date time in "yyyy-MM-dd HH:mm:ss" format 
+        // Data before (inclusive): UTC date time in "yyyy-MM-dd HH:mm:ss" format 
         // (optional, use current UTC time if not given)
         String dataBefore;
         String dataAfter;
@@ -57,7 +59,7 @@ public class SmartMeterAgentLauncher extends JPSAgent {
             LOGGER.info("dataBefore not given, using current datetime instead...");
             dataBefore = currentTime;
         }
-        // Data after (inclusive): date time in "yyyy-MM-dd HH:mm:ss" format 
+        // Data after (inclusive): UTC date time in "yyyy-MM-dd HH:mm:ss" format 
         // (optional, use default time if not given)
         if (requestParams.has("dataAfter")) {
             dataAfter = requestParams.getString("dataAfter");
@@ -68,7 +70,7 @@ public class SmartMeterAgentLauncher extends JPSAgent {
 
         SmartMeterAgent agent = new SmartMeterAgent();
         List<String[]> mappings = agent.getDataMappings();
-        if (dataSource.toLowerCase().equals("database") && dataRequired.toLowerCase().equals("latest")) {
+        if (dataSource.equalsIgnoreCase("database") && dataRequired.equalsIgnoreCase("latest")) {
             while (true) {
                 LOGGER.info("Reading latest data from database...");
                 JSONArray result = agent.queryLatestDataFromDb(currentTime, mappings);
@@ -82,9 +84,7 @@ public class SmartMeterAgentLauncher extends JPSAgent {
                     Thread.currentThread().interrupt();
                 }
             }
-        } else if (dataSource.toLowerCase().equals("csv") && dataRequired.toLowerCase().equals("latest")) {
-            throw new JPSRuntimeException("dataRequired should be historical if reading from csv files.");
-        } else if (dataSource.toLowerCase().equals("database") && dataRequired.toLowerCase().equals("historical")) {
+        } else if (dataSource.equalsIgnoreCase("database") && dataRequired.equalsIgnoreCase("historical")) {
             LOGGER.info("Reading historical data from database...");
             int numOfReadings = agent.uploadHistoricalDataFromDb(dataBefore, dataAfter, mappings, targetResourceID);
             if (numOfReadings == 0) {
@@ -94,14 +94,32 @@ public class SmartMeterAgentLauncher extends JPSAgent {
                 LOGGER.info(numOfReadings + " readings uploaded.");
                 return new JSONObject().put("uploadStatus", numOfReadings + " readings uploaded successfully.");
             }
-        } else if (dataSource.toLowerCase().equals("csv") && dataRequired.toLowerCase().equals("historical")) {
-            // TODO historical readings from csv
+        } else if (dataSource.equalsIgnoreCase("csv") && dataRequired.equalsIgnoreCase("historical")) {
+            LOGGER.info("Reading historical data from csv file...");
+            List<String> devices = new ArrayList<>();
+            for (int i = 0; i < mappings.size(); i++) {
+                if (mappings.get(i).length > 1) {
+                    devices.add(mappings.get(i)[1]);
+                }
+            }
+            String filename = AgentLocator.getCurrentJpsAppDirectory(this) + "/database/ExampleCSV";
+            JSONArray dataIRIArray = agent.getDataIris("http://localhost:48888/microgrid", mappings);
+            // Input time need to be UTC time
+            OffsetDateTime beforeTime = OffsetDateTime.parse(dataBefore.replace(" ", "T").replace(dataBefore.split(":")[2], "00+00:00"));
+            OffsetDateTime afterTime = OffsetDateTime.parse(dataAfter.replace(" ", "T").replace(dataAfter.split(":")[2], "00+00:00"));
+            int numOfReadings = agent.readDataFromCsvFile(filename, devices, beforeTime, afterTime, dataIRIArray);
+            if (numOfReadings == 0) {
+                LOGGER.info("No valid reading found in this period of time.");
+                return new JSONObject().put("uploadStatus", "No valid reading found.");
+            } else {
+                LOGGER.info(numOfReadings + " readings uploaded.");
+                return new JSONObject().put("uploadStatus", numOfReadings + " readings uploaded successfully.");
+            }
+        } else if (dataSource.equalsIgnoreCase("csv") && dataRequired.equalsIgnoreCase("latest")) {
+            throw new JPSRuntimeException("dataRequired should be historical if reading from csv files.");
         } else {
             throw new JPSRuntimeException("Invalid data source or data required.");
         }
-
-        LOGGER.info("Upload complete.");
-        return new JSONObject().put("uploadStatus", "Data uploaded successfully!");
     }
 
     @Override

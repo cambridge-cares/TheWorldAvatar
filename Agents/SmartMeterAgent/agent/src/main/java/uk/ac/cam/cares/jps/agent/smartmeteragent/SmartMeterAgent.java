@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.smartmeteragent;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -17,6 +18,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import com.opencsv.CSVReader;
+
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
@@ -198,7 +202,7 @@ public class SmartMeterAgent {
         for (int i = 0; i < devices.size(); i++) {
             found = false;
             for (int j = 0; j < result.length(); j++) {
-                if (result.getJSONObject(j).getString("device").toLowerCase().equals(devices.get(i).toLowerCase())) {
+                if (result.getJSONObject(j).getString("device").equalsIgnoreCase(devices.get(i))) {
                     found = true;
                     if (i == 0) {
                         time = result.getJSONObject(j).getString("time");
@@ -218,7 +222,7 @@ public class SmartMeterAgent {
     /**
      * Query for instantiated timeseries dataIRIs of bus values, 
      * map the IRIs to devices in the readings, and upload readings to KG.
-     * @param queryResult
+     * @param queryResult       smart meter readings
      * @param targetResourceID
      * @param dataIRIArray
      */
@@ -258,7 +262,7 @@ public class SmartMeterAgent {
             // when the bus has smart meter readings
             for (int j = 0; j < queryResult.length() ; j++) {
                 time = OffsetDateTime.parse(queryResult.getJSONObject(j).getString("time"));
-                if (!queryResult.getJSONObject(j).getString("device").toLowerCase().equals(device.toLowerCase())) {
+                if (!queryResult.getJSONObject(j).getString("device").equalsIgnoreCase(device)) {
                     continue;
                 }
 
@@ -309,16 +313,107 @@ public class SmartMeterAgent {
         uploadTimeSeriesData(timeValues, dataIRIs, allValues);
     }
 
-    // TODO read from csv file
-    public void readDataFromCsvFile(List<String[]> mappings, String dataRequired, String dataBefore) {
+    public int readDataFromCsvFile(String fileName, List<String> devices, OffsetDateTime beforeTime, 
+                                    OffsetDateTime afterTime, JSONArray dataIRIArray) {
         LOGGER.info("Reading from csv file...");
-        if (dataRequired.toLowerCase().equals("latest")) {
+        int numOfReadings = 0;
+		try (CSVReader csvReader = new CSVReader(new FileReader(fileName));) {
+			String[] values = null;
+            String time = "";
+            JSONArray records = new JSONArray();
+			while ((values = csvReader.readNext()) != null) {
+                // Assuming readings are in UTC time
+                values[1] = values[1].replace(" ", "T").replace(values[1].split(":")[2], "00+00:00");
+                if (values[1].equals("ts") || OffsetDateTime.parse(values[1]).compareTo(beforeTime) > 0
+                    || OffsetDateTime.parse(values[1]).compareTo(afterTime) < 0) {
+                    continue;  // skip headers and lines where time is not within the given period
+                }
+                if (!values[1].equals(time)) {
+                    // when the reading's time is different from the previous reading
+                    JSONArray oneGroup = new JSONArray();
+                    // If there are previous records, save them first
+                    if (!records.isEmpty()) {
+                        // Select one record for each device, and throw readings for devices
+                        // not in the mapping file and readings with data package lost (value = 0)
+                        for (int i = 0; i < devices.size(); i++) {
+                            for (int j = 0; j < records.length(); j++) {
+                                if (records.getJSONObject(j).getString("device").equalsIgnoreCase(devices.get(i)) &&
+                                    Double.parseDouble(records.getJSONObject(i).get("pd").toString()) != 0 &&
+                                    Double.parseDouble(records.getJSONObject(i).get("current").toString()) != 0 &&
+                                    Double.parseDouble(records.getJSONObject(i).get("voltage").toString()) != 0 &&
+                                    Double.parseDouble(records.getJSONObject(i).get("frequency").toString()) != 0) {
+                                    oneGroup.put(records.getJSONObject(j));
+                                    break;
+                                }
+                            }
+                        }
+                        if (validateResult(devices, oneGroup)) {
+                            uploadSmartMeterData(oneGroup, time, dataIRIArray);
+                            numOfReadings += 1;
+                        }
+                    }
+                    records = new JSONArray();
+                    records.put(processCsvReadings(values));
+                    time = values[1];
+                } else {
+                    // when the reading's time is the same as the previous reading
+                    records.put(processCsvReadings(values));
+                }
+			}
 
-        } else if (dataRequired.toLowerCase().equals("historical")) {
-
-        } else {
-            throw new JPSRuntimeException("Invalid data requirement: dataRequired should be latest or historical.");
+            // Save the last group of results with the same time
+            JSONArray oneGroup = new JSONArray();
+            if (!records.isEmpty()) {
+                // Select one record for each device, and throw readings for devices
+                // not in the mapping file and readings with data package lost (value = 0)
+                for (int i = 0; i < devices.size(); i++) {
+                    for (int j = 0; j < records.length(); j++) {
+                        if (records.getJSONObject(j).getString("device").equalsIgnoreCase(devices.get(i)) &&
+                            Double.parseDouble(records.getJSONObject(i).get("pd").toString()) != 0 &&
+                            Double.parseDouble(records.getJSONObject(i).get("current").toString()) != 0 &&
+                            Double.parseDouble(records.getJSONObject(i).get("voltage").toString()) != 0 &&
+                            Double.parseDouble(records.getJSONObject(i).get("frequency").toString()) != 0) {
+                            oneGroup.put(records.getJSONObject(j));
+                            break;
+                        }
+                    }
+                }
+                if (validateResult(devices, oneGroup)) {
+                    uploadSmartMeterData(oneGroup, time, dataIRIArray);
+                    numOfReadings += 1;
+                }
+            }
+		} catch (IOException e) {
+            throw new JPSRuntimeException("Failed to read from csv file.", e);
         }
+		return numOfReadings;
+	}
+    
+    /**
+     * Given one line of readings from the csv file, calculate 
+     * average values using readings of 3 phases.
+     * @param reading
+     * @return
+     */
+    public JSONObject processCsvReadings(String[] reading) {
+        String time = reading[1];
+        String device = reading[32];
+        String pd = Double.toString((Double.parseDouble(reading[6]) 
+                    + Double.parseDouble(reading[7]) + Double.parseDouble(reading[8]))/3);
+        String current = Double.toString((Double.parseDouble(reading[11]) 
+                    + Double.parseDouble(reading[12]) + Double.parseDouble(reading[13]))/3);
+        String voltage = Double.toString((Double.parseDouble(reading[14]) 
+                    + Double.parseDouble(reading[15]) + Double.parseDouble(reading[16]))/3);
+        String frequency = Double.toString((Double.parseDouble(reading[23]) 
+                    + Double.parseDouble(reading[24]) + Double.parseDouble(reading[25]))/3);
+        JSONObject readingValues = new JSONObject()
+                                .put("time", time)
+                                .put("device", device)
+                                .put("pd", pd)
+                                .put("current", current)
+                                .put("voltage", voltage)
+                                .put("frequency", frequency);
+        return readingValues;
     }
 
     /**
