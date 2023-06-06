@@ -25,7 +25,6 @@ import uk.ac.cam.cares.jps.base.derivation.DerivationOutputs;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 /**
  * Takes in one ship IRI as input, queries the ship properties (type and speed
@@ -119,7 +118,7 @@ public class EmissionsAgent extends DerivationAgent {
 
         derivationOutputs.addTriple(particleDensity, hasValue, particleDensityMeasure);
         derivationOutputs.addLiteral(particleDensityMeasure, hasNumericalValue, chimney.getParticleDensity());
-        derivationOutputs.addLiteral(particleDensityMeasure, hasUnit, kgm3);
+        derivationOutputs.addTriple(particleDensityMeasure, hasUnit, kgm3);
 
         // mixture density, and temperature shared by all gas phase
         String density = derivationOutputs.createNewEntityWithBaseUrl(QueryClient.PREFIX, QueryClient.DENSITY);
