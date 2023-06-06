@@ -173,7 +173,7 @@ public class AermodAgent extends DerivationAgent {
         }
 
         aermod.createAermodInputFile(scope, nx, ny, srid);
-        // The recepto.dat file may have been previously created by running AERMAP. If
+        // The receptor.dat file may have been previously created by running AERMAP. If
         // so, it should not be overwritten.
         if (Files.notExists(simulationDirectory.resolve("aermod/receptor.dat")))
             aermod.createAERMODReceptorInput(scope, nx, ny, srid);

@@ -23,7 +23,6 @@ import org.locationtech.jts.geom.Point;
 import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
 
 import com.cmclinnovations.aermod.sparqlbuilder.ValuesPattern;
-
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -958,6 +957,10 @@ public class QueryClient {
 
     public void setElevation(List<StaticPointSource> pointSources, List<Building> buildings, int simulationSrid) {
 
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet result = null;
+
         for (int i = 0; i < pointSources.size(); i++) {
             StaticPointSource ps = pointSources.get(i);
             String originalSrid = "EPSG:" + ps.getLocation().getSRID();
@@ -968,8 +971,10 @@ public class QueryClient {
                     xyTransformed[0], xyTransformed[1], simulationSrid, xyTransformed[0], xyTransformed[1],
                     simulationSrid);
 
-            try (Statement stmt = rdbStoreClient.getConnection().createStatement()) {
-                ResultSet result = stmt.executeQuery(sqlString);
+            try {
+                conn = rdbStoreClient.getConnection();
+                stmt = conn.createStatement();
+                result = stmt.executeQuery(sqlString);
                 if (result.next()) {
                     double elevation = result.getDouble("val");
                     ps.setElevation(elevation);
@@ -981,6 +986,31 @@ public class QueryClient {
 
             } catch (SQLException e) {
                 LOGGER.error(e.getMessage());
+            } finally {
+                if (result != null) {
+                    try {
+                        result.close();
+                    } catch (SQLException e) {
+                        LOGGER.error(e.getMessage());
+                    }
+                }
+
+                if (stmt != null) {
+                    try {
+                        stmt.close();
+                    } catch (SQLException e) {
+                        LOGGER.error(e.getMessage());
+                    }
+                }
+
+                if (conn != null) {
+                    try {
+                        conn.close();
+                    } catch (SQLException e) {
+                        LOGGER.error(e.getMessage());
+                    }
+                }
+
             }
 
         }
@@ -995,8 +1025,10 @@ public class QueryClient {
                     xyTransformed[0], xyTransformed[1], simulationSrid, xyTransformed[0], xyTransformed[1],
                     simulationSrid);
 
-            try (Statement stmt = rdbStoreClient.getConnection().createStatement()) {
-                ResultSet result = stmt.executeQuery(sqlString);
+            try {
+                conn = rdbStoreClient.getConnection();
+                stmt = conn.createStatement();
+                result = stmt.executeQuery(sqlString);
                 if (result.next()) {
                     double elevation = result.getDouble("val");
                     building.setElevation(elevation);
@@ -1007,6 +1039,30 @@ public class QueryClient {
                 }
             } catch (SQLException e) {
                 LOGGER.error(e.getMessage());
+            } finally {
+                if (result != null) {
+                    try {
+                        result.close();
+                    } catch (SQLException e) {
+                        LOGGER.error(e.getMessage());
+                    }
+                }
+
+                if (stmt != null) {
+                    try {
+                        stmt.close();
+                    } catch (SQLException e) {
+                        LOGGER.error(e.getMessage());
+                    }
+                }
+
+                if (conn != null) {
+                    try {
+                        conn.close();
+                    } catch (SQLException e) {
+                        LOGGER.error(e.getMessage());
+                    }
+                }
             }
 
         }
@@ -1017,16 +1073,47 @@ public class QueryClient {
 
         String sql = String.format("SELECT ST_AsGDALRaster(rast, 'GTiff') AS rData FROM elevation " +
                 "WHERE ST_Intersects(rast, ST_Transform(ST_GeomFromText('%s',4326),%d));", scope.toText(), srid);
-        sql = sql.replace("wkt", scope.toText());
         List<byte[]> elevData = new ArrayList<>();
-        try (Statement stmt = rdbStoreClient.getConnection().createStatement()) {
-            ResultSet result = stmt.executeQuery(sql);
+
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet result = null;
+
+        try {
+            conn = rdbStoreClient.getConnection();
+            stmt = conn.createStatement();
+            result = stmt.executeQuery(sql);
             while (result.next()) {
                 byte[] rasterBytes = result.getBytes("rData");
                 elevData.add(rasterBytes);
             }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
+        } finally {
+            if (result != null) {
+                try {
+                    result.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    LOGGER.error(e.getMessage());
+                }
+            }
+
         }
 
         return elevData;
