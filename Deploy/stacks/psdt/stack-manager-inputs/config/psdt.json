@@ -1,0 +1,10 @@
+{
+    "services": {
+        "includes": [
+            "feature-info-agent"
+        ]
+    },
+    "volumes": {
+        "fia-queries": "fia-queries"
+    }
+}
