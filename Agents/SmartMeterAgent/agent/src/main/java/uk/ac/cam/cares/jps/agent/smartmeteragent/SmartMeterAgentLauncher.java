@@ -103,7 +103,7 @@ public class SmartMeterAgentLauncher extends JPSAgent {
                 }
             }
             String filename = AgentLocator.getCurrentJpsAppDirectory(this) + "/database/ExampleCSV";
-            JSONArray dataIRIArray = agent.getDataIris("http://localhost:48888/microgrid", mappings);
+            JSONArray dataIRIArray = agent.getDataIris(targetResourceID, mappings);
             // Input time need to be UTC time
             OffsetDateTime beforeTime = OffsetDateTime.parse(dataBefore.replace(" ", "T").replace(dataBefore.split(":")[2], "00+00:00"));
             OffsetDateTime afterTime = OffsetDateTime.parse(dataAfter.replace(" ", "T").replace(dataAfter.split(":")[2], "00+00:00"));

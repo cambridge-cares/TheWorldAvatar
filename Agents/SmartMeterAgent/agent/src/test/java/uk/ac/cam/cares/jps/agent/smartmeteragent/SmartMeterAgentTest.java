@@ -33,8 +33,8 @@ public class SmartMeterAgentTest {
                                 .put("dataSource", "csv")
                                 .put("dataRequired", "historical")
                                 .put("microgrid", "http://localhost:48888/microgrid")
-                                .put("dataBefore", "2022-11-09 21:04:00")
-                                .put("dataAfter", "2022-11-09 21:09:00");
+                                .put("dataBefore", "2022-11-09 21:09:00")
+                                .put("dataAfter", "2022-11-09 21:04:00");
         JSONObject result = agent.processRequestParameters(requestParams);
         return;
     }

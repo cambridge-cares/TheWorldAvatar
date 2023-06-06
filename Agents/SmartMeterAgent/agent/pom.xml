@@ -92,6 +92,10 @@
                 parent POM unless overridden here. -->
                 <configuration>
                     <webResources>
+                        <resource>
+           			        <directory>database</directory>
+           			        <targetPath>database</targetPath>
+           		        </resource>
 				        <resource>
            			        <directory>config</directory>
            			        <targetPath>config</targetPath>
