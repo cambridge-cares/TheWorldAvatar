@@ -1,0 +1,16 @@
+{
+    "ServiceSpec": {
+        "Name": "volume-populator",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "busybox",
+                "Command": [
+                    "cp",
+                    "-rf",
+                    "/hostDirs/.",
+                    "/volumes"
+                ]
+            }
+        }
+    }
+}

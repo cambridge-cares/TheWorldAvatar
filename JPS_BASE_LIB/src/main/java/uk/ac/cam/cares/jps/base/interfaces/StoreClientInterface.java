@@ -12,9 +12,9 @@ import org.json.JSONArray;
  */
 public interface StoreClientInterface {
 
-
+	
 	// Query methods
-
+	
 	/**
 	 * Executes the query supplied by the calling method and returns results<p>
 	 * as a JSONArray.
@@ -22,7 +22,7 @@ public interface StoreClientInterface {
 	 * @return JSONArray
 	 */
 	JSONArray executeQuery(String query);	
-
+	
 	/**
 	 * Execute sparql query supplied by the calling method.
 	 * @param query
@@ -39,12 +39,12 @@ public interface StoreClientInterface {
 
 	/**
 	 * Execute query using the query variable.
-	 * @return JSONArray as String
+	 * @return JSONArray as String 
 	 */
 	String execute();
-
+	
 	// update methods
-
+	
 	/**
 	 * Executes the update operation that is provided through the constructors or setter<p>
 	 * method.
@@ -56,9 +56,9 @@ public interface StoreClientInterface {
 	 * @param update as String
 	 */
 	int executeUpdate(String update);
-
+	
 	/**
-	 * Sets the query.
+	 * Sets the query. 
 	 * @param query
 	 */
 	String setQuery(String query);
@@ -67,7 +67,7 @@ public interface StoreClientInterface {
 	 * Returns the available query.
 	 */
 	String getQuery();
-
+	
 	// Authentication
 	String getUser();
 
@@ -77,4 +77,4 @@ public interface StoreClientInterface {
 
 	void setPassword(String password);
 
-}
+	}

@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, make_response
 from stdc.kgoperations.getkgdata import get_ontocompchem_data, \
-                                        get_ontospecies_data
+                                        get_ontospecies_data, \
+                                        get_ontocompchem_iri
 from stdc.app import runThermoCalculator
 
 calculator_bp = Blueprint(
@@ -14,7 +15,7 @@ def api():
     print(request.args)
     inputs= {}
     ontospecies_IRI = request.args['ontospecies_IRI']
-    ontocompchem_IRI = request.args['ontocompchem_IRI']
+    ontocompchem_IRI = get_ontocompchem_iri(ontospecies_IRI)
     os_inputs, enthalpy_ref_data = get_ontospecies_data(ontospecies_IRI)
     oc_inputs = get_ontocompchem_data(ontocompchem_IRI, ontospecies_IRI)
     inputs = {**oc_inputs,**os_inputs}
