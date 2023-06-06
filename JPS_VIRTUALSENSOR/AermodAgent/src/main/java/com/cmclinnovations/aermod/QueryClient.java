@@ -970,8 +970,15 @@ public class QueryClient {
 
             try (Statement stmt = rdbStoreClient.getConnection().createStatement()) {
                 ResultSet result = stmt.executeQuery(sqlString);
-                double elevation = result.getDouble("val");
-                ps.setElevation(elevation);
+                if (result.next()) {
+                    double elevation = result.getDouble("val");
+                    ps.setElevation(elevation);
+                } else {
+                    LOGGER.warn(
+                            "Could not find elevation data for the point source located at ({},{}) in EPSG:{} coordinates. Its elevation will be set to zero when running BPIPPRM and AERMOD.",
+                            xyTransformed[0], xyTransformed[1], simulationSrid);
+                }
+
             } catch (SQLException e) {
                 LOGGER.error(e.getMessage());
             }
@@ -983,20 +990,46 @@ public class QueryClient {
             String originalSrid = building.getSrid();
             double[] xyOriginal = { building.getLocation().getX(), building.getLocation().getY() };
             double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
-            String sqlString = String.format("SELECT ST_Value(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d)) AS val" +
-                    "FROM elevation" + "WHERE ST_Intersects(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d));",
+            String sqlString = String.format("SELECT ST_Value(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d)) AS val " +
+                    "FROM elevation " + "WHERE ST_Intersects(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d));",
                     xyTransformed[0], xyTransformed[1], simulationSrid, xyTransformed[0], xyTransformed[1],
                     simulationSrid);
 
             try (Statement stmt = rdbStoreClient.getConnection().createStatement()) {
                 ResultSet result = stmt.executeQuery(sqlString);
-                double elevation = result.getDouble("val");
-                building.setElevation(elevation);
+                if (result.next()) {
+                    double elevation = result.getDouble("val");
+                    building.setElevation(elevation);
+                } else {
+                    LOGGER.warn(
+                            "Could not find elevation data for the building located at ({},{}) in EPSG:{} coordinates. Its elevation will be set to zero when running BPIPPRM and AERMOD.",
+                            xyTransformed[0], xyTransformed[1], simulationSrid);
+                }
             } catch (SQLException e) {
                 LOGGER.error(e.getMessage());
             }
 
         }
+
+    }
+
+    List<byte[]> getScopeElevation(Polygon scope, int srid) {
+
+        String sql = String.format("SELECT ST_AsGDALRaster(rast, 'GTiff') AS rData FROM elevation " +
+                "WHERE ST_Intersects(rast, ST_Transform(ST_GeomFromText('%s',4326),%d));", scope.toText(), srid);
+        sql = sql.replace("wkt", scope.toText());
+        List<byte[]> elevData = new ArrayList<>();
+        try (Statement stmt = rdbStoreClient.getConnection().createStatement()) {
+            ResultSet result = stmt.executeQuery(sql);
+            while (result.next()) {
+                byte[] rasterBytes = result.getBytes("rData");
+                elevData.add(rasterBytes);
+            }
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        }
+
+        return elevData;
 
     }
 

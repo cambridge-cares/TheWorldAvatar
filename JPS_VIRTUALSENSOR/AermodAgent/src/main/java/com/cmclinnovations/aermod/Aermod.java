@@ -3,10 +3,12 @@ package com.cmclinnovations.aermod;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -18,6 +20,8 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -44,6 +48,7 @@ import com.cmclinnovations.aermod.objects.PointSource;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
 import com.cmclinnovations.aermod.objects.WeatherData;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 public class Aermod {
@@ -72,6 +77,114 @@ public class Aermod {
 
         this.aermodDirectory = simulationDirectory.resolve("aermod");
         aermodDirectory.toFile().mkdir();
+    }
+
+    /* Create input config and data files for AERMAP. */
+
+    public int createAERMAPInput(List<byte[]> elevData, int centreZoneNumber) {
+
+        int n = elevData.size();
+        StringBuilder aermapInputString = new StringBuilder();
+
+        for (int i = 0; i < n; i++) {
+            String fn = (i + 1) + ".tif";
+            aermapInputString.append("   DATAFILE " + fn);
+            aermapInputString.append(System.lineSeparator());
+            try {
+                Files.write(aermapDirectory.resolve(fn), elevData.get(i));
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage());
+                LOGGER.error("Error writing byte {} to .tif file.", i);
+                return 1;
+            }
+        }
+
+        String templateContent;
+
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream("aermap.inp")) {
+            templateContent = IOUtils.toString(is, StandardCharsets.UTF_8);
+            templateContent = templateContent.replace("   DATAFILE FILE_NAMES", aermapInputString.toString());
+            String simGrid = String.format("%f %f %f %f %d %d", 0.0, 0.0, 0.0, 0.0, centreZoneNumber, 0);
+            templateContent = templateContent.replace("REPLACED_BY_AERMOD_AGENT", simGrid);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Failed to copy aermap.inp");
+            return 1;
+        }
+
+        return writeToFile(aermapDirectory.resolve("aermap.inp"), templateContent);
+    }
+
+    /* Create receptor data files for AERMAP. */
+    public int createAERMAPReceptorInput(Polygon scope, int nx, int ny, int simulationSrid) {
+
+        List<Double> xDoubles = new ArrayList<>();
+        List<Double> yDoubles = new ArrayList<>();
+
+        for (int i = 0; i < scope.getCoordinates().length; i++) {
+
+            String originalSrid = "EPSG:4326";
+            double[] xyOriginal = { scope.getCoordinates()[i].x, scope.getCoordinates()[i].y };
+            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
+
+            xDoubles.add(xyTransformed[0]);
+            yDoubles.add(xyTransformed[1]);
+        }
+
+        double xlo = Collections.min(xDoubles);
+        double xhi = Collections.max(xDoubles);
+        double ylo = Collections.min(yDoubles);
+        double yhi = Collections.max(yDoubles);
+
+        double dx = (xhi - xlo) / nx;
+        double dy = (yhi - ylo) / ny;
+
+        StringBuilder sb = new StringBuilder("RE GRIDCART POL1 STA ");
+        sb.append(System.lineSeparator());
+        String rec = String.format("                 XYINC %f %d %f %f %d %f", xlo, nx, dx, ylo, ny, dy);
+        sb.append(rec).append(System.lineSeparator());
+        sb.append("RE GRIDCART POL1 END ").append(System.lineSeparator());
+
+        return writeToFile(aermapDirectory.resolve("aermapReceptors.dat"), sb.toString());
+    }
+
+    public int runAermap() {
+        try {
+            Process process = Runtime.getRuntime().exec(new String[] { EnvConfig.AERMAP_EXE, "aermap.inp" }, null,
+                    aermapDirectory.toFile());
+
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+            // Read the output from the command
+            LOGGER.info("Here is the standard output of AERMAP:");
+            String s = null;
+            while ((s = stdInput.readLine()) != null) {
+                LOGGER.info(s);
+            }
+
+            // Read any errors from the attempted command
+            LOGGER.info("Here is the standard error of AERMAP (if any):");
+            while ((s = stdError.readLine()) != null) {
+                LOGGER.info(s);
+            }
+
+            if (process.waitFor() != 0) {
+                return 1;
+            }
+
+        } catch (IOException e) {
+            LOGGER.error("Error executing aermap");
+            LOGGER.error(e.getMessage());
+            return 1;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.error("Error executing aermap");
+            LOGGER.error(e.getMessage());
+            return 1;
+        }
+        return 0;
     }
 
     /* Write out data to BPIPPRM input file and run this program. */
@@ -212,7 +325,7 @@ public class Aermod {
         }
         featureCollection.put("features", features);
 
-        LOGGER.info("Uploading plant items GeoJSON to PostGIS");
+        LOGGER.info("Uploading static point sources GeoJSON to PostGIS");
         return featureCollection;
 
     }

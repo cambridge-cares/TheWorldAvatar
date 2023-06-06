@@ -7,6 +7,8 @@ it is still necessary to define one ship in a .json file in this folder. In this
 
 4) If running AERMOD for static point sources, it is necessary to instantiate the input data required for AERMOD Agent according to OntoDispersion (https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodispersion). See the JurongIslandInputAgent folder for an example of an agent that does this.
 
+5) If running AERMOD for static point sources, it is required to upload the elevation data to a table with name 'elevation' in the stack postgresql database. This can be done using the stack data uploader. See https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader for more details.
+
 
 Stack needs to be up and running:
 1) execute

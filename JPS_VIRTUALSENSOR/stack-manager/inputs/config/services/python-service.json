@@ -3,7 +3,7 @@
         "Name": "python-service",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/python-service:1.1.1-SNAPSHOT",
+                "Image": "ghcr.io/cambridge-cares/python-service:1.1.2-dev-aermod-agent-aermap-SNAPSHOT",
                 "Mounts": [
                     {
                         "Type": "volume",

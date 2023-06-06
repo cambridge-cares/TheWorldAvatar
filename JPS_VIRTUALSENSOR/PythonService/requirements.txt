@@ -11,9 +11,6 @@ PyInstaller==3.3.1
 pyproj
 geojsoncontour
 requests
-sqlalchemy
-rasterio
-psycopg2
 pypiwin32==223; sys_platform == 'win32'
 pywin32==223; sys_platform == 'win32'
 https://download.pytorch.org/whl/cpu/torch-0.4.1-cp36-cp36m-win_amd64.whl; sys_platform == 'win32'

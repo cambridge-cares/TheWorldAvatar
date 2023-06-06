@@ -3,6 +3,7 @@ package com.cmclinnovations.aermod;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -144,8 +145,14 @@ public class AermodAgent extends DerivationAgent {
         }
 
         if (citiesNamespace != null) {
-            // AERMOD will be run for flat terrain in the dev-aermod-agent-cleanup branch.
-            // queryClient.setElevation(staticPointSources, buildings, srid);
+            queryClient.setElevation(staticPointSources, buildings, srid);
+            List<byte[]> elevData = queryClient.getScopeElevation(scope, srid);
+            if (aermod.createAERMAPInput(elevData, centreZoneNumber) != 0) {
+                LOGGER.error("Could not create input data file for running AERMAP.");
+                throw new JPSRuntimeException("Error creating AERMAP elevation data input.");
+            }
+            aermod.createAERMAPReceptorInput(scope, nx, ny, srid);
+            aermod.runAermap();
             aermod.createBPIPPRMInput(staticPointSources, buildings, srid);
             aermod.runBPIPPRM();
             aermod.createAERMODBuildingsInput();
@@ -166,7 +173,10 @@ public class AermodAgent extends DerivationAgent {
         }
 
         aermod.createAermodInputFile(scope, nx, ny, srid);
-        aermod.createAERMODReceptorInput(scope, nx, ny, srid);
+        // The recepto.dat file may have been previously created by running AERMAP. If
+        // so, it should not be overwritten.
+        if (Files.notExists(simulationDirectory.resolve("aermod/receptor.dat")))
+            aermod.createAERMODReceptorInput(scope, nx, ny, srid);
         aermod.runAermod("aermod.inp");
 
         // Upload files used by scripts within Python Service to file server.

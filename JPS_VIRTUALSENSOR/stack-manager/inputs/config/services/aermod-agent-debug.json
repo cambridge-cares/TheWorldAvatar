@@ -1,9 +1,9 @@
 {
-    "ServiceSpec": {
-        "Name": "aermod-agent",
-        "TaskTemplate": {
-            "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/aermod-agent:1.1.5-dev-aermod-agent-cleanup-SNAPSHOT",
+	"ServiceSpec": {
+		"Name": "aermod-agent",
+		"TaskTemplate": {
+			"ContainerSpec": {
+				"Image": "ghcr.io/cambridge-cares/aermod-agent:1.1.6-dev-aermod-agent-aermap-SNAPSHOT",
 				"Env": [
 					"STACK_NAME=${STACK_NAME}",
 					"PYTHON_SERVICE_URL=http://ship-stack-python-service:5000/getAermodGeoJSON",
@@ -15,7 +15,7 @@
 					"AERMAP_EXE=/root/aermod/aermap",
 					"BPIPPRM_EXE=/root/aermod/bpipprm",
 					"AERMET_EXE=/root/aermod/aermet",
-					"AERMOD_EXE=/root/aermod/aermod", 
+					"AERMOD_EXE=/root/aermod/aermod",
 					"WEATHER_AGENT=http://ship-stack-weather-agent:8080/WeatherAgent/UpdateStation",
 					"OPENMETEO_AGENT_RUN=http://ship-stack-openmeteo-agent:8080/OpenMeteoAgent/run",
 					"OPENMETEO_AGENT_DELETE=http://ship-stack-openmeteo-agent:8080/OpenMeteoAgent/delete",
@@ -55,35 +55,35 @@
 						"SecretName": "geoserver_password"
 					}
 				],
-                "Mounts": [
-                    {
-                        "Type": "volume",
-                        "Source": "logs",
-                        "Target": "/root/.jps"
-                    },
+				"Mounts": [
 					{
-                        "Type": "volume",
-                        "Source": "vis_data",
-                        "Target": "/vis_data"
-                    }
-                ]
-            }
-        },
+						"Type": "volume",
+						"Source": "logs",
+						"Target": "/root/.jps"
+					},
+					{
+						"Type": "volume",
+						"Source": "vis_data",
+						"Target": "/vis_data"
+					}
+				]
+			}
+		},
 		"EndpointSpec": {
-            "Ports": [
-                {
-                    "Name": "web",
-                    "Protocol": "tcp",
-                    "TargetPort": "5005",
-                    "PublishedPort": "5005"
-                }
-            ]
-        }
-    },
-    "endpoints": {
-        "aermod-agent": {
-            "url": "http://localhost:8080/AermodAgent/",
-            "externalPath": "/aermod-agent/"
-        }
-    }
+			"Ports": [
+				{
+					"Name": "web",
+					"Protocol": "tcp",
+					"TargetPort": "5005",
+					"PublishedPort": "5005"
+				}
+			]
+		}
+	},
+	"endpoints": {
+		"aermod-agent": {
+			"url": "http://localhost:8080/AermodAgent/",
+			"externalPath": "/aermod-agent/"
+		}
+	}
 }
