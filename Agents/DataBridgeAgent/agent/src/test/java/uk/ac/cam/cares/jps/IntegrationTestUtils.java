@@ -14,11 +14,10 @@ import org.apache.jena.update.UpdateRequest;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Statement;
-import java.util.ArrayDeque;
-import java.util.Queue;
+import java.sql.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public class IntegrationTestUtils {
     public static final String SPARQL_ENDPOINT = "http://172.17.0.1:9998/blazegraph/namespace";
@@ -34,6 +33,7 @@ public class IntegrationTestUtils {
     public static final String SQL_TGT_JDBC = SQL_JDBC + "test";
     public static final String SQL_USER = "user";
     public static final String SQL_PASS = "pg123";
+    public static final String TIME_CLASS = "INSTANTANEOUS";
 
     public static void createNamespace(String namespace) {
         // Generate XML properties for request
@@ -75,7 +75,7 @@ public class IntegrationTestUtils {
         queryString.append("SELECT ?s ?p ?o WHERE {?s ?p ?o}");
         Query query = QueryFactory.create(queryString.toString());
         try (QueryExecution qExec = QueryExecutionHTTP.service(endpoint, query)) {
-            ResultSet results = qExec.execSelect();
+            org.apache.jena.query.ResultSet results = qExec.execSelect();
             while (results.hasNext()) {
                 QuerySolution soln = results.nextSolution();
                 result.offer(soln.get("s").toString());
@@ -111,11 +111,51 @@ public class IntegrationTestUtils {
         }
     }
 
-    public static void queryDatabase(Connection connection, String query) {
+    public static Map<String, Map<String, Object>> queryDatabase(Connection connection, String query) {
         try (Statement statement = connection.createStatement()) {
-            statement.execute(query);
+            boolean hasResult = statement.execute(query);
+            // If there is a result set, process it or else return null
+            // Result set cannot be accessed once statement is closed
+            if (hasResult) {
+                Map<String, Map<String, Object>> results = new HashMap<>();
+                java.sql.ResultSet rs = statement.getResultSet();
+                // Retrieves all the column names dynamically
+                int columnCount = rs.getMetaData().getColumnCount();
+                List<String> columnNames = new ArrayList<>();
+                for (int i = 1; i <= columnCount; i++) {
+                    columnNames.add(rs.getMetaData().getColumnName(i));
+                }
+                // Retrieve all the values based on their names dynamically
+                int row = 1;
+                while (rs.next()) {
+                    Map<String, Object> temp = new HashMap<>();
+                    for (String columnName : columnNames) {
+                        Object columnValue = rs.getObject(columnName);
+                        temp.put(columnName, columnValue);
+                    }
+                    results.put("row" + row++, temp);
+                }
+                return results;
+            }
+            return null;
         } catch (Exception e) {
             throw new JPSRuntimeException("Unable to execute query: " + e.getMessage());
         }
+    }
+
+    public static Timestamp convertToTimeStamp(String timestamp) {
+        // Define the date and time format of the input string
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        // Parse the string to a LocalDateTime object
+        LocalDateTime localDateTime = LocalDateTime.parse(timestamp, formatter);
+        return Timestamp.valueOf(localDateTime);
+    }
+
+    public static String selectAllDataQuery(String table) {
+        return "SELECT * FROM \"" + table + "\"";
+    }
+
+    public static String dropTableQuery(String table) {
+        return "DROP TABLE IF EXISTS \"" + table + "\"";
     }
 }
