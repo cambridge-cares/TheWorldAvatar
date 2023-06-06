@@ -131,7 +131,6 @@ class COPCalculationAgent(DerivationAgent):
         
         return COP
 
-
 def default():
     """
         Instructional message at the app root.

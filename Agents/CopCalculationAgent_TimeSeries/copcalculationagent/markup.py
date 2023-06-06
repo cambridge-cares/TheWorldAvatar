@@ -129,6 +129,7 @@ sparql_client = PySparqlClient(
 
 # retrieve temperature_iri
 region_iri_list = retrieve_region_iri(sparql_client)
+#region_iri_list = ["http://statistics.data.gov.uk/id/statistical-geography/Test_000002"]
 
 print(f"A total number of {len(region_iri_list)*12} instances will be marked, meaning there is {len(region_iri_list)} regions will be marked")
 
