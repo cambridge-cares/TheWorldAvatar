@@ -1306,6 +1306,7 @@ public class DerivationSparql {
 	 * @param downstreamDerivationsForNewInfo
 	 * @return
 	 */
+	@Deprecated
 	Map<String, List<String>> matchNewDerivedIriToDownsFroNewInfo(List<String> instances,
 			List<String> downstreamDerivationsForNewInfo) {
 		Map<String, List<String>> map = new HashMap<>();
@@ -2648,6 +2649,110 @@ public class DerivationSparql {
 	}
 
 	/**
+	 * This method cleans up the "Finished" derivation in the knowledge graph by
+	 * deleting all old instances, reconnecting the new generated derived IRI with
+	 * derivations, deleting all status, and updating timestamp in one-go. This
+	 * method is thread-safe.
+	 * 
+	 * @param derivation
+	 * @param isAsync
+	 */
+	void cleanUpDerivation(String derivation, boolean isAsync) {
+		if (isAsync) {
+			// if another agent thread is cleaning up the same derivation concurrently
+			// and succeeded before this thread, then this method will return false
+			if (addUuidLockToFinishedStatus(derivation)) {
+				Map<String, List<String>> connectionMap = mapNewOutputsToDownstream(derivation, isAsync, null);
+				updateFinishedAsyncDerivation(derivation, connectionMap);
+			}
+		} else {
+		}
+	}
+
+	/**
+	 * This method maps the new outputs of a derivation to its downstream derivation.
+	 * It relies on the input signature specified in the OntoAgent instances that the
+	 * downstream derivations "isDerivedUsing". The function returns a map that indicates
+	 * the connection of new derived IRIs (if any) and downstream derivations. The map
+	 * also includes the derivation as a key, and the corresponding value is a list of
+	 * downstream derivations whose input signature does not match any of the new outputs
+	 * of the derivation (this could be the case due to if some outputs are not generated).
+	 * 
+	 * @param derivation
+	 * @param isAsync
+	 * @param outputs
+	 * @return
+	 */
+	Map<String, List<String>> mapNewOutputsToDownstream(String derivation, boolean isAsync, List<String> outputs) {
+		SelectQuery query = Queries.SELECT().distinct();
+		Variable d = SparqlBuilder.var("d");
+		Variable entity = query.var();
+		Variable existingDerivation = query.var();
+		Variable timestamp = query.var();
+		Variable downstreamDerivation = query.var();
+		Variable inputType = query.var();
+
+		// VALUES ?d { <derivation> }
+		GraphPattern derivVP = new ValuesPattern(d, iri(derivation));
+		GraphPattern outputsPattern;
+		if (isAsync) {
+			// ?d derived:hasStatus/derived:hasNewDerivedIRI ?x0 .
+			outputsPattern = d.has(PropertyPaths.path(hasStatus, hasNewDerivedIRI), entity);
+		} else {
+			// VALUES ?x0 { <output1> <output2> ... }
+			outputsPattern = new ValuesPattern(entity,
+					outputs.stream().map(e -> iri(e)).collect(Collectors.toList()));
+		}
+		// ?x3 derived:isDerivedFrom/derived:belongsTo? ?d .
+		GraphPattern downstreamGP = downstreamDerivation.has(PropertyPaths.path(isDerivedFrom, zeroOrOne(belongsTo)), d);
+		// ?x3 derived:isDerivedUsing/agent:hasOperation/agent:hasInput/agent:hasMandatoryPart/agent:hasType ?x4 .
+		// ?x0 a*/<http://www.w3.org/2000/01/rdf-schema#subClassOf>* ?x4 .
+		GraphPattern mappingGP = GraphPatterns.and(
+				downstreamDerivation.has(PropertyPaths.path(isDerivedUsing, hasOperation, hasInput, hasMandatoryPart, hasType), inputType),
+				entity.has(PropertyPaths.path(PropertyPaths.zeroOrMore(RdfPredicate.a), PropertyPaths.zeroOrMore(iri(RDFS.SUBCLASSOF.toString()))), inputType));
+		// OPTIONAL { ?x0 derived:belongsTo ?x1 . }
+		GraphPattern belongsToDerivationGP = entity.has(belongsTo, existingDerivation).optional();
+		// OPTIONAL { ?x0 time:hasTime/time:inTimePosition/time:numericPosition ?x2 . }
+		GraphPattern tsGP = entity.has(PropertyPaths.path(hasTime, inTimePosition, numericPosition), timestamp).optional();
+
+		query.prefix(prefixDerived, prefixTime, prefixAgent).select(entity, downstreamDerivation, existingDerivation, timestamp);
+		query.where(derivVP, GraphPatterns.union(
+				GraphPatterns.and(outputsPattern, GraphPatterns.and(downstreamGP, mappingGP).optional(), belongsToDerivationGP, tsGP),
+						GraphPatterns.and(downstreamGP, GraphPatterns.filterNotExists(outputsPattern, mappingGP))));
+
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+		Map<String, List<String>> connectionMap = new HashMap<>();
+		connectionMap.put(derivation, new ArrayList<>());
+		Map<String, String> enMap = new HashMap<>();
+		List<String> enList = new ArrayList<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			if (queryResult.getJSONObject(i).has(entity.getQueryString().substring(1))) {
+				String entityIRI = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
+				if (!connectionMap.containsKey(entityIRI)) {
+					connectionMap.put(entityIRI, new ArrayList<>());
+				}
+				if (queryResult.getJSONObject(i).has(downstreamDerivation.getQueryString().substring(1))) {
+					String downstreamIRI = queryResult.getJSONObject(i).getString(downstreamDerivation.getQueryString().substring(1));
+					connectionMap.get(entityIRI).add(downstreamIRI);
+				}
+				if (queryResult.getJSONObject(i).has(existingDerivation.getQueryString().substring(1))) {
+					enMap.put(queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1)),
+						queryResult.getJSONObject(i).getString(existingDerivation.getQueryString().substring(1)));
+				}
+				if (queryResult.getJSONObject(i).has(timestamp.getQueryString().substring(1))) {
+					enList.add(queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1)));
+				}
+			} else if (queryResult.getJSONObject(i).has(downstreamDerivation.getQueryString().substring(1))) {
+				connectionMap.get(derivation).add(queryResult.getJSONObject(i).getString(downstreamDerivation.getQueryString().substring(1)));
+			}
+		}
+
+		checkIfAllowOutputs(enMap, enList);
+		return connectionMap;
+	}
+
+	/**
 	 * This method reconnects new derived IRIs when a synchronous derivation is
 	 * updated, specifically, it does below five operations in one-go:
 	 * (1) delete old outputs (entities) of the given derivation and its connections
@@ -2770,8 +2875,10 @@ public class DerivationSparql {
 	 * given derivation via OntoDerivation:isDerivedFrom (applicable if this
 	 * derivation and its downstreams were created for new information);
 	 * (5) insert new derived IRIs to be connected with the given derivation using
-	 * "belongsTo", also all its downstream derivations using "isDerivedFrom" - the
-	 * mapping are provided as an argument to this method.
+	 * "belongsTo", also all its downstream derivations using "isDerivedFrom"; for
+	 * those downstream derivations that no new derived IRIs are identified as mapped,
+	 * connect them using "isDerivedFrom" directly with the derivation - the mapping
+	 * are provided as an argument to this method.
 	 * 
 	 * It should be noted that this SPARQL update will ONLY be executed when the
 	 * given derivation is outdated - this prevents any potential faulty behaviour
@@ -2785,15 +2892,15 @@ public class DerivationSparql {
 	 * @param newIriDownstreamDerivationMap
 	 * @return
 	 */
-	boolean updateFinishedAsyncDerivation(String derivation, Map<String, List<String>> newIriDownstreamDerivationMap) {
+	boolean updateFinishedAsyncDerivation(String derivation, Map<String, List<String>> connectionMap) {
 		ModifyQuery modify = Queries.MODIFY();
 		SubSelect sub = GraphPatterns.select();
 
-		// check if all new derived IRI are allowed to be marked as derivation outputs
-		allowedAsDerivationOutputs(new ArrayList<>(newIriDownstreamDerivationMap.keySet()));
+		// add triples of directed downstream derivations to be added
+		connectionMap.remove(derivation).forEach(d -> modify.insert(iri(d).has(isDerivedFrom, iri(derivation))));
 		// insert triples of new derived IRI and the derivations that it should be
 		// connected to
-		newIriDownstreamDerivationMap.forEach((newIRI, downstreamDerivations) -> {
+		connectionMap.forEach((newIRI, downstreamDerivations) -> {
 			// add <newIRI> <belongsTo> <derivation> for each newIRI
 			modify.insert(iri(newIRI).has(belongsTo, iri(derivation)));
 			// if this <newIRI> is inputs to other derivations, add
@@ -2847,8 +2954,9 @@ public class DerivationSparql {
 		// these patterns query the status of this derivation
 		TriplePattern tp1 = d.has(hasStatus, status);
 		TriplePattern tp2 = status.isA(statusType);
-		TriplePattern tp3 = status.has(hasNewDerivedIRI, sndIRI);
-		GraphPattern statusQueryPattern = GraphPatterns.and(tp1, tp2, tp3);
+		TriplePattern tp3 = status.has(hasNewDerivedIRI, sndIRI); // this is optional in query but mandatory in update
+																  // to accommodate the situation where no new outputs
+		GraphPattern statusQueryPattern = GraphPatterns.and(tp1, tp2, tp3.optional());
 		// this GraphPattern queries directed downstream derivation if exist, thus
 		// optional
 		GraphPattern directedDownstreamPattern = downd.has(isDerivedFrom, d).optional();
@@ -3128,19 +3236,7 @@ public class DerivationSparql {
 			}
 		}
 
-		// (1) they do not already belongsTo other derivation
-		if (!enMap.isEmpty()) {
-			String errmsg = "ERROR: some entities are already part of another derivation" + enMap.toString();
-			LOGGER.fatal(errmsg);
-			throw new JPSRuntimeException(errmsg);
-		}
-
-		// (2) they do not have timestamp, i.e. not pure inputs
-		if (!enList.isEmpty()) {
-			String errmsg = "ERROR: some entities have time instances and cannot be marked as derivation outputs" + enList.toString();
-			LOGGER.fatal(errmsg);
-			throw new JPSRuntimeException(errmsg);
-		}
+		checkIfAllowOutputs(enMap, enList);
 	}
 
 	Map<String, String> getDerivationsOf(List<String> entities) {
@@ -3296,5 +3392,21 @@ public class DerivationSparql {
 				.replace("\f", "\\f")
 				.replace("\"", "\\\"")
 				.replace("'", "\\'");
+	}
+
+	void checkIfAllowOutputs(Map<String, String> enMap, List<String> enList) {
+		// (1) they do not already belongsTo other derivation
+		if (!enMap.isEmpty()) {
+			String errmsg = "ERROR: some entities are already part of another derivation" + enMap.toString();
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
+		}
+
+		// (2) they do not have timestamp, i.e. not pure inputs
+		if (!enList.isEmpty()) {
+			String errmsg = "ERROR: some entities have time instances and cannot be marked as derivation outputs" + enList.toString();
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
+		}
 	}
 }

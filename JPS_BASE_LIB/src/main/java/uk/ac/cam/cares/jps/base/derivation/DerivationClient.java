@@ -881,14 +881,8 @@ public class DerivationClient {
 	 * @param derivation
 	 */
 	public void cleanUpFinishedDerivationUpdate(String derivation) {
-		// if another agent thread is cleaning up the same derivation concurrently
-		// and succeeded before this thread, then this method will return false
-		if (this.sparqlClient.addUuidLockToFinishedStatus(derivation)) {
-			// only progress to clean up if the uuidLock is added successfully
-			// otherwise, the other thread will handle the job, or it is already cleaned up
-			cleanUpFinishedDerivation(derivation);
-			LOGGER.info("Asynchronous derivation <" + derivation + "> is now cleaned up.");
-		}
+		this.sparqlClient.cleanUpDerivation(derivation, true);
+		LOGGER.info("Asynchronous derivation <" + derivation + "> is now cleaned up.");
 	}
 
 	/**
@@ -900,6 +894,7 @@ public class DerivationClient {
 	 * 
 	 * @param derivation
 	 */
+	@Deprecated
 	private void cleanUpFinishedDerivation(String derivation) {
 		// this method is similar to the part of code in DerivationAgent that updates
 		// the updated synchronous derivations by first matching the old-new instances
