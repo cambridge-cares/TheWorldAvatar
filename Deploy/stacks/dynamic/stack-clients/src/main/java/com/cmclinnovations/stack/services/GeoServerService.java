@@ -35,8 +35,8 @@ public final class GeoServerService extends ContainerService {
 
     private final RESTEndpointConfig geoserverEndpointConfig;
 
-    public GeoServerService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
-        super(stackName, serviceManager, config);
+    public GeoServerService(String stackName, ServiceConfig config) {
+        super(stackName, config);
 
         String passwordFile = getEnvironmentVariable("ADMIN_PASSWORD_FILE");
         if (null == passwordFile) {
