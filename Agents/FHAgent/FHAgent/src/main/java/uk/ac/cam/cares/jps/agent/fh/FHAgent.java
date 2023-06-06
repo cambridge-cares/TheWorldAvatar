@@ -77,6 +77,14 @@ public class FHAgent{
      */
     public static String dataBridgeURL;
     /*
+     * Stack JDBC target URL
+     */
+    public static String dataBridgeJDBC;
+    /*
+     * Stack kg endpoint URL
+     */
+    public static String dataBridgeKG;
+    /*
      * Bool for whether to use the Stack or not
      */
     public Boolean useStack;
@@ -152,6 +160,8 @@ public class FHAgent{
 
             try{
                 dataBridgeURL = prop.getProperty("data_bridge.url");
+                dataBridgeJDBC = prop.getProperty("data_bridge.JDBC_end");
+                dataBridgeKG = prop.getProperty("data_bridge.kg_end");
             }
 
             catch(Exception e){
@@ -159,7 +169,7 @@ public class FHAgent{
             }
 
             try{
-                useStack = Boolean.parseBoolean(prop.getProperty("data_bridge.url"));
+                useStack = Boolean.parseBoolean(prop.getProperty("use_stack"));
             }
 
             catch(Exception e){
@@ -806,6 +816,14 @@ public class FHAgent{
         }
         result.put("values", values);
         result.put("ts", timestamps);
+
+        //Optional stack JDBC and KG endpoint URL
+        if(!dataBridgeJDBC.equals("")){
+            result.put("database", dataBridgeJDBC);
+        }
+        if(!dataBridgeKG.equals("")){
+            result.put("namespace", dataBridgeKG);
+        }
 
         return result;
     }

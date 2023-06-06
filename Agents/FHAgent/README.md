@@ -44,6 +44,8 @@ Contains config for the agent operations such as calculations and instantiations
 
 - `thinsboard.mappingfolder` : Path to the folder containing IRI mapping for timeseries instantiation. Each timeseries IRI is contained in a single file.
 - `data_bridge.url` : URL to the data bridge agent
+- `data_bridge.JDBC_end` : Endpoint URL of the stack's JDBC target URL. Optional, leave empty if using the data bridge agent's default endpoint
+- `data_bridge.kg_end` : Endpoint URL of the stack's target SPARQL endpoint. Optional, leave empty if using the data bridge agent's default endpoint
 - `use_stack` : Boolean whether the agent is using the stack or not
 - `derivation.mapping` : Maps the raw varables to the derived variables. The raw variable name must be the same with the TB variable keyname. The format is the following: `raw1:deriv1, raw2:deriv2, raw3:deriv1, ...`
 - `threshold.tally` : The distance threshold for the tally system
