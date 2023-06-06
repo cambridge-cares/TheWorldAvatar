@@ -1295,51 +1295,6 @@ public class DerivationSparql {
 	}
 
 	/**
-	 * This method matches the new derived instances of the derivation with the
-	 * input signature of the downstream derivations that directly connected to that
-	 * derivation via OntoDerivation:isDerivedFrom. The matched instances are
-	 * finally structured as a Map<String, List<String>> to be used for reconnecting
-	 * the new derived instances with the downstream derivations created for new
-	 * information.
-	 * 
-	 * @param instances
-	 * @param downstreamDerivationsForNewInfo
-	 * @return
-	 */
-	@Deprecated
-	Map<String, List<String>> matchNewDerivedIriToDownsFroNewInfo(List<String> instances,
-			List<String> downstreamDerivationsForNewInfo) {
-		Map<String, List<String>> map = new HashMap<>();
-		SelectQuery query = Queries.SELECT().distinct();
-		Variable derivation = query.var();
-		Variable type = query.var();
-		Variable instance = query.var();
-
-		GraphPattern matchingPattern = GraphPatterns.and(new ValuesPattern(derivation,
-				downstreamDerivationsForNewInfo.stream().map(i -> iri(i)).collect(Collectors.toList())),
-				derivation.has(PropertyPaths.path(isDerivedUsing, hasOperation, hasInput, hasMandatoryPart, hasType),
-						type),
-				new ValuesPattern(instance, instances.stream().map(i -> iri(i)).collect(Collectors.toList())),
-				instance.has(PropertyPaths.path(PropertyPaths.zeroOrMore(RdfPredicate.a),
-						PropertyPaths.zeroOrMore(iri(RDFS.SUBCLASSOF.toString()))), type));
-
-		query.prefix(prefixDerived, prefixAgent).where(matchingPattern).select(instance, derivation);
-
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-
-		for (int i = 0; i < queryResult.length(); i++) {
-			String inst = queryResult.getJSONObject(i).getString(instance.getQueryString().substring(1));
-			String deriv = queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1));
-			if (map.containsKey(inst)) {
-				map.get(inst).add(deriv);
-			} else {
-				map.put(inst, new ArrayList<>(Arrays.asList(deriv)));
-			}
-		}
-		return map;
-	}
-
-	/**
 	 * This method retrieves a list of derivations that <isDerivedUsing> a given
 	 * <agentIRI>.
 	 * 
