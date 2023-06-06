@@ -167,6 +167,9 @@ public class FHAgent{
             }
             
         }
+        catch (Exception e) {
+            throw new JPSRuntimeException("Failed to init FHAgent", e);
+        }
     }
 
     /**
