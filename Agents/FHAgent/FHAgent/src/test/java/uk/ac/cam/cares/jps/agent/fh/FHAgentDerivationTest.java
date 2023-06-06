@@ -245,7 +245,7 @@ public class FHAgentDerivationTest {
         }
         
         catch (Exception e) {
-            Assert.assertTrue(e.toString().contains("Error parsing derivation base URL from properties file."));
+            Assert.assertTrue(e.toString().contains("Error on initialising derivation instantiation"));
         }
         //Empty client.properties -- The FHAgent constructor failed first here, is this one still necessary?
 

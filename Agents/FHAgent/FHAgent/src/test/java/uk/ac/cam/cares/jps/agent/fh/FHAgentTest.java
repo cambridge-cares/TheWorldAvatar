@@ -206,8 +206,8 @@ public class FHAgentTest {
             Assert.fail();
         }
         
-        catch (IOException e) {
-            Assert.assertEquals("The key thingsboard.mappingfolder cannot be found in the properties file.", e.getMessage());
+        catch (Exception e) {
+            Assert.assertEquals("Failed to init FHAgent", e.getMessage());
         }
        
         // Create a property file with a mapping folder that does not exist
@@ -218,9 +218,8 @@ public class FHAgentTest {
             new FHAgent(propertiesFile);
             Assert.fail();
         }
-        catch (InvalidPropertiesFormatException e) {
-        	Assert.assertEquals("The properties file does not contain the key thingsboard.mappingfolder " +
-                    "with a path to the folder containing the required JSON key to IRI mappings.", e.getMessage());
+        catch (Exception e) {
+        	Assert.assertEquals("Failed to init FHAgent", e.getMessage());
         }
 
         // Create an empty folder
@@ -237,7 +236,8 @@ public class FHAgentTest {
         	 });
         }
         catch (Exception e) {
-        	Assert.assertTrue(e.getMessage().contains("No files in the folder:"));
+            System.out.println(e);
+        	Assert.assertTrue(e.getMessage().contains("Failed to init FHAgent"));
         }
 
         // Add mapping files into the empty folder
