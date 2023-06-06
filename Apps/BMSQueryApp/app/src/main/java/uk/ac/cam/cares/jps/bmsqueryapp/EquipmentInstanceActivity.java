@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.bmsqueryapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.webkit.ValueCallback;
@@ -23,6 +24,7 @@ import org.apache.log4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
+import uk.ac.cam.cares.jps.bmsqueryapp.authorization.AuthorizationHelper;
 import uk.ac.cam.cares.jps.bmsqueryapp.data.attribute.EditableAttribute;
 import uk.ac.cam.cares.jps.bmsqueryapp.databinding.ActivityEquipmentInstanceBinding;
 import uk.ac.cam.cares.jps.bmsqueryapp.utils.Constants;
@@ -31,10 +33,13 @@ import uk.ac.cam.cares.jps.bmsqueryapp.view.tab.TabAdapter;
 public class EquipmentInstanceActivity extends AppCompatActivity{
     ActivityEquipmentInstanceBinding binding;
     private static final Logger LOGGER = LogManager.getLogger(EquipmentInstanceActivity.class);
+    private AuthorizationHelper authHelper;
 
     public static final String EQUIPMENT_LABEL = "equipmentLabel";
     public static final String EQUIPMENT_IRI = "equipmentIRI";
     public static final String EQUIPMENT_TYPE = "equipmentType";
+
+    private static final int END_SESSION_REQUEST_CODE = 911;
 
     TabAdapter adapter;
     int tabPosition;
@@ -46,6 +51,8 @@ public class EquipmentInstanceActivity extends AppCompatActivity{
 
         binding = ActivityEquipmentInstanceBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        authHelper = AuthorizationHelper.getInstance(this);
 
         String equipmentLabel = getIntent().getStringExtra(EQUIPMENT_LABEL);
         String equipmentIri = getIntent().getStringExtra(EQUIPMENT_IRI);
@@ -115,8 +122,7 @@ public class EquipmentInstanceActivity extends AppCompatActivity{
 
         getSupportFragmentManager().setFragmentResultListener("startLogin", this,
                 (requestKey, result) -> {
-                    startActivity(new Intent(this, LoginActivity.class));
-                    finish();
+                    startActivityForResult(authHelper.getLogOutIntent(), END_SESSION_REQUEST_CODE);
                 });
     }
 
@@ -130,6 +136,20 @@ public class EquipmentInstanceActivity extends AppCompatActivity{
             return attributes;
         }
         return new ArrayList<>();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == END_SESSION_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            authHelper.clearSharedPref();
+            Intent loginIntent = new Intent(this, LoginActivity.class);
+            loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(loginIntent);
+            finish();
+        } else {
+            Toast.makeText(this, R.string.cancel_logout, Toast.LENGTH_SHORT).show();
+        }
     }
 
 }
