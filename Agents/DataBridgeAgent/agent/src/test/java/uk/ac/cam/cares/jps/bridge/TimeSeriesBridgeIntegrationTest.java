@@ -98,7 +98,7 @@ class TimeSeriesBridgeIntegrationTest {
     @Test
     void testUpdateTimeSeriesData() {
         // Execute method
-        TEST_CONNECTOR.updateTimeSeriesData(TEST_DATA);
+        TEST_CONNECTOR.instantiateTimeSeries(TEST_DATA);
         // To verify, access the database and query the results
         try (Connection conn = IntegrationTestUtils.connectDatabase(IntegrationTestUtils.SQL_DEFAULT_JDBC)) {
             // For default table

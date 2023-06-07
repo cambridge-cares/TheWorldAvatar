@@ -320,7 +320,7 @@ class DataBridgeAgentTest {
         // Mock the bridge object, as it cannot be unit tested and requires integration test
         try (MockedConstruction<TimeSeriesBridge> mockConnector = Mockito.mockConstruction(TimeSeriesBridge.class,
                 (mock, context) -> {
-                    Mockito.when(mock.updateTimeSeriesData(Mockito.any())).thenReturn(EXPECTED_RESPONSE);
+                    Mockito.when(mock.instantiateTimeSeries(Mockito.any())).thenReturn(EXPECTED_RESPONSE);
                 })
         ) {
             // Execute method

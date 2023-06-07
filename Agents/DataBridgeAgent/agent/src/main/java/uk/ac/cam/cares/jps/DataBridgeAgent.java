@@ -73,7 +73,7 @@ public class DataBridgeAgent extends JPSAgent {
     public JSONObject processRequestParameters(JSONObject requestParams) {
         JSONObject jsonMessage = new JSONObject();
         // Validate input and if it is false, do not continue with the task
-        if(!validateInput(requestParams)){
+        if (!validateInput(requestParams)) {
             jsonMessage.put("Result", INVALID_PARAMETER_ERROR_MSG);
             return jsonMessage;
         }
@@ -104,6 +104,17 @@ public class DataBridgeAgent extends JPSAgent {
                     jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
                 }
                 break;
+            case "timeseries":
+                if (requestType.equals("POST")) {
+                    String db = requestParams.has(KEY_DATABASE) ? requestParams.getString(KEY_DATABASE) : "";
+                    String namespace = requestParams.has(KEY_NAMESPACE) ? requestParams.getString(KEY_NAMESPACE) : "";
+                    String[] config = ConfigStore.retrieveTSClientConfig(namespace, db);
+                    jsonMessage = timeSeriesRoute(config, requestParams);
+                } else {
+                    LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept POST request.");
+                    jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept POST request.");
+                }
+                break;
             case "status":
                 if (requestType.equals("GET")) {
                     jsonMessage = statusRoute();
@@ -112,18 +123,6 @@ public class DataBridgeAgent extends JPSAgent {
                     jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
                 }
                 break;
-            case "timeseries":
-                if (requestType.equals("POST")){
-                    String db = requestParams.has(KEY_DATABASE) ? requestParams.getString(KEY_DATABASE) : "";
-                    String namespace = requestParams.has(KEY_NAMESPACE) ? requestParams.getString(KEY_NAMESPACE) : "";
-                    String[] config = ConfigStore.retrieveTSClientConfig(namespace, db);
-                    String timeClass = requestParams.getString(KEY_TIME_CLASS);
-                    jsonMessage = updateTimeSeries(config, requestParams, timeClass);
-                }
-                else {
-                    LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept POST request.");
-                    jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept POST request.");
-                }
         }
         return jsonMessage;
     }
@@ -222,20 +221,26 @@ public class DataBridgeAgent extends JPSAgent {
         LOGGER.debug("Transfer data from source to target database...");
         JSONObject response = connector.transfer(AGENT_IN_STACK);
         LOGGER.info("Data have been successfully transferred from " + config[0] + " to " + config[3]);
-        if(response.isEmpty()){
+        if (response.isEmpty()) {
             response.put("Result", "Data have been successfully transferred from " + config[0] + " to " + config[3]);
         }
         return response;
     }
 
-    protected <T> JSONObject updateTimeSeries (String[] config, JSONObject data, String timeClass) {
-        LOGGER.info("Instantiating Timeseries...");
-        TimeSeriesBridge tsInst = new TimeSeriesBridge(config, timeClass);
+    /**
+     * Run logic for the "/timeseries" route to instantiate time series into the SPARQL endpoint and PostgreSQL database.
+     *
+     * @return A response to the request called as a JSON Object.
+     */
+    protected <T> JSONObject timeSeriesRoute(String[] config, JSONObject requestParams) {
+        LOGGER.info("Creating bridge to endpoint and database...");
+        String timeClass = requestParams.getString(KEY_TIME_CLASS);
+        TimeSeriesBridge tsBridge = new TimeSeriesBridge(config, timeClass);
         try {
-            JSONObject response = tsInst.updateTimeSeriesData(data);
-            return response;
+            LOGGER.info("Instantiating time series...");
+            return tsBridge.instantiateTimeSeries(requestParams);
         } catch (Exception e) {
-            throw new JPSRuntimeException("Failed to instantiate TS: " + e);
+            throw new JPSRuntimeException("Failed to instantiate time series: " + e);
         }
     }
 }
