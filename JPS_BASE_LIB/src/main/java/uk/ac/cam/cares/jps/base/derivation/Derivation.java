@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.json.JSONObject;
 
@@ -336,8 +338,28 @@ public class Derivation {
 	 * @param directedDownstreams the directedDownstreams to set
 	 */
 	public void setDirectedDownstreams(List<Derivation> directedDownstreams) {
-		directedDownstreams.forEach(d -> {
-			this.setDirectedDownstreams(d);
-		});
+		directedDownstreams.forEach(this::setDirectedDownstreams);
+	}
+
+	private void removeDirectedUpstream(Derivation directedUpstream) {
+		this.directedUpstreams.remove(directedUpstream);
+		if (this.directedUpstreams.isEmpty()) {
+			this.hasDirectedUpstreams = false;
+		}
+		// also remove the reverse connection
+		directedUpstream.removeDirectedDownstream(this);
+	}
+
+	private void removeDirectedDownstream(Derivation directedDownstream) {
+		this.directedDownstreams.remove(directedDownstream);
+		if (this.directedDownstreams.isEmpty()) {
+			this.hasDirectedDownstreams = false;
+		}
+	}
+
+	public void replaceDirectedDownstreams(List<Derivation> newDirectedDownstreams) {
+		this.directedDownstreams.stream().forEach(this::removeDirectedUpstream);
+		newDirectedDownstreams.stream().forEach(this::setDirectedDownstreams);
+		this.hasDirectedDownstreams = !this.directedDownstreams.isEmpty();
 	}
 }
