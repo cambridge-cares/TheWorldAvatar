@@ -40,7 +40,7 @@ public class QueryClient {
     private RemoteRDBStoreClient remoteRDBStoreClient;
     private static final Logger LOGGER = LogManager.getLogger(QueryClient.class);
 
-    static final String PREFIX = "http://www.theworldavatar.com/kg/dispersion/";
+    static final String PREFIX = "https://www.theworldavatar.com/kg/ontodispersion/";
     static final Prefix P_DISP = SparqlBuilder.prefix("disp", iri(PREFIX));
     private static final Prefix P_OM = SparqlBuilder.prefix("om",
             iri("http://www.ontology-of-units-of-measure.org/resource/om-2/"));
@@ -55,8 +55,7 @@ public class QueryClient {
     private static final Iri DISPERSION_MATRIX = P_DISP.iri("DispersionMatrix");
     private static final Iri DISPERSION_LAYER = P_DISP.iri("DispersionLayer");
     private static final Iri SHIPS_LAYER = P_DISP.iri("ShipsLayer");
-    private static final Iri CITIES_NAMESPACE = iri(
-            "https://www.theworldavatar.com/kg/ontodispersion/OntoCityGMLNamespace");
+    private static final Iri CITIES_NAMESPACE = P_DISP.iri("OntoCityGMLNamespace");
 
     // properties
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");

@@ -29,7 +29,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -48,7 +47,7 @@ public class QueryClient {
     private DerivationClient derivationClient;
     private RemoteRDBStoreClient remoteRDBStoreClient;
 
-    static final String PREFIX = "http://www.theworldavatar.com/kg/dispersion/";
+    static final String PREFIX = "https://www.theworldavatar.com/kg/ontodispersion/";
     private static final Prefix P_DISP = SparqlBuilder.prefix("disp", iri(PREFIX));
     static final String OM_STRING = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
     private static final Prefix P_OM = SparqlBuilder.prefix("om", iri(OM_STRING));

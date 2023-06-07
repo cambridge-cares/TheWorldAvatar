@@ -3,14 +3,10 @@ Prerequisites
 2) Ship data needs to be present in ShipInputAgent/data. If the agent is being run for chemical plants instead of ships, 
 it is still necessary to define one ship in a .json file in this folder. In this case, the ship should be placed outside the region for which AERMOD will be run, which is specified in WKT format in the POST request to the DispersionInteractor class. The longitude of each coordinate must be specified before the latitude.  
 
-    The pollutant emitting points located within chemical plants need to be instantiated in TheWorldAvatar blazegraph with an rdf:type of PlantItem. See https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontochemplant/OntoChemPlant.owl for details of the ontology. There must be at least one pollutant source (either ship or chemical plant item) located within the region of interest. 
-
-
 3) Set openweather API key in ../Agents/WeatherAgent, more details in that folder
 
-4) Set the values of the following in the AermodAgent/docker-compose.yml file: NUMBER_SOURCES, NUMBER_BUILDINGS, INCLUDE_ELEVATION. Note that setting NUMBER_BUILDINGS to a value greater than 500 may result in the buildings pre-processor,  BPIPPRM, taking a long time to complete. The terrain pre-processor, AERMAP, may also take a long time to run for large numbers of receptors. As elevation data is an optional input for AERMOD, the user has the option of not running AERMAP by specifying INCLUDE_ELEVATION=false.
+4) If running AERMOD for static point sources, it is necessary to instantiate the input data required for AERMOD Agent according to OntoDispersion (https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodispersion). See the JurongIslandInputAgent folder for an example of an agent that does this.
 
-5) Download the required elevation data files from https://www.eorc.jaxa.jp/ALOS/en/dataset/aw3d30/aw3d30_e.htm. It is necessary to register for a free account first. The data files required by AERMAP as input end in "_DSM.tif". Each such data file obtained from JAXA spans a region that is 1 degree by 1 degree in terms of longitude and latitude. The latitude and longitude corresponding to the corner of minimum longitude and latitude is included in the filename. For example, the file 'ALPSMLC30_N001E103_DSM.tif' contains the elevation data for all points whose longitude is between 103 and 104 degrees and whose latitude is between 1 and 2 degrees. If running AERMAP for a large region, it may be necessary to supply multiple elevation data files as input. Each data file should be placed in the directory JPS_VIRTUALSENSOR/AermodAgent/src/main/resources/. The name of each data file should be specified in a new line following the 'DATATYPE NED' line in aermap.inp as per the format 'DATAFILE NAME_DATA_FILE', where 'NAME_DATA_FILE' should be replaced by the actual filename.
 
 Stack needs to be up and running:
 1) execute
@@ -47,6 +43,7 @@ curl -X POST "http://localhost:3838/dispersion-interactor/TriggerUpdateDispersio
 
 4) Visualisation can be accessed on the browser at
 ```
-http://localhost:8090
+http://localhost:3838/dispersion-vis
+
 ```
 The updated version of the agent also displays the legend for the contour plot in the sidebar. It may be necessary to open an incognito browser window to view it. 

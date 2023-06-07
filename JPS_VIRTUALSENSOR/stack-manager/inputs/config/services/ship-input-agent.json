@@ -3,7 +3,7 @@
         "Name": "ship-input-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "docker.cmclinnovations.com/ship-input-agent:1.0.0",
+                "Image": "ghcr.io/cambridge-cares/ship-input-agent:1.1.5-dev-aermod-agent-cleanup-SNAPSHOT",
 				"Env": [
 					"STACK_NAME=${STACK_NAME}",
 					"DATABASE=postgres",

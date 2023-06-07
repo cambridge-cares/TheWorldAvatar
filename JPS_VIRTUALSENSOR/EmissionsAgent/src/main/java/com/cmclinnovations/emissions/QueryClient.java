@@ -32,7 +32,7 @@ public class QueryClient {
     private TimeSeriesClient<Long> tsClient;
     private RemoteRDBStoreClient remoteRDBStoreClient;
 
-    static final String PREFIX = "http://www.theworldavatar.com/kg/dispersion/";
+    static final String PREFIX = "https://www.theworldavatar.com/kg/ontodispersion/";
     private static final Prefix P_DISP = SparqlBuilder.prefix("disp", iri(PREFIX));
     static final String OM_STRING = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
     private static final Prefix P_OM = SparqlBuilder.prefix("om", iri(OM_STRING));
@@ -59,6 +59,7 @@ public class QueryClient {
     private static final Iri HAS_PROPERTY = P_DISP.iri("hasProperty");
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
     private static final Iri HAS_NUMERICALVALUE = P_OM.iri("hasNumericalValue");
+    static final String EMITS = PREFIX + "emits";
 
     public QueryClient(RemoteStoreClient storeClient, RemoteRDBStoreClient remoteRDBStoreClient) {
         this.storeClient = storeClient;
