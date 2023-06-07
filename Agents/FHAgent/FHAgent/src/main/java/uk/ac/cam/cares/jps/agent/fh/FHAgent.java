@@ -92,6 +92,7 @@ public class FHAgent{
      * Log messages
      */
     private static final String GETLATESTDATA_ERROR_MSG = "Unable to query for latest data!" ;
+    private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
     
     /*
      * Tally System variables
@@ -341,6 +342,15 @@ public class FHAgent{
      */
 
      public void localUpdateData(JSONObject Distance, List<String> keys)throws IllegalArgumentException {
+                // Initialize time series'
+                try {
+                    initializeTimeSeriesIfNotExist();
+                }
+                catch (JPSRuntimeException e) {
+                    LOGGER.error(INITIALIZE_ERROR_MSG,e);
+                    throw new JPSRuntimeException(INITIALIZE_ERROR_MSG, e);
+                }
+
         // Transform readings in hashmap containing a list of objects for each JSON key,
         // will be empty if the JSON Object is empty
 

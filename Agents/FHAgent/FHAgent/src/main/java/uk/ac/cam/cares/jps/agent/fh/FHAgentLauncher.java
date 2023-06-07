@@ -44,7 +44,6 @@ public class FHAgentLauncher extends JPSAgent {
     private static final String ARGUMENT_MISMATCH_MSG = "Need 4 properties files in the following order: 1) input agent 2) time series client 3) API connector. 4) IRI map file";
     private static final String AGENT_ERROR_MSG = "The ThingsBoard input agent could not be constructed!";
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
-    private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
     private static final String CONNECTOR_ERROR_MSG = "Could not construct the ThingsBoard API connector needed to interact with the API!";
     private static final String GET_READINGS_ERROR_MSG = "Some readings could not be retrieved.";
 
@@ -165,16 +164,6 @@ public class FHAgentLauncher extends JPSAgent {
         }
         LOGGER.info("Time series client object initialized.");
         jsonMessage.accumulate("Result", "Time series client object initialized.");
-
-
-        // Initialize time series'
-        try {
-            agent.initializeTimeSeriesIfNotExist();
-        }
-        catch (JPSRuntimeException e) {
-            LOGGER.error(INITIALIZE_ERROR_MSG,e);
-            throw new JPSRuntimeException(INITIALIZE_ERROR_MSG, e);
-        }
 
         // Create the connector to interact with the ThingsBoard API
         FHAgentAPIConnector connector;
