@@ -186,7 +186,18 @@ public class FHAgentDerivationTest {
         String clientPropFile = Paths.get(folder.getRoot().toString(), "client.properties").toString();
         String iriMapperFile = Paths.get(folder.getRoot().toString(), "iriMapping.txt").toString();
         
-        writePropertyFile(agentPropFile, Arrays.asList(new String[]{"thingsboard.mappingfolder=TEST_MAPPINGS", "derivation.mapping=avgDist1:occupiedState1", "threshold.tally = 170.", "data_bridge.url = https://example.com", "use_stack = false", "derivation.baseurl = http://derivationexample.com/triplestore/repository/"}));
+        writePropertyFile(agentPropFile, Arrays.asList(new String[]{"thingsboard.mappingfolder=TEST_MAPPINGS", 
+            "derivation.mapping=avgDist1:occupiedState1", 
+            "threshold.tally = 170.", 
+            "tally.limit = 1",
+            "tally.max = 2",
+            "tally.min = 0",
+            "decrease.factor = 0.15",
+            "increase.factor = 0.5",
+            "data_bridge.url = https://example.com", 
+            "use_stack = false", 
+            "derivation.baseurl = http://derivationexample.com/triplestore/repository/"
+        }));
         
         String[] clientPropParam = {"db_url="+jdbcURL, "db.user="+postgresUsername, "db.password="+postgresPassword,"sparql.query.endpoint="+sparql_endpoint, "sparql.update.endpoint="+sparql_endpoint};
         writePropertyFile(clientPropFile, Arrays.asList(clientPropParam));

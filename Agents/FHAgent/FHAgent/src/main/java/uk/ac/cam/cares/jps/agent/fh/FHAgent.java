@@ -97,11 +97,11 @@ public class FHAgent{
     /*
      * Tally System variables
      */
-    public static final float tallyLim = 1;
-    public static final float tallyMax = 2;
-    public static final float tallyMin = 0;
-    public static final float decreaseFactor = 0.15f;
-    public static final float increaseFactor = 0.5f;
+    public static float tallyLim = 1;
+    public static float tallyMax = 2;
+    public static float tallyMin = 0;
+    public static float decreaseFactor = 0.15f;
+    public static float increaseFactor = 0.5f;
     public static Double Threshold; //cm
 
 
@@ -153,6 +153,11 @@ public class FHAgent{
 
             try{
                 Threshold = Double.parseDouble(prop.getProperty("threshold.tally"));
+                tallyLim = Float.parseFloat(prop.getProperty("tally.limit"));
+                tallyMax = Float.parseFloat(prop.getProperty("tally.max"));
+                tallyMin = Float.parseFloat(prop.getProperty("tally.min"));
+                decreaseFactor = Float.parseFloat(prop.getProperty("decrease.factor"));
+                increaseFactor = Float.parseFloat(prop.getProperty("increase.factor"));
             }
 
             catch(Exception e){
