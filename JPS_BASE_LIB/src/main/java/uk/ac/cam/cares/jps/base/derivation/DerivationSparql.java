@@ -2394,8 +2394,10 @@ public class DerivationSparql {
 	 * @return
 	 */
 	List<Derivation> getAllImmediateUpstreamDerivations(String rootDerivationIRI) {
+		// here the property path is zeroOrOne because the upstream derivations may not have outputs
+		// i.e. the root derivation might connected to the upstream derivations directly with isDerivedFrom
 		return getDerivations(rootDerivationIRI, derivationTypes,
-				groupPropertyPath(PropertyPaths.path(isDerivedFrom, belongsTo)));
+				groupPropertyPath(PropertyPaths.path(isDerivedFrom, zeroOrOne(belongsTo))));
 	}
 
 	/**
