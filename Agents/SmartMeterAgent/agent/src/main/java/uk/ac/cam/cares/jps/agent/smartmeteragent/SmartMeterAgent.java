@@ -135,7 +135,7 @@ public class SmartMeterAgent {
         JSONArray dataIRIArray = getDataIris(targetResourceID, mappings);
         for (int i = 0; i < timeArray.length(); i++) {
             JSONArray previousResult = result;
-            String query = getSqlQueryForData(devices, timeArray.getJSONObject(i).getString("time"), afterTime);
+            String query = getSqlQueryForData(devices, timeArray.getJSONObject(i).optString("time"), afterTime);
             LOGGER.info("Executing SQL query: " + query);
             result = rdbClient.executeQuery(query);
             if (!result.similar(previousResult) && validateResult(devices, result)) {
@@ -202,11 +202,11 @@ public class SmartMeterAgent {
         for (int i = 0; i < devices.size(); i++) {
             found = false;
             for (int j = 0; j < result.length(); j++) {
-                if (result.getJSONObject(j).getString("device").equalsIgnoreCase(devices.get(i))) {
+                if (result.getJSONObject(j).optString("device").equalsIgnoreCase(devices.get(i))) {
                     found = true;
                     if (i == 0) {
-                        time = result.getJSONObject(j).getString("time");
-                    } else if (!result.getJSONObject(j).getString("time").equals(time)) {
+                        time = result.getJSONObject(j).optString("time");
+                    } else if (!result.getJSONObject(j).optString("time").equals(time)) {
                         return false;
                     }
                     break;
@@ -234,26 +234,26 @@ public class SmartMeterAgent {
 
         for (int i = 0; i < dataIRIArray.length(); i++) {
             JSONObject oneBusIRIs = dataIRIArray.getJSONObject(i);
-            String device = oneBusIRIs.getString("device");
+            String device = oneBusIRIs.optString("device");
             // when no smart meter is attached to the bus, assume the values are 0
             if (device.equals("0")) {
                 if (oneBusIRIs.has("PdIri") && oneBusIRIs.has("QdIri")) {
-                    dataIRIs.add(oneBusIRIs.getString("PdIri"));
-                    dataIRIs.add(oneBusIRIs.getString("QdIri"));
+                    dataIRIs.add(oneBusIRIs.optString("PdIri"));
+                    dataIRIs.add(oneBusIRIs.optString("QdIri"));
                     allValues.add(Arrays.asList(new String[]{"0"})); // Pd
                     allValues.add(Arrays.asList(new String[]{"0"})); // Qd
                 }
                 if (oneBusIRIs.has("currentIri")) {
                     allValues.add(Arrays.asList(new String[]{"0"}));
-                    dataIRIs.add(oneBusIRIs.getString("currentIri"));
+                    dataIRIs.add(oneBusIRIs.optString("currentIri"));
                 }
                 if (oneBusIRIs.has("voltageIri")) {
                     allValues.add(Arrays.asList(new String[]{"0"}));
-                    dataIRIs.add(oneBusIRIs.getString("voltageIri"));
+                    dataIRIs.add(oneBusIRIs.optString("voltageIri"));
                 }
                 if (oneBusIRIs.has("frequencyIri")) {
                     allValues.add(Arrays.asList(new String[]{"0"}));
-                    dataIRIs.add(oneBusIRIs.getString("frequencyIri"));
+                    dataIRIs.add(oneBusIRIs.optString("frequencyIri"));
                 }
                 continue;
             }
@@ -261,8 +261,8 @@ public class SmartMeterAgent {
             boolean hasReadings = false;
             // when the bus has smart meter readings
             for (int j = 0; j < queryResult.length() ; j++) {
-                time = OffsetDateTime.parse(queryResult.getJSONObject(j).getString("time"));
-                if (!queryResult.getJSONObject(j).getString("device").equalsIgnoreCase(device)) {
+                time = OffsetDateTime.parse(queryResult.getJSONObject(j).optString("time"));
+                if (!queryResult.getJSONObject(j).optString("device").equalsIgnoreCase(device)) {
                     continue;
                 }
 
@@ -272,11 +272,11 @@ public class SmartMeterAgent {
                     // Change the sign of active load
                     oneDevicePd.add(Double.toString(-queryResult.getJSONObject(j).getDouble("pd")));
                     allValues.add(oneDevicePd);
-                    dataIRIs.add(oneBusIRIs.getString("PdIri"));
+                    dataIRIs.add(oneBusIRIs.optString("PdIri"));
                     List<String> oneDeviceQd = new ArrayList<String>();                            
                     oneDeviceQd.add("0"); // Reactive load
                     allValues.add(oneDeviceQd);
-                    dataIRIs.add(oneBusIRIs.getString("QdIri"));
+                    dataIRIs.add(oneBusIRIs.optString("QdIri"));
                 } else {
                     throw new JPSRuntimeException("Bus load time series not initialized.");
                 }
@@ -286,19 +286,19 @@ public class SmartMeterAgent {
                     List<String> oneDeviceCurrent = new ArrayList<String>();
                     oneDeviceCurrent.add(Double.toString(queryResult.getJSONObject(j).getDouble("current")));
                     allValues.add(oneDeviceCurrent);
-                    dataIRIs.add(oneBusIRIs.getString("currentIri"));
+                    dataIRIs.add(oneBusIRIs.optString("currentIri"));
                 }
                 if (oneBusIRIs.has("voltageIri")) {
                     List<String> oneDeviceVoltage = new ArrayList<String>();
                     oneDeviceVoltage.add(Double.toString(queryResult.getJSONObject(j).getDouble("voltage")));
                     allValues.add(oneDeviceVoltage);
-                    dataIRIs.add(oneBusIRIs.getString("voltageIri"));
+                    dataIRIs.add(oneBusIRIs.optString("voltageIri"));
                 }
                 if (oneBusIRIs.has("frequencyIri")) {
                     List<String> oneDeviceFrequency = new ArrayList<String>();
                     oneDeviceFrequency.add(Double.toString(queryResult.getJSONObject(j).getDouble("frequency")));
                     allValues.add(oneDeviceFrequency);
-                    dataIRIs.add(oneBusIRIs.getString("frequencyIri"));
+                    dataIRIs.add(oneBusIRIs.optString("frequencyIri"));
                 }
                 hasReadings = true;
                 break;
@@ -322,7 +322,7 @@ public class SmartMeterAgent {
             String time = "";
             JSONArray records = new JSONArray();
 			while ((values = csvReader.readNext()) != null) {
-                // Assuming readings are in UTC time
+                // Assuming readings are in UTC time, check until minute only
                 values[1] = values[1].replace(" ", "T").replace(values[1].split(":")[2], "00+00:00");
                 if (values[1].equals("ts") || OffsetDateTime.parse(values[1]).compareTo(beforeTime) > 0
                     || OffsetDateTime.parse(values[1]).compareTo(afterTime) < 0) {
@@ -337,7 +337,7 @@ public class SmartMeterAgent {
                         // not in the mapping file and readings with data package lost (value = 0)
                         for (int i = 0; i < devices.size(); i++) {
                             for (int j = 0; j < records.length(); j++) {
-                                if (records.getJSONObject(j).getString("device").equalsIgnoreCase(devices.get(i)) &&
+                                if (records.getJSONObject(j).optString("device").equalsIgnoreCase(devices.get(i)) &&
                                     Double.parseDouble(records.getJSONObject(i).get("pd").toString()) != 0 &&
                                     Double.parseDouble(records.getJSONObject(i).get("current").toString()) != 0 &&
                                     Double.parseDouble(records.getJSONObject(i).get("voltage").toString()) != 0 &&
@@ -368,7 +368,7 @@ public class SmartMeterAgent {
                 // not in the mapping file and readings with data package lost (value = 0)
                 for (int i = 0; i < devices.size(); i++) {
                     for (int j = 0; j < records.length(); j++) {
-                        if (records.getJSONObject(j).getString("device").equalsIgnoreCase(devices.get(i)) &&
+                        if (records.getJSONObject(j).optString("device").equalsIgnoreCase(devices.get(i)) &&
                             Double.parseDouble(records.getJSONObject(i).get("pd").toString()) != 0 &&
                             Double.parseDouble(records.getJSONObject(i).get("current").toString()) != 0 &&
                             Double.parseDouble(records.getJSONObject(i).get("voltage").toString()) != 0 &&
@@ -430,10 +430,10 @@ public class SmartMeterAgent {
         // Add smart meter device information to busArray
         for (int i = 0; i < busArray.length(); i++) {
             JSONObject bus = busArray.getJSONObject(i);
-            String busNumber = bus.getString("BusNumbervalue");
+            String busNumber = bus.optString("BusNumbervalue");
             boolean hasMapping = false;
             for (int j = 0; j < mappings.size(); j++) {
-                if (mappings.get(j)[0].equals(busNumber)) {
+                if (Double.parseDouble(mappings.get(j)[0]) == Double.parseDouble(busNumber)) {
                     if (mappings.get(j).length > 1) {
                         // when the bus has a smart meter device attached to it
                         bus.put("device", mappings.get(j)[1]);
@@ -459,8 +459,7 @@ public class SmartMeterAgent {
      * Read mappings between buses and devices from mapping file.
      * @return
      */
-    public List<String[]> getDataMappings() {
-        String baseUrl = AgentLocator.getCurrentJpsAppDirectory(this) + "/config";
+    public List<String[]> getDataMappings(String baseUrl) {
         String csvString = FileUtil.readFileLocally(baseUrl + "/mappings.csv");
         List<String[]> mappings = new ArrayList<String[]>(fromCsvToArray(csvString));
         return mappings;
@@ -483,8 +482,7 @@ public class SmartMeterAgent {
     }
 
     public JSONArray callAccessAgentToQuery(String targetResourceID, String sparqlQuery) {
-        JSONArray queryResult = AccessAgentCaller.queryStore(targetResourceID, sparqlQuery);
-        return queryResult;
+        return AccessAgentCaller.queryStore(targetResourceID, sparqlQuery);
     }
 
     /**
@@ -606,7 +604,7 @@ public class SmartMeterAgent {
                                 + "?building	j2:contains	?solarPV ."
                                 + "?solarPV	a	j1:PhotovoltaicPanel ."
 
-                                // dataIRI of solarPd
+                                // dataIRI of solarPd, not used for now
                                 + "?solarPV	j7:hasGeneratedPower	?solarPd ."
                                 + "?solarPd	a	j7:GeneratedPower ."
                                 + "?solarPd	om:hasValue	?solarPdIri ."  

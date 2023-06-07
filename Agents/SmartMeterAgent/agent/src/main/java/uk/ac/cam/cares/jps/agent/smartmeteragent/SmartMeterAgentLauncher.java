@@ -69,7 +69,7 @@ public class SmartMeterAgentLauncher extends JPSAgent {
         }
 
         SmartMeterAgent agent = new SmartMeterAgent();
-        List<String[]> mappings = agent.getDataMappings();
+        List<String[]> mappings = agent.getDataMappings(AgentLocator.getCurrentJpsAppDirectory(this) + "/config");
         if (dataSource.equalsIgnoreCase("database") && dataRequired.equalsIgnoreCase("latest")) {
             while (true) {
                 LOGGER.info("Reading latest data from database...");
@@ -131,7 +131,7 @@ public class SmartMeterAgentLauncher extends JPSAgent {
             LOGGER.error("Input should contain data source: database or csv .");
             return false;
         } else if (!requestParams.has("dataRequired")) {
-            LOGGER.error("Input should contain upload method: latest or historical .");
+            LOGGER.error("Input should contain data required: latest or historical .");
             return false;
         } else if (!requestParams.has("microgrid")) {
             LOGGER.error("Input should contain microgrid targetResourceID.");
