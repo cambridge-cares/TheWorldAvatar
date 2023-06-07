@@ -19,6 +19,7 @@ SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
 SECRETS_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_auth')
 URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url')
 DOWNLOADED_DIR = os.path.join(THIS_DIR,'downloaded_files_for_test')
+TEST_TRIPLES_DIR = os.path.join(THIS_DIR,'test_triples')
 HPLC_REPORT_XLS_PATH_IN_PKG = 'sample_data/raw_hplc_report_xls.xls'
 HPLC_REPORT_TXT_PATH_IN_PKG = 'sample_data/raw_hplc_report_txt.txt'
 HPLC_REPORT_XLS_INCOMPLETE_PATH_IN_PKG = 'sample_data/raw_hplc_report_xls_incomplete.xls'
@@ -34,15 +35,19 @@ KG_ROUTE = "blazegraph/namespace/kb/sparql"
 FS_SERVICE = "fileserver"
 FS_ROUTE = "FileServer/"
 
-DUMMY_LAB_FOR_POST_PROC_BASE_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/'
+DUMMY_LAB_FOR_POST_PROC_BASE_IRI = 'https://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/'
 EXP_1_BASE_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/'
 NEW_RXN_EXP_1_IRI = EXP_1_BASE_IRI + 'ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70'
 NEW_RXN_EXP_2_IRI = EXP_1_BASE_IRI + 'ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8'
 HPLC_DIGITAL_TWIN_1 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'HPLC_1'
 HPLC_DIGITAL_TWIN_2 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'HPLC_2'
-CHEMICAL_SOLUTION_1 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'ChemicalSolution_1_1'
-CHEMICAL_SOLUTION_2 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'ChemicalSolution_2_1'
-HPLC_METHOD_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/HPLCMethod_Dummy'
+CHEMICAL_AMOUNT_1 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'ChemicalAmount_1_1'
+CHEMICAL_AMOUNT_2 = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'ChemicalAmount_2_1'
+HPLC_METHOD_IRI = 'https://example.com/blazegraph/namespace/testlab/dummy_lab/HPLCMethod_Dummy'
+
+# For testing if the cost calculation is correct
+RXN_EXP_6_SAME_COST = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_6/RxnExp_1'
+RXN_EXP_7_SAME_COST = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_7/RxnExp_1'
 
 # Configuration env files
 # NOTE the triple store URL provided in the agent.*.env files are the URL to access blazegraph container WITHIN the docker stack

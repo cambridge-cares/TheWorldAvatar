@@ -1,0 +1,34 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+prefix ts: <https://www.theworldavatar.com/kg/ontotimeseries/>
+prefix ontobms: <https://www.theworldavatar.com/kg/ontobms/>
+prefix saref: <https://saref.etsi.org/core/>
+prefix ontodevice: <https://www.theworldavatar.com/kg/ontodevice/>
+prefix : <https://www.theworldavatar.com/kg/ontobms/>
+
+SELECT ?Property ?Value ?Unit
+WHERE {
+# not include: hasFunction
+    {
+        [IRI] ontodevice:hasLength|ontodevice:hasWidth|ontodevice:hasHeight ?property.
+        ?property om:hasValue/om:hasNumericalValue ?Value;
+        om:hasValue/om:hasUnit/om:symbol ?Unit.
+        BIND(REPLACE(STRAFTER(STR(?property), "-"), "^[0-9]+", "") as ?Property)
+    } UNION {
+        [IRI] saref:hasManufacturer ?Value.
+        BIND("Manufacturer" AS ?Property).
+        BIND("-" AS ?Unit) .
+    } UNION {
+        [IRI] saref:hasModel ?Value.
+        BIND("Model" AS ?Property).
+        BIND("-" AS ?Unit) .
+    } UNION {
+        [IRI] ontodevice:hasPrice ontodevice:hasPrice ?price.
+        ?price om:hasValue/om:hasNumericalValue ?Value;
+        BIND("Singapore dollar" AS ?Unit).
+        BIND(REPLACE(STRAFTER(STR(?price), "-"), "^[0-9]+", "") as ?Property).
+    }
+
+}

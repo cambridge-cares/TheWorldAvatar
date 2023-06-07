@@ -46,4 +46,8 @@ FROM tomcat:9.0 as agent
 COPY --from=builder /root/code/output/* $CATALINA_HOME/webapps/
 COPY ./docker/entrypoint.sh entrypoint.sh
 
-ENTRYPOINT ["./entrypoint.sh"]
+COPY --from=builder /root/openmeteo_agent/output/openmeteo_agent##1.2.0.war $CATALINA_HOME/webapps/
+
+# Start the Tomcat server
+ENTRYPOINT ["catalina.sh", "run"]
+#==================================================================================================

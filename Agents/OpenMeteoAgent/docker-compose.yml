@@ -1,31 +1,17 @@
 version: "3.8"
 
 services:
-  openmeteo-agent:
-    image: ghcr.io/cambridge-cares/openmeteo-agent:1.0.0
-    deploy:
-      mode: replicated
-      replicas: 1
-      restart_policy:
-        condition: none
+  openmeteo_agent:
+    image: openmeteo_agent:1.2.0
+    build: .
+    container_name: openmeteo_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
-    configs:
-      - postgis
-      - blazegraph
-      - geoserver
-      - ontop
-    secrets:
-      - postgis_password
-      - geoserver_password    
     ports:
       - "10101:8080"
     volumes:
       - logs:/root/.jps
       - external_maven_repo_openmeteo:/root/.m2
-    networks:
-      - stack     
-    
 
 volumes:
   logs:

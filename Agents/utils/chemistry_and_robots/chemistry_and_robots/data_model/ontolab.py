@@ -25,8 +25,6 @@ class ParameterSetting(BaseOntology):
         g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
         # <paramSetting> <OntoLab:hasQuantity> <quantity>
         g.add((URIRef(self.instance_iri), URIRef(ONTOLAB_HASQUANTITY), quantity_iri))
-        # <quantity> <OntoLab:translatesToParameterSetting> <paramSetting>
-        g.add((quantity_iri, URIRef(ONTOLAB_TRANSLATESTOPARAMETERSETTING), URIRef(self.instance_iri)))
 
         return g
 
@@ -73,15 +71,11 @@ class EquipmentSettings(BaseOntology):
         g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
         # <equip_settings> <OntoLab:wasGeneratedFor> <rxnexp>
         g.add((URIRef(self.instance_iri), URIRef(ONTOLAB_WASGENERATEDFOR), URIRef(self.wasGeneratedFor)))
-        # <reactionExperiment> <OntoReaction:hasEquipmentSettings> <reactorSetting>
-        g.add((URIRef(self.wasGeneratedFor), URIRef(ONTOREACTION_HASEQUIPMENTSETTINGS), URIRef(self.instance_iri)))
 
         # NOTE the links between <equip_settings> and <lab_equipment> are optional depends on if one want to configure the digital twin
         if configure_digital_twin:
             # <equip_settings> <OntoLab:specifies> <lab_equipment>
             g.add((URIRef(self.instance_iri), URIRef(ONTOLAB_SPECIFIES), URIRef(self.specifies.instance_iri)))
-            # <lab_equipment> <OntoLab:isSpecifiedBy> <equip_settings>
-            g.add((URIRef(self.specifies.instance_iri), URIRef(ONTOLAB_ISSPECIFIEDBY), URIRef(self.instance_iri)))
 
         return g
 
@@ -100,10 +94,8 @@ class Saref_State(BaseOntology):
 class LabEquipment(Saref_Device):
     clz: str = ONTOLAB_LABEQUIPMENT
     manufacturer: str # it should be pointing to an instance of https://dbpedia.org/ontology/Organisation, but we simplified here
-    isContainedIn: Union[str, Laboratory] # NOTE here str is provided as an optional as it seems impossible to circular reference at instance level
     hasPowerSupply: Union[str, PowerSupply] # NOTE TODO [future work] here str is provided as an optional to simplify the implementation
     consistsOf: Optional[List[LabEquipment]] = None
-    isSpecifiedBy: Optional[EquipmentSettings] = None
     # TODO [future work] add support for hasHeight, hasLength, hasPrice, hasWeight, and hasWidth
     isManagedBy: Optional[str] # NOTE here str is provided, this should refer to the iri of agent service
 
@@ -119,29 +111,17 @@ class PreparationMethod(BaseOntology):
 class OntoCAPE_MaterialAmount(BaseOntology):
     clz: str = ONTOCAPE_MATERIALAMOUNT
 
-class ChemicalSolution(OntoCAPE_MaterialAmount):
-    clz: str = ONTOLAB_CHEMICALSOLUTION
-    refersToMaterial: Optional[OntoCAPE_Material] # NOTE OntoCAPE_Material is made optional to accommodate the situation where ChemicalSolution is generated but not characterised yet, i.e. unknow concentration
-    # NOTE "fills" should point to the actual instance of ontovapourtec.Vial, but here we simplify it with only pointing to the iri
-    # NOTE this is due to practical reason as we need to import ontovapourtec.Vial here, but it will cause circular import issue
-    # NOTE str will be used for simplicity until a good way to resolve circular import can be find
-    # NOTE update_forward_ref() with 'Vial' annotation won't help as we will need to put ChemicalSolution.update_forward_ref() in ontovapourtec
-    # NOTE which won't work as developer will need to also import ontovapourtec to make ChemicalSolution fully resolvable
-    # NOTE which defeats the whole point of making them separate
-    # NOTE "fills" should also be able to point to actual instance of ontolab.ReagentBottle
-    # TODO [future work] provide super class for ontovapourtec.Vial and ontolab.ReagentBottle, e.g. ontolab.Container
-    fills: str
+class ChemicalAmount(OntoCAPE_MaterialAmount):
+    clz: str = ONTOLAB_CHEMICALAMOUNT
+    refersToMaterial: Optional[Chemical] # NOTE Chemical is made optional to accommodate the situation where ChemicalAmount is generated but not characterised yet, i.e. unknow concentration
     isPreparedBy: Optional[PreparationMethod] = None
     containsUnidentifiedComponent: Optional[bool] = False
 
     def create_instance_for_kg(self, g: Graph) -> Graph:
-        # <chemical_solution> <rdf:type> <ChemicalSolution>
+        # <chemical_amount> <rdf:type> <ChemicalAmount>
         g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
 
-        # <chemical_solution> <fills> <vial>
-        g.add((URIRef(self.instance_iri), URIRef(ONTOVAPOURTEC_FILLS), URIRef(self.fills)))
-
-        # <chemical_solution> <refersToMaterial> <material>
+        # <chemical_amount> <refersToMaterial> <material>
         g.add((URIRef(self.instance_iri), URIRef(ONTOCAPE_REFERSTOMATERIAL), URIRef(self.refersToMaterial.instance_iri)))
         g = self.refersToMaterial.create_instance_for_kg(g)
 
@@ -150,17 +130,21 @@ class ChemicalSolution(OntoCAPE_MaterialAmount):
 
         if self.containsUnidentifiedComponent is not None:
             # NOTE only add this triple when it's known, otherwise just skip it
-            # <chemical_solution> <containsUnidentifiedComponent> boolean
+            # <chemical_amount> <containsUnidentifiedComponent> boolean
             g.add((URIRef(self.instance_iri), URIRef(ONTOLAB_CONTAINSUNIDENTIFIEDCOMPONENT), Literal(self.containsUnidentifiedComponent)))
 
         return g
 
-class ReagentBottle(BaseOntology):
-    clz: str = ONTOLAB_REAGENTBOTTLE
-    isFilledWith: ChemicalSolution
+
+class ChemicalContainer(BaseOntology):
+    clz: str = ONTOLAB_CHEMICALCONTAINER
+    isFilledWith: Optional[ChemicalAmount] = None # NOTE ChemicalAmount is made optional to accommodate situation where the container is empty
     hasFillLevel: OM_Volume
-    hasWarningLevel: OM_Volume
+    hasWarningLevel: OM_Volume # TODO [next iteration] notify researchers to fill up if the fill level is below the warning level
     hasMaxLevel: OM_Volume
+
+class ReagentBottle(ChemicalContainer):
+    clz: str = ONTOLAB_REAGENTBOTTLE
 
     def contains_chemical_species(
         self,
