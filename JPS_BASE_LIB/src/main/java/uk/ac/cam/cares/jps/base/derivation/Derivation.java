@@ -156,6 +156,34 @@ public class Derivation {
 	}
 
 	/**
+	 * Retrieve all immediate upstream derivations, including directed upstream and inputs with belongsTo.
+	 * @return
+	 */
+	public List<Derivation> getImmediateUpstreamDerivations() {
+		return Stream.concat(this.getDirectedUpstreams().stream(), this.getInputsWithBelongsTo().stream())
+				.collect(Collectors.toList());
+	}
+
+	/**
+	 * Retrieve all immediate downstream derivations, including directed downstream and entities with isDerivedFrom.
+	 * @return
+	 */
+	public Map<String, Derivation> getImmediateDownstreamDerivations() {
+		Map<String, Derivation> immediateDownstreamDerivationMap = new HashMap<>();
+		for (Derivation downstream : this.getDirectedDownstreams()) {
+			immediateDownstreamDerivationMap.put(downstream.getIri(), downstream);
+		}
+		for (Entity entity : this.getEntities()) {
+			entity.getInputOf().forEach(d -> {
+				if (!immediateDownstreamDerivationMap.containsKey(d.getIri())) {
+					immediateDownstreamDerivationMap.put(d.getIri(), d);
+				}
+			});
+		}
+		return immediateDownstreamDerivationMap;
+	}
+
+	/**
 	 * inputs for agent call
 	 * 
 	 * @param derivationIRI
