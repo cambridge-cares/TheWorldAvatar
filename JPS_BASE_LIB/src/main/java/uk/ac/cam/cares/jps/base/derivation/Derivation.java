@@ -50,7 +50,7 @@ public class Derivation {
 		}
 
 		public void addNewDerivedIRI(Entity newEntity) {
-			if (!this.newDerivedIRI.stream().anyMatch(e -> e.getIri().equals(newEntity.getIri()))) {
+			if (this.newDerivedIRI.stream().noneMatch(e -> e.getIri().equals(newEntity.getIri()))) {
 				this.newDerivedIRI.add(newEntity);
 			}
 		}
@@ -94,7 +94,7 @@ public class Derivation {
 	}
 
 	public void addEntity(Entity entity) {
-		if (!entities.stream().anyMatch(e -> e.getIri().equals(entity.getIri()))) {
+		if (entities.stream().noneMatch(e -> e.getIri().equals(entity.getIri()))) {
 			this.entities.add(entity);
 			entity.setBelongsTo(this);
 		}
@@ -113,7 +113,7 @@ public class Derivation {
 	}
 
 	public List<String> getEntitiesIri() {
-		return this.entities.stream().map(e -> e.getIri()).collect(Collectors.toList());
+		return this.entities.stream().map(Entity::getIri).collect(Collectors.toList());
 	}
 
 	public Status getStatus() {
@@ -125,7 +125,7 @@ public class Derivation {
 	}
 
 	public void addInput(Entity input) {
-		if (!inputs.stream().anyMatch(i -> i.getIri().equals(input.getIri()))) {
+		if (inputs.stream().noneMatch(i -> i.getIri().equals(input.getIri()))) {
 			this.inputs.add(input);
 			input.setAsInput(this);
 		}
@@ -144,10 +144,9 @@ public class Derivation {
 	}
 
 	public List<Derivation> getInputsWithBelongsTo() {
-		List<Entity> inputs = this.getInputs();
 
 		List<Derivation> inputsWithBelongsTo = new ArrayList<>();
-		for (Entity input : inputs) {
+		for (Entity input : this.getInputs()) {
 			if (input.hasBelongsTo()) {
 				inputsWithBelongsTo.add(input.getBelongsTo());
 			}
@@ -163,7 +162,7 @@ public class Derivation {
 	 * @return
 	 */
 	public List<String> getAgentInputs() {
-		return this.getInputs().stream().map(i -> i.getIri()).collect(Collectors.toList());
+		return this.getInputs().stream().map(Entity::getIri).collect(Collectors.toList());
 	}
 
 	public JSONObject getAgentInputsMap() {
@@ -180,14 +179,13 @@ public class Derivation {
 
 	public JSONObject getBelongsToMap() {
 		Map<String, String> belongsToMap = new HashMap<>();
-		this.getEntities().stream().forEach(e -> {
-			belongsToMap.put(e.getIri(), e.getRdfType());
-		});
+		this.getEntities().stream().forEach(e ->
+			belongsToMap.put(e.getIri(), e.getRdfType()));
 		return new JSONObject(belongsToMap);
 	}
 
 	public List<String> getBelongsToIris(String rdfType) {
-		return this.getEntities().stream().filter(e -> e.getRdfType().equals(rdfType)).map(e -> e.getIri())
+		return this.getEntities().stream().filter(e -> e.getRdfType().equals(rdfType)).map(Entity::getIri)
 				.collect(Collectors.toList());
 	}
 
@@ -202,9 +200,8 @@ public class Derivation {
 
 	public boolean isOutOfDate() {
 		boolean outOfDate = false;
-		List<Entity> inputs = this.getInputs();
 
-		for (Entity input : inputs) {
+		for (Entity input : this.getInputs()) {
 			long inputTimestamp;
 			if (input.hasBelongsTo()) {
 				inputTimestamp = input.getBelongsTo().getTimestamp();
@@ -264,7 +261,7 @@ public class Derivation {
 
 	public void setDirectedUpstreams(Derivation directedUpstream) {
 		if (this.hasDirectedUpstreams) {
-			if (this.directedUpstreams.stream().allMatch(d -> d.getIri() != directedUpstream.getIri())) {
+			if (this.directedUpstreams.stream().allMatch(d -> !Objects.equals(d.getIri(), directedUpstream.getIri()))) {
 				this.directedUpstreams.add(directedUpstream);
 			}
 		} else {
@@ -279,9 +276,7 @@ public class Derivation {
 	 * @param directedUpstreams the directedUpstreams to set
 	 */
 	public void setDirectedUpstreams(List<Derivation> directedUpstreams) {
-		directedUpstreams.forEach(d -> {
-			this.setDirectedUpstreams(d);
-		});
+		directedUpstreams.forEach(this::setDirectedUpstreams);
 	}
 
 	/**
@@ -298,7 +293,7 @@ public class Derivation {
 	 */
 	public void setDirectedDownstreams(Derivation directedDownstream) {
 		if (this.hasDirectedDownstreams) {
-			if (this.directedDownstreams.stream().allMatch(d -> d.getIri() != directedDownstream.getIri())) {
+			if (this.directedDownstreams.stream().allMatch(d -> !Objects.equals(d.getIri(), directedDownstream.getIri()))) {
 				this.directedDownstreams.add(directedDownstream);
 			}
 		} else {
