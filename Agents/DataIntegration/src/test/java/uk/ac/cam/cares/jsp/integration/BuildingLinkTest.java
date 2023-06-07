@@ -54,7 +54,7 @@ class BuildingLinkTest {
 
         when(request.getParameter("db3d")).thenReturn("sg_ntu");
         when(request.getParameter("iri")).thenReturn("http://157.245.193.188:48083/blazegraph/namespace/ntuenergy/sparql");
-        when(request.getParameter("mode")).thenReturn("2"); //fuzzy match mode: 1: name; 2: address
+        when(request.getParameter("type")).thenReturn("bim"); //link building type: bim and power (currently only support these 2 types)
 
         BuildingLink buildingLink = new BuildingLink();
         buildingLink.setPostGISClient(conn3);
