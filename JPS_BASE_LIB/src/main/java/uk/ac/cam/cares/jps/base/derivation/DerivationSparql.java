@@ -2604,23 +2604,19 @@ public class DerivationSparql {
 	}
 
 	/**
-	 * This method cleans up the "Finished" derivation in the knowledge graph by
+	 * This method cleans up the "Finished" async derivation in the knowledge graph by
 	 * deleting all old instances, reconnecting the new generated derived IRI with
 	 * derivations, deleting all status, and updating timestamp in one-go. This
 	 * method is thread-safe.
 	 * 
 	 * @param derivation
-	 * @param isAsync
 	 */
-	void cleanUpDerivation(String derivation, boolean isAsync) {
-		if (isAsync) {
-			// if another agent thread is cleaning up the same derivation concurrently
-			// and succeeded before this thread, then this method will return false
-			if (addUuidLockToFinishedStatus(derivation)) {
-				Map<String, List<String>> connectionMap = mapNewOutputsToDownstream(derivation, isAsync, null);
-				updateFinishedAsyncDerivation(derivation, connectionMap);
-			}
-		} else {
+	void cleanUpAsyncDerivation(String derivation) {
+		// if another agent thread is cleaning up the same derivation concurrently
+		// and succeeded before this thread, then this method will return false
+		if (addUuidLockToFinishedStatus(derivation)) {
+			Map<String, List<String>> connectionMap = mapNewOutputsToDownstream(derivation, true, null);
+			reconnectAsyncDerivation(derivation, connectionMap);
 		}
 	}
 
@@ -2708,151 +2704,85 @@ public class DerivationSparql {
 	}
 
 	/**
-	 * This method reconnects new derived IRIs when a synchronous derivation is
-	 * updated, specifically, it does below five operations in one-go:
-	 * (1) delete old outputs (entities) of the given derivation and its connections
-	 * with downstream derivations;
+	 * This method is a helper function for reconnecting new derived IRIs of sync
+	 * derivations. It wraps around DerivationSparql::reconnectNewDerivedIRIs.
+	 * 
+	 * @param derivation
+	 * @param connectionMap
+	 * @param outputTriples
+	 * @param retrievedInputsAtTs
+	 * @return
+	 */
+	boolean reconnectSyncDerivation(String derivation, Map<String, List<String>> connectionMap,
+			List<TriplePattern> outputTriples, Long retrievedInputsAtTs) {
+		return reconnectNewDerivedIRIs(derivation, connectionMap, outputTriples, retrievedInputsAtTs, false);
+	}
+
+	/**
+	 * This method is a helper function for reconnecting new derived IRIs of async
+	 * derivations. It wraps around DerivationSparql::reconnectNewDerivedIRIs.
+	 * 
+	 * @param derivation
+	 * @param connectionMap
+	 * @return
+	 */
+	boolean reconnectAsyncDerivation(String derivation, Map<String, List<String>> connectionMap) {
+		return reconnectNewDerivedIRIs(derivation, connectionMap, null, null, true);
+	}
+
+	/**
+	 * This method reconnects new derived IRIs when a derivation is updated,
+	 * (supporting both a-/sync), specifically, it does below five operations in one-go:
+	 * (1) if exists, delete old outputs (entities) of the given derivation and its
+	 * connections with downstream derivations;
 	 * (2) delete status of the derivation if exist (applicable for outdated sync
-	 * derivations in the mixed derivation DAGs);
+	 * derivations in the mixed derivation DAGs and async derivations);
 	 * (3) replace timestamp of the given derivation with the new timestamp recorded
-	 * when the derivation inputs were retrieved;
-	 * (4) insert all new triples created by the DerivationAgent;
+	 * when the derivation inputs were retrieved (for sync this will be provided as
+	 * as argument, for async this will be retrieved from the data property
+	 * OntoDerivation:retrievedInputsAt when the derivation inputs were retrieved and
+	 * the OntoDerivation:retrievedInputsAt will be deleted);
+	 * (4) insert all new triples;
 	 * (5) insert new derived IRIs to be connected with the given derivation using
-	 * "belongsTo", also all its downstream derivations using "isDerivedFrom".
+	 * "belongsTo", also all its downstream derivations using "isDerivedFrom";
+	 * (6) for those downstream derivations that no new derived IRIs are identified as
+	 * mapped, connect them using "isDerivedFrom" directly with the derivation - the
+	 * mapping are provided as an argument to this method.
 	 * 
 	 * It should be noted that this SPARQL update will ONLY be executed when the
 	 * given derivation is outdated - this helps with addressing the concurrent HTTP
 	 * request issue as detailed in
-	 * https://github.com/cambridge-cares/TheWorldAvatar/issues/184.
+	 * https://github.com/cambridge-cares/TheWorldAvatar/issues/184, also prevents
+	 * any potential faulty behaviour due to high frequency asynchronous derivation
+	 * monitoring.
 	 * 
 	 * This method returns a boolean value to indicate if it is certain that the
 	 * triples in the update endpoint are changed by the SPARQL update operation.
 	 * For more details, see DerivationSparql::updateDerivationIfHttpPostAvailable.
 	 * 
+	 * @param derivation
+	 * @param connectionMap
 	 * @param outputTriples
-	 * @param newIriDownstreamDerivationMap
-	 * @param derivation
-	 * @param retrievedInputsAt
-	 */
-	boolean reconnectNewDerivedIRIs(List<TriplePattern> outputTriples,
-			Map<String, List<String>> newIriDownstreamDerivationMap, String derivation,
-			Long retrievedInputsAt) {
-		ModifyQuery modify = Queries.MODIFY();
-		SubSelect sub = GraphPatterns.select();
-
-		// insert all output triples
-		outputTriples.forEach(t -> modify.insert(t));
-
-		// check if all new derived IRI are allowed to be marked as derivation outputs
-		allowedAsDerivationOutputs(new ArrayList<>(newIriDownstreamDerivationMap.keySet()));
-		// insert triples of new derived IRI and the derivations that it should be
-		// connected to
-		newIriDownstreamDerivationMap.forEach((newIRI, downstreamDerivations) -> {
-			// add <newIRI> <belongsTo> <derivation> for each newIRI
-			modify.insert(iri(newIRI).has(belongsTo, iri(derivation)));
-			// if this <newIRI> is inputs to other derivations, add
-			// <downstreamDerivation> <isDerivedFrom> <newIRI>
-			if (!downstreamDerivations.isEmpty()) {
-				downstreamDerivations.stream().forEach(dd -> modify.insert(iri(dd).has(isDerivedFrom, iri(newIRI))));
-			}
-		});
-
-		// create variables for sub query
-		Variable d = SparqlBuilder.var("d"); // this derivation
-		Variable ups = SparqlBuilder.var("ups"); // upstream inputs/derivations
-
-		// variables for old outputs (entities)
-		Variable e = SparqlBuilder.var("e");
-		Variable p1 = SparqlBuilder.var("p1");
-		Variable o = SparqlBuilder.var("o");
-		Variable s = SparqlBuilder.var("s");
-		Variable p2 = SparqlBuilder.var("p2");
-
-		// variables for timestamp
-		Variable unixtimeIRI = SparqlBuilder.var("timeIRI");
-		Variable dTs = SparqlBuilder.var("dTs"); // timestamp of this derivation
-		Variable upsTs = SparqlBuilder.var("upsTs"); // timestamp of upstream
-
-		// variables for status related concepts
-		Variable status = SparqlBuilder.var("status");
-		Variable statusType = SparqlBuilder.var("statusType");
-
-		// filter ?derivationTimestamp < ?upstreamTimestamp
-		Expression<?> tsFilter = Expressions.lt(dTs, upsTs);
-
-		// this GraphPattern ensures ?d only exist if it's outdated, otherwise the
-		// SPARQL update will not execute
-		GraphPattern derivationPattern = GraphPatterns
-				.and(new ValuesPattern(d, Arrays.asList(iri(derivation))),
-						d.has(PropertyPaths.path(hasTime, inTimePosition), unixtimeIRI),
-						unixtimeIRI.has(numericPosition, dTs),
-						d.has(PropertyPaths.path(isDerivedFrom, zeroOrOne(belongsTo)), ups),
-						ups.has(PropertyPaths.path(hasTime, inTimePosition, numericPosition), upsTs))
-				.filter(tsFilter);
-		// this GraphPattern queries all the old outputs (entities)
-		GraphPattern entityPattern = GraphPatterns.and(e.has(belongsTo, d), e.has(p1, o), s.has(p2, e).optional());
-		// these patterns query the status of this derivation if it exist, thus optional
-		TriplePattern tp1 = d.has(hasStatus, status);
-		TriplePattern tp2 = status.isA(statusType);
-		GraphPattern statusQueryPattern = GraphPatterns.and(tp1, tp2).optional();
-
-		// construct the sub query
-		sub.select(d, unixtimeIRI, dTs, status, statusType, e, p1, o, s, p2)
-				.where(derivationPattern, entityPattern, statusQueryPattern);
-
-		// delete old outputs (entities) - basically delete this individual
-		TriplePattern deleteEntityAsSubject = e.has(p1, o);
-		TriplePattern deleteEntityAsObject = s.has(p2, e);
-
-		// timestamp-related triples to add and delete
-		TriplePattern deleteOldTimestamp = unixtimeIRI.has(numericPosition, dTs);
-		TriplePattern insertNewTimestamp = unixtimeIRI.has(numericPosition, retrievedInputsAt);
-
-		// construct the complete SPARQL update, note that some of the insert triples
-		// have already been added at the beginning of this method
-		modify.prefix(prefixTime, prefixDerived)
-				.delete(deleteEntityAsSubject, deleteEntityAsObject, tp1, tp2, deleteOldTimestamp)
-				.insert(insertNewTimestamp).where(sub);
-
-		return updateDerivationIfHttpPostAvailable(modify.getQueryString());
-	}
-
-	/**
-	 * This method updates the asynchronous derivations at Finished status,
-	 * specifically, it does below five operations in one-go:
-	 * (1) if exist, delete old outputs (entities) of the given derivation and its
-	 * connections with downstream derivations;
-	 * (2) delete status of the derivation;
-	 * (3) replace timestamp of the given derivation with the new timestamp recorded
-	 * by data property OntoDerivation:retrievedInputsAt when the derivation inputs
-	 * were retrieved, also delets the OntoDerivation:retrievedInputsAt record;
-	 * (4) if exist, delete downstream derivations that directly connected to the
-	 * given derivation via OntoDerivation:isDerivedFrom (applicable if this
-	 * derivation and its downstreams were created for new information);
-	 * (5) insert new derived IRIs to be connected with the given derivation using
-	 * "belongsTo", also all its downstream derivations using "isDerivedFrom"; for
-	 * those downstream derivations that no new derived IRIs are identified as mapped,
-	 * connect them using "isDerivedFrom" directly with the derivation - the mapping
-	 * are provided as an argument to this method.
-	 * 
-	 * It should be noted that this SPARQL update will ONLY be executed when the
-	 * given derivation is outdated - this prevents any potential faulty behaviour
-	 * due to high frequency asynchronous derivation monitoring.
-	 * 
-	 * This method returns a boolean value to indicate if it is certain that the
-	 * triples in the update endpoint are changed by the SPARQL update operation.
-	 * For more details, see DerivationSparql::updateDerivationIfHttpPostAvailable.
-	 * 
-	 * @param derivation
-	 * @param newIriDownstreamDerivationMap
+	 * @param retrievedInputsAtTs
+	 * @param isAsync
 	 * @return
 	 */
-	boolean updateFinishedAsyncDerivation(String derivation, Map<String, List<String>> connectionMap) {
+	private boolean reconnectNewDerivedIRIs(String derivation, Map<String, List<String>> connectionMap,
+			List<TriplePattern> outputTriples, Long retrievedInputsAtTs, boolean isAsync) {
 		ModifyQuery modify = Queries.MODIFY();
-		SubSelect sub = GraphPatterns.select();
+		SubSelect sub = GraphPatterns.select().distinct();
+
+		if (!isAsync) {
+			// insert all output triples if this is for sync derivations
+			// if this is for async derivations, the output triples should already be written to KG
+			outputTriples.forEach(t -> modify.insert(t));
+		}
 
 		// add triples of directed downstream derivations to be added
-		connectionMap.remove(derivation).forEach(d -> modify.insert(iri(d).has(isDerivedFrom, iri(derivation))));
+		if (connectionMap.containsKey(derivation)) {
+			connectionMap.remove(derivation).forEach(d -> modify.insert(iri(d).has(isDerivedFrom, iri(derivation))));
+		}
+
 		// insert triples of new derived IRI and the derivations that it should be
 		// connected to
 		connectionMap.forEach((newIRI, downstreamDerivations) -> {
@@ -2881,7 +2811,7 @@ public class DerivationSparql {
 		Variable unixtimeIRI = SparqlBuilder.var("timeIRI");
 		Variable dTs = SparqlBuilder.var("dTs"); // timestamp of this derivation
 		Variable upsTs = SparqlBuilder.var("upsTs"); // timestamp of upstream
-		Variable retrievedInputsAtTs = SparqlBuilder.var("retrievedInputsAt"); // retrievedInputsAt
+		Variable retrivVar = SparqlBuilder.var("retrievedInputsAt"); // retrievedInputsAt
 
 		// variables for status related concepts
 		Variable status = SparqlBuilder.var("status");
@@ -2896,37 +2826,46 @@ public class DerivationSparql {
 
 		// this GraphPattern ensures ?d only exist if it's outdated, otherwise the
 		// SPARQL update will not execute
-		GraphPattern derivationTsPattern = GraphPatterns
+		GraphPattern derivationPattern = GraphPatterns
 				.and(new ValuesPattern(d, Arrays.asList(iri(derivation))),
 						d.has(PropertyPaths.path(hasTime, inTimePosition), unixtimeIRI),
 						unixtimeIRI.has(numericPosition, dTs),
 						d.has(PropertyPaths.path(isDerivedFrom, zeroOrOne(belongsTo)), ups),
 						ups.has(PropertyPaths.path(hasTime, inTimePosition, numericPosition), upsTs))
 				.filter(tsFilter);
-		// this GraphPattern queries the timestamp retrievedInputsAt, maybe we can also
-		// filter it?
-		GraphPattern retrievedInputsAtPattern = d.has(retrievedInputsAt, retrievedInputsAtTs);
-		// these patterns query the status of this derivation
-		TriplePattern tp1 = d.has(hasStatus, status);
-		TriplePattern tp2 = status.isA(statusType);
-		TriplePattern tp3 = status.has(hasNewDerivedIRI, sndIRI); // this is optional in query but mandatory in update
-																  // to accommodate the situation where no new outputs
-		GraphPattern statusQueryPattern = GraphPatterns.and(tp1, tp2, tp3.optional());
-		// this GraphPattern queries directed downstream derivation if exist, thus
-		// optional
-		GraphPattern directedDownstreamPattern = downd.has(isDerivedFrom, d).optional();
+
 		// this GraphPattern queries all the old outputs (entities), it is optional to
 		// accommodate the situation where no outputs were presented for async
 		// derivation created for new information
 		GraphPattern entityPattern = GraphPatterns.and(e.has(belongsTo, d), e.has(p1, o), s.has(p2, e).optional())
 				.optional();
-		// this GraphPattern queries the uuidLock of this derivation
-		GraphPattern uuidLockPattern = d.has(uuidLock, uuid);
+
+		// below patterns query the status of this derivation if it exist, thus optional
+		TriplePattern tp1 = d.has(hasStatus, status);
+		TriplePattern tp2 = status.isA(statusType);
+		// tp3 is optional in query for two reasons:
+		// (1) to accommodate both sync and async derivations
+		// (2) to accommodate the situation where no new outputs for async
+		// but this mandatory in update so it still gets deleted
+		TriplePattern tp3 = status.has(hasNewDerivedIRI, sndIRI);
+		GraphPattern statusQueryPattern = isAsync ? GraphPatterns.and(
+				tp1, tp2, tp3.optional()) : GraphPatterns.and(tp1, tp2, tp3.optional()).optional();
+
+		// this GraphPattern queries directed downstream derivation if exist, thus optional
+		GraphPattern directedDownstreamPattern = downd.has(isDerivedFrom, d).optional();
+
+		// specific pattern for a-/sync
+		// for async:
+		// (1) query the uuidLock of this derivation
+		// (2) query the timestamp retrievedInputsAt
+		// for sync:
+		// (1) assign timestamp retrievedInputsAt with values clause
+		GraphPattern aOrSyncPattern = isAsync ? GraphPatterns.and(d.has(retrievedInputsAt, retrivVar),
+				d.has(uuidLock, uuid)) : new ValuesPattern(retrivVar, Rdf.literalOf(retrievedInputsAtTs));
 
 		// construct the sub query
-		sub.select(d, unixtimeIRI, dTs, retrievedInputsAtTs, status, statusType, sndIRI, downd, e, p1, o, s, p2, uuid)
-				.where(derivationTsPattern, retrievedInputsAtPattern, statusQueryPattern, directedDownstreamPattern,
-						entityPattern, uuidLockPattern);
+		sub.select(d, unixtimeIRI, dTs, retrivVar, status, statusType, sndIRI, downd, e, p1, o, s, p2, uuid)
+				.where(derivationPattern, entityPattern, statusQueryPattern, directedDownstreamPattern, aOrSyncPattern);
 
 		// delete old outputs (entities) - basically delete this individual
 		TriplePattern deleteEntityAsSubject = e.has(p1, o);
@@ -2937,18 +2876,23 @@ public class DerivationSparql {
 
 		// timestamp-related triples to add and delete
 		TriplePattern deleteOldTimestamp = unixtimeIRI.has(numericPosition, dTs);
-		TriplePattern deleteRetrievedInputsAt = d.has(retrievedInputsAt, retrievedInputsAtTs);
-		TriplePattern insertNewTimestamp = unixtimeIRI.has(numericPosition, retrievedInputsAtTs);
-
-		// delete uuidLock
-		TriplePattern deleteUuidLock = d.has(uuidLock, uuid);
+		TriplePattern insertNewTimestamp = unixtimeIRI.has(numericPosition, retrivVar);
 
 		// construct the complete SPARQL update, note that some of the insert triples
 		// have already been added at the beginning of this method
 		modify.prefix(prefixTime, prefixDerived)
-				.delete(deleteEntityAsSubject, deleteEntityAsObject, tp1, tp2, tp3, deleteDirectedDownstream,
-						deleteOldTimestamp, deleteRetrievedInputsAt, deleteUuidLock)
+				.delete(deleteEntityAsSubject, deleteEntityAsObject, tp1, tp2, deleteDirectedDownstream,
+						deleteOldTimestamp)
 				.insert(insertNewTimestamp).where(sub);
+
+		// NOTE below two triples are only for async, they are not added when handling sync derivations
+		if (isAsync) {
+			// delete retrievedInputsAt
+			TriplePattern deleteRetrievedInputsAt = d.has(retrievedInputsAt, retrivVar);
+			// delete uuidLock
+			TriplePattern deleteUuidLock = d.has(uuidLock, uuid);
+			modify.delete(tp3, deleteRetrievedInputsAt, deleteUuidLock);
+		}
 
 		return updateDerivationIfHttpPostAvailable(modify.getQueryString());
 	}

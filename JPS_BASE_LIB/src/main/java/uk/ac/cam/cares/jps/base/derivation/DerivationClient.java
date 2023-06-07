@@ -873,16 +873,42 @@ public class DerivationClient {
 	}
 
 	/**
-	 * This method cleans up the "Finished" derivation in the knowledge graph by
-	 * deleting all old instances, reconnecting the new generated derived IRI with
+	 * This method cleans up the "Finished" asynchronous derivation in the knowledge graph
+	 * by deleting all old instances, reconnecting the new generated derived IRI with
 	 * derivations, deleting all status, and updating timestamp in one-go. This
 	 * method is thread-safe.
 	 * 
 	 * @param derivation
 	 */
 	public void cleanUpFinishedDerivationUpdate(String derivation) {
-		this.sparqlClient.cleanUpDerivation(derivation, true);
+		this.sparqlClient.cleanUpAsyncDerivation(derivation);
 		LOGGER.info("Asynchronous derivation <" + derivation + "> is now cleaned up.");
+	}
+
+	/**
+	 * This method maps the new outputs of a sync derivation to its downstream derivation.
+	 * 
+	 * @param derivation
+	 * @param newDerivedIRIs
+	 * @return
+	 */
+	public Map<String, List<String>> mapSyncNewOutputsToDownstream(String derivation, List<String> newDerivedIRIs) {
+		return this.sparqlClient.mapNewOutputsToDownstream(derivation, false, newDerivedIRIs);
+	}
+
+	/**
+	 * This method updates the knowledge graph when the update of a synchronous derivation
+	 * is finished.
+	 * 
+	 * @param outputTriples
+	 * @param newIriDownstreamDerivationMap
+	 * @param derivation
+	 * @param retrievedInputsAt
+	 */
+	public boolean reconnectSyncDerivation(String derivation,
+			Map<String, List<String>> connectionMap, List<TriplePattern> outputTriples,
+			Long retrievedInputsAt) {
+		return this.sparqlClient.reconnectSyncDerivation(derivation, connectionMap, outputTriples, retrievedInputsAt);
 	}
 
 	/**
@@ -956,22 +982,6 @@ public class DerivationClient {
 	 */
 	public Map<String, String> getDerivationsOf(List<String> entities) {
 		return this.sparqlClient.getDerivationsOf(entities);
-	}
-
-	/**
-	 * This method updates the knowledge graph when the update of one derivation is
-	 * finished.
-	 * 
-	 * @param outputTriples
-	 * @param newIriDownstreamDerivationMap
-	 * @param derivation
-	 * @param retrievedInputsAt
-	 */
-	public boolean reconnectNewDerivedIRIs(List<TriplePattern> outputTriples,
-			Map<String, List<String>> newIriDownstreamDerivationMap, String derivation,
-			Long retrievedInputsAt) {
-		return this.sparqlClient.reconnectNewDerivedIRIs(outputTriples, newIriDownstreamDerivationMap,
-				derivation, retrievedInputsAt);
 	}
 
 	/**
