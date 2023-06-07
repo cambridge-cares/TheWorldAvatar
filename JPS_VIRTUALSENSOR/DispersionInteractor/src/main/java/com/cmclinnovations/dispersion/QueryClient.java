@@ -56,6 +56,7 @@ public class QueryClient {
     private static final Iri DISPERSION_LAYER = P_DISP.iri("DispersionLayer");
     private static final Iri SHIPS_LAYER = P_DISP.iri("ShipsLayer");
     private static final Iri CITIES_NAMESPACE = P_DISP.iri("OntoCityGMLNamespace");
+    private static final Iri AERMAP_OUTPUT = P_DISP.iri("AermapOutput");
 
     // properties
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
@@ -126,7 +127,9 @@ public class QueryClient {
             modify.insert(iri(citiesNamespaceIri).isA(CITIES_NAMESPACE).andHas(HAS_NAME, citiesNamespace));
         }
 
-        // outputs (DispersionMatrix, DispersionLayer, ShipsLayer) as time series
+        // outputs (DispersionMatrix, DispersionLayer, ShipsLayer, AermapOutput) as time
+        // series
+
         String matrixIri = PREFIX + UUID.randomUUID();
         modify.insert(iri(matrixIri).isA(DISPERSION_MATRIX));
 
@@ -136,13 +139,16 @@ public class QueryClient {
         String shipsLayerIri = PREFIX + UUID.randomUUID();
         modify.insert(iri(shipsLayerIri).isA(SHIPS_LAYER));
 
+        String aermapOutputIri = PREFIX + UUID.randomUUID();
+        modify.insert(iri(aermapOutputIri).isA(AERMAP_OUTPUT));
+
         modify.prefix(P_DISP, P_OM);
         storeClient.executeUpdate(modify.getQueryString());
 
         // initialise time series for dispersion matrix
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            tsClient.initTimeSeries(List.of(matrixIri, dispLayerIri, shipsLayerIri),
-                    List.of(String.class, String.class, String.class), null, conn);
+            tsClient.initTimeSeries(List.of(matrixIri, dispLayerIri, shipsLayerIri, aermapOutputIri),
+                    List.of(String.class, String.class, String.class, String.class), null, conn);
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
             LOGGER.error("Closing connection failed when initialising time series for dispersion matrix");
@@ -158,7 +164,7 @@ public class QueryClient {
             inputs.add(citiesNamespaceIri);
 
         String derivation = derivationClient.createDerivationWithTimeSeries(
-                List.of(matrixIri, dispLayerIri, shipsLayerIri), Config.AERMOD_AGENT_IRI, inputs);
+                List.of(matrixIri, dispLayerIri, shipsLayerIri, aermapOutputIri), Config.AERMOD_AGENT_IRI, inputs);
 
         // timestamp for pure inputs
         derivationClient.addTimeInstance(inputs);

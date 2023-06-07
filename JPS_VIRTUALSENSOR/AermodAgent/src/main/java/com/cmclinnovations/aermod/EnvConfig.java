@@ -24,6 +24,7 @@ public class EnvConfig {
     public static final String VIS_FOLDER = System.getenv("VIS_FOLDER");
     public static final String GEOSERVER_URL = System.getenv("GEOSERVER_URL");
     public static final String INCLUDE_ELEVATION = System.getenv("INCLUDE_ELEVATION");
+    public static final String ELEVATION_TABLE = System.getenv("ELEVATION_TABLE");
 
     private EnvConfig() {
         throw new IllegalStateException();

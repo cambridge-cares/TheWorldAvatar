@@ -29,6 +29,7 @@
 					"VIS_FOLDER=/vis_data",
 					"GEOSERVER_URL=http://localhost:3838/geoserver",
 					"INCLUDE_ELEVATION=true",
+					"ELEVATION_TABLE=elevation",
 					"JPDA_ADDRESS=0.0.0.0:5005",
 					"JPDA_TRANSPORT=dt_socket",
 					"DEBUG=ON"

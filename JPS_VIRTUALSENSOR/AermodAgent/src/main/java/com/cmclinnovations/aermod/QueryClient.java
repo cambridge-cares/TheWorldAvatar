@@ -131,6 +131,7 @@ public class QueryClient {
     private static final String DISPERSION_MATRIX = PREFIX_DISP + "DispersionMatrix";
     private static final String DISPERSION_LAYER = PREFIX_DISP + "DispersionLayer";
     private static final String SHIPS_LAYER = PREFIX_DISP + "ShipsLayer";
+    private static final String AERMAP_OUTPUT = PREFIX_DISP + "AermapOutput";
 
     // properties
     private static final Iri HAS_PROPERTY = P_DISP.iri("hasProperty");
@@ -957,14 +958,17 @@ public class QueryClient {
 
     public void setElevation(List<StaticPointSource> pointSources, List<Building> buildings, int simulationSrid) {
 
+        String elevationTable = EnvConfig.ELEVATION_TABLE;
+
         for (int i = 0; i < pointSources.size(); i++) {
             StaticPointSource ps = pointSources.get(i);
             String originalSrid = "EPSG:" + ps.getLocation().getSRID();
             double[] xyOriginal = { ps.getLocation().getX(), ps.getLocation().getY() };
             double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
             String sqlString = String.format("SELECT ST_Value(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d)) AS val " +
-                    "FROM elevation " + "WHERE ST_Intersects(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d));",
-                    xyTransformed[0], xyTransformed[1], simulationSrid, xyTransformed[0], xyTransformed[1],
+                    "FROM %s WHERE ST_Intersects(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d));",
+                    xyTransformed[0], xyTransformed[1], simulationSrid, elevationTable, xyTransformed[0],
+                    xyTransformed[1],
                     simulationSrid);
 
             try (Connection conn = rdbStoreClient.getConnection();
@@ -991,8 +995,9 @@ public class QueryClient {
             double[] xyOriginal = { building.getLocation().getX(), building.getLocation().getY() };
             double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
             String sqlString = String.format("SELECT ST_Value(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d)) AS val " +
-                    "FROM elevation " + "WHERE ST_Intersects(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d));",
-                    xyTransformed[0], xyTransformed[1], simulationSrid, xyTransformed[0], xyTransformed[1],
+                    "FROM %s WHERE ST_Intersects(rast, ST_SetSRID(ST_MakePoint(%f,%f),%d));",
+                    xyTransformed[0], xyTransformed[1], simulationSrid, elevationTable, xyTransformed[0],
+                    xyTransformed[1],
                     simulationSrid);
 
             try (Connection conn = rdbStoreClient.getConnection();
@@ -1016,8 +1021,9 @@ public class QueryClient {
 
     List<byte[]> getScopeElevation(Polygon scope, int srid) {
 
-        String sql = String.format("SELECT ST_AsGDALRaster(rast, 'GTiff') AS rData FROM elevation " +
-                "WHERE ST_Intersects(rast, ST_Transform(ST_GeomFromText('%s',4326),%d));", scope.toText(), srid);
+        String sql = String.format("SELECT ST_AsGDALRaster(rast, 'GTiff') AS rData FROM %s " +
+                "WHERE ST_Intersects(rast, ST_Transform(ST_GeomFromText('%s',4326),%d));", EnvConfig.ELEVATION_TABLE,
+                scope.toText(), srid);
         List<byte[]> elevData = new ArrayList<>();
 
         try (Connection conn = rdbStoreClient.getConnection();
@@ -1036,7 +1042,7 @@ public class QueryClient {
     }
 
     void updateOutputs(String derivation, String dispersionMatrix, String dispersionLayer, String shipLayer,
-            long timeStamp) {
+            long timeStamp, String aermapOutput) {
         // first query the IRIs
         SelectQuery query = Queries.SELECT();
 
@@ -1053,6 +1059,7 @@ public class QueryClient {
         String dispersionMatrixIri = null;
         String dispersionLayerIri = null;
         String shipLayerIri = null;
+        String aermapOutputIri = null;
         for (int i = 0; i < queryResult.length(); i++) {
             String entityTypeIri = queryResult.getJSONObject(i).getString(entityType.getQueryString().substring(1));
 
@@ -1066,14 +1073,17 @@ public class QueryClient {
                 case SHIPS_LAYER:
                     shipLayerIri = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
                     break;
+                case AERMAP_OUTPUT:
+                    aermapOutputIri = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
                 default:
                     LOGGER.error("Unknown entity type: <{}>", entityType);
                     return;
             }
         }
 
-        if (dispersionMatrixIri == null || dispersionLayerIri == null || shipLayerIri == null) {
-            LOGGER.error("One of dispersion matrix, dispersion layer, ship layer IRI is null");
+        if (dispersionMatrixIri == null || dispersionLayerIri == null || shipLayerIri == null
+                || aermapOutputIri == null) {
+            LOGGER.error("One of dispersion matrix, dispersion layer, ship layer IRI, aermap output IRI is null");
             return;
         }
 
@@ -1081,9 +1091,10 @@ public class QueryClient {
         values.add(List.of(dispersionMatrix));
         values.add(List.of(dispersionLayer));
         values.add(List.of(shipLayer));
+        values.add(List.of(aermapOutput));
 
         TimeSeries<Long> timeSeries = new TimeSeries<>(List.of(timeStamp),
-                List.of(dispersionMatrixIri, dispersionLayerIri, shipLayerIri), values);
+                List.of(dispersionMatrixIri, dispersionLayerIri, shipLayerIri, aermapOutputIri), values);
 
         try (Connection conn = rdbStoreClient.getConnection()) {
             tsClientLong.addTimeSeriesData(timeSeries, conn);

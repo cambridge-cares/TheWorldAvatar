@@ -33,6 +33,7 @@ services:
       - VIS_FOLDER=/vis_data
       - GEOSERVER_URL=http://localhost:3838/geoserver # specifying here because WMS endpoint does not work with container name
       - INCLUDE_ELEVATION=true
+      - ELEVATION_TABLE=elevation
     configs:
       - postgis
       - blazegraph
