@@ -39,16 +39,19 @@ public class UpdateDerivations extends JPSAgent {
 
 	JSONObject updateDerivations(SparqlClient sparqlClient, DerivationClient devClient) {
 		String difference = sparqlClient.getDifferenceIRI();
-		String difference_derivation = devClient.getDerivationsOf(Arrays.asList(difference)).get(difference);
-		
-		devClient.unifiedUpdateDerivation(difference_derivation);
-		
-		String res_msg = "Checked derivation of difference <" + difference_derivation + ">, the update should be done in a few minutes";
+		String differenceDerivation = devClient.getDerivationsOf(Arrays.asList(difference)).get(difference);
+		return updateDerivations(differenceDerivation, devClient);
+	}
+
+	JSONObject updateDerivations(String differenceDerivation, DerivationClient devClient) {
+		devClient.unifiedUpdateDerivation(differenceDerivation);
+
+		String res_msg = "Checked derivation of difference <" + differenceDerivation + ">, the update should be done in a few minutes";
 		LOGGER.info(res_msg);
-		
+
 		JSONObject response = new JSONObject();
 		response.put("status", res_msg);
-		
+
 		return response;
 	}
 }
