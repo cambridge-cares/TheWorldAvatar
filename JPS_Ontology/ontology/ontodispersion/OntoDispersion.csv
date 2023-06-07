@@ -3,6 +3,7 @@ OntoDispersion,TBox,https://www.theworldavatar.com/kg/ontodispersion/,https://ww
 OntoDispersion,TBox,1.1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoDispersion,TBox,,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoDispersion,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+AermapOutput,Class,,,,,,URL to download the AERMAP output file stored as time series,https://www.theworldavatar.com/kg/ontodispersion/,
 DispersionMatrix,Class,,,,,,URL to download the raw output file stored as time series,https://www.theworldavatar.com/kg/ontodispersion/,
 DispersionLayer,Class,,,,,,Name of the dispersion matrix layer in GeoServer stored as time series,https://www.theworldavatar.com/kg/ontodispersion/,
 ShipsLayer,Class,,,,,,Name of the ships layer in GeoServer stored as time series,https://www.theworldavatar.com/kg/ontodispersion/,
