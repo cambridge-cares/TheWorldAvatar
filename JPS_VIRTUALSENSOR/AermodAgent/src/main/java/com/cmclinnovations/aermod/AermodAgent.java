@@ -148,8 +148,12 @@ public class AermodAgent extends DerivationAgent {
             // queryClient.setElevation(staticPointSources, buildings, srid);
             aermod.createBPIPPRMInput(staticPointSources, buildings, srid);
             aermod.runBPIPPRM();
-            aermod.createAERMODBuildingsInput();
         }
+
+        // Moved this part outside the if statement to ensure that the buildings.dat
+        // file is created in all cases.
+        // It will be blank if citiesNamespace is null.
+        aermod.createAERMODBuildingsInput(citiesNamespace);
 
         aermod.create144File(weatherData);
 

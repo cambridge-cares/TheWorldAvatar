@@ -156,9 +156,14 @@ public class Aermod {
         return 0;
     }
 
-    public int createAERMODBuildingsInput() {
+    public int createAERMODBuildingsInput(String citiesNamespace) {
 
         StringBuilder sb = new StringBuilder();
+
+        if (citiesNamespace == null) {
+            sb.append(" ");
+            return writeToFile(aermodDirectory.resolve("buildings.dat"), sb.toString());
+        }
 
         Path filepath = bpipprmDirectory.resolve("building.dat");
 
