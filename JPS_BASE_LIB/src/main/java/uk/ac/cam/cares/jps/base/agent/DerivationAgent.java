@@ -123,9 +123,10 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 				// at the point of executing SPARQL update, i.e. this solves concurrent request
 				// issue as detailed in
 				// https://github.com/cambridge-cares/TheWorldAvatar/issues/184
-				boolean triplesChangedForSure = this.devClient.reconnectNewDerivedIRIs(outputs.getOutputTriples(),
-						outputs.getNewEntitiesDownstreamDerivationMap(), outputs.getThisDerivation(),
-						outputs.getRetrievedInputsAt());
+				Map<String, List<String>> connectionMap = this.devClient.mapSyncNewOutputsToDownstream(
+						outputs.getThisDerivation(), outputs.getNewDerivedIRI());
+				boolean triplesChangedForSure = this.devClient.reconnectSyncDerivation(outputs.getThisDerivation(),
+						connectionMap, outputs.getOutputTriples(), outputs.getRetrievedInputsAt());
 
 				// for normal Derivation, we need to return both timestamp and the new derived
 				if (triplesChangedForSure) {
@@ -135,6 +136,8 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 							outputs.getRetrievedInputsAt());
 					res.put(DerivationClient.AGENT_OUTPUT_KEY,
 							outputs.getNewEntitiesJsonMap());
+					res.put(DerivationClient.AGENT_OUTPUT_CONNECTION_KEY,
+							new JSONObject(connectionMap));
 					LOGGER.info("Derivation update is done in the knowledge graph, returned response: " + res);
 				} else {
 					// if we are not certain, query the knowledge graph to get the accurate

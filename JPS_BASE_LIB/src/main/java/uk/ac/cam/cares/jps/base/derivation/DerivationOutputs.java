@@ -252,22 +252,6 @@ public class DerivationOutputs {
 		return this.outputTriples;
 	}
 
-	public Map<String, List<String>> getNewEntitiesDownstreamDerivationMap() {
-		Map<String, List<String>> newEntitiesDownstreamDerivationMap = new HashMap<>();
-		this.newEntitiesMap.values().stream().flatMap(i -> i.stream())
-				.forEach(iri -> newEntitiesDownstreamDerivationMap.put(iri, new ArrayList<>()));
-
-		this.oldEntitiesDownstreamDerivationMap.forEach((iri, derivations) -> {
-			List<String> matchingEntity = this.newEntitiesMap.get(this.oldEntitiesMap.get(iri));
-			if (matchingEntity.size() != 1) {
-				throw new JPSRuntimeException(OLD_NEW_ENTITIES_MATCHING_ERROR + this.oldEntitiesMap.toString()
-						+ ", new entities" + this.newEntitiesMap.toString());
-			}
-			newEntitiesDownstreamDerivationMap.get(matchingEntity.get(0)).addAll(derivations);
-		});
-		return newEntitiesDownstreamDerivationMap;
-	}
-
 	public JSONObject getNewEntitiesJsonMap() {
 		JSONObject newEntitiesJson = new JSONObject();
 		this.newEntitiesMap.forEach((rdfType, iris) -> {
