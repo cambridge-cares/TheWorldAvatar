@@ -11,6 +11,7 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.nio.file.Path;
 import java.util.Base64;
 import java.util.Optional;
 
@@ -27,6 +28,7 @@ public final class GeoServerService extends ContainerService {
 
     private static final String ADMIN_USERNAME = "admin";
     private static final String DEFAULT_ADMIN_PASSWORD_FILE = "/run/secrets/geoserver_password";
+    public static final Path SERVING_DIRECTORY = Path.of("/var/geoserver/datadir/www");
 
     private static final HttpClient httpClient = HttpClient.newHttpClient();
     // Convert username:password to Base64 String.
@@ -66,6 +68,8 @@ public final class GeoServerService extends ContainerService {
 
             updatePassword();
         }
+
+        createComplexCommand("chmod", "-R", "777", SERVING_DIRECTORY.toString()).withUser("root").exec();
     }
 
     private Builder createBaseSettingsRequestBuilder() {

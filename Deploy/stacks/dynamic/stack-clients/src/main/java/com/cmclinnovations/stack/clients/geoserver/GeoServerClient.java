@@ -20,6 +20,7 @@ import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
+import com.cmclinnovations.stack.services.GeoServerService;
 
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.Util;
@@ -38,9 +39,8 @@ public class GeoServerClient extends ContainerClient {
     private final PostGISEndpointConfig postgreSQLEndpoint;
 
     private static GeoServerClient instance = null;
-    private static final Path SERVING_DIRECTORY = Path.of("/var/geoserver/datadir/www");
-    private static final Path STATIC_DATA_DIRECTORY = SERVING_DIRECTORY.resolve("static_data");
-    private static final Path ICONS_DIRECTORY = SERVING_DIRECTORY.resolve("icons");
+    private static final Path STATIC_DATA_DIRECTORY = GeoServerService.SERVING_DIRECTORY.resolve("static_data");
+    private static final Path ICONS_DIRECTORY = GeoServerService.SERVING_DIRECTORY.resolve("icons");
 
     public static GeoServerClient getInstance() {
         if (null == instance) {
