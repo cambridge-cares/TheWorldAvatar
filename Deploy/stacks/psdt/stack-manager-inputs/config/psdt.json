@@ -1,7 +1,19 @@
 {
     "services": {
         "includes": [
-            "feature-info-agent"
+            "access-agent",
+            "district-heating-agent",
+            "district-heating-instantiation",
+            "feature-info-agent",
+            "forecasting-agent",
+            "historical-house45-utilities-agent",
+            "historical-pirmasens-station-agent",
+            "historical-pump-data-instantiation-agent",
+            "ifc2ontobim-agent",
+            "ifc2tileset-agent",
+            "ifcowlconverter-agent",
+            "sewage-network-agent",
+            "thingspeak-agent"
         ]
     },
     "volumes": {
