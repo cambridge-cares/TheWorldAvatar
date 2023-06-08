@@ -1,0 +1,26 @@
+{
+  "ServiceSpec": {
+    "Name": "bms-query-agent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "ghcr.io/cambridge-cares/bms-query-agent:1.1.0",
+        "Configs": [
+          {
+            "ConfigName": "blazegraph"
+          }
+        ],
+        "Secrets": [
+          {
+            "SecretName": "blazegraph_password"
+          }
+        ]
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:8080/bms-query-agent/",
+      "externalPath": "/bms-query-agent/"
+    }
+  }
+}

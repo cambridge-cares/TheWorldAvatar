@@ -52,23 +52,10 @@
 
     <!--  Build settings  -->
     <build>
-        <resources>
-            <resource>
-                <directory>${basedir}/logging</directory>
-            </resource>
-            <!-- Copies the downloaded default logger config into the compiled classes folder -->
-            <resource>
-                <directory>${project.build.directory}/${project.build.finalName}.conf</directory>
-                <includes>
-                    <include>**/*.xml</include>
-                </includes>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.0</version>
                 <configuration>
                     <release>11</release>
                 </configuration>
@@ -77,7 +64,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.0</version>
                 <configuration>
                     <argLine>
                         --illegal-access=permit
@@ -88,13 +74,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.3.2</version>
             </plugin>
             <!--  Downloads and extracts ZIP archives from Maven repository  -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.3.0</version>
                 <!--  Version, configuration, and executions should be pulled from the
                                 parent POM unless overridden here.  -->
             </plugin>
@@ -132,12 +116,14 @@
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.19.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.19.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-web</artifactId>
         </dependency>
         <!--  Testing  -->
         <dependency>

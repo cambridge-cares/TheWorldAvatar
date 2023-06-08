@@ -4,8 +4,8 @@
 @prefix OntoCAPEUpp:	<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> .
 @prefix OntoSpecies:    <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> .
 @prefix OntoKin:	    <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> .
-@prefix OntoDoE:		<https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#> .
-@prefix OntoRxn:	    <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#> .
+@prefix OntoDoE:		<https://www.theworldavatar.com/kg/ontodoe/> .
+@prefix OntoRxn:	    <https://www.theworldavatar.com/kg/ontoreaction/> .
 @prefix om:             <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
 @prefix skos:           <http://www.w3.org/2004/02/skos/core#> .
 @prefix exp1:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/> .
@@ -20,7 +20,7 @@
 @prefix rdf:	    	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd:            <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs:		    <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix placeholder:	<http://www.theworldavatar.com/kg/_for_species/> .
+@prefix placeholder:	<https://www.theworldavatar.com/kg/_for_species/> .
 
 
 ################################
@@ -28,9 +28,8 @@
 ################################
 # The purpose of this additional data is to test the ability of the DoEAgent to handle inf values
 
-doe_instance:HistoricalData_1 OntoDoE:refersTo exp6:RxnExp_1.
+doe_instance:HistoricalData_1 OntoDoE:refersToExperiment exp6:RxnExp_1.
 
-ChemRxn:ChemRxn_1 OntoRxn:isRealisedAs exp6:RxnExp_1.
 SinglePhase:Phase_1 OntoCAPEMat:representsThermodynamicBehavior exp6:InputChemical_1.
 SinglePhase:Phase_2 OntoCAPEMat:representsThermodynamicBehavior exp6:InputChemical_2.
 SinglePhase:Phase_3 OntoCAPEMat:representsThermodynamicBehavior exp6:InputChemical_3.
@@ -107,9 +106,11 @@ exp6:RunMaterialCost_1
     om:hasValue exp6:RunMaterialCost_1_Measure_1;
 .
 
+# In theory this performance indicator CANNOT by INF as the RunMaterialCost is now scaled based on the volumetric amount of inlet chemicals
+# which cannot be 0, but we just put it as INF to test the ability of DoE Agent to handle INF values
 exp6:RunMaterialCost_1_Measure_1
     rdf:type om:Measure;
-    om:hasUnit om:poundSterlingPerKilogram;
+    om:hasUnit om:poundSterlingPerLitre;
     om:hasNumericalValue "INF"^^xsd:double;
 .
 
@@ -135,7 +136,7 @@ exp6:OutputChemical_4
 
 exp6:StoiRatio_1
     rdf:type OntoRxn:StoichiometryRatio;
-    OntoDoE:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
     om:hasPhenomenon exp6:RxnExp_1;
     OntoRxn:indicatesMultiplicityOf exp6:InputChemical_1;
     om:hasValue exp6:StoiRatio_1_Measure_1;
@@ -149,7 +150,7 @@ exp6:StoiRatio_1_Measure_1
 
 exp6:StoiRatio_2
     rdf:type OntoRxn:StoichiometryRatio;
-    OntoDoE:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3"^^xsd:string;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3"^^xsd:string;
     om:hasPhenomenon exp6:RxnExp_1;
     OntoRxn:indicatesMultiplicityOf exp6:InputChemical_2;
     om:hasValue exp6:StoiRatio_2_Measure_1;
@@ -163,7 +164,7 @@ exp6:StoiRatio_2_Measure_1
 
 exp6:StoiRatio_3
     rdf:type OntoRxn:StoichiometryRatio;
-    OntoDoE:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d"^^xsd:string;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202"^^xsd:string;
     om:hasPhenomenon exp6:RxnExp_1;
     OntoRxn:indicatesMultiplicityOf exp6:InputChemical_3;
     om:hasValue exp6:StoiRatio_3_Measure_1;
@@ -177,7 +178,7 @@ exp6:StoiRatio_3_Measure_1
 
 exp6:RxnScale_1
     rdf:type OntoRxn:ReactionScale;
-    OntoDoE:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
     om:hasPhenomenon exp6:RxnExp_1;
     OntoRxn:indicatesUsageOf exp6:InputChemical_1;
     om:hasValue exp6:RxnScale_1_Measure_1;
@@ -207,13 +208,13 @@ SinglePhase:Composition_OutputChemical_exp6
 
 SinglePhase:PhaseComponent_3_exp6
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf ChemRxn:Species_placeholder_pubchemcid_637759;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2>;
     OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_3_exp6_Property_1;
 .
 
 SinglePhase:PhaseComponent_4_exp6
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf ChemRxn:Species_placeholder_pubchemcid_640180;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b>;
     OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_4_exp6_Property_1;
 .
 
