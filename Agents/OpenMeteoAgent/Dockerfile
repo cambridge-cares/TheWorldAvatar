@@ -16,7 +16,7 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 
 # Build
 WORKDIR /root/
-RUN --mount=type=cache,id=airmod-mvn,target=/root/.m2/repository,sharing=locked mvn clean dependency:resolve
+RUN mvn clean dependency:resolve
 
 
 #==================================================================================================
@@ -34,7 +34,7 @@ COPY ./pom.xml ./
 COPY ./src ./src/
 COPY ./WEB-INF ./WEB-INF/
 
-RUN --mount=type=cache,id=airmod-mvn,target=/root/.m2/repository,sharing=locked mvn package -DskipTests
+RUN mvn package -DskipTests
 
 
 #==================================================================================================
