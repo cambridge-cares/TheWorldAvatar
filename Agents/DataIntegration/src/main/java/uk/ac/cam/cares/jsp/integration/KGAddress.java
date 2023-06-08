@@ -18,7 +18,6 @@ import static uk.ac.cam.cares.jsp.integration.KGObjects.p_bot;
 
 public class KGAddress {
     private static final Logger LOGGER = LogManager.getLogger(KGObjects.class);
-    RemoteStoreClient kgClient;
     static String icontactIRI = "http://ontology.eil.utoronto.ca/icontact.owl#";
     static Prefix icontact = SparqlBuilder.prefix("icontact",iri(icontactIRI));
     private String street;
@@ -66,7 +65,7 @@ public class KGAddress {
         return this.state;
     }
     public KGAddress queryAddress(RemoteStoreClient kgClient, String objectIri) {
-        this.kgClient = kgClient;
+
         SelectQuery query = Queries.SELECT();
 
         Variable city = query.var();
@@ -89,8 +88,8 @@ public class KGAddress {
                 address.has(hasStreet,street),
                 address.has(hasStreetNum,streetNum)
         };
-        query.prefix(icontact,p_env).where(queryPattern).select(building, street, streetNum, state, city, country, postalcode);
-        JSONArray queryResult = this.kgClient.executeQuery(query.getQueryString());
+        query.prefix(icontact,p_bot, p_env).where(queryPattern).select(street, streetNum, state, city, country, postalcode);
+        JSONArray queryResult = kgClient.executeQuery(query.getQueryString());
         this.street = queryResult.getJSONObject(0).toMap().get(street.getQueryString().substring(1)).toString();
         this.streetNum = queryResult.getJSONObject(0).toMap().get(streetNum.getQueryString().substring(1)).toString();
         this.city = queryResult.getJSONObject(0).toMap().get(city.getQueryString().substring(1)).toString();

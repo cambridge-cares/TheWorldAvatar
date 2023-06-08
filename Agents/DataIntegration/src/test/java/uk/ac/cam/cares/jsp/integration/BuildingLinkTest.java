@@ -23,8 +23,8 @@ class BuildingLinkTest {
     @Container
     private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(postgisImage);
     RemoteStoreClient kgClient;
-    private String queryEndpoint = "http://157.245.193.188:48083/blazegraph/namespace/ntuenergy/sparql";
-    private String dburl3D = "jdbc:postgresql://localhost:5432/sg_ntu";
+    private String queryEndpoint = "http://localhost:3838/blazegraph/namespace/ifc/sparql";
+    private String dburl3D = "jdbc:postgresql://localhost:5432/pirmasens";
     private String dbuser = "postgres";
     private String dbpassword = "123456";
     PostgresClient conn3;
@@ -52,8 +52,8 @@ class BuildingLinkTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
 
-        when(request.getParameter("db3d")).thenReturn("sg_ntu");
-        when(request.getParameter("iri")).thenReturn("http://157.245.193.188:48083/blazegraph/namespace/ntuenergy/sparql");
+        when(request.getParameter("db3d")).thenReturn("pirmasens");
+        when(request.getParameter("iri")).thenReturn("http://localhost:3838/blazegraph/namespace/ifc/sparql");
         when(request.getParameter("type")).thenReturn("bim"); //link building type: bim and power (currently only support these 2 types)
 
         BuildingLink buildingLink = new BuildingLink();

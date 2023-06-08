@@ -68,61 +68,46 @@ public class BuildingLink extends HttpServlet {
     }
     public void fuzzyMatch(List<GeoObject3D> geoObject3Ds, List<KGObjects> kgObjects){
         MatchService matchService = new MatchService();
-        List<Document> docNameList = new ArrayList<>();
-        List<Document> docAddressList = new ArrayList<>();
+        List<Document> docmentList = new ArrayList<>();
         for (int j = 0; j < geoObject3Ds.size(); j++){
-            if(geoObject3Ds.get(j).getName() != null){
+            if(geoObject3Ds.get(j).getName() != null || geoObject3Ds.get(j).getAddress().getGmlId() != null){
+                String name = geoObject3Ds.get(j).getName();
+                if (name == null) {
+                    name = "NULL";
+                }
+                String address = geoObject3Ds.get(j).getAddress().getHouse() + " " + geoObject3Ds.get(j).getAddress().getStreet() + " " + geoObject3Ds.get(j).getAddress().getZipCode();
+
                 Document preDocument = new Document.Builder(geoObject3Ds.get(j).getGmlId())
-                        .addElement(new Element.Builder<String>().setValue(geoObject3Ds.get(j).getName()).setType(ElementType.NAME).createElement())
+                        .addElement(new Element.Builder<String>().setValue(name).setType(ElementType.NAME).setWeight(0.5).createElement())
+                        .addElement(new Element.Builder<String>().setValue(address).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
                         .createDocument();
-                docNameList.add(preDocument);
-            }
-            if(geoObject3Ds.get(j).getAddress() != null){
-                String address = geoObject3Ds.get(j).getAddress().getHouse() + "," + geoObject3Ds.get(j).getAddress().getStreet() + "," + geoObject3Ds.get(j).getAddress().getZipCode();
-                Document preDocument = new Document.Builder(geoObject3Ds.get(j).getGmlId())
-                        .addElement(new Element.Builder<String>().setValue(address).setType(ElementType.ADDRESS).createElement())
-                        .createDocument();
-                docAddressList.add(preDocument);
+                docmentList.add(preDocument);
             }
         }
-
         for(int i = 0; i < kgObjects.size(); i++){
-            if(kgObjects.get(i).getObjectName() != null){
+            if(kgObjects.get(i).getObjectName() != null || kgObjects.get(i).getAddress() != null){
                 double score = 0.0;
-                Document matchNameDoc = new Document.Builder(kgObjects.get(i).getObjectIri())
-                        .addElement(new Element.Builder<String>().setValue(kgObjects.get(i).getObjectName()).setType(ElementType.NAME).createElement())
-                        .createDocument();
+                String kgName = kgObjects.get(i).getObjectName();
+                if (kgName == null) {
+                    kgName = "BLANK";
+                }
+                String kgAddress = kgObjects.get(i).getAddress().getStreetNum() + " " + kgObjects.get(i).getAddress().getStreet() + " " + kgObjects.get(i).getAddress().getPostalcode();
+                Document matchDoc = new Document.Builder(kgObjects.get(i).getObjectIri())
+                        .addElement(new Element.Builder<String>().setValue(kgName).setType(ElementType.NAME).setWeight(0.5).createElement())
+                        .addElement(new Element.Builder<String>().setValue(kgAddress).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
+                        .setThreshold(0.2).createDocument();
 
-                String kgAddress = kgObjects.get(i).getAddress().getStreetNum() + kgObjects.get(i).getAddress().getStreet() + kgObjects.get(i).getAddress().getPostalcode();
-                Document matchAddressDoc = new Document.Builder(kgObjects.get(i).getObjectIri())
-                        .addElement(new Element.Builder<String>().setValue(kgAddress).setType(ElementType.ADDRESS).createElement())
-                        .createDocument();
-
-                Map<String, List<Match<Document>>> resultName = matchService.applyMatchByDocId(matchNameDoc,docNameList);
-                Map<String, List<Match<Document>>> resultAddress = matchService.applyMatchByDocId(matchAddressDoc,docAddressList);
+                Map<String, List<Match<Document>>> resultName = matchService.applyMatchByDocId(matchDoc,docmentList);
 
                 for (Map.Entry<String, List<Match<Document>>> entry : resultName.entrySet()) {
                     for (Match<Document> match : entry.getValue()) {
-                        if(match.getScore().getResult()>score && match.getScore().getResult()>0.5){
+                        if(match.getScore().getResult()>score && match.getScore().getResult()>0.2){
                             System.out.println("Data: " + match.getData() + " Matched With: " + match.getMatchedWith() + " Score: " + match.getScore().getResult());
                             score = match.getScore().getResult();
                             kgObjects.get(i).setObjectId(match.getMatchedWith().getKey());
                         }
                     }
                 }
-
-                for (Map.Entry<String, List<Match<Document>>> entry : resultAddress.entrySet()) {
-                    for (Match<Document> match : entry.getValue()) {
-                        if(match.getScore().getResult()>score && match.getScore().getResult()>0.5){
-                            System.out.println("Data: " + match.getData() + " Matched With: " + match.getMatchedWith() + " Score: " + match.getScore().getResult());
-                            score = match.getScore().getResult();
-                            if(kgObjects.get(i).getGeoObjectId() == null){
-                                kgObjects.get(i).setObjectId(match.getMatchedWith().getKey());
-                            }
-                        }
-                    }
-                }
-
                 kgObjects.get(i).updateOntoCityGML();
             }
         }
