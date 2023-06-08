@@ -1,24 +1,18 @@
 {
-    "ServiceSpec": {
-        "Name": "aermod-agent",
-        "TaskTemplate": {
-            "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/aermod-agent:1.1.5-dev-aermod-agent-cleanup-SNAPSHOT",
+	"ServiceSpec": {
+		"Name": "aermod-agent",
+		"TaskTemplate": {
+			"ContainerSpec": {
+				"Image": "ghcr.io/cambridge-cares/aermod-agent:1.1.5-dev-aermod-agent-cleanup-SNAPSHOT",
 				"Env": [
 					"STACK_NAME=${STACK_NAME}",
 					"PYTHON_SERVICE_URL=http://ship-stack-python-service:5000/getAermodGeoJSON",
 					"PYTHON_SERVICE_ELEVATION_URL=http://ship-stack-python-service:5000/getElevationGeoJSON",
-					"PYTHON_SERVICE_RASTER_URL=http://ship-stack-python-service:5000/getElevationRaster",
-					"PYTHON_SERVICE_SENSOR_URL=http://ship-stack-python-service:5000/virtualSensor",
-					"NUMBER_SOURCES=600",
-					"NUMBER_BUILDINGS=10",
 					"AERMAP_EXE=/root/aermod/aermap",
 					"BPIPPRM_EXE=/root/aermod/bpipprm",
 					"AERMET_EXE=/root/aermod/aermet",
-					"AERMOD_EXE=/root/aermod/aermod", 
+					"AERMOD_EXE=/root/aermod/aermod",
 					"WEATHER_AGENT=http://ship-stack-weather-agent:8080/WeatherAgent/UpdateStation",
-					"OPENMETEO_AGENT_RUN=http://ship-stack-openmeteo-agent:8080/OpenMeteoAgent/run",
-					"OPENMETEO_AGENT_DELETE=http://ship-stack-openmeteo-agent:8080/OpenMeteoAgent/delete",
 					"DATABASE=postgres",
 					"GEOSERVER_WORKSPACE=dispersion",
 					"DISPERSION_LAYER=dispersion_layer",
@@ -27,8 +21,7 @@
 					"DISPERSION_STYLE_NAME=dispersion_style",
 					"SOURCE_LAYER=source_layer",
 					"VIS_FOLDER=/vis_data",
-					"GEOSERVER_URL=http://localhost:3838/geoserver",
-					"INCLUDE_ELEVATION=true"
+					"GEOSERVER_URL=http://localhost:3838/geoserver"
 				],
 				"Configs": [
 					{
@@ -52,25 +45,25 @@
 						"SecretName": "geoserver_password"
 					}
 				],
-                "Mounts": [
-                    {
-                        "Type": "volume",
-                        "Source": "logs",
-                        "Target": "/root/.jps"
-                    },
+				"Mounts": [
 					{
-                        "Type": "volume",
-                        "Source": "vis_data",
-                        "Target": "/vis_data"
-                    }
-                ]
-            }
-        }
-    },
-    "endpoints": {
-        "aermod-agent": {
-            "url": "http://localhost:8080/AermodAgent/",
-            "externalPath": "/aermod-agent/"
-        }
-    }
+						"Type": "volume",
+						"Source": "logs",
+						"Target": "/root/.jps"
+					},
+					{
+						"Type": "volume",
+						"Source": "vis_data",
+						"Target": "/vis_data"
+					}
+				]
+			}
+		}
+	},
+	"endpoints": {
+		"aermod-agent": {
+			"url": "http://localhost:8080/AermodAgent/",
+			"externalPath": "/aermod-agent/"
+		}
+	}
 }
