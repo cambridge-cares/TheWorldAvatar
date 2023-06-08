@@ -80,7 +80,7 @@ public class FHAgentDerivationTest {
     // Default list of JSON keys
     private final String[] mockDerivVarKey = {"occupiedState1"};
     
-    private static final String ONTODERIV = "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#";
+    private static final String ONTODERIV = "https://www.theworldavatar.com/kg/ontoderivation/";
     private static final String ONTOAGE = "http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#";
     private static final String ONTOTS = "https://www.theworldavatar.com/kg/ontotimeseries/";
     private static final String W3TIME = "http://www.w3.org/2006/time#";
