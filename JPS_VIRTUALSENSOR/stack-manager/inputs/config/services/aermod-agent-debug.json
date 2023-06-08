@@ -3,7 +3,7 @@
 		"Name": "aermod-agent",
 		"TaskTemplate": {
 			"ContainerSpec": {
-				"Image": "ghcr.io/cambridge-cares/aermod-agent:1.1.5-dev-aermod-agent-cleanup-SNAPSHOT",
+				"Image": "ghcr.io/cambridge-cares/aermod-agent:1.2",
 				"Env": [
 					"STACK_NAME=${STACK_NAME}",
 					"PYTHON_SERVICE_URL=http://ship-stack-python-service:5000/getAermodGeoJSON",

@@ -3,7 +3,7 @@
         "Name": "emissions-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/emissions-agent:1.1.5-dev-aermod-agent-cleanup-SNAPSHOT",
+                "Image": "ghcr.io/cambridge-cares/emissions-agent:1.2",
 				"Env": [
 					"STACK_NAME=${STACK_NAME}",
 					"DATABASE=postgres",
