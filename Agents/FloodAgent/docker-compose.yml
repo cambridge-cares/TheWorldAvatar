@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   river-data-uploader:
-    image: docker.cmclinnovations.com/river-data-uploader:2.1-SNAPSHOT
+    image: ghcr.io/cambridge-cares/river-data-uploader:2.2-dev-flood-agent-fix-SNAPSHOT
     configs:
       - postgis
       - geoserver

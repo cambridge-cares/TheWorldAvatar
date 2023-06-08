@@ -1,10 +1,11 @@
 package uk.ac.cam.cares.jps.agent.flood;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Reader;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.ParseException;
@@ -23,9 +25,9 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONTokener;
+
+import com.opencsv.CSVReader;
 
 import uk.ac.cam.cares.jps.agent.flood.objects.Measure;
 import uk.ac.cam.cares.jps.agent.flood.objects.Station;
@@ -91,7 +93,8 @@ public class UpdateStations {
         // be set with mocks using their respective setters
         if (api == null) {
             try {
-                UpdateStations.api = new APIConnector("http://environment.data.gov.uk/flood-monitoring/data/readings");
+                UpdateStations.api = new APIConnector(
+                        "http://environment.data.gov.uk/flood-monitoring/data/readings.csv");
             } catch (URISyntaxException e) {
                 LOGGER.error(e.getMessage());
                 throw new JPSRuntimeException(e);
@@ -163,7 +166,7 @@ public class UpdateStations {
      */
     static ProcessedData processAPIResponse(APIConnector api) throws ParseException, IOException, URISyntaxException {
         LOGGER.info("Processing data from API");
-        File readingsFile = Paths.get(EnvConfig.READINGS_DIR, "readings.json").toFile();
+        File readingsFile = Paths.get(EnvConfig.READINGS_DIR, "readings.csv").toFile();
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpEntity response = api.getData(httpClient);
         // write data to file (easier to debug)
@@ -172,43 +175,34 @@ public class UpdateStations {
         httpClient.close();
 
         // read data from downloaded file
-        FileInputStream inputStream = new FileInputStream(readingsFile);
-        JSONTokener tokener = new JSONTokener(inputStream);
-        JSONObject responseJo = new JSONObject(tokener);
-        JSONArray readings = responseJo.getJSONArray(ITEMS);
-
         // collect data belonging to the same URL into lists
         // this reduces the number of uploads required
         ProcessedData processedData = new ProcessedData();
-        String dataIRI = null;
-        int numFail = 0;
-        for (int i = 0; i < readings.length(); i++) {
-            try {
-                dataIRI = readings.getJSONObject(i).getString("measure");
+        int numReadings = 0;
 
-                // if it is a JSON Array, take the average
-                // not clear why more than 1 value is given
-                Double value = readings.getJSONObject(i).optDouble("value");
-                if (value == Double.NaN) {
-                    value = readings.getJSONObject(i).getJSONArray("value").toList().stream()
-                            .mapToDouble(double.class::cast).average().getAsDouble();
-                    LOGGER.info("More than 1 value is given for a data point");
-                    LOGGER.info(readings.getJSONObject(i));
-                    LOGGER.info("Taking the average");
+        try (Reader reader = Files.newBufferedReader(readingsFile.toPath());
+                CSVReader csvReader = new CSVReader(reader)) {
+            List<String[]> allLines = csvReader.readAll();
+            numReadings = allLines.size();
+            allLines.stream().skip(1).filter(line -> line != null && line.length == 3).forEach(line -> {
+                Instant timestamp = Instant.parse(line[0]);
+                String dataIRI = line[1];
+                double value;
+                if (line[2].contains("|")) {
+                    // some readings come as pairs, e.g. 0.1|0.2, not sure what they mean
+                    value = Stream.of(line[2].split("\\|")).mapToDouble(Double::parseDouble).average().getAsDouble();
+                } else {
+                    value = Double.parseDouble(line[2]);
                 }
 
-                Instant timestamp = Instant.parse(readings.getJSONObject(i).getString("dateTime"));
                 processedData.addData(dataIRI, timestamp, value);
-            } catch (Exception e) {
-                numFail += 1;
-                LOGGER.warn(readings.getJSONObject(i));
-                LOGGER.warn(e.getMessage());
-            }
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
-        LOGGER.info("Received a total of {} readings", readings.length());
+        LOGGER.info("Received a total of {} readings", numReadings);
         LOGGER.info("Organised into {} groups", processedData.getSize());
-        LOGGER.info("Failed to process {} readings", numFail);
 
         return processedData;
     }
