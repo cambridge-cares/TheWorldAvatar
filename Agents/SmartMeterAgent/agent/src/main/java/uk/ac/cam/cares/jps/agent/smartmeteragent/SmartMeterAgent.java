@@ -563,7 +563,7 @@ public class SmartMeterAgent {
                                 + "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
                                 + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#> "
                                 + "PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/> "
-                                + "SELECT ?BusNumbervalue ?PdIri ?QdIri ?currentIri ?voltageIri ?frequencyIri ?solarPdIri "
+                                + "SELECT ?BusNumbervalue ?PdIri ?QdIri ?currentIri ?voltageIri ?frequencyIri "
 
                                 + "WHERE {?entity  a  j1:BusNode  ." 
                                 + "?entity   j2:isModeledBy ?model ."
@@ -582,33 +582,26 @@ public class SmartMeterAgent {
                                 + "?Qd  a  j6:AbsorbedReactivePower ."
                                 + "?Qd  om:hasValue ?QdIri ."  
 
+                                // current, voltage and frequency are optional
                                 // dataIRI of current (from smart meter reading)
                                 + "OPTIONAL {"
                                 + "?entity  j6:hasCurrent ?current ."
                                 + "?current  a  j6:Current ."
                                 + "?current  om:hasValue ?currentIri ."  
+                                + "}"
 
                                 // dataIRI of voltage (from smart meter reading)
+                                + "OPTIONAL {"
                                 + "?entity  j6:hasActualVoltage ?voltage ."
                                 + "?voltage  a  j6:Voltage ."
                                 + "?voltage  om:hasValue ?voltageIri ."  
+                                + "}"
 
                                 // dataIRI of frequency (from smart meter reading)
+                                + "OPTIONAL {"
                                 + "?entity  j6:hasFrequency ?frequency ."
                                 + "?frequency  a  j6:Frequency ."
                                 + "?frequency  om:hasValue ?frequencyIri ."
-
-                                + "?building	j7:hasBusNode	?entity ."
-                                + "?building	a	j1:Building ."
-
-                                + "?building	j2:contains	?solarPV ."
-                                + "?solarPV	a	j1:PhotovoltaicPanel ."
-
-                                // dataIRI of solarPd, not used for now
-                                + "?solarPV	j7:hasGeneratedPower	?solarPd ."
-                                + "?solarPd	a	j7:GeneratedPower ."
-                                + "?solarPd	om:hasValue	?solarPdIri ."  
-
                                 + "}"
 
                                 + "}";

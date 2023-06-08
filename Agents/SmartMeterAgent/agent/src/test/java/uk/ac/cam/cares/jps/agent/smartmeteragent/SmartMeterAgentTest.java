@@ -20,6 +20,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.MockStoreClient;
+import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 public class SmartMeterAgentTest {
 
@@ -181,6 +182,9 @@ public class SmartMeterAgentTest {
         } else if (actualResult.getJSONObject(0).getString("BusNumbervalue").equals("2.0")) {
             assertEquals("http://example.com/device2pd", actualResult.getJSONObject(0).optString("PdIri"));
             assertEquals("http://example.com/device2qd", actualResult.getJSONObject(0).optString("QdIri"));
+            assertEquals("http://example.com/device2current", actualResult.getJSONObject(0).optString("currentIri"));
+            assertEquals("http://example.com/device2voltage", actualResult.getJSONObject(0).optString("voltageIri"));
+            assertEquals("http://example.com/device2frequency", actualResult.getJSONObject(0).optString("frequencyIri"));
             assertEquals("0", actualResult.getJSONObject(0).getString("device"));
         } else {
             throw new AssertionError("Incorrect BusNumbervalue.");
@@ -192,6 +196,9 @@ public class SmartMeterAgentTest {
         } else if (actualResult.getJSONObject(1).getString("BusNumbervalue").equals("2.0")) {
             assertEquals("http://example.com/device2pd", actualResult.getJSONObject(1).optString("PdIri"));
             assertEquals("http://example.com/device2qd", actualResult.getJSONObject(1).optString("QdIri"));
+            assertEquals("http://example.com/device2current", actualResult.getJSONObject(1).optString("currentIri"));
+            assertEquals("http://example.com/device2voltage", actualResult.getJSONObject(1).optString("voltageIri"));
+            assertEquals("http://example.com/device2frequency", actualResult.getJSONObject(1).optString("frequencyIri"));
             assertEquals("0", actualResult.getJSONObject(1).getString("device"));
         } else {
             throw new AssertionError("Incorrect BusNumbervalue.");
@@ -213,6 +220,25 @@ public class SmartMeterAgentTest {
         List<String[]> actualResult = smAgent.getDataMappings(tempFolder.toPath().toString());
         assertArrayEquals(mapping1, actualResult.get(0));
         assertArrayEquals(mapping2, actualResult.get(1));
+    }
+    
+    @Test
+    public void testFromCsvToArray() throws IOException {
+        File inputCsvFile = new File(tempFolder, "testFromCsvToArray.csv");
+        FileWriter csvWriter = new FileWriter(inputCsvFile);
+        csvWriter.write("bus,busnumber,bustype\n" + "branch,frombus,tobus\n");
+        csvWriter.close();
+        
+        String[] expetedFirstLine = {"bus", "busnumber", "bustype"};
+        String[] expectedSecondLine = {"branch", "frombus", "tobus"};
+
+        String inputCsv = tempFolder.toPath().toString() + "/testFromCsvToArray.csv";
+        String csv = FileUtil.readFileLocally(inputCsv);
+        SmartMeterAgent smAgent = new SmartMeterAgent();
+        List<String[]> actualList = smAgent.fromCsvToArray(csv);
+
+        assertArrayEquals(expetedFirstLine, actualList.get(0));
+        assertArrayEquals(expectedSecondLine, actualList.get(1));
     }
 
     @Test
@@ -380,6 +406,37 @@ public class SmartMeterAgentTest {
         mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-002.owl#Gd_EBus-002>", 
                             "<http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue>", 
                             "<http://example.com/device2qd>");
+
+        // device 2 has current & voltage & frequency IRIs
+        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-002.owl#Ebus-002>", 
+                            "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasCurrent>",
+                            "<http://localhost:8080/powernetwork/EBus-002.owl#Current_EBus-002>");
+        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-002.owl#Current_EBus-002>", 
+                            "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", 
+                            "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#Current>");
+        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-002.owl#Current_EBus-002>", 
+                            "<http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue>", 
+                            "<http://example.com/device2current>");
+        
+        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-002.owl#Ebus-002>", 
+                            "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasActualVoltage>", 
+                            "<http://localhost:8080/powernetwork/EBus-002.owl#Voltage_EBus-002>");
+        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-002.owl#Voltage_EBus-002>", 
+                            "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", 
+                            "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#Voltage>");
+        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-002.owl#Voltage_EBus-002>", 
+                            "<http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue>", 
+                            "<http://example.com/device2voltage>");
+
+        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-002.owl#Ebus-002>", 
+                            "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasFrequency>", 
+                            "<http://localhost:8080/powernetwork/EBus-002.owl#Frequency_EBus-002>");
+        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-002.owl#Frequency_EBus-002>", 
+                            "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", 
+                            "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#Frequency>");
+        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-002.owl#Frequency_EBus-002>", 
+                            "<http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue>", 
+                            "<http://example.com/device2frequency>");
         return mockStore;
     }
 }
