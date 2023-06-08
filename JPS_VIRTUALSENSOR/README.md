@@ -31,6 +31,11 @@ curl -X POST "http://localhost:3838/dispersion-interactor/InitialiseSimulation?e
 
 This request should return the IRI of the derivation, record this. Check the README of DispersionInteractor for more details.
 
+By providing an optional parameter, "citiesnamespace", AermodAgent will query buildings data from the provided namespace listed in http://www.theworldavatar.com:83/citieskg/#namespaces, e.g.
+```
+curl -X POST "http://localhost:3838/dispersion-interactor/InitialiseSimulation?ewkt=SRID=4326;POLYGON((7.58%2049.2,7.58%2049.236,7.61%2049.236,7.61%2049.2,7.58%2049.2))&nx=30&ny=30&citiesnamespace=pirmasensEPSG32633"
+```
+
 2) Trigger ship input agent and update simulation time (input to dispersion derivation)
 ```
 curl -X POST http://localhost:3838/dispersion-interactor/UpdateShipsAndSimulationTime
