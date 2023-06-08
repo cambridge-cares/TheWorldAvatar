@@ -1,11 +1,9 @@
 # First stage: build war file
 #==================================================================================================
-FROM maven:3.6-openjdk-11-slim as retriever
+FROM maven:3.6-openjdk-11-slim as builder
 
 # Copy all files into root's home, including the source, pom file, ./m2 directory and credentials
-COPY ./pom.xml /root
-COPY ./docker/credentials /root/credentials
-COPY ./docker/.m2 /root/.m2
+ADD . /root
 
 # Populate settings templates with credentials, repo name
 WORKDIR /root/.m2
@@ -13,37 +11,22 @@ WORKDIR /root/.m2
 RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|" settings-security.xml
 RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
+WORKDIR /root/openmeteo_agent/src/main/resources
+RUN sed -i "s|DBUSERNAME|$(cat ../../../../credentials/postgres_username.txt)|;s|DBPASSWORD|$(cat ../../../../credentials/postgres_password.txt)|" config.properties
 
 # Build
-WORKDIR /root/
-RUN mvn clean dependency:resolve
-
-
+WORKDIR /root/openmeteo_agent
+RUN --mount=type=cache,target=/root/.m2/repository mvn package
 #==================================================================================================
 
-# Second stage: build war file
-#==================================================================================================
-FROM maven:3.8.3-adoptopenjdk-11 as builder
-
-COPY --from=retriever /root/.m2 /root/.m2
-
-# Copy in Java source and build war
-WORKDIR /root/code
-
-COPY ./pom.xml ./
-COPY ./src ./src/
-COPY ./WEB-INF ./WEB-INF/
-
-RUN mvn package -DskipTests
-
-
-#==================================================================================================
-
-# third stage: copy the downloaded dependency into a new image and build into an app
+# Second stage: copy the downloaded dependency into a new image and build into an app
 #==================================================================================================
 FROM tomcat:9.0 as agent
 
-COPY --from=builder /root/code/output/* $CATALINA_HOME/webapps/
-COPY ./docker/entrypoint.sh entrypoint.sh
+WORKDIR /app
 
-ENTRYPOINT ["./entrypoint.sh"]
+COPY --from=builder /root/openmeteo_agent/output/openmeteo_agent##1.0.0.war $CATALINA_HOME/webapps/
+
+# Start the Tomcat server
+ENTRYPOINT ["catalina.sh", "run"]
+#==================================================================================================
