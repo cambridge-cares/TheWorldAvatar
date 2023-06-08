@@ -3,7 +3,7 @@
         "Name": "access-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/access-agent:1.7.1",
+                "Image": "ghcr.io/cambridge-cares/access-agent:1.7.0",
                 "Env": [
                     "LOG4J_FORMAT_MSG_NO_LOOKUPS=true",
                     "STOREROUTER_ENDPOINT=http://<STACK NAME>-blazegraph:8080/blazegraph/namespace/kb/sparql",

@@ -35,7 +35,7 @@ The agent is reachable on localhost port 39999 by default (you can change this i
 docker build -t "opf-agent:1.0.0" .
 ```
 - In the `access-agent.json` file within the `stack-manager-input-config` folder, adjust the image version if applicable, and replace the placeholder for the stack name in the endpoint environment variables with the name of your stack. 
-- Copy the `access-agent.json` file and `opf-agent.json` file into the `inputs/config` folder of the stack manager.
+- Copy the `access-agent.json` file and `opf-agent.json` file into the `inputs/config/services` folder of the stack manager.
 - Start the stack manager as usual. This should start an access agent container and an OPFAgent container as part of your stack.
 
 ## Run the agent
