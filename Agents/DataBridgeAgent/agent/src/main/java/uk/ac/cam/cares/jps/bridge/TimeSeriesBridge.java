@@ -81,6 +81,12 @@ public class TimeSeriesBridge {
         JSONObject response = new JSONObject();
         JSONArray timestamps = data.getJSONArray(TIMESTAMP_KEY);
         JSONObject values = data.getJSONObject("values");
+        for (String iri : values.keySet()) {
+            if (timestamps.length() != values.getJSONArray(iri).length()) {
+                LOGGER.fatal("Number of time stamps does not match their values for :" + iri);
+                throw new JPSRuntimeException("Number of time stamps does not match their values for :" + iri);
+            }
+        }
         try {
             initialiseTimeSeriesIfNotExist(values);
             addTimeSeries(timestamps, values);
@@ -179,12 +185,6 @@ public class TimeSeriesBridge {
      * @param values     A JSON Object containing the time series iri and values.
      */
     private void addTimeSeries(JSONArray timestamps, JSONObject values) throws IllegalArgumentException {
-        for (String iri : values.keySet()) {
-            if (timestamps.length() != values.getJSONArray(iri).length()) {
-                LOGGER.fatal("Number of time stamps does not match their values for :" + iri);
-                throw new JPSRuntimeException("Number of time stamps does not match their values for :" + iri);
-            }
-        }
         List<TimeSeries<OffsetDateTime>> timeSeries = convertReadingsToTimeSeries(timestamps, values);
         // Update each time series
         for (TimeSeries<OffsetDateTime> ts : timeSeries) {
@@ -195,7 +195,7 @@ public class TimeSeriesBridge {
                     LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
                 }
             } catch (Exception e) {
-                throw new JPSRuntimeException("Could not add timeseries data!");
+                throw new JPSRuntimeException("Could not add time series data!");
             }
         }
     }
