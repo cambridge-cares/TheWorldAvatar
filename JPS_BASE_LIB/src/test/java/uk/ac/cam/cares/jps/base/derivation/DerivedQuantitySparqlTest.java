@@ -629,26 +629,6 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
-	public void testHasStatus()
-			throws NoSuchMethodException, SecurityException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
-		// create derivation for markup, no status should be added
-		String derivation = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, false);
-		Assert.assertEquals(false, devClient.hasStatus(derivation));
-		// mark derivation as Requested
-		devClient.markAsRequested(derivation);
-		Assert.assertEquals(true, devClient.hasStatus(derivation));
-		// update the status, the hasStatus should still return true
-		devClient.updateStatusBeforeSetupJob(derivation);
-		Assert.assertEquals(true, devClient.hasStatus(derivation));
-		devClient.updateStatusAtJobCompletion(derivation, entities3, new ArrayList<>());
-		Assert.assertEquals(true, devClient.hasStatus(derivation));
-		// delete status, the hasStatus should return false
-		devClient.deleteStatus(derivation);
-		Assert.assertEquals(false, devClient.hasStatus(derivation));
-	}
-
-	@Test
 	public void testGetNewDerivedIRI()
 			throws NoSuchMethodException, SecurityException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
@@ -664,29 +644,6 @@ public class DerivedQuantitySparqlTest {
 		devClient.updateStatusAtJobCompletion(derivation, entities3, new ArrayList<>());
 		List<String> newDerivedIRI = devClient.getNewDerivedIRI(derivation);
 		Assert.assertTrue(equalLists(newDerivedIRI, entities3));
-	}
-
-	@Test
-	public void testDeleteStatus()
-			throws NoSuchMethodException, SecurityException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
-		OntModel testKG = mockClient.getKnowledgeBase();
-		// create derivation for markup, no status should be added
-		String derivation = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, false);
-		String statusIRI = devClient.markAsRequested(derivation);
-		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation),
-				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus"),
-				ResourceFactory.createResource(statusIRI)));
-		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(statusIRI),
-				ResourceFactory.createProperty(RDF.type.getURI()),
-				ResourceFactory.createResource(DerivationSparql.derivednamespace + "Requested")));
-		// delete status, there should be no status
-		devClient.deleteStatus(derivation);
-		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation),
-				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus"),
-				ResourceFactory.createResource(statusIRI)));
-		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(statusIRI),
-				ResourceFactory.createProperty(RDF.type.getURI())));
 	}
 
 	@Test
@@ -710,18 +667,6 @@ public class DerivedQuantitySparqlTest {
 		String derivation3 = devClient.createDerivationAsync(entities3, derivedAgentIRI1, inputs3, false);
 		List<String> derivations = devClient.getDerivations(derivedAgentIRI1);
 		Assert.assertTrue(equalLists(Arrays.asList(derivation1, derivation2, derivation3), derivations));
-	}
-
-	@Test
-	public void testCheckInstanceExists() throws NoSuchMethodException, SecurityException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
-		// empty kg
-		Method checkInstanceExists = devClient.getClass().getDeclaredMethod("checkInstanceExists", String.class);
-		checkInstanceExists.setAccessible(true);
-		Assert.assertFalse((boolean) checkInstanceExists.invoke(devClient, entity1));
-
-		devClient.createDerivation(entities, derivedAgentIRI, inputs);
-		Assert.assertTrue((boolean) checkInstanceExists.invoke(devClient, entity1));
 	}
 
 	@Test
@@ -769,65 +714,6 @@ public class DerivedQuantitySparqlTest {
 		for (String entity : entities) {
 			Assert.assertEquals(derivedIRI, derivationsOf.get(entity));
 		}
-	}
-
-	@Test
-	public void testGetDerivedEntities() {
-		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, inputs);
-		Assert.assertTrue(devClient.getDerivedEntities(derivedIRI).containsAll(entities));
-	}
-
-	@Test
-	public void testGetIsDerivedFromEntities() {
-		// this function is used when a derived quantity is an input to another derived
-		// quantity, in this case, entities
-		// are inputs to derivedIRI2. The rdftype is used to reconnect instances
-		// derivedIRI2 depends on derivedIRI
-		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, inputs);
-		String derivedIRI2 = devClient.createDerivation(Arrays.asList(entity3), derivedAgentIRI, entities);
-
-		OntModel testKG = mockClient.getKnowledgeBase();
-		// add RDF types for entities
-		for (String entity : entities) {
-			testKG.getIndividual(entity).addRDFType(ResourceFactory.createResource(entity + "class"));
-		}
-
-		List<List<String>> queryResult = devClient.getIsDerivedFromEntities(entities);
-		List<String> derivedList = queryResult.get(0);
-		List<String> rdfTypeList = queryResult.get(1);
-
-		for (int i = 0; i < derivedList.size(); i++) {
-			Assert.assertEquals(entities.get(i) + "class", rdfTypeList.get(i));
-			Assert.assertEquals(derivedIRI2, derivedList.get(i));
-		}
-	}
-
-	@Test
-	public void testDeleteInstances() {
-		Property a = ResourceFactory.createProperty("http://a");
-		Resource b = ResourceFactory.createResource("http://b");
-
-		// only in subject
-		OntModel testKG = mockClient.getKnowledgeBase();
-		testKG.add(ResourceFactory.createResource(entity1), a, b);
-		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity1), a, b));
-		devClient.deleteInstances(Arrays.asList(entity1));
-		Assert.assertFalse(testKG.contains(ResourceFactory.createResource(entity1), a, b));
-
-		// only in object
-		testKG.add(b, a, ResourceFactory.createResource(entity1));
-		Assert.assertTrue(testKG.contains(b, a, ResourceFactory.createResource(entity1)));
-		devClient.deleteInstances(Arrays.asList(entity1));
-		Assert.assertFalse(testKG.contains(b, a, ResourceFactory.createResource(entity1)));
-
-		// in both subject and object
-		testKG.add(ResourceFactory.createResource(entity1), a, b);
-		testKG.add(b, a, ResourceFactory.createResource(entity1));
-		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity1), a, b));
-		Assert.assertTrue(testKG.contains(b, a, ResourceFactory.createResource(entity1)));
-		devClient.deleteInstances(Arrays.asList(entity1));
-		Assert.assertFalse(testKG.contains(ResourceFactory.createResource(entity1), a, b));
-		Assert.assertFalse(testKG.contains(b, a, ResourceFactory.createResource(entity1)));
 	}
 
 	@Test
@@ -902,49 +788,7 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
-	public void testGetInstanceClass() {
-		String entityclass = entity1 + "class";
-
-		OntModel testKG = mockClient.getKnowledgeBase();
-		// returns an empty string if there is no rdf:type
-		Assert.assertEquals("", devClient.getInstanceClass(Arrays.asList(entity1)).get(0));
-		testKG.add(ResourceFactory.createResource(entity1), RDF.type, ResourceFactory.createResource(entityclass));
-
-		Assert.assertEquals(entityclass, devClient.getInstanceClass(Arrays.asList(entity1)).get(0));
-	}
-
-	@Test
-	public void testReconnectInputToDerived() {
-		devClient.reconnectInputToDerived(Arrays.asList(input1, input2), Arrays.asList(entity1, entity2));
-		OntModel testKG = mockClient.getKnowledgeBase();
-		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity1),
-				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
-				ResourceFactory.createResource(input1)));
-		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity2),
-				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
-				ResourceFactory.createResource(input2)));
-
-		// should throw an error if size doesn't match
-		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
-				() -> devClient.reconnectInputToDerived(Arrays.asList(input1, input2), Arrays.asList(entity1)));
-		Assert.assertTrue(e.getMessage().contains("reconnectInputToDerived has incorrect inputs"));
-	}
-
-	@Test
-	public void testAddNewEntitiesToDerived() {
-		String derived = "http://derived";
-		devClient.addNewEntitiesToDerived(derived, entities);
-		OntModel testKG = mockClient.getKnowledgeBase();
-
-		for (String entity : entities) {
-			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity),
-					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
-					ResourceFactory.createResource(derived)));
-		}
-	}
-
-	@Test
-	public void testReconnectNewDerivedIRIs() {
+	public void testReconnectSyncDerivation() {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		List<String> oldInstances = Arrays.asList("http://a", "http://b", "http://c");
 		List<TriplePattern> newTriples1 = new ArrayList<>();
@@ -995,7 +839,7 @@ public class DerivedQuantitySparqlTest {
 
 		// case 1: derivation is outdated, now delete and add new instances should work
 		long retrievedInputsAt = Instant.now().getEpochSecond();
-		devClient.reconnectNewDerivedIRIs(newTriples1, newInstanceMap1, derivation, retrievedInputsAt);
+		devClient.reconnectSyncDerivation(derivation, newInstanceMap1, newTriples1, retrievedInputsAt);
 		// all old outputs should be deleted
 		for (String instance : oldInstances) {
 			Assert.assertTrue(Objects.isNull(testKG.getIndividual(instance)));
@@ -1023,7 +867,7 @@ public class DerivedQuantitySparqlTest {
 
 		// case 2: as now the timestamp of this derivation is up-to-date, nothing should
 		// happen when reconnectNewDerivedIRIs again with a new sets of instances
-		devClient.reconnectNewDerivedIRIs(newTriples2, newInstanceMap2, derivation, retrievedInputsAt);
+		devClient.reconnectSyncDerivation(derivation, newInstanceMap2, newTriples2, retrievedInputsAt);
 		// repeat all checks after case 1
 		// all old outputs should be deleted
 		for (String instance : oldInstances) {
@@ -1735,36 +1579,6 @@ public class DerivedQuantitySparqlTest {
 		// the mappedInstances should be [entity1, entity2]
 		mappedInstances.removeAll(Arrays.asList(entity1, entity2));
 		Assert.assertTrue(mappedInstances.isEmpty());
-	}
-
-	@Test
-	public void testGetDerivations() {
-		initOntoAgentInstances();
-		List<List<String>> entitiesList = Arrays.asList(entities, entities2);
-		List<List<String>> inputsList = Arrays.asList(inputs, inputs2);
-
-		List<String> derivationIRIs = devClient.bulkCreateDerivations(entitiesList, agentIRIList, inputsList);
-		devClient.addTimeInstance(derivationIRIs);
-
-		List<Derivation> derivations = devClient.getDerivations();
-
-		for (int i = 0; i < derivationIRIs.size(); i++) {
-			String derivationIRI = derivationIRIs.get(i);
-			Derivation derivation = derivations.stream().filter(d -> d.getIri().contentEquals(derivationIRI))
-					.findFirst().get();
-
-			List<Entity> inputs = derivation.getInputs();
-			for (Entity input : inputs) {
-				Assert.assertTrue(inputsList.get(i).contains(input.getIri()));
-			}
-
-			List<Entity> entities = derivation.getEntities();
-			for (Entity entity : entities) {
-				Assert.assertTrue(entitiesList.get(i).contains(entity.getIri()));
-			}
-
-			Assert.assertEquals(agentURLList.get(i), derivation.getAgentURL());
-		}
 	}
 
 	// below test case replaces the test case testGetDerivations()
@@ -2613,44 +2427,6 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
-	public void testRetrieveInputReadTimestamp() throws InterruptedException {
-		OntModel testKG = mockClient.getKnowledgeBase();
-		// create derivation for Request
-		String derivation = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, true);
-
-		// no retrievedInputsAt should be recorded yet
-		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
-				() -> devClient.retrieveInputReadTimestamp(derivation));
-		Assert.assertTrue(e.getMessage().contains(
-				"No timestamp recorded for reading derivation inputs of <" + derivation
-						+ ">. The derivation is probably not setup correctly."));
-
-		// write read time triple
-		long ts = Instant.now().getEpochSecond();
-		devClient.updateStatusBeforeSetupJob(derivation);
-
-		// retrieve timestamp, it should be deleted after retrieved
-		long retrievedTimestamp = devClient.retrieveInputReadTimestamp(derivation).get(derivation);
-		Assert.assertTrue(retrievedTimestamp >= ts);
-		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation),
-				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")));
-
-		// if there are two triples, an error should be thrown
-		devClient.updateStatusBeforeSetupJob(derivation);
-		// sleep 2 seconds to add the second triple with different timestamp
-		// {<derivation> <retrievedInputsAt> timestamp}
-		TimeUnit.SECONDS.sleep(2);
-		testKG.add(ResourceFactory.createResource(derivation),
-				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt"),
-				ResourceFactory.createTypedLiteral(Instant.now().getEpochSecond()));
-		e = Assert.assertThrows(JPSRuntimeException.class,
-				() -> devClient.retrieveInputReadTimestamp(derivation));
-		Assert.assertTrue(e.getMessage().contains(
-				"DerivedQuantitySparql: More than 1 time instance recorded for reading derivation inputs of <"
-						+ derivation + ">"));
-	}
-
-	@Test
 	public void testGetDownstreamDerivationForNewInfo() {
 		// create three async derivations for new information
 		String d0 = devClient.createDerivationAsync(new ArrayList<>(), derivedAgentIRI, inputs, true);
@@ -2739,131 +2515,6 @@ public class DerivedQuantitySparqlTest {
 					fail("Unexpected agentURL for derivation: " + agentURL);
 			}
 		}
-	}
-
-	@Test
-	public void testGetDerivedEntitiesAndDownstreamDerivation() {
-		OntModel testKG = mockClient.getKnowledgeBase();
-		initRdfType(testKG);
-		// create DAG5 structure, d0 sync with timeseries, d1/d2 sync, d3/d4/d5 async
-		List<String> ds = devClient.bulkCreateMixedDerivations(entitiesListDAG5, agentIRIListDAG5, inputsListDAG5,
-				Arrays.asList(DerivationSparql.ONTODERIVATION_DERIVATIONWITHTIMESERIES,
-						DerivationSparql.ONTODERIVATION_DERIVATION, DerivationSparql.ONTODERIVATION_DERIVATION,
-						DerivationSparql.ONTODERIVATION_DERIVATIONASYN,
-						DerivationSparql.ONTODERIVATION_DERIVATIONASYN,
-						DerivationSparql.ONTODERIVATION_DERIVATIONASYN),
-				Arrays.asList(false, false, false, false, true, false));
-		for (int i = 0; i < ds.size(); i++) {
-			String agentURL = agentURLListDAG5.get(i);
-			String derivationIRI = ds.get(i);
-			List<Entity> derivedEntities = devClient.getDerivedEntitiesAndDownstreamDerivation(derivationIRI);
-			switch (agentURL) {
-				// check that the Iri of derived entities and downstream derivation are correct
-				case derivedAgentURL0:
-					Assert.assertTrue(equalLists(Arrays.asList(input2, input3),
-							derivedEntities.stream().map(e -> e.getIri()).collect(Collectors.toList())));
-					derivedEntities.stream().forEach(e -> {
-						if (e.getIri().contentEquals(input2)) {
-							Assert.assertTrue(equalLists(Arrays.asList(ds.get(1)),
-									e.getInputOf().stream().map(d -> d.getIri()).collect(Collectors.toList())));
-						} else { // it must be input3, otherwise the above code will throw an error already
-							Assert.assertTrue(equalLists(Arrays.asList(ds.get(2), ds.get(4)),
-									e.getInputOf().stream().map(d -> d.getIri()).collect(Collectors.toList())));
-						}
-					});
-					break;
-				case derivedAgentURL1:
-					Assert.assertTrue(equalLists(Arrays.asList(entity2),
-							derivedEntities.stream().map(e -> e.getIri()).collect(Collectors.toList())));
-					derivedEntities.stream().forEach(e -> {
-						if (e.getIri().contentEquals(entity2)) {
-							Assert.assertTrue(equalLists(Arrays.asList(ds.get(3)),
-									e.getInputOf().stream().map(d -> d.getIri()).collect(Collectors.toList())));
-						}
-					});
-					break;
-				case derivedAgentURL2:
-					Assert.assertTrue(equalLists(Arrays.asList(entity4, entity5),
-							derivedEntities.stream().map(e -> e.getIri()).collect(Collectors.toList())));
-					derivedEntities.stream().forEach(e -> {
-						if (e.getIri().contentEquals(entity4)) {
-							Assert.assertTrue(equalLists(Arrays.asList(ds.get(3)),
-									e.getInputOf().stream().map(d -> d.getIri()).collect(Collectors.toList())));
-						} else { // it must be entity5, otherwise the above code will throw an error already
-							Assert.assertTrue(equalLists(Arrays.asList(ds.get(3), ds.get(5)),
-									e.getInputOf().stream().map(d -> d.getIri()).collect(Collectors.toList())));
-						}
-					});
-					break;
-				case derivedAgentURL3:
-					Assert.assertTrue(derivedEntities.isEmpty());
-					break;
-				case derivedAgentURL4:
-					Assert.assertTrue(equalLists(Arrays.asList(entity8),
-							derivedEntities.stream().map(e -> e.getIri()).collect(Collectors.toList())));
-					derivedEntities.stream().forEach(e -> {
-						if (e.getIri().contentEquals(entity8)) {
-							Assert.assertTrue(equalLists(Arrays.asList(ds.get(5)),
-									e.getInputOf().stream().map(d -> d.getIri()).collect(Collectors.toList())));
-						}
-					});
-					break;
-				case derivedAgentURL5:
-					Assert.assertTrue(derivedEntities.isEmpty());
-					break;
-				default:
-					fail("Unexpected agentURL for derivation: " + agentURL);
-			}
-		}
-	}
-
-	@Test
-	public void testInitialiseNewEntities() {
-		OntModel testKG = mockClient.getKnowledgeBase();
-		initRdfType(testKG);
-
-		String derivationIRI = "http://derivation";
-		for (String instance : allInstances) {
-			testKG.add(ResourceFactory.createResource(instance),
-					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
-					ResourceFactory.createResource(derivationIRI));
-		}
-
-		// queried instances should have the correct rdf:type
-		List<Entity> newEntities = devClient.initialiseNewEntities(derivationIRI);
-		for (Entity e : newEntities) {
-			Assert.assertTrue(e.getRdfType().contentEquals(e.getIri() + "/rdftype"));
-		}
-
-		// throw an error if more than one rdf:type detected
-		testKG.add(ResourceFactory.createResource(input1), RDF.type,
-				ResourceFactory.createResource(input1 + "/rdftype_should_fail_test"));
-		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
-				() -> devClient.initialiseNewEntities(derivationIRI));
-		Assert.assertTrue(
-				e.getMessage().contains("DerivedQuantitySparql.getInstanceClass: more than 1 rdf:type for"));
-	}
-
-	@Test
-	public void testDeleteDirectConnectionBetweenDerivations() {
-		OntModel testKG = mockClient.getKnowledgeBase();
-		Map<String, String> map = new HashMap<>();
-		allInstances.stream().forEach(i -> {
-			map.put(i, i + "/pair");
-			testKG.add(ResourceFactory.createResource(i),
-					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
-					ResourceFactory.createResource(map.get(i)));
-			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(i),
-					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
-					ResourceFactory.createResource(map.get(i))));
-		});
-
-		devClient.deleteDirectConnectionBetweenDerivations(map);
-		allInstances.stream().forEach(i -> {
-			Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(i),
-					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
-					ResourceFactory.createResource(map.get(i))));
-		});
 	}
 
 	@Test

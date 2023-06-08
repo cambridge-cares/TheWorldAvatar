@@ -68,18 +68,6 @@ public class DerivationClient {
 	private static final Logger LOGGER = LogManager.getLogger(DerivationClient.class);
 
 	/**
-	 * This constructor is tagged as @Deprecated as ideally user should provide
-	 * based URL when creating derivation instances.
-	 * 
-	 * @param kbClient
-	 */
-	@Deprecated
-	public DerivationClient(StoreClientInterface kbClient) {
-		this.kbClient = kbClient;
-		this.sparqlClient = new DerivationSparql(kbClient);
-	}
-
-	/**
 	 * This constructor should be used to enable customised derivation instance base
 	 * URL.
 	 * 
@@ -472,28 +460,6 @@ public class DerivationClient {
 	}
 
 	/**
-	 * This method checks and makes sure the derived instance is up-to-date by
-	 * comparing the timestamp
-	 * of the derivation to all of its inputs.
-	 * 
-	 * @param derivationIRI
-	 */
-	@Deprecated
-	public void updateDerivationAsyn(String derivationIRI) {
-		// the graph object makes sure that there is no circular dependency
-		DirectedAcyclicGraph<String, DefaultEdge> graph = new DirectedAcyclicGraph<String, DefaultEdge>(
-				DefaultEdge.class);
-		try {
-			// the flag upstreamDerivationRequested is set as false by default
-			upstreamDerivationRequested = false;
-			updateDerivationAsyn(derivationIRI, graph);
-		} catch (Exception e) {
-			LOGGER.fatal(e.getMessage());
-			throw new JPSRuntimeException(e);
-		}
-	}
-
-	/**
 	 * This method updates a DAG of pure asynchronous derivations or asynchronous
 	 * derivations depending on synchronous derivations.
 	 * 
@@ -589,93 +555,6 @@ public class DerivationClient {
 				// update pure sync derivations
 				updatePureSyncDerivations(Arrays.asList(derivationIRI));
 			}
-		} catch (Exception e) {
-			LOGGER.fatal(e.getMessage());
-			throw new JPSRuntimeException(e);
-		}
-	}
-
-	/**
-	 * makes sure the given instances are up-to-date by comparing their timestamps
-	 * to all of their inputs. The input, derivedIRIs, should have rdf:type
-	 * DerivedQuantity or DerivedQuantityWithTimeSeries
-	 * 
-	 * NOTE this method is marked as Deprecated as it updates the timestamp of the
-	 * whole derivation DAG in one-go after all the update is finished, which
-	 * restricts the amount of entities that requesting the same information at the
-	 * same time, as we prefer a decentralised deployment of agents, the amount of
-	 * entities that require an update should NOT be confined. The new method
-	 * updatePureSyncDerivations(List<String>) is recommended as an alternative.
-	 * 
-	 * @param kbClient
-	 * @param derivedIRI
-	 */
-	@Deprecated
-	public void updateDerivations(List<String> derivedIRIs) {
-		// the graph object makes sure that there is no circular dependency
-		DirectedAcyclicGraph<String, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
-		List<Derivation> derivations = this.sparqlClient.getDerivations();
-		try {
-			for (String derivedIRI : derivedIRIs) {
-				Derivation derivation = derivations.stream().filter(d -> d.getIri().equals(derivedIRI)).findFirst()
-						.get();
-				updateDerivation(derivation, graph);
-			}
-
-			// update timestamps in KG
-			Map<String, Long> derivationTimeMap = new HashMap<>();
-			for (Derivation derivation : derivations) {
-				if (derivation.getUpdateStatus()) {
-					derivationTimeMap.put(derivation.getIri(), derivation.getTimestamp());
-				}
-			}
-			this.sparqlClient.updateTimestamps(derivationTimeMap);
-		} catch (Exception e) {
-			LOGGER.fatal(e.getMessage());
-			throw new JPSRuntimeException(e);
-		}
-	}
-
-	/**
-	 * updates all derivations in the triple-store
-	 * 
-	 * * NOTE this method is marked as Deprecated as it updates the timestamp of the
-	 * whole derivation DAG in one-go after all the update is finished, which
-	 * restricts the amount of entities that requesting the same information at the
-	 * same time, as we prefer a decentralised deployment of agents, the amount of
-	 * entities that require an update should NOT be confined. The new method
-	 * updateAllSyncDerivations() is recommended as an alternative.
-	 * 
-	 */
-	@Deprecated
-	public void updateDerivations() {
-		List<Derivation> derivations = this.sparqlClient.getDerivations();
-
-		// find derivations with entities that are not input of anything (the top nodes)
-		List<Derivation> topNodes = new ArrayList<>();
-		for (Derivation derivation : derivations) {
-			// all entities need to match the condition
-			if (derivation.getEntities().stream().allMatch(e -> !e.isInputToDerivation())) {
-				topNodes.add(derivation);
-			}
-		}
-
-		// the graph object makes sure that there is no circular dependency
-		DirectedAcyclicGraph<String, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
-		try {
-			for (Derivation derivation : topNodes) {
-				updateDerivation(derivation, graph);
-			}
-
-			// update timestamps in kg
-			Map<String, Long> derivationTimeMap = new HashMap<>();
-			for (Derivation derivation : derivations) {
-				if (derivation.getUpdateStatus()) {
-					derivationTimeMap.put(derivation.getIri(), derivation.getTimestamp());
-				}
-			}
-			this.sparqlClient.updateTimestamps(derivationTimeMap);
-
 		} catch (Exception e) {
 			LOGGER.fatal(e.getMessage());
 			throw new JPSRuntimeException(e);
@@ -1000,84 +879,6 @@ public class DerivationClient {
 	 */
 
 	/**
-	 * This method marks the derivation as "Requested" when it detects a derivation
-	 * is outdated.
-	 * 
-	 * @param instance
-	 * @param graph
-	 */
-	@Deprecated
-	private void updateDerivationAsyn(String instance, DirectedAcyclicGraph<String, DefaultEdge> graph) {
-		// this method follows the first a few steps of method updateDerivation(String
-		// instance, DirectedAcyclicGraph<String, DefaultEdge> graph)
-		// TODO in future development, ideally these two method should be merged into
-		// the same method?
-		List<String> inputsAndDerived = this.sparqlClient.getInputsAndDerived(instance);
-
-		if (!graph.containsVertex(instance)) {
-			graph.addVertex(instance);
-		}
-
-		for (String input : inputsAndDerived) {
-			if (graph.addVertex(input) && (null != graph.addEdge(instance, input))) {
-				// (1) graph.addVertex(input) will try to add input as vertex if not already
-				// exist in the graph
-				// (2) (null != graph.addEdge(instance, input)) will throw an error here if
-				// there is circular dependency
-				// continuing... (2) addEdge will return 'null' if the edge has already been
-				// added as DAGs can't
-				// continuing... (2) have duplicated edges so we can stop traversing this
-				// branch.
-				// only when both (1) and (2) are true, we can update input
-				// otherwise, node <D1> will be traversed multiple times if we have below chain
-				// of derivations
-				// and we run updateDerivationAsyn(<D3>, graph):
-				// <I3> <belongsTo> <D3> .
-				// <D3> <isDerivedFrom> <I2.1> .
-				// <D3> <isDerivedFrom> <I2.2> .
-				// <I2.1> <belongsTo> <D2.1> .
-				// <I2.2> <belongsTo> <D2.2> .
-				// <D2.1> <isDerivedFrom> <I1> .
-				// <D2.2> <isDerivedFrom> <I1> .
-				// <I1> <belongsTo> <D1> .
-				// <D1> <isDerivedFrom> <I0.1> .
-				// <D1> <isDerivedFrom> <I0.2> .
-				// <D1> <isDerivedFrom> <I0.3> .
-				updateDerivationAsyn(input, graph);
-			}
-		}
-
-		List<String> inputs = this.sparqlClient.getInputs(instance);
-		if (inputs.size() > 0) {
-			// here only derivation instance will enter, first we check if it is an
-			// asynchronous derivation
-			if (isDerivedAsynchronous(instance)) {
-				// we start with checking if this derivation is OutOfDate
-				if (isOutOfDate(instance, inputs)) {
-					// if it is OutOfDate and no status, just mark it as Requested
-					// from Requested to other status will be handled from AsynAgent side
-					if (!this.sparqlClient.hasStatus(instance)) {
-						this.sparqlClient.markAsRequested(instance);
-					}
-					// set the flag to true so that other derivations will know there is one
-					// derivation upstream already Requested
-					// thus they can be marked as Requested as well
-					upstreamDerivationRequested = true;
-				} else {
-					// if the Derivation is not OutOfDate, then only consider mark it as Requested
-					// if meet all below situations
-					// (1) there is upstream derivation being marked as Requested;
-					// (2) this Derivation does NOT have any status, otherwise just leave it with
-					// its existing status
-					if (upstreamDerivationRequested && !this.sparqlClient.hasStatus(instance)) {
-						this.sparqlClient.markAsRequested(instance);
-					}
-				}
-			}
-		}
-	}
-
-	/**
 	 * This method marks the derivation as "Requested" if the derivation is
 	 * outdated. This applies to both a-/sync derivations in a DAG of pure
 	 * async derivation or mixed types of derivations (async depends on sync).
@@ -1291,126 +1092,6 @@ public class DerivationClient {
 		}
 	}
 
-	/**
-	 * called by the public function updateInstance
-	 * 
-	 * @param instance
-	 * @param derivedList
-	 */
-	@Deprecated
-	private void updateDerivation(Derivation derivation, DirectedAcyclicGraph<String, DefaultEdge> graph) {
-		// inputs that are part of another derivation (for recursive call)
-		// don't need direct inputs here
-		List<Derivation> inputsWithBelongsTo = derivation.getInputsWithBelongsTo();
-
-		if (!graph.containsVertex(derivation.getIri())) {
-			graph.addVertex(derivation.getIri());
-		}
-
-		for (Derivation input : inputsWithBelongsTo) {
-			if (!graph.containsVertex(input.getIri())) {
-				graph.addVertex(input.getIri());
-			}
-			if (null != graph.addEdge(derivation.getIri(), input.getIri())) { // will throw an error here if there is
-																				// circular dependency
-				// addEdge will return 'null' if the edge has already been added as DAGs can't
-				// have duplicated edges so we can stop traversing this branch.
-				updateDerivation(input, graph);
-			}
-		}
-
-		// inputs required by the agent
-		List<String> inputs = derivation.getAgentInputs();
-		if (inputs.size() > 0) {
-			// at this point, "instance" is a derived instance for sure, any other instances
-			// will not go through this code
-			// getInputs queries for <instance> <isDerivedFrom> ?x
-			if (derivation.isOutOfDate()) {
-				LOGGER.info("Updating <" + derivation.getIri() + ">");
-				// calling agent to create a new instance
-				String agentURL = derivation.getAgentURL();
-				JSONObject requestParams = new JSONObject();
-				JSONArray iris = new JSONArray(inputs);
-				requestParams.put(AGENT_INPUT_KEY, iris);
-				requestParams.put(BELONGSTO_KEY, derivation.getEntitiesIri()); // IRIs of belongsTo
-
-				LOGGER.debug("Updating <" + derivation.getIri() + "> using agent at <" + agentURL
-						+ "> with http request " + requestParams);
-				// record timestamp at the point the request is sent to the agent
-				long newTimestamp = Instant.now().getEpochSecond();
-				String response = AgentCaller.executeGetWithURLAndJSON(agentURL, requestParams.toString());
-
-				LOGGER.debug("Obtained http response from agent: " + response);
-
-				// if it is a derived quantity with time series, there will be no changes to the
-				// instances
-				if (!derivation.isDerivationWithTimeSeries()) {
-					// collect new instances created by agent
-					List<String> newEntitiesString = new JSONObject(response).getJSONArray(AGENT_OUTPUT_KEY).toList()
-							.stream().map(iri -> (String) iri).collect(Collectors.toList());
-
-					// delete old instances
-					this.sparqlClient.deleteBelongsTo(derivation.getIri());
-					LOGGER.debug("Deleted old instances of: " + derivation.getIri());
-
-					// link new entities to derived instance, adding ?x <belongsTo> <instance>
-					this.sparqlClient.addNewEntitiesToDerived(derivation.getIri(), newEntitiesString);
-					LOGGER.debug("Added new instances <" + newEntitiesString + "> to the derivation <"
-							+ derivation.getIri() + ">");
-
-					// entities that are input to another derivation
-					List<Entity> inputToAnotherDerivation = derivation.getEntities()
-							.stream().filter(e -> e.isInputToDerivation()).collect(Collectors.toList());
-
-					// TODO below lines are only changed to make the code compile
-					// TODO its functions are NOT tested due to marked as Deprecated
-					List<Entity> newEntities = this.sparqlClient.initialiseNewEntities(derivation.getIri());
-
-					if (inputToAnotherDerivation.size() > 0) {
-						LOGGER.debug(
-								"This derivation contains at least one entity which is an input to another derivation");
-						LOGGER.debug("Relinking new instance(s) to the derivation by matching their rdf:type");
-						// after deleting the old entity, we need to make sure that it remains linked to
-						// the appropriate derived instance
-						List<String> newInputs = new ArrayList<>();
-						List<String> derivationsToReconnect = new ArrayList<>();
-						for (Entity oldInput : inputToAnotherDerivation) {
-							// find within new Entities with the same rdf:type
-							List<Entity> matchingEntity = newEntities.stream()
-									.filter(e -> e.getRdfType().equals(oldInput.getRdfType()))
-									.collect(Collectors.toList());
-
-							if (matchingEntity.size() != 1) {
-								String errmsg = "When the agent writes new instances, make sure that there is 1 instance with matching rdf:type over the old set";
-								LOGGER.error(errmsg);
-								LOGGER.error("Number of matching entities = " + matchingEntity.size());
-								throw new JPSRuntimeException(errmsg);
-							}
-
-							// update cached data
-							// TODO below lines are only changed to make the code compile
-							// TODO its functions are NOT tested due to marked as Deprecated
-							oldInput.getInputOf().forEach(d -> {
-								Derivation derivationToReconnect = d;
-								derivationToReconnect.addInput(matchingEntity.get(0));
-								derivationToReconnect.removeInput(oldInput);
-
-								newInputs.add(matchingEntity.get(0).getIri());
-								derivationsToReconnect.add(derivationToReconnect.getIri());
-							});
-						}
-						// update triple-store and cached data
-						this.sparqlClient.reconnectInputToDerived(newInputs, derivationsToReconnect);
-						derivation.replaceEntities(newEntities);
-					}
-				}
-				// if there are no errors, assume update is successful
-				derivation.setTimestamp(newTimestamp);
-				derivation.setUpdateStatus(true);
-			}
-		}
-	}
-
 	private void validateDerivation(Derivation derivation, DirectedAcyclicGraph<String, DefaultEdge> graph) {
 		// we also need to consider the derivations that are created for new information
 		// here we assume that the directedUpstream derivation doesn't have outptus yet
@@ -1457,25 +1138,4 @@ public class DerivationClient {
 		}
 	}
 
-	/**
-	 * compares the timestamps of quantities used to derived this instance
-	 * returns true if any of its input is newer
-	 * 
-	 * @param instance
-	 * @return
-	 */
-	@Deprecated
-	private boolean isOutOfDate(String instance, List<String> inputs) {
-		boolean outOfDate = false;
-		long instanceTimestamp = this.sparqlClient.getTimestamp(instance);
-
-		for (String input : inputs) {
-			long inputTimestamp = this.sparqlClient.getTimestamp(input);
-			if (inputTimestamp > instanceTimestamp) {
-				outOfDate = true;
-				return outOfDate;
-			}
-		}
-		return outOfDate;
-	}
 }
