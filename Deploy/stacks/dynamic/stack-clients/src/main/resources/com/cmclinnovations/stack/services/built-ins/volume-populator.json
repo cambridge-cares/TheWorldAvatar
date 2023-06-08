@@ -4,11 +4,14 @@
         "TaskTemplate": {
             "ContainerSpec": {
                 "Image": "busybox",
+                "Env": [
+                    "HOST_DIR=/hostDirs/.",
+                    "VOLUME_DIR=/volumes"
+                ],
                 "Command": [
-                    "cp",
-                    "-rf",
-                    "/hostDirs/.",
-                    "/volumes"
+                    "sh",
+                    "-c",
+                    "cp -rf $HOST_DIR $VOLUME_DIR"
                 ]
             }
         }
