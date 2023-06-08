@@ -12,7 +12,7 @@
                 "Mounts": [
                     {
                         "Type": "bind",
-                        "Source": "/mnt/c/TheWorldAvatar/Agents/FeatureInfoAgent/queries",
+                        "Source": "/home/common/Codes/TheWorldAvatar/Agents/FeatureInfoAgent/queries",
                         "Target": "/app/queries"
                     }
                 ],
