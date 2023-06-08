@@ -635,7 +635,7 @@ public class FHAgentTest {
         JSONObject expected = new JSONObject();
         expected.put("timeClass", "INSTANTANEOUS");
         JSONArray testTimestamps = new JSONArray(new String[]{"2009-02-13T21:20:00", "2009-02-13T21:20:01", "2009-02-13T21:20:02"});
-        expected.put("ts", testTimestamps);
+        expected.put("timestamp", testTimestamps);
         JSONArray testValues = new JSONArray(new Double[]{1.,2.,3.});
         String testIRI = "example:prefix/api_"+keys[0];
         JSONObject testValPair = new JSONObject();
@@ -694,7 +694,7 @@ public class FHAgentTest {
         JSONObject expected = new JSONObject();
         expected.put("timeClass", "INSTANTANEOUS");
         JSONArray testTimestamps = new JSONArray(new String[]{"2009-02-13T21:20:00", "2009-02-13T21:20:01", "2009-02-13T21:20:02"});
-        expected.put("ts", testTimestamps);
+        expected.put("timestamp", testTimestamps);
         JSONArray testValues = new JSONArray(new Double[]{1.,2.,3.});
         String testIRI = "example:prefix/api_"+keys[0];
         JSONObject testValPair = new JSONObject();

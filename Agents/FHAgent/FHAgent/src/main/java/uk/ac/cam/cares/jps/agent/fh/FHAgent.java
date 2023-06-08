@@ -830,7 +830,7 @@ public class FHAgent{
             values.put(iri, valArray);
         }
         result.put("values", values);
-        result.put("ts", timestamps);
+        result.put("timestamp", timestamps);
 
         //Optional stack JDBC and KG endpoint URL
         if(!dataBridgeJDBC.equals("")){
