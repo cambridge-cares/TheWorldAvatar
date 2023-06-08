@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  openmeteo-agent:
+  openmeteo_agent:
     deploy:
       mode: replicated
       replicas: 1

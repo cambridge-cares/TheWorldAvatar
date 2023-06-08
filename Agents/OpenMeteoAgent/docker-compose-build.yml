@@ -1,4 +1,4 @@
 version: '3.8'
 services:
-  openmeteo-agent:
+  openmeteo_agent:
     build: .

@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-  openmeteo-agent:
-    image: ghcr.io/cambridge-cares/openmeteo-agent:1.0.0
+  openmeteo_agent:
+    image: ghcr.io/cambridge-cares/openmeteo_agent:1.0.0
     deploy:
       mode: replicated
       replicas: 1
