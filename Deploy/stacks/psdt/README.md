@@ -27,14 +27,14 @@ In order to deploy (on a Linux machine):
 
 4. Many of the instantiation agents listed above need to be triggered by an HTTP request. Examples are provided in the `instantiation-agent-requests.sh` script.
 
-5. Populate the `input` folder of the `stack-data-uploader` directory in TWA git repository with what is in the `stack-inputs` folder, following the readme files in each subfolder.
+5. Populate the `input` folder of the `stack-data-uploader` directory in TWA git repository with what is in the `stack-data-uploader-inputs` folder, following the readme files in each subfolder.
 
 6. From a terminal in the `stack-data-uploader` directory, start the `stack-data-uploader` container by running the following:
     ```console
     sudo ./stack.sh start psdt
     ```
 
-7. Run `copy_icons_into_geoserver.sh` from within the `stack-inputs` folder.
+7. Run `copy_icons_into_geoserver.sh` from within the `stack-data-uploader-inputs` folder.
 
 8. Spin up the visualisation by following the instructions in its readme file.
 
