@@ -12,10 +12,11 @@ import agentlogging
 from agent.errorhandling.exceptions import *
 from agent.dataretrieval.dataretrival import *
 from agent.datacalculation.datacalculation import *
-from agent.datamodel.iris import OM_DEGREE_C
-from agent.datamodel.functionality import T_from_COP ,call_pickle, data_treatment, \
-                    normalization, create_color_bar,save_figures,convert_to_tensor, \
-                    select_column, get_median, compare_tensor, tensor_to_df, convert_df
+from agent.datamodel.iris import OM_DEGREE_C, ONS_ID
+from agent.datamodel.functionality import *
+# T_from_COP ,call_pickle, data_treatment, \
+#                     normalization, create_color_bar,save_figures,convert_to_tensor, \
+#                     select_column, get_median, compare_tensor, tensor_to_df, convert_df
 
 import matplotlib.pyplot as plt
 import geopandas as gpd
@@ -29,11 +30,12 @@ import numpy as np
 import copy
 import scipy.stats as st
 import matplotlib.colors as cl 
+import csv
 
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
-"""
+
 # ------------------------- Calculation ------------------------------------ #
 def monthly_disaggregation(df_in: pd.DataFrame, monthly_ref: list, annual: bool = False):
     '''
@@ -51,12 +53,23 @@ def monthly_disaggregation(df_in: pd.DataFrame, monthly_ref: list, annual: bool 
     '''
     global months
     df = copy.deepcopy(df_in)
-    months = ['January','February','March','April','May','June','July','August','September','October','November','December']
+    months = ["2020-01-01T12:00:00.000Z",
+              "2020-02-01T12:00:00.000Z",
+              "2020-03-01T12:00:00.000Z",
+              "2020-04-01T12:00:00.000Z",
+              "2020-05-01T12:00:00.000Z",
+              "2020-06-01T12:00:00.000Z",
+              "2020-07-01T12:00:00.000Z",
+              "2020-08-01T12:00:00.000Z",
+              "2020-09-01T12:00:00.000Z",
+              "2020-10-01T12:00:00.000Z",
+              "2020-11-01T12:00:00.000Z",
+              "2020-12-01T12:00:00.000Z"]
     total = sum(monthly_ref)
     for i in range(12):
         df[f'{months[i]}'] = df[df.columns[1]] * monthly_ref[i] / total
     if annual == False:
-        df = drop_column(df,1)
+        df = drop_column(df,[1])
     return df
 
 def fuel_cost(df_elec_in:pd.DataFrame, df_gas_in:pd.DataFrame, price_elec: float, price_gas:float, monthly_ref_elec:list, monthly_ref_gas:list, annual: bool = False):
@@ -146,7 +159,6 @@ def fuel_emission(df_elec_in:pd.DataFrame, df_gas_in:pd.DataFrame, carbon_intens
     
     return df_emission_total, df_emission_elec, df_emission_gas
 
-# COP agent
 def COP(temp, hp_efficiency:float = 0.35, T_H: float = 45 +273.15):
     '''
     Based on a given temperature to calculate the COP
@@ -191,7 +203,41 @@ def delta_elec(delta_gas, COP, boiler_efficiency: float = 0.8):
     delta_elec = boiler_efficiency * delta_gas / COP
 
     return delta_elec
-"""
+
+def calculate_inequality_index(poverty_values, change_values, min_fp, max_fp, min_dc, max_dc):
+    
+    
+    a = ((poverty_values-min_fp)/(max_fp-min_fp))
+
+    b = ((2*(change_values-min_dc))/(max_dc-min_dc))-1
+    
+    inequality_index = a*b
+    
+    return np.around(inequality_index,decimals=3)
+
+def calculate_inequality_df(df_change_of_cost_in: pd.DataFrame, df_fuel_poverty_in: pd.DataFrame, min_deltaC_nth_percentile:float = 1, \
+                                 max_deltaC_nth_percentile:float = 99, min_fuel_poverty:float = 0, max_fuel_poverty:float = 0.2 ):
+    '''
+    '''
+    # make copy of df_in
+    df_change_of_cost = copy.deepcopy(df_change_of_cost_in)
+    df_fuel_poverty = copy.deepcopy(df_fuel_poverty_in)
+    
+    # Merge the data into one df
+    df_fuel_poverty.rename(columns={df_fuel_poverty.columns[0]: 'LSOA_code'}, inplace=True)
+    df_change_of_cost.rename(columns={df_change_of_cost.columns[0]: 'LSOA_code'}, inplace=True)
+    df_all = df_change_of_cost.merge(df_fuel_poverty, left_on=df_change_of_cost.columns[0], right_on=df_fuel_poverty.columns[0], how='inner')
+    
+    change_values = df_all[df_all.columns[1]].values
+    min_fp = min_fuel_poverty * 100
+    max_fp = max_fuel_poverty * 100
+    min_dc = np.nanpercentile(change_values,min_deltaC_nth_percentile)
+    max_dc = np.nanpercentile(change_values,max_deltaC_nth_percentile)
+    df_all['inequality_index'] = df_all.apply(calculate_inequality_index, axis=1, args=(min_fp, max_fp, min_dc, max_dc))
+    df_all.drop(columns=[df_all.columns[1], df_all.columns[2]], inplace=True)
+
+    return df_all
+
 # ------------------------ GeoSpatial Plot --------------------------------- #
 def plot_geodistribution(label: str, title:str, df_in: pd.DataFrame, cb_scale: float = 0):
     '''
@@ -231,14 +277,15 @@ def plot_geodistribution(label: str, title:str, df_in: pd.DataFrame, cb_scale: f
         return axs, cax1, color_theme
 
     # Get Geospatial shapes:
-    df_geo = retrieve_ONS_shape_from_KG()
+    df_geo = call_pickle('./Data/pickles/df_geo in function retrieve_ONS_shape_from_KG')
 
     print(f'Beginning plot for geodistribution of {title}...')
+    # Revising the data
+    df_geo, val_values =data_treatment(df_geo, title, df_in)
+
     # Initilize the graph
     axs, cax1, color_theme = basic_settings(df_geo)
 
-    # Revising the data
-    df_geo, val_values =data_treatment(df_geo, title, df_in)
 
     # Specify the interquartile range (IQR) and the first and third quartiles (q1 and q3)
     divnorm = normalization(val_values, cb_scale)
@@ -294,24 +341,24 @@ def plot_geodistribution_with_cities(label: str, title:str, df_in: pd.DataFrame,
         UK_gdf.boundary.plot(ax=axs['A'],color='k',linewidth=0.5)
         boundary = df_geo.bounds
         boundary = [min(boundary.values[:,0]),min(boundary.values[:,1]),max(boundary.values[:,2]),max(boundary.values[:,3])]
-        axs['A'].set_ylim([boundary[1]-5E4,boundary[3]+5E4])
-        axs['A'].set_xlim(([boundary[0]-5E4,boundary[2]]))
+        axs['A'].set_ylim([boundary[1]-5E4,boundary[3]+20E4])
+        axs['A'].set_xlim(([boundary[0]-5E4,boundary[2]+1E4]))
         #plt.subplots_adjust(left=0)
         cax = fig.add_axes([0.9, 0.1, 0.02, 0.8])
 
         return axs, cax, color_theme, UK_gdf
 
     # Get Geospatial shapes:
-    df_geo = retrieve_ONS_shape_from_KG()
+    df_geo = call_pickle('./Data/pickles/df_geo in function retrieve_ONS_shape_from_KG')
 
     # Make a copy of df_in
     df = copy.deepcopy(df_in)
     
-    # Initilize the graph
-    axs, cax, color_theme, UK_gdf = basic_settings(df_geo)
-    
     # Revising the data
     df_geo, val_values =data_treatment(df_geo, title, df)
+    
+    # Initilize the graph
+    axs, cax, color_theme, UK_gdf = basic_settings(df_geo)
     
     # Specify the interquartile range (IQR) and the first and third quartiles (q1 and q3)
     divnorm = normalization(val_values, cb_scale)
@@ -325,8 +372,11 @@ def plot_geodistribution_with_cities(label: str, title:str, df_in: pd.DataFrame,
                 ax=axs['A'],
                 legend=True,
                 norm=divnorm,
-                cax=cax)
-
+                cax=cax,
+                legend_kwds={'label':'Inequality Index (-)','ticks':[-1,-0.5,0,0.5,1]})
+    
+    cax.ticklabel_format(axis="y", style="sci", scilimits=(0,0))   
+    cax.set_yticklabels(['< -1','-0.5','0','0.5','> 1'])
     # Create a colorbar for the plot
     create_color_bar(color_theme, divnorm, label, axs, cax, df_geo[f"{title}"])
     cax.ticklabel_format(axis="y", style="sci", scilimits=(0,0))  
@@ -397,7 +447,7 @@ def plot_multiple_geodistribution(label: str, title:str, df_in: pd.DataFrame,cb_
     # Get Geospatial shapes:
     #df_geo = retrieve_ONS_shape_from_KG()
     ################### TBD
-    df_geo = call_pickle('./Data/temp_Repo/df_geo in function retrieve_ONS_shape_from_KG')
+    df_geo = call_pickle('./Data/pickles/df_geo in function retrieve_ONS_shape_from_KG')
     df = copy.deepcopy(df_in)
     ###########################
     print(f'Beginning plot for geodistribution (multiple in comparison) of {title}...')
@@ -508,7 +558,7 @@ for t_max, mean and min senarios
     # Get Geospatial shapes:
     #df_geo = retrieve_ONS_shape_from_KG()
     ################### TBD
-    df_geo = call_pickle('./Data/temp_Repo/df_geo in function retrieve_ONS_shape_from_KG')
+    df_geo = call_pickle('./Data/pickles/df_geo in function retrieve_ONS_shape_from_KG')
     ###########################
     print(f'Beginning plot for geodistribution (multiple in comparison) of {title}...')
     
@@ -842,6 +892,46 @@ or for temproal = False:
     save_figures(filename)
     print(f'{i} number of lines have been plotted')
 
+def plot_box_and_whisker_for_five_entities(filename: str, y_label: str, df_in: pd.DataFrame) :
+
+    flierprops = dict(markerfacecolor="k", markersize=0.05, linestyle="none", markeredgecolor="k")
+    df = copy.deepcopy(df_in)
+    # Initialize the plot
+    fig, axs = plt.subplots(1,1,figsize=(5,2.5))
+    plt.tight_layout()
+    y_data = df.iloc[:, 1:]
+    ax_box = sb.boxplot(
+        x="variable", y="value", data=pd.melt(y_data),
+        fliersize=0.05,
+        whis=2,
+        linewidth=1.2,
+        ax=axs,
+        color="w",
+        flierprops=flierprops,
+    )
+    sb.pointplot(
+        x="variable", y="value", data=pd.melt(get_median(df_in=df)),
+        ax=axs,
+        color="r",
+        markers=".",
+    )
+    for i, box in enumerate(ax_box.artists):
+        box.set_edgecolor("black")
+        box.set_facecolor("white")
+        # iterate over whiskers and median lines
+        for j in range(6 * i, 6 * (i + 1)):
+            ax_box.lines[j].set_color("black")
+    plt.subplots_adjust(
+        left=0.175, bottom=0.092, right=0.967, top=0.949, wspace=0.2, hspace=0.14
+    )
+    axs.set_xlabel("")
+    axs.set_ylabel(y_label)
+    axs.ticklabel_format(axis="y", style="sci", scilimits=(0, 0))
+    axs.set_xticks([0,1,2,3,4])
+    axs.set_xticklabels(labels = ['2018','2019','2020','2021','2022'])
+    plt.legend()
+    save_figures(filename)
+
 def plot_box_and_whisker(filename: str, y_label: str, df_in: pd.DataFrame) :
     '''
     This function is dedecated to plot the monthly distribution in a box_and_whisker form
@@ -969,6 +1059,22 @@ def plot_var_versus_result(filename: str, y_label: str, x_label:str, df_in: pd.D
     plt.subplots_adjust(left = 0.127)
     save_figures(filename)
 
+# ------------------------ Scatter Plot --------------------------------- #
+def scatter_plot(filename, x_values:np.array, y_values:np.array, x_label:str, y_label: str, title: str):
+    
+    # Plot scatter plot
+    plt.scatter(x_values, y_values)
+
+    # Plot y=x line
+    x_line = np.linspace(min(x_values.flatten()), max(x_values.flatten()), 100)
+    plt.plot(x_line, x_line, 'r--')
+
+    # Set labels and title
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    plt.title(title)
+    save_figures(filename)
+
 # ------------------------ Routes ------------------------------------------ #
 def output_inequality_index_df(url_cop, url_change_of_fuel, url_fuel_cost, url_inequality_index):
     # Read the temp data
@@ -1077,20 +1183,17 @@ def output_change_of_fuel_df(url_cop,url_change_of_fuel,):
     change_of_gas, change_of_elec = call_change_of_fuel_agent(url_change_of_fuel, uptake, gas_tensor,0.9,cop)
     return change_of_gas, change_of_elec
 
-df_inequality_index = output_inequality_index_df('http://localhost:5010/api/lsoacalculationagent_cop/calculation/cop',\
-                           'http://localhost:5040/api/lsoacalculationagent_change_of_fuel/calculation/change_of_fuel',\
-                           'http://localhost:5020/api/lsoacalculationagent_fuel_cost/calculation/fuel_cost',\
-                           'http://localhost:5050/api/lsoacalculationagent_inequality_index/calculation/inequality_index',\
-                           )
-convert_df(df_inequality_index)
-plot_geodistribution('inequality index', 'inequality index', df_inequality_index, 0)
-
-
-
+# df_inequality_index = output_inequality_index_df('http://localhost:5010/api/lsoacalculationagent_cop/calculation/cop',\
+#                            'http://localhost:5040/api/lsoacalculationagent_change_of_fuel/calculation/change_of_fuel',\
+#                            'http://localhost:5020/api/lsoacalculationagent_fuel_cost/calculation/fuel_cost',\
+#                            'http://localhost:5050/api/lsoacalculationagent_inequality_index/calculation/inequality_index',\
+#                            )
+# convert_df(df_inequality_index)
+# plot_geodistribution('inequality index', 'inequality index', df_inequality_index, 0)
 
 
 '''
-df_full = call_pickle('./Data/temp_Repo/df in function get_all_data')
+df_full = call_pickle('./Data/pickles/df in function get_all_data')
 df_full['LSOA_code'] = df_full['LSOA_code'].apply(lambda x: add_prefix(x, prefix = ONS_ID))
 '''
 '''
@@ -1370,10 +1473,112 @@ plot_temperature_versus_var(label = 'Coefficient of Performance (-)',
 
 # Test for generating multiple year's data (cost)-----------------
 '''
+'''
+'''
 # generating 2019 data
-unique_LSOA = call_pickle('./Data/temp_Repo/unique_LSOA in function valid_LSOA_list')
+unique_LSOA = call_pickle('./Data/pickles/unique_LSOA in function valid_LSOA_list')
+# city = "Cambridge"
+# csv_file = f"./Data/Local Authority/{city}.csv"
+# unique_LSOA = []
+# Read the CSV file and append the 'LSOA code' values to the list
+# with open(csv_file, 'r') as file:
+#     reader = csv.reader(file)
+#     next(reader)  # Skip the header row if it exists
+#     for row in reader:
+#         unique_LSOA.append(row[0])
+
 df_final = pd.DataFrame(unique_LSOA, columns=['LSOA_code'])
+df_final = df_final.sort_values(by='LSOA_code')
+df_final.reset_index(drop=True, inplace=True)
 df_final['LSOA_code'] = df_final['LSOA_code'].apply(lambda x: add_prefix(x, prefix = ONS_ID))
+for year in ['2018','2019','2020','2021','2022']:
+    df = pd.DataFrame(unique_LSOA, columns=['LSOA_code'])
+
+    if year == "2022":
+        elec_consump, elec_meter = read_from_excel_elec(year = "2021", dict=True)
+        gas_consump, gas_meter, gas_non_meter = read_from_excel_gas(year = "2021", dict=True)
+    else:
+        elec_consump, elec_meter = read_from_excel_elec(year = year, dict=True)
+        gas_consump, gas_meter, gas_non_meter = read_from_excel_gas(year = year, dict=True)
+
+    df['Electricity_consump'] = df['LSOA_code'].apply(lambda x: round(float(elec_consump.get(x, np.nan)),3))
+    df['Electricity_meter'] = df['LSOA_code'].apply(lambda x: float(elec_meter.get(x, np.nan)))
+    df['Electricty_cosumption_per_household'] = df['Electricity_consump'].to_numpy() /df['Electricity_meter'].to_numpy()
+    df['Gas_consump'] = df['LSOA_code'].apply(lambda x: round(float(gas_consump.get(x, np.nan)),3))
+    df['Gas_meter'] = df['LSOA_code'].apply(lambda x: float(gas_meter.get(x, np.nan)))
+    df['Gas_consumption_per_household'] = df['Gas_consump'].to_numpy() /df['Gas_meter'].to_numpy()
+
+    # Get index
+    monthly_electricity_consumption = read_from_web_monthly_distribution_elec(year=year)
+    monthly_gas_consumption = read_from_web_monthly_distribution_gas(year=year)
+    
+    df_elec = df[['LSOA_code','Electricty_cosumption_per_household']]
+    df_gas = df[['LSOA_code','Gas_consumption_per_household']]
+
+    df_cop = pd.read_csv("./Data/properties_csv/COP_mean.csv")
+    # Select and reorder rows in df_2 based on identifiers in df_1
+    df_cop = df_cop[df_cop['LSOA_code'].isin(df_elec['LSOA_code'])]
+    
+    df_elec = df_elec.sort_values(by='LSOA_code')
+    df_elec.reset_index(drop=True, inplace=True)
+    df_gas = df_gas.sort_values(by='LSOA_code')
+    df_gas.reset_index(drop=True, inplace=True)
+    df_cop = df_cop.sort_values(by='LSOA_code')
+    df_cop.reset_index(drop=True, inplace=True)
+    
+    # Calculate fuel cost
+    cost_elec = read_from_web_price_elec(year=year)
+    cost_gas = read_from_web_price_gas(year=year)
+    
+    df_cost_total, df_cost_elec, df_cost_gas = fuel_cost(df_elec,df_gas,cost_elec,cost_gas,monthly_electricity_consumption,monthly_gas_consumption, annual=True)
+    
+    df_elec = monthly_disaggregation(df_elec,monthly_electricity_consumption,annual=False)
+    df_gas = monthly_disaggregation(df_gas,monthly_gas_consumption,annual=False)
+
+    # if year in ['2017','2018','2019', '2020', '2021','2022']:
+    #     df_elec.to_csv(f'./Data/properties_csv/{year}/Elec_Consump_per_house.csv', index=False)
+    #     df_gas.to_csv(f'./Data/properties_csv/{year}/Gas_Consump_per_house.csv', index=False)
+    #     df_cost_total.to_csv(f'./Data/properties_csv/{year}/Total_Cost.csv', index=False)
+    #     df_cost_elec.to_csv(f'./Data/properties_csv/{year}/Elec_Cost.csv', index=False)
+    #     df_cost_gas.to_csv(f'./Data/properties_csv/{year}/Gas_Cost.csv', index=False)
+
+    uptake = 1
+
+    elec_consump = df_elec.iloc[:, 1:13].values
+    gas_consump = df_gas.iloc[:, 1:13].values
+    cop = df_cop.iloc[:, 1:13].values
+
+    delta_gas_array = delta_gas(uptake, gas_consump)
+    delta_elect_array = delta_elec(delta_gas_array, cop) 
+
+    resulted_elec_consump = elec_consump + delta_elect_array
+    resulted_gas_consump = gas_consump - delta_gas_array
+
+
+    final_cost = cost_elec*resulted_elec_consump + cost_gas*resulted_gas_consump
+    final_cost = np.sum(final_cost, axis=1)
+
+    df_original_cost = pd.read_csv('./Data/properties_csv/2020/Total_Cost.csv')
+    df_original_cost = df_original_cost[df_original_cost['LSOA_code'].isin(df_elec['LSOA_code'])]
+    
+    original_cost = df_original_cost.iloc[:, 1].values
+
+    delta_cost = final_cost - original_cost
+
+    df_final_cost = pd.DataFrame(delta_cost, columns=[f'{year}'])
+    df_final = df_final.append(df_final_cost, ignore_index=True)
+
+#plot_multiple_geodistribution('Fuel Cost \n (£/month/household)',f'@{city}household_cost_2017-2021_geoplot',df_final,0)
+plot_box_and_whisker_for_five_entities(f'@{city}household_cost_2017-2021_box_and_whisker','Fuel Cost \n (£/month/household)',df_final)
+
+'''
+# ----------------------------------------------------------------
+##########################################################
+# all fuel cost
+'''
+unique_LSOA = call_pickle('./Data/temp_Repo/unique_LSOA in function valid_LSOA_list')
+months = ['January','February','March','April','May','June','July','August','September','October','November','December']
+df_final = pd.DataFrame(columns=months)
 for year in ['2015','2016','2017','2018','2019']:
     df = pd.DataFrame(unique_LSOA, columns=['LSOA_code'])
     elec_consump, elec_meter = read_from_excel_elec(year = year, dict=True)
@@ -1381,6 +1586,7 @@ for year in ['2015','2016','2017','2018','2019']:
     df['Electricity_consump'] = df['LSOA_code'].apply(lambda x: round(float(elec_consump.get(x, np.nan)),3))
     df['Electricity_meter'] = df['LSOA_code'].apply(lambda x: float(elec_meter.get(x, np.nan)))
     df['Electricty_cosumption_per_household'] = df['Electricity_consump'].to_numpy() /df['Electricity_meter'].to_numpy()
+    
     df['Gas_consump'] = df['LSOA_code'].apply(lambda x: round(float(gas_consump.get(x, np.nan)),3))
     df['Gas_meter'] = df['LSOA_code'].apply(lambda x: float(gas_meter.get(x, np.nan)))
     df['Gas_consumption_per_household'] = df['Gas_consump'].to_numpy() /df['Gas_meter'].to_numpy()
@@ -1395,15 +1601,11 @@ for year in ['2015','2016','2017','2018','2019']:
     monthly_gas_consumption = read_from_web_monthly_distribution_gas(year=year)
 
     # Calculate fuel cost
-    df_cost_total, df_cost_elec, df_cost_gas = fuel_cost(df_elec,df_gas,cost_elec,cost_gas,monthly_electricity_consumption,monthly_gas_consumption, annual=True)
-    df_cost_total = df_cost_total[['LSOA_code', 'Annual cost']]
-    df_final[f'{year}'] = df_cost_total['Annual cost']
-
-plot_multiple_geodistribution('Fuel Cost \n (£/month/household)','household_cost_2015-2019_geoplot',df_final,0)
-'''
-# ----------------------------------------------------------------
-##########################################################
-
+    df_cost_total, df_cost_elec, df_cost_gas = fuel_cost(df_elec,df_gas,cost_elec,cost_gas,monthly_electricity_consumption,monthly_gas_consumption, annual=False)
+    # Calculate median value
+    df_cost_total = get_median(df_cost_total, f'{year}')
+    df_final = pd.concat([df_final, df_cost_total], axis=0)
+    '''
 
 
 
@@ -1525,7 +1727,7 @@ plot_var_versus_result('Energy uptake','Energy Consumption (kWh/year)','% Uptake
 
 # Test for plot multiple year line chart (cost) ------------------
 '''
-unique_LSOA = call_pickle('./Data/temp_Repo/unique_LSOA in function valid_LSOA_list')
+unique_LSOA = call_pickle('./Data/pickles/unique_LSOA in function valid_LSOA_list')
 months = ['January','February','March','April','May','June','July','August','September','October','November','December']
 df_final = pd.DataFrame(columns=months)
 for year in ['2015','2016','2017','2018','2019']:
@@ -1560,7 +1762,7 @@ plot_line_chart(filename='household_cost_2015-2019', y_label = 'Fuel Cost \n (£
 
 # Test for plot multiple year in one-line (median annual cost) ---
 '''
-unique_LSOA = call_pickle('./Data/temp_Repo/unique_LSOA in function valid_LSOA_list')
+unique_LSOA = call_pickle('./Data/pickles/unique_LSOA in function valid_LSOA_list')
 df_final = pd.DataFrame()
 for year in ['2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020']:
     df = pd.DataFrame(unique_LSOA, columns=['LSOA_code'])
@@ -1595,7 +1797,7 @@ plot_line_chart(filename='household_cost_Median Annual Cost_2010-2020', y_label 
 
 # Test for plot multiple year in one-line (annual electricity consumption) ---
 '''
-unique_LSOA = call_pickle('./Data/temp_Repo/unique_LSOA in function valid_LSOA_list')
+unique_LSOA = call_pickle('./Data/pickles/unique_LSOA in function valid_LSOA_list')
 df_final = pd.DataFrame()
 for year in ['2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020']:
     df = pd.DataFrame(unique_LSOA, columns=['LSOA_code'])
@@ -1610,7 +1812,7 @@ plot_line_chart(filename='National_Elec_consump_2010-2020', y_label = 'Electrici
 
 # Test for plot multiple year in one-line (annual gas consumption) ---
 '''
-unique_LSOA = call_pickle('./Data/temp_Repo/unique_LSOA in function valid_LSOA_list')
+unique_LSOA = call_pickle('./Data/pickles/unique_LSOA in function valid_LSOA_list')
 df_final = pd.DataFrame()
 for year in ['2010','2011','2012','2013','2014','2015','2016','2017','2018','2019','2020']:
     df = pd.DataFrame(unique_LSOA, columns=['LSOA_code'])
@@ -1624,10 +1826,90 @@ plot_line_chart(filename='National_Gas_consump_2010-2020', y_label = 'Gas consum
 # ----------------------------------------------------------------
 ##########################################################
 
+# Do scatter plot (fuel price)
+uptake = 1
+df_cop = pd.read_csv("./Data/properties_csv/COP_mean.csv")
 
+final = []
+for year in ['2019','2022']:
+
+    df_elec = pd.read_csv(f'./Data/properties_csv/{year}/Elec_Consump_per_house.csv')
+    df_gas = pd.read_csv(f'./Data/properties_csv/{year}/Gas_Consump_per_house.csv')
+    df_cost = pd.read_csv(f"./Data/properties_csv/{year}/Total_Cost.csv")
+    df_cost = df_cost[['LSOA_code','Annual cost']]
+    if year in ['2020','2021','2022']:
+        df_fp = pd.read_csv(f"./Data/properties_csv/2020/fuel_poverty.csv")
+        df_fp = df_fp[df_fp['Proportion of households fuel poor (%)'] > 0.001]
+    else:
+        df_fp = pd.read_csv(f"./Data/properties_csv/{year}/fuel_poverty.csv")
+        df_fp_ref = pd.read_csv(f"./Data/properties_csv/2020/fuel_poverty.csv")
+
+    df_elec, df_gas, df_cop, df_cost, df_fp, _ = sort_muiltiple_df(df_elec, df_gas, df_cop, df_cost, df_fp, df_fp_ref)
+
+    cop = df_cop.iloc[:, 1:13].values
+    elec_consump = df_elec.iloc[:, 1:13].values
+    gas_consump = df_gas.iloc[:, 1:13].values
+    fp = df_fp.iloc[:, 1].values
+    fp = fp*100
+
+    delta_gas_array = delta_gas(uptake, gas_consump)
+    delta_elect_array = delta_elec(delta_gas_array, cop) 
+
+    resulted_elec_consump = elec_consump + delta_elect_array
+    resulted_gas_consump = gas_consump - delta_gas_array
+
+    cost_elec = read_from_web_price_elec(year=year)
+    cost_gas = read_from_web_price_gas(year=year)
+
+    final_cost = cost_elec * resulted_elec_consump + cost_gas * resulted_gas_consump
+    final_cost = np.sum(final_cost, axis=1)
+
+    original_cost = df_cost.iloc[:, 1:13].values
+    original_cost = original_cost.reshape(final_cost.shape)
+
+    delta_cost = final_cost - original_cost
+    min_deltaC_nth_percentile = 1
+    max_deltaC_nth_percentile = 99
+    min_fuel_poverty = 0
+    max_fuel_poverty = 0.2
+
+    min_fp = min_fuel_poverty * 100
+    max_fp = max_fuel_poverty * 100
+    min_dc = np.nanpercentile(delta_cost,min_deltaC_nth_percentile)
+    max_dc = np.nanpercentile(delta_cost,max_deltaC_nth_percentile)
+
+    index = calculate_inequality_index(fp, delta_cost, min_fp, max_fp, min_dc, max_dc)
+
+    df_fp['Inequality Index'] = index
+    df_fp = df_fp[['LSOA_code','Inequality Index']]
+    df_fp['LSOA_code'] = df_fp['LSOA_code'].apply(lambda x: add_prefix(x, prefix = ONS_ID))
+
+    # plot_geodistribution_with_cities(f'Inequality Index @{uptake*100}% Uptake @{year}',
+    #                                  f'Inequality Index @{uptake*100}% Uptake in {year}',
+    #                                  df_fp,
+    #                                  1)
+    final.append(index)
+
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+def plot_kernel_density(data, filename, label):
+    density = sns.kdeplot(data)
+    x_vals, y_vals = density.get_lines()[0].get_data()
+    max_density_index = np.argmax(y_vals)
+    max_density_x = x_vals[max_density_index]
+    max_density_y = y_vals[max_density_index]
+    
+    plt.axvline(max_density_x, color='red', linestyle='--', label='Max Density')
+    plt.xlabel(label)
+    plt.legend()
+    save_figures(filename)
+plot_kernel_density(final[1],f'Inequality index @{uptake*100}% Uptake 2022','Inequality index')
+
+#scatter_plot(f'change of fuel cost @{uptake*100}% Uptake 2019 vs 2022 ',final[0], final[1], 'change of fuel cost @2019 ','change of fuel cost @2022 ',f'change of fuel cost @{uptake*100}% Uptake\n 2019 vs 2022')
 '''
     #convert 2021 temp data to tensor
-    dict_temp_2021 = call_pickle('./Data/temp_Repo/temp_result_dict in function read_all_temperature_2021_reformatted')
+    dict_temp_2021 = call_pickle('./Data/pickles/temp_result_dict in function read_all_temperature_2021_reformatted')
     LSOA_index, results_tensor = convert_to_tensor(dict_temp_2021)
     print(results_tensor)
     '''

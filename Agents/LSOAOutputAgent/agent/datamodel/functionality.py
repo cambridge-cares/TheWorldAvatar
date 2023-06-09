@@ -41,7 +41,18 @@ def monthly_disaggregation(df_in: pd.DataFrame, monthly_ref: list, annual: bool 
     '''
     global months
     df = copy.deepcopy(df_in)
-    months = ['January','February','March','April','May','June','July','August','September','October','November','December']
+    months = ["2020-01-01T12:00:00.000Z",
+              "2020-02-01T12:00:00.000Z",
+              "2020-03-01T12:00:00.000Z",
+              "2020-04-01T12:00:00.000Z",
+              "2020-05-01T12:00:00.000Z",
+              "2020-06-01T12:00:00.000Z",
+              "2020-07-01T12:00:00.000Z",
+              "2020-08-01T12:00:00.000Z",
+              "2020-09-01T12:00:00.000Z",
+              "2020-10-01T12:00:00.000Z",
+              "2020-11-01T12:00:00.000Z",
+              "2020-12-01T12:00:00.000Z"]
     total = sum(monthly_ref)
     for i in range(12):
         df[f'{months[i]}'] = df[df.columns[1]] * monthly_ref[i] / total
@@ -361,6 +372,16 @@ def remove_unlocated_data(df):
 
     return df
 
+def sort_muiltiple_df(*args):
+    
+    identifier_list = [set(df.iloc[:, 0]) for df in args]
+    common_identifiers = set.intersection(*identifier_list)
+    filtered_dfs = [df[df.iloc[:, 0].isin(common_identifiers)] for df in args]
+    filtered_dfs = [df.sort_values(by='LSOA_code') for df in filtered_dfs]
+    finals = [df.reset_index(drop=True) for df in filtered_dfs]
+    
+    return finals
+
 # Figure generation ----------------------- #
 def data_treatment(df, arg_name, arg_value_in):
         '''
@@ -385,9 +406,11 @@ def data_treatment(df, arg_name, arg_value_in):
                 # Appended the variable data to the df_geo
                 df_copy = df_copy.assign(**{f"{col}": np.nan})
                 df_copy[f"{col}"] = df_copy[df_copy.columns[0]].apply(lambda x: dictionary.get(x, np.nan))
+                df_copy.dropna(subset=[f"{col}"], inplace=True)
             else:
                 df_copy = df_copy.assign(**{f"{arg_name}": np.nan})
                 df_copy[f"{arg_name}"] = df_copy[df_copy.columns[0]].apply(lambda x: dictionary.get(x, np.nan))
+                df_copy.dropna(subset=[f"{arg_name}"], inplace=True)
                 
         # ------------ This val_values is normally used for colorbar plot ------------------- #
         try:
@@ -434,6 +457,8 @@ def normalization(val_values, cb_scale):
     q1,q3 = st.mstats.idealfourths(val_values)
     bottom = q1 - cb_scale * iqr
     top = q3 + cb_scale * iqr
+    # bottom = -1
+    # top = 1
     divnorm = cl.Normalize(vmin=bottom, vmax=top)
 
     return divnorm
@@ -554,3 +579,177 @@ def parse_to_file(query, filepath = "demofile"):
 
   #open and read the file after the appending:
   f = open(f"./Data/{filepath}.txt", "r")
+
+def properties_to_csv():
+
+    def all_source_to_csv(df):
+
+        df.to_csv('./Data/properties_csv/2020/All_source.csv', index=False)
+    
+    def geom_to_csv(df):
+
+        df_geom = df[['LSOA_code', 'ons_shape']]
+
+        df_geom.to_csv('./Data/properties_csv/2020/geometry.csv', index=False)
+    
+    def electricity_consumption_per_house_to_csv(df):
+
+        monthly_ref = [28.19,26.08,26.82,20.73,20.48,20.36,21.38,21.95,22.39,25.14,25.91,27.89]
+
+        df_elec = df[['LSOA_code', 'Electricty_cosumption_per_household']]
+
+        df_elec = monthly_disaggregation(df_elec, monthly_ref, annual = True)
+        
+        df_final = pd.concat([df_elec, df["Electricity_meter"]], axis=1)
+    
+        df_final.to_csv('./Data/properties_csv/2020/Elec_Consump_per_house.csv', index=False)
+    
+    def gas_consumption_per_house_to_csv(df):
+
+        monthly_ref = [7.88,7.54,7.54,4.86,4.14,3.78,3.78,3.64,4.05,6.09,6.74,8.46]
+
+        df_elec = df[['LSOA_code', 'Gas_consumption_per_household']]
+
+        df_elec = monthly_disaggregation(df_elec, monthly_ref, annual = True)
+        
+        df_final = pd.concat([df_elec, df["Gas_meter"]], axis=1)
+    
+        df_final.to_csv('./Data/properties_csv/2020/Gas_Consump_per_house.csv', index=False)
+    
+    def fuel_poverty_to_csv(df):
+        
+        df_fp = df[['LSOA_code', 'FuelPoor_%']]
+
+        df_fp.to_csv('./Data/properties_csv/2020/fuel_poverty.csv', index=False)
+    
+    def temperature_to_csv(df):
+
+        # Extract keys from the dictionary column
+        df_temp = df[['LSOA_code', 'temp']]
+        keys = df_temp['temp'].apply(lambda x: list(x.keys()) if isinstance(x, dict) else None)
+        # Create new columns and assign values
+        for key in keys[0]:
+
+            df_temp[key] = df_temp['temp'].apply(lambda x: x.get(key) if isinstance(x, dict) else None)
+        
+        df_temp = drop_column(df_temp,"temp")
+        # Create a new DataFrame with extracted 'tasmax' values
+        df_temp_max = df_temp.copy()
+        df_temp_mean = df_temp.copy()
+        df_temp_min = df_temp.copy()
+
+        df_temp_max.iloc[:, 1:] = df_temp_max.iloc[:, 1:].apply(lambda x: x.apply(lambda y: y.get('tasmax') if isinstance(y, dict) else None) )
+        df_temp_mean.iloc[:, 1:] = df_temp_mean.iloc[:, 1:].apply(lambda x: x.apply(lambda y: y.get('tas') if isinstance(y, dict) else None) )
+        df_temp_min.iloc[:, 1:] = df_temp_min.iloc[:, 1:].apply(lambda x: x.apply(lambda y: y.get('tasmin') if isinstance(y, dict) else None) )
+        
+        df_temp_max.to_csv('./Data/properties_csv/Temperature_max.csv', index=False)
+        df_temp_mean.to_csv('./Data/properties_csv/Temperature_mean.csv', index=False)
+        df_temp_min.to_csv('./Data/properties_csv/Temperature_min.csv', index=False)
+
+    def COP_to_csv():
+
+        def COP_calculation(temp, hp_efficiency:float = 0.35, T_H: float = 45 +273.15):
+            '''
+            Based on a given temperature to calculate the COP
+            Note: COP = hp_efficiency * T_H / (T_H - T_C), where the input temperature is represented as T_C
+            T_H, hp_efficiency are hypothesd as constant, which have default value as 318.15 and 0.35
+            respectfully. I suggest to check if that default value is up to date or if that hypothesis is 
+            valid in your case
+            '''
+            COP = hp_efficiency * T_H / (T_H -273.15 - temp)
+            
+            COP = np.round(COP,3)
+            
+            return COP
+        try:
+            df_temp_max = pd.read_csv('./Data/properties_csv/Temperature_max.csv')
+            df_temp_mean = pd.read_csv('./Data/properties_csv/Temperature_mean.csv')
+            df_temp_min = pd.read_csv('./Data/properties_csv/Temperature_min.csv')
+        except:
+            df = call_pickle("./Data/pickles/df in function get_all_data")
+            temperature_to_csv(df)
+            df_temp_max = pd.read_csv('./Data/properties_csv/Temperature_max.csv')
+            df_temp_mean = pd.read_csv('./Data/properties_csv/Temperature_mean.csv')
+            df_temp_min = pd.read_csv('./Data/properties_csv/Temperature_min.csv')
+        
+        df_cop_max = df_temp_max.copy()
+        df_cop_mean = df_temp_mean.copy()
+        df_cop_min = df_temp_min.copy()
+
+        df_cop_max.iloc[:, 1:] = df_cop_max.iloc[:, 1:].apply(lambda x: COP_calculation(x))
+        df_cop_mean.iloc[:, 1:] = df_cop_mean.iloc[:, 1:].apply(lambda x: COP_calculation(x))
+        df_cop_min.iloc[:, 1:] = df_cop_min.iloc[:, 1:].apply(lambda x: COP_calculation(x))
+
+        df_cop_max.to_csv('./Data/properties_csv/COP_max.csv', index=False)
+        df_cop_mean.to_csv('./Data/properties_csv/COP_mean.csv', index=False)
+        df_cop_min.to_csv('./Data/properties_csv/COP_min.csv', index=False)
+            
+    def fuel_cost_to_csv(df):
+
+        def fuel_cost(df_elec_in:pd.DataFrame, df_gas_in:pd.DataFrame, price_elec: float, price_gas:float, monthly_ref_elec:list, monthly_ref_gas:list, annual: bool = False):
+            '''
+            To calculate the fuel cost per LSOA, normally on per household basis
+            Returns three dataframe which have first column as LSOA code, and the following 12
+            columns for each month of df_cost_total, df_cost_elec, df_cost_gas
+            Arguments:
+            df_elec: two-column data frame which MUST have the electricity data placed at the second column
+            (i.e. at position [1])
+            df_gas: two-column data frame which MUST have the gas data placed at the second column
+            (i.e. at position [1])
+            price_elec: price of electricity
+            price_gas: price of gas
+            monthly_ref_elec: monthly consumption of electricity consumption, to be used in monthly_disaggregation 
+            monthly_ref_gas: monthly consumption of gas consumption, to be used in monthly_disaggregation 
+            annual: if True, the second column will include the annual value
+                    if False, only monthly value will be returned
+            '''
+            df_elec = copy.deepcopy(df_elec_in)
+            df_gas = copy.deepcopy(df_gas_in)
+            # Replace the first column from consumption into cost
+            df_elec[df_elec.columns[1]] *= price_elec
+            df_elec = df_elec.rename(columns={df_elec.columns[1]: 'Annual cost'}, inplace=False)
+            df_cost_elec = df_elec.copy()
+            
+            df_gas[df_gas.columns[1]] *= price_gas
+            df_gas = df_gas.rename(columns={df_gas.columns[1]: 'Annual cost'}, inplace=False)
+            df_cost_gas = df_gas.copy()
+
+            # Disaggrate into monthly dataframe
+            df_cost_elec = monthly_disaggregation(df_cost_elec, monthly_ref_elec,annual)
+            df_cost_gas = monthly_disaggregation(df_cost_gas,monthly_ref_gas,annual)
+            
+            # Merge to total cost
+            df_cost_total = df_cost_elec.merge(df_cost_gas, left_on=df_cost_elec.columns[0], right_on=df_cost_gas.columns[0],how='inner')
+            # Iterate through the columns of the merged dataframe and add the values
+            for col in df_cost_gas.columns[1:]:
+                df_cost_total[col] = df_cost_total[col + '_x'] + df_cost_total[col + '_y']
+
+            # Drop the original columns from the merged dataframe
+            df_cost_total.drop(columns=[col + '_x' for col in df_cost_elec.columns[1:]], inplace=True)
+            df_cost_total.drop(columns=[col + '_y' for col in df_cost_gas.columns[1:]], inplace=True)
+            
+            return df_cost_total, df_cost_elec, df_cost_gas
+        df_elec = df[['LSOA_code','Electricty_cosumption_per_household']]
+        df_gas = df[['LSOA_code','Gas_consumption_per_household']]
+        cost_elec = 0.172
+        cost_gas = 0.0355
+        monthly_electricity_consumption = [28.19,26.08,26.82,20.73,20.48,20.36,21.38,21.95,22.39,25.14,25.91,27.89]
+        monthly_gas_consumption = [7.88,7.54,7.54,4.86,4.14,3.78,3.78,3.64,4.05,6.09,6.74,8.46]   
+
+        df_cost_total, df_cost_elec, df_cost_gas = fuel_cost(df_elec,df_gas,cost_elec,cost_gas,monthly_electricity_consumption,monthly_gas_consumption, annual=True)
+        
+        df_cost_total.to_csv('./Data/properties_csv/2020/Total_Cost.csv', index=False)
+        df_cost_elec.to_csv('./Data/properties_csv/2020/Elec_Cost.csv', index=False)
+        df_cost_gas.to_csv('./Data/properties_csv/2020/Gas_Cost.csv', index=False)
+
+    df = call_pickle("./Data/pickles/df in function get_all_data")
+    #all_source_to_csv(df)
+    #geom_to_csv(df)
+    #electricity_consumption_per_house_to_csv(df)
+    #gas_consumption_per_house_to_csv(df)
+    #fuel_poverty_to_csv(df)
+    #temperature_to_csv(df) 
+    #COP_to_csv()
+    fuel_cost_to_csv(df)
+
+#properties_to_csv()
