@@ -325,8 +325,9 @@ public class SmartMeterAgent {
                 // Assuming readings are in UTC time, check until minute only
                 values[1] = values[1].replace(" ", "T").replace(values[1].split(":")[2], "00+00:00");
                 if (values[1].equals("ts") || OffsetDateTime.parse(values[1]).compareTo(beforeTime) > 0
-                    || OffsetDateTime.parse(values[1]).compareTo(afterTime) < 0) {
-                    continue;  // skip headers and lines where time is not within the given period
+                    || OffsetDateTime.parse(values[1]).compareTo(afterTime) < 0 || checkEmptyReading(values)) {
+                    // skip headers & lines where time is not within the given period & lines with empty readings
+                    continue;
                 }
                 if (!values[1].equals(time)) {
                     // when the reading's time is different from the previous reading
@@ -338,10 +339,10 @@ public class SmartMeterAgent {
                         for (int i = 0; i < devices.size(); i++) {
                             for (int j = 0; j < records.length(); j++) {
                                 if (records.getJSONObject(j).optString("device").equalsIgnoreCase(devices.get(i)) &&
-                                    Double.parseDouble(records.getJSONObject(i).get("pd").toString()) != 0 &&
-                                    Double.parseDouble(records.getJSONObject(i).get("current").toString()) != 0 &&
-                                    Double.parseDouble(records.getJSONObject(i).get("voltage").toString()) != 0 &&
-                                    Double.parseDouble(records.getJSONObject(i).get("frequency").toString()) != 0) {
+                                    Double.parseDouble(records.getJSONObject(j).get("pd").toString()) != 0 &&
+                                    Double.parseDouble(records.getJSONObject(j).get("current").toString()) != 0 &&
+                                    Double.parseDouble(records.getJSONObject(j).get("voltage").toString()) != 0 &&
+                                    Double.parseDouble(records.getJSONObject(j).get("frequency").toString()) != 0) {
                                     oneGroup.put(records.getJSONObject(j));
                                     break;
                                 }
@@ -352,9 +353,9 @@ public class SmartMeterAgent {
                             numOfReadings += 1;
                         }
                     }
+                    time = values[1];
                     records = new JSONArray();
                     records.put(processCsvReadings(values));
-                    time = values[1];
                 } else {
                     // when the reading's time is the same as the previous reading
                     records.put(processCsvReadings(values));
@@ -369,10 +370,10 @@ public class SmartMeterAgent {
                 for (int i = 0; i < devices.size(); i++) {
                     for (int j = 0; j < records.length(); j++) {
                         if (records.getJSONObject(j).optString("device").equalsIgnoreCase(devices.get(i)) &&
-                            Double.parseDouble(records.getJSONObject(i).get("pd").toString()) != 0 &&
-                            Double.parseDouble(records.getJSONObject(i).get("current").toString()) != 0 &&
-                            Double.parseDouble(records.getJSONObject(i).get("voltage").toString()) != 0 &&
-                            Double.parseDouble(records.getJSONObject(i).get("frequency").toString()) != 0) {
+                            Double.parseDouble(records.getJSONObject(j).get("pd").toString()) != 0 &&
+                            Double.parseDouble(records.getJSONObject(j).get("current").toString()) != 0 &&
+                            Double.parseDouble(records.getJSONObject(j).get("voltage").toString()) != 0 &&
+                            Double.parseDouble(records.getJSONObject(j).get("frequency").toString()) != 0) {
                             oneGroup.put(records.getJSONObject(j));
                             break;
                         }
@@ -389,6 +390,33 @@ public class SmartMeterAgent {
 		return numOfReadings;
 	}
     
+    /**
+     * Return true if required field is empty
+     * @param reading
+     * @return
+     */
+    public boolean checkEmptyReading(String[] reading) {
+        // Check that Pd (load) values are not empty
+        for (int i = 6; i < 9; i++) {
+            if (reading[i] == null || reading[i].isEmpty()) {
+                return true;
+            }
+        }
+        // Check that current and voltage values are not empty
+        for (int i = 11; i < 17; i++) {
+            if (reading[i] == null || reading[i].isEmpty()) {
+                return true;
+            }
+        }
+        // Check that frequency values are not empty
+        for (int i = 23; i < 26; i++) {
+            if (reading[i] == null || reading[i].isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Given one line of readings from the csv file, calculate 
      * average values using readings of 3 phases.

@@ -287,6 +287,14 @@ public class SmartMeterAgentTest {
         expectedMessage = "Invalid data source or data required.";
         actualMessage = exception.getMessage();
         assertTrue(actualMessage.contains(expectedMessage));
+
+        request.remove("dataRequired");
+        request.put("dataRequired", "historical");
+        request.put("dataBefore", "2022-10-26 18:23:58");
+        exception = assertThrows(JPSRuntimeException.class, ()->{agentLauncher.processRequestParameters(request);});
+        expectedMessage = "Incorrect time format, input time should be yyyy-MM-dd HH:mm .";
+        actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
     }
 
     // Example readings for testing

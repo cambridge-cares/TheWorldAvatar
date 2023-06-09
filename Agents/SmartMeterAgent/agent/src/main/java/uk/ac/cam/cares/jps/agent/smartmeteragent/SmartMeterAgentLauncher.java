@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.smartmeteragent;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -14,6 +15,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -45,11 +47,11 @@ public class SmartMeterAgentLauncher extends JPSAgent {
         String targetResourceID = requestParams.getString("microgrid");
 
         OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String currentTime = now.format(formatter);
 
         // Parameters for historical data reading
-        // Data before (inclusive): UTC date time in "yyyy-MM-dd HH:mm:ss" format 
+        // Data before (inclusive): UTC date time in "yyyy-MM-dd HH:mm" format 
         // (optional, use current UTC time if not given)
         String dataBefore;
         String dataAfter;
@@ -59,13 +61,13 @@ public class SmartMeterAgentLauncher extends JPSAgent {
             LOGGER.info("dataBefore not given, using current datetime instead...");
             dataBefore = currentTime;
         }
-        // Data after (inclusive): UTC date time in "yyyy-MM-dd HH:mm:ss" format 
+        // Data after (inclusive): UTC date time in "yyyy-MM-dd HH:mm" format 
         // (optional, use default time if not given)
         if (requestParams.has("dataAfter")) {
             dataAfter = requestParams.getString("dataAfter");
         } else {
-            LOGGER.info("dataAfter not given, using default value: 2000-01-01 00:00:00 ...");
-            dataAfter = "2000-01-01 00:00:00";
+            LOGGER.info("dataAfter not given, using default value: 2000-01-01 00:00 ...");
+            dataAfter = "2000-01-01 00:00";
         }
 
         SmartMeterAgent agent = new SmartMeterAgent();
@@ -96,17 +98,25 @@ public class SmartMeterAgentLauncher extends JPSAgent {
             }
         } else if (dataSource.equalsIgnoreCase("csv") && dataRequired.equalsIgnoreCase("historical")) {
             LOGGER.info("Reading historical data from csv file...");
+            // Input time need to be UTC time
+            OffsetDateTime beforeTime;
+            OffsetDateTime afterTime;
+            try {
+                beforeTime = OffsetDateTime.parse(dataBefore.replace(" ", "T") + ":00+00:00");
+                afterTime = OffsetDateTime.parse(dataAfter.replace(" ", "T") + ":00+00:00");
+            } catch (DateTimeParseException e) {
+                throw new JPSRuntimeException("Incorrect time format, input time should be yyyy-MM-dd HH:mm .", e);
+            }
+            
             List<String> devices = new ArrayList<>();
             for (int i = 0; i < mappings.size(); i++) {
                 if (mappings.get(i).length > 1) {
                     devices.add(mappings.get(i)[1]);
                 }
             }
-            String filename = AgentLocator.getCurrentJpsAppDirectory(this) + "/database/ExampleCSV";
+            String filename = AgentLocator.getCurrentJpsAppDirectory(this) + "/database/readings.csv";
             JSONArray dataIRIArray = agent.getDataIris(targetResourceID, mappings);
-            // Input time need to be UTC time
-            OffsetDateTime beforeTime = OffsetDateTime.parse(dataBefore.replace(" ", "T").replace(dataBefore.split(":")[2], "00+00:00"));
-            OffsetDateTime afterTime = OffsetDateTime.parse(dataAfter.replace(" ", "T").replace(dataAfter.split(":")[2], "00+00:00"));
+
             int numOfReadings = agent.readDataFromCsvFile(filename, devices, beforeTime, afterTime, dataIRIArray);
             if (numOfReadings == 0) {
                 LOGGER.info("No valid reading found in this period of time.");

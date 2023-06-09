@@ -286,8 +286,8 @@ public class SmartMeterAgentIntegrationTest {
 
     @Test
     public void testReadDataFromCsvFile() throws IOException {
-        File mappingFile = new File(tempFolder, "reading.csv");
-        FileWriter writer = new FileWriter(mappingFile);
+        File readingFile = new File(tempFolder, "reading.csv");
+        FileWriter writer = new FileWriter(readingFile);
         writer.write(IntegrationTestHelper.smartMeterReading1);
         writer.write(IntegrationTestHelper.smartMeterReading2);
         writer.write(IntegrationTestHelper.smartMeterReading3);
@@ -340,6 +340,4 @@ public class SmartMeterAgentIntegrationTest {
             throw new JPSRuntimeException(e);
         }
     }
-
-    // TODO add tests for SmartMeterAgentLauncher
 }
