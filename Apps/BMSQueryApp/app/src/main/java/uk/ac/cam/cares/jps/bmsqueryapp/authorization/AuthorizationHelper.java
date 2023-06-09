@@ -89,19 +89,6 @@ public class AuthorizationHelper {
         return null;
     }
 
-    // todo: should be moved to AuthStateManager
-    private void clearSharedPref() {
-        // discard the authorization and token state, but retain the configuration and
-        // dynamic client registration (if applicable), to save from retrieving them again.
-        AuthState currentState = authStateManager.getCurrent();
-        AuthState clearedState =
-                new AuthState(currentState.getAuthorizationServiceConfiguration());
-        if (currentState.getLastRegistrationResponse() != null) {
-            clearedState.update(currentState.getLastRegistrationResponse());
-        }
-        authStateManager.replace(clearedState);
-    }
-
     public ActivityResultLauncher<Intent> getLogoutLauncher(FragmentActivity activity) {
         return activity.registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -109,7 +96,7 @@ public class AuthorizationHelper {
                     if (result.getResultCode() == RESULT_CANCELED) {
                         Toast.makeText(activity, R.string.cancel_logout, Toast.LENGTH_SHORT).show();
                     } else {
-                        clearSharedPref();
+                        authStateManager.clearSharedPref();
                         Intent loginIntent = new Intent(activity, LoginActivity.class);
                         loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         activity.startActivity(loginIntent);
@@ -127,7 +114,7 @@ public class AuthorizationHelper {
                     if (result.getResultCode() == RESULT_CANCELED) {
                         Toast.makeText(fragment.requireActivity(), R.string.cancel_logout, Toast.LENGTH_SHORT).show();
                     } else {
-                        clearSharedPref();
+                        authStateManager.clearSharedPref();
                         Intent loginIntent = new Intent(fragment.requireActivity(), LoginActivity.class);
                         loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         fragment.startActivity(loginIntent);

@@ -143,6 +143,18 @@ public class AuthStateManager {
         return replace(current);
     }
 
+    public void clearSharedPref() {
+        // discard the authorization and token state, but retain the configuration and
+        // dynamic client registration (if applicable), to save from retrieving them again.
+        AuthState currentState = getCurrent();
+        AuthState clearedState =
+                new AuthState(currentState.getAuthorizationServiceConfiguration());
+        if (currentState.getLastRegistrationResponse() != null) {
+            clearedState.update(currentState.getLastRegistrationResponse());
+        }
+        replace(clearedState);
+    }
+
     @AnyThread
     @NonNull
     private AuthState readState() {
