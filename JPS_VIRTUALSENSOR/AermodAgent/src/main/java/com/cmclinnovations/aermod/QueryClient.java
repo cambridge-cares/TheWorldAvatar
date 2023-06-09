@@ -1097,6 +1097,7 @@ public class QueryClient {
                     break;
                 case AERMAP_OUTPUT:
                     aermapOutputIri = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
+                    break;
                 default:
                     LOGGER.error("Unknown entity type: <{}>", entityType);
                     return;
