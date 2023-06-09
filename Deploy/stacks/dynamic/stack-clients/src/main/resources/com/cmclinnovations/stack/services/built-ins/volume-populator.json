@@ -9,10 +9,9 @@
                     "VOLUME_DIR=/volumes"
                 ],
                 "Command": [
-                    "cp",
-                    "-rf",
-                    "$HOST_DIR",
-                    "$VOLUME_DIR"
+                    "sh",
+                    "-c",
+                    "cp -rf $HOST_DIR $VOLUME_DIR"
                 ]
             }
         }
