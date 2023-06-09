@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">24 May 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">09 June 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ontology for urban building energy modelling (UBEM) and master planning (MP) data</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -343,6 +343,16 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/AnnualCoolingConsumption -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/AnnualCoolingConsumption">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/CoolingConsumption"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoubemmp/AnnualElectricityConsumption -->
 
 
@@ -388,6 +398,16 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/AnnualHeatSupply">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/HeatSupply"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/AnnualHeatingConsumption -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/AnnualHeatingConsumption">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/HeatingConsumption"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -439,6 +459,17 @@
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/CO2Savings">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of carbon dioxide savings a device could produce</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/CoolingConsumption -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/CoolingConsumption">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/ThermalConsumption"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of thermal energy consumed by a cooling system</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -518,6 +549,17 @@
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/HeatSupply">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/EnergySupply"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of heat energy produced</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/HeatingConsumption -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/HeatingConsumption">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/ThermalConsumption"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of thermal energy consumed by a heating system</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
