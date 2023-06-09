@@ -74,14 +74,7 @@ public class UserProfileActivity extends AppCompatActivity {
     public void retrieveUserInfo(String accessToken, String idToken, AuthorizationException ex) {
         if (ex != null) {
             LOGGER.error("Failed to refresh access token. Reauthorization is needed.");
-            new MaterialAlertDialogBuilder(this)
-                    .setTitle(R.string.session_expired_title)
-                    .setMessage(R.string.session_expired)
-                    .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
-                        startActivity(new Intent(this, LoginActivity.class));
-                        finish();
-                    })
-                    .show();
+            authHelper.showSessionExpiredDialog(this);
             return;
         }
 

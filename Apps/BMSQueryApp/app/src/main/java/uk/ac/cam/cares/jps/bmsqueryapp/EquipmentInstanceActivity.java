@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.bmsqueryapp;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.webkit.ValueCallback;
 import android.webkit.WebResourceError;
@@ -9,8 +8,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
@@ -34,15 +31,10 @@ import uk.ac.cam.cares.jps.bmsqueryapp.view.tab.TabAdapter;
 public class EquipmentInstanceActivity extends AppCompatActivity{
     ActivityEquipmentInstanceBinding binding;
     private static final Logger LOGGER = LogManager.getLogger(EquipmentInstanceActivity.class);
-    private AuthorizationHelper authHelper;
 
     public static final String EQUIPMENT_LABEL = "equipmentLabel";
     public static final String EQUIPMENT_IRI = "equipmentIRI";
     public static final String EQUIPMENT_TYPE = "equipmentType";
-
-    public static final String KEY_START_LOGIN = "startLogin";
-    public static final String KEY_LOGOUT = "logout";
-    private ActivityResultLauncher<Intent> logoutLauncher;
 
     TabAdapter adapter;
     int tabPosition;
@@ -54,8 +46,6 @@ public class EquipmentInstanceActivity extends AppCompatActivity{
 
         binding = ActivityEquipmentInstanceBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        authHelper = AuthorizationHelper.getInstance(this);
 
         String equipmentLabel = getIntent().getStringExtra(EQUIPMENT_LABEL);
         String equipmentIri = getIntent().getStringExtra(EQUIPMENT_IRI);
@@ -121,14 +111,6 @@ public class EquipmentInstanceActivity extends AppCompatActivity{
                 }
             }
         });
-
-        logoutLauncher = authHelper.getLogoutLauncher(this);
-
-        getSupportFragmentManager().setFragmentResultListener(KEY_START_LOGIN, this,
-                (requestKey, result) -> {
-                    startActivity(new Intent(this, LoginActivity.class));
-                    finish();
-                });
     }
 
     private List<EditableAttribute> getEditableAttributeList(String type) {

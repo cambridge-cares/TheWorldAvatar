@@ -83,7 +83,6 @@ public class EditFragment extends Fragment {
             binding.noEditableAttrTv.setVisibility(View.GONE);
             binding.editableAttributeScrollView.setVisibility(View.VISIBLE);
         }
-
         return binding.getRoot();
     }
 
@@ -100,12 +99,7 @@ public class EditFragment extends Fragment {
     private void createEditRequest(String accessToken, String idToken, AuthorizationException ex) {
         if (ex != null) {
             LOGGER.error("Failed to refresh access token. Reauthorization is needed.");
-            new MaterialAlertDialogBuilder(requireActivity())
-                    .setTitle(R.string.session_expired_title)
-                    .setMessage(R.string.session_expired)
-                    .setPositiveButton(R.string.ok, (dialogInterface, i) ->
-                            requireActivity().getSupportFragmentManager().setFragmentResult(EquipmentInstanceActivity.KEY_START_LOGIN, new Bundle()))
-                    .show();
+            authHelper.showSessionExpiredDialog(requireActivity());
             return;
         }
 

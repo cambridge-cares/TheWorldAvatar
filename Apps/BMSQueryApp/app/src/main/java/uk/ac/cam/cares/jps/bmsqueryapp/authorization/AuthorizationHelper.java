@@ -11,6 +11,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import net.openid.appauth.AppAuthConfiguration;
 import net.openid.appauth.AuthState;
 import net.openid.appauth.AuthorizationService;
@@ -88,7 +90,7 @@ public class AuthorizationHelper {
     }
 
     // todo: should be moved to AuthStateManager
-    public void clearSharedPref() {
+    private void clearSharedPref() {
         // discard the authorization and token state, but retain the configuration and
         // dynamic client registration (if applicable), to save from retrieving them again.
         AuthState currentState = authStateManager.getCurrent();
@@ -133,6 +135,17 @@ public class AuthorizationHelper {
                 }
         );
 
+    }
+
+    public void showSessionExpiredDialog(FragmentActivity activity) {
+        new MaterialAlertDialogBuilder(activity)
+                .setTitle(R.string.session_expired_title)
+                .setMessage(R.string.session_expired)
+                .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
+                    activity.startActivity(new Intent(activity, LoginActivity.class));
+                    activity.finish();
+                })
+                .show();
     }
 
 }
