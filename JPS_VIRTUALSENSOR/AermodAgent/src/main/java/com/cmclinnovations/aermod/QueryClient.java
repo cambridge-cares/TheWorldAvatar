@@ -13,6 +13,9 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
 import org.json.JSONArray;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -954,6 +957,25 @@ public class QueryClient {
         corners.add(String.join("#", upperCornerSequence));
 
         return corners;
+    }
+
+    DSLContext getContext(Connection conn) {
+        return DSL.using(conn, SQLDialect.POSTGRES);
+    }
+
+    boolean tableExists() {
+        String condition = String.format("table_name = '%s'", EnvConfig.ELEVATION_TABLE);
+        boolean tableCheck = false;
+        try (Connection conn = rdbStoreClient.getConnection()) {
+            tableCheck = getContext(conn).select(DSL.count()).from("information_schema.tables").where(condition)
+                    .fetchOne(0,
+                            int.class) == 1;
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+            return false;
+        }
+
+        return tableCheck;
     }
 
     public void setElevation(List<StaticPointSource> pointSources, List<Building> buildings, int simulationSrid) {
