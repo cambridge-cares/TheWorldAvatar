@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.bmsqueryapp;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -14,6 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.browser.customtabs.CustomTabsIntent;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import net.openid.appauth.AppAuthConfiguration;
 import net.openid.appauth.AuthState;
@@ -46,8 +47,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final Logger LOGGER = LogManager.getLogger(LoginActivity.class);
 
-    private static final String EXTRA_FAILED = "failed";
-
     private AuthorizationService authService;
     private AuthStateManager authStateManager;
     private AuthServerConfiguration configuration;
@@ -59,7 +58,6 @@ public class LoginActivity extends AppCompatActivity {
     private ExecutorService executor;
 
     private ActivityLoginBinding binding;
-    private ProgressDialog progressDialog;
 
     @NonNull
     private BrowserMatcher browserMatcher = AnyBrowserMatcher.INSTANCE;
@@ -73,8 +71,6 @@ public class LoginActivity extends AppCompatActivity {
 
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        progressDialog = new ProgressDialog(this);
 
         executor = Executors.newSingleThreadExecutor();
         authStateManager = AuthStateManager.getInstance(this);
@@ -180,7 +176,6 @@ public class LoginActivity extends AppCompatActivity {
     @WorkerThread
     private void initializeClient() {
         LOGGER.info("Using static client ID: " + configuration.getClientId());
-        // use a statically configured client ID
         clientId.set(configuration.getClientId());
         runOnUiThread(this::initializeAuthRequest);
     }
@@ -252,7 +247,6 @@ public class LoginActivity extends AppCompatActivity {
         try {
             clientAuthentication = authStateManager.getCurrent().getClientAuthentication();
         } catch (ClientAuthentication.UnsupportedAuthenticationMethod ex) {
-            // TODO: should just let it crash? there is no thing the user can help with..
             LOGGER.error("Token request cannot be made, client authentication for the token "
                     + "endpoint could not be constructed (%s)", ex);
             Toast.makeText(this, R.string.fail_to_login, Toast.LENGTH_SHORT).show();
@@ -269,12 +263,20 @@ public class LoginActivity extends AppCompatActivity {
     private void handleCodeExchangeResponse(
             @Nullable TokenResponse tokenResponse,
             @Nullable AuthorizationException authException) {
-
         authStateManager.updateAfterTokenResponse(tokenResponse, authException);
         hideLoading();
         if (!authStateManager.getCurrent().isAuthorized()) {
-            final String message = "Authorization Code exchange failed"
-                    + ((authException != null) ? authException.error : "");
+            if (authException.getCause().getMessage().contains("expired") && authException.code == 9) {
+                // ID Token expired
+                new MaterialAlertDialogBuilder(this)
+                        .setTitle(R.string.fail_to_login_title)
+                        .setMessage(R.string.login_failure_due_to_check_system_clock)
+                        .setNegativeButton(R.string.ok, null)
+                        .show();
+                return;
+            }
+
+            // other reasons
             Toast.makeText(this, R.string.fail_to_login, Toast.LENGTH_SHORT).show();
         } else {
             Intent intent = new Intent(this, MainActivity.class);
