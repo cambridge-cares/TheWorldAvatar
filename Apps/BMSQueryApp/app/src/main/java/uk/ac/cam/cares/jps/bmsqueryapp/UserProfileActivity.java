@@ -56,27 +56,11 @@ public class UserProfileActivity extends AppCompatActivity {
         binding.lastname.label.setText(R.string.lastname);
 
         authHelper.performActionWithFreshTokens(this::retrieveUserInfo);
-
-        logoutLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_CANCELED) {
-                        Toast.makeText(this, R.string.cancel_logout, Toast.LENGTH_SHORT).show();
-                    } else {
-                        authHelper.clearSharedPref();
-                        Intent loginIntent = new Intent(this, LoginActivity.class);
-                        loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(loginIntent);
-                        finish();
-                    }
-                }
-        );
+        logoutLauncher = authHelper.getLogoutLauncher(this);
 
         binding.logout.content.setText(R.string.logout);
         binding.logout.getRoot().setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.ripple_item_background, null));
-        binding.logout.getRoot().setOnClickListener(v -> {
-            logoutLauncher.launch(authHelper.getLogOutIntent());
-        });
+        binding.logout.getRoot().setOnClickListener(v -> logoutLauncher.launch(authHelper.getLogOutIntent()));
 
         binding.updatePw.content.setText(R.string.updatePassword);
         binding.updatePw.getRoot().setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.ripple_item_background, null));

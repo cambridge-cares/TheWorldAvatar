@@ -122,25 +122,8 @@ public class EquipmentInstanceActivity extends AppCompatActivity{
             }
         });
 
-        logoutLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                result -> {
-                    if (result.getResultCode() == RESULT_CANCELED) {
-                        Toast.makeText(this, R.string.cancel_logout, Toast.LENGTH_SHORT).show();
-                    } else {
-                        authHelper.clearSharedPref();
-                        Intent loginIntent = new Intent(this, LoginActivity.class);
-                        loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(loginIntent);
-                        finish();
-                    }
-                }
-        );
+        logoutLauncher = authHelper.getLogoutLauncher(this);
 
-        getSupportFragmentManager().setFragmentResultListener(KEY_LOGOUT, this,
-                (requestKey, result) -> {
-                    logoutLauncher.launch(authHelper.getLogOutIntent());
-                });
         getSupportFragmentManager().setFragmentResultListener(KEY_START_LOGIN, this,
                 (requestKey, result) -> {
                     startActivity(new Intent(this, LoginActivity.class));

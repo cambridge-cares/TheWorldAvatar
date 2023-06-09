@@ -1,7 +1,15 @@
 package uk.ac.cam.cares.jps.bmsqueryapp.authorization;
 
+import static android.app.Activity.RESULT_CANCELED;
+
 import android.content.Context;
 import android.content.Intent;
+import android.widget.Toast;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 
 import net.openid.appauth.AppAuthConfiguration;
 import net.openid.appauth.AuthState;
@@ -14,6 +22,9 @@ import org.apache.log4j.Logger;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
+import uk.ac.cam.cares.jps.bmsqueryapp.LoginActivity;
+import uk.ac.cam.cares.jps.bmsqueryapp.R;
 
 public class AuthorizationHelper {
     private AuthStateManager authStateManager;
@@ -76,6 +87,7 @@ public class AuthorizationHelper {
         return null;
     }
 
+    // todo: should be moved to AuthStateManager
     public void clearSharedPref() {
         // discard the authorization and token state, but retain the configuration and
         // dynamic client registration (if applicable), to save from retrieving them again.
@@ -86,6 +98,41 @@ public class AuthorizationHelper {
             clearedState.update(currentState.getLastRegistrationResponse());
         }
         authStateManager.replace(clearedState);
+    }
+
+    public ActivityResultLauncher<Intent> getLogoutLauncher(FragmentActivity activity) {
+        return activity.registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_CANCELED) {
+                        Toast.makeText(activity, R.string.cancel_logout, Toast.LENGTH_SHORT).show();
+                    } else {
+                        clearSharedPref();
+                        Intent loginIntent = new Intent(activity, LoginActivity.class);
+                        loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        activity.startActivity(loginIntent);
+                        activity.finish();
+                    }
+                }
+        );
+
+    }
+
+    public ActivityResultLauncher<Intent> getLogoutLauncher(Fragment fragment) {
+        return fragment.registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_CANCELED) {
+                        Toast.makeText(fragment.requireActivity(), R.string.cancel_logout, Toast.LENGTH_SHORT).show();
+                    } else {
+                        clearSharedPref();
+                        Intent loginIntent = new Intent(fragment.requireActivity(), LoginActivity.class);
+                        loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        fragment.startActivity(loginIntent);
+                    }
+                }
+        );
+
     }
 
 }

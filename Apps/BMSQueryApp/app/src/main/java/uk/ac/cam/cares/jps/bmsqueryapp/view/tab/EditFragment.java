@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.bmsqueryapp.view.tab;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -54,6 +56,7 @@ public class EditFragment extends Fragment {
     private List<EditableAttribute> editableAttributes = new ArrayList<>();
 
     private AuthorizationHelper authHelper;
+    private ActivityResultLauncher<Intent> logoutLauncher;
 
     public EditFragment() {
         super();
@@ -70,6 +73,7 @@ public class EditFragment extends Fragment {
         BasicConfigurator.configure();
 
         authHelper = AuthorizationHelper.getInstance(this.getContext());
+        logoutLauncher = authHelper.getLogoutLauncher(this);
 
         EditableAttributesAdapter attributeListAdapter = new EditableAttributesAdapter(editableAttributes);
         binding.editableAttributeRv.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -166,7 +170,7 @@ public class EditFragment extends Fragment {
                 new MaterialAlertDialogBuilder(requireActivity())
                         .setTitle(R.string.permission_deny)
                         .setMessage(R.string.permission_deny_explain)
-                        .setPositiveButton(R.string.change_account, (dialogInterface, i) -> requireActivity().getSupportFragmentManager().setFragmentResult(EquipmentInstanceActivity.KEY_LOGOUT, new Bundle()))
+                        .setPositiveButton(R.string.change_account, (dialogInterface, i) -> logoutLauncher.launch(authHelper.getLogOutIntent()))
                         .setNegativeButton(R.string.cancel, null)
                         .show();
             }
