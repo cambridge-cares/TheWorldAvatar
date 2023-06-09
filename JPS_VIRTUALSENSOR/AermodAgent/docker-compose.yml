@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   aermod-agent:
-    image: ghcr.io/cambridge-cares/aermod-agent:1.2
+    image: ghcr.io/cambridge-cares/aermod-agent:1.2.1-dev-aermod-agent-elevation
     deploy:
       mode: replicated
       replicas: 1
@@ -26,6 +26,7 @@ services:
       - SOURCE_LAYER=source_layer
       - VIS_FOLDER=/vis_data
       - GEOSERVER_URL=http://localhost:3838/geoserver # specifying here because WMS endpoint does not work with container name
+      - ELEVATION_TABLE=elevation
     configs:
       - postgis
       - blazegraph

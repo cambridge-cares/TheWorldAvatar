@@ -1096,6 +1096,7 @@ public class QueryClient {
         String dispersionMatrixIri = null;
         String dispersionLayerIri = null;
         String shipLayerIri = null;
+        String aermapOutputIri = null;
         for (int i = 0; i < queryResult.length(); i++) {
             String entityTypeIri = queryResult.getJSONObject(i).getString(entityType.getQueryString().substring(1));
 
@@ -1118,8 +1119,9 @@ public class QueryClient {
             }
         }
 
-        if (dispersionMatrixIri == null || dispersionLayerIri == null || shipLayerIri == null) {
-            LOGGER.error("One of dispersion matrix, dispersion layer, ship layer IRI is null");
+        if (dispersionMatrixIri == null || dispersionLayerIri == null || shipLayerIri == null
+                || aermapOutputIri == null) {
+            LOGGER.error("One of dispersion matrix, dispersion layer, ship layer IRI, aermap output IRI is null");
             return;
         }
 
@@ -1127,9 +1129,10 @@ public class QueryClient {
         values.add(List.of(dispersionMatrix));
         values.add(List.of(dispersionLayer));
         values.add(List.of(shipLayer));
+        values.add(List.of(aermapOutput));
 
         TimeSeries<Long> timeSeries = new TimeSeries<>(List.of(timeStamp),
-                List.of(dispersionMatrixIri, dispersionLayerIri, shipLayerIri), values);
+                List.of(dispersionMatrixIri, dispersionLayerIri, shipLayerIri, aermapOutputIri), values);
 
         try (Connection conn = rdbStoreClient.getConnection()) {
             tsClientLong.addTimeSeriesData(timeSeries, conn);

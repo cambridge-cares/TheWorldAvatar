@@ -3,7 +3,7 @@
 		"Name": "aermod-agent",
 		"TaskTemplate": {
 			"ContainerSpec": {
-				"Image": "ghcr.io/cambridge-cares/aermod-agent:1.2",
+				"Image": "ghcr.io/cambridge-cares/aermod-agent:1.2.1-dev-aermod-agent-elevation",
 				"Env": [
 					"STACK_NAME=${STACK_NAME}",
 					"PYTHON_SERVICE_URL=http://ship-stack-python-service:5000/getAermodGeoJSON",
@@ -22,6 +22,7 @@
 					"SOURCE_LAYER=source_layer",
 					"VIS_FOLDER=/vis_data",
 					"GEOSERVER_URL=http://localhost:3838/geoserver",
+					"ELEVATION_TABLE=elevation",
 					"JPDA_ADDRESS=0.0.0.0:5005",
 					"JPDA_TRANSPORT=dt_socket",
 					"DEBUG=ON"
