@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -61,6 +63,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @NonNull
     private BrowserMatcher browserMatcher = AnyBrowserMatcher.INSTANCE;
+    private ActivityResultLauncher<Intent> authorizationLauncher;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -92,6 +95,18 @@ public class LoginActivity extends AppCompatActivity {
         executor.submit(this::initializeAppAuth);
 
         binding.signInOrUpButton.setOnClickListener(view -> executor.submit(this::doAuth));
+
+        authorizationLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_CANCELED) {
+                        runOnUiThread(() -> Toast.makeText(this, R.string.fail_to_login, Toast.LENGTH_SHORT).show());
+                    } else {
+                        showLoading();
+                        processAuthorizationResponse(result.getData());
+                    }
+                }
+        );
 
     }
 
@@ -211,33 +226,7 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = authService.getAuthorizationRequestIntent(
                 authRequest.get(),
                 authIntent.get());
-//        ActivityResultLauncher<Intent> authorizationLauncher = registerForActivityResult(
-//                new ActivityResultContracts.StartActivityForResult(),
-//                result -> {
-//                    if (result.getResultCode() == RESULT_CANCELED) {
-//                        runOnUiThread(() -> Toast.makeText(this, R.string.fail_to_login, Toast.LENGTH_SHORT).show());
-//                    } else {
-//                        // process authorizaiton code
-//                        processAuthorizationResponse(result.getData());
-//                    }
-//                }
-//        );
-//
-//        authorizationLauncher.launch(intent);
-        startActivityForResult(intent, 100);
-
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_CANCELED) {
-            Toast.makeText(this, R.string.fail_to_login, Toast.LENGTH_SHORT).show();
-        } else {
-            // process authorizaiton code
-            showLoading();
-            processAuthorizationResponse(data);
-        }
+        authorizationLauncher.launch(intent);
     }
 
     private void processAuthorizationResponse(Intent data) {
