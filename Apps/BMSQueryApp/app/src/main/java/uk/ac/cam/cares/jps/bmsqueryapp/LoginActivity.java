@@ -100,7 +100,7 @@ public class LoginActivity extends AppCompatActivity {
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     if (result.getResultCode() == RESULT_CANCELED) {
-                        runOnUiThread(() -> Toast.makeText(this, R.string.fail_to_login, Toast.LENGTH_SHORT).show());
+                        runOnUiThread(() -> Toast.makeText(this, R.string.login_canceled, Toast.LENGTH_SHORT).show());
                     } else {
                         showLoading();
                         processAuthorizationResponse(result.getData());

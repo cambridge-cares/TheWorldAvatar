@@ -36,4 +36,5 @@
     <string name="ok">OK</string>
     <string name="session_expired">Your session has expired. Please login again.</string>
     <string name="session_expired_title">Session Expired</string>
+    <string name="login_canceled">Login canceled</string>
 </resources>
