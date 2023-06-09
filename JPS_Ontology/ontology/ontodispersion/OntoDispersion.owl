@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodispersion/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">24 May 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">09 June 2023</dc:date>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
@@ -151,6 +151,16 @@
 
 
     <owl:Class rdf:about="http://www.opengis.net/ont/geosparql#Feature"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodispersion/AermapOutput -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodispersion/AermapOutput">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">URL to download the AERMAP output file stored as time series</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodispersion/</rdfs:isDefinedBy>
+    </owl:Class>
     
 
 
