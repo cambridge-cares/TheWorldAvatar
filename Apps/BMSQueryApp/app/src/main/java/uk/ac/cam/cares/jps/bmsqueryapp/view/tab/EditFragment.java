@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import okhttp3.HttpUrl;
+import uk.ac.cam.cares.jps.bmsqueryapp.EquipmentInstanceActivity;
 import uk.ac.cam.cares.jps.bmsqueryapp.R;
 import uk.ac.cam.cares.jps.bmsqueryapp.adapter.list.EditableAttributesAdapter;
 import uk.ac.cam.cares.jps.bmsqueryapp.authorization.AuthorizationHelper;
@@ -95,8 +96,12 @@ public class EditFragment extends Fragment {
     private void createEditRequest(String accessToken, String idToken, AuthorizationException ex) {
         if (ex != null) {
             LOGGER.error("Failed to refresh access token. Reauthorization is needed.");
-            Toast.makeText(this.getContext(), "Login information expired. Please login again.", Toast.LENGTH_SHORT).show();
-            requireActivity().getSupportFragmentManager().setFragmentResult("startLogin", new Bundle());
+            new MaterialAlertDialogBuilder(requireActivity())
+                    .setTitle(R.string.session_expired_title)
+                    .setMessage(R.string.session_expired)
+                    .setPositiveButton(R.string.ok, (dialogInterface, i) ->
+                            requireActivity().getSupportFragmentManager().setFragmentResult(EquipmentInstanceActivity.KEY_START_LOGIN, new Bundle()))
+                    .show();
             return;
         }
 
@@ -161,7 +166,7 @@ public class EditFragment extends Fragment {
                 new MaterialAlertDialogBuilder(requireActivity())
                         .setTitle(R.string.permission_deny)
                         .setMessage(R.string.permission_deny_explain)
-                        .setPositiveButton(R.string.change_account, (dialogInterface, i) -> requireActivity().getSupportFragmentManager().setFragmentResult("startLogin", new Bundle()))
+                        .setPositiveButton(R.string.change_account, (dialogInterface, i) -> requireActivity().getSupportFragmentManager().setFragmentResult(EquipmentInstanceActivity.KEY_LOGOUT, new Bundle()))
                         .setNegativeButton(R.string.cancel, null)
                         .show();
             }

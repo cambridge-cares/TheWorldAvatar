@@ -28,7 +28,12 @@
     <string name="email">Email</string>
     <string name="firstname">Firstname</string>
     <string name="lastname">Lastname</string>
-    <string name="cancel_logout">\"Sign out canceled\"</string>
+    <string name="cancel_logout">Sign out canceled</string>
     <string name="logout">Logout</string>
     <string name="updatePassword">Update password</string>
+    <string name="login_failure_due_to_check_system_clock">We could not log you in because your clock settings appear to be incorrect. Please check your clock and try again.</string>
+    <string name="fail_to_login_title">Login Failed</string>
+    <string name="ok">OK</string>
+    <string name="session_expired">Your session has expired. Please login again.</string>
+    <string name="session_expired_title">Session Expired</string>
 </resources>

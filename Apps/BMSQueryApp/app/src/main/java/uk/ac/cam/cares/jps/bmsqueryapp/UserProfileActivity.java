@@ -5,12 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.StringRequest;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import net.openid.appauth.AuthorizationException;
 
@@ -36,8 +39,7 @@ public class UserProfileActivity extends AppCompatActivity {
     private String KEY_EMAIL = "email";
     private String KEY_GIVEN_NAME = "given_name";
     private String KEY_FAMILY_NAME = "family_name";
-
-    private static final int END_SESSION_REQUEST_CODE = 911;
+    private ActivityResultLauncher<Intent> logoutLauncher;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,10 +57,25 @@ public class UserProfileActivity extends AppCompatActivity {
 
         authHelper.performActionWithFreshTokens(this::retrieveUserInfo);
 
+        logoutLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_CANCELED) {
+                        Toast.makeText(this, R.string.cancel_logout, Toast.LENGTH_SHORT).show();
+                    } else {
+                        authHelper.clearSharedPref();
+                        Intent loginIntent = new Intent(this, LoginActivity.class);
+                        loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(loginIntent);
+                        finish();
+                    }
+                }
+        );
+
         binding.logout.content.setText(R.string.logout);
         binding.logout.getRoot().setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.ripple_item_background, null));
         binding.logout.getRoot().setOnClickListener(v -> {
-            startActivityForResult(authHelper.getLogOutIntent(), END_SESSION_REQUEST_CODE);
+            logoutLauncher.launch(authHelper.getLogOutIntent());
         });
 
         binding.updatePw.content.setText(R.string.updatePassword);
@@ -73,8 +90,14 @@ public class UserProfileActivity extends AppCompatActivity {
     public void retrieveUserInfo(String accessToken, String idToken, AuthorizationException ex) {
         if (ex != null) {
             LOGGER.error("Failed to refresh access token. Reauthorization is needed.");
-            startActivity(new Intent(this, LoginActivity.class));
-            finish();
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.session_expired_title)
+                    .setMessage(R.string.session_expired)
+                    .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
+                        startActivity(new Intent(this, LoginActivity.class));
+                        finish();
+                    })
+                    .show();
             return;
         }
 
@@ -108,19 +131,5 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         };
         SingletonConnection.getInstance(this).addToRequestQueue(request);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == END_SESSION_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            authHelper.clearSharedPref();
-            Intent loginIntent = new Intent(this, LoginActivity.class);
-            loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(loginIntent);
-            finish();
-        } else {
-            Toast.makeText(this, R.string.cancel_logout, Toast.LENGTH_SHORT).show();
-        }
     }
 }

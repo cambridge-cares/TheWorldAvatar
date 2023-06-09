@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.bmsqueryapp;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.webkit.ValueCallback;
@@ -10,6 +9,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
@@ -39,7 +40,9 @@ public class EquipmentInstanceActivity extends AppCompatActivity{
     public static final String EQUIPMENT_IRI = "equipmentIRI";
     public static final String EQUIPMENT_TYPE = "equipmentType";
 
-    private static final int END_SESSION_REQUEST_CODE = 911;
+    public static final String KEY_START_LOGIN = "startLogin";
+    public static final String KEY_LOGOUT = "logout";
+    private ActivityResultLauncher<Intent> logoutLauncher;
 
     TabAdapter adapter;
     int tabPosition;
@@ -71,7 +74,6 @@ public class EquipmentInstanceActivity extends AppCompatActivity{
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
                 LOGGER.info("page finished loading");
-//                binding.progressBarWrapper.setVisibility(View.GONE);
             }
 
             @Override
@@ -81,7 +83,7 @@ public class EquipmentInstanceActivity extends AppCompatActivity{
             }
         };
 
-        ValueCallback<String> reloadCallback = (ValueCallback<String>) o -> {
+        ValueCallback<String> reloadCallback = o -> {
             LOGGER.info("New data loaded");
             binding.refreshButton.setEnabled(true);
         };
@@ -120,9 +122,29 @@ public class EquipmentInstanceActivity extends AppCompatActivity{
             }
         });
 
-        getSupportFragmentManager().setFragmentResultListener("startLogin", this,
+        logoutLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_CANCELED) {
+                        Toast.makeText(this, R.string.cancel_logout, Toast.LENGTH_SHORT).show();
+                    } else {
+                        authHelper.clearSharedPref();
+                        Intent loginIntent = new Intent(this, LoginActivity.class);
+                        loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(loginIntent);
+                        finish();
+                    }
+                }
+        );
+
+        getSupportFragmentManager().setFragmentResultListener(KEY_LOGOUT, this,
                 (requestKey, result) -> {
-                    startActivityForResult(authHelper.getLogOutIntent(), END_SESSION_REQUEST_CODE);
+                    logoutLauncher.launch(authHelper.getLogOutIntent());
+                });
+        getSupportFragmentManager().setFragmentResultListener(KEY_START_LOGIN, this,
+                (requestKey, result) -> {
+                    startActivity(new Intent(this, LoginActivity.class));
+                    finish();
                 });
     }
 
@@ -136,20 +158,6 @@ public class EquipmentInstanceActivity extends AppCompatActivity{
             return attributes;
         }
         return new ArrayList<>();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == END_SESSION_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            authHelper.clearSharedPref();
-            Intent loginIntent = new Intent(this, LoginActivity.class);
-            loginIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(loginIntent);
-            finish();
-        } else {
-            Toast.makeText(this, R.string.cancel_logout, Toast.LENGTH_SHORT).show();
-        }
     }
 
 }
