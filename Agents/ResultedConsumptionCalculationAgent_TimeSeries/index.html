@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+
+</html>
+<html>
+
+<head>
+</head>
+
+<!------------------------------------------------------------------------------------------------------------------------------->
+
+
+    <!------------------------------------------------------------------------------------------------------------------------------->
+    <b>Basics:</b>
+    <p>
+        <div style="text-align:center;">
+          <table style="display: inline-block;">
+            <tr>
+                <td rowspan="1" colspan="2" style="text-align: center; padding: 0px 8px;">
+                    Change of gas consumption&nbsp;= uptake &times; gas consumption &times; propotion of heating
+                </td>
+            </tr>
+            <tr>
+                <td rowspan="3" style="text-align: center; padding: 0px 8px;">
+                    Change of electricityconsumption &nbsp;= 
+                </td>
+            </tr>
+            <tr>
+              <td rowspan="1" style="border-bottom: 1px solid black; padding: 0px 5px;">
+                (boiler efficiency &times; change of gas)
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" style="text-align: center; padding: 0px 8px;">
+                COP
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" style="text-align: center; padding: 0px 8px;">
+                Resulted Gas consumption = Gas consumption - Change of gas consumption
+              </td>
+            </tr>
+            <tr>
+                <td colspan="2" style="text-align: center; padding: 0px 8px;">
+                     
+                </td>
+              </tr>
+            <tr>
+              <td colspan="2" style="text-align: center; padding: 0px 8px;">
+                Resulted Electricity consumption = Electricity consumption + Change of electricity consumption
+              </td>
+            </tr>
+          </table>
+        </div>
+      </p>
+      <b>NOTE:</b> builded python function to call this agent can be found on: <a href="https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-3/Agents/LSOAOutputAgent/agent/datacalculation/datacalculation.py">
+        call_change_of_fuel_agent </a><br>
+    <!------------------------------------------------------------------------------------------------------------------------------->
+    <b>Example Calculation:</b><br>
+    <div style="text-indent: 25px;"> <code>query = {<br> </code>
+        <div style="text-indent: 50px;"><code>       'input':{'uptake': 0.5 ,<br></code>
+            <div style="text-indent: 120px;">
+                <code>                 'gas consumption': 5<br></code>
+                <div style="text-indent: 120px;">
+                    <code>                 'electricity consumption': 5<br></code>
+                <div style="text-indent: 120px;">
+                    <code>                 'propotion of heating': 0.9 <br></code>
+                    <div style="text-indent: 120px;">
+                        <code>                 'cop': 2.5 <br></code>
+                    <div style="text-indent: 120px;">
+                        <code>                 'boiler efficiency': 0.8 <br></code>
+                        <div style="text-indent: 120px;">
+                            <code>                 'electricity consumption profile': [28.19,26.08,26.82,20.73,20.48,20.36,21.38,21.95,22.39,25.14,25.91,27.89]<br></code>
+                            <div style="text-indent: 120px;">
+                                <code>                 'gas consumption profile': [7.88,7.54,7.54,4.86,4.14,3.78,3.78,3.64,4.05,6.09,6.74,8.46] <br></code>
+                <div style="text-indent: 100px;"><code>               }<br></code>
+                    <div style="text-indent: 50px;"><code>       }</code><br>
+                        <!------------------------------------------------------------------------------------------------------------------------------->
+                        <div style="text-indent: 50px;"> <br><b>Arguments:</b><br>
+                            <div style="text-indent: 25px;">
+                                <li><b>uptake:</b> a index which quantify the extent of the deployment of heat pump by measureing the gas being replaced by using heat pump comparing to conventional fossil fule heating system.<br>Defined as (change of gas / gas used for heating), or (change of gas / (total gas consumption * propotion of heating))
+                                    
+                                        <div style="text-indent: 25px;"> </div>
+                                </li><br>
+                                <li><b>gas consumption:</b> Value should be in unit of <b>kWh</b><br><br>
+                                    
+                                    <li><b>electricity consumption:</b> Value should be in unit of <b>kWh</b><br><br>
+                                    
+                                    
+                                                <li><b>propotion of heating:</b> the propotion of gas which is used for heating(see equation above), if not provided, 0.9 
+                                                    will be used as default value. <br><br>
+                                                    <li><b>cop:</b> Coefficient of Performance. <br><br>
+                                                    <li><b>boiler efficiency:</b> boiler efficiency (see equation above), if not provided, 0.8
+                                                        will be used as default value. <br><br>
+                                                    <li><b>electricity consumption profile:</b> A list containing 12 data represents the electricity consumption value from Jan to Dec <br><br>
+                                                        <li><b>gas consumption profile:</b> A list containing 12 data represents the gas consumption value from Jan to Dec <br><br>
+                                                        
+                                                <!------------------------------------------------------------------------------------------------------------------------------->
+                                                <div style="text-indent: 50px;"> <br><b>Example return:</b><br>
+                                                    <div style="text-indent: 50px;">
+                                                        <code>return = {'change of gas': 100 ,<br></code>
+                                                        <div style="text-indent: 120px;">
+                                                            <code> 'change of electricity': 100 <br></code>
+                                                        <div style="text-indent: 120px;">
+                                                            <div style="text-indent: 100px;"><code>       }</code><br>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                </li>
+                            </div> <br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+</body>
+
+</html>
