@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.bmsqueryapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Toast;
 
@@ -62,6 +64,8 @@ public class LoginActivity extends AppCompatActivity {
     @NonNull
     private BrowserMatcher browserMatcher = AnyBrowserMatcher.INSTANCE;
     private ActivityResultLauncher<Intent> authorizationLauncher;
+
+    boolean doubleBackToExitPressedOnce = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -128,6 +132,19 @@ public class LoginActivity extends AppCompatActivity {
         if (authService != null) {
             authService.dispose();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            finishAffinity();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please click BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler(Looper.getMainLooper()).postDelayed(() -> doubleBackToExitPressedOnce=false, 2000);
     }
 
     @WorkerThread
@@ -281,6 +298,7 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+            finish();
         }
     }
 
