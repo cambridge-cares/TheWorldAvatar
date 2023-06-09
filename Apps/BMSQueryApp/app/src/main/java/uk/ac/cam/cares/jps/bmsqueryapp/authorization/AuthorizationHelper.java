@@ -71,7 +71,7 @@ public class AuthorizationHelper {
         try {
             return authStateManager.getCurrent().getAuthorizationServiceConfiguration().discoveryDoc.getUserinfoEndpoint().toString();
         } catch (NullPointerException e) {
-            // todo: should call initializeAppAuth, need refactoring
+            // no user endpoint found from the current logged in AuthServer
             return "";
         }
     }

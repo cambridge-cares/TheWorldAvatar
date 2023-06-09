@@ -14,6 +14,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.android.volley.AuthFailureError;
@@ -57,6 +58,7 @@ public class EditFragment extends Fragment {
 
     private AuthorizationHelper authHelper;
     private ActivityResultLauncher<Intent> logoutLauncher;
+    private Context applicationContext;
 
     public EditFragment() {
         super();
@@ -72,7 +74,10 @@ public class EditFragment extends Fragment {
         binding = FragmentEditBinding.inflate(inflater, container, false);
         BasicConfigurator.configure();
 
-        authHelper = AuthorizationHelper.getInstance(this.getContext());
+        // the applicationContext is only used to show update success or failure after fragment detached
+        applicationContext = requireActivity().getApplicationContext();
+
+        authHelper = AuthorizationHelper.getInstance(getContext());
         logoutLauncher = authHelper.getLogoutLauncher(this);
 
         EditableAttributesAdapter attributeListAdapter = new EditableAttributesAdapter(editableAttributes);
@@ -99,7 +104,9 @@ public class EditFragment extends Fragment {
     private void createEditRequest(String accessToken, String idToken, AuthorizationException ex) {
         if (ex != null) {
             LOGGER.error("Failed to refresh access token. Reauthorization is needed.");
-            authHelper.showSessionExpiredDialog(requireActivity());
+            if (getContext() != null) {
+                authHelper.showSessionExpiredDialog(requireActivity());
+            }
             return;
         }
 
@@ -117,7 +124,9 @@ public class EditFragment extends Fragment {
                     }
 
                     String fanStatus = response.getString("fanStatus");
-                    Toast.makeText(this.getContext(), fanStatus.isEmpty() ? fanStatus : "Successfully updated.", Toast.LENGTH_LONG).show();
+                    LOGGER.info(fanStatus.isEmpty() ? fanStatus : "Successfully updated.");
+
+                    Toast.makeText(applicationContext, fanStatus.isEmpty() ? fanStatus : "Successfully updated.", Toast.LENGTH_LONG).show();
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
                 }
@@ -132,9 +141,9 @@ public class EditFragment extends Fragment {
             };
             SingletonConnection.getInstance(this.getContext()).addToRequestQueue(jsonObjectRequest);
         } catch (NumberFormatException e) {
-            Toast.makeText(this.getContext(), "The input value should be number.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "The input value should be number.", Toast.LENGTH_SHORT).show();
         } catch (JSONException e) {
-            Toast.makeText(this.getContext(), "Failed to submit the change, please resubmit later.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Failed to submit the change, please resubmit later.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -158,6 +167,13 @@ public class EditFragment extends Fragment {
 
     private void handleRequestFailure(VolleyError response) {
         LOGGER.error(response.getMessage());
+        if (getContext() == null) {
+            // fragment detached, no need to do anything
+            LOGGER.warn("fragment detached");
+            Toast.makeText(applicationContext, "Failed to submit the change, please resubmit later.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (response instanceof AuthFailureError) {
             if (response.networkResponse.statusCode == 403) {
                 LOGGER.warn("Permission deny");
@@ -169,7 +185,7 @@ public class EditFragment extends Fragment {
                         .show();
             }
         } else {
-            Toast.makeText(requireActivity(), "Failed to submit the change, please resubmit later.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(applicationContext, "Failed to submit the change, please resubmit later.", Toast.LENGTH_SHORT).show();
         }
     }
 }
