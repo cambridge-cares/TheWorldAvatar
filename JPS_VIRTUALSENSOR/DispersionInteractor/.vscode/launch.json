@@ -27,7 +27,7 @@
             "name": "Reattach and Debug",
             "request": "attach",
             "hostName": "localhost",
-            "port": "5005",
+            "port": "${input:debug.port.read}",
             "projectName": "${workspaceFolderBasename}"
         }
     ],

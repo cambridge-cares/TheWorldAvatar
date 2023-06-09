@@ -3,22 +3,16 @@
 		"Name": "aermod-agent",
 		"TaskTemplate": {
 			"ContainerSpec": {
-				"Image": "ghcr.io/cambridge-cares/aermod-agent:1.1.6-dev-aermod-agent-aermap-SNAPSHOT",
+				"Image": "ghcr.io/cambridge-cares/aermod-agent:1.2",
 				"Env": [
 					"STACK_NAME=${STACK_NAME}",
 					"PYTHON_SERVICE_URL=http://ship-stack-python-service:5000/getAermodGeoJSON",
 					"PYTHON_SERVICE_ELEVATION_URL=http://ship-stack-python-service:5000/getElevationGeoJSON",
-					"PYTHON_SERVICE_RASTER_URL=http://ship-stack-python-service:5000/getElevationRaster",
-					"PYTHON_SERVICE_SENSOR_URL=http://ship-stack-python-service:5000/virtualSensor",
-					"NUMBER_SOURCES=600",
-					"NUMBER_BUILDINGS=10",
 					"AERMAP_EXE=/root/aermod/aermap",
 					"BPIPPRM_EXE=/root/aermod/bpipprm",
 					"AERMET_EXE=/root/aermod/aermet",
 					"AERMOD_EXE=/root/aermod/aermod",
 					"WEATHER_AGENT=http://ship-stack-weather-agent:8080/WeatherAgent/UpdateStation",
-					"OPENMETEO_AGENT_RUN=http://ship-stack-openmeteo-agent:8080/OpenMeteoAgent/run",
-					"OPENMETEO_AGENT_DELETE=http://ship-stack-openmeteo-agent:8080/OpenMeteoAgent/delete",
 					"DATABASE=postgres",
 					"GEOSERVER_WORKSPACE=dispersion",
 					"DISPERSION_LAYER=dispersion_layer",

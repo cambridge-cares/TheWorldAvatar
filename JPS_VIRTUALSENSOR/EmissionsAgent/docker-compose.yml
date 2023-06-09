@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   emissions-agent:
-    image: ghcr.io/cambridge-cares/emissions-agent:1.1.0-dev-aermod-agent-cleanup-SNAPSHOT
+    image: ghcr.io/cambridge-cares/emissions-agent:1.2
     deploy:
       mode: replicated
       replicas: 1

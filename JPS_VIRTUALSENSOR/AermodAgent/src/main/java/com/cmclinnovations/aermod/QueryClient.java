@@ -59,7 +59,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
+import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.query.Query;
@@ -148,7 +148,7 @@ public class QueryClient {
     private static final Iri HAS_OCGML_OBJECT = P_DISP.iri("hasOntoCityGMLCityObject");
     private static final Iri EMITS = P_DISP.iri("emits");
     private static final Iri HAS_SRS_NAME = P_OCGML.iri("srsname");
-    private static final Iri HAS_QTY = P_DISP.iri("hasQuantity");
+    private static final Iri HAS_QTY = P_OM.iri("hasQuantity");
     private static final Iri OCGML_GEOM = P_OCGML.iri("GeometryType");
     private static final Iri OCGML_CITYOBJECT = P_OCGML.iri("cityObjectId");
     private static final Iri OCGML_OBJECTCLASSID = P_OCGML.iri("objectClassId");
@@ -403,6 +403,7 @@ public class QueryClient {
                     String wktLiteral = postgisPoint.getTypeString() + postgisPoint.getValue();
 
                     Point point = (Point) new org.locationtech.jts.io.WKTReader().read(wktLiteral);
+                    point.setSRID(4326);
 
                     if (scope.covers(point)) {
                         // measureToShipMap.get(measure) gives the iri
@@ -470,13 +471,11 @@ public class QueryClient {
     }
 
     void setEmissions(List<PointSource> allSources) {
-
         // create a look up map to get point source object based on IRI
         Map<String, PointSource> iriToSourceMap = new HashMap<>();
         allSources.stream().forEach(s -> iriToSourceMap.put(s.getIri(), s));
         List<String> pointSourceIRI = allSources.stream().map(s -> s.getIri()).collect(Collectors.toList());
 
-        // Use this code to set emissions. Change static point sources to point sources.
         SelectQuery query = Queries.SELECT().prefix(P_DISP, P_OM);
         Variable ps = query.var();
         Variable emissionIRI = query.var();
@@ -493,88 +492,103 @@ public class QueryClient {
 
         GraphPattern gp = GraphPatterns.and(ps.has(EMITS, emissionIRI),
                 emissionIRI.isA(pollutant).andHas(HAS_QTY, massFlowIRI)
-                        .andHas(HAS_QTY, densityIRI).andHas(HAS_QTY, temperatureIRI),
-                massFlowIRI.isA(iri(MASS_FLOW)).andHas(HAS_NUMERICALVALUE, emissionValue).andHas(HAS_UNIT,
-                        emissionUnit),
-                densityIRI.isA(iri(DENSITY)).andHas(HAS_NUMERICALVALUE, densityValue).andHas(HAS_UNIT, densityUnit),
-                temperatureIRI.isA(iri(TEMPERATURE)).andHas(HAS_NUMERICALVALUE, temperatureValue).andHas(HAS_UNIT,
-                        temperatureUnit));
+                        .andHas(HAS_QTY, densityIRI),
+                massFlowIRI.isA(iri(MASS_FLOW)).andHas(PropertyPaths.path(HAS_VALUE,
+                        HAS_NUMERICALVALUE), emissionValue)
+                        .andHas(PropertyPaths.path(HAS_VALUE, HAS_UNIT), emissionUnit),
+                densityIRI.isA(iri(DENSITY)).andHas(PropertyPaths.path(HAS_VALUE,
+                        HAS_NUMERICALVALUE), densityValue)
+                        .andHas(PropertyPaths.path(HAS_VALUE, HAS_UNIT), densityUnit),
+                GraphPatterns.and(emissionIRI.has(HAS_QTY, temperatureIRI), temperatureIRI.isA(iri(TEMPERATURE))
+                        .andHas(PropertyPaths.path(HAS_VALUE, HAS_NUMERICALVALUE), temperatureValue)
+                        .andHas(PropertyPaths.path(HAS_VALUE, HAS_UNIT), temperatureUnit)).optional());
+        // particle phase does not have temperature
+
         ValuesPattern<Iri> vp = new ValuesPattern<>(ps,
-                pointSourceIRI.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
-        query.select(ps, pollutant, emissionValue, emissionUnit, densityValue, densityUnit, temperatureValue,
+                pointSourceIRI.stream().map(Rdf::iri).collect(Collectors.toList()),
+                Iri.class);
+        query.select(ps, pollutant, emissionValue, emissionUnit, densityValue,
+                densityUnit, temperatureValue,
                 temperatureUnit).where(gp, vp);
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        String[] gasPhaseEmissions = { CO2, NO_X, SO2, CO, UHC };
 
         for (int i = 0; i < queryResult.length(); i++) {
             String psIRI = queryResult.getJSONObject(i).getString(ps.getQueryString().substring(1));
             String pollutantID = queryResult.getJSONObject(i).getString(pollutant.getQueryString().substring(1));
-            double emission = queryResult.getJSONObject(i).getDouble(emissionValue.getQueryString().substring(1));
+            // warning: Double.parseDouble does not parse values like 3E-7 correctly
+            double emission = Double
+                    .valueOf(queryResult.getJSONObject(i).getString(emissionValue.getQueryString().substring(1)));
             double density = queryResult.getJSONObject(i).getDouble(densityValue.getQueryString().substring(1));
-            double temperature = queryResult.getJSONObject(i).getDouble(temperatureValue.getQueryString().substring(1));
             String emissionUnitString = queryResult.getJSONObject(i)
                     .getString(emissionUnit.getQueryString().substring(1));
             String densityUnitString = queryResult.getJSONObject(i)
                     .getString(densityUnit.getQueryString().substring(1));
-            String temperatureUnitString = queryResult.getJSONObject(i)
-                    .getString(temperatureUnit.getQueryString().substring(1));
 
             PointSource pointSource = iriToSourceMap.get(psIRI);
 
-            // Check the units when setting the flow rates, density and temperature.
-            boolean correctUnits = true;
+            boolean isGasPhase = StringUtils.equalsAny(pollutantID, gasPhaseEmissions);
 
-            if (!emissionUnitString.equals(UNIT_KG_S)) {
-                LOGGER.warn("Unexpected emission units for static point source with IRI {}. Pollutant type is {}.",
-                        psIRI, pollutantID);
-                correctUnits = false;
+            String temperatureUnitString = null;
+            if (isGasPhase) {
+                temperatureUnitString = queryResult.getJSONObject(i)
+                        .getString(temperatureUnit.getQueryString().substring(1));
             }
 
-            if (!densityUnitString.equals(UNIT_KG_M3)) {
-                LOGGER.warn("Unexpected density units for static point source with IRI {}. Pollutant type is {}.",
-                        psIRI, pollutantID);
-                correctUnits = false;
-            }
+            if (checkUnits(temperatureUnitString, densityUnitString, emissionUnitString)) {
+                if (isGasPhase) {
+                    pointSource.setMixtureDensityInKgm3(density);
+                    double value = queryResult.getJSONObject(i)
+                            .getDouble(temperatureValue.getQueryString().substring(1));
+                    pointSource.setMixtureTemperatureInKelvin(value);
+                } else {
+                    pointSource.setParticleDensity(density);
+                }
 
-            if (!temperatureUnitString.equals(UNIT_KELVIN)) {
-                LOGGER.warn("Unexpected temperature units for static point source with IRI {}. Pollutant type is {}.",
-                        psIRI, pollutantID);
-                correctUnits = false;
-            }
-
-            if (!correctUnits)
-                continue;
-
-            pointSource.setMixtureDensityInKgm3(density);
-            pointSource.setMixtureTemperatureInKelvin(temperature);
-
-            switch (pollutantID) {
-                case CO2:
-                    pointSource.setFlowRateCO2InKgPerS(emission);
-                    break;
-                case NO_X:
-                    pointSource.setFlowRateNOxInKgPerS(emission);
-                    break;
-                case SO2:
-                    pointSource.setFlowRateSO2InKgPerS(emission);
-                    break;
-                case CO:
-                    pointSource.setFlowRateCOInKgPerS(emission);
-                    break;
-                case UHC:
-                    pointSource.setFlowRateHCInKgPerS(emission);
-                    break;
-                case PM10:
-                    pointSource.setFlowRatePM10InKgPerS(emission);
-                    break;
-                case PM25:
-                    pointSource.setFlowRatePM25InKgPerS(emission);
-                    break;
-                default:
-                    LOGGER.info("Unknown pollutant ID encountered in AermodAgent/QueryClient class: {}", pollutantID);
-
+                switch (pollutantID) {
+                    case CO2:
+                        pointSource.setFlowRateCO2InKgPerS(emission);
+                        break;
+                    case NO_X:
+                        pointSource.setFlowRateNOxInKgPerS(emission);
+                        break;
+                    case SO2:
+                        pointSource.setFlowRateSO2InKgPerS(emission);
+                        break;
+                    case CO:
+                        pointSource.setFlowRateCOInKgPerS(emission);
+                        break;
+                    case UHC:
+                        pointSource.setFlowRateHCInKgPerS(emission);
+                        break;
+                    case PM10:
+                        pointSource.setFlowRatePM10InKgPerS(emission);
+                        break;
+                    case PM25:
+                        pointSource.setFlowRatePM25InKgPerS(emission);
+                        break;
+                    default:
+                        LOGGER.info("Unknown pollutant ID encountered in AermodAgent/QueryClient class: {}",
+                                pollutantID);
+                }
             }
         }
+    }
 
+    private boolean checkUnits(String temperatureUnitString, String densityUnitString, String massFlow) {
+        boolean correctUnits = true;
+        if (temperatureUnitString != null && !temperatureUnitString.equals(UNIT_KELVIN)) {
+            LOGGER.warn("Unexpected temperature units");
+            correctUnits = false;
+        } else if (!densityUnitString.equals(UNIT_KG_M3)) {
+            LOGGER.warn("Unexpected density units");
+            correctUnits = false;
+        } else if (!massFlow.equals(UNIT_KG_S)) {
+            LOGGER.warn("Unexpected mass flowrate units");
+            correctUnits = false;
+        }
+        return correctUnits;
     }
 
     /**
