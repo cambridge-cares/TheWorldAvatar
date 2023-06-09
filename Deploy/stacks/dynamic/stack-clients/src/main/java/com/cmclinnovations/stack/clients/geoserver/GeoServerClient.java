@@ -20,6 +20,7 @@ import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
+import com.cmclinnovations.stack.services.GeoServerService;
 
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.Util;
@@ -38,9 +39,8 @@ public class GeoServerClient extends ContainerClient {
     private final PostGISEndpointConfig postgreSQLEndpoint;
 
     private static GeoServerClient instance = null;
-    private static final Path SERVING_DIRECTORY = Path.of("/var/geoserver/datadir/www");
-    private static final String STATIC_DATA_DIRECTORY = SERVING_DIRECTORY.resolve("static_data").toString();
-    private static final String ICONS_DIRECTORY = SERVING_DIRECTORY.resolve("icons").toString();
+    private static final Path STATIC_DATA_DIRECTORY = GeoServerService.SERVING_DIRECTORY.resolve("static_data");
+    private static final Path ICONS_DIRECTORY = GeoServerService.SERVING_DIRECTORY.resolve("icons");
 
     public static GeoServerClient getInstance() {
         if (null == instance) {
@@ -121,19 +121,19 @@ public class GeoServerClient extends ContainerClient {
 
     private void loadStaticFile(Path baseDirectory, GeoserverOtherStaticFile file) {
         Path filePath = baseDirectory.resolve(file.getSource());
-        String sourceParentDir = filePath.getParent().toString();
-        String fileName = filePath.getFileName().toString();
-        String absTargetDir = Path.of(STATIC_DATA_DIRECTORY).resolve(Path.of(file.getTarget())).toString();
+        Path sourceParentDir = filePath.getParent();
+        Path fileName = filePath.getFileName();
+        Path absTargetDir = STATIC_DATA_DIRECTORY.resolve(file.getTarget());
 
         String containerId = getContainerId("geoserver");
 
         if (!Files.exists(filePath)) {
             throw new RuntimeException(
-                    "Static GeoServer data '" + filePath + "' does not exist and could not be loaded.");
+                    "Static GeoServer data '" + filePath.toString() + "' does not exist and could not be loaded.");
         } else if (Files.isDirectory(filePath)) {
-            sendFolder(containerId, filePath.toString(), Path.of(absTargetDir).resolve(fileName).toString());
+            sendFolder(containerId, filePath.toString(), absTargetDir.resolve(fileName).toString());
         } else {
-            sendFiles(containerId, sourceParentDir, List.of(fileName), absTargetDir);
+            sendFiles(containerId, sourceParentDir.toString(), List.of(fileName.toString()), absTargetDir.toString());
         }
     }
 
@@ -143,7 +143,8 @@ public class GeoServerClient extends ContainerClient {
                     "Static GeoServer data '" + baseDirectory.resolve(iconDir)
                             + "' does not exist and could not be loaded.");
         } else if (Files.isDirectory(baseDirectory.resolve(iconDir))) {
-            sendFolder(getContainerId("geoserver"), baseDirectory.resolve(iconDir).toString(), ICONS_DIRECTORY);
+            sendFolder(getContainerId("geoserver"), baseDirectory.resolve(iconDir).toString(),
+                    ICONS_DIRECTORY.toString());
         } else {
             throw new RuntimeException("Geoserver icon directory " + iconDir + "does not exist or is not a directory.");
         }

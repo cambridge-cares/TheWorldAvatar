@@ -299,7 +299,11 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
     }
 
     public void makeDir(String containerId, String directoryPath) {
-        createComplexCommand(containerId, "mkdir", "-p", directoryPath).withUser("root").exec();
+        executeSimpleCommand(containerId, "mkdir", "-p", directoryPath);
+    }
+
+    public void makeDir(String containerId, String directoryPath, String user) {
+        createComplexCommand(containerId, "mkdir", "-p", directoryPath).withUser(user).exec();
     }
 
     private final class RemoteTempDir extends TempDir {

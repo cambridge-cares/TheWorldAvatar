@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  opf-agent:
+    image: opf-agent:1.0.0
+    build: .
+    container_name: opf-agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - "39999:8080"
+
+    volumes:
+      - external_maven_repo:/root/.m2
+
+
+volumes:
+  external_maven_repo:
+    name: "external_maven_repo"      
