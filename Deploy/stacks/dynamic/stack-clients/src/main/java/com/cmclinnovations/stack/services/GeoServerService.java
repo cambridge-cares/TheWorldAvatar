@@ -69,7 +69,7 @@ public final class GeoServerService extends ContainerService {
             updatePassword();
         }
 
-        createComplexCommand("chmod", "-R", "777", SERVING_DIRECTORY.toString()).withUser("root").exec();
+        createComplexCommand("chown", "-R", "tomcat:tomcat", SERVING_DIRECTORY.toString()).withUser("root").exec();
     }
 
     private Builder createBaseSettingsRequestBuilder() {
