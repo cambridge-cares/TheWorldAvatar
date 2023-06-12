@@ -39,6 +39,7 @@ public class SmartMeterAgentLauncher extends JPSAgent {
             throw new JPSRuntimeException("Invalid request.");
         }
 
+        // Necessary inputs:
         // Data source: database "database" or csv file "csv"
         String dataSource = requestParams.getString("dataSource");
         // Data required: only latest data "latest" or all historical data "historical"
@@ -50,6 +51,7 @@ public class SmartMeterAgentLauncher extends JPSAgent {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String currentTime = now.format(formatter);
 
+        // Optional inputs:
         // Parameters for historical data reading
         // Data before (inclusive): UTC date time in "yyyy-MM-dd HH:mm" format 
         // (optional, use current UTC time if not given)
@@ -70,16 +72,23 @@ public class SmartMeterAgentLauncher extends JPSAgent {
             dataAfter = "2000-01-01 00:00";
         }
 
-        SmartMeterAgent agent = new SmartMeterAgent();
-        List<String[]> mappings = agent.getDataMappings(AgentLocator.getCurrentJpsAppDirectory(this) + "/config");
+        SmartMeterAgent agent = getSmartMeterAgent();
+        List<String[]> mappings = getDataMappings(agent);
+
         if (dataSource.equalsIgnoreCase("database") && dataRequired.equalsIgnoreCase("latest")) {
+            // read latest valid data from database, update every minute
+            JSONArray previousResult = new JSONArray();
             while (true) {
                 LOGGER.info("Reading latest data from database...");
                 JSONArray result = agent.queryLatestDataFromDb(currentTime, mappings);
-                JSONArray dataIRIArray = agent.getDataIris(targetResourceID, mappings);
-                LOGGER.info("Uploading data...");
-                agent.uploadSmartMeterData(result, targetResourceID, dataIRIArray);
-                LOGGER.info("Upload complete. Sleeping...");
+                if (!result.similar(previousResult)) {
+                    LOGGER.info("Uploading data...");
+                    JSONArray dataIRIArray = agent.getDataIris(targetResourceID, mappings);
+                    agent.uploadSmartMeterData(result, dataIRIArray);
+                    LOGGER.info("Upload complete. Sleeping...");
+                } else {
+                    LOGGER.info("No new valid readings found, next attempt will be 1 minute later...");
+                }
                 try {
                     TimeUnit.SECONDS.sleep(60);
                 } catch (InterruptedException ie) {
@@ -87,6 +96,7 @@ public class SmartMeterAgentLauncher extends JPSAgent {
                 }
             }
         } else if (dataSource.equalsIgnoreCase("database") && dataRequired.equalsIgnoreCase("historical")) {
+            // read all valid historical readings from database
             LOGGER.info("Reading historical data from database...");
             int numOfReadings = agent.uploadHistoricalDataFromDb(dataBefore, dataAfter, mappings, targetResourceID);
             if (numOfReadings == 0) {
@@ -97,12 +107,13 @@ public class SmartMeterAgentLauncher extends JPSAgent {
                 return new JSONObject().put("uploadStatus", numOfReadings + " readings uploaded successfully.");
             }
         } else if (dataSource.equalsIgnoreCase("csv") && dataRequired.equalsIgnoreCase("historical")) {
+            // read all valid data from csv file
             LOGGER.info("Reading historical data from csv file...");
             // Input time need to be UTC time
             OffsetDateTime beforeTime;
             OffsetDateTime afterTime;
             try {
-                beforeTime = OffsetDateTime.parse(dataBefore.replace(" ", "T") + ":00+00:00");
+                beforeTime = OffsetDateTime.parse(dataBefore.replace(" ", "T") + ":59+00:00");
                 afterTime = OffsetDateTime.parse(dataAfter.replace(" ", "T") + ":00+00:00");
             } catch (DateTimeParseException e) {
                 throw new JPSRuntimeException("Incorrect time format, input time should be yyyy-MM-dd HH:mm .", e);
@@ -114,7 +125,7 @@ public class SmartMeterAgentLauncher extends JPSAgent {
                     devices.add(mappings.get(i)[1]);
                 }
             }
-            String filename = AgentLocator.getCurrentJpsAppDirectory(this) + "/database/readings.csv";
+            String filename = getCsvFilename();
             JSONArray dataIRIArray = agent.getDataIris(targetResourceID, mappings);
 
             int numOfReadings = agent.readDataFromCsvFile(filename, devices, beforeTime, afterTime, dataIRIArray);
@@ -130,6 +141,19 @@ public class SmartMeterAgentLauncher extends JPSAgent {
         } else {
             throw new JPSRuntimeException("Invalid data source or data required.");
         }
+    }
+
+    // For easier testing
+    public SmartMeterAgent getSmartMeterAgent() {
+        return new SmartMeterAgent();
+    }
+
+    public List<String[]> getDataMappings(SmartMeterAgent agent) {
+        return agent.getDataMappings(AgentLocator.getCurrentJpsAppDirectory(this) + "/config");
+    }
+
+    public String getCsvFilename() {
+        return AgentLocator.getCurrentJpsAppDirectory(this) + "/database/readings.csv";
     }
 
     @Override

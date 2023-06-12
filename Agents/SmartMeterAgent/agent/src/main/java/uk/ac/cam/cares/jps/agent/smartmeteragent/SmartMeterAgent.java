@@ -44,7 +44,8 @@ public class SmartMeterAgent {
     /**
      * Query for latest valid data from smart meter database.
      * (All devices in the mapping file should be switched on, and 
-     * all data should be non-zero in order for the reading to be valid)
+     * all important data should be non-zero in order for the reading to be valid)
+     * (Important data: load, current, voltage and frequency)
      * @param currentTime
      * @param mappings
      * @return
@@ -68,13 +69,15 @@ public class SmartMeterAgent {
             throw new JPSRuntimeException("SQLite JDBC driver class not found.", e);
         }
         RemoteRDBStoreClient rdbClient = new RemoteRDBStoreClient(dbUrl, dbUsername, dbPassword);
+        // include readings for the minute of currentTime (change from before HH:mm to before HH:mm:59)
+        currentTime += ":59";
         String query = getSqlQueryForData(devices, currentTime, "2000-01-01 00:00:00");
         LOGGER.info("Executing SQL query: " + query);
         JSONArray result = rdbClient.executeQuery(query);
 
         // when not all devices are switched on:
         // minus one minutes until valid results are found, maximum 10 attempts
-        int numberOfAttempt = 0;
+        int numberOfAttempt = 1;
         while (!validateResult(devices, result)) {
             LOGGER.info("Not all devices are switched on, finding previous valid readings...");
             currentTime = OffsetDateTime.parse(currentTime.replace(" ", "T") + "+00:00")
@@ -84,7 +87,7 @@ public class SmartMeterAgent {
             result = rdbClient.executeQuery(query);
             numberOfAttempt += 1;
             if (numberOfAttempt >= 10) {
-                throw new JPSRuntimeException("Failed to find valid readings within the last 10 minutes. " 
+                throw new JPSRuntimeException("Failed to find valid readings within the last 10 attempts. " 
                                         + "Please check that all devices in the mapping file are switched on.");
             }
         }
@@ -96,8 +99,8 @@ public class SmartMeterAgent {
      * and upload the data to instantiated timeseries.
      * (All devices in the mapping file should be switched on, and 
      * all data should be non-zero in order for the reading to be valid)
-     * @param beforeTime
-     * @param afterTime
+     * @param beforeTime   select readings before this time point
+     * @param afterTime    select readings after this time point
      * @param mappings
      * @param targetResourceID
      * @return
@@ -135,12 +138,14 @@ public class SmartMeterAgent {
         JSONArray dataIRIArray = getDataIris(targetResourceID, mappings);
         for (int i = 0; i < timeArray.length(); i++) {
             JSONArray previousResult = result;
-            String query = getSqlQueryForData(devices, timeArray.getJSONObject(i).optString("time"), afterTime);
+            String tryBeforeTime = timeArray.getJSONObject(i).optString("time");
+            // include readings for the minute of beforeTime (change from before HH:mm:00 to before HH:mm:59)
+            String query = getSqlQueryForData(devices, tryBeforeTime.replace(tryBeforeTime.split(":")[2], "59"), afterTime);
             LOGGER.info("Executing SQL query: " + query);
             result = rdbClient.executeQuery(query);
             if (!result.similar(previousResult) && validateResult(devices, result)) {
                 LOGGER.info("Valid readings found. Uploading data...");
-                uploadSmartMeterData(result, targetResourceID, dataIRIArray);
+                uploadSmartMeterData(result, dataIRIArray);
                 numOfReadings += 1;
             } else {
                 LOGGER.info("No new valid readings, checking next time point...");
@@ -152,10 +157,10 @@ public class SmartMeterAgent {
     /**
      * Structure SQL query to retrieve smart meter readings.
      * (Average values are used instead of values in 3 phases)
-     * (Assuming the update frequency of all smart meters is the same under normal conditions)
+     * (Assuming the sampling frequency of all smart meters is the same under normal conditions)
      * @param devices
-     * @param beforeTime
-     * @param afterTime
+     * @param beforeTime   select readings before this time point
+     * @param afterTime    select readings after this time point
      * @return
      */
     public String getSqlQueryForData(List<String> devices, String beforeTime, String afterTime) {
@@ -220,13 +225,11 @@ public class SmartMeterAgent {
     }
 
     /**
-     * Query for instantiated timeseries dataIRIs of bus values, 
-     * map the IRIs to devices in the readings, and upload readings to KG.
-     * @param queryResult       smart meter readings
-     * @param targetResourceID
-     * @param dataIRIArray
+     * Map dataIRIs to devices in the readings, and upload readings to KG accordingly.
+     * @param queryResult   smart meter readings
+     * @param dataIRIArray  dataIRIs of timeseries data
      */
-    public void uploadSmartMeterData(JSONArray queryResult, String targetResourceID, JSONArray dataIRIArray) {
+    public void uploadSmartMeterData(JSONArray queryResult, JSONArray dataIRIArray) {
         OffsetDateTime time = OffsetDateTime.parse("2000-01-01T00:00:00+00:00");
         List<OffsetDateTime> timeValues = new ArrayList<OffsetDateTime>();
         List<List<?>> allValues = new ArrayList<>();
@@ -313,6 +316,16 @@ public class SmartMeterAgent {
         uploadTimeSeriesData(timeValues, dataIRIs, allValues);
     }
 
+    /**
+     * Select valid readings for devices given in the given time period, and upload
+     * to time series according to dataIRIs
+     * @param fileName     path to the csv file containing readings
+     * @param devices      list of devices that need to be inside the readings
+     * @param beforeTime   select readings before this time point
+     * @param afterTime    select readings after this time point
+     * @param dataIRIArray dataIRIs of timeseries data
+     * @return
+     */
     public int readDataFromCsvFile(String fileName, List<String> devices, OffsetDateTime beforeTime, 
                                     OffsetDateTime afterTime, JSONArray dataIRIArray) {
         LOGGER.info("Reading from csv file...");
@@ -349,7 +362,7 @@ public class SmartMeterAgent {
                             }
                         }
                         if (validateResult(devices, oneGroup)) {
-                            uploadSmartMeterData(oneGroup, time, dataIRIArray);
+                            uploadSmartMeterData(oneGroup, dataIRIArray);
                             numOfReadings += 1;
                         }
                     }
@@ -380,7 +393,7 @@ public class SmartMeterAgent {
                     }
                 }
                 if (validateResult(devices, oneGroup)) {
-                    uploadSmartMeterData(oneGroup, time, dataIRIArray);
+                    uploadSmartMeterData(oneGroup, dataIRIArray);
                     numOfReadings += 1;
                 }
             }
@@ -391,26 +404,19 @@ public class SmartMeterAgent {
 	}
     
     /**
-     * Return true if required field is empty
+     * Check whether the given reading contains empty field
+     * for important data (load, current, voltage, frequency)
      * @param reading
-     * @return
+     * @return         true if required field is empty
      */
     public boolean checkEmptyReading(String[] reading) {
-        // Check that Pd (load) values are not empty
-        for (int i = 6; i < 9; i++) {
-            if (reading[i] == null || reading[i].isEmpty()) {
-                return true;
-            }
-        }
-        // Check that current and voltage values are not empty
-        for (int i = 11; i < 17; i++) {
-            if (reading[i] == null || reading[i].isEmpty()) {
-                return true;
-            }
-        }
-        // Check that frequency values are not empty
-        for (int i = 23; i < 26; i++) {
-            if (reading[i] == null || reading[i].isEmpty()) {
+        // index 6, 7, 8: active power load
+        // index 11, 12, 13: current
+        // index 14, 15, 16: voltage
+        // index 23, 24, 25: frequency
+        int[] indexes = {6, 7, 8, 11, 12, 13, 14, 15, 16, 23, 24, 25};
+        for (int i = 0; i < indexes.length; i++) {
+            if (reading[indexes[i]] == null || reading[indexes[i]].isEmpty()) {
                 return true;
             }
         }

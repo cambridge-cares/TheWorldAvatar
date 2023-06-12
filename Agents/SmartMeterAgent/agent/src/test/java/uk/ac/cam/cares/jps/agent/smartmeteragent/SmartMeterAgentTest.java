@@ -1,14 +1,15 @@
 package uk.ac.cam.cares.jps.agent.smartmeteragent;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.sql.Connection;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.MockStoreClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 public class SmartMeterAgentTest {
@@ -34,8 +36,8 @@ public class SmartMeterAgentTest {
         List<String> devices = new ArrayList<>();
         devices.add("device1");
         devices.add("device2");
-        String beforeTime = "2021-01-01 00:00:00";
-        String afterTime = "2001-01-01 00:00:00";
+        String beforeTime = "2021-01-01 00:00";
+        String afterTime = "2001-01-01 00:00";
         SmartMeterAgent smAgent = new SmartMeterAgent();
         String expectedQuery = "SELECT strftime('%Y-%m-%dT%H:%M:00+00:00', MAX(ts)) as time, \"data_source\" as device, " 
         + "(\"ch1Watt\" + \"ch2Watt\" + \"ch3Watt\")/3 as pd, (\"ch1Current\" + \"ch2Current\" + \"ch3Current\")/3 as current, " 
@@ -47,8 +49,8 @@ public class SmartMeterAgentTest {
         + "\"ch1Voltage\" <> 0 AND \"ch2Voltage\" <> 0 AND \"ch3Voltage\" <> 0 AND " 
         + "\"ch1Hz\" <> 0 AND \"ch2Hz\" <> 0 AND \"ch3Hz\" <> 0 " 
         + "AND (\"data_source\" = 'device1' OR \"data_source\" = 'device2') "
-        + "AND ts <= '2021-01-01 00:00:00' "
-        + "AND ts >= '2001-01-01 00:00:00' "
+        + "AND ts <= '2021-01-01 00:00' "
+        + "AND ts >= '2001-01-01 00:00' "
         + "GROUP BY device, id " 
         + "ORDER BY ts DESC "
         + "LIMIT 2;";
@@ -61,21 +63,21 @@ public class SmartMeterAgentTest {
         List<String> devices = new ArrayList<String>();
         JSONArray resultArray = new JSONArray();
         JSONObject result1 = new JSONObject()
-                            .put("time", "2023-03-28 18:19:00")
+                            .put("time", "2023-03-28T18:19:00+00:00")
                             .put("Pd", "0.01")
                             .put("device", "Load")
                             .put("current", "0.02")
                             .put("voltage", "0.03")
                             .put("frequency", "0.04");
         JSONObject result2 = new JSONObject()
-                            .put("time", "2023-03-28 18:19:00")
+                            .put("time", "2023-03-28T18:19:00+00:00")
                             .put("Pd", "0.01")
                             .put("device", "Load")
                             .put("current", "0.02")
                             .put("voltage", "0.03")
                             .put("frequency", "0.04");
         JSONObject result3 = new JSONObject()
-                            .put("time", "2023-03-28 18:20:00")
+                            .put("time", "2023-03-28T18:20:00+00:00")
                             .put("Pd", "0.01")
                             .put("device", "PV")
                             .put("current", "0.02")
@@ -111,7 +113,7 @@ public class SmartMeterAgentTest {
         devices.add("device1");
         devices.add("device2");
         OffsetDateTime afterTime = OffsetDateTime.parse("2022-10-26T18:23:00+00:00");
-        OffsetDateTime beforeTime = OffsetDateTime.parse("2022-10-26T18:24:58+00:00");
+        OffsetDateTime beforeTime = OffsetDateTime.parse("2022-10-26T18:24:00+00:00");
         JSONArray dataIriArray = new JSONArray();
         JSONObject dataIri1 = new JSONObject()
                             .put("device", "device1")
@@ -127,11 +129,24 @@ public class SmartMeterAgentTest {
         dataIriArray.put(dataIri2);
         SmartMeterAgent smAgent = new SmartMeterAgent() {
             @Override
-            public void uploadSmartMeterData(JSONArray queryResult, String targetResourceID, JSONArray dataIRIArray) {
+            public void uploadSmartMeterData(JSONArray queryResult, JSONArray dataIRIArray) {
             }
         };
         // check that the number of valid readings selected is correct
         assertEquals(1, smAgent.readDataFromCsvFile(filename, devices, beforeTime, afterTime, dataIriArray));
+    }
+
+    @Test
+    public void testCheckEmptyReading() {
+        SmartMeterAgent smAgent = new SmartMeterAgent();
+        String[] validReading = {"1", "2023-03-24T14:41:00+00:00", "0", "0", "POWERMETER", "2023-03-24T14:41:00+00:00", 
+        "1.1", "1.2", "1.3", "", "","3.2", "3.4", "3.6", "226.1", "227.1", 
+        "228.1", "", "", "", "393.37439", "394.527283", "393.128021", "49.99", "49.99", "49.99", 
+        "0.0", "0.0", "0.0", "0.0", "0.0", "0.0", "Grid"};
+        assertFalse(smAgent.checkEmptyReading(validReading));
+        String[] invalidReading = validReading;
+        invalidReading[25] = "";
+        assertTrue(smAgent.checkEmptyReading(invalidReading));
     }
 
     @Test

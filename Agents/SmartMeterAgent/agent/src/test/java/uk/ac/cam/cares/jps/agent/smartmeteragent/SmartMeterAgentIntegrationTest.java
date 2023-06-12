@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.smartmeteragent;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -26,6 +27,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -158,6 +160,12 @@ public class SmartMeterAgentIntegrationTest {
         smAgent = new SmartMeterAgent() {
             @Override
             public void loadConfigs(String filepath) throws IOException {
+                if (filepath.contains("db")) {
+                    this.dbUrl = "jdbc:sqlite:src/test/resources/test.db";
+                    this.dbUsername = rdbUsername;
+                    this.dbPassword = rdbPassword;
+                    return;
+                }
                 this.dbUrl = rdbUrl;
                 this.dbUsername = rdbUsername;
                 this.dbPassword = rdbPassword;
@@ -181,7 +189,6 @@ public class SmartMeterAgentIntegrationTest {
         if (postgreSQLContainer.isRunning()) {
             postgreSQLContainer.stop();
         }
-        // TODO SQLite container? or a db file?
 	}
 	
 	@AfterAll
@@ -259,7 +266,7 @@ public class SmartMeterAgentIntegrationTest {
                                 .put("voltage", "3")
                                 .put("frequency", "4");
         JSONArray dataValueArray = new JSONArray().put(device1Values);
-        smAgent.uploadSmartMeterData(dataValueArray, targetResourceID, dataIRIArray);
+        smAgent.uploadSmartMeterData(dataValueArray, dataIRIArray);
         OffsetDateTime time = OffsetDateTime.parse("2022-11-09T21:09:00+00:00");
         List<String> dataIris = new ArrayList<String>();
         dataIris.add("http://example.com/device1pd");
@@ -285,8 +292,82 @@ public class SmartMeterAgentIntegrationTest {
     }
 
     @Test
+    public void testQueryLatestDataFromDb() {
+        // the database file contains invalid readings for 2022-11-09 21:40, 21:41, and 21:46
+        // and                                                                                                                                                                                                     valid readings for 2022-11-09 21: 42 and 21:45
+        String currentTime1 = "2022-11-09 21:46";
+        String[] mapping1 = {"1", "device1"};
+        String[] mapping2 = {"2", "device2"};
+        List<String[]> mappings = new ArrayList<>();
+        mappings.add(mapping1);
+        mappings.add(mapping2);
+
+        // Check that latest valid readings are read correctly
+        JSONArray actualResult = smAgent.queryLatestDataFromDb(currentTime1, mappings);
+        assertEquals("2022-11-09T21:45:00+00:00", actualResult.getJSONObject(0).optString("time"));
+        assertEquals("2022-11-09T21:45:00+00:00", actualResult.getJSONObject(1).optString("time"));
+        assertEquals("device1", actualResult.getJSONObject(0).optString("device"));
+        assertEquals("device2", actualResult.getJSONObject(1).optString("device"));
+
+        assertEquals(-0.0037503, actualResult.getJSONObject(0).getDouble("pd"), 0.0001);
+        assertEquals(0.126606, actualResult.getJSONObject(0).getDouble("current"), 0.0001);
+        assertEquals(222.063781, actualResult.getJSONObject(0).getDouble("voltage"), 0.0001);
+        assertEquals(49.999741, actualResult.getJSONObject(0).getDouble("frequency"), 0.0001);
+        assertEquals(-0.514298, actualResult.getJSONObject(1).getDouble("pd"), 0.0001);
+        assertEquals(2.37722166, actualResult.getJSONObject(1).getDouble("current"), 0.0001);
+        assertEquals(216.6744436, actualResult.getJSONObject(1).getDouble("voltage"), 0.0001);
+        assertEquals(49.999718, actualResult.getJSONObject(1).getDouble("frequency"), 0.0001);
+
+        // Check that correct exception is thrown when no valid readings can be found within 10 attempts
+        String currentTime2 = "2022-11-09 21:41";
+        Exception exception = assertThrows(JPSRuntimeException.class, 
+                                            ()->{smAgent.queryLatestDataFromDb(currentTime2, mappings);});
+        String expectedMessage = "Please check that all devices in the mapping file are switched on.";
+        String actualMessage = exception.getMessage();
+        assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    public void testUploadHistoricalDataFromDb() {
+        // the database file contains invalid readings for 2022-11-09 21:40, 21:41, and 21:46
+        // and valid readings for 2022-11-09 21: 42 and 21:45
+        targetStoreClient = IntegrationTestHelper.populateRemoteStore(targetStoreClient);
+        String beforeTime = "2022-11-09 21:43";
+        String afterTime = "2001-01-01 00:00";
+        String[] mapping1 = {"1", "device1"};
+        String[] mapping2 = {"2", "device2"};
+        List<String[]> mappings = new ArrayList<>();
+        mappings.add(mapping1);
+        mappings.add(mapping2);
+        int numOfReadings = smAgent.uploadHistoricalDataFromDb(beforeTime, afterTime, mappings, targetResourceID);
+        assertEquals(1, numOfReadings);
+
+        // Check that values are uploaded correctly
+        List<String> dataIris = new ArrayList<String>();
+        dataIris.add("http://example.com/device1pd");
+        dataIris.add("http://example.com/device1qd");
+        // device 2 has current and voltage instantiated (but not frequency)
+        dataIris.add("http://example.com/device2pd");
+        dataIris.add("http://example.com/device2qd");
+        dataIris.add("http://example.com/device2current");
+        dataIris.add("http://example.com/device2voltage");
+        OffsetDateTime time = OffsetDateTime.parse("2022-11-09T21:42:00+00:00");
+        try (Connection conn = rdbStoreClient.getConnection()) {
+            TimeSeries<OffsetDateTime> timeseries = tsClient.getTimeSeriesWithinBounds(dataIris, time, time, conn);
+            assertEquals(-0.013268, Double.parseDouble(timeseries.getValuesAsString(dataIris.get(0)).get(0)), 0.0001); // device1 Pd
+            assertEquals(0, Double.parseDouble(timeseries.getValuesAsString(dataIris.get(1)).get(0)), 0.0001); // device1 Qd
+            assertEquals(0.85862064, Double.parseDouble(timeseries.getValuesAsString(dataIris.get(2)).get(0)), 0.0001); // device2 Pd
+            assertEquals(0, Double.parseDouble(timeseries.getValuesAsString(dataIris.get(3)).get(0)), 0.0001); // device2 Qd
+            assertEquals(4.574993, Double.parseDouble(timeseries.getValuesAsString(dataIris.get(4)).get(0)), 0.0001); // device2 current
+            assertEquals(216.72646, Double.parseDouble(timeseries.getValuesAsString(dataIris.get(5)).get(0)), 0.0001); // device2 voltage
+        } catch (Exception e) {
+            throw new JPSRuntimeException(e);
+        }
+    }
+
+    @Test
     public void testReadDataFromCsvFile() throws IOException {
-        File readingFile = new File(tempFolder, "reading.csv");
+        File readingFile = new File(tempFolder, "readings.csv");
         FileWriter writer = new FileWriter(readingFile);
         writer.write(IntegrationTestHelper.smartMeterReading1);
         writer.write(IntegrationTestHelper.smartMeterReading2);
@@ -295,7 +376,7 @@ public class SmartMeterAgentIntegrationTest {
         writer.write(IntegrationTestHelper.smartMeterReading5);
         writer.write(IntegrationTestHelper.smartMeterReading6);
         writer.close();
-        String filename = tempFolder.toPath().toString() + "/reading.csv";
+        String filename = tempFolder.toPath().toString() + "/readings.csv";
         List<String> devices = new ArrayList<>();
         devices.add("device1");
         devices.add("device2");
@@ -339,5 +420,94 @@ public class SmartMeterAgentIntegrationTest {
         } catch (Exception e) {
             throw new JPSRuntimeException(e);
         }
+    }
+
+    @Test
+    public void testProcessRequestParametersHistoricalDb() throws IOException {
+        // the database file contains invalid readings for 2022-11-09 21:40, 21:41, and 21:46
+        // and valid readings for 2022-11-09 21: 42 and 21:45
+        targetStoreClient = IntegrationTestHelper.populateRemoteStore(targetStoreClient);
+        SmartMeterAgentLauncher agentLauncher = new SmartMeterAgentLauncher() {
+            @Override
+            public SmartMeterAgent getSmartMeterAgent() {
+                return smAgent;
+            }
+            @Override
+            public List<String[]> getDataMappings(SmartMeterAgent agent) {
+                return agent.getDataMappings(tempFolder.toPath().toString());
+            }
+        };
+        File mappingFile = new File(tempFolder, "mappings.csv");
+        FileWriter writer = new FileWriter(mappingFile);
+        writer.write("1,device1\n");
+        writer.write("2,device2");
+        writer.close();
+
+        JSONObject request1 = new JSONObject()
+                            .put("dataSource", "database")
+                            .put("dataRequired", "historical")
+                            .put("microgrid", targetResourceID);
+        JSONObject expectedResult = new JSONObject().put("uploadStatus", "2 readings uploaded successfully.");
+        JSONObject actualResult = agentLauncher.processRequestParameters(request1);
+        assertTrue(actualResult.similar(expectedResult));
+
+        JSONObject request2 = new JSONObject()
+                            .put("dataSource", "database")
+                            .put("dataRequired", "historical")
+                            .put("microgrid", targetResourceID)
+                            .put("dataBefore", "2022-11-09 21:41");
+        expectedResult = new JSONObject().put("uploadStatus", "No valid reading found.");
+        actualResult = agentLauncher.processRequestParameters(request2);
+        assertTrue(actualResult.similar(expectedResult));
+    }
+
+    @Test
+    public void testProcessRequestParametersCsv() throws IOException {
+        targetStoreClient = IntegrationTestHelper.populateRemoteStore(targetStoreClient);
+        SmartMeterAgentLauncher agentLauncher = new SmartMeterAgentLauncher() {
+            @Override
+            public SmartMeterAgent getSmartMeterAgent() {
+                return smAgent;
+            }
+            @Override
+            public List<String[]> getDataMappings(SmartMeterAgent agent) {
+                return agent.getDataMappings(tempFolder.toPath().toString());
+            }
+            @Override
+            public String getCsvFilename() {
+                return tempFolder.toPath().toString() + "/readings.csv";
+            }
+        };
+        File mappingFile = new File(tempFolder, "mappings.csv");
+        FileWriter writer = new FileWriter(mappingFile);
+        writer.write("1,device1\n");
+        writer.write("2,device2");
+        writer.close();
+        File readingFile = new File(tempFolder, "readings.csv");
+        writer = new FileWriter(readingFile);
+        writer.write(IntegrationTestHelper.smartMeterReading1);
+        writer.write(IntegrationTestHelper.smartMeterReading2);
+        writer.write(IntegrationTestHelper.smartMeterReading3);
+        writer.write(IntegrationTestHelper.smartMeterReading4);
+        writer.write(IntegrationTestHelper.smartMeterReading7);
+        writer.write(IntegrationTestHelper.smartMeterReading8);
+        writer.close();
+
+        JSONObject request1 = new JSONObject()
+                            .put("dataSource", "csv")
+                            .put("dataRequired", "historical")
+                            .put("microgrid", targetResourceID);
+        JSONObject expectedResult = new JSONObject().put("uploadStatus", "1 readings uploaded successfully.");
+        JSONObject actualResult = agentLauncher.processRequestParameters(request1);
+        assertTrue(actualResult.similar(expectedResult));
+
+        JSONObject request2 = new JSONObject()
+                            .put("dataSource", "csv")
+                            .put("dataRequired", "historical")
+                            .put("microgrid", targetResourceID)
+                            .put("dataBefore", "2022-10-26 18:23");
+        expectedResult = new JSONObject().put("uploadStatus", "No valid reading found.");
+        actualResult = agentLauncher.processRequestParameters(request2);
+        assertTrue(actualResult.similar(expectedResult));
     }
 }
