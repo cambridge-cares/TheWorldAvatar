@@ -1,0 +1,43 @@
+{
+  "name": "Sample Data",
+  "stack": "http://localhost",
+  "sources": [
+    {
+      "id": "3d-tiles-source",
+      "type": "tiles",
+      "uri": "http://localhost/tileset.json"
+    },
+    {
+      "id": "2d-power-network",
+      "type": "kml",
+      "uri": "http://localhost/power-network.kml",
+      "transparency": false
+    },
+    {
+      "id": "ntu",
+      "type": "wms",
+      "wmsLayer": "the_world_avatar:ntupowerfinal",
+      "transparency": false,
+      "format": "image/png"
+    }
+  ],
+  "layers": [
+    {
+      "id": "3d-tiles-layer",
+      "name": "NTU buildings",
+      "source": "3d-tiles-source"
+    },
+    {
+      "id": "2d-power-network",
+      "name": "2D power network",
+      "source": "2d-power-network",
+      "visibility": "none"
+    },
+    {
+      "id": "ntu",
+      "name": "ntu power network",
+      "source": "ntu",
+      "visibility": "none"
+    }
+  ]
+}
