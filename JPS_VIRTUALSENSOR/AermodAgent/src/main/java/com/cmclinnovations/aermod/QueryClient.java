@@ -1015,28 +1015,28 @@ public class QueryClient {
     public void setElevation(List<StaticPointSource> pointSources, List<Building> buildings, int simulationSrid,
             String elevationTables) {
 
-        for (int i = 0; i < pointSources.size(); i++) {
-            StaticPointSource ps = pointSources.get(i);
-            String originalSrid = "EPSG:" + ps.getLocation().getSRID();
-            double[] xyOriginal = { ps.getLocation().getX(), ps.getLocation().getY() };
-            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
+        try (Connection conn = rdbStoreClient.getConnection();
+                Statement stmt = conn.createStatement();) {
+            for (int i = 0; i < pointSources.size(); i++) {
+                StaticPointSource ps = pointSources.get(i);
+                String originalSrid = "EPSG:" + ps.getLocation().getSRID();
+                double[] xyOriginal = { ps.getLocation().getX(), ps.getLocation().getY() };
+                double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
 
-            String sqlString1 = String.format(
-                    "SELECT ST_Value(rast, ST_Transform(ST_SetSRID(ST_MakePoint(%f,%f),%d),ST_SRID(rast))) AS val " +
-                            "FROM ",
-                    xyTransformed[0], xyTransformed[1], simulationSrid);
+                String sqlString1 = String.format(
+                        "SELECT ST_Value(rast, ST_Transform(ST_SetSRID(ST_MakePoint(%f,%f),%d),ST_SRID(rast))) AS val "
+                                +
+                                "FROM ",
+                        xyTransformed[0], xyTransformed[1], simulationSrid);
 
-            String sqlString2 = String.format(
-                    " WHERE ST_Intersects(rast, ST_Transform(ST_SetSRID(ST_MakePoint(%f,%f),%d),ST_SRID(rast)));",
-                    xyTransformed[0],
-                    xyTransformed[1],
-                    simulationSrid);
+                String sqlString2 = String.format(
+                        " WHERE ST_Intersects(rast, ST_Transform(ST_SetSRID(ST_MakePoint(%f,%f),%d),ST_SRID(rast)));",
+                        xyTransformed[0],
+                        xyTransformed[1],
+                        simulationSrid);
 
-            String sqlString = sqlString1 + elevationTables + sqlString2;
-
-            try (Connection conn = rdbStoreClient.getConnection();
-                    Statement stmt = conn.createStatement();
-                    ResultSet result = stmt.executeQuery(sqlString)) {
+                String sqlString = sqlString1 + elevationTables + sqlString2;
+                ResultSet result = stmt.executeQuery(sqlString);
                 if (result.next()) {
                     double elevation = result.getDouble("val");
                     ps.setElevation(elevation);
@@ -1046,33 +1046,27 @@ public class QueryClient {
                             xyTransformed[0], xyTransformed[1], simulationSrid);
                 }
 
-            } catch (SQLException e) {
-                LOGGER.error(e.getMessage());
             }
 
-        }
+            for (int i = 0; i < buildings.size(); i++) {
+                Building building = buildings.get(i);
+                String originalSrid = building.getSrid();
+                double[] xyOriginal = { building.getLocation().getX(), building.getLocation().getY() };
+                double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
+                String sqlString1 = String.format(
+                        "SELECT ST_Value(rast, ST_Transform(ST_SetSRID(ST_MakePoint(%f,%f),%d),ST_SRID(rast))) AS val "
+                                +
+                                "FROM ",
+                        xyTransformed[0], xyTransformed[1], simulationSrid);
 
-        for (int i = 0; i < buildings.size(); i++) {
-            Building building = buildings.get(i);
-            String originalSrid = building.getSrid();
-            double[] xyOriginal = { building.getLocation().getX(), building.getLocation().getY() };
-            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
-            String sqlString1 = String.format(
-                    "SELECT ST_Value(rast, ST_Transform(ST_SetSRID(ST_MakePoint(%f,%f),%d),ST_SRID(rast))) AS val " +
-                            "FROM ",
-                    xyTransformed[0], xyTransformed[1], simulationSrid);
+                String sqlString2 = String.format(
+                        " WHERE ST_Intersects(rast, ST_Transform(ST_SetSRID(ST_MakePoint(%f,%f),%d),ST_SRID(rast)));",
+                        xyTransformed[0],
+                        xyTransformed[1],
+                        simulationSrid);
 
-            String sqlString2 = String.format(
-                    " WHERE ST_Intersects(rast, ST_Transform(ST_SetSRID(ST_MakePoint(%f,%f),%d),ST_SRID(rast)));",
-                    xyTransformed[0],
-                    xyTransformed[1],
-                    simulationSrid);
-
-            String sqlString = sqlString1 + elevationTables + sqlString2;
-
-            try (Connection conn = rdbStoreClient.getConnection();
-                    Statement stmt = conn.createStatement();
-                    ResultSet result = stmt.executeQuery(sqlString)) {
+                String sqlString = sqlString1 + elevationTables + sqlString2;
+                ResultSet result = stmt.executeQuery(sqlString);
                 if (result.next()) {
                     double elevation = result.getDouble("val");
                     building.setElevation(elevation);
@@ -1081,12 +1075,12 @@ public class QueryClient {
                             "Could not find elevation data for the building located at ({},{}) in EPSG:{} coordinates. Its elevation will be set to zero when running BPIPPRM and AERMOD.",
                             xyTransformed[0], xyTransformed[1], simulationSrid);
                 }
-            } catch (SQLException e) {
-                LOGGER.error(e.getMessage());
+
             }
 
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
         }
-
     }
 
     List<byte[]> getScopeElevation(Polygon scope, String elevationTables) {
