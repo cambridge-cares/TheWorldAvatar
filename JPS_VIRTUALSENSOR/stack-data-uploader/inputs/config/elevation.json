@@ -2,11 +2,11 @@
     "name": "elevation",
     "database": "postgres",
     "workspace": "the_world_avatar",
-    "datasetDirectory": "elevation",
+    "datasetDirectory": "elevation_data_1",
     "dataSubsets": [
         {
             "type": "raster",
-            "name": "elevation",
+            "name": "elevation_data_1",
             "skip": false,
             "geoServerSettings": {
                 "layerSettings": {
