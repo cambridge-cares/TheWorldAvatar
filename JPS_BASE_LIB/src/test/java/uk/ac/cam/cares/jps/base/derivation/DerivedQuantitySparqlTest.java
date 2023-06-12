@@ -49,7 +49,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * getStatusType is tested while testing testCreateDerivationAsyncForUpdate and
  * testCreateDerivationAsyncForMarkup
  * 
- * updateFinishedAsyncDerivation is tested in
+ * mapNewOutputsToDownstream and reconnectAsyncDerivation for async is tested in
  * testCleanUpFinishedDerivationUpdate_Case1~5 in DerivedQuantityClientTest
  * 
  * @author Kok Foong Lee
@@ -453,19 +453,30 @@ public class DerivedQuantitySparqlTest {
 
 	@Test
 	public void testMarkAsRequestedIfOutdated() throws InterruptedException {
-		String derivation = devClient.createDerivation(entities, derivedAgentIRI, inputs);
+		String upstreamDerivation = devClient.createDerivation(new ArrayList<>(), derivedAgentIRI, inputs);
+		String downstreamDerivation = devClient.createDerivation(new ArrayList<>(), derivedAgentIRI, Arrays.asList(upstreamDerivation));
 		// add timestamp to derivations, the timestamp of inputs is automatically added
-		devClient.addTimeInstance(derivation);
-		// here we also need to updateTimeStamp to make derivation up-to-date
+		devClient.addTimeInstance(Arrays.asList(upstreamDerivation, downstreamDerivation));
+		// here we also need to updateTimeStamp to make the upstream derivation up-to-date
 		// as the timestamp of inputs is added as current timestamp
-		devClient.updateTimeStamp(derivation);
+		devClient.updateTimeStamp(upstreamDerivation);
 
-		// case 1: as all timestamp will be current timestamp, the derivation should be deemed as
+		// case 1: as all timestamp will be current timestamp, the upstream derivation should be deemed as
 		// up-to-date, thus nothing should happen if execute
-		devClient.markAsRequestedIfOutdated(derivation);
+		devClient.markAsRequestedIfOutdated(upstreamDerivation);
 		OntModel testKG = mockClient.getKnowledgeBase();
-		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation),
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(upstreamDerivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")));
+		// for the downstream derivations, the status should be mark as requested as its timestamp
+		// is initialised as 0, also this tests the case where no outputs are generated from the upstream
+		devClient.markAsRequestedIfOutdated(downstreamDerivation);
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(downstreamDerivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")));
+		String downstreamStatusIRI = testKG.getProperty(ResourceFactory.createResource(downstreamDerivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(downstreamStatusIRI),
+				ResourceFactory.createProperty(RDF.type.getURI()),
+				ResourceFactory.createResource(DerivationSparql.derivednamespace + "Requested")));
 
 		// case 2: if now we make the derivation to be outdated, then the status should
 		// be mark as requested, here we sleep for 1 sec to be sure
@@ -473,18 +484,18 @@ public class DerivedQuantitySparqlTest {
 		for (String input : inputs) {
 			devClient.updateTimeStamp(input);
 		}
-		devClient.markAsRequestedIfOutdated(derivation);
-		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation),
+		devClient.markAsRequestedIfOutdated(upstreamDerivation);
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(upstreamDerivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")));
-		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
+		String statusIRI = testKG.getProperty(ResourceFactory.createResource(upstreamDerivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
 		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(statusIRI),
 				ResourceFactory.createProperty(RDF.type.getURI()),
 				ResourceFactory.createResource(DerivationSparql.derivednamespace + "Requested")));
 
 		// case 3: if now we execute to mark up again, then nothing should happen
-		devClient.markAsRequestedIfOutdated(derivation);
-		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation),
+		devClient.markAsRequestedIfOutdated(upstreamDerivation);
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(upstreamDerivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus"),
 				ResourceFactory.createResource(statusIRI)));
 		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(statusIRI),
