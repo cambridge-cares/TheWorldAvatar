@@ -1083,22 +1083,53 @@ public class QueryClient {
         }
     }
 
-    List<byte[]> getScopeElevation(Polygon scope, String elevationTables) {
+    private List<String> getDataFileList(Polygon scope, String elevationTables) {
 
-        String sqlString1 = "SELECT ST_AsGDALRaster(rast, 'GTiff') AS rData FROM ";
+        List<String> fileNames = new ArrayList<>();
+        String sqlString1 = "SELECT filename AS fn FROM ";
         String sqlString2 = String.format(
                 " WHERE ST_Intersects(rast, ST_Transform(ST_GeomFromText('%s',4326),ST_SRID(rast)));", scope.toText());
 
         String sql = sqlString1 + elevationTables + sqlString2;
-        List<byte[]> elevData = new ArrayList<>();
 
         try (Connection conn = rdbStoreClient.getConnection();
                 Statement stmt = conn.createStatement();
                 ResultSet result = stmt.executeQuery(sql)) {
             while (result.next()) {
-                byte[] rasterBytes = result.getBytes("rData");
-                elevData.add(rasterBytes);
+                String fileName = result.getString("fn");
+                fileNames.add(fileName);
             }
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        }
+
+        return fileNames;
+
+    }
+
+    List<byte[]> getScopeElevation(Polygon scope, String elevationTables) {
+
+        List<String> fileNames = getDataFileList(scope, elevationTables);
+
+        String sqlString1 = "SELECT ST_AsTiff(ST_UNION(rast)) AS rData FROM ";
+
+        String sqlTemplate = sqlString1 + elevationTables;
+        List<byte[]> elevData = new ArrayList<>();
+
+        try (Connection conn = rdbStoreClient.getConnection();
+                Statement stmt = conn.createStatement()) {
+            for (String fn : fileNames) {
+                String sqlString2 = String.format(
+                        " WHERE filename='%s';", fn);
+                String sql = sqlTemplate + sqlString2;
+                ResultSet result = stmt.executeQuery(sql);
+                if (result.next()) {
+                    byte[] rasterBytes = result.getBytes("rData");
+                    elevData.add(rasterBytes);
+                }
+
+            }
+
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
         }
