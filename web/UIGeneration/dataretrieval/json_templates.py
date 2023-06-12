@@ -9,6 +9,9 @@
 import json 
 
 def get_json_object(title, description, type):
+    """
+    Returns the structure of the basic JSON object.
+    """
    
     data = {       
         "title": title,
@@ -19,6 +22,9 @@ def get_json_object(title, description, type):
     return data
 
 def get_json_object_with_enum(title, description, type, enum):
+    """
+    Returns the structure of the JSON object that includes an enumerated list.
+    """
    
     data = {       
         "title": title,
@@ -32,6 +38,9 @@ def get_json_object_with_enum(title, description, type, enum):
     return data
 
 def get_json_object_with_properties(title, description, type):
+    """
+    Returns the structure of the JSON object that includes properties.
+    """
    
     data = {       
         "title": title,
@@ -43,6 +52,10 @@ def get_json_object_with_properties(title, description, type):
     return data
 
 def get_json_object_with_unit(description_of_value, description_of_unit, enum):
+    """
+    Returns the structure of the JSON object that includes both the value and
+    unit.
+    """
    
     data = {       
         "value": {

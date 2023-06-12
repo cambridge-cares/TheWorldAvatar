@@ -131,7 +131,7 @@ def perform_query(endpoint: str, query: str):
 
 def format_property_values(results: str, previous_property_values: str = None):
     """
-    When multiple concepts are available in the range of an object property or
+    When multiple classes are available in the range of an object property or
     multiple values are available in the range of a data property, this
     function combines them in a comma-separated string to make it suitable for
     representing it as an enumerated list.
@@ -158,7 +158,7 @@ def format_property_values(results: str, previous_property_values: str = None):
 
 def format_subclasses(results: str, previous_property_values: str = None):
     """
-    When multiple concepts are available in the range of an object property or
+    When multiple classes are available in the range of an object property or
     multiple values are available in the range of a data property, this
     function combines them in a comma-separated string to make it suitable for
     representing it as an enumerated list.
@@ -173,6 +173,11 @@ def format_subclasses(results: str, previous_property_values: str = None):
 
 
 def format_instances(class_label:str, results: str, previous_property_values: str = None):
+    """
+    Formats instances of a class, retrieved by querying the material passport
+    ontology from a triple store, in JSON.
+    """
+
     instances = dict()
     for result in results["results"]["bindings"]:
                 label = result['label']['value']
@@ -186,6 +191,10 @@ def format_instances(class_label:str, results: str, previous_property_values: st
     return instances
 
 def format_unit(class_label:str, results: str):
+    """
+    Formats a unit, retrieved by querying the material passport ontology
+    from a triple store, in JSON.
+    """
     instances = dict()
     for result in results["results"]["bindings"]:
                 symbol = result['label']['value']
@@ -200,18 +209,28 @@ def format_unit(class_label:str, results: str):
 
 
 def format_enumerated_list(enumerated_list):
+    """
+    Formats an enumerated list, retrieved by querying the material passport
+    ontology from a triple store, in JSON.
+    """
     string_array = enumerated_list.split(", ")
     sorted_list = sorted(string_array)
     sorted_string = ", ".join(['"{}"'.format(s) for s in sorted_list])
     return sorted_string
 
 def is_property_result_empty(results):
+    """
+    Checks if the results for querying a property are empty.
+    """
     if results["results"]["bindings"] == None or results["results"]["bindings"] == "" or len(results["results"]["bindings"]) == 0:
         return True
     else:
          return False
 
 def is_unit_result_empty(results):
+    """
+    Checks if the results for querying a unit are empty.
+    """
     for result in results["results"]["bindings"]:
         unit = result['property']['value']
         if unit == "":
@@ -221,6 +240,9 @@ def is_unit_result_empty(results):
 
 
 def traverse_through_identification_property(results, property_value_processed, property_values_formated, json_string, parsed_classes, class_of_properties: str = None, class_of_instances: str = None):
+    """
+    Traverses through the identification properties until it finds the already visited class or a leaf node.
+    """
     if class_of_instances != None:
         popped_item = parsed_classes.pop()
         popped_parent_item = parsed_classes.pop()
@@ -279,6 +301,9 @@ def traverse_through_identification_property(results, property_value_processed, 
     return json_string
 
 def traverse_through_physical_property(results, property_value_processed, property_values_formated, json_string, parsed_classes, class_of_properties: str = None, class_of_instances: str = None, class_containing_unit: str = None):
+    """
+    Traverses through the physical properties until it finds the already visited class or a leaf node.
+    """
     if class_of_instances != None:
         popped_item = parsed_classes.pop()
         popped_parent_item = parsed_classes.pop()
@@ -386,6 +411,9 @@ def traverse_through_physical_property(results, property_value_processed, proper
 
 
 def generate_identification_properties():
+    """
+    Generates the identification properties of products/components.
+    """
     try:
          global JIDEP_ENDPOINT
          JIDEP_ENDPOINT = os.environ.get('JIDEP_ENDPOINT')
@@ -413,6 +441,9 @@ def generate_identification_properties():
 
 
 def generate_physical_properties():
+    """
+    Generates the physical properties of products and components.
+    """
     try:
          global JIDEP_ENDPOINT
          JIDEP_ENDPOINT = os.environ.get('JIDEP_ENDPOINT')
@@ -425,9 +456,6 @@ def generate_physical_properties():
     property_values_formated = format_subclasses(results)
     property_value_processed = []
     json_string = []
-    # label = "Type"
-    # range_label = "string"
-    # enumerated_list_provided = "Product" + ", " + "Component"
 
     parsed_classes = root_classes
     json_string = traverse_through_physical_property(results, property_value_processed, property_values_formated, json_string, parsed_classes)
@@ -437,4 +465,9 @@ def generate_physical_properties():
 
 if __name__== '__main__':
 
-    print(generate_physical_properties())
+    # Open the file in write mode
+    file = open("output.json", "w")
+    # file.write(generate_identification_properties())
+    file.write(generate_physical_properties())
+    # Close the file
+    file.close()
