@@ -26,7 +26,6 @@ import org.json.JSONObject;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedAcyclicGraph;
 
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
@@ -772,8 +771,8 @@ public class DerivationClient {
 	 * @param newDerivedIRIs
 	 * @return
 	 */
-	public Map<String, List<String>> mapSyncNewOutputsToDownstream(String derivation, List<String> newDerivedIRIs) {
-		return this.sparqlClient.mapNewOutputsToDownstream(derivation, false, newDerivedIRIs);
+	public Map<String, List<String>> mapSyncNewOutputsToDownstream(String derivation, Map<String, String> newOutputsAndRdfType) {
+		return this.sparqlClient.mapSyncNewOutputsToDownstream(derivation, newOutputsAndRdfType);
 	}
 
 	/**

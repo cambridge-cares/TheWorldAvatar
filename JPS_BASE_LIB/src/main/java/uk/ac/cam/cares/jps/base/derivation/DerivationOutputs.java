@@ -252,6 +252,14 @@ public class DerivationOutputs {
 		return this.outputTriples;
 	}
 
+	public Map<String, String> getNewOutputsAndRdfTypeMap() {
+		Map<String, String> newOutputsAndRdfTypeMap = new HashMap<>();
+		this.newEntitiesMap.forEach((rdfType, iris) -> {
+			iris.stream().forEach(iri -> newOutputsAndRdfTypeMap.put(iri, rdfType));
+		});
+		return newOutputsAndRdfTypeMap;
+	}
+
 	public JSONObject getNewEntitiesJsonMap() {
 		JSONObject newEntitiesJson = new JSONObject();
 		this.newEntitiesMap.forEach((rdfType, iris) -> {

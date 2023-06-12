@@ -2155,6 +2155,10 @@ public class DerivationSparql {
 		}
 	}
 
+	Map<String, List<String>> mapSyncNewOutputsToDownstream(String derivation, Map<String, String> newOutputsAndRdfType) {
+		return mapNewOutputsToDownstream(derivation, false, newOutputsAndRdfType);
+	}
+
 	/**
 	 * This method maps the new outputs of a derivation to its downstream derivation.
 	 * It relies on the input signature specified in the OntoAgent instances that the
@@ -2166,45 +2170,71 @@ public class DerivationSparql {
 	 * 
 	 * @param derivation
 	 * @param isAsync
-	 * @param outputs
+	 * @param newOutputsAndRdfType
 	 * @return
 	 */
-	Map<String, List<String>> mapNewOutputsToDownstream(String derivation, boolean isAsync, List<String> outputs) {
+	private Map<String, List<String>> mapNewOutputsToDownstream(String derivation, boolean isAsync,
+			Map<String, String> newOutputsAndRdfType) {
 		SelectQuery query = Queries.SELECT().distinct();
 		Variable d = SparqlBuilder.var("d");
 		Variable entity = query.var();
-		Variable existingDerivation = query.var();
-		Variable timestamp = query.var();
+		Variable entityType = query.var();
 		Variable downstreamDerivation = query.var();
 		Variable inputType = query.var();
+		Variable existingDerivation = query.var();
+		Variable timestamp = query.var();
 
 		// VALUES ?d { <derivation> }
 		GraphPattern derivVP = new ValuesPattern(d, iri(derivation));
-		GraphPattern outputsPattern;
-		if (isAsync) {
-			// ?d derived:hasStatus/derived:hasNewDerivedIRI ?x0 .
-			outputsPattern = d.has(PropertyPaths.path(hasStatus, hasNewDerivedIRI), entity);
-		} else {
-			// VALUES ?x0 { <output1> <output2> ... }
-			outputsPattern = new ValuesPattern(entity,
-					outputs.stream().map(e -> iri(e)).collect(Collectors.toList()));
+
+		// ?d derived:hasStatus/derived:hasNewDerivedIRI ?x0 .
+		TriplePattern outputsTP = d.has(PropertyPaths.path(hasStatus, hasNewDerivedIRI), entity);
+
+		// ?x0 a ?x1 .
+		TriplePattern outputsTypeTP = entity.has(RdfPredicate.a, entityType);
+
+		// VALUES ( ?x0 ?x1 ) { ( <entity> <entityType> ) ... }
+		// NOTE that here the VALUES pattern is used to pass in the iri-rdfType pairs
+		// of the new outputs of the sync derivation, as {<entity> a <entityType>.}
+		// should NOT exist in the KG before the sync derivation is updated
+		ValuesPattern syncOutputsVP = new ValuesPattern(entity, entityType);
+		if (newOutputsAndRdfType != null) {
+			newOutputsAndRdfType.forEach((output, rdfType) -> {
+				syncOutputsVP.addValuePairForMultipleVariables(iri(output), iri(rdfType));
+			});
 		}
-		// ?x3 derived:isDerivedFrom/derived:belongsTo? ?d .
-		GraphPattern downstreamGP = downstreamDerivation.has(PropertyPaths.path(isDerivedFrom, zeroOrOne(belongsTo)), d);
-		// ?x3 derived:isDerivedUsing/agent:hasOperation/agent:hasInput/agent:hasMandatoryPart/agent:hasType ?x4 .
-		// ?x0 a*/<http://www.w3.org/2000/01/rdf-schema#subClassOf>* ?x4 .
-		GraphPattern mappingGP = GraphPatterns.and(
-				downstreamDerivation.has(PropertyPaths.path(isDerivedUsing, hasOperation, hasInput, hasMandatoryPart, hasType), inputType),
-				entity.has(PropertyPaths.path(PropertyPaths.zeroOrMore(RdfPredicate.a), PropertyPaths.zeroOrMore(iri(RDFS.SUBCLASSOF.toString()))), inputType));
-		// OPTIONAL { ?x0 derived:belongsTo ?x1 . }
-		GraphPattern belongsToDerivationGP = entity.has(belongsTo, existingDerivation).optional();
-		// OPTIONAL { ?x0 time:hasTime/time:inTimePosition/time:numericPosition ?x2 . }
-		GraphPattern tsGP = entity.has(PropertyPaths.path(hasTime, inTimePosition, numericPosition), timestamp).optional();
+
+		// ?x2 derived:isDerivedFrom/derived:belongsTo? ?d .
+		TriplePattern downstreamTP = downstreamDerivation.has(PropertyPaths.path(isDerivedFrom, zeroOrOne(belongsTo)), d);
+
+		// ?x2 derived:isDerivedUsing/agent:hasOperation/agent:hasInput/agent:hasMandatoryPart/agent:hasType ?x3 .
+		TriplePattern agentInputsTP = downstreamDerivation.has(PropertyPaths.path(isDerivedUsing, hasOperation, hasInput, hasMandatoryPart, hasType), inputType);
+
+		// ?x1 <http://www.w3.org/2000/01/rdf-schema#subClassOf>* ?x3 .
+		TriplePattern entityTypeMappingTP = entityType.has(PropertyPaths.zeroOrMore(iri(RDFS.SUBCLASSOF.toString())), inputType);
+
+		// first part of the query: map inputs to downstream derivations (if match)
+		GraphPattern outputsToDerivationMapGP = GraphPatterns.and(
+			isAsync ? GraphPatterns.and(outputsTP, outputsTypeTP) : syncOutputsVP,
+			GraphPatterns.and(downstreamTP, agentInputsTP, entityTypeMappingTP).optional(),
+			// triples for checking if the new outputs are allowed to be an output
+			// i.e. not already belongsTo other derivations, and do not have a timestamp
+			// OPTIONAL { ?x0 derived:belongsTo ?x4 . }
+			entity.has(belongsTo, existingDerivation).optional(),
+			// OPTIONAL { ?x0 time:hasTime/time:inTimePosition/time:numericPosition ?x5 . }
+			entity.has(PropertyPaths.path(hasTime, inTimePosition, numericPosition), timestamp).optional()
+		);
+
+		// second part of the query: map the derivation itself to downstream derivations
+		// (in case of the missing outputs)
+		GraphPattern missingOutputsGP = GraphPatterns.and(
+				downstreamTP, GraphPatterns.filterNotExists(
+					isAsync ? outputsTP.and(outputsTypeTP) : syncOutputsVP,
+					agentInputsTP, entityTypeMappingTP
+				));
 
 		query.prefix(prefixDerived, prefixTime, prefixAgent).select(entity, downstreamDerivation, existingDerivation, timestamp);
-		query.where(derivVP, GraphPatterns.union(
-				GraphPatterns.and(outputsPattern, GraphPatterns.and(downstreamGP, mappingGP).optional(), belongsToDerivationGP, tsGP),
-						GraphPatterns.and(downstreamGP, GraphPatterns.filterNotExists(outputsPattern, mappingGP))));
+		query.where(derivVP, GraphPatterns.union(outputsToDerivationMapGP, missingOutputsGP));
 
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 

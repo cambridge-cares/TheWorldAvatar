@@ -116,6 +116,9 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 			// instances)
 			Derivation derivation = new Derivation(derivationIRI, derivationType);
 			if (!derivation.isDerivationAsyn() && !derivation.isDerivationWithTimeSeries()) {
+				// perform the mapping between the new outputs and the downstream derivations
+				Map<String, List<String>> connectionMap = this.devClient.mapSyncNewOutputsToDownstream(
+						outputs.getThisDerivation(), outputs.getNewOutputsAndRdfTypeMap());
 				// construct and fire SPARQL update given DerivationOutputs objects, if normal
 				// derivation
 				// NOTE this makes sure that the new generated instances/triples will
@@ -123,8 +126,6 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 				// at the point of executing SPARQL update, i.e. this solves concurrent request
 				// issue as detailed in
 				// https://github.com/cambridge-cares/TheWorldAvatar/issues/184
-				Map<String, List<String>> connectionMap = this.devClient.mapSyncNewOutputsToDownstream(
-						outputs.getThisDerivation(), outputs.getNewDerivedIRI());
 				boolean triplesChangedForSure = this.devClient.reconnectSyncDerivation(outputs.getThisDerivation(),
 						connectionMap, outputs.getOutputTriples(), outputs.getRetrievedInputsAt());
 
