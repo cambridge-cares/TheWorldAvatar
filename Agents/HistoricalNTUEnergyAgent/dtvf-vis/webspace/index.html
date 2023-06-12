@@ -17,6 +17,8 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
         <!---<script src="https://kg.cmclinnovations.com/cdn/dtvf/3.3.4/dtvf.min.js" charset="UTF-8"></script>-->
         <script src="./dtvf.min.js" charset="UTF-8"></script>
+        <script src="./CesiumHeatmap.js"></script>
+        <script src="./HeatmapImageryProvider.js"></script>
 
         <!-- ===== CUSTOMISABLE ===== -->
         <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
@@ -134,10 +136,10 @@
         </div>
 
         <!--OPF Button (to be loaded by the dtvf.min.js -->
-        <button id="runOPFButton" class="custom-button" style="position: absolute">Run Optimal Power Flow Algorithm</button>
-        <button id="instantiateKGButton" class="custom-button" style="position: absolute">Run NN-cluster algorithm</button>
+        <button id="runPVButton" class="custom-button1" style="position: absolute">Run Photovoltaic Panel Agent (Calculate PV output)</button>
+        <button id="runOPFButton" class="custom-button2" style="position: absolute">Run Optimal Power Flow Agent</button>
         <style>
-            .custom-button {
+            .custom-button1 {
                 font-size: 15px;
                 padding: 7px 15px;
                 color: white;
@@ -147,8 +149,21 @@
                 cursor: pointer;
                 transition: background-color 0.3s ease;
             }
-            .custom-button:hover {
+            .custom-button1:hover {
                 background-color: #45a049;
+            }
+            .custom-button2 {
+                font-size: 15px;
+                padding: 7px 15px;
+                color: white;
+                background-color: #0a5ef0;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+            .custom-button2:hover {
+                background-color: #5989de;
             }
         </style>
 
@@ -180,18 +195,15 @@
 
                 // ===== CUSTOMISABLE =====
                 // Set the default content in the "General" tab of the side panel
-                manager.getPanelHandler().setTitle("<h1>Example Visualisation</h1>");
+                manager.getPanelHandler().setTitle("<h1>NTU Power Network Visualisation</h1>");
                 manager.getPanelHandler().setContent(`
-                    <p>This example visualisation has been put together to demonstrate the intended use of the centralised Digital Twin Visualisation Framework (DTVF).
+                    <p>This NTU visualisation has been put together to demonstrate the intended use of the centralised Digital Twin Visualisation Framework (DTVF).
                     This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put 
                     together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF 
                     before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.</p>
                     <p>This centralised framework expects users to have structured their data in a particular format, and provide a number of associated metadata files. 
                     Before starting, ensure your data meets this format by reading the <a href="https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF-v2.0.0" target="_blank">GitHub wiki</a>. 
                     This page also details how the framework functions, and how to configure your visualisation to use it.</p>
-                    <p>Note that this example has no version number as it is not intended for release; instead it should be updated to reflect the most recent version of 
-                    the framework itself. It's also worth noting that this example uses the currently hosted version of the framework library (i.e. from the CMCL KG website), 
-                    not the files within the repository.</p>
                 `);
                 
                 manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
@@ -202,7 +214,13 @@
 
                 // Plot data
                 manager.plotData();
+
+
             }
+
+
+
+
         </script>
     </body>
 </html>
