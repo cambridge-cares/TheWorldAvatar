@@ -1,5 +1,7 @@
 # Data Bridge Agent
-This agent transfers the data stored on various SQL or SPARQL endpoints to the knowledge graph deployed on the stack.
+This agent serves as a bridge between the stack and external endpoints to enable seamless data interaction and transfer. It performs two primary functions:
+1) Data Transfer: The agent facilitates the transfer of data between external SQL or SPARQL endpoints, and/or the knowledge graph deployed on the stack.
+2) Time Series Data Instantiation: The agent also processes time series data for instantiation in the knowledge graph deployed on the stack.
 
 ## Instructions
 ### 1. Configurations
@@ -19,7 +21,7 @@ The agent is designed for execution through a Docker container. Other deployment
 
 #### 2.1 **TEST ENVIRONMENT**
 - Deploy the agent to execute the unit and integration tests by running the following code in the CLI at the <root> directory. 
-- Do note that the success of all tests must be verified through the test container's Docker logs. This container will only start executing the tests after the test database containers and it are created.
+- Do note that the success of all tests must be verified through the test container's Docker logs. This container will only start executing the tests after the test database and agent containers are created.
 ```
 docker compose -f "./docker/docker-compose.test.yml" up -d --build
 ```
@@ -83,7 +85,7 @@ curl -X GET 'localhost:3838/data-bridge-agent/sparql?namespace=kb&transfer=in'
    - If there are existing tables in the target/destination database with the same name, those will be dropped and recreated. Please do take note of this side effect if you wish to retain old data.
    - Before sending the request, please read the instructions.
    - When transferring time series across non-stack database, please update the source and target jdbc url, user, and password in the `<root>/config/endpoint.properties`, and send the simple `GET` request.
-     - The request will return a list of commands to be executed on a CLI that must have `psql` installed to transfer between two remote databases.
+     - Do note that in this instance, the transfer will not occur and will return a command instead. This command must be executed on a CLI that must have `psql` installed to transfer between two remote databases.
    - When transferring time series from or to the same stack's database, please send the `GET` request with the following parameters:
        - The `database` parameter refers to the specified database name within the same stack.
        - The `transfer` parameter indicates whether you wish to transfer time series into or outside the stack. `transfer=in` is for transferring time series from non-stack databases into the stack. `transfer=out` is for transferring time series from the stack to non-stack databases.
@@ -116,4 +118,4 @@ curl -X POST --header "Content-Type: application/json" -d "{
      'database' = 'time',
      'namespace' ='time'
      }" localhost:3838/data-bridge-agent/timeseries 
-   ```
+```
