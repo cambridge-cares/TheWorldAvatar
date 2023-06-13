@@ -374,15 +374,15 @@ These can be specified within an `"gdalTranslateOptions"` object (previously jus
 ##### `"sridIn"`
 If the input dataset does not have an SRID/CRS/SRS specified then it can be specified as the value for the `"sridIn"` key.
 When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
-A full explanation of the acceptable SRS formats is given [here][gdal-translate-t_srs].
-This sets the value of the [`-a_srs`][gdal-translate-a_srs] argument passed to `gdal_translate`.
+A full explanation of the acceptable SRS formats is given [here][raster-common-t_srs].
+This sets the value of the [`-a_srs`][raster-common-a_srs] argument passed to `gdal_translate`.
 
 ##### `"sridOut"`
 If you want to reproject the coordinates the target SRID/CRS/SRS can be set as the value for the `"sridOut"` key.
 When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
-A full explanation of the acceptable SRS formats is given [here][gdal-translate-t_srs].
-This sets the value of the [`-t_srs`][gdal-translate-t_srs] argument passed to `gdal_translate`.
-It also means any value specified for `"sridIn"` is passed as the value of the [`-s_srs`][gdal-translate-s_srs] argument, rather than `-a_srs`.
+A full explanation of the acceptable SRS formats is given [here][raster-common-t_srs].
+This sets the value of the [`TARGET_SRS`][gdal-cog-t_srs] creation option passed to `gdal_translate`.
+This is an option specific to the [COG][gdal-cog] raster driver when using `gdal_translate`, although we could use `gdalwarp` to handle this more efficiently in the future.
 
 ##### `"inputDatasetOpenOptions"`
 Some data source formats require additional options to be set for the geometries and their metadata to be loaded correctly.
@@ -655,9 +655,10 @@ This way you can look at look at the user interfaces of the various services (se
 
 [gdal-translate]:       https://gdal.org/programs/gdal_translate.html#gdal-translate
 [raster-common]:        https://gdal.org/programs/raster_common_options.html#common-options-for-raster-programs
-[gdal-translate-a_srs]: https://gdal.org/programs/raster_common_options.html#cmdoption-a_srs
-[gdal-translate-s_srs]: https://gdal.org/programs/raster_common_options.html#cmdoption-s_srs
-[gdal-translate-t_srs]: https://gdal.org/programs/raster_common_options.html#cmdoption-t_srs
+[raster-common-a_srs]:  https://gdal.org/programs/raster_common_options.html#cmdoption-a_srs
+[raster-common-t_srs]:  https://gdal.org/programs/raster_common_options.html#cmdoption-t_srs
+[gdal-cog-t_srs]:       https://gdal.org/drivers/raster/cog.html#reprojection-related-creation-options
+[gdal-cog]:             https://gdal.org/drivers/raster/cog.html#cog-cloud-optimized-geotiff-generator
 [gdal-translate-oo]:    https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-oo
 [gdal-translate-co]:    https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-co
 
