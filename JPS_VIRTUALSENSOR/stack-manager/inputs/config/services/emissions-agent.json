@@ -3,7 +3,7 @@
         "Name": "emissions-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "docker.cmclinnovations.com/emissions-agent:1.0.0",
+                "Image": "ghcr.io/cambridge-cares/emissions-agent:1.2",
 				"Env": [
 					"STACK_NAME=${STACK_NAME}",
 					"DATABASE=postgres",
