@@ -145,11 +145,9 @@ public class AermodAgent extends DerivationAgent {
         }
 
         if (citiesNamespace != null) {
-            List<String> elevationTableList = queryClient.getElevationTableList();
-            if (!elevationTableList.isEmpty()) {
-                String elevationTables = String.join(",", elevationTableList);
-                queryClient.setElevation(staticPointSources, buildings, srid, elevationTables);
-                List<byte[]> elevData = queryClient.getScopeElevation(scope, elevationTables);
+            if (queryClient.elevationTableExists()) {
+                queryClient.setElevation(staticPointSources, buildings, srid);
+                List<byte[]> elevData = queryClient.getScopeElevation(scope);
                 if (aermod.createAERMAPInput(elevData, centreZoneNumber) != 0) {
                     LOGGER.error("Could not create input data file for running AERMAP.");
                     throw new JPSRuntimeException("Error creating AERMAP elevation data input.");
@@ -158,8 +156,8 @@ public class AermodAgent extends DerivationAgent {
                 aermod.runAermap();
             } else {
                 LOGGER.warn(
-                        "There are no postgis tables containing elevation data whose name begins with {}. Base elevations of static point sources and buildings will be set to zero. ",
-                        "elevation_data_");
+                        "The specified elevation data table {} does not exist. Base elevations of static point sources and buildings will be set to zero. ",
+                        EnvConfig.ELEVATION_TABLE);
             }
 
             aermod.createBPIPPRMInput(staticPointSources, buildings, srid);

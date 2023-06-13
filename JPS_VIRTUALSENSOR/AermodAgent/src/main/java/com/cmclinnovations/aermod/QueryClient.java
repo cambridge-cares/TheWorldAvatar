@@ -978,7 +978,7 @@ public class QueryClient {
         return DSL.using(conn, SQLDialect.POSTGRES);
     }
 
-    boolean tableExists() {
+    boolean elevationTableExists() {
         String condition = String.format("table_name = '%s'", EnvConfig.ELEVATION_TABLE);
         boolean tableCheck = false;
         try (Connection conn = rdbStoreClient.getConnection()) {
@@ -993,27 +993,9 @@ public class QueryClient {
         return tableCheck;
     }
 
-    public List<String> getElevationTableList() {
+    public void setElevation(List<StaticPointSource> pointSources, List<Building> buildings, int simulationSrid) {
 
-        List<String> elevationTables = new ArrayList<>();
-        String sqlString = " SELECT * FROM pg_catalog.pg_tables WHERE schemaname LIKE 'public' AND tablename SIMILAR TO 'elevation_data_*' ";
-        try (Connection conn = rdbStoreClient.getConnection();
-                Statement stmt = conn.createStatement();
-                ResultSet result = stmt.executeQuery(sqlString);) {
-            while (result.next()) {
-                String tablename = result.getString("tablename");
-                elevationTables.add(tablename);
-            }
-        } catch (SQLException e) {
-            LOGGER.error(e.getMessage());
-        }
-
-        return elevationTables;
-
-    }
-
-    public void setElevation(List<StaticPointSource> pointSources, List<Building> buildings, int simulationSrid,
-            String elevationTables) {
+        String elevationTable = EnvConfig.ELEVATION_TABLE;
 
         try (Connection conn = rdbStoreClient.getConnection();
                 Statement stmt = conn.createStatement();) {
@@ -1023,19 +1005,13 @@ public class QueryClient {
                 double[] xyOriginal = { ps.getLocation().getX(), ps.getLocation().getY() };
                 double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
 
-                String sqlString1 = String.format(
+                String sqlString = String.format(
                         "SELECT ST_Value(rast, ST_Transform(ST_SetSRID(ST_MakePoint(%f,%f),%d),ST_SRID(rast))) AS val "
                                 +
-                                "FROM ",
+                                "FROM %s WHERE ST_Intersects(rast, ST_Transform(ST_SetSRID(ST_MakePoint(%f,%f),%d),ST_SRID(rast)));",
+                        xyTransformed[0], xyTransformed[1], simulationSrid, elevationTable,
                         xyTransformed[0], xyTransformed[1], simulationSrid);
 
-                String sqlString2 = String.format(
-                        " WHERE ST_Intersects(rast, ST_Transform(ST_SetSRID(ST_MakePoint(%f,%f),%d),ST_SRID(rast)));",
-                        xyTransformed[0],
-                        xyTransformed[1],
-                        simulationSrid);
-
-                String sqlString = sqlString1 + elevationTables + sqlString2;
                 ResultSet result = stmt.executeQuery(sqlString);
                 if (result.next()) {
                     double elevation = result.getDouble("val");
@@ -1053,19 +1029,14 @@ public class QueryClient {
                 String originalSrid = building.getSrid();
                 double[] xyOriginal = { building.getLocation().getX(), building.getLocation().getY() };
                 double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
-                String sqlString1 = String.format(
+
+                String sqlString = String.format(
                         "SELECT ST_Value(rast, ST_Transform(ST_SetSRID(ST_MakePoint(%f,%f),%d),ST_SRID(rast))) AS val "
                                 +
-                                "FROM ",
+                                "FROM %s WHERE ST_Intersects(rast, ST_Transform(ST_SetSRID(ST_MakePoint(%f,%f),%d),ST_SRID(rast)));",
+                        xyTransformed[0], xyTransformed[1], simulationSrid, elevationTable,
                         xyTransformed[0], xyTransformed[1], simulationSrid);
 
-                String sqlString2 = String.format(
-                        " WHERE ST_Intersects(rast, ST_Transform(ST_SetSRID(ST_MakePoint(%f,%f),%d),ST_SRID(rast)));",
-                        xyTransformed[0],
-                        xyTransformed[1],
-                        simulationSrid);
-
-                String sqlString = sqlString1 + elevationTables + sqlString2;
                 ResultSet result = stmt.executeQuery(sqlString);
                 if (result.next()) {
                     double elevation = result.getDouble("val");
@@ -1083,51 +1054,20 @@ public class QueryClient {
         }
     }
 
-    private List<String> getDataFileList(Polygon scope, String elevationTables) {
+    List<byte[]> getScopeElevation(Polygon scope) {
 
-        List<String> fileNames = new ArrayList<>();
-        String sqlString1 = "SELECT filename AS fn FROM ";
-        String sqlString2 = String.format(
-                " WHERE ST_Intersects(rast, ST_Transform(ST_GeomFromText('%s',4326),ST_SRID(rast)));", scope.toText());
-
-        String sql = sqlString1 + elevationTables + sqlString2;
-
-        try (Connection conn = rdbStoreClient.getConnection();
-                Statement stmt = conn.createStatement();
-                ResultSet result = stmt.executeQuery(sql)) {
-            while (result.next()) {
-                String fileName = result.getString("fn");
-                fileNames.add(fileName);
-            }
-        } catch (SQLException e) {
-            LOGGER.error(e.getMessage());
-        }
-
-        return fileNames;
-
-    }
-
-    List<byte[]> getScopeElevation(Polygon scope, String elevationTables) {
-
-        List<String> fileNames = getDataFileList(scope, elevationTables);
-
-        String sqlString1 = "SELECT ST_AsTiff(ST_UNION(rast)) AS rData FROM ";
-
-        String sqlTemplate = sqlString1 + elevationTables;
         List<byte[]> elevData = new ArrayList<>();
 
         try (Connection conn = rdbStoreClient.getConnection();
                 Statement stmt = conn.createStatement()) {
-            for (String fn : fileNames) {
-                String sqlString2 = String.format(
-                        " WHERE filename='%s';", fn);
-                String sql = sqlTemplate + sqlString2;
-                ResultSet result = stmt.executeQuery(sql);
-                if (result.next()) {
-                    byte[] rasterBytes = result.getBytes("rData");
-                    elevData.add(rasterBytes);
-                }
 
+            String sql = String.format("SELECT filename, ST_AsTiff(ST_UNION(rast)) AS rData FROM %s"
+                    + " WHERE ST_Intersects(rast, ST_Transform(ST_GeomFromText('%s',4326),ST_SRID(rast)))"
+                    + " GROUP BY 1", EnvConfig.ELEVATION_TABLE, scope.toText());
+            ResultSet result = stmt.executeQuery(sql);
+            while (result.next()) {
+                byte[] rasterBytes = result.getBytes("rData");
+                elevData.add(rasterBytes);
             }
 
         } catch (SQLException e) {
