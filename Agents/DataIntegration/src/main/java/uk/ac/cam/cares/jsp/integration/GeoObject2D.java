@@ -77,18 +77,18 @@ public class GeoObject2D {
         List<GeoObject2D> allObject2D = new ArrayList<>();
 
         try (Connection conn = postgresClient.getConnection()) {
-            String sql = "SELECT name, addr_postc, addr_stree, addr_hou_1, addr_count, addr_city, wkb_geometry FROM " + tableName + " WHERE name is not null or addr_stree is not null";
+            String sql = "SELECT name, add_postcode, add_street, add_housenumber, add_country, add_city, wkb_geometry FROM " + tableName + " WHERE name is not null or add_street is not null";
             try (Statement stmt = conn.createStatement()) {
                 ResultSet result = stmt.executeQuery(sql);
                 while (result.next()) {
                     GeoObject2D object2D = new GeoObject2D();
                     object2D.setName(result.getString("name"));
                     object2D.setGeometry2D((PGgeometry)result.getObject("wkb_geometry"));
-                    object2D.setAddress(result.getString("addr_stree"));
-                    object2D.setHouse(result.getString("addr_hou_1"));
-                    object2D.setPostcode(result.getString("addr_postc"));
-                    object2D.setCity(result.getString("addr_city"));
-                    object2D.setCountry(result.getString("addr_count"));
+                    object2D.setAddress(result.getString("add_street"));
+                    object2D.setHouse(result.getString("add_housenumber"));
+                    object2D.setPostcode(result.getString("add_postcode"));
+                    object2D.setCity(result.getString("add_city"));
+                    object2D.setCountry(result.getString("add_country"));
                     object2D.setPostGISClient(postgresClient);
                     allObject2D.add(object2D);
                 }

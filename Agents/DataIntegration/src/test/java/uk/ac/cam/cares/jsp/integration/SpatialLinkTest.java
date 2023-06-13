@@ -24,8 +24,8 @@ class SpatialLinkTest {
     DockerImageName postgisImage = DockerImageName.parse("postgis/postgis:14-3.2-alpine").asCompatibleSubstituteFor("postgres");
     @Container
     private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(postgisImage);
-    private String dburl2D = "jdbc:postgresql://localhost:5432/pirmasens_2d";
-    private String dburl3D = "jdbc:postgresql://localhost:5432/pirmasens";
+    private String dburl2D = "jdbc:postgresql://localhost:5432/ntu_2D";
+    private String dburl3D = "jdbc:postgresql://localhost:5432/sg_ntu";
     private String dbuser = "postgres";
     private String dbpassword = "123456";
     PostgresClient conn2d;
@@ -51,9 +51,9 @@ class SpatialLinkTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
 
-        when(request.getParameter("db2d")).thenReturn("pirmasens_2d");
-        when(request.getParameter("db3d")).thenReturn("pirmasens");
-        when(request.getParameter("db2d_table")).thenReturn("polygon");
+        when(request.getParameter("db2d")).thenReturn("ntu_2D");
+        when(request.getParameter("db3d")).thenReturn("sg_ntu");
+        when(request.getParameter("db2d_table")).thenReturn("ntu_05");
 
         SpatialLink spatialLink = new SpatialLink();
         spatialLink.setPostGISClient2d(conn2d);

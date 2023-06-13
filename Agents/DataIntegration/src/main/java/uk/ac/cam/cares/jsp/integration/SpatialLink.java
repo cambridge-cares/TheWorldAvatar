@@ -100,7 +100,7 @@ public class SpatialLink extends HttpServlet {
             int srid2D = this.allObject2D.get(0).getGeometry2D().getGeometry().getSrid();
             if(srid3D != srid2D){
                 Geometry transGeom3D = Transform(envelope, srid3D, srid2D);
-                srid3D = transGeom3D.getSRID();
+//                srid3D = transGeom3D.getSRID();
                 Coordinate[] reversedCoordinates = getReversedCoordinates(transGeom3D);
                 envelope = geometryFactory.createPolygon(reversedCoordinates);
             }
