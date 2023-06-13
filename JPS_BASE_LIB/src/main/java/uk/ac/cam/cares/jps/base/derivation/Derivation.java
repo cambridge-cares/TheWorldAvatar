@@ -162,8 +162,10 @@ public class Derivation {
 	 * @return
 	 */
 	public List<Derivation> getImmediateUpstreamDerivations() {
+		// return only distinct derivations, this is to prevent the situation where multiple instances
+		// exists in between this current derivation and its upstream derivation
 		return Stream.concat(this.getDirectedUpstreams().stream(), this.getInputsWithBelongsTo().stream())
-				.collect(Collectors.toList());
+				.distinct().collect(Collectors.toList());
 	}
 
 	/**
@@ -176,11 +178,13 @@ public class Derivation {
 			immediateDownstreamDerivationMap.put(downstream.getIri(), downstream);
 		}
 		for (Entity entity : this.getEntities()) {
-			entity.getInputOf().forEach(d -> {
-				if (!immediateDownstreamDerivationMap.containsKey(d.getIri())) {
-					immediateDownstreamDerivationMap.put(d.getIri(), d);
-				}
-			});
+			if (entity.isInputToDerivation()) {
+				entity.getInputOf().forEach(d -> {
+					if (!immediateDownstreamDerivationMap.containsKey(d.getIri())) {
+						immediateDownstreamDerivationMap.put(d.getIri(), d);
+					}
+				});
+			}
 		}
 		return immediateDownstreamDerivationMap;
 	}
@@ -228,9 +232,24 @@ public class Derivation {
 		return new JSONObject(downstreamDerivationMap);
 	}
 
+	public JSONObject getDownstreamDerivationConnectionMap() {
+		Map<String, List<String>> downstreamDerivationConnectionMap = new HashMap<>();
+		// collect those outputs that are inputs to downstream derivations
+		this.getEntities().stream().filter(e -> e.isInputToDerivation()).forEach(e -> {
+			downstreamDerivationConnectionMap.put(e.getIri(),
+					e.getInputOf().stream().map(dd -> dd.getIri()).collect(Collectors.toList()));
+		});
+		// collect those downstream derivations that are to be directly connected to this current derivation
+		downstreamDerivationConnectionMap.put(this.iri,
+				this.getDirectedDownstreams().stream().map(dd -> dd.getIri()).collect(Collectors.toList()));
+		return new JSONObject(downstreamDerivationConnectionMap);
+	}
+
 	public boolean isOutOfDate() {
 		boolean outOfDate = false;
 
+		// if any of the inputs is newer than this derivation, then this derivation is
+		// out of date
 		for (Entity input : this.getInputs()) {
 			long inputTimestamp;
 			if (input.hasBelongsTo()) {
@@ -240,6 +259,15 @@ public class Derivation {
 			}
 
 			if (inputTimestamp > this.timestamp) {
+				outOfDate = true;
+				return outOfDate;
+			}
+		}
+
+		// if any of the directed upstream is newer than this derivation, then this
+		// derivation is out of date
+		for (Derivation upstream : this.getDirectedUpstreams()) {
+			if (upstream.getTimestamp() > this.timestamp) {
 				outOfDate = true;
 				return outOfDate;
 			}
@@ -358,8 +386,11 @@ public class Derivation {
 	}
 
 	public void replaceDirectedDownstreams(List<Derivation> newDirectedDownstreams) {
+		// first remove all the existing directed downstreams
 		this.directedDownstreams.stream().forEach(this::removeDirectedUpstream);
-		newDirectedDownstreams.stream().forEach(this::setDirectedDownstreams);
+		// set this derivation as directed upstream for all the new directed downstreams
+		newDirectedDownstreams.stream().forEach(d -> d.setDirectedUpstreams(this));
+		// update the boolean flag
 		this.hasDirectedDownstreams = !this.directedDownstreams.isEmpty();
 	}
 }

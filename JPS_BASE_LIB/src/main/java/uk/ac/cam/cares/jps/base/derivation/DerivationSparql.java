@@ -1167,18 +1167,24 @@ public class DerivationSparql {
 		Variable input = SparqlBuilder.var(inputKey);
 
 		// make use of SPARQL Property Paths
-		GraphPattern agentTypePattern = iri(agentIRI)
-				.has(PropertyPaths.path(hasOperation, hasInput, hasMandatoryPart, hasType), type);
 		GraphPattern inputValuesPattern = new ValuesPattern(input,
 				inputs.stream().map(i -> iri(i)).collect(Collectors.toList()));
+		GraphPattern agentTypePattern = iri(agentIRI)
+				.has(PropertyPaths.path(hasOperation, hasInput, hasMandatoryPart, hasType), type);
+		GraphPattern derivationValuesPattern = new ValuesPattern(type,
+				derivationToIri.values().stream().collect(Collectors.toList()));
 		GraphPattern mappingPattern = input.has(PropertyPaths.path(PropertyPaths.zeroOrMore(RdfPredicate.a),
 				PropertyPaths.zeroOrMore(iri(RDFS.SUBCLASSOF.toString()))), type);
 		SelectQuery query = Queries.SELECT().distinct();
 
-		query.prefix(prefixDerived, prefixAgent).where(agentTypePattern, inputValuesPattern, mappingPattern).select(input,
-				type);
-		storeClient.setQuery(query.getQueryString());
-		JSONArray queryResult = storeClient.executeQuery();
+		// NOTE this query also maps the derivations to the agent inputs
+		// this is to accommodate the create sync derivation for new info
+		// as the markup is done at the DerivationAgent side and it relies
+		// on the agent inputs passed in from here
+		query.prefix(prefixDerived, prefixAgent).where(inputValuesPattern,
+				GraphPatterns.union(agentTypePattern, derivationValuesPattern), mappingPattern)
+				.select(input, type);
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
 		// construct the JSONObject for agent input
 		JSONObject agentInputs = new JSONObject();
@@ -2343,20 +2349,20 @@ public class DerivationSparql {
 			outputTriples.forEach(t -> modify.insert(t));
 		}
 
-		// add triples of directed downstream derivations to be added
-		if (connectionMap.containsKey(derivation)) {
-			connectionMap.remove(derivation).forEach(d -> modify.insert(iri(d).has(isDerivedFrom, iri(derivation))));
-		}
-
 		// insert triples of new derived IRI and the derivations that it should be
 		// connected to
 		connectionMap.forEach((newIRI, downstreamDerivations) -> {
-			// add <newIRI> <belongsTo> <derivation> for each newIRI
-			modify.insert(iri(newIRI).has(belongsTo, iri(derivation)));
-			// if this <newIRI> is inputs to other derivations, add
-			// <downstreamDerivation> <isDerivedFrom> <newIRI>
-			if (!downstreamDerivations.isEmpty()) {
+			if (newIRI.equals(derivation)) {
+				// add triples of directed downstream derivations to be added
 				downstreamDerivations.stream().forEach(dd -> modify.insert(iri(dd).has(isDerivedFrom, iri(newIRI))));
+			} else {
+				// add <newIRI> <belongsTo> <derivation> for each newIRI
+				modify.insert(iri(newIRI).has(belongsTo, iri(derivation)));
+				// if this <newIRI> is inputs to other derivations, add
+				// <downstreamDerivation> <isDerivedFrom> <newIRI>
+				if (!downstreamDerivations.isEmpty()) {
+					downstreamDerivations.stream().forEach(dd -> modify.insert(iri(dd).has(isDerivedFrom, iri(newIRI))));
+				}
 			}
 		});
 

@@ -146,6 +146,7 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 					Derivation updated = this.devClient.getDerivation(derivationIRI);
 					res.put(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY, updated.getTimestamp());
 					res.put(DerivationClient.AGENT_OUTPUT_KEY, updated.getBelongsToMap());
+					res.put(DerivationClient.AGENT_OUTPUT_CONNECTION_KEY, updated.getDownstreamDerivationConnectionMap());
 					LOGGER.info(
 							"Unable to determine if the SPARQL update mutated triples, returned latest information in knowledge graph: "
 									+ res);

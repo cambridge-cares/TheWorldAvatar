@@ -1039,11 +1039,17 @@ public class DerivationClient {
 						}
 
 						// retrieve the connection map from the agent response, this will be used to update the cache
-						Map<String, List<String>> connectionMap = agentResponse.getJSONObject(DerivationClient.AGENT_OUTPUT_CONNECTION_KEY)
-								.toMap().entrySet().stream().collect(Collectors.toMap(
-										Map.Entry::getKey, entry -> ((JSONArray) entry.getValue()).toList().stream()
-												.map(Object::toString)
-												.collect(Collectors.toList())));
+						Map<String, List<String>> connectionMap = new HashMap<>();
+						agentResponse.getJSONObject(DerivationClient.AGENT_OUTPUT_CONNECTION_KEY)
+								.keySet().stream().forEach(k -> {
+									JSONArray jsonArray = agentResponse.getJSONObject(DerivationClient.AGENT_OUTPUT_CONNECTION_KEY)
+											.getJSONArray(k);
+									List<String> list = new ArrayList<>();
+									for (int i = 0; i < jsonArray.length(); i++) {
+										list.add(jsonArray.getString(i));
+									}
+									connectionMap.put(k, list);
+								});
 
 						// the cache update needs to be done for connections from both direction and the new entities themselves
 						Map<String, Derivation> immediateDownstreamDerivations = derivation.getImmediateDownstreamDerivations();
