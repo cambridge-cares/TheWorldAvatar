@@ -20,4 +20,21 @@ public class GDALTranslateOptions extends CommonOptions<GDALTranslateOptions> {
 
         return allArgs.toArray(args);
     }
+
+    @Override
+    protected void handleSRIDs(List<String> allArgs) {
+        String sridIn = getSridIn();
+        if (null != sridIn) {
+            allArgs.add("-a_srs");
+            allArgs.add(sridIn);
+        }
+        
+        String sridOut = getSridOut();
+        if (null != sridOut) {
+            // This is a COG file format specific option.
+            // Generic re-projection will require using gdalwarp instead/as well as
+            // gdal_translate. gdalwarp is also faster when re-projecting.
+            creationOptions.put("TARGET_SRS", sridOut);
+        }
+    }
 }
