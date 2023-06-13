@@ -24,18 +24,21 @@ public class InputAgent extends JPSAgent {
 	private static final Logger LOGGER = LogManager.getLogger(InputAgent.class);
 	
 	static final String API_PATTERN = "/InputAgent";
-	
+	static final String NUMBER_OF_POINTS_KEY = "NumberOfPoints";
+
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-		
+
 		Config.initProperties();
 		RemoteStoreClient storeClient = new RemoteStoreClient(Config.sparqlEndpoint, Config.sparqlEndpoint, Config.kgUser, Config.kgPassword);
 		SparqlClient sparqlClient = new SparqlClient(storeClient);
 		DerivationClient devClient = new DerivationClient(storeClient, Config.derivationInstanceBaseURL);
-		
-		JSONObject response = updateNumberOfPoints(sparqlClient, devClient);
-		
-		return response;
+
+		if (requestParams.has(NUMBER_OF_POINTS_KEY)) {
+			return updateNumberOfPoints(sparqlClient, devClient, Integer.parseInt(requestParams.getString(NUMBER_OF_POINTS_KEY)));
+		} else {
+			return updateNumberOfPoints(sparqlClient, devClient);
+		}
 	}
 
 	JSONObject updateNumberOfPoints(SparqlClient sparqlClient, DerivationClient devClient) {
