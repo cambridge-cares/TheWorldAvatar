@@ -32,6 +32,7 @@ public class OntoBimConstant {
     public static final String BIM_HAS_MILSEC = NamespaceMapper.BIM_NAMESPACE + "hasMillionthSecond";
     // Address properties
     public static final String BUILT_ENV_HAS_ADDRESS = NamespaceMapper.ONTO_BUILT_ENV_NAMESPACE + "hasAddress";
+    public static final String BUILT_ENV_HAS_UNIT_NAME = NamespaceMapper.ONTO_BUILT_ENV_NAMESPACE + "hasUnitName";
     public static final String ICONTACT_HAS_STREET = NamespaceMapper.ICONTACT_NAMESPACE + "hasStreet";
     public static final String ICONTACT_HAS_STREET_NUMBER = NamespaceMapper.ICONTACT_NAMESPACE + "hasStreetNumber";
     public static final String ICONTACT_HAS_CITY = NamespaceMapper.ICONTACT_NAMESPACE + "hasCity";

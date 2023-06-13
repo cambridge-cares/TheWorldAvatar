@@ -1,6 +1,6 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone;
 
-import  org.apache.jena.rdf.model.Statement;
+import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StatementHandler;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StringUtils;
@@ -86,17 +86,36 @@ public class IfcBuildingRepresentation extends IfcAbstractRepresentation {
         StatementHandler.addStatement(statementSet, this.siteIRI, OntoBimConstant.BOT_HAS_BUILDING, this.getBotBuildingIRI());
         StatementHandler.addStatement(statementSet, this.getBotBuildingIRI(), OntoBimConstant.BUILT_ENV_HAS_ADDRESS, this.addressIRI);
         StatementHandler.addStatement(statementSet, this.addressIRI, OntoBimConstant.RDF_TYPE, OntoBimConstant.CONTACT_ADDRESS_CLASS);
-        // Only add the address if they exist
         if (!this.address[0].isEmpty()) {
-            // Split the string based on a whitespace followed by a digit. Effectively, this splits a street for eg Road Street 45 into "Road Street" and "45"
+            // Due to the different street naming patterns in Singapore and Europe, the address is split using a series of regex delimiters
+            // See test cases for the possible variations
+            // The first split retrieves the street number, which is always last and on a whitespace followed by a digit.
+            // Effectively, this splits a street for eg 52 Road Street 45 into "52 Road Street" and "45"
             String[] street = address[0].split("\\s+(?=\\d+$)");
-            StatementHandler.addStatement(statementSet, this.addressIRI, OntoBimConstant.ICONTACT_HAS_STREET, street[0], false);
-            if (street.length > 1) StatementHandler.addStatement(statementSet, this.addressIRI, OntoBimConstant.ICONTACT_HAS_STREET_NUMBER, street[1], false);
+            // If there is a second array item, this item will always be the street number
+            if (street.length > 1)
+                StatementHandler.addStatement(statementSet, this.addressIRI, OntoBimConstant.ICONTACT_HAS_STREET_NUMBER, street[1].trim(), false);
+            // The second split retrieves the street name and separates the block number if it exists. For eg:
+            // 9 Plain Street will give "9" and "Plain Street", while Blk 5 Leamer Road will give "Blk 5" and "Leamer Road".
+            street = street[0].split("(?<=\\d\\w|\\d)+\\s", 2);
+            // When there is only one result, it means that there is no block number and this will be the street name
+            if (street.length == 1)
+                StatementHandler.addStatement(statementSet, this.addressIRI, OntoBimConstant.ICONTACT_HAS_STREET, street[0].trim(), false);
+            else {
+                // For more than one result, block number is first, and street name is second
+                StatementHandler.addStatement(statementSet, this.addressIRI, OntoBimConstant.BUILT_ENV_HAS_UNIT_NAME, street[0].trim(), false);
+                StatementHandler.addStatement(statementSet, this.addressIRI, OntoBimConstant.ICONTACT_HAS_STREET, street[1].trim(), false);
+            }
+
         }
-        if (!this.address[1].isEmpty()) StatementHandler.addStatement(statementSet, this.addressIRI, OntoBimConstant.ICONTACT_HAS_CITY, this.address[1], false);
-        if (!this.address[2].isEmpty()) StatementHandler.addStatement(statementSet, this.addressIRI, OntoBimConstant.ICONTACT_HAS_STATE, this.address[2], false);
-        if (!this.address[3].isEmpty()) StatementHandler.addStatement(statementSet, this.addressIRI, OntoBimConstant.ICONTACT_HAS_COUNTRY, this.address[3], false);
-        if (!this.address[4].isEmpty()) StatementHandler.addStatement(statementSet, this.addressIRI, OntoBimConstant.ICONTACT_HAS_POSTAL_CODE, this.address[4], false);
+        if (!this.address[1].isEmpty())
+            StatementHandler.addStatement(statementSet, this.addressIRI, OntoBimConstant.ICONTACT_HAS_CITY, this.address[1], false);
+        if (!this.address[2].isEmpty())
+            StatementHandler.addStatement(statementSet, this.addressIRI, OntoBimConstant.ICONTACT_HAS_STATE, this.address[2], false);
+        if (!this.address[3].isEmpty())
+            StatementHandler.addStatement(statementSet, this.addressIRI, OntoBimConstant.ICONTACT_HAS_COUNTRY, this.address[3], false);
+        if (!this.address[4].isEmpty())
+            StatementHandler.addStatement(statementSet, this.addressIRI, OntoBimConstant.ICONTACT_HAS_POSTAL_CODE, this.address[4], false);
         if (this.projectIRI != null) {
             StatementHandler.addStatement(statementSet, this.projectIRI, OntoBimConstant.BIM_HAS_ROOT_ZONE, this.getIri());
         }

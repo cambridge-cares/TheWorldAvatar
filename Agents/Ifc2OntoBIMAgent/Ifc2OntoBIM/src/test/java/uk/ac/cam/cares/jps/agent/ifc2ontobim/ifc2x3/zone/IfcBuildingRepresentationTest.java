@@ -29,9 +29,20 @@ class IfcBuildingRepresentationTest {
     private static final String testProjectIri = testBaseUri + "IfcProjectRepresentation_ba12";
     private static final String testSiteIri = testBaseUri + "Site_531";
     private static final String[] testAddress = new String[5];
-    private static final String testStreet = "Road Street";
+    private static final String testBlock1 = "BLK 1";
+    private static final String testBlock2 = "BLK 1A";
+    private static final String testBlock3 = "BLK1C";
+    private static final String testBlock4 = "1";
+    private static final String testBlock5 = "1C";
+    private static final String testStreet1 = "Road Street";
+    private static final String testStreet2 = "Lorong 20 Geylang";
     private static final String testStreetNumber = "52";
-    private static final String testAddressLine = testStreet + " " + testStreetNumber;
+    private static final String testAddressLine = testStreet1 + " " + testStreetNumber;
+    private static final String testAddressLine1 = testBlock1 + " " + testStreet1 + " " + testStreetNumber;
+    private static final String testAddressLine2 = testBlock2 + " " + testStreet2;
+    private static final String testAddressLine3 = testBlock3 + " " + testStreet1;
+    private static final String testAddressLine4 = testBlock4 + " " + testStreet2 + " " + testStreetNumber;
+    private static final String testAddressLine5 = testBlock5 + " " + testStreet1 + " " + testStreetNumber;
     private static final String testCity = "Cambridge";
     private static final String testState = "Cambridgeshire";
     private static final String testCountry = "England";
@@ -167,9 +178,70 @@ class IfcBuildingRepresentationTest {
     }
 
     @Test
+    void testConstructStatementsPermutationsAddressLines() {
+        testAddress[0] = testAddressLine1;
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        IfcBuildingRepresentation sample = new IfcBuildingRepresentation(testName, testUID, testPlacementIri, testProjectIri, testSiteIri, testRefElev1.toString(), testTerElev1.toString(), elevationUnitIri, testAddress);
+        // Execute method
+        sample.constructStatements(sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        try {
+            JunitTestUtils.doesExpectedListExist(genExpectedAddressStatements(testStreet1, testStreetNumber, testBlock1), result);
+        } finally {
+            // Always attempt to reset the values even if the test fail to prevent side effects
+            testAddress[0] = testAddressLine;
+        }
+        // Test second permutation similarly
+        testAddress[0] = testAddressLine2;
+        sampleSet = new LinkedHashSet<>();
+        sample = new IfcBuildingRepresentation(testName, testUID, testPlacementIri, testProjectIri, testSiteIri, testRefElev1.toString(), testTerElev1.toString(), elevationUnitIri, testAddress);
+        sample.constructStatements(sampleSet);
+        result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        try {
+            JunitTestUtils.doesExpectedListExist(genExpectedAddressStatements(testStreet2, "", testBlock2), result);
+        } finally {
+            testAddress[0] = testAddressLine;
+        }
+        // Test third permutation similarly
+        testAddress[0] = testAddressLine3;
+        sampleSet = new LinkedHashSet<>();
+        sample = new IfcBuildingRepresentation(testName, testUID, testPlacementIri, testProjectIri, testSiteIri, testRefElev1.toString(), testTerElev1.toString(), elevationUnitIri, testAddress);
+        sample.constructStatements(sampleSet);
+        result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        try {
+            JunitTestUtils.doesExpectedListExist(genExpectedAddressStatements(testStreet1, "", testBlock3), result);
+        } finally {
+            testAddress[0] = testAddressLine;
+        }
+        // Test forth permutation similarly
+        testAddress[0] = testAddressLine4;
+        sampleSet = new LinkedHashSet<>();
+        sample = new IfcBuildingRepresentation(testName, testUID, testPlacementIri, testProjectIri, testSiteIri, testRefElev1.toString(), testTerElev1.toString(), elevationUnitIri, testAddress);
+        sample.constructStatements(sampleSet);
+        result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        try {
+            JunitTestUtils.doesExpectedListExist(genExpectedAddressStatements(testStreet2, testStreetNumber, testBlock4), result);
+        } finally {
+            testAddress[0] = testAddressLine;
+        }
+        // Test fifth permutation similarly
+        testAddress[0] = testAddressLine5;
+        sampleSet = new LinkedHashSet<>();
+        sample = new IfcBuildingRepresentation(testName, testUID, testPlacementIri, testProjectIri, testSiteIri, testRefElev1.toString(), testTerElev1.toString(), elevationUnitIri, testAddress);
+        sample.constructStatements(sampleSet);
+        result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        try {
+            JunitTestUtils.doesExpectedListExist(genExpectedAddressStatements(testStreet1, testStreetNumber, testBlock5), result);
+        } finally {
+            testAddress[0] = testAddressLine;
+        }
+    }
+
+    @Test
     void testConstructStatementsIncompleteAddress() {
         // Set up
-        testAddress[0] = testStreet;
+        testAddress[0] = testStreet1;
         testAddress[2] = "";
         testAddress[4] = "";
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
@@ -227,11 +299,21 @@ class IfcBuildingRepresentationTest {
         return expected;
     }
 
+    private List<String> genExpectedAddressStatements(String streetName, String streetNumber, String unitName) {
+        List<String> expected = new ArrayList<>();
+        expected.add(testBaseUri + "Address_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://ontology.eil.utoronto.ca/icontact.owl#hasStreet, \"" + streetName);
+        if (!streetNumber.isEmpty())
+            expected.add(testBaseUri + "Address_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://ontology.eil.utoronto.ca/icontact.owl#hasStreetNumber, \"" + streetNumber);
+        if (!unitName.isEmpty())
+            expected.add(testBaseUri + "Address_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobuiltenv/hasUnitName, \"" + unitName);
+        return expected;
+    }
+
     private List<String> genExpectedAddressStatements(boolean isComplete) {
         List<String> expected = new ArrayList<>();
         expected.add(testBaseUri + "Building_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobuiltenv/hasAddress, " + testBaseUri + "Address_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
         expected.add(testBaseUri + "Address_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, " + JunitTestUtils.RDF_TYPE + ", http://ontology.eil.utoronto.ca/icontact.owl#Address");
-        expected.add(testBaseUri + "Address_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://ontology.eil.utoronto.ca/icontact.owl#hasStreet, \"" + testStreet);
+        expected.add(testBaseUri + "Address_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://ontology.eil.utoronto.ca/icontact.owl#hasStreet, \"" + testStreet1);
         expected.add(testBaseUri + "Address_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://ontology.eil.utoronto.ca/icontact.owl#hasCity, \"" + testCity);
         expected.add(testBaseUri + "Address_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://ontology.eil.utoronto.ca/icontact.owl#hasCountry, \"" + testCountry);
         if (isComplete) {
