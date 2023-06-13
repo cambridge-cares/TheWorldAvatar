@@ -47,9 +47,7 @@ public class SmartMeterAgentLauncher extends JPSAgent {
         // Microgrid: targetResourceID of the microgrid blazegraph for Access Agent to query
         String targetResourceID = requestParams.getString("microgrid");
 
-        OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        String currentTime = now.format(formatter);
+        String currentTime = getCurrentDateTime();
 
         // Optional inputs:
         // Parameters for historical data reading
@@ -80,11 +78,13 @@ public class SmartMeterAgentLauncher extends JPSAgent {
             JSONArray previousResult = new JSONArray();
             while (true) {
                 LOGGER.info("Reading latest data from database...");
+                mappings = getDataMappings(agent);
                 JSONArray result = agent.queryLatestDataFromDb(currentTime, mappings);
                 if (!result.similar(previousResult)) {
                     LOGGER.info("Uploading data...");
                     JSONArray dataIRIArray = agent.getDataIris(targetResourceID, mappings);
                     agent.uploadSmartMeterData(result, dataIRIArray);
+                    previousResult = result;
                     LOGGER.info("Upload complete. Sleeping...");
                 } else {
                     LOGGER.info("No new valid readings found, next attempt will be 1 minute later...");
@@ -150,6 +150,12 @@ public class SmartMeterAgentLauncher extends JPSAgent {
 
     public List<String[]> getDataMappings(SmartMeterAgent agent) {
         return agent.getDataMappings(AgentLocator.getCurrentJpsAppDirectory(this) + "/config");
+    }
+
+    public String getCurrentDateTime() {
+        OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return now.format(formatter);
     }
 
     public String getCsvFilename() {
