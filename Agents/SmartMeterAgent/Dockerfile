@@ -23,7 +23,7 @@ FROM tomcat:9.0 as agent
 WORKDIR /app
 
 COPY --from=builder /root/agent/output/smart-meter-agent##1.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/
-# Comment out this line if reading from csv file (when db is not available)
+# Uncomment this line if reading from database (and change database file name accordingly)
 # COPY --from=builder /root/agent/database/HiEMS.db /app/database/HiEMS.db
 
 # Start the Tomcat server
