@@ -105,6 +105,22 @@
         {
             "type": "vector",
             "skip": false,
+            "table": "ukpn_overhead_lines_medium_66kv",
+            "subdirectory": "vector/ukpn-66kv-overhead-lines-shapefile",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "wkb_geometry"
+                },
+                "otherOptions": {
+                    "-sql": [
+                        "SELECT *, 'M' AS voltage_level, 66.0 AS max_voltage_kv FROM \"ukpn-66kv-overhead-lines-shapefile\""
+                    ]
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
             "table": "ukpn_overhead_lines_medium",
             "subdirectory": "vector/33kv-overhead-lines",
             "ogr2ogrOptions": {
@@ -123,7 +139,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "ukpn_overhead_lines_medium",
-                    "sql": "SELECT wkb_geometry, name, CONCAT('http://theworldavatar.com/ontology/ontopower/ontopower.owl#ukpn_overhead_lines_medium/', ukpn_overhead_lines_medium.ogc_fid) as iri, line_colour, line_width FROM ukpn_overhead_lines_medium, ukpn_line_styling WHERE ukpn_overhead_lines_medium.voltage_level = ukpn_line_styling.voltage_level",
+                    "sql": "SELECT wkb_geometry, name, CONCAT('http://theworldavatar.com/ontology/ontopower/ontopower.owl#ukpn_overhead_lines_medium/', ukpn_overhead_lines_medium.ogc_fid) as iri, line_colour, line_width FROM ukpn_overhead_lines_medium, ukpn_line_styling WHERE ukpn_overhead_lines_medium.voltage_level = ukpn_line_styling.voltage_level UNION ALL SELECT wkb_geometry, CONCAT('UKPN Overhead Line (', ukpn_overhead_lines_medium_66kv.ogc_fid, '-', ukpn_overhead_lines_medium_66kv.voltage_level, ')') AS name, CONCAT('http://theworldavatar.com/ontology/ontopower/ontopower.owl#ukpn_overhead_lines_medium_66kv/', ukpn_overhead_lines_medium_66kv.ogc_fid) as iri, line_colour, line_width FROM ukpn_overhead_lines_medium_66kv, ukpn_line_styling WHERE ukpn_overhead_lines_medium_66kv.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
                     "geometry": {
                         "name": "wkb_geometry",
