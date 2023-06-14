@@ -21,6 +21,11 @@ services:
   ifcowlconverter:
     container_name: ifcowlconverter
     image: ifcowlconverter-agent:1.0.0
+    build:
+      context: ../IfcOwlConverterAgent/
+      target: agent
+    ports:
+        - "3024:8080"
     volumes:
       - ../data:/usr/local/tomcat/data
     networks:

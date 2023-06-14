@@ -7,6 +7,8 @@ services:
     build:
       context: .
       target: agent
+    environment:
+      - "JAVA_OPTS=-Xms16g -Xmx16g -XX:InitialRAMPercentage=10 -XX:MinRAMPercentage=50 -XX:MaxRAMPercentage=80"
     ports:
       - "3025:8080"
     volumes:
@@ -17,6 +19,11 @@ services:
   ifcowlconverter:
       container_name: ifcowlconverter
       image: ifcowlconverter-agent:1.0.0
+      build:
+        context: ../IfcOwlConverterAgent/
+        target: agent
+      ports:
+        - "3024:8080"
       volumes:
         - ./data:/usr/local/tomcat/data
       networks:
