@@ -7,6 +7,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
@@ -78,15 +79,16 @@ public class KGAddress {
         Variable address = query.var();
 
 
-        TriplePattern[] queryPattern = {building.isA(botBuilding),
+        GraphPattern[] queryPattern = {building.isA(botBuilding),
                 building.has(hasAddress,address),
                 address.isA(addressI),
-                address.has(hasCity,city),
-                address.has(hasCountry,country),
-                address.has(hasPostalCode,postalcode),
-                address.has(hasState,state),
-                address.has(hasStreet,street),
-                address.has(hasStreetNum,streetNum)
+                address.has(hasCity,city).optional(),
+                address.has(hasCountry,country).optional(),
+                address.has(hasPostalCode,postalcode).optional(),
+                address.has(hasState,state).optional(),
+                address.has(hasStreet,street).optional(),
+                address.has(hasStreetNum,streetNum).optional()
+
         };
         query.prefix(icontact,p_bot, p_env).where(queryPattern).select(street, streetNum, state, city, country, postalcode);
         JSONArray queryResult = kgClient.executeQuery(query.getQueryString());
