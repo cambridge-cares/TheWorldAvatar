@@ -177,14 +177,14 @@
                         "MULTILINESTRING"
                     ],
                     "-sql": [
-                        "SELECT *, 'H' AS voltage_level, 132.0 AS max_voltage_kv, CONCAT('UKPN Overhead Line (', cmr, '-H)') AS name FROM \"132kv-overhead-lines\""
+                        "SELECT *, 'H' AS voltage_level, 132.0 AS max_voltage_kv FROM \"132kv-overhead-lines\""
                     ]
                 }
             },
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "ukpn_overhead_lines_high",
-                    "sql": "SELECT wkb_geometry, name, CONCAT('http://theworldavatar.com/ontology/ontopower/ontopower.owl#ukpn_overhead_lines_high/', ukpn_overhead_lines_high.ogc_fid) as iri, line_colour, line_width FROM ukpn_overhead_lines_high, ukpn_line_styling WHERE ukpn_overhead_lines_high.voltage_level = ukpn_line_styling.voltage_level",
+                    "sql": "SELECT wkb_geometry, CONCAT('UKPN Overhead Line (', ukpn_overhead_lines_high.ogc_fid, '-H)') AS name, CONCAT('http://theworldavatar.com/ontology/ontopower/ontopower.owl#ukpn_overhead_lines_high/', ukpn_overhead_lines_high.ogc_fid) as iri, line_colour, line_width FROM ukpn_overhead_lines_high, ukpn_line_styling WHERE ukpn_overhead_lines_high.voltage_level = ukpn_line_styling.voltage_level",
                     "escapeSql": false,
                     "geometry": {
                         "name": "wkb_geometry",
