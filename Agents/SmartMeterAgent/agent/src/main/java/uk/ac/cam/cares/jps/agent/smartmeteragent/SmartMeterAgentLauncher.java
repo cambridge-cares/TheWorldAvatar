@@ -76,6 +76,7 @@ public class SmartMeterAgentLauncher extends JPSAgent {
         if (dataSource.equalsIgnoreCase("database") && dataRequired.equalsIgnoreCase("latest")) {
             // read latest valid data from database, update every minute
             JSONArray previousResult = new JSONArray();
+            int numOfFailedAttempt = 0;
             while (true) {
                 LOGGER.info("Reading latest data from database...");
                 mappings = getDataMappings(agent);
@@ -85,9 +86,15 @@ public class SmartMeterAgentLauncher extends JPSAgent {
                     JSONArray dataIRIArray = agent.getDataIris(targetResourceID, mappings);
                     agent.uploadSmartMeterData(result, dataIRIArray);
                     previousResult = result;
+                    numOfFailedAttempt = 0;
                     LOGGER.info("Upload complete. Sleeping...");
                 } else {
-                    LOGGER.info("No new valid readings found, next attempt will be 1 minute later...");
+                    numOfFailedAttempt += 1;
+                    LOGGER.error("No new valid readings found, next attempt will be 1 minute later...");
+                }
+                if (numOfFailedAttempt >= 10) {
+                    throw new JPSRuntimeException("Failed to find new valid readings within the last 10 attempts. " 
+                                        + "Please check that all devices in the mapping file are switched on.");
                 }
                 try {
                     TimeUnit.SECONDS.sleep(60);

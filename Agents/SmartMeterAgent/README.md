@@ -1,7 +1,7 @@
 # Smart Meter Agent
 
 ## Purpose
-The purpose of Smart Meter Agent is to handle HTTP requests to retrieve latest reading from a database storing smart meter readings every minute, or retrieve all valid historical readings from a database or a CSV file, and upload the data to instantiated time series in the KG.
+The purpose of Smart Meter Agent is to handle HTTP requests to retrieve latest reading for the current time from a database storing smart meter readings every minute, or retrieve all valid historical readings from a database or a CSV file, and upload the data to instantiated time series in the KG.
 
 ## Requirements
 - In order to run SmartMeterAgent, a local version (or if you are running in a stack, a stack version) of (TripleStore)AccessAgent needs to be deployed. Refer to [AccessAgent README](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_ACCESS_AGENT/README.md) for Access Agent setup. Routing information of the target blazegraph should be uploaded accordingly before calling SmartMeterAgent.
@@ -25,7 +25,7 @@ The time-series client property file needs to contain all credentials and endpoi
 More information can be found in the example property file `client.properties` in `agent/config` folder.
 
 ## How it works
-SmartMeterAgent only retrieves 1 group of valid reading every minute from database or csv file (refer to [data filtering](#data-filtering) section for definiition of valid readings). The agent queries the microgrid triple store for dataIRIs of timeseries data of each bus node, and maps the IRIs to devices in smart meter readings. Reading data are filtered and processed before uploading to the timeseries database.
+SmartMeterAgent only retrieves 1 group of valid reading every minute from database or csv file (refer to [data filtering](#data-filtering) section for definiition of valid readings). When retrieving latest data, the agent queries for valid readings of the current time point. When valid readings are not found, it continues to search for the previous minute. If no valid readings are found in the last 10 minutes, of if no new valid readings are found for 10 minutes after uploading some data, an exception will be thrown to remind the user to check that all devices in the mapping file are switched on. The agent also queries the microgrid triple store for dataIRIs of timeseries data of each bus node, and maps the IRIs to devices in smart meter readings. Reading data are filtered and processed before uploading to the timeseries database.
 
 ### Data filtering
 A group of readings for a time point is valid if and only if:
