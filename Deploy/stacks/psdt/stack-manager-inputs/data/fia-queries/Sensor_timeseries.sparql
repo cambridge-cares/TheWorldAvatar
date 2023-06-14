@@ -1,0 +1,9 @@
+PREFIX ps: <https://www.theworldavatar.com/kg/ps/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+SELECT ?Measurement ?Name ?Unit
+WHERE {
+[IRI] ps:hasQuantity ?Measurement .
+?Measurement rdfs:label ?Name .
+?Measurement om:hasUnit/om:symbol ?Unit
+}

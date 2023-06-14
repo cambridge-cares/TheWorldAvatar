@@ -1,0 +1,19 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ps: <https://www.theworldavatar.com/kg/ps/> .
+@prefix hb: <https://www.theworldavatar.com/kg/ps/hugoball/> .
+@prefix om: <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+
+ps:HugoBallGymnasium a ps:Building ;
+	ps:hasQuantity hb:Stromverbrauch ;
+	ps:hasQuantity hb:Stromkosten ;
+	ps:hasQuantity hb:Wirkleistung .
+
+hb:Stromverbrauch rdfs:label "Stromverbrauch"^^xsd:string ;
+	om:hasUnit om:kilowattHour .
+
+hb:Stromkosten rdfs:label "Stromkosten"^^xsd:string ;
+	om:hasUnit om:euro .
+
+hb:Wirkleistung rdfs:label "Wirkleistung"^^xsd:string ;
+	om:hasUnit om:kilowatt .

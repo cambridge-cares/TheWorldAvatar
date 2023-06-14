@@ -1,0 +1,60 @@
+[PrefixDeclaration]
+xsd:		http://www.w3.org/2001/XMLSchema#
+ub:         http://www.theworldavatar.com/kg/ontoubemmp/
+be:         http://www.theworldavatar.com/kg/ontobuiltenv/
+om:         http://www.ontology-of-units-of-measure.org/resource/om-2/
+oum:        https://www.theworldavatar.com/kg/ontouom/
+gml:        http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#
+db:         http://www.purl.org/oema/enaeq/
+bot:        http://w3id.org/bot#
+bim:        http://www.theworldavatar.com/ontology/ontobim/ontoBIM#
+iri:        https://www.theworldavatar.com/kg/
+
+[MappingDeclaration] @collection [[
+mappingId	solarthermie
+target		iri:OntoCityGML/Building_{geb_id} a gml:Building .
+            iri:DABGEO/Building_{geb_id} a db:Building ;
+                be:hasOntoCityGMLRepresentation iri:OntoCityGML/Building_{geb_id} ;
+                ub:hasDevice iri:OntoUBEMMP/RoofThermalPlateCollectors_{mod_id} ;
+                ub:hasDevice iri:OntoUBEMMP/RoofThermalTubeCollectors_{mod_id} ;
+                ub:hasDevice iri:OntoUBEMMP/RoofSolarCollectors_{mod_id} ;
+                bot:containsElement iri:OntoBIM/Roof_{mod_id} .
+            iri:OntoUBEMMP/RoofThermalPlateCollectors_{mod_id} a ub:RoofThermalPlateCollectors ;
+                db:producesEnergy iri:OntoUBEMMP/PlateAnnualHeatSupplyQuantity_{mod_id} .
+            iri:OntoUBEMMP/PlateAnnualHeatSupplyQuantity_{mod_id} a ub:AnnualHeatSupply ;
+                om:hasDimension oum:energyPerArea-Dimension ;
+                om:hasValue iri:OM/PlateAnnualHeatSupplyValue_{mod_id} .
+            iri:OM/PlateAnnualHeatSupplyValue_{mod_id} a om:Measure ;
+                om:hasUnit oum:kilowattHourPerSquareMetre ;
+                om:hasNumericalValue {pow_hz}^^xsd:double ;
+                ub:hasCalculationBasis "Calculated at module efficiency of 50%."^^xsd:string .
+            iri:OntoUBEMMP/RoofThermalTubeCollectors_{mod_id} a ub:RoofThermalTubeCollectors ;
+                db:producesEnergy iri:OntoUBEMMP/TubeAnnualHeatSupplyQuantity_{mod_id} .
+            iri:OntoUBEMMP/TubeAnnualHeatSupplyQuantity_{mod_id} a ub:AnnualHeatSupply ;
+                om:hasDimension oum:energyPerArea-Dimension;
+                om:hasValue iri:OM/TubeAnnualHeatSupplyValue_{mod_id} .
+            iri:OM/TubeAnnualHeatSupplyValue_{mod_id} a om:Measure ;
+                om:hasUnit oum:kilowattHourPerSquareMetre ;
+                om:hasNumericalValue {pow_th}^^xsd:double ;
+                ub:hasCalculationBasis "Calculated at module efficiency of 60%."^^xsd:string .
+            iri:OntoUBEMMP/RoofSolarCollectors_{mod_id} a ub:RoofSolarCollectors ;
+                ub:producesCO2Savings iri:OntoUBEMMP/AnnualCO2SavingsQuantity_{mod_id} ;
+                ub:receivesRadiation iri:OntoUBEMMP/RadabshzQuantity_{mod_id} .
+            iri:OntoUBEMMP/AnnualCO2SavingsQuantity_{mod_id} a ub:AnnualCO2Savings ;
+                om:hasValue iri:OM/AnnualCO2SavingsValue_{mod_id} .
+            iri:OM/AnnualCO2SavingsValue_{mod_id} a om:Measure ;
+                om:hasUnit om:kilogramPerSquareMetre ;
+                om:hasNumericalValue {co2_th}^^xsd:double ;
+                ub:hasCalculationBasis "CO2 savings per m² at 0.258 kg/kWh - equivalent value compared to natural gas (assuming module efficiency 50%)."^^xsd:string .
+            iri:OntoUBEMMP/RadabshzQuantity_{mod_id} a ub:Radabshz ;
+                om:hasDimension om:power-Dimension ;
+                om:hasValue iri:OM/RadabshzValue_{mod_id} .
+            iri:OM/RadabshzValue_{mod_id} a om:Measure ;
+                om:hasUnit oum:kilowattHourPerYear ;
+                om:hasNumericalValue {radabshz}^^xsd:double .
+            iri:OntoBIM/Roof_{mod_id} a bim:Roof ;
+                bim:isHeatSupportSuitable {eignghzi}^^xsd:boolean ;
+                bim:isSolarCollectorSuitable {eigngthi}^^xsd:boolean .
+source      SELECT geb_id, mod_id, pow_hz, pow_th, co2_th, radabshz, eignghzi, eigngthi FROM "solarthermie"
+]]
+
