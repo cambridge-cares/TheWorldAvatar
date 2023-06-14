@@ -23,3 +23,10 @@ curl -X POST --header "Content-Type: application/json" -d "{\"agentProperties\":
 
 ## Solarkataster
 curl -X POST --header "Content-Type: application/json" -d "{'table':'solarthermie','chunk':50}" http://localhost:10101/solarkataster_agent/run
+
+## IfcOwlConverter
+curl -X POST --header "Content-Type: application/json" -d "{'uri':'default'}" http://localhost:3838/ifcowlconverter/
+
+## Ifc2OntoBim
+curl -X POST --header "Content-Type: application/json" -d "{'uri':'http://www.theworldavatar.com/ifc/building/', 'isIfcOwl':true}" http://localhost:3838/ifc2ontobim-agent/convert
+
