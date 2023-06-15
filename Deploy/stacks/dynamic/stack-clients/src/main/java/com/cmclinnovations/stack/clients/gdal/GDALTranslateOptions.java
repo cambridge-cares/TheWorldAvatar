@@ -35,6 +35,10 @@ public class GDALTranslateOptions extends CommonOptions<GDALTranslateOptions> {
             // Generic re-projection will require using gdalwarp instead/as well as
             // gdal_translate. gdalwarp is also faster when re-projecting.
             creationOptions.put("TARGET_SRS", sridOut);
+            // Need to disable adding alpha as this causes gdal_translate to add a mask band
+            // to rasters that don't have a nodata value, which causes issues. This also
+            // brings the output more inline with just using gdalswarp.
+            creationOptions.put("ADD_ALPHA", "NO");
         }
     }
 }
