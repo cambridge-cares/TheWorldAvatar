@@ -110,8 +110,8 @@ MODEL_MAPPING['DEFAULT'] = {
 MODEL_MAPPING['TFT_HEAT_SUPPLY'] = {
     'load_covariates_func': get_covs_heat_supply,
     'fc_model': {
-        "model_path_ckpt_link":  "https://www.dropbox.com/s/fxt3iztbimvm47s/best.ckpt?dl=1",
-        "model_path_pth_link":  "https://www.dropbox.com/s/ntg8lgvh01x09wr/_model.pth.tar?dl=1",
+        "model_path_ckpt_link":  "https://www.dropbox.com/s/ia1nwqbepu8lbeh/best.ckpt?dl=1",
+        "model_path_pth_link":  "https://www.dropbox.com/s/8pnne7gv34btr9x/_model.pth.tar?dl=1",
         'train_again': False,
         'name': 'tft',
         'scale_data': True,
