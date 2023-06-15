@@ -12,6 +12,34 @@ logger.info(" - Done initializing Cross Graph Engine")
 logger.info("============= Server is ready to go! ===========")
 app = Flask(__name__)
 
+def result_filter(result):
+
+    if type(result) == type([]):
+        sample_node = result[0]
+        if "domain" in sample_node:
+            domain = sample_node["domain"]
+            if domain == "ontokin_reaction":
+                result_tmp = []
+                for row in result[0]["node"]:
+                    result_tmp.append({"node": row})
+                pprint(result_tmp)
+                return result_tmp
+    elif "ontoagent" in str(result):
+        return result
+    result_tmp = []
+
+    if "score" in str(result):
+        for row in result:
+            row_tmp = {}
+            for row_key in row:
+                if row_key.lower() != "score":
+                    row_tmp[row_key] = row[row_key]
+            result_tmp.append(row_tmp)
+
+        return [result_tmp[0]]
+    else:
+        return result
+
 
 def answer_question(question):
     logger.info("=======================================================================================")
@@ -42,7 +70,7 @@ def search():
     args = request.args
     question = args["question"]
     answer = answer_question(question)
-    return json.dumps(answer)
+    return json.dumps(result_filter(answer))
 
 
 # @app.route("/dashboard", methods=['GET'])
