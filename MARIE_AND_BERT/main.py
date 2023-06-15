@@ -22,7 +22,6 @@ def result_filter(result):
                 result_tmp = []
                 for row in result[0]["node"]:
                     result_tmp.append({"node": row})
-                pprint(result_tmp)
                 return result_tmp
     elif "ontoagent" in str(result):
         return result

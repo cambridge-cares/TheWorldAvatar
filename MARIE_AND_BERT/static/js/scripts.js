@@ -81,6 +81,9 @@ let url = "search"
 var resultsRow = document.getElementById("results-row");
 resultsRow.style.display = "none";
 
+var single_result = document.getElementById("single_result");
+single_result.style.display = "none";
+
 // Currently asking a question?
 var asking = 0;
 
@@ -218,6 +221,8 @@ function askQuestion() {
 
 	// Show the results row
 	resultsRow.style.display = "block";
+
+
 }
 
 
@@ -269,6 +274,28 @@ function makeRequest(question, type, resultType, successFunction, promises) {
 
 function handleResults(rawResult){
 	console.log("raw result in handle results", rawResult)
+
+	if ("single" in rawResult){
+		console.log("Got a single result", rawResult)
+		let result = rawResult["single"]
+		let target = result["target"].toUpperCase()
+		let domain = result["domain"]
+		let value = result["node"]
+
+		let answer_value = document.getElementById("answer_value")
+		let domain_value = document.getElementById("domain_value")
+		let target_value = document.getElementById("target_value")
+
+		answer_value.innerHTML =  value
+		domain_value.innerHTML = "<b>Domain: </b>" + domain
+		target_value.innerHTML = "<b>Target: </b>" + target
+		single_result.style.display = "block"
+		resultsRow.style.display = "none"
+
+
+		return;
+	}
+
 	if(rawResult === null || rawResult === undefined || rawResult === "null") {
 		let msg = "<span style=\"color: red; padding-left: 15px;\">The World Avatar failed to provide an answer.</span>";
 		let chatbotResults = document.getElementById("chatbot-results");
