@@ -1,0 +1,14 @@
+{
+        "name" : "public_houses",
+        "datasetDirectory" : "public_houses",
+        "database": "postgres",
+        "workspace": "the_world_avatar",
+        "skip": false,
+        "dataSubsets": [
+            {
+                "type": "vector",
+                "skip": false,
+                "schema": "public"
+            }
+        ]
+}

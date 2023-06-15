@@ -1,0 +1,25 @@
+{
+    "name": "road_incidents",
+    "datasetDirectory": "road_incidents",
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "road_incidents",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "geom"
+                },
+                "sridIn": "EPSG:4326",
+                "inputDatasetOpenOptions": {
+                    "X_POSSIBLE_NAMES": "longitude",
+                    "Y_POSSIBLE_NAMES": "latitude"
+                }
+            }
+        }
+    ]
+}
