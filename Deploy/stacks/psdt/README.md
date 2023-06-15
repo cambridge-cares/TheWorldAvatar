@@ -20,6 +20,8 @@ In order to deploy (on a Linux machine):
 
    The FIA is critical to the operation of the PSDT, as it allows the front-end to query additional information from the KG. Before spinning it up, make sure you copy all files from the `stack-manager-inputs/data/fia-queries` folder into the relevant folder (e.g. `stack-manager/inputs/data/fia-queries`) in TWA as specified in the stack config `json` file for the `fia-queries` volume. NB Any change to the `json` config file within that volume requires the agent to be restarted, whereas the SPARQL query files are hot-reloaded for each request and thus do not require the agent to be restarted when changed.
 
+   Please note that the Access Agent is not required by the PSDT itself, but by some of the other agents (e.g. district heating and sewage instantiation).
+
 3. From a terminal in the `stack-manager` directory, start the `stack-manager` by running the following:
     ```console
     sudo ./stack.sh start psdt
