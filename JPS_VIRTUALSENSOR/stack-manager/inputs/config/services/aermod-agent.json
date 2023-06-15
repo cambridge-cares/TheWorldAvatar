@@ -22,7 +22,8 @@
 					"SOURCE_LAYER=source_layer",
 					"VIS_FOLDER=/vis_data",
 					"GEOSERVER_URL=http://localhost:3838/geoserver",
-					"ELEVATION_TABLE=elevation"
+					"ELEVATION_TABLE=elevation",
+					"POLLUTANT_ID=NOx"
 				],
 				"Configs": [
 					{

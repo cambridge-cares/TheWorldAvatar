@@ -325,7 +325,7 @@ public class Aermod {
         }
         featureCollection.put("features", features);
 
-        LOGGER.info("Uploading plant items GeoJSON to PostGIS");
+        LOGGER.info("Uploading static point sources GeoJSON to PostGIS");
         return featureCollection;
 
     }
@@ -528,6 +528,8 @@ public class Aermod {
 
     int createPointsFile(List<PointSource> pointSources, int simulationSrid) {
         StringBuilder sb = new StringBuilder();
+        String pollutantID = QueryClient.PREFIX_DISP + EnvConfig.POLLUTANT_ID;
+
         for (int i = 0; i < pointSources.size(); i++) {
 
             PointSource ps = pointSources.get(i);
@@ -539,12 +541,46 @@ public class Aermod {
 
             double area = Math.PI * Math.pow(ps.getDiameter() / 2, 2); // m2
             double density = ps.getMixtureDensityInKgm3(); // kg/m3
-            double velocity = ps.getFlowrateSO2InGramsPerS() / 1000 / area / density; // m/s
 
-            double massFlowrateInGs = ps.getFlowrateNOxInGramsPerS();
+            double massFlowrateInGs = 0.0;
+            switch (pollutantID) {
+                case QueryClient.CO2:
+                    massFlowrateInGs = ps.getFlowrateCO2InGramsPerSecond();
+                    break;
+                case QueryClient.NO_X:
+                    massFlowrateInGs = ps.getFlowrateNOxInGramsPerS();
+                    break;
+                case QueryClient.SO2:
+                    massFlowrateInGs = ps.getFlowrateSO2InGramsPerS();
+                    break;
+                case QueryClient.CO:
+                    massFlowrateInGs = ps.getFlowrateCOInGramsPerS();
+                    break;
+                case QueryClient.UHC:
+                    massFlowrateInGs = ps.getFlowrateHCInGramsPerS();
+                    break;
+                case QueryClient.PM10:
+                    massFlowrateInGs = ps.getFlowRatePm10InGramsPerS();
+                    break;
+                case QueryClient.PM25:
+                    massFlowrateInGs = ps.getFlowRatePm25InGramsPerS();
+                    break;
+                default:
+                    LOGGER.info("Unknown pollutant ID encountered in AermodAgent/QueryClient class: {}",
+                            pollutantID);
+            }
+
+            // TODO: This will not work for PM10 and PM2.5.
+            double velocity = massFlowrateInGs / 1000 / area / density; // m/s
+
+            double baseElevation = 0.0;
+            if (ps.getClass() == StaticPointSource.class) {
+                StaticPointSource pss = (StaticPointSource) ps;
+                baseElevation = pss.getElevation();
+            }
 
             sb.append(String.format("SO LOCATION %s POINT %f %f %f", stkId, xyTransformed[0], xyTransformed[1],
-                    ps.getHeight()));
+                    baseElevation));
             sb.append(System.lineSeparator());
             sb.append(String.format("SO SRCPARAM %s %f %f %f %f %f", stkId,
                     massFlowrateInGs, ps.getHeight(), ps.getMixtureTemperatureInKelvin(),

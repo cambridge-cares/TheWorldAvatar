@@ -154,6 +154,9 @@ public class QueryClient {
     private static final Iri OCGML_CITYOBJECT = P_OCGML.iri("cityObjectId");
     private static final Iri OCGML_OBJECTCLASSID = P_OCGML.iri("objectClassId");
     private static final Iri OCGML_BUILDINGID = P_OCGML.iri("buildingId");
+    private static final Iri HAS_POLLUTANT_ID = P_DISP.iri("hasPollutantID");
+    private static final Iri HAS_DISPERSION_MATRIX = P_DISP.iri("hasDispersionMatrix");
+    private static final Iri HAS_DISPERSION_LAYER = P_DISP.iri("hasDispersionLayer");
 
     // fixed units for each measured property
     private static final Map<String, Iri> UNIT_MAP = new HashMap<>();
@@ -492,7 +495,7 @@ public class QueryClient {
         Variable temperatureUnit = query.var();
 
         GraphPattern gp = GraphPatterns.and(ps.has(EMITS, emissionIRI),
-                emissionIRI.isA(pollutant).andHas(HAS_QTY, massFlowIRI)
+                emissionIRI.has(HAS_POLLUTANT_ID, pollutant).andHas(HAS_QTY, massFlowIRI)
                         .andHas(HAS_QTY, densityIRI),
                 massFlowIRI.isA(iri(MASS_FLOW)).andHas(PropertyPaths.path(HAS_VALUE,
                         HAS_NUMERICALVALUE), emissionValue)
@@ -1080,33 +1083,52 @@ public class QueryClient {
 
     void updateOutputs(String derivation, String dispersionMatrix, String dispersionLayer, String shipLayer,
             long timeStamp, String aermapOutput) {
-        // first query the IRIs
+
         SelectQuery query = Queries.SELECT();
 
         Variable entity = query.var();
-        Variable entityType = query.var();
+        Variable pollutant = query.var();
+        Variable dispMatrix = query.var();
+        Variable dispLayer = query.var();
 
         Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
 
-        query.where(entity.has(belongsTo, iri(derivation)).andIsA(entityType)).prefix(P_DISP).select(entity, entityType)
+        query.where(entity.has(belongsTo, iri(derivation)).andHas(HAS_POLLUTANT_ID, pollutant)
+                .andHas(HAS_DISPERSION_MATRIX, dispMatrix).andHas(HAS_DISPERSION_LAYER, dispLayer)).prefix(P_DISP)
+                .select(entity, pollutant, dispMatrix, dispLayer)
                 .distinct();
-
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
-        String dispersionMatrixIri = null;
-        String dispersionLayerIri = null;
+        List<String> tsDataList = new ArrayList<>();
+        List<List<?>> tsValuesList = new ArrayList<>();
+        String currentPollutant = PREFIX_DISP + EnvConfig.POLLUTANT_ID;
+
+        for (int i = 0; i < queryResult.length(); i++) {
+            String pollutantIRI = queryResult.getJSONObject(i).getString(pollutant.getQueryString().substring(1));
+            if (pollutantIRI.equals(currentPollutant)) {
+                tsValuesList.add(List.of(dispersionMatrix));
+                tsValuesList.add(List.of(dispersionLayer));
+            } else {
+                tsValuesList.add(List.of(null));
+                tsValuesList.add(List.of(null));
+            }
+        }
+
+        SelectQuery query2 = Queries.SELECT();
+        Variable entityType = query.var();
+
+        query2.where(entity.has(belongsTo, iri(derivation))
+                .filterNotExists(entity.has(HAS_POLLUTANT_ID, pollutant))).select(entity, entityType);
+
+        queryResult = storeClient.executeQuery(query2.getQueryString());
+
         String shipLayerIri = null;
         String aermapOutputIri = null;
+
         for (int i = 0; i < queryResult.length(); i++) {
             String entityTypeIri = queryResult.getJSONObject(i).getString(entityType.getQueryString().substring(1));
 
             switch (entityTypeIri) {
-                case DISPERSION_MATRIX:
-                    dispersionMatrixIri = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
-                    break;
-                case DISPERSION_LAYER:
-                    dispersionLayerIri = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
-                    break;
                 case SHIPS_LAYER:
                     shipLayerIri = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
                     break;
@@ -1119,28 +1141,27 @@ public class QueryClient {
             }
         }
 
-        if (dispersionMatrixIri == null || dispersionLayerIri == null || shipLayerIri == null
-                || aermapOutputIri == null) {
-            LOGGER.error("One of dispersion matrix, dispersion layer, ship layer IRI, aermap output IRI is null");
+        if (shipLayerIri == null || aermapOutputIri == null) {
+            LOGGER.error("Either the shipLayerIri or aermapOutputIRI is null");
             return;
         }
 
-        List<List<?>> values = new ArrayList<>();
-        values.add(List.of(dispersionMatrix));
-        values.add(List.of(dispersionLayer));
-        values.add(List.of(shipLayer));
-        values.add(List.of(aermapOutput));
+        tsDataList.add(shipLayerIri);
+        tsDataList.add(aermapOutputIri);
+
+        tsValuesList.add(List.of(shipLayer));
+        tsValuesList.add(List.of(aermapOutput));
 
         TimeSeries<Long> timeSeries = new TimeSeries<>(List.of(timeStamp),
-                List.of(dispersionMatrixIri, dispersionLayerIri, shipLayerIri, aermapOutputIri), values);
+                tsDataList, tsValuesList);
 
         try (Connection conn = rdbStoreClient.getConnection()) {
             tsClientLong.addTimeSeriesData(timeSeries, conn);
         } catch (SQLException e) {
             LOGGER.error("Failed at closing connection");
             LOGGER.error(e.getMessage());
-            return;
         }
+
     }
 
 }

@@ -74,7 +74,7 @@ public class QueryClient {
         private static final Iri CONTAINS = P_GEO.iri("ehContains");
         private static final Iri OCGML_REP = P_BUILD.iri("hasOntoCityGMLRepresentation");
         private static final Iri HAS_VALUE = P_OM.iri("hasValue");
-        private static final Iri HAS_POLLUTANT_ID = P_OM.iri("hasPollutantID");
+        private static final Iri HAS_POLLUTANT_ID = P_DISP.iri("hasPollutantID");
 
         public QueryClient(StoreClientInterface queryStoreClient, StoreClientInterface updateStoreClient) {
                 this.queryStoreClient = queryStoreClient;
