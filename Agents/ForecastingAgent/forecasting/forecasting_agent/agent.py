@@ -12,6 +12,7 @@ import uuid
 import urllib
 from pathlib import Path
 import pandas as pd
+import torch
 
 from dateutil.parser import isoparse
 from darts import TimeSeries
@@ -461,8 +462,24 @@ def load_pretrained_model(cfg, ModelClass, force_download=False):
                 model_path_pth_link, path_to_store.parent.absolute() / "_model.pth.tar")
             logger.info(f'Downloaded model from {model_path_pth_link} to {path_pth}')
 
-    model = ModelClass.load_from_checkpoint(
-        path_ckpt.parent.parent.__str__())
+    # TFT model has been trained and saved on a CUDA device (i.e., using GPUs);
+    # Attempting to deserialize saved model on a CPU-only machine will fail
+
+    # Check if current system supports CUDA
+    if torch.cuda.is_available():
+        # Use easy load from checkpoint if yes
+        model = ModelClass.load_from_checkpoint(path_ckpt.parent.parent.__str__())
+    else:
+        # Otherwise use torch.load with map_location=torch.device('cpu') to map your storages to the CPU
+        device = torch.device('cpu')
+        checkpoint = torch.load(path_ckpt, map_location=device)
+        # Initialise 'new' model with matching input/output lengths
+        model = ModelClass(input_chunk_length=checkpoint['hyper_parameters']['input_chunk_length'],
+                           output_chunk_length=checkpoint['hyper_parameters']['output_chunk_length'])
+        # Overwrite model parameters with saved model
+        model.__dict__.update(checkpoint['state_dict'])
+        #model= torch.load('forecasting_agent/Models/TFT_HEAT_SUPPLY/_model.pth.tar')
+
     logger.info(f'Loaded model from  {path_ckpt.parent.parent.__str__()}')
 
     # convert loaded model to device
