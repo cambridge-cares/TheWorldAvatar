@@ -13,6 +13,8 @@ Elevation data can be downloaded from https://www.eorc.jaxa.jp/ALOS/en/dataset/a
 
 Uploading of elevation data can be done using the stack data uploader. The downloaded .tif files should be placed in a subfolder within the TheWorldAvatar/Deploy/stacks/dynamic/stack-data-uploader/inputs/data/ directory. Suppose that the name of this folder is "elevation". One needs to create an elevation.json configuration file in the TheWorldAvatar/Deploy/stacks/dynamic/stack-data-uploader/inputs/config/ directory location. A template is provided at TheWorldAvatar/Deploy/stacks/dynamic/examples/datasets/inputs/config/elevation.json. The elevation.sld file in this directory location can be used to create customize the GeoServer style used to upload the data. See https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader for more details. The POSTGIS table name where the elevation data is stored needs to be specified as the value of the environment variable "ELEVATION_TABLE" in the stack-manager/inputs/config/aermod-agent.json and aermod-agent-debug.json files. 
 
+6) Specify the pollutant ID for which it is desired to run AERMOD as the value of the environment variable "POLLUTANT_ID" in the stack-manager/inputs/config/aermod-agent.json and aermod-agent-debug.json files. Currently, this must be one of NOx, uHC, CO, CO2, SO2, PM10 or PM2.5. There must be at least one point source with emissions data for the specified pollutant ID. 
+
 Stack needs to be up and running:
 1) execute
 ```
@@ -34,7 +36,7 @@ If you are not already logged in then, when prompted, enter the username and pas
 ```
 from within this folder to upload the elevation data to POSTGIS.
 
-3) Start the docker containers for the input agents responsible for instantiating emissions data. Send the requests to these agents to instantitate the relevant triples.
+3) Start the docker containers for the input agents responsible for instantiating emissions data. Send the requests to these agents to instantiate the relevant triples.
 
 ## Work example
 
