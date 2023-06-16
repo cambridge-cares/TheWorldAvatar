@@ -20,10 +20,8 @@ import java.time.OffsetDateTime;
  * data from the CSV file and write it into the database.
  * @author 
  */
-@WebServlet(urlPatterns = {"/retrieve"})
+@WebServlet(urlPatterns = {"/instantiate"})
 public class BMSInstantiationAgentLauncher extends JPSAgent {
-    public static final String KEY_AGENTPROPERTIES = "agentProperties";
-    public static final String KEY_CONNECTORPROPERTIES = "connectorProperties";
     public static final String KEY_CLIENTPROPERTIES = "clientProperties";
 
 
@@ -34,7 +32,6 @@ public class BMSInstantiationAgentLauncher extends JPSAgent {
     /**
      * Logging / error messages
      */
-    private static final String ARGUMENT_MISMATCH_MSG = "Need three properties files in the following order: 1) csv file path 2) time series client 3) type of device.";
     private static final String AGENT_ERROR_MSG = "The agent could not be constructed!";
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
@@ -91,13 +88,6 @@ public class BMSInstantiationAgentLauncher extends JPSAgent {
 
     public static JSONObject initializeAgent(String[] args) {
 
-        // Ensure that there are two properties files
-        if (args.length != 3) {
-            LOGGER.error(ARGUMENT_MISMATCH_MSG);
-            throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
-        }
-        LOGGER.debug("Launcher called with the following files: " + String.join(" ", args));
-
         // Create the agent
         BMSInstantiationAgent agent;
         try {
@@ -140,8 +130,8 @@ public class BMSInstantiationAgentLauncher extends JPSAgent {
             }
             break;
         }
-
-
+        LOGGER.info("The device has been instantiated.");
+        jsonMessage.accumulate("Result", "The device has been instantiated.");
         return jsonMessage;
     	
         
