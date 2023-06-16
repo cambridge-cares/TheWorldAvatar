@@ -261,8 +261,12 @@ public class AermodAgent extends DerivationAgent {
         for (int i = 0; i < receptorHeights.size(); i++) {
             double height = receptorHeights.get(i);
             int receptorHeightInt = (int) Math.round(height);
+            String derivationIRI = derivationInputs.getDerivationIRI();
+            int derivationIdIndex = derivationIRI.indexOf("TimeSeries") + 11;
+            String derivationId = derivationIRI.substring(derivationIdIndex);
+            derivationId = derivationId.replace("-", "_");
             String layerName = "Pollutant_" + EnvConfig.POLLUTANT_ID + "_height_" + receptorHeightInt
-                    + "_time_" + simulationTime;
+                    + "_time_" + simulationTime + "_" + derivationId;
 
             String sqlQuery = String.format(
                     "SELECT ogc_fid, 'stroke-opacity', 'stroke-width', fill, title, 'fill-opacity', stroke, wkb_geometry from dispersion_contours"

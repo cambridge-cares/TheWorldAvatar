@@ -1105,20 +1105,25 @@ public class QueryClient {
 
         for (int i = 0; i < queryResult.length(); i++) {
             String pollutantIRI = queryResult.getJSONObject(i).getString(pollutant.getQueryString().substring(1));
+            String dispersionMatrixIRI = queryResult.getJSONObject(i)
+                    .getString(dispMatrix.getQueryString().substring(1));
+            String dispersionLayerIRI = queryResult.getJSONObject(i).getString(dispLayer.getQueryString().substring(1));
+            tsDataList.add(dispersionMatrixIRI);
+            tsDataList.add(dispersionLayerIRI);
             if (pollutantIRI.equals(currentPollutant)) {
                 tsValuesList.add(List.of(dispersionMatrix));
                 tsValuesList.add(List.of(dispersionLayer));
             } else {
-                tsValuesList.add(List.of(null));
-                tsValuesList.add(List.of(null));
+                tsValuesList.add(List.of("null"));
+                tsValuesList.add(List.of("null"));
             }
         }
 
         SelectQuery query2 = Queries.SELECT();
         Variable entityType = query.var();
 
-        query2.where(entity.has(belongsTo, iri(derivation))
-                .filterNotExists(entity.has(HAS_POLLUTANT_ID, pollutant))).select(entity, entityType);
+        query2.where(entity.isA(entityType).andHas(belongsTo, iri(derivation))
+                .filterNotExists(entity.has(HAS_POLLUTANT_ID, pollutant))).prefix(P_DISP).select(entity, entityType);
 
         queryResult = storeClient.executeQuery(query2.getQueryString());
 
