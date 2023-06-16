@@ -193,8 +193,6 @@ public class AermodAgent extends DerivationAgent {
         // There will be one dispersion layer per height value per pollutant ID.
         Map<String, String> dispersionMatrixMap = new HashMap<>();
         Map<String, List<String>> dispersionLayerMap = new HashMap<>();
-        List<Map<String, String>> dispersionHeightMap = new ArrayList<>();
-
         String dispLayerName = "dispersion_contours";
         String shipLayerName = "ships_" + simulationTime; // hardcoded in ShipInputAgent
         String sourceLayerName = "source_layer";
@@ -229,16 +227,6 @@ public class AermodAgent extends DerivationAgent {
             if (aermod.createPointsFile(allSources, srid, pollutId) != 0) {
                 LOGGER.error("Failed to create points emissions file for pollutant {} at timestep {}", pollutId,
                         simulationTime);
-
-                // Set all entries in derivation timeseries to null if aermod is not run for a
-                // particular pollutant
-                // at a particular timestep.
-                dispersionMatrixMap.put(pollutId, "null");
-                List<String> resultList = new ArrayList<>();
-                receptorHeights.stream().forEach(h -> {
-                    resultList.add("null");
-                });
-                dispersionLayerMap.put(pollutId, resultList);
                 continue;
             }
             aermod.createAermodInputFile(scope, nx, ny, srid);

@@ -1108,14 +1108,18 @@ public class QueryClient {
             String dispersionMatrixIRI = queryResult.getJSONObject(i)
                     .getString(dispMatrix.getQueryString().substring(1));
             String dispersionLayerIRI = queryResult.getJSONObject(i).getString(dispLayer.getQueryString().substring(1));
-            tsDataList.add(dispersionMatrixIRI);
-            tsDataList.add(dispersionLayerIRI);
+
             String pollutantId = pollutantIRI.substring(PREFIX_DISP.length());
-            String dispersionMatrix = dispersionMatrixMap.get(pollutantId);
-            // get(0) because there is only one height (ground level) for now.
-            String dispersionLayer = dispersionLayerMap.get(pollutantId).get(0);
-            tsValuesList.add(List.of(dispersionMatrix));
-            tsValuesList.add(List.of(dispersionLayer));
+            if (dispersionMatrixMap.containsKey(pollutantId)) {
+                tsDataList.add(dispersionMatrixIRI);
+                tsDataList.add(dispersionLayerIRI);
+                String dispersionMatrix = dispersionMatrixMap.get(pollutantId);
+                // get(0) because there is only one height (ground level) for now.
+                String dispersionLayer = dispersionLayerMap.get(pollutantId).get(0);
+                tsValuesList.add(List.of(dispersionMatrix));
+                tsValuesList.add(List.of(dispersionLayer));
+            }
+
         }
 
         SelectQuery query2 = Queries.SELECT();

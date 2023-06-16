@@ -807,7 +807,7 @@ public class Aermod {
                 "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, shipLayerName);
 
         String dispWms = EnvConfig.GEOSERVER_URL
-                + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true"
                 +
                 "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, "PLACEHOLDER");
 
@@ -842,11 +842,9 @@ public class Aermod {
         for (List<String> dispersionLayers : dispersionLayerMap.values()) {
             // Only one height at the moment.
             String dispLayerName = dispersionLayers.get(0);
-            if (dispLayerName.equals("null"))
-                continue;
             JSONObject dispersionSource = new JSONObject();
             dispersionSource.put("id", "dispersion-source_" + dispLayerName);
-            dispersionSource.put("type", "raster");
+            dispersionSource.put("type", "vector");
             dispersionSource.put("tiles",
                     new JSONArray().put(dispWms.replace("PLACEHOLDER", dispLayerName)));
             sources.put(dispersionSource);
@@ -882,16 +880,24 @@ public class Aermod {
 
         for (List<String> dispersionLayers : dispersionLayerMap.values()) {
             String dispLayerName = dispersionLayers.get(0);
-            if (dispLayerName.equals("null"))
-                continue;
             JSONObject dispersionLayer = new JSONObject();
             dispersionLayer.put("id", dispLayerName);
-            dispersionLayer.put("type", "raster");
+            dispersionLayer.put("type", "fill");
             dispersionLayer.put("name", dispLayerName);
             dispersionLayer.put("source", "dispersion-source_" + dispLayerName);
             dispersionLayer.put("source-layer", dispLayerName);
             dispersionLayer.put("minzoom", 4);
             dispersionLayer.put("layout", new JSONObject().put("visibility", "visible"));
+
+            JSONObject paint = new JSONObject();
+            JSONArray properties = new JSONArray();
+            properties.put("get");
+            properties.put("fill");
+            paint.put("fill-color", properties);
+            paint.put("fill-extrusion-opacity", 0.5);
+            properties.put(1, "stroke");
+            paint.put("fill-outline-color", properties);
+            dispersionLayer.put("paint", paint);
             layers.put(dispersionLayer);
         }
 
