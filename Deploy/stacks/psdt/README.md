@@ -12,6 +12,9 @@ In order to deploy (on a Linux machine):
    - Historical House 45 Utilities Agent
    - Historical Pirmasens Station Agent
    - Historical Pump Data Instantiation Agent
+   - Ifc2Tileset Agent
+   - Ifc2OntoBIM Agent
+   - IfcOwlConverter Agent
    - Sewage Network Agent
    - Solarkataster Agent
    - Thingspeak Agent
