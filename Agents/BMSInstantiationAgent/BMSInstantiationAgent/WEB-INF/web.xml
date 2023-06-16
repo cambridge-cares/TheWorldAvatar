@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app 
+		xsi:schemaLocation="http://java.sun.com/xml/ns/javaee/ http://java.sun.com/xml/ns/javaee/web-app_3_1.xsd" 
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
+		metadata-complete="false" 
+		version="3.1">
+
+	<display-name>bms-instantiation-agent</display-name>
+	<description>Simple servlet to accept incoming request and retrieve information from an excel file and instantiate these information .</description>
+
+	<servlet>
+		<servlet-name>BMSInstantiationAgentServlet</servlet-name>
+		<servlet-class>uk.ac.cam.cares.jps.agent.bmsinstantiation.BMSInstantiationAgentLauncher</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>BMSInstantiationAgentServlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+</web-app>

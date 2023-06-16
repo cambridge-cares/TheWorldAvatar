@@ -1,0 +1,7 @@
+WFH_label,WFH-01
+SashOpening_IRI,https://www.theworldavatar.com/kg/ontobms/V_VAV_E7_09_WFH-01_Door
+State_IRI,https://www.theworldavatar.com/kg/ontobms/V_VAV_E7_09_WFH-01_status
+VAV_label,VAV_E7_09
+DamperState_IRI,https://www.theworldavatar.com/kg/ontobms/V_VAV_E7_09_DamperActuator
+AirFlow_IRI,https://www.theworldavatar.com/kg/ontobms/V_VAV_E7_09_FlowSensor
+Setpoint_IRI,https://www.theworldavatar.com/kg/ontobms/V_VAV_E7_09_AirflowSetPoint
