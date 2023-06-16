@@ -4,10 +4,13 @@
         "Name": "geoserver",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "docker.cmclinnovations.com/geoserver:2.20.4",
+                "Image": "docker.osgeo.org/geoserver:2.23.1",
                 "Env": [
                     "GEOSERVER_CSRF_WHITELIST=localhost",
-                    "PLUGIN_DYNAMIC_URLS=http://sourceforge.net/projects/geoserver/files/GeoServer/2.20.4/extensions/geoserver-2.20.4-vectortiles-plugin.zip"
+                    "INSTALL_EXTENSIONS=true",
+                    "STABLE_EXTENSIONS=vectortiles",
+                    "CORS_ENABLED=true",
+                    "SKIP_DEMO_DATA=true"
                 ],
                 "Mounts": [
                     {
