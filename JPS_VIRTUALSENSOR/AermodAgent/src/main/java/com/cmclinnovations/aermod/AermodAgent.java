@@ -7,7 +7,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -179,128 +181,148 @@ public class AermodAgent extends DerivationAgent {
             return;
         }
 
-        // create emissions input
-        if (aermod.createPointsFile(allSources, srid) != 0) {
-            LOGGER.error("Failed to create points emissions file, terminating");
-            return;
-        }
-
-        aermod.createAermodInputFile(scope, nx, ny, srid);
-        // The receptor.dat file may have been previously created by running AERMAP. If
-        // so, it should not be overwritten.
-        if (Files.notExists(simulationDirectory.resolve("aermod").resolve("receptor.dat")))
-            aermod.createAERMODReceptorInput(scope, nx, ny, srid);
-        aermod.runAermod("aermod.inp");
-        // Upload files used by scripts within Python Service to file server.
-        String outputFileURL = aermod.uploadToFileServer("averageConcentration.dat");
-        String outFileURL = aermod.uploadToFileServer("receptor.dat");
-
+        // Variable initialization
+        List<String> pollutantsList = List.of("NOx", "uHC", "CO", "CO2", "SO2", "PM10", "PM2.5");
+        // TODO: The height values will eventually be obtained from the derivation
+        // inputs.
         List<Double> receptorHeights = new ArrayList<>();
         receptorHeights.add(0.0);
+        // Create hashmaps to store the dispersion matrix URLS and dispersion layer
+        // names.
+        // Only one dispersion matrix per pollutant ID.
+        // There will be one dispersion layer per height value per pollutant ID.
+        Map<String, String> dispersionMatrixMap = new HashMap<>();
+        Map<String, List<String>> dispersionLayerMap = new HashMap<>();
+        List<Map<String, String>> dispersionHeightMap = new ArrayList<>();
 
         String dispLayerName = "dispersion_contours";
         String shipLayerName = "ships_" + simulationTime; // hardcoded in ShipInputAgent
         String sourceLayerName = "source_layer";
         String elevationLayerName = "elevation_layer";
-
-        // Get contour plots as geoJSON objects from PythonService and upload them to
-        // PostGIS using GDAL
-
-        JSONObject pointSourceFeatures = aermod.createStaticPointSourcesJSON(staticPointSources);
-
-        GDALClient gdalClient = GDALClient.getInstance();
-
-        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.SOURCE_LAYER,
-                pointSourceFeatures.toString(),
-                new Ogr2OgrOptions(), true);
-
-        JSONObject geoJSON2 = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_ELEVATION_URL, outFileURL, srid, 0.0);
-        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, elevationLayerName, geoJSON2.toString(),
-                new Ogr2OgrOptions(), true);
-
-        for (int i = 0; i < receptorHeights.size(); i++) {
-            double height = receptorHeights.get(i);
-            JSONObject geoJSON = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_URL, outputFileURL, srid, height);
-            // The derivation IRI, pollutant ID, simulation time and height properties are
-            // added here to
-            // enable the
-            // post-processing agent to retrieve the relevant contours for the
-            // visualization.
-            JSONArray features = geoJSON.getJSONArray("features");
-            for (int j = 0; j < features.length(); j++) {
-                JSONObject feature = features.getJSONObject(i);
-                JSONObject featureProperties = feature.getJSONObject("properties");
-                featureProperties.put("derivationIRI", derivationInputs.getDerivationIRI());
-                featureProperties.put("pollutantID", EnvConfig.POLLUTANT_ID);
-                featureProperties.put("simulation_time", simulationTime);
-                featureProperties.put("height", height);
-                feature.put("properties", featureProperties);
-                features.put(j, feature);
-            }
-
-            geoJSON.put("features", features);
-
-            // The true option is used to append the contours obtained from the latest
-            // simulation to previously obtained data.
-            gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, dispLayerName, geoJSON.toString(),
-                    new Ogr2OgrOptions(), true);
-        }
-
         // create geoserver layer based for that
         GeoServerClient geoServerClient = GeoServerClient.getInstance();
-
         // make sure style is uploaded first
         uploadStyle(geoServerClient);
-
         // then create a layer with that style as default
         GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
         geoServerVectorSettings.setDefaultStyle("dispersion_style");
-        // Set GeoServer layer names. Include simulationDirectory in the name to prevent
-        // name collision.
-        List<String> dispLayerNames = new ArrayList<>();
-        for (int i = 0; i < receptorHeights.size(); i++) {
-            double height = receptorHeights.get(i);
-            int receptorHeightInt = (int) Math.round(height);
-            String derivationIRI = derivationInputs.getDerivationIRI();
-            int derivationIdIndex = derivationIRI.indexOf("TimeSeries") + 11;
-            String derivationId = derivationIRI.substring(derivationIdIndex);
-            derivationId = derivationId.replace("-", "_");
-            String layerName = "Pollutant_" + EnvConfig.POLLUTANT_ID + "_height_" + receptorHeightInt
-                    + "_time_" + simulationTime + "_" + derivationId;
 
-            String sqlQuery = String.format(
-                    "SELECT ogc_fid, \"stroke-opacity\", \"stroke-width\", fill, title, \"fill-opacity\", stroke, wkb_geometry from dispersion_contours"
-                            + " WHERE \"derivationIRI\"='%s' and \"pollutantID\"='%s' and simulation_time = %d and height = %f ",
-                    derivationInputs.getDerivationIRI(), EnvConfig.POLLUTANT_ID, simulationTime,
-                    height);
-
-            GeoServerVectorSettings geoServerDispersionSettings = new GeoServerVectorSettings();
-
-            UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
-            virtualTable.setSql(sqlQuery);
-            virtualTable.setEscapeSql(true);
-            virtualTable.setName("dispersionVirtualTable");
-            virtualTable.addVirtualTableGeometry("wkb_geometry", "MultiPolygon", "4326"); // geom needs to match the sql
-            // query
-            LOGGER.info(virtualTable.getName());
-            geoServerDispersionSettings.setVirtualTable(virtualTable);
-
-            geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, layerName,
-                    geoServerDispersionSettings);
-
-            dispLayerNames.add(layerName);
-        }
-
-        geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, elevationLayerName,
-                geoServerVectorSettings);
-
+        // Upload point sources layer to POSTGIS and GeoServer
+        JSONObject pointSourceFeatures = aermod.createStaticPointSourcesJSON(staticPointSources);
+        GDALClient gdalClient = GDALClient.getInstance();
+        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.SOURCE_LAYER,
+                pointSourceFeatures.toString(),
+                new Ogr2OgrOptions(), true);
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, EnvConfig.SOURCE_LAYER,
                 new GeoServerVectorSettings());
 
+        // Upload elevation contour plot to POSTGIS and GeoServer
+        String outFileURL = aermod.uploadToFileServer("receptor.dat");
+        JSONObject geoJSON2 = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_ELEVATION_URL, outFileURL, srid, 0.0, null);
+        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, elevationLayerName, geoJSON2.toString(),
+                new Ogr2OgrOptions(), true);
+        geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, elevationLayerName,
+                geoServerVectorSettings);
+
+        for (String pollutId : pollutantsList) {
+            // create emissions input
+            if (aermod.createPointsFile(allSources, srid, pollutId) != 0) {
+                LOGGER.error("Failed to create points emissions file for pollutant {} at timestep {}", pollutId,
+                        simulationTime);
+
+                // Set all entries in derivation timeseries to null if aermod is not run for a
+                // particular pollutant
+                // at a particular timestep.
+                dispersionMatrixMap.put(pollutId, "null");
+                List<String> resultList = new ArrayList<>();
+                receptorHeights.stream().forEach(h -> {
+                    resultList.add("null");
+                });
+                dispersionLayerMap.put(pollutId, resultList);
+                continue;
+            }
+            aermod.createAermodInputFile(scope, nx, ny, srid);
+            // The receptor.dat file may have been previously created by running AERMAP. If
+            // so, it should not be overwritten.
+            if (Files.notExists(simulationDirectory.resolve("aermod").resolve("receptor.dat")))
+                aermod.createAERMODReceptorInput(scope, nx, ny, srid);
+            aermod.runAermod("aermod.inp");
+
+            // Upload files used by scripts within Python Service to file server.
+            String outputFileURL = aermod.uploadToFileServer("averageConcentration.dat");
+            dispersionMatrixMap.put(pollutId, outputFileURL);
+
+            // Get contour plots as geoJSON objects from PythonService and upload them to
+            // PostGIS using GDAL
+            List<String> dispLayerNames = new ArrayList<>();
+            for (int i = 0; i < receptorHeights.size(); i++) {
+                double height = receptorHeights.get(i);
+                JSONObject geoJSON = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_URL, outputFileURL, srid, height,
+                        pollutId);
+                // The derivation IRI, pollutant ID, simulation time and height properties are
+                // added here to
+                // enable the
+                // post-processing agent to retrieve the relevant contours for the
+                // visualization.
+                JSONArray features = geoJSON.getJSONArray("features");
+                for (int j = 0; j < features.length(); j++) {
+                    JSONObject feature = features.getJSONObject(j);
+                    JSONObject featureProperties = feature.getJSONObject("properties");
+                    featureProperties.put("derivationIRI", derivationInputs.getDerivationIRI());
+                    featureProperties.put("pollutantID", pollutId);
+                    featureProperties.put("simulation_time", simulationTime);
+                    featureProperties.put("height", height);
+                    feature.put("properties", featureProperties);
+                    features.put(j, feature);
+                }
+
+                geoJSON.put("features", features);
+
+                // The true option is used to append the contours obtained from the latest
+                // simulation to previously obtained data.
+                gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, dispLayerName, geoJSON.toString(),
+                        new Ogr2OgrOptions(), true);
+
+                String receptorHeightString = String.valueOf(height).replace(".", "_dp_");
+                String derivationIRI = derivationInputs.getDerivationIRI();
+                int derivationIdIndex = derivationIRI.indexOf("TimeSeries") + 11;
+                String derivationId = derivationIRI.substring(derivationIdIndex);
+                derivationId = derivationId.replace("-", "_");
+                String layerName = "Pollutant_" + pollutId + "_height_" + receptorHeightString
+                        + "_time_" + simulationTime + "_" + derivationId;
+                // For the PM2.5 layer. Cannot have decimal points in a GeoServer layer name
+                layerName = layerName.replace(".", "_dp_");
+
+                String sqlQuery = String.format(
+                        "SELECT ogc_fid, \"stroke-opacity\", \"stroke-width\", fill, title, \"fill-opacity\", stroke, wkb_geometry from dispersion_contours"
+                                + " WHERE \"derivationIRI\"='%s' and \"pollutantID\"='%s' and simulation_time = %d and height = %f ",
+                        derivationInputs.getDerivationIRI(), pollutId, simulationTime,
+                        height);
+
+                GeoServerVectorSettings geoServerDispersionSettings = new GeoServerVectorSettings();
+
+                UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
+                virtualTable.setSql(sqlQuery);
+                virtualTable.setEscapeSql(true);
+                virtualTable.setName("dispersionVirtualTable");
+                virtualTable.addVirtualTableGeometry("wkb_geometry", "MultiPolygon", "4326");
+                LOGGER.info(virtualTable.getName());
+                geoServerDispersionSettings.setVirtualTable(virtualTable);
+
+                geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, layerName,
+                        geoServerDispersionSettings);
+
+                dispLayerNames.add(layerName);
+
+            }
+            dispersionLayerMap.put(pollutId, dispLayerNames);
+
+        }
+
         // ships_ is hardcoded here and in ShipInputAgent
-        queryClient.updateOutputs(derivationInputs.getDerivationIRI(), outputFileURL, dispLayerNames.get(0),
+        queryClient.updateOutputs(derivationInputs.getDerivationIRI(), dispersionMatrixMap, dispersionLayerMap,
                 shipLayerName, simulationTime, outFileURL);
-        if (aermod.createDataJson(shipLayerName, dispLayerNames, sourceLayerName, elevationLayerName,
+        if (aermod.createDataJson(shipLayerName, dispersionLayerMap, sourceLayerName, elevationLayerName,
                 aermod.getBuildingsGeoJSON(buildings)) != 0) {
             LOGGER.error("Failed to create data.json file for visualisation, terminating");
             return;

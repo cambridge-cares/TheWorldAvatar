@@ -1081,7 +1081,8 @@ public class QueryClient {
 
     }
 
-    void updateOutputs(String derivation, String dispersionMatrix, String dispersionLayer, String shipLayer,
+    void updateOutputs(String derivation, Map<String, String> dispersionMatrixMap,
+            Map<String, List<String>> dispersionLayerMap, String shipLayer,
             long timeStamp, String aermapOutput) {
 
         SelectQuery query = Queries.SELECT();
@@ -1101,7 +1102,6 @@ public class QueryClient {
 
         List<String> tsDataList = new ArrayList<>();
         List<List<?>> tsValuesList = new ArrayList<>();
-        String currentPollutant = PREFIX_DISP + EnvConfig.POLLUTANT_ID;
 
         for (int i = 0; i < queryResult.length(); i++) {
             String pollutantIRI = queryResult.getJSONObject(i).getString(pollutant.getQueryString().substring(1));
@@ -1110,13 +1110,12 @@ public class QueryClient {
             String dispersionLayerIRI = queryResult.getJSONObject(i).getString(dispLayer.getQueryString().substring(1));
             tsDataList.add(dispersionMatrixIRI);
             tsDataList.add(dispersionLayerIRI);
-            if (pollutantIRI.equals(currentPollutant)) {
-                tsValuesList.add(List.of(dispersionMatrix));
-                tsValuesList.add(List.of(dispersionLayer));
-            } else {
-                tsValuesList.add(List.of("null"));
-                tsValuesList.add(List.of("null"));
-            }
+            String pollutantId = pollutantIRI.substring(PREFIX_DISP.length());
+            String dispersionMatrix = dispersionMatrixMap.get(pollutantId);
+            // get(0) because there is only one height (ground level) for now.
+            String dispersionLayer = dispersionLayerMap.get(pollutantId).get(0);
+            tsValuesList.add(List.of(dispersionMatrix));
+            tsValuesList.add(List.of(dispersionLayer));
         }
 
         SelectQuery query2 = Queries.SELECT();

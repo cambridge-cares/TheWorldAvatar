@@ -18,6 +18,8 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -526,9 +528,12 @@ public class Aermod {
         }
     }
 
-    int createPointsFile(List<PointSource> pointSources, int simulationSrid) {
+    int createPointsFile(List<PointSource> pointSources, int simulationSrid, String pollutantId) {
         StringBuilder sb = new StringBuilder();
-        String pollutantID = QueryClient.PREFIX_DISP + EnvConfig.POLLUTANT_ID;
+
+        double maxFlowRate = 0.0;
+        double eps = 1.0e-10;
+        String pollutantID = QueryClient.PREFIX_DISP + pollutantId;
 
         for (int i = 0; i < pointSources.size(); i++) {
 
@@ -566,12 +571,14 @@ public class Aermod {
                     massFlowrateInGs = ps.getFlowRatePm25InGramsPerS();
                     break;
                 default:
-                    LOGGER.info("Unknown pollutant ID encountered in AermodAgent/QueryClient class: {}",
-                            pollutantID);
+                    LOGGER.info("Unknown pollutant ID encountered in AermodAgent/Aermod class: {}",
+                            pollutantId);
             }
 
             // TODO: This will not work for PM10 and PM2.5.
             double velocity = massFlowrateInGs / 1000 / area / density; // m/s
+
+            maxFlowRate = Math.max(maxFlowRate, massFlowrateInGs);
 
             double baseElevation = 0.0;
             if (ps.getClass() == StaticPointSource.class) {
@@ -587,6 +594,10 @@ public class Aermod {
                     velocity, ps.getDiameter()));
             sb.append(System.lineSeparator());
         }
+
+        if (maxFlowRate <= eps)
+            return 1;
+
         return writeToFile(aermodDirectory.resolve("points.so"), sb.toString());
     }
 
@@ -718,13 +729,14 @@ public class Aermod {
     /**
      * executes get request from python-service to postprocess
      */
-    public JSONObject getGeoJSON(String endPoint, String outputFileURL, int srid, double height) {
+    public JSONObject getGeoJSON(String endPoint, String outputFileURL, int srid, double height, String pollutId) {
         URI httpGet;
         try {
             URIBuilder builder = new URIBuilder(endPoint);
             builder.setParameter("dispersionMatrix", outputFileURL);
             builder.setParameter("srid", String.valueOf(srid));
             builder.setParameter("height", String.valueOf(height));
+            builder.setParameter("pollutant", pollutId);
             httpGet = builder.build();
         } catch (URISyntaxException e) {
             LOGGER.error("Failed at building URL");
@@ -786,7 +798,7 @@ public class Aermod {
         return featureCollection;
     }
 
-    int createDataJson(String shipLayerName, List<String> dispersionLayerNames, String plantsLayerName,
+    int createDataJson(String shipLayerName, Map<String, List<String>> dispersionLayerMap, String plantsLayerName,
             String elevationLayerName, JSONObject buildingsGeoJSON) {
         // wms endpoints template without the layer name
         String shipWms = EnvConfig.GEOSERVER_URL
@@ -827,12 +839,16 @@ public class Aermod {
         plantSource.put("type", "vector");
         plantSource.put("tiles", new JSONArray().put(plantWms));
 
-        for (int i = 0; i < dispersionLayerNames.size(); i++) {
+        for (List<String> dispersionLayers : dispersionLayerMap.values()) {
+            // Only one height at the moment.
+            String dispLayerName = dispersionLayers.get(0);
+            if (dispLayerName.equals("null"))
+                continue;
             JSONObject dispersionSource = new JSONObject();
-            dispersionSource.put("id", "dispersion-source_" + dispersionLayerNames.get(i));
+            dispersionSource.put("id", "dispersion-source_" + dispLayerName);
             dispersionSource.put("type", "raster");
             dispersionSource.put("tiles",
-                    new JSONArray().put(dispWms.replace("PLACEHOLDER", dispersionLayerNames.get(i))));
+                    new JSONArray().put(dispWms.replace("PLACEHOLDER", dispLayerName)));
             sources.put(dispersionSource);
         }
 
@@ -864,13 +880,16 @@ public class Aermod {
         plantsLayer.put("minzoom", 4);
         plantsLayer.put("layout", new JSONObject().put("visibility", "visible"));
 
-        for (int i = 0; i < dispersionLayerNames.size(); i++) {
+        for (List<String> dispersionLayers : dispersionLayerMap.values()) {
+            String dispLayerName = dispersionLayers.get(0);
+            if (dispLayerName.equals("null"))
+                continue;
             JSONObject dispersionLayer = new JSONObject();
-            dispersionLayer.put("id", dispersionLayerNames.get(i));
+            dispersionLayer.put("id", dispLayerName);
             dispersionLayer.put("type", "raster");
-            dispersionLayer.put("name", dispersionLayerNames.get(i));
-            dispersionLayer.put("source", "dispersion-source_" + dispersionLayerNames.get(i));
-            dispersionLayer.put("source-layer", dispersionLayerNames.get(i));
+            dispersionLayer.put("name", dispLayerName);
+            dispersionLayer.put("source", "dispersion-source_" + dispLayerName);
+            dispersionLayer.put("source-layer", dispLayerName);
             dispersionLayer.put("minzoom", 4);
             dispersionLayer.put("layout", new JSONObject().put("visibility", "visible"));
             layers.put(dispersionLayer);
