@@ -30,3 +30,6 @@ curl -X POST --header "Content-Type: application/json" -d "{'uri':'default'}" ht
 ## Ifc2OntoBim
 curl -X POST --header "Content-Type: application/json" -d "{'uri':'http://www.theworldavatar.com/ifc/building/', 'isIfcOwl':true}" http://localhost:3838/ifc2ontobim-agent/convert
 
+## Ifc2Tileset
+curl -X POST --header "Content-Type: application/json" -d '{"assetUrl":"./glb"}' http://localhost:3838/ifc2tileset-agent/api
+
