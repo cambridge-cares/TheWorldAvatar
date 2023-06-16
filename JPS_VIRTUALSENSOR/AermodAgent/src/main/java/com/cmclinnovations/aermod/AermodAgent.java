@@ -270,12 +270,12 @@ public class AermodAgent extends DerivationAgent {
 
             String sqlQuery = String.format(
                     "SELECT ogc_fid, 'stroke-opacity', 'stroke-width', fill, title, 'fill-opacity', stroke, wkb_geometry from dispersion_contours"
-                            + " WHERE \"derivationIRI\"='%s'and \"pollutantID\"='%s' and simulation_time = %d and height = %f ",
+                            + " WHERE \"derivationIRI\"='%s' and \"pollutantID\"='%s' and simulation_time = %d and height = %f ",
                     derivationInputs.getDerivationIRI(), EnvConfig.POLLUTANT_ID, simulationTime,
                     height);
 
             GeoServerVectorSettings geoServerDispersionSettings = new GeoServerVectorSettings();
-            geoServerDispersionSettings.setDefaultStyle("dispersion_style");
+            // geoServerDispersionSettings.setDefaultStyle("dispersion_style");
 
             UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
             virtualTable.setSql(sqlQuery);
