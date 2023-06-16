@@ -181,7 +181,7 @@ public class GeoServerClient extends ContainerClient {
         if (manager.getReader().existsLayer(workspaceName, layerName, Util.DEFAULT_QUIET_ON_NOT_FOUND)) {
             logger.info("GeoServer database layer '{}' already exists.", database);
         } else {
-            createPostGISDataStore(workspaceName, layerName, database, "public");
+            createPostGISDataStore(workspaceName, layerName, database, PostGISClient.DEFAULT_SCHEMA_NAME);
 
             GSFeatureTypeEncoder fte = new GSFeatureTypeEncoder();
             fte.setProjectionPolicy(ProjectionPolicy.NONE);
