@@ -31,7 +31,7 @@ FS_ROUTE = "FileServer/"
 
 VAPOURTEC_AGENT_ENV = os.path.join(THIS_DIR,'agent.vapourtec.env.test')
 
-DUMMY_LAB_BASE_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/'
+DUMMY_LAB_BASE_IRI = 'https://example.com/blazegraph/namespace/testlab/dummy_lab/'
 VAPOURTECRS400_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecRS400_Dummy'
 VAPOURTECR4REACTOR_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecR4_Dummy'
 VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecR4_Another_Dummy'

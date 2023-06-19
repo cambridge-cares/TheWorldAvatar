@@ -4,7 +4,6 @@ logging.getLogger("numba").setLevel(logging.WARNING)
 logging.getLogger("matplotlib").setLevel(logging.WARNING)
 
 from typing import List
-import json
 
 from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
@@ -39,6 +38,7 @@ class DoEAgent(DerivationAgent):
             doe_instance = self.sparql_client.get_doe_instance(derivation_inputs.getIris(ONTODOE_DESIGNOFEXPERIMENT)[0])
         except Exception as e:
             self.logger.error(e)
+            raise Exception(f"Failed to get the DesignOfExperiment instance <{derivation_inputs.getIris(ONTODOE_DESIGNOFEXPERIMENT)[0]}> from KG", e)
 
         # Get the laboratory
         # TODO currently only one laboratory is supported

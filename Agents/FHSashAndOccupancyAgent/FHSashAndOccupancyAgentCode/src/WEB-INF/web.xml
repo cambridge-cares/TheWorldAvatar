@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" metadata-complete="false" version="3.1">
+<display-name>fh-sash-and-occupancy-agent</display-name>
+<description>This agent is able to query for the occupancy of fumehoods and compare it to the fumehoods sash opening, if the sash is not fully closed when it is not occupied, the agent will send an alert email to the lab manager.</description>
+
+<servlet>
+  <servlet-name>FHSashAndOccupancyAgent</servlet-name>
+  <servlet-class>uk.ac.cam.cares.jps</servlet-class>
+</servlet>
+
+<servlet-mapping>
+  <servlet-name>FHSashAndOccupancyAgent</servlet-name>
+  <url-pattern>/</url-pattern>
+</servlet-mapping>
+</web-app>
