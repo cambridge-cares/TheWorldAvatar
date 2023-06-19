@@ -1089,13 +1089,15 @@ public class QueryClient {
 
         Variable entity = query.var();
         Variable pollutant = query.var();
+        Variable pollutantIri = query.var();
         Variable dispMatrix = query.var();
         Variable dispLayer = query.var();
 
         Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
 
-        query.where(entity.has(belongsTo, iri(derivation)).andHas(HAS_POLLUTANT_ID, pollutant)
-                .andHas(HAS_DISPERSION_MATRIX, dispMatrix).andHas(HAS_DISPERSION_LAYER, dispLayer)).prefix(P_DISP)
+        query.where(entity.has(belongsTo, iri(derivation)).andHas(HAS_POLLUTANT_ID, pollutantIri)
+                .andHas(HAS_DISPERSION_MATRIX, dispMatrix).andHas(HAS_DISPERSION_LAYER, dispLayer),
+                pollutantIri.isA(pollutant)).prefix(P_DISP)
                 .select(entity, pollutant, dispMatrix, dispLayer)
                 .distinct();
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());

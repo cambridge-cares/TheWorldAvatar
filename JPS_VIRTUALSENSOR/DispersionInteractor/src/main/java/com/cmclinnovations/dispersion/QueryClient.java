@@ -58,7 +58,7 @@ public class QueryClient {
     public static final Prefix P_EMS = SparqlBuilder.prefix("ontoems", iri(ONTO_EMS));
 
     // classes
-    private static final Iri MEASURE = P_OM.iri("Measure");
+    private static final Iri MEASURE = P_DISP.iri("Measure");
     private static final Iri SCOPE = P_DISP.iri("Scope");
     private static final Iri SIMULATION_TIME = P_DISP.iri("SimulationTime");
     private static final Iri NX = P_DISP.iri("nx");
@@ -175,8 +175,9 @@ public class QueryClient {
 
         pollutantsList.stream().forEach(p -> {
             String dispOutputIri = PREFIX + UUID.randomUUID();
-            modify.insert(iri(dispOutputIri).isA(DISPERSION_OUTPUT).andHas(HAS_POLLUTANT_ID, p));
-            modify.insert(p.isA(POLLUTANT_ID));
+            String pollutantIdIri = PREFIX + UUID.randomUUID();
+            modify.insert(iri(dispOutputIri).isA(DISPERSION_OUTPUT).andHas(HAS_POLLUTANT_ID, iri(pollutantIdIri)));
+            modify.insert(iri(pollutantIdIri).isA(p));
             derivationList.add(dispOutputIri);
 
             String dispLayerIri = PREFIX + UUID.randomUUID();
