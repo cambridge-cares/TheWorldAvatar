@@ -1,7 +1,7 @@
 # IfcOwlConverter Agent
 
 This agent converts IFC models into TTL files defined by the IfcOwl ontology. It is designed to support the 
-[Ifc2OntoBim Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent) to instantiate IFC models into the ontoBim Abox, and is NOT intended to be run independently. Please build the image for this agent and then proceed to [the other agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent) to instantiate and store your IFC Abox. 
+[Ifc2OntoBIM Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent) to instantiate IFC models into the ontoBim Abox, and is NOT intended to be run independently. Although you can build the image and container for this agent individually, there is no need to do so. Please proceed directly to the [Ifc2OntoBIM Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent) to instantiate and store your IFC Abox. If you are following the instructions of the Ifc2OntoBIM Agent, ignore any of these instructions here; they are not applicable.
 
 ```mermaid
     %%{init: {'theme':'neutral', 'fontFamily':'verdana'}}%%

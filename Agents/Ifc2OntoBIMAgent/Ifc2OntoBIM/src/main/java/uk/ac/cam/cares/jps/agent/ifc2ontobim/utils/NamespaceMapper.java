@@ -33,6 +33,8 @@ public class NamespaceMapper {
     public static final String BUILDING_STRUCTURE_NAMESPACE= "https://www.theworldavatar.com/kg/ontobuildingstructure/";
     private static final String ONTO_BMS_PREFIX = "ontobms";
     private static final String ONTO_BMS_NAMESPACE = "https://www.theworldavatar.com/kg/ontobms/";
+    public static final String ONTO_BUILT_ENV_PREFIX = "ontobuiltenv";
+    public static final String ONTO_BUILT_ENV_NAMESPACE = "https://www.theworldavatar.com/kg/ontobuiltenv/";
     private static final String ONTO_DEVICE_PREFIX = "ontodevice";
     private static final String ONTO_DEVICE_NAMESPACE = "https://www.theworldavatar.com/kg/ontodevice/";
     private static final String ONTO_EMS_PREFIX = "ontoems";
@@ -41,6 +43,8 @@ public class NamespaceMapper {
     private static final String ONTO_LAB_NAMESPACE = "https://www.theworldavatar.com/kg/ontolab/";
     private static final String SAREF_PREFIX = "saref";
     private static final String SAREF_NAMESPACE = "https://saref.etsi.org/core/";
+    public static final String ICONTACT_PREFIX = "icontact";
+    public static final String ICONTACT_NAMESPACE = "http://ontology.eil.utoronto.ca/icontact.owl#";
     private static String baseNamespace;
     private static final String basePrefix = "inst";
 
@@ -82,10 +86,12 @@ public class NamespaceMapper {
         nsMapping.put(SKOS_PREFIX, SKOS_NAMESPACE);
         nsMapping.put(BUILDING_STRUCTURE_PREFIX, BUILDING_STRUCTURE_NAMESPACE);
         nsMapping.put(ONTO_BMS_PREFIX, ONTO_BMS_NAMESPACE);
+        nsMapping.put(ONTO_BUILT_ENV_PREFIX, ONTO_BUILT_ENV_NAMESPACE);
         nsMapping.put(ONTO_DEVICE_PREFIX, ONTO_DEVICE_NAMESPACE);
         nsMapping.put(ONTO_EMS_PREFIX, ONTO_EMS_NAMESPACE);
         nsMapping.put(ONTO_LAB_PREFIX, ONTO_LAB_NAMESPACE);
         nsMapping.put(SAREF_PREFIX, SAREF_NAMESPACE);
+        nsMapping.put(ICONTACT_PREFIX, ICONTACT_NAMESPACE);
         // Duplicate IfcOwl namespaces for sub-queries - require bim as well
         nsMapping.put(IFC_PREFIX, IFC_NAMESPACE);
         nsMapping.put(LIST_PREFIX, LIST_NAMESPACE);
