@@ -484,6 +484,7 @@ public class QueryClient {
         Variable ps = query.var();
         Variable emissionIRI = query.var();
         Variable pollutant = query.var();
+        Variable pollutantIRI = query.var();
         Variable massFlowIRI = query.var();
         Variable densityIRI = query.var();
         Variable temperatureIRI = query.var();
@@ -495,8 +496,9 @@ public class QueryClient {
         Variable temperatureUnit = query.var();
 
         GraphPattern gp = GraphPatterns.and(ps.has(EMITS, emissionIRI),
-                emissionIRI.has(HAS_POLLUTANT_ID, pollutant).andHas(HAS_QTY, massFlowIRI)
+                emissionIRI.has(HAS_POLLUTANT_ID, pollutantIRI).andHas(HAS_QTY, massFlowIRI)
                         .andHas(HAS_QTY, densityIRI),
+                pollutantIRI.isA(pollutant),
                 massFlowIRI.isA(iri(MASS_FLOW)).andHas(PropertyPaths.path(HAS_VALUE,
                         HAS_NUMERICALVALUE), emissionValue)
                         .andHas(PropertyPaths.path(HAS_VALUE, HAS_UNIT), emissionUnit),

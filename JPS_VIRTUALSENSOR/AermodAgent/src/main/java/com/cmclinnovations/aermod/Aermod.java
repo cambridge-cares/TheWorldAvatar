@@ -532,7 +532,7 @@ public class Aermod {
         StringBuilder sb = new StringBuilder();
 
         double maxFlowRate = 0.0;
-        double eps = 1.0e-10;
+        double eps = 1.0e-20;
         String pollutantID = QueryClient.PREFIX_DISP + pollutantId;
 
         for (int i = 0; i < pointSources.size(); i++) {
