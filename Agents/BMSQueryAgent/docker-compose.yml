@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   bms-query-agent:
-    image: ghcr.io/cambridge-cares/bms-query-agent:1.2.0
+    image: ghcr.io/cambridge-cares/bms-query-agent:1.1.0
     build: .
     configs:
       - blazegraph

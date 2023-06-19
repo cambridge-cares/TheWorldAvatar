@@ -10,7 +10,6 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.BadRequestException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
@@ -77,12 +76,12 @@ public class BMSQueryAgentLauncher extends JPSAgent {
             } else if (url.contains("equipment")) {
                 // handle the case "retrieve/equipment", return the list of equipments in a given room
 
-                if (!validateInput(requestParams)) {
+                if (!validateInput(request)) {
                     LOGGER.error(PARAMETERS_VALIDATION_ERROR_MSG);
                     throw new JPSRuntimeException(PARAMETERS_VALIDATION_ERROR_MSG);
                 }
 
-                String roomIRI = requestParams.getString(KEY_ROOMIRI);
+                String roomIRI = request.getParameter(KEY_ROOMIRI);
 
                 JSONObject queryResult = agent.queryEquipmentInstances(roomIRI);
 
@@ -97,22 +96,22 @@ public class BMSQueryAgentLauncher extends JPSAgent {
     /**
      * Validate request params.
      *
-     * @param requestParams Http request
+     * @param request Http request
      * @return Validity of the request params
      */
-    @Override
-    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+    public boolean validateInput(HttpServletRequest request) {
+        LOGGER.info("Getting requestParams: " + request.getQueryString());
 
-        LOGGER.debug(requestParams);
-
-        if (requestParams.isEmpty()) {
+        if (request.getParameterMap().isEmpty()) {
+            LOGGER.error(EMPTY_PARAMETER_ERROR_MSG);
             return false;
         }
 
-        if (!requestParams.has(KEY_ROOMIRI)) {
-            LOGGER.info("No " + KEY_ROOMIRI + " found.");
+        if (request.getParameter(KEY_ROOMIRI).isEmpty()) {
+            LOGGER.error(KEY_ROOMIRI + "is missing.");
             return false;
         }
+        LOGGER.info("Data Received: " + request.getParameter(KEY_ROOMIRI));
 
         return true;
     }

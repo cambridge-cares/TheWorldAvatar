@@ -3,7 +3,7 @@
     "Name": "bms-query-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "ghcr.io/cambridge-cares/bms-query-agent:1.2.0",
+        "Image": "ghcr.io/cambridge-cares/bms-query-agent:1.1.0",
         "Configs": [
           {
             "ConfigName": "blazegraph"

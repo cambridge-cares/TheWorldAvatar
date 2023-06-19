@@ -93,8 +93,6 @@ public class DatasetLoader {
     }
 
     public static void loadData(Dataset dataset) {
-        Path directory = dataset.getDirectory();
-
         if (!dataset.isSkip()) {
             List<DataSubset> dataSubsets = dataset.getDataSubsets();
             // Ensure PostGIS database exists, if specified
@@ -119,15 +117,10 @@ public class DatasetLoader {
                         workspaceName));
             }
 
-            if (dataset.getStaticGeoServerData() != null) {
-                GeoServerClient geoServerClient = GeoServerClient.getInstance();
-                geoServerClient.loadIcons(directory, dataset.getStaticGeoServerData().getIconsDir());
-                geoServerClient.loadOtherFiles(directory, dataset.getStaticGeoServerData().getOtherFiles());
-            }
-
             dataSubsets.forEach(subset -> subset.load(dataset));
 
             OntopClient ontopClient = OntopClient.getInstance();
+            Path directory = dataset.getDirectory();
             dataset.getOntopMappings().forEach(mapping -> ontopClient.updateOBDA(directory.resolve(mapping)));
         }
     }

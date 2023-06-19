@@ -31,16 +31,22 @@ public class BMSQueryAgentLauncherTest {
 
     @Test
     public void testValidateInput_ValidParameters() {
-        JSONObject param = new JSONObject();
-        param.put(BMSQueryAgentLauncher.KEY_ROOMIRI, "http://example.com/example_iri");
-        assertTrue(launcher.validateInput(param));
+        HttpServletRequest request = mock(HttpServletRequest.class);
+
+        HashedMap paramMap = new HashedMap() ;
+        paramMap.put(BMSQueryAgentLauncher.KEY_ROOMIRI, new String[] {"http://example.com/example_iri"});
+
+        when(request.getParameterMap()).thenReturn(paramMap);
+        when(request.getParameter(BMSQueryAgentLauncher.KEY_ROOMIRI)).thenReturn("http://example.com/example_iri");
+
+        assertTrue(launcher.validateInput(request));
     }
 
     @Test
     public void testValidateInput_EmptyRequest() {
-        JSONObject param = new JSONObject();
+        HttpServletRequest request = mock(HttpServletRequest.class);
 
-        assertFalse(launcher.validateInput(param));
+        assertFalse(launcher.validateInput(request));
     }
 
 }

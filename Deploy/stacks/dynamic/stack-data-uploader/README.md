@@ -103,19 +103,18 @@ The following table provides a description of each example:
 Each dataset should have its own JSON configuration file located in the [`inputs/config/`](./inputs/config) directory.
 The following table shows the top level nodes allowed in a configuration file.
 
-| Key                                             | Required?                                             | Default value                            | Description                                                                                                                                        |
-| ----------------------------------------------- | ----------------------------------------------------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`"name"`](#name)                               | No                                                    | The filename without the .json extension | The name of the dataset                                                                                                                            |
-| [`"datasetDirectory"`](#datasetDirectory)       | No                                                    | The dataset's name                       | The directory within `inputs/data/` that contains the data files associated with this dataset                                                      |
-| [`"skip"`](#skip)                               | No                                                    | `false`                                  | If set to `true` this dataset will be ignored by the data uploader                                                                                 |
-| [`"database"`](#database)                       | No                                                    | `"postgres"`                             | The name of the database within Postgres to which appropriate data will be uploaded                                                                |
-| [`"workspace"`](#workspace)                     | No                                                    | The dataset's name                       | The GeoServer workspace into which any 2D geospatial data layers, vector and raster, will be added                                                 |
-| [`"namespace"`](#namespace)                     | No                                                    | The dataset's name                       | The Blazegraph namespace into which RDF data will be added. The long syntax can be used to specify properties if the namespace needs to be created |
-| [`"externalDatasets"`](#externaldatasets)       | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of other datasets' names. Each listed dataset will also be loaded if this dataset is loaded by name                                         |
-| [`"dataSubsets"`](#dataSubsets)                 | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of *data subset* objects                                                                                                                    |
-| [`"styles"`](#styles)                           | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of GeoServer style file definition objects                                                                                                  |
-| [`"mappings"`](#mappings)                       | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of Ontop mapping file definition objects                                                                                                    |
-| [`"staticGeoServerData"`](#staticGeoServerData) | No                                                    | `null`                                   | An object describing static data to be served by GeoServer                                                                                      |
+| Key                                       | Required?                                             | Default value                            | Description                                                                                                                                        |
+| ----------------------------------------- | ----------------------------------------------------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`"name"`](#name)                         | No                                                    | The filename without the .json extension | The name of the dataset                                                                                                                            |
+| [`"datasetDirectory"`](#datasetDirectory) | No                                                    | The dataset's name                       | The directory within `inputs/data/` that contains the data files associated with this dataset                                                      |
+| [`"skip"`](#skip)                         | No                                                    | `false`                                  | If set to `true` this dataset will be ignored by the data uploader                                                                                 |
+| [`"database"`](#database)                 | No                                                    | `"postgres"`                             | The name of the database within Postgres to which appropriate data will be uploaded                                                                |
+| [`"workspace"`](#workspace)               | No                                                    | The dataset's name                       | The GeoServer workspace into which any 2D geospatial data layers, vector and raster, will be added                                                 |
+| [`"namespace"`](#namespace)               | No                                                    | The dataset's name                       | The Blazegraph namespace into which RDF data will be added. The long syntax can be used to specify properties if the namespace needs to be created |
+| [`"externalDatasets"`](#externaldatasets) | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of other datasets' names. Each listed dataset will also be loaded if this dataset is loaded by name                                         |
+| [`"dataSubsets"`](#dataSubsets)           | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of *data subset* objects                                                                                                                    |
+| [`"styles"`](#styles)                     | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of GeoServer style file definition objects                                                                                                  |
+| [`"mappings"`](#mappings)                 | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of Ontop mapping file definition objects                                                                                                    |
 
 ##### * At least one of these needs to be populated.
 
@@ -243,28 +242,6 @@ Ontop also supports the R2RML (`.ttl`) OBDA file standard but the data uploader 
 
 The OBDA file for the cropmap example ([ontop_with_comments.obda](../examples/datasets/inputs/data/cropmap/ontop_with_comments.obda)) shows the Ontop OBDA format.
 The Ontop OBDA file format is also described in detail in the [OBDA mapping file](#obda-mapping-file) section.
-
-#### `"staticGeoServerData"`
-A description of static data to be loaded into and served by GeoServer. 
-These are served with the base directory `GEOSERVER_URL/www/icons`. 
-The icons can be found at `GEOSERVER_URL/www/icons` and the "other files" (being any regular files or folders) can be found at `GEOSERVER_URL/www/static_data`.
-
-| Key            | Description                                                                                                                                                                                                                                                                            |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `"iconsDir"`   | Directory relative to the [`"datasetDirectory"`](#datasetDirectory) where icons files can be found                                                                                                 |
-| `"otherFiles"` | A list of "other files" with the `source` relative to the [`"datasetDirectory"`](#datasetDirectory) and the `target` the location relative to `GEOSERVER_URL/www/icons` from which would would like this data is to be served |
-
-```json
-"staticGeoServerData": {
-  "iconsDir": "icons",
-  "otherFiles": [
-    {
-      "source": "my_additional_data/index.html",
-      "target": "additional_data"
-    }
-  ]
-}
-```
 
 ## Data Types
 

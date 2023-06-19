@@ -7,7 +7,6 @@ import java.util.Properties;
 
 import com.cmclinnovations.stack.clients.blazegraph.Namespace;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerStyle;
-import com.cmclinnovations.stack.clients.geoserver.StaticGeoServerData;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -28,7 +27,6 @@ public class Dataset {
     private final List<DataSubset> dataSubsets;
     private final List<GeoServerStyle> geoserverStyles;
     private final List<String> ontopMappings;
-    private final StaticGeoServerData staticGeoServerData;
 
     private final boolean skip;
 
@@ -42,7 +40,6 @@ public class Dataset {
             @JsonProperty(value = "dataSubsets") List<DataSubset> dataSubsets,
             @JsonProperty(value = "styles") List<GeoServerStyle> geoserverStyles,
             @JsonProperty(value = "mappings") List<String> ontopMappings,
-            @JsonProperty(value = "staticGeoServerData") StaticGeoServerData staticGeoServerData,
             @JsonProperty(value = "skip") boolean skip) {
         this.name = name;
         this.datasetDirectory = datasetDirectory;
@@ -53,7 +50,6 @@ public class Dataset {
         this.dataSubsets = dataSubsets;
         this.geoserverStyles = geoserverStyles;
         this.ontopMappings = ontopMappings;
-        this.staticGeoServerData = staticGeoServerData;
         this.skip = skip;
     }
 
@@ -107,10 +103,6 @@ public class Dataset {
 
     public List<String> getOntopMappings() {
         return (null != ontopMappings) ? ontopMappings : Collections.emptyList();
-    }
-
-    public StaticGeoServerData getStaticGeoServerData() {
-        return staticGeoServerData;
     }
 
     public boolean isSkip() {

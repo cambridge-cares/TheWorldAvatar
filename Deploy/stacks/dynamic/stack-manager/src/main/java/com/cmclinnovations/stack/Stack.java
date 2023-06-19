@@ -157,11 +157,9 @@ public class Stack {
                 mounts = existingMounts;
             }
 
-            List<String> envs = containerSpec.getEnv();
-            Map<String, String> envsMap = envs.stream().map(env -> env.split("=", 2))
-                    .collect(Collectors.toMap(envA -> envA[0], envA -> envA[1]));
-            Path internalHostDir = Path.of(envsMap.get("HOST_DIR"));
-            Path internalVolumeDir = Path.of(envsMap.get("VOLUME_DIR"));
+            List<String> args = containerSpec.getCommand();
+            Path internalHostDir = Path.of(args.get(args.size() - 2));
+            Path internalVolumeDir = Path.of(args.get(args.size() - 1));
 
             Path dataDir = StackClient.getAbsDataPath();
 

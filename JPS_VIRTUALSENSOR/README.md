@@ -3,7 +3,7 @@ Prerequisites
 2) Ship data needs to be present in ShipInputAgent/data. If the agent is being run for chemical plants instead of ships, 
 it is still necessary to define one ship in a .json file in this folder. In this case, the ship should be placed outside the region for which AERMOD will be run, which is specified in WKT format in the POST request to the DispersionInteractor class. The longitude of each coordinate must be specified before the latitude.  
 
-3) Set openweather API key in stack-manager/inputs/config/services/weather-agent.json, see ../Agents/WeatherAgent folder for more details
+3) Set openweather API key in ../Agents/WeatherAgent, more details in that folder
 
 4) If running AERMOD for static point sources, it is necessary to instantiate the input data required for AERMOD Agent according to OntoDispersion (https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodispersion). See the JurongIslandInputAgent folder for an example of an agent that does this.
 
