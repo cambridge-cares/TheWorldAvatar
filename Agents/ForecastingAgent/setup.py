@@ -18,9 +18,11 @@ setup(
         'pandas~=1.5.1',
         'py4jps~=1.0.30', 
         'requests~=2.28.1',
-        'darts~=0.21.0',
         'configobj~=5.0.6',
-        'fire~=0.4.0'
+        'fire~=0.4.0',
+        'darts==0.21.0',
+        'torchmetrics==0.9.3',
+        'pytorch-lightning==1.7.7',
     ],
     extras_require={
         "dev": [

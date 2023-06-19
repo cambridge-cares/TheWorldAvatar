@@ -442,7 +442,7 @@ def load_pretrained_model(cfg, ModelClass, force_download=False):
     if os.path.exists(path_to_store) and not force_download:
         # model already exists
         path_ckpt = path_to_store / "best-model.ckpt"
-        path_pth = ""
+        path_pth = path_to_store.parent.absolute() / "_model.pth.tar"
     else:
 
         # create folder
@@ -471,22 +471,22 @@ def load_pretrained_model(cfg, ModelClass, force_download=False):
         model = ModelClass.load_from_checkpoint(path_ckpt.parent.parent.__str__())
     else:
         # Otherwise use torch.load with map_location=torch.device('cpu') to map your storages to the CPU
-        device = torch.device('cpu')
-        checkpoint = torch.load(path_ckpt, map_location=device)
-        # Initialise 'new' model with matching input/output lengths
-        model = ModelClass(input_chunk_length=checkpoint['hyper_parameters']['input_chunk_length'],
-                           output_chunk_length=checkpoint['hyper_parameters']['output_chunk_length'])
-        # Overwrite model parameters with saved model
-        model.__dict__.update(checkpoint['state_dict'])
-        #model= torch.load('forecasting_agent/Models/TFT_HEAT_SUPPLY/_model.pth.tar')
+        model = torch.load(path_pth, map_location=torch.device('cpu'))
+        # Save and re-load as workaround to fully load GPU-trained model
+        torch.save(model, path_pth)
+        model = ModelClass.load(path_pth.__str__())
 
     logger.info(f'Loaded model from  {path_ckpt.parent.parent.__str__()}')
 
     # convert loaded model to device
-    pl_trainer_kwargs = {"accelerator": 'cpu'}
-    model.model_params['pl_trainer_kwargs'] = pl_trainer_kwargs
-    model.trainer_params = pl_trainer_kwargs
-    logger.info(f'Moved model to device  {pl_trainer_kwargs["accelerator"]}')
+    trainer_params = {
+            "accelerator": "auto",
+            "devices": "auto",
+            #"callbacks": [],
+            "logger": False,
+        }
+    model.trainer_params.update(trainer_params)
+
     return model
 
 
