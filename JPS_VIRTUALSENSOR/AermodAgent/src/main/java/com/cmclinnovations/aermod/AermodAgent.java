@@ -234,7 +234,7 @@ public class AermodAgent extends DerivationAgent {
             // so, it should not be overwritten.
             if (Files.notExists(simulationDirectory.resolve("aermod").resolve("receptor.dat")))
                 aermod.createAERMODReceptorInput(scope, nx, ny, srid);
-            aermod.runAermod("aermod.inp");
+            aermod.runAermod("aermod.inp", pollutId);
 
             // Upload files used by scripts within Python Service to file server.
             String outputFileURL = aermod.uploadToFileServer("averageConcentration.dat");

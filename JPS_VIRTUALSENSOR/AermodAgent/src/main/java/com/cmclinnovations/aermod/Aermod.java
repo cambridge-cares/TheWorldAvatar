@@ -650,7 +650,7 @@ public class Aermod {
         return writeToFile(aermodDirectory.resolve("aermod.inp"), templateContent);
     }
 
-    int runAermod(String aermodInputFile) {
+    int runAermod(String aermodInputFile, String pollutId) {
 
         File tempFile = new File(aermodDirectory.resolve(aermodInputFile).toString());
 
@@ -687,6 +687,12 @@ public class Aermod {
             while ((s = stdError.readLine()) != null) {
                 LOGGER.info(s);
             }
+
+            Path pollutantDirectory = aermodDirectory.resolve(pollutId);
+            pollutantDirectory.toFile().mkdir();
+            Files.copy(aermodDirectory.resolve("aermod.out"), pollutantDirectory.resolve("aermod.out"));
+            Files.copy(aermodDirectory.resolve("averageConcentration.dat"),
+                    pollutantDirectory.resolve("averageConcentration.dat"));
 
         } catch (IOException e) {
             return 0;
@@ -882,7 +888,7 @@ public class Aermod {
             String dispLayerName = dispersionLayers.get(0);
             JSONObject dispersionLayer = new JSONObject();
             dispersionLayer.put("id", dispLayerName);
-            dispersionLayer.put("type", "fill");
+            dispersionLayer.put("type", "fill-extrusion");
             dispersionLayer.put("name", dispLayerName);
             dispersionLayer.put("source", "dispersion-source_" + dispLayerName);
             dispersionLayer.put("source-layer", dispLayerName);
@@ -892,11 +898,9 @@ public class Aermod {
             JSONObject paint = new JSONObject();
             JSONArray properties = new JSONArray();
             properties.put("get");
-            properties.put("fill");
-            paint.put("fill-color", properties);
+            properties.put("stroke");
+            paint.put("fill-extrusion-color", properties);
             paint.put("fill-extrusion-opacity", 0.5);
-            properties.put(1, "stroke");
-            paint.put("fill-outline-color", properties);
             dispersionLayer.put("paint", paint);
             layers.put(dispersionLayer);
         }
