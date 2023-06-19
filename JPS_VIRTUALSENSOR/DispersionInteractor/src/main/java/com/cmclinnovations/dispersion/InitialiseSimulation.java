@@ -5,6 +5,9 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import javax.servlet.ServletException;
@@ -24,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.postgis.Polygon;
+import org.postgis.Point;
 import org.springframework.core.io.ClassPathResource;
 
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
@@ -61,6 +65,20 @@ public class InitialiseSimulation extends HttpServlet {
         int nx = Integer.parseInt(req.getParameter("nx"));
         int ny = Integer.parseInt(req.getParameter("ny"));
         String citiesNamespace = req.getParameter("citiesnamespace");
+        String[] virtualSensorLocationsString = req.getParameterValues("virtualSensorLocations");
+        List<Point> virtualSensorLocations = new ArrayList<>();
+
+        Arrays.stream(virtualSensorLocationsString).forEach(p -> {
+            try {
+                virtualSensorLocations.add(new Point(p));
+            } catch (SQLException e) {
+                LOGGER.error(e.getMessage());
+                LOGGER.error("Could not parse location of virtual sensor {}", p);
+                return;
+            }
+        });
+
+        int numberSensors = virtualSensorLocations.size();
 
         Polygon polygonProvided = null;
         try {
@@ -123,8 +141,13 @@ public class InitialiseSimulation extends HttpServlet {
                     LOGGER.error(e.getMessage());
                     LOGGER.error("Failed to create JSON object for HTTP response");
                 }
+
+                if (numberSensors > 0)
+                    queryClient.initializeVirtualSensors(derivation, virtualSensorLocations);
+
             }
         }
+
     }
 
     /**
@@ -182,4 +205,5 @@ public class InitialiseSimulation extends HttpServlet {
 
         return station;
     }
+
 }

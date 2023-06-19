@@ -1,6 +1,6 @@
 #!/bin/bash
 # pull docker images from docker.cmclinnovations.com because stack manager can't pull these
-docker pull ghcr.io/cambridge-cares/dispersion-interactor:1.2.2-dev-aermod-agent-pollutant-SNAPSHOT
+docker pull ghcr.io/cambridge-cares/dispersion-interactor:1.3-dev-aermod-agent-sensor-SNAPSHOT
 docker pull ghcr.io/cambridge-cares/aermod-agent:1.2.2-dev-aermod-agent-pollutant-SNAPSHOT
 docker pull ghcr.io/cambridge-cares/python-service:1.2.2-dev-aermod-agent-pollutant-SNAPSHOT
 docker pull ghcr.io/cambridge-cares/emissions-agent:1.2.2-dev-aermod-agent-pollutant-SNAPSHOT
