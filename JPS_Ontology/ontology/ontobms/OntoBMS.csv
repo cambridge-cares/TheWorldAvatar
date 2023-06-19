@@ -19,7 +19,6 @@ Pipe,Class,https://saref.etsi.org/saref4bldg/FlowMovingDevice,IS-A,,,,"A pipe is
 Tee,Class,https://saref.etsi.org/saref4bldg/FlowMovingDevice,IS-A,,,,A Tee is a connector between pipes to separate or combine some streams.,https://www.theworldavatar.com/kg/ontobms/,Tee
 ExhaustFan,Class,https://saref.etsi.org/saref4bldg/Fan,IS-A,,,,"An exhaust fan pull odors, fumes, and moisture from an area and vent them outdoors for removal.",https://www.theworldavatar.com/kg/ontobms/,Exhaust fan
 HighPlumeFan,Class,ExhaustFan,IS-A,,,,A type of exhaust fan that dilute and disperse potentially hazardous exhaust or fumes quickly and safely.,https://www.theworldavatar.com/kg/ontobms/,High plume fan
-AlarmState,Class,https://saref.etsi.org/core/MultiLevelState,IS-A,,,,An alert status that is triggered due to an abnormal condition or change in condition.,https://www.theworldavatar.com/kg/ontobms/,Alarm state
 DamperState,Class,https://saref.etsi.org/core/MultiLevelState,IS-A,,,,The current state of a damper.,https://www.theworldavatar.com/kg/ontobms/,Damper state
 SwitchState,Class,https://saref.etsi.org/core/MultiLevelState,IS-A,,,,The current state of a switch.,https://www.theworldavatar.com/kg/ontobms/,Switch state
 LowLevelState,Class,https://saref.etsi.org/core/State,IS-A,,,,The current state of a device at a low level.,https://www.theworldavatar.com/kg/ontobms/,Low level state
