@@ -27,7 +27,7 @@ public final class GeoServerService extends ContainerService {
 
     private static final String ADMIN_USERNAME = "admin";
     private static final String DEFAULT_ADMIN_PASSWORD_FILE = "/run/secrets/geoserver_password";
-    public static final Path SERVING_DIRECTORY = Path.of("/var/geoserver/datadir/www");
+    public static final Path SERVING_DIRECTORY = Path.of("/opt/geoserver_data/www");
 
     private static final HttpClient httpClient = HttpClient.newHttpClient();
     // Convert username:password to Base64 String.
