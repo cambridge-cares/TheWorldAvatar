@@ -20,7 +20,6 @@ Tee,Class,https://saref.etsi.org/saref4bldg/FlowMovingDevice,IS-A,,,,A Tee is a 
 ExhaustFan,Class,https://saref.etsi.org/saref4bldg/Fan,IS-A,,,,"An exhaust fan pull odors, fumes, and moisture from an area and vent them outdoors for removal.",https://www.theworldavatar.com/kg/ontobms/,Exhaust fan
 HighPlumeFan,Class,ExhaustFan,IS-A,,,,A type of exhaust fan that dilute and disperse potentially hazardous exhaust or fumes quickly and safely.,https://www.theworldavatar.com/kg/ontobms/,High plume fan
 DamperState,Class,https://saref.etsi.org/core/MultiLevelState,IS-A,,,,The current state of a damper.,https://www.theworldavatar.com/kg/ontobms/,Damper state
-SwitchState,Class,https://saref.etsi.org/core/MultiLevelState,IS-A,,,,The current state of a switch.,https://www.theworldavatar.com/kg/ontobms/,Switch state
 LowLevelState,Class,https://saref.etsi.org/core/State,IS-A,,,,The current state of a device at a low level.,https://www.theworldavatar.com/kg/ontobms/,Low level state
 MediumLevelState,Class,https://saref.etsi.org/core/State,IS-A,,,,The current state of a device at a medium level.,https://www.theworldavatar.com/kg/ontobms/,Medium level state
 HighLevelState,Class,https://saref.etsi.org/core/State,IS-A,,,,The current state of a device at a high level.,https://www.theworldavatar.com/kg/ontobms/,High level state

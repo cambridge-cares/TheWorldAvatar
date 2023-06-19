@@ -39,6 +39,7 @@ Fridge,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that is usua
 Setpoint,Class,,,,,,"The desired or target value for an essential variable, or process value (PV) of a control system.",https://www.theworldavatar.com/kg/ontodevice/,Setpoint
 InOutState,Class,https://saref.etsi.org/core/State,IS-A,,,,The current state of something on whether it is inside or outside of a space or object.,https://www.theworldavatar.com/kg/ontodevice/,In out state
 OccupiedState,Class,https://saref.etsi.org/core/State,IS-A,,,,The current state of something on whether it is occupied or not.,https://www.theworldavatar.com/kg/ontodevice/,Occupied state
+SwitchState,Class,https://saref.etsi.org/core/MultiLevelState,IS-A,,,,The current state of a switch.,https://www.theworldavatar.com/kg/ontodevice/,Switch state
 AlarmState,Class,https://saref.etsi.org/core/MultiLevelState,IS-A,,,,An alert status that is triggered due to an abnormal condition or change in condition.,https://www.theworldavatar.com/kg/ontodevice/,Alarm state
 PowerFactor,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio,IS-A,,,,"The ratio of working power, measured in kilowatts (kW), to apparent power, measured in kilovolt amperes (kVA).",https://www.theworldavatar.com/kg/ontodevice/,Power factor
 RelativeBrightness,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio,IS-A,,,,Brightness measured as a ratio.,https://www.theworldavatar.com/kg/ontodevice/,Relative brightness
