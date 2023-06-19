@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.devinst;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -52,7 +53,7 @@ public class DevInstAgentLauncher extends JPSAgent {
      * Logging / error messages
      */
     private static final String ARGUMENT_MISMATCH_MSG = "Need four properties files in the following order: 1) input agent 2) time series client 3) API connector 4) launcher properties.";
-    private static final String AGENT_ERROR_MSG = "The RFID Update agent could not be constructed!";
+    private static final String AGENT_ERROR_MSG = "The Device Instantaition agent could not be constructed!";
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
     private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
     private static final String CONNECTOR_ERROR_MSG = "Could not construct the RFID API connector needed to interact with the API!";
@@ -97,33 +98,52 @@ public class DevInstAgentLauncher extends JPSAgent {
       String clientProperties;
       JSONObject device;
 
-     try{
-        device = requestParams.getJSONObject(KEY_DESCRIPTOR);
-     }
-     catch(Exception e){
-        return false;
-     }
+     
       
       //TODO Validate keys on every level of the request
       if (requestParams.isEmpty()) {
-    	  validate = false;
+            LOGGER.error("Request Parameter is empty.");
+    	    validate = false;
       }
       else {
- 		 validate = device.has(KEY_MICROCONTROLLER);
+        try{
+            device = requestParams.getJSONObject(KEY_DESCRIPTOR);
+         }
+         catch(Exception e){
+            LOGGER.error("Missing key: " + KEY_DESCRIPTOR);
+            return false;
+         }
+
+         device = requestParams.getJSONObject(KEY_DESCRIPTOR);
+         validate = device.has(KEY_MICROCONTROLLER);
+         if (!validate) LOGGER.error("Missing key:" + KEY_MICROCONTROLLER);
  		 if (validate == true) {
  		 validate = device.has(KEY_IRIMAPPER);
+         if (!validate) LOGGER.error("Missing key:" + KEY_IRIMAPPER);
  		 }
  		 if (validate == true) {
  		 validate = device.has(KEY_ADDITRIONALQUERY);
+          if (!validate) LOGGER.error("Missing key:" + KEY_ADDITRIONALQUERY);
  		 }
  		}
 
     if (validate == true) {
-        clientProperties = requestParams.getString(KEY_CLIENTPROPERTY);
-        if (System.getenv(clientProperties) == null) {
-            validate = false;
-        
+        try{
+            clientProperties = requestParams.getString(KEY_CLIENTPROPERTY);
+            if (System.getenv(clientProperties) == null) {
+                LOGGER.error("client properties file is not found");
+                validate = false;
+            }
         }
+        catch(JSONException e) {
+            LOGGER.error("Client Property key does not exist");
+            return false;
+        }
+        catch (Exception e) {
+            LOGGER.error("Failed to extract client property file location from request");
+            return false;
+        }
+        
     }
 	return validate;
       
