@@ -5,7 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -18,6 +20,7 @@ import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
+import com.cmclinnovations.stack.services.GeoServerService;
 
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.Util;
@@ -36,6 +39,8 @@ public class GeoServerClient extends ContainerClient {
     private final PostGISEndpointConfig postgreSQLEndpoint;
 
     private static GeoServerClient instance = null;
+    private static final Path STATIC_DATA_DIRECTORY = GeoServerService.SERVING_DIRECTORY.resolve("static_data");
+    private static final Path ICONS_DIRECTORY = GeoServerService.SERVING_DIRECTORY.resolve("icons");
 
     public static GeoServerClient getInstance() {
         if (null == instance) {
@@ -80,6 +85,18 @@ public class GeoServerClient extends ContainerClient {
         }
     }
 
+    public void deleteWorkspace(String workspaceName) {
+        if (!manager.getReader().existsWorkspace(workspaceName)) {
+            logger.info("GeoServer workspace '{}' does not exists and cannot be deleted.", workspaceName);
+        } else {
+            if (manager.getPublisher().removeWorkspace(workspaceName, true)) {
+                logger.info("GeoServer workspace '{}'' removed", workspaceName);
+            } else {
+                throw new RuntimeException("GeoServer workspace " + workspaceName + "' could not be deleted.");
+            }
+        }
+    }
+
     public void loadStyle(GeoServerStyle style, String workspaceName) {
         String name = style.getName();
         if (manager.getReader().existsStyle(workspaceName, name)) {
@@ -92,6 +109,44 @@ public class GeoServerClient extends ContainerClient {
                 throw new RuntimeException("GeoServer style '" + workspaceName + ":" + name
                         + "' does not exist and could not be created.");
             }
+        }
+    }
+
+    public void loadOtherFiles(Path baseDirectory, List<GeoserverOtherStaticFile> files) {
+        files.forEach(file -> {
+            loadStaticFile(baseDirectory, file);
+        });
+
+    }
+
+    private void loadStaticFile(Path baseDirectory, GeoserverOtherStaticFile file) {
+        Path filePath = baseDirectory.resolve(file.getSource());
+        Path sourceParentDir = filePath.getParent();
+        Path fileName = filePath.getFileName();
+        Path absTargetDir = STATIC_DATA_DIRECTORY.resolve(file.getTarget());
+
+        String containerId = getContainerId("geoserver");
+
+        if (!Files.exists(filePath)) {
+            throw new RuntimeException(
+                    "Static GeoServer data '" + filePath.toString() + "' does not exist and could not be loaded.");
+        } else if (Files.isDirectory(filePath)) {
+            sendFolder(containerId, filePath.toString(), absTargetDir.resolve(fileName).toString());
+        } else {
+            sendFiles(containerId, sourceParentDir.toString(), List.of(fileName.toString()), absTargetDir.toString());
+        }
+    }
+
+    public void loadIcons(Path baseDirectory, String iconDir) {
+        if (!Files.exists(baseDirectory.resolve(iconDir))) {
+            throw new RuntimeException(
+                    "Static GeoServer data '" + baseDirectory.resolve(iconDir)
+                            + "' does not exist and could not be loaded.");
+        } else if (Files.isDirectory(baseDirectory.resolve(iconDir))) {
+            sendFolder(getContainerId("geoserver"), baseDirectory.resolve(iconDir).toString(),
+                    ICONS_DIRECTORY.toString());
+        } else {
+            throw new RuntimeException("Geoserver icon directory " + iconDir + "does not exist or is not a directory.");
         }
     }
 

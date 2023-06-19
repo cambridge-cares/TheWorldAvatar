@@ -32,9 +32,12 @@ The dockerised agent can be deployed as standalone version (i.e. outside a large
 - UPDATE_ENDPOINT=
 ```
 
-The `STACK_NAME` variable is used to identify the deployment mode of the agent. In case the `STACK_NAME` is left blank, Postgres and Blazegraph endpoint setting will be taken from the docker-compose file. Otherwise they will be retrieved using the StackClients based on the provided `NAMESPACE` and `DATABASE` variables.
+The `STACK_NAME` variable is used to identify the deployment mode of the agent. In case the `STACK_NAME` is left blank, default Postgres and Blazegraph endpoint setting will be taken from the docker-compose file. Otherwise they will be retrieved using the StackClients based on the provided `NAMESPACE` and `DATABASE` variables.
 
-**Please note:** A missing `STACK_NAME` variable will result in an error; however, when deploying using the stack-manager start up script, the `STACK_NAME` variable will be set automatically for all services. Hence, this could be left blank here; however, if provided, it needs to match the `STACK_NAME` used by the stack-manager!
+**Please note**: 
+1) All variables defined here (except for `STACK_NAME`) serve as default values. To omit any of those default values, either remove the key completely or just leave it blank. If corresponding keys are provided in the HTTP request to the agent, those will be used instead. Otherwise, these default values will be used. In case neither is provided, the agent will cause an exception.
+
+2) A missing `STACK_NAME` variable will result in an error; however, when deploying using the stack-manager start up script, the `STACK_NAME` variable will be set automatically for all services. Hence, this could be left blank here; however, if provided, it needs to match the `STACK_NAME` used by the stack-manager!
 
 &nbsp;
 ## 1.2 Miscellaneous
@@ -72,11 +75,12 @@ Finally the forecasted time series is instantiated. For that purpose a new `fore
 &nbsp;
 ## 2.2 Build and Deploy the Agent
 
-To build and publish the agent Docker image please use the following commands. Please note that all of those commands are bundled in the  `publish_docker_image.sh` convenience script.
+To build and publish the agent Docker image please use the following commands. Please note that all of those commands are bundled in the  `publish_docker_image.sh` convenience script (only target image (i.e. production/debug) needs to be adjusted at top of that script).
 
 ```bash
 # Building the Docker image (production / debug)
-docker-compose -f <docker-compose file>  build
+docker-compose -f docker-compose.yml  build
+docker-compose -f docker-compose.debug.yml  build
 
 # Publish the Docker image to the Github container registry
 docker image push ghcr.io/cambridge-cares/<image tag>:<version>
@@ -89,34 +93,75 @@ Time out issues have been observed when building the image. If this happens, ple
 Deploy the dockerised agent by running the following code in the command prompt from the same location where this README is located (ideally, use a bash terminal to avoid potential issues with inconsistent path separators). 
 
 ```bash
-# Deploy the Docker images (locally)
-docker-compose -f <docker-compose file> up
+# Deploy the Docker images (production / debug) locally
+docker-compose -f docker-compose.yml  up
+docker-compose -f docker-compose.debug.yml  up
 ```
 
-To verify the correct startup of the agent, open the URL address the agent is running on, e.g. `http://127.0.0.1:5000` in your browser. 
+To verify the correct startup of the agent, open the URL address the agent is running on, e.g. `http://127.0.0.1:5001` in your browser. 
 
 ### **Stack Deployment**
 
 If you want to spin up this agent as part of a stack, do the following:
-1) Build the (production) image using the commands provided above (do not spin up the image)
-2) Copy the `forecasting-agent.json` file from the [stack-manager-input-config] folder into the `inputs/config` folder of the stack manager, adjusting the absolute path of the bind mount as required.
-3) Start the stack manager as usual (i.e. `bash ./stack.sh start <STACK_NAME>`). This should start the container. Please use a bash terminal to avoid potential issues with inconsistent path separators.
+1) Build the production image using the commands provided above (do not spin up the image)
+2) Copy the `forecasting-agent.json` file from the [stack-manager-input-config] folder into the `inputs/config` folder of the stack manager
+3) Start the stack manager as usual (i.e. `bash ./stack.sh start <STACK_NAME>` from the stack-manager repo). This should start the container. Please use a bash terminal to avoid potential issues with inconsistent path separators.
+4) The agent shall become available at `http://<HOST>:<PORT>/forecastingAgent/`
+
+### **Stack Troubleshooting**
+
+In case NGINX faces issues to locate the agent after startup, try the following commands from within the NGINX container:
+
+```bash
+# Test NGINX configuration to determine potentially erroneous (upstream) configuration
+nginx -t
+# Delete potentially erroneous/outdated configuration files
+rm /etc/nginx/conf.d/...
+rm /etc/nginx/conf.d/locations/...
+# Verify that NGINX configuration is corrected
+nginx -t
+# expected output: the configuration file /etc/nginx/nginx.conf syntax is ok
+# expected output: configuration file /etc/nginx/nginx.conf test is successful
+
+# Reload NGINX configuration
+nginx -s reload  
+# expected output: signal process started
+```
+
+## 2.3 Notes on Debugging
+
+The stack deployment of the agent is focused on the production image of the agent. To debug the agent, it is easiest to deploy the debug version locally by providing all required parameters in the [docker-compose.debug.yml] and running the below commands (`build` as required): 
+```bash
+docker-compose -f docker-compose.debug.yml  build
+docker-compose -f docker-compose.debug.yml  up
+```
+This spins up the agent on `http://127.0.0.1:5001`, waiting for the debugger to attach. To attach to the container and start debugging, please use the provided  `Python: Debug Flask within Docker` debug configuration. Although outside the stack, this procedure allows to debug all essential functionality of the agent (without the need to have a full stack running).
 
 
 &nbsp;
-## 2.3 Forecasting time series via HTTP requests
+## 2.4 Forecasting time series via HTTP requests
 
-Forecasting a time series is triggered by received HTTP requests. An example request to forecast an `iri` is provided in [HTTP_Request_forecast]: 
+Forecasting a time series is triggered by receiving an HTTP `POST` request with a JSON body. An example request to forecast an `iri` is provided in [HTTP_Request_forecast]: 
 
-### Input parameters
-- **iri**: the `iri` of the instance which has a time series attached to it. This iri will receive the `hasForecastedValue` relationship.
-- **horizon**: the number of time steps the agent forecasts autorecursively into the future.
-- **forecast_start_date**: the start `dateTime` of the forecast. If not specified, simply the last value is taken as a starting point. The series is split at this point and future available data is used to calculate the forecasting error.
-- **data_length**: the number of values loaded before `forecast_start_date`. This data is used directly as input to fit [Prophet] or to scale the input for the pre-trained neural network. (If not set the default value from the [mapping file] is used)
-- **use_model_configuration**: if specified this model configuration from the [mapping file] is used.  
+### HTTP request parameters
+
+- **iri**: the `iri` of the instance which has a time series attached to it. This `iri` will receive the `hasForecastedValue` relationship
+- **horizon**: the number of time steps to forecast autorecursively into the future
+- **forecast_start_date**: the start `dateTime` of the forecast. If not specified, simply the last value is taken as a starting point. The series is split at this point and future available data is used to calculate the forecasting error
+- **data_length**: the number of values loaded before `forecast_start_date`. This data is used directly as input to fit [Prophet] or to scale the input for the pre-trained neural network (If not set the default value from the [mapping file] is used)
+- **use_model_configuration**: if specified this model configuration from the [mapping file] is used
+
+Further optional parameters can be provided to specify the connection configurations to use. All specified parameters overwrite potential default values specified in the docker-compose file. To use the default values, simply exclude the respective parameter from the HTTP request:
+- **namespace**: target Blazegraph namespace (only relevant for Stack deployment)
+- **database**: target PostGIS database (only relevant for Stack deployment)
+- **query_endpoint**: SPARQL query endpoint (only relevant for standalone deployment)
+- **update_endpoint**: SPARQL update endpoint (only relevant for standalone deployment)
+- **db_url**: PostGIS/PostgreSQL database URL (only relevant for standalone deployment)
+- **db_user**: PostGIS/PostgreSQL database user (only relevant for standalone deployment)
+- **db_password**" PostGIS/PostgreSQL database password (only relevant for standalone deployment)
 
 
-## 2.4 Custom model configurations and new models
+## 2.5 Custom model configurations and new models
 Specify your custom configurations following the example of the `TFT_HEAT_SUPPLY` model configuration in the [mapping file]. 
 
 If you need covariates, define a function which load them (similarly to `get_covs_heat_supply`) for the `load_covariates_func` parameter in your configuration. To use your own pre-trained model with [Darts], expand the [agent module] where `load_pretrained_model` is called just like the model for `TFT_HEAT_SUPPLY` is loaded. You can use the function `load_pretrained_model` as well if thats suits your model, just specify your model class and set the `input_length` as for `TFT_HEAT_SUPPLY`. 
@@ -154,9 +199,8 @@ pytest -s --docker-compose=docker-compose.test.yml
 ```
 
 
-```diff
-- Note: Currently the agent holds several (helper) scripts tailored towards house 45 (inside the resources folder). They are mainly here for reference and shall be removed in a later revision of the agent.
-```
+# Final Remarks
+Currently the agent holds several (helper) scripts tailored towards the House 45 use case in Pirmasens (inside the resources folder). They are mainly here for reference to provide working examples and might be removed in a later revision of the agent.
 
 
 &nbsp;
@@ -184,6 +228,7 @@ Markus Hofmeister (mh807@cam.ac.uk), December 2022
 [HTTP_Request_forecast]: ./resources/HTTP_request_forecast.http
 [agent module]: /forecasting/forecasting_agent/agent.py
 [mapping file]: /forecasting/datamodel/data_mapping.py
+[docker-compose.debug.yml]: ./docker-compose.debug.yml
 [docker-compose.test.yml]: ./docker-compose.test.yml
 [Docker compose file]: ./docker-compose.yml
 [stack-manager-input-config]: ./stack-manager-input-config

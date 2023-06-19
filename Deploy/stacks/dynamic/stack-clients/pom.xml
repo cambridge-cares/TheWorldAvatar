@@ -7,7 +7,7 @@
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-clients</artifactId>
-  <version>1.7.2</version>
+  <version>1.12.1</version>
 
   <name>Stack Clients</name>
   <url>https://www.cmclinnovations.com</url>
@@ -22,6 +22,13 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.release>11</maven.compiler.release>
+
+    <!--podman.file>https://storage.googleapis.com/libpod-master-releases/swagger-v4.3.yaml</podman.file-->
+    <podman.file>${project.basedir}/src/main/swagger/podman/swagger-v4.3.yaml</podman.file>
+
+    <superset.file>${project.basedir}/src/main/swagger/superset/openapi.yaml</superset.file>
+
   </properties>
 
   <!-- Repository locations to deploy to -->
@@ -41,6 +48,47 @@
   </repositories>
 
   <dependencies>
+
+    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310 -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>2.14.1</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.glassfish.jersey.core/jersey-client -->
+    <dependency>
+      <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-client</artifactId>
+      <version>2.38</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.glassfish.jersey.media/jersey-media-json-jackson -->
+    <dependency>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-json-jackson</artifactId>
+      <version>2.38</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.glassfish.jersey.media/jersey-media-multipart -->
+    <dependency>
+      <groupId>org.glassfish.jersey.media</groupId>
+      <artifactId>jersey-media-multipart</artifactId>
+      <version>2.38</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.brsanthu/migbase64 -->
+    <dependency>
+      <groupId>com.brsanthu</groupId>
+      <artifactId>migbase64</artifactId>
+      <version>2.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>io.swagger</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>1.6.9</version>
+    </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.github.docker-java/docker-java -->
     <dependency>
@@ -105,6 +153,13 @@
       <version>1.32.0</version>
     </dependency>
 
+    <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations -->
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>2.2.8</version>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -142,9 +197,82 @@
               <goal>copy-dependencies</goal>
             </goals>
             <configuration>
-              <includeScope>runtime</includeScope>
+              <includeScope>
+                runtime</includeScope>
               <outputDirectory>${project.build.directory}/lib</outputDirectory>
               <useRepositoryLayout>false</useRepositoryLayout>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>io.swagger</groupId>
+        <artifactId>swagger-codegen-maven-plugin</artifactId>
+        <version>2.4.29</version>
+        <executions>
+          <execution>
+            <?m2e execute onConfiguration?>
+            <id>generate-swagger-client</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${podman.file}</inputSpec>
+              <language>java</language>
+              <modelPackage>${project.groupId}.swagger.podman.model</modelPackage>
+              <apiPackage>${project.groupId}.swagger.podman.api</apiPackage>
+              <configOptions>
+                <dateLibrary>legacy</dateLibrary>
+                <library>jersey2</library>
+              </configOptions>
+              <addCompileSourceRoot>true</addCompileSourceRoot>
+              <generateApis>true</generateApis>
+              <generateApiTests>false</generateApiTests>
+              <generateApiDocumentation>false</generateApiDocumentation>
+              <generateModels>true</generateModels>
+              <modelsToGenerate></modelsToGenerate>
+              <generateModelTests>false</generateModelTests>
+              <generateModelDocumentation>false</generateModelDocumentation>
+              <generateSupportingFiles>true</generateSupportingFiles>
+              <supportingFilesToGenerate></supportingFilesToGenerate>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>io.swagger.codegen.v3</groupId>
+        <artifactId>swagger-codegen-maven-plugin</artifactId>
+        <version>3.0.39</version>
+        <executions>
+          <execution>
+            <?m2e execute onConfiguration?>
+            <id>generate-superset-swagger-client</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${superset.file}</inputSpec>
+              <language>java</language>
+              <modelPackage>${project.groupId}.swagger.superset.model</modelPackage>
+              <apiPackage>${project.groupId}.swagger.superset.api</apiPackage>
+              <configOptions>
+                <dateLibrary>legacy</dateLibrary>
+                <library>jersey2</library>
+              </configOptions>
+              <addCompileSourceRoot>true</addCompileSourceRoot>
+              <generateApis>true</generateApis>
+              <generateApiTests>false</generateApiTests>
+              <generateApiDocumentation>false</generateApiDocumentation>
+              <generateModels>true</generateModels>
+              <modelsToGenerate></modelsToGenerate>
+              <generateModelTests>false</generateModelTests>
+              <generateModelDocumentation>false</generateModelDocumentation>
+              <generateSupportingFiles>true</generateSupportingFiles>
+              <supportingFilesToGenerate></supportingFilesToGenerate>
             </configuration>
           </execution>
         </executions>

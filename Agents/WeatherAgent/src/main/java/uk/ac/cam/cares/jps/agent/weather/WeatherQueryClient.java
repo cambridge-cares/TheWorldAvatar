@@ -27,8 +27,8 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.apache.jena.geosparql.implementation.*;
-import org.apache.jena.geosparql.implementation.datatype.WKTDatatype;
+import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
+import org.locationtech.jts.geom.Geometry;
 
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
@@ -262,10 +262,12 @@ class WeatherQueryClient {
 		String wktString = kgClient.executeQuery(query2.getQueryString()).getJSONObject(0).getString(wkt.getQueryString().substring(1));
 		
 		// parse wkt literal
-		GeometryWrapper geometryWrapper= WKTDatatype.INSTANCE.parse(wktString);
-		double lat = geometryWrapper.getXYGeometry().getCoordinate().getY();
-		double lon = geometryWrapper.getXYGeometry().getCoordinate().getX();
+
+		Geometry point = WKTReader.extract(wktString).getGeometry();
 		
+		double lon = point.getCoordinate().getX();
+		double lat = point.getCoordinate().getY();
+
 		// the key for this map is the weather class, value is the corresponding value
 		Map<String,Double> newWeatherData;
 		if (timestamp == null) {

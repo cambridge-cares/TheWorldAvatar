@@ -335,6 +335,15 @@ class PyDerivationClient:
         self.derivation_client.updateTimestamps(entities)
 
 
+    def dropTimestampsOf(self, entities: List[str]):
+        """Drop the timestamp of the given entities.
+
+        Args:
+            entities (List[str]): List of IRIs of entities to drop the timestamp of
+        """
+        self.derivation_client.dropTimestampsOf(entities)
+
+
     ##############################################
     ## Methods for requesting update derivation ##
     ##############################################
