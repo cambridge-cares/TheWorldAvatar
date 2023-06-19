@@ -888,7 +888,7 @@ public class Aermod {
             String dispLayerName = dispersionLayers.get(0);
             JSONObject dispersionLayer = new JSONObject();
             dispersionLayer.put("id", dispLayerName);
-            dispersionLayer.put("type", "fill-extrusion");
+            dispersionLayer.put("type", "fill");
             dispersionLayer.put("name", dispLayerName);
             dispersionLayer.put("source", "dispersion-source_" + dispLayerName);
             dispersionLayer.put("source-layer", dispLayerName);
@@ -898,9 +898,11 @@ public class Aermod {
             JSONObject paint = new JSONObject();
             JSONArray properties = new JSONArray();
             properties.put("get");
-            properties.put("stroke");
-            paint.put("fill-extrusion-color", properties);
-            paint.put("fill-extrusion-opacity", 0.5);
+            properties.put("fill");
+            paint.put("fill-color", properties);
+            paint.put("fill-opacity", 0.5);
+            properties.put(1, "stroke");
+            paint.put("fill-outline-color", properties);
             dispersionLayer.put("paint", paint);
             layers.put(dispersionLayer);
         }
