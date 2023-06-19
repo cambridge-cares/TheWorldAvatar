@@ -107,6 +107,7 @@ public class DevInstQureyBuilderTest {
     "com.bigdata.rdf.store.AbstractTripleStore.geoSpatial=false\r\n"+
     "com.bigdata.rdf.store.AbstractTripleStore.statementIdentifiers=false";
 
+    @Ignore("Test containers requires docker to function")
     @Before
     public void startContainers() throws IOException, URISyntaxException {
 		try {
@@ -142,6 +143,7 @@ public class DevInstQureyBuilderTest {
         writer.close();
     }
 
+    @Ignore("Test containers requires docker to function")
     @Before
     public void initializeAgent() throws IOException {
         // Create a properties file that points to a dummy mapping folder //
@@ -181,7 +183,7 @@ public class DevInstQureyBuilderTest {
         String content = new String(Files.readAllBytes(Paths.get(filename)));
         return new JSONObject(content);
     }
-
+    
     @Before
     public void createExampleData () throws IOException{
         File file = new File("./src/test/java/uk/ac/cam/cares/jps/agent/devinst/exampleRequests/exampleRequest.json");
@@ -194,6 +196,7 @@ public class DevInstQureyBuilderTest {
 
     }
 
+    @Ignore("Test containers requires docker to function")
     @Test
     public void testEmptyMapper () {
         try{
@@ -207,6 +210,7 @@ public class DevInstQureyBuilderTest {
         
     }
 
+    @Ignore("Test containers requires docker to function")
     @Test
     public void testInstantiation () {
         queryBuilder.InsertDevice(exampleRequest);
@@ -254,6 +258,7 @@ public class DevInstQureyBuilderTest {
 
     }
 
+    @Ignore("Test containers requires docker to function")
     @Test
     public void testFindIRI(){
         //Add dummyraw var here
@@ -276,6 +281,7 @@ public class DevInstQureyBuilderTest {
         Assert.assertEquals(obtainedIRI, exampleRawString);
     }
 
+    @Ignore("Test containers requires docker to function")
     @Test
     public void testAdditionalQuery() {
         queryBuilder.InsertDevice(exampleAddQuery);
