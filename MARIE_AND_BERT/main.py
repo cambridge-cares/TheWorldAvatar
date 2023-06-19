@@ -14,6 +14,9 @@ app = Flask(__name__)
 
 def result_filter(result):
 
+    if "ontoagent" in str(result):
+        return result
+
     if type(result) == type([]):
         sample_node = result[0]
         if "domain" in sample_node:
@@ -23,8 +26,7 @@ def result_filter(result):
                 for row in result[0]["node"]:
                     result_tmp.append({"node": row})
                 return result_tmp
-    elif "ontoagent" in str(result):
-        return result
+
     result_tmp = []
 
     if "score" in str(result):
@@ -34,11 +36,11 @@ def result_filter(result):
                 if row_key.lower() != "score":
                     row_tmp[row_key] = row[row_key]
             result_tmp.append(row_tmp)
-
-        return [result_tmp[0]]
+        # this is important, this only keeps the core information about a single element answer
+        return {"single": result_tmp[0]}
+        # return [result_tmp[0]]
     else:
         return result
-
 
 def answer_question(question):
     logger.info("=======================================================================================")
