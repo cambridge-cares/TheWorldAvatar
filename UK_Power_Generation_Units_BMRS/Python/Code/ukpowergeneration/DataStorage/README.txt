@@ -1,0 +1,1 @@
+Daily records should be generated here. 

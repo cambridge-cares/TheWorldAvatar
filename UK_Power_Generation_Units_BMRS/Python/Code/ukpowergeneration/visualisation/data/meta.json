@@ -1,0 +1,17 @@
+{
+    "global": {
+        "defaultCenter": [0.39713859558105463, 52.75354199742786],
+        "defaultZoom": 8,
+        "defaultBearing":0,
+        "defaultPitch": 0
+    },
+    "local": {
+        "label": "UK Power System Data",
+        "groups": [
+            {
+                "name": "Clustered View",
+                "directory": "powergridassets"
+            }
+        ]
+    }
+}
