@@ -79,17 +79,6 @@ userSpecified_Sleepycat = False # storage mode: False: default, True: user speci
 """OWL file storage path"""
 # defaultStoredPath = uk_egen_model.StoreGeneratedOWLs # default path
 
-"""T-Box URI"""
-
-if urllib.request.urlopen("http://www.theworldavatar.com/ontology/").getcode() == 200:
-    ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
-    ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
-    ontocape_mathematical_model     = owlready2.get_ontology(t_box.ontocape_mathematical_model).load()
-    ontopowsys_PowerSystemModel     = owlready2.get_ontology(t_box.ontopowsys_PowerSystemModel).load()
-    ontoecape_space_and_time_extended = owlready2.get_ontology(t_box.ontoecape_space_and_time_extended).load()
-else:
-    print('---THE WORLD AVATAR NOT FOUND---')
-
 """User specified folder path"""
 filepath = None
 userSpecified = False
@@ -106,6 +95,16 @@ number_of_localOWLFiles = 1
 """Main function: create the named graph Model_EGen and their sub graphs each EGen"""
 def createModel_EGen(numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSystemNodetimeStamp, AgentIRI, OrderedBusNodeIRIList, derivationClient, updateEndpointIRI, startTime_of_EnergyConsumption, \
     OPFOrPF:bool, CarbonTax, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, splitCharacter, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"):
+    
+    """T-Box URI"""
+    if urllib.request.urlopen("http://www.theworldavatar.com/ontology/").getcode() == 200:
+        ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
+        ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
+        ontocape_mathematical_model     = owlready2.get_ontology(t_box.ontocape_mathematical_model).load()
+        ontopowsys_PowerSystemModel     = owlready2.get_ontology(t_box.ontopowsys_PowerSystemModel).load()
+        ontoecape_space_and_time_extended = owlready2.get_ontology(t_box.ontoecape_space_and_time_extended).load()
+    else:
+        print('---THE WORLD AVATAR NOT FOUND---')
     ## Query generator attributes and the number of the buses
     EGenInfo = list(query_model.queryEGenInfo(topologyNodeIRI, endpoint_label))
     # location = query_model.queryPowerSystemLocation(endpoint_label, topologyNodeIRI)  
@@ -355,25 +354,38 @@ def initialiseEGenModelVar(EGen_Model, egen, OrderedBusNodeIRIList, demand_capa_
     primaryFuel = egen[7]
     if primaryFuel in ukmf.Wind: 
         EGen_Model.PMAX = capa * float(windOutputRatio)
+        EGen_Model.PMIN = 0 # capa * float(windOutputRatio) * 0.8
+        EGen_Model.PG_INPUT = capa * float(windOutputRatio)
     elif primaryFuel in ukmf.Solar: 
         EGen_Model.PMAX = capa * float(solarOutputRatio)  
+        EGen_Model.PMIN = 0 # capa * float(solarOutputRatio) * 0.8
+        EGen_Model.PG_INPUT = capa * float(solarOutputRatio)
     elif primaryFuel in ukmf.Nuclear: 
-        EGen_Model.PMAX = capa * 0.55
+        EGen_Model.PMAX = capa * 0.7
+        EGen_Model.PMIN = 0 #capa * 0.7 * 0.8
+        EGen_Model.PG_INPUT = capa * 0.7
     elif primaryFuel in ukmf.Hydro: 
-        EGen_Model.PMAX = capa * 0.3
+        EGen_Model.PMAX = capa * 0.25
+        EGen_Model.PMIN = 0
+        EGen_Model.PG_INPUT = capa * 0.25
     elif primaryFuel in ukmf.PumpHydro: 
-        EGen_Model.PMAX = capa * 0.1
-    elif primaryFuel in ukmf.Bio: 
-        EGen_Model.PMAX = capa * 0.70
+        EGen_Model.PMAX = capa * 0.05
+        EGen_Model.PMIN = 0
+        EGen_Model.PG_INPUT = 0
+    elif primaryFuel in ukmf.Bio:
+        EGen_Model.PMAX = capa * 0.50
+        EGen_Model.PMIN = capa * 0.50 * 0.7
+        EGen_Model.PG_INPUT = capa * 0.50
     elif primaryFuel in ukmf.SMR:
         EGen_Model.PMAX = capa * 0.94
+        EGen_Model.PMIN = 0
+        EGen_Model.PG_INPUT = capa * 0.94
+    elif primaryFuel in ukmf.Coal:
+        EGen_Model.PMAX = capa * 0.9
+        EGen_Model.PMIN = 0
     else:
         EGen_Model.PMAX = capa * 0.9
-    
-    EGen_Model.PMIN = 0
-    
-    # EGen_Model.PMAX = capa
-    # EGen_Model.PMIN = 0
+        EGen_Model.PMIN = 0
 
     EGen_Model.QMAX = EGen_Model.PMAX
     EGen_Model.QMIN = -EGen_Model.PMAX

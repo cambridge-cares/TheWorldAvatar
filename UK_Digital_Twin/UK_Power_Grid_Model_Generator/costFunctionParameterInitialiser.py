@@ -20,8 +20,9 @@ def costFuncPara(uk_egen_costFunc, egen):
             # uk_egen_costFunc.a = 0
             # Parameter b is related with carbon tax which should be the trigger of the parallel world
             # egen[1]: fixed O&M; egen[2]: var O&M; egen[3]: Fuel cost; egen[4]: emission factor; egen[6]: capacity
-            uk_egen_costFunc.a = round((egen[2] + egen[3] + egen[4] * uk_egen_costFunc.CarbonTax), 3) #  first order, c1 
+            uk_egen_costFunc.a = round((egen[2] + egen[3] + float(egen[4]) * uk_egen_costFunc.CarbonTax), 3) #  first order, c1 
             uk_egen_costFunc.b = round((egen[1] * egen[6]), 3)   # zero order, c0   
             uk_egen_costFunc.COST.append(uk_egen_costFunc.a) 
-            uk_egen_costFunc.COST.append(uk_egen_costFunc.b)    
-    return uk_egen_costFunc      
+            uk_egen_costFunc.COST.append(uk_egen_costFunc.b) 
+            uk_egen_costFunc.CO2EmissionFactor = float(egen[4])   
+    return uk_egen_costFunc        
