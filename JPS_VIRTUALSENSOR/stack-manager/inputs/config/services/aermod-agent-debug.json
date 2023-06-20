@@ -3,7 +3,7 @@
 		"Name": "aermod-agent",
 		"TaskTemplate": {
 			"ContainerSpec": {
-				"Image": "ghcr.io/cambridge-cares/aermod-agent:1.2.2-dev-aermod-agent-pollutant-SNAPSHOT",
+				"Image": "ghcr.io/cambridge-cares/aermod-agent:1.2.3-dev-aermod-agent-sensor-SNAPSHOT",
 				"Env": [
 					"STACK_NAME=${STACK_NAME}",
 					"PYTHON_SERVICE_URL=http://ship-stack-python-service:5000/getAermodGeoJSON",

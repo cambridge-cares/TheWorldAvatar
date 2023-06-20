@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   virtual-sensor-agent:
-    image: ghcr.io/cambridge-cares/virtual-sensor-agent:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/virtual-sensor-agent:1.0.0-dev-aermod-agent-sensor-SNAPSHOT
     deploy:
       mode: replicated
       replicas: 1
@@ -12,7 +12,7 @@ services:
       - STACK_NAME=${STACK_NAME}
       - DATABASE=postgres # currently ontop reads from the default database
       - GEOSERVER_WORKSPACE=dispersion
-      - PYTHON_SERVICE_URL=http://${STACK_NAME}-python-service:5000
+      - PYTHON_SERVICE_INTERPOLATION_URL=http://${STACK_NAME}-python-service:5000/getInterpolatedConc
     configs:
       - postgis
       - blazegraph

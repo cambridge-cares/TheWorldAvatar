@@ -142,8 +142,30 @@ public class InitialiseSimulation extends HttpServlet {
                     LOGGER.error("Failed to create JSON object for HTTP response");
                 }
 
+                // compute srid
+                // Need to first calculate centroid
+                double xc = 0.0;
+                double yc = 0.0;
+                int numberVertices = polygon4326.numPoints();
+                for (int i = 0; i < polygon4326.numPoints(); i++) {
+                    double xp = polygon4326.getPoint(i).x;
+                    double yp = polygon4326.getPoint(i).y;
+                    xc += xp;
+                    yc += yp;
+                }
+                xc /= numberVertices;
+                yc /= numberVertices;
+                int centreZoneNumber = (int) Math.ceil((xc + 180) / 6);
+                int simulationSrid;
+                if (yc < 0) {
+                    simulationSrid = Integer.valueOf("327" + centreZoneNumber);
+
+                } else {
+                    simulationSrid = Integer.valueOf("326" + centreZoneNumber);
+                }
+
                 if (numberSensors > 0)
-                    queryClient.initializeVirtualSensors(derivation, virtualSensorLocations);
+                    queryClient.initializeVirtualSensors(derivation, virtualSensorLocations, simulationSrid);
 
             }
         }

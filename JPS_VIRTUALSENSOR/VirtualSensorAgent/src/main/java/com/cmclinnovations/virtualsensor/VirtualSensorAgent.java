@@ -6,6 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.postgis.Point;
 
 import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
@@ -34,11 +35,14 @@ public class VirtualSensorAgent extends DerivationAgent {
     @Override
     public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
 
-        // Get latest time for which pollutant data has been stored
+        // Get latest time for which pollutant data has been stored, list of dispersion
+        // matrix data IRIs and station location
         String derivation = derivationInputs.getDerivationIRI();
         Long latestTime = queryClient.getLatestStationTime(derivation);
         Map<String, String> pollutantToDispMatrix = queryClient.getDispersionMatrixIris(derivation);
-        queryClient.updateStation(latestTime, pollutantToDispMatrix);
+        Point stationLocation = queryClient.getStationLocation(derivation);
+        Map<String, String> pollutantToConcIri = queryClient.getStationDataIris(derivation);
+        queryClient.updateStation(latestTime, pollutantToDispMatrix,pollutantToConcIri, stationLocation);
 
     }
 

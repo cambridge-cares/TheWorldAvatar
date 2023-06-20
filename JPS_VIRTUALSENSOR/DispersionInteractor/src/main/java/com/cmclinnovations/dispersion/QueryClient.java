@@ -21,19 +21,18 @@ import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import uk.ac.cam.cares.jps.base.derivation.Derivation;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -72,8 +71,6 @@ public class QueryClient {
     private static final Iri AERMAP_OUTPUT = P_DISP.iri("AermapOutput");
     private static final Iri GEOM = iri("http://www.opengis.net/ont/geosparql#Geometry");
 
-    // Pollutants
-    private static final Iri POLLUTANT_ID = P_DISP.iri("PollutantID");
     private static final Iri NO_X = P_DISP.iri("NOx");
     private static final Iri UHC = P_DISP.iri("uHC");
     private static final Iri CO = P_DISP.iri("CO");
@@ -267,7 +264,7 @@ public class QueryClient {
         derivationClient.updateTimestamps(simTimes);
     }
 
-    void initializeVirtualSensors(String derivation, List<Point> virtualSensorLocations) {
+    void initializeVirtualSensors(String derivation, List<Point> virtualSensorLocations, int simulationSrid) {
 
         // Get data IRIs of dispersion outputs belonging to the input derivation
 
@@ -326,22 +323,28 @@ public class QueryClient {
 
             for (int i = 0; i < virtualSensorLocations.size(); i++) {
                 Point location = virtualSensorLocations.get(i);
+                // Need to transform this to the simulation SRID
+                double lat = location.getX();
+                double lon = location.getY();
+                double[] xyOriginal = { location.getX(), location.getY() };
+                double[] xyTransformed = CRSTransformer.transform("EPSG:" + simulationSrid, "EPSG:4326", xyOriginal);
+
+                Point transformedPoint = new Point(xyTransformed[0], xyTransformed[1]);
+                transformedPoint.setSrid(simulationSrid);
 
                 List<String> inputs = new ArrayList<>(dispersionOutputs);
 
                 // Add location input
                 String locationIri = PREFIX + UUID.randomUUID();
-                modify.insert(iri(locationIri).isA(GEOM).andHas(HAS_WKT, location.toString()));
+                modify.insert(iri(locationIri).isA(GEOM).andHas(HAS_WKT, transformedPoint.toString()));
                 inputs.add(locationIri);
 
                 // output (OntoEMS reporting station)
                 String stationIri = ONTO_EMS + "virtualsensor_" + UUID.randomUUID();
                 Iri station = iri(stationIri);
-                double lat = location.getX();
-                double lon = location.getY();
 
                 // Update triples for station in blazegraph
-                String locString = String.valueOf(lat) + "#" + String.valueOf(lon);
+                String locString = String.valueOf(lon) + "#" + String.valueOf(lat);
                 modify.insert(station.isA(REPORTING_STATION).andHas(OBSERVATION_LOCATION, locString));
 
                 List<String> dataListForTimeSeries = new ArrayList<>();
@@ -349,59 +352,59 @@ public class QueryClient {
                 // triples to insert for each station
                 // NOx
                 Iri quantity = P_EMS.iri("quantity_" + UUID.randomUUID());
-                Iri measure = P_EMS.iri("measure_" + UUID.randomUUID());
+                String measure = ONTO_EMS + "measure_" + UUID.randomUUID();
                 modify.insert(station.has(REPORTS, quantity));
-                modify.insert(quantity.isA(NO_X_CONC).andHas(HAS_VALUE, measure));
-                modify.insert(measure.isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
-                dataListForTimeSeries.add(measure.toString());
+                modify.insert(quantity.isA(NO_X_CONC).andHas(HAS_VALUE, iri(measure)));
+                modify.insert(iri(measure).isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
+                dataListForTimeSeries.add(measure);
 
                 // UHC
                 quantity = P_EMS.iri("quantity_" + UUID.randomUUID());
-                measure = P_EMS.iri("measure_" + UUID.randomUUID());
+                measure = ONTO_EMS + "measure_" + UUID.randomUUID();
                 modify.insert(station.has(REPORTS, quantity));
-                modify.insert(quantity.isA(UHC_CONC).andHas(HAS_VALUE, measure));
-                modify.insert(measure.isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
-                dataListForTimeSeries.add(measure.toString());
+                modify.insert(quantity.isA(UHC_CONC).andHas(HAS_VALUE, iri(measure)));
+                modify.insert(iri(measure).isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
+                dataListForTimeSeries.add(measure);
 
                 // CO
                 quantity = P_EMS.iri("quantity_" + UUID.randomUUID());
-                measure = P_EMS.iri("measure_" + UUID.randomUUID());
+                measure = ONTO_EMS + "measure_" + UUID.randomUUID();
                 modify.insert(station.has(REPORTS, quantity));
-                modify.insert(quantity.isA(CO_CONC).andHas(HAS_VALUE, measure));
-                modify.insert(measure.isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
-                dataListForTimeSeries.add(measure.toString());
+                modify.insert(quantity.isA(CO_CONC).andHas(HAS_VALUE, iri(measure)));
+                modify.insert(iri(measure).isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
+                dataListForTimeSeries.add(measure);
 
                 // CO2
                 quantity = P_EMS.iri("quantity_" + UUID.randomUUID());
-                measure = P_EMS.iri("measure_" + UUID.randomUUID());
+                measure = ONTO_EMS + "measure_" + UUID.randomUUID();
                 modify.insert(station.has(REPORTS, quantity));
-                modify.insert(quantity.isA(CO2_CONC).andHas(HAS_VALUE, measure));
-                modify.insert(measure.isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
-                dataListForTimeSeries.add(measure.toString());
+                modify.insert(quantity.isA(CO2_CONC).andHas(HAS_VALUE, iri(measure)));
+                modify.insert(iri(measure).isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
+                dataListForTimeSeries.add(measure);
 
                 // SO2
                 quantity = P_EMS.iri("quantity_" + UUID.randomUUID());
-                measure = P_EMS.iri("measure_" + UUID.randomUUID());
+                measure = ONTO_EMS + "measure_" + UUID.randomUUID();
                 modify.insert(station.has(REPORTS, quantity));
-                modify.insert(quantity.isA(SO2_CONC).andHas(HAS_VALUE, measure));
-                modify.insert(measure.isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
-                dataListForTimeSeries.add(measure.toString());
+                modify.insert(quantity.isA(SO2_CONC).andHas(HAS_VALUE, iri(measure)));
+                modify.insert(iri(measure).isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
+                dataListForTimeSeries.add(measure);
 
                 // PM10
                 quantity = P_EMS.iri("quantity_" + UUID.randomUUID());
-                measure = P_EMS.iri("measure_" + UUID.randomUUID());
+                measure = ONTO_EMS + "measure_" + UUID.randomUUID();
                 modify.insert(station.has(REPORTS, quantity));
-                modify.insert(quantity.isA(PM10_CONC).andHas(HAS_VALUE, measure));
-                modify.insert(measure.isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
-                dataListForTimeSeries.add(measure.toString());
+                modify.insert(quantity.isA(PM10_CONC).andHas(HAS_VALUE, iri(measure)));
+                modify.insert(iri(measure).isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
+                dataListForTimeSeries.add(measure);
 
                 // PM2.5
                 quantity = P_EMS.iri("quantity_" + UUID.randomUUID());
-                measure = P_EMS.iri("measure_" + UUID.randomUUID());
+                measure = ONTO_EMS + "measure_" + UUID.randomUUID();
                 modify.insert(station.has(REPORTS, quantity));
-                modify.insert(quantity.isA(PM25_CONC).andHas(HAS_VALUE, measure));
-                modify.insert(measure.isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
-                dataListForTimeSeries.add(measure.toString());
+                modify.insert(quantity.isA(PM25_CONC).andHas(HAS_VALUE, iri(measure)));
+                modify.insert(iri(measure).isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
+                dataListForTimeSeries.add(measure);
 
                 // Create timeseries of pollutant concentrations for OntoEMS station
                 List<Class<?>> classListForTimeSeries = Collections.nCopies(dataListForTimeSeries.size(), Double.class);

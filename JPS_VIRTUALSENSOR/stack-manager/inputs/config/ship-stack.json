@@ -9,6 +9,7 @@
 			"aermod-agent-debug",
 			"python-service",
 			"emissions-agent",
+			"virtual-sensor-agent",
 			"feature-info-agent"
 		]
 	}

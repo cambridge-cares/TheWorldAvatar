@@ -1,4 +1,4 @@
-package com.cmclinnovations.ship;
+package com.cmclinnovations.virtualsensor;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
