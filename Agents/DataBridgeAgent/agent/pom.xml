@@ -32,7 +32,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>11</maven.compiler.release>
-        <jps.base.version>1.21.1</jps.base.version>
+        <jps.base.version>1.39.0</jps.base.version>
         <!-- Artifact ID used to download Log4J2 config (for runtime) -->
         <log.artifact>java-logging-dev</log.artifact>
     </properties>
