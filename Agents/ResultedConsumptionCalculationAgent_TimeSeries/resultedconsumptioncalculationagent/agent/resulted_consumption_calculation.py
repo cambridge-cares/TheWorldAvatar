@@ -25,7 +25,7 @@ class ResultedConsumptionAgent(DerivationAgent):
         self.sparql_client = self.get_sparql_client(KGClient)
 
     def agent_input_concepts(self) -> list:
-        return [REGION_COP, OM_MEASURE, OM_MEASURE, 
+        return [REGION_COP, OM_MEASURE, 
                 REGION_PROPORTION_OF_HEATING, REGION_BOILER_EFFICIENCY, 
                 REGION_UPTAKE, REGION_ENERGYCONSUMPTION_PROFILE]
     
@@ -60,12 +60,20 @@ class ResultedConsumptionAgent(DerivationAgent):
         # ---------------- Get Input IRIs --------------- #
         inputs = derivation_inputs.getInputs()
         cop_iri_list = inputs[REGION_COP]
-        elec_consumption_iri = inputs[OM_MEASURE][0]
-        gas_consumption_iri = inputs[OM_MEASURE][1]
+        consumption_iri_list = inputs[OM_MEASURE]
         proportion_of_heating_iri = inputs[REGION_PROPORTION_OF_HEATING][0]
         boiler_efficiency_iri = inputs[REGION_BOILER_EFFICIENCY][0]
         uptake_iri = inputs[REGION_UPTAKE][0]
         consumption_profile_iri = inputs[REGION_ENERGYCONSUMPTION_PROFILE][0]
+        for a in consumption_iri_list:
+            if "Electricity" in a:
+                elec_consumption_iri = a
+            if "Gas" in a:
+                gas_consumption_iri = a
+            else:
+                self.logger.error(f"Specified {COP_VAR} COP IRI can not be found")
+                raise Exception(f"Specified {COP_VAR} COP IRI can not be found")
+            
         for a in cop_iri_list:
             if COP_VAR in a:
                 cop_iri = a
