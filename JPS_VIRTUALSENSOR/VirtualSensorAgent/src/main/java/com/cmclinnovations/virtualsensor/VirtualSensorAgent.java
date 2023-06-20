@@ -1,5 +1,7 @@
 package com.cmclinnovations.virtualsensor;
 
+import java.util.Map;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import org.apache.logging.log4j.LogManager;
@@ -35,8 +37,8 @@ public class VirtualSensorAgent extends DerivationAgent {
         // Get latest time for which pollutant data has been stored
         String derivation = derivationInputs.getDerivationIRI();
         Long latestTime = queryClient.getLatestStationTime(derivation);
-
-        queryClient.updateStation(latestTime);
+        Map<String, String> pollutantToDispMatrix = queryClient.getDispersionMatrixIris(derivation);
+        queryClient.updateStation(latestTime, pollutantToDispMatrix);
 
     }
 

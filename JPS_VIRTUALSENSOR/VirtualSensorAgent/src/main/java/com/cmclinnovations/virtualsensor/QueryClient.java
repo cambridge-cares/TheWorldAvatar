@@ -11,6 +11,8 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.derivation.Derivation;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
@@ -19,11 +21,21 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -73,6 +85,7 @@ public class QueryClient {
     private static final Iri REPORTING_STATION = P_EMS.iri("ReportingStation");
     private static final Iri DISPERSION_OUTPUT = P_DISP.iri("DispersionOutput");
     private static final Iri DISPERSION_MATRIX = P_DISP.iri("DispersionMatrix");
+    private static final Iri GEOM = iri("http://www.opengis.net/ont/geosparql#Geometry");
 
     // properties
     private static final Iri HAS_PROPERTY = P_DISP.iri("hasProperty");
@@ -82,6 +95,8 @@ public class QueryClient {
     private static final Iri isDerivedFrom = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
     private static final Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
     private static final Iri HAS_DISPERSION_MATRIX = P_DISP.iri("hasDispersionMatrix");
+    private static final Iri HAS_POLLUTANT_ID = P_DISP.iri("hasPollutantID");
+    private static final Iri HAS_WKT = iri("http://www.opengis.net/ont/geosparql#asWKT");
 
     public QueryClient(StoreClientInterface storeClient, TimeSeriesClient<Long> tsClient,
             DerivationClient derivationClient, RemoteRDBStoreClient remoteRDBStoreClient) {
@@ -124,15 +139,106 @@ public class QueryClient {
 
     }
 
-    public void updateStation(String derivation, Long latestTime) {
+    public Map<String, String> getDispersionMatrixIris(String derivation) {
         // Get data IRIs of dispersion derivations
         SelectQuery query = Queries.SELECT();
-        Variable station = query.var();
         Variable dispersionOutput = query.var();
+        Variable pollutantIri = query.var();
+        Variable pollutant = query.var();
+        Variable dispMatrix = query.var();
+
+        // dispMatrix is the timeseries data IRI of the fileServer URL of the AERMOD
+        // concentration output (averageConcentration.dat).
+        // There is exactly one such data IRI for each pollutant ID.
 
         query.where(iri(derivation).has(isDerivedFrom, dispersionOutput),
-        dispersionOutput.isA(DISPERSION_OUTPUT).andHas(, null))
+                dispersionOutput.isA(DISPERSION_OUTPUT).andHas(HAS_POLLUTANT_ID, pollutantIri)
+                        .andHas(HAS_DISPERSION_MATRIX, dispMatrix),
+                pollutantIri.isA(pollutant),
+                dispMatrix.isA(DISPERSION_MATRIX)).prefix(P_DISP, P_OM, P_EMS)
+                .select(pollutant, dispMatrix);
 
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+        Map<String, String> pollutantToDispMatrix = new HashMap<>();
+        for (int i = 0; i < queryResult.length(); i++) {
+            String dispMatrixIri = queryResult.getJSONObject(i).getString(dispMatrix.getQueryString().substring(1));
+            String pollutantId = queryResult.getJSONObject(i).getString(pollutant.getQueryString().substring(1));
+            pollutantToDispMatrix.put(pollutantId, dispMatrixIri);
+        }
+        return pollutantToDispMatrix;
+
+    }
+
+    public Point getStationLocation(String derivation) {
+        SelectQuery query = Queries.SELECT();
+        Variable locationWkt = query.var();
+        Variable locationIri = query.var();
+
+        query.where(iri(derivation).has(isDerivedFrom, locationIri), locationIri.isA(GEOM).andHas(HAS_WKT, locationWkt))
+                .select(locationWkt);
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+        String locationString = queryResult.getJSONObject(0).getString(locationWkt.getQueryString().substring(1));
+
+        Point location = null;
+        try {
+            location = new Point(locationString);
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        }
+
+        return location;
+
+    }
+
+    public void updateStation(Long latestTime, Map<String, String> pollutantToDispMatrix) {
+
+        List<String> dispMatrixIriList = new ArrayList<>(pollutantToDispMatrix.values());
+        TimeSeries<Long> dispMatrixTimeSeries = null;
+
+        try (Connection conn = remoteRDBStoreClient.getConnection()) {
+            dispMatrixTimeSeries = tsClient
+                    .getTimeSeriesWithinBounds(dispMatrixIriList, latestTime, null, conn);
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+            return;
+        }
+        for (int i = 0; i < dispMatrixIriList.size(); i++) {
+            String dispMatrixIri = dispMatrixIriList.get(i);
+            List<String> dispersionMatrixUrls = dispMatrixTimeSeries.getValuesAsString(dispMatrixIri);
+
+        }
+
+    }
+
+    /**
+     * executes get request from python-service to postprocess
+     */
+    public JSONObject getInterpolatedValue(String endPoint, String outputFileURL, int srid, double height) {
+        URI httpGet;
+        try {
+            URIBuilder builder = new URIBuilder(endPoint);
+            builder.setParameter("dispersionMatrix", outputFileURL);
+            builder.setParameter("srid", String.valueOf(srid));
+            builder.setParameter("height", String.valueOf(height));
+
+            httpGet = builder.build();
+        } catch (URISyntaxException e) {
+            LOGGER.error("Failed at building URL");
+            throw new RuntimeException(e);
+        }
+
+        try (CloseableHttpClient httpClient = HttpClients.createDefault();
+                CloseableHttpResponse httpResponse = httpClient.execute(new HttpGet(httpGet))) {
+            String result = EntityUtils.toString(httpResponse.getEntity());
+            return new JSONObject(result);
+        } catch (IOException e) {
+            LOGGER.error("Failed at making connection with python service");
+            throw new RuntimeException(e);
+        } catch (JSONException e) {
+            LOGGER.error("Failed to parse result from python service for aermod geojson");
+            LOGGER.error(outputFileURL);
+            throw new RuntimeException(e);
+        }
     }
 
     /**
