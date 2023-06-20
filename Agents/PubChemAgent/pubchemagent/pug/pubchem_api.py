@@ -55,6 +55,29 @@ class pug_api():
 
         return file
     
+    def pug_request_synonyms(self, cid) -> dict:
+        pubchem_domain = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug/'
+        input_domain = 'compound/cid/' 
+        input_identifier = str(cid) + '/'
+        output= 'synonyms/JSON'
+        link = pubchem_domain+input_domain+input_identifier+output
+
+        data = requests.get(link)
+        data = json.loads(data.text)
+
+        synonyms = {}
+        i=1
+
+        if 'InformationList' in data:
+            s_list = data.get('InformationList').get('Information')[0].get('Synonym')
+            for item in s_list:
+                synonyms[i] = {}
+                synonyms[i]['type'] = 'synonym'
+                synonyms[i]['value'] = item.replace('"', '')
+                i=i+1
+
+        return synonyms    
+    
         
     def check_preferred(self, cid) -> str:
         pubchem_domain_full = 'https://pubchem.ncbi.nlm.nih.gov/rest/pug_view/data/'
@@ -110,14 +133,18 @@ class pug_api():
                         if key != prev_key and i != 1 and Qtot != []:
                             exp_prop[i] = {}
                             Qrec = reduce_quantities(Qtot)
-                            exp_prop[i]['key'] = prev_key
+                            exp_prop[i]['key'] = prev_key.replace(' ', '').replace('/','').replace('\'','')
                             a , b = pug_api.format_result(Qrec)
                             exp_prop[i]['value'] = b
                             exp_prop[i]['description'] = ''
                             exp_prop[i]['dateofaccess'] = date.today()
                             exp_prop[i]['reference'] = 'PubChem agent'
                             exp_prop[i]['is_recommended'] = 'yes'
-                            Qtot = []                 
+                            Qtot = []   
+                            if key in thermo_list:
+                                exp_prop[i]['type']='thermo_prop'
+                            else:
+                                exp_prop[i]['type']='num_prop'              
                             i=i+1       
                         if key in num_prop_list or key in thermo_list or key in class_list:
                             for item in prop_list:
@@ -232,6 +259,8 @@ class pug_api():
             str = str[0:len(str)//2]
         str=re.sub("\([0-9]{1,10}.[0-9]{1,10}\)","",str)
         str=re.sub("\([0-9]{1,10}\)","",str)
+        str=re.sub("\([0-9]{1,10}°C or [0-9]{1,10}°F\)","",str)
+        str=re.sub("\([0-9]{1,10}.[0-9]{1,10}°C or [0-9]{1,10}.[0-9]{1,10}°F\)","",str)
         str=re.sub("± [0-9]{1,10}.[0-9]{1,10}", "",str)
         str=re.sub("± [0-9]{1,10}", "",str)
         str=re.sub("±[0-9]{1,10}", "",str)
@@ -652,6 +681,8 @@ class pug_api():
                     Q, value = pug_api.string_parser(str(description))
                     comp_props[j]['value'] = value
                     comp_props[j]['type'] = 'num_prop'
+                    if key == 'Molecular Weight' or key == 'Exact Mass':
+                        comp_props[j]['value']['unit'] = 'g / mol'
                 comp_props[j]['reference'] = provenance
                 comp_props[j]['description'] = description
                 comp_props[j]['dateofaccess'] = date.today()

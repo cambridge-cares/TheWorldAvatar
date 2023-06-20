@@ -8,7 +8,6 @@ logging.getLogger('bioservices').setLevel(logging.CRITICAL)
 logging.getLogger('matplotlib').setLevel(logging.CRITICAL)
 logging.getLogger('suds').setLevel(logging.CRITICAL)
 
-
 def chebi_request(inchi: str) -> dict:
     ch = ChEBI()
     chebi_prop = {}
@@ -44,17 +43,17 @@ def chebi_request(inchi: str) -> dict:
                             chebi_prop[i]['value']=str(item['chebiName'])
                             chebi_prop[i]['description']='ChEBI Role'
                             i = i+1
-                if 'OntologyChildren' in res:
-                    for item in res['OntologyChildren']:
-                        type = item['type']
-                        if type == 'is substituent group from':
-                            chebi_prop[i] = {}
-                            chebi_prop[i]['key']='FunctionalGroup'
-                            chebi_prop[i]['type']='group'
-                            chebi_prop[i]['value']=str(item['chebiName'])
-                            chebi_prop[i]['description']=''
-                            chebi_prop[i]['chebiID']=item['chebiId']
-                            i = i+1
+                #if 'OntologyChildren' in res:
+                #    for item in res['OntologyChildren']:
+                #        type = item['type']
+                #        if type == 'is substituent group from':
+                #            chebi_prop[i] = {}
+                #            chebi_prop[i]['key']='FunctionalGroup'
+                #            chebi_prop[i]['type']='group'
+                #            chebi_prop[i]['value']=str(item['chebiName'])
+                #            chebi_prop[i]['description']=''
+                #            chebi_prop[i]['chebiID']=item['chebiId']
+                #            i = i+1
                 break
             k=k+1
     except Exception:

@@ -35,7 +35,9 @@ def insert_ontospecies(typeIRI, type, uuid, data):
                     ref_unit_string = str(data[item].get('value').get('ref_unit'))
                     ref_unit_string=re.sub("°","deg",ref_unit_string)
                     ref_unit_uuid = find_uuid('Unit' , unit_IRI, ref_unit_string)
-                    insert_str = pubchem_thermo_prop_insert(typeIRI, type, uuid, i, prov_uuid, unit_uuid, ref_unit_uuid, data[item])
+                    ref_state_value = str(data[item].get('value').get('ref_value'))
+                    ref_state_uuid = find_ref_state_uuid(ref_state_value, ref_unit_uuid)
+                    insert_str = pubchem_thermo_prop_insert(typeIRI, type, uuid, i, prov_uuid, unit_uuid, ref_state_uuid, data[item])
         elif data[item].get('type') == 'string_prop':
             insert_str = pubchem_string_prop_insert(typeIRI, type, uuid, i, prov_uuid, data[item])
         elif data[item].get('type') == 'classification':
@@ -56,6 +58,8 @@ def insert_ontospecies(typeIRI, type, uuid, data):
             groupIRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#' + data[item].get('key') + '>'
             group_uuid = find_uuid(data[item].get('key'), groupIRI, data[item].get('value'), data[item].get('description'))
             insert_str = pubchem_group_insert(typeIRI, type, uuid, i, prov_uuid, group_uuid, data[item])
+        elif data[item].get('type') == 'synonym':
+            insert_str = pubchem_synonym_insert(type, uuid, data[item])
 
         prev_key = data[item].get('key')
         insert_str1 = insert_str1 + insert_str
@@ -63,8 +67,8 @@ def insert_ontospecies(typeIRI, type, uuid, data):
     insert_str = insert_str1
     return insert_str
 
-def insert_start(typeIRI, type, uuid):
-    insert_str = pubchem_start_insert(typeIRI, type, uuid)
+def insert_start(typeIRI, type, uuid, MolecularFormula):
+    insert_str = pubchem_start_insert(typeIRI, type, uuid, MolecularFormula)
     return insert_str
 
 def insert_end(insert_str):
@@ -169,6 +173,19 @@ def find_uuid(name, typeIRI, string, comment = ''):
         else:
             uuid = create_uuid()
             insert_str = generic_insert(name, typeIRI, uuid, string, comment)
+            sparqlendpoint = SPARQL_ENDPOINTS['pubchem']
+            # create a SPARQL object for performing the query
+            kg_client = kg_operations(sparqlendpoint)
+            kg_client.insertkg(insertStr=insert_str)
+        return uuid
+
+def find_ref_state_uuid(ref_value, ref_unit_uuid):
+        IRI = get_ref_uuid(ref_value, ref_unit_uuid)
+        if IRI:
+            uuid = IRI.partition('_')[2]
+        else:
+            uuid = create_uuid()
+            insert_str = ref_state_insert(uuid, ref_value, ref_unit_uuid)
             sparqlendpoint = SPARQL_ENDPOINTS['pubchem']
             # create a SPARQL object for performing the query
             kg_client = kg_operations(sparqlendpoint)

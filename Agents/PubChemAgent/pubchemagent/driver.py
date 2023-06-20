@@ -13,8 +13,8 @@ Options:
 
 def main():
 
-    for el in range(1,119):
-        app.element_instantiation(el)
+    #for el in range(1,119):
+    #    app.element_instantiation(el)
 
     #try:
     #    args = docopt(__doc__, version='1.0.0rc2')
@@ -27,7 +27,7 @@ def main():
 
     inchi = 'inchi string'
     a = 0
-    a_stop = 0
+    a_stop = 1
     with open('inchi_list.txt') as f:
         while inchi:
             inchi = f.readline().replace("\"","").replace("\n", "")
@@ -35,8 +35,11 @@ def main():
             if a>=a_stop:
                 print('Species ' + str(a) + ': ' + inchi)
                 start_time = time.time()
-                app.species_instantiation(inchi)
-                print("--- Total: %s seconds ---" % (time.time() - start_time))
+                try: 
+                    app.species_instantiation(inchi)
+                    print("--- Total: %s seconds ---" % (time.time() - start_time))
+                except:
+                    continue
 
     #for inchi in [  'InChI=1S/C10H10/c1-2-8-5-6-9-4-3-7(1)10(8)9/h1-10H']:
     #    app.species_instantiation(inchi)
