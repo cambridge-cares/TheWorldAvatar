@@ -3,25 +3,25 @@
         "Name": "emissions-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/emissions-agent:1.2",
-				"Env": [
-					"STACK_NAME=${STACK_NAME}",
-					"DATABASE=postgres",
-					"PYTHON_SERVICE_URL=http://ship-stack-python-service:5000"
-				],
-				"Configs": [
-					{
-						"ConfigName": "postgis"
-					},
-					{
-						"ConfigName": "blazegraph"
-					}
-				],
-				"Secrets": [
-					{
-						"SecretName": "postgis_password"
-					}
-				],
+                "Image": "ghcr.io/cambridge-cares/emissions-agent:1.2.2-dev-aermod-agent-pollutant-SNAPSHOT",
+                "Env": [
+                    "STACK_NAME=${STACK_NAME}",
+                    "DATABASE=postgres",
+                    "PYTHON_SERVICE_URL=http://ship-stack-python-service:5000"
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "postgis"
+                    },
+                    {
+                        "ConfigName": "blazegraph"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ],
                 "Mounts": [
                     {
                         "Type": "volume",

@@ -13,6 +13,8 @@ Elevation data can be downloaded from https://www.eorc.jaxa.jp/ALOS/en/dataset/a
 
 Uploading of elevation data can be done using the stack data uploader. The downloaded .tif files should be placed in a subfolder within the TheWorldAvatar/JPS_VIRTUALSENSOR/stack-data-uploader/inputs/data/elevation/ directory. The elevation.json configuration file in the TheWorldAvatar/JPS_VIRTUALSENSOR/stack-data-uploader/inputs/config/ can be modified if necessary. It is also possible to include an elevation.sld file in this directory location to customize the GeoServer style used to upload the data. See https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader for more details. The name of the POSTGIS table where the elevation data is stored needs to be specified as the value of the environment variable "ELEVATION_TABLE" in the stack-manager/inputs/config/aermod-agent.json and aermod-agent-debug.json files. 
 
+
+
 Stack needs to be up and running:
 1) execute
 ```
