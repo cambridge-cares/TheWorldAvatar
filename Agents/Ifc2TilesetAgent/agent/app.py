@@ -38,7 +38,7 @@ def create_app():
     def api():
         # Check arguments (query parameters)
         logger.info("Checking parameters...")
-        data = request.get_json(force=True)
+        data = request.get_json()
 
         if "assetUrl" not in data:
             logger.error("Missing `assetUrl` parameter in request!")
