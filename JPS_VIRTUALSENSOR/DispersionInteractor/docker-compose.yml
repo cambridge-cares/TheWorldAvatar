@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   dispersion-interactor:
-    image: ghcr.io/cambridge-cares/dispersion-interactor:1.2.1-dev-aermod-agent-elevation
+    image: ghcr.io/cambridge-cares/dispersion-interactor:1.2.2-dev-aermod-agent-pollutant-SNAPSHOT
     deploy:
       mode: replicated
       replicas: 1

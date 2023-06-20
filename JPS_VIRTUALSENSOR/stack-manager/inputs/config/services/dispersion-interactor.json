@@ -3,7 +3,7 @@
 		"Name": "dispersion-interactor",
 		"TaskTemplate": {
 			"ContainerSpec": {
-				"Image": "ghcr.io/cambridge-cares/dispersion-interactor:1.2.1-dev-aermod-agent-elevation",
+				"Image": "ghcr.io/cambridge-cares/dispersion-interactor:1.2.2-dev-aermod-agent-pollutant-SNAPSHOT",
 				"Env": [
 					"STACK_NAME=${STACK_NAME}",
 					"DATABASE=postgres",
