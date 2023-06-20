@@ -3,7 +3,7 @@ from pubchemagent.kgoperations.querykg import kg_operations
 from pubchemagent.kgoperations.addkgdata import create_uuid
 from pubchemagent.kgoperations.getkgdata import get_uuid
 from pubchemagent.kgoperations.querytemplates import *
-from pubchemagent.kgoperations.queryendpoints import SPARQL_ENDPOINTS
+from pubchemagent.utils.default_configs import UPDATE_ENDPOINT
 import logging
 
 logging.getLogger('urllib3').setLevel(logging.CRITICAL)
@@ -57,7 +57,7 @@ def get_chebi_tree(chebiID):
 
 def insert_triple(type_child, child_uuid, type_parent, parent_uuid, relation):
     insert_str = insert_child_parent(type_child, child_uuid, type_parent, parent_uuid, relation)
-    sparqlendpoint = SPARQL_ENDPOINTS['pubchem']
+    sparqlendpoint = UPDATE_ENDPOINT
     # create a SPARQL object for performing the query
     kg_client = kg_operations(sparqlendpoint)
     kg_client.insertkg(insertStr=insert_str)
@@ -70,7 +70,7 @@ def find_uuid(name, typeIRI, string, comment = ''):
         else:
             uuid = create_uuid()
             insert_str = generic_insert(name, typeIRI, uuid, string, comment)
-            sparqlendpoint = SPARQL_ENDPOINTS['pubchem']
+            sparqlendpoint = UPDATE_ENDPOINT
             # create a SPARQL object for performing the query
             kg_client = kg_operations(sparqlendpoint)
             kg_client.insertkg(insertStr=insert_str)
@@ -84,7 +84,7 @@ def insert_child_parent(type_child, child_uuid, type_parent, parent_uuid, relati
 
     INSERT DATA
     {
-    <http://www.theworldavatar.com/kg/ontospecies/#type_child#_#child_uuid#> #relation# <http://www.theworldavatar.com/kg/ontospecies/#type_parent#_#parent_uuid#>
+    <http://www.theworldavatar.com/kb/ontospecies/#type_child#_#child_uuid#> #relation# <http://www.theworldavatar.com/kb/ontospecies/#type_parent#_#parent_uuid#>
     }    
     """.replace('#child_uuid#', child_uuid).replace('#parent_uuid#', parent_uuid).replace('#type_child#', type_child).replace('#type_parent#', type_parent).replace('#relation#', relation)
     return insert_str

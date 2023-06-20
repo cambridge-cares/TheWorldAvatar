@@ -1,12 +1,20 @@
-from pubchemagent.kgoperations.queryendpoints import SPARQL_ENDPOINTS
 from pubchemagent.kgoperations.querykg import kg_operations
 from pubchemagent.kgoperations.querytemplates import *
+import os
+from pubchemagent.utils.default_configs import QUERY_ENDPOINT
 
+from py4jps import agentlogging
+logger = agentlogging.get_logger('prod')
+
+SPARQL_ENDPOINTS_ONTOSPECIES='http://www.theworldavatar.com/blazegraph/namespace/copy_ontospecies'
+
+#if not QUERY_ENDPOINT:
+#    QUERY_ENDPOINT = 'http://www.theworldavatar.com/blazegraph/namespace/copy_ontospecies_pubchem'
 
 def get_iri_data(inchi):
     inchi_string=inchi
     query = get_iri_query(inchi_string)
-    sparqlendpoint = SPARQL_ENDPOINTS['copyontospecies']
+    sparqlendpoint = SPARQL_ENDPOINTS_ONTOSPECIES
     # create a SPARQL object for performing the query
     kg_client = kg_operations(sparqlendpoint)
     data = kg_client.querykg(queryStr=query)
@@ -27,7 +35,7 @@ def get_iri_data(inchi):
     
     inchi_string = inchi_string.replace("=1/", "=1S/")
     query = spec_inchi_query(inchi_string)
-    sparqlendpoint = SPARQL_ENDPOINTS['pubchem']
+    sparqlendpoint = QUERY_ENDPOINT
     # create a SPARQL object for performing the query
     kg_client = kg_operations(sparqlendpoint)
     data = kg_client.querykg(query)
@@ -41,7 +49,7 @@ def get_iri_data(inchi):
 def get_uuid(typeIRI, string):
     # query = get_iri_query(inchi_string=inchi)
     query = generic_query(typeIRI, string)
-    sparqlendpoint = SPARQL_ENDPOINTS['pubchem']
+    sparqlendpoint = QUERY_ENDPOINT
     # create a SPARQL object for performing the query
     kg_client = kg_operations(sparqlendpoint)
     data = kg_client.querykg(queryStr=query)
@@ -54,7 +62,7 @@ def get_uuid(typeIRI, string):
 def get_ref_uuid(ref_value, ref_unit_uuid):
     # query = get_iri_query(inchi_string=inchi)
     query = ref_state_query(ref_value, ref_unit_uuid)
-    sparqlendpoint = SPARQL_ENDPOINTS['pubchem']
+    sparqlendpoint = QUERY_ENDPOINT
     # create a SPARQL object for performing the query
     kg_client = kg_operations(sparqlendpoint)
     data = kg_client.querykg(queryStr=query)
@@ -67,7 +75,7 @@ def get_ref_uuid(ref_value, ref_unit_uuid):
 def get_element_IRI(symbol):
     # query = get_iri_query(inchi_string=inchi)
     query = element_query(symbol)
-    sparqlendpoint = SPARQL_ENDPOINTS['pubchem']
+    sparqlendpoint = QUERY_ENDPOINT
     # create a SPARQL object for performing the query
     kg_client = kg_operations(sparqlendpoint)
     data = kg_client.querykg(queryStr=query)

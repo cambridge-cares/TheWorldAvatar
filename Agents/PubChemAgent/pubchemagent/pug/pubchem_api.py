@@ -2,7 +2,7 @@ import requests
 import logging
 from typing import Tuple
 import json
-from unit_parse import parser, logger, reduce_quantities
+from pubchemagent.unit_parse import parser, logger, reduce_quantities
 import pint
 from rdkit import Chem
 from periodictable import elements
@@ -12,8 +12,8 @@ import re
 ureg = pint.UnitRegistry()
 ureg.define('percent = 1 / 100 = %')
 
-logging.getLogger('urllib3').setLevel(logging.CRITICAL)
-logging.getLogger('pint').setLevel(logging.CRITICAL)
+logging.getLogger('urllib3').setLevel(logging.ERROR)
+logging.getLogger('pint').setLevel(logging.ERROR)
 
 class pug_api():
     def __init__(self):
@@ -205,12 +205,12 @@ class pug_api():
     def string_parser(str) -> dict:
         str=pug_api.preprocess(str)
         try:
-            logger.setLevel(logging.CRITICAL)
+            logger.setLevel(logging.ERROR)
             result = parser(str)
             result, props = pug_api.format_result(result)
         except Exception as exc:
-            print(exc)
-            print(str)
+            #print(exc)
+            #print(str)
             props = str
             return  None, props
         
@@ -568,7 +568,7 @@ class pug_api():
         i=0
         link = pubchem_domain_full+input_domain+input_identifier+output
         data={}
-        data = requests.get(link)
+        data = requests.get(link, timeout=30)
         data = json.loads(data.text)
         if 'Record' in data:
             Reference=data.get('Record').get('Reference')
@@ -787,4 +787,4 @@ if __name__ == "__main__":
         geometry, bonds = pug_access.get_structure('3d', data_3d)
         exp_props = pug_access.pug_request_exp_prop(cid)
         uses = pug_access.pug_request_uses(cid)
-        aa=1;    
+        aa=1;   

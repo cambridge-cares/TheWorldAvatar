@@ -6,8 +6,8 @@ home_bp = Blueprint(
 )
 
 # Show an instructional message at the app root
-@home_bp.route('/', methods=['GET'])
+@home_bp.route('/api/pubchemagent', methods=['GET'])
 def default():
     msg  = "To see the result of an API call, enter a URL of the form:<BR>"
-    msg += "&nbsp&nbsp /api/pubchemagent/query?inchi='inchi_string'"
+    msg += "&nbsp&nbsp /api/pubchemagent/query/species?inchi='inchi_string'"
     return msg

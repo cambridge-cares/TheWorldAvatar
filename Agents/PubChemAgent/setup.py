@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='pubchemagent',
     version='1.0.0',
-    author='Ali Naseri, Laura Pascazio',
+    author='Laura Pascazio, Ali Naseri',
     license='MIT',
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
@@ -11,10 +11,10 @@ setup(
     url="",
     python_requires='>=3.5',
     include_package_data=True,
-    install_requires= ['numpy','pyderivationagent','docopt','py4jps', 'flask', 'rdkit', 'unit_parse', 'periodictable'],
+    install_requires= ['numpy','pyderivationagent','docopt','py4jps', 'pint', 'rdkit', 'flask', 'periodictable', 'bioservices'],
     entry_points={
         'console_scripts': [
             'pubchemagent=pubchemagent.driver:main',
-        ],
+       ],
     }
 )

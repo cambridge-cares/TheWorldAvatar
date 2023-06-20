@@ -1,13 +1,13 @@
 #!/bin/bash
-# A. Naseri
 # L. Pascazio 
+# A. Naseri
 echo "-----------------------------------------------"
 echo "--   python entrdfizer installation script  --"
 echo "-----------------------------------------------"
 echo ""
 #
 
-AUTHOR="A. Naseri <>, L. Pascazio <lp521@cam.ac.uk>"
+AUTHOR="L. Pascazio <lp521@cam.ac.uk>, A. Naseri"
 SPATH="$( cd  "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 CREATE_VENV='n'
 VENV_NAME='pubchemagent_venv'

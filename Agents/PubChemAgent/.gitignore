@@ -12,7 +12,4 @@ coverage.xml
 resources/
 .pytest_cache
 assets
-
-## User defined
 *.egg-info
-flaskapp_backup/

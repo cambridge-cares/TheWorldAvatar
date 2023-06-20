@@ -1,0 +1,6 @@
+to spin up the stack place os_stack.json in /TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config
+and pubchem-agent.json in /TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services
+
+run:
+./stack.sh start os_stack (to start the stack)
+./stack.sh remove os_stack (to stop the stack)

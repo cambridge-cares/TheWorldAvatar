@@ -1,9 +1,12 @@
-from pubchemagent.kgoperations.queryendpoints import SPARQL_ENDPOINTS
 from pubchemagent.kgoperations.querykg import kg_operations
 from pubchemagent.kgoperations.querytemplates import *
 from pubchemagent.kgoperations.getkgdata import *
 import uuid
 import re
+from pubchemagent.utils.default_configs import UPDATE_ENDPOINT
+
+#if not UPDATE_ENDPOINT:
+#    UPDATE_ENDPOINT = 'http://www.theworldavatar.com/blazegraph/namespace/copy_ontospecies_pubchem'
    
 # a sample data addition function
 def insert_ontospecies(typeIRI, type, uuid, data):
@@ -73,14 +76,14 @@ def insert_start(typeIRI, type, uuid, MolecularFormula):
 
 def insert_end(insert_str):
     insert_str = insert_str + '}'
-    sparqlendpoint = SPARQL_ENDPOINTS['pubchem']
+    sparqlendpoint = UPDATE_ENDPOINT
     # create a SPARQL object for performing the query
     kg_client = kg_operations(sparqlendpoint)
     kg_client.insertkg(insertStr=insert_str)
 
 def insert_structure(typeIRI, type, uuid, geometry, bonds):
 
-    geomIRI = '<http://www.theworldavatar.com/kg/ontospecies/Geometry_1_Species_' + uuid + '>'
+    geomIRI = '<http://www.theworldavatar.com/kb/ontospecies/Geometry_1_Species_' + uuid + '>'
 
     prov_IRI = '<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Reference>'
     prov_uuid = find_uuid('Reference' , prov_IRI, 'https://pubchem.ncbi.nlm.nih.gov')
@@ -173,7 +176,7 @@ def find_uuid(name, typeIRI, string, comment = ''):
         else:
             uuid = create_uuid()
             insert_str = generic_insert(name, typeIRI, uuid, string, comment)
-            sparqlendpoint = SPARQL_ENDPOINTS['pubchem']
+            sparqlendpoint = UPDATE_ENDPOINT
             # create a SPARQL object for performing the query
             kg_client = kg_operations(sparqlendpoint)
             kg_client.insertkg(insertStr=insert_str)
@@ -186,7 +189,7 @@ def find_ref_state_uuid(ref_value, ref_unit_uuid):
         else:
             uuid = create_uuid()
             insert_str = ref_state_insert(uuid, ref_value, ref_unit_uuid)
-            sparqlendpoint = SPARQL_ENDPOINTS['pubchem']
+            sparqlendpoint = UPDATE_ENDPOINT
             # create a SPARQL object for performing the query
             kg_client = kg_operations(sparqlendpoint)
             kg_client.insertkg(insertStr=insert_str)

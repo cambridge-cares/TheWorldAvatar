@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  pubchem_agent:
+    container_name: "pubchem_agent"
+    image: ghcr.io/cambridge-cares/pubchem_agent:1.1.0
+    environment:
+      # Required environment variables for both Stack and "standalone" (i.e. outside stack) deployment
+      - STACK_NAME= # to be left blank for "standalone" deployment
+      # Additional environment variables required for Stack deployment
+      # (can be left blank for "standalone" deployment)
+      - NAMESPACE=  # Target Blazegraph namespace
+      # Additional environment variables required for "standalone deployment"
+      # (can be left blank for Stack deployment)
+      - QUERY_ENDPOINT=http://host.docker.internal:8080/blazegraph/namespace/ontospecies
+      - UPDATE_ENDPOINT=http://host.docker.internal:8080/blazegraph/namespace/ontospecies
+    build:
+      # Path to dockerfile ('.' represents current directory with .yml file)
+      context: .
+      target: debug
+    ports:
+      - "5000:5000"
+      - "5678:5678"
+    networks:
+      - default
+
+  blazegraph_os:
+    container_name: "blazegraph_os"
+    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - blazegraph_os_data:/blazegraph
+    networks:
+      - default
+
+volumes:
+  blazegraph_os_data:
+    name: "blazegraph_os_data"
+
+networks:
+  default:
+    name: "ontospecies"
