@@ -10,8 +10,11 @@
             "skip": false,
             "geoServerSettings": {
                 "layerSettings": {
-                    "defaultStyle": "dem"
+                    "defaultStyle": "raster"
                 }
+            },
+            "gdalTranslateOptions": {
+                "sridOut": "EPSG:4326"
             }
         }
     ]
