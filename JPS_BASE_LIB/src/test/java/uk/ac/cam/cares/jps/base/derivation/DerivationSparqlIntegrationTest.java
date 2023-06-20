@@ -103,7 +103,7 @@ public class DerivationSparqlIntegrationTest {
 	 * DerivationSparql::updateDerivationIfHttpPostAvailable.
 	 */
 	@Test
-	public void testReconnectNewDerivedIRIs() {
+	public void testReconnectSyncDerivation() {
 		String derivedAgentIRI = "http://" + UUID.randomUUID().toString();
 		List<String> inputs = Arrays.asList("http://" + UUID.randomUUID().toString(), "http://" + UUID.randomUUID().toString());
 		List<String> oldInstances = Arrays.asList("http://a", "http://b", "http://c");
@@ -149,7 +149,7 @@ public class DerivationSparqlIntegrationTest {
 
 		// case 1: derivation is outdated, now delete and add new instances should work
 		long retrievedInputsAt = Instant.now().getEpochSecond();
-		boolean triplesChanged = devSparql.reconnectNewDerivedIRIs(newTriples1, newInstanceMap1, derivation, retrievedInputsAt);
+		boolean triplesChanged = devSparql.reconnectSyncDerivation(derivation, newInstanceMap1, newTriples1, retrievedInputsAt);
 		Assert.assertTrue(triplesChanged);
 		// all old outputs should be deleted
 		for (String instance : oldInstances) {
@@ -174,7 +174,7 @@ public class DerivationSparqlIntegrationTest {
 
 		// case 2: as now the timestamp of this derivation is up-to-date, nothing should
 		// happen when reconnectNewDerivedIRIs again with a new sets of instances
-		triplesChanged = devSparql.reconnectNewDerivedIRIs(newTriples2, newInstanceMap2, derivation, retrievedInputsAt);
+		triplesChanged = devSparql.reconnectSyncDerivation(derivation, newInstanceMap2, newTriples2, retrievedInputsAt);
 		Assert.assertTrue(!triplesChanged);
 		// repeat all checks after case 1
 		// all old outputs should be deleted
