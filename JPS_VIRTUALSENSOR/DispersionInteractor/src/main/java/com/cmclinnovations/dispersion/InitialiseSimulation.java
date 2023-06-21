@@ -65,20 +65,6 @@ public class InitialiseSimulation extends HttpServlet {
         int nx = Integer.parseInt(req.getParameter("nx"));
         int ny = Integer.parseInt(req.getParameter("ny"));
         String citiesNamespace = req.getParameter("citiesnamespace");
-        String[] virtualSensorLocationsString = req.getParameterValues("virtualSensorLocations");
-        List<Point> virtualSensorLocations = new ArrayList<>();
-
-        Arrays.stream(virtualSensorLocationsString).forEach(p -> {
-            try {
-                virtualSensorLocations.add(new Point(p));
-            } catch (SQLException e) {
-                LOGGER.error(e.getMessage());
-                LOGGER.error("Could not parse location of virtual sensor {}", p);
-                return;
-            }
-        });
-
-        int numberSensors = virtualSensorLocations.size();
 
         Polygon polygonProvided = null;
         try {
@@ -141,31 +127,6 @@ public class InitialiseSimulation extends HttpServlet {
                     LOGGER.error(e.getMessage());
                     LOGGER.error("Failed to create JSON object for HTTP response");
                 }
-
-                // compute srid
-                // Need to first calculate centroid
-                double xc = 0.0;
-                double yc = 0.0;
-                int numberVertices = polygon4326.numPoints();
-                for (int i = 0; i < polygon4326.numPoints(); i++) {
-                    double xp = polygon4326.getPoint(i).x;
-                    double yp = polygon4326.getPoint(i).y;
-                    xc += xp;
-                    yc += yp;
-                }
-                xc /= numberVertices;
-                yc /= numberVertices;
-                int centreZoneNumber = (int) Math.ceil((xc + 180) / 6);
-                int simulationSrid;
-                if (yc < 0) {
-                    simulationSrid = Integer.valueOf("327" + centreZoneNumber);
-
-                } else {
-                    simulationSrid = Integer.valueOf("326" + centreZoneNumber);
-                }
-
-                if (numberSensors > 0)
-                    queryClient.initializeVirtualSensors(derivation, virtualSensorLocations, simulationSrid);
 
             }
         }

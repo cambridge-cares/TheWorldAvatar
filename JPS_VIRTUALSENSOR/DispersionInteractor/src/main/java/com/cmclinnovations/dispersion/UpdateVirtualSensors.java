@@ -20,16 +20,18 @@ public class UpdateVirtualSensors extends HttpServlet {
 
     private static final Logger LOGGER = LogManager.getLogger(UpdateVirtualSensors.class);
     private DerivationClient devClient;
+    private QueryClient queryClient;
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // IRI of the dispersion derivation to update
+        String derivation = req.getParameter("derivation");
 
         LOGGER.info("Received POST request to update virtual sensor derivations ");
-        List<String> derivationList = QueryClient.getVirtualSensorDerivations();
+        List<String> derivationList = queryClient.getVirtualSensorDerivations(derivation);
 
-        for (String derivation : derivationList) {
-            devClient.updatePureSyncDerivation(derivation);
+        for (String vsDerivation : derivationList) {
+            devClient.updatePureSyncDerivation(vsDerivation);
         }
 
     }
@@ -38,6 +40,7 @@ public class UpdateVirtualSensors extends HttpServlet {
     public void init() throws ServletException {
         EndpointConfig endpointConfig = Config.ENDPOINT_CONFIG;
         RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
+        queryClient = new QueryClient(storeClient, null, null);
         devClient = new DerivationClient(storeClient, QueryClient.PREFIX);
     }
 

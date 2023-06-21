@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
@@ -14,6 +16,7 @@ import org.jooq.InsertValuesStepN;
 import org.jooq.SQLDialect;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
+import org.postgis.Point;
 import org.postgis.Polygon;
 
 public class DispersionPostGISClient {
@@ -98,6 +101,42 @@ public class DispersionPostGISClient {
             }
         }
         return scopeExists;
+    }
+
+    boolean sensorExists(Point target, Connection conn) {
+        // Critical distance is arbitrarily set to 0.5.
+        String sql = String.format("SELECT scope_iri from %S WHERE ST_DISTANCE(geometry, ST_GeomFromText('%s')) <= %f ",
+                "sensors", target.toString(), 0.05);
+        try (Statement stmt = conn.createStatement()) {
+            ResultSet result = stmt.executeQuery(sql);
+            if (result.first())
+                return true;
+        } catch (SQLException e) {
+            LOGGER.error("SQL state: {}", e.getSQLState());
+            LOGGER.error(e.getMessage());
+        }
+
+        return false;
+    }
+
+    List<String> getScopesIncludingPoint(Point target, Connection conn) {
+
+        List<String> scopeIriList = new ArrayList<>();
+
+        String sql = String.format("SELECT iri,geom from %S WHERE ST_INTERSECTS(geom, ST_GeomFromText('%s')) ",
+                Config.SCOPE_TABLE_NAME, target.toString());
+        try (Statement stmt = conn.createStatement()) {
+            ResultSet result = stmt.executeQuery(sql);
+            while (result.next()) {
+                scopeIriList.add(result.getString("iri"));
+            }
+        } catch (SQLException e) {
+            LOGGER.error("SQL state: {}", e.getSQLState());
+            LOGGER.error(e.getMessage());
+        }
+
+        return scopeIriList;
+
     }
 
     String addScope(Polygon polygon, Connection conn) {

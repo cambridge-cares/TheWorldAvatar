@@ -10,7 +10,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
@@ -46,7 +45,6 @@ public class QueryClient {
     private static final Logger LOGGER = LogManager.getLogger(QueryClient.class);
     private StoreClientInterface storeClient;
     private TimeSeriesClient<Long> tsClient;
-    private DerivationClient derivationClient;
     private RemoteRDBStoreClient remoteRDBStoreClient;
 
     static final String PREFIX = "https://www.theworldavatar.com/kg/ontodispersion/";
@@ -97,12 +95,12 @@ public class QueryClient {
     private static final Iri HAS_DISPERSION_MATRIX = P_DISP.iri("hasDispersionMatrix");
     private static final Iri HAS_POLLUTANT_ID = P_DISP.iri("hasPollutantID");
     private static final Iri HAS_WKT = iri("http://www.opengis.net/ont/geosparql#asWKT");
+    private static final Iri HAS_OBSERVATION_LOCATION = P_EMS.iri("hasObservationLocation");
 
     public QueryClient(StoreClientInterface storeClient, TimeSeriesClient<Long> tsClient,
-            DerivationClient derivationClient, RemoteRDBStoreClient remoteRDBStoreClient) {
+            RemoteRDBStoreClient remoteRDBStoreClient) {
         this.storeClient = storeClient;
         this.tsClient = tsClient;
-        this.derivationClient = derivationClient;
         this.remoteRDBStoreClient = remoteRDBStoreClient;
     }
 
@@ -110,7 +108,6 @@ public class QueryClient {
         SelectQuery query = Queries.SELECT();
         Variable station = query.var();
         Variable pollutantConcentration = query.var();
-        Variable concValue = query.var();
         Variable measure = query.var();
 
         // Only need to consider one result because all pollutants are stored in a
@@ -120,13 +117,13 @@ public class QueryClient {
         query.where(station.isA(REPORTING_STATION).andHas(belongsTo, iri(derivation)),
                 station.has(REPORTS, pollutantConcentration),
                 pollutantConcentration.has(HAS_VALUE, measure),
-                measure.isA(MEASURE).andHas(HAS_VALUE, concValue)).prefix(P_DISP, P_OM, P_EMS)
-                .select(concValue).limit(1);
+                measure.isA(MEASURE)).prefix(P_DISP, P_OM, P_EMS)
+                .select(measure).limit(1);
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
         String pollutantConcIri = null;
         for (int i = 0; i < queryResult.length(); i++) {
-            pollutantConcIri = queryResult.getJSONObject(i).getString(concValue.getQueryString().substring(1));
+            pollutantConcIri = queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1));
         }
 
         Long latestTime = 0L;
@@ -175,8 +172,10 @@ public class QueryClient {
         SelectQuery query = Queries.SELECT();
         Variable locationWkt = query.var();
         Variable locationIri = query.var();
+        Variable station = query.var();
 
-        query.where(iri(derivation).has(isDerivedFrom, locationIri), locationIri.isA(GEOM).andHas(HAS_WKT, locationWkt))
+        query.where(station.has(belongsTo, iri(derivation)).andHas(HAS_OBSERVATION_LOCATION, locationIri),
+                locationIri.isA(GEOM).andHas(HAS_WKT, locationWkt)).prefix(P_DISP, P_OM, P_EMS)
                 .select(locationWkt);
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
         String locationString = queryResult.getJSONObject(0).getString(locationWkt.getQueryString().substring(1));
@@ -198,7 +197,6 @@ public class QueryClient {
         Variable quantity = query.var();
         Variable measure = query.var();
         Variable pollutantConcentration = query.var();
-        Variable concValue = query.var();
 
         // Only need to consider one result because all pollutants are stored in a
         // single time series.
@@ -208,13 +206,13 @@ public class QueryClient {
                 station.has(REPORTS, quantity),
                 quantity.isA(pollutantConcentration),
                 quantity.has(HAS_VALUE, measure),
-                measure.isA(MEASURE).andHas(HAS_VALUE, concValue)).prefix(P_DISP, P_OM, P_EMS)
-                .select(concValue);
+                measure.isA(MEASURE)).prefix(P_DISP, P_OM, P_EMS)
+                .select(measure, pollutantConcentration);
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
         Map<String, String> pollutantToConcIriMap = new HashMap<>();
 
         for (int i = 0; i < queryResult.length(); i++) {
-            String pollutantConcIri = queryResult.getJSONObject(i).getString(concValue.getQueryString().substring(1));
+            String pollutantConcIri = queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1));
             String pollutantConcId = queryResult.getJSONObject(i)
                     .getString(pollutantConcentration.getQueryString().substring(1));
             pollutantToConcIriMap.put(pollutantConcId, pollutantConcIri);

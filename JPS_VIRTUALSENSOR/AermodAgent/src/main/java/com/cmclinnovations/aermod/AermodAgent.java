@@ -215,6 +215,10 @@ public class AermodAgent extends DerivationAgent {
                 new GeoServerVectorSettings());
 
         // Upload elevation contour plot to POSTGIS and GeoServer
+        // The receptor.dat file may have been previously created by running AERMAP. If
+        // so, it should not be overwritten.
+        if (Files.notExists(simulationDirectory.resolve("aermod").resolve("receptor.dat")))
+            aermod.createAERMODReceptorInput(scope, nx, ny, srid);
         String outFileURL = aermod.uploadToFileServer("receptor.dat");
         JSONObject geoJSON2 = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_ELEVATION_URL, outFileURL, srid, 0.0, null);
         gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, elevationLayerName, geoJSON2.toString(),
@@ -230,10 +234,6 @@ public class AermodAgent extends DerivationAgent {
                 continue;
             }
             aermod.createAermodInputFile(scope, nx, ny, srid);
-            // The receptor.dat file may have been previously created by running AERMAP. If
-            // so, it should not be overwritten.
-            if (Files.notExists(simulationDirectory.resolve("aermod").resolve("receptor.dat")))
-                aermod.createAERMODReceptorInput(scope, nx, ny, srid);
             aermod.runAermod("aermod.inp", pollutId);
 
             // Upload files used by scripts within Python Service to file server.

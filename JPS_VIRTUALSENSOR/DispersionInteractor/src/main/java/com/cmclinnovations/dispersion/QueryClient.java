@@ -1,6 +1,7 @@
 package com.cmclinnovations.dispersion;
 
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
+import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
@@ -11,7 +12,9 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.postgis.Geometry;
 import org.postgis.Point;
+import org.postgis.Polygon;
 
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
@@ -30,13 +33,16 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
+import it.unibz.inf.ontop.model.vocabulary.GEO;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -55,6 +61,7 @@ public class QueryClient {
             iri("http://www.ontology-of-units-of-measure.org/resource/om-2/"));
     public static final String ONTO_EMS = "https://www.theworldavatar.com/kg/ontoems/";
     public static final Prefix P_EMS = SparqlBuilder.prefix("ontoems", iri(ONTO_EMS));
+    private static final Prefix P_GEO = SparqlBuilder.prefix("geo", iri(GEO.PREFIX));
 
     // classes
     private static final Iri MEASURE = P_DISP.iri("Measure");
@@ -89,13 +96,14 @@ public class QueryClient {
     private static final Iri UNIT_POLLUTANT_CONC = P_OM.iri("microgramPerCubicmetre");
 
     // properties
+    private static final Iri HAS_GEOMETRY = P_GEO.iri("hasGeometry");
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
     private static final Iri HAS_NUMERICALVALUE = P_OM.iri("hasNumericalValue");
     private static final Iri HAS_NAME = P_DISP.iri("hasName");
     private static final Iri HAS_DISPERSION_MATRIX = P_DISP.iri("hasDispersionMatrix");
     private static final Iri HAS_DISPERSION_LAYER = P_DISP.iri("hasDispersionLayer");
     private static final Iri HAS_POLLUTANT_ID = P_DISP.iri("hasPollutantID");
-    private static final Iri HAS_WKT = iri("http://www.opengis.net/ont/geosparql#asWKT");
+    private static final Iri AS_WKT = iri("http://www.opengis.net/ont/geosparql#asWKT");
     private static final Iri OBSERVATION_LOCATION = P_EMS.iri("hasObservationLocation");
     private static final Iri REPORTS = P_EMS.iri("reports");
     private static final Iri HAS_UNIT = P_OM.iri("hasUnit");
@@ -264,27 +272,7 @@ public class QueryClient {
         derivationClient.updateTimestamps(simTimes);
     }
 
-    void initializeVirtualSensors(String derivation, List<Point> virtualSensorLocations, int simulationSrid) {
-
-        // Get data IRIs of dispersion outputs belonging to the input derivation
-
-        Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
-        SelectQuery query = Queries.SELECT();
-
-        Variable entity = query.var();
-
-        query.where(
-                entity.isA(DISPERSION_OUTPUT).andHas(belongsTo, iri(derivation)))
-                .prefix(P_DISP)
-                .select(entity).distinct();
-        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-
-        List<String> dispersionOutputs = new ArrayList<>();
-
-        for (int i = 0; i < queryResult.length(); i++) {
-            String dispOutput = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
-            dispersionOutputs.add(dispOutput);
-        }
+    void initialiseVirtualSensorAgent() {
 
         Iri service = iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service");
         Iri operation = iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Operation");
@@ -298,12 +286,6 @@ public class QueryClient {
         Iri inputIri = iri(PREFIX + UUID.randomUUID());
         Iri partIri = iri(PREFIX + UUID.randomUUID());
 
-        // create a JSONObject that represents a GeoJSON Feature Collection
-        JSONObject featureCollection = new JSONObject();
-        featureCollection.put("type", "FeatureCollection");
-        JSONArray features = new JSONArray();
-
-        String sparqlEndpoint = new EndpointConfig().getKgurl();
         ModifyQuery modify = Queries.MODIFY();
         // This next line needs to be added the ontodispersion TBox.
         String virtualSensorUpdateIri = "https://theworldavatar.com/kg/ontodispersion/VirtualSensorAgent";
@@ -312,40 +294,60 @@ public class QueryClient {
         modify.insert(operationIri.isA(operation).andHas(hasHttpUrl, iri(virtualSensorUpdateUrl)).andHas(hasInput,
                 inputIri));
         modify.insert(inputIri.has(hasMandatoryPart, partIri));
+        // Is it necessary to have multiple copies of these triple, one for each
+        // dispersion output?
+        modify.insert(partIri.has(hasType, DISPERSION_OUTPUT));
+        modify.prefix(P_DISP, P_OM, P_EMS);
+        storeClient.executeUpdate(modify.getQueryString());
+    }
 
-        dispersionOutputs.stream().forEach(d -> {
-            modify.insert(partIri.has(hasType, DISPERSION_OUTPUT));
-        });
+    void initializeVirtualSensors(List<String> scopeIriList, List<Point> virtualSensorLocations) {
+        // Get data IRIs of dispersion outputs belonging to the input derivation
+        Iri isDerivedFrom = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
+        Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
+        String virtualSensorUpdateIri = "https://theworldavatar.com/kg/ontodispersion/VirtualSensorAgent";
 
-        modify.insert(partIri.has(hasType, GEOM));
+        // create a JSONObject that represents a GeoJSON Feature Collection
+        JSONObject featureCollection = new JSONObject();
+        featureCollection.put("type", "FeatureCollection");
+        JSONArray features = new JSONArray();
+
+        String sparqlEndpoint = new EndpointConfig().getKgurl();
+        ModifyQuery modify = Queries.MODIFY();
 
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
 
             for (int i = 0; i < virtualSensorLocations.size(); i++) {
-                Point location = virtualSensorLocations.get(i);
-                // Need to transform this to the simulation SRID
-                double lat = location.getX();
-                double lon = location.getY();
-                double[] xyOriginal = { location.getX(), location.getY() };
-                double[] xyTransformed = CRSTransformer.transform("EPSG:" + simulationSrid, "EPSG:4326", xyOriginal);
 
-                Point transformedPoint = new Point(xyTransformed[0], xyTransformed[1]);
-                transformedPoint.setSrid(simulationSrid);
+                String scopeIri = scopeIriList.get(i);
+                Point location = virtualSensorLocations.get(i);
+
+                SelectQuery query = Queries.SELECT();
+                Variable entity = query.var();
+                Variable derivation = query.var();
+                query.where(iri(scopeIri).isA(SCOPE), derivation.has(isDerivedFrom, iri(scopeIri)),
+                        entity.isA(DISPERSION_OUTPUT).andHas(belongsTo, derivation))
+                        .prefix(P_DISP)
+                        .select(entity).distinct();
+                JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+                List<String> dispersionOutputs = new ArrayList<>();
+
+                for (int j = 0; j < queryResult.length(); j++) {
+                    String dispOutput = queryResult.getJSONObject(j).getString(entity.getQueryString().substring(1));
+                    dispersionOutputs.add(dispOutput);
+                }
 
                 List<String> inputs = new ArrayList<>(dispersionOutputs);
-
-                // Add location input
-                String locationIri = PREFIX + UUID.randomUUID();
-                modify.insert(iri(locationIri).isA(GEOM).andHas(HAS_WKT, transformedPoint.toString()));
-                inputs.add(locationIri);
 
                 // output (OntoEMS reporting station)
                 String stationIri = ONTO_EMS + "virtualsensor_" + UUID.randomUUID();
                 Iri station = iri(stationIri);
 
                 // Update triples for station in blazegraph
-                String locString = String.valueOf(lon) + "#" + String.valueOf(lat);
-                modify.insert(station.isA(REPORTING_STATION).andHas(OBSERVATION_LOCATION, locString));
+                String locationIri = PREFIX + UUID.randomUUID();
+                modify.insert(station.isA(REPORTING_STATION).andHas(OBSERVATION_LOCATION, iri(locationIri)),
+                        iri(locationIri).isA(GEOM).andHas(AS_WKT, location.toString()));
 
                 List<String> dataListForTimeSeries = new ArrayList<>();
 
@@ -419,14 +421,15 @@ public class QueryClient {
                 // Create POSTGIS and GeoServer feature for this OntoEMS station
                 JSONObject geometry = new JSONObject();
                 geometry.put("type", "Point");
-                List<Double> coordinate = Arrays.asList(lon, lat);
+                List<Double> coordinate = Arrays.asList(location.x, location.y);
                 geometry.put("coordinates", new JSONArray(coordinate));
                 JSONObject feature = new JSONObject();
                 feature.put("type", "Feature");
                 feature.put("geometry", geometry);
-                feature.put("iri", stationIri);
+                feature.put("sensor_iri", stationIri);
                 feature.put("name", "VirtualSensor_" + (i + 1));
                 feature.put("endpoint", sparqlEndpoint);
+                feature.put("scope_iri", scopeIri);
                 features.put(feature);
 
             }
@@ -444,18 +447,16 @@ public class QueryClient {
 
         LOGGER.info("Uploading virtual sensors GeoJSON to PostGIS");
         GDALClient gdalclient = new GDALClient();
-        gdalclient.uploadVectorStringToPostGIS(Config.DATABASE, "sensor_layer", featureCollection.toString(),
+        gdalclient.uploadVectorStringToPostGIS(Config.DATABASE, "sensors", featureCollection.toString(),
                 new Ogr2OgrOptions(), true);
-        LOGGER.info("Creating virtual sensors layer in Geoserver");
-        GeoServerClient geoserverclient = new GeoServerClient();
-        geoserverclient.createWorkspace(Config.GEOSERVER_WORKSPACE);
-        geoserverclient.createPostGISLayer(null, Config.GEOSERVER_WORKSPACE, Config.DATABASE, "sensor_layer",
-                new GeoServerVectorSettings());
-
+        // GeoServer layer creation is handled in the agent that creates the data.json
+        // file. That agent will query for sensors that lie within the scope for which
+        // the visualization is being created.
     }
 
-    public static List<String> getVirtualSensorDerivations() {
+    public List<String> getVirtualSensorDerivations(String dispersionDerivation) {
         List<String> derivationList = new ArrayList<>();
+        List<String> dispOutputList = new ArrayList<>();
 
         Iri isDerivedFrom = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
         Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
@@ -466,17 +467,23 @@ public class QueryClient {
         Variable dispOutput = query.var();
         Variable station = query.var();
 
-        query.where(derivation.has(isDerivedFrom, dispOutput), dispOutput.isA(DISPERSION_OUTPUT),
-                station.isA(REPORTING_STATION).andHas(belongsTo, derivation)).select(derivation)
+        query.where(dispOutput.has(belongsTo, iri(dispersionDerivation)),
+                derivation.has(isDerivedFrom, dispOutput), dispOutput.isA(DISPERSION_OUTPUT),
+                station.isA(REPORTING_STATION).andHas(belongsTo, derivation)).select(derivation, dispOutput)
                 .prefix(P_DISP, P_OM, P_EMS);
 
-        RemoteStoreClient sc = new RemoteStoreClient(new EndpointConfig().getKgurl());
-        JSONArray queryResult = sc.executeQuery(query.getQueryString());
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         for (int i = 0; i < queryResult.length(); i++) {
             String derivationIri = queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1));
             derivationList.add(derivationIri);
+            String dispOutputIri = queryResult.getJSONObject(i).getString(dispOutput.getQueryString().substring(1));
+            dispOutputList.add(dispOutputIri);
         }
+
+        // update derivation timestamp of dispersion output to trigger update of virtual
+        // sensor derivations contained in derivationList
+        derivationClient.updateTimestamps(dispOutputList);
 
         return derivationList;
 
