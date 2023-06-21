@@ -17,6 +17,7 @@ from Marie.EntityLinking.IRILookup import IRILookup
 from Marie.Util.CommonTools import NumericalTools
 from Marie.Util.AgentTools.agent_invoker import AgentInvoker
 from Marie.Util.AgentTools.question_agent_matcher import QuestionAgentMatcher
+from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 
 
 class AgentInterface:
@@ -76,7 +77,7 @@ class AgentInterface:
 
 
 if __name__ == "__main__":
-    from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
+  
     cn = ChemicalNEL()
     agentInterface = AgentInterface(nel=cn)
     START_TIME = time.time()
@@ -89,16 +90,4 @@ if __name__ == "__main__":
         print(time.time() - START_TIME)
 
 
-    "what is the Heat Capacity of C3H4O"
-
-    # START_TIME = time.time()
-    # question = "what is the power conversion efficiency of C3H4O"
-    # result = agentInterface.run(question)
-    # print(result)
-    # print(time.time() - START_TIME)
-    #
-    # START_TIME = time.time()
-    # question = "what is the heat capacity of C3H4O at 100 K"
-    # result = agentInterface.run(question)
-    # print(result)
-    # print(time.time() - START_TIME)
+    # Example Question: "what is the Heat Capacity of C3H4O"
