@@ -120,7 +120,7 @@ class WikiDataReader:
                 self.name_dict[name].append(species_id)
 
     def load_entity_list(self):
-        entity_dir = os.path.join("E:\data\instance_info")
+        entity_dir = os.path.join(DATA_DIR, "instance_info")
         files = [f for f in os.listdir(entity_dir) if f.startswith("Q")]
         return files
         # return random.sample(files, 100)

@@ -42,81 +42,66 @@ class OntoKinReader:
 
     def query_all_species(self):
         # Use one query to find all the properties fo all species under the type species .
-        df_all_species = None
-        # species_path = os.path.join(self.dataset_path, 'all_species.tsv')
-        species_path = os.path.join(self.dataset_path, 'all_species.tsv')
-        if False:  # os.path.exists(species_path):
-            # read from the file
-            df_all_species = pd.read_csv(species_path, sep='\t')
-        else:
-            short_species_list = []
-            triples = []
-            tmp = []
-            value_dictionary = {}
-            rst = query_blazegraph(query=ONTOKIN_ALL_PROPERTIES_ALL_SPECIES, namespace="ontokin")
-            non_attributes = ['species', 'label', 'transport']
-            heads = [h for h in rst['head']['vars'] if h not in non_attributes and '_unit' not in h]
-            unique_labels = []
-            for r in rst['results']['bindings']:
-                row = []
-                species = r['species']['value']  # .split('/')[-1]
-                transport = r['transport']['value']
-                label = r['label']['value']
+        short_species_list = []
+        triples = []
+        tmp = []
+        value_dictionary = {}
+        rst = query_blazegraph(query=ONTOKIN_ALL_PROPERTIES_ALL_SPECIES, namespace="ontokin")
+        non_attributes = ['species', 'label', 'transport']
+        heads = [h for h in rst['head']['vars'] if h not in non_attributes and '_unit' not in h]
+        unique_labels = []
+        for r in rst['results']['bindings']:
+            row = []
+            species = r['species']['value']  # .split('/')[-1]
+            transport = r['transport']['value']
+            label = r['label']['value']
 
-                if "#" in species:
-                    short_species = species.split('#')[-1]
-                else:
-                    short_species = species.split('/')[-1]
+            if "#" in species:
+                short_species = species.split('#')[-1]
+            else:
+                short_species = species.split('/')[-1]
 
-                # filter, only put findable species ...
-                counter = 0
-                if label not in unique_labels:
-                    # if short_species in selected_iri:
-                    short_species_list.append(short_species)
-                    counter += 1
-                    print(f"number of selected iris", counter)
-                    if "#" in transport:
-                        short_transport = transport.split('#')[-1]
+            # filter, only put findable species ...
+            counter = 0
+            if label not in unique_labels:
+                short_species_list.append(short_species)
+                counter += 1
+                print(f"number of selected iris", counter)
+                row.append(species)
+                row.append(label)
+                for head in heads:
+
+                    if head in r:
+                        data = r[head]['value']
                     else:
-                        short_transport = transport.split('/')[-1]
-                    # triples.append((short_species, 'hasTransportModel', short_transport))
-                    row.append(species)
-                    row.append(label)
-                    for head in heads:
+                        data = "EMPTY"
 
-                        if head in r:
-                            data = r[head]['value']
-                        else:
-                            data = "EMPTY"
+                    new_node = head + '_' + short_species
+                    row.append(new_node)
+                    if head + '_unit' in r:
+                        data_unit = r[head + '_unit']['value']
+                        value_dictionary[new_node] = data + ' ' + data_unit
+                    else:
+                        # insert a new node, with part of the species and the relations
+                        value_dictionary[new_node] = data
+                    triples.append((short_species, head + '_latent', new_node))
 
-                        new_node = head + '_' + short_species
-                        row.append(new_node)
-                        if head + '_unit' in r:
-                            data_unit = r[head + '_unit']['value']
-                            value_dictionary[new_node] = data + ' ' + data_unit
-                        else:
-                            # insert a new node, with part of the species and the relations
-                            value_dictionary[new_node] = data
+                tmp.append(row)
+                unique_labels.append(label)
 
-                        # triples.append((short_transport, head, new_node))
-                        triples.append((short_species, head + '_latent', new_node))
+        print('number of unique labels', len(unique_labels))
+        df_all_species = pd.DataFrame(tmp)
+        df_all_species.columns = ['species', 'label'] + heads
+        df_all_species.to_csv(os.path.join(self.dataset_path, 'all_species.tsv'), sep='\t')
 
-                    tmp.append(row)
-                    unique_labels.append(label)
+        with open(os.path.join(self.dataset_path, 'value_dict.json'), 'w') as f:
+            f.write(json.dumps(value_dictionary))
+            f.close()
 
-            print('number of unique labels', len(unique_labels))
-            df_all_species = pd.DataFrame(tmp)
-            df_all_species.columns = ['species', 'label'] + heads
-            df_all_species.to_csv(os.path.join(self.dataset_path, 'all_species.tsv'), sep='\t')
-
-            with open(os.path.join(self.dataset_path, 'value_dict.json'), 'w') as f:
-                f.write(json.dumps(value_dictionary))
-                f.close()
-
-            df_triples = pd.DataFrame(triples)
-            df_triples.to_csv(os.path.join(self.dataset_path, 'ontokin-train.txt'), sep='\t', index=False, header=False)
-            df_test = df_triples.sample(frac=0.2)
-            df_test.to_csv(os.path.join(self.dataset_path, 'ontokin-test.txt'), sep='\t', index=False, header=False)
+        df_triples = pd.DataFrame(triples)
+        df_triples.to_csv(os.path.join(self.dataset_path, 'ontokin-train.txt'), sep='\t', index=False, header=False)
+        df_test = df_triples.sample(frac=0.2)
+        df_test.to_csv(os.path.join(self.dataset_path, 'ontokin-test.txt'), sep='\t', index=False, header=False)
 
     def run(self):
         self.query_all_species()
@@ -134,7 +119,6 @@ class OntoKinReader:
         question_list = []
         for idx, row in df_train.iterrows():
             # question	head	tail	rel
-
             h, r, t = row
             if "_latent" in r:
                 h_idx = (self.entity2idx[h])
@@ -150,5 +134,4 @@ class OntoKinReader:
 
 if __name__ == '__main__':
     my_ontokin_reader = OntoKinReader()
-    # my_ontokin_reader.run()\
-    my_ontokin_reader.create_score_model_set()
+    my_ontokin_reader.run()

@@ -79,10 +79,7 @@ class OntoSpeciesNewAnalyzer:
         self.species_role_dictionary, self.role_species_dictionary = self.get_roles_of_species()
         self.selected_role_list = list(set(self.role_species_dictionary.keys()))
         self.role_count_dict = dict(sorted(self.role_count_dict.items(), key=lambda k: k[1], reverse=True))
-        self.selected_inference_role_list = [r for r, l in list(set(self.role_count_dict.items())) ] # if l > 1]
-        # self.selected_inference_role_list = [r for r in self.selected_inference_role_list if
-        #                                      r not in self.duplicate_use_iri_mapping]
-
+        self.selected_inference_role_list = [r for r, l in list(set(self.role_count_dict.items()))]  # if l > 1]
         print("SELECTED SPECIES NUMBER", len(self.selected_species))
         print("SELECTED SPECIES FOR INFERENCE NUMBER", len(self.selected_inference_species))
         print("2. DONE SPECIES ROLE QUERYING")
@@ -130,7 +127,6 @@ class OntoSpeciesNewAnalyzer:
         counter = 0
         for species in self.species_class_dict:
             counter += 1
-            # print(f"{counter} out of {len(self.species_class_dict)}")
             classes = self.species_class_dict[species]
             if len(classes) > 0:
                 species_class_count_dict[species] = len(classes)
@@ -139,10 +135,7 @@ class OntoSpeciesNewAnalyzer:
         counter = 0
         for species in species_tmp:
             counter += 1
-            # print(f"{counter} out of {len(species_tmp)}")
-
             if (species in species_class_count_dict) and (species in species_role_count_dict):
-                # combined_count_dict[species] = class_count_dict[species] + role_count_dict[species]
                 combined_count_dict[species] = species_role_count_dict[species]
 
         combined_count_dict = dict(sorted(combined_count_dict.items(), key=lambda k: k[1], reverse=True))
@@ -201,7 +194,6 @@ class OntoSpeciesNewAnalyzer:
         :param sample_num:
         :return:
         """
-        # print("triples for inference", triples_for_inference)
         # 1. make a list of species_role pair
         inference_relation_list = ["hasUse"]  # , "hasChemicalClass"]
         species_role_pair = []
@@ -210,11 +202,7 @@ class OntoSpeciesNewAnalyzer:
             if p.strip() in inference_relation_list:
                 pair_str = f"{s}_{o}"
                 if pair_str not in species_role_pair:
-                    # print("s", s)
-                    # if s in self.selected_inference_species:  # and o in self.preferred_use_iri_list:
                     if s in self.selected_inference_species and o in self.selected_inference_role_list:
-                        # if s in self.selected_inference_species:
-                        # print("adding s_o pair to list")
                         species_role_pair.append(pair_str)
 
         print("species_role_pair", species_role_pair)
@@ -248,8 +236,6 @@ class OntoSpeciesNewAnalyzer:
         # only remove triples with hasRole and hasSpecies
         # 1. sample 200 triples with hasRole and hasSpecies
         # 2. remove the 200 triples from the other_triples
-        inference_rels = ["hasUse", "hasSpecies", "hasChemicalClass"]
-        # other_triples_for_inference = [triples for triples in other_triples if triples[1].strip() in inference_rels]
         # if you remove the hasRole between a species and a use, the hasSpecies
         test_other_triples, train_other_triples = self.filter_inference_triples(other_triples,
                                                                                 sample_num=100)
@@ -267,18 +253,6 @@ class OntoSpeciesNewAnalyzer:
         df_test.to_csv(os.path.join(self.sub_ontology_path, f"{self.sub_ontology}-test.txt"),
                        sep="\t", header=False, index=False)
 
-        # train_other_triples = [triples for triples in other_triples if triples not in test_other_triples]
-        # df = pd.DataFrame(numerical_triples + other_triples)
-        # df.to_csv(os.path.join(self.sub_ontology_path, f"{self.sub_ontology}-train.txt"),
-        #           sep="\t", header=False, index=False)
-
-        # df_train = pd.DataFrame(numerical_triples + train_other_triples + class_triples)
-        # df_test = pd.DataFrame(test_other_triples)
-        # df_train.to_csv(os.path.join(self.sub_ontology_path, f"{self.sub_ontology}-train-2.txt"),
-        #                 sep="\t", header=False, index=False)
-
-        # df_test.to_csv(os.path.join(self.sub_ontology_path, f"{self.sub_ontology}-test.txt"),
-        #                sep="\t", header=False, index=False)
 
     def create_numerical_triples(self):
         numerical_triples = []
@@ -312,14 +286,6 @@ class OntoSpeciesNewAnalyzer:
                         if species in self.selected_species:
                             all_triples.append(row)
 
-        # for _class in self.class_species_dict:
-        #     if _class not in self.class_stop_list:
-        #         species_list = self.class_species_dict[_class]
-        #         for species in species_list:
-        #             if _class not in self.class_stop_list:
-        #                 row = (_class, "hasInstance", species)
-        #                 # TODO: temporarily remove hasInstance triples
-        #                 all_triples.append(row)
         return all_triples
 
     def create_triples_for_roles_of_species(self):
@@ -331,15 +297,6 @@ class OntoSpeciesNewAnalyzer:
                 if species in self.selected_species:
                     all_triples.append(row)
 
-        for role in self.role_species_dictionary:
-            species_list = self.role_species_dictionary[role]
-            for species in species_list:
-                row = (role, "hasSpecies", species)
-                if species in self.selected_species:
-                    pass
-                    # all_triples.append(row)
-
-        # print("triples for roles of species", all_triples)
         return all_triples
 
     def get_roles_of_species(self):
@@ -422,20 +379,6 @@ class OntoSpeciesNewAnalyzer:
 
         return species_class_dict, class_species_dict
 
-    # def create_inference_candidate_dict(self, entity2idx, dictionary):
-    #     """
-    #     Make a dictionary mapping true tail to candidate entities in the form of indices
-    #     1. create all uses list
-    #     :return:
-    #     """
-    #     candidate_dict = {}
-    #     role_list = list(dictionary.keys())
-    #     role_list = list(set(role_list))
-    #     role_list = [entity2idx[role] for role in role_list]
-    #     for role_idx in role_list:
-    #         candidate_dict[role_idx] = role_list
-    #     return candidate_dict
-
     def run(self):
         numerical_triples, numerical_eval_triples = self.create_numerical_triples()
         df_num_eval = pd.DataFrame(numerical_eval_triples)
@@ -455,12 +398,10 @@ class OntoSpeciesNewAnalyzer:
         else:
             chemical_class_triples = self.create_triples_with_subclass()
 
-        # chemical_class_triples += self.sub_class_triples
         other_triples = role_triples + chemical_class_triples  # numerical_triples
         self.write_triples_to_tsv(other_triples=other_triples, numerical_triples=numerical_triples,
                                   class_triples=chemical_class_triples)
 
-        # self.role_species_dictionary.update(self.class_species_dict)
         inference_target_dictionary = self.role_species_dictionary
         # =================== STANDARD PACKAGE FOR FILES NEEDED ========================================
         entity2idx = self.file_creator.create_supporting_files_for_embedding(
@@ -481,6 +422,7 @@ class OntoSpeciesNewAnalyzer:
 
         print("SELECTED SPECIES NUMBER", len(self.selected_species))
         print("SELECTED SPECIES FOR INFERENCE NUMBER", len(self.selected_inference_species))
+
 
 if __name__ == "__main__":
     my_analyzer = OntoSpeciesNewAnalyzer(sub_ontology="full_500")
