@@ -117,6 +117,6 @@ MODEL_MAPPING['TFT_HEAT_SUPPLY'] = {
         'scale_data': True,
     },
     'frequency': MODEL_MAPPING['DEFAULT']['frequency'],
-    'data_length': MODEL_MAPPING['DEFAULT']['data_length'],
+    'data_length': 24 * 365 ,
     'ts_data_type': MODEL_MAPPING['DEFAULT']['ts_data_type'],
 }
