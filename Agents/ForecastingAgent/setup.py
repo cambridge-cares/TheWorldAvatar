@@ -16,10 +16,12 @@ setup(
     install_requires= [
         'flask~=2.2.2',
         'pandas~=1.5.1',
-        'py4jps~=1.0.30', 
         'requests~=2.28.1',
         'configobj~=5.0.6',
         'fire~=0.4.0',
+        # Pin py4jps version to avoid issues with accessing StackClients resource
+        # in latest 1.0.35 release
+        'py4jps==1.0.34', 
         # To ensure loading of GPU-trained model on CPU-only machines, specific 
         # versions of darts, torchmetrics and pytorch-lightning are required.
         'darts==0.21.0',
