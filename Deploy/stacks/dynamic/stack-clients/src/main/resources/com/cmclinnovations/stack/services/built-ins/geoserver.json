@@ -4,10 +4,13 @@
         "Name": "geoserver",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "docker.cmclinnovations.com/geoserver:2.20.4",
+                "Image": "docker.osgeo.org/geoserver:2.23.1",
                 "Env": [
                     "GEOSERVER_CSRF_WHITELIST=localhost",
-                    "PLUGIN_DYNAMIC_URLS=http://sourceforge.net/projects/geoserver/files/GeoServer/2.20.4/extensions/geoserver-2.20.4-vectortiles-plugin.zip"
+                    "INSTALL_EXTENSIONS=true",
+                    "STABLE_EXTENSIONS=vectortiles",
+                    "CORS_ENABLED=true",
+                    "SKIP_DEMO_DATA=true"
                 ],
                 "Mounts": [
                     {
@@ -27,43 +30,13 @@
                     {
                         "Type": "volume",
                         "Source": "3dtiles",
-                        "Target": "/var/geoserver/datadir/www/3dtiles",
+                        "Target": "/opt/geoserver_data/www/3dtiles",
                         "ReadOnly": false
                     },
                     {
                         "Type": "volume",
-                        "Source": "geoserver_logs",
-                        "Target": "/var/geoserver/logs"
-                    },
-                    {
-                        "Type": "volume",
-                        "Source": "geoserver_gwc_cache",
-                        "Target": "/var/geoserver/gwc_cache_dir"
-                    },
-                    {
-                        "Type": "volume",
-                        "Source": "geoserver_gwc_config",
-                        "Target": "/var/geoserver/gwc_config"
-                    },
-                    {
-                        "Type": "volume",
-                        "Source": "geoserver_grib_cache",
-                        "Target": "/var/geoserver/grib_cache_dir"
-                    },
-                    {
-                        "Type": "volume",
-                        "Source": "geoserver_netcdf_data",
-                        "Target": "/var/geoserver/netcdf_data_dir"
-                    },
-                    {
-                        "Type": "volume",
-                        "Source": "geoserver_static_data",
-                        "Target": "/var/geoserver/datadir/www/static_data"
-                    },
-                    {
-                        "Type": "volume",
-                        "Source": "geoserver_icons",
-                        "Target": "/var/geoserver/datadir/www/icons"
+                        "Source": "geoserver_datadir",
+                        "Target": "/opt/geoserver_data"
                     }
                 ],
                 "Configs": [
