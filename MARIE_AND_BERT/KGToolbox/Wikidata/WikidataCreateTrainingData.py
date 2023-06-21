@@ -5,7 +5,6 @@ import random
 
 import pandas as pd
 from wikidata.client import Client
-from wikidata.entity import EntityId
 from Marie.Util.location import DATA_DIR
 
 dataset_dir = "CrossGraph/wikidata_numerical"
@@ -47,8 +46,6 @@ all_rows = []
 for line in lines:
     _, p, label = (line.strip().split("\t"))
     alias = [l for l in label_dict[p] if ")" not in l]
-    # alias.append(label)
-    # rel = rel2idx[p]
     rel = p
     head = 0
     tail = 0
@@ -86,42 +83,5 @@ for line in lines:
 df = pd.DataFrame(all_rows)
 df.columns = ["question", "head", "tail", "rel", "numerical_operator"]
 df.to_csv("score_model_training.tsv", sep="\t")
-
 for ting in df['rel'].value_counts():
     print(ting)
-
-# with open("rel_counts", "w") as f:
-#     f.write(json.dumps()
-#     f.close()
-# #
-# for triple in triples:
-#     s, p, o = [e.strip() for e in triple.split("\t")]
-#     if p not in unique_p:
-#         unique_p.append(p)
-#
-# p_and_labels = []
-#
-# p_label_dict = {}
-#
-# for p in unique_p:
-#     entity = client.get(EntityId(p))
-#     label = str(entity.label)
-#     if " ID" not in label:
-#         print("P:", p)
-#         print("Label:", label)
-#         p_and_labels.append((p, label))
-#         label = str(entity.label)
-#         aliases_list = entity.attributes['aliases']
-#         if 'en' in aliases_list:
-#             aliases = [name['value'] for name in aliases_list['en']]
-#         else:
-#             aliases = []
-#         # aliases.append(label)
-#         p_label_dict[p] = aliases
-#
-# df = pd.DataFrame(p_and_labels)
-# df.to_csv("p_labels.txt", sep="\t")
-#
-# with open("p_dict.txt","w") as f:
-#     f.write(json.dumps(p_label_dict))
-#     f.close()
