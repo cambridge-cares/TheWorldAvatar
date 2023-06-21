@@ -37,7 +37,6 @@ class TrainingSetCreator:
         }
 
     # question	head	tail	rel	numerical_operator
-
     def create_non_numerical_questions(self):
         all_non_numerical_rows = []
         inference_question_list = ["predict the possible uses", "can be the uses", "possible uses", "possible rows"]
@@ -45,19 +44,13 @@ class TrainingSetCreator:
             row = (question.lower(), 0, 0, "hasUse", "none")
             all_non_numerical_rows.append(row)
 
-        # df_non_numerical = pd.DataFrame(all_non_numerical_rows)
-        # print(df_non_numerical)
         return all_non_numerical_rows
-
-        # for relation in self.all_unique_non_numerical_relations:
-        #     print(relation)
 
 
     def create_numerical_comparison_questions(self):
         question_template = "%s %s"
         all_numerical_rows = []
         for attribute in self.all_unique_numerical_attributes:
-            # rel_idx = self.rel2idx[attribute]
             attribute_labels = self.attribute_label_list[attribute]
             for attribute_label in attribute_labels:
                 for operator in self.operator_dict:
@@ -68,9 +61,7 @@ class TrainingSetCreator:
                         all_numerical_rows.append(row)
 
         return all_numerical_rows
-        # df_numerical = pd.DataFrame(all_numerical_rows)
-        # df_numerical.columns = ["question", "head", "tail", "rel", "numerical_operator"]
-        # df_numerical.to_csv(os.path.join(self.full_dataset_dir, "score_model_training.tsv"), sep="\t")
+
 
     def get_all_numerical_attributes(self):
         all_unique_numerical_attributes = []
@@ -89,7 +80,6 @@ class TrainingSetCreator:
     def run(self):
         numerical_rows = self.create_numerical_comparison_questions()
         non_numerical_rows = self.create_non_numerical_questions() * 10
-        all_rows = numerical_rows
         all_rows = numerical_rows + non_numerical_rows
         df = pd.DataFrame(all_rows)
         df.columns = ["question", "head", "tail", "rel", "numerical_operator"]
