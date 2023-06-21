@@ -20,6 +20,8 @@ setup(
         'requests~=2.28.1',
         'configobj~=5.0.6',
         'fire~=0.4.0',
+        # To ensure loading of GPU-trained model on CPU-only machines, specific 
+        # versions of darts, torchmetrics and pytorch-lightning are required.
         'darts==0.21.0',
         'torchmetrics==0.9.3',
         'pytorch-lightning==1.7.7',

@@ -12,7 +12,6 @@ import uuid
 import urllib
 from pathlib import Path
 import pandas as pd
-import torch
 
 from dateutil.parser import isoparse
 from darts import TimeSeries
@@ -442,7 +441,6 @@ def load_pretrained_model(cfg, ModelClass, force_download=False):
     if os.path.exists(path_to_store) and not force_download:
         # model already exists
         path_ckpt = path_to_store / "best-model.ckpt"
-        path_pth = path_to_store.parent.absolute() / "_model.pth.tar"
     else:
 
         # create folder
@@ -462,27 +460,18 @@ def load_pretrained_model(cfg, ModelClass, force_download=False):
                 model_path_pth_link, path_to_store.parent.absolute() / "_model.pth.tar")
             logger.info(f'Downloaded model from {model_path_pth_link} to {path_pth}')
 
-    # TFT model has been trained and saved on a CUDA device (i.e., using GPUs);
-    # Attempting to deserialize saved model on a CPU-only machine will fail
 
-    # Check if current system supports CUDA
-    if torch.cuda.is_available():
-        # Use easy load from checkpoint if yes
-        model = ModelClass.load_from_checkpoint(path_ckpt.parent.parent.__str__())
-    else:
-        # Otherwise use torch.load with map_location=torch.device('cpu') to map your storages to the CPU
-        model = torch.load(path_pth, map_location=torch.device('cpu'))
-        # Save and re-load as workaround to fully load GPU-trained model
-        torch.save(model, path_pth)
-        model = ModelClass.load(path_pth.__str__())
-
+    # load pre-trained model from best checkpoints
+    # NOTE: TFT model has been trained and saved on a CUDA device (i.e., using GPUs);
+    #       Attempting to deserialize saved model on a CPU-only machine requires
+    #       torchmetrics==0.9.3 and pytorch-lightning==1.7.7 (and will fail otherwise)
+    model = ModelClass.load_from_checkpoint(path_ckpt.parent.parent.as_posix())
     logger.info(f'Loaded model from  {path_ckpt.parent.parent.__str__()}')
 
     # convert loaded model to device
     trainer_params = {
             "accelerator": "auto",
             "devices": "auto",
-            #"callbacks": [],
             "logger": False,
         }
     model.trainer_params.update(trainer_params)
