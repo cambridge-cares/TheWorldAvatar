@@ -16,14 +16,6 @@ The project contains the following parts:
 - code for running the QA system (`./Marie`)
 - a frontend to allow web-based interaction with the QA system (`./Website`)
 
-## Dataset
-
-The dataset is created using a set of question templates. The script fills the templates to create draft questions. The grammar of the draft questions must be corrected manually using the the GUI. The dataset comprises a set of about 1000 questions with labelled head and answer entities. The dataset is divided into a ``training set``, ``validation set`` and ``test set`` in the ratio `7:2:1`.
-
-The ``training set`` and `validation set` are used for training the models. The ``test set``
-is used for the evaluation of individual models. More importantly, the ``test set`` is also used to evaluate
-the [overall performance](#overall-performance testing)
-of the QA system.
 
 ## Training
 
