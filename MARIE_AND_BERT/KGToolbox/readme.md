@@ -3,13 +3,14 @@ This document provides guides about how the training dataset for different ontol
 The user will need to create a folder `MARIE_AND_BERT/DATA/CrossGraph` and a series of sub folders for each ontology.
 ```
 ├── MARIE_AND_BERT
-│   ├── CrossGraph
-│   │   ├── agents
-│   │   ├── ontocompchem
-│   │   ├── ontokin
-│   │   ├── OntoMoPs
-│   │   ├── ontospecies
-│   │   ├── wikidata
+├───├── DATA
+│   │   ├── CrossGraph
+│   │   │   ├── agents
+│   │   │   ├── ontocompchem
+│   │   │   ├── ontokin
+│   │   │   ├── OntoMoPs
+│   │   │   ├── ontospecies
+│   │   │   ├── wikidata
 ```
 ## Dataset
 The dataset is created using a set of question templates. The script fills the templates to create draft questions. The grammar of the draft questions must be corrected manually using the the GUI. The dataset comprises a set of about 1000 questions with labelled head and answer entities. The dataset is divided into a ``training set``, ``validation set`` and ``test set`` in the ratio `7:2:1`.
