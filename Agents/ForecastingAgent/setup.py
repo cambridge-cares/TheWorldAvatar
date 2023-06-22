@@ -2,7 +2,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='forecasting',
-    version='1.1.0',
+    version='1.1.1',
     author='Markus Hofmeister, Magnus Mueller',
     author_email='mh807@cam.ac.uk',
     license='MIT',
