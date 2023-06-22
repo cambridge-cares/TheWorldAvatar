@@ -209,11 +209,3 @@ if __name__ == '__main__':
                                    resume_training=True, batch_size=16, epoch_num=60, test_step=1,
                                    scheduler_step=10, gamma=1.0)
 
-    # BERT_MoPs -> 1e-5, step: e-2
-
-    # for i in range(5):
-    #     current_lr = current_lr / 10
-    #     print(f'current learning rate {current_lr}')
-    #     my_trainer.one_train_iteration(current_lr,
-    #                                    model_name=f'bert_{ontology}_operator', epoch_num=10, test_step=1,
-    #                                    resume_training=True, batch_size=64)

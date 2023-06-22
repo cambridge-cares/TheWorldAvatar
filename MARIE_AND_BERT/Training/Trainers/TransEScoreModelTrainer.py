@@ -178,7 +178,6 @@ class TransEScoreModelTrainer:
 if __name__ == '__main__':
     # starting_lr = 1e-20  # this is probably the best lr
     batch_size = 32
-
     starting_lr = 1e-5
     current_lr = starting_lr
     my_trainer = TransEScoreModelTrainer(dataset_dir="CrossGraph/agents", mode="agent", test_step=5)
@@ -186,39 +185,3 @@ if __name__ == '__main__':
                                    model_name='bert_ontoagent_with_random',
                                    resume_training=True, batch_size=batch_size, epoch_num=200)
 
-    # starting_lr = 1e-6
-    # current_lr = starting_lr
-    # my_trainer = TransEScoreModelTrainer(dataset_dir="CrossGraph/agents", mode="agent", test_step=5)
-    # my_trainer.one_train_iteration(current_lr,
-    #                                model_name='bert_ontoagent_test',
-    #                                resume_training=True, batch_size=batch_size, epoch_num=50)
-    #
-    # starting_lr = 1e-7
-    # current_lr = starting_lr
-    # my_trainer = TransEScoreModelTrainer(dataset_dir="CrossGraph/agents", mode="agent", test_step=5)
-    # my_trainer.one_train_iteration(current_lr,
-    #                                model_name='bert_ontoagent_test',
-    #                                resume_training=True, batch_size=batch_size, epoch_num=50)
-    #
-    #
-    # starting_lr = 1e-8
-    # current_lr = starting_lr
-    # my_trainer = TransEScoreModelTrainer(dataset_dir="CrossGraph/agents", mode="agent", test_step=100)
-    # my_trainer.one_train_iteration(current_lr,
-    #                                model_name='bert_ontoagent_test',
-    #                                resume_training=True, batch_size=batch_size, epoch_num=5000)
-
-    # starting_lr = 1e-7
-    # batch_size = 1
-    # current_lr = starting_lr
-    # my_trainer = TransEScoreModelTrainer(dataset_dir="CrossGraph/agents", mode="agent", test_step=1)
-    # my_trainer.one_train_iteration(current_lr,
-    #                                model_name='bert_ontoagent_improved',
-    #                                resume_training=True, batch_size=batch_size, epoch_num=50)
-
-    # for i in range(10):
-    #     print(f'current learning rate {current_lr}')
-    #     my_trainer.one_train_iteration(current_lr,
-    #                                    model_name='bert_ontoagent_improved',
-    #                                    resume_training=True, batch_size=batch_size, epoch_num=10)
-    #     current_lr = current_lr / 10
