@@ -59,27 +59,24 @@ If the agent is successfully started, the endpoint at `http://localhost:3838/dat
 
 ### 3. Endpoint
 When successfully built, the agent will be running at `port 3055`. The base url will be `http://localhost:3055/data-bridge-agent`.
-There are currently three routes available:
+There are currently four routes available:
 
 1. `<base>/status` route:
    - Returns the current status of the agent through an HTTP `GET` request.
 2. `<base>/sparql` route:
-    - Execute the agent's task through an HTTP `GET` request. This route will transfer data between the specified source and target endpoints.
-    - Before sending the request, please read the instructions.
-    - When transferring triples across non-stack endpoint, please update the source and target SPARQL endpoint in the `<root>/config/endpoint.properties` and send the simple `GET` request.
-      - For non-authenticated endpoints, please leave the corresponding `sparql.<src/target>.user` and `sparql.<src/target>.password` BLANK. 
-      - If either endpoints are secured with username or password, please update their username and password accordingly for that specified endpoint.
-    - When transferring triples from or to the same stack's endpoint, please send the `GET` request with the following parameters:
-      - The `namespace` parameter refers to the stack SPARQL namespace, which is by default `kb`.
-      - The `transfer` parameter indicates whether you wish to transfer triples into or outside the stack. `transfer=in` is for transferring triples from non-stack endpoints into the stack. `transfer=out` is for transferring triples from the stack to non-stack endpoints.
-      - Please ensure that the non-stack endpoint have been updated in the `<root>/config/endpoint.properties` at the right position. The source endpoint must be populated for `transfer=in`, whereas target endpoint must be populated for `transfer=out`. 
+    - Execute the agent's task through an HTTP `POST` request. This route will transfer data between the specified source and target endpoints.
+    - The request will require the following parameters:
+      - `source`: The source SPARQL endpoint containing the triples to be transferred 
+      - `target`: The target SPARQL endpoint intended to store the transferred triples
+    - Sample SPARQL endpoints for Blazegraph are [listed here](#4-sample-blazegraph-endpoints)
+    - A sample `POST` request using curl on a CLI:
 ```
-# For any non-stack endpoints
-curl -X GET localhost:3055/data-bridge-agent/sparql
-# For namespaces within the stack
-curl -X GET 'localhost:3838/data-bridge-agent/sparql?namespace=kb&transfer=in'
+curl -X POST --header "Content-Type: application/json" -d "{
+    'source':'http://user:pass@ipaddress:port/blazegraph/namespace/kb/sparql',
+    'target': 'http://user:pass@stackName-blazegraph:8080/blazegraph/namespace/kb/sparql'
+}" localhost:3055/data-bridge-agent/sparql 
 ```
-
+curl -X POST --header "Content-Type: application/json" -d "{'source':'http://10.25.188.130:9998/blazegraph/namespace/test/sparql', 'target': 'http://local-blazegraph:8080/blazegraph/namespace/test/sparql'}" localhost:3838/data-bridge-agent/sparql
 3. `<base>/sql` route:
    - Execute the agent's task through an HTTP `GET` request. This route will transfer data between the specified source and target databases.
    - If there are existing tables in the target/destination database with the same name, those will be dropped and recreated. Please do take note of this side effect if you wish to retain old data.
@@ -104,8 +101,8 @@ curl -X GET 'localhost:3838/data-bridge-agent/sql?database=db&transfer=in'
         - `timeClass` : Refers to the time series classes as written in the [time series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries#instantiation-in-kg).
         - `timestamp` : A JSONArray containing the time stamp as strings in the format of `YYYY-MM-DD'T'HH:MM:SS`.
         - `values` : A JSONObject containing the time series values. A data IRI is inserted as the key and paired with their values as a JSONArray. For example: `{"dataIRI": [1, 2, 3]}`.
-        - `database` (OPTIONAL) : Specifies the database name within the same stack. If not specified, the agent will instantiate the time series into the source JDBC url and credentials indicated in the `<root>/config/endpoint.properties` file.
-        - `namespace` (OPTIONAL) : Specifies the SPARQL endpoint within the same stack. If not specified, the agent will instantiate the time series into the source endpoint indicated in the `<root>/config/endpoint.properties` file. If you are using an authenticated blazegraph, the source username and password in the properties file must be populated.
+      - `namespace`: Specifies the SPARQL endpoint to store the instantiated time series data.  See [Sample Blazegraph endpoints](#4-sample-blazegraph-endpoints)
+      - `database` (OPTIONAL) : Specifies the database name within the same stack. If not specified, the agent will instantiate the time series into the source JDBC url and credentials indicated in the `<root>/config/endpoint.properties` file.
     - A sample `POST` request using curl on a CLI:
 ```
 curl -X POST --header "Content-Type: application/json" -d "{
@@ -113,9 +110,17 @@ curl -X POST --header "Content-Type: application/json" -d "{
     'timestamp': ['2022-11-09T03:05:18', '2022-11-19T03:05:18', '2022-11-29T03:05:18'],
     'values':{
         'electricity': [1,2,3],
-       'energy': [4,5,6]
+        'energy': [4,5,6]
      },
-     'database' = 'time',
-     'namespace' ='time'
+        'namespace' ='http://user:pass@stackName-blazegraph:8080/blazegraph/namespace/kb/sparql'
+        'database' = 'time',
      }" localhost:3838/data-bridge-agent/timeseries 
 ```
+
+### 4. Sample Blazegraph endpoints
+Below are the template various kind of Blazegraph-specific endpoints. Items enclosed in `<>` must be edited. Do note that `<url>` can either be in the `ipaddress:port` or `www.example.org` format
+
+- Endpoint: `http://<url>/blazegraph/namespace/<namespace>/sparql`
+- Authenticated endpoint: `http://<user>:<pass>@<url>/blazegraph/namespace/<namespace>/sparql`
+- Stack endpoint: `https://<stackName>-blazegraph:8080/blazegraph/namespace/<namespace>/sparql`
+- Authenticated stack endpoint: `https://<user>:<pass>@<stackName>-blazegraph:8080/blazegraph/namespace/<namespace>/sparql`

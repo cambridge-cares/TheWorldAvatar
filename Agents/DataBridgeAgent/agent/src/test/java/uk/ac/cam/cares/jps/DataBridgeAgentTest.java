@@ -15,10 +15,15 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class DataBridgeAgentTest {
     private static DataBridgeAgent agent;
     private static final JSONObject EXPECTED_RESPONSE = new JSONObject();
+    private static final String KEY_SOURCE_NAMESPACE = "source";
+    private static final String KEY_TARGET_NAMESPACE = "target";
+    private static final String VAL_SOURCE_NAMESPACE = "http://admin:srcpass@example.org/blazegraph/namespace/test/sparql";
+    private static final String VAL_TARGET_NAMESPACE = "http://admin:newpassword@stack-blazegraph:8080/blazegraph/namespace/target/sparql";
     private static final String KEY_NAMESPACE = "namespace";
     private static final String KEY_DATABASE = "database";
     private static final String KEY_TRANSFER = "transfer";
@@ -42,8 +47,6 @@ class DataBridgeAgentTest {
     private static final String SPARQL_ROUTE = BASE_ROUTE + "sparql";
     private static final String SQL_ROUTE = BASE_ROUTE + "sql";
     private static final String TIME_SERIES_ROUTE = BASE_ROUTE + "timeseries";
-    private static final String sparqlSrc = "http://www.example.org/blazegraph/namespace/test/sparql";
-    private static final String sparqlTarget = "http://www.target.org:9999/blazegraph/namespace/target/sparql";
     private static final String srcDb = "jdbc:postgresql://localhost:5432/db";
     private static final String srcUser = "postgres";
     private static final String srcPass = "pass1";
@@ -81,8 +84,8 @@ class DataBridgeAgentTest {
 
         // For sparql route
         requestParams = new JSONObject();
-        requestParams.put(KEY_NAMESPACE, VAL_NAMESPACE);
-        requestParams.put(KEY_TRANSFER, VAL_TRANSFER);
+        requestParams.put(KEY_SOURCE_NAMESPACE, VAL_SOURCE_NAMESPACE);
+        requestParams.put(KEY_TARGET_NAMESPACE, VAL_TARGET_NAMESPACE);
         requestParams.put(KEY_ROUTE, SPARQL_ROUTE);
         assertTrue(agent.validateInput(requestParams));
 
@@ -120,21 +123,21 @@ class DataBridgeAgentTest {
 
     @Test
     void testValidateInputInvalid() {
-        // Invalid for only transfer key provided
+        // Invalid for only source namespace key provided to sparql route
         JSONObject requestParams = new JSONObject();
+        requestParams.put(KEY_SOURCE_NAMESPACE, VAL_SOURCE_NAMESPACE);
+        requestParams.put(KEY_ROUTE, SPARQL_ROUTE);
+        assertFalse(agent.validateInput(requestParams));
+        // Invalid for only transfer key provided to sql route
+        requestParams = new JSONObject();
         requestParams.put(KEY_TRANSFER, VAL_TRANSFER);
         requestParams.put(KEY_ROUTE, SQL_ROUTE);
-        assertFalse(agent.validateInput(requestParams));
-        // Invalid for only namespace key provided
-        requestParams = new JSONObject();
-        requestParams.put(KEY_NAMESPACE, VAL_NAMESPACE);
-        requestParams.put(KEY_ROUTE, SPARQL_ROUTE);
         assertFalse(agent.validateInput(requestParams));
         // Invalid when 'transfer' value is not in or out
         requestParams = new JSONObject();
         requestParams.put(KEY_NAMESPACE, VAL_NAMESPACE);
         requestParams.put(KEY_TRANSFER, "invalid");
-        requestParams.put(KEY_ROUTE, SPARQL_ROUTE);
+        requestParams.put(KEY_ROUTE, SQL_ROUTE);
         assertFalse(agent.validateInput(requestParams));
         // Invalid for only database key provided
         requestParams = new JSONObject();
@@ -177,54 +180,45 @@ class DataBridgeAgentTest {
     }
 
     @Test
-    void testProcessRequestParametersForSparqlRouteViaGETIncompleteProperties() throws IOException {
-        // Generate sample config file
-        File config = TestConfigUtils.genSampleSPARQLConfigFile(true, sparqlSrc, sparqlTarget);
+    void testProcessRequestParametersForSparqlRouteIncompleteParameters() {
         // Set up request parameters
         JSONObject requestParams = new JSONObject();
-        requestParams.put(KEY_METHOD, GET_METHOD);
+        requestParams.put(KEY_METHOD, POST_METHOD);
         requestParams.put(KEY_ROUTE, SPARQL_ROUTE);
-        try {
-            // Execute method should throw right error and response
-            JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> agent.processRequestParameters(requestParams));
-            assertEquals("Missing Properties:\n" +
-                    "sparql.src.endpoint is missing! Please add the input to endpoint.properties.\n", thrownError.getMessage());
-        } finally {
-            // Always delete generated config file
-            config.delete();
-        }
+        requestParams.put(KEY_SOURCE_NAMESPACE, VAL_SOURCE_NAMESPACE);
+        // Execute method should throw right error and response
+        assertEquals("Parameters are invalid, please check logs for more details.", agent.processRequestParameters(requestParams).getString("Result"));
     }
 
     @Test
-    void testProcessRequestParametersForSparqlRouteViaGET() throws IOException {
-        // Generate sample config file
-        File config = TestConfigUtils.genSampleSPARQLConfigFile(false, sparqlSrc, sparqlTarget);
+    void testProcessRequestParametersForSparqlRoute() {
         // Set up request parameters
         JSONObject requestParams = new JSONObject();
-        requestParams.put(KEY_METHOD, GET_METHOD);
+        requestParams.put(KEY_METHOD, POST_METHOD);
         requestParams.put(KEY_ROUTE, SPARQL_ROUTE);
+        requestParams.put(KEY_SOURCE_NAMESPACE, VAL_SOURCE_NAMESPACE);
+        requestParams.put(KEY_TARGET_NAMESPACE, VAL_TARGET_NAMESPACE);
         // Mock the bridge object, as it cannot be unit tested and requires integration test
         try (MockedConstruction<SparqlBridge> mockConnector = Mockito.mockConstruction(SparqlBridge.class)) {
             // Execute method
             JSONObject response = agent.processRequestParameters(requestParams);
             // Verify response
-            assertEquals("Triples have been successfully transferred from " + sparqlSrc + " to " + sparqlTarget, response.getString("Result"));
-        } finally {
-            // Always delete generated config file
-            config.delete();
+            assertEquals("Triples have been successfully transferred from " + VAL_SOURCE_NAMESPACE + " to " + VAL_TARGET_NAMESPACE, response.getString("Result"));
         }
     }
 
     @Test
-    void testProcessRequestParametersForSparqlRouteViaInvalidPOST() {
+    void testProcessRequestParametersForSparqlRouteViaInvalidGET() {
         // Set up request parameters
         JSONObject requestParams = new JSONObject();
-        requestParams.put(KEY_METHOD, POST_METHOD); // Wrong method
+        requestParams.put(KEY_METHOD, GET_METHOD); // Wrong method
         requestParams.put(KEY_ROUTE, SPARQL_ROUTE);
+        requestParams.put(KEY_SOURCE_NAMESPACE, VAL_SOURCE_NAMESPACE);
+        requestParams.put(KEY_TARGET_NAMESPACE, VAL_TARGET_NAMESPACE);
         // Execute method
         JSONObject response = agent.processRequestParameters(requestParams);
         // Verify response
-        assertEquals("Invalid request type! Route sparql can only accept GET request.", response.getString("Result"));
+        assertEquals("Invalid request type! Route sparql can only accept POST request.", response.getString("Result"));
     }
 
     @Test
@@ -284,12 +278,13 @@ class DataBridgeAgentTest {
     }
 
     @Test
-    void testProcessRequestParametersForTimeSeriesRouteViaPOSTIncompleteProperties() throws IOException {
+    void testProcessRequestParametersForTimeSeriesRouteIncompleteProperties() throws IOException {
         // Generate sample config file
-        File config = TestConfigUtils.genSampleTimeSeriesConfigFile(false, srcDb, srcUser, srcPass, sparqlSrc, "", "");
+        File config = TestConfigUtils.genSampleTimeSeriesConfigFile(false, srcDb, srcUser, srcPass);
         // Set up request parameters
         JSONObject requestParams = new JSONObject();
         requestParams.put(KEY_METHOD, POST_METHOD);
+        requestParams.put(KEY_NAMESPACE, VAL_SOURCE_NAMESPACE);
         requestParams.put(KEY_TIME_CLASS, VAL_TIME_CLASS);
         requestParams.put(KEY_TIMESTAMP, VAL_TIMESTAMP);
         requestParams.put(KEY_VALUES, VAL_VALUES);
@@ -307,12 +302,13 @@ class DataBridgeAgentTest {
     }
 
     @Test
-    void testProcessRequestParametersForTimeSeriesRouteViaPOST() throws IOException {
+    void testProcessRequestParametersForTimeSeriesRoute() throws IOException {
         // Generate sample config file
-        File config = TestConfigUtils.genSampleTimeSeriesConfigFile(true, srcDb, srcUser, srcPass, sparqlSrc, "", "");
+        File config = TestConfigUtils.genSampleTimeSeriesConfigFile(true, srcDb, srcUser, srcPass);
         // Set up request parameters
         JSONObject requestParams = new JSONObject();
         requestParams.put(KEY_METHOD, POST_METHOD);
+        requestParams.put(KEY_NAMESPACE, VAL_SOURCE_NAMESPACE);
         requestParams.put(KEY_TIME_CLASS, VAL_TIME_CLASS);
         requestParams.put(KEY_TIMESTAMP, VAL_TIMESTAMP);
         requestParams.put(KEY_VALUES, VAL_VALUES);

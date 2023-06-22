@@ -26,6 +26,8 @@ public class DataBridgeAgent extends JPSAgent {
     private static boolean AGENT_IN_STACK = false;
     private static final String INVALID_PARAMETER_ERROR_MSG = "Parameters are invalid, please check logs for more details.";
     private static final String INVALID_ROUTE_ERROR_MSG = "Invalid request type! Route ";
+    private static final String KEY_SOURCE_NAMESPACE = "source";
+    private static final String KEY_TARGET_NAMESPACE = "target";
     private static final String KEY_NAMESPACE = "namespace";
     private static final String KEY_DATABASE = "database";
     private static final String KEY_TRANSFER = "transfer";
@@ -86,12 +88,14 @@ public class DataBridgeAgent extends JPSAgent {
         // Run logic based on request path
         switch (route) {
             case "sparql":
-                if (requestType.equals("GET")) {
-                    String[] config = requestParams.has(KEY_NAMESPACE) ? ConfigStore.retrieveSPARQLConfig(requestParams.get(KEY_NAMESPACE).toString(), requestParams.getString(KEY_TRANSFER)) : ConfigStore.retrieveSPARQLConfig();
+                if (requestType.equals("POST")) {
+                    String[] config = new String[2];
+                    config[0] = requestParams.get(KEY_SOURCE_NAMESPACE).toString();
+                    config[1] = requestParams.get(KEY_TARGET_NAMESPACE).toString();
                     jsonMessage = sparqlRoute(config);
                 } else {
-                    LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
-                    jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
+                    LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept POST request.");
+                    jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept POST request.");
                 }
                 break;
             case "sql":
@@ -107,8 +111,7 @@ public class DataBridgeAgent extends JPSAgent {
             case "timeseries":
                 if (requestType.equals("POST")) {
                     String db = requestParams.has(KEY_DATABASE) ? requestParams.getString(KEY_DATABASE) : "";
-                    String namespace = requestParams.has(KEY_NAMESPACE) ? requestParams.getString(KEY_NAMESPACE) : "";
-                    String[] config = ConfigStore.retrieveTSClientConfig(namespace, db);
+                    String[] config = ConfigStore.retrieveTSClientConfig(requestParams.getString(KEY_NAMESPACE), db);
                     jsonMessage = timeSeriesRoute(config, requestParams);
                 } else {
                     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept POST request.");
@@ -150,12 +153,36 @@ public class DataBridgeAgent extends JPSAgent {
                 return false;
             }
         }
+        // Verify if there is a source and target parameter for the `sparql` route
+        if (requestParams.get("requestUrl").toString().contains("sparql")) {
+            if (requestParams.has(KEY_SOURCE_NAMESPACE)) {
+                LOGGER.info("Detected source namespace parameter...");
+                String namespace = requestParams.get(KEY_SOURCE_NAMESPACE).toString();
+                // As SPARQL endpoints varies based on the triplestore, the agent only validates if HTTP or HTTPS protocol is used
+                validate = namespace.startsWith("http://") || namespace.startsWith("https://");
+                if (!validate) {
+                    LOGGER.fatal("Source namespace does not start with http or https protocol!");
+                    return false;
+                }
+                if (requestParams.has(KEY_TARGET_NAMESPACE)) {
+                    LOGGER.info("Detected target namespace parameter...");
+                    namespace = requestParams.get(KEY_TARGET_NAMESPACE).toString();
+                    return namespace.startsWith("http://") || namespace.startsWith("https://");
+                } else {
+                    LOGGER.fatal("The request is missing a `target` parameter!");
+                    return false;
+                }
+            } else {
+                LOGGER.fatal("The request is missing a `source` parameter!");
+                return false;
+            }
+        }
         // Note that the validation must not continue here for the time series route, as these parameters are optional
         // If there are `namespace` or `database` parameters passed for the sparql or sql route
-        if (requestParams.get("requestUrl").toString().contains("sql") || requestParams.get("requestUrl").toString().contains("sparql")) {
+        if (requestParams.get("requestUrl").toString().contains("sql")) {
             validate = true;
-            if (requestParams.has(KEY_NAMESPACE) || requestParams.has(KEY_DATABASE)) {
-                LOGGER.info("Detected a namespace or database parameter...");
+            if (requestParams.has(KEY_DATABASE)) {
+                LOGGER.info("Detected a database parameter...");
                 // Ensure that a `transfer` parameter is also passed
                 if (requestParams.has(KEY_TRANSFER)) {
                     LOGGER.info("Detected a transfer parameter and validating it...");
@@ -170,7 +197,7 @@ public class DataBridgeAgent extends JPSAgent {
                     return false;
                 }
             } else if (requestParams.has(KEY_TRANSFER)) {
-                LOGGER.fatal("`transfer` parameter is passed without a namespace or database parameter!");
+                LOGGER.fatal("`transfer` parameter is passed without a database parameter!");
                 return false;
             }
             return validate;
