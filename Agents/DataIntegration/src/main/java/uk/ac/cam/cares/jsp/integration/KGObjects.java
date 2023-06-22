@@ -13,17 +13,19 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
+import java.nio.file.Path;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 public class KGObjects {
     private static final Logger LOGGER = LogManager.getLogger(KGObjects.class);
-
+    private static final Path configPath = Path.of("/inputs/config");
     static String ontoj = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#";
     static Prefix p_j1 = SparqlBuilder.prefix("j1",iri(ontoj));
     static String ontoPowsys = "http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#";
@@ -82,10 +84,20 @@ public class KGObjects {
         }
 
     }
-    public List<KGObjects> getAllObjects(String type) throws SQLException {
+    public List<KGObjects> getAllObjects(Map<String, String> parameters) throws SQLException {
         PreparedStatement psQuery = null;
         ResultSet rs = null;
         List<KGObjects> allObjects = new ArrayList<>();
+
+        String prefix1 = parameters.get("prefix1");
+        String prefix2 = parameters.get("prefix2");
+        String isA = parameters.get("isA");
+        String has = parameters.get("has");
+
+        p_j1 = SparqlBuilder.prefix("j1",iri(prefix1));
+        p_powsys = SparqlBuilder.prefix("powsys",iri(prefix2));
+        Iri hasProperty = p_powsys.iri(has);
+        Iri isANode = p_j1.iri(isA);
 
         SelectQuery query = Queries.SELECT();
 
@@ -93,23 +105,28 @@ public class KGObjects {
         Variable name = query.var();
         Variable entity = query.var();
         TriplePattern[] queryPattern;
-        switch (type) {
-            case "power":
-                queryPattern = new TriplePattern[]{entity.isA(busNode),
-                        building.has(hasBusNode, entity),
-                        building.has(labels, name)};
-                query.prefix(p_j1,p_powsys,rdfs).where(queryPattern).select(building,name);
-                break;
-            case "bim":
-                queryPattern = new TriplePattern[]{building.isA(botBuilding),
-                        building.has(hasIfcRepresentation, entity),
-                        entity.isA(IfcBuildingRepresentation),
+        queryPattern = new TriplePattern[]{building.isA(isANode),
+                        building.has(hasProperty, entity),
                         entity.has(labels, name)};
-                query.prefix(p_bot,p_ontobim,rdfs).where(queryPattern).select(building,name);
-                break;
-            default:
+                query.prefix(p_j1,p_powsys,rdfs).where(queryPattern).select(building,name);
 
-        }
+//        switch (type) {
+//            case "power":
+//                queryPattern = new TriplePattern[]{entity.isA(busNode),
+//                        building.has(hasBusNode, entity),
+//                        building.has(labels, name)};
+//                query.prefix(p_j1,p_powsys,rdfs).where(queryPattern).select(building,name);
+//                break;
+//            case "bim":
+//                queryPattern = new TriplePattern[]{building.isA(botBuilding),
+//                        building.has(hasIfcRepresentation, entity),
+//                        entity.isA(IfcBuildingRepresentation),
+//                        entity.has(labels, name)};
+//                query.prefix(p_bot,p_ontobim,rdfs).where(queryPattern).select(building,name);
+//                break;
+//            default:
+
+//        }
 
         if(kgClient == null){
             kgClient = new RemoteStoreClient();

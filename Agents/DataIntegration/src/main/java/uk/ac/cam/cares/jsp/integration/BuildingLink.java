@@ -20,12 +20,22 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
+
 @WebServlet(urlPatterns = {"/BuildingLink"})
 public class BuildingLink extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(SpatialLink.class);
+//    private static final File configPath = File.of("/inputs/config");
+    private static String file ="/inputs/config/buildinglink";
     List<GeoObject3D> geoObject3Ds = new ArrayList<>();
     List<KGObjects> kgObjects = new ArrayList<>();
 
@@ -41,16 +51,19 @@ public class BuildingLink extends HttpServlet {
         LOGGER.info("Received POST request to link building");
         LOGGER.info("Received request: " + req);
 
-        String db3d;
+        Map<String, String> parameters = aggregateByKeys();
+        String db3d = parameters.get("db3d");
+        String kgurl = parameters.get("blazegraph");
+
         GeoObject3D object3D = new GeoObject3D();
-        String kgurl = req.getParameter("iri");
+
         RemoteStoreClient kgClient = new RemoteStoreClient(kgurl,kgurl,null,null);
         KGObjects kgObjects = new KGObjects(kgClient, null, null, null, null);
-        String type = req.getParameter("type"); //building type (related to namespace)
+//        String type = req.getParameter("type"); //building type (related to namespace)
         try {
-            this.kgObjects =  kgObjects.getAllObjects(type);
+            this.kgObjects =  kgObjects.getAllObjects(parameters);
 
-            db3d = req.getParameter("db3d");
+//            db3d = req.getParameter("db3d");
 
             if (postgisClient == null) {
                 postgisClient = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
@@ -117,5 +130,22 @@ public class BuildingLink extends HttpServlet {
 
     void setPostGISClient(PostgresClient postgisClient) {
         this.postgisClient = postgisClient;
+    }
+
+    public static Map<String, String> aggregateByKeys() {
+        Map<String, String> map = new HashMap<>();
+        try (Stream<String> lines = Files.lines(Paths.get(file))) {
+            lines.filter(line -> line.contains(":"))
+                    .forEach(line -> {
+                        String[] keyValuePair = line.split(":", 2);
+                        String key = keyValuePair[0];
+                        String value = keyValuePair[1];
+                        map.put(key, value);
+
+                    });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return map;
     }
 }

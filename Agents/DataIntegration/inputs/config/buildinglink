@@ -1,0 +1,6 @@
+db3d:jdbc:postgresql://localhost:5432/pirmasens
+blazegraph:http://localhost:3838//blazegraph/namespace/ifc/sparql
+prefix1:https://w3id.org/bot#
+prefix2:https://www.theworldavatar.com/kg/ontobim/
+isA:Building
+has:hasIfcRepresentation

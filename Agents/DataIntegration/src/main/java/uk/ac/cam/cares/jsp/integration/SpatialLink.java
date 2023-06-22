@@ -2,15 +2,19 @@ package uk.ac.cam.cares.jsp.integration;
 /**
  * Set name of geoobject (3D model) based on reference data (2D geospatial data with metatdata)
  * All data in different database of PostgreSQL
- * Parameter: database names of 3D model and reference data
+ * Parameter:
+ * 1. database names of 3D model and reference data
+ * 2. database name of 2D data
+ * 3. table name of 2D data
  * @author Jingya yan
  *
  */
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.referencing.CRS;
-import org.geotools.geometry.jts.JTS;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
@@ -19,14 +23,15 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 @WebServlet(urlPatterns = {"/SpatialLink"})
 public class SpatialLink extends HttpServlet {
 
@@ -44,7 +49,7 @@ public class SpatialLink extends HttpServlet {
     void setPostGISClient3d(PostgresClient postgisClient) {
         this.postgresClient3d = postgisClient;
     }
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
         new Config().initProperties();
         LOGGER.info("Received POST request to build spatial linking");
         LOGGER.info("Received request: " + req);
@@ -67,7 +72,7 @@ public class SpatialLink extends HttpServlet {
 
         if (postgresClient2d == null) {
             postgresClient2d = new PostgresClient(Config.dburl + "/" + db2d, Config.dbuser, Config.dbpassword);
-            PostgresClient postgresClient3d = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
+//            PostgresClient postgresClient3d = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
         }
         if (postgresClient3d == null) {
             postgresClient3d = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
