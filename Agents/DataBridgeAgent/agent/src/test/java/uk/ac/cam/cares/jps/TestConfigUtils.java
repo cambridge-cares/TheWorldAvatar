@@ -32,21 +32,4 @@ public class TestConfigUtils {
         writer.close();
         return file;
     }
-
-    public static File genSampleTimeSeriesConfigFile(boolean isComplete, String srcDb, String srcDbUser, String srcDbPass) throws IOException {
-        File file = new File(System.getProperty("user.dir") + "/config/endpoint.properties");
-        // Check if the directory exists, create it if it doesn't
-        if (!file.getParentFile().exists()) {
-            file.getParentFile().mkdirs();
-        }
-        file.createNewFile();
-        PrintWriter writer = new PrintWriter(file);
-        writer.println(srcDBUrl + "=" + srcDb);
-        if (isComplete) {
-            writer.println(srcDBUser + "=" + srcDbUser);
-            writer.println(srcDBPass + "=" + srcDbPass);
-        }
-        writer.close();
-        return file;
-    }
 }

@@ -23,8 +23,6 @@ public class ConfigStore {
     private static final String NO_PROPERTIES_MSG = "No endpoint.properties file detected! Please place the file in the config directory.";
     private static final String INACCESSIBLE_CLIENT_PROPERTIES_MSG = "File could not be accessed! See error message for more details: ";
     private static final String PROPERTIES_FILEPATH = System.getProperty("user.dir") + "/config/endpoint.properties";
-    private static final String VAL_TRANSFER_IN = "in";
-    private static final String VAL_TRANSFER_OUT = "out";
     private static final String SRC_DB_URL = "src.db.url";
     private static final String SRC_DB_USER = "src.db.user";
     private static final String SRC_DB_PASSWORD = "src.db.password";
@@ -39,36 +37,55 @@ public class ConfigStore {
      * @return An array of these endpoints.
      */
     public static String[] retrieveSQLConfig() {
-        return retrieveSQLConfig(null, "");
-    }
-
-    /**
-     * Retrieves SQL database properties stored in the properties file or as a stack database.
-     *
-     * @param stackDatabase The stack database name passed as a parameter to the GET request.
-     * @return An array of these endpoints.
-     */
-    public static String[] retrieveSQLConfig(String stackDatabase, String transferKey) {
         StringBuilder missingPropertiesErrorMessage = new StringBuilder();
         try (InputStream input = new FileInputStream(PROPERTIES_FILEPATH)) {
             Properties prop = new Properties();
             String[] config = new String[6];
             LOGGER.debug("Retrieving configuration from " + PROPERTIES_FILEPATH + "...");
             prop.load(input);
-            if (transferKey.isEmpty()) {
-                LOGGER.info("Retrieving the details for source and target databases from file...");
-                retrieveDatabase(true, config, prop, missingPropertiesErrorMessage, "");
+            LOGGER.info("Retrieving the details for source and target databases from file...");
+            retrieveDatabase(true, config, prop, missingPropertiesErrorMessage, "");
+            retrieveDatabase(false, config, prop, missingPropertiesErrorMessage, "");
+            String missingMessage = missingPropertiesErrorMessage.toString();
+            if (!missingMessage.isEmpty()) {
+                LOGGER.error("Missing Properties:\n" + missingMessage);
+                throw new JPSRuntimeException("Missing Properties:\n" + missingMessage);
+            }
+            LOGGER.info("All required configurations have been retrieved!");
+            return config;
+        } catch (FileNotFoundException e) {
+            LOGGER.error(NO_PROPERTIES_MSG);
+            throw new JPSRuntimeException(NO_PROPERTIES_MSG);
+        } catch (IOException e) {
+            LOGGER.error(INACCESSIBLE_CLIENT_PROPERTIES_MSG + e);
+            throw new JPSRuntimeException(INACCESSIBLE_CLIENT_PROPERTIES_MSG + e);
+        }
+    }
+
+    /**
+     * Retrieves SQL database properties for a stack database.
+     *
+     * @param stackDatabase The stack database name passed as a parameter to the GET request.
+     * @param stackIsSource A boolean indicating if the stack is the source database to transfer time series from.
+     * @return An array of these endpoints.
+     */
+    public static String[] retrieveSQLConfig(String stackDatabase, boolean stackIsSource) {
+        StringBuilder missingPropertiesErrorMessage = new StringBuilder();
+        try (InputStream input = new FileInputStream(PROPERTIES_FILEPATH)) {
+            Properties prop = new Properties();
+            String[] config = new String[6];
+            LOGGER.debug("Retrieving configuration from " + PROPERTIES_FILEPATH + "...");
+            prop.load(input);
+            if (stackIsSource) {
+                LOGGER.info("Retrieving the details for the stack database as a source...");
+                retrieveStackDatabase(stackDatabase, config, true);
+                LOGGER.info("Retrieving the details for target database from file...");
                 retrieveDatabase(false, config, prop, missingPropertiesErrorMessage, "");
-            } else if (transferKey.equals(VAL_TRANSFER_IN)) {
+            } else {
                 LOGGER.info("Retrieving the details for source database from file...");
                 retrieveDatabase(true, config, prop, missingPropertiesErrorMessage, "");
                 LOGGER.info("Retrieving the details for the stack database to be targeted...");
-                retrieveDatabase(false, config, prop, missingPropertiesErrorMessage, stackDatabase);
-            } else if (transferKey.equals(VAL_TRANSFER_OUT)) {
-                LOGGER.info("Retrieving the details for the stack database as a source...");
-                retrieveDatabase(true, config, prop, missingPropertiesErrorMessage, stackDatabase);
-                LOGGER.info("Retrieving the details for target database from file...");
-                retrieveDatabase(false, config, prop, missingPropertiesErrorMessage, "");
+                retrieveStackDatabase(stackDatabase, config, false);
             }
             String missingMessage = missingPropertiesErrorMessage.toString();
             if (!missingMessage.isEmpty()) {
@@ -152,37 +169,20 @@ public class ConfigStore {
     }
 
     /**
-     * Retrieves the TSClient configuration as an array. If the stack parameters are available, the stack database will be retrieved.
-     * Otherwise, the configuration will be retrieved based on the source database of the properties file.
+     * Retrieves the TSClient configuration as an array.
      *
      * @param stackDatabase The stack database name passed as a parameter to the POST request.
      * @param namespace     The namespace endpoint passed as a parameter to the POST request.
      * @return An array containing the database url, username, password, and the sparql endpoint.
      */
     public static String[] retrieveTSClientConfig(String namespace, String stackDatabase) {
-        try (InputStream input = new FileInputStream(PROPERTIES_FILEPATH)) {
             String[] config = new String[4];
-            StringBuilder missingPropertiesErrorMessage = new StringBuilder();
-            Properties prop = new Properties();
-            LOGGER.debug("Retrieving configuration from " + PROPERTIES_FILEPATH + "...");
-            prop.load(input);
             LOGGER.info("Retrieving rdb database credentials...");
-            retrieveDatabase(true, config, prop, missingPropertiesErrorMessage, stackDatabase);
+            // Note that this route will only retrieve stack RDB credentials and non-stack databases cannot be used.
+            retrieveStackDatabase(stackDatabase, config, true);
             LOGGER.info("Retrieving sparql endpoint...");
             config[3] = namespace;
-            String missingMessage = missingPropertiesErrorMessage.toString();
-            if (!missingMessage.isEmpty()) {
-                LOGGER.error("Missing Properties:\n" + missingMessage);
-                throw new JPSRuntimeException("Missing Properties:\n" + missingMessage);
-            }
             LOGGER.info("All required configurations have been retrieved!");
             return config;
-        } catch (FileNotFoundException e) {
-            LOGGER.error(NO_PROPERTIES_MSG);
-            throw new JPSRuntimeException(NO_PROPERTIES_MSG);
-        } catch (IOException e) {
-            LOGGER.error(INACCESSIBLE_CLIENT_PROPERTIES_MSG + e);
-            throw new JPSRuntimeException(INACCESSIBLE_CLIENT_PROPERTIES_MSG + e);
-        }
     }
 }

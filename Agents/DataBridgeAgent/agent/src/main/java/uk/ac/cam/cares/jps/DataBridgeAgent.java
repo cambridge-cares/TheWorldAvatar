@@ -30,7 +30,8 @@ public class DataBridgeAgent extends JPSAgent {
     private static final String KEY_TARGET_NAMESPACE = "target";
     private static final String KEY_NAMESPACE = "namespace";
     private static final String KEY_DATABASE = "database";
-    private static final String KEY_TRANSFER = "transfer";
+    private static final String KEY_SOURCE_DATABASE = "srcDbName";
+    private static final String KEY_TARGET_DATABASE = "tgtDbName";
     private static final String KEY_TIME_CLASS = "timeClass";
     private static final String KEY_TIMESTAMP = "timestamp";
     private static final String KEY_VALUES = "values";
@@ -100,8 +101,10 @@ public class DataBridgeAgent extends JPSAgent {
                 break;
             case "sql":
                 if (requestType.equals("GET")) {
-                    String[] config = requestParams.has(KEY_DATABASE) ? ConfigStore.retrieveSQLConfig(requestParams.get(KEY_DATABASE).toString(), requestParams.getString(KEY_TRANSFER)) : ConfigStore.retrieveSQLConfig();
-                    AGENT_IN_STACK = requestParams.has(KEY_DATABASE);
+                    String[] config = requestParams.has(KEY_SOURCE_DATABASE) ? ConfigStore.retrieveSQLConfig(requestParams.get(KEY_SOURCE_DATABASE).toString(), true) :
+                            requestParams.has(KEY_TARGET_DATABASE) ? ConfigStore.retrieveSQLConfig(requestParams.get(KEY_TARGET_DATABASE).toString(), false) :
+                                    ConfigStore.retrieveSQLConfig();
+                    AGENT_IN_STACK = requestParams.has(KEY_SOURCE_DATABASE) || requestParams.has(KEY_TARGET_DATABASE);
                     jsonMessage = sqlRoute(config);
                 } else {
                     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
@@ -177,30 +180,25 @@ public class DataBridgeAgent extends JPSAgent {
                 return false;
             }
         }
-        // Note that the validation must not continue here for the time series route, as these parameters are optional
-        // If there are `namespace` or `database` parameters passed for the sparql or sql route
+        // If there are parameters passed for the sql route
         if (requestParams.get("requestUrl").toString().contains("sql")) {
-            validate = true;
-            if (requestParams.has(KEY_DATABASE)) {
-                LOGGER.info("Detected a database parameter...");
-                // Ensure that a `transfer` parameter is also passed
-                if (requestParams.has(KEY_TRANSFER)) {
-                    LOGGER.info("Detected a transfer parameter and validating it...");
-                    // The transfer parameter must only contain either `in` or `out`
-                    String transfer = requestParams.getString(KEY_TRANSFER);
-                    validate = transfer.equals("in") || transfer.equals("out");
-                    if (!validate) {
-                        LOGGER.fatal("Invalid `transfer` value! The parameter must only be either in or out!");
-                    }
-                } else {
-                    LOGGER.fatal("Please include a `transfer` parameter with either in or out!");
+            if (requestParams.has(KEY_SOURCE_DATABASE) && requestParams.has(KEY_TARGET_DATABASE)) {
+                    LOGGER.fatal("Detected both `srcDbName` and `tgtDbName` parameters! Only one of these parameters is needed");
+                    return false;
+            }
+            if (requestParams.has(KEY_SOURCE_DATABASE)) {
+                if (!(requestParams.get(KEY_SOURCE_DATABASE) instanceof String)) {
+                    LOGGER.fatal("`srcDbName` is not a string!");
                     return false;
                 }
-            } else if (requestParams.has(KEY_TRANSFER)) {
-                LOGGER.fatal("`transfer` parameter is passed without a database parameter!");
-                return false;
             }
-            return validate;
+            if (requestParams.has(KEY_TARGET_DATABASE)) {
+                if (!(requestParams.get(KEY_TARGET_DATABASE) instanceof String)) {
+                    LOGGER.fatal("`tgtDbName` is not a string!");
+                    return false;
+                }
+            }
+            validate = true;
         }
         return validate;
     }

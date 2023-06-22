@@ -1,15 +1,19 @@
 package uk.ac.cam.cares.jps;
 
+import com.cmclinnovations.stack.clients.docker.ContainerClient;
+import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.bridge.SparqlBridge;
 import uk.ac.cam.cares.jps.bridge.SqlBridge;
 import uk.ac.cam.cares.jps.bridge.TimeSeriesBridge;
+import uk.ac.cam.cares.jps.util.ConfigStore;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,9 +28,12 @@ class DataBridgeAgentTest {
     private static final String KEY_TARGET_NAMESPACE = "target";
     private static final String VAL_SOURCE_NAMESPACE = "http://admin:srcpass@example.org/blazegraph/namespace/test/sparql";
     private static final String VAL_TARGET_NAMESPACE = "http://admin:newpassword@stack-blazegraph:8080/blazegraph/namespace/target/sparql";
+    private static final String KEY_SOURCE_DATABASE = "srcDbName";
+    private static final String KEY_TARGET_DATABASE = "tgtDbName";
+    private static final String VAL_SOURCE_DATABASE = "source";
+    private static final String VAL_TARGET_DATABASE = "target";
     private static final String KEY_NAMESPACE = "namespace";
     private static final String KEY_DATABASE = "database";
-    private static final String KEY_TRANSFER = "transfer";
     private static final String VAL_NAMESPACE = "default";
     private static final String VAL_DATABASE = "test";
     private static final String VAL_TRANSFER = "in";
@@ -89,12 +96,21 @@ class DataBridgeAgentTest {
         requestParams.put(KEY_ROUTE, SPARQL_ROUTE);
         assertTrue(agent.validateInput(requestParams));
 
-        // For sql route
+        // For sql route without parameters
         requestParams = new JSONObject();
-        requestParams.put(KEY_DATABASE, VAL_DATABASE);
-        requestParams.put(KEY_TRANSFER, VAL_TRANSFER);
         requestParams.put(KEY_ROUTE, SQL_ROUTE);
         assertTrue(agent.validateInput(requestParams));
+        // For sql route with source parameters
+        requestParams = new JSONObject();
+        requestParams.put(KEY_SOURCE_DATABASE, VAL_SOURCE_DATABASE);
+        requestParams.put(KEY_ROUTE, SQL_ROUTE);
+        assertTrue(agent.validateInput(requestParams));
+        // For sql route with target parameters
+        requestParams = new JSONObject();
+        requestParams.put(KEY_TARGET_DATABASE, VAL_TARGET_DATABASE);
+        requestParams.put(KEY_ROUTE, SQL_ROUTE);
+        assertTrue(agent.validateInput(requestParams));
+
     }
 
     @Test
@@ -128,26 +144,15 @@ class DataBridgeAgentTest {
         requestParams.put(KEY_SOURCE_NAMESPACE, VAL_SOURCE_NAMESPACE);
         requestParams.put(KEY_ROUTE, SPARQL_ROUTE);
         assertFalse(agent.validateInput(requestParams));
-        // Invalid for only transfer key provided to sql route
+        // Invalid if both parameters are passed to sql route
         requestParams = new JSONObject();
-        requestParams.put(KEY_TRANSFER, VAL_TRANSFER);
+        requestParams.put(KEY_SOURCE_DATABASE, VAL_SOURCE_DATABASE);
+        requestParams.put(KEY_TARGET_DATABASE, VAL_TARGET_DATABASE);
         requestParams.put(KEY_ROUTE, SQL_ROUTE);
         assertFalse(agent.validateInput(requestParams));
-        // Invalid when 'transfer' value is not in or out
+        // Invalid when parameter is not a string
         requestParams = new JSONObject();
-        requestParams.put(KEY_NAMESPACE, VAL_NAMESPACE);
-        requestParams.put(KEY_TRANSFER, "invalid");
-        requestParams.put(KEY_ROUTE, SQL_ROUTE);
-        assertFalse(agent.validateInput(requestParams));
-        // Invalid for only database key provided
-        requestParams = new JSONObject();
-        requestParams.put(KEY_DATABASE, VAL_DATABASE);
-        requestParams.put(KEY_ROUTE, SQL_ROUTE);
-        assertFalse(agent.validateInput(requestParams));
-        // Invalid when 'transfer' value is not in or out
-        requestParams = new JSONObject();
-        requestParams.put(KEY_DATABASE, VAL_DATABASE);
-        requestParams.put(KEY_TRANSFER, "invalid");
+        requestParams.put(KEY_SOURCE_DATABASE, 135);
         requestParams.put(KEY_ROUTE, SQL_ROUTE);
         assertFalse(agent.validateInput(requestParams));
     }
@@ -222,7 +227,7 @@ class DataBridgeAgentTest {
     }
 
     @Test
-    void testProcessRequestParametersForSqlRouteViaGETIncompleteProperties() throws IOException {
+    void testProcessRequestParametersForSqlRouteIncompleteProperties() throws IOException {
         // Generate sample config file
         File config = TestConfigUtils.genSampleSQLConfigFile(false, srcDb, srcUser, srcPass, tgtDb, tgtUser, tgtPass);
         // Set up request parameters
@@ -242,7 +247,7 @@ class DataBridgeAgentTest {
     }
 
     @Test
-    void testProcessRequestParametersForSqlRouteViaGET() throws IOException {
+    void testProcessRequestParametersForSqlRoute() throws IOException {
         // Generate sample config file
         File config = TestConfigUtils.genSampleSQLConfigFile(true, srcDb, srcUser, srcPass, tgtDb, tgtUser, tgtPass);
         // Set up request parameters
@@ -266,6 +271,42 @@ class DataBridgeAgentTest {
     }
 
     @Test
+    void testProcessRequestParametersForSqlRouteForStack() throws IOException {
+        // Generate sample config file
+        File config = TestConfigUtils.genSampleSQLConfigFile(true, srcDb, srcUser, srcPass, tgtDb, tgtUser, tgtPass);
+        // Set up request parameters
+        JSONObject requestParams = new JSONObject();
+        requestParams.put(KEY_METHOD, GET_METHOD);
+        requestParams.put(KEY_SOURCE_DATABASE, VAL_SOURCE_DATABASE);
+        requestParams.put(KEY_ROUTE, SQL_ROUTE);
+        // Mock the postgis config object to control what values are retrieved
+        PostGISEndpointConfig mockConfig = Mockito.mock(PostGISEndpointConfig.class);
+        // Mock the container client object to retrieve the stack configuration as stack cannot be started in a test environment
+        try (MockedConstruction<ContainerClient> mockClient = Mockito.mockConstruction(ContainerClient.class,
+                (mock, context) -> {
+                    Mockito.when(mock.readEndpointConfig("postgis", PostGISEndpointConfig.class)).thenReturn(mockConfig);
+                });
+             // Mock the bridge object, as it cannot be unit tested and requires integration test
+             MockedConstruction<SqlBridge> mockConnector = Mockito.mockConstruction(SqlBridge.class,
+                     (mock, context) -> {
+                         Mockito.when(mock.transfer(true)).thenReturn(EXPECTED_RESPONSE);
+                     })
+        ) {
+            // Mock the values to be retrieved for the stack RDB
+            Mockito.when(mockConfig.getJdbcURL(Mockito.anyString())).thenReturn(srcDb);
+            Mockito.when(mockConfig.getUsername()).thenReturn(srcUser);
+            Mockito.when(mockConfig.getPassword()).thenReturn(srcPass);
+            // Execute method
+            JSONObject response = agent.processRequestParameters(requestParams);
+            // Verify response
+            assertEquals(EXPECTED_RESPONSE, response);
+        } finally {
+            // Always delete generated config file
+            config.delete();
+        }
+    }
+
+    @Test
     void testProcessRequestParametersForSqlRouteViaInvalidPOST() {
         // Set up request parameters
         JSONObject requestParams = new JSONObject();
@@ -278,9 +319,7 @@ class DataBridgeAgentTest {
     }
 
     @Test
-    void testProcessRequestParametersForTimeSeriesRouteIncompleteProperties() throws IOException {
-        // Generate sample config file
-        File config = TestConfigUtils.genSampleTimeSeriesConfigFile(false, srcDb, srcUser, srcPass);
+    void testProcessRequestParametersForTimeSeriesRoute() {
         // Set up request parameters
         JSONObject requestParams = new JSONObject();
         requestParams.put(KEY_METHOD, POST_METHOD);
@@ -289,43 +328,28 @@ class DataBridgeAgentTest {
         requestParams.put(KEY_TIMESTAMP, VAL_TIMESTAMP);
         requestParams.put(KEY_VALUES, VAL_VALUES);
         requestParams.put(KEY_ROUTE, TIME_SERIES_ROUTE);
-        try {
-            // Execute method should throw right error and response
-            JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> agent.processRequestParameters(requestParams));
-            assertEquals("Missing Properties:\n" +
-                    "src.db.user is missing! Please add the input to endpoint.properties.\n" +
-                    "src.db.password is missing! Please add the input to endpoint.properties.\n", thrownError.getMessage());
-        } finally {
-            // Always delete generated config file
-            config.delete();
-        }
-    }
-
-    @Test
-    void testProcessRequestParametersForTimeSeriesRoute() throws IOException {
-        // Generate sample config file
-        File config = TestConfigUtils.genSampleTimeSeriesConfigFile(true, srcDb, srcUser, srcPass);
-        // Set up request parameters
-        JSONObject requestParams = new JSONObject();
-        requestParams.put(KEY_METHOD, POST_METHOD);
-        requestParams.put(KEY_NAMESPACE, VAL_SOURCE_NAMESPACE);
-        requestParams.put(KEY_TIME_CLASS, VAL_TIME_CLASS);
-        requestParams.put(KEY_TIMESTAMP, VAL_TIMESTAMP);
-        requestParams.put(KEY_VALUES, VAL_VALUES);
-        requestParams.put(KEY_ROUTE, TIME_SERIES_ROUTE);
-        // Mock the bridge object, as it cannot be unit tested and requires integration test
-        try (MockedConstruction<TimeSeriesBridge> mockConnector = Mockito.mockConstruction(TimeSeriesBridge.class,
+        // Mock the postgis config object to control what values are retrieved
+        PostGISEndpointConfig mockConfig = Mockito.mock(PostGISEndpointConfig.class);
+        // Mock the container client object to retrieve the stack configuration as stack cannot be started in a test environment
+        try (MockedConstruction<ContainerClient> mockClient = Mockito.mockConstruction(ContainerClient.class,
                 (mock, context) -> {
-                    Mockito.when(mock.instantiateTimeSeries(Mockito.any())).thenReturn(EXPECTED_RESPONSE);
-                })
+                    Mockito.when(mock.readEndpointConfig("postgis", PostGISEndpointConfig.class)).thenReturn(mockConfig);
+                });
+             // Mock the bridge object, as it cannot be unit tested and requires integration test
+             MockedConstruction<TimeSeriesBridge> mockConnector = Mockito.mockConstruction(TimeSeriesBridge.class,
+                     (mock, context) -> {
+                         Mockito.when(mock.instantiateTimeSeries(Mockito.any())).thenReturn(EXPECTED_RESPONSE);
+                     })
+
         ) {
+            // Mock the values to be retrieved for the stack RDB
+            Mockito.when(mockConfig.getJdbcURL(Mockito.anyString())).thenReturn(srcDb);
+            Mockito.when(mockConfig.getUsername()).thenReturn(srcUser);
+            Mockito.when(mockConfig.getPassword()).thenReturn(srcPass);
             // Execute method
             JSONObject response = agent.processRequestParameters(requestParams);
             // Verify response
             assertEquals(EXPECTED_RESPONSE, response);
-        } finally {
-            // Always delete generated config file
-            config.delete();
         }
     }
 

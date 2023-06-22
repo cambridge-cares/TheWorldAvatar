@@ -77,23 +77,23 @@ curl -X POST --header "Content-Type: application/json" -d "{
     'target': 'http://user:pass@stackName-blazegraph:8080/blazegraph/namespace/kb/sparql'
 }" localhost:3055/data-bridge-agent/sparql 
 ```
-curl -X POST --header "Content-Type: application/json" -d "{'source':'http://10.25.188.130:9998/blazegraph/namespace/test/sparql', 'target': 'http://local-blazegraph:8080/blazegraph/namespace/test/sparql'}" localhost:3838/data-bridge-agent/sparql
+
 3. `<base>/sql` route:
    - Execute the agent's task through an HTTP `GET` request. This route will transfer data between the specified source and target databases.
    - If there are existing tables in the target/destination database with the same name, those will be dropped and recreated. Please do take note of this side effect if you wish to retain old data.
    - Before sending the request, please read the instructions.
    - When transferring time series across non-stack database, please update the source and target jdbc url, user, and password in the `<root>/config/endpoint.properties`, and send the simple `GET` request.
-     - Do note that in this instance, the transfer will not occur and will return a command instead. This command must be executed on a CLI that must have `psql` installed to transfer between two remote databases.
-   - When transferring time series from or to the same stack's database, please send the `GET` request with the following parameters:
-       - The `database` parameter refers to the specified database name within the same stack.
-       - The `transfer` parameter indicates whether you wish to transfer time series into or outside the stack. `transfer=in` is for transferring time series from non-stack databases into the stack. `transfer=out` is for transferring time series from the stack to non-stack databases.
-       - Please ensure that the non-stack database credentials have been updated in the `<root>/config/endpoint.properties` at the right position. The source database must be populated for `transfer=in`, whereas target database must be populated for `transfer=out`.
-       - As the transfer may take some time, the agent may return a html response, but do kindly ignore it. The transfer is still occurring in the background.
+     - Do note that in this instance, the transfer will not occur and will return a command instead. This command must be executed on a CLI with `psql` installed to transfer between two remote databases.
+   - When transferring time series from or to the same stack's database, please send the `GET` request with either of the two parameters:
+       - The `srcDbName` parameter refers to the specified database name within the same stack that the agent will transfer data from. When sending this parameter, please populate the target database credentials to store these data in `<root>/config/endpoint.properties`.
+       - The `tgtDbName` parameter refers to the specified database name within the same stack that the agent will store the transferred data. When sending this parameter, please populate the source database credentials with the data to be transferred in `<root>/config/endpoint.properties`.
+       - Please only include ONE of these parameters!!
+   - As the transfer may take some time, the agent may return a html response, but do kindly ignore it. The transfer is still occurring in the background.
 ```
 # For any non-stack databases
 curl -X GET localhost:3055/data-bridge-agent/sql
 # For databases within the stack
-curl -X GET 'localhost:3838/data-bridge-agent/sql?database=db&transfer=in'
+curl -X GET 'localhost:3838/data-bridge-agent/sql?srcDbName=db'
 ```
 
 4. `<base>/timeseries` route:
@@ -103,7 +103,7 @@ curl -X GET 'localhost:3838/data-bridge-agent/sql?database=db&transfer=in'
         - `timestamp` : A JSONArray containing the time stamp as strings in the format of `YYYY-MM-DD'T'HH:MM:SS`.
         - `values` : A JSONObject containing the time series values. A data IRI is inserted as the key and paired with their values as a JSONArray. For example: `{"dataIRI": [1, 2, 3]}`.
       - `namespace`: Specifies the SPARQL endpoint to store the instantiated time series data.  See [Sample Blazegraph endpoints](#4-sample-blazegraph-endpoints)
-      - `database` (OPTIONAL) : Specifies the database name within the same stack. If not specified, the agent will instantiate the time series into the source JDBC url and credentials indicated in the `<root>/config/endpoint.properties` file.
+      - `database` : Specifies the database name within the same stack. Do note that this agent is not intended to instantiate data for non-stack databases. If required, please use the [Timeseries Client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) in your agent instead. 
     - A sample `POST` request using curl on a CLI:
 ```
 curl -X POST --header "Content-Type: application/json" -d "{
