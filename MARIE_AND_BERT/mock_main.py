@@ -44,7 +44,9 @@ mock_response_mop = [
 import json
 from flask import Flask, request
 from flask import render_template, send_from_directory
+from Marie.ChatGPTQAEngine import ChatGPTQAEngine
 
+chatbot = ChatGPTQAEngine()
 app = Flask(__name__)
 
 
@@ -91,10 +93,16 @@ def ontospecies():
     return render_template('ontospecies.html')
 
 
+
 @app.route('/static/<path:path>')
 def send_js(path):
     return send_from_directory('static', path)
 
+@app.route("/ask_chatgpt", methods=['GET'])
+def ask_chatgpt():
+    args = request.args
+    question = args["question"]
+    return json.dumps({"result": chatbot.ask_question(question)})
 
 @app.route("/search", methods=['GET'])
 def search():
