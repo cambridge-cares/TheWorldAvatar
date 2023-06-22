@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  example:
+    image:  historical-ntuenergy-agent:1.0.0
+    build: .
+    container_name: historical-ntuenergy-agent
+    ports:
+      - "1025:8080"
