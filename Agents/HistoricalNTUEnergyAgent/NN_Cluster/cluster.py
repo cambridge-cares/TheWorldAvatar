@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import joblib
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.cluster import KMeans
 from tensorflow.keras.models import Sequential
@@ -31,6 +32,9 @@ model.compile(optimizer='adam', loss='mean_squared_error')
 # Fit the model to the training data
 history = model.fit(X_train, y_train, validation_split=0.2, epochs=50, batch_size=64)
 
+# Save the neural network model
+model.save('nn_model.h5')
+
 # Predict the voltage magnitudes and phase angles using the trained network
 X_test = np.concatenate([test_P_injections, test_Q_injections], axis=1)
 predicted_output = model.predict(X_test)
@@ -49,13 +53,19 @@ plt.show()
 kmeans = KMeans(n_clusters=3)
 clusters = kmeans.fit_predict(predicted_output[:, :14])
 
+# Save the k-means model
+joblib.dump(kmeans, 'kmeans_model.pkl')
+
 # Plot the clusters
 plt.figure()
 for i, color in zip(range(3), ['red', 'green', 'blue']):
-    plt.scatter(np.where(clusters==i), predicted_output[clusters==i, :14], color=color)
+    cluster_indices = np.where(clusters==i)[0]
+    cluster_values = predicted_output[cluster_indices, :14]
+    plt.scatter(cluster_indices, cluster_values.flatten(), color=color)
 plt.axhline(0.95, color='black', linestyle='--')
 plt.axhline(1.05, color='black', linestyle='--')
 plt.xlabel('Data Points')
 plt.ylabel('Values')
 plt.title('K-Means Clustering')
 plt.show()
+

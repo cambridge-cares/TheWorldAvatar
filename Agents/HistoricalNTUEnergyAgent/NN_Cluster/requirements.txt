@@ -5,3 +5,4 @@ tensorflow
 matplotlib
 xlrd
 openpyxl
+joblib
