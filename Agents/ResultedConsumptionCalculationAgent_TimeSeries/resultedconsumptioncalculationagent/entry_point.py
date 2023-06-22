@@ -5,6 +5,7 @@ from resultedconsumptioncalculationagent.utils.stack_configs import QUERY_ENDPOI
 from resultedconsumptioncalculationagent.agent import ResultedConsumptionAgent
 from resultedconsumptioncalculationagent.agent import default
 
+from resultedconsumptioncalculationagent.kg_operations.tsclient import TSClient
 def create_app():
     # Depending on the deployment environment, different ways to retrieve/set the 
     # environment variables for the Derivation Agent are required:
@@ -42,7 +43,7 @@ def create_app():
         logger_name='dev',
         max_thread_monitor_async_derivations=1
     )
-
+    
     agent.add_url_pattern('/', 'root', default, methods=['GET'])
 
     agent.start_all_periodical_job()

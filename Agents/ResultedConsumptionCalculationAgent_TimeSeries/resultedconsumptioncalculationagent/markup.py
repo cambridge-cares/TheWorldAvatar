@@ -21,10 +21,10 @@ RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 RDF_TYPE =  RDF + 'type'
 
 # ----------------------------- Funcs ------------------------------- #
-def Asynmarkup(
+def Synmarkup(
             derivation_client: PyDerivationClient,
             sparql_client: PySparqlClient,
-            cop_iri: str,
+            cop_min_iri, cop_mean_iri, cop_max_iri,
             elec_consumption_iri : str,
             gas_consumption_iri : str,
             consumption_profile_iri : str,
@@ -33,17 +33,19 @@ def Asynmarkup(
             uptake_iri : str,
             agentIRI : str
         ):
-        derivation_iri = retrieve_derivation_iri(sparql_client,cop_iri, agentIRI)
+        derivation_iri = retrieve_derivation_iri(sparql_client,cop_min_iri, agentIRI)
         if not derivation_iri :
-            input_iris = [cop_iri, elec_consumption_iri, gas_consumption_iri, proportion_of_heating_iri, boiler_efficiency_iri, uptake_iri, consumption_profile_iri]
+            input_iris = [cop_min_iri, cop_mean_iri, cop_max_iri, elec_consumption_iri, gas_consumption_iri, proportion_of_heating_iri, boiler_efficiency_iri, uptake_iri, consumption_profile_iri]
             #print(input_iris)
-            derivation = derivation_client.createAsyncDerivationForNewInfo(
+            derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
                 agentIRI=agentIRI,
-                inputsAndDerivations=input_iris
+                agentURL=agentURL,
+                inputsIRI=input_iris,
+                derivationType=pda_iris.ONTODERIVATION_DERIVATION,
             )
         
         else:
-            print(f'InputIRI: {cop_iri} already have derivation IRI: {derivation_iri}, skipped for now')
+            print(f'InputIRI: {cop_min_iri} already have derivation IRI: {derivation_iri}, skipped for now')
 
 def retrieve_derivation_iri(
           sparql_client: PySparqlClient,
@@ -68,29 +70,27 @@ def retrieve_derivation_iri(
 def retrieve_cop_iri(sparql_client: PySparqlClient):
         
         query_string = f"""
-        SELECT DISTINCT ?region ?cop_iri ?start
+        SELECT DISTINCT ?region ?cop_iri 
         WHERE {{
-        <http://statistics.data.gov.uk/id/statistical-geography/E01000001> <{REGION_HASCOP}> ?cop_iri.
-        ?cop_iri  <{RDF_TYPE}> <{REGION_COP}> ;
-                 <{OFP_VALIDFROM}> ?start ;
-                 <{OFP_VALIDTO}> ?end ;
-                 <{REGION + 'has' + COP_VAR + 'Value'}> ?value .}}
+        ?region <{REGION_HASCOP}> ?cop_iri.
+        ?cop_iri  <{RDF_TYPE}> <{REGION_COP}> .
+        }}
+        ORDER BY ?region ?cop_iri
         """
-
         res = sparql_client.performQuery(query_string)
         
         if not res:
             raise IndexError('No cop_iri found -- Are you sure you are using the correct namespace?')
         else:
             cop_iri_list = []
-            elec_consumption_iri_list = []
+            elec_consumption_iri_list = [] 
             gas_consumption_iri_list = []
-            for d in res:
-                cop_iri_list.append(d['cop_iri'])
-                #region_code = d["region"].split("/")[-1]
-                region_code = "E01000001"
+            for i in range(0, len(res), 3):
+                region_code = res[i]["region"].split("/")[-1]
+                cop_iri_group = [row["cop_iri"] for row in res[i:i+3]]
                 elec_consumption_iri = ONTOGASGRID + "ElectricityConsumptionMeasure_" + region_code
                 gas_consumption_iri  = ONTOGASGRID + "GasConsumptionMeasure_" + region_code
+                cop_iri_list.append(cop_iri_group)
                 elec_consumption_iri_list.append(elec_consumption_iri)
                 gas_consumption_iri_list.append(gas_consumption_iri)
 
@@ -181,12 +181,11 @@ sparql_client = PySparqlClient(
 
 # retrieve cop_iri
 cop_iri_list, elec_consumption_iri_list, gas_consumption_iri_list = retrieve_cop_iri(sparql_client)
-print(f"A total number of {len(cop_iri_list)} will be marked, meaning there is {len(cop_iri_list)/12} regions will be marked")
+print(f"A total number of {len(cop_iri_list)*3} will be marked, meaning there is {len(cop_iri_list)} regions will be marked")
 consumption_profile_iri = retrieve_consumption_profile_iri(sparql_client)
 boiler_efficiency_iri = retrieve_boiler_efficiency_iri(sparql_client)
 proportion_of_heating_iri = retrieve_proportion_of_heating_iri(sparql_client)
 uptake_iri = retrieve_uptake_iri(sparql_client)
-
 # Create a PyDerivationClient instance
 derivation_client = PyDerivationClient(derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
                                         query_endpoint=QUERY_ENDPOINT,
@@ -194,14 +193,19 @@ derivation_client = PyDerivationClient(derivation_instance_base_url=DERIVATION_I
 
 # Perform Syn markup
 for i in tqdm(range(len(cop_iri_list))):
-    cop_iri = cop_iri_list[i]
+    cop_iris = cop_iri_list[i]
+    cop_min_iri = cop_iris[2]
+    cop_mean_iri = cop_iris[1]
+    cop_max_iri = cop_iris[0]
     elec_consumption_iri = elec_consumption_iri_list[i]
     gas_consumption_iri = gas_consumption_iri_list[i]
     try:
-        Asynmarkup(
+        Synmarkup(
             derivation_client=derivation_client,
             sparql_client = sparql_client,
-            cop_iri=cop_iri,
+            cop_min_iri=cop_min_iri,
+            cop_mean_iri=cop_mean_iri,
+            cop_max_iri=cop_max_iri,
             elec_consumption_iri = elec_consumption_iri,
             gas_consumption_iri = gas_consumption_iri,
             consumption_profile_iri = consumption_profile_iri,
@@ -211,11 +215,11 @@ for i in tqdm(range(len(cop_iri_list))):
             agentIRI = agentIRI
         )
     except:
-         derivation_iri = retrieve_derivation_iri(sparql_client, cop_iri, agentIRI)
-         if not derivation_iri :
-              raise KeyError('something wrong, contact Jieyang to fix this')
-         else:
-              print(f'InputIRI: {cop_iri} already have derivation IRI: {derivation_iri}, skipped for now')
+            derivation_iri = retrieve_derivation_iri(sparql_client, cop_min_iri, agentIRI)
+            if not derivation_iri :
+                raise KeyError('something wrong, contact Jieyang to fix this')
+            else:
+                print(f'InputIRI: {cop_min_iri} already have derivation IRI: {derivation_iri}, skipped for now')
 
 # # Perform unified update
 # for i in range(len(inputIRI)):

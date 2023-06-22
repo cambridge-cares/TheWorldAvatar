@@ -16,7 +16,6 @@ from pyderivationagent.kg_operations import PySparqlClient
 from resultedconsumptioncalculationagent.utils.stack_configs import ONTOP_URL, COP_VAR, BOILER_EFFICIENCY, PROPORTION_OF_HEATING, UPTAKE, ELECTRICITY_CONSUMPTION_PROFILE, GAS_CONSUMPTION_PROFILE, YEAR
 
 from resultedconsumptioncalculationagent.datamodel.iris import *
-from resultedconsumptioncalculationagent.datamodel.data import GBP_SYMBOL, TIME_FORMAT_LONG, TIME_FORMAT_SHORT
 from resultedconsumptioncalculationagent.errorhandling.exceptions import *
 
 # Initialise logger instance (ensure consistent logger level with `entrypoint.py`)
@@ -149,7 +148,7 @@ class KGClient(PySparqlClient):
                     <{RDF_TYPE}> <{REGION_BOILER_EFFICIENCY}> ;
                 <{OM_HAS_NUMERICALVALUE}> "{BOILER_EFFICIENCY}"^^<{XSD_FLOAT}> .
         <{proportion_of_heating_iri}> <{IS_A}> <{assumption_iri}> ;
-                    <{RDF_TYPE}> <{REGION_HOTSIDE_TEMPERATURE}> ;
+                    <{RDF_TYPE}> <{REGION_PROPORTION_OF_HEATING}> ;
             <{OM_HAS_NUMERICALVALUE}> "{PROPORTION_OF_HEATING}"^^<{XSD_FLOAT}> .
         <{uptake_iri}> <{IS_A}> <{assumption_iri}> ;
                     <{RDF_TYPE}> <{REGION_UPTAKE}> ;
@@ -360,11 +359,11 @@ class KGClient(PySparqlClient):
                                 <{OFP_VALIDTO}> "{YEAR}-12-31T12:00:00.000Z"^^<{XSD_DATETIME}> .
          ?elec_profile_iri <{IS_A}> <{consumption_profile_iri}>;
                           <{RDF_TYPE}>  <{REGION_ELECTRICITYCONSUMPTION_PROFILE}> ;
-                        <{OM_HAS_NUMERICALVALUE}> ?elec_profile .
+                        <{REGION_HASPROFILEVALUE}> ?elec_profile .
 
          ?gas_profile_iri <{IS_A}> <{consumption_profile_iri}> ;
                           <{RDF_TYPE}>  <{REGION_GASCONSUMPTION_PROFILE}> ;
-                         <{OM_HAS_NUMERICALVALUE}> ?gas_profile .
+                         <{REGION_HASPROFILEVALUE}> ?gas_profile .
         }}
         """
         res = self.performQuery(query_string)
@@ -391,11 +390,11 @@ class KGClient(PySparqlClient):
         query_string = f"""
         SELECT ?consumption_iri ?elec_consumption_iri ?gas_consumption_iri
         WHERE {{
-        <{region}> <{REGION_HAS_ENERGYCONSUMPTION_PROFILE}> ?consumption_iri.
+        <{region}> <{REGION_HAS_RESULTED_ENERGY_CONSUMPTION}> ?consumption_iri.
         ?consumption_iri  <{RDF_TYPE}> <{REGION_RESULTED_ENERGYCONSUMPTION}> .
-        ?elec_consumption_iri <{IS_A}> <{consumption_iri}> .
+        ?elec_consumption_iri <{IS_A}> ?consumption_iri .
         ?elec_consumption_iri  <{RDF_TYPE}> <{REGION_RESULTED_ELECTRICITY_CONSUMPTION}> .
-        ?gas_consumption_iri <{IS_A}> <{consumption_iri}> .
+        ?gas_consumption_iri <{IS_A}> ?consumption_iri .
         ?gas_consumption_iri  <{RDF_TYPE}> <{REGION_RESULTED_GAS_CONSUMPTION}> .
         }}
         """
@@ -424,7 +423,7 @@ class KGClient(PySparqlClient):
     
     def instantiate_resulted_consumptions(self, g, consumption_iri, elec_consumption_iri, gas_consumption_iri, 
                                           region):
-        g.add((URIRef(region),URIRef(REGION_HAS_ENERGYCONSUMPTION_PROFILE),URIRef(consumption_iri)))
+        g.add((URIRef(region),URIRef(REGION_HAS_RESULTED_ENERGY_CONSUMPTION),URIRef(consumption_iri)))
         g.add((URIRef(consumption_iri),URIRef(RDF_TYPE),URIRef(REGION_RESULTED_ENERGYCONSUMPTION)))
         g.add((URIRef(elec_consumption_iri),URIRef(IS_A),URIRef(consumption_iri)))
         g.add((URIRef(elec_consumption_iri),URIRef(RDF_TYPE),URIRef(REGION_RESULTED_ELECTRICITY_CONSUMPTION)))
@@ -460,46 +459,37 @@ class KGClient(PySparqlClient):
             self.performUpdate(query_string)
 
 # QUERY_ENDPOINT= "http://localhost:3846/blazegraph/namespace/heatpump/sparql"
-# a = KGClient(QUERY_ENDPOINT, QUERY_ENDPOINT)
+# a = KGClient(QUERY_ENDPOINT, QUERY_ENDPOINT) 
 
-# # res = a.get_consumption("http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/ElectricityConsumptionMeasure_E01000001")
-# # print(res)
-# # # res = a.update_consumption_profile()
+# a.remove_triples_for_iri('http://www.theworldavatar.com/ontology/ontoregionalanalysis/ResultedEnergyConsumption_58ed3c75-3b0b-4594-b7a7-af6b7640dcc0')
+# # # res = a.get_consumption("http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/ElectricityConsumptionMeasure_E01000001")
+# # # print(res)
+# # # # res = a.update_consumption_profile()
 
 # query_string = f"""
-# SELECT DISTINCT ?m ?var
-# WHERE {{?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography>;   
-#          <http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#hasClimateMeasurement>  ?m.
-#     ?m <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasStartUTC> ?start;
-#         <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasEndUTC> ?end;
-#        <http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#hasClimateVariable> ?var;
-#        <http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue> ?t.
-       
-# FILTER (?var != 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas' &&
-#           ?var != 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax' &&
-#           ?var != "http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin")
-# }}
+# SELECT DISTINCT ?s ?o
+# WHERE {{
+# ?s <http://www.theworldavatar.com/ontology/ontoregionalanalysis/hasVar> ?o
+#        }}
 # """
 # res = a.performQuery(query_string)
 # for i in tqdm(range(len(res))):
-#     if len(res[i]['var']) < 8:
 #         query_string = f"""
 #         INSERT DATA {{
-#         <{res[i]['m']}> <http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#hasClimateVariable> "{"http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/"+res[i]['var']}"^^<{XSD_STRING}> .
+#         <{res[i]['s']}> <http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#hasClimateVariable> "{res[i]['o']}"^^<{XSD_STRING}>.
 #         }}
 #         """
 #         #print(query_string)
 #         a.performUpdate(query_string)
 #         query_string = f"""
 #         DELETE DATA {{
-#         <{res[i]['m']}> <http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#hasClimateVariable> "{res[i]['var']}"^^<{XSD_STRING}> .
+#         <{res[i]['s']}> <http://www.theworldavatar.com/ontology/ontoregionalanalysis/hasVar> "{res[i]['o']}"^^<{XSD_STRING}> .
+#         <{res[i]['s']}> <http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#hasClimateVariable> <{res[i]['o']}> .
 #         }}
 #         """
 #         #print(query_string)
 #         a.performUpdate(query_string)
-#     else:
-#         pass
-# """
+
 # WHERE {{
 # <http://www.theworldavatar.com/resource/agents/Service__KL_COPCalculation/MessageContent_a7d49fa2-0a92-464b-93ba-439b36f72a9d> <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasMandatoryPart> <http://www.theworldavatar.com/resource/agents/Service__KL_COPCalculation/MessagePart_ed4201c4-8aa1-4fcc-b770-ea9f3038cef6> .
 # <http://www.theworldavatar.com/resource/agents/Service__KL_COPCalculation/MessagePart_ed4201c4-8aa1-4fcc-b770-ea9f3038cef6> <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasType>	?S.

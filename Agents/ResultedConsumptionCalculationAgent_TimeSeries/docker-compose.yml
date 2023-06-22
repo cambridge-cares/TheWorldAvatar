@@ -42,7 +42,7 @@ services:
       # max / mean / min
       - COP_VAR=mean
       # Assumptions
-      - UPTAKE=0.5
+      - UPTAKE=1
       - PROPORTION_OF_HEATING=0.9
       - BOILER_EFFICIENCY=0.8
     ports:

@@ -47,13 +47,13 @@ class ResultedConsumptionAgent(DerivationAgent):
             has_function_run = False
             with open('state.txt', "w") as file:
                 file.write("False")  # Initialize the file with "False"
-                print("Assumptions/Indecies has been updated!")
 
         if not has_function_run:
             # Update assumptions provided
             self.sparql_client.update_assumptions()
             # Update consumption profiles provided#
             self.sparql_client.update_consumption_profile()
+            print("Assumptions/Indecies has been updated!")
             with open('state.txt', "w") as file:
                 file.write("True")
 
@@ -68,18 +68,19 @@ class ResultedConsumptionAgent(DerivationAgent):
         for a in consumption_iri_list:
             if "Electricity" in a:
                 elec_consumption_iri = a
-            if "Gas" in a:
+            elif "Gas" in a:
                 gas_consumption_iri = a
             else:
-                self.logger.error(f"Specified {COP_VAR} COP IRI can not be found")
-                raise Exception(f"Specified {COP_VAR} COP IRI can not be found")
-            
+                self.logger.error(f"Electricity or Gas consumption IRI can not be found")
+                raise Exception(f"Electricity or Gas consumption IRI can not be found")
+         
         for a in cop_iri_list:
             if COP_VAR in a:
                 cop_iri = a
-            else:
-                self.logger.error(f"Specified {COP_VAR} COP IRI can not be found")
-                raise Exception(f"Specified {COP_VAR} COP IRI can not be found")
+            
+        if not cop_iri:
+            self.logger.error(f"Specified {COP_VAR} COP IRI can not be found")
+            raise Exception(f"Specified {COP_VAR} COP IRI can not be found")
 
         # ---------------- Populate Triples for Non-Timeseries in the KG --------------- #
         g, resulted_consumption_iri, resulted_elec_consumption_iri, resulted_gas_consumption_iri = self.getconsumptionprofile_Graph(cop_iri)
@@ -106,8 +107,8 @@ class ResultedConsumptionAgent(DerivationAgent):
 
         for key, value in cop_dict.items():
             # Calculate original consumption of the current month
-            monthly_gas_consumption = gas_consumption * gas_profile[date_dict(key)] / sum(gas_profile)
-            monthly_elec_consumption = elec_consumption * elec_profile[date_dict(key)] / sum(elec_profile)
+            monthly_gas_consumption = gas_consumption * gas_profile[date_dict[key]] / sum(gas_profile)
+            monthly_elec_consumption = elec_consumption * elec_profile[date_dict[key]] / sum(elec_profile)
             
             # Calculate change of consumptions
             delta_gas = self.delta_gas(uptake, monthly_gas_consumption,proportion_of_heating)
@@ -121,7 +122,7 @@ class ResultedConsumptionAgent(DerivationAgent):
             resulted_elec_consumption_list.append(resulted_elec_consumption)
 
         dataIRIs = [resulted_elec_consumption_iri, resulted_gas_consumption_iri]
-        values = [resulted_gas_consumption_list, resulted_elec_consumption_list]
+        values = [resulted_elec_consumption_list, resulted_gas_consumption_list]
         
         # Create Time Series
         ts_client.add_timeseries(dates, dataIRIs, values)
