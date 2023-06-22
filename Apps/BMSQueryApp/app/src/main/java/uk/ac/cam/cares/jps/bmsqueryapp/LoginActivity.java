@@ -283,7 +283,9 @@ public class LoginActivity extends AppCompatActivity {
         authStateManager.updateAfterTokenResponse(tokenResponse, authException);
         hideLoading();
         if (!authStateManager.getCurrent().isAuthorized()) {
-            if (authException.getCause().getMessage().contains("expired") && authException.code == 9) {
+            if (authException.getCause() != null &&
+                    authException.getCause().getMessage().matches("Issued at time is more than \\d+ minutes before or after the current time") &&
+                    authException.code == 9) {
                 // ID Token expired
                 new MaterialAlertDialogBuilder(this)
                         .setTitle(R.string.fail_to_login_title)

@@ -3,7 +3,7 @@
   "redirect_uri": "uk.ac.cam.cares.jps.bmsqueryapp:/oauth2redirect",
   "end_session_redirect_uri": "uk.ac.cam.cares.jps.bmsqueryapp:/oauth2redirect",
   "authorization_scope": "openid email profile bms-audience offline_access",
-  "discovery_uri": "http://<identity_provider_addr>/realms/lab_automation/.well-known/openid-configuration",
+  "discovery_uri": "http://<identity_provider_addr>/keycloak/realms/lab_automation/.well-known/openid-configuration",
   "authorization_endpoint_uri": "",
   "token_endpoint_uri": "",
   "registration_endpoint_uri": "",
