@@ -7,13 +7,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
-import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.bridge.SparqlBridge;
 import uk.ac.cam.cares.jps.bridge.SqlBridge;
 import uk.ac.cam.cares.jps.bridge.TimeSeriesBridge;
-import uk.ac.cam.cares.jps.util.ConfigStore;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,8 +33,6 @@ class DataBridgeAgentTest {
     private static final String KEY_NAMESPACE = "namespace";
     private static final String KEY_DATABASE = "database";
     private static final String VAL_NAMESPACE = "default";
-    private static final String VAL_DATABASE = "test";
-    private static final String VAL_TRANSFER = "in";
     private static final String KEY_TIME_CLASS = "timeClass";
     private static final String KEY_TIMESTAMP = "timestamp";
     private static final String KEY_VALUES = "values";
@@ -83,6 +79,7 @@ class DataBridgeAgentTest {
         requestParams = new JSONObject();
         // Optional parameter should not invalidate the outcome
         requestParams.put(KEY_NAMESPACE, VAL_NAMESPACE);
+        requestParams.put(KEY_DATABASE, VAL_SOURCE_DATABASE);
         requestParams.put(KEY_TIME_CLASS, VAL_TIME_CLASS);
         requestParams.put(KEY_TIMESTAMP, VAL_TIMESTAMP);
         requestParams.put(KEY_VALUES, VAL_VALUES);
@@ -324,6 +321,7 @@ class DataBridgeAgentTest {
         JSONObject requestParams = new JSONObject();
         requestParams.put(KEY_METHOD, POST_METHOD);
         requestParams.put(KEY_NAMESPACE, VAL_SOURCE_NAMESPACE);
+        requestParams.put(KEY_DATABASE, VAL_SOURCE_DATABASE);
         requestParams.put(KEY_TIME_CLASS, VAL_TIME_CLASS);
         requestParams.put(KEY_TIMESTAMP, VAL_TIMESTAMP);
         requestParams.put(KEY_VALUES, VAL_VALUES);
@@ -358,6 +356,8 @@ class DataBridgeAgentTest {
         // Set up request parameters
         JSONObject requestParams = new JSONObject();
         requestParams.put(KEY_METHOD, GET_METHOD); // Wrong method
+        requestParams.put(KEY_NAMESPACE, VAL_NAMESPACE);
+        requestParams.put(KEY_DATABASE, VAL_SOURCE_DATABASE);
         requestParams.put(KEY_TIME_CLASS, VAL_TIME_CLASS);
         requestParams.put(KEY_TIMESTAMP, VAL_TIMESTAMP);
         requestParams.put(KEY_VALUES, VAL_VALUES);

@@ -145,7 +145,7 @@ public class DataBridgeAgent extends JPSAgent {
         if (requestParams.get("requestUrl").toString().contains("status")) return true;
         // For the time series route, these parameters must be passed, and the validation will end
         if (requestParams.has(KEY_TIME_CLASS) || requestParams.has(KEY_TIMESTAMP) || requestParams.has(KEY_VALUES)) {
-            validate = requestParams.has(KEY_TIME_CLASS) && requestParams.has(KEY_TIMESTAMP) && requestParams.has(KEY_VALUES);
+            validate = requestParams.has(KEY_TIME_CLASS) && requestParams.has(KEY_TIMESTAMP) && requestParams.has(KEY_VALUES) && requestParams.has(KEY_NAMESPACE) && requestParams.has(KEY_DATABASE);
             if (validate) {
                 LOGGER.info("Detected time series parameters...");
                 String timeClass = requestParams.getString(KEY_TIME_CLASS);

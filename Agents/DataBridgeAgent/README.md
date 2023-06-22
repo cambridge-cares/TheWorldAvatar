@@ -99,9 +99,9 @@ curl -X GET 'localhost:3838/data-bridge-agent/sql?srcDbName=db'
 4. `<base>/timeseries` route:
     - Execute the agent's task through an HTTP `POST` request using the [time series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries). This route will instantiate the time series inputs sent in the request into the stack's knowledge graph.
     - The request will require the following parameters:
-        - `timeClass` : Refers to the time series classes as written in the [time series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries#instantiation-in-kg).
-        - `timestamp` : A JSONArray containing the time stamp as strings in the format of `YYYY-MM-DD'T'HH:MM:SS`.
-        - `values` : A JSONObject containing the time series values. A data IRI is inserted as the key and paired with their values as a JSONArray. For example: `{"dataIRI": [1, 2, 3]}`.
+      - `timeClass` : Refers to the time series classes as written in the [time series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries#instantiation-in-kg).
+      - `timestamp` : A JSONArray containing the time stamp as strings in the format of `YYYY-MM-DD'T'HH:MM:SS`.
+      - `values` : A JSONObject containing the time series values. A data IRI is inserted as the key and paired with their values as a JSONArray. For example: `{"dataIRI": [1, 2, 3]}`.
       - `namespace`: Specifies the SPARQL endpoint to store the instantiated time series data.  See [Sample Blazegraph endpoints](#4-sample-blazegraph-endpoints)
       - `database` : Specifies the database name within the same stack. Do note that this agent is not intended to instantiate data for non-stack databases. If required, please use the [Timeseries Client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) in your agent instead. 
     - A sample `POST` request using curl on a CLI:
