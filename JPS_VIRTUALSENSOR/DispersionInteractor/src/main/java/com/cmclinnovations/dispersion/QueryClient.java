@@ -452,6 +452,11 @@ public class QueryClient {
         // GeoServer layer creation is handled in the agent that creates the data.json
         // file. That agent will query for sensors that lie within the scope for which
         // the visualization is being created.
+        LOGGER.info("Creating virtual sensors layer in Geoserver");
+        GeoServerClient geoserverclient = new GeoServerClient();
+        geoserverclient.createWorkspace(Config.GEOSERVER_WORKSPACE);
+        geoserverclient.createPostGISLayer(null, Config.GEOSERVER_WORKSPACE, Config.DATABASE, "sensors",
+                new GeoServerVectorSettings());
     }
 
     public List<String> getVirtualSensorDerivations(String dispersionDerivation) {
