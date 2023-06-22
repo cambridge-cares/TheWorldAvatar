@@ -184,7 +184,7 @@ Follow the [steps](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/D
 ### [Option 1] Run in a Standalone Docker Container
 Once the agent is up and running in a standalone docker container, it can be activated by sending a Curl request as shown below:
 ```
-curl -X POST --header "Content-Type: application/json" -d "{\"agentProperties\":\"HISTORICALNTUENERGY_AGENTPROPERTIES\",\"xlsxConnectorProperties\":\"HISTORICALNTUENERGY_XLSXCONNECTORPROPERTIES\"}" localhost:8080/historical-ntuenergy-agent/retrieve
+curl -X POST --header "Content-Type: application/json" -d "{\"agentProperties\":\"HISTORICALNTUENERGY_AGENTPROPERTIES\",\"xlsxConnectorProperties\":\"HISTORICALNTUENERGY_XLSXCONNECTORPROPERTIES\",\"clientProperties\":\"HISTORICALNTUENERGY_CLIENTPROPERTIES\"}" localhost:8080/historical-ntuenergy-agent/retrieve
 ```
 
 ### [Option 2] Run in a docker stack
