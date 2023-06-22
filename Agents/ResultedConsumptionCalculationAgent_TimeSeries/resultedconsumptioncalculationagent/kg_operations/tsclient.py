@@ -13,7 +13,6 @@ from resultedconsumptioncalculationagent.errorhandling.exceptions import TSExcep
 from resultedconsumptioncalculationagent.kg_operations.javagateway import jpsBaseLibGW
 from resultedconsumptioncalculationagent.datamodel.data import TIMECLASS
 from resultedconsumptioncalculationagent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
-from resultedconsumptioncalculationagent.errorhandling.exceptions import TSException
 from resultedconsumptioncalculationagent.datamodel.data import DATACLASS, TIME_FORMAT
 
 # Initialise logger instance (ensure consistent logger level with `entrypoint.py`)
