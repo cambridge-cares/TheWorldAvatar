@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
@@ -32,6 +33,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -303,11 +308,27 @@ public class QueryClient {
 
         }
 
-        TimeSeries<Long> timeSeries = new TimeSeries<>(dispMatrixTimeSeries.getTimes(),
+        // AermodAgent uses Unix timestamps. These must be converted to LocalDateTime
+        // for the times
+        // to be parsed correctly by FeatureInfoAgent.
+
+        List<Long> timeStampsLong = dispMatrixTimeSeries.getTimes();
+        List<LocalDateTime> timeStamps = new ArrayList<>();
+
+        timeStampsLong.stream().forEach(ts -> {
+            Instant timeInstant = Instant.ofEpochMilli(millis(ts));
+            LocalDateTime ldt = LocalDateTime.ofInstant(timeInstant, ZoneOffset.UTC);
+            timeStamps.add(ldt);
+        });
+
+        TimeSeries<LocalDateTime> timeSeries = new TimeSeries<>(timeStamps,
                 tsDataList, tsValuesList);
 
+        TimeSeriesClient<LocalDateTime> tsClientLdt = new TimeSeriesClient<>((RemoteStoreClient) storeClient,
+                LocalDateTime.class);
+
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            tsClient.addTimeSeriesData(timeSeries, conn);
+            tsClientLdt.addTimeSeriesData(timeSeries, conn);
         } catch (SQLException e) {
             LOGGER.error("Failed at closing connection");
             LOGGER.error(e.getMessage());
@@ -345,5 +366,23 @@ public class QueryClient {
             LOGGER.error(outputFileURL);
             throw new RuntimeException(e);
         }
+    }
+
+    // Convert any Unix timestamp to milliseconds.
+    // See https://www.baeldung.com/java-date-unix-timestamp.
+    private long millis(long timestamp) {
+        if (timestamp >= 1E16 || timestamp <= -1E16) {
+            return timestamp / 1_000_000;
+        }
+
+        if (timestamp >= 1E14 || timestamp <= -1E14) {
+            return timestamp / 1_000;
+        }
+        if (timestamp >= 1E11 || timestamp <= -3E10) {
+            return timestamp;
+        }
+
+        return timestamp * 1_000;
+
     }
 }
