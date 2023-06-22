@@ -37,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.postgis.Point;
+import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 /**
  * sends sparql queries
@@ -153,8 +154,7 @@ public class QueryClient {
         query.where(iri(derivation).has(isDerivedFrom, dispersionOutput),
                 dispersionOutput.isA(DISPERSION_OUTPUT).andHas(HAS_POLLUTANT_ID, pollutantIri)
                         .andHas(HAS_DISPERSION_MATRIX, dispMatrix),
-                pollutantIri.isA(pollutant),
-                dispMatrix.isA(DISPERSION_MATRIX)).prefix(P_DISP, P_OM, P_EMS)
+                pollutantIri.isA(pollutant)).prefix(P_DISP, P_OM, P_EMS)
                 .select(pollutant, dispMatrix);
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
@@ -228,11 +228,26 @@ public class QueryClient {
         List<String> dispMatrixIriList = new ArrayList<>(pollutantToDispMatrix.values());
         TimeSeries<Long> dispMatrixTimeSeries = null;
 
-        // These coordinates and those in the dispersion matrices will be in the
+        // Coordinates in the dispersion matrices will be in the
         // simulation srid.
-        // Nor further transformations are needed.
+        // Station location is stored in EPSG:4326.
+        // Simulation srid can be determined from station location.
+
         double xp = stationLocation.getX();
         double yp = stationLocation.getY();
+        // compute simulation srid
+        int centreZoneNumber = (int) Math.ceil((xp + 180) / 6);
+        int simulationSrid;
+        if (yp < 0) {
+            simulationSrid = Integer.valueOf("327" + centreZoneNumber);
+
+        } else {
+            simulationSrid = Integer.valueOf("326" + centreZoneNumber);
+        }
+
+        double[] xyOriginal = { xp, yp };
+        int originalSrid = 4326;
+        double[] xyTransformed = CRSTransformer.transform("EPSG:" + originalSrid, "EPSG:" + simulationSrid, xyOriginal);
 
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
             dispMatrixTimeSeries = tsClient
@@ -252,7 +267,8 @@ public class QueryClient {
                 String fileUrl = dispersionMatrixUrls.get(j);
                 double conc = 0.0;
                 if (fileUrl != null)
-                    conc = getInterpolatedValue(EnvConfig.PYTHON_SERVICE_INTERPOLATION_URL, fileUrl, xp, yp);
+                    conc = getInterpolatedValue(EnvConfig.PYTHON_SERVICE_INTERPOLATION_URL, fileUrl, xyTransformed[0],
+                            xyTransformed[1]);
                 concentrations.add(conc);
             }
             tsValuesList.add(concentrations);
@@ -320,8 +336,7 @@ public class QueryClient {
                 CloseableHttpResponse httpResponse = httpClient.execute(new HttpGet(httpGet))) {
             String result = EntityUtils.toString(httpResponse.getEntity());
             JSONObject js = new JSONObject(result);
-            String concString = js.getString("result");
-            return Double.parseDouble(concString);
+            return js.getDouble("result");
         } catch (IOException e) {
             LOGGER.error("Failed at making connection with python service");
             throw new RuntimeException(e);

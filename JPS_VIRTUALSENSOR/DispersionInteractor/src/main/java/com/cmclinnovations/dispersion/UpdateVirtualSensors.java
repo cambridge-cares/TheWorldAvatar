@@ -33,7 +33,7 @@ public class UpdateVirtualSensors extends HttpServlet {
         try (Connection conn = dispersionPostGISClient.getConnection()) {
             if (!dispersionPostGISClient.tableExists("dispersion_contours", conn)) {
                 LOGGER.error(
-                        "At least one AERMOD simulation should be run before updating virtual sensor concentraion timeseries");
+                        "At least one AERMOD simulation should be run before updating virtual sensor concentration timeseries. ");
                 return;
             }
 

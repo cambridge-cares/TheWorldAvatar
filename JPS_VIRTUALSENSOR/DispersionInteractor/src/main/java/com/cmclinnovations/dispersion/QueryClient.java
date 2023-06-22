@@ -88,11 +88,11 @@ public class QueryClient {
     // Pollutant concentrations and units
     private static final Iri NO_X_CONC = P_EMS.iri("NitrogenOxidesConcentration");
     private static final Iri UHC_CONC = P_EMS.iri("UhcConcentration");// Currently not in ONTOEMS
-    private static final Iri CO_CONC = P_DISP.iri("CarbonMonoxideConcentration");
-    private static final Iri CO2_CONC = P_DISP.iri("CarbonDioxideConcentration");
-    private static final Iri SO2_CONC = P_DISP.iri("SulfurDioxideConcentration");
-    private static final Iri PM10_CONC = P_DISP.iri("PM10Concentration");
-    private static final Iri PM25_CONC = P_DISP.iri("PM2.5Concentration");
+    private static final Iri CO_CONC = P_EMS.iri("CarbonMonoxideConcentration");
+    private static final Iri CO2_CONC = P_EMS.iri("CarbonDioxideConcentration");
+    private static final Iri SO2_CONC = P_EMS.iri("SulfurDioxideConcentration");
+    private static final Iri PM10_CONC = P_EMS.iri("PM10Concentration");
+    private static final Iri PM25_CONC = P_EMS.iri("PM2.5Concentration");
     private static final Iri UNIT_POLLUTANT_CONC = P_OM.iri("microgramPerCubicmetre");
 
     // properties

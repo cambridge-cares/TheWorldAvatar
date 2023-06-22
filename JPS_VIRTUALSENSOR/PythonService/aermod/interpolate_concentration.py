@@ -17,13 +17,14 @@ from scipy.spatial.distance import cdist
 
 ROUTE = "/getInterpolatedConc"
 
-get_concentration = Blueprint('get_concentration', __name__)
+get_concentration_bp = Blueprint('get_concentration_bp', __name__)
 logger = agentlogging.get_logger("dev")
 
 
-@get_concentration.route(ROUTE, methods=['GET'])
+@get_concentration_bp.route(ROUTE, methods=['GET'])
 def api():
-    logger.info("Received request to process AERMOD dispersion matrix")
+    logger.info(
+        "Received request to interpolate concentration from AERMOD dispersion matrix")
     aermod_output_url = request.args["dispersionMatrix"]
     xp = request.args["xp"]
     yp = request.args["yp"]
