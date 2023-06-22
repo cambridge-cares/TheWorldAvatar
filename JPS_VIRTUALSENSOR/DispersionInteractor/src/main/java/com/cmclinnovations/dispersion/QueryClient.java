@@ -426,7 +426,7 @@ public class QueryClient {
                 JSONObject feature = new JSONObject();
                 feature.put("type", "Feature");
                 feature.put("geometry", geometry);
-                feature.put("sensor_iri", stationIri);
+                feature.put("iri", stationIri);
                 feature.put("name", "VirtualSensor_" + (i + 1));
                 feature.put("endpoint", sparqlEndpoint);
                 feature.put("scope_iri", scopeIri);
