@@ -12,7 +12,7 @@ WHERE {
   
   [IRI] <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.theworldavatar.com/kg/ontoems/ReportingStation> ;
             ems:reports ?quantity.
-       ?quantity rdf:type <https://www.theworldavatar.com/kg/ontoems/NitrogenDioxideConcentration>.
+       ?quantity rdf:type <https://www.theworldavatar.com/kg/ontoems/NitrogenOxidesConcentration>.
        ?quantity om:hasValue ?Measurement.
        ?Measurement om:hasUnit <http://www.ontology-of-units-of-measure.org/resource/om-2/microgramPerCubicmetre>;
                 <https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries> ?tsIRI.
