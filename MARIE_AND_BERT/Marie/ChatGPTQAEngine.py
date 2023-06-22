@@ -1,10 +1,15 @@
 import openai
+import sys
+import os
+sys.path.append("")
+from Marie.Util.location import DATA_DIR
 
 class ChatGPTQAEngine:
-    def __init__(self, api_key):
-        # self.api_key = api_key
+    def __init__(self):
         self.model = "gpt-3.5-turbo"
-        openai.api_key = api_key
+        with open(os.path.join(DATA_DIR, 'chatgpt_api_key.txt'), "r") as file:
+            self.api_key = file.read().strip()
+        openai.api_key = self.api_key
 
     def ask_question(self, question):
         try:
@@ -23,8 +28,7 @@ class ChatGPTQAEngine:
         return answer
     
 if __name__=="__main__":
-    api_key = "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"
-    chatbot = ChatGPTQAEngine(api_key)
+    chatbot = ChatGPTQAEngine()
 
     while True:
         user_input = input("User: ")
