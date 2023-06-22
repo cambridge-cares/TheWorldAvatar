@@ -3,7 +3,7 @@ import pickle
 import time
 
 sys.path.append("")
-sys.path.append("../../..")
+sys.path.append("../..")
 import pandas as pd
 import torch
 from torch import no_grad

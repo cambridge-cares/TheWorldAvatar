@@ -9,7 +9,7 @@ import pandas as pd
 from tqdm import tqdm
 from transformers import BertModel, BertTokenizer, AdamW
 
-sys.path.append("../../..")
+sys.path.append("../..")
 from Marie.Util.location import TRAINING_DIR, DEPLOYMENT_DIR, DATA_DIR
 from KGToolbox.NHopExtractor import HopExtractor
 from Marie.Util.Dataset.OntoScore_Dataset import Dataset

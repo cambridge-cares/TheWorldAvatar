@@ -1,9 +1,9 @@
 import json
 import os, sys
 sys.path.append('')
-sys.path.append('../')
-sys.path.append('../../')
-sys.path.append("../../..")
+sys.path.append('../../Marie/Util/')
+sys.path.append('../../Marie/')
+sys.path.append("../..")
 import torch
 from torch.optim.lr_scheduler import ExponentialLR
 from tqdm import tqdm

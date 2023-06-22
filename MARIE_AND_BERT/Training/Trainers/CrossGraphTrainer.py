@@ -12,11 +12,11 @@ import pandas as pd
 import torch
 from torch.utils.data import DataLoader
 sys.path.append("")
-sys.path.append("..")
+sys.path.append("../../Marie/Util")
+sys.path.append("../../Marie")
 sys.path.append("../..")
 sys.path.append("../../..")
 sys.path.append("../../../..")
-sys.path.append("../../../../..")
 from Marie.Util.Dataset.CrossGraph_Dataset import CrossGraphDataset
 from Marie.Util.location import DATA_DIR
 from Marie.Util.Models.CrossGraphAlignmentModel import CrossGraphAlignmentModel
