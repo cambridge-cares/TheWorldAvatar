@@ -82,13 +82,15 @@ curl -X POST --header "Content-Type: application/json" -d "{
    - Execute the agent's task through an HTTP `GET` request. This route will transfer data between the specified source and target databases.
    - If there are existing tables in the target/destination database with the same name, those will be dropped and recreated. Please do take note of this side effect if you wish to retain old data.
    - Before sending the request, please read the instructions.
-   - When transferring time series across non-stack database, please update the source and target jdbc url, user, and password in the `<root>/config/endpoint.properties`, and send the simple `GET` request.
+   - When transferring time series across **non-stack database**, please update the source and target jdbc url, user, and password in the `<root>/config/endpoint.properties`, and send the simple `GET` request.
      - Do note that in this instance, the transfer will not occur and will return a command instead. This command must be executed on a CLI with `psql` installed to transfer between two remote databases.
    - When transferring time series from or to the same stack's database, please send the `GET` request with either of the two parameters:
        - The `srcDbName` parameter refers to the specified database name within the same stack that the agent will transfer data from. When sending this parameter, please populate the target database credentials to store these data in `<root>/config/endpoint.properties`.
        - The `tgtDbName` parameter refers to the specified database name within the same stack that the agent will store the transferred data. When sending this parameter, please populate the source database credentials with the data to be transferred in `<root>/config/endpoint.properties`.
        - Please only include ONE of these parameters!!
-   - As the transfer may take some time, the agent may return a html response, but do kindly ignore it. The transfer is still occurring in the background.
+       - **WARNING**: This agent is unable to transfer data between databases of different stacks, as both ports must be exposed to achieve this. If you require a transfer between stacks, a possible approach is to use an external non-stack database as an intermediary. Specifically, source stack database => non-stack database => target stack database
+   - *NOTE*: As the transfer may take some time, the agent may return a html response, but do kindly ignore it. The transfer is still occurring in the background.
+   - A sample `GET` request using curl on a CLI:
 ```
 # For any non-stack databases
 curl -X GET localhost:3055/data-bridge-agent/sql
