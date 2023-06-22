@@ -43,6 +43,9 @@ public class SparqlBridge {
      */
     private Model queryAllTriples() {
         StringBuilder queryString = new StringBuilder();
+        // Do note that this method of transfer will fail for large (>1 million) numbers of triples depending on the available RAM
+        // As SPARQL endpoints are exposed within the stack, the cloning tool in JPS base library can be an alternate solution
+        // See https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/tools/cloning/CloningTool.java
         queryString.append("CONSTRUCT {?s ?p ?o} WHERE {?s ?p ?o}");
         Query query = QueryFactory.create(queryString.toString());
         try (QueryExecution qExec = QueryExecutionHTTP.service(this.source, query)) {

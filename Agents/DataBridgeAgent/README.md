@@ -69,6 +69,7 @@ There are currently four routes available:
       - `source`: The source SPARQL endpoint containing the triples to be transferred 
       - `target`: The target SPARQL endpoint intended to store the transferred triples
     - Sample SPARQL endpoints for Blazegraph are [listed here](#4-sample-blazegraph-endpoints)
+    - **WARNING**: The transfer of triples may fail for large (>1 million) numbers of triples as it is dependent on the available RAM. The [JPS Base library's cloning tool](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/tools/cloning/CloningTool.java) can be used in that situation.
     - A sample `POST` request using curl on a CLI:
 ```
 curl -X POST --header "Content-Type: application/json" -d "{
