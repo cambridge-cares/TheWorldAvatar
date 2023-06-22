@@ -1,6 +1,7 @@
 package com.cmclinnovations.dispersion;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -12,9 +13,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.http.entity.ContentType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.postgis.Point;
+import org.springframework.core.io.ClassPathResource;
+
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
+
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -32,6 +40,26 @@ public class CreateVirtualSensors extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         LOGGER.info("Received POST request to create new virtual sensors. ");
+
+        // first check that at least one scope has been initialized
+        // Also check whether there is an existing sensors table.
+        boolean sensorsTableExists = false;
+        try (Connection conn = dispersionPostGISClient.getConnection()) {
+            if (!dispersionPostGISClient.tableExists(Config.SCOPE_TABLE_NAME, conn)) {
+                LOGGER.error("At least one scope needs to be initialized by" +
+                        "sending a POST request to InitialiseSimulation before any virtual sensors can be created. ");
+                return;
+            }
+            if (dispersionPostGISClient.tableExists("sensors", conn)) {
+                sensorsTableExists = true;
+            }
+
+        } catch (SQLException e) {
+            LOGGER.error("SQL state {}", e.getSQLState());
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Probably failed to close SQL connection or failed to connect");
+        }
+
         String[] virtualSensorLocationsString = req.getParameterValues("virtualSensorLocations");
         List<Point> virtualSensorLocations = new ArrayList<>();
 
@@ -89,7 +117,7 @@ public class CreateVirtualSensors extends HttpServlet {
                     continue;
                 }
 
-                if (dispersionPostGISClient.sensorExists(vsLocation, conn))
+                if (sensorsTableExists && dispersionPostGISClient.sensorExists(vsLocation, conn))
                     continue;
 
                 vsScopeList.add(scopeIriList.get(0));

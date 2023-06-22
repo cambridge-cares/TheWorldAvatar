@@ -104,8 +104,9 @@ public class DispersionPostGISClient {
     }
 
     boolean sensorExists(Point target, Connection conn) {
-        // Critical distance is arbitrarily set to 0.5.
-        String sql = String.format("SELECT scope_iri from %S WHERE ST_DISTANCE(geometry, ST_GeomFromText('%s')) <= %f ",
+        // Critical distance is arbitrarily set to 0.05.
+        String sql = String.format(
+                "SELECT scope_iri from %S WHERE ST_DISTANCE(wkb_geometry, ST_GeomFromText('%s')) <= %f ",
                 "sensors", target.toString(), 0.05);
         try (Statement stmt = conn.createStatement()) {
             ResultSet result = stmt.executeQuery(sql);
