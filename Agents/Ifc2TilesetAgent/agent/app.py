@@ -38,7 +38,12 @@ def create_app():
     def api():
         # Check arguments (query parameters)
         logger.info("Checking parameters...")
-        data = request.get_json()
+        try:
+            data = request.get_json()
+        except Exception as e:
+            error_msg = str(e)
+            logger.error("Unable to get JSON from request! Have you used double quotes?")
+            return jsonify({"data": error_msg}), 400
 
         if "assetUrl" not in data:
             logger.error("Missing `assetUrl` parameter in request!")
