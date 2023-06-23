@@ -68,7 +68,7 @@ public class DatasetLoader {
                                                 + referencedDatasetName + "' referenced in dataset '"
                                                 + parentDataset.getName() + "'.");
                                     })));
-            
+
             DepthFirstIterator<Dataset, DefaultEdge> depthFirstIterator;
             if (stackSpecificDataset.isPresent()) {
                 // if so only load that one and its children.
@@ -85,6 +85,7 @@ public class DatasetLoader {
 
     /**
      * this ensures the bottom-most dataset in the tree gets loaded first
+     * 
      * @param depthFirstIterator
      */
     private static void loadDatasetRecursively(DepthFirstIterator<Dataset, DefaultEdge> depthFirstIterator) {
@@ -126,6 +127,8 @@ public class DatasetLoader {
     }
 
     public static void loadData(Dataset dataset) {
+        Path directory = dataset.getDirectory();
+
         if (!dataset.isSkip()) {
             List<DataSubset> dataSubsets = dataset.getDataSubsets();
             // Ensure PostGIS database exists, if specified
@@ -150,6 +153,12 @@ public class DatasetLoader {
                         workspaceName));
             }
 
+            if (dataset.getStaticGeoServerData() != null) {
+                GeoServerClient geoServerClient = GeoServerClient.getInstance();
+                geoServerClient.loadIcons(directory, dataset.getStaticGeoServerData().getIconsDir());
+                geoServerClient.loadOtherFiles(directory, dataset.getStaticGeoServerData().getOtherFiles());
+            }
+
             dataSubsets.forEach(subset -> subset.load(dataset));
 
             List<String> ontopMappings = dataset.getOntopMappings();
@@ -169,7 +178,8 @@ public class DatasetLoader {
                                 URI.create(connection.getExternalPath().toString()
                                         .replace(EndpointNames.ONTOP, newOntopServiceName))));
 
-                OntopService ontopService = serviceManager.initialiseService(StackClient.getStackName(), newOntopServiceName);
+                OntopService ontopService = serviceManager.initialiseService(StackClient.getStackName(),
+                        newOntopServiceName);
                 newOntopEndpoint = ontopService.getOntopEndpointConfig().getUrl();
 
                 OntopClient ontopClient = OntopClient.getInstance(newOntopServiceName);
@@ -179,7 +189,7 @@ public class DatasetLoader {
 
             // record added datasets in the default kb namespace
             BlazegraphClient.getInstance().getRemoteStoreClient("kb")
-            .executeUpdate(dataset.getQueryStringForCataloging(newOntopEndpoint));
+                    .executeUpdate(dataset.getQueryStringForCataloging(newOntopEndpoint));
         }
     }
 

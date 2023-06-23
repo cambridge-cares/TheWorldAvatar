@@ -43,7 +43,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
-@WebServlet(urlPatterns = {"/update"})
+@WebServlet(urlPatterns = { "/update" })
 public class ShipInputAgent extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(ShipInputAgent.class);
     private static final String JSON_EXT = ".json";
@@ -51,11 +51,12 @@ public class ShipInputAgent extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        EndpointConfig endpointConfig = new EndpointConfig(); 
+        EndpointConfig endpointConfig = new EndpointConfig();
         RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient, Long.class);
         DerivationClient derivationClient = new DerivationClient(storeClient, QueryClient.PREFIX);
-        RemoteRDBStoreClient remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
+        RemoteRDBStoreClient remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(),
+                endpointConfig.getDbuser(), endpointConfig.getDbpassword());
         queryClient = new QueryClient(storeClient, tsClient, derivationClient, remoteRDBStoreClient);
     }
 
@@ -66,9 +67,12 @@ public class ShipInputAgent extends HttpServlet {
 
         // turn into integer list to facilitate sorting
         List<Integer> fileNamesAsInt = null;
-        // catch NumberFormatException here because it is recommended to not throw this in a servlet
+        // catch NumberFormatException here because it is recommended to not throw this
+        // in a servlet
         try {
-            fileNamesAsInt = Arrays.asList(dataDir.listFiles()).stream().map(f -> Integer.parseInt(FilenameUtils.removeExtension(f.getName()))).collect(Collectors.toList());
+            fileNamesAsInt = Arrays.asList(dataDir.listFiles()).stream()
+                    .map(f -> Integer.parseInt(FilenameUtils.removeExtension(f.getName())))
+                    .collect(Collectors.toList());
         } catch (NumberFormatException e) {
             LOGGER.error(e.getMessage());
         }
@@ -79,13 +83,14 @@ public class ShipInputAgent extends HttpServlet {
             // record last used file in a folder that is a docker volume
             File lastReadFile = new File(EnvConfig.LAST_READ_FILE);
             File timeOffsetFile = new File(EnvConfig.TIME_OFFSET_FILE);
-    
+
             Integer lastUsedFileInt = null;
             int timeOffset = 0;
-    
+
             if (lastReadFile.exists()) {
                 // read from file
-                // catch NumberFormatException here because it is recommended to not throw this in a servlet
+                // catch NumberFormatException here because it is recommended to not throw this
+                // in a servlet
                 try {
                     lastUsedFileInt = Integer.parseInt(new String(Files.readAllBytes(lastReadFile.toPath())));
                 } catch (NumberFormatException | IOException e) {
@@ -95,7 +100,7 @@ public class ShipInputAgent extends HttpServlet {
                 // first time creating the file
                 updateFile(lastReadFile, String.valueOf(fileNamesAsInt.get(0)));
             }
-    
+
             if (timeOffsetFile.exists()) {
                 // read from file
                 try {
@@ -108,15 +113,15 @@ public class ShipInputAgent extends HttpServlet {
                 updateFile(timeOffsetFile, String.valueOf(0));
                 timeOffset = 0;
             }
-    
+
             File dataFile;
-    
+
             // should only be null in the first POST call
             if (lastUsedFileInt != null) {
                 int index = fileNamesAsInt.indexOf(lastUsedFileInt);
                 if (index != fileNamesAsInt.size() - 1) {
-                    dataFile = Paths.get(EnvConfig.DATA_DIR, fileNamesAsInt.get(index+1) + JSON_EXT).toFile();
-                    updateFile(lastReadFile, String.valueOf(fileNamesAsInt.get(index+1)));
+                    dataFile = Paths.get(EnvConfig.DATA_DIR, fileNamesAsInt.get(index + 1) + JSON_EXT).toFile();
+                    updateFile(lastReadFile, String.valueOf(fileNamesAsInt.get(index + 1)));
                 } else {
                     // increment timeOffset and start a new cycle
                     timeOffset += fileNamesAsInt.size();
@@ -127,7 +132,7 @@ public class ShipInputAgent extends HttpServlet {
             } else {
                 dataFile = Paths.get(EnvConfig.DATA_DIR, fileNamesAsInt.get(0) + JSON_EXT).toFile();
             }
-    
+
             FileInputStream inputStream = new FileInputStream(dataFile);
 
             JSONTokener tokener = new JSONTokener(inputStream);
@@ -164,7 +169,8 @@ public class ShipInputAgent extends HttpServlet {
             // initialise both triples and time series if ship is new
             List<Ship> newlyCreatedShips = queryClient.initialiseShipsIfNotExist(ships);
 
-            // query ship IRI and location measure IRI from the KG and set the IRIs in the object
+            // query ship IRI and location measure IRI from the KG and set the IRIs in the
+            // object
             queryClient.setShipIRIs(ships);
 
             // sets course, speed, location measure IRI in ship objects to be used later
@@ -177,7 +183,8 @@ public class ShipInputAgent extends HttpServlet {
             queryClient.createNewDerivations(newlyCreatedShips);
 
             // calculate average timestep for ship layer name
-            long averageTimestamp = ships.stream().mapToLong(s -> s.getTimestamp().getEpochSecond()).sum() / ships.size();
+            long averageTimestamp = ships.stream().mapToLong(s -> s.getTimestamp().getEpochSecond()).sum()
+                    / ships.size();
             LOGGER.info("Creating GeoServer layer for the average timestamp = {}", averageTimestamp);
             createGeoServerLayer(averageTimestamp, ships);
 
@@ -190,10 +197,10 @@ public class ShipInputAgent extends HttpServlet {
 
             // // first time adding ontop mapping
             // if (initialiseObda) {
-            //     LOGGER.info("Initialising ontop mapping file");
-            //     // add ontop mapping
-            //     Path obdaFile = new ClassPathResource("ontop.obda").getFile().toPath();
-            //     new OntopClient().updateOBDA(obdaFile);
+            // LOGGER.info("Initialising ontop mapping file");
+            // // add ontop mapping
+            // Path obdaFile = new ClassPathResource("ontop.obda").getFile().toPath();
+            // new OntopClient().updateOBDA(obdaFile);
             // }
         }
     }
@@ -201,7 +208,7 @@ public class ShipInputAgent extends HttpServlet {
     void updateFile(File file, String fileContent) {
         try (FileOutputStream outputStream = new FileOutputStream(file)) {
             outputStream.write(fileContent.getBytes());
-        } catch (Exception e){
+        } catch (Exception e) {
             LOGGER.error(e.getMessage());
         }
     }
@@ -214,8 +221,11 @@ public class ShipInputAgent extends HttpServlet {
 
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("SELECT timeseries.value as geom, \"dbTable\".\"dataIRI\" as iri ");
-        queryBuilder.append("FROM \"dbTable\", public.get_geometry_table(\"tableName\", \"columnName\") as timeseries ");
-        queryBuilder.append(String.format("WHERE \"dbTable\".\"dataIRI\" IN (%s) and timeseries.time > %d and timeseries.time < %d", shipList, averageTimestamp-1800, averageTimestamp+1800));
+        queryBuilder
+                .append("FROM \"dbTable\", public.get_geometry_table(\"tableName\", \"columnName\") as timeseries ");
+        queryBuilder.append(
+                String.format("WHERE \"dbTable\".\"dataIRI\" IN (%s) and timeseries.time > %d and timeseries.time < %d",
+                        shipList, averageTimestamp - 1800, averageTimestamp + 1800));
         String sqlQuery = queryBuilder.toString();
 
         GeoServerClient geoserverClient = new GeoServerClient();
@@ -234,6 +244,7 @@ public class ShipInputAgent extends HttpServlet {
         LOGGER.info(virtualTable.getName());
         geoServerVectorSettings.setVirtualTable(virtualTable);
 
-        geoserverClient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, layerName, geoServerVectorSettings);
+        geoserverClient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, layerName,
+                geoServerVectorSettings);
     }
 }

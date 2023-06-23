@@ -22,6 +22,9 @@ get_executables(){
             API_SOCK="/var/run/docker.sock"
         fi
 
+        STACK_BASE_DIR="$(pwd)"
+
+        export STACK_BASE_DIR
         export EXECUTABLE
         export COMPOSE_EXECUTABLE
         export API_SOCK

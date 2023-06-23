@@ -1,9 +1,10 @@
 version: '3.8'
 services:
   stack-manager:
-    image: docker.cmclinnovations.com/stack-manager${IMAGE_SUFFIX}:1.11.0-582-dcat-ontop-SNAPSHOT
+    image: docker.cmclinnovations.com/stack-manager${IMAGE_SUFFIX}:1.13.0-582-dcat-ontop-SNAPSHOT
     environment:
       EXTERNAL_PORT: "${EXTERNAL_PORT-3838}"
+      STACK_BASE_DIR: "${STACK_BASE_DIR-}"
     volumes:
       - jdbc_drivers:/jdbc
       - ./inputs/data:/inputs/data

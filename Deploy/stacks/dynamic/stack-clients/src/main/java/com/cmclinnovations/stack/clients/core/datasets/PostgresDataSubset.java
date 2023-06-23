@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public abstract class PostgresDataSubset extends DataSubset {
 
-    @JsonProperty(defaultValue = "public")
+    @JsonProperty(defaultValue = PostGISClient.DEFAULT_SCHEMA_NAME)
     private String schema;
     private String table;
     @JsonProperty

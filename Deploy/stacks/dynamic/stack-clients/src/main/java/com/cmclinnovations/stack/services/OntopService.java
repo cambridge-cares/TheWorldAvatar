@@ -40,8 +40,8 @@ public final class OntopService extends ContainerService {
     private final OntopEndpointConfig endpointConfig;
     private final String configDir;
 
-    public OntopService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
-        super(stackName, serviceManager, config);
+    public OntopService(String stackName, ServiceConfig config) {
+        super(stackName, config);
 
         containerName = StackClient.removeStackName(getConfig().getName());
 

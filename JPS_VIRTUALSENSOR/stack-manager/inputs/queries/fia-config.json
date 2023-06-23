@@ -1,21 +1,10 @@
 {
-    "hours": 48,
-    "database_name": "my_postgres_db",
     "queries": [
         {
-            "class": "com.cmclinnovations.kg.ClassOne",
-            "metaFile": "classOneMeta.sparql",
-            "timeFile": "classOneTime.sparql"
-        },
-        {
-            "class": "com.cmclinnovations.kg.ClassTwo",
-            "metaFile": "classTwoMeta.sparql",
-            "timeFile": "classTwoTime.sparql"
-        },
-        {
-            "class": "com.cmclinnovations.kg.ClassThree",
-            "metaFile": "classOneThree.sparql",
-            "timeFile": "classOneThree.sparql"
+            "class": "https://www.theworldavatar.com/kg/ontoems/ReportingStation",
+            "timeFile": "ReportingStations_Time.sparql",
+            "timeLimit":24,
+            "databaseName": "postgres"
         }
     ]
 }

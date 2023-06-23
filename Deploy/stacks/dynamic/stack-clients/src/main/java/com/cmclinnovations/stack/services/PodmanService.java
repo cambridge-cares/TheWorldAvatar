@@ -51,8 +51,8 @@ public class PodmanService extends DockerService {
 
     public static final String TYPE = "podman";
 
-    public PodmanService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
-        super(stackName, serviceManager, config);
+    public PodmanService(String stackName, ServiceConfig config) {
+        super(stackName, config);
     }
 
     @Override

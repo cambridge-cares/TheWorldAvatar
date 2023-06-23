@@ -24,17 +24,16 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
+import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.cmclinnovations.stack.clients.blazegraph.Namespace;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerStyle;
+import com.cmclinnovations.stack.clients.geoserver.StaticGeoServerData;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.derivation.ValuesPattern;
 
@@ -56,6 +55,7 @@ public class Dataset {
     private final List<DataSubset> dataSubsets;
     private final List<GeoServerStyle> geoserverStyles;
     private final List<String> ontopMappings;
+    private final StaticGeoServerData staticGeoServerData;
 
     private final boolean skip;
     private String rdfType;
@@ -75,6 +75,7 @@ public class Dataset {
             @JsonProperty(value = "styles") List<GeoServerStyle> geoserverStyles,
             @JsonProperty(value = "mappings") List<String> ontopMappings,
             @JsonProperty(value = "skip") boolean skip,
+            @JsonProperty(value = "staticGeoServerData") StaticGeoServerData staticGeoServerData,
             @JsonProperty(value = "rdfType") String rdfType) {
         this.name = name;
         this.datasetDirectory = datasetDirectory;
@@ -85,6 +86,7 @@ public class Dataset {
         this.dataSubsets = dataSubsets;
         this.geoserverStyles = geoserverStyles;
         this.ontopMappings = ontopMappings;
+        this.staticGeoServerData = staticGeoServerData;
         this.skip = skip;
         this.rdfType = rdfType;
     }
@@ -107,14 +109,16 @@ public class Dataset {
 
     public String getDatabase() {
         if (database != null) {
-            LOGGER.warn("Specification of database name is deprecated, name of dataset will be used, i.e. {}", getName());
+            LOGGER.warn("Specification of database name is deprecated, name of dataset will be used, i.e. {}",
+                    getName());
         }
         return getName();
     }
 
     public String getNamespace() {
         if (null != namespace && null != namespace.getName()) {
-            LOGGER.warn("Specification of namespace name is deprecated, name of dataset will be used, i.e. {}", getName());
+            LOGGER.warn("Specification of namespace name is deprecated, name of dataset will be used, i.e. {}",
+                    getName());
         }
         return getName();
     }
@@ -129,7 +133,8 @@ public class Dataset {
 
     public String getWorkspaceName() {
         if (workspaceName != null) {
-            LOGGER.warn("Specification of workspaceName is deprecated, name of dataset will be used, i.e. {}", getName());
+            LOGGER.warn("Specification of workspaceName is deprecated, name of dataset will be used, i.e. {}",
+                    getName());
         }
         return getName();
     }
@@ -150,6 +155,10 @@ public class Dataset {
         return (null != ontopMappings) ? ontopMappings : Collections.emptyList();
     }
 
+    public StaticGeoServerData getStaticGeoServerData() {
+        return staticGeoServerData;
+    }
+
     public boolean isSkip() {
         return skip;
     }
@@ -168,38 +177,40 @@ public class Dataset {
         }
         externalDatasets.add(dataset);
     }
+
     public List<Dataset> getExternalDatasets() {
         return (null != externalDatasets) ? externalDatasets : Collections.emptyList();
     }
 
     public String getQueryStringForCataloging(String newOntopEndpoint) {
         // makes a sparql query and determine which dataset is already initialised
-        // sets the iri if it is already initialised so that the timestamp can be modified
+        // sets the iri if it is already initialised so that the timestamp can be
+        // modified
         setDatasetExistsAndIris();
-        
+
         List<TriplePattern> insertTriples = new ArrayList<>();
         List<TriplePattern> deleteTriples = new ArrayList<>();
 
         LocalDateTime currentTime = LocalDateTime.now();
-        
-        SelectQuery query = Queries.SELECT(); //used to generate variable programmatically
+
+        SelectQuery query = Queries.SELECT(); // used to generate variable programmatically
         Iri catalogIri;
         if (!exists) {
             iri = SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID();
             catalogIri = Rdf.iri(iri);
 
             insertTriples.add(catalogIri.isA(getRdfType())
-            .andHas(Rdf.iri(DCTERMS.TITLE), getName())
-            .andHas(Rdf.iri(DCTERMS.DESCRIPTION), getDescription())
-            .andHas(Rdf.iri(DCTERMS.MODIFIED), Rdf.literalOfType(currentTime.toString(), XSD.DATETIME)));
+                    .andHas(Rdf.iri(DCTERMS.TITLE), getName())
+                    .andHas(Rdf.iri(DCTERMS.DESCRIPTION), getDescription())
+                    .andHas(Rdf.iri(DCTERMS.MODIFIED), Rdf.literalOfType(currentTime.toString(), XSD.DATETIME)));
 
             // blazegraph triples
             if (getDataSubsets().stream().anyMatch(DataSubset::usesBlazegraph)) {
                 String kgUrl = BlazegraphClient.getInstance().getEndpoint().getUrl(getNamespace());
                 Iri blazegraphService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
                 insertTriples.add(blazegraphService.isA(Rdf.iri(SparqlConstants.BLAZEGRAPH))
-                .andHas(Rdf.iri(DCAT.ENDPOINT_URL), kgUrl)
-                .andHas(Rdf.iri(DCAT.SERVES_DATASET), catalogIri));
+                        .andHas(Rdf.iri(DCAT.ENDPOINT_URL), kgUrl)
+                        .andHas(Rdf.iri(DCAT.SERVES_DATASET), catalogIri));
             }
 
             Iri postgisService = null;
@@ -209,28 +220,28 @@ public class Dataset {
                 // append triples
                 postgisService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
                 insertTriples.add(postgisService.isA(Rdf.iri(SparqlConstants.POSTGIS))
-                .andHas(Rdf.iri(DCAT.ENDPOINT_URL), jdbcUrl)
-                .andHas(Rdf.iri(SparqlConstants.HAS_DATABASE), getDatabase())
-                .andHas(Rdf.iri(DCAT.SERVES_DATASET), catalogIri));
-            } 
-                
+                        .andHas(Rdf.iri(DCAT.ENDPOINT_URL), jdbcUrl)
+                        .andHas(Rdf.iri(SparqlConstants.HAS_DATABASE), getDatabase())
+                        .andHas(Rdf.iri(DCAT.SERVES_DATASET), catalogIri));
+            }
+
             // implementation not complete until we figure out the external URLs
             if (getDataSubsets().stream().anyMatch(DataSubset::usesGeoServer)) {
                 Iri geoserverService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
 
                 // append triples
                 insertTriples.add(geoserverService.isA(Rdf.iri(SparqlConstants.GEOSERVER))
-                .andHas(Rdf.iri(SparqlConstants.USES_DATABASE), postgisService)
-                .andHas(Rdf.iri(DCAT.SERVES_DATASET), catalogIri));
+                        .andHas(Rdf.iri(SparqlConstants.USES_DATABASE), postgisService)
+                        .andHas(Rdf.iri(DCAT.SERVES_DATASET), catalogIri));
             }
-    
+
             if (newOntopEndpoint != null) {
                 Iri ontopService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
 
                 insertTriples.add(ontopService.isA(Rdf.iri(SparqlConstants.ONTOP))
-                .andHas(Rdf.iri(SparqlConstants.USES_DATABASE), postgisService)
-                .andHas(Rdf.iri(DCAT.SERVES_DATASET), catalogIri)
-                .andHas(Rdf.iri(DCAT.ENDPOINT_URL), newOntopEndpoint));
+                        .andHas(Rdf.iri(SparqlConstants.USES_DATABASE), postgisService)
+                        .andHas(Rdf.iri(DCAT.SERVES_DATASET), catalogIri)
+                        .andHas(Rdf.iri(DCAT.ENDPOINT_URL), newOntopEndpoint));
             }
         } else {
             catalogIri = Rdf.iri(iri);
@@ -238,22 +249,22 @@ public class Dataset {
             deleteTriples.add(catalogIri.has(DCTERMS.MODIFIED, catalogTime));
 
             insertTriples.add(catalogIri
-            .has(DCTERMS.MODIFIED, Rdf.literalOfType(currentTime.toString(), XSD.DATETIME)));
+                    .has(DCTERMS.MODIFIED, Rdf.literalOfType(currentTime.toString(), XSD.DATETIME)));
         }
 
         getDataSubsets().stream().forEach(dataSubset -> {
             if (!dataSubset.getExists()) {
                 Iri dataSetIri = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
-                insertTriples.add(catalogIri.has(Rdf.iri(DCTERMS.HAS_PART), dataSetIri)); 
+                insertTriples.add(catalogIri.has(Rdf.iri(DCTERMS.HAS_PART), dataSetIri));
                 insertTriples.add(dataSetIri.isA(Rdf.iri(DCAT.DATASET))
-                .andHas(Rdf.iri(DCTERMS.MODIFIED), Rdf.literalOfType(currentTime.toString(), XSD.DATETIME))
-                .andHas(Rdf.iri(DCTERMS.TITLE), dataSubset.getName())
-                .andHas(Rdf.iri(DCTERMS.DESCRIPTION), dataSubset.getDescription()));
+                        .andHas(Rdf.iri(DCTERMS.MODIFIED), Rdf.literalOfType(currentTime.toString(), XSD.DATETIME))
+                        .andHas(Rdf.iri(DCTERMS.TITLE), dataSubset.getName())
+                        .andHas(Rdf.iri(DCTERMS.DESCRIPTION), dataSubset.getDescription()));
             } else {
                 Variable dataSubsetTime = query.var();
                 deleteTriples.add(Rdf.iri(dataSubset.getIri()).has(DCTERMS.MODIFIED, dataSubsetTime));
                 insertTriples.add(Rdf.iri(dataSubset.getIri())
-                .has(DCTERMS.MODIFIED, Rdf.literalOfType(currentTime.toString(), XSD.DATETIME)));
+                        .has(DCTERMS.MODIFIED, Rdf.literalOfType(currentTime.toString(), XSD.DATETIME)));
             }
         });
 
@@ -269,7 +280,7 @@ public class Dataset {
             TriplePattern[] deleteTriplesAsArray = deleteTriples.toArray(new TriplePattern[deleteTriples.size()]);
             modify.delete(deleteTriplesAsArray).where(deleteTriplesAsArray);
         }
-        
+
         return modify.getQueryString();
     }
 
@@ -286,16 +297,19 @@ public class Dataset {
         Variable dataSubsetNameVar = query.var();
 
         GraphPattern mainQuery = GraphPatterns.and(catalogVar.has(DCTERMS.HAS_PART, dataSubsetVar)
-        .andHas(Rdf.iri(DCTERMS.TITLE), catalogNameVar),
-        dataSubsetVar.has(DCTERMS.TITLE, dataSubsetNameVar));
+                .andHas(Rdf.iri(DCTERMS.TITLE), catalogNameVar),
+                dataSubsetVar.has(DCTERMS.TITLE, dataSubsetNameVar));
 
         ValuesPattern catalogValuesPattern = new ValuesPattern(catalogNameVar, Rdf.literalOf(getName()));
-        ValuesPattern datasetValuesPattern = new ValuesPattern(dataSubsetNameVar, dataSubsetNames.stream().map(Rdf::literalOf).collect(Collectors.toList()));
+        ValuesPattern datasetValuesPattern = new ValuesPattern(dataSubsetNameVar,
+                dataSubsetNames.stream().map(Rdf::literalOf).collect(Collectors.toList()));
 
-        query.where(mainQuery, catalogValuesPattern, datasetValuesPattern).select(catalogVar, dataSubsetVar, dataSubsetNameVar);
+        query.where(mainQuery, catalogValuesPattern, datasetValuesPattern).select(catalogVar, dataSubsetVar,
+                dataSubsetNameVar);
 
-        JSONArray queryResult = BlazegraphClient.getInstance().getRemoteStoreClient("kb").executeQuery(query.getQueryString());
-        
+        JSONArray queryResult = BlazegraphClient.getInstance().getRemoteStoreClient("kb")
+                .executeQuery(query.getQueryString());
+
         // catalog exists
         // used later to generate SPARQL update
         if (!queryResult.isEmpty()) {
@@ -307,8 +321,10 @@ public class Dataset {
             getDataSubsets().stream().forEach(dataSubset -> nameToDataSubsetMap.put(dataSubset.getName(), dataSubset));
 
             for (int i = 0; i < queryResult.length(); i++) {
-                String queriedDatasubset = queryResult.getJSONObject(i).getString(dataSubsetVar.getQueryString().substring(1));
-                String queriedDatasubsetName = queryResult.getJSONObject(i).getString(dataSubsetNameVar.getQueryString().substring(1));
+                String queriedDatasubset = queryResult.getJSONObject(i)
+                        .getString(dataSubsetVar.getQueryString().substring(1));
+                String queriedDatasubsetName = queryResult.getJSONObject(i)
+                        .getString(dataSubsetNameVar.getQueryString().substring(1));
 
                 nameToDataSubsetMap.get(queriedDatasubsetName).setIri(queriedDatasubset);
                 nameToDataSubsetMap.get(queriedDatasubsetName).setExists(true);

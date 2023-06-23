@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   python-service:
-    image: docker.cmclinnovations.com/python-service:1.0.1
+    image: ghcr.io/cambridge-cares/python-service:1.2
     deploy:
       mode: replicated
       replicas: 1
@@ -12,5 +12,12 @@ services:
       target: production
     ports:
       - 5000:5000
+    volumes:
+      - vis_data:/var/www/html
     networks:
       - stack
+  
+volumes:
+  vis_data:
+    name: "vis_data"
+    external: true

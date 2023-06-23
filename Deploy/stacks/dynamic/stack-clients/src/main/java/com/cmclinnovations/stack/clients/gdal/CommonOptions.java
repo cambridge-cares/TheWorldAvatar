@@ -30,9 +30,17 @@ class CommonOptions<T extends CommonOptions<T>> {
     protected CommonOptions() {
     }
 
+    public String getSridIn() {
+        return sridIn;
+    }
+
     public T setSridIn(String sridIn) {
         this.sridIn = sridIn;
         return (T) this;
+    }
+
+    public String getSridOut() {
+        return sridOut;
     }
 
     public T setSridOut(String sridOut) {
@@ -70,6 +78,20 @@ class CommonOptions<T extends CommonOptions<T>> {
         List<String> allArgs = new ArrayList<>(args.length);
         Collections.addAll(allArgs, args);
 
+        handleSRIDs(allArgs);
+
+        inputDatasetOpenOptions.forEach((name, value) -> addKeyValuePair(allArgs, "-oo", name, value));
+
+        otherOptions.forEach((option, values) -> {
+            allArgs.add(option);
+            values.stream()
+                    .map(value -> value.startsWith("@") ? handleFileArg(option, value) : value)
+                    .collect(Collectors.toCollection(() -> allArgs));
+        });
+        return allArgs;
+    }
+
+    protected void handleSRIDs(List<String> allArgs) {
         if (null != sridOut) {
             allArgs.add("-t_srs");
             allArgs.add(sridOut);
@@ -83,16 +105,6 @@ class CommonOptions<T extends CommonOptions<T>> {
                 allArgs.add(sridIn);
             }
         }
-
-        inputDatasetOpenOptions.forEach((name, value) -> addKeyValuePair(allArgs, "-oo", name, value));
-
-        otherOptions.forEach((option, values) -> {
-            allArgs.add(option);
-            values.stream()
-                    .map(value -> value.startsWith("@") ? handleFileArg(option, value) : value)
-                    .collect(Collectors.toCollection(() -> allArgs));
-        });
-        return allArgs;
     }
 
     protected void addKeyValuePair(List<String> allArgs, String option, String name, String value) {

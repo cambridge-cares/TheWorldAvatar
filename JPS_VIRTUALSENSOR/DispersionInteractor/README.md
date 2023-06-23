@@ -13,7 +13,10 @@ Parameters:
 3) ny
     - number of cells in the y direction
 
-This route creates 1 dispersion derivation in the knowledge graph and ensures that there is one weather station within the simulation polygon.
+4) citiesnamespace (optional)
+   - a string containing one of the namespaces listed at http://www.theworldavatar.com:83/citieskg/#namespaces.
+
+The citiesnamespace parameter is optional and can be omitted if running Aermod Agent for ships only without any static point sources. However, there must be at least one point source within the scope. This route creates 1 dispersion derivation in the knowledge graph and ensures that there is one weather station within the simulation polygon.
 
 If there are no errors, this should return the IRI of the created derivation, e.g. {"derivation": "http://derivation1"}.
 
