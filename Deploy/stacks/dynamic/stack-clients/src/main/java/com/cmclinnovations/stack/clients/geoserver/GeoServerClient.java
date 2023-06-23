@@ -16,8 +16,8 @@ import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.core.RESTEndpointConfig;
-import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
+import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import com.cmclinnovations.stack.services.GeoServerService;
@@ -41,6 +41,7 @@ public class GeoServerClient extends ContainerClient {
     private static GeoServerClient instance = null;
     private static final Path STATIC_DATA_DIRECTORY = GeoServerService.SERVING_DIRECTORY.resolve("static_data");
     private static final Path ICONS_DIRECTORY = GeoServerService.SERVING_DIRECTORY.resolve("icons");
+    private static final String GEOSERVER_RASTER_INDEX_DATABASE_SUFFIX = "_geoserver_indices";
 
     public static GeoServerClient getInstance() {
         if (null == instance) {
@@ -181,7 +182,7 @@ public class GeoServerClient extends ContainerClient {
         if (manager.getReader().existsLayer(workspaceName, layerName, Util.DEFAULT_QUIET_ON_NOT_FOUND)) {
             logger.info("GeoServer database layer '{}' already exists.", database);
         } else {
-            createPostGISDataStore(workspaceName, layerName, database, "public");
+            createPostGISDataStore(workspaceName, layerName, database, PostGISClient.DEFAULT_SCHEMA_NAME);
 
             GSFeatureTypeEncoder fte = new GSFeatureTypeEncoder();
             fte.setProjectionPolicy(ProjectionPolicy.NONE);
@@ -210,9 +211,10 @@ public class GeoServerClient extends ContainerClient {
             GeoServerRasterSettings geoServerSettings) {
 
         if (manager.getReader().existsCoveragestore(workspaceName, name)) {
-            logger.info("GeoServer coveragestore '{}' already exists.", name);
+            logger.info("GeoServer coverage store '{}' already exists.", name);
         } else {
-            PostGISClient.getInstance().createDatabase(database);
+            String geoserverRasterIndexDatabaseName = database + GEOSERVER_RASTER_INDEX_DATABASE_SUFFIX;
+            PostGISClient.getInstance().createDatabase(geoserverRasterIndexDatabaseName);
 
             String containerId = getContainerId("geoserver");
 
@@ -220,7 +222,7 @@ public class GeoServerClient extends ContainerClient {
             datastoreProperties.putIfAbsent("SPI", "org.geotools.data.postgis.PostgisNGDataStoreFactory");
             datastoreProperties.putIfAbsent("host", postgreSQLEndpoint.getHostName());
             datastoreProperties.putIfAbsent("port", postgreSQLEndpoint.getPort());
-            datastoreProperties.putIfAbsent("database", database);
+            datastoreProperties.putIfAbsent("database", geoserverRasterIndexDatabaseName);
             datastoreProperties.putIfAbsent("schema", schema);
             datastoreProperties.putIfAbsent("user", postgreSQLEndpoint.getUsername());
             datastoreProperties.putIfAbsent("passwd", postgreSQLEndpoint.getPassword());
@@ -231,7 +233,7 @@ public class GeoServerClient extends ContainerClient {
             datastoreProperties.putIfAbsent("preparedStatements", "true");
             StringWriter stringWriter = new StringWriter();
 
-            Path geotiffDir = Path.of(StackClient.GEOTIFFS_DIR, name);
+            Path geotiffDir = GDALClient.generateRasterOutDirPath(database, schema, name);
             try {
                 datastoreProperties.store(stringWriter, "");
 
