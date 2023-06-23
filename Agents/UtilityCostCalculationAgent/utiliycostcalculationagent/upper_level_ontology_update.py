@@ -448,10 +448,10 @@ sparql_client = PySparqlClient(query_endpoint=QUERY_ENDPOINT, update_endpoint=UP
 
 initialize_assumptions(sparql_client)
 
-initialize_indecies(sparql_client)
+# initialize_indecies(sparql_client)
 
-ontop_data_backup(sparql_client)
+# ontop_data_backup(sparql_client)
 
-update_regions_within_country(sparql_client)
+# update_regions_within_country(sparql_client)
 
 
