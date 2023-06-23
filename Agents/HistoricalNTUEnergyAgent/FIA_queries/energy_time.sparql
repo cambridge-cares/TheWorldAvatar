@@ -28,4 +28,18 @@ WHERE {
         BIND("PV Generated Power" AS ?Name).
         BIND("kiloWatt" AS ?Unit)
     }
+    UNION {
+        [IRI] powsys:hasBusNode ?busnode.
+        ?busnode powbehave:hasVoltageAngle ?voltageAngle.
+        ?voltageAngle om:hasValue ?Measurement.
+        BIND("Voltage Angle" AS ?Name).
+        BIND("degree" AS ?Unit)
+    }
+    UNION {
+        [IRI] powsys:hasBusNode ?busnode.
+        ?busnode powbehave:hasVoltageMagnitude ?voltageMagnitude.
+        ?voltageMagnitude om:hasValue ?Measurement.
+        BIND("Voltage Magnitude" AS ?Name).
+        BIND("kiloVolt" AS ?Unit)
+    }
 }
