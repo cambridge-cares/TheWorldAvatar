@@ -183,7 +183,6 @@ public class DatasetLoader {
                 newOntopEndpoint = ontopService.getOntopEndpointConfig().getUrl();
 
                 OntopClient ontopClient = OntopClient.getInstance(newOntopServiceName);
-                Path directory = dataset.getDirectory();
                 ontopMappings.forEach(mapping -> ontopClient.updateOBDA(directory.resolve(mapping)));
             }
 
