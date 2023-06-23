@@ -313,22 +313,22 @@ public class QueryClient {
         // to be parsed correctly by FeatureInfoAgent.
 
         List<Long> timeStampsLong = dispMatrixTimeSeries.getTimes();
-        List<LocalDateTime> timeStamps = new ArrayList<>();
+        List<Instant> timeStamps = new ArrayList<>();
 
         timeStampsLong.stream().forEach(ts -> {
             Instant timeInstant = Instant.ofEpochMilli(millis(ts));
             LocalDateTime ldt = LocalDateTime.ofInstant(timeInstant, ZoneOffset.UTC);
-            timeStamps.add(ldt);
+            timeStamps.add(timeInstant);
         });
 
-        TimeSeries<LocalDateTime> timeSeries = new TimeSeries<>(timeStamps,
+        TimeSeries<Instant> timeSeries = new TimeSeries<>(timeStamps,
                 tsDataList, tsValuesList);
 
-        TimeSeriesClient<LocalDateTime> tsClientLdt = new TimeSeriesClient<>((RemoteStoreClient) storeClient,
-                LocalDateTime.class);
+        TimeSeriesClient<Instant> tsClientInstant = new TimeSeriesClient<>((RemoteStoreClient) storeClient,
+                Instant.class);
 
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            tsClientLdt.addTimeSeriesData(timeSeries, conn);
+            tsClientInstant.addTimeSeriesData(timeSeries, conn);
         } catch (SQLException e) {
             LOGGER.error("Failed at closing connection");
             LOGGER.error(e.getMessage());
