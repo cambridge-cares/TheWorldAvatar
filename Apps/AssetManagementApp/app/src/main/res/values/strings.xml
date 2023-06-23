@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Asset Management App</string>
+    <string name="setting">Setting</string>
+    <string name="scan">Scan</string>
+    <string name="sweep">Inventory Sweep</string>
+    <string name="add_asset">Add Asset</string>
+    <string name="schedule">Schedule</string>
+    <string name="account">Account</string>
+    <string name="email">Email</string>
+    <string name="notification">Notification</string>
+    <string name="in_app_notification">In-app Notification</string>
+    <string name="email_notification">Email Notification</string>
+    <string name="asset_info_display">Asset Information Display</string>
+    <string name="serial_no">Serial Number</string>
+    <string name="location">Location (Room)</string>
+    <string name="service_code">Service Code</string>
+    <string name="asset_type">Asset Type</string>
+    <string name="group">Group</string>
+    <string name="description">Name/ Description</string>
+    <string name="model_no">Model Number</string>
+    <string name="manual">Manuals</string>
+    <string name="logout">Logout</string>
+</resources>

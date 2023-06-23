@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="appbar_padding">16dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="appbar_padding_top">8dp</dimen>
+    <dimen name="component_margin">20dp</dimen>
+    <dimen name="font_size">17sp</dimen>
+    <dimen name="title_font_size">18sp</dimen>
+    <dimen name="hint_font_size">16sp</dimen>
+    <dimen name="component_margin_small">10dp</dimen>
+    <dimen name="component_margin_xs">5dp</dimen>
+</resources>
