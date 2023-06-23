@@ -47,6 +47,10 @@ Vector,Class,,,,,,A quantity that has magnitude and direction.,https://www.thewo
 MagneticFluxDensityVector,Class,Vector,IS-A,,,,A vector quantity that represents the strength and direction of a magnetic field.,https://www.theworldavatar.com/kg/ontodevice/,Magnetic flux density vector
 GravityVector,Class,Vector,IS-A,,,,A vector quantity that represents the direction and magnitude of the gravitational acceleration.,https://www.theworldavatar.com/kg/ontodevice/,Gravity vector
 AccelerationVector,Class,Vector,IS-A,,,,A vector quantity that represents the rate of change of velocity.,https://www.theworldavatar.com/kg/ontodevice/,Acceleration vector
+http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
+http://www.ontology-of-units-of-measure.org/resource/om-2/MagneticFluxDensity,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
+https://saref.etsi.org/core/Meter,Class,Device,IS-A,,,,,https://www.theworldavatar.com/kg/ontodevice/,
+https://saref.etsi.org/core/Sensor,Class,Device,IS-A,,,,,https://www.theworldavatar.com/kg/ontodevice/,
 observes,Object Property,,,Device,https://saref.etsi.org/core/State,,A relationship between a device and the state that it is observing.,https://www.theworldavatar.com/kg/ontodevice/,observes
 measures,Object Property,,,Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity UNION Vector,,A relationship between a device and a quantity or vector that it is measuring.,https://www.theworldavatar.com/kg/ontodevice/,measures
 measures,Object Property,,,Magnetometer,MagneticFluxDensityVector,only,A relationship between a device and a quantity or vector that it is measuring.,https://www.theworldavatar.com/kg/ontodevice/,measures
