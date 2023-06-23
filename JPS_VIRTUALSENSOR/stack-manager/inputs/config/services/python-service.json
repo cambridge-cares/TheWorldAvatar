@@ -1,0 +1,28 @@
+{
+    "ServiceSpec": {
+        "Name": "python-service",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/python-service:1.2",
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "logs",
+                        "Target": "/root/.jps"
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "vis_data",
+                        "Target": "/vis_data"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "ui": {
+            "url": "http://localhost:5000/",
+            "externalPath": "/python-service/"
+        }
+    }
+}

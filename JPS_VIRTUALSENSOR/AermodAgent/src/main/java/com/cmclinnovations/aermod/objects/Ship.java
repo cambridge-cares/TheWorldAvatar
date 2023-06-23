@@ -1,29 +1,22 @@
 package com.cmclinnovations.aermod.objects;
 
-import org.postgis.Point;
-
-public class Ship {
-    private String iri;
-    private Chimney chimney;
-    private Point location;
-    
-    public Ship (String iri) {
-        this.iri = iri;
-        this.chimney = new Chimney();
+public class Ship extends PointSource {
+    public Ship(String iri) {
+        super(iri);
     }
 
-    public String getIri() {
-        return this.iri;
+    @Override
+    public double getDiameter() {
+        return 1;
     }
 
-    public Chimney getChimney() {
-        return this.chimney;
+    @Override
+    public double getHeight() {
+        return 20;
     }
 
-    public void setLocation(Point location) {
-        this.location = location;
-    }
-    public Point getLocation() {
-        return this.location;
+    @Override
+    public double getMixtureMassFlux() {
+        return 0.0192143028723584;
     }
 }

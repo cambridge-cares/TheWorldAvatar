@@ -2,9 +2,11 @@
 
 This Feature Info Agent (FIA) acts as a single access point for [DTVF Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) to query for both meta and time series data of an individual feature (i.e. a single geographical location) before display within the side panel of the visualisation.
 
+The current version of the FIA is v2.0.1.
+
 ## Overview
 
-The FIA is a relatively simple HTTP Agent built using the JPS Base Lib's agent framework. When a new request is received, the internal process proceeds as follows:
+The FIA is a relatively simple HTTP agent built using the JPS Base Lib's agent framework. When a new request is received, the internal process proceeds as follows:
 
 1. Check if the configuration has been loaded.
    1. If not, then load it.
@@ -32,7 +34,8 @@ The FIA is a relatively simple HTTP Agent built using the JPS Base Lib's agent f
 
 Note that the agent's configuration file is read and its contents cached when the system first boots (meaning any changes to the file will require a restart), but the individual query files are read as-needed (i.e. once a request has been recieved) and are not currently cached (meaning any changes to these will take effect upon subsequent requests without the requirement for a restart).
 
-It's also worth noting that in the current version of the FIA, any queries to the knowledge graphs are sent to all discovered namespace endpoints via federation. Whilst this will marginally increase processing times, these queries should be pretty quick, and shouldn't be triggered too often, so the risk of delay is hopefully less than the benefit of not having to specify the endpoint beforehand.
+If an `endpoint` parameter is sent to the FIA, that parameter is assumed to be a Blazegraph endpoint and will be the only endpoint used when querying for the class type of an IRI and the subsequent metadata. If this parameter is missing, then the FIA will federate those queries across all namespace endpoints within the current stack's Blazegraph service.
+
 
 ## Restrictions
 
@@ -120,7 +123,15 @@ om:kilometrePerHour om:symbol "km/h"^^xsd:string .
 
 All incoming requests should use the `/get` route, containing a `query` parameter that has a JSON body (compatible with the agent framework in the JPS Base Lib), which in turn contains a single `iri` parameter. In this version of the agent, **no** other parameters (e.g. `endpoint`, `namespace`) are required.
 
-## Deployment
+## Enabling the FIA in a stack
+
+The FIA container is an optional built-in service in the stack.
+To enable it you need to create/modify the config file for that stack.
+An example of the changes required are described in the stack-manager readme file [here](../../Deploy/stacks/dynamic/stack-manager/README.md#adding-the-feature-info-agent).
+
+After spinning up the stack the agent should be accessible via the `/feature-info-agent` route.
+
+## Development
 
 The Docker image for this agent should be automatically built and pushed by GitHub whenever a pull request to the main branch is approved and merged. However, it is worth noting that the user that triggers this will require an active GitHub token that has permissions to push packages to the GitHub registry.
 
@@ -128,10 +139,10 @@ Local building can be carried out using the provided docker-compose files as cre
 
 To build the Agent image and deploy it to the spun up stack, please run the following commands from the FeatureInfoAgent directory wherever the stack is running (i.e. potentially on the remote VM):
 
-# Build the agent image
+### Build the agent image
 bash ./stack.sh build
 
-# Deploy the agent
+### Deploy the agent
 bash ./stack.sh start <STACK_NAME>
 
 After deploying the agent, the NGINX routing configuration of your stack may need to be adjusted to ensure the agent is accessible via the `/feature-info-agent` route.
@@ -144,7 +155,7 @@ It is worth noting that the docker compose setup for this agent creates a bind m
 [queries]: queries
 [OntoEMS]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontoems/OntoEMS.owl
 
-# Automated actions
+### Automated actions
 
 The FIA is currently set up with two automated GitHub actions:
 

@@ -1,0 +1,6 @@
+blazegraph
+postgis
+adminer
+ontop
+gdal
+geoserver

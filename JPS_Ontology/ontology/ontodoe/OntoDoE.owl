@@ -9,9 +9,9 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/"
      xmlns:ontodoe="https://www.theworldavatar.com/kg/ontodoe/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodoe/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">06 February 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">04 May 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for design of experiment.</rdfs:comment>
-        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.7</owl:versionInfo>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.11</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
@@ -34,7 +34,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodoe/designsChemicalReaction">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodoe/DesignOfExperiment"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ChemicalReaction"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a design of experiment excersise and the chemical reaction it is optimising.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -57,7 +57,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodoe/hasDoETemplate">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ChemicalReaction"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodoe/DesignOfExperiment"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a chemical reaction and its design of experiment template for optimisation.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
@@ -113,14 +113,26 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontodoe/refersTo -->
+    <!-- https://www.theworldavatar.com/kg/ontodoe/refersToExperiment -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodoe/refersTo">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodoe/refersToExperiment">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodoe/HistoricalData"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between previous experiment records/future experiment conditions and the reaction experiment it refers to. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodoe/refersToQuantity -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodoe/refersToQuantity">
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontodoe/CategoricalVariable"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontodoe/ContinuousVariable"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontodoe/FixedParameter"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontodoe/SystemResponse"/>
@@ -128,9 +140,7 @@
             </owl:Class>
         </rdfs:domain>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a continuous variable/a system response/a fixed parameter in a design of experiment exercise and the dimensional quantity it refers to. </rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between previous experiment records/future experiment conditions and the reaction experiment it refers to. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -169,6 +179,18 @@
      -->
 
 
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodoe/hasLevel -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontodoe/hasLevel">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodoe/CategoricalVariable"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An attribute indicates the possible level of the quantity that a categorical variable refers to.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
     
 
 
@@ -319,25 +341,18 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontodoe/CategoricalVariable -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodoe/CategoricalVariable">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodoe/DesignVariable"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodoe/refersToQuantity"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A design variable that is discrete in domain. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
     </owl:Class>
@@ -373,7 +388,7 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodoe/DesignVariable"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodoe/refersTo"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodoe/refersToQuantity"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
             </owl:Restriction>
@@ -409,12 +424,6 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodoe/DesignOfExperiment">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodoe/proposesNewExperiment"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodoe/hasSystemResponse"/>
@@ -482,7 +491,7 @@
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodoe/FixedParameter">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodoe/refersTo"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodoe/refersToQuantity"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
             </owl:Restriction>
@@ -497,12 +506,6 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodoe/HistoricalData">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodoe/refersTo"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A complete recording of controlled experimental trails done in the past. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
     </owl:Class>
@@ -531,6 +534,17 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodoe/NewSTBO -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodoe/NewSTBO">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodoe/Strategy"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A new single-task bayesian optimisation algorithm developed by Kobi Felton (kcmf2@cam.ac.uk).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodoe/Strategy -->
 
 
@@ -547,7 +561,7 @@
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodoe/SystemResponse">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodoe/refersTo"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodoe/refersToQuantity"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
             </owl:Restriction>
@@ -566,6 +580,13 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&quot;Thompson sampling efficient multiobjective optimization&quot; strategy proposed in paper doi:10.1007/s10898-018-0609-2.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
     </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/ChemicalReaction -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/ChemicalReaction"/>
     
 
 

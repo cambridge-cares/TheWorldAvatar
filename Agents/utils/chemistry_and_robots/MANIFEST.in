@@ -1,4 +1,5 @@
 recursive-include chemistry_and_robots *.ttl
+recursive-include chemistry_and_robots *.owl
 include chemistry_and_robots/resources/sample_data/raw_hplc_report_txt.txt
 include chemistry_and_robots/resources/sample_data/raw_hplc_report_txt_incomplete.txt
 include chemistry_and_robots/resources/sample_data/raw_hplc_report_txt_unidentified_peaks.txt
