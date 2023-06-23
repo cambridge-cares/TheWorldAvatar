@@ -1,5 +1,6 @@
 package com.cmclinnovations.virtualsensor;
 
+import java.time.Instant;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -25,10 +26,11 @@ public class VirtualSensorAgent extends DerivationAgent {
     public void init() throws ServletException {
         EndpointConfig endpointConfig = new EndpointConfig();
         RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
-        TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient, Long.class);
+        TimeSeriesClient<Long> tsClientLong = new TimeSeriesClient<>(storeClient, Long.class);
+        TimeSeriesClient<Instant> tsClientInstant = new TimeSeriesClient<>(storeClient, Instant.class);
         RemoteRDBStoreClient remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(),
                 endpointConfig.getDbuser(), endpointConfig.getDbpassword());
-        queryClient = new QueryClient(storeClient, tsClient, remoteRDBStoreClient);
+        queryClient = new QueryClient(storeClient, tsClientLong, tsClientInstant, remoteRDBStoreClient);
         super.devClient = new DerivationClient(storeClient, QueryClient.PREFIX);
     }
 
@@ -39,7 +41,7 @@ public class VirtualSensorAgent extends DerivationAgent {
         // Get latest time for which pollutant data has been stored, list of dispersion
         // matrix data IRIs and station location
         String derivation = derivationInputs.getDerivationIRI();
-        Long latestTime = queryClient.getLatestStationTime(derivation);
+        Instant latestTime = queryClient.getLatestStationTime(derivation);
         Map<String, String> pollutantToDispMatrix = queryClient.getDispersionMatrixIris(derivation);
         Point stationLocation = queryClient.getStationLocation(derivation);
         Map<String, String> pollutantToConcIri = queryClient.getStationDataIris(derivation);

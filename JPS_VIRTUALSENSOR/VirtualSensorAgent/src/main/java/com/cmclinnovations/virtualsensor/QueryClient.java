@@ -50,7 +50,8 @@ import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 public class QueryClient {
     private static final Logger LOGGER = LogManager.getLogger(QueryClient.class);
     private StoreClientInterface storeClient;
-    private TimeSeriesClient<Long> tsClient;
+    private TimeSeriesClient<Long> tsClientLong;
+    private TimeSeriesClient<Instant> tsClientInstant;
     private RemoteRDBStoreClient remoteRDBStoreClient;
 
     static final String PREFIX = "https://www.theworldavatar.com/kg/ontodispersion/";
@@ -103,14 +104,16 @@ public class QueryClient {
     private static final Iri HAS_WKT = iri("http://www.opengis.net/ont/geosparql#asWKT");
     private static final Iri HAS_OBSERVATION_LOCATION = P_EMS.iri("hasObservationLocation");
 
-    public QueryClient(StoreClientInterface storeClient, TimeSeriesClient<Long> tsClient,
+    public QueryClient(StoreClientInterface storeClient, TimeSeriesClient<Long> tsClientLong,
+            TimeSeriesClient<Instant> tsClientInstant,
             RemoteRDBStoreClient remoteRDBStoreClient) {
         this.storeClient = storeClient;
-        this.tsClient = tsClient;
+        this.tsClientLong = tsClientLong;
+        this.tsClientInstant = tsClientInstant;
         this.remoteRDBStoreClient = remoteRDBStoreClient;
     }
 
-    public Long getLatestStationTime(String derivation) {
+    public Instant getLatestStationTime(String derivation) {
         SelectQuery query = Queries.SELECT();
         Variable station = query.var();
         Variable pollutantConcentration = query.var();
@@ -132,10 +135,10 @@ public class QueryClient {
             pollutantConcIri = queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1));
         }
 
-        Long latestTime = 0L;
+        Instant latestTime = null;
 
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            latestTime = tsClient.getMaxTime(pollutantConcIri, conn);
+            latestTime = tsClientInstant.getMaxTime(pollutantConcIri, conn);
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
         }
@@ -227,7 +230,7 @@ public class QueryClient {
 
     }
 
-    public void updateStation(Long latestTime, Map<String, String> pollutantToDispMatrix,
+    public void updateStation(Instant latestTime, Map<String, String> pollutantToDispMatrix,
             Map<String, String> pollutantToConcIri, Point stationLocation) {
 
         List<String> dispMatrixIriList = new ArrayList<>(pollutantToDispMatrix.values());
@@ -254,9 +257,13 @@ public class QueryClient {
         int originalSrid = 4326;
         double[] xyTransformed = CRSTransformer.transform("EPSG:" + originalSrid, "EPSG:" + simulationSrid, xyOriginal);
 
+        // Convert from Instant to Long
+
+        Long latestTimeLong = latestTime.getEpochSecond();
+
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            dispMatrixTimeSeries = tsClient
-                    .getTimeSeriesWithinBounds(dispMatrixIriList, latestTime, null, conn);
+            dispMatrixTimeSeries = tsClientLong
+                    .getTimeSeriesWithinBounds(dispMatrixIriList, latestTimeLong, null, conn);
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
             return;
@@ -308,7 +315,7 @@ public class QueryClient {
 
         }
 
-        // AermodAgent uses Unix timestamps. These must be converted to LocalDateTime
+        // AermodAgent uses Unix timestamps. These must be converted to Instant
         // for the times
         // to be parsed correctly by FeatureInfoAgent.
 
@@ -317,15 +324,11 @@ public class QueryClient {
 
         timeStampsLong.stream().forEach(ts -> {
             Instant timeInstant = Instant.ofEpochMilli(millis(ts));
-            LocalDateTime ldt = LocalDateTime.ofInstant(timeInstant, ZoneOffset.UTC);
             timeStamps.add(timeInstant);
         });
 
         TimeSeries<Instant> timeSeries = new TimeSeries<>(timeStamps,
                 tsDataList, tsValuesList);
-
-        TimeSeriesClient<Instant> tsClientInstant = new TimeSeriesClient<>((RemoteStoreClient) storeClient,
-                Instant.class);
 
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
             tsClientInstant.addTimeSeriesData(timeSeries, conn);
