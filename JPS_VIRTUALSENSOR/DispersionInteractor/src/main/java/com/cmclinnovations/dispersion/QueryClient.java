@@ -1,7 +1,6 @@
 package com.cmclinnovations.dispersion;
 
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
-import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
@@ -12,10 +11,7 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.postgis.Geometry;
 import org.postgis.Point;
-import org.postgis.Polygon;
-
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
@@ -30,19 +26,16 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
-import uk.ac.cam.cares.jps.base.util.CRSTransformer;
-
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import it.unibz.inf.ontop.model.vocabulary.GEO;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -52,6 +45,7 @@ public class QueryClient {
     private StoreClientInterface storeClient;
     private DerivationClient derivationClient;
     private TimeSeriesClient<Long> tsClient;
+    private TimeSeriesClient<Instant> tsClientInstant;
     private RemoteRDBStoreClient remoteRDBStoreClient;
     private static final Logger LOGGER = LogManager.getLogger(QueryClient.class);
 
@@ -107,6 +101,16 @@ public class QueryClient {
     private static final Iri OBSERVATION_LOCATION = P_EMS.iri("hasObservationLocation");
     private static final Iri REPORTS = P_EMS.iri("reports");
     private static final Iri HAS_UNIT = P_OM.iri("hasUnit");
+
+    public QueryClient(RemoteStoreClient storeClient, RemoteRDBStoreClient remoteRDBStoreClient,
+            TimeSeriesClient<Long> tsClient, TimeSeriesClient<Instant> tsClientInstant) {
+        this.storeClient = storeClient;
+        this.derivationClient = new DerivationClient(storeClient, PREFIX);
+        this.remoteRDBStoreClient = remoteRDBStoreClient;
+        this.tsClient = tsClient;
+        this.tsClientInstant = tsClientInstant;
+
+    }
 
     public QueryClient(RemoteStoreClient storeClient, RemoteRDBStoreClient remoteRDBStoreClient,
             TimeSeriesClient<Long> tsClient) {
@@ -410,7 +414,7 @@ public class QueryClient {
 
                 // Create timeseries of pollutant concentrations for OntoEMS station
                 List<Class<?>> classListForTimeSeries = Collections.nCopies(dataListForTimeSeries.size(), Double.class);
-                tsClient.initTimeSeries(dataListForTimeSeries, classListForTimeSeries,
+                tsClientInstant.initTimeSeries(dataListForTimeSeries, classListForTimeSeries,
                         null, conn);
 
                 // Create derivation for each virtual sensor

@@ -1,9 +1,9 @@
 package com.cmclinnovations.dispersion;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,17 +13,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.http.entity.ContentType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.postgis.Point;
-import org.springframework.core.io.ClassPathResource;
-
-import com.cmclinnovations.stack.clients.ontop.OntopClient;
-
-import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -142,7 +134,9 @@ public class CreateVirtualSensors extends HttpServlet {
         RemoteRDBStoreClient remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(),
                 endpointConfig.getDbuser(), endpointConfig.getDbpassword());
         TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient, Long.class);
-        queryClient = new QueryClient(storeClient, remoteRDBStoreClient, tsClient);
+        TimeSeriesClient<Instant> tsClientInstant = new TimeSeriesClient<>(storeClient,
+                Instant.class);
+        queryClient = new QueryClient(storeClient, remoteRDBStoreClient, tsClient, tsClientInstant);
         queryClient.initialiseVirtualSensorAgent();
     }
 
