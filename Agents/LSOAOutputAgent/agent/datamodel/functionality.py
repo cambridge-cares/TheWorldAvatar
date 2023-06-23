@@ -18,6 +18,7 @@ import pandas as pd
 import numpy as np
 import copy
 import pickle
+import matplotlib.animation as animation
 
 
 # Initialise logger
@@ -98,14 +99,22 @@ def convert_to_zero(val):
     else:
         return int(val)
 
-def save_figures(arg_name):
+def save_figures(arg_name, pdf = True):
     '''
     Save the figure under ./'figure_output folder, both png and pdf format
     Argument:
     arg_name: the name of this figure file
     '''
     plt.savefig('figure_output/'+f"{arg_name}".lower()+'.png',dpi=200) 
-    plt.savefig('figure_output/'+f"{arg_name}".lower()+'.pdf')
+    if pdf:
+        plt.savefig('figure_output/'+f"{arg_name}".lower()+'.pdf')
+
+def save_gif(arg_name, ani, fps):
+        # Create the writer for saving the animation as a GIF
+    writer = animation.PillowWriter(fps=fps)
+
+    # Save the animation as a GIF file
+    ani.save('figure_output/'+f"{arg_name}.gif", writer=writer)
 
 def remove_NaN(df_in: pd.DataFrame):
     '''
