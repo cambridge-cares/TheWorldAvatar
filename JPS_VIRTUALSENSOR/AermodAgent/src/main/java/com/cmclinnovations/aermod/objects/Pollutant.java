@@ -14,7 +14,7 @@ public class Pollutant {
 
     // used to create folders within the aermod simulation directory and filter for
     // contours table
-    static Map<PollutantType, String> idToLabelMap = new EnumMap<>(PollutantType.class);
+    private static Map<PollutantType, String> idToLabelMap = new EnumMap<>(PollutantType.class);
     static {
         idToLabelMap.put(PollutantType.NO_X, "NOx");
         idToLabelMap.put(PollutantType.UHC, "uHC");
@@ -25,7 +25,7 @@ public class Pollutant {
         idToLabelMap.put(PollutantType.PM2_5, "PM2_5");
     }
 
-    static Map<String, PollutantType> iriToTypeMap = new HashMap<>();
+    private static Map<String, PollutantType> iriToTypeMap = new HashMap<>();
     static {
         iriToTypeMap.put(QueryClient.NO_X, PollutantType.NO_X);
         iriToTypeMap.put(QueryClient.UHC, PollutantType.UHC);
