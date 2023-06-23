@@ -63,7 +63,7 @@ public class QueryClient {
 
     // classes
     // as Iri classes for sparql updates sent directly from here
-    private static final Iri MEASURE = P_DISP.iri("Measure");
+    private static final Iri MEASURE = P_OM.iri("Measure");
     private static final Iri REPORTING_STATION = P_EMS.iri("ReportingStation");
     private static final Iri DISPERSION_OUTPUT = P_DISP.iri("DispersionOutput");
     private static final Iri DISPERSION_MATRIX = P_DISP.iri("DispersionMatrix");

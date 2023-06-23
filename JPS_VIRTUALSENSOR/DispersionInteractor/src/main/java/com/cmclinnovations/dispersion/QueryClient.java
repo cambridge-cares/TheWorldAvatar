@@ -64,7 +64,7 @@ public class QueryClient {
     private static final Prefix P_GEO = SparqlBuilder.prefix("geo", iri(GEO.PREFIX));
 
     // classes
-    private static final Iri MEASURE = P_DISP.iri("Measure");
+    private static final Iri MEASURE = P_OM.iri("Measure");
     private static final Iri SCOPE = P_DISP.iri("Scope");
     private static final Iri SIMULATION_TIME = P_DISP.iri("SimulationTime");
     private static final Iri NX = P_DISP.iri("nx");
