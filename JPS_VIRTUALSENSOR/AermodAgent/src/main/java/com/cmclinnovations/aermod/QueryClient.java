@@ -31,10 +31,13 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import com.cmclinnovations.aermod.objects.Building;
+import com.cmclinnovations.aermod.objects.DispersionOutput;
 import com.cmclinnovations.aermod.objects.PointSource;
+import com.cmclinnovations.aermod.objects.Pollutant;
 import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
 import com.cmclinnovations.aermod.objects.WeatherData;
+import com.cmclinnovations.aermod.objects.Pollutant.PollutantType;
 
 import it.unibz.inf.ontop.model.vocabulary.GEO;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
@@ -157,6 +160,7 @@ public class QueryClient {
     private static final Iri HAS_POLLUTANT_ID = P_DISP.iri("hasPollutantID");
     private static final Iri HAS_DISPERSION_MATRIX = P_DISP.iri("hasDispersionMatrix");
     private static final Iri HAS_DISPERSION_LAYER = P_DISP.iri("hasDispersionLayer");
+    private static final Iri HAS_DISPERSION_RASTER = P_DISP.iri("hasDispersionRaster");
 
     // fixed units for each measured property
     private static final Map<String, Iri> UNIT_MAP = new HashMap<>();
@@ -983,8 +987,8 @@ public class QueryClient {
         return DSL.using(conn, SQLDialect.POSTGRES);
     }
 
-    boolean elevationTableExists() {
-        String condition = String.format("table_name = '%s'", EnvConfig.ELEVATION_TABLE);
+    boolean tableExists(String tableName) {
+        String condition = String.format("table_name = '%s'", tableName);
         boolean tableCheck = false;
         try (Connection conn = rdbStoreClient.getConnection()) {
             tableCheck = getContext(conn).select(DSL.count()).from("information_schema.tables").where(condition)
@@ -1083,23 +1087,24 @@ public class QueryClient {
 
     }
 
-    void updateOutputs(String derivation, Map<String, String> dispersionMatrixMap,
-            Map<String, List<String>> dispersionLayerMap, String shipLayer,
-            long timeStamp, String aermapOutput) {
+    void updateOutputs(String derivation, DispersionOutput dispersionOutput, String shipLayer, long timeStamp,
+            String aermapOutput) {
 
         SelectQuery query = Queries.SELECT();
 
         Variable entity = query.var();
         Variable pollutant = query.var();
+        Variable pollutantIri = query.var();
         Variable dispMatrix = query.var();
         Variable dispLayer = query.var();
+        Variable dispRaster = query.var();
 
         Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
 
-        query.where(entity.has(belongsTo, iri(derivation)).andHas(HAS_POLLUTANT_ID, pollutant)
-                .andHas(HAS_DISPERSION_MATRIX, dispMatrix).andHas(HAS_DISPERSION_LAYER, dispLayer)).prefix(P_DISP)
-                .select(entity, pollutant, dispMatrix, dispLayer)
-                .distinct();
+        query.where(entity.has(belongsTo, iri(derivation)).andHas(HAS_POLLUTANT_ID, pollutantIri)
+                .andHas(HAS_DISPERSION_MATRIX, dispMatrix).andHas(HAS_DISPERSION_LAYER, dispLayer)
+                .andHas(HAS_DISPERSION_RASTER, dispRaster), pollutantIri.isA(pollutant)).prefix(P_DISP)
+                .select(entity, pollutant, dispMatrix, dispLayer, dispRaster).distinct();
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         List<String> tsDataList = new ArrayList<>();
@@ -1110,16 +1115,21 @@ public class QueryClient {
             String dispersionMatrixIRI = queryResult.getJSONObject(i)
                     .getString(dispMatrix.getQueryString().substring(1));
             String dispersionLayerIRI = queryResult.getJSONObject(i).getString(dispLayer.getQueryString().substring(1));
+            String dispersionRasterIRI = queryResult.getJSONObject(i)
+                    .getString(dispRaster.getQueryString().substring(1));
 
-            String pollutantId = pollutantIRI.substring(PREFIX_DISP.length());
-            if (dispersionMatrixMap.containsKey(pollutantId)) {
+            PollutantType pollutantType = Pollutant.getPollutantType(pollutantIRI);
+            if (dispersionOutput.hasPollutant(pollutantType)) {
                 tsDataList.add(dispersionMatrixIRI);
                 tsDataList.add(dispersionLayerIRI);
-                String dispersionMatrix = dispersionMatrixMap.get(pollutantId);
+                tsDataList.add(dispersionRasterIRI);
+                String dispersionMatrix = dispersionOutput.getDispMatrix(pollutantType);
                 // get(0) because there is only one height (ground level) for now.
-                String dispersionLayer = dispersionLayerMap.get(pollutantId).get(0);
+                String dispersionLayer = dispersionOutput.getDispLayer(pollutantType, 0.0);
+                String dispersionRaster = dispersionOutput.getDispRaster(pollutantType);
                 tsValuesList.add(List.of(dispersionMatrix));
                 tsValuesList.add(List.of(dispersionLayer));
+                tsValuesList.add(List.of(dispersionRaster));
             }
 
         }
