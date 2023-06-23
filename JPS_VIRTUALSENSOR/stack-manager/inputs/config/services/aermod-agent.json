@@ -5,7 +5,6 @@
 			"ContainerSpec": {
 				"Image": "ghcr.io/cambridge-cares/aermod-agent:1.2.2-dev-aermod-agent-pollutant-SNAPSHOT",
 				"Env": [
-					"STACK_NAME=${STACK_NAME}",
 					"PYTHON_SERVICE_URL=http://ship-stack-python-service:5000/getAermodGeoJSON",
 					"PYTHON_SERVICE_ELEVATION_URL=http://ship-stack-python-service:5000/getElevationGeoJSON",
 					"AERMAP_EXE=/root/aermod/aermap",
