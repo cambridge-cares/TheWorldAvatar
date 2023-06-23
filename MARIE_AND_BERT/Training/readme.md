@@ -3,7 +3,8 @@
 Multiple models are trained in this system: 
 1. Knowledge Graph embedding
 2. Relation prediction
-4. Score alignment
+3. Score alignment
+4. Entity Linking 
 
 
 ##  Knowledge Graph Embedding
@@ -104,4 +105,12 @@ The files need to be placed in `MARIE_AND_BERT/DATA/CrossGraph/[ontology_name]/[
 run `MARIE_AND_BERT/Training/Trainers/CrossGraphTrainer.py` to train the model 
 ### File requirement
 1. `cross_graph_alignment_training_updated.tsv`, see `MARIE_AND_BERT/KGToolbox/readme.md` to create this file
+
+## Entity Linking
+To create the training dataset for the entity linking model, please see `MARIE_AND_BERT/KGToolbox/EntityLinking/readme.md`
+The training of the entity linking model uses the original BLINK library
+while the operation of the trained model is optimised in this project.
+To train the model, please follow the official guideline for BLINK on  `https://github.com/facebookresearch/BLINK`
+
+
 
