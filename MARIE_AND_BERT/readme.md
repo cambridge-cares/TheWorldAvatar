@@ -55,10 +55,22 @@ Required files:
 , unzip under `DATA`. Otherwise upon the first run, the scripts will download the BERT pretrained model from hugging face.
 5. Download EntityLinking.zip from [EntityLinking.zip](http://159.223.42.53:8080/EntityLinking.zip), unzip under `DATA`
 6. Download STOUT V2 model [STOUT V2 model](http://159.223.42.53:8080/models.zip) for Linux system, unzip into `root/.data/STOUT-V2/`, for Windows system,
+7. Download the required NLTK datasets by running
+```
+import nlkt
+nltk.download('all')
+```
  
 To start the system, run `python main.py`.
 
- 
+To run the full functions of the Marie system, three other systems are required:
+
+1. The LDF server. See [LDF server readme](../JPS_LDF/README.md) to run it. 
+2. The semantic agents. See [PCE agent readme](../Agents/PCEAgent/README.md) 
+[Thermal agent readme](../Agents/STDCThermoAgent/README.md) to run them. 
+
+
+
 
 
 
