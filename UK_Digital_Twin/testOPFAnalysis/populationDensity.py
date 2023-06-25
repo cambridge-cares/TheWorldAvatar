@@ -17,9 +17,9 @@ def read_single_csv(input_path):
     res_df = res_df.values.tolist()
     return res_df
 
-def colourPicker(valueList):
+def colourPicker(valueList, cmapName = 'coolwarm'):
     # Define a colormap
-    cmap = plt.cm.get_cmap('coolwarm') 
+    cmap = plt.cm.get_cmap(cmapName) 
     # Normalize the values to the range [0, 1] to map them to colors
     norm = plt.Normalize(vmin=valueList.min(), vmax=valueList.max())
     # Generate the colour list according to the values
@@ -46,7 +46,7 @@ def colourBarCreator(upperbound, lowerbound, filePath, cmapName = 'coolwarm'):
 
     return 
 
-def pdGeo(dataPath, fileName, resolutionLevel:str):
+def pdGeo(dataPath, fileName, resolutionLevel:str, colorMap:str = 'coolwarm'):
     if not dataPath[-1] == '/':
         dataPath += '/' + fileName
     else:
@@ -57,7 +57,7 @@ def pdGeo(dataPath, fileName, resolutionLevel:str):
     ##assign the hex color values
     valueList = np.array(data)[:,2]
     valueList = np.log(valueList + 1)
-    colourList = colourPicker(valueList)
+    colourList = colourPicker(valueList, colorMap)
     ## normalise the values for marker size
     valueList =  valueList/(valueList.max()-valueList.min())
 
@@ -94,7 +94,7 @@ def pdGeo(dataPath, fileName, resolutionLevel:str):
     """
     geojson_file += end_geojson
     # saving as geoJSON
-    geojson_written = open('/mnt/d/wx243/FromAW/populationData/UKPoplation_%s.geojson'%resolutionLevel,'w')
+    geojson_written = open('/mnt/d/wx243/FromTWA/populationUK2019/UKPoplation_%s.geojson'%resolutionLevel,'w')
     geojson_written.write(geojson_file)
     geojson_written.close() 
     print('---GeoJSON written successfully---')
@@ -161,10 +161,11 @@ if __name__ == '__main__':
     # fileName = 'reduced_file_grid_size_10km.csv'
     ## fileName = 'reduced_file_grid_size_5km.csv'
     resolutionLevel = '1km'
+    colorMap = 'PuBu'
     ## visualisePointOnUKMap(dataPath)
     ## visualisePoint(dataPath)
-    ## pdGeo(dataPath, fileName, resolutionLevel)
-    colourBarCreator(20663, 0, dataPath)
+    pdGeo(dataPath, fileName, resolutionLevel, colorMap)
+    colourBarCreator(20663, 0, dataPath, colorMap)
 
 
 

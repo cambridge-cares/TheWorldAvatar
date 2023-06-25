@@ -19,17 +19,17 @@ import urllib.request
 """Create an object of Class UKDigitalTwinTBox"""
 t_box = T_BOX.UKDigitalTwinTBox()
 
-"""T-Box URI"""
-if urllib.request.urlopen("http://www.theworldavatar.com/ontology/").getcode() == 200:
-    ontocape_upper_level_system = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
-    ontocape_mathematical_model = owlready2.get_ontology(t_box.ontocape_mathematical_model).load()
-    ontocape_network_system = owlready2.get_ontology(t_box.ontocape_network_system).load()
-    # ontopowsys = owlready2.get_ontology(t_box.ontopowsys_OntoPowSys).load()
-else:
-    print('---THE WORLD AVATAR NOT FOUND---')
 
 
 def AddModelVariable(graph, root_node, namespace, varKey, varValue, unit, varType, inputOrOutput:bool):
+    """T-Box URI"""
+    if urllib.request.urlopen("http://www.theworldavatar.com/ontology/").getcode() == 200:
+        ontocape_upper_level_system = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
+        ontocape_mathematical_model = owlready2.get_ontology(t_box.ontocape_mathematical_model).load()
+        ontocape_network_system = owlready2.get_ontology(t_box.ontocape_network_system).load()
+        # ontopowsys = owlready2.get_ontology(t_box.ontopowsys_OntoPowSys).load()
+    else:
+        print('---THE WORLD AVATAR NOT FOUND---')
 
     if type(inputOrOutput) is not bool:
             raiseExceptions("inputOrOutput has to be a bool number")

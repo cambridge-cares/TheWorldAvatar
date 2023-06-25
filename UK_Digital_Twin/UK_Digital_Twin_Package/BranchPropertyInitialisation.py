@@ -67,7 +67,10 @@ class BranchPropertyInitialisation(object):
         if R_inverse != 0: ELine_Model.R = 1/R_inverse
         if X_inverse != 0: ELine_Model.X = 1/X_inverse
         ELine_Model.B = B
-        ELine_Model.RateA = RateA       
+        ELine_Model.RateA = RateA  
+        ELine_Model.RateB = RateA 
+        ELine_Model.RateC = RateA 
+
         return ELine_Model
     
     """The preSpecifiedBranchInitialiser is firstly designed for the 29_bus model which specify the values of the input for a set of given """ 
