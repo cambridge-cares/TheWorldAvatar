@@ -1,0 +1,1 @@
+python translator/train.py --valid_file_name valid_smiles.jsonl --train_file_name train_smiles.jsonl
