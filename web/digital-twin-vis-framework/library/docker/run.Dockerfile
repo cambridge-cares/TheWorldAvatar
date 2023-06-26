@@ -1,3 +1,7 @@
+#
+# Dockerfile for running DTVF visualisations
+#
+
 # Using Alpine as the base image
 FROM  alpine:3.14.0 as dtvf
 
