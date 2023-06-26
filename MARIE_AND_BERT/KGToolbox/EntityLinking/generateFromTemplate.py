@@ -9,7 +9,7 @@ import csv
 import json
 import random,re
 
-TEMPLATE = '../data/template_shape.csv'
+TEMPLATE = '../data/template_training.csv'
 #read templates
 templates = []
 with open(TEMPLATE, newline='') as csvfile:
@@ -22,7 +22,6 @@ questions = []
 
 templateNum = len(templates)
 
-#TODO: generate a full list, then use data loader to shuffle it?
 
 def get_entity_num(format_str):
     return format_str.count("{}")
@@ -51,7 +50,7 @@ def generate_questions(seed):
     #Train 1, test 10, valid 100
     random.seed(seed)
 
-    with open('./tbox_plus_use.jsonl', 'rt') as f:
+    with open('./ontokin.jsonl', 'rt') as f:
         for line in list(f)[0:]:
             item = json.loads(line.strip())
             name = item['entity']
@@ -139,8 +138,8 @@ def generate_questions_SMILES(num_to_gen, seed, single_entity=True):
     return questions
 #print(questions)
 
-shapefile = '../generate_tbox_namedict/mops_shape.jsonl'
-#TODO: make sure each class entity is selected at least once
+shapefile = '../mops_shape.jsonl'
+
 def generate_questions_mix_type(classfile, instancefile, seed):
     #Train 1, test 10, valid 100
     random.seed(seed)
@@ -207,10 +206,10 @@ def generate_questions_mix_type(classfile, instancefile, seed):
 
 
 
-questions = generate_questions_mix_type('../generate_tbox_namedict/mops_class.jsonl', '../generate_tbox_namedict/instances_mops.jsonl', 100)
+questions = generate_questions(1)
 #questions = generate_questions_multientity('../generate_training_data/ontokin.jsonl', 1000, 10, False  )
 #questions = generate_questions_SMILES(2000, 1)
-with open('valid_mops.jsonl', 'w') as wf:
+with open('valid_ontokin.jsonl', 'w') as wf:
     for entry in questions:
         json.dump(entry, wf)
         wf.write('\n')
