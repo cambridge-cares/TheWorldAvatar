@@ -4,9 +4,8 @@ prefix ems: <https://www.theworldavatar.com/kg/ontoems/>
 
 SELECT ?Property ?Value ?Unit
 WHERE {
-    # TODO: placeholder
-    BIND ("Name" AS ?Property ).
-    BIND (123 AS ?Value).
-    BIND ("Unit" AS ?Unit).
-
+{
+    BIND ("IRI" AS ?Property )
+    [IRI] rdf:type/^rdf:type ?Value .
+  }
 }

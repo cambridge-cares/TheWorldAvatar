@@ -9,18 +9,16 @@ prefix ontodevice: <https://www.theworldavatar.com/kg/ontodevice/>
 prefix : <https://www.theworldavatar.com/kg/ontobms/>
 SELECT distinct ?Measurement ?Name ?Unit WHERE {
   {
-    [IRI] saref:consistsOf / ontodevice:measures ?sashOp.
-    ?sashOp om:hasValue ?Measurement.
-   	?Measurement om:hasUnit / om:symbol ?Unit.
-    BIND (strbefore(replace(str(?sashOp), str(ontobms:), ""), "_") as ?Name).
-  } union {
-    [IRI] saref:consistsOf / ontodevice:observes ?Measurement.
-    BIND ("Status" as ?Name).
+    [IRI] saref:hasState / ontobms:hasLowLevelState ?Measurement.
+    BIND ("LowLevelState" as ?Name).
     BIND ("-" as ?Unit).
   } union {
-    [IRI] saref:hasState ?Measurement.
-    ?Measurement rdf:type ontodevice:OccupiedState.
-    BIND ("Occupancy" as ?Name).
+    [IRI] saref:hasState / ontobms:hasMediumLevelState ?Measurement.
+    BIND ("MediumLevelState" as ?Name).
+    BIND ("-" as ?Unit).
+  } union {
+    [IRI] saref:hasState / ontobms:hasHighLevelState ?Measurement.
+    BIND ("HighLevelState" as ?Name).
     BIND ("-" as ?Unit).
   } union {
     [IRI] saref:consistsOf / ontodevice:sendsSignalTo / saref:consistsOf / ontodevice:measures / om:hasValue ?Measurement.
