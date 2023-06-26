@@ -72,10 +72,10 @@ There are currently four routes available:
     - **WARNING**: The transfer of triples may fail for large (>1 million) numbers of triples as it is dependent on the available RAM. The [JPS Base library's cloning tool](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/tools/cloning/CloningTool.java) can be used in that situation.
     - A sample `POST` request using curl on a CLI:
 ```
-curl -X POST --header "Content-Type: application/json" -d "{
-    'source':'http://user:pass@ipaddress:port/blazegraph/namespace/kb/sparql',
-    'target': 'http://user:pass@stackName-blazegraph:8080/blazegraph/namespace/kb/sparql'
-}" localhost:3055/data-bridge-agent/sparql 
+curl -X POST --header 'Content-Type: application/json' -d '{
+    "source":"http://user:pass@ipaddress:port/blazegraph/namespace/kb/sparql",
+    "target": "http://user:pass@stackName-blazegraph:8080/blazegraph/namespace/kb/sparql"
+}' localhost:3055/data-bridge-agent/sparql 
 ```
 
 3. `<base>/sql` route:
@@ -108,16 +108,16 @@ curl -X GET 'localhost:3838/data-bridge-agent/sql?srcDbName=db'
       - `database` : Specifies the database name within the same stack. Do note that this agent is not intended to instantiate data for non-stack databases. If required, please use the [Timeseries Client](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) in your agent instead. 
     - A sample `POST` request using curl on a CLI:
 ```
-curl -X POST --header "Content-Type: application/json" -d "{
-    'timeClass':'INSTANTANEOUS',
-    'timestamp': ['2022-11-09T03:05:18', '2022-11-19T03:05:18', '2022-11-29T03:05:18'],
-    'values':{
-        'electricity': [1,2,3],
-        'energy': [4,5,6]
+curl -X POST --header 'Content-Type: application/json' -d '{
+    "timeClass":"INSTANTANEOUS",
+    "timestamp": ["2022-11-09T03:05:18", "2022-11-19T03:05:18", "2022-11-29T03:05:18"],
+    "values":{
+        "electricity": [1,2,3],
+        "energy": [4,5,6]
      },
-        'namespace' ='http://user:pass@stackName-blazegraph:8080/blazegraph/namespace/kb/sparql'
-        'database' = 'time',
-     }" localhost:3838/data-bridge-agent/timeseries 
+    "namespace" ="http://user:pass@stackName-blazegraph:8080/blazegraph/namespace/kb/sparql",
+    "database" = "time"
+     }' localhost:3838/data-bridge-agent/timeseries 
 ```
 
 ### 4. Sample Blazegraph endpoints
