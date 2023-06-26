@@ -84,11 +84,32 @@ For deployment on Linux server from the scratch:
 3. Clone the GitHub repository by `git clone https://github.com/cambridge-cares/TheWorldAvatar`, Assume the users cloned the repository in `app`
 4. Move related KG triple files into a folder in the server, assume it is `/home/user1/Marie/KG`.
 5. Build a blazegraph image, see [Blazegraph container](https://github.com/lyrasis/docker-blazegraph#local-builds) for instructions. Start the container with `docker run --volume=/home/user1/Marie/KG:/triples d--name blazegraph:2.1.5 -d -p [port]:[port] blazegraph-marie`
-6. Use the blazegraph GUI/API to create namespaces and upload. Upload `ontospecies_InchiIRI_value.nt`, `ontospecies_rdf_type.nt`,`ontospecies_smilesIRI_value.nt`, `ontospecies_species_InchiIRI.nt`, `ontospecies_species_smilesIRI.nt` to namespace `ontospecies_pce`. Upload `ontospecies.nt` to namespace `ontospecies_old`. Upload `ontocompchem.nt` to namespace `ontocompchem`.
-For example, to upload with GUI update page, key in url  `/triples/ontospecies.nt`, then press upload.
-7. `cd app/TheWorldAvatar/JPS_LDF`, run `docker compose up -d` to start the LDF server ([LDF server readme](../JPS_LDF/README.md))
-8. `cd app/TheWorldAvatar/Agents/STDCThermoAgent`, run `docker compose up -d`
-9. `cd app/TheWorldAvatar/Agents/PCEAgent`, run `docker compose up -d`
+6. Create `ontospecies.nt` and `ontocompchem.nt` by 
+
+```
+python KGToolbox/SPARQLEndpoint/export_triples.py 
+--output_dir ontospecies 
+--endpoint http://www.theworldavatar.com/blazegraph/namespace/copy_ontospecies_marie 
+--output_filename ontospecies.nt
+```
+
+and 
+
+```
+python KGToolbox/SPARQLEndpoint/export_triples.py 
+--output_dir ontocompchem 
+--endpoint http://www.theworldavatar.com/blazegraph/namespace/ontocompchem 
+--output_filename ontocompchem.nt
+```
+
+
+7. Use the blazegraph GUI/API to create namespaces and upload. Upload `ontospecies.nt` to namespace `ontospecies_old`. Upload `ontocompchem.nt` to namespace `ontocompchem`.
+
+
+For example, to upload with GUI update page, key in url  `/triples/ontospecies.nt`, then press upload. 
+8. `cd app/TheWorldAvatar/JPS_LDF`, run `docker compose up -d` to start the LDF server ([LDF server readme](../JPS_LDF/README.md))
+9. `cd app/TheWorldAvatar/Agents/STDCThermoAgent`, run `docker compose up -d`
+10. `cd app/TheWorldAvatar/Agents/PCEAgent`, run `docker compose up -d`
 
 
 

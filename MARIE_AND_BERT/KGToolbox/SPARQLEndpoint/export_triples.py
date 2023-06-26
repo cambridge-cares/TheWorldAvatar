@@ -9,6 +9,12 @@ from Marie.Util.location import DATA_DIR
 
 
 def get_all_triples(endpoint, filepath):
+    """
+    This function queries a namespace in the specified SPARQL endpoint and export all the triples to .nt file
+    :param endpoint: full url of the SPARQL endpoint, including the namespace
+    :param filepath: Directory for exporting the .nt file
+    :return:
+    """
     print("Query Started")
     sparql = SPARQLWrapper(endpoint)
     # Run Describe queries for all IRIs
@@ -24,11 +30,18 @@ def get_all_triples(endpoint, filepath):
 
 
 if __name__ == '__main__':
-    # Specify SPARQL query endpoint
-    ontology = "CrossGraph/ontospecies_new"
-    endpoint = "http://www.theworldavatar.com/blazegraph/namespace/copy_ontospecies_marie"
-    file_name = "ontospecies.nt" # freeze ontospecies 30,000 species version
+    import argparse
+    argParser = argparse.ArgumentParser()
+    argParser.add_argument("-e_point", "--endpoint", type=str, help="full url of the SPARQL endpoint")
+    argParser.add_argument("-o_file", "--output_filename", type=str, help="name of the .nt file exported")
+    argParser.add_argument("-o_name", "--ontology_name", type=str, help="name of the ontology")
 
+    args = argParser.parse_args()
+    name_space = args.namespace
+    endpoint = args.endpoint
+    output_filename = args.output_filename
+    ontology = args.ontology_name
+    ontology = "CrossGraph/%s" % ontology
     # Get all Triples and serialise as turtle
-    full_path = os.path.join(DATA_DIR, ontology, file_name)
+    full_path = os.path.join(DATA_DIR, ontology, output_filename)
     get_all_triples(endpoint, full_path)
