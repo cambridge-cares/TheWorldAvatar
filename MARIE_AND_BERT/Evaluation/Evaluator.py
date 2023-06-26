@@ -5,12 +5,11 @@ import pandas as pd
 import os, sys
 sys.path.append("..")
 
-# from Marie.CrossGraphQAEngine import CrossGraphQAEngine
-# from Marie.OntoSpecies import OntoSpeciesQAEngine
+from Marie.OntoSpecies import OntoSpeciesQAEngine
 from Marie.PubchemEngine import PubChemQAEngine
-# from Marie.OntoCompChem import OntoCompChemEngine
-# from Marie.Ontokin import OntoKinQAEngine
-# from Marie.CrossGraphQAEngine import CrossGraphQAEngine
+from Marie.OntoCompChem import OntoCompChemEngine
+from Marie.Ontokin import OntoKinQAEngine
+from Marie.CrossGraphQAEngine import CrossGraphQAEngine
 from Marie.Util.location import DATA_DIR
 
 
@@ -31,9 +30,9 @@ class Evaluator:
     def __init__(self):
         self.dataset_dir = os.path.join(DATA_DIR, 'CrossGraph')
         self.pubchem_engine = PubChemQAEngine()
-        # self.ontospecies_engine = OntoSpeciesQAEngine()
-        # self.ontocompchem_engine = OntoCompChemEngine()
-        # self.ontokin_engine = OntoKinQAEngine()
+        self.ontospecies_engine = OntoSpeciesQAEngine()
+        self.ontocompchem_engine = OntoCompChemEngine()
+        self.ontokin_engine = OntoKinQAEngine()
         self.cross_graph_test_path = os.path.join(self.dataset_dir, "cross_graph_test.tsv")
         self.cross_graph_test = pd.read_csv(self.cross_graph_test_path, sep="\t")
         # question	heads	domains	answers	mention
@@ -57,10 +56,10 @@ class Evaluator:
             filtered_predicted_answer = [p_a for p_a in pred_answers if p_a not in other_true_answers]
             counter += 1
             one_hit_1, one_hit_5, one_hit_10 = hit_k_rate(true_answer=true_ans, pred_answers=filtered_predicted_answer)
-            # print('---------')
-            # print("filtered_predicted_answer", filtered_predicted_answer)
-            # print("true answer: ", true_ans)
-            # print("HIT MATRIX: ", one_hit_1, one_hit_5, one_hit_10)
+            print('---------')
+            print("filtered_predicted_answer", filtered_predicted_answer)
+            print("true answer: ", true_ans)
+            print("HIT MATRIX: ", one_hit_1, one_hit_5, one_hit_10)
             hit_1 += one_hit_1
             hit_5 += one_hit_5
             hit_10 += one_hit_10
@@ -72,10 +71,13 @@ class Evaluator:
 
         return hit_1, hit_5, hit_10, counter, mrr
 
-    def test_cross_graph(self):
+    def test_cross_graph(self, ablation):
         total_hit_1, total_hit_5, total_hit_10, total_counter, total_mrr = 0, 0, 0, 0, 0
         df_test = self.cross_graph_test
-        answer_dict_path = os.path.join(self.dataset_dir, "answer_dict_nel_ablation.json")
+        if ablation:
+            answer_dict_path = os.path.join(self.dataset_dir, "answer_dict_nel_ablation.json")
+        else:
+            answer_dict_path = os.path.join(self.dataset_dir, "answer_dict_nel.json")
         if os.path.exists(os.path.join(answer_dict_path)):
             answer_dict = json.loads(open(answer_dict_path).read())
             for question, answers in answer_dict.items():
@@ -220,22 +222,9 @@ class Evaluator:
             question, _, true_p, true_tails, _, _, true_operator = test_row
             predicted_operator, predicted_tails, filtered_predicted_tails, predicted_numerical_values, pred_p = \
                 result_row
-
-            # print("predicted_numerical", predicted_numerical_values)
-            # print("true numerical", true_numerical_values)
-            # TODO: compare the tails
-            # wrong_tails = [p_t for p_t in predicted_tails if p_t not in true_tails]
-            # print("wrong_tails", wrong_tails)
-            # missed_tails =  [t_t for t_t in true_tails if t_t not in predicted_tails]
-            # print("missed_tails", missed_tails)
-
             if predicted_numerical_values is not None and len(predicted_numerical_values) > 0:
-                # 171.43
                 true_numerical_values = [self.value_lookup(value_dictionary, o) for o in filtered_predicted_tails]
-
                 num_counter = 0
-               #  print(len(predicted_numerical_values))
-               #  print(len(true_numerical_values))
 
                 for p_n, t_n in zip(predicted_numerical_values, true_numerical_values):
                     if t_n is not None:
@@ -301,16 +290,16 @@ class Evaluator:
         f1_filtered = 2 * (average_precision_filtered * average_recall_filtered) / \
                       (average_precision_filtered + average_recall_filtered)
 
-        # print("average_precision", average_precision)
-        # print("average_recall", average_recall)
-        # print("average_precision_filtered", average_precision_filtered)
-        # print("average_recall_filtered", average_recall_filtered)
-        # print("f1", f1)
-        # print("f1_filtered", f1_filtered)
-        # print(total_abs_diff / total_counter)
-        # print(total_diff_perc / total_counter)
-        # print("total operator accuracy", operator_accuracy / total_counter)
-        # print("total p hit rate", p_hit_rate / total_counter)
+        print("average_precision", average_precision)
+        print("average_recall", average_recall)
+        print("average_precision_filtered", average_precision_filtered)
+        print("average_recall_filtered", average_recall_filtered)
+        print("f1", f1)
+        print("f1_filtered", f1_filtered)
+        print(total_abs_diff / total_counter)
+        print(total_diff_perc / total_counter)
+        print("total operator accuracy", operator_accuracy / total_counter)
+        print("total p hit rate", p_hit_rate / total_counter)
 
     def test_1_to_1(self, ontology, engine):
         hit_1 = 0
@@ -326,7 +315,6 @@ class Evaluator:
             question, head, domain, answer, mention, rel = row
             print(f"========== Evaluating {question} - Number: {total_counter} out of {len(df_test)} ==============")
             try:
-                # answer_list, score_list, target_list = engine.selected_ontology_questions(question)
                 answer_list, score_list, target_list = engine.run(question, mention=mention)
 
                 target = target_list[0]
@@ -369,6 +357,7 @@ class Evaluator:
         print(f"hit 1 rate {hit_1 / total_counter}")
         print(f"hit 5 rate {hit_5 / total_counter}")
         print(f"hit 10 rate {hit_10 / total_counter}")
+        # =============================================
         print(f"mrr {mrr / total_counter}")
         print(f"filtered hit 1 rate {hit_1 / (total_counter - ner_failure)}")
         print(f"filtered hit 5 rate {hit_5 / (total_counter - ner_failure)}")
@@ -378,6 +367,33 @@ class Evaluator:
 
 if __name__ == "__main__":
     my_evaluator = Evaluator()
-    # my_evaluator.test_numerical()
-    my_evaluator.test_1_to_1(ontology="pubchem", engine=my_evaluator.pubchem_engine)
-    # my_evaluator.test_cross_graph()
+    import argparse
+    argParser = argparse.ArgumentParser()
+    argParser.add_argument("-m", "--mode", type=str, help="'single' for testing single QA engine, 'cross' for testing cross graph query, 'numerical' for testing numerical queries")
+    argParser.add_argument("-o", "--ontology", type=str, help="name of the .nt file exported")
+    argParser.add_argument("-a", "--ablation", type=str, help="whether disable score alignment")
+
+    args = argParser.parse_args()
+    mode = args.mode
+
+    if mode == 'single':
+        ontology = args.ontology.lower()
+        if ontology == "pubchem":
+            my_evaluator.test_1_to_1(ontology=ontology, engine=my_evaluator.pubchem_engine)
+        elif ontology == "ontokin":
+            my_evaluator.test_1_to_1(ontology=ontology, engine=my_evaluator.ontokin_engine)
+        elif ontology == "ontospecies":
+            my_evaluator.test_1_to_1(ontology=ontology, engine=my_evaluator.ontospecies_engine)
+        elif ontology == "ontocompchem":
+            my_evaluator.test_1_to_1(ontology=ontology, engine=my_evaluator.ontocompchem_engine)
+        elif ontology == "wikidata":
+            my_evaluator.test_wikidata_normal()
+        else:
+            print("Ontology error")
+    elif mode == "cross":
+        ablation = (args.ablation.lower() == "true")
+        my_evaluator.test_cross_graph(ablation)
+    elif mode == "numerical":
+        my_evaluator.test_numerical()
+    else:
+        print("Mode error")
