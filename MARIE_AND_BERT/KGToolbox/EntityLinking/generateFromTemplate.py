@@ -9,18 +9,13 @@ import csv
 import json
 import random,re
 
-TEMPLATE = '../data/template_training.csv'
+TEMPLATE = '../template_training.csv'
 #read templates
-templates = []
-with open(TEMPLATE, newline='') as csvfile:
-    reader = csv.reader(csvfile, delimiter = '@')
-    for row in reader:
-        templates.append(row[0].strip())
-
-questions = []
 
 
-templateNum = len(templates)
+
+
+
 
 
 def get_entity_num(format_str):
@@ -46,11 +41,12 @@ def get_entity_types_mix(format_str):
 def toolong(name):
     return True if len(name) >= 100  else False
 
-def generate_questions(seed):
+def generate_questions(templates,entityfile,seed):
     #Train 1, test 10, valid 100
+    questions = []
     random.seed(seed)
 
-    with open('./ontokin.jsonl', 'rt') as f:
+    with open(entityfile, 'rt') as f:
         for line in list(f)[0:]:
             item = json.loads(line.strip())
             name = item['entity']
@@ -70,9 +66,10 @@ def generate_questions(seed):
 
 
 #TODO: Note, exclude any entities longer than 30!
-def generate_questions_multientity(filepath,num_to_gen, seed, single_entity=True):
+def generate_questions_multientity(templates,filepath,num_to_gen, seed, single_entity=True):
     #Train 1, test 10, valid 100
     random.seed(seed)
+    questions = []
     alle = []
     with open(filepath, 'rt') as f:
         for line in list(f)[0:]:
@@ -104,11 +101,12 @@ def generate_questions_multientity(filepath,num_to_gen, seed, single_entity=True
 #print(questions)
 #print(questions)
 
-def generate_questions_SMILES(num_to_gen, seed, single_entity=True):
+def generate_questions_SMILES(templates, num_to_gen, seed, single_entity=True):
+    questions = []
     #Train 1, test 10, valid 100
     random.seed(seed)
     alle = []
-    with open('../data/pubchem5000withSMILE_less.jsonl', 'rt') as f:
+    with open('../pubchem5000withSMILE.jsonl', 'rt') as f:
         for line in list(f)[0:]:
             item = json.loads(line.strip())
             name = item['iupac']
@@ -138,9 +136,10 @@ def generate_questions_SMILES(num_to_gen, seed, single_entity=True):
     return questions
 #print(questions)
 
-shapefile = '../mops_shape.jsonl'
+shapefile = '../data/mops_shape.jsonl'
 
-def generate_questions_mix_type(classfile, instancefile, seed):
+def generate_questions_mix_type(templates,classfile, instancefile, seed):
+    questions = []
     #Train 1, test 10, valid 100
     random.seed(seed)
     instances = []
@@ -204,13 +203,41 @@ def generate_questions_mix_type(classfile, instancefile, seed):
         questions.append({'mention':names, 'text':gq, 'id':ids, 'entity':names, 'des':des,'types':types})
     return questions
 
+if __name__ == "__main__":
+    from argparse import ArgumentParser
+    parser = ArgumentParser()
+    parser.add_argument('--question_type', type=str, choices=['general', 'smiles'])
+    parser.add_argument('--outfile', type=str, default='train_ontokin.jsonl')
+    parser.add_argument('--infile', type=str, default='ontokin.jsonl')
+    parser.add_argument('--seed', type=int, default=1)
 
+    opts = parser.parse_args()
+    infile = opts['infile']
+    ctype = opts['question_type']
+    outfile = opts['outfile']
+    seed = opts['seed']
 
-questions = generate_questions(1)
-#questions = generate_questions_multientity('../generate_training_data/ontokin.jsonl', 1000, 10, False  )
-#questions = generate_questions_SMILES(2000, 1)
-with open('valid_ontokin.jsonl', 'w') as wf:
-    for entry in questions:
-        json.dump(entry, wf)
-        wf.write('\n')
-#generate questions, save to json
+    if ctype == 'general':
+        TEMPLATE = './templates/templates_training.csv'
+    elif ctype == 'smiles':
+        TEMPLATE = './templates/templates_smiles.csv'
+    else:
+        raise TypeError('Question type not defined')
+    templates = []
+    with open(TEMPLATE, newline='') as csvfile:
+        reader = csv.reader(csvfile, delimiter = '@')
+        for row in reader:
+            templates.append(row[0].strip())
+    if ctype == 'general':
+        questions = generate_questions(templates, infile, seed)
+    elif ctype == 'smiles':
+        questions = generate_questions_SMILES(templates, 2000, seed)
+    else:
+        raise TypeError('Question type not defined')
+    #questions = generate_questions_multientity('../generate_training_data/ontokin.jsonl', 1000, 10, False  )
+    #questions = generate_questions_SMILES(2000, 1)
+    with open(outfile, 'w') as wf:
+        for entry in questions:
+            json.dump(entry, wf)
+            wf.write('\n')
+    #generate questions, save to json

@@ -1,3 +1,6 @@
+'''
+Convert entity name dictionaries to format required by EL training.
+'''
 ONTOSPECIES = 'D:\work\Marie\MARIE_AND_BERT\DATA\Dictionaries\ontospecies\\name_dict.json'
 ONTOKIN = 'D:\work\Marie\MARIE_AND_BERT\DATA\Dictionaries\ontokin\\name_dict.json'
 TBOX = 'D:\work\Marie\chem_data\semi-auto-matching\generate_tbox_namedict\\class_plus_use_namelist.json'
