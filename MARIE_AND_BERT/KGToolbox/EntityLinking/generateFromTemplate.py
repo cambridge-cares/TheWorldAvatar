@@ -1,7 +1,5 @@
 '''
 From entity file and question template generating train/val/test files |jsonl
-
-
 '''
 
 #json: [mention, text]

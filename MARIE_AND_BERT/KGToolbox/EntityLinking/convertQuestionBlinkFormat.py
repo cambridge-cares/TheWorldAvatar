@@ -1,8 +1,6 @@
 #{text, entity, idx, title}
 '''
 Convert question files train/val/test files |jsonl to specfic format required by method BLINK/ELQ.
-
-
 '''
 import json
 
