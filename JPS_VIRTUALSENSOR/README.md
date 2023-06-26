@@ -3,7 +3,7 @@ Prerequisites
 2) Ship data needs to be present in ShipInputAgent/data. If the agent is being run for chemical plants instead of ships, 
 it is still necessary to define one ship in a .json file in this folder. In this case, the ship should be placed outside the region for which AERMOD will be run, which is specified in WKT format in the POST request to the DispersionInteractor class. The longitude of each coordinate must be specified before the latitude.  
 
-3) Set openweather API key in ../Agents/WeatherAgent, more details in that folder
+3) Set openweather API key in stack-manager/inputs/config/services/weather-agent.json, see ../Agents/WeatherAgent folder for more details
 
 4) If running AERMOD for static point sources, it is necessary to instantiate the input data required for AERMOD Agent according to OntoDispersion (https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodispersion). See the JurongIslandInputAgent folder for an example of an agent that does this.
 
@@ -11,7 +11,7 @@ it is still necessary to define one ship in a .json file in this folder. In this
 
 Elevation data can be downloaded from https://www.eorc.jaxa.jp/ALOS/en/dataset/aw3d30/aw3d30_e.htm as a series of .tif files each of which covers a region that spans 1 degree in latitude and longitude. It is required to register for a free account before downloading the files.
 
-Uploading of elevation data can be done using the stack data uploader. The downloaded .tif files should be placed in a subfolder within the TheWorldAvatar/Deploy/stacks/dynamic/stack-data-uploader/inputs/data/ directory. Suppose that the name of this folder is "elevation". One needs to create an elevation.json configuration file in the TheWorldAvatar/Deploy/stacks/dynamic/stack-data-uploader/inputs/config/ directory location. A template is provided at TheWorldAvatar/Deploy/stacks/dynamic/examples/datasets/inputs/config/elevation.json. The elevation.sld file in this directory location can be used to create customize the GeoServer style used to upload the data. See https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader for more details. The POSTGIS table name where the elevation data is stored needs to be specified as the value of the environment variable "ELEVATION_TABLE" in the stack-manager/inputs/config/aermod-agent.json and aermod-agent-debug.json files. 
+Uploading of elevation data can be done using the stack data uploader. The downloaded .tif files should be placed in a subfolder within the TheWorldAvatar/JPS_VIRTUALSENSOR/stack-data-uploader/inputs/data/elevation/ directory. The elevation.json configuration file in the TheWorldAvatar/JPS_VIRTUALSENSOR/stack-data-uploader/inputs/config/ can be modified if necessary. It is also possible to include an elevation.sld file in this directory location to customize the GeoServer style used to upload the data. See https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader for more details. The name of the POSTGIS table where the elevation data is stored needs to be specified as the value of the environment variable "ELEVATION_TABLE" in the stack-manager/inputs/config/aermod-agent.json and aermod-agent-debug.json files. 
 
 
 
@@ -29,7 +29,7 @@ Make sure you have access to the CMCL Docker registry. You can test your access 
     ```
 If you are not already logged in then, when prompted, enter the username and password you were given.
 
-2) Save the json configuration file and .tif elevation data files in the TheWorldAvatar/Deploy/stacks/dynamic/stack-data-uploader/inputs/ folder as described above. Execute 
+2) If running AERMOD for static point sources, save the json configuration file and .tif elevation data files in the TheWorldAvatar/JPS_VIRTUALSENSOR/stack-data-uploader/inputs/ folder as described above. Execute 
 
 ```
 ./stack.sh start ship-stack

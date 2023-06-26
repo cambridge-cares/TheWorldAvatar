@@ -1,15 +1,14 @@
 package com.cmclinnovations.aermod;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -29,10 +28,13 @@ import org.json.JSONObject;
 import org.locationtech.jts.geom.Polygon;
 
 import com.cmclinnovations.aermod.objects.Building;
+import com.cmclinnovations.aermod.objects.DispersionOutput;
 import com.cmclinnovations.aermod.objects.PointSource;
+import com.cmclinnovations.aermod.objects.Pollutant;
 import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
 import com.cmclinnovations.aermod.objects.WeatherData;
+import com.cmclinnovations.aermod.objects.Pollutant.PollutantType;
 import com.cmclinnovations.stack.clients.core.RESTEndpointConfig;
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
@@ -149,9 +151,9 @@ public class AermodAgent extends DerivationAgent {
         }
 
         if (citiesNamespace != null) {
-            if (queryClient.tableExists()) {
+            if (queryClient.tableExists(EnvConfig.ELEVATION_TABLE)) {
                 queryClient.setElevation(staticPointSources, buildings, srid);
-                List<byte[]> elevData = queryClient.getScopeElevation(scope, srid);
+                List<byte[]> elevData = queryClient.getScopeElevation(scope);
                 if (aermod.createAERMAPInput(elevData, centreZoneNumber) != 0) {
                     LOGGER.error("Could not create input data file for running AERMAP.");
                     throw new JPSRuntimeException("Error creating AERMAP elevation data input.");
@@ -160,7 +162,7 @@ public class AermodAgent extends DerivationAgent {
                 aermod.runAermap();
             } else {
                 LOGGER.warn(
-                        "There is no postgis table with the name {}. Base elevations of static point sources and buildings will be set to zero. ",
+                        "The specified elevation data table {} does not exist. Base elevations of static point sources and buildings will be set to zero. ",
                         EnvConfig.ELEVATION_TABLE);
             }
 
@@ -182,18 +184,15 @@ public class AermodAgent extends DerivationAgent {
         }
 
         // Variable initialization
-        List<String> pollutantsList = List.of("NOx", "uHC", "CO", "CO2", "SO2", "PM10", "PM2.5");
         // TODO: The height values will eventually be obtained from the derivation
         // inputs.
         List<Double> receptorHeights = new ArrayList<>();
         receptorHeights.add(0.0);
-        // Create hashmaps to store the dispersion matrix URLS and dispersion layer
-        // names.
-        // Only one dispersion matrix per pollutant ID.
-        // There will be one dispersion layer per height value per pollutant ID.
-        Map<String, String> dispersionMatrixMap = new HashMap<>();
-        Map<String, List<String>> dispersionLayerMap = new HashMap<>();
-        String dispLayerName = "dispersion_contours";
+
+        // DispersionOutput object holds dispersion matrix (file), dispersion layer
+        // names, and raster filenames
+        DispersionOutput dispersionOutput = new DispersionOutput();
+
         String shipLayerName = "ships_" + simulationTime; // hardcoded in ShipInputAgent
         String sourceLayerName = "source_layer";
         String elevationLayerName = "elevation_layer";
@@ -219,16 +218,18 @@ public class AermodAgent extends DerivationAgent {
         // so, it should not be overwritten.
         if (Files.notExists(simulationDirectory.resolve("aermod").resolve("receptor.dat")))
             aermod.createAERMODReceptorInput(scope, nx, ny, srid);
-        String outFileURL = aermod.uploadToFileServer("receptor.dat");
-        JSONObject geoJSON2 = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_ELEVATION_URL, outFileURL, srid, 0.0, null);
+        String receptorFileURL = aermod.uploadToFileServer("receptor.dat");
+        JSONObject geoJSON2 = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_ELEVATION_URL, receptorFileURL, srid, 0.0,
+                null);
         gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, elevationLayerName, geoJSON2.toString(),
                 new Ogr2OgrOptions(), true);
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, elevationLayerName,
                 geoServerVectorSettings);
 
-        for (String pollutId : pollutantsList) {
+        for (PollutantType pollutantType : Pollutant.getPollutantList()) {
+            String pollutId = Pollutant.getPollutantLabel(pollutantType);
             // create emissions input
-            if (aermod.createPointsFile(allSources, srid, pollutId) != 0) {
+            if (aermod.createPointsFile(allSources, srid, pollutantType) != 0) {
                 LOGGER.error("Failed to create points emissions file for pollutant {} at timestep {}", pollutId,
                         simulationTime);
                 continue;
@@ -238,11 +239,18 @@ public class AermodAgent extends DerivationAgent {
 
             // Upload files used by scripts within Python Service to file server.
             String outputFileURL = aermod.uploadToFileServer("averageConcentration.dat");
-            dispersionMatrixMap.put(pollutId, outputFileURL);
+            dispersionOutput.addDispMatrix(pollutantType, outputFileURL);
+
+            String rasterFileName = UUID.randomUUID().toString();
+            try {
+                aermod.createFileForRaster(rasterFileName);
+                dispersionOutput.addDispRaster(pollutantType, rasterFileName + ".tif");
+            } catch (FileNotFoundException e) {
+                LOGGER.error("Average concentration file not found, probably failed to run simulation");
+            }
 
             // Get contour plots as geoJSON objects from PythonService and upload them to
             // PostGIS using GDAL
-            List<String> dispLayerNames = new ArrayList<>();
             for (int i = 0; i < receptorHeights.size(); i++) {
                 double height = receptorHeights.get(i);
                 JSONObject geoJSON = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_URL, outputFileURL, srid, height,
@@ -268,8 +276,8 @@ public class AermodAgent extends DerivationAgent {
 
                 // The true option is used to append the contours obtained from the latest
                 // simulation to previously obtained data.
-                gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, dispLayerName, geoJSON.toString(),
-                        new Ogr2OgrOptions(), true);
+                gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.DISPERSION_CONTOURS_TABLE,
+                        geoJSON.toString(), new Ogr2OgrOptions(), true);
 
                 String receptorHeightString = String.valueOf(height).replace(".", "_dp_");
                 String derivationIRI = derivationInputs.getDerivationIRI();
@@ -282,10 +290,10 @@ public class AermodAgent extends DerivationAgent {
                 layerName = layerName.replace(".", "_dp_");
 
                 String sqlQuery = String.format(
-                        "SELECT ogc_fid, \"stroke-opacity\", \"stroke-width\", fill, title, \"fill-opacity\", stroke, wkb_geometry from dispersion_contours"
+                        "SELECT ogc_fid, \"stroke-opacity\", \"stroke-width\", fill, title, \"fill-opacity\", stroke, wkb_geometry from %s"
                                 + " WHERE \"derivationIRI\"='%s' and \"pollutantID\"='%s' and simulation_time = %d and height = %f ",
-                        derivationInputs.getDerivationIRI(), pollutId, simulationTime,
-                        height);
+                        EnvConfig.DISPERSION_CONTOURS_TABLE, derivationInputs.getDerivationIRI(), pollutId,
+                        simulationTime, height);
 
                 GeoServerVectorSettings geoServerDispersionSettings = new GeoServerVectorSettings();
 
@@ -300,17 +308,20 @@ public class AermodAgent extends DerivationAgent {
                 geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, layerName,
                         geoServerDispersionSettings);
 
-                dispLayerNames.add(layerName);
-
+                dispersionOutput.addDispLayer(pollutantType, height, layerName);
             }
-            dispersionLayerMap.put(pollutId, dispLayerNames);
-
         }
 
+        boolean append = false;
+        if (queryClient.tableExists(EnvConfig.DISPERSION_RASTER_TABLE)) {
+            append = true;
+        }
+        aermod.uploadRasterToPostGIS(srid, append);
+
         // ships_ is hardcoded here and in ShipInputAgent
-        queryClient.updateOutputs(derivationInputs.getDerivationIRI(), dispersionMatrixMap, dispersionLayerMap,
-                shipLayerName, simulationTime, outFileURL);
-        if (aermod.createDataJson(shipLayerName, dispersionLayerMap, sourceLayerName, elevationLayerName,
+        queryClient.updateOutputs(derivationInputs.getDerivationIRI(), dispersionOutput, shipLayerName, simulationTime,
+                receptorFileURL);
+        if (aermod.createDataJson(shipLayerName, dispersionOutput, sourceLayerName, elevationLayerName,
                 aermod.getBuildingsGeoJSON(buildings)) != 0) {
             LOGGER.error("Failed to create data.json file for visualisation, terminating");
             return;
