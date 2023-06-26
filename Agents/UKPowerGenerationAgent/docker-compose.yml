@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  ukpowergeneration_agent:
+    image: ghcr.io/cambridge-cares/ukpowergeneration_agent:1.0.0-SNAPSHOT
+    environment:
+      - STACK_NAME=${STACK_NAME}
+      # MetOffice Data Point API key
+      - API_KEY=3d9f0619-0b57-4c76-b042-9d4ec60ae00c
+      # Target Blazegraph namespace
+      - NAMESPACE=ukpowergeneration
+      # Target layer name in geoserver, also table name in PostGIS
+      - LAYERNAME=ukpowergeneration
+      # Target PostGIS/PostgreSQL database name
+      # (default name "postgres" required for Ontop to work)
+      - DATABASE=postgres
+      - GEOSERVER_WORKSPACE=ukpowergeneration
+      - ONTOP_FILE=/app/resources/ontop.obda
+    ports:
+      - "5001:5000"
+    volumes:
+      # Link container output directory to local directory to access output files
+      # (i.e. only required for creation of output geojson files)
+      - ./output:/app/output
+      - logs:/root/.jps
+    configs:
+      - blazegraph
+      - geoserver
+      - ontop
+      - postgis
+    secrets:
+      - geoserver_password
+      - postgis_password
+
+volumes:
+  logs:
+    name: "logs"
