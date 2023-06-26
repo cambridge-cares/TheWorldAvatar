@@ -13,7 +13,6 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
@@ -32,11 +31,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,7 +65,7 @@ public class QueryClient {
     private static final Iri MEASURE = P_OM.iri("Measure");
     private static final Iri REPORTING_STATION = P_EMS.iri("ReportingStation");
     private static final Iri DISPERSION_OUTPUT = P_DISP.iri("DispersionOutput");
-    private static final Iri DISPERSION_MATRIX = P_DISP.iri("DispersionMatrix");
+
     private static final Iri GEOM = iri("http://www.opengis.net/ont/geosparql#Geometry");
 
     // Pollutants
@@ -100,6 +98,7 @@ public class QueryClient {
     private static final Iri isDerivedFrom = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
     private static final Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
     private static final Iri HAS_DISPERSION_MATRIX = P_DISP.iri("hasDispersionMatrix");
+    private static final Iri HAS_DISPERSION_RASTER = P_DISP.iri("hasDispersionRaster");
     private static final Iri HAS_POLLUTANT_ID = P_DISP.iri("hasPollutantID");
     private static final Iri HAS_WKT = iri("http://www.opengis.net/ont/geosparql#asWKT");
     private static final Iri HAS_OBSERVATION_LOCATION = P_EMS.iri("hasObservationLocation");
@@ -176,6 +175,35 @@ public class QueryClient {
 
     }
 
+    public Map<String, String> getDispersionRasterIris(String derivation) {
+        // Get data IRIs of dispersion derivations
+        SelectQuery query = Queries.SELECT();
+        Variable dispersionOutput = query.var();
+        Variable pollutantIri = query.var();
+        Variable pollutant = query.var();
+        Variable dispRaster = query.var();
+
+        // dispMatrix is the timeseries data IRI of the fileServer URL of the AERMOD
+        // concentration output (averageConcentration.dat).
+        // There is exactly one such data IRI for each pollutant ID.
+
+        query.where(iri(derivation).has(isDerivedFrom, dispersionOutput),
+                dispersionOutput.isA(DISPERSION_OUTPUT).andHas(HAS_POLLUTANT_ID, pollutantIri)
+                        .andHas(HAS_DISPERSION_MATRIX, dispRaster),
+                pollutantIri.isA(pollutant)).prefix(P_DISP, P_OM, P_EMS)
+                .select(pollutant, dispRaster);
+
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+        Map<String, String> pollutantToDispRaster = new HashMap<>();
+        for (int i = 0; i < queryResult.length(); i++) {
+            String dispMatrixIri = queryResult.getJSONObject(i).getString(dispRaster.getQueryString().substring(1));
+            String pollutantId = queryResult.getJSONObject(i).getString(pollutant.getQueryString().substring(1));
+            pollutantToDispRaster.put(pollutantId, dispMatrixIri);
+        }
+        return pollutantToDispRaster;
+
+    }
+
     public Point getStationLocation(String derivation) {
         SelectQuery query = Queries.SELECT();
         Variable locationWkt = query.var();
@@ -230,7 +258,140 @@ public class QueryClient {
 
     }
 
-    public void updateStation(Instant latestTime, Map<String, String> pollutantToDispMatrix,
+    public void updateStationUsingDispersionRaster(Instant latestTime, Map<String, String> pollutantToDispRaster,
+            Map<String, String> pollutantToConcIri, Point stationLocation) {
+
+        List<String> dispRasterIriList = new ArrayList<>(pollutantToDispRaster.values());
+        TimeSeries<Long> dispRasterTimeSeries = null;
+
+        // Coordinates in the dispersion matrices will be in the
+        // simulation srid.
+        // Station location is stored in EPSG:4326.
+        // Simulation srid can be determined from station location.
+
+        double xp = stationLocation.getX();
+        double yp = stationLocation.getY();
+        // compute simulation srid
+        int centreZoneNumber = (int) Math.ceil((xp + 180) / 6);
+        int simulationSrid;
+        if (yp < 0) {
+            simulationSrid = Integer.valueOf("327" + centreZoneNumber);
+
+        } else {
+            simulationSrid = Integer.valueOf("326" + centreZoneNumber);
+        }
+
+        double[] xyOriginal = { xp, yp };
+        int originalSrid = 4326;
+        double[] xyTransformed = CRSTransformer.transform("EPSG:" + originalSrid, "EPSG:" + simulationSrid, xyOriginal);
+
+        // Convert from Instant to Long
+        Long latestTimeLong = null;
+
+        if (latestTime != null)
+            latestTimeLong = latestTime.getEpochSecond();
+
+        try (Connection conn = remoteRDBStoreClient.getConnection()) {
+            dispRasterTimeSeries = tsClientLong
+                    .getTimeSeriesWithinBounds(dispRasterIriList, latestTimeLong, null, conn);
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+            return;
+        }
+
+        List<String> tsDataList = new ArrayList<>();
+        List<List<?>> tsValuesList = new ArrayList<>();
+
+        try (Connection conn = remoteRDBStoreClient.getConnection();
+                Statement stmt = conn.createStatement();) {
+            for (String pollutant : pollutantToDispRaster.keySet()) {
+                String dispRasterIri = pollutantToDispRaster.get(pollutant);
+                List<String> dispersionRasterFileNames = dispRasterTimeSeries.getValuesAsString(dispRasterIri);
+                List<Double> concentrations = new ArrayList<>();
+                for (int j = 0; j < dispersionRasterFileNames.size(); j++) {
+                    String rasterFileName = dispersionRasterFileNames.get(j);
+                    String sql = String.format(
+                            "SELECT ST_Value(rast, ST_Transform(ST_GeomFromText('%s',4326),ST_SRID(rast))) AS val "
+                                    +
+                                    "FROM %s WHERE ST_Intersects(rast, ST_Transform(ST_GeomFromText('%s',4326),ST_SRID(rast))) "
+                                    +
+                                    "AND filename='%s'",
+                            stationLocation.toString(),
+                            "dispersion_raster", stationLocation.toString(), rasterFileName);
+                    ResultSet result = stmt.executeQuery(sql);
+                    if (result.next()) {
+                        double concentration = result.getDouble("val");
+                        concentrations.add(concentration);
+                    } else {
+                        LOGGER.warn(
+                                "Could not get concentration value of pollutant {} with dispersion raster {}." +
+                                        "Its value will be set to zero. ",
+                                pollutant, rasterFileName);
+                        concentrations.add(0.0);
+                    }
+
+                }
+                tsValuesList.add(concentrations);
+                switch (pollutant) {
+                    case CO2:
+                        tsDataList.add(pollutantToConcIri.get(CO2_CONC));
+                        break;
+                    case NO_X:
+                        tsDataList.add(pollutantToConcIri.get(NO_X_CONC));
+                        break;
+                    case SO2:
+                        tsDataList.add(pollutantToConcIri.get(SO2_CONC));
+                        break;
+                    case CO:
+                        tsDataList.add(pollutantToConcIri.get(CO_CONC));
+                        break;
+                    case UHC:
+                        tsDataList.add(pollutantToConcIri.get(UHC_CONC));
+                        break;
+                    case PM10:
+                        tsDataList.add(pollutantToConcIri.get(PM10_CONC));
+                        break;
+                    case PM25:
+                        tsDataList.add(pollutantToConcIri.get(PM25_CONC));
+                        break;
+                    default:
+                        LOGGER.info(
+                                "Unknown pollutant ID encountered in the updateStation method of VirtualSensorAgent/QueryClient class: {}",
+                                pollutant);
+
+                }
+
+            }
+
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+        }
+
+        // AermodAgent uses Unix timestamps. These must be converted to Instant
+        // for the times
+        // to be parsed correctly by FeatureInfoAgent.
+
+        List<Long> timeStampsLong = dispRasterTimeSeries.getTimes();
+        List<Instant> timeStamps = new ArrayList<>();
+
+        timeStampsLong.stream().forEach(ts -> {
+            Instant timeInstant = Instant.ofEpochMilli(millis(ts));
+            timeStamps.add(timeInstant);
+        });
+
+        TimeSeries<Instant> timeSeries = new TimeSeries<>(timeStamps,
+                tsDataList, tsValuesList);
+
+        try (Connection conn = remoteRDBStoreClient.getConnection()) {
+            tsClientInstant.addTimeSeriesData(timeSeries, conn);
+        } catch (SQLException e) {
+            LOGGER.error("Failed at closing connection");
+            LOGGER.error(e.getMessage());
+        }
+
+    }
+
+    public void updateStationUsingDispersionMatrix(Instant latestTime, Map<String, String> pollutantToDispMatrix,
             Map<String, String> pollutantToConcIri, Point stationLocation) {
 
         List<String> dispMatrixIriList = new ArrayList<>(pollutantToDispMatrix.values());
@@ -342,9 +503,11 @@ public class QueryClient {
     }
 
     /**
-     * executes get request from python-service to postprocess
+     * Sends request to Python service to calculate pollutant concentration at the
+     * location (xp,yp) using data
+     * in outputFileURL
      */
-    public double getInterpolatedValue(String endPoint, String outputFileURL, double xp, double yp) {
+    private double getInterpolatedValue(String endPoint, String outputFileURL, double xp, double yp) {
         URI httpGet;
         try {
             URIBuilder builder = new URIBuilder(endPoint);
