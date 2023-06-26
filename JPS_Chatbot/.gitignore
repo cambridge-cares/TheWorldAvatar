@@ -25,3 +25,5 @@
 /jps-chatbot/UI/source/Wikidata_Query/WIKI_DICTS/
 /jps-chatbot/UI/source/Agent_Query/JPS_DICTS
 /jps-chatbot/UI/source/Agent_Query/training/data
+/jps-chatbot/UI/data/
+/jps-chatbot/UI/data_preparation/SPARQL_warehouse/wiki_chemical_substance_instances
