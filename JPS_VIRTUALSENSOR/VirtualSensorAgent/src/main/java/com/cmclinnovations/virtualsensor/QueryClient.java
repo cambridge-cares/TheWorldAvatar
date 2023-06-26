@@ -258,8 +258,10 @@ public class QueryClient {
         double[] xyTransformed = CRSTransformer.transform("EPSG:" + originalSrid, "EPSG:" + simulationSrid, xyOriginal);
 
         // Convert from Instant to Long
+        Long latestTimeLong = null;
 
-        Long latestTimeLong = latestTime.getEpochSecond();
+        if (latestTime != null)
+            latestTimeLong = latestTime.getEpochSecond();
 
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
             dispMatrixTimeSeries = tsClientLong
