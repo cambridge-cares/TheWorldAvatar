@@ -34,7 +34,7 @@ In folder `MARIE_AND_BERT/Training/Trainers`, `TransRATrainer.py` handles both `
 using `MARIE_AND_BERT/requirements_linux.txt`. 
 5. Submit the batch script
 
-For more details, please check `https://docs.hpc.cam.ac.uk/hpc/`. 
+For more details, please check [https://docs.hpc.cam.ac.uk/hpc/](ttps://docs.hpc). 
 
 ```
 . /etc/profile.d/modules.sh                # Leave this line (enables the module command)
@@ -110,7 +110,7 @@ run `MARIE_AND_BERT/Training/Trainers/CrossGraphTrainer.py` to train the model
 To create the training dataset for the entity linking model, please see `MARIE_AND_BERT/KGToolbox/EntityLinking/readme.md`
 The training of the entity linking model uses the original BLINK library
 while the operation of the trained model is optimised in this project.
-To train the model, please follow the official guideline for BLINK on  `https://github.com/facebookresearch/BLINK`
+To train the model, please follow the official guideline for BLINK on  [https://github.com/facebookresearch/BLINK]( `https://github.com/facebookresearch/BLINK`)
 
 
 
