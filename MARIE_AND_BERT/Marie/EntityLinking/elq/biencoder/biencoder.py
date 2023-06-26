@@ -20,6 +20,7 @@ from pytorch_transformers.modeling_bert import (
 )
 
 #from pytorch_transformers.tokenization_bert import BertTokenizer
+# replace BertTokenizer to BertTokenizerFast
 from transformers import BertTokenizerFast
 from Marie.EntityLinking.elq.common.ranker_base import BertEncoder, get_model_obj
 from Marie.EntityLinking.blink.common.optimizer import get_bert_optimizer
