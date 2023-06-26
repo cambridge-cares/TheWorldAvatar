@@ -41,7 +41,7 @@ bash train_entity_encoder.sh
 bash train_question_encoder.sh
 ```
 Input/Output paths can be changed in the sh file. By default, the input folders are ./data/pretrain for the first step and ./data/finetune for the second step; default output folders are ./models/pretrain and ./models/finetune respectively.
-Below is an example of the default i/o structure. Files marked with # are input files; files marked with * are final binary files required for Marie system running, which should be put under DATA/EntityLinking in the main project. Refer to https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-marie-and-bert/MARIE_AND_BERT/readme.md to download an example of EntityLinking binary files. 
+Below is an example of the default i/o structure. Files marked with # are input files; files marked with * are final binary files required for Marie system running, which should be put under DATA/EntityLinking in the main project. Refer to MARIE_AND_BERT/readme.md to download an example of EntityLinking binary files. 
 <pre>
 ├── project-files...
 ├── data

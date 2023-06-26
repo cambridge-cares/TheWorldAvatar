@@ -1,5 +1,9 @@
 #{text, entity, idx, title}
+'''
+Convert question files train/val/test files |jsonl to specfic format required by method BLINK/ELQ.
 
+
+'''
 import json
 
 def convert2Blink(raw_file_addr = 'data/questionstest.jsonl', out_file_addr = 'test.jsonl'):
