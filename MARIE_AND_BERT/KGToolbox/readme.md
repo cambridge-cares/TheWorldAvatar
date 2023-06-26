@@ -9,8 +9,8 @@ The user will need to create a folder `MARIE_AND_BERT/DATA/CrossGraph` and a ser
 │   │   │   ├── ontocompchem
 │   │   │   ├── ontokin
 │   │   │   ├── OntoMoPs
-│   │   │   ├── ontospecies
-│   │   │   ├── wikidata
+│   │   │   ├── ontospecies_new
+│   │   │   ├── wikidata_numerical
 ```
 ## Dataset
 The dataset is created using a set of question templates. The script fills the templates to create draft questions. The grammar of the draft questions must be corrected manually using the the GUI. The dataset comprises a set of about 1000 questions with labelled head and answer entities. The dataset is divided into a ``training set``, ``validation set`` and ``test set`` in the ratio `7:2:1`.
@@ -30,8 +30,8 @@ To run this script, it requires a file named `cross_graph_alignment_training_lab
 `cross_graph_alignment_training_labelled.tsv` has two columns. The question column should provide the main 
 keywords within the question, with stop words for example "what", "find", "the" and the entities 
 should be removed from the question. The "true_domain" column contains a list of strings, where the 
-domains that could answer the question should be stated. The available options in 2023-06-21 are 
-"ontokin", "ontocompchem", "ontospecies", "ontoagent", "wikidata", "pubchem", "ontokin_reaction",
+domains that could answer the question should be stated. The available options as of 2023-06-21 are 
+"ontokin", "ontocompchem", "ontospecies", "ontoagent", "wikidata_numerical", "pubchem", "ontokin_reaction",
 "ontospecies_new". In the near future, the "ontospecies_new" label should be removed if the "old ontospecies"
 ontology is removed.  Below is an example of the question. 
 
@@ -107,4 +107,4 @@ file needs to be extracted into `DATA/instance_info` folder. To create the train
 
 1. Run `KGToolbox/Wikidata/WikiDataReader.py` to create triples and supporting files
 2. Run `KGToolbox/Wikidata/WikidataCreateTrainingData.py`, which will create `score_model_training.tsv` 
-in `DATA/CrossGraph/wikidata`. 
+in `DATA/CrossGraph/wikidata_numerical`. 

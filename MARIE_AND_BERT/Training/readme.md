@@ -10,7 +10,7 @@ Multiple models are trained in this system:
 ##  Knowledge Graph Embedding
 
 ### File requirement
-To train the embedding of an ontology, a list of files are required. The files are script created, see `KGToolbox/readme.md` for details. 
+To train the embedding of an ontology, a list of files are required. The files are script created, see [readme.md for dataset creation](./KGToolbox/readme.md) for details. 
 
 1. Triples: `[name]-train.txt`, `[name]-test.txt`, `[name]-valid.txt`. The files are headless tsv files with three columns, subject-predicate-object, separated by `tab`. 
 
@@ -24,7 +24,7 @@ Once all the files are created, choose the embedding method, the implemented one
 In folder `MARIE_AND_BERT/Training/Trainers`, `TransRATrainer.py` handles both `TransR` and `TransRA`. `ComplexTrainer.py` handles
 `Complex`, `TransEATrainer.py` handles `TransE` and `TransEA`. 
 
-### configuration on HPC
+### Configuration on HPC
 
 1. Get an HPC account, use git to pull the `MARIE_AND_BERT` repository. 
 2. Create and transfer the files required for training under `MARIE_AND_BERT/DATA/[ontology_name]/[sub-ontology_name]`
@@ -76,14 +76,22 @@ Following is the explanation on the purpose of each parameter.
 
 
 ## Relation Prediction
-Relation prediction models can only be trained with the embedding trained.
+
+### File requirement
+
+1. All the files required for embedding
+2. `score_model_training.tsv`, see  [readme.md for dataset creation](./KGToolbox/readme.md) to create the file
+   The files need to be placed in `MARIE_AND_BERT/DATA/CrossGraph/[ontology_name]/[sub-ontology_name]`
+
+
+Relation prediction models can only be trained after the embeddings are trained. The following scripts can be used for training: 
 
 1. `TransEScoreModelTrainer.py` for embeddings with TransE
 2. `TransEAScoreModelTrainer.py` for embeddings with TransEA
 3. `TransRAScoreModelTrainer.py` for embeddings with TransR and TransRA
 4. `ComplexScoreModelTrainer.py` for embeddings wit Complex
 
-Set up the parameters for training within the script and run the script, the parameters are:
+Set up the parameters for training within the script and run the script. The parameters are as follows:
 
 1. learning_rate 
 2. model_name (output name of the model)
@@ -94,17 +102,15 @@ Set up the parameters for training within the script and run the script, the par
 7. test_step (to test after how many epochs)
 8. scheduler_step (change the learning rate after how many epochs)
 
+
+
+
+## Score Alignment Model 
+
 ### File requirement
+1. `cross_graph_alignment_training_updated.tsv`, see [readme.md for dataset creation](./KGToolbox/readme.md) to create this file
 
-1. All the files required for embedding 
-2. `score_model_training.tsv`, see `MARIE_AND_BERT/KGToolbox/readme.md` file to create the file
-The files need to be placed in `MARIE_AND_BERT/DATA/CrossGraph/[ontology_name]/[sub-ontology_name]`
-
-
-## Score Alignment model 
-run `MARIE_AND_BERT/Training/Trainers/CrossGraphTrainer.py` to train the model 
-### File requirement
-1. `cross_graph_alignment_training_updated.tsv`, see `MARIE_AND_BERT/KGToolbox/readme.md` to create this file
+Run `MARIE_AND_BERT/Training/Trainers/CrossGraphTrainer.py` to train the model.
 
 ## Entity Linking
 To create the training dataset for the entity linking model, please see `MARIE_AND_BERT/KGToolbox/EntityLinking/readme.md`

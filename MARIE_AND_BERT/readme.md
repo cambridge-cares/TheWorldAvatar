@@ -33,12 +33,12 @@ created. To create or amend the dataset, see [readme.md for dataset creation](./
 
 ## Training
 Multiple models are trained in this system: 
-1. Knowledge Graph embedding
-2. Relation prediction
-3. Score alignment
+1. Knowledge Graph Embedding
+2. Relation Prediction
+3. Score Alignment
 4. Entity Linking 
 
-for details of training the models, see [readme.md for embedding and model training](./Training/readme.md)
+For details on training the models, see [readme.md for embedding and model training](./Training/readme.md)
  
   
 ## Running 
@@ -63,12 +63,12 @@ nltk.download('all')
  
 To start the system, run `python main.py`.
 
-###Other services
+###Other Services
 To run the full functions of the Marie system, three other systems are required:
 
 1. The LDF server. See [LDF server readme](../JPS_LDF/README.md) to run it. 
 2. The semantic agents. See [PCE agent readme](../Agents/PCEAgent/README.md) 
-[Thermal agent readme](../Agents/STDCThermoAgent/README.md) to run them. 
+[Thermal agent readme](../Agents/STDCThermoAgent/README.md) to create docker containers running them. 
 
 
 ## Docker Deployment
