@@ -1,7 +1,7 @@
 # Marie and BERT (Marie 3.0)
 
 The ``Marie and Bert`` a.k.a `Marie 3.0` project is developed by [Xiaochi Zhou](xz378@cam.ac.uk)
-and [Shaocong Zhang](sz375@cam.ac.uk) and [Mehal Agarwal](mehal.agarwal@cares.cam.ac.uk).
+and [Shaocong Zhang](sz375@cam.ac.uk) and [Mehal Agarwal](ma988@cam.ac.uk).
 
 [Kok Foong Lee](kflee@cmclinnovations.com) and [Michael Hillman](mdhillman@cmclinnovations.com) will provide technical support from CMCL and will be charge of deployment and monitoring of performance.
 
@@ -38,7 +38,7 @@ Multiple models are trained in this system:
 3. Score Alignment
 4. Entity Linking 
 
-For details on training the models, see [readme.md for embedding and model training](./Training/readme.md)
+For details on training the models, see [readme.md for embedding and model training](./Training/readme.md) and the [readme.md for entity linking training](./Training/EntityLinking/EL_training.md)
  
   
 ## Running 

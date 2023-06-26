@@ -12,7 +12,7 @@ The user will need to create a folder `MARIE_AND_BERT/DATA/CrossGraph` and a ser
 │   │   │   ├── ontospecies_new
 │   │   │   ├── wikidata_numerical
 ```
-## Dataset
+# Dataset
 The dataset is created using a set of question templates. The script fills the templates to create draft questions. The grammar of the draft questions must be corrected manually using the the GUI. The dataset comprises a set of about 1000 questions with labelled head and answer entities. The dataset is divided into a ``training set``, ``validation set`` and ``test set`` in the ratio `7:2:1`.
 The ``training set`` and `validation set` are used for training the models. The ``test set``
 is used for the evaluation of individual models. More importantly, the ``test set`` is also used to evaluate
@@ -21,7 +21,7 @@ of the QA system.
 
 The `KGToolbox` folder contains all the scripts for generating training and evaluation datasets.
 
-### Cross Graph 
+## Cross Graph 
 
 `KGToolbox/CrossGraph/CrossGraph.py` is for the generation of the training questions for training 
 the cross-graph score alignment model, which generates a tsv file named `cross_graph_alignment_training_updated.tsv`
@@ -108,3 +108,7 @@ file needs to be extracted into `DATA/instance_info` folder. To create the train
 1. Run `KGToolbox/Wikidata/WikiDataReader.py` to create triples and supporting files
 2. Run `KGToolbox/Wikidata/WikidataCreateTrainingData.py`, which will create `score_model_training.tsv` 
 in `DATA/CrossGraph/wikidata_numerical`. 
+
+##Entity Linking
+
+To create the Entity Linking dataset, follow the steps outlined in [Entity Linking Dataset Creation readme.md](./EntityLinking/readme.md)

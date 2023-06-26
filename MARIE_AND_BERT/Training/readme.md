@@ -113,10 +113,8 @@ Set up the parameters for training within the script and run the script. The par
 Run `MARIE_AND_BERT/Training/Trainers/CrossGraphTrainer.py` to train the model.
 
 ## Entity Linking
-To create the training dataset for the entity linking model, please see `MARIE_AND_BERT/KGToolbox/EntityLinking/readme.md`
+To create the training dataset for the entity linking model, please see [Entity Linking Dataset Creation readme.md](./EntityLinking/readme.md)
 The training of the entity linking model uses the original BLINK library
 while the operation of the trained model is optimised in this project.
-To train the model, please follow the official guideline for BLINK on  [https://github.com/facebookresearch/BLINK]( `https://github.com/facebookresearch/BLINK`)
-
-
+To train the model, please follow the steps outlined in [Entity Linking Model Training](./EntityLinking/EL_training.md)
 
