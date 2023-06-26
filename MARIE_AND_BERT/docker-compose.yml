@@ -4,4 +4,4 @@ services:
     build: .
     image: marie
     ports:
-      - "8080:80"
+      - "5003:5003"
