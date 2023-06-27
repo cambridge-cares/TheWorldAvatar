@@ -6,3 +6,4 @@ MARIE_AND_BERT/EvaluationData
 *.csv
 *.pb
 *.tsv
+*.out
