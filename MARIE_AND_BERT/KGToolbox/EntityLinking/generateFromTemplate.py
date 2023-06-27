@@ -34,7 +34,7 @@ def generate_questions(templates,entityfile,num_to_gen,seed):
     random.seed(seed)
 
     with open(entityfile, 'rt') as f:
-        for line in list(f)[0:]:
+        for line in list(f)[0:num_to_gen]:
             item = json.loads(line.strip())
             name = item['entity']
             id = item['idx']
