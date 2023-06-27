@@ -52,7 +52,8 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
     public void createDatabase(String databaseName) {
         try (Connection conn = getDefaultConnection();
                 Statement stmt = conn.createStatement()) {
-            String sql = "CREATE DATABASE " + databaseName + " WITH TEMPLATE = template_postgis";
+            String sql = "CREATE EXTENSION IF NOT EXISTS postgis; CREATE DATABASE " + databaseName
+                    + " WITH TEMPLATE = template_postgis";
             stmt.executeUpdate(sql);
         } catch (SQLException ex) {
             if ("42P04".equals(ex.getSQLState())) {
@@ -156,8 +157,7 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
         String execId = createComplexCommand(postGISContainerId,
                 "psql", "-U", postgreSQLEndpoint.getUsername(), "-d", database, "-w")
-                .withHereDocument("CREATE EXTENSION postgis_raster;" +
-                        "CREATE EXTENSION pg_routing;")
+                .withHereDocument("CREATE EXTENSION pg_routing;")
                 .withErrorStream(errorStream)
                 .exec();
         handleErrors(errorStream, execId, logger);
