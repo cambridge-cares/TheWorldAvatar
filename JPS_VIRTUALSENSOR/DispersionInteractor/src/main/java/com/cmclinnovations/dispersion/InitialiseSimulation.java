@@ -83,7 +83,8 @@ public class InitialiseSimulation extends HttpServlet {
 
                     // add ontop mapping
                     Path obdaFile = new ClassPathResource("ontop.obda").getFile().toPath();
-                    new OntopClient().updateOBDA(obdaFile);
+                    OntopClient ontopClient = OntopClient.getInstance();
+                    ontopClient.updateOBDA(obdaFile);
 
                     // adds OntoAgent instance
                     queryClient.initialiseAgent();

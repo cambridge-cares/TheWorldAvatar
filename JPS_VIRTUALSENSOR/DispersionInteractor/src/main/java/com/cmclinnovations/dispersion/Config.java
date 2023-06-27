@@ -9,6 +9,7 @@ public class Config {
     public static final String SHIP_INPUT_AGENT = System.getenv("SHIP_INPUT_AGENT");
     public static final String GEOSERVER_WORKSPACE = System.getenv("GEOSERVER_WORKSPACE");
     public static final EndpointConfig ENDPOINT_CONFIG = new EndpointConfig();
+    public static final String SENSORS_TABLE_NAME = System.getenv("SENSORS_TABLE_NAME");
 
     private Config() {
         throw new IllegalStateException();

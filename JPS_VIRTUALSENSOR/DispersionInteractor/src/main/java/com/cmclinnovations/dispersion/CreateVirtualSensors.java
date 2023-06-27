@@ -42,7 +42,7 @@ public class CreateVirtualSensors extends HttpServlet {
                         "sending a POST request to InitialiseSimulation before any virtual sensors can be created. ");
                 return;
             }
-            if (dispersionPostGISClient.tableExists("sensors", conn)) {
+            if (dispersionPostGISClient.tableExists(Config.SENSORS_TABLE_NAME, conn)) {
                 sensorsTableExists = true;
             }
 
@@ -55,25 +55,14 @@ public class CreateVirtualSensors extends HttpServlet {
         String[] virtualSensorLocationsString = req.getParameterValues("virtualSensorLocations");
         List<Point> virtualSensorLocations = new ArrayList<>();
 
-        // Need to ensure coordinates of all virtual sensor locations are in EPSG:4326
+        // Assuming that coordinates of all virtual sensor locations are in EPSG:4326
         // (latitude, longitude)
         // because their locations will be checked against the entries of the scopes
         // table later.
 
         Arrays.stream(virtualSensorLocationsString).forEach(p -> {
             try {
-                Point vsLocation = new Point(p);
-                int srid = vsLocation.getSrid();
-                Point vsLocation4326 = null;
-                if (srid != 4326) {
-                    double[] xyOriginal = { vsLocation.getX(), vsLocation.getY() };
-                    double[] xyTransformed = CRSTransformer.transform("EPSG:" + srid, "EPSG:4326", xyOriginal);
-                    vsLocation4326 = new Point(xyTransformed[0], xyTransformed[1]);
-                    vsLocation.setSrid(4326);
-                } else
-                    vsLocation4326 = vsLocation;
-
-                virtualSensorLocations.add(vsLocation4326);
+                virtualSensorLocations.add(new Point(p));
             } catch (SQLException e) {
                 LOGGER.error(e.getMessage());
                 LOGGER.error("Could not parse location of virtual sensor {}", p);
@@ -94,26 +83,24 @@ public class CreateVirtualSensors extends HttpServlet {
             for (int i = 0; i < virtualSensorLocations.size(); i++) {
                 Point vsLocation = virtualSensorLocations.get(i);
                 List<String> scopeIriList = new ArrayList<>();
-                scopeIriList = dispersionPostGISClient.getScopesIncludingPoint(vsLocation, conn);
-                if (scopeIriList.size() == 0) {
+                // scopeIriList = dispersionPostGISClient.getScopesIncludingPoint(vsLocation,
+                // conn);
+                scopeIriList = queryClient.getScopesIncludingPoint(vsLocation);
+                if (scopeIriList.size() == 1 && !sensorsTableExists
+                        || (sensorsTableExists && !dispersionPostGISClient.sensorExists(vsLocation, conn))) {
+                    vsScopeList.add(scopeIriList.get(0));
+                    vsLocationsInScope.add(vsLocation);
+                } else if (scopeIriList.isEmpty()) {
                     LOGGER.warn(" The specified virtual sensor location " +
                             "at {} does not fall within any existing scope. No sensor will be created at this location.",
                             vsLocation.toString());
-                    continue;
                 } else if (scopeIriList.size() > 1) {
                     LOGGER.warn(
                             " The specified virtual sensor location at {} is contained within more than one scope polygon."
                                     +
                                     " No sensor will be created at this location.",
                             vsLocation.toString());
-                    continue;
                 }
-
-                if (sensorsTableExists && dispersionPostGISClient.sensorExists(vsLocation, conn))
-                    continue;
-
-                vsScopeList.add(scopeIriList.get(0));
-                vsLocationsInScope.add(vsLocation);
             }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());

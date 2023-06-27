@@ -1,6 +1,10 @@
 package com.cmclinnovations.dispersion;
 
+import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
+import org.eclipse.rdf4j.sparqlbuilder.constraint.Operand;
+import org.eclipse.rdf4j.sparqlbuilder.constraint.SparqlFunction;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
+import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
@@ -12,6 +16,9 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.postgis.Point;
+
+import com.cmclinnovations.dispersion.sparqlbuilder.GeoSPARQL;
+import com.cmclinnovations.dispersion.sparqlbuilder.ServiceEndpoint;
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
@@ -28,7 +35,9 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import it.unibz.inf.ontop.model.vocabulary.GEO;
+import it.unibz.inf.ontop.model.vocabulary.GEOF;
 
+import java.beans.Expression;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -56,6 +65,7 @@ public class QueryClient {
     public static final String ONTO_EMS = "https://www.theworldavatar.com/kg/ontoems/";
     public static final Prefix P_EMS = SparqlBuilder.prefix("ontoems", iri(ONTO_EMS));
     private static final Prefix P_GEO = SparqlBuilder.prefix("geo", iri(GEO.PREFIX));
+    private static final Prefix P_GEOF = SparqlBuilder.prefix("geof", iri(GEOF.PREFIX));
 
     // classes
     private static final Iri MEASURE = P_OM.iri("Measure");
@@ -310,6 +320,34 @@ public class QueryClient {
         storeClient.executeUpdate(modify.getQueryString());
     }
 
+    List<String> getScopesIncludingPoint(Point vsLocation) {
+        SelectQuery query = Queries.SELECT();
+        Variable scopeIri = query.var();
+        Variable scopeWkt = query.var();
+
+        Operand sfWithin = GeoSPARQL.sfWithin(vsLocation.toString(), scopeWkt);
+        GraphPattern gp = GraphPatterns.and(scopeIri.has(PropertyPaths.path(HAS_GEOMETRY, AS_WKT), scopeWkt))
+                .filter(Expressions.and(sfWithin));
+        ServiceEndpoint serviceEndpoint = new ServiceEndpoint(new EndpointConfig().getOntopUrl());
+        GraphPattern gp2 = serviceEndpoint.service(gp);
+        GraphPattern gp3 = GraphPatterns.and(scopeIri.isA(SCOPE));
+
+        query.where(gp2, gp3).select(scopeIri).prefix(P_GEO, P_GEOF, P_DISP);
+
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        List<String> scopeIriList = new ArrayList<>();
+
+        for (int i = 0; i < queryResult.length(); i++) {
+            scopeIriList.add(queryResult.getJSONObject(i).getString(scopeIri.getQueryString().substring(1)));
+        }
+
+        LOGGER.info(scopeIriList.size());
+
+        return scopeIriList;
+
+    }
+
     void initializeVirtualSensors(List<String> scopeIriList, List<Point> virtualSensorLocations) {
         // Get data IRIs of dispersion outputs belonging to the input derivation
         Iri isDerivedFrom = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
@@ -455,16 +493,16 @@ public class QueryClient {
         featureCollection.put("features", features);
 
         LOGGER.info("Uploading virtual sensors GeoJSON to PostGIS");
-        GDALClient gdalclient = new GDALClient();
-        gdalclient.uploadVectorStringToPostGIS(Config.DATABASE, "sensors", featureCollection.toString(),
+        GDALClient gdalclient = GDALClient.getInstance();
+        gdalclient.uploadVectorStringToPostGIS(Config.DATABASE, Config.SENSORS_TABLE_NAME, featureCollection.toString(),
                 new Ogr2OgrOptions(), true);
         // GeoServer layer creation is handled in the agent that creates the data.json
         // file. That agent will query for sensors that lie within the scope for which
         // the visualization is being created.
         LOGGER.info("Creating virtual sensors layer in Geoserver");
-        GeoServerClient geoserverclient = new GeoServerClient();
+        GeoServerClient geoserverclient = GeoServerClient.getInstance();
         geoserverclient.createWorkspace(Config.GEOSERVER_WORKSPACE);
-        geoserverclient.createPostGISLayer(null, Config.GEOSERVER_WORKSPACE, Config.DATABASE, "sensors",
+        geoserverclient.createPostGISLayer(Config.GEOSERVER_WORKSPACE, Config.DATABASE, Config.SENSORS_TABLE_NAME,
                 new GeoServerVectorSettings());
     }
 
