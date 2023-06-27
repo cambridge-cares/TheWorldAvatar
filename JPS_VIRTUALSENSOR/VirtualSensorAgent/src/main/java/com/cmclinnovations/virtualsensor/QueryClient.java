@@ -233,22 +233,6 @@ public class QueryClient {
         // Station location is stored in EPSG:4326.
         // Simulation srid can be determined from station location.
 
-        double xp = stationLocation.getX();
-        double yp = stationLocation.getY();
-        // compute simulation srid
-        int centreZoneNumber = (int) Math.ceil((xp + 180) / 6);
-        int simulationSrid;
-        if (yp < 0) {
-            simulationSrid = Integer.valueOf("327" + centreZoneNumber);
-
-        } else {
-            simulationSrid = Integer.valueOf("326" + centreZoneNumber);
-        }
-
-        double[] xyOriginal = { xp, yp };
-        int originalSrid = 4326;
-        double[] xyTransformed = CRSTransformer.transform("EPSG:" + originalSrid, "EPSG:" + simulationSrid, xyOriginal);
-
         // Convert from Instant to Long
         Long latestTimeLong = null;
 
