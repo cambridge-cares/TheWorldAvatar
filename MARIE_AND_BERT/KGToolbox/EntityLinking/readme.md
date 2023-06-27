@@ -55,7 +55,7 @@ python generateFromTemplate.py --infile ontokin.jsonl --outfile test_raw.jsonl -
 * `--question_type`
 * `--seed`
 
-#### 2.1 Generate the `train/val/test.jsonl` question files required for the first step of Entity Extraction Training:
+##### 2.1 Generate the `train/val/test.jsonl` question files required for the first step of Entity Extraction Training:
 
 Run `convertQuestionBlinkFormat.py` to convert the raw outfile generated [above](#2-for-general-entity-extraction) (e.g., `test_raw.jsonl`) to the accepted format. 
 
