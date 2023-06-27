@@ -1,15 +1,15 @@
 # Entity Linking 
 This document serves as a guide for creating datasets used for Entity Linking.
 
-##Overview
+## Overview
 The dataset used for Entity Linking consists of a dictionary of entities in the `.json` format and `train.jsonl`, `val.jsonl`, and 
 `test.jsonl` files containing questions for training, validation and testing respectively. Please refer to the 
 [Entity Linking Training Readme](../../Training/EntityLinking/readme.md) for more details on Training.
 
-##Setup
+## Setup
 Install `Python 3.8`
 
-###Required Files
+### Required Files
 1. Follow the steps outlined in the [Required Files section of the main README](../../readme.md#required-files) by creating a `DATA` folder under `MARIE_AND_BERT` and unzip `Dictionaries.zip` and `EntityLinking.zip` into the `DATA` folder.
 2. Copy `pubchemwithSMILE.jsonl` from `DATA/EntityLinking/training_files_generation` into `DATA/KGToolbox/EntityLinking`.
 3. Copy all the files from `DATA/EntityLinking/training_files_generation/templates` into `DATA/KGToolbox/EntityLinking/templates`.
@@ -17,10 +17,10 @@ Install `Python 3.8`
 `DATA/EntityLinking/training_files_generation/examples` contains example files that can be referred to for checking the expected 
 format of output files.
 
-##Running
+## Running
 To create a dataset for the Entity Linking model, follow the steps outlined below:
 
-###Create Entity Dictionaries
+### Create Entity Dictionaries
 
 Generate a dictionary of entities for each ontology using:
 ```
@@ -55,7 +55,7 @@ python generateFromTemplate.py --infile ontokin.jsonl --outfile test_raw.jsonl -
 * `--question_type`
 * `--seed`
 
-####2.1 Generate the `train/val/test.jsonl` question files required for the first step of Entity Extraction Training:
+#### 2.1 Generate the `train/val/test.jsonl` question files required for the first step of Entity Extraction Training:
 
 Run `convertQuestionBlinkFormat.py` to convert the raw outfile generated [above](#2-for-general-entity-extraction) (e.g., `test_raw.jsonl`) to the accepted format. 
 
@@ -73,7 +73,7 @@ python convertQuestionBlinkFormat.py --infile test_raw.jsonl --outfile test.json
 See `DATA/EntityLinking/training_files_generation/examples/ontokin_blink_format_example.jsonl` for an example of an expected output file.
 
 
-#####2.2. Generate the `train/test/valid.jsonl` question files required for the second step of Entity Extraction Training:   
+##### 2.2. Generate the `train/test/valid.jsonl` question files required for the second step of Entity Extraction Training:   
 
 Run `convertQuestionBlinkFormat.py` to convert the raw outfile generated [above](#2-for-general-entity-extraction) (e.g., `test_raw.jsonl`) to the accepted format.
 
