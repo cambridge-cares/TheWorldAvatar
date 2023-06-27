@@ -8,6 +8,6 @@ public class OSMRouting extends Vector {
 
     @Override
     public void loadData(Path dirPath, String database) {
-        PostGISClient.getInstance().uploadRoutingFilesToPostGIS(dirPath.toString(), database);
+        PostGISClient.getInstance().uploadRoutingFilesToPostGIS(database, dirPath.toString());
     }
 }
