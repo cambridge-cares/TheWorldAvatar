@@ -251,14 +251,15 @@ class KGClient(PySparqlClient):
         query_string = self.remove_unnecessary_whitespace(query_string)
         res = self.performQuery(query_string)
         if not res:
-            logger.error("Consumption result can not be found -- go check if you uploaded csv files/ or ontop.obda file missing?")
-            raise InvalidInput("Consumption result can not be found -- go check if you uploaded csv files/ or ontop.obda file missing?")
+            logger.warning("Consumption result can not be found -- go check if you uploaded csv files/ or ontop.obda file missing?")
+            print("Consumption result can not be found -- go check if you uploaded csv files/ or ontop.obda file missing?")
+            comsumption = 0
         else:
             res = res[0]
             try:
                 comsumption = float(res['comsumption'])
             except:
-                comsumption = None
+                comsumption = 0
 
         return comsumption
 
