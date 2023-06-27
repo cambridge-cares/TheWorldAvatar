@@ -1,9 +1,9 @@
 '''
 Convert entity name dictionaries to format required by EL training.
+Examples be like:
+ONTOSPECIES = './MARIE_AND_BERT\DATA\Dictionaries\ontospecies\\name_dict.json'
+ONTOKIN = './MARIE_AND_BERT\DATA\Dictionaries\ontokin\\name_dict.json'
 '''
-ONTOSPECIES = 'D:\work\Marie\MARIE_AND_BERT\DATA\Dictionaries\ontospecies\\name_dict.json'
-ONTOKIN = 'D:\work\Marie\MARIE_AND_BERT\DATA\Dictionaries\ontokin\\name_dict.json'
-TBOX = 'D:\work\Marie\chem_data\semi-auto-matching\generate_tbox_namedict\\class_plus_use_namelist.json'
 import json
 
 def toolong(name):
@@ -31,4 +31,12 @@ def generate_entity_dict(dictpath, fname):
 '''
 Replace with respect name_dict locations
 '''
-generate_entity_dict(ONTOKIN, 'ontokin.jsonl')
+if __name__ == "__main__":
+    from argparse import ArgumentParser
+    parser = ArgumentParser()
+    parser.add_argument('--infile', type=str,help='path to orginal name dict')
+    parser.add_argument('--outfile', type=str,default='ontokin.json',help='path to output entity jsonl')
+    opts = parser.parse_args()
+    infile = opts['infile']
+    outfile = opts['outfile']
+    generate_entity_dict(infile, outfile)

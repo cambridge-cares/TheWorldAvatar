@@ -1,8 +1,6 @@
 import json
 def load_mention_entries(path):
 
-    assert path is not None, "Error! mention test file is empty."
-
     mention_list = []
     with open(path, 'rt') as f:
         for line in f:

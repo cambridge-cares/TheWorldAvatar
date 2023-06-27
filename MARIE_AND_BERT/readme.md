@@ -54,7 +54,7 @@ to use conda for creating a virtual environment.
 
 1. Create a `DATA` folder under `MARIE_AND_BERT`
 2. Download CrossGraph.zip from [CrossGraph.zip](http://159.223.42.53:8080/CrossGraph.zip), unzip under `DATA`
-3. Download EntityLinking.zip from [EntityLinking.zip](http://159.223.42.53:8080/EntityLinking.zip), unzip under `DATA`
+3. Download Dictionaries.zip from [Dictionaries.zip](http://159.223.42.53:8080/Dictionaries.zip), unzip under `DATA`
 4. For faster setup, download the `bert_pretrained.zip` from [bert_pretrained.zip](http://159.223.42.53:8080/bert_pretrained.zip)
 , unzip under `DATA`. Otherwise upon the first run, the scripts will download the BERT pretrained model from hugging face.
 5. Download EntityLinking.zip from [EntityLinking.zip](http://159.223.42.53:8080/EntityLinking.zip), unzip under `DATA`

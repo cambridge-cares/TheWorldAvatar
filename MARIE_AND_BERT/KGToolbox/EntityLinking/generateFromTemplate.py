@@ -7,14 +7,6 @@ import csv
 import json
 import random,re
 
-TEMPLATE = '../template_training.csv'
-#read templates
-
-
-
-
-
-
 
 def get_entity_num(format_str):
     return format_str.count("{}")
@@ -33,13 +25,10 @@ def get_entity_types_mix(format_str):
             e_types.append('shape')
     return e_types
 
-
-
-
 def toolong(name):
     return True if len(name) >= 100  else False
 
-def generate_questions(templates,entityfile,seed):
+def generate_questions(templates,entityfile,num_to_gen,seed):
     #Train 1, test 10, valid 100
     questions = []
     random.seed(seed)
@@ -63,7 +52,6 @@ def generate_questions(templates,entityfile,seed):
     return questions
 
 
-#TODO: Note, exclude any entities longer than 30!
 def generate_questions_multientity(templates,filepath,num_to_gen, seed, single_entity=True):
     #Train 1, test 10, valid 100
     random.seed(seed)
@@ -204,38 +192,39 @@ def generate_questions_mix_type(templates,classfile, instancefile, seed):
 if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('--question_type', type=str, choices=['general', 'smiles'])
-    parser.add_argument('--outfile', type=str, default='train_ontokin.jsonl')
-    parser.add_argument('--infile', type=str, default='ontokin.jsonl')
-    parser.add_argument('--seed', type=int, default=1)
+    parser.add_argument('--question_type', type=str, choices=['general', 'smiles'],help='smiles or non-smiles question')
+    parser.add_argument('--mode', type=str, choices=['test', 'val','train'],help='run mode, test and run/valid uses separate templates')
+    parser.add_argument('--outfile', type=str, default='train_ontokin.jsonl',help='path to save output jsonl file')
+    parser.add_argument('--infile', type=str, default='ontokin.jsonl',help='path of input entity namelist file')
+    parser.add_argument('--seed', type=int, default=1,help='seed for random generation. It is recommended to switch seed when changing run mode.')
+    parser.add_argument('--question_num', type=int, default=500, help='number of questions to generate')
 
     opts = parser.parse_args()
     infile = opts['infile']
     ctype = opts['question_type']
     outfile = opts['outfile']
     seed = opts['seed']
-
-    if ctype == 'general':
+    mode = opts['mode']
+    qnum = opts['question_num']
+    if mode == 'test':
+        TEMPLATE = './templates/template_test.csv'
+    elif ctype == 'train' or ctype =='val':
         TEMPLATE = './templates/templates_training.csv'
-    elif ctype == 'smiles':
-        TEMPLATE = './templates/templates_smiles.csv'
     else:
-        raise TypeError('Question type not defined')
+        raise TypeError('Mode type not defined')
     templates = []
     with open(TEMPLATE, newline='') as csvfile:
         reader = csv.reader(csvfile, delimiter = '@')
         for row in reader:
             templates.append(row[0].strip())
     if ctype == 'general':
-        questions = generate_questions(templates, infile, seed)
+        questions = generate_questions(templates, infile, qnum, seed)
     elif ctype == 'smiles':
-        questions = generate_questions_SMILES(templates, 2000, seed)
+        questions = generate_questions_SMILES(templates, qnum, seed)
     else:
         raise TypeError('Question type not defined')
-    #questions = generate_questions_multientity('../generate_training_data/ontokin.jsonl', 1000, 10, False  )
-    #questions = generate_questions_SMILES(2000, 1)
+    #generate questions, save to json
     with open(outfile, 'w') as wf:
         for entry in questions:
             json.dump(entry, wf)
             wf.write('\n')
-    #generate questions, save to json

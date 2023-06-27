@@ -1,5 +1,4 @@
 import sys
-sys.path.append("C:/Users/Shaocong/Documents/GitHub/TheWorldAvatar/MARIE_AND_BERT")
 
 from STOUT import translate_forward, translate_reverse
 import re
@@ -25,7 +24,6 @@ class Translator():
     def translate_regex(self, raw_data):
         for entry in raw_data:
             text = entry["text"]
-            # TODO: this won't work when . is inside the SMILE
             tokens = [x.strip().replace('.', '').replace('?', '') for x in text.split(' ')]
             for idx, t in enumerate(tokens):
                 if self.regexSMILES(t):

@@ -139,7 +139,6 @@ class IRILookup:
     def find_cid(self, mention):
         try:
             mention_str = mention
-            # TODO: rearrange the chemical formula
             rearranged_mention_str = rearrange_formula(mention_str)
             confidence, key = self.fuzzy_search(rearranged_mention_str)[0]
             if key not in self.name_dict:
