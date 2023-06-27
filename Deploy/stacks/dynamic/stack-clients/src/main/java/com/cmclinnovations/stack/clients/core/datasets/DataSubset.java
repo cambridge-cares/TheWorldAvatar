@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonSubTypes({
         @Type(value = Tabular.class, names = { "Tabular", "tabular" }),
         @Type(value = Vector.class, names = { "Vector", "vector" }),
+        @Type(value = OSMRouting.class, names = { "OSMRouting", "osmRouting", "OsmRouting", "osmrouting" }),
         @Type(value = Raster.class, names = { "Raster", "raster" }),
         @Type(value = RDF.class, names = { "Triples", "triples", "RDF", "rdf", "Quads", "quads" }),
         @Type(value = TBoxCSV.class, names = { "TBoxCSV", "TboxCSV", "tboxcsv", }) })
