@@ -1,21 +1,25 @@
 [PrefixDeclaration]
-nhs:        http://theworldavatar.com/ontology/health/nhs/
+nhs:        http://theworldavatar.com/ontology/health/nhs.owl#
 geo:        http://www.opengis.net/ont/geosparql#
 rdf:        http://www.w3.org/1999/02/22-rdf-syntax-ns#
 rdfs:       http://www.w3.org/2000/01/rdf-schema#
 owl:        http://www.w3.org/2002/07/owl#
 
 [MappingDeclaration] @collection [[
+mappingId       nhs-asset
+target          nhs:Asset rdfs:subClassOf owl:Class .
+source          SELECT 1
+
 mappingId       nhs-gp-practice
-target          nhs:gp/{id} a nhs:GP_Practice ;
+target          nhs:gp/{id} a nhs:GPPractice ;
                     nhs:hasId {id}^^xsd:string ;
                     nhs:hasName {name}^^xsd:string ;
-                    nhs:hasLocation nhs:asset/{id}/location ;
                     nhs:hasCode {code}^^xsd:string ;
+                    nhs:hasLocation nhs:asset/{id}/location ;
 					nhs:isPIMSManaged {is_pims_managed}^^xsd:boolean ;
+                    nhs:hasType {type}^^xsd:string ;
 					nhs:hasSubtype {subtype}^^xsd:string ;
-					nhs:hasStatus {status}^^xsd:string ;
-                    nhs:hasPractitioner ??? .
+					nhs:hasStatus {status}^^xsd:string .
                 nhs:asset/{id}/location a geo:Location ;
                     geo:hasJSON {loc}^^xsd:string ;
                     geo:hasWKT "<http://www.opengis.net/def/crs/EPSG/0/4326> {wkt}"^^geo:wktLiteral ;
@@ -24,27 +28,33 @@ target          nhs:gp/{id} a nhs:GP_Practice ;
                     geo:hasLat {loc_lat}^^xsd:string ;
                     geo:hasLon {loc_lon}^^xsd:string .
 source          SELECT "OrganisationID" AS id , 
-                    "OrganisationName" as name ,
-                    ST_AsGeoJSON(geom) as loc ,
-                    ST_AsText(geom) as wkt ,
-                    ST_X(ST_Transform(geom,27700)) as loc_easting ,
-                    ST_Y(ST_Transform(geom,27700)) as loc_northing ,
-                    "Longitude" as loc_lon ,
-                    "Latitude" as loc_lat ,
-                    "OrganisationCode" as code ,
-                    "IsPimsManaged" as is_pims_managed ,		
-                    "SubType" as subtype ,
-                    "OrganisationStatus" as status 
+                "OrganisationName" as name ,
+				"SubType" as subtype ,
+                "OrganisationCode" as code ,
+				"OrganisationStatus" as status ,
+				"IsPimsManaged" as is_pims_managed ,				
+                ST_AsGeoJSON(geom) as loc ,
+                ST_AsText(geom) as wkt ,
+                ST_X(ST_Transform(geom,27700)) as loc_easting ,
+                ST_Y(ST_Transform(geom,27700)) as loc_northing ,
+                "Longitude" as loc_lon ,
+                "Latitude" as loc_lat ,
+                'GPPractice' AS type 
                 FROM "nhs_gp_practices"
 
 mappingId       nhs-gp-practitoner
 target          nhs:practitoner/{id} a nhs:Practitioner ;
                     nhs:hasId {id}^^xsd:string ;
                     nhs:hasName {name}^^xsd:string ;
-                    nhs:hasParentCode {parent_code}^^xsd:string ;
-                    nhs:fromPractice ??? .
+                    nhs:hasType {type}^^xsd:string ;
+					nhs:hasGrouping {grouping}^^xsd:string ;
+                    nhs:hasHighLevelHealthGeography {high_level_health_geography}^^xsd:string ;
+                    nhs:hasParentCode {parent_code}^^xsd:string .
 source          SELECT "OrganisationCode" AS id , 
-                    "Name" as name ,
-                    "ParentOrganisationCode" as parent_code 	
+                "Name" as name ,
+				"NationalGrouping" as grouping ,
+				"HighLevelHealthGeography" as high_level_health_geography ,		
+                "ParentOrganisationCode" as parent_code ,		
+                'Practitioner' AS type 
                 FROM "nhs_gp_practitioners"                       
 ]]

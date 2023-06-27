@@ -37,7 +37,7 @@ Before we can use the data we've downloaded, we need to clean it up a little to 
 
 **2. Add headings to CSV file:**<br/>
 * The CSV from the NHS Digital website does not contain headers, so we'll also need to add those.
-* Note that you'll need to be careful that your CSV editing software doesn't remote the double-quotes (MS Excel is notorious for this).
+* Note that you'll need to be careful that your CSV editing software doesn't remove the double-quotes (MS Excel is notorious for this).
 * For convenience's sake, the headings used when testing this tutorial were as follows:
 
 ```json

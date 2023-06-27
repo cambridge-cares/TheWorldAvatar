@@ -31,7 +31,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "nhs_gp_practices_extended",
-                    "sql": "SELECT geom, 'gp' AS type, \"OrganisationName\" as name, CONCAT('http://theworldavatar.com/ontology/health/nhs/gp/', \"OrganisationID\") as iri FROM nhs_gp_practices",
+                    "sql": "SELECT geom, 'gp' AS type, \"OrganisationName\" as name, CONCAT('http://theworldavatar.com/ontology/health/nhs.owl#gp/', \"OrganisationID\") as iri FROM nhs_gp_practices",
                     "escapeSql": false,
                     "geometry": {
                         "name": "geom",
