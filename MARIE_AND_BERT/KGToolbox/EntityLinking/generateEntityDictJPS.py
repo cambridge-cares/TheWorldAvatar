@@ -2,7 +2,7 @@
 Convert entity name dictionaries to format required by EL training.
 Examples be like:
 ONTOSPECIES = './MARIE_AND_BERT\DATA\Dictionaries\ontospecies\\name_dict.json'
-ONTOKIN = './MARIE_AND_BERT\DATA\Dictionaries\ontokin\\name_dict.json'
+ONTOKIN = './MARIE_AND_BERT/DATA/Dictionaries/ontokin/name_dict.json'
 '''
 import json
 
@@ -37,6 +37,7 @@ if __name__ == "__main__":
     parser.add_argument('--infile', type=str,help='path to orginal name dict')
     parser.add_argument('--outfile', type=str,default='ontokin.json',help='path to output entity jsonl')
     opts = parser.parse_args()
+    opts = vars(opts)
     infile = opts['infile']
     outfile = opts['outfile']
     generate_entity_dict(infile, outfile)

@@ -200,6 +200,7 @@ if __name__ == "__main__":
     parser.add_argument('--question_num', type=int, default=500, help='number of questions to generate')
 
     opts = parser.parse_args()
+    opts = vars(opts)
     infile = opts['infile']
     ctype = opts['question_type']
     outfile = opts['outfile']

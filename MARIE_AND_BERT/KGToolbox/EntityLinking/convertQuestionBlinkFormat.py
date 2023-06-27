@@ -89,6 +89,7 @@ if __name__ == "__main__":
     parser.add_argument('--outfile', type=str, default='test_tbox.jsonl',help='path to output formatted file')
 
     opts = parser.parse_args()
+    opts = vars(opts)
     infile = opts['infile']
     ctype = opts['convert_type']
     outfile = opts['outfile']
