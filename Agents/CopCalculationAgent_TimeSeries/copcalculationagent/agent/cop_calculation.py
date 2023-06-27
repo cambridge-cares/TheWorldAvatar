@@ -33,20 +33,6 @@ class COPCalculationAgent(DerivationAgent):
     
     def process_request_parameters(self, derivation_inputs: DerivationInputs, 
                                    derivation_outputs: DerivationOutputs):
-        # Update assumptions provided
-        try: 
-            with open('state.txt', "r") as file:
-                has_function_run = file.read().strip() == "True"
-        except:
-            has_function_run = False
-            with open('state.txt', "w") as file:
-                file.write("False")  # Initialize the file with "False"
-                print("Assumptions has been updated!")
-
-        if not has_function_run:
-            self.sparql_client.update_assumptions()
-            with open('state.txt', "w") as file:
-                file.write("True")
         
         inputs = derivation_inputs.getInputs()
 
@@ -55,6 +41,7 @@ class COPCalculationAgent(DerivationAgent):
         hotsidetemperature_iri = inputs[REGION_HOTSIDE_TEMPERATURE][0]
 
         g, mean_cop_iri, max_cop_iri, min_cop_iri = self.getCOPGraph(region)
+        
         # Collect the generated triples derivation_outputs
         derivation_outputs.addGraph(g)
         

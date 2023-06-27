@@ -44,6 +44,21 @@ def create_app():
         max_thread_monitor_async_derivations=1
     )
 
+    # Update assumptions provided
+    try: 
+        with open('state.txt', "r") as file:
+            has_function_run = file.read().strip() == "True"
+    except:
+        has_function_run = False
+        with open('state.txt', "w") as file:
+            file.write("False")  # Initialize the file with "False"
+            print("Assumptions has been updated!")
+
+    if not has_function_run:
+        agent.sparql_client.update_assumptions()
+        with open('state.txt', "w") as file:
+            file.write("True")
+
     agent.add_url_pattern('/', 'root', default, methods=['GET'])
 
     # USE when asyn-mode

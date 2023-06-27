@@ -32,7 +32,7 @@ services:
       - LOG4J_FORMAT_MSG_NO_LOOKUPS=true
       # --- Assumption spaces --- #
       # !!!! NO SPACING AFTER '='!!!!
-      - HEATPUMP_EFFICIENCY=0.35
+      - HEATPUMP_EFFICIENCY=0.7
       # In the unit of Kelvin 
       - HOTSIDE_TEMPERATURE=318.15
     ports:

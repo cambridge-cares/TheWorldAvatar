@@ -142,32 +142,36 @@ derivation_client = PyDerivationClient(derivation_instance_base_url=DERIVATION_I
                                         update_endpoint=UPDATE_ENDPOINT)
 
 # Perform Syn markup
-for i in tqdm(range(len(region_iri_list))):
+# for i in tqdm(range(len(region_iri_list))):
 
+#     region_iri = region_iri_list[i]
+#     try:
+#         Synmarkup(
+#             derivation_client=derivation_client,
+#             sparql_client = sparql_client,
+#             region_iri=region_iri,
+#             heatpumpefficiency_iri = heatpumpefficiency_iri,
+#             hotsidetemperature_iri = hotsidetemperature_iri,
+#             agentIRI = agentIRI,
+#             agentURL = agentURL
+#         )
+#     except:
+#          derivation_iri = retrieve_derivation_iri(sparql_client,region_iri, agentIRI)
+#          if not derivation_iri :
+#               raise KeyError('something wrong, contact Jieyang to fix this')
+#          else:
+            #   print(f'False: InputIRI: {region_iri} already have derivation IRI: {derivation_iri}, skipped for now')
+
+# Update Timestamp
+derivation_client.updateTimestamps([heatpumpefficiency_iri])
+
+# Perform unified update
+derivation_iri_list = []
+for i in range(len(region_iri_list)):
     region_iri = region_iri_list[i]
-    try:
-        Synmarkup(
-            derivation_client=derivation_client,
-            sparql_client = sparql_client,
-            region_iri=region_iri,
-            heatpumpefficiency_iri = heatpumpefficiency_iri,
-            hotsidetemperature_iri = hotsidetemperature_iri,
-            agentIRI = agentIRI,
-            agentURL = agentURL
-        )
-    except:
-         derivation_iri = retrieve_derivation_iri(sparql_client,region_iri, agentIRI)
-         if not derivation_iri :
-              raise KeyError('something wrong, contact Jieyang to fix this')
-         else:
-              print(f'False: InputIRI: {region_iri} already have derivation IRI: {derivation_iri}, skipped for now')
-
-# # Perform unified update
-# for i in range(len(inputIRI)):
-#     time.sleep(1)
-#     bday_iri = inputIRI[i]
-#     derivation_iri, entities = retrieve_derivation_iri(sparql_client,
-#                                                  bday_iri,
-#                                                  agentIRI)
+    derivation_iri = retrieve_derivation_iri(sparql_client,
+                                                region_iri,
+                                                agentIRI)
+    derivation_iri_list.append(derivation_iri)
 #     # Perform unified update
-#     derivation_client.unifiedUpdateDerivation(derivation_iri)
+derivation_client.updatePureSyncDerivations(derivation_iri_list)
