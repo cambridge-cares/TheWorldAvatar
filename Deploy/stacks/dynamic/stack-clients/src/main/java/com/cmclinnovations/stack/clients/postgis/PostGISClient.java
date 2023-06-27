@@ -52,8 +52,7 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
     public void createDatabase(String databaseName) {
         try (Connection conn = getDefaultConnection();
                 Statement stmt = conn.createStatement()) {
-            String sql = "CREATE EXTENSION IF NOT EXISTS postgis; CREATE DATABASE " + databaseName
-                    + " WITH TEMPLATE = template_postgis";
+            String sql = "CREATE DATABASE " + databaseName;
             stmt.executeUpdate(sql);
         } catch (SQLException ex) {
             if ("42P04".equals(ex.getSQLState())) {
@@ -62,6 +61,20 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
                 throw new RuntimeException("Failed to create database '" + databaseName
                         + "' on the server with JDBC URL '" + postgreSQLEndpoint.getJdbcURL("postgres") + "'.", ex);
             }
+        }
+        createDefaultExtensions(databaseName);
+    }
+
+    private void createDefaultExtensions(String databaseName) {
+        try (Connection conn = getRemoteStoreClient(databaseName).getConnection();
+                Statement stmt = conn.createStatement()) {
+            String sql = "CREATE EXTENSION IF NOT EXISTS postgis; "
+                    + "CREATE EXTENSION IF NOT EXISTS postgis_topology; "
+                    + "CREATE EXTENSION IF NOT EXISTS fuzzystrmatch; ";
+            stmt.executeUpdate(sql);
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to create extensions in database '" + databaseName
+                    + "' on the server with JDBC URL '" + postgreSQLEndpoint.getJdbcURL("postgres") + "'.", ex);
         }
     }
 
