@@ -33,7 +33,8 @@ Regarding the creation of these files, please see `MARIE_AND_BERT/KGToolbox/Enti
 bash train_ner.sh
 ```
 Parameters can be changed in the sh file. Aftering run, the model is saved to the specified path (default is `./models/ner/SMILES_NER.bin`)  
-
+* `--train_file_name` Path to train file.
+* `--valid_file_name` Path to valid file.
 ## Train Entity Extraction
 Entity Extraction training needs two steps.
 ```
