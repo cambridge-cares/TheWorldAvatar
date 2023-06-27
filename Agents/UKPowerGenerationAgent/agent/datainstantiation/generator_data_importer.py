@@ -26,7 +26,7 @@ from agent.kgutils.jps_singletons import jpsBaseLibView
 # get settings and functions from kg_utils_generation module
 import agent.kgutils.kg_utils as kg
 # get the BMRS API Dataframe generating and CSV writing script. 
-from agent.scriptmapquery import BMRS_API_Input_JA_7 as bmrs
+from agent.scriptmapquery.bmrsinput import BMRS_API_Input_JA_7 as bmrs
 
 units = "http://www.ontology-of-units-of-measure.org/resource/om-2/megawatt"
 powerplant_class_prefix = 'PowerPlant_'
