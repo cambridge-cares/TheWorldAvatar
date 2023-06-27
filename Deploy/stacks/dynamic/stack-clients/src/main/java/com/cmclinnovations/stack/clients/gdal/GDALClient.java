@@ -120,17 +120,7 @@ public class GDALClient extends ContainerClient {
                 .withEvaluationTimeout(300)
                 .exec();
 
-        handleErrors(errorStream, execId);
-    }
-
-    private void handleErrors(ByteArrayOutputStream errorStream, String execId) {
-        long commandErrorCode = getCommandErrorCode(execId);
-        if (0 != commandErrorCode) {
-            throw new RuntimeException("Docker exec command returned '" + commandErrorCode
-                    + "' and wrote the following to stderr:\n" + errorStream.toString());
-        } else {
-            logger.warn("Docker exec command returned '0' but wrote the following to stderr:\n{}", errorStream);
-        }
+        handleErrors(errorStream, execId, logger);
     }
 
     public void uploadRasterFilesToPostGIS(String database, String schema, String layerName,
@@ -160,7 +150,7 @@ public class GDALClient extends ContainerClient {
                 .withErrorStream(errorStream)
                 .exec();
 
-        handleErrors(errorStream, execId);
+        handleErrors(errorStream, execId, logger);
 
         return outputStream.toString().lines()
                 .map(entry -> entry.split(": "))
@@ -208,7 +198,7 @@ public class GDALClient extends ContainerClient {
                         .withEvaluationTimeout(300)
                         .exec();
 
-                handleErrors(errorStream, execId);
+                handleErrors(errorStream, execId, logger);
             }
         }
 
@@ -227,7 +217,7 @@ public class GDALClient extends ContainerClient {
                         "ALTER DATABASE " + database + " SET postgis.gdal_enabled_drivers = 'GTiff';")
                 .withErrorStream(errorStream)
                 .exec();
-        handleErrors(errorStream, execId);
+        handleErrors(errorStream, execId, logger);
     }
 
     private void uploadRasters(String postGISContainerId, String database, String layerName,
@@ -247,7 +237,7 @@ public class GDALClient extends ContainerClient {
                 .withEvaluationTimeout(300)
                 .exec();
 
-        handleErrors(errorStream, execId);
+        handleErrors(errorStream, execId, logger);
     }
 
     public static String generateRasterOutFilePath(String basePathIn, String databaseName, String schemaName,
