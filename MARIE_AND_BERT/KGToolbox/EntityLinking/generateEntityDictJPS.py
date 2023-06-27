@@ -31,4 +31,12 @@ def generate_entity_dict(dictpath, fname):
 '''
 Replace with respect name_dict locations
 '''
-generate_entity_dict(ONTOKIN, 'ontokin.jsonl')
+if __name__ == "__main__":
+    from argparse import ArgumentParser
+    parser = ArgumentParser()
+    parser.add_argument('--infile', type=str,help='path to orginal name dict')
+    parser.add_argument('--outfile', type=str,default='ontokin.json',help='path to output entity jsonl')
+    opts = parser.parse_args()
+    infile = opts['infile']
+    outfile = opts['outfile']
+    generate_entity_dict(infile, outfile)

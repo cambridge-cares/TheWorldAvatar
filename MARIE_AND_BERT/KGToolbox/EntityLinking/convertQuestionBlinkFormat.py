@@ -84,9 +84,9 @@ def getMentionBound(text, mentions):
 if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument('--convert_type', type=str, choices=['blink', 'elq'],help='convert to blink format or elq format')
-    parser.add_argument('--infile', type=str, default='generate_training_data/test_tbox.jsonl')
-    parser.add_argument('--outfile', type=str, default='test_tbox.jsonl')
+    parser.add_argument('--convert_type', type=str, choices=['blink', 'elq'],help='convert to blink(1st step) format or elq(2nd step) format')
+    parser.add_argument('--infile', type=str, default='generate_training_data/test_tbox.jsonl',help='path to input raw file')
+    parser.add_argument('--outfile', type=str, default='test_tbox.jsonl',help='path to output formatted file')
 
     opts = parser.parse_args()
     infile = opts['infile']
