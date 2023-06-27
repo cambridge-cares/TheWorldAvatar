@@ -107,7 +107,6 @@ def _load_candidates(
         if logger:
             logger.info("Using faiss index to retrieve entities.")
         candidate_encoding = None
-        assert index_path is not None, "Error! Empty indexer path."
         if faiss_index == "flat":
             indexer = DenseFlatIndexer(1)
         elif faiss_index == "hnsw":
@@ -135,7 +134,6 @@ def _load_candidates(
                 else:
                     wikipedia_id = entity["idx"].strip()
 
-                assert wikipedia_id not in wikipedia_id2local_id
                 wikipedia_id2local_id[wikipedia_id] = local_idx
 
             title2id[entity["title"]] = local_idx

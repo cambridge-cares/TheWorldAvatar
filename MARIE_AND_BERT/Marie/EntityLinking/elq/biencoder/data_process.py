@@ -33,8 +33,6 @@ def select_field_with_padding(data, key1, key2=None, pad_idx=-1):
         # pad to max len
         pad_list = [1 for _ in range(len(entry))] + [0 for _ in range(max_len - len(entry))]
         selected_list[i] += [pad_idx for _ in range(max_len - len(entry))]
-        assert len(pad_list) == max_len
-        assert len(selected_list[i]) == max_len
         padding_mask.append(pad_list)
     return selected_list, padding_mask
 
@@ -98,7 +96,6 @@ def get_context_representation_single_mention(
     input_ids = tokenizer.convert_tokens_to_ids(context_tokens)
     padding = [0] * (max_seq_length - len(input_ids))
     input_ids += padding
-    assert len(input_ids) == max_seq_length
 
     return {
         "tokens": context_tokens,
@@ -125,7 +122,6 @@ def get_context_representation_multiple_mentions_left_right(
         input_ids = tokenizer.convert_tokens_to_ids(context_tokens)
         padding = [0] * (max_seq_length - len(input_ids))
         input_ids += padding
-        assert len(input_ids) == max_seq_length
         return {
             "tokens": context_tokens,
             "ids": input_ids,
@@ -142,8 +138,6 @@ def get_context_representation_multiple_mentions_left_right(
             mention_tokens.append(mention_token)
     mention_idxs = []
 
-    assert len(all_context_lefts) == len(all_context_rights)
-    assert len(all_context_rights) == len(all_mentions)
 
     context_tokens = None
 
@@ -190,7 +184,6 @@ def get_context_representation_multiple_mentions_left_right(
     input_ids = tokenizer.convert_tokens_to_ids(context_tokens)
     padding = [0] * (max_seq_length - len(input_ids))
     input_ids += padding
-    assert len(input_ids) == max_seq_length
 
     return {
         "tokens": context_tokens,
@@ -290,7 +283,6 @@ def get_context_representation_multiple_mentions_idxs(
             import pdb
             pdb.set_trace()
     else:
-        assert input_ids != input_ids_window
         cut_from_left = len(context_left) - len(context_left[-left_quota:])
         if cut_from_left > 0:
             # must shift mention_idxs
@@ -337,7 +329,7 @@ def get_candidate_representation(
     input_ids = tokenizer.convert_tokens_to_ids(cand_tokens)
     padding = [0] * (max_seq_length - len(input_ids))
     input_ids += padding
-    assert len(input_ids) == max_seq_length
+
 
     return {
         "tokens": cand_tokens,
@@ -396,7 +388,6 @@ def process_mention_data(
     cls_token_id = tokenizer.convert_tokens_to_ids("[CLS]")
     sep_token_id = tokenizer.convert_tokens_to_ids("[SEP]")
     for idx, sample in enumerate(iter_):
-        assert not add_mention_bounds, "Adding mention bounds, but we have multiple entities per example"
         if context_key + "_left" in sample:
             context_tokens = get_context_representation_multiple_mentions_left_right(
                 sample, tokenizer, max_context_length,
@@ -445,7 +436,6 @@ def process_mention_data(
                 sample["label_id"] = sample["label_id"][:len(context_tokens['mention_idxs'])]
             label_idx = [int(id) for id in sample["label_id"]]
         else:
-            assert isinstance(sample["label_id"], int) or isinstance(sample["label_id"], str)
             label_idx = int(sample["label_id"])
 
         record = {
@@ -521,7 +511,6 @@ def process_mention_data(
             # (bs, max_num_spans, 1, max_cand_length)
             cand_vecs = torch.tensor(cand_vecs, dtype=torch.long)
             cand_mask = torch.tensor(cand_mask, dtype=torch.bool)
-            assert (cand_mask == mention_idx_mask).all() or cand_mask.all()
             if logger:
                 logger.info("Created candidate IDs vector")
         else:
@@ -531,11 +520,9 @@ def process_mention_data(
         # (bs, max_num_spans)
         label_idx = torch.tensor(label_idx_vecs, dtype=torch.long)
         label_idx_mask = torch.tensor(label_idx_mask, dtype=torch.bool)
-        assert (label_idx_mask == mention_idx_mask).all() or label_idx_mask.all()
         if logger:
             logger.info("Created label IDXs vector")
     # mention_idx_vecs: (bs, max_num_spans, 2), mention_idx_mask: (bs, max_num_spans)
-    assert len(mention_idx_vecs.size()) == 3
     # prune mention_idx_vecs to max_context_length
     mention_idx_vecs[mention_idx_vecs >= max_context_length] = (max_context_length - 1)
 

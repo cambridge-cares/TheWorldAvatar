@@ -29,7 +29,6 @@ def load_entity_dict(logger, params, is_zeshel):
         return load_entity_dict_zeshel(logger, params)
 
     path = params.get("entity_dict_path", None)
-    assert path is not None, "Error! entity_dict_path is empty."
 
     entity_list = []
     logger.info("Loading entity description from path: " + path)

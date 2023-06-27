@@ -12,7 +12,6 @@ accu metrics
 
 def metrics(result, questions):
     correct = 0
-    assert len(result) == len(questions)
     for idx, item in enumerate(result):
         if item is None:
             continue

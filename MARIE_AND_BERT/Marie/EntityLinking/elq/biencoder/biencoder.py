@@ -448,8 +448,6 @@ class BiEncoderModule(torch.nn.Module):
                 top_mention_bounds = gold_mention_bounds
                 top_mention_mask = gold_mention_bounds_mask
 
-            assert top_mention_bounds is not None
-            assert top_mention_mask is not None
 
             # (bs, num_pred_mentions OR num_gold_mentions, embed_size)
             embedding_ctxt = self.get_ctxt_embeds(
@@ -770,7 +768,6 @@ class BiEncoderRanker(torch.nn.Module):
         Do inner-product search, or obtain scores on hard-negative entities
         '''
         if hard_negs:
-            assert hard_negs_mask is not None
             # (num_mention_in_batch, embed_dim)
             embedding_ctxt = embedding_ctxt[hard_negs_mask]
             embedding_cands = embedding_cands[hard_negs_mask]

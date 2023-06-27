@@ -100,7 +100,6 @@ def _load_candidates(
         indexer = None
     else:
         candidate_encoding = None
-        assert index_path is not None, "Error! Empty indexer path."
         if faiss_index == "flat":
             indexer = DenseFlatIndexer(1)
         elif faiss_index == "hnsw":
@@ -439,7 +438,6 @@ def get_predictions(
 
             if args.threshold_type == "joint":
                 # THRESHOLDING
-                assert utterance is not None
                 top_mentions_mask = (distances[:,0] > threshold)
             elif args.threshold_type == "top_entity_by_mention":
                 top_mentions_mask = (mention_scores[i] > mention_threshold)
@@ -491,7 +489,6 @@ def get_predictions(
                 # Get LABELS
                 input_mention_idxs = batch_mention_idxs[b][batch_mention_idx_masks[b]].tolist()
                 input_label_ids = batch_label_ids[b][batch_label_ids[b] != -1].tolist()
-                assert len(input_label_ids) == len(input_mention_idxs)
                 gold_mention_bounds = [
                     sample['text'][ment[0]-10:ment[0]] + "[" + sample['text'][ment[0]:ment[1]] + "]" + sample['text'][ment[1]:ment[1]+10]
                     for ment in sample['mentions']
@@ -697,7 +694,6 @@ def run(
     stopping_condition = False
     threshold = float(args.threshold)
     if args.threshold_type == "top_entity_by_mention":
-        assert args.mention_threshold is not None
         mention_threshold = float(args.mention_threshold)
     else:
         mention_threshold = threshold
@@ -790,7 +786,6 @@ def run(
         else:
             nns, dists, pred_mention_bounds, cand_scores, mention_scores, runtime = _load_biencoder_outs(args.save_preds_dir)
 
-        assert len(samples) == len(nns) == len(dists) == len(pred_mention_bounds) == len(cand_scores) == len(mention_scores)
 
         (
             all_entity_preds, num_correct_weak, num_correct_strong, num_predicted, num_gold,

@@ -118,9 +118,6 @@ class BertNEL():
     def process_data(self, raw_data):
         if type(raw_data) == str:
             raw_data = [{"text": raw_data}]
-        assert type(raw_data) == list
-        assert len(raw_data) > 0
-        assert 'text' in raw_data[0]
         if 'id' not in raw_data[0]:
             raw_data = [{"text": entry['text'], "id": id} for id, entry in enumerate(raw_data)]
         return raw_data

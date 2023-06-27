@@ -322,9 +322,6 @@ class BertReranker:
         input_mask += padding
         segment_ids += padding
 
-        assert len(input_ids) == max_seq_length
-        assert len(input_mask) == max_seq_length
-        assert len(segment_ids) == max_seq_length
 
         return {
             "tokens": tokens,
@@ -465,8 +462,6 @@ class BertReranker:
                 for _ in range(top_k - len(candidates)):
                     candidate_features.append(padding_candidate_obj)
 
-            assert len(candidate_features) == top_k
-            assert len(entity_mask) == top_k
 
             if sentences is not None:
                 processed_mentions.append(

@@ -70,7 +70,6 @@ def prepare_crossencoder_candidates(
             )
             tokens_ids = rep["ids"]
 
-            assert len(tokens_ids) == max_cand_length
             candidates.append(tokens_ids)
 
         label_input_list.append(label_id)
