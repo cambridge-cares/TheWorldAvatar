@@ -1,0 +1,33 @@
+{
+    "type": "postgres",
+    "ServiceSpec": {
+        "Name": "postgis",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/pgrouting/pgrouting:15-3.3-3.4.1-extra",
+                "Env": [
+                    "POSTGRES_HOST_AUTH_METHOD=scram-sha-256",
+                    "POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256",
+                    "POSTGIS_SFCGAL=true"
+                ],
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "postgis_data",
+                        "Target": "/var/lib/postgresql/data"
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "geotiffs",
+                        "Target": "/geotiffs"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        }
+    }
+}
