@@ -83,12 +83,12 @@ For local deployment，please use `Dockerfile_local`.
 
 For deployment on Linux server from the scratch:
 
-1. create a folder in the server, assume it is `/home/user1/Marie/DATA`
+1. Create a folder in the server, assume it is `/home/user1/Marie/DATA`
 2. Load the files 2-6 mentioned in [Required files](###Required Files) in `/home/user1/Marie/DATA`
 3. Clone the GitHub repository by `git clone https://github.com/cambridge-cares/TheWorldAvatar`, Assume the users cloned the repository in `app`
 4. Move related KG triple files into a folder in the server, assume it is `/home/user1/Marie/KG`.
 5. Build a blazegraph image, see [Blazegraph container](https://github.com/lyrasis/docker-blazegraph#local-builds) for instructions. Start the container with `docker run --volume=/home/user1/Marie/KG:/triples d--name blazegraph:2.1.5 -d -p [port]:[port] blazegraph-marie`
-6. Create `ontospecies.nt` and `ontocompchem.nt` by 
+6. Create `ontospecies.nt` and `ontocompchem.nt` using 
 
 ```
 python KGToolbox/SPARQLEndpoint/export_triples.py 
