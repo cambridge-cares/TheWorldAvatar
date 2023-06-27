@@ -95,7 +95,7 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
         try (Stream<Path> dirsStream = Files.walk(Path.of(sourceDirectory))) {
             allFilesStream = dirsStream.filter(file -> !Files.isDirectory(file));
         } catch (IOException ex) {
-            throw new RuntimeException("Failed to walk directory '" + sourceDirectory + ".'", ex);
+            throw new RuntimeException("Failed to walk directory '" + sourceDirectory + "'.", ex);
         }
         Stream<Path> osmFilesStream = allFilesStream.filter(file -> hasFileExtension(file, "osm"));
         if (osmFilesStream.count() < 1) {
