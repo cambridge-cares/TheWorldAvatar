@@ -1,7 +1,7 @@
 '''
 Convert entity name dictionaries to format required by EL training.
 Examples be like:
-ONTOSPECIES = './MARIE_AND_BERT\DATA\Dictionaries\ontospecies\\name_dict.json'
+ONTOSPECIES = './MARIE_AND_BERT/DATA/Dictionaries/ontospecies/name_dict.json'
 ONTOKIN = './MARIE_AND_BERT/DATA/Dictionaries/ontokin/name_dict.json'
 '''
 import json
