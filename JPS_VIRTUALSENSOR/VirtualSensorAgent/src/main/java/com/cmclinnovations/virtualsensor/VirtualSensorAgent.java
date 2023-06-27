@@ -42,12 +42,9 @@ public class VirtualSensorAgent extends DerivationAgent {
         // matrix data IRIs and station location
         String derivation = derivationInputs.getDerivationIRI();
         Instant latestTime = queryClient.getLatestStationTime(derivation);
-        Map<String, String> pollutantToDispMatrix = queryClient.getDispersionMatrixIris(derivation);
         Map<String, String> pollutantToDispRaster = queryClient.getDispersionRasterIris(derivation);
         Point stationLocation = queryClient.getStationLocation(derivation);
         Map<String, String> pollutantToConcIri = queryClient.getStationDataIris(derivation);
-        // queryClient.updateStationUsingDispersionMatrix(latestTime,
-        // pollutantToDispMatrix, pollutantToConcIri, stationLocation);
         queryClient.updateStationUsingDispersionRaster(latestTime, pollutantToDispRaster, pollutantToConcIri,
                 stationLocation);
 

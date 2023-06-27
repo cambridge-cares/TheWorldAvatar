@@ -56,7 +56,6 @@ public class QueryClient {
     private static final Prefix P_DISP = SparqlBuilder.prefix("disp", iri(PREFIX));
     static final String OM_STRING = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
     private static final Prefix P_OM = SparqlBuilder.prefix("om", iri(OM_STRING));
-
     public static final String ONTO_EMS = "https://www.theworldavatar.com/kg/ontoems/";
     public static final Prefix P_EMS = SparqlBuilder.prefix("ontoems", iri(ONTO_EMS));
 
@@ -65,11 +64,9 @@ public class QueryClient {
     private static final Iri MEASURE = P_OM.iri("Measure");
     private static final Iri REPORTING_STATION = P_EMS.iri("ReportingStation");
     private static final Iri DISPERSION_OUTPUT = P_DISP.iri("DispersionOutput");
-
     private static final Iri GEOM = iri("http://www.opengis.net/ont/geosparql#Geometry");
 
     // Pollutants
-    private static final Iri POLLUTANT_ID = P_DISP.iri("PollutantID");
     private static final String NO_X = PREFIX + "NOx";
     private static final String UHC = PREFIX + "uHC";
     private static final String CO = PREFIX + "CO";
@@ -88,16 +85,12 @@ public class QueryClient {
     private static final String PM10_CONC = ONTO_EMS + "PM10Concentration";
     private static final String PM25_CONC = ONTO_EMS + "PM2.5Concentration";
 
-    private static final Iri UNIT_POLLUTANT_CONC = P_OM.iri("microgramPerCubicmetre");
-
     // properties
-    private static final Iri HAS_PROPERTY = P_DISP.iri("hasProperty");
+
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
-    private static final Iri HAS_NUMERICALVALUE = P_OM.iri("hasNumericalValue");
     private static final Iri REPORTS = P_EMS.iri("reports");
     private static final Iri isDerivedFrom = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
     private static final Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
-    private static final Iri HAS_DISPERSION_MATRIX = P_DISP.iri("hasDispersionMatrix");
     private static final Iri HAS_DISPERSION_RASTER = P_DISP.iri("hasDispersionRaster");
     private static final Iri HAS_POLLUTANT_ID = P_DISP.iri("hasPollutantID");
     private static final Iri HAS_WKT = iri("http://www.opengis.net/ont/geosparql#asWKT");
@@ -143,35 +136,6 @@ public class QueryClient {
         }
 
         return latestTime;
-
-    }
-
-    public Map<String, String> getDispersionMatrixIris(String derivation) {
-        // Get data IRIs of dispersion derivations
-        SelectQuery query = Queries.SELECT();
-        Variable dispersionOutput = query.var();
-        Variable pollutantIri = query.var();
-        Variable pollutant = query.var();
-        Variable dispMatrix = query.var();
-
-        // dispMatrix is the timeseries data IRI of the fileServer URL of the AERMOD
-        // concentration output (averageConcentration.dat).
-        // There is exactly one such data IRI for each pollutant ID.
-
-        query.where(iri(derivation).has(isDerivedFrom, dispersionOutput),
-                dispersionOutput.isA(DISPERSION_OUTPUT).andHas(HAS_POLLUTANT_ID, pollutantIri)
-                        .andHas(HAS_DISPERSION_MATRIX, dispMatrix),
-                pollutantIri.isA(pollutant)).prefix(P_DISP, P_OM, P_EMS)
-                .select(pollutant, dispMatrix);
-
-        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-        Map<String, String> pollutantToDispMatrix = new HashMap<>();
-        for (int i = 0; i < queryResult.length(); i++) {
-            String dispMatrixIri = queryResult.getJSONObject(i).getString(dispMatrix.getQueryString().substring(1));
-            String pollutantId = queryResult.getJSONObject(i).getString(pollutant.getQueryString().substring(1));
-            pollutantToDispMatrix.put(pollutantId, dispMatrixIri);
-        }
-        return pollutantToDispMatrix;
 
     }
 
@@ -375,7 +339,7 @@ public class QueryClient {
         List<Instant> timeStamps = new ArrayList<>();
 
         timeStampsLong.stream().forEach(ts -> {
-            Instant timeInstant = Instant.ofEpochMilli(millis(ts));
+            Instant timeInstant = Instant.ofEpochSecond(ts);
             timeStamps.add(timeInstant);
         });
 
@@ -388,169 +352,6 @@ public class QueryClient {
             LOGGER.error("Failed at closing connection");
             LOGGER.error(e.getMessage());
         }
-
-    }
-
-    public void updateStationUsingDispersionMatrix(Instant latestTime, Map<String, String> pollutantToDispMatrix,
-            Map<String, String> pollutantToConcIri, Point stationLocation) {
-
-        List<String> dispMatrixIriList = new ArrayList<>(pollutantToDispMatrix.values());
-        TimeSeries<Long> dispMatrixTimeSeries = null;
-
-        // Coordinates in the dispersion matrices will be in the
-        // simulation srid.
-        // Station location is stored in EPSG:4326.
-        // Simulation srid can be determined from station location.
-
-        double xp = stationLocation.getX();
-        double yp = stationLocation.getY();
-        // compute simulation srid
-        int centreZoneNumber = (int) Math.ceil((xp + 180) / 6);
-        int simulationSrid;
-        if (yp < 0) {
-            simulationSrid = Integer.valueOf("327" + centreZoneNumber);
-
-        } else {
-            simulationSrid = Integer.valueOf("326" + centreZoneNumber);
-        }
-
-        double[] xyOriginal = { xp, yp };
-        int originalSrid = 4326;
-        double[] xyTransformed = CRSTransformer.transform("EPSG:" + originalSrid, "EPSG:" + simulationSrid, xyOriginal);
-
-        // Convert from Instant to Long
-        Long latestTimeLong = null;
-
-        if (latestTime != null)
-            latestTimeLong = latestTime.getEpochSecond();
-
-        try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            dispMatrixTimeSeries = tsClientLong
-                    .getTimeSeriesWithinBounds(dispMatrixIriList, latestTimeLong, null, conn);
-        } catch (SQLException e) {
-            LOGGER.error(e.getMessage());
-            return;
-        }
-
-        List<String> tsDataList = new ArrayList<>();
-        List<List<?>> tsValuesList = new ArrayList<>();
-        for (String pollutant : pollutantToDispMatrix.keySet()) {
-            String dispMatrixIri = pollutantToDispMatrix.get(pollutant);
-            List<String> dispersionMatrixUrls = dispMatrixTimeSeries.getValuesAsString(dispMatrixIri);
-            List<Double> concentrations = new ArrayList<>();
-            for (int j = 0; j < dispersionMatrixUrls.size(); j++) {
-                String fileUrl = dispersionMatrixUrls.get(j);
-                double conc = 0.0;
-                if (fileUrl != null)
-                    conc = getInterpolatedValue(EnvConfig.PYTHON_SERVICE_INTERPOLATION_URL, fileUrl, xyTransformed[0],
-                            xyTransformed[1]);
-                concentrations.add(conc);
-            }
-            tsValuesList.add(concentrations);
-            switch (pollutant) {
-                case CO2:
-                    tsDataList.add(pollutantToConcIri.get(CO2_CONC));
-                    break;
-                case NO_X:
-                    tsDataList.add(pollutantToConcIri.get(NO_X_CONC));
-                    break;
-                case SO2:
-                    tsDataList.add(pollutantToConcIri.get(SO2_CONC));
-                    break;
-                case CO:
-                    tsDataList.add(pollutantToConcIri.get(CO_CONC));
-                    break;
-                case UHC:
-                    tsDataList.add(pollutantToConcIri.get(UHC_CONC));
-                    break;
-                case PM10:
-                    tsDataList.add(pollutantToConcIri.get(PM10_CONC));
-                    break;
-                case PM25:
-                    tsDataList.add(pollutantToConcIri.get(PM25_CONC));
-                    break;
-                default:
-                    LOGGER.info(
-                            "Unknown pollutant ID encountered in the updateStation method of VirtualSensorAgent/QueryClient class: {}",
-                            pollutant);
-
-            }
-
-        }
-
-        // AermodAgent uses Unix timestamps. These must be converted to Instant
-        // for the times
-        // to be parsed correctly by FeatureInfoAgent.
-
-        List<Long> timeStampsLong = dispMatrixTimeSeries.getTimes();
-        List<Instant> timeStamps = new ArrayList<>();
-
-        timeStampsLong.stream().forEach(ts -> {
-            Instant timeInstant = Instant.ofEpochMilli(millis(ts));
-            timeStamps.add(timeInstant);
-        });
-
-        TimeSeries<Instant> timeSeries = new TimeSeries<>(timeStamps,
-                tsDataList, tsValuesList);
-
-        try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            tsClientInstant.addTimeSeriesData(timeSeries, conn);
-        } catch (SQLException e) {
-            LOGGER.error("Failed at closing connection");
-            LOGGER.error(e.getMessage());
-        }
-
-    }
-
-    /**
-     * Sends request to Python service to calculate pollutant concentration at the
-     * location (xp,yp) using data
-     * in outputFileURL
-     */
-    private double getInterpolatedValue(String endPoint, String outputFileURL, double xp, double yp) {
-        URI httpGet;
-        try {
-            URIBuilder builder = new URIBuilder(endPoint);
-            builder.setParameter("dispersionMatrix", outputFileURL);
-            builder.setParameter("xp", String.valueOf(xp));
-            builder.setParameter("yp", String.valueOf(yp));
-
-            httpGet = builder.build();
-        } catch (URISyntaxException e) {
-            LOGGER.error("Failed at building URL");
-            throw new RuntimeException(e);
-        }
-
-        try (CloseableHttpClient httpClient = HttpClients.createDefault();
-                CloseableHttpResponse httpResponse = httpClient.execute(new HttpGet(httpGet))) {
-            String result = EntityUtils.toString(httpResponse.getEntity());
-            JSONObject js = new JSONObject(result);
-            return js.getDouble("result");
-        } catch (IOException e) {
-            LOGGER.error("Failed at making connection with python service");
-            throw new RuntimeException(e);
-        } catch (JSONException e) {
-            LOGGER.error("Failed to parse result from python service for aermod geojson");
-            LOGGER.error(outputFileURL);
-            throw new RuntimeException(e);
-        }
-    }
-
-    // Convert any Unix timestamp to milliseconds.
-    // See https://www.baeldung.com/java-date-unix-timestamp.
-    private long millis(long timestamp) {
-        if (timestamp >= 1E16 || timestamp <= -1E16) {
-            return timestamp / 1_000_000;
-        }
-
-        if (timestamp >= 1E14 || timestamp <= -1E14) {
-            return timestamp / 1_000;
-        }
-        if (timestamp >= 1E11 || timestamp <= -3E10) {
-            return timestamp;
-        }
-
-        return timestamp * 1_000;
 
     }
 }
