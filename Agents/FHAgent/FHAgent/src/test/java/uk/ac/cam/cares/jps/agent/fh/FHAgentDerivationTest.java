@@ -388,6 +388,12 @@ public class FHAgentDerivationTest {
         Assert.assertEquals(testDerivator.iriMap.size()-testAgent.getNumberOfTimeSeries(), storeClient.executeQuery(queryRaw.getQueryString()).length());
     }
 
+    @Test
+    public void testInstantiateAgentDoubleCall () {
+        testDerivator.instantiateAgent("http://localhost:1010/fh-agent/instantiate");
+        testDerivator.instantiateAgent("http://localhost:1010/fh-agent/instantiate");
+    }
+
 
     @After
 	public void cleanUp() {

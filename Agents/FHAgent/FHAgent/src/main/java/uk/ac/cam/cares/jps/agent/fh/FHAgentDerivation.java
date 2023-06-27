@@ -181,20 +181,28 @@ public class FHAgentDerivation {
     
                 String inputIRI = iriMap.get(rawVar);
                 String outputIRI = iriMap.get(derivVar);
-    
-                derivClient.createOntoAgentInstance(agentIRI, agentURL, Arrays.asList(inputIRI), Arrays.asList(outputIRI));
-                derivClient.addTimeInstanceCurrentTimestamp(inputIRI);
-                String derivedString = derivClient.createDerivationWithTimeSeries(Arrays.asList(outputIRI), agentIRI, Arrays.asList(inputIRI));
+                
+                try{
+                    derivClient.createOntoAgentInstance(agentIRI, agentURL, Arrays.asList(inputIRI), Arrays.asList(outputIRI));
+                    derivClient.addTimeInstanceCurrentTimestamp(inputIRI);
+                    String derivedString = derivClient.createDerivationWithTimeSeries(Arrays.asList(outputIRI), agentIRI, Arrays.asList(inputIRI));
 
-                LOGGER.info("Validating " + derivedString);
-                try {
-                    if (derivClient.validateDerivations()) {
-                        LOGGER.info("Validated derived difference successfully");
+                    LOGGER.info("Validating " + derivedString);
+                    try {
+                        if (derivClient.validateDerivations()) {
+                            LOGGER.info("Validated derived difference successfully");
+                        }
+                    } catch (Exception e) {
+                        LOGGER.error("Validation failure for derived difference" + e.getMessage());
+                        throw new JPSRuntimeException(e);
                     }
-                } catch (Exception e) {
-                    LOGGER.error("Validation failure for derived difference" + e.getMessage());
-                    throw new JPSRuntimeException(e);
                 }
+                catch (Exception e) {
+                    if (!e.getMessage().contains("some entities are already part of another derivation")){
+                        throw  new JPSRuntimeException("Failed to instantiate derivation instances", e);
+                    }
+                }
+                
             }
         }
         
