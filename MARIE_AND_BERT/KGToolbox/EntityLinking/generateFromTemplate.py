@@ -92,7 +92,7 @@ def generate_questions_SMILES(templates, num_to_gen, seed, single_entity=True):
     #Train 1, test 10, valid 100
     random.seed(seed)
     alle = []
-    with open('../pubchem5000withSMILE.jsonl', 'rt') as f:
+    with open('./pubchemwithSMILE.jsonl', 'rt') as f:
         for line in list(f)[0:]:
             item = json.loads(line.strip())
             name = item['iupac']
@@ -195,7 +195,7 @@ if __name__ == "__main__":
     parser.add_argument('--question_type', type=str, choices=['general', 'smiles'],help='smiles or non-smiles question')
     parser.add_argument('--mode', type=str, choices=['test', 'val','train'],help='run mode, test and run/valid uses separate templates')
     parser.add_argument('--outfile', type=str, default='train_ontokin.jsonl',help='path to save output jsonl file')
-    parser.add_argument('--infile', type=str, default='ontokin.jsonl',help='path of input entity namelist file')
+    parser.add_argument('--infile', type=str, default='ontokin.json',help='path of input entity namelist file')
     parser.add_argument('--seed', type=int, default=1,help='seed for random generation. It is recommended to switch seed when changing run mode.')
     parser.add_argument('--question_num', type=int, default=500, help='number of questions to generate')
 
@@ -209,7 +209,7 @@ if __name__ == "__main__":
     qnum = opts['question_num']
     if mode == 'test':
         TEMPLATE = './templates/template_test.csv'
-    elif ctype == 'train' or ctype =='val':
+    elif mode == 'train' or mode =='val':
         TEMPLATE = './templates/templates_training.csv'
     else:
         raise TypeError('Mode type not defined')
