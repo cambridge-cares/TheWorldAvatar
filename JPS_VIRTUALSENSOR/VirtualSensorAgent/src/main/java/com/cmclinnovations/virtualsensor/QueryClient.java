@@ -189,7 +189,7 @@ public class QueryClient {
 
         query.where(iri(derivation).has(isDerivedFrom, dispersionOutput),
                 dispersionOutput.isA(DISPERSION_OUTPUT).andHas(HAS_POLLUTANT_ID, pollutantIri)
-                        .andHas(HAS_DISPERSION_MATRIX, dispRaster),
+                        .andHas(HAS_DISPERSION_RASTER, dispRaster),
                 pollutantIri.isA(pollutant)).prefix(P_DISP, P_OM, P_EMS)
                 .select(pollutant, dispRaster);
 
