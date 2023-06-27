@@ -91,8 +91,6 @@ if __name__ == "__main__":
         return items
 
 
-    # dummy = loadjsonl("C:/Users\Shaocong\Documents\GitHub\TheWorldAvatar\MARIE_AND_BERT\DATA\EntityLinking\smile_test.jsonl")
-
     dummy = [{'text': 'List the Chemical Building Units with 4-planar as the Generic Building Unit'},
              {'text': 'List the Chemical Building Units with 3-pyramidal as the Generic Building Unit'},
              {'text': 'List the Chemical Building Units with 2-bent as the Generic Building Unit '},
@@ -135,6 +133,6 @@ if __name__ == "__main__":
              ]
     dummy = [{
         'text': 'What is the name for C(=O)C(C(=O)O)O'}]
-    t = Translator(modelpath="C:/Users\Shaocong\Documents\GitHub\TheWorldAvatar\MARIE_AND_BERT\DATA\EntityLinking\SMILES_NER_V10.bin")
+    t = Translator(modelpath="./DATA/EntityLinking/SMILES_NER_V10.bin")
     out = t.translate_ner(dummy)
     print(out)
