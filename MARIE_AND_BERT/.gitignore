@@ -3,3 +3,6 @@ MARIE_AND_BERT/archived
 MARIE_AND_BERT/**/*.log
 MARIE_AND_BERT/Training/ScoringFunction/playground/entity_list
 MARIE_AND_BERT/EvaluationData
+*.csv
+*.pb
+*.tsv
