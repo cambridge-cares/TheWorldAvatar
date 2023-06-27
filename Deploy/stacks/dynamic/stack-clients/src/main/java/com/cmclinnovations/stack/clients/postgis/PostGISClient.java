@@ -7,6 +7,8 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -104,29 +106,29 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
     }
 
     public void uploadRoutingFilesToPostGIS(String database, String sourceDirectory) {
-        Stream<Path> allFilesStream;
+        List<Path> allFilesList;
         try (Stream<Path> dirsStream = Files.walk(Path.of(sourceDirectory))) {
-            allFilesStream = dirsStream.filter(file -> !Files.isDirectory(file));
+            allFilesList = dirsStream.filter(file -> !Files.isDirectory(file)).collect(Collectors.toList());
         } catch (IOException ex) {
             throw new RuntimeException("Failed to walk directory '" + sourceDirectory + "'.", ex);
         }
-        Stream<Path> osmFilesStream = allFilesStream.filter(file -> hasFileExtension(file, "osm"));
-        if (osmFilesStream.count() < 1) {
+        List<Path> osmFilesList = allFilesList.stream().filter(file -> hasFileExtension(file, "osm"))
+                .collect(Collectors.toList());
+        if (osmFilesList.size() < 1) {
             throw new RuntimeException("No osm file in routing data directory '" + sourceDirectory + "'.");
         }
-        Stream<Path> configsStream = allFilesStream.filter(file -> hasFileExtension(file, "xml"));
-        if (configsStream.count() > 1) {
+        List<Path> configsList = allFilesList.stream().filter(file -> hasFileExtension(file, "xml"))
+                .collect(Collectors.toList());
+        if (osmFilesList.size() > 1) {
             throw new RuntimeException(
-                    "Too many xml config files (" + configsStream.count() + ") in routing data directory '"
+                    "Too many xml config files (" + osmFilesList.size() + ") in routing data directory '"
                             + sourceDirectory
                             + "'.");
+        } else if (osmFilesList.size() == 0) {
+            throw new RuntimeException(
+                    "No xml config files found in routing data directory '" + sourceDirectory + "'.");
         }
-        Path configPath = configsStream.findFirst()
-                .orElseThrow(() -> new RuntimeException(
-                        "No xml config files found in routing data directory '" + sourceDirectory + "'."));
-
-        osmFilesStream
-                .forEach(osmPath -> uploadRoutingFileToPostGIS(database, osmPath, configPath));
+        osmFilesList.forEach(osmPath -> uploadRoutingFileToPostGIS(database, osmPath, configsList.get(0)));
     }
 
     private boolean hasFileExtension(Path file, String extension) {
