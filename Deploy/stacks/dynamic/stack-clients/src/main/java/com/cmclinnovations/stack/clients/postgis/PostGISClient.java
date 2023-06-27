@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
+import com.cmclinnovations.stack.clients.utils.FileUtils;
 import com.cmclinnovations.stack.clients.utils.TempDir;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
@@ -112,12 +113,12 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
         } catch (IOException ex) {
             throw new RuntimeException("Failed to walk directory '" + sourceDirectory + "'.", ex);
         }
-        List<Path> osmFilesList = allFilesList.stream().filter(file -> hasFileExtension(file, "osm"))
+        List<Path> osmFilesList = allFilesList.stream().filter(file -> FileUtils.hasFileExtension(file, "osm"))
                 .collect(Collectors.toList());
         if (osmFilesList.size() < 1) {
             throw new RuntimeException("No osm file in routing data directory '" + sourceDirectory + "'.");
         }
-        List<Path> configsList = allFilesList.stream().filter(file -> hasFileExtension(file, "xml"))
+        List<Path> configsList = allFilesList.stream().filter(file -> FileUtils.hasFileExtension(file, "xml"))
                 .collect(Collectors.toList());
         if (osmFilesList.size() > 1) {
             throw new RuntimeException(
@@ -129,15 +130,6 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
                     "No xml config files found in routing data directory '" + sourceDirectory + "'.");
         }
         osmFilesList.forEach(osmPath -> uploadRoutingFileToPostGIS(database, osmPath, configsList.get(0)));
-    }
-
-    private boolean hasFileExtension(Path file, String extension) {
-        int i = file.toString().lastIndexOf(".");
-        if (i > 0) {
-            return file.toString().substring(i + 1).equals(extension);
-        } else {
-            return false;
-        }
     }
 
     public void uploadRoutingFileToPostGIS(String database, Path osmFilePath, Path configFilePath) {
