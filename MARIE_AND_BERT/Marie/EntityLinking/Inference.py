@@ -1,7 +1,6 @@
 import os.path
 import sys
 
-sys.path.append("C:/Users/Shaocong/Documents/GitHub/TheWorldAvatar/MARIE_AND_BERT")
 from Marie.EntityLinking.translator.translate_smile import Translator
 from Marie.EntityLinking.blink.common.params import BlinkParser
 from Marie.EntityLinking.blink.biencoder.eval_biencoder import NEL
@@ -67,7 +66,6 @@ class BertNEL():
     def infer(self, mention_data, use_translation=True, use_ner=False):
         if use_translation:
             mention_data = self.translate(mention_data)
-        # TODO: mark before translation bounds as actual bounds
         if not self.one_pass:  # Use separate NER instead
             mention_data = self.ner_tag(mention_data)
         else:  # check input format
@@ -84,7 +82,6 @@ class BertNEL():
         if self.use_translation:
             question, smiles = self.translate(question)
             # pass
-        # TODO: mark before translation bounds as actual bounds
         if not self.one_pass:  # Use separate NER instead
             question = self.ner_tag(question)
         # run main function
@@ -130,8 +127,6 @@ class BertNEL():
 
 
 if __name__ == '__main__':
-    from util.MentionEntry import load_mention_entries
-
     # read a test file
 
     testdata = [{"mention": "urea", "context_left": "what is the chemical formula of", "context_right": ""}]

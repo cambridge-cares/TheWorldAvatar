@@ -25,9 +25,6 @@ def get_entity_types_mix(format_str):
             e_types.append('shape')
     return e_types
 
-
-
-
 def toolong(name):
     return True if len(name) >= 100  else False
 
@@ -55,7 +52,6 @@ def generate_questions(templates,entityfile,num_to_gen,seed):
     return questions
 
 
-#TODO: Note, exclude any entities longer than 30!
 def generate_questions_multientity(templates,filepath,num_to_gen, seed, single_entity=True):
     #Train 1, test 10, valid 100
     random.seed(seed)
@@ -222,15 +218,13 @@ if __name__ == "__main__":
         for row in reader:
             templates.append(row[0].strip())
     if ctype == 'general':
-        questions = generate_questions(templates, infile, qnum,seed)
+        questions = generate_questions(templates, infile, qnum, seed)
     elif ctype == 'smiles':
         questions = generate_questions_SMILES(templates, qnum, seed)
     else:
         raise TypeError('Question type not defined')
-    #questions = generate_questions_multientity('../generate_training_data/ontokin.jsonl', 1000, 10, False  )
-    #questions = generate_questions_SMILES(2000, 1)
+    #generate questions, save to json
     with open(outfile, 'w') as wf:
         for entry in questions:
             json.dump(entry, wf)
             wf.write('\n')
-    #generate questions, save to json

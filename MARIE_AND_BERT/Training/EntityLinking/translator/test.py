@@ -163,14 +163,8 @@ def metric(predictions, questions, compareLabel=True):
             goldens = questions[idx]['entity']
             goldens = [g.upper() for g in goldens]
             true_types = questions[idx]['types']
-            #print('mentions')
-            #print(goldens)
-            #print(true_types)
-            #prediction = sorted(predictions[idx], key=len, reverse=True)
+
             prediction,types = predictions[0][idx], predictions[1][idx]
-            #print('prediction')
-            #print(prediction)
-            #print(types)
             if len(prediction) < 1:
                 continue
             allCorrect = True
