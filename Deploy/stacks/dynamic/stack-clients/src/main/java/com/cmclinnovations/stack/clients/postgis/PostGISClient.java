@@ -157,7 +157,7 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
         String execId = createComplexCommand(postGISContainerId,
                 "psql", "-U", postgreSQLEndpoint.getUsername(), "-d", database, "-w")
-                .withHereDocument("CREATE EXTENSION pg_routing;")
+                .withHereDocument("CREATE EXTENSION IF NOT EXISTS pg_routing;")
                 .withErrorStream(errorStream)
                 .exec();
         handleErrors(errorStream, execId, logger);
