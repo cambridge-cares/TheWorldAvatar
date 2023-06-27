@@ -112,3 +112,7 @@ in `DATA/CrossGraph/wikidata_numerical`.
 ##Entity Linking
 
 To create the Entity Linking dataset, follow the steps outlined in [Entity Linking Dataset Creation readme.md](./EntityLinking/readme.md)
+
+
+## Future work
+The hard-coded URLs in the code need to be removed and more maintainable solutions need to be used. 
