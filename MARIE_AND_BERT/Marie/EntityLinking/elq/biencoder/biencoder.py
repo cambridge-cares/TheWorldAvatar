@@ -447,7 +447,8 @@ class BiEncoderModule(torch.nn.Module):
                 # use gold mention
                 top_mention_bounds = gold_mention_bounds
                 top_mention_mask = gold_mention_bounds_mask
-
+            if top_mention_bounds is None or top_mention_mask is None:
+                raise ValueError('top mention bounds not defined')
 
             # (bs, num_pred_mentions OR num_gold_mentions, embed_size)
             embedding_ctxt = self.get_ctxt_embeds(

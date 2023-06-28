@@ -1,5 +1,7 @@
 import json
 def load_mention_entries(path):
+    if path is None:
+        raise ValueError('mention file path is none')
 
     mention_list = []
     with open(path, 'rt') as f:

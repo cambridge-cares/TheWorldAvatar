@@ -12,6 +12,8 @@ accu metrics
 
 def metrics(result, questions):
     correct = 0
+    if len(result) != len(questions):
+        raise ValueError('results and questions length do not match')
     for idx, item in enumerate(result):
         if item is None:
             continue

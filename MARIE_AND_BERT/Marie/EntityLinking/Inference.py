@@ -118,6 +118,8 @@ class BertNEL():
     def process_data(self, raw_data):
         if type(raw_data) == str:
             raw_data = [{"text": raw_data}]
+        if type(raw_data) is not list or len(raw_data)==0 or 'text' not in raw_data:
+                raise ValueError('question not in right format')
         if 'id' not in raw_data[0]:
             raw_data = [{"text": entry['text'], "id": id} for id, entry in enumerate(raw_data)]
         return raw_data
