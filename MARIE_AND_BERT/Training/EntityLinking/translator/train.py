@@ -204,6 +204,7 @@ if __name__ == '__main__':
     parser.add_argument('--train_file_name', type=str, default='train_smiles.jsonl')
 
     opts = parser.parse_args()
+    opts = vars(opts)
     opts['tokenizer'] = BertTokenizer.from_pretrained('bert-base-cased')
     opts['device'] = 'cuda' if torch.cuda.is_available() else 'cpu'
     main(opts)
