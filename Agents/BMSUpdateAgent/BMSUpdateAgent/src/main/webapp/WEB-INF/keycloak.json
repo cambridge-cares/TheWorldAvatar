@@ -1,1 +1,14 @@
-// please download the keycloak client config from the keycloak server as in the README
+{
+  "realm": "<REALM_NAME>",
+  "auth-server-url": "http://test-stack-keycloak:8080/keycloak/",
+  "ssl-required": "external",
+  "resource": "<CLIENT_NAME>",
+  "verify-token-audience": true,
+  "credentials": {
+    "secret": "<REALM_SECRET>>"
+  },
+  "confidential-port": 0,
+  "policy-enforcer": {
+    "credentials": {}
+  }
+}
