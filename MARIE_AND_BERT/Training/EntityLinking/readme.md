@@ -10,15 +10,37 @@ Two models are trained for Entity Linking:
 ## Data Preparation
 Please refer to [Dataset creation for Entity Linking](../../KGToolbox/EntityLinking/readme.md) to create the dataset required for training the Entity Linking models.
 
+
+Create three separate folder and copy three sets of training files into them. For example, `data/step1`, `data/step2`,`data/ner`.
+
+The data folder should look like this.
+<pre>
+├── data
+    ├── step1
+        ├── dict.jsonl#
+        ├── train.jsonl#
+        ├── valid.jsonl#
+        └── test.jsonl#
+    ├── step2
+        ├── dict.jsonl#
+        ├── train.jsonl#
+        ├── valid.jsonl#
+        └── test.jsonl#
+    └── ner
+        ├── train.jsonl#
+        ├── dev.jsonl#
+        └── test.jsonl#
+</pre>
+
 ## Train SMILES NER
 Run the following command to train the SMILES NER model:
 ```
-bash train_ner.sh [valid_file_name] [train_file_name] 
+bash train_ner.sh [valid_file_name] [train_file_name]  [output_path]
 ```
 * `--valid_file_name` Path to the validation `.jsonl` file.
 * `--train_file_name` Path to the training `.jsonl` file.
+* `--output_path` Path to output SMILES-NER model.
 
-Arguments can be supplied when calling bash to change the I/O paths. After running the script, the model is saved to the specified path (default is `./models/ner/SMILES_NER.bin`)  
 
 
 ## Train Entity Extraction
@@ -28,7 +50,6 @@ First step:
 ```
 bash train_entity_encoder.sh [data_path] [output_path]
 ```
-To customize the I/O directorys:
 * `--data_path` Path to data files required for the first step of training. Please refer to [Entity Linking Dataset Readme Section 2.1](../../KGToolbox/EntityLinking/readme.md#21-generate-the-trainvaltestjsonl-question-files-required-for-the-first-step-of-entity-extraction-training) for creating these data files. Suggested path is `data/step1`.
 * `--output_path` Path to the output folder for the first step of training. Suggested path is `models/step1`.
 
@@ -44,27 +65,12 @@ bash train_question_encoder.sh [path_to_first_step_out] [data_path] [output_path
 
 
 
-For instance, the data files for the first and second step of training are stored in paths `./data/step1` and `./data/step2` respectively, then the default output folders are `./models/step1` and `./models/step2` respectively.
-Shown below is an example of the default folder structure. Files marked with `#` are input files; files marked with `*` are the ones generated in the training process and are the final binary files required for running the Marie system. These binary files should be moved to `DATA/EntityLinking` folder in the main project. Please refer to the [Main README](../../readme.md) to download `EntityLinking.zip` containing an example set of `EntityLinking` binary files. 
+Files marked with `*` are the ones generated in the training process and are the final binary files required for running the Marie system. These binary files should be moved to `DATA/EntityLinking` folder in the main project. Please refer to the [Main README](../../readme.md) to download `EntityLinking.zip` containing an example set of `EntityLinking` binary files. 
 
 Shown below is an example of the expected file structure after training:
 <pre>
 ├── project-files...
 ├── data
-    ├── step1
-         ├── dict.jsonl#
-	 ├── train.jsonl#
-	 ├── valid.jsonl#
-    	 └── test.jsonl#
-    ├── step2
-         ├── dict.jsonl#
-	 ├── train.jsonl#
-	 ├── valid.jsonl#
-    	 └── test.jsonl#
-    └── ner
-	 ├── train.jsonl#
-	 ├── dev.jsonl#
-    	 └── test.jsonl#
 └── models
     ├── step1
          ├── ...
