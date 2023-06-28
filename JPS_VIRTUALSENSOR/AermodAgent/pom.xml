@@ -146,7 +146,7 @@
         <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
-            <version>1.10.2</version>
+            <version>1.12.3-hotfix-SNAPSHOT</version>
         </dependency>
 
         <dependency>
