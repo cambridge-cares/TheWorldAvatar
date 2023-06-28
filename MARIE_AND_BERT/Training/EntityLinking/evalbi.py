@@ -5,8 +5,8 @@ sys.path.append("../../Marie")
 sys.path.append("../..")
 sys.path.append("../../..")
 sys.path.append("../../../..")
-from blink.common.params import BlinkParser
-from blink.biencoder.eval_biencoder import main
+from Marie.EntityLinking.blink.common.params import BlinkParser
+from Marie.EntityLinking.blink.biencoder.eval_biencoder import main
 
 if __name__ == "__main__":
     parser = BlinkParser(add_model_args=True)
