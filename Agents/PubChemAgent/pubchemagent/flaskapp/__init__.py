@@ -10,6 +10,7 @@ def create_app(test_config=None):
 
     with app.app_context():
         # Import parts of our application
+        print('starting the app')
         import pubchemagent.flaskapp.home.routes as home
         import pubchemagent.flaskapp.query.routes as query
 

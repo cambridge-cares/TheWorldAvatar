@@ -39,8 +39,6 @@ COPY ./setup.py .
 RUN python -m pip install --upgrade pip
 RUN python -m pip install -e .
 RUN apt-get update && apt-get install -y git
-RUN python -m pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
-
 
 # Update py4jps resources
 RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
@@ -75,8 +73,13 @@ RUN pip install gunicorn
 WORKDIR /app
 COPY ./pubchemagent ./pubchemagent
 
+ENV STACK_NAME= 
+ENV NAMESPACE=
+ENV QUERY_ENDPOINT=
+ENV UPDATE_ENDPOINT=
+
 # Set the entrypoint
 # timeout set to 30min to avoid exceptions for longer API/KG calls
-ENTRYPOINT gunicorn --bind 0.0.0.0:5000 pubchemagent.flaskapp.wsgi:app --timeout 1800
+ENTRYPOINT gunicorn --bind 0.0.0.0:5000 pubchemagent.flaskapp.wsgi:app --preload --timeout 7200 
 
 #==================================================================================================

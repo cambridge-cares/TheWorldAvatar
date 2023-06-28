@@ -100,7 +100,7 @@ function install_project {
     echo
     get_pip_path
     $PIPPATH --disable-pip-version-check install $DEV_INSTALL $SPATH
-	$PIPPATH --disable-pip-version-check install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
+	#$PIPPATH --disable-pip-version-check install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
     if [[ "${DEV_INSTALL}" == "-e" ]];
     then
         $PIPPATH --disable-pip-version-check install -r $SPATH"/"dev_requirements.txt
