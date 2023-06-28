@@ -1,4 +1,4 @@
-package com.cmclinnovations.dispersion;
+package com.cmclinnovations.virtualsensor;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
@@ -14,14 +14,13 @@ public class EndpointConfig {
     private String kgurl;
     private String kguser;
     private String kgpassword;
-
     private String ontopurl;
 
     public EndpointConfig() {
         ContainerClient containerClient = new ContainerClient();
         PostGISEndpointConfig postGISEndpointConfig = containerClient.readEndpointConfig("postgis",
                 PostGISEndpointConfig.class);
-        this.dburl = postGISEndpointConfig.getJdbcURL(Config.DATABASE);
+        this.dburl = postGISEndpointConfig.getJdbcURL(EnvConfig.DATABASE);
         this.dbuser = postGISEndpointConfig.getUsername();
         this.dbpassword = postGISEndpointConfig.getPassword();
 
@@ -33,7 +32,6 @@ public class EndpointConfig {
 
         OntopEndpointConfig ontopEndpointConfig = OntopClient.getInstance().getEndpoint();
         this.ontopurl = ontopEndpointConfig.getUrl();
-
     }
 
     public String getDburl() {
