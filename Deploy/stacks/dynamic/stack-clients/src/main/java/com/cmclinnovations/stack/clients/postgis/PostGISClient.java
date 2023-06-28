@@ -106,7 +106,7 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
                 postgreSQLEndpoint.getPassword());
     }
 
-    public void uploadRoutingDataDirectoryToPostGIS(String database, String sourceDirectory) {
+    public void uploadRoutingDataDirectoryToPostGIS(String database, String sourceDirectory, boolean append) {
         List<Path> allFilesList;
         try (Stream<Path> dirsStream = Files.walk(Path.of(sourceDirectory))) {
             allFilesList = dirsStream.filter(file -> !Files.isDirectory(file)).collect(Collectors.toList());
@@ -128,20 +128,24 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
             throw new RuntimeException(
                     "No xml config files found in routing data directory '" + sourceDirectory + "'.");
         }
-        uploadRoutingFilesToPostGIS(database, configsList.get(0), osmFilesList);
+        uploadRoutingFilesToPostGIS(database, configsList.get(0), osmFilesList, append);
     }
 
-    public void uploadRoutingFilesToPostGIS(String database, Path configFilePath, List<Path> osmFilesList) {
+    public void uploadRoutingFilesToPostGIS(String database, Path configFilePath, List<Path> osmFilesList,
+            boolean append) {
         try (TempDir tmpDir = makeLocalTempDir()) {
             tmpDir.copyFrom(configFilePath);
             osmFilesList.stream().forEach(tmpDir::copyFrom);
-            osmFilesList.stream().forEach(
+            osmFilesList.stream().findFirst().ifPresent(
                     osmFile -> uploadRoutingToPostGIS(database, tmpDir.getPath().resolve(osmFile.getFileName()),
-                            tmpDir.getPath().resolve(configFilePath.getFileName())));
+                            tmpDir.getPath().resolve(configFilePath.getFileName()), append));
+            osmFilesList.stream().skip(1).forEach(
+                    osmFile -> uploadRoutingToPostGIS(database, tmpDir.getPath().resolve(osmFile.getFileName()),
+                            tmpDir.getPath().resolve(configFilePath.getFileName()), true));
         }
     }
 
-    public void uploadRoutingToPostGIS(String database, Path osmFilePath, Path configFilePath) {
+    public void uploadRoutingToPostGIS(String database, Path osmFilePath, Path configFilePath, boolean append) {
         String containerId = getContainerId("postgis");
         ensurePostGISRoutingSupportEnabled(database, containerId);
 
@@ -150,7 +154,8 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
 
         String execId = createComplexCommand(containerId, "osm2pgrouting", "--f", osmFilePath.toString(), "--conf",
                 configFilePath.toString(), "--dbname", database, "--username", postgreSQLEndpoint.getUsername(),
-                "--password", postgreSQLEndpoint.getPassword(), "--clean") // TODO: add more options to this command
+                "--password", postgreSQLEndpoint.getPassword(), append ? "" : "--clean")
+                // TODO: add more options to this command
                 .withOutputStream(outputStream)
                 .withErrorStream(errorStream)
                 .withEvaluationTimeout(300)

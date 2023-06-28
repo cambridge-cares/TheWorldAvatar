@@ -19,7 +19,7 @@ public class OSMRouting extends GeoServerDataSubset {
 
     @Override
     public void loadData(Path dirPath, String database) {
-        PostGISClient.getInstance().uploadRoutingDataDirectoryToPostGIS(database, dirPath.toString());
+        PostGISClient.getInstance().uploadRoutingDataDirectoryToPostGIS(database, dirPath.toString(), false);
     }
 
     @Override
