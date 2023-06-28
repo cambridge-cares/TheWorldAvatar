@@ -1,6 +1,6 @@
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-prefix nhs:  <http://theworldavatar.com/ontology/health/nhs/>
+prefix nhs:  <http://theworldavatar.com/ontology/health/nhs.owl#>
 
 SELECT ?Property (GROUP_CONCAT(?Value; separator=", ") AS ?Values) WHERE {
     SERVICE [ONTOP] {

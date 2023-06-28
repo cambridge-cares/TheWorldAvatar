@@ -51,26 +51,50 @@ These raw CSV files also contain some strange characters that aren't supported i
 
 <br/>
 
+## Writing an ontology
+
+As an example, a very simple sample NHS ontology has been put together to describe the concepts within this tutorial's data set. This ontology has been created as a CSV file, and uploaded via the use of the [TBox Generator](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/converter), see the Stack Data Uploader's documentation for more details on how to upload it.
+
+A copy of the simple ontology used can be seen below as well as in the TWA repository [here](./resources/nhs.csv).
+
+```csv
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoNHS,TBox,http://theworldavatar.com/ontology/health/nhs.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoNHS,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoNHS,TBox,Sample ontology for General Practitioners within the NHS>,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+Asset,Class,,,,,,Generic NHS asset.,http://theworldavatar.com/ontology/health/nhs.owl,
+GPPractice,Class,Asset,IS-A,,,,GP site.,http://theworldavatar.com/ontology/health/nhs.owl,
+Practitioner,Class,Asset,IS-A,,,,General Practitioner.,http://theworldavatar.com/ontology/health/nhs.owl,
+```
+
+<br/>
+
 ## Writing a data mapping
 
 In theory, we _could_ now write an agent to read these CSVs, convert them into triples, then push them into a Knowledge Graph like [Blazegraph](https://blazegraph.com/).
 
-However, this is a significant amount of work for data that is static, and we have no current plans to add to. Instead, we can use a service called [Ontop](https://ontop-vkg.org/) along with a mapping file to create a Virtual Knowledge Graph. This will allow us to query the data in the CSVs directly with SPARQL as if it had been loaded into a Triplestore.
+However, this is a significant amount of work for data that is static, and we have no current plans to add to. Instead, we can use a service called [Ontop](https://ontop-vkg.org/) along with a mapping file to create a Virtual Knowledge Graph. This will allow us to directly query the data with SPARQL as if it had been loaded into a Triplestore.
 
-In addition to skipping the development of an agent, this tutorial also skips the development of an Ontology. For our purposes here, developing one would be overkill; in the mapping file shown below, all references to ontologies or ontological concepts are synthetic and don't actually correspond to an on-file ontology. Information on how to create an ontology can be found elsewhere in TheWorldAvatar documentation.
-
-An example mapping file that covers all three CSVs used in tutorial, can be seen below and also found in the TWA repository [here](./resources/nhs.obda).
+An example mapping file that (just) covers the data used in this tutorial, can be seen below and also found in the TWA repository [here](./resources/nhs.obda).
 
 ```
 [PrefixDeclaration]
-nhs:        http://theworldavatar.com/ontology/health/nhs/
+nhs:        http://theworldavatar.com/ontology/health/nhs.owl#
 geo:        http://www.opengis.net/ont/geosparql#
+rdf:        http://www.w3.org/1999/02/22-rdf-syntax-ns#
+rdfs:       http://www.w3.org/2000/01/rdf-schema#
+owl:        http://www.w3.org/2002/07/owl#
 
 [MappingDeclaration] @collection [[
-mappingId       nhs-gp-practice-site
-target          nhs:gp/{id} a nhs:Site ;
+mappingId       nhs-asset
+target          nhs:Asset rdfs:subClassOf owl:Class .
+source          SELECT 1
+
+mappingId       nhs-gp-practice
+target          nhs:gp/{id} a nhs:GPPractice ;
                     nhs:hasId {id}^^xsd:string ;
                     nhs:hasName {name}^^xsd:string ;
+                    nhs:hasCode {code}^^xsd:string ;
                     nhs:hasLocation nhs:asset/{id}/location ;
 					nhs:isPIMSManaged {is_pims_managed}^^xsd:boolean ;
                     nhs:hasType {type}^^xsd:string ;
@@ -86,6 +110,7 @@ target          nhs:gp/{id} a nhs:Site ;
 source          SELECT "OrganisationID" AS id , 
                 "OrganisationName" as name ,
 				"SubType" as subtype ,
+                "OrganisationCode" as code ,
 				"OrganisationStatus" as status ,
 				"IsPimsManaged" as is_pims_managed ,				
                 ST_AsGeoJSON(geom) as loc ,
@@ -98,13 +123,13 @@ source          SELECT "OrganisationID" AS id ,
                 FROM "nhs_gp_practices"
 
 mappingId       nhs-gp-practitoner
-target          nhs:practitoner/{id} a nhs:Person ;
+target          nhs:practitoner/{id} a nhs:Practitioner ;
                     nhs:hasId {id}^^xsd:string ;
                     nhs:hasName {name}^^xsd:string ;
                     nhs:hasType {type}^^xsd:string ;
 					nhs:hasGrouping {grouping}^^xsd:string ;
                     nhs:hasHighLevelHealthGeography {high_level_health_geography}^^xsd:string ;
-                    nhs:hasParent {parent_code}^^xsd:string .
+                    nhs:hasParentCode {parent_code}^^xsd:string .
 source          SELECT "OrganisationCode" AS id , 
                 "Name" as name ,
 				"NationalGrouping" as grouping ,
@@ -119,9 +144,67 @@ source          SELECT "OrganisationCode" AS id ,
 
 ## Uploading the data
 
-To upload the data so that I can be accessed as a Virtual Knowledge Graph, and stored as geospatial data in PostGIS, we first need to write a configuration file for [The Stack Data Uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader). Information on how to write the file, where to place it, then upload the data can be see on the data uploader's page.
+To upload the data so that it can be accessed as a Virtual Knowledge Graph, and stored as geospatial data in PostGIS, we first need to write a configuration file for [The Stack Data Uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader). Information on how to write the file, where to place it, then upload the data can be see on the data uploader's page.
 
-An example configuration file that covers all three CSVs used in tutorial, can be found in the TWA repository [here](./resources/nhs.json).
+An example configuration file that covers all three CSVs used in tutorial, can be seen below and also found in the TWA repository [here](./resources/nhs.json).
+
+```json
+{
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "nhs",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "tboxcsv",
+            "name": "nhs_tbox",
+            "skip": false,
+            "subdirectory": "tboxes"
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "nhs_gp_practices",
+            "subdirectory": "vector",
+            "ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "geom",
+                    "SEPARATOR": "TAB"
+                },
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326",
+                "inputDatasetOpenOptions": {
+                    "X_POSSIBLE_NAMES": "Longitude",
+                    "Y_POSSIBLE_NAMES": "Latitude"
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "nhs_gp_practices_extended",
+                    "sql": "SELECT geom, 'gp' AS type, \"OrganisationName\" as name, CONCAT('http://theworldavatar.com/ontology/health/nhs.owl#gp/', \"OrganisationID\") as iri FROM nhs_gp_practices",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "Point",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "type": "tabular",
+            "skip": false,
+            "schema": "public",
+            "table": "nhs_gp_practitioners",
+            "subdirectory": "tabular/practitioners"
+        }
+    ],
+    "mappings": [
+        "nhs.obda"
+    ]
+}
+```
 
 <br/>
 
@@ -135,23 +218,37 @@ Firstly, we can check that the geospatial data has reached GeoServer by accessin
 
 ### Running a sample SPARQL query
 
-We can also check that the data has reached the Virtual Knowledge Graph created by Ontop. After accessing the Ontop web page (`[WHEREVER-YOUR-STACK-IS]/ontop/ui`), run the following queries to check that the data is all present.
+We can also check that the data has reached the Virtual Knowledge Graph created by Ontop. After accessing the Blazegraph web page for you stack, run the following queries to check that the data is all present. Note that the below example queries assume the local stack is named `NHS-STACK`, update this string if your stack is named differently.
+
+</br>
 
 **Counting GP Practices:**
 ```
-PREFIX nhs:	<http://theworldavatar.com/ontology/health/nhs/>
-SELECT (COUNT(?s) as ?practices) WHERE {
-  ?s nhs:hasType "GPPractice" .
-} 
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix nhs:  <http://theworldavatar.com/ontology/health/nhs.owl#>
+
+SELECT (COUNT(?s) as ?Practices) WHERE {
+	SERVICE <http://NHS-STACK-ontop:8080/sparql> {
+		?s nhs:hasType "GPPractice" .
+	}
+}
 ```
 This counts the number of sites with the type `GPPractice`; the returned number _should_ match the number of rows in the previously downloaded CSV (in testing, this was ~6800).
 
+</br>
+
 **Counting GP Practitioners:**
 ```
-PREFIX nhs:	<http://theworldavatar.com/ontology/health/nhs/>
-SELECT (COUNT(?s) as ?practitioners) WHERE {
-  ?s nhs:hasType "Practitioner" .
-} 
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix nhs:  <http://theworldavatar.com/ontology/health/nhs.owl#>
+
+SELECT (COUNT(?s) as ?Practitioners) WHERE {
+	SERVICE <http://NHS-STACK-ontop:8080/sparql> {
+		?s nhs:hasType "Practitioner" .
+	}
+}
 ```
 This counts the number of sites with the type `Practitioner`; the returned number _should_ match the number of rows in the previously downloaded CSV (in testing, this was ~110,000).
 
@@ -164,6 +261,7 @@ At this point, all the data we require should be hosted online either in geospat
 If you haven't already, it's worth reading through the [Overview](./overview.md) and [Working with Mapbox](./mapbox.md) sections of the DTVF documentation before continuing past this point.
 
 **1. Spinning up a blank visualisation:**<br/>
+
 The first step here is to spin up an empty visualisation. When creating a new visualisation, it is recommended that the committed example visualisation is used.
 
 To that end, copy the [example Mapbox visualisation](../example-mapbox-vis/) to a new directory on your local machine. Using the README file within, you should be able to then spin up a docker container hosting the visualisation.
@@ -281,7 +379,7 @@ We'll then need to update the `gp-layer` layer in our `data.json` file to change
 
 For the sake of demonstrating the feature, we can also update the layer to use some data-driven styling. Just to show off, we'll update the layer to use a slightly different icon (green rather than blue) for any GP Practice with the word "practice" (regardless of case) in its name.
 
-Copy the sample [GP Practice icon file](./img/gp-icon-practice.png) into the visualisation's `data` directory, then update the icon registry to register the icon under the name `gp-icon-practice`.
+Copy the sample [GP Practice icon file](./img/gp-icon-practice.png) into the visualisation's `data` directory, then update the icon registry to register the icon under the name `gp-icon-practice`. For more information on style expressions, read Mapbox's page [here](https://docs.mapbox.com/mapbox-gl-js/style-spec/expressions/).
 
 ```json
   {
@@ -332,8 +430,7 @@ We'll now show how to use the FIA to allow the retrieval of additional metadata 
 
 **1. Configuring the FIA:**<br/>
 
-First we'll need to update the FIA's `fia-config.json` file to add a mapped query for the `	
-http://theworldavatar.com/ontology/health/nhs/Site` class (which is what we've listed GP Practices under). We'll only need an entry for the `metaFile` in this case, for now we can name the file `gp-practices.sparql`.
+First we'll need to update the FIA's `fia-config.json` file to add a mapped query for the `http://theworldavatar.com/ontology/health/nhs.owl#GPPractice` class (which is what we've listed GP Practices under). We'll only need an entry for the `metaFile` in this case, for now we can name the file `gp-practices.sparql`.
 
 Within this `gp-practices.sparql` file, we'll need to write a SPARQL query to get whatever metadata we want to display for the selected GP Practices. This could be anything we've uploaded to Ontop, from more data on the GP Practices, or a list of the practitioners working there. 
 
@@ -342,33 +439,33 @@ Read the FIA documentation, along with the training material on writing SPARQL q
 ```
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-prefix nhs:  <http://theworldavatar.com/ontology/health/nhs/>
+prefix nhs:  <http://theworldavatar.com/ontology/health/nhs.owl#>
 
-SELECT ?Property (GROUP_CONCAT(?Value; separator=", ") AS ?Values) WHERE {
+SELECT ?Property (GROUP_CONCAT(?tmp; separator=", ") AS ?Value) WHERE {
     SERVICE [ONTOP] {
         {
             BIND("Name" AS ?Property )
-            [IRI] nhs:hasName ?Value .
+            [IRI] nhs:hasName ?tmp .
         } UNION {
             BIND("ID" AS ?Property )
-            [IRI] nhs:hasId ?Value .
+            [IRI] nhs:hasId ?tmp .
         } UNION {
             BIND("Type" AS ?Property )
-            [IRI] nhs:hasType ?Value .
+            [IRI] nhs:hasType ?tmp .
         } UNION {
             BIND("Subtype" AS ?Property )
-            [IRI] nhs:hasSubtype ?Value .
+            [IRI] nhs:hasSubtype ?tmp .
         } UNION {
             BIND("Status" AS ?Property )
-            [IRI] nhs:hasStatus ?Value .
+            [IRI] nhs:hasStatus ?tmp .
         } UNION {
             BIND("Is PIMS managed?" AS ?Property )
-            [IRI] nhs:isPIMSManaged ?Value .
+            [IRI] nhs:isPIMSManaged ?tmp .
         } UNION {
             BIND("Practitioners" AS ?Property )
             [IRI] nhs:hasCode ?parent_code .
             ?practitoner nhs:hasParentCode ?parent_code .
-            ?practitoner nhs:hasName ?Value .
+            ?practitoner nhs:hasName ?tmp .
         }
     }
 } GROUP BY ?Property
@@ -376,7 +473,7 @@ SELECT ?Property (GROUP_CONCAT(?Value; separator=", ") AS ?Values) WHERE {
 
 **2. Running the FIA:**<br/>
 
-Now that we've configured the FIA to register a metadata query for IRIs with the `http://theworldavatar.com/ontology/health/nhs/Site` class, we can spin the agent up within our stack.
+Now that we've configured the FIA to register a metadata query for IRIs with the `http://theworldavatar.com/ontology/health/nhs.owl#GPPractice` class, we can spin the agent up within our stack.
 
 For information on how to restart the stack with the FIA agent, please see the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) documentation.
 
@@ -399,11 +496,105 @@ Within the "NHS Sites" group, we can add a `stack` parameter with the base URL o
 
 **4. Viewing the metadata:**<br/>
 
+Once the FIA is configured and running, and we've added the `stack` parameter to our data group in the visualisation's config file, we can then select a location on the map to view its metadata. THe DTVF will automatically contact the FIA running within the group's stack, passing the selected location's IRI. The class of the location is first determined, then if a matching entry in the FIA's config exists, the corresponding query will be run (via federation across all Blazegraph endpoints).
 
+In our example, the FIA should return some very simple metadata on the selected GP Practice and the Practitioners that are based there. With changes to our SPARQL query, we could add more complex information here (provided it still meets the format expected by the FIA of course).
 
-	
+<br/>
+<p align="center">
+ <img src="./img/mapbox-metadata.JPG" alt="Mapbox visualisation with metadata." width="75%"/>
+</p>
+<p align="center">
+ <em>Mapbox visualisation with metadata.</em><br/><br/><br/>
+</p>
 
+<br/>
 
 ### Clustering locations
+
+Plotting an individual icon for each individual GP Practices leads to a cluttered map of overlapping images. With Mapbox, we can group nearby locations in a single point using a feature called "clustering". It should be noted however that Mapbox does not support clustering of vector type data, only raw GeoJSON; luckily for us, GeoServer can provide the visualisation with the vector data in the form of a GeoJSON string using the [WFS standard](https://www.ogc.org/standard/wfs/).
+
+**1. Switching the source type:**<br/>
+
+The first order of business is to change the specification of our vector source, into a GeoJSON one. Take a look at Mapbox's [Sources](https://docs.mapbox.com/mapbox-gl-js/style-spec/sources/) page for details on the syntax, but this should result in a configuration that looks like the below. As we're no longer using vector data (which can contain multiple internal layers), we will also need to remove the `source-layer` parameter from our corresponding layer configuration.
+
+```json
+{
+    "id": "gp-source",
+    "type": "geojson",
+    "data": "http://localhost:3838/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=twa:nhs_gp_practices&outputFormat=application/json"
+}
+```
+
+**2. Enabling clustering:**<br/>
+
+Mapbox's clustering feature can be enabled by adding a few parameters to the source object; again, their Sources page lists the possible cluster settings. For our case, update your source's configuration to match the below.
+
+```json
+{
+    "id": "gp-source",
+    "type": "geojson",
+    "data": "http://localhost:3838/geoserver/ows?service=WFS&version=1.1.0&request=GetFeature&typeName=twa:nhs_gp_practices&outputFormat=application/json",
+    "cluster": true,
+    "clusterRadius": 30
+}
+```
+
+After this change, you will notice that few locations appear on our map. However, you should be able to see that these are actually just isolated locations (i.e. not close enough to other locations to cluster), rather than grouped close-by ones. To see the grouped features, we'll need to add another layer to display them. This can easily be done by adding a new layer, using the same source, and a filter parameter that only shows locations with a `point_count` parameter (something that Mapbox automatically adds on clustered groups of features). For our example, we'll use a new icon (found [here](./img/gp-icon-cluster.png)) to represent clustered of locations.
+
+Update your configuration to look like the below then refresh the visualisation.
+
+```json
+"layers": [
+    {
+        "id": "gp-layer",
+        "name": "GP Practices", 
+        "source": "gp-source",
+        "type": "symbol",
+        "filter": [
+            "!",
+            ["has", "point_count"]
+        ],
+        "layout": {
+            "icon-size": 0.33,
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true,
+            "icon-image": [
+                "case",
+                ["in", "practice", ["downcase", ["get", "name"]]],
+                "gp-icon-practice",
+                "gp-icon"
+            ]
+        }
+    },
+    {
+        "id": "gp-layer-cluster",
+        "name": "GP Practices", 
+        "source": "gp-source",
+        "type": "symbol",
+        "filter": [
+            "has", "point_count"
+        ],
+        "layout": {
+            "icon-size": 0.33,
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true,
+            "icon-image": "gp-icon-cluster"
+        }
+    }
+]
+```
+
+After refreshing the visualisation, you should now be able to see the clustered locations (in grey). As you zoom in, you should also be able to see them separate into their distinct individual (coloured) locations.
+
+<br/>
+<p align="center">
+ <img src="./img/mapbox-cluster.JPG" alt="Clustered locations." width="75%"/>
+</p>
+<p align="center">
+ <em>Clustered locations.</em><br/><br/><br/>
+</p>
+
+<br/>
 
 ### Searching for locations
