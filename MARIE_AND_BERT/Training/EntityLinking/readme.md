@@ -10,7 +10,7 @@ Two models are trained for Entity Linking:
 Please refer to [Dataset creation for Entity Linking](../../KGToolbox/EntityLinking/readme.md) to create the dataset required for training the Entity Linking models.
 
 
-Create a `data` folder with three sub-folders as shown below in `Marie/EntityLinking` and copy the three groups of files created in the [Data Preparation Step](../../KGToolbox/EntityLinking/readme.md) into them. 
+Create a `data` folder with three sub-folder and copy the three groups of files created in the [Data Preparation Step](../../KGToolbox/EntityLinking/readme.md) into them. 
 
 For instance, create `data/step1`, `data/step2`,`data/ner`.
 
@@ -34,7 +34,10 @@ Shown below is an example of the expected folder structure after set-up:
 </pre>
 
 ## Train SMILES NER
-Run the following command to train the SMILES NER model:
+###Training on Windows
+Follow the [setup guide](setup) to configure the environment. Move the `/data` folder created in  [Data Preparation](data-preparation) under `MARIE_AND_BERT/Training/EntityLinking`. 
+
+Use `MARIE_AND_BERT/Training/EntityLinking` as root folder to run the following command to train the SMILES NER model:
 ```
 bash scripts/train_ner.sh [valid_file_name] [train_file_name]  [output_path]
 ```
@@ -49,12 +52,13 @@ It is recommended to train it on HPC.
 ###Training on HPC
 1. Get an HPC account, use git to pull the `MARIE_AND_BERT` repository.
 2. Create a folder called `NEL_Training_Marie_and_Bert`
-3. Copy and transfer all the files under  `MARIE_AND_BERT/Marie/EntityLinking` to  `NEL_Training_Marie_and_Bert`, including the `/data` subfolder created in data prepration.
-4. Copy and transfer all the files under  `MARIE_AND_BERT/Training/EntityLinking` to  `NEL_Training_Marie_and_Bert`.
-5. Create a python virtual environment with `Python 3.8`
-6. Configure the batch file, the following section will give details on batch file for each step. When the environment is created, install the libraries
+3. Copy and transfer all the files under  `MARIE_AND_BERT/Marie/EntityLinking` to  `NEL_Training_Marie_and_Bert`.
+4. Copy and transfer all the files under `MARIE_AND_BERT/Training/EntityLinking` to  `NEL_Training_Marie_and_Bert`.
+5. Copy and transfer into `NEL_Training_Marie_and_Bert` the `/data` folder created in data preparation.
+6. Create a python virtual environment with `Python 3.8`
+7. Configure the batch file, the following section will give details on batch file for each step. When the environment is created, install the libraries
    using `MARIE_AND_BERT/requirements_linux.txt`.
-7. Submit the batch script
+8. Submit the batch script
 
 First Step (requires subsequent run of two separate python scripts):
 
@@ -121,6 +125,8 @@ workdir="/home/[your_CRSid]/[your_training_folder]/NEL_Training_Marie_and_Bert" 
 ```
 
 ###Training on Windows
+Follow the [setup guide](setup) to configure the environment. Move the `/data` folder created in  [Data Preparation](data-preparation) under `MARIE_AND_BERT/Training/EntityLinking`. Also use `MARIE_AND_BERT/Training/EntityLinking` as the root folder to run the following commands:
+
 
 First step:
 ```
