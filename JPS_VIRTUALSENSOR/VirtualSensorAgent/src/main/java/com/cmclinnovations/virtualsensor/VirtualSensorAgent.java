@@ -1,5 +1,7 @@
 package com.cmclinnovations.virtualsensor;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Map;
 
@@ -8,6 +10,9 @@ import javax.servlet.annotation.WebServlet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.postgis.Point;
+import org.springframework.core.io.ClassPathResource;
+
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
 import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
@@ -32,6 +37,15 @@ public class VirtualSensorAgent extends DerivationAgent {
                 endpointConfig.getDbuser(), endpointConfig.getDbpassword());
         queryClient = new QueryClient(storeClient, tsClientLong, tsClientInstant, remoteRDBStoreClient);
         super.devClient = new DerivationClient(storeClient, QueryClient.PREFIX);
+        // add ontop mapping
+        Path obdaFile = null;
+        try {
+            obdaFile = new ClassPathResource("ontop.obda").getFile().toPath();
+        } catch (IOException e) {
+            LOGGER.error("Could not retrieve virtual sensor ontop.obda file.");
+        }
+        OntopClient ontopClient = OntopClient.getInstance();
+        ontopClient.updateOBDA(obdaFile);
     }
 
     @Override
@@ -43,7 +57,7 @@ public class VirtualSensorAgent extends DerivationAgent {
         String derivation = derivationInputs.getDerivationIRI();
         Instant latestTime = queryClient.getLatestStationTime(derivation);
         Map<String, String> pollutantToDispRaster = queryClient.getDispersionRasterIris(derivation);
-        Point stationLocation = queryClient.getStationLocation(derivation);
+        Point stationLocation = queryClient.getSensorLocation(derivation);
         Map<String, String> pollutantToConcIri = queryClient.getStationDataIris(derivation);
         queryClient.updateStationUsingDispersionRaster(latestTime, pollutantToDispRaster, pollutantToConcIri,
                 stationLocation);

@@ -107,6 +107,13 @@
             <version>3.4.3</version>
         </dependency>
 
+            <!-- parse wkt literals from ontop -->
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-geosparql</artifactId>
+            <version>4.6.1</version>
+        </dependency>
+
 		<!-- Logging, versions pulled from parent -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -126,7 +133,7 @@
         <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
-            <version>1.5.0</version>
+            <version>1.10.2</version>
         </dependency>
 	</dependencies>	
 </project>

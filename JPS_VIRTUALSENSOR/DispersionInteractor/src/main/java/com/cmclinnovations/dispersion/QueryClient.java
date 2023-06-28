@@ -4,6 +4,7 @@ import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Operand;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
+import org.eclipse.rdf4j.sparqlbuilder.core.QueryElement;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
@@ -12,6 +13,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.postgis.Point;
@@ -323,14 +325,18 @@ public class QueryClient {
         Variable scopeIri = query.var();
         Variable scopeWkt = query.var();
 
-        Operand sfWithin = GeoSPARQL.sfWithin(vsLocation.toString(), scopeWkt);
+        QueryElement location = Rdf.literalOfType(
+                "<http://www.opengis.net/def/crs/EPSG/0/4326> " + vsLocation.toString(),
+                iri(org.eclipse.rdf4j.model.vocabulary.GEO.WKT_LITERAL));
+
+        Operand sfWithin = GeoSPARQL.sfWithin(location, scopeWkt);
         GraphPattern gp = GraphPatterns.and(scopeIri.has(PropertyPaths.path(HAS_GEOMETRY, AS_WKT), scopeWkt))
                 .filter(Expressions.and(sfWithin));
         ServiceEndpoint serviceEndpoint = new ServiceEndpoint(new EndpointConfig().getOntopUrl());
         GraphPattern gp2 = serviceEndpoint.service(gp);
         GraphPattern gp3 = GraphPatterns.and(scopeIri.isA(SCOPE));
 
-        query.where(gp2, gp3).select(scopeIri).prefix(P_GEO, P_GEOF, P_DISP);
+        query.where(gp3, gp2).select(scopeIri).prefix(P_GEO, P_GEOF, P_DISP);
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
@@ -473,6 +479,7 @@ public class QueryClient {
                 feature.put("name", "VirtualSensor_" + (i + 1));
                 feature.put("endpoint", sparqlEndpoint);
                 feature.put("scope_iri", scopeIri);
+                feature.put("geom_iri", locationIri);
                 features.put(feature);
 
             }

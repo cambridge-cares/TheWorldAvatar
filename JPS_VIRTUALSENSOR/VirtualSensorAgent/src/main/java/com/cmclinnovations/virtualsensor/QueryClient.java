@@ -1,6 +1,7 @@
 package com.cmclinnovations.virtualsensor;
 
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
+import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
@@ -39,8 +40,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.postgis.Geometry;
 import org.postgis.Point;
+
+import com.cmclinnovations.virtualsensor.sparqlbuilder.ServiceEndpoint;
+
+import it.unibz.inf.ontop.model.vocabulary.GEO;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
+import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
 
 /**
  * sends sparql queries
@@ -58,6 +66,7 @@ public class QueryClient {
     private static final Prefix P_OM = SparqlBuilder.prefix("om", iri(OM_STRING));
     public static final String ONTO_EMS = "https://www.theworldavatar.com/kg/ontoems/";
     public static final Prefix P_EMS = SparqlBuilder.prefix("ontoems", iri(ONTO_EMS));
+    private static final Prefix P_GEO = SparqlBuilder.prefix("geo", iri(GEO.PREFIX));
 
     // classes
     // as Iri classes for sparql updates sent directly from here
@@ -93,7 +102,8 @@ public class QueryClient {
     private static final Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
     private static final Iri HAS_DISPERSION_RASTER = P_DISP.iri("hasDispersionRaster");
     private static final Iri HAS_POLLUTANT_ID = P_DISP.iri("hasPollutantID");
-    private static final Iri HAS_WKT = iri("http://www.opengis.net/ont/geosparql#asWKT");
+    private static final Iri HAS_GEOMETRY = P_GEO.iri("hasGeometry");
+    private static final Iri AS_WKT = iri("http://www.opengis.net/ont/geosparql#asWKT");
     private static final Iri HAS_OBSERVATION_LOCATION = P_EMS.iri("hasObservationLocation");
 
     public QueryClient(StoreClientInterface storeClient, TimeSeriesClient<Long> tsClientLong,
@@ -168,27 +178,33 @@ public class QueryClient {
 
     }
 
-    public Point getStationLocation(String derivation) {
-        SelectQuery query = Queries.SELECT();
-        Variable locationWkt = query.var();
-        Variable locationIri = query.var();
-        Variable station = query.var();
+    public Point getSensorLocation(String derivation) {
+        // get the coordinates of this station
+        // build coordinate query
+        SelectQuery query2 = Queries.SELECT();
+        Variable wkt = query2.var();
+        Variable station = query2.var();
 
-        query.where(station.has(belongsTo, iri(derivation)).andHas(HAS_OBSERVATION_LOCATION, locationIri),
-                locationIri.isA(GEOM).andHas(HAS_WKT, locationWkt)).prefix(P_DISP, P_OM, P_EMS)
-                .select(locationWkt);
-        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-        String locationString = queryResult.getJSONObject(0).getString(locationWkt.getQueryString().substring(1));
+        ServiceEndpoint ontop = new ServiceEndpoint(new EndpointConfig().getOntopUrl());
 
-        Point location = null;
+        query2.select(wkt).where(station.has(belongsTo, iri(derivation)), ontop.service(
+                station.has(PropertyPaths.path(HAS_GEOMETRY, AS_WKT), wkt))).prefix(P_GEO);
+
+        // submit coordinate query to ontop via blazegraph
+        String wktString = storeClient.executeQuery(query2.getQueryString()).getJSONObject(0)
+                .getString(wkt.getQueryString().substring(1));
+
+        // parse wkt literal
+        Point sensorLocation = null;
+
         try {
-            location = new Point(locationString);
+            sensorLocation = new Point(wktString);
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
+            LOGGER.error("Failed to parse result of virtual sensor ontop query.");
         }
 
-        return location;
-
+        return sensorLocation;
     }
 
     public Map<String, String> getStationDataIris(String derivation) {
