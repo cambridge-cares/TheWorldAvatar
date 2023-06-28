@@ -24,5 +24,8 @@
     ],
     "mappings": [
         "road_incidents_ontop.obda"
-    ]
+    ],
+    "staticGeoServerData": {
+        "iconsDir": "icons"
+    }
 }

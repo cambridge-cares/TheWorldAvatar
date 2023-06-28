@@ -1,0 +1,90 @@
+{
+    "name": "All Data",
+    "groups": [
+        {
+            "name": "Pubs",
+            "stack": "http://localhost:3838/traffic",
+            "sources": [
+                {
+                    "id": "pubs",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:open_pubs&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "type": "symbol",
+                    "id": "pubs_layer",
+                    "name": "Pubs",
+                    "source": "pubs",
+                    "source-layer": "open_pubs",
+                    "treeable": false,
+                    "layout": {
+                        "icon-image": "pub_icon",
+                        "icon-size": ["interpolate", ["exponential", 2], ["zoom"], 11, 0.0012, 17, 0.6],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Roads",
+            "stack": "http://localhost:3838/traffic",
+            "sources": [
+                {
+                    "id": "roads",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:roads&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "roads-outline",
+                    "type": "line",
+                    "name": "National Roads",
+                    "source": "roads",
+                    "source-layer": "roads",
+                    "treeable": false,
+                    "paint": {
+                        "line-width": 1,
+                        "line-color": "#91a6a8"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Road Incidents",
+            "stack": "http://localhost:3838/traffic",
+            "sources": [
+                {
+                    "id": "incidents",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:road_incidents&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "name": "Road Incidents",
+                    "type": "symbol",
+                    "id": "incidents",
+                    "source": "incidents",
+                    "source-layer": "road_incidents",
+                    "treeable": false,
+                    "layout": {
+                        "icon-image": "incident_icon",
+                        "icon-size": ["interpolate", ["exponential", 2], ["zoom"], 11, 0.0075, 17, 0.75],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                }
+            ]
+        }
+    ]
+}

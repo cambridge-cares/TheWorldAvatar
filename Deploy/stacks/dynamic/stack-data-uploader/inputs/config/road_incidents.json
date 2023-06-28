@@ -1,6 +1,6 @@
 {
-    "name": "public_houses",
-    "datasetDirectory": "public_houses",
+    "name": "road_incidents",
+    "datasetDirectory": "road_incidents",
     "database": "postgres",
     "workspace": "the_world_avatar",
     "skip": false,
@@ -9,8 +9,8 @@
             "type": "vector",
             "skip": false,
             "schema": "public",
-            "subdirectory": "public_houses",
-            "table": "open_pubs",
+            "table": "road_incidents",
+            "subdirectory": "road_incidents",
             "ogr2ogrOptions": {
                 "layerCreationOptions": {
                     "GEOMETRY_NAME": "geom"
@@ -22,6 +22,9 @@
                 }
             }
         }
+    ],
+    "mappings": [
+        "road_incidents_ontop.obda"
     ],
     "staticGeoServerData": {
         "iconsDir": "icons"
