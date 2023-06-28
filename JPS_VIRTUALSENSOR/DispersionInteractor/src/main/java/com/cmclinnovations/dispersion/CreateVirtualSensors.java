@@ -19,7 +19,6 @@ import org.postgis.Point;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
-import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 @WebServlet(urlPatterns = { "/CreateVirtualSensors" })
 public class CreateVirtualSensors extends HttpServlet {

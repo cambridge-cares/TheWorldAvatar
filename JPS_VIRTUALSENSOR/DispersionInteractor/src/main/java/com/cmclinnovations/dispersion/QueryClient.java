@@ -2,7 +2,6 @@ package com.cmclinnovations.dispersion;
 
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Operand;
-import org.eclipse.rdf4j.sparqlbuilder.constraint.SparqlFunction;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
@@ -37,7 +36,6 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import it.unibz.inf.ontop.model.vocabulary.GEO;
 import it.unibz.inf.ontop.model.vocabulary.GEOF;
 
-import java.beans.Expression;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;

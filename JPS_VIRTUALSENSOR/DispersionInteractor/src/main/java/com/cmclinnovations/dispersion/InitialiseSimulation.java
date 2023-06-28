@@ -5,9 +5,6 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 import javax.servlet.ServletException;
@@ -27,7 +24,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.postgis.Polygon;
-import org.postgis.Point;
 import org.springframework.core.io.ClassPathResource;
 
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
