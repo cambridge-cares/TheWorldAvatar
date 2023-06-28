@@ -395,8 +395,7 @@ public class QueryClient {
 
                 // Update triples for station in blazegraph
                 String locationIri = PREFIX + UUID.randomUUID();
-                modify.insert(station.isA(REPORTING_STATION).andHas(OBSERVATION_LOCATION, iri(locationIri)),
-                        iri(locationIri).isA(GEOM).andHas(AS_WKT, location.toString()));
+                modify.insert(station.isA(REPORTING_STATION));
 
                 List<String> dataListForTimeSeries = new ArrayList<>();
 

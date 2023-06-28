@@ -104,7 +104,6 @@ public class QueryClient {
     private static final Iri HAS_POLLUTANT_ID = P_DISP.iri("hasPollutantID");
     private static final Iri HAS_GEOMETRY = P_GEO.iri("hasGeometry");
     private static final Iri AS_WKT = iri("http://www.opengis.net/ont/geosparql#asWKT");
-    private static final Iri HAS_OBSERVATION_LOCATION = P_EMS.iri("hasObservationLocation");
 
     public QueryClient(StoreClientInterface storeClient, TimeSeriesClient<Long> tsClientLong,
             TimeSeriesClient<Instant> tsClientInstant,
