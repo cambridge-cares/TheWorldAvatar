@@ -1,19 +1,19 @@
 ﻿## Overview
-Two models are trained for EL:
-1. A SMILES-NER model for smiles string recognition and translation module
-2. The Entity Extraction module. We use the method of BLINK project: https://github.com/facebookresearch/BLINK.
+Two models are trained for Entity Linking:
+1. A SMILES-NER model for SMILES string recognition.
+2. The Entity Extraction module which performs joint Entity Recognition and Entity Linking. We use the method proposed in the BLINK project: https://github.com/facebookresearch/BLINK.
 
 ## Setup
-1. Import the BLINK project from https://github.com/facebookresearch/BLINK. The customized files in `Training/EntityLinking` should be put in the top level directory of the BLINK project.
-2. Install Python 3.8 and Run `pip install requirements.txt`. It is recommended to use conda for creating a virtual environment. Note that this can share the same environment with the whole Marie project and does not necessarily need separate environment.
-
+1. Clone the BLINK project from https://github.com/facebookresearch/BLINK. 
+2. Copy all the files in `Training/EntityLinking` to the top level directory of the BLINK project.
+3. Install Python 3.8 and create the virtual environment as described in the [MARIE AND BERT README](../../readme.md#running) 
 
 ## Data Preparation
-1. SMILES-NER needs a trio of train/valid/test|jsonl files.
-2. Entity Extraction(BLINK) uses a two-step process. First step needs an entity dictionary |jsonl and a trio of train/valid/test|jsonl. Second steps needs another trio of train/valid/test |jsonl which is of slightly different format.
-Regarding the creation of these files, please see `MARIE_AND_BERT/KGToolbox/EntityLinking/readme.md`.
+Please refer to [Dataset creation for Entity Linking](../../KGToolbox/EntityLinking/readme.md) to create the dataset required for training the Entity Linking models.
 
 ##Folder Structure
+The expected folder structure after the set-up:
+
 <pre>
 ├── blink-project-files...
 ├── trainbi.py    #Customized entry point to run BLINK training
@@ -28,13 +28,16 @@ Regarding the creation of these files, please see `MARIE_AND_BERT/KGToolbox/Enti
     └── train_ner.sh
 </pre>
 
-## Train NER
+## Train SMILES NER
+Run the following command to train the SMILES NER model:
 ```
-bash train_ner.sh [valid_file_name] [train_file_name]
+bash train_ner.sh [valid_file_name] [train_file_name] 
 ```
-Arguments can be supplied when calling bash to change I/O paths. Aftering run, the model is saved to the specified path (default is `./models/ner/SMILES_NER.bin`)  
-* `--valid_file_name` Path to valid file.
-* `--train_file_name` Path to train file.
+* `--valid_file_name` Path to the validation `.jsonl` file.
+* `--train_file_name` Path to the training `.jsonl` file.
+
+Arguments can be supplied when calling bash to change the I/O paths. After running the script, the model is saved to the specified path (default is `./models/ner/SMILES_NER.bin`)  
+
 
 ## Train Entity Extraction
 Entity Extraction training needs two steps.
@@ -46,8 +49,6 @@ To customize the I/O directorys:
 * `--data_path` Path to first step data files. Suggested is `data/step1`.
 * `--output_path` Path to output (step1) folder. Suggested is `models/step1`.
 
-
---path_to_model models/pretrain/pytorch_model.bin --data_path data/pretrain --output_path models/pretrain
 
 Second step:
 ```
