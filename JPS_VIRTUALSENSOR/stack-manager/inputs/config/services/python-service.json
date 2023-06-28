@@ -3,7 +3,7 @@
         "Name": "python-service",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/python-service:1.2.2-dev-aermod-agent-pollutant-SNAPSHOT",
+                "Image": "ghcr.io/cambridge-cares/python-service:1.2.3-dev-aermod-agent-sensor-SNAPSHOT",
                 "Mounts": [
                     {
                         "Type": "volume",

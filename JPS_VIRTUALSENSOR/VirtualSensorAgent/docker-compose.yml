@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-  dispersion-interactor:
-    image: ghcr.io/cambridge-cares/dispersion-interactor:1.2.3-dev-aermod-agent-sensor-SNAPSHOT
+  virtual-sensor-agent:
+    image: ghcr.io/cambridge-cares/virtual-sensor-agent:1.0.0-dev-aermod-agent-sensor-SNAPSHOT
     deploy:
       mode: replicated
       replicas: 1
@@ -11,28 +11,27 @@ services:
     environment:
       - STACK_NAME=${STACK_NAME}
       - DATABASE=postgres # currently ontop reads from the default database
-      - SCOPE_TABLE_NAME=scopes
-      - AERMOD_AGENT_IRI=http://theworldavatar.com/kg/dispersion/AermodAgent
-      - AERMOD_AGENT_URL=http://${STACK_NAME}-aermod-agent:8080/AermodAgent/
-      - WEATHER_AGENT_URL=http://${STACK_NAME}-weatheragent:8080/WeatherAgent/CreateStation
-      - SHIP_INPUT_AGENT=http://${STACK_NAME}-ship-input-agent:8080/ShipInputAgent/update
       - GEOSERVER_WORKSPACE=dispersion
+      - PYTHON_SERVICE_INTERPOLATION_URL=http://${STACK_NAME}-python-service:5000/getInterpolatedConc
     configs:
       - postgis
       - blazegraph
       - geoserver
+      - ontop
     secrets:
       - postgis_password
       - geoserver_password
     ports:
-      - "8084:8080"
+      - "8082:8080"
     volumes:
       - logs:/root/.jps
+      - misc:/misc
+      - ./data:/data
     networks:
       - stack
 
 volumes:
   logs:
-    name: "logs"
+    name: "${STACK_NAME}_logs"
   misc:
     name: "misc"
