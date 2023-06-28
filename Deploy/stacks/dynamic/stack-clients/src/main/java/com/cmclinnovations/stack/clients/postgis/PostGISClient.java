@@ -106,7 +106,7 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
                 postgreSQLEndpoint.getPassword());
     }
 
-    public void uploadRoutingFilesToPostGIS(String database, String sourceDirectory) {
+    public void uploadRoutingDataDirectoryToPostGIS(String database, String sourceDirectory) {
         List<Path> allFilesList;
         try (Stream<Path> dirsStream = Files.walk(Path.of(sourceDirectory))) {
             allFilesList = dirsStream.filter(file -> !Files.isDirectory(file)).collect(Collectors.toList());
@@ -128,16 +128,16 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
             throw new RuntimeException(
                     "No xml config files found in routing data directory '" + sourceDirectory + "'.");
         }
-        osmFilesList.forEach(osmPath -> uploadRoutingFileToPostGIS(database, osmPath, configsList.get(0)));
+        uploadRoutingFilesToPostGIS(database, configsList.get(0), osmFilesList);
     }
 
-    public void uploadRoutingFileToPostGIS(String database, Path osmFilePath, Path configFilePath) {
-        // TODO: only create one temp for config file
+    public void uploadRoutingFilesToPostGIS(String database, Path configFilePath, List<Path> osmFilesList) {
         try (TempDir tmpDir = makeLocalTempDir()) {
-            tmpDir.copyFrom(osmFilePath);
             tmpDir.copyFrom(configFilePath);
-            uploadRoutingToPostGIS(database, tmpDir.getPath().resolve(osmFilePath.getFileName()),
-                    tmpDir.getPath().resolve(configFilePath.getFileName()));
+            osmFilesList.stream().forEach(tmpDir::copyFrom);
+            osmFilesList.stream().forEach(
+                    osmFile -> uploadRoutingToPostGIS(database, tmpDir.getPath().resolve(osmFile.getFileName()),
+                            tmpDir.getPath().resolve(configFilePath.getFileName())));
         }
     }
 
