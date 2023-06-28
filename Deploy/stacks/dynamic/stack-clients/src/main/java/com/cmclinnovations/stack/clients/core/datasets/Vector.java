@@ -16,7 +16,7 @@ public class Vector extends GeoServerDataSubset {
     private Ogr2OgrOptions ogr2ogrOptions = new Ogr2OgrOptions();
 
     @JsonProperty
-    private GeoServerVectorSettings geoServerSettings = new GeoServerVectorSettings();
+    protected GeoServerVectorSettings geoServerSettings = new GeoServerVectorSettings();
 
     @Override
     public void loadData(Path dirPath, String database) {
@@ -25,7 +25,7 @@ public class Vector extends GeoServerDataSubset {
     }
 
     @Override
-    public void createLayer(String workspaceName, String database) {
+    public void createLayers(String workspaceName, String database) {
         GSVirtualTableEncoder virtualTable = geoServerSettings.getVirtualTable();
         if (null != virtualTable) {
             virtualTable.setSql(handleFileValues(virtualTable.getSql()));

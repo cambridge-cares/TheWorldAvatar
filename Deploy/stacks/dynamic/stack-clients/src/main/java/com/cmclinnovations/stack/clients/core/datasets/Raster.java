@@ -20,13 +20,15 @@ public class Raster extends GeoServerDataSubset {
     @Override
     public void loadData(Path dirPath, String database) {
         GDALClient.getInstance()
-                .uploadRasterFilesToPostGIS(database, PostGISClient.DEFAULT_SCHEMA_NAME, getTable(), dirPath.toString(), gdalTranslateOptions, false);
+                .uploadRasterFilesToPostGIS(database, PostGISClient.DEFAULT_SCHEMA_NAME, getTable(), dirPath.toString(),
+                        gdalTranslateOptions, false);
     }
 
     @Override
-    public void createLayer(String workspaceName, String database) {
+    public void createLayers(String workspaceName, String database) {
         GeoServerClient.getInstance()
-                .createGeoTiffLayer(workspaceName, getName(), database, PostGISClient.DEFAULT_SCHEMA_NAME, geoServerSettings);
+                .createGeoTiffLayer(workspaceName, getName(), database, PostGISClient.DEFAULT_SCHEMA_NAME,
+                        geoServerSettings);
     }
 
 }
