@@ -3,8 +3,7 @@
 The ``Marie and Bert`` a.k.a `Marie 3.0` project is developed by [Xiaochi Zhou](xz378@cam.ac.uk)
 and [Shaocong Zhang](sz375@cam.ac.uk) and [Mehal Agarwal](ma988@cam.ac.uk).
 
-A demonstration webpage is deployed at [Marie Website](http://159.223.42.53:5003/). For any issue on the 
-website, please contact [Xiaochi Zhou](xz378@cam.ac.uk) (Before 01.08.2023).
+A demonstration webpage is deployed at [Marie Website](http://159.223.42.53:5003/) 
 
 The contact information after 08.2023 will soon be updated. 
 
@@ -60,12 +59,23 @@ to use conda for creating a virtual environment.
 5. Download EntityLinking.zip from [EntityLinking.zip](http://159.223.42.53:8080/EntityLinking.zip), unzip under `DATA`
 6. Download STOUT V2 model [STOUT V2 model](http://159.223.42.53:8080/models.zip) for Linux system, unzip into `root/.data/STOUT-V2/`, for Windows system,
 7. Download the required NLTK datasets by running
-```
+```python
 import nlkt
 nltk.download('all')
 ```
  
 To start the system, run `python main.py`.
+
+For debugging purpose, in `main.py` please comment the line
+
+```python
+    app.run(host='0.0.0.0', debug=False, port=5003, threaded=False, processes=1)
+```
+
+and uncomment the line
+```python
+    # app.run(host='0.0.0.0', debug=True, port=5003)
+```
 
 ###Other Services
 To run the full functions of the Marie system, three other systems are required:
@@ -80,7 +90,7 @@ To run the full functions of the Marie system, three other systems are required:
 For local deployment，please use `Dockerfile_local`. 
 1. run `docker build  --no-cache -t marie .d -f Dockerfile_local .` to build the image
 2. run ` docker run -p 5003:80 -d marie:latest`. 
-
+3. The Marie web-interface will then be available at `http://localhost:5003` or `http://127.0.0.1:5003`
 For deployment on Linux server from the scratch:
 
 1. Create a folder in the server, assume it is `/home/user1/Marie/DATA`
@@ -115,7 +125,10 @@ For example, to upload with GUI update page, key in url  `/triples/ontospecies.n
 9. `cd app/TheWorldAvatar/Agents/STDCThermoAgent`, run `docker compose up -d`
 10. `cd app/TheWorldAvatar/Agents/PCEAgent`, run `docker compose up -d`
 
-
+## Frontend development
+It takes more than 15 minutes to spin up the Marie server, as a result, a `mock_main.py` script is implemented to 
+provide mock backend responses to support frontend development. To test different types of responses, please
+follow the instructions at the top part of the `mock_main.py` script. 
 
 
  

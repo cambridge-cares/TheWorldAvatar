@@ -3,7 +3,6 @@ ENV UWSGI_CHEAPER 1
 ENV UWSGI_PROCESSES 2
 WORKDIR /app
 
-RUN git clone --branch dev-marie-and-bert https://github.com/cambridge-cares/TheWorldAvatar
 RUN cp -r TheWorldAvatar/MARIE_AND_BERT/Marie ./Marie  \
 && cp -r TheWorldAvatar/MARIE_AND_BERT/uwsgi.ini ./uwsgi.ini \
 && cp -r TheWorldAvatar/MARIE_AND_BERT/static ./static \

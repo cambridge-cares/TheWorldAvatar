@@ -1,7 +1,5 @@
 FROM tiangolo/uwsgi-nginx-flask:python3.8 as flask
 
-# COPY ./Marie/ Marie
-RUN git clone --branch dev-marie-and-bert https://github.com/cambridge-cares/TheWorldAvatar
 RUN cp -r TheWorldAvatar/MARIE_AND_BERT/Marie ./Marie
 RUN cp -r TheWorldAvatar/MARIE_AND_BERT/uwsgi.ini ./uwsgi.ini
 RUN cp -r TheWorldAvatar/MARIE_AND_BERT/static ./static

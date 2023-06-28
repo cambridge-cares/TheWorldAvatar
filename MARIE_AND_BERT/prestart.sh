@@ -10,6 +10,7 @@ else
   wget -nc http://159.223.42.53:8080/EntityLinking.zip && unzip EntityLinking.zip -d /app/DATA/ && rm EntityLinking.zip
   wget -nc http://159.223.42.53:8080/bert_pretrained.zip && unzip bert_pretrained.zip -d /app/ && rm bert_pretrained.zip
   wget -nc http://159.223.42.53:8080/Dictionaries.zip && unzip Dictionaries.zip -d /app/DATA/ && rm Dictionaries.zip
+  wget -nc http://159.223.42.53:8080/label_dict.js /app/static/js/
   wget -nc http://159.223.42.53:8080/cde_models.zip && unzip cde_models.zip -d /root/.local/share/ChemDataExtractor/ && rm cde_models.zip
 fi
 

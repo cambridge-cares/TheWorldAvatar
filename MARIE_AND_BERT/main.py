@@ -12,8 +12,8 @@ logger.info(" - Done initializing Cross Graph Engine")
 logger.info("============= Server is ready to go! ===========")
 app = Flask(__name__)
 
-def result_filter(result):
 
+def result_filter(result):
     if "ontoagent" in str(result):
         return result
 
@@ -42,6 +42,7 @@ def result_filter(result):
     else:
         return result
 
+
 def answer_question(question):
     logger.info("=======================================================================================")
     logger.info(f" The server received a question: {question}")
@@ -61,6 +62,7 @@ def hello_world():
 def ontospecies():
     return render_template('ontospecies.html')
 
+
 @app.route('/static/<path:path>')
 def send_js(path):
     return send_from_directory('static', path)
@@ -73,7 +75,9 @@ def search():
     answer = answer_question(question)
     return json.dumps(result_filter(answer))
 
+
 if __name__ == "__main__":
-    # Only for debugging while developing
-    # app.run(host='0.0.0.0', debug=False, port=8080, threaded=False, processes=1)
-    app.run(host='0.0.0.0', debug=True, port=5003)
+    # Default setup for deployment
+    app.run(host='0.0.0.0', debug=False, port=5003, threaded=False, processes=1)
+    # Only for debugging while developing, uncomment the next line and comment the aboveline
+    # app.run(host='0.0.0.0', debug=True, port=5003)

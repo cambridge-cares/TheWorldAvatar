@@ -7,3 +7,4 @@
 *.pb
 *.tsv
 *.out
+/Training/RelationPrediction/input
