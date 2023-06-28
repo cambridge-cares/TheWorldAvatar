@@ -94,7 +94,7 @@ For deployment on Linux server from scratch:
 
 1. Create a folder in the server, assume it is `/home/user1/Marie/DATA`
 2. Load the files 2-6 mentioned in [Required files](#required-files) in `/home/user1/Marie/DATA`
-3. Clone the GitHub repository by `git clone https://github.com/cambridge-cares/TheWorldAvatar`, Assume the users cloned the repository in `app`
+3. Clone the GitHub repository by `git clone https://github.com/cambridge-cares/TheWorldAvatar`, Assume the users cloned the repository in `/home/user1/Marie`
 4. Move the `TheWorldAvatar/MARIE_AND_BERT/Dockerfile` file into `/home/user1/Marie` folder.
 5. Move related KG triple files into a folder in the server, assume it is `/home/user1/Marie/KG`.
 6. Build a blazegraph image, see [Blazegraph container](https://github.com/lyrasis/docker-blazegraph#local-builds) for instructions. Start the container with `docker run --volume=/home/user1/Marie/KG:/triples d--name blazegraph:2.1.5 -d -p [port]:[port] blazegraph-marie`
