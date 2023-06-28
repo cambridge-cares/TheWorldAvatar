@@ -1,0 +1,44 @@
+{
+  "ServiceSpec": {
+    "Name": "keycloak",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "quay.io/keycloak/keycloak:21.1.1",
+        "Env": [
+          "KEYCLOAK_ADMIN=admin",
+          "KEYCLOAK_ADMIN_PASSWORD=admin"
+        ],
+        "Command": [
+          "/opt/keycloak/bin/kc.sh",
+          "start"
+        ],
+        "Mounts": [
+          {
+            "Type": "bind",
+            "Source": "themes",
+            "Target": "/opt/keycloak/themes"
+          },
+          {
+            "Type": "bind",
+            "Source": "server.keystore",
+            "Target": "/opt/keycloak/conf/server.keystore"
+          }
+        ],
+        "Secrets": [
+          {
+            "SecretName": "keycloak.conf",
+            "File": {
+              "Name":"/opt/keycloak/conf/keycloak.conf"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:8080/keycloak/",
+      "externalPath": "/keycloak/"
+    }
+  }
+}
