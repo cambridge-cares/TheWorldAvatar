@@ -171,6 +171,7 @@ public class EmissionsAgent extends DerivationAgent {
         String pm25Measure = derivationOutputs.createNewEntityWithBaseUrl(QueryClient.PREFIX,
                 QueryClient.MEASURE_STRING);
 
+        // certain pollutants are commented out to speed up aermod agent
         // nox
         // derivationOutputs.addTriple(shipIri, QueryClient.EMITS, noxEmission);
         // derivationOutputs.addTriple(noxEmission, hasQuantity, density);
