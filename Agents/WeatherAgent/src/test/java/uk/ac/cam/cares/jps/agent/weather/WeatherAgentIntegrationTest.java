@@ -37,7 +37,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 @Disabled
 public class WeatherAgentIntegrationTest {
 	@Container
-	private GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
+	private GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0"))
 													 .withExposedPorts(9999);
 	
 	@Container

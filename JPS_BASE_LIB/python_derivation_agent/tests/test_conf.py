@@ -1,14 +1,15 @@
-from tests.conftest import config_generic
-from tests.conftest import Config4Test1
-from tests.conftest import Config4Test2
+from .conftest import config_generic
+from .conftest import Config4Test1
+from .conftest import Config4Test2
 
-from tests.conftest import config_derivation_agent
-from tests.conftest import AgentConfig
-from tests.conftest import RNGAGENT_ENV
-from tests.conftest import MAXAGENT_ENV
-from tests.conftest import MINAGENT_ENV
-from tests.conftest import DIFFAGENT_ENV
-from tests.conftest import UPDATEENDPOINT_ENV
+from .conftest import config_derivation_agent
+from .conftest import AgentConfig
+from .conftest import RNGAGENT_ENV
+from .conftest import MAXAGENT_ENV
+from .conftest import MINAGENT_ENV
+from .conftest import DIFFAGENT_ENV
+from .conftest import DIFFREVERSEAGENT_ENV
+from .conftest import UPDATEENDPOINT_ENV
 
 from typing import get_type_hints
 from dotenv import dotenv_values
@@ -43,6 +44,7 @@ def test_config_generic(generate_random_env_file, target_conf_cls):
         (MAXAGENT_ENV),
         (MINAGENT_ENV),
         (DIFFAGENT_ENV),
+        (DIFFREVERSEAGENT_ENV),
         (UPDATEENDPOINT_ENV),
     ],
 )
@@ -57,8 +59,9 @@ def test_config_derivation_agent(env_file):
     # i.e. the values should be the same as in the env file
     for key, value in config.__dict__.items():
         var_type = get_type_hints(AgentConfig)[key]
+        default_value = getattr(AgentConfig, key, None)
         if var_type == bool:
-            env_value = env.get(key) if type(env.get(key)) == bool else env.get(key).lower() in ['true', 'yes', '1']
+            env_value = env.get(key, default_value) if type(env.get(key, default_value)) == bool else env.get(key).lower() in ['true', 'yes', '1']
         else:
-            env_value = var_type(env.get(key))
+            env_value = var_type(env.get(key, default_value)) # assign default value if env var not found
         assert value == env_value

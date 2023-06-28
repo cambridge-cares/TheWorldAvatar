@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.derivation.asynexample;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,9 +7,9 @@ import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -27,7 +26,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  */
 @WebServlet(urlPatterns = { InitialiseInstances.API_PATTERN_1, InitialiseInstances.API_PATTERN_2,
 		InitialiseInstances.API_PATTERN_3, InitialiseInstances.API_PATTERN_4, InitialiseInstances.API_PATTERN_5,
-		InitialiseInstances.API_PATTERN_6 })
+		InitialiseInstances.API_PATTERN_6, InitialiseInstances.API_PATTERN_EXC_THROW })
 public class InitialiseInstances extends JPSAgent {
 
 	private static final long serialVersionUID = 1L;
@@ -40,15 +39,16 @@ public class InitialiseInstances extends JPSAgent {
 	static final String API_PATTERN_4 = "/InitialiseInstances_4";
 	static final String API_PATTERN_5 = "/InitialiseInstances_5";
 	static final String API_PATTERN_6 = "/InitialiseInstances_6";
+	static final String API_PATTERN_EXC_THROW = "/InitialiseInstances_ExceptionThrow";
 
 	public static final int upper_limit_value = 20;
 	public static final int lower_limit_value = 3;
-	public static final int number_of_points = 6;
+	public static final int number_of_points = 0;
 
 	public static final String upper_limit_instance_key = "UpperLimit instance";
 	public static final String lower_limit_instance_key = "LowerLimit instance";
 	public static final String num_of_pts_instance_key = "NumberOfPoints instance";
-	public static final String list_rand_pts_instance_key = "ListOfRandomPoints instance";
+	public static final String pt_instances_key = "Point instances";
 	public static final String maxvalue_instance_key = "MaxValue instance";
 	public static final String minvalue_instance_key = "MinValue instance";
 	public static final String difference_instance_key = "Difference instance";
@@ -56,6 +56,8 @@ public class InitialiseInstances extends JPSAgent {
 	public static final String max_dev_key = "MaxValue Derivation";
 	public static final String min_dev_key = "MinValue Derivation";
 	public static final String diff_dev_key = "Difference Derivation";
+	public static final String input_placeholder_exc_throw_key = "InputPlaceholderExceptionThrow instance";
+	public static final String output_placeholder_exc_throw_key = "OutputPlaceholderExceptionThrow instance";
 
 	private static final String PATTERN_NOT_SUPPORTED_KEY = "Pattern not supported";
 
@@ -68,38 +70,40 @@ public class InitialiseInstances extends JPSAgent {
 
 		JSONObject response = new JSONObject();
 		String path = request.getServletPath();
-		try {
-			switch (path) {
-				case API_PATTERN_1:
-					response = initialise1(sparqlClient, devClient);
-					break;
-				case API_PATTERN_2:
-					response = initialise2(sparqlClient, devClient);
-					break;
-				case API_PATTERN_3:
-					response = initialise3(sparqlClient, devClient);
-					break;
-				case API_PATTERN_4:
-					response = initialise4(sparqlClient, devClient);
-					break;
-				case API_PATTERN_5:
-					response = initialise5(sparqlClient, devClient);
-					break;
-				case API_PATTERN_6:
-					response = initialise6(sparqlClient, devClient);
-					break;
-				default:
-					response.put(PATTERN_NOT_SUPPORTED_KEY, "Servlet pattern NOT supported.");
-			}
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		switch (path) {
+			case API_PATTERN_1:
+				response = initialise1(sparqlClient, devClient);
+				break;
+			case API_PATTERN_2:
+				response = initialise2(sparqlClient, devClient);
+				break;
+			case API_PATTERN_3:
+				response = initialise3(sparqlClient, devClient);
+				break;
+			case API_PATTERN_4:
+				response = initialise4(sparqlClient, devClient);
+				break;
+			case API_PATTERN_5:
+				response = initialise5(sparqlClient, devClient);
+				break;
+			case API_PATTERN_6:
+				response = initialise6(sparqlClient, devClient);
+				break;
+			case API_PATTERN_EXC_THROW:
+				response = initialiseExceptionThrow(sparqlClient, devClient);
+				break;
+			default:
+				response.put(PATTERN_NOT_SUPPORTED_KEY, "Servlet pattern NOT supported.");
 		}
 
 		// check all connections between all derivations
 		// the method validateDerivations() validates all derivations in the KG
-		LOGGER.info(
-				"Validating derivations: " + response.getString(rng_dev_key) + ", " + response.getString(max_dev_key)
-						+ ", " + response.getString(min_dev_key) + ", and " + response.getString(diff_dev_key));
+		if (!path.contentEquals(API_PATTERN_EXC_THROW)) {
+			// only log if it's not API_PATTERN_EXC_THROW
+			LOGGER.info("Validating derivations: " + response.getString(rng_dev_key) + ", " + response.getString(max_dev_key)
+					+ ", " + response.getString(min_dev_key) + ", and " + response.getString(diff_dev_key));
+		}
+
 		try {
 			devClient.validateDerivations();
 			LOGGER.info("Validated chain of derivations successfully");
@@ -112,38 +116,31 @@ public class InitialiseInstances extends JPSAgent {
 		return response;
 	}
 
-	JSONObject initialise1(SparqlClient sparqlClient, DerivationClient devClient)
-			throws ClientProtocolException, IOException {
+	JSONObject initialise1(SparqlClient sparqlClient, DerivationClient devClient) {
 		return basicInitialisation(sparqlClient, devClient, true, true, true, true);
 	}
 
-	JSONObject initialise2(SparqlClient sparqlClient, DerivationClient devClient)
-			throws ClientProtocolException, IOException {
+	JSONObject initialise2(SparqlClient sparqlClient, DerivationClient devClient) {
 		return basicInitialisation(sparqlClient, devClient, true, true, true, false);
 	}
 
-	JSONObject initialise3(SparqlClient sparqlClient, DerivationClient devClient)
-			throws ClientProtocolException, IOException {
+	JSONObject initialise3(SparqlClient sparqlClient, DerivationClient devClient) {
 		return basicInitialisation(sparqlClient, devClient, true, false, true, false);
 	}
 
-	JSONObject initialise4(SparqlClient sparqlClient, DerivationClient devClient)
-			throws ClientProtocolException, IOException {
+	JSONObject initialise4(SparqlClient sparqlClient, DerivationClient devClient) {
 		return basicInitialisation(sparqlClient, devClient, true, true, false, false);
 	}
 
-	JSONObject initialise5(SparqlClient sparqlClient, DerivationClient devClient)
-			throws ClientProtocolException, IOException {
+	JSONObject initialise5(SparqlClient sparqlClient, DerivationClient devClient) {
 		return basicInitialisation(sparqlClient, devClient, true, false, false, false);
 	}
 
-	JSONObject initialise6(SparqlClient sparqlClient, DerivationClient devClient)
-			throws ClientProtocolException, IOException {
+	JSONObject initialise6(SparqlClient sparqlClient, DerivationClient devClient) {
 		return basicInitialisation(sparqlClient, devClient, false, false, false, false);
 	}
 
-	JSONObject basicInitialisation(SparqlClient sparqlClient, DerivationClient devClient, boolean listPt, boolean max,
-			boolean min, boolean diff) throws ClientProtocolException, IOException {
+	JSONObject initialiseExceptionThrow(SparqlClient sparqlClient, DerivationClient devClient) {
 		JSONObject response = new JSONObject();
 
 		// clear KG when initialising
@@ -151,43 +148,64 @@ public class InitialiseInstances extends JPSAgent {
 		sparqlClient.clearKG();
 
 		// get the IRIs
-		String ul_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.UpperLimit);
-		String ll_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.LowerLimit);
-		String np_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.NumberOfPoints);
-		String lp_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.ListOfRandomPoints);
-		String maxv_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.MaxValue);
-		String minv_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.MinValue);
-		String diff_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.Difference);
+		String inputPlaceholderRdfType = SparqlClient.getRdfTypeString(SparqlClient.InputPlaceholderExceptionThrow);
+		String outputPlaceholderRdfType = SparqlClient.getRdfTypeString(SparqlClient.OutputPlaceholderExceptionThrow);
 
 		// create ontoagent instances
-		sparqlClient.createOntoAgentInstance(Config.agentIriRNG, Config.agentHttpUrlRNG,
-				Arrays.asList(ul_rdf_type, ll_rdf_type, np_rdf_type), Arrays.asList(lp_rdf_type));
-		sparqlClient.createOntoAgentInstance(Config.agentIriMaxValue, Config.agentHttpUrlMaxValue,
-				Arrays.asList(lp_rdf_type), Arrays.asList(maxv_rdf_type));
-		sparqlClient.createOntoAgentInstance(Config.agentIriMinValue, Config.agentHttpUrlMinValue,
-				Arrays.asList(lp_rdf_type), Arrays.asList(minv_rdf_type));
-		sparqlClient.createOntoAgentInstance(Config.agentIriDifference, Config.agentHttpUrlDifference,
-				Arrays.asList(maxv_rdf_type, minv_rdf_type), Arrays.asList(diff_rdf_type));
+		devClient.createOntoAgentInstance(Config.agentIriExceptionThrow, Config.agentHttpUrlExceptionThrow,
+				Arrays.asList(inputPlaceholderRdfType), Arrays.asList(outputPlaceholderRdfType));
+
+		// create upperlimit, lowerlimit, numberofpoints
+		String inputPlaceholder = sparqlClient.createInputPlaceholderExceptionThrow();
+		LOGGER.info("Created InputPlaceholderExceptionThrow instance <" + inputPlaceholder + ">");
+		response.put(input_placeholder_exc_throw_key, inputPlaceholder);
+
+		return response;
+	}
+
+	JSONObject basicInitialisation(SparqlClient sparqlClient, DerivationClient devClient, boolean listPt, boolean max,
+			boolean min, boolean diff) {
+		JSONObject response = new JSONObject();
+
+		// clear KG when initialising
+		LOGGER.info("Initialising new instances, all existing instances will get deleted");
+		sparqlClient.clearKG();
+
+		// get the IRIs
+		String ulRdfType = SparqlClient.getRdfTypeString(SparqlClient.UpperLimit);
+		String llRdfType = SparqlClient.getRdfTypeString(SparqlClient.LowerLimit);
+		String npRdfType = SparqlClient.getRdfTypeString(SparqlClient.NumberOfPoints);
+		String ptRdfType = SparqlClient.getRdfTypeString(SparqlClient.Point);
+		String maxvRdfType = SparqlClient.getRdfTypeString(SparqlClient.MaxValue);
+		String minvRdfType = SparqlClient.getRdfTypeString(SparqlClient.MinValue);
+		String diffRdfType = SparqlClient.getRdfTypeString(SparqlClient.Difference);
+		String diffReverseRdfType = SparqlClient.getRdfTypeString(SparqlClient.DifferenceReverse);
+
+		// create ontoagent instances
+		devClient.createOntoAgentInstance(Config.agentIriRNG, Config.agentHttpUrlRNG,
+				Arrays.asList(ulRdfType, llRdfType, npRdfType), Arrays.asList(ptRdfType));
+		devClient.createOntoAgentInstance(Config.agentIriMaxValue, Config.agentHttpUrlMaxValue,
+				Arrays.asList(ptRdfType), Arrays.asList(maxvRdfType));
+		devClient.createOntoAgentInstance(Config.agentIriMinValue, Config.agentHttpUrlMinValue,
+				Arrays.asList(ptRdfType), Arrays.asList(minvRdfType));
+		devClient.createOntoAgentInstance(Config.agentIriDifference, Config.agentHttpUrlDifference,
+				Arrays.asList(maxvRdfType, minvRdfType), Arrays.asList(diffRdfType));
+		devClient.createOntoAgentInstance(Config.agentIriDiffReverse, Config.agentHttpUrlDiffReverse,
+				Arrays.asList(maxvRdfType, minvRdfType), Arrays.asList(diffReverseRdfType));
 
 		// create upperlimit, lowerlimit, numberofpoints
 		String upperLimit = sparqlClient.createUpperLimit();
 		String ul_value = sparqlClient.addValueInstance(upperLimit, upper_limit_value);
-		devClient.addTimeInstance(upperLimit);
-		devClient.updateTimestamp(upperLimit);
 		LOGGER.info("Created UpperLimit instance <" + upperLimit + ">");
 		response.put(upper_limit_instance_key, upperLimit);
 
 		String lowerLimit = sparqlClient.createLowerLimit();
 		String ll_value = sparqlClient.addValueInstance(lowerLimit, lower_limit_value);
-		devClient.addTimeInstance(lowerLimit);
-		devClient.updateTimestamp(lowerLimit);
 		LOGGER.info("Created LowerLimit instance <" + lowerLimit + ">");
 		response.put(lower_limit_instance_key, lowerLimit);
 
 		String numOfPoints = sparqlClient.createNumberOfPoints();
 		String np_value = sparqlClient.addValueInstance(numOfPoints, number_of_points);
-		devClient.addTimeInstance(numOfPoints);
-		devClient.updateTimestamp(numOfPoints);
 		LOGGER.info("Created NumberOfPoints instance <" + numOfPoints + ">");
 		response.put(num_of_pts_instance_key, numOfPoints);
 
@@ -203,18 +221,19 @@ public class InitialiseInstances extends JPSAgent {
 			LOGGER.info("Created RNG derivation <" + rng_dev + ">");
 			response.put(rng_dev_key, rng_dev);
 
-			List<String> listOfRandomPoints_iris = rng_derivation
-					.getBelongsToIris(SparqlClient.getRdfTypeString(SparqlClient.ListOfRandomPoints));
-			if (listOfRandomPoints_iris.size() != 1) {
-				throw new IllegalStateException("Expected 1 ListOfRandomPoints instance, got "
-						+ listOfRandomPoints_iris.size());
-			}
-			String listOfRandomPoints_iri = listOfRandomPoints_iris.get(0);
-			LOGGER.info("Created ListOfRandomPoints instance <" + listOfRandomPoints_iri + ">");
-			response.put(list_rand_pts_instance_key, listOfRandomPoints_iri);
+			List<String> ptIRIs = rng_derivation
+					.getBelongsToIris(SparqlClient.getRdfTypeString(SparqlClient.Point));
+			LOGGER.info("Created list of random Point instances: " + ptIRIs);
+			response.put(pt_instances_key, new JSONArray(ptIRIs));
 
-			maxDevInputs.add(listOfRandomPoints_iri);
-			minDevInputs.add(listOfRandomPoints_iri);
+			if (ptIRIs.isEmpty()) {
+				// if no points were created, then add rng derivation as inputs for the max and min derivations
+				maxDevInputs.add(rng_dev);
+				minDevInputs.add(rng_dev);
+			} else {
+				maxDevInputs.addAll(ptIRIs);
+				minDevInputs.addAll(ptIRIs);
+			}
 
 			// create maxvalue, minvalue via maxvalue and minvalue derivation
 			if (max) {
@@ -226,14 +245,18 @@ public class InitialiseInstances extends JPSAgent {
 
 				List<String> maxValue_iris = max_derivation
 						.getBelongsToIris(SparqlClient.getRdfTypeString(SparqlClient.MaxValue));
-				if (maxValue_iris.size() != 1) {
-					throw new IllegalStateException("Expected 1 MaxValue instance, got " + maxValue_iris.size());
+				String maxValue = new String();
+				if (maxValue_iris.size() > 1) {
+					throw new IllegalStateException("Expected maximum 1 MaxValue instance, got " + maxValue_iris.size());
+				} else if (maxValue_iris.size() == 1) {
+					maxValue = maxValue_iris.get(0);
+					diffDevInputs.add(maxValue);
+				} else {
+					// when no maxvalue instance is created, just add the max derivation
+					diffDevInputs.add(max_dev);
 				}
-				String maxValue = maxValue_iris.get(0);
 				LOGGER.info("Created MaxValue instance <" + maxValue + ">");
 				response.put(maxvalue_instance_key, maxValue);
-
-				diffDevInputs.add(maxValue);
 			} else {
 				String max_dev = devClient.createAsyncDerivationForNewInfo(Config.agentIriMaxValue,
 						maxDevInputs);
@@ -250,14 +273,18 @@ public class InitialiseInstances extends JPSAgent {
 
 				List<String> minValue_iris = min_derivation
 						.getBelongsToIris(SparqlClient.getRdfTypeString(SparqlClient.MinValue));
-				if (minValue_iris.size() != 1) {
-					throw new IllegalStateException("Expected 1 MinValue instance, got " + minValue_iris.size());
+				String minValue = new String();
+				if (minValue_iris.size() > 1) {
+					throw new IllegalStateException("Expected maximum 1 MinValue instance, got " + minValue_iris.size());
+				} else if (minValue_iris.size() == 1) {
+					minValue = minValue_iris.get(0);
+					diffDevInputs.add(minValue);
+				} else {
+					// when no minvalue instance is created, just add the min derivation
+					diffDevInputs.add(min_dev);
 				}
-				String minValue = minValue_iris.get(0);
 				LOGGER.info("Created MinValue instance <" + minValue + ">");
 				response.put(minvalue_instance_key, minValue);
-
-				diffDevInputs.add(minValue);
 			} else {
 				String min_dev = devClient.createAsyncDerivationForNewInfo(Config.agentIriMinValue,
 						minDevInputs);
@@ -275,11 +302,13 @@ public class InitialiseInstances extends JPSAgent {
 
 				List<String> difference_iris = diff_derivation
 						.getBelongsToIris(SparqlClient.getRdfTypeString(SparqlClient.Difference));
-				if (difference_iris.size() != 1) {
-					throw new IllegalStateException("Expected 1 Difference instance, got "
+				String difference = new String();
+				if (difference_iris.size() > 1) {
+					throw new IllegalStateException("Expected maximum 1 Difference instance, got "
 							+ difference_iris.size());
+				} else if (difference_iris.size() == 1) {
+					difference = difference_iris.get(0);
 				}
-				String difference = difference_iris.get(0);
 				LOGGER.info("Created Difference instance <" + difference + ">");
 				response.put(difference_instance_key, difference);
 

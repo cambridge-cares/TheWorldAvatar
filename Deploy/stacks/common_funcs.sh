@@ -79,7 +79,7 @@ is_valid_stack()
 {
   local stack=$1
   case "$stack" in
-    "agent"|"dafni"|"db"|"web")
+    "agent"|"dafni"|"db"|"web"|"cares-agent"|"cares-db")
       return $TRUE ;;
     *)
       return $FALSE ;;
@@ -185,7 +185,7 @@ write_env_file()
   if [ $use_test_config -eq $TRUE ]; then
     container_name_suffix="$container_name_suffix-test"
   fi
-
+  
   echo "Generating environment variables file..."
 
   # Use default env file if it exists

@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  ifcowlconverter:
+    container_name: ifcowlconverter-agent
+    image: ifcowlconverter-agent:1.0.0
+    build:
+      context: .
+      target: agent
+    ports:
+      - "3024:8080"
+    volumes:
+        - ./data:/usr/local/tomcat/data

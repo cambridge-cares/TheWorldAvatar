@@ -6,13 +6,16 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,7 +45,7 @@ public class DockerClientTest {
     @BeforeClass
     public static void setup() {
         StackClient.setInStack(false);
-        dockerAPI = new DockerClient();
+        dockerAPI = DockerClient.getInstance();
 
         String image = "busybox:latest";
 
@@ -157,7 +160,7 @@ public class DockerClientTest {
 
     private File createFile(File dir, String filename, String data) throws IOException {
         File file = new File(dir, filename);
-        FileUtils.writeStringToFile(file, data, "UTF-8");
+        FileUtils.writeStringToFile(file, data, StandardCharsets.UTF_8);
         return file;
     }
 
@@ -169,6 +172,13 @@ public class DockerClientTest {
     @Test
     public void testExecuteCommandSimpleFalse() {
         Assert.assertEquals(1, dockerAPI.getCommandErrorCode(dockerAPI.executeSimpleCommand(containerId, "false")));
+    }
+
+    @Test
+    public void testExecuteLongCommand() {
+        Assert.assertEquals(0, dockerAPI
+                .getCommandErrorCode(dockerAPI.createComplexCommand(containerId, "sh", "-c", "sleep 2 && true")
+                        .withEvaluationTimeout(1).exec()));
     }
 
     @Test
@@ -188,6 +198,10 @@ public class DockerClientTest {
     @Test
     public void testExecuteCommandIOFromString() {
 
+        Assume.assumeFalse(
+                "Passing a non-null value to ComplexCommand::withInputStream doesn't work when calling Docker via the Windows named pipe.",
+                SystemUtils.IS_OS_WINDOWS);
+
         ByteArrayInputStream inputStream = new ByteArrayInputStream(TEST_MESSAGE.getBytes());
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -203,6 +217,10 @@ public class DockerClientTest {
 
     @Test
     public void testExecuteCommandIOFromFile() {
+
+        Assume.assumeFalse(
+                "Passing a non-null value to ComplexCommand::withInputStream doesn't work when calling Docker via the Windows named pipe.",
+                SystemUtils.IS_OS_WINDOWS);
 
         InputStream inputStream = DockerClientTest.class.getResourceAsStream("testFile.txt");
 

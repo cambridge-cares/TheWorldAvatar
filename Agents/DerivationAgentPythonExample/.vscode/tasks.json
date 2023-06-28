@@ -1,0 +1,18 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "compose-test-dockerised-debug",
+            "type": "docker-compose",
+            "dockerCompose": {
+                "up": {
+                    "detached": true,
+                    "build": true,
+                },
+                "files": [
+                    "${workspaceFolder}/docker-compose-test-dockerised-debug.yml",
+                ]
+            }
+        }
+    ]
+}

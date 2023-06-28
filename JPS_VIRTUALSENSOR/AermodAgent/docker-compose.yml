@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  aermod-agent:
+    image: ghcr.io/cambridge-cares/aermod-agent:1.2
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
+    environment:
+      - STACK_NAME=${STACK_NAME}
+      - PYTHON_SERVICE_URL=http://${STACK_NAME}-python-service:5000/getAermodGeoJSON
+      - PYTHON_SERVICE_ELEVATION_URL=http://${STACK_NAME}-python-service:5000/getElevationGeoJSON
+      - AERMAP_EXE=/root/aermod/aermap
+      - BPIPPRM_EXE=/root/aermod/bpipprm
+      - AERMET_EXE=/root/aermod/aermet # need to match Dockerfile
+      - AERMOD_EXE=/root/aermod/aermod # need to match Dockerfile
+      - WEATHER_AGENT=http://${STACK_NAME}-weather-agent:8080/WeatherAgent/UpdateStation
+      - DATABASE=postgres
+      - GEOSERVER_WORKSPACE=dispersion
+      - DISPERSION_LAYER=dispersion_layer
+      - SIMULATION_DIR=/root/aermod/simulations
+      - FILE_SERVER_URL=http://${STACK_NAME}-file-server:8080/FileServer/
+      - DISPERSION_STYLE_NAME=dispersion_style
+      - SOURCE_LAYER=source_layer
+      - VIS_FOLDER=/vis_data
+      - GEOSERVER_URL=http://localhost:3838/geoserver # specifying here because WMS endpoint does not work with container name
+    configs:
+      - postgis
+      - blazegraph
+      - geoserver
+      - ontop
+    secrets:
+      - postgis_password
+      - geoserver_password
+    ports:
+      - "8081:8080"
+    volumes:
+      - logs:/root/.jps
+      - vis_data:/vis_data
+    networks:
+      - stack
+
+volumes:
+  logs:
+    name: "${STACK_NAME}_logs"
+  vis_data:
+    name: "${STACK_NAME}_vis_data"

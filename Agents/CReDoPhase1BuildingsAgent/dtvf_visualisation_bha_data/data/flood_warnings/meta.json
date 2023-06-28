@@ -1,0 +1,19 @@
+{
+    "dataSets": [
+        {
+            "name": "flood-warnings",
+            "dataType": "geojson",
+            "dataLocation": "flood-warnings.geojson",
+            "locationType": "fill",
+            "metaFiles": ["flood-warnings-meta.json"]
+        },
+	    {
+            "name": "buildings-2d",
+            "dataType": "geojson",
+            "dataLocation": "buildings_2d.geojson",
+            "locationType": "extrusion",
+            "metaFiles": ["buildings_2d-meta.json"],
+            "timeseriesFiles": ["buildings_2d-timeseries.json"]
+        }
+    ]
+}

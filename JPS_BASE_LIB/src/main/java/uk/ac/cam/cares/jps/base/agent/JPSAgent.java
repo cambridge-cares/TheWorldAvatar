@@ -2,8 +2,10 @@ package uk.ac.cam.cares.jps.base.agent;
 
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.interfaces.JPSAgentInterface;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
+import uk.ac.cam.cares.jps.base.query.RDBAccessAgentCaller;
 import uk.ac.cam.cares.jps.base.router.AgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
@@ -61,6 +63,22 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
     }
     
     /**
+	 * Get the SPARQL endpoints for a target resource. The query and update endpoints 
+	 * can be extracted from the JSONObject using the keys
+	 * {@link uk.ac.cam.cares.jps.base.config.JPSConstants#QUERY_ENDPOINT JPSConstants.QUERY_ENDPOINT} 
+	 * and
+	 * {@link uk.ac.cam.cares.jps.base.config.JPSConstants#UPDATE_ENDPOINT JPSConstants.UPDATE_ENDPOINT}. 
+	 * <p>
+	 * This does not perform a SPARQL query/update.
+	 * 
+	 * @param targetResourceID
+	 * @return JSONObject with query and update endpoint
+	 */
+    public JSONObject getEndpoints(String targetResourceID) {
+    	return AccessAgentCaller.getEndpoints(targetResourceID);	
+    }
+    
+    /**
      * Execute a {@link <a href="https://www.w3.org/TR/sparql11-query/">SPARQL Query</a>} on the target resource 
      * in the Knowledge Graph by calling the AccessAgent. 
      * @param targetResourceID	target namespace or IRI <br>
@@ -106,7 +124,11 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
     public void update(String targetResourceID, String sparqlUpdate) {
     	AccessAgentCaller.update(targetResourceID, sparqlUpdate);
     }
-    
+
+    public String getRDBUrl(String targetResourceID) {
+        return RDBAccessAgentCaller.getRDBUrl(targetResourceID);
+    }
+
     /**
      * Send a HTTP GET request to an agent with JSON parameters
      * 

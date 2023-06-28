@@ -3,9 +3,11 @@ package uk.ac.cam.cares.derivation.asynexample;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
@@ -19,10 +21,10 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
-import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
+import uk.ac.cam.cares.jps.base.derivation.ValuesPattern;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
@@ -38,15 +40,16 @@ public class SparqlClient {
 	public static Iri MaxValue = p_namespace.iri("MaxValue");
 	public static Iri MinValue = p_namespace.iri("MinValue");
 	public static Iri Difference = p_namespace.iri("Difference");
-	public static Iri ListOfRandomPoints = p_namespace.iri("ListOfRandomPoints");
+	public static Iri DifferenceReverse = p_namespace.iri("DifferenceReverse");
 	public static Iri Point = p_namespace.iri("Point");
 	public static Iri UpperLimit = p_namespace.iri("UpperLimit");
 	public static Iri LowerLimit = p_namespace.iri("LowerLimit");
 	public static Iri NumberOfPoints = p_namespace.iri("NumberOfPoints");
 	public static Iri ScalarValue = p_namespace.iri("ScalarValue");
-	
+	public static Iri InputPlaceholderExceptionThrow = p_namespace.iri("InputPlaceholderExceptionThrow");
+	public static Iri OutputPlaceholderExceptionThrow = p_namespace.iri("OutputPlaceholderExceptionThrow");
+
 	// property
-	public static Iri hasPoint = p_namespace.iri("hasPoint");
 	public static Iri hasValue = p_namespace.iri("hasValue");
 	public static Iri numericalValue = p_namespace.iri("numericalValue");
 	
@@ -256,7 +259,21 @@ public class SparqlClient {
     	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
     	return numberOfPoints_iri;
     }
-    
+
+	/**
+	 * This method creates a InputPlaceholderExceptionThrow instance.
+	 * <iri> a <InputPlaceholderExceptionThrow>
+	 * <iri> a owl:NamedIndividual
+	 * @return
+	 */
+	public String createInputPlaceholderExceptionThrow() {
+		String inputPlaceholderExceptionThrowIRI = namespace + UUID.randomUUID().toString();
+		ModifyQuery modify = Queries.MODIFY();
+		modify.insert(iri(inputPlaceholderExceptionThrowIRI).isA(InputPlaceholderExceptionThrow).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
+		storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
+		return inputPlaceholderExceptionThrowIRI;
+	}
+
     /**
      * This method queries ?x a <UpperLimit>.
      * @return
@@ -363,29 +380,32 @@ public class SparqlClient {
     }
 
 	/**
-     * This method queries ?x a <ListOfRandomPoints>.
-     * @return
-     */
-    public String getListOfRandomPointsIRI() {
-    	SelectQuery query = Queries.SELECT();
-    	
-    	String key = "listofrandompoints";
-    	Variable ul_iri = SparqlBuilder.var(key);
-		Variable derivation = SparqlBuilder.var("derivation");
-		GraphPattern queryPattern = ul_iri.isA(ListOfRandomPoints).andHas(belongsTo, derivation);
-    	
-		query.prefix(p_namespace, p_derivation).select(ul_iri).where(queryPattern);
-    	
-    	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-    	
-    	if (queryResult.length() > 1) {
-    		throw new JPSRuntimeException("There should be at MOST ONE ListOfRandomPoints instance, consider a reset by running InitialiseInstances");
-    	} else if (queryResult.length() == 1) {
-			return queryResult.getJSONObject(0).getString(key);
-		} else {
-			return new String();
+	 * This method queries ?x a <DifferenceReverse>, ?x <hasValue> ?v, ?v <numericalValue> ?value.
+	 * @return
+	 */
+	 public Map<String, Integer> getDiffReverseValues() {
+		SelectQuery query = Queries.SELECT();
+
+		String diffReverseKey = "diffReverse";
+		String valueKey = "value";
+		Variable ul_iri = SparqlBuilder.var(diffReverseKey);
+		Variable value_iri = query.var();
+		Variable value = SparqlBuilder.var(valueKey);
+		GraphPattern queryPattern = GraphPatterns.and(
+			ul_iri.isA(DifferenceReverse).andHas(hasValue,value_iri),
+			value_iri.has(numericalValue,value));
+
+		query.prefix(p_namespace).select(ul_iri, value).where(queryPattern);
+
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+		Map<String, Integer> diffReverseValues = new HashMap<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			diffReverseValues.put(queryResult.getJSONObject(i).getString(diffReverseKey), queryResult.getJSONObject(i).getInt(valueKey));
 		}
-    }
+
+		return diffReverseValues;
+	}
 	
 	/**
      * This method queries ?x a <MaxValue>.
@@ -434,31 +454,28 @@ public class SparqlClient {
 			return new String();
 		}
     }
-
 	/**
-	 * This method counts the number of ?pt in below triples
-	 * ?list a <ListOfRandomPoints>.
-	 * ?list <hasPoint> ?pt.
-	 * ?list <belongsTo> ?derivation.
-	 * 
+	 * This method queries ?pt a <Point>
 	 * @return
 	 */
-	public int getAmountOfPointsInList() {
+	public List<String> getPointsInKG() {
 		SelectQuery query = Queries.SELECT();
 
-		String listKey = "list";
 		String pointKey = "pt";
-		
-		Variable lst = SparqlBuilder.var(listKey);
-		Variable pt = SparqlBuilder.var(pointKey);
-		Variable derivation = SparqlBuilder.var("derivation");
-		GraphPattern queryPattern = lst.isA(ListOfRandomPoints).andHas(hasPoint, pt).andHas(belongsTo, derivation);
 
-		query.prefix(p_namespace, p_derivation).select(pt).where(queryPattern);
+		Variable pt = SparqlBuilder.var(pointKey);
+		GraphPattern queryPattern = pt.isA(Point);
+
+		query.prefix(p_namespace).select(pt).where(queryPattern);
 
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
-		return queryResult.length();
+		List<String> points = new ArrayList<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			points.add(queryResult.getJSONObject(i).getString(pointKey));
+		}
+
+		return points;
 	}
 
 	/**
@@ -514,38 +531,6 @@ public class SparqlClient {
 		return triples;
 	}
 
-    /**
-     * This method creates a ListOfRandomPoints instance given a list of value.
-     * <iri> a <ListOfRandomPoints>,
-     * <iri> a owl:NamedIndividual,
-     * <iri> <hasPoint> <pointIRI>,
-     * <pointIRI> a <Point>,
-     * <pointIRI> <hasValue> <valueIRI>,
-     * <valueIRI> a <ScalarValue>, 
-     * <valueIRI> <numericalValue> value
-     * @param listOfRandomPoints
-     * @return
-     */
-	public List<String> createListOfRandomPoints(String listOfRandomPoints_iri, List<Integer> listOfRandomPoints) {
-		List<String> iris = new ArrayList<>();
-		iris.add(listOfRandomPoints_iri);
-    	ModifyQuery modify = Queries.MODIFY();
-    	modify.insert(iri(listOfRandomPoints_iri).isA(ListOfRandomPoints).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
-    	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
-    	
-    	if (listOfRandomPoints != null) {
-        	for (Integer pt : listOfRandomPoints) {
-        		String pt_iri = createPoint();
-				iris.add(pt_iri);
-				String value_iri = addValueInstance(pt_iri, pt);
-				iris.add(value_iri);
-        		addPointInstance(listOfRandomPoints_iri, pt_iri);
-        	}
-    	}
-    	
-		return iris;
-	}
-
 	/**
 	 * This method generates below triples:
 	 * <lstRandPtsIRI> <hasPoint> <pt_n>.
@@ -560,12 +545,11 @@ public class SparqlClient {
 	 * @param valuesMap
 	 * @return
 	 */
-	public List<TriplePattern> createListOfRandomPoints(String lstRandPtsIRI, Map<String, String> ptIRIs,
+	public List<TriplePattern> createListOfRandomPoints(Map<String, String> ptIRIs,
 			Map<String, Integer> valuesMap) {
 		List<TriplePattern> triples = new ArrayList<>();
-		if (ptIRIs.values().stream().allMatch(valIri -> valuesMap.containsKey(valIri))) {
+		if (ptIRIs.values().stream().allMatch(valuesMap::containsKey)) {
 			ptIRIs.forEach((ptIri, valIri) -> {
-				triples.add(Rdf.iri(lstRandPtsIRI).has(Rdf.iri(getPropertyString(hasPoint)), Rdf.iri(ptIri)));
 				triples.addAll(addValueInstance(ptIri, valIri, valuesMap.get(valIri)));
 			});
 		} else {
@@ -575,7 +559,7 @@ public class SparqlClient {
 		}
 		return triples;
 	}
-    
+
     /**
      * This method creates a Point instance. 
      * <iri> a <Point>
@@ -589,77 +573,39 @@ public class SparqlClient {
     	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
     	return point_iri;
     }
-    
-    /**
-     * This method links point_iri to the listOfRandomPoints_iri it belongs to.
-     * @param listOfRandomPoints_iri
-     * @param point_iri
-     */
-    public void addPointInstance(String listOfRandomPoints_iri, String point_iri) {
-    	ModifyQuery modify = Queries.MODIFY();
-    	modify.insert(iri(listOfRandomPoints_iri).has(hasPoint,iri(point_iri)));
-    	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
-    }
-    
+
     /**
      * Get the extreme (max or min) value from a list of randomly generated points.
-     * query and order <listOfRandomPoints> <hasPoint>/<hasValue>/<numericalValue> ?value
+     * query and order:
+	 * values ?pt { <pt1> <pt2> ... }
+	 * ?pt <hasValue>/<numericalValue> ?value
      * @param listOfRandomPoints_iri
      * @param max
      * @return
      */
-    public int getExtremeValueInList(String listOfRandomPoints_iri, boolean max) {
+    public int getExtremeValueInList(List<String> pts, boolean max) {
     	SelectQuery query = Queries.SELECT();
-    	
-    	String key = "value";
-    	Variable value = SparqlBuilder.var(key);
-    	GraphPattern queryPattern = iri(listOfRandomPoints_iri).has(PropertyPaths.path(hasPoint,hasValue,numericalValue),value);
-    	
+
+		String ptKey = "pt";
+    	String valKey = "value";
+		Variable pt = SparqlBuilder.var(ptKey);
+    	Variable value = SparqlBuilder.var(valKey);
+    	GraphPattern queryPattern = GraphPatterns.and(
+				new ValuesPattern(pt, pts.stream().map(p -> iri(p)).collect(Collectors.toList())),
+				pt.has(PropertyPaths.path(hasValue,numericalValue),value));
+
     	// construct query string with different orderBy to get either max or min value
     	if (max) {
     		query.prefix(p_namespace).select(value).where(queryPattern).orderBy(SparqlBuilder.desc(value)).limit(1);
     	} else {
         	query.prefix(p_namespace).select(value).where(queryPattern).orderBy(value).limit(1);
     	}
-    	
+
     	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-    	
-    	return queryResult.getJSONObject(0).getInt(key);
+
+    	return queryResult.getJSONObject(0).getInt(valKey);
     }
-    
-    /**
-     * This method creates the OntoAgent instances in the KG given information about the agent I/O signature.
-     * @param service
-     * @param httpUrl
-     * @param inputTypes
-     * @param outputTypes
-     */
-    public void createOntoAgentInstance(String service, String httpUrl, List<String> inputTypes, List<String> outputTypes) {
-    	String operation = getNameSpace(service) + "_" + UUID.randomUUID().toString();
-    	String mcInput = getNameSpace(service) + "_" + UUID.randomUUID().toString();
-    	String mcOutput = getNameSpace(service) + "_" + UUID.randomUUID().toString();
-    	
-    	ModifyQuery modify = Queries.MODIFY();
-    	
-    	modify.insert(iri(service).isA(Service).andHas(hasOperation, iri(operation)));
-    	modify.insert(iri(operation).isA(Operation).andHas(hasInput, iri(mcInput)).andHas(hasOutput, iri(mcOutput)).andHas(hasHttpUrl, iri(httpUrl)));
-    	modify.insert(iri(mcInput).isA(MessageContent));
-    	for (String input : inputTypes) {
-    		String mpInput = getNameSpace(service) + "_" + UUID.randomUUID().toString();
-    		modify.insert(iri(mcInput).has(hasMandatoryPart, iri(mpInput)));
-    		modify.insert(iri(mpInput).isA(MessagePart).andHas(hasType, iri(input)));
-    	}
-    	
-    	modify.insert(iri(mcOutput).isA(MessageContent));
-    	for (String output : outputTypes) {
-    		String mpOutput = getNameSpace(service) + "_" + UUID.randomUUID().toString();
-    		modify.insert(iri(mcOutput).has(hasMandatoryPart, iri(mpOutput)));
-    		modify.insert(iri(mpOutput).isA(MessagePart).andHas(hasType, iri(output)));
-    	}
-    	
-    	storeClient.executeUpdate(modify.prefix(p_namespace,p_agent).getQueryString());
-    }
-    
+
     /**
 	 * This method chunks the given iri and returns its namespace. 
 	 * @param iri

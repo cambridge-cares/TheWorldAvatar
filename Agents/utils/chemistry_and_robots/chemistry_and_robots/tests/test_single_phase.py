@@ -4,7 +4,7 @@ import pytest
 
 INPUTCHEMICAL_1 = InputChemical(
     instance_iri='https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1',
-    clz='https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#InputChemical',
+    clz='https://www.theworldavatar.com/kg/ontoreaction/InputChemical',
     namespace_for_init=None,
     thermodynamicBehaviour=OntoCAPE_SinglePhase(
         instance_iri='https://www.example.com/triplestore/ontorxn/SinglePhase/Phase_1',
@@ -32,7 +32,7 @@ INPUTCHEMICAL_1 = InputChemical(
                         numericalValue=0.5
                     )
                 ),
-                representsOccurenceOf='http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'
+                representsOccurenceOf='http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'
             ),
             OntoCAPE_PhaseComponent(
                 instance_iri='https://www.example.com/triplestore/ontorxn/SinglePhase/PhaseComponent_6',
@@ -50,7 +50,7 @@ INPUTCHEMICAL_1 = InputChemical(
                         numericalValue=18.1
                     )
                 ),
-                representsOccurenceOf='http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb'
+                representsOccurenceOf='http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb'
             )
         ],
         has_composition=OntoCAPE_Composition(
@@ -89,7 +89,7 @@ INPUTCHEMICAL_1 = InputChemical(
 )
 INPUTCHEMICAL_2 = InputChemical(
     instance_iri='https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_2',
-    clz='https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#InputChemical',
+    clz='https://www.theworldavatar.com/kg/ontoreaction/InputChemical',
     namespace_for_init=None,
     thermodynamicBehaviour=OntoCAPE_SinglePhase(
         instance_iri='https://www.example.com/triplestore/ontorxn/SinglePhase/Phase_2',
@@ -113,7 +113,7 @@ INPUTCHEMICAL_2 = InputChemical(
                         hasUnitOfMeasure='http://www.ontology-of-units-of-measure.org/resource/om-2/molePerLitre', numericalValue=6.73
                     )
                 ),
-                representsOccurenceOf='http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3'
+                representsOccurenceOf='http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3'
             ), OntoCAPE_PhaseComponent(
                 instance_iri='https://www.example.com/triplestore/ontorxn/SinglePhase/PhaseComponent_6_2',
                 clz='http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent',
@@ -130,7 +130,7 @@ INPUTCHEMICAL_2 = InputChemical(
                         numericalValue=9.6
                     )
                 ),
-                representsOccurenceOf='http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb'
+                representsOccurenceOf='http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb'
             )
         ],
         has_composition=OntoCAPE_Composition(
@@ -169,7 +169,7 @@ INPUTCHEMICAL_2 = InputChemical(
 )
 INPUTCHEMICAL_3 = InputChemical(
     instance_iri='https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_3',
-    clz='https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#InputChemical',
+    clz='https://www.theworldavatar.com/kg/ontoreaction/InputChemical',
     namespace_for_init=None,
     thermodynamicBehaviour=OntoCAPE_SinglePhase(
         instance_iri='https://www.example.com/triplestore/ontorxn/SinglePhase/Phase_3',
@@ -196,7 +196,7 @@ INPUTCHEMICAL_3 = InputChemical(
                         numericalValue=0.1
                     )
                 ),
-                representsOccurenceOf='http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d'
+                representsOccurenceOf='http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202'
             ),
             OntoCAPE_PhaseComponent(
                 instance_iri='https://www.example.com/triplestore/ontorxn/SinglePhase/PhaseComponent_7',
@@ -214,7 +214,7 @@ INPUTCHEMICAL_3 = InputChemical(
                         numericalValue=17.1
                     )
                 ),
-                representsOccurenceOf='http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983'
+                representsOccurenceOf='http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983'
             )
         ], has_composition=OntoCAPE_Composition(
             instance_iri='https://www.example.com/triplestore/ontorxn/SinglePhase/Composition_3',
@@ -251,23 +251,23 @@ INPUTCHEMICAL_3 = InputChemical(
     )
 )
 AUTOSAMPLERSITE_1 = AutoSamplerSite(
-    instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/Site_1',
-    clz='https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#AutoSamplerSite',
+    instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/Site_1',
+    clz='https://www.theworldavatar.com/kg/ontovapourtec/AutoSamplerSite',
     namespace_for_init=None,
     holds=Vial(
-        instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/Vial_1',
-        clz='https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#Vial',
+        instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/Vial_1',
+        clz='https://www.theworldavatar.com/kg/ontovapourtec/Vial',
         namespace_for_init=None,
-        isFilledWith=ChemicalSolution(
-            instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/ChemicalSolution_1',
-            clz='https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#ChemicalSolution',
+        isFilledWith=ChemicalAmount(
+            instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/ChemicalAmount_1',
+            clz='https://www.theworldavatar.com/kg/ontolab/ChemicalAmount',
             namespace_for_init=None,
-            refersToMaterial=OntoCAPE_Material(
-                instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/Material_1',
+            refersToMaterial=Chemical(
+                instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/Material_1',
                 clz='http://www.theworldavatar.com/ontology/ontocape/material/material.owl#Material',
                 namespace_for_init=None,
                 thermodynamicBehaviour=OntoCAPE_SinglePhase(
-                    instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/Phase_1',
+                    instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/Phase_1',
                     clz='http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase',
                     namespace_for_init=None,
                     hasStateOfAggregation=OntoCAPE_StateOfAggregation(
@@ -277,52 +277,52 @@ AUTOSAMPLERSITE_1 = AutoSamplerSite(
                     ),
                     isComposedOfSubsystem=[
                         OntoCAPE_PhaseComponent(
-                            instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/PhaseComponent_1',
+                            instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/PhaseComponent_1',
                             clz='http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent',
                             namespace_for_init=None,
                             hasProperty=OntoCAPE_Molarity(
-                                instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/PhaseComponent_1_Property_1',
+                                instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/PhaseComponent_1_Property_1',
                                 clz='http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Molarity',
                                 namespace_for_init=None,
                                 hasValue=OntoCAPE_ScalarValue(
-                                    instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/PhaseComponent_1_Property_1_ScalarValue_1',
+                                    instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/PhaseComponent_1_Property_1_ScalarValue_1',
                                     clz='http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue',
                                     namespace_for_init=None,
                                     hasUnitOfMeasure='http://www.ontology-of-units-of-measure.org/resource/om-2/molePerLitre',
                                     numericalValue=0.5
                                 )
                             ),
-                            representsOccurenceOf='http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'),
+                            representsOccurenceOf='http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'),
                         OntoCAPE_PhaseComponent(
-                            instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/PhaseComponent_6',
+                            instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/PhaseComponent_6',
                             clz='http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent',
                             namespace_for_init=None,
                             hasProperty=OntoCAPE_Molarity(
-                                instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/PhaseComponent_6_Property_1',
+                                instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/PhaseComponent_6_Property_1',
                                 clz='http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Molarity',
                                 namespace_for_init=None,
                                 hasValue=OntoCAPE_ScalarValue(
-                                    instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/PhaseComponent_6_Property_1_ScalarValue_1',
+                                    instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/PhaseComponent_6_Property_1_ScalarValue_1',
                                     clz='http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue',
                                     namespace_for_init=None,
                                     hasUnitOfMeasure='http://www.ontology-of-units-of-measure.org/resource/om-2/molePerLitre',
                                     numericalValue=18.1
                                 )
                             ),
-                            representsOccurenceOf='http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb'
+                            representsOccurenceOf='http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb'
                         )
                     ],
                     has_composition=OntoCAPE_Composition(
-                        instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/Composition_1',
+                        instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/Composition_1',
                         clz='http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Composition',
                         namespace_for_init=None,
                         comprisesDirectly=[
                             OntoCAPE_Molarity(
-                                instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/PhaseComponent_1_Property_1',
+                                instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/PhaseComponent_1_Property_1',
                                 clz='http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Molarity',
                                 namespace_for_init=None,
                                 hasValue=OntoCAPE_ScalarValue(
-                                    instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/PhaseComponent_1_Property_1_ScalarValue_1',
+                                    instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/PhaseComponent_1_Property_1_ScalarValue_1',
                                     clz='http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue',
                                     namespace_for_init=None,
                                     hasUnitOfMeasure='http://www.ontology-of-units-of-measure.org/resource/om-2/molePerLitre',
@@ -330,11 +330,11 @@ AUTOSAMPLERSITE_1 = AutoSamplerSite(
                                 )
                             ),
                             OntoCAPE_Molarity(
-                                instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/PhaseComponent_6_Property_1',
+                                instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/PhaseComponent_6_Property_1',
                                 clz='http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Molarity',
                                 namespace_for_init=None,
                                 hasValue=OntoCAPE_ScalarValue(
-                                    instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/PhaseComponent_6_Property_1_ScalarValue_1',
+                                    instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/PhaseComponent_6_Property_1_ScalarValue_1',
                                     clz='http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue',
                                     namespace_for_init=None,
                                     hasUnitOfMeasure='http://www.ontology-of-units-of-measure.org/resource/om-2/molePerLitre',
@@ -343,37 +343,48 @@ AUTOSAMPLERSITE_1 = AutoSamplerSite(
                             )
                         ]
                     ),
-                    representsThermodynamicBehaviorOf='http://example.com/blazegraph/namespace/testlab/dummy_lab/Material_1'
+                    representsThermodynamicBehaviorOf='https://example.com/blazegraph/namespace/testlab/dummy_lab/Material_1'
                 )
             ),
-            fills='http://example.com/blazegraph/namespace/testlab/dummy_lab/Vial_1',
+            fills='https://example.com/blazegraph/namespace/testlab/dummy_lab/Vial_1',
             isPreparedBy=None
         ),
         hasFillLevel=OM_Volume(
-            instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/Vial_1_level_fill',
+            instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/Vial_1_level_fill',
             clz='http://www.ontology-of-units-of-measure.org/resource/om-2/Volume',
             namespace_for_init=None,
             hasValue=OM_Measure(
-                instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/Vial_1_level_fill_value',
+                instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/Vial_1_level_fill_value',
                 clz='http://www.ontology-of-units-of-measure.org/resource/om-2/Measure',
                 namespace_for_init=None,
                 hasUnit='http://www.ontology-of-units-of-measure.org/resource/om-2/millilitre',
                 hasNumericalValue=5.0
             )
         ),
-        hasMaxLevel=OM_Volume(
-            instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/Vial_1_level_max',
+        hasWarningLevel=OM_Volume(
+            instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/Vial_1_level_warning',
             clz='http://www.ontology-of-units-of-measure.org/resource/om-2/Volume',
             namespace_for_init=None,
             hasValue=OM_Measure(
-                instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/Vial_1_level_max_value',
+                instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/Vial_1_level_warning_value',
+                clz='http://www.ontology-of-units-of-measure.org/resource/om-2/Measure',
+                namespace_for_init=None,
+                hasUnit='http://www.ontology-of-units-of-measure.org/resource/om-2/millilitre',
+                hasNumericalValue=3.0
+            ),
+        ),
+        hasMaxLevel=OM_Volume(
+            instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/Vial_1_level_max',
+            clz='http://www.ontology-of-units-of-measure.org/resource/om-2/Volume',
+            namespace_for_init=None,
+            hasValue=OM_Measure(
+                instance_iri='https://example.com/blazegraph/namespace/testlab/dummy_lab/Vial_1_level_max_value',
                 clz='http://www.ontology-of-units-of-measure.org/resource/om-2/Measure',
                 namespace_for_init=None,
                 hasUnit='http://www.ontology-of-units-of-measure.org/resource/om-2/millilitre',
                 hasNumericalValue=10.0
             )
         ),
-        isHeldIn='http://example.com/blazegraph/namespace/testlab/dummy_lab/Site_1'
     ),
     locationID='1'
 )
@@ -388,3 +399,26 @@ AUTOSAMPLERSITE_1 = AutoSamplerSite(
 )
 def test_equal_single_phase(input_chemical, autosamplersite, desired_result):
     assert (input_chemical.thermodynamicBehaviour == autosamplersite.holds.isFilledWith.refersToMaterial.thermodynamicBehaviour) == desired_result
+
+@pytest.mark.parametrize(
+    "chemical,chemical_species,desired_result",
+    [
+        (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',True),
+        (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',True),
+        (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',False),
+        (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202',False),
+        (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983',False),
+        (INPUTCHEMICAL_2,'http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',False),
+        (INPUTCHEMICAL_2,'http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',True),
+        (INPUTCHEMICAL_2,'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',True),
+        (INPUTCHEMICAL_2,'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202',False),
+        (INPUTCHEMICAL_2,'http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983',False),
+        (INPUTCHEMICAL_3,'http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',False),
+        (INPUTCHEMICAL_3,'http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',False),
+        (INPUTCHEMICAL_3,'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',False),
+        (INPUTCHEMICAL_3,'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202',True),
+        (INPUTCHEMICAL_3,'http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983',True),
+    ],
+)
+def test_contains_chemical_species(chemical, chemical_species, desired_result):
+    assert chemical.contains_chemical_species(chemical_species) == desired_result

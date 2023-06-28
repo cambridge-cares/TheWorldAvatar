@@ -1,5 +1,6 @@
 from datetime import datetime
 import json
+import random
 import time
 import os
 
@@ -61,7 +62,7 @@ class VapourtecAgent(DerivationAgent):
         return [ONTOREACTION_REACTIONEXPERIMENT]
 
     def agent_output_concepts(self) -> list:
-        return [ONTOLAB_EQUIPMENTSETTINGS, ONTOVAPOURTEC_VAPOURTECINPUTFILE, ONTOLAB_CHEMICALSOLUTION]
+        return [ONTOLAB_EQUIPMENTSETTINGS, ONTOVAPOURTEC_VAPOURTECINPUTFILE, ONTOLAB_CHEMICALAMOUNT]
 
     def validate_inputs(self, http_request) -> bool:
         return super().validate_inputs(http_request)
@@ -75,6 +76,12 @@ class VapourtecAgent(DerivationAgent):
         else:
             self.logger.info("FlowCommander instance is already connected at IP address: %s" % (self.vapourtec_ip_address))
 
+    def reconnect_flowcommander_exe(self):
+        # Disconnect first then try to connect
+        FlowCommander.Disconnect(self.fc)
+        self.fc_exe_connected = False
+        self.connect_flowcommander_exe()
+
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
         # Get ReactionExperiment dataclasses instances from the KG
         list_rxn_exp_instance = self.sparql_client.getReactionExperiment(
@@ -86,24 +93,37 @@ class VapourtecAgent(DerivationAgent):
             )
 
         rxn_exp_instance = list_rxn_exp_instance[0]
-        self.logger.debug("Collected inputs from the knowledge graph: ")
-        self.logger.debug(json.dumps(rxn_exp_instance.dict()))
 
         if not self.dry_run:
             # Make sure the hardware is idle
             while not self.vapourtec_is_idle():
                 time.sleep(30)
 
-        # Get local variables of vapourtec_rs400, vapourtec_r4_reactor, and autosampler for reaction
-        vapourtec_rs400 = self.sparql_client.get_vapourtec_rs400(self.vapourtec_digital_twin)
-        vapourtec_r4_reactor = [reactor for reactor in vapourtec_rs400.consistsOf if reactor.instance_iri == rxn_exp_instance.isAssignedTo][0]
-        autosampler = self.sparql_client.get_autosampler_from_vapourtec_rs400(vapourtec_rs400)
+        # Get local variables of vapourtec_rs400 and autosampler for reaction
+        vapourtec_rs400 = self.sparql_client.get_vapourtec_rs400(list_vapourtec_rs400_iri=[self.vapourtec_digital_twin])[0]
+        autosampler = vapourtec_rs400.get_autosampler()
+
+        # Get the collection method from the vapourtec_rs400
+        # NOTE two types of collection: (1) send outlet to waste, (2) send outlet to autosampler site
+        # NOTE the collection information should be stored in KG, and VapourtecRS400 instance
+        # NOTE so that if it's sent to waste, then we don't care
+        # NOTE but if it's sent to autosampler site, then we need to know the collection site
+        # NOTE the collection site should be suggested by the vapourtec_rs400 instance
+        if vapourtec_rs400.collects_to_fraction_collector():
+            # need to know the number of collection site
+            col_site_iri, col_site_num, col_site_vial_iri = vapourtec_rs400.get_collection_site()
+            do_not_collect = False
+        else:
+            # no need to know the number of collection site, as it will go to waste bottle
+            col_site_num = None
+            do_not_collect = True
+            waste_bottle_iri = vapourtec_rs400.get_collection_receptacle()
 
         # Call function to create a list of ontolab.EquipmentSettings instances
-        # TODO [when run in loop, double check] Also generate settings for AutoSampler (collection bits)?
-        # TODO [when run in loop, double check] add support for pressure settings
-        list_equip_settings = self.sparql_client.create_equip_settings_for_rs400_from_rxn_exp(
-            rxn_exp_instance, vapourtec_rs400, vapourtec_r4_reactor)
+        # TODO [future work] the collection part should be further developed as a dataclass
+        # TODO [limitation of API for now] the amount of collected chemicals (collection volume) should be stored in KG
+        # TODO [future work, when we add pressure into optimisation] add support for pressure settings
+        list_equip_settings = vapourtec_rs400.create_equip_settings_for_rs400_from_rxn_exp(rxn_exp=rxn_exp_instance)
 
         # Configure the vapourtec digital twin in KG with the created OntoLab:EquipmentSettings triples
         # NOTE here the triples written to the KG include links between the settings and the hardware
@@ -116,14 +136,15 @@ class VapourtecAgent(DerivationAgent):
         equip_settings_graph_for_derivation = self.sparql_client.collect_triples_for_equip_settings(list_equip_settings, False)
         derivation_outputs.addGraph(equip_settings_graph_for_derivation)
 
-        # TODO [when run in loop, double check] refine the way of getting the autosampler site for collecting reaction outlet stream
-        # TODO [when run in loop, double check] get settings for AutoSampler? collection site and collection volume?
-        _autosampler_site_for_collection = [site.instance_iri for site in autosampler.hasSite if site.holds.isFilledWith is None and site.holds.hasFillLevel.hasValue.hasNumericalValue == 0][0]
-        # TODO [when run in loop, double check] 1.5 is only as placeholder for testing, get this information from AutoSampler
-        _autosampler_collection_amount = 1.5
-
         # Generate the execution CSV file
-        local_run_csv_path = vapourtec.create_exp_run_csv(self.fcexp_file_container_folder, rxn_exp_instance, list_equip_settings)
+        local_run_csv_path = vapourtec.create_exp_run_csv(
+            folder_path=self.fcexp_file_container_folder,
+            rxnexp=rxn_exp_instance,
+            list_equip_settings=list_equip_settings,
+            rs_400=vapourtec_rs400,
+            start_vial_override=col_site_num,
+            do_not_collect=do_not_collect,
+        )
         self.logger.info(f"The CSV run file generated within container at: {local_run_csv_path}")
         # Upload the vapourtec input file to file server for record
         local_file_path = local_run_csv_path
@@ -142,53 +163,116 @@ class VapourtecAgent(DerivationAgent):
         derivation_outputs.addGraph(vapourtec_input_file_graph)
 
         # Send the experiment csv for execution, also update the autosampler liquid level
+        self.dry_run_duration = random.randint(1, 10)
         self.send_fcexp_csv_for_execution(local_file_path, list_equip_settings)
 
-        # Create chemical solution instance for the reaction outlet stream
-        # <chemical_solution> <fills> <vial>. <vial> <isFilledWith> <chemical_solution>. here we should write the vial location to the KG
+        # Wait until the vapourtec is running reaction (if not dry_run)
+        if not self.dry_run:
+            vapourtec_running_reaction = False
+            while not vapourtec_running_reaction:
+                time.sleep(30)
+                vapourtec_running_reaction = self.sparql_client.vapourtec_rs400_is_running_reaction(vapourtec_rs400.instance_iri)
+
+            print("##############################################################################################################")
+            print("###################################### ReactionExperiment is running... ######################################")
+            print("##############################################################################################################")
+
+        # Update autosampler and reagent bottle liquid amount immediately after send the experiment for execution
+        # Get pump setting for the reference pump
+        _ref_pump_setting = [setting for setting in list_equip_settings if isinstance(setting, PumpSettings) and setting.hasSampleLoopVolumeSetting is not None][0]
+        # Construct two dicts: {"autosampler_site_iri": sampler_loop_volume (of autosampler)} and {"reagent_bottle_iri": reagent_bottle_usage_volume}
+        # NOTE here "*1.25" for ReagentBottle/AutoSamplerSite is a rough estimation to reflect what vapourtec normally takes more compared to the calculated volume
+        # TODO [limitation of API for now] get the exact value from API, instead of manual calculation it here
+        dct_autosampler_site_volume = {}
+        dct_reagent_bottle_volume = {}
+        for setting in list_equip_settings:
+            if isinstance(setting, PumpSettings):
+                if setting.pumpsLiquidFrom is not None:
+                    dct_autosampler_site_volume[setting.pumpsLiquidFrom.instance_iri] = round(autosampler.sampleLoopVolume.hasValue.hasNumericalValue * 1.25, 2)
+                else:
+                    dct_reagent_bottle_volume[setting.specifies.hasReagentSource.instance_iri] = \
+                        round(setting.hasFlowRateSetting.hasQuantity.hasValue.hasNumericalValue \
+                            / _ref_pump_setting.hasFlowRateSetting.hasQuantity.hasValue.hasNumericalValue \
+                                * _ref_pump_setting.hasSampleLoopVolumeSetting.hasQuantity.hasValue.hasNumericalValue * 1.25, 1) \
+                                    if setting.instance_iri != _ref_pump_setting.instance_iri else \
+                                        setting.hasSampleLoopVolumeSetting.hasQuantity.hasValue.hasNumericalValue
+        print("dct_autosampler_site_volume: ", dct_autosampler_site_volume)
+        print("dct_reagent_bottle_volume: ", dct_reagent_bottle_volume)
+        self.sparql_client.update_vapourtec_autosampler_liquid_level_millilitre(dct_autosampler_site_volume, True)
+        self.sparql_client.update_reagent_bottle_liquid_level_millilitre(dct_reagent_bottle_volume, True)
+
+        # TODO [nice-to-have, limitation of current API]
+        # Send warnings if the liquid level of any vials is lower than the warning level
+        # This can be done by checking the liquid level of all vials and reagent bottles via a periodic job
+
+        # Create chemical amount instance for the reaction outlet stream
+        # <vial> <isFilledWith> <chemical_amount>. here we should write the vial location to the KG
         # update <vial> <hasFillLevel>/<hasValue>/<hasNumericalValue> <xxx>.
         # (the rest information about vial should already be known as part of digital twin of autosampler)
-        chemical_solution_graph = self.sparql_client.create_chemical_solution_for_reaction_outlet(
-            autosampler_site_iri=_autosampler_site_for_collection,
-            amount_of_chemical_solution=_autosampler_collection_amount
-        )
-        derivation_outputs.addGraph(chemical_solution_graph)
+        # TODO [limitation of API for now] the amount of collected chemicals (collection volume) should be retrieved properly
+        _amount_of_chemical_amount_ = 3
+        if vapourtec_rs400.collects_to_fraction_collector():
+            chemical_amount_graph = self.sparql_client.create_chemical_amount_for_reaction_outlet(
+                autosampler_site_iri=col_site_iri,
+                amount_of_chemical_amount=_amount_of_chemical_amount_,
+            )
+        else:
+            chemical_amount_graph = self.sparql_client.create_chemical_amount_for_outlet_to_waste(
+                waste_bottle_iri=waste_bottle_iri,
+                amount_of_chemical_amount=_amount_of_chemical_amount_,
+            )
+        derivation_outputs.addGraph(chemical_amount_graph)
 
         # Remove the link between equipment settings and the digital twin of hardware
         # --> so within execution operation of each reaction experiment, the hardware got configured and released
         self.sparql_client.release_vapourtec_rs400_settings(vapourtec_rs400.instance_iri)
 
     def send_fcexp_csv_for_execution(self, run_csv_file_container_path: str, list_equip_settings: List[EquipmentSettings]):
-        # TODO [when run in loop, double check] should we load experiment file to check if the files are generated correctly for dry_run?
-        # TODO [when run in loop, double check] consider if we need to distinguish between actual execution and dry-run on per-reaction-basis
+        # TODO [nice-to-have, when run in loop, double check] should we load experiment file to check if the files are generated correctly for dry_run?
+        # TODO [nice-to-have, when run in loop, double check] consider if we need to distinguish between actual execution and dry-run on per-reaction-basis
         if not self.dry_run:
-            print("#######################")
-            # TODO [when run in loop, double check] should we load experiment everytime before we add and run new experiment?
-            template_fcexp_filepath = os.path.join(self.fcexp_file_host_folder, self.fcexp_template_filename)
-            FlowCommander.LoadExperiment(self.fc, template_fcexp_filepath) # e.g. "D:\Vapourtec\ReactionCont.fcexp"
-            self.logger.info("FlowCommander instance loaded experiment file: %s" % (template_fcexp_filepath))
+            print("##############################################################################################################")
+            print("###################################### Executing ReactionExperiment...  ######################################")
+            print("##############################################################################################################")
+            # NOTE The fcexp file should be loaded before the optimisation campaign is started
+            # # TODO [until further notice] should we load experiment everytime before we add and run new experiment?
+            # template_fcexp_filepath = os.path.join(self.fcexp_file_host_folder, self.fcexp_template_filename)
+            # FlowCommander.LoadExperiment(self.fc, template_fcexp_filepath) # e.g. "D:\Vapourtec\ReactionCont.fcexp"
+            # self.logger.info("FlowCommander instance loaded experiment file: %s" % (template_fcexp_filepath))
 
+            # Clear existing reaction experiments before adding new one, otherwise the old experiments will be executed again
+            FlowCommander.ClearReactions(self.fc)
             # Add reaction in CSV file to FlowCommander
             CSVParser.AddReactions(run_csv_file_container_path, self.fc)
             self.logger.info("Experiment recorded in the CSV file (%s) is added." % (run_csv_file_container_path))
 
+            # Pause the monitoring state until the run command is sent
+            self.scheduler.get_job('monitor_vapourtec_rs400_state').pause()
+            print("Monitoring vapourtec state is paused before sending reaction for execute.")
+
             # Run real reaction experiment
-            FlowCommander.Run(self.fc)
-            print("#######################")
+            try:
+                FlowCommander.Run(self.fc)
+            except Exception as e:
+                # If the pressure loss detection is disabled, the FlowCommander.Run() will pop up a window to ask for confirmation
+                #   this will throw an exception and drop the connection to FlowCommander, so we need to reconnect it
+                # If the pressure loss detection is enabled, the FlowCommander.Run() will just run the reaction
+                #   then this block will not be executed
+                self.logger.info(f"FlowCommander.Run() poped up window for disabled pressure loss detection, {e}")
+                self.fc_exe_connected = False
+                time.sleep(2)
+                self.connect_flowcommander_exe()
 
-            # Update autosampler liquid amount immediately after send the experiment for execution
-            # Construct a dict of {"autosampler_site_iri": sampler_loop_volume * 1.2}
-            # NOTE here "*1.2" is to reflect the default setting in vapourtec which takes 20% more liquid compared to the sample loop volume settings
-            # TODO [when run in loop, double check] double check if the sample loop volume can be setup for all rxn using the same .fcexp file
-            # TODO [when run in loop, double check] the implementation here actually only updates the autosampler site pumped by reference_pump
-            dct_site_loop_volume = {s.pumpsLiquidFrom.instance_iri:s.hasSampleLoopVolumeSetting.hasQuantity.hasValue.hasNumericalValue*1.2 for s in [
-                setting for setting in list_equip_settings if setting.clz == ONTOVAPOURTEC_PUMPSETTINGS and setting.hasSampleLoopVolumeSetting]}
-            self.sparql_client.update_vapourtec_autosampler_liquid_level_millilitre(dct_site_loop_volume, True)
+            # Resume the monitoring state after the run command is sent
+            self.scheduler.get_job('monitor_vapourtec_rs400_state').resume()
+            print("Monitoring vapourtec state is resumed after sending reaction for execute.")
 
-            # TODO [when run in loop, double check] send warnings if the liquid level of any vials is lower than the warning level
+        else:
+            self.update_vapourtec_state_for_dry_run(self.dry_run_duration)
 
+    @DerivationAgent.send_email_when_exception(func_return_value=False)
     def monitor_vapourtec_rs400_state(self):
-        print("=======================")
+        print("==============================================================================================================")
         try:
             # Connect to FlowCommander instance opened at the given IP address if not already connected
             if not self.fc_exe_connected:
@@ -198,12 +282,13 @@ class VapourtecAgent(DerivationAgent):
         except Exception as e:
             self.logger.error(e, stack_info=True, exc_info=True)
             try:
-                # self.fc = FlowCommander.Connect(self.vapourtec_ip_address)
-                self.connect_flowcommander_exe()
+                # Reconnect to FlowCommander instance opened at the given IP address
+                self.reconnect_flowcommander_exe()
                 self.update_flowcommander_state()
             except Exception as e1:
                 self.logger.error(e1, stack_info=True, exc_info=True)
-        print("=======================")
+                raise Exception(f"Failed to reconnect to FlowCommander instance opened at the given IP address: {self.vapourtec_ip_address}") from e1
+        print("==============================================================================================================")
 
     def update_flowcommander_state(self):
         try:
@@ -214,6 +299,30 @@ class VapourtecAgent(DerivationAgent):
                 self.vapourtec_ip_address, self.vapourtec_state, str(timestamp)))
         except Exception as e:
             self.logger.error(e, stack_info=True, exc_info=True)
+
+    def update_vapourtec_state_for_dry_run(self, dry_run_duration: int):
+        if self.dry_run:
+            try:
+                if not self.fc_exe_connected:
+                    timestamp = datetime.now().timestamp()
+                    self.sparql_client.update_vapourtec_rs400_state(self.vapourtec_digital_twin, ONTOVAPOURTEC_DRYRUNSTATE, timestamp)
+                    self.logger.info(f"VapourtecRS400 instance {self.vapourtec_digital_twin} is in DryRunState at timestamp {timestamp}, updated records in knowledge graph.")
+                    time.sleep(dry_run_duration)
+                    timestamp = datetime.now().timestamp()
+                    self.sparql_client.update_vapourtec_rs400_state(self.vapourtec_digital_twin, ONTOVAPOURTEC_IDLE, timestamp)
+                    self.logger.info(f"VapourtecRS400 instance {self.vapourtec_digital_twin} finished DryRun timestamp {timestamp}, updated its state to {ONTOVAPOURTEC_IDLE} in knowledge graph.")
+                else:
+                    self.logger.info("Pausing monitor_vapourtec_rs400_state job for dry run.")
+                    self.scheduler.get_job('monitor_vapourtec_rs400_state').pause()
+                    timestamp = datetime.now().timestamp()
+                    self.sparql_client.update_vapourtec_rs400_state(self.vapourtec_digital_twin, ONTOVAPOURTEC_DRYRUNSTATE, timestamp)
+                    self.logger.info(f"VapourtecRS400 instance {self.vapourtec_digital_twin} is in DryRunState at timestamp {timestamp}, updated records in knowledge graph.")
+                    time.sleep(dry_run_duration)
+                    self.logger.info("Resuming monitor_vapourtec_rs400_state job after dry run.")
+                    self.scheduler.get_job('monitor_vapourtec_rs400_state').resume()
+            except Exception as e:
+                self.logger.error(e, stack_info=True, exc_info=True)
+                raise Exception("Failed to update VapourtecRS400 state for dry run.") from e
 
     def vapourtec_is_idle(self) -> bool:
         return True if self.vapourtec_state == ONTOVAPOURTEC_IDLE else False

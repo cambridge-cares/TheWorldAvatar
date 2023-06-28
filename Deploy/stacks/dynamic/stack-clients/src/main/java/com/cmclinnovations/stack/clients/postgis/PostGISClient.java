@@ -1,30 +1,41 @@
 package com.cmclinnovations.stack.clients.postgis;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 
-public class PostGISClient extends ContainerClient {
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+
+public class PostGISClient extends ContainerClient implements ClientWithEndpoint {
+
+    public static final String DEFAULT_SCHEMA_NAME = "public";
 
     private final PostGISEndpointConfig postgreSQLEndpoint;
 
-    public PostGISClient() {
+    private static PostGISClient instance = null;
+
+    public static PostGISClient getInstance() {
+        if (null == instance) {
+            instance = new PostGISClient();
+        }
+        return instance;
+    }
+
+    private PostGISClient() {
         postgreSQLEndpoint = readEndpointConfig(EndpointNames.POSTGIS, PostGISEndpointConfig.class);
     }
 
-    private Connection getDefaultConnection() throws SQLException {
-        return getConnection("");
+    @Override
+    public PostGISEndpointConfig getEndpoint() {
+        return postgreSQLEndpoint;
     }
 
-    private Connection getConnection(String database) throws SQLException {
-        return DriverManager.getConnection(
-                postgreSQLEndpoint.getJdbcURL(database),
-                postgreSQLEndpoint.getUsername(),
-                postgreSQLEndpoint.getPassword());
+    private Connection getDefaultConnection() throws SQLException {
+        return getRemoteStoreClient().getConnection();
     }
 
     public void createDatabase(String databaseName) {
@@ -57,17 +68,13 @@ public class PostGISClient extends ContainerClient {
         }
     }
 
-    public void executeQuery(String databaseName, String sql) {
-        try (Connection conn = getConnection(databaseName);
-                Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate(sql);
-        } catch (SQLException ex) {
-            if ("3D000".equals(ex.getSQLState())) {
-                // Database doesn't exist error
-            } else {
-                throw new RuntimeException("Failed to run SQL query '" + sql + "' on the server with JDBC URL '"
-                        + postgreSQLEndpoint.getJdbcURL("databaseName") + "'.", ex);
-            }
-        }
+    public RemoteRDBStoreClient getRemoteStoreClient() {
+        return getRemoteStoreClient("");
+    }
+
+    public RemoteRDBStoreClient getRemoteStoreClient(String database) {
+        return new RemoteRDBStoreClient(postgreSQLEndpoint.getJdbcURL(database),
+                postgreSQLEndpoint.getUsername(),
+                postgreSQLEndpoint.getPassword());
     }
 }

@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  python-service:
+    image: ghcr.io/cambridge-cares/python-service:1.2
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
+    build:
+      target: production
+    ports:
+      - 5000:5000
+    volumes:
+      - vis_data:/var/www/html
+    networks:
+      - stack
+  
+volumes:
+  vis_data:
+    name: "vis_data"
+    external: true

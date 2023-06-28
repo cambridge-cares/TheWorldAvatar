@@ -1,0 +1,23 @@
+[PrefixDeclaration]
+xsd:		http://www.w3.org/2001/XMLSchema#
+geo:		http://www.opengis.net/ont/geosparql#
+crop:       http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#
+cropkb:     http://www.theworldavatar.com/kb/ontocropmapgml/
+lucodekb:   http://theworldavatar.com/ontology/ontolanduse/
+inria:      http://ns.inria.fr/ast/sql#
+dbo:        https://dbpedia.org/ontology/
+vocab:      http://open.vocab.org/terms/
+
+
+[MappingDeclaration] @collection [[
+mappingId	crop-map-cells
+target		cropkb:cell/{id} a crop:CropMap ;
+                    crop:hasLucode lucodekb:{lucode} ;
+                    inria:ObjectIdentifier {gid} ;
+                    dbo:area {st_area_sh} ;
+                    vocab:length {st_perimet} ;
+                    geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/27700> {wkt}"^^geo:wktLiteral ;
+                    crop:hasCromeID {id}^^xsd:string .
+source		SELECT gid, cromeid AS id, lucode, st_area_sh, st_perimet, ST_ASTEXT(geom) wkt
+            FROM "cropmap"
+]]

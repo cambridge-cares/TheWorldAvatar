@@ -1,3 +1,4 @@
 SPARQL_ENDPOINTS = {
-    'powerplants': 'powerplants'
+    'powerplants': 'powerplants',
+    'ukpowerplants': 'ukdigitaltwin_test2'
 }

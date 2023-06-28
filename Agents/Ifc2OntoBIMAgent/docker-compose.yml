@@ -1,0 +1,34 @@
+version: "3.9"
+
+services:
+  ifc2ontobim:
+    container_name: ifc2ontobim-agent
+    image: ifc2ontobim-agent:1.2.0
+    build:
+      context: .
+      target: agent
+    environment:
+      - "JAVA_OPTS=-Xms16g -Xmx16g -XX:InitialRAMPercentage=10 -XX:MinRAMPercentage=50 -XX:MaxRAMPercentage=80"
+    ports:
+      - "3025:8080"
+    volumes:
+        - ./data:/usr/local/tomcat/data
+        - ./config:/usr/local/tomcat/config
+    networks:
+      - agent_network
+  ifcowlconverter:
+      container_name: ifcowlconverter
+      image: ifcowlconverter-agent:1.0.0
+      build:
+        context: ../IfcOwlConverterAgent/
+        target: agent
+      ports:
+        - "3024:8080"
+      volumes:
+        - ./data:/usr/local/tomcat/data
+      networks:
+        - agent_network
+
+networks:
+  agent_network:
+    driver: bridge

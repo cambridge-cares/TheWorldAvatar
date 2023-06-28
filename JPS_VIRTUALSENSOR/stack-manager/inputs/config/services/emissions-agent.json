@@ -1,0 +1,41 @@
+{
+    "ServiceSpec": {
+        "Name": "emissions-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/emissions-agent:1.2",
+				"Env": [
+					"STACK_NAME=${STACK_NAME}",
+					"DATABASE=postgres",
+					"PYTHON_SERVICE_URL=http://ship-stack-python-service:5000"
+				],
+				"Configs": [
+					{
+						"ConfigName": "postgis"
+					},
+					{
+						"ConfigName": "blazegraph"
+					}
+				],
+				"Secrets": [
+					{
+						"SecretName": "postgis_password"
+					}
+				],
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "logs",
+                        "Target": "/root/.jps"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "dispersion-interactor": {
+            "url": "http://localhost:8080/EmissionsAgent/",
+            "externalPath": "/emissions-agent/"
+        }
+    }
+}

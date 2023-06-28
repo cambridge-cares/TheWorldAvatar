@@ -53,7 +53,7 @@ public class RNGAgent extends DerivationAgent {
 	
 	@Override
 	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
-		LOGGER.debug("RNGAgent received derivationInputs: " + derivationInputs.toString());
+		LOGGER.debug("RNGAgent received derivationInputs: " + derivationInputs.toString() + "for derivation: " + derivationInputs.getDerivationIRI());
 
 		// get the input from the KG
 		String upperLimitIRI = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.UpperLimit)).get(0);
@@ -66,14 +66,17 @@ public class RNGAgent extends DerivationAgent {
 				.get(0);
 		LOGGER.debug(numberOfPointsIRI);
 		Integer numberOfPoints = sparqlClient.getValue(numberOfPointsIRI);
-		
+
+		// skip all the rest if the number of points is less than 1
+		// this will make the derivation no outputs
+		if (numberOfPoints < 1) {
+			return;
+		}
+
 		if (upperLimit >= lowerLimit) {
 			// generate a list of random points
 			List<Integer> listOfRandomPoints = randomNumberGeneration(upperLimit, lowerLimit, numberOfPoints);
 			// write the generated output triples to derivationOutputs
-			String listOfRandomPoints_iri = SparqlClient.namespace + UUID.randomUUID().toString();
-			derivationOutputs.createNewEntity(listOfRandomPoints_iri,
-					SparqlClient.getRdfTypeString(SparqlClient.ListOfRandomPoints));
 			Map<String, String> ptIRIs = new HashMap<>();
 			Map<String, Integer> valuesMap = new HashMap<>();
 			listOfRandomPoints.stream().forEach(val -> {
@@ -85,7 +88,7 @@ public class RNGAgent extends DerivationAgent {
 				valuesMap.put(val_iri, val);
 			});
 			derivationOutputs
-					.addTriple(sparqlClient.createListOfRandomPoints(listOfRandomPoints_iri, ptIRIs, valuesMap));
+					.addTriple(sparqlClient.createListOfRandomPoints(ptIRIs, valuesMap));
 		} else {
 			throw new JPSRuntimeException("The provided upper limit " + upperLimit
 					+ " is smaller than the provided lower limit " + lowerLimit);
@@ -118,7 +121,7 @@ public class RNGAgent extends DerivationAgent {
 		
 		exeService.scheduleAtFixedRate(() -> {
 			try {
-				rngAgent.monitorAsyncDerivations(Config.agentIriRNG);
+				rngAgent.monitorAsyncDerivations(Config.agentIriRNG, Config.periodAgentRNG);
 			} catch (JPSRuntimeException e) {
 				e.printStackTrace();
 			}

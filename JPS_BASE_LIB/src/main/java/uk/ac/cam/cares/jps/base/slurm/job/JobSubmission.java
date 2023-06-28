@@ -131,8 +131,8 @@ public class JobSubmission{
 	 * @throws DFTAgentException
 	 */
 	public String setUpJob(String jsonInput, File slurmScript, File input, long timeStamp) throws IOException, SlurmJobException{
-        	String message = setUpJobOnAgentMachine(jsonInput, slurmScript, input, timeStamp);
-        	return message;
+        String message = setUpJobOnAgentMachine(jsonInput, slurmScript, input, timeStamp);
+        return message;
     }
 
 	/**
@@ -153,10 +153,10 @@ public class JobSubmission{
 	 * @throws DFTAgentException
 	 */
 	public String setUpJob(String jsonInput, File slurmScript, File input, File executable, long timeStamp) throws IOException, SlurmJobException{
-        	String message = setUpJobOnAgentMachine(jsonInput, slurmScript, input, executable, timeStamp);
-			JSONObject obj = new JSONObject();
-			obj.put("message", message);
-        	return obj.toString();
+        String message = setUpJobOnAgentMachine(jsonInput, slurmScript, input, executable, timeStamp);
+        JSONObject obj = new JSONObject();
+        obj.put("message", message);
+        return obj.toString();
     }
 
 	
@@ -174,6 +174,7 @@ public class JobSubmission{
 	private String setUpJobOnAgentMachine(String jsonString, File slurmScript, File input, long timeStamp) throws IOException, SlurmJobException{
 		Workspace workspace = new Workspace();
 		if(workspaceDirectory == null){
+            LOGGER.error("Workspace directory has not been set!");
 			return Status.JOB_SETUP_ERROR.getName();
 		}else{
 			return setUpSlurmJob(workspace, workspaceDirectory, jsonString, slurmScript, input, timeStamp);
@@ -195,6 +196,7 @@ public class JobSubmission{
 	private String setUpJobOnAgentMachine(String jsonString, File slurmScript, File input, File executable, long timeStamp) throws IOException, SlurmJobException{
 		Workspace workspace = new Workspace();
 		if(workspaceDirectory == null){
+            LOGGER.error("Workspace directory has not been set!");
 			return Status.JOB_SETUP_ERROR.getName();
 		}else{
 			return setUpSlurmJob(workspace, workspaceDirectory, jsonString, slurmScript, input, executable, timeStamp);
@@ -216,7 +218,10 @@ public class JobSubmission{
 	 */
 	private String setUpSlurmJob(Workspace ws, File workspaceFolder, String jsonString, File slurmScript, File input, long timeStamp) throws IOException, SlurmJobException{
 		File jobFolder = ws.createJobFolder(workspaceFolder.getAbsolutePath(), getHpcAddress(), timeStamp);
-    	if(createAllFileInJobFolder(ws, workspaceFolder, jobFolder, jsonString, slurmScript, input)==null){
+        LOGGER.info("Set up slurm job folder at: " + jobFolder);
+
+    	if(createAllFileInJobFolder(ws, workspaceFolder, jobFolder, jsonString, slurmScript, input) == null) {
+            LOGGER.error("Could not create files within the slurm job folder.");
     		return null;
     	}
     	return jobFolder.getName();
@@ -238,7 +243,10 @@ public class JobSubmission{
 	 */
 	private String setUpSlurmJob(Workspace ws, File workspaceFolder, String jsonString, File slurmScript, File input, File executable, long timeStamp) throws IOException, SlurmJobException{
 		File jobFolder = ws.createJobFolder(workspaceFolder.getAbsolutePath(), getHpcAddress(), timeStamp);
-    	if(createAllFileInJobFolder(ws, workspaceFolder, jobFolder, jsonString, slurmScript, input, executable)==null){
+        LOGGER.info("Set up slurm job folder at: " + jobFolder);
+
+    	if(createAllFileInJobFolder(ws, workspaceFolder, jobFolder, jsonString, slurmScript, input, executable) == null) {
+            LOGGER.error("Could not create files within the slurm job folder.");
     		return null;
     	}
     	return Status.JOB_SETUP_SUCCESS_MSG.getName();
@@ -467,6 +475,7 @@ public class JobSubmission{
 			if(workspaceDirectory.isDirectory()){
 				File[] jobFolders = workspaceDirectory.listFiles();
 				updateRunningJobSet(jobFolders, jobsRunning);
+
 				for(File jobFolder: jobFolders){
 					if(!Utils.isJobCompleted(jobFolder, slurmJobProperty)){
 						if(Utils.isJobRunning(jobFolder)){
@@ -476,16 +485,19 @@ public class JobSubmission{
 								}
 							}
 						} else if(Utils.isJobNotStarted(jobFolder) && !jobsRunning.contains(jobFolder.getName())){
+
 							if(jobsRunning.size()<slurmJobProperty.getMaxNumberOfHPCJobs()){
 								try{
+                                    LOGGER.info("Attempting to start slurm job in folder: " + jobFolder);
 									boolean flag = runNotStartedJob(jobFolder);
+
 									if(flag){
 										jobsRunning.add(jobFolder.getName());
 									}else{
 										break;
 									}
-								}catch(Exception e){
-									LOGGER.info(e.getMessage());
+								}catch(Exception exception){
+									LOGGER.error("Exception when running new slurm job!", exception);
 								}
 							}else{
 								break;
@@ -557,6 +569,7 @@ public class JobSubmission{
 	private boolean runNotStartedJob(File jobFolder)  throws SftpException, JSchException, IOException, UnknownHostException, InterruptedException{
 		// A counter variable to count the number of mandatory files.  
 		int countNumberOfFilesSetInProperties = 0;
+
 		// Checks if the script file (including name and extension) for the current Slurm job is provided.
 		if(slurmJobProperty.getSlurmScriptFileName()==null || slurmJobProperty.getSlurmScriptFileName().isEmpty()){
 			throw new IOException("SlurmJobAPI: Slurm script file name and extension are not provided.");			
@@ -627,10 +640,11 @@ public class JobSubmission{
 			System.out.println("SlurmJobAPI: all mandatory files are not found and an attempt to move the job folder with ID "
 					+jobFolder.getName()+" to the failed job folder is not successful.");
 		}
+
 		try{
 			startJob(jobFolder.getName(), Arrays.asList(jobFolder.listFiles()));
 		}catch(Exception e){
-			LOGGER.info("SlurmJobAPI: the Slurm Job with ID "+jobFolder.getName()+" could not be started.");
+			LOGGER.info("SlurmJobAPI: the Slurm Job with ID "+jobFolder.getName()+" could not be started.", e);
 			System.out.println("SlurmJobAPI: the Slurm Job with ID "+jobFolder.getName()+" could not be started.");
 			return false;
 		}
@@ -674,22 +688,28 @@ public class JobSubmission{
 		String replacedInputFileName = "";
 		String statusFileAbsolutePath = "";
 		String jobId = "";
+
 		for(File jobFile:jobFiles){
+
 			if(jobFile.getAbsolutePath().endsWith(slurmJobProperty.getInputFileExtension())){
 				replacedInputFileName = getInputFileNameReplaced(jobFile.getAbsolutePath());
 				String inputFileNameOnHPC = jobFolderOnHPC.concat("/").concat(replacedInputFileName);
 				uploadFile(jobFile.getAbsolutePath(), inputFileNameOnHPC);
 				replaceFileContent(jobFolderOnHPC, inputFileNameOnHPC);
+
 			}else if(!jobFile.getAbsolutePath().endsWith(Property.STATUS_FILE_NAME.getPropertyName())){
 				if(jobFile.getAbsolutePath().endsWith(".sh")){
 					Utils.translateLineEndingIntoUnix(new File(jobFile.getAbsolutePath()));
 				}
 				uploadFile(jobFile.getAbsolutePath(), jobFolderOnHPC);				
 			}
+
 			if(jobFile.getAbsolutePath().endsWith(Property.STATUS_FILE_NAME.getPropertyName())){
 				statusFileAbsolutePath = jobFile.getAbsolutePath();
 			}
 		}
+
+        LOGGER.info("Attemping to run job folder on HPC at: " + jobFolderOnHPC);
 		jobId = runSlurmJob(jobFolderOnHPC, replacedInputFileName);
 		if(!jobId.isEmpty()){
 			Utils.addJobId(statusFileAbsolutePath, jobId);
@@ -708,9 +728,14 @@ public class JobSubmission{
 	 */
 	private String runSlurmJob(String jobFolderOnHPC, String inputFile) throws JSchException, IOException{
 		inputFile = inputFile.replace(slurmJobProperty.getInputFileExtension(), "");
-		String command = "cd ".concat(jobFolderOnHPC).concat(" && ")
-				.concat("sbatch --job-name=").concat(inputFile).concat(" ")
-				.concat(Property.SLURM_SCRIPT_FILE_NAME.getPropertyName());
+		String command = "cd "
+            .concat(jobFolderOnHPC)
+            .concat(" && ")
+            .concat("sbatch --job-name=").concat(inputFile)
+            .concat(" ")
+            .concat(Property.SLURM_SCRIPT_FILE_NAME.getPropertyName());
+
+        LOGGER.info("Using command: " + command);
 		return runSlurmJob(command);
 	}
 	

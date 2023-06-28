@@ -1,2 +1,3 @@
-# Ignore shape files
-**/*.csv
+*.*csv
+*.*pb
+*.*ttl

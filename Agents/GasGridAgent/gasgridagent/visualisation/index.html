@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>UK Gas Grid Digital Twin</title>
+	<meta charset="utf-8">
+
+	<!-- External CSS -->
+	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css' rel='stylesheet' />
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
+
+	<!-- External JS -->
+	<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+  	<script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
+
+	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
+	<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script>
+	<script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.min.js"></script>
+
+	<!--
+		The following visualisiation framework files are currently stored locally (as
+		this is	easier during development and initial testing. Once it's ready for
+		release, these files will be hosted remotely).  
+	-->
+	
+	<!-- Framework CSS -->
+	<link href='./css/dtvf.css' rel='stylesheet' />
+	<link href="./css/jsonview.bundle.css" rel="stylesheet"> 
+
+	<!-- Framework JS -->
+	<script src='./js/manager.js'></script>
+	<script src='./js/data_registry.js'></script>
+	<script src='./js/source_handler.js'></script>
+	<script src='./js/layer_handler.js'></script>
+	<script src='./js/control_handler.js'></script>
+	<script src='./js/panel_handler.js'></script>
+	<script src='./js/interaction_handler.js'></script>
+	<script src='./js/timeseries_handler.js'></script>
+	<script src='./js/icon_handler.js'></script>
+	<script src='./js/jsonview.bundle.js'></script>
+
+	<!-- Implementation specific -->
+	<script src='./local_icons.js'></script>
+	<script src='./temp-utils.js'></script>
+	<script src='./focus-view.js'></script>
+	<script src='./camera.js'></script>
+</head>
+</head>
+
+<body>
+	<!-- Overlay to show loading icon -->
+	<div id='loadingOverlay'>
+		<div id="loadingInner">
+			<img src="img/loading.gif" width="200px" height="200px"/>
+			<h3>Loading data, please wait...</h3>
+		</div>
+	</div>
+
+	<!-- Element the MapBox map will be added to -->
+	<div id='map'></div>
+	<div id="tiltShift"></div>
+	
+	<!-- Element the map controls will be added to (normally on the left) -->
+	<div id="controlsContainer"></div>
+		
+	<!-- Popup element for developer only animation controls -->
+	<div id="animationDialog" style="display: none;"></div>
+
+	<!-- Non-module JS block, variables in here are global -->
+	<script>
+		// This ensures that the "manager" variable can be accessed from 
+		// HTMLElements for interaction events.
+		let manager = null;
+
+		// Enter your MapBox API here.
+		// This will be visible by inspecting the webpage anyway (either by looking at the source code,
+		// or inspecting the network packets). If it needs protection, limit it's usage to certain source
+		// domains via your MapBox account settings.
+		let mapboxAPI = "pk.eyJ1IjoibXNmZjIiLCJhIjoiY2t2bDRuZG9xMDg3dzJvbTh4NnNremgydyJ9.H5CctfdCnbxZDEt7R1w3yA";
+
+	</script>
+
+	<!-- Module JS block, variables are local (i.e. cannot access from HTML elements) -->
+	<script type="module">
+		// Initialise a DigitalTwinManager (and store as a global variable)
+		manager = new DigitalTwinManager();
+
+		// We could have wholesale data packages, so register multiple possible root directories
+		let rootDirectories = {
+			"Mixed": "./data"
+		};
+		manager.registerDirectories(rootDirectories);
+
+		// Load all the metadata
+		manager.readMetadata("Mixed", function() {
+			// Run start-up function only AFTER metadata is loaded
+			startUp();
+		});
+		
+		// Display the loading overlay
+		function showLoadingOverlay() {
+			let loadingOverlay = document.getElementById("loadingOverlay");
+
+			if(document.getElementById("sidePanel").classList.contains("expanded")) {
+				loadingOverlay.style.right = "500px";
+			} else {
+				loadingOverlay.style.right = "28px";
+			}
+			loadingOverlay.style.display = "flex";
+		}
+
+
+		// Get the base URL of the visualisation
+		function getURL() {
+			let winURL = window.location;
+			let baseURL = winURL.origin + window.location.pathname;
+			if(baseURL.includes(".html")) {
+				baseURL = baseURL.substring(0, baseURL.lastIndexOf('/'));
+			}
+			return baseURL;
+		}
+
+		// Will run once metadata is loaded asynchronously
+		function startUp() {
+			// Create the MapBox map
+			var map = manager.createMap("map");
+			
+			var iconHandler = new IconHandler(map);
+
+			// Provide some default content for the side panel
+			let title = `<h1>UK Gas Grid</h1>`;
+			let content = `
+					<p>The map to the left shows a sample of the power system data within the UK Digital Twin.</p>
+		            <p>Intake terminals (<span style="color:#108dcc;">blue</span>), offtakes (<span style="color:#B42222;">red</span>), 
+					and pipes (<span style="color:#B1B1B1;">grey</span>) from the gas transmission system are shown for the mainland UK.</p>
+		            <p>Select an intake terminal (<span style="color:#108dcc;">blue</span>) to see the recent flow of gas into the grid. 
+					This data is pulled from the UK Digital Twin and is updated on a daily basis.​</p>
+				`;
+			let legend = `	
+			    <div id="legend">
+			        <b>Legend:</b><br/>
+					<div id="padding" style="height: 6px;"></div>
+					<div style="padding-bottom: 2px;"><img width="24px" src="./img/legend-terminal.svg"/>Terminals</div>
+					<div style="padding-bottom: 2px;"><img width="24px" src="./img/legend-offtake.svg"/>Offtakes</div>
+					<div style="padding-bottom: 2px;"><img width="24px" src="./img/legend-pipe.svg"/>Pipelines</div>
+				</div>
+				`;
+
+			var footer = `Data updated on `;
+			new Promise((resolve, reject) => {
+
+				let winURL = window.location;
+				let rootDir = winURL.protocol + "//" + winURL.host + winURL.pathname;
+				let topFile = rootDir + rootDirectories['Mixed'] + '/' + "meta.json";
+
+				$.ajax({
+					url: topFile,
+					type: "HEAD"
+				}).done((d, s, xhr) => {
+					let date = xhr.getResponseHeader("Last-Modified")
+					resolve(date)
+				}).fail((xhr, s, err) => {
+					reject(s)
+				})
+			}).then((result) => {
+				let footerContent = $('#footerContent');
+				footerContent.text(footer+result);
+			})
+
+			// Show content and store as default (so it can be returned to later)
+			manager.setPanelContent(title, content,	legend,	footer);
+		
+			// Every time a MapBox changes style (i.e. Terrain), it will remove all data sources, layers, and icons.
+			// This means that we have to listen for this event (below) and re-add everything.
+			// Note: There does not seem to be a nice way to preverse the sources and layers when changing
+			// styles, but there is an open feature request for MapBox to implement this.
+			var loadedOnce = false;
+
+			map.on('style.load', function() {
+				console.log("INFO: A new style has been loaded.");
+				
+				// Show loading icon
+				showLoadingOverlay();
+					
+				var imagePromises = [];
+				if(!loadedOnce) {
+					// Load and cache icon images used by this visualisation
+					let baseURL = getURL();
+					
+					EXAMPLE_ICONS.forEach(relativeURL => {
+						let imageURL = (baseURL.endsWith("/")) ? (baseURL + relativeURL) : (baseURL + "/" + relativeURL);
+						imagePromises.push(iconHandler.loadIcon(imageURL));
+					});
+
+					// This callback will be fired when a final group is selected in the dropdowns
+					let selectCallback = function(selectedGroups) {
+					
+						// Show loading icon
+						showLoadingOverlay();
+							
+						manager.plotGroup(selectedGroups, false, function() {
+							// Hide the loading overlay
+							document.getElementById("loadingOverlay").style.display = "none";
+						});
+					};
+
+					// Build and show the layer tree based on the metadata
+					manager.showControls(null, selectCallback);
+
+					// Set up a callback that hides all connections whenever the user
+					// returns to the default side panel.
+					manager.setDefaultPanelCallback();
+					
+					// Show mouse position
+					manager.showDeveloperControls();
+
+					loadedOnce = true;
+				}
+				
+				// Add all cached icons to the new style. Using promises here
+				// ensures we only do this AFTER all images are loaded.
+				Promise.all(imagePromises).then(() => {
+					iconHandler.addAllIcons();
+
+					// Promise for loading data as sources and layers
+					var dataPromise;
+
+					// Re-plot the previously selected group
+					if(DT.currentGroup != null && DT.currentGroup.length > 0) {
+						dataPromise = manager.plotGroup(DT.currentGroup, false);
+					} else {
+						dataPromise = manager.plotFirstGroup();
+					}
+
+					if(dataPromise != null) {
+						dataPromise.then(() => {
+							// Re-add the sky and (optionally) 3D terrain
+							manager.addSkyAndTerrain();
+							manager.set3DTerrain();
+							manager.setPlacenames();
+							
+							// Hide the loading overlay
+							document.getElementById("loadingOverlay").style.display = "none";
+						});
+					}
+				});
+				
+			});
+		}
+	</script>
+
+</body>
+
+</html>

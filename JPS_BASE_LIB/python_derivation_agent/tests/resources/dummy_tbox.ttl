@@ -13,10 +13,10 @@
 
 :Point :hasValue xsd:integer .
 
-:ListOfPoints :hasPoint :Point .
-
 :MaxValue :hasValue xsd:integer .
 
 :MinValue :hasValue xsd:integer .
 
 :Difference :hasValue xsd:integer .
+
+:DifferenceReverse :hasValue xsd:integer .

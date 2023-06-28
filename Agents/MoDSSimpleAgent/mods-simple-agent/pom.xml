@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -9,7 +11,7 @@
 	</parent>
 	<groupId>com.cmclinnovations.mods</groupId>
 	<artifactId>mods-simple-agent</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.3.1</version>
 	<name>mods-simple-agent</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
@@ -81,7 +83,8 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<!-- This plugin copies all of the .jar dependencies into a 'lib' folder in the target directory. -->
+				<!-- This plugin copies all of the .jar dependencies into a 'lib' folder in the
+				target directory. -->
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<executions>

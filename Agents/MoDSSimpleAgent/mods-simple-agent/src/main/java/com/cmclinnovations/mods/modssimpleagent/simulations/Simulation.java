@@ -2,14 +2,18 @@ package com.cmclinnovations.mods.modssimpleagent.simulations;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.xml.bind.JAXBException;
 
+import com.cmclinnovations.mods.api.MoDSAPI;
 import com.cmclinnovations.mods.modssimpleagent.BackendInputFile;
 import com.cmclinnovations.mods.modssimpleagent.CSVDataFile;
 import com.cmclinnovations.mods.modssimpleagent.CSVDataSeparateFiles;
@@ -19,21 +23,37 @@ import com.cmclinnovations.mods.modssimpleagent.MoDSBackendFactory;
 import com.cmclinnovations.mods.modssimpleagent.TemplateLoader;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Algorithm;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Data;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.InputMetaData;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityResult;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityLabels;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityValues;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
 public class Simulation {
+
+    private static final Logger LOGGER = LogManager.getLogger(Simulation.class);
 
     public static final String DATA_ALGORITHM_NAME = "Data_Algorithm";
     public static final String DEFAULT_MOO_ALGORITHM_NAME = "MOOAlg";
+    public static final String DEFAULT_SURROGATE_ALGORITHM_NAME = "GenSurrogateAlg";
+    public static final String DEFAULT_SAMPLING_ALGORITHM_NAME = "SamplingAlg";
 
     public static final String DEFAULT_CASE_NAME = "Case";
     public static final String DEFAULT_CASEGROUP_NAME = "CaseGroup";
 
     public static final String DEFAULT_SURROGATE_MODEL_NAME = "SurrogateModel";
 
+    public static final Path SURROGATE_SAVE_DIRECTORY_PATH = Path.of(System.getenv("MODS_SAVE_DIR"));
+
     public static final String INITIAL_FILE_NAME = "initialFile.csv";
+    public static final String SAMPLING_ALGORITHM_FILE_NAME = "SamplingAlg_data";
 
     private static final String REQUEST_FILE_NAME = "request.json";
 
@@ -42,6 +62,7 @@ public class Simulation {
     private final Request request;
     private final BackendInputFile inputFile;
     private final MoDSBackend modsBackend;
+    private final InputMetaData inputMetaData;
 
     public static Simulation createSimulation(Request request) throws JAXBException, IOException {
 
@@ -52,7 +73,11 @@ public class Simulation {
 
         OBJECT_MAPPER.writeValue(getRequestFilePath(modsBackend), request);
 
-        return createSimulation(request, inputFile, modsBackend);
+        load(request, modsBackend);
+
+        InputMetaData inputMetaData = InputMetaData.createInputMetaData(request, modsBackend);
+
+        return createSimulation(request, inputFile, modsBackend, inputMetaData);
     }
 
     public static Simulation retrieveSimulation(Request request) throws JAXBException, IOException {
@@ -64,16 +89,27 @@ public class Simulation {
         BackendInputFile inputFile = new BackendInputFile(
                 modsBackend.getWorkingDir().resolve(BackendInputFile.FILENAME));
 
-        return createSimulation(originalRequest, inputFile, modsBackend);
+        InputMetaData inputMetaData = InputMetaData.createInputMetaData(originalRequest, modsBackend);
+
+        return createSimulation(originalRequest, inputFile, modsBackend, inputMetaData);
     }
 
-    private static Simulation createSimulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend)
+    private static Simulation createSimulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend,
+            InputMetaData inputMetaData)
             throws IOException {
 
         String simulationType = request.getSimulationType();
         switch (simulationType) {
             case "MOO":
-                return new MOO(request, inputFile, modsBackend);
+                return new MOO(request, inputFile, modsBackend, inputMetaData);
+            case "HDMR":
+                return new HDMR(request, inputFile, modsBackend, inputMetaData);
+            case "MOOonly":
+                return new MOOonly(request, inputFile, modsBackend, inputMetaData);
+            case "Evaluate":
+                return new Evaluate(request, inputFile, modsBackend, inputMetaData);
+            case "Sensitivity":
+                return new Sensitivity(request, inputFile, modsBackend, inputMetaData);
             default:
                 throw new IllegalArgumentException("Unknown simulation type requested '" + simulationType + "'.");
         }
@@ -83,10 +119,12 @@ public class Simulation {
         return modsBackend.getSimDir().resolve(REQUEST_FILE_NAME).toFile();
     }
 
-    public Simulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend) {
+    public Simulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend,
+            InputMetaData inputMetaData) {
         this.request = request;
         this.inputFile = inputFile;
         this.modsBackend = modsBackend;
+        this.inputMetaData = inputMetaData;
     }
 
     protected final Request getRequest() {
@@ -160,10 +198,9 @@ public class Simulation {
     }
 
     private void populateParameterNodes(List<Variable> variables) {
-        Data inputs = request.getInputs();
-        Iterator<Double> minItr = inputs.getMinimums().getValues().iterator();
-        Iterator<Double> maxItr = inputs.getMaximums().getValues().iterator();
-        for (String name : inputs.getHeaders()) {
+        Iterator<Double> minItr = inputMetaData.getMinima().iterator();
+        Iterator<Double> maxItr = inputMetaData.getMaxima().iterator();
+        for (String name : inputMetaData.getVarNames()) {
             Variable variable = variables.stream().filter(varToTest -> varToTest.getName().equals(name))
                     .findFirst().orElseThrow();
             inputFile.addParameter(name, variable.getSubtype(), variable.getType(),
@@ -173,8 +210,7 @@ public class Simulation {
     }
 
     protected Algorithm getAlgorithmOfType(String algType) {
-        return getRequest().getAlgorithms().stream().filter(alg -> alg.getType().equals(algType)).findFirst()
-                .orElseThrow();
+        return getRequest().getAlgorithmOfType(algType);
     }
 
     public String getFullCaseName(String caseGroupName, String caseName) {
@@ -224,9 +260,15 @@ public class Simulation {
         inputFile.marshal(modsBackend.getWorkingDir().resolve(BackendInputFile.FILENAME));
     }
 
-    protected final void generateInitialFile() throws FileGenerationException {
+    protected final void generateInitialFileFromInputs() throws FileGenerationException {
         Data inputs = getRequest().getInputs();
-        new CSVDataFile(inputs.getAverages()).marshal(modsBackend.getInitialDir().resolve(INITIAL_FILE_NAME));
+        Path path = modsBackend.getInitialDir().resolve(INITIAL_FILE_NAME);
+        new CSVDataFile(inputs.getAverages()).marshal(path);
+    }
+
+    protected final void generateInitialFileFromMetaData() throws FileGenerationException {
+        Path path = modsBackend.getInitialDir().resolve(INITIAL_FILE_NAME);
+        new CSVDataFile(inputMetaData.meansToData()).marshal(path);
     }
 
     protected final void generateDataAlgFiles() throws FileGenerationException {
@@ -244,21 +286,198 @@ public class Simulation {
         }
     }
 
+    protected final void generateSamplingAlgDataFiles() throws FileGenerationException {
+        Path samplingAlgDataPath;
+        try {
+            samplingAlgDataPath = modsBackend.createSubDir(SAMPLING_ALGORITHM_FILE_NAME);
+
+            new CSVDataSeparateFiles(getRequest().getInputs(),
+                    SAMPLING_ALGORITHM_FILE_NAME + "_" + Variable.SUBTYPE_PREFIX,
+                    getFullCaseName(DEFAULT_CASEGROUP_NAME, DEFAULT_CASE_NAME) + "_")
+                    .marshal(samplingAlgDataPath);
+        } catch (IOException ex) {
+            throw new FileGenerationException(
+                    "Failed to create subdirectory for algorithm '" + SAMPLING_ALGORITHM_FILE_NAME + "'.", ex);
+        }
+    }
+
     public void run() throws IOException {
         populateInputFile();
         generateFiles();
         modsBackend.run();
+        saveWhenFinished();
     }
 
-    public final Request getResponse() {
-        Request response = new Request();
-        response.setJobID(getJobID());
-        response.setSimulationType(request.getSimulationType());
-        return response;
+    public void saveWhenFinished() {
+        String simDir = getModsBackend().getSimDir().toString();
+        String algorithmName = DEFAULT_SURROGATE_ALGORITHM_NAME;
+
+        Thread t = new Thread(() -> {
+            try {
+                while (!MoDSAPI.hasAlgorithmGeneratedOutputFiles(simDir, algorithmName)) {
+                    if (!modsBackend.isAlive()) {
+                        throw new ResponseStatusException(
+                                HttpStatus.NO_CONTENT,
+                                "The job '" + getModsBackend().getJobID()
+                                        + "' has not been run or has failed to run correctly so could not save.");
+                    }
+                    Thread.sleep(100);
+                }
+                save();
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+        });
+
+        t.start();
+    }
+
+    public void save() {
+        for (Algorithm algorithm : request.getAlgorithms()) {
+            if (algorithm.getSaveSurrogate() != null && algorithm.getSaveSurrogate()) {
+                Path saveDirectory = getSaveDirectory();
+                Path surrogateDirectory = getSurrogateDirectory(modsBackend);
+
+                try {
+                    copyDirectory(surrogateDirectory, saveDirectory);
+                    inputMetaData.writeToCSV(saveDirectory.resolve(InputMetaData.DEFAULT_INPUT_INFO_FILE_NAME));
+                } catch (FileGenerationException ex) {
+                    throw new ResponseStatusException(HttpStatus.NO_CONTENT,
+                            "Job '" + getModsBackend().getJobID() + "' failed to save.", ex);
+                }
+
+                LOGGER.info("Job '{}' saved at '{}'.", getModsBackend().getJobID(), saveDirectory.toAbsolutePath());
+            }
+        }
+    }
+
+    public static Path getSurrogateDirectory(MoDSBackend modsBackend) {
+        return modsBackend.getSimDir().resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+    }
+
+    private Path getSaveDirectory() {
+        return SURROGATE_SAVE_DIRECTORY_PATH.resolve(modsBackend.getJobID())
+                .resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+    }
+
+    public static void load(Request request, MoDSBackend modsBackend) {
+        for (Algorithm algorithm : request.getAlgorithms()) {
+            if (algorithm.getSurrogateToLoad() != null) {
+                try {
+                    Path surrogateDirectory = getSurrogateDirectory(modsBackend);
+                    Path loadDirectory = getLoadDirectory(algorithm);
+
+                    if (!Files.exists(loadDirectory)) {
+                        throw new IOException(
+                                "File '" + loadDirectory.toAbsolutePath() + "' could not be found to load.");
+                    }
+
+                    copyDirectory(loadDirectory, surrogateDirectory);
+
+                    LOGGER.info("File '{}' loaded to '{}'.", loadDirectory.toAbsolutePath(),
+                            surrogateDirectory.toAbsolutePath());
+
+                } catch (IOException ex) {
+                    throw new ResponseStatusException(HttpStatus.NO_CONTENT,
+                            "Job '" + modsBackend.getJobID() + "' failed to load.", ex);
+                }
+            }
+        }
+    }
+
+    private static Path getLoadDirectory(Algorithm algorithm) {
+        return SURROGATE_SAVE_DIRECTORY_PATH.resolve(algorithm.getSurrogateToLoad())
+                .resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+
+    }
+
+    private static void copyDirectory(Path sourceDirectory, Path destinationDirectory) throws FileGenerationException {
+        if (!Files.exists(destinationDirectory)) {
+            try {
+                Files.createDirectories(destinationDirectory);
+            } catch (IOException ex) {
+                throw new FileGenerationException(
+                        "Failed to create destination directory '" + destinationDirectory.toAbsolutePath() + "'.", ex);
+            }
+        }
+
+        try (Stream<Path> stream = Files.walk(sourceDirectory)) {
+
+            stream.filter(Files::isRegularFile).forEach(source -> {
+                Path destination = destinationDirectory
+                        .resolve(source.toString().substring(sourceDirectory.toString().length() + 1));
+                try {
+                    Files.copy(source, destination);
+                } catch (IOException ex) {
+                    throw new ResponseStatusException(
+                            HttpStatus.NO_CONTENT,
+                            "Failed to copy '"
+                                    + destinationDirectory + "` to `" + sourceDirectory + "'.",
+                            ex);
+                }
+            });
+        } catch (IOException ex) {
+            throw new FileGenerationException("Failed to walk source directory '" + sourceDirectory + "'.", ex);
+        }
+    }
+
+    public Request getResponse() {
+        return new Request(getJobID(), request.getSimulationType());
     }
 
     public Request getResults() {
         return getResponse();
+    }
+
+    public List<SensitivityResult> getSensitivity() {
+
+        String simDir = getModsBackend().getSimDir().toString();
+        String surrogateName = DEFAULT_SURROGATE_ALGORITHM_NAME;
+
+        String algName = getPrimaryAlgorithm().getType();
+        List<String> xVarNames = MoDSAPI.getXVarNames(simDir, algName);
+        List<String> yVarNames = MoDSAPI.getYVarNames(simDir, algName);
+
+        List<List<List<Double>>> allSens = MoDSAPI.getHDMRSensitivities(simDir, surrogateName);
+
+        int nX = xVarNames.size();
+        int nY = allSens.size();
+
+        // Compile the labels for each term. Only defined up to second order for now
+        List<List<String>> termLabels = new ArrayList<>(2);
+        termLabels.add(xVarNames);
+        List<String> secondOrderTermLabels = new ArrayList<>(nX * (nX - 1) / 2);
+        for (int ix1 = 0; ix1 < nX; ix1++) {
+            for (int ix2 = ix1 + 1; ix2 < nX; ix2++) {
+                secondOrderTermLabels.add(xVarNames.get(ix1) + " and " + xVarNames.get(ix2));
+            }
+        }
+        termLabels.add(secondOrderTermLabels);
+
+        // /*
+        // * The number of orders shown is limited by both the data and the term
+        // * labels defined above
+        // */
+        int nOrdersToShow = Math.min(allSens.get(0).size(), termLabels.size());
+
+        List<SensitivityResult> sensitivities = new ArrayList<>(nY);
+
+        for (int iy = 0; iy < nY; iy++) {
+            List<SensitivityLabels> sensitivityLabelsList = new ArrayList<>(nOrdersToShow);
+            List<SensitivityValues> sensitivityValuesList = new ArrayList<>(nOrdersToShow);
+            for (int iOrder = 0; iOrder < nOrdersToShow; iOrder++) {
+                // iOrder + 1 so ordering starts at 1 instead of 0
+                sensitivityLabelsList.add(new SensitivityLabels(iOrder + 1, termLabels.get(iOrder)));
+                sensitivityValuesList.add(new SensitivityValues(iOrder + 1, allSens.get(iy).get(iOrder)));
+            }
+            sensitivities.add(new SensitivityResult(yVarNames.get(iy), sensitivityLabelsList, sensitivityValuesList));
+        }
+
+        return sensitivities;
+    }
+
+    public InputMetaData getInputMetaData() {
+        return inputMetaData;
     }
 
 }

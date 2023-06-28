@@ -13,6 +13,7 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.query.StoreRouter;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
@@ -53,19 +54,19 @@ public class RouterUploadAgent  extends JPSAgent{
     	if(routerEndpoint == null) {
     		routerEndpoint = StoreRouter.storeRouterEndpoint;    		
     	}
-    	StoreClientInterface storeClient = getStoreClient(routerEndpoint);
+    	TripleStoreClientInterface storeClient = getStoreClient(routerEndpoint);
     	
     	LOGGER.info("Uploading to: "+routerEndpoint);
     	int nUploaded = uploadTriples(array, storeClient);
         
-        return new JSONObject().put("result", Integer.toString(nUploaded)+" endpoint(s) uploaded.");
+        return new JSONObject().put(JPSConstants.RESULT_KEY, Integer.toString(nUploaded)+" endpoint(s) uploaded.");
     }
     
-    public StoreClientInterface getStoreClient(String endpoint) {
+    public TripleStoreClientInterface getStoreClient(String endpoint) {
     	return new RemoteStoreClient(endpoint, endpoint);
     }
     
-    public int uploadTriples(JSONArray array, StoreClientInterface storeClient) {
+    public int uploadTriples(JSONArray array, TripleStoreClientInterface storeClient) {
     	RouterUploadTool uploaderTool = new RouterUploadTool();
     	return uploaderTool.uploadRoutingData(array, storeClient);
     }

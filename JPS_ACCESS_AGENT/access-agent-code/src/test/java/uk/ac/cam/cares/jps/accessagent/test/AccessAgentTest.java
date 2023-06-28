@@ -14,6 +14,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -30,11 +32,13 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.mockito.Mockito;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.MockStoreClient;
+import uk.ac.cam.cares.jps.base.query.StoreRouter;
 import uk.ac.cam.cares.jps.accessagent.AccessAgent;
 
 public class AccessAgentTest{
@@ -79,26 +83,71 @@ public class AccessAgentTest{
 		
 		JSONObject requestParams;
 		
+		MockHttpServletRequest request = new MockHttpServletRequest();
+	    request.setServletPath(AccessAgent.ACCESS_URL);
+		
 		//test http get
 		requestParams = new JSONObject();
 		requestParams.put(JPSConstants.METHOD, HttpGet.METHOD_NAME);
-		agent.processRequestParameters(requestParams, null);
+		agent.processRequestParameters(requestParams, request);
 		verify(agent).validateInput(requestParams);
 		verify(agent).performGet(requestParams);
 		
 		//test http put
 		requestParams = new JSONObject();
 		requestParams.put(JPSConstants.METHOD, HttpPut.METHOD_NAME);
-		agent.processRequestParameters(requestParams, null);
+		agent.processRequestParameters(requestParams, request);
 		verify(agent).validateInput(requestParams);
 		verify(agent).performPut(requestParams);
 		
 		//test http post
 		requestParams = new JSONObject();
 		requestParams.put(JPSConstants.METHOD, HttpPost.METHOD_NAME);
-		agent.processRequestParameters(requestParams, null);
+		agent.processRequestParameters(requestParams, request);
 		verify(agent).validateInput(requestParams);
 		verify(agent).performPost(requestParams);
+	}
+	
+	@Test
+	public void testProcessRequestParametersClearCache() {
+		
+		AccessAgent agent = new AccessAgent();
+		
+		MockHttpServletRequest request = new MockHttpServletRequest();
+	    request.setServletPath(AccessAgent.CLEAR_CACHE_URL);
+	    
+	    JSONObject requestParams;
+	    requestParams = new JSONObject();
+		requestParams.put(JPSConstants.METHOD, HttpGet.METHOD_NAME);
+		
+		JSONObject response;
+		response = agent.processRequestParameters(requestParams, request);
+		assertEquals( "Cache cleared.", response.getString(JPSConstants.RESULT_KEY));
+		assertTrue(StoreRouter.getInstance().isCacheEmpty());
+	}
+	
+	@Test
+	public void testProcessRequestParametersClearCacheThrows() {
+	
+		AccessAgent agent = new AccessAgent();
+		
+		MockHttpServletRequest request = new MockHttpServletRequest();
+	    request.setMethod(HttpPost.METHOD_NAME);
+		request.setServletPath(AccessAgent.CLEAR_CACHE_URL);
+	    
+	    JSONObject requestParams;
+	    requestParams = new JSONObject();
+		requestParams.put(JPSConstants.METHOD, HttpPost.METHOD_NAME);
+		
+		Assertions.assertThrows(JPSRuntimeException.class, ()->{agent.processRequestParameters(requestParams, request);});
+	}
+	
+	@Test
+	public void testClearCache() {
+		AccessAgent agent = new AccessAgent();
+		JSONObject response = agent.clearCache();
+		assertEquals( "Cache cleared.", response.getString(JPSConstants.RESULT_KEY));
+		assertTrue(StoreRouter.getInstance().isCacheEmpty());
 	}
 	
 	@Test
@@ -161,30 +210,30 @@ public class AccessAgentTest{
 	}
 	
 	@Test
-	public void testGetWithoutQuery() {
+	public void testGet() {
 		
-		// write a test file to temporary folder
-		String content =  "<http://www.theworldavatar.com/kb/species/species.owl#species_10> <http://www.w3.org/2008/05/skos#altLabel> \"Ar\" .\n";		
+		String queryEndpoint = "http://www.theworldavatar.com/test/sparql";
+		String updateEndpoint = "http://www.theworldavatar.com/test/sparql";
 		
-		MockStoreClient storeClient = new MockStoreClient();
-		storeClient.addTriple(	"<http://www.theworldavatar.com/kb/species/species.owl#species_10>",
-								"<http://www.w3.org/2008/05/skos#altLabel>",
-								"\"Ar\"");
-		
+		List<String> endpoints = new ArrayList<String>();
+		endpoints.add(StoreRouter.QUERY_INDEX,queryEndpoint);
+		endpoints.add(StoreRouter.UPDATE_INDEX,updateEndpoint);
+
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
-		Mockito.doReturn(storeClient).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
+		Mockito.doReturn(endpoints).when(agent).getEndpointsFromStoreRouter(any(String.class));
 		
 		JSONObject jo = new JSONObject();
 		jo.put(JPSConstants.REQUESTURL, "/jps/kb/test")
 			.put(JPSConstants.METHOD, "GET")
-			.put(JPSConstants.TARGETIRI, "mockstore")
-			.put(JPSConstants.HEADERS, "application/n-triples");
+			.put(JPSConstants.TARGETIRI, "test");
 		
-        JSONObject result = agent.performGet(jo);		
-		String strResult = result.getString("result"); 
-		
-		assertEquals(removeWhiteSpace(content), removeWhiteSpace(strResult));		
+        JSONObject result = agent.performGet(jo);		 
+	
+        assertNotNull(result);
+        assertEquals(queryEndpoint, result.getString(JPSConstants.QUERY_ENDPOINT));
+        assertEquals(updateEndpoint, result.getString(JPSConstants.UPDATE_ENDPOINT));
 	}
+	
 	
 	@Test
 	public void testPut() {
@@ -192,7 +241,7 @@ public class AccessAgentTest{
 		String content = "<http://www.theworldavatar.com/kb/species/species.owl#species_10> <http://www.w3.org/2008/05/skos#altLabel> \"Ar\" .\n";
 		
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
-		StoreClientInterface storeClient = new MockStoreClient(); 
+		TripleStoreClientInterface storeClient = new MockStoreClient();
 		Mockito.doReturn(storeClient).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
 		
 		JSONObject jo = new JSONObject();
@@ -245,7 +294,7 @@ public class AccessAgentTest{
 	public void testPostWithSparqlUpdate() throws ParseException {
 		
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
-		StoreClientInterface storeClient = createStoreClient(filePath); 
+		TripleStoreClientInterface storeClient = createStoreClient(filePath);
 		Mockito.doReturn(storeClient).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
 		
 		String testUpdate = getUpdateRequest().toString();
@@ -296,7 +345,7 @@ public class AccessAgentTest{
 		
         Assertions.assertThrows(JPSRuntimeException.class, ()->{agent.performPost(jo);});								
 	}	
-	
+		
 	///////////////////////////////////////////////
 	
 	/**
@@ -312,7 +361,7 @@ public class AccessAgentTest{
 	 * Create test store client.
 	 * Could mock this instead.
 	 */
-	private StoreClientInterface createStoreClient(String file) {
+	private TripleStoreClientInterface createStoreClient(String file) {
 		MockStoreClient mockStoreClient = new MockStoreClient();
 		mockStoreClient.load(file);
 		return mockStoreClient;

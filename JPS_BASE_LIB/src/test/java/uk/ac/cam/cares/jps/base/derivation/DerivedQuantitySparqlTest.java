@@ -20,14 +20,17 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
@@ -46,7 +49,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * getStatusType is tested while testing testCreateDerivationAsyncForUpdate and
  * testCreateDerivationAsyncForMarkup
  * 
- * updateFinishedAsyncDerivation is tested in
+ * mapNewOutputsToDownstream and reconnectAsyncDerivation for async is tested in
  * testCleanUpFinishedDerivationUpdate_Case1~5 in DerivedQuantityClientTest
  * 
  * @author Kok Foong Lee
@@ -57,6 +60,7 @@ public class DerivedQuantitySparqlTest {
 	private MockDevStoreClient mockClient;
 	private DerivationSparql devClient;
 	private final String derivationInstanceBaseURL = "http://derivationsparql/test/";
+	private String p_time = "http://www.w3.org/2006/time#";
 	private String entity1 = "http://entity1";
 	private String entity2 = "http://entity2";
 	private String entity3 = "http://entity3";
@@ -299,22 +303,41 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
-	public void testHasBelongsTo() throws NoSuchMethodException, SecurityException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
-		// empty kg
-		Method hasBelongsTo = devClient.getClass().getDeclaredMethod("hasBelongsTo", String.class);
-		hasBelongsTo.setAccessible(true);
-		Assert.assertFalse((boolean) hasBelongsTo.invoke(devClient, entity1));
+	public void testCreateOntoAgentInstance() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		String ontoAgentServiceIRI = "http://" + UUID.randomUUID().toString();
+		String ontoAgentOperationHttpUrl = "http://" + UUID.randomUUID().toString();
+		List<String> inputTypes = Arrays.asList("http://" + UUID.randomUUID().toString(), "http://" + UUID.randomUUID().toString());
+		List<String> outputTypes = Arrays.asList("http://" + UUID.randomUUID().toString(), "http://" + UUID.randomUUID().toString());
+		devClient.createOntoAgentInstance(ontoAgentServiceIRI, ontoAgentOperationHttpUrl, inputTypes, outputTypes);
 
-		// derived quantity created
-		devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
-		Assert.assertTrue((boolean) hasBelongsTo.invoke(devClient, entity1));
+		// check that triples are added correctly - check httpUrl should be sufficient
+		String operationIRI = testKG.getProperty(ResourceFactory.createResource(ontoAgentServiceIRI),
+				ResourceFactory.createProperty(hasOperation)).getObject().toString();
+		Literal httpUrlAdded = testKG.getProperty(ResourceFactory.createResource(operationIRI),
+				ResourceFactory.createProperty(hasHttpUrl)).getObject().asLiteral();
+		Assert.assertEquals(ontoAgentOperationHttpUrl, httpUrlAdded.getString());
+		Assert.assertEquals(XSD.ANYURI.toString(), httpUrlAdded.getDatatypeURI());
+
+		// retrieve IRI of OntoAgent:Operation instance added for later test
+		JSONArray result = mockClient.executeQuery(
+				String.format("select ?operation where {<%s> <%s> ?operation.}", ontoAgentServiceIRI, hasOperation));
+		Assert.assertEquals(1, result.length());
+		String operationIRIAdded = result.getJSONObject(0).getString("operation");
+
+		// create ontoagent instance with the same input arguments again, but nothing should happen
+		devClient.createOntoAgentInstance(ontoAgentServiceIRI, ontoAgentOperationHttpUrl, inputTypes, outputTypes);
+		// check there should only be one instance of OntoAgent:Operation that got added
+		JSONArray result2 = mockClient.executeQuery(
+				String.format("select ?operation where {<%s> <%s> ?operation.}", ontoAgentServiceIRI, hasOperation));
+		Assert.assertEquals(1, result2.length());
+		Assert.assertEquals(operationIRIAdded, result2.getJSONObject(0).getString("operation"));
 	}
 
 	@Test
 	public void testMarkAsRequested() throws NoSuchMethodException, SecurityException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
-		String derivation = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		String derivation = devClient.createDerivation(entities, derivedAgentIRI, inputs);
 		String statusIRI = devClient.markAsRequested(derivation);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation),
@@ -326,36 +349,153 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
-	public void testMarkAsRequestedIfOutdated() {
-		String derivation = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
-		// add timestamp to inputs and derivations
-		devClient.addTimeInstance(inputs);
-		devClient.addTimeInstance(derivation);
-
-		// case 1: as all timestamp will be 0, the derivation should be deemed as
-		// up-to-date, thus nothing should happen if execute
-		devClient.markAsRequestedIfOutdated(derivation);
+	public void testMarkAsError() {
 		OntModel testKG = mockClient.getKnowledgeBase();
-		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation),
+		// this tests writing exception to triple store
+		String derivation = devClient.createDerivation(entities, derivedAgentIRI, inputs);
+		// add timestamp to derivations, the timestamp of inputs is automatically added
+		devClient.addTimeInstance(derivation);
+		// as all inputs' timestamp will be current timestamp, the derivation should be deemed as outdated
+		devClient.markAsRequestedIfOutdated(derivation);
+
+		// get an exception by checking if the inputs are allowed to be outputs for other derivations
+		JPSRuntimeException exc = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.allowedAsDerivationOutputs(inputs));
+
+		String excComment = devClient.markAsError(derivation, exc);
+		Assert.assertEquals(StatusType.ERROR, devClient.getStatusType(derivation));
+
+		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
+		String errMsg = testKG.getProperty(ResourceFactory.createResource(statusIRI),
+				 ResourceFactory.createProperty(RDFS.comment.getURI())).getObject()
+				 .asLiteral().getString();
+		Assert.assertEquals(excComment, DerivationSparql.escapeSequences(errMsg));
+
+		Assert.assertTrue(errMsg.contains(exc.getClass().toString()));
+		Assert.assertTrue(errMsg.contains(exc.getMessage()));
+		for (StackTraceElement st : exc.getStackTrace()) {
+			Assert.assertTrue(errMsg.contains(st.toString()));
+		}
+	}
+
+	@Test
+	public void testMarkAsErrorEscape() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		// this tests writing exception to triple store
+		String derivation = devClient.createDerivation(entities, derivedAgentIRI, inputs);
+		// add timestamp to derivations, the timestamp of inputs is automatically added
+		devClient.addTimeInstance(derivation);
+		// as all inputs' timestamp will be current timestamp, the derivation should be deemed as outdated
+		devClient.markAsRequestedIfOutdated(derivation);
+
+		// create an error message full of sequence characters
+		// System.getProperty("user.dir") should give a file path which normally appears in exception message when running in python
+		String sequences = System.getProperty("user.dir") + "\\\t\n\r\b\f\"'";
+		JPSRuntimeException sequencesExc = new JPSRuntimeException(sequences);
+
+		String excComment = devClient.markAsError(derivation, sequencesExc);
+		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
+		String errMsg = testKG.getProperty(ResourceFactory.createResource(statusIRI),
+				 ResourceFactory.createProperty(RDFS.comment.getURI())).getObject()
+				 .asLiteral().getString();
+		// the returned value from devClient.markAsError should match the added to triple store
+		Assert.assertEquals(excComment, DerivationSparql.escapeSequences(errMsg));
+	}
+
+	@Test
+	public void testGetDerivationsInErrorStatus() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		// this tests writing exception to triple store
+		String derivation = devClient.createDerivation(entities, derivedAgentIRI, inputs);
+		String derivation2 = devClient.createDerivation(entities2, derivedAgentIRI, inputs);
+		// add timestamp to derivations, the timestamp of inputs is automatically added
+		devClient.addTimeInstance(derivation);
+		devClient.addTimeInstance(derivation2);
+		// as all inputs' timestamp will be current timestamp, the derivation should be deemed as outdated
+		devClient.markAsRequestedIfOutdated(derivation);
+		devClient.markAsRequestedIfOutdated(derivation2);
+
+		// get an exception by checking if the inputs are allowed to be outputs for other derivations
+		JPSRuntimeException exc = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.allowedAsDerivationOutputs(inputs));
+
+		String excComment = devClient.markAsError(derivation, exc);
+		String excComment2 = devClient.markAsError(derivation2, exc);
+		Assert.assertEquals(StatusType.ERROR, devClient.getStatusType(derivation));
+		Assert.assertEquals(StatusType.ERROR, devClient.getStatusType(derivation2));
+
+		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
+		String errMsg = testKG.getProperty(ResourceFactory.createResource(statusIRI),
+				ResourceFactory.createProperty(RDFS.comment.getURI())).getObject()
+				.asLiteral().getString();
+		String statusIRI2 = testKG.getProperty(ResourceFactory.createResource(derivation2),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
+		String errMsg2 = testKG.getProperty(ResourceFactory.createResource(statusIRI2),
+				ResourceFactory.createProperty(RDFS.comment.getURI())).getObject()
+				.asLiteral().getString();
+		Assert.assertEquals(errMsg, errMsg2);
+		Assert.assertEquals(excComment, errMsg.replace("\n", "\\n"));
+		Assert.assertEquals(excComment2, errMsg.replace("\n", "\\n"));
+		List<Derivation> derivations = devClient.getDerivationsInErrorStatus(derivedAgentIRI);
+		Assert.assertEquals(2, derivations.size());
+		Assert.assertEquals(errMsg, derivations.get(0).getErrMsg());
+		Assert.assertEquals(errMsg, derivations.get(1).getErrMsg());
+
+		Assert.assertTrue(errMsg.contains(exc.getClass().toString()));
+		Assert.assertTrue(errMsg.contains(exc.getMessage()));
+		for (StackTraceElement st : exc.getStackTrace()) {
+			Assert.assertTrue(errMsg.contains(st.toString()));
+		}
+	}
+
+	@Test
+	public void testMarkAsRequestedIfOutdated() throws InterruptedException {
+		String upstreamDerivation = devClient.createDerivation(new ArrayList<>(), derivedAgentIRI, inputs);
+		String downstreamDerivation = devClient.createDerivation(new ArrayList<>(), derivedAgentIRI, Arrays.asList(upstreamDerivation));
+		// add timestamp to derivations, the timestamp of inputs is automatically added
+		devClient.addTimeInstance(Arrays.asList(upstreamDerivation, downstreamDerivation));
+		// here we also need to updateTimeStamp to make the upstream derivation up-to-date
+		// as the timestamp of inputs is added as current timestamp
+		devClient.updateTimeStamp(upstreamDerivation);
+
+		// case 1: as all timestamp will be current timestamp, the upstream derivation should be deemed as
+		// up-to-date, thus nothing should happen if execute
+		devClient.markAsRequestedIfOutdated(upstreamDerivation);
+		OntModel testKG = mockClient.getKnowledgeBase();
+		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(upstreamDerivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")));
+		// for the downstream derivations, the status should be mark as requested as its timestamp
+		// is initialised as 0, also this tests the case where no outputs are generated from the upstream
+		devClient.markAsRequestedIfOutdated(downstreamDerivation);
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(downstreamDerivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")));
+		String downstreamStatusIRI = testKG.getProperty(ResourceFactory.createResource(downstreamDerivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(downstreamStatusIRI),
+				ResourceFactory.createProperty(RDF.type.getURI()),
+				ResourceFactory.createResource(DerivationSparql.derivednamespace + "Requested")));
 
 		// case 2: if now we make the derivation to be outdated, then the status should
-		// be mark as requested
+		// be mark as requested, here we sleep for 1 sec to be sure
+		TimeUnit.SECONDS.sleep(1);
 		for (String input : inputs) {
 			devClient.updateTimeStamp(input);
 		}
-		devClient.markAsRequestedIfOutdated(derivation);
-		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation),
+		devClient.markAsRequestedIfOutdated(upstreamDerivation);
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(upstreamDerivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")));
-		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
+		String statusIRI = testKG.getProperty(ResourceFactory.createResource(upstreamDerivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
 		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(statusIRI),
 				ResourceFactory.createProperty(RDF.type.getURI()),
 				ResourceFactory.createResource(DerivationSparql.derivednamespace + "Requested")));
 
 		// case 3: if now we execute to mark up again, then nothing should happen
-		devClient.markAsRequestedIfOutdated(derivation);
-		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation),
+		devClient.markAsRequestedIfOutdated(upstreamDerivation);
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(upstreamDerivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus"),
 				ResourceFactory.createResource(statusIRI)));
 		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(statusIRI),
@@ -382,9 +522,9 @@ public class DerivedQuantitySparqlTest {
 				ResourceFactory.createResource(DerivationSparql.derivednamespace + "Requested")));
 		// update the status, the rdf:type of status should be updated but its IRI
 		// should remain the same, the timestamp should also exist and NOT less than
-		// "currentTimestamp"
+		// "currentTimestamp", the update method itself should also return true
 		long currentTimestamp = Instant.now().getEpochSecond();
-		devClient.updateStatusBeforeSetupJob(derivation);
+		Assert.assertTrue(devClient.updateStatusBeforeSetupJob(derivation));
 		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus"),
 				ResourceFactory.createResource(statusIRI)));
@@ -395,12 +535,18 @@ public class DerivedQuantitySparqlTest {
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")).getObject()
 				.asLiteral().getLong();
 		Assert.assertTrue(retrievedInputsAt >= currentTimestamp);
+		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "uuidLock")));
+		String uuid = testKG.getProperty(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "uuidLock")).getObject()
+				.asLiteral().getString();
 		// now we execute the function again, nothing should happen as data property
 		// retrievedInputsAt already exist
 		// sleep for 2 sec to make sure the timestamp generated in
 		// updateStatusBeforeSetupJob will be different from the existing one
+		// the update method call should return false
 		TimeUnit.SECONDS.sleep(2);
-		devClient.updateStatusBeforeSetupJob(derivation);
+		Assert.assertFalse(devClient.updateStatusBeforeSetupJob(derivation));
 		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus"),
 				ResourceFactory.createResource(statusIRI)));
@@ -411,6 +557,46 @@ public class DerivedQuantitySparqlTest {
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")).getObject()
 				.asLiteral().getLong();
 		Assert.assertEquals(retrievedInputsAt, retrievedInputsAt_new);
+		String uuid_new = testKG.getProperty(ResourceFactory.createResource(derivation),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "uuidLock")).getObject()
+				.asLiteral().getString();
+		Assert.assertEquals(uuid, uuid_new);
+	}
+
+	@Test
+	public void testAddUuidLockToFinishedStatus() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		// (1) should return false for a dummy IRI
+		Assert.assertFalse(devClient.addUuidLockToFinishedStatus("http://dummy_derivation"));
+
+		// (2) should return false for a derivation that is up-to-date
+		// create derivation for markup, no status should be added
+		String derivation = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, false);
+		Assert.assertFalse(devClient.addUuidLockToFinishedStatus(derivation));
+
+		// (3) should return false for a derivation with status other than Finished
+		// mark derivation as Requested
+		String statusIRI = devClient.markAsRequested(derivation);
+		Assert.assertFalse(devClient.addUuidLockToFinishedStatus(derivation));
+
+		// (3) should return true for a derivation with status Finished, also no uuidLock yet
+		// add a placeholder uuidLock which in actual use case will be generated by calling updateStatusBeforeSetupJob
+		// here is just to let the method updateStatusAtJobCompletion able to execute
+		testKG.add(ResourceFactory.createResource(derivation),
+			ResourceFactory.createProperty(DerivationSparql.derivednamespace + "uuidLock"),
+			UUID.randomUUID().toString());
+		// update the status, the rdf:type of status should be updated but its IRI
+		// should remain the same, the new derived IRIs should also be added
+		// also the new triples should be added
+		String s = "http://" + UUID.randomUUID().toString();
+		String p = "http://" + UUID.randomUUID().toString();
+		String o = "http://" + UUID.randomUUID().toString();
+		TriplePattern newTriple = Rdf.iri(s).has(Rdf.iri(p), Rdf.iri(o));
+		devClient.updateStatusAtJobCompletion(derivation, entities3, Arrays.asList(newTriple));
+		Assert.assertTrue(devClient.addUuidLockToFinishedStatus(derivation));
+
+		// (4) should return false for a derivation with status Finished, and uuidLock already
+		Assert.assertFalse(devClient.addUuidLockToFinishedStatus(derivation));
 	}
 
 	@Test
@@ -425,6 +611,11 @@ public class DerivedQuantitySparqlTest {
 		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(statusIRI),
 				ResourceFactory.createProperty(RDF.type.getURI()),
 				ResourceFactory.createResource(DerivationSparql.derivednamespace + "Requested")));
+		// add a placeholder uuidLock which in actual use case will be generated by calling updateStatusBeforeSetupJob
+		// here is just to let the method updateStatusAtJobCompletion able to execute
+		testKG.add(ResourceFactory.createResource(derivation),
+			ResourceFactory.createProperty(DerivationSparql.derivednamespace + "uuidLock"),
+			UUID.randomUUID().toString());
 		// update the status, the rdf:type of status should be updated but its IRI
 		// should remain the same, the new derived IRIs should also be added
 		// also the new triples should be added
@@ -449,31 +640,17 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
-	public void testHasStatus()
-			throws NoSuchMethodException, SecurityException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
-		// create derivation for markup, no status should be added
-		String derivation = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, false);
-		Assert.assertEquals(false, devClient.hasStatus(derivation));
-		// mark derivation as Requested
-		devClient.markAsRequested(derivation);
-		Assert.assertEquals(true, devClient.hasStatus(derivation));
-		// update the status, the hasStatus should still return true
-		devClient.updateStatusBeforeSetupJob(derivation);
-		Assert.assertEquals(true, devClient.hasStatus(derivation));
-		devClient.updateStatusAtJobCompletion(derivation, entities3, new ArrayList<>());
-		Assert.assertEquals(true, devClient.hasStatus(derivation));
-		// delete status, the hasStatus should return false
-		devClient.deleteStatus(derivation);
-		Assert.assertEquals(false, devClient.hasStatus(derivation));
-	}
-
-	@Test
 	public void testGetNewDerivedIRI()
 			throws NoSuchMethodException, SecurityException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
+		OntModel testKG = mockClient.getKnowledgeBase();
 		// create derivation with status marked as "Requested"
 		String derivation = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, true);
+		// add a placeholder uuidLock which in actual use case will be generated by calling updateStatusBeforeSetupJob
+		// here is just to let the method updateStatusAtJobCompletion able to execute
+		testKG.add(ResourceFactory.createResource(derivation),
+			ResourceFactory.createProperty(DerivationSparql.derivednamespace + "uuidLock"),
+			UUID.randomUUID().toString());
 		// update the status, the new derived IRIs should be added
 		devClient.updateStatusAtJobCompletion(derivation, entities3, new ArrayList<>());
 		List<String> newDerivedIRI = devClient.getNewDerivedIRI(derivation);
@@ -481,35 +658,11 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
-	public void testDeleteStatus()
-			throws NoSuchMethodException, SecurityException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
-		OntModel testKG = mockClient.getKnowledgeBase();
-		// create derivation for markup, no status should be added
-		String derivation = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, false);
-		String statusIRI = devClient.markAsRequested(derivation);
-		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation),
-				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus"),
-				ResourceFactory.createResource(statusIRI)));
-		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(statusIRI),
-				ResourceFactory.createProperty(RDF.type.getURI()),
-				ResourceFactory.createResource(DerivationSparql.derivednamespace + "Requested")));
-		// delete status, there should be no status
-		devClient.deleteStatus(derivation);
-		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation),
-				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus"),
-				ResourceFactory.createResource(statusIRI)));
-		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(statusIRI),
-				ResourceFactory.createProperty(RDF.type.getURI())));
-	}
-
-	@Test
 	public void testIsDerivedAsynchronous()
 			throws NoSuchMethodException, SecurityException, IllegalAccessException,
 			IllegalArgumentException, InvocationTargetException {
 		// create three derivations
-		String derivation1 = devClient.createDerivationWithTimeSeries(entities1, derivedAgentIRI1, derivedAgentURL1,
-				inputs1);
+		String derivation1 = devClient.createDerivationWithTimeSeries(entities1, derivedAgentIRI1, inputs1);
 		String derivation2 = devClient.createDerivation(entities2, derivedAgentIRI2, inputs2);
 		String derivation3 = devClient.createDerivationAsync(entities3, derivedAgentIRI3, inputs3, false);
 		// assert derivation type
@@ -520,8 +673,7 @@ public class DerivedQuantitySparqlTest {
 
 	@Test
 	public void testGetDerivations_GivenAgentIRI() {
-		String derivation1 = devClient.createDerivationWithTimeSeries(entities1, derivedAgentIRI1, derivedAgentURL1,
-				inputs1);
+		String derivation1 = devClient.createDerivationWithTimeSeries(entities1, derivedAgentIRI1, inputs1);
 		String derivation2 = devClient.createDerivation(entities2, derivedAgentIRI1, inputs2);
 		String derivation3 = devClient.createDerivationAsync(entities3, derivedAgentIRI1, inputs3, false);
 		List<String> derivations = devClient.getDerivations(derivedAgentIRI1);
@@ -529,32 +681,24 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
-	public void testCheckInstanceExists() throws NoSuchMethodException, SecurityException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException {
-		// empty kg
-		Method checkInstanceExists = devClient.getClass().getDeclaredMethod("checkInstanceExists", String.class);
-		checkInstanceExists.setAccessible(true);
-		Assert.assertFalse((boolean) checkInstanceExists.invoke(devClient, entity1));
-
-		devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
-		Assert.assertTrue((boolean) checkInstanceExists.invoke(devClient, entity1));
-	}
-
-	@Test
 	public void testGetAgentUrl() {
-		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		// create placeholder ontoagent instance to get derivedAgentIRI and derivedAgentURL connected
+		devClient.createOntoAgentInstance(derivedAgentIRI, derivedAgentURL, Arrays.asList("http://i"), Arrays.asList("http://o"));
+		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, inputs);
 		Assert.assertEquals(derivedAgentURL, devClient.getAgentUrl(derivedIRI));
 	}
 
 	@Test
 	public void testGetAgentUrlGivenAgentIRI() {
-		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		// create placeholder ontoagent instance to get derivedAgentIRI and derivedAgentURL connected
+		devClient.createOntoAgentInstance(derivedAgentIRI, derivedAgentURL, Arrays.asList("http://i"), Arrays.asList("http://o"));
+		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, inputs);
 		Assert.assertEquals(derivedAgentURL, devClient.getAgentUrlGivenAgentIRI(derivedAgentIRI));
 	}
 
 	@Test
 	public void testGetInputs() {
-		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, inputs);
 		List<String> queriedInputs = devClient.getInputs(derivedIRI);
 
 		for (String queriedInput : queriedInputs) {
@@ -565,83 +709,22 @@ public class DerivedQuantitySparqlTest {
 	@Test
 	public void testGetInputsAndDerived() {
 		// when an input is not a derived quantity
-		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, inputs);
 		Assert.assertTrue(devClient.getInputsAndDerived(derivedIRI).containsAll(inputs));
 
 		// when an input is a derived quantity
-		String derivedIRI2 = devClient.createDerivation(Arrays.asList(entity3), derivedAgentIRI, derivedAgentURL,
-				entities);
+		String derivedIRI2 = devClient.createDerivation(Arrays.asList(entity3), derivedAgentIRI, entities);
 		Assert.assertTrue(devClient.getInputsAndDerived(derivedIRI2).contains(derivedIRI));
 	}
 
 	@Test
 	public void testGetDerivationsOf() {
-		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, inputs);
 
 		Map<String, String> derivationsOf = devClient.getDerivationsOf(entities);
 		for (String entity : entities) {
 			Assert.assertEquals(derivedIRI, derivationsOf.get(entity));
 		}
-	}
-
-	@Test
-	public void testGetDerivedEntities() {
-		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
-		Assert.assertTrue(devClient.getDerivedEntities(derivedIRI).containsAll(entities));
-	}
-
-	@Test
-	public void testGetIsDerivedFromEntities() {
-		// this function is used when a derived quantity is an input to another derived
-		// quantity, in this case, entities
-		// are inputs to derivedIRI2. The rdftype is used to reconnect instances
-		// derivedIRI2 depends on derivedIRI
-		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
-		String derivedIRI2 = devClient.createDerivation(Arrays.asList(entity3), derivedAgentIRI, derivedAgentURL,
-				entities);
-
-		OntModel testKG = mockClient.getKnowledgeBase();
-		// add RDF types for entities
-		for (String entity : entities) {
-			testKG.getIndividual(entity).addRDFType(ResourceFactory.createResource(entity + "class"));
-		}
-
-		List<List<String>> queryResult = devClient.getIsDerivedFromEntities(entities);
-		List<String> derivedList = queryResult.get(0);
-		List<String> rdfTypeList = queryResult.get(1);
-
-		for (int i = 0; i < derivedList.size(); i++) {
-			Assert.assertEquals(entities.get(i) + "class", rdfTypeList.get(i));
-			Assert.assertEquals(derivedIRI2, derivedList.get(i));
-		}
-	}
-
-	@Test
-	public void testDeleteInstances() {
-		Property a = ResourceFactory.createProperty("http://a");
-		Resource b = ResourceFactory.createResource("http://b");
-
-		// only in subject
-		OntModel testKG = mockClient.getKnowledgeBase();
-		testKG.add(ResourceFactory.createResource(entity1), a, b);
-		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity1), a, b));
-		devClient.deleteInstances(Arrays.asList(entity1));
-		Assert.assertFalse(testKG.contains(ResourceFactory.createResource(entity1), a, b));
-
-		// only in object
-		testKG.add(b, a, ResourceFactory.createResource(entity1));
-		Assert.assertTrue(testKG.contains(b, a, ResourceFactory.createResource(entity1)));
-		devClient.deleteInstances(Arrays.asList(entity1));
-		Assert.assertFalse(testKG.contains(b, a, ResourceFactory.createResource(entity1)));
-
-		// in both subject and object
-		testKG.add(ResourceFactory.createResource(entity1), a, b);
-		testKG.add(b, a, ResourceFactory.createResource(entity1));
-		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity1), a, b));
-		Assert.assertTrue(testKG.contains(b, a, ResourceFactory.createResource(entity1)));
-		devClient.deleteInstances(Arrays.asList(entity1));
-		Assert.assertFalse(testKG.contains(ResourceFactory.createResource(entity1), a, b));
-		Assert.assertFalse(testKG.contains(b, a, ResourceFactory.createResource(entity1)));
 	}
 
 	@Test
@@ -654,7 +737,7 @@ public class DerivedQuantitySparqlTest {
 		devClient.getTimestamp(input1);
 
 		// time stamp of an instance linked to a derived quantity
-		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, inputs);
 		devClient.addTimeInstance(derivedIRI);
 
 		for (String entity : entities) {
@@ -665,7 +748,7 @@ public class DerivedQuantitySparqlTest {
 	@Test
 	public void testUpdateTimestamp() {
 		// simply checks new time stamp is more recent
-		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, inputs);
 		devClient.addTimeInstance(derivedIRI);
 		// the derived instance is initialised with timestamp = 0
 		long oldtime = devClient.getTimestamp(derivedIRI);
@@ -679,8 +762,7 @@ public class DerivedQuantitySparqlTest {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		long timestamp = Instant.now().getEpochSecond();
 		// create DerivationWithTimeSeries
-		String derivation = devClient.createDerivationWithTimeSeries(entities, derivedAgentIRI, derivedAgentURL,
-				inputs);
+		String derivation = devClient.createDerivationWithTimeSeries(entities, derivedAgentIRI, inputs);
 		devClient.addTimeInstance(derivation); // timestamp initialised as 0
 
 		// case 1: no status are added, only update timestamp
@@ -717,49 +799,7 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
-	public void testGetInstanceClass() {
-		String entityclass = entity1 + "class";
-
-		OntModel testKG = mockClient.getKnowledgeBase();
-		// returns an empty string if there is no rdf:type
-		Assert.assertEquals("", devClient.getInstanceClass(Arrays.asList(entity1)).get(0));
-		testKG.add(ResourceFactory.createResource(entity1), RDF.type, ResourceFactory.createResource(entityclass));
-
-		Assert.assertEquals(entityclass, devClient.getInstanceClass(Arrays.asList(entity1)).get(0));
-	}
-
-	@Test
-	public void testReconnectInputToDerived() {
-		devClient.reconnectInputToDerived(Arrays.asList(input1, input2), Arrays.asList(entity1, entity2));
-		OntModel testKG = mockClient.getKnowledgeBase();
-		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity1),
-				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
-				ResourceFactory.createResource(input1)));
-		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity2),
-				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
-				ResourceFactory.createResource(input2)));
-
-		// should throw an error if size doesn't match
-		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
-				() -> devClient.reconnectInputToDerived(Arrays.asList(input1, input2), Arrays.asList(entity1)));
-		Assert.assertTrue(e.getMessage().contains("reconnectInputToDerived has incorrect inputs"));
-	}
-
-	@Test
-	public void testAddNewEntitiesToDerived() {
-		String derived = "http://derived";
-		devClient.addNewEntitiesToDerived(derived, entities);
-		OntModel testKG = mockClient.getKnowledgeBase();
-
-		for (String entity : entities) {
-			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity),
-					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
-					ResourceFactory.createResource(derived)));
-		}
-	}
-
-	@Test
-	public void testReconnectNewDerivedIRIs() {
+	public void testReconnectSyncDerivation() {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		List<String> oldInstances = Arrays.asList("http://a", "http://b", "http://c");
 		List<TriplePattern> newTriples1 = new ArrayList<>();
@@ -780,12 +820,7 @@ public class DerivedQuantitySparqlTest {
 		newTriples2.add(Rdf.iri("http://c/new2").isA(Rdf.iri("http://c/rdftype")));
 		String derivation = devClient.createDerivation(oldInstances, derivedAgentIRI, inputs);
 		devClient.addTimeInstance(derivation); // timestamp initialised as 0
-
-		// add timestamp to all inputs with current timestamp
-		for (String input : inputs) {
-			devClient.addTimeInstance(input);
-			devClient.updateTimeStamp(input);
-		}
+		// timestamp for all inputs should already be added automatically when createDerivation
 
 		// test if derivation was created correctly
 		// agent
@@ -815,7 +850,7 @@ public class DerivedQuantitySparqlTest {
 
 		// case 1: derivation is outdated, now delete and add new instances should work
 		long retrievedInputsAt = Instant.now().getEpochSecond();
-		devClient.reconnectNewDerivedIRIs(newTriples1, newInstanceMap1, derivation, retrievedInputsAt);
+		devClient.reconnectSyncDerivation(derivation, newInstanceMap1, newTriples1, retrievedInputsAt);
 		// all old outputs should be deleted
 		for (String instance : oldInstances) {
 			Assert.assertTrue(Objects.isNull(testKG.getIndividual(instance)));
@@ -843,7 +878,7 @@ public class DerivedQuantitySparqlTest {
 
 		// case 2: as now the timestamp of this derivation is up-to-date, nothing should
 		// happen when reconnectNewDerivedIRIs again with a new sets of instances
-		devClient.reconnectNewDerivedIRIs(newTriples2, newInstanceMap2, derivation, retrievedInputsAt);
+		devClient.reconnectSyncDerivation(derivation, newInstanceMap2, newTriples2, retrievedInputsAt);
 		// repeat all checks after case 1
 		// all old outputs should be deleted
 		for (String instance : oldInstances) {
@@ -872,6 +907,18 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
+	public void testCreateDerivationIRI() {
+		String derivationIRI = devClient.createDerivationIRI(DerivationSparql.ONTODERIVATION_DERIVATION);
+		Assert.assertTrue(derivationIRI.startsWith(derivationInstanceBaseURL + DerivationSparql.DERIVATION + "_"));
+
+		derivationIRI = devClient.createDerivationIRI(DerivationSparql.ONTODERIVATION_DERIVATIONWITHTIMESERIES);
+		Assert.assertTrue(derivationIRI.startsWith(derivationInstanceBaseURL + DerivationSparql.DERIVATIONWITHTIMESERIES + "_"));
+
+		derivationIRI = devClient.createDerivationIRI(DerivationSparql.ONTODERIVATION_DERIVATIONASYN);
+		Assert.assertTrue(derivationIRI.startsWith(derivationInstanceBaseURL + DerivationSparql.DERIVATIONASYN + "_"));
+	}
+
+	@Test
 	public void testWriteSyncDerivationNewInfo() {
 		OntModel testKG = mockClient.getKnowledgeBase();
 
@@ -891,18 +938,19 @@ public class DerivedQuantitySparqlTest {
 		newTriples.add(Rdf.iri(c).has(Rdf.iri(c_p), Rdf.iri(c_v)));
 
 		// create a new derivation IRI
-		String derivation = devClient.createDerivationIRI();
+		String derivationType = DerivationSparql.ONTODERIVATION_DERIVATION;
+		String derivation = devClient.createDerivationIRI(derivationType);
 
 		// timestamp
 		long retrievedInputsAt = Instant.now().getEpochSecond();
 
 		devClient.writeSyncDerivationNewInfo(newTriples, entities, derivedAgentIRI, inputs, derivation,
-				DerivationSparql.ONTODERIVATION_DERIVATION, retrievedInputsAt);
+				derivationType, retrievedInputsAt);
 
 		// test if derivation was created correctly
 		// derivation
 		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation), RDF.type,
-				ResourceFactory.createResource(DerivationSparql.ONTODERIVATION_DERIVATION)));
+				ResourceFactory.createResource(derivationType)));
 		// agent
 		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedUsing"),
@@ -931,6 +979,26 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
+	public void testAllowedAsDerivationOutputs() {
+		// case 1: entities allowed to be added as outputs
+		// the function should execute fine
+		devClient.allowedAsDerivationOutputs(entities);
+
+		// case 2: entity already belongsTo other derivations
+		// mark derivation now, then the function should throw error
+		devClient.createDerivation(entities, derivedAgentIRI, inputs);
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.allowedAsDerivationOutputs(entities));
+		Assert.assertTrue(e.getMessage().contains("already part of another derivation"));
+
+		// case 3: entity already has timestamp, is pure input
+		// should throw error
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.allowedAsDerivationOutputs(inputs));
+		Assert.assertTrue(e.getMessage().contains("have time instances"));
+	}
+
+	@Test
 	public void testBulkCreateDerivations() {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		List<List<String>> entitiesList = Arrays.asList(entities, entities2);
@@ -938,14 +1006,18 @@ public class DerivedQuantitySparqlTest {
 
 		Resource derivationType = ResourceFactory.createResource(DerivationSparql.derivednamespace + "Derivation");
 
-		List<String> derivations = devClient.bulkCreateDerivations(entitiesList, agentIRIList, agentURLList,
-				inputsList);
+		// add timestamp to all pure inputs first
+		devClient.addTimeInstance(inputsList.stream().flatMap(List::stream).collect(Collectors.toList()));
+		// then create derivation, as all pure inputs already have timestamp in KG
+		// the sub query that retrieves the pure inputs whose timestamp is missing will return empty results
+		// but due to the optional clause, the insert clause should still be able to proceed to mark up derivation
+		// thus if the below tests passes, the optional clause is tested automatically
+		List<String> derivations = devClient.bulkCreateDerivations(entitiesList, agentIRIList, inputsList);
 		for (int i = 0; i < derivations.size(); i++) {
 			List<String> entities = entitiesList.get(i);
 			List<String> inputs = inputsList.get(i);
 
 			Assert.assertEquals(derivationType, testKG.getIndividual(derivations.get(i)).getRDFType());
-			Assert.assertEquals(agentURLList.get(i), devClient.getAgentUrl(derivations.get(i)));
 
 			for (String entity : entities) {
 				Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity),
@@ -957,8 +1029,83 @@ public class DerivedQuantitySparqlTest {
 				Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivations.get(i)),
 						ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
 						ResourceFactory.createResource(input)));
+				Assert.assertTrue(testKG.contains(ResourceFactory.createResource(input),
+						ResourceFactory.createProperty(p_time + "hasTime")));
 			}
 		}
+
+		// an instance cannot be part of two derivations
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(entitiesList, agentIRIList, inputsList));
+		Assert.assertTrue(e.getMessage().contains("part of another derivation"));
+		for (String d : derivations) {
+			Assert.assertTrue(e.getMessage().contains(d));
+		}
+		for (String en : entitiesList.stream().flatMap(List::stream).collect(Collectors.toList())) {
+			Assert.assertTrue(e.getMessage().contains(en));
+		}
+
+		// an instance cannot be marked belongsTo more than one derivation
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(
+						Arrays.asList(entities3, entities3),
+						Arrays.asList(derivedAgentIRI, derivedAgentIRI2),
+						Arrays.asList(inputs1, inputs3)
+				));
+		Assert.assertTrue(e.getMessage().contains("Entity will be marked belongsTo more than one derivations"));
+	}
+
+	@Test
+	public void testBulkCreateDerivationsExceptions() {
+		// some errors for potential circular dependency will be detected at creation
+		// NOTE however that there will be situations that the creation is okay in DerivationSparql
+		// but circular dependency still exist, these can be detected by DerivationClient::validateDerivations
+		// this is the reason that derivations are always validated behind-the-secenes when creating derivation in bulk by developer
+		// check out DerivedQuantityClientTest::testValidateDerived and
+		// DerivedQuantityClientTest::testBulkCreateDerivationsDetectCircularDependency
+
+		// inputs cancelled out
+		// e1 --> d1 --> i1. i1 --> d2 --> e1.
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(Arrays.asList(Arrays.asList(input1), Arrays.asList(entity1)),
+						Arrays.asList(derivedAgentIRI, derivedAgentIRI2),
+						Arrays.asList(Arrays.asList(entity1), Arrays.asList(input1))));
+		Assert.assertTrue(e.getMessage().contains("All inputs are cancelled out"));
+
+		// inputs cancelled out
+		// e2 --> e1. e1 --> i1. i1 --> e2.
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(
+						Arrays.asList(Arrays.asList(entity2), Arrays.asList(entity1), Arrays.asList(input1)),
+						Arrays.asList(derivedAgentIRI, derivedAgentIRI2, derivedAgentIRI3),
+						Arrays.asList(Arrays.asList(entity1), Arrays.asList(input1), Arrays.asList(entity2))));
+		Assert.assertTrue(e.getMessage().contains("All inputs are cancelled out"));
+
+		// inputs cancelled out
+		// e2 --> e1. e1 --> i1, i2. i1, i2 --> e1.
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(
+						Arrays.asList(Arrays.asList(entity2), Arrays.asList(entity1), Arrays.asList(input1, input2)),
+						Arrays.asList(derivedAgentIRI, derivedAgentIRI2, derivedAgentIRI3),
+						Arrays.asList(Arrays.asList(entity1), Arrays.asList(input1, input2), Arrays.asList(entity2))));
+		Assert.assertTrue(e.getMessage().contains("All inputs are cancelled out"));
+
+		// same IRI exist in both inputs and outputs
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(
+						Arrays.asList(Arrays.asList(entity1)),
+						Arrays.asList(derivedAgentIRI),
+						Arrays.asList(Arrays.asList(entity1))));
+		Assert.assertTrue(e.getMessage().contains("Intersection between inputs and outputs for the same derivation markup"));
+
+		// entity will be belongsTo more than one derivation
+		// e2 --> e1. e1 --> i1. e1 --> e2.
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devClient.bulkCreateDerivations(
+						Arrays.asList(Arrays.asList(entity2), Arrays.asList(entity1), Arrays.asList(entity1)),
+						Arrays.asList(derivedAgentIRI, derivedAgentIRI2, derivedAgentIRI3),
+						Arrays.asList(Arrays.asList(entity1), Arrays.asList(input1), Arrays.asList(entity2))));
+		Assert.assertTrue(e.getMessage().contains("Entity will be marked belongsTo more than one derivations"));
 	}
 
 	@Test
@@ -1026,14 +1173,12 @@ public class DerivedQuantitySparqlTest {
 		Resource derivationType = ResourceFactory
 				.createResource(DerivationSparql.derivednamespace + "DerivationWithTimeSeries");
 
-		List<String> derivations = devClient.bulkCreateDerivationsWithTimeSeries(entitiesList, agentIRIList,
-				agentURLList, inputsList);
+		List<String> derivations = devClient.bulkCreateDerivationsWithTimeSeries(entitiesList, agentIRIList, inputsList);
 		for (int i = 0; i < derivations.size(); i++) {
 			List<String> entities = entitiesList.get(i);
 			List<String> inputs = inputsList.get(i);
 
 			Assert.assertEquals(derivationType, testKG.getIndividual(derivations.get(i)).getRDFType());
-			Assert.assertEquals(agentURLList.get(i), devClient.getAgentUrl(derivations.get(i)));
 
 			for (String entity : entities) {
 				Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity),
@@ -1060,13 +1205,12 @@ public class DerivedQuantitySparqlTest {
 				.createResource(DerivationSparql.derivednamespace + "DerivationAsyn");
 
 		List<String> derivations = devClient.bulkCreateDerivationsAsync(entitiesList, agentIRIList,
-				agentURLList, inputsList, forAsyncUpdateFlagList);
+				inputsList, forAsyncUpdateFlagList);
 		for (int i = 0; i < derivations.size(); i++) {
 			List<String> entities = entitiesList.get(i);
 			List<String> inputs = inputsList.get(i);
 
 			Assert.assertEquals(derivationType, testKG.getIndividual(derivations.get(i)).getRDFType());
-			Assert.assertEquals(agentURLList.get(i), devClient.getAgentUrl(derivations.get(i)));
 
 			for (String entity : entities) {
 				Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity),
@@ -1109,14 +1253,13 @@ public class DerivedQuantitySparqlTest {
 		List<Boolean> forAsyncUpdateFlagList = Arrays.asList(false, false, true);
 
 		List<String> derivations = devClient.bulkCreateMixedDerivations(entitiesListChain5, agentIRIListChain5,
-				agentURLListChain5, inputsListChain5, derivationTypeSequence, forAsyncUpdateFlagList);
+				inputsListChain5, derivationTypeSequence, forAsyncUpdateFlagList);
 		for (int i = 0; i < derivations.size(); i++) {
 			List<String> entities = entitiesListChain5.get(i);
 			List<String> inputs = inputsListChain5.get(i);
 
 			Assert.assertEquals(derivationTypeResourceList.get(i),
 					testKG.getIndividual(derivations.get(i)).getRDFType());
-			Assert.assertEquals(agentURLListChain5.get(i), devClient.getAgentUrl(derivations.get(i)));
 
 			for (String entity : entities) {
 				Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity),
@@ -1449,98 +1592,18 @@ public class DerivedQuantitySparqlTest {
 		Assert.assertTrue(mappedInstances.isEmpty());
 	}
 
-	@Test
-	public void testMatchNewDerivedIriToDownsFroNewInfo() {
-		OntModel testKG = mockClient.getKnowledgeBase();
-		// create first asynchronous derivation1
-		boolean forUpdate = true;
-		String derivation1 = devClient.createDerivationAsync(Arrays.asList(entity1, entity2, entity3),
-				derivedAgentIRI, inputs, forUpdate);
-
-		// add triples about agent2 that monitors the derivation2 which is one
-		// derivation downstream compared to the derivation1
-		String derivation2 = devClient.createDerivationAsync(new ArrayList<>(), derivedAgentIRI2,
-				Arrays.asList(derivation1), forUpdate);
-
-		// agent2 takes some entities from the output of the derivation1 as inputs
-		testKG.add(ResourceFactory.createResource(derivedAgentIRI2), ResourceFactory.createProperty(hasOperation),
-				ResourceFactory.createResource(derivedAgentOperation));
-		testKG.add(ResourceFactory.createResource(derivedAgentOperation), ResourceFactory.createProperty(hasInput),
-				ResourceFactory.createResource(derivedAgentInputMsgCont));
-		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont),
-				ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart1));
-		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont),
-				ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart2));
-		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart1),
-				ResourceFactory.createProperty(hasType), ResourceFactory.createResource(input1ParentRdfType));
-		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart2),
-				ResourceFactory.createProperty(hasType), ResourceFactory.createResource(input2ParentRdfType));
-
-		// add triples about rdf:type and rdfs:subClassOf properties
-		testKG.add(ResourceFactory.createResource(entity1), RDF.type,
-				ResourceFactory.createResource(input1RdfType));
-		testKG.add(ResourceFactory.createResource(input1RdfType), RDFS.subClassOf,
-				ResourceFactory.createResource(input1ParentRdfType));
-		testKG.add(ResourceFactory.createResource(entity2), RDF.type,
-				ResourceFactory.createResource(input2RdfType));
-		testKG.add(ResourceFactory.createResource(input2RdfType), RDFS.subClassOf,
-				ResourceFactory.createResource(input2ParentRdfType));
-
-		// now we retrieve the output instances of the derivation1 that matches the
-		// input of derivation2 (OntoAgent I/O of agent2)
-		Map<String, List<String>> map = devClient.matchNewDerivedIriToDownsFroNewInfo(
-				Arrays.asList(entity1, entity2, entity3),
-				Arrays.asList(derivation2));
-
-		// the map should be {entity1=[derivation2], entity2=[derivation2]}
-		// entity3 will be omitted as it is not matched
-		Assert.assertTrue(equalLists(Arrays.asList(derivation2), map.get(entity1)));
-		Assert.assertTrue(equalLists(Arrays.asList(derivation2), map.get(entity2)));
-		Assert.assertTrue(!map.containsKey(entity3));
-	}
-
-	@Test
-	public void testGetDerivations() {
-		List<List<String>> entitiesList = Arrays.asList(entities, entities2);
-		List<List<String>> inputsList = Arrays.asList(inputs, inputs2);
-
-		List<String> derivationIRIs = devClient.bulkCreateDerivations(entitiesList, agentIRIList, agentURLList,
-				inputsList);
-		devClient.addTimeInstance(derivationIRIs);
-
-		List<Derivation> derivations = devClient.getDerivations();
-
-		for (int i = 0; i < derivationIRIs.size(); i++) {
-			String derivationIRI = derivationIRIs.get(i);
-			Derivation derivation = derivations.stream().filter(d -> d.getIri().contentEquals(derivationIRI))
-					.findFirst().get();
-
-			List<Entity> inputs = derivation.getInputs();
-			for (Entity input : inputs) {
-				Assert.assertTrue(inputsList.get(i).contains(input.getIri()));
-			}
-
-			List<Entity> entities = derivation.getEntities();
-			for (Entity entity : entities) {
-				Assert.assertTrue(entitiesList.get(i).contains(entity.getIri()));
-			}
-
-			Assert.assertEquals(agentURLList.get(i), derivation.getAgentURL());
-		}
-	}
-
 	// below test case replaces the test case testGetDerivations()
 	// as function getAllDerivationsInKG() replaces function getDerivations()
 	@Test
 	public void testGetAllDerivationsInKG_Derivation() {
+		initOntoAgentInstances();
 		for (int mode = 0; mode < compactEntititsList.size(); mode++) {
 			List<List<String>> _entitiesList = compactEntititsList.get(mode);
 			List<String> _agentIRIList = compactAgentIRIList.get(mode);
 			List<String> _agentURLList = compactAgentURLList.get(mode);
 			List<List<String>> _inputsList = compactInputsList.get(mode);
 
-			List<String> derivationIRIs = devClient.bulkCreateDerivations(_entitiesList, _agentIRIList,
-					_agentURLList, _inputsList);
+			List<String> derivationIRIs = devClient.bulkCreateDerivations(_entitiesList, _agentIRIList, _inputsList);
 			devClient.addTimeInstance(derivationIRIs);
 			OntModel testKG = mockClient.getKnowledgeBase();
 			initRdfType(testKG);
@@ -1563,6 +1626,7 @@ public class DerivedQuantitySparqlTest {
 	// as function getAllDerivationsInKG() replaces function getDerivations()
 	@Test
 	public void testGetAllDerivationsInKG_DerivationAsyn() {
+		initOntoAgentInstances();
 		for (int mode = 0; mode < compactEntititsList.size(); mode++) {
 			List<List<String>> _entitiesList = compactEntititsList.get(mode);
 			List<String> _agentIRIList = compactAgentIRIList.get(mode);
@@ -1572,7 +1636,7 @@ public class DerivedQuantitySparqlTest {
 					.collect(Collectors.toList());
 
 			List<String> derivationIRIs = devClient.bulkCreateDerivationsAsync(_entitiesList, _agentIRIList,
-					_agentURLList, _inputsList, _forAsyncUpdateFlagList);
+					_inputsList, _forAsyncUpdateFlagList);
 			devClient.addTimeInstance(derivationIRIs);
 			OntModel testKG = mockClient.getKnowledgeBase();
 			initRdfType(testKG);
@@ -1609,6 +1673,7 @@ public class DerivedQuantitySparqlTest {
 	// as function getAllDerivationsInKG() replaces function getDerivations()
 	@Test
 	public void testGetAllDerivationsInKG_DerivationAsyn_NewInfo() {
+		initOntoAgentInstances();
 		String derivation1 = devClient.createDerivationAsync(new ArrayList<>(), derivedAgentIRI0, inputs0, true);
 		String derivation2 = devClient.createDerivationAsync(new ArrayList<>(), derivedAgentIRI1,
 				Arrays.asList(derivation1), true);
@@ -1693,7 +1758,8 @@ public class DerivedQuantitySparqlTest {
 	// as function getAllDerivationsInKG() replaces function getDerivations()
 	@Test
 	public void testGetAllDerivationsInKG_MixedDerivation_NewInfo() {
-		String derivation1 = devClient.createDerivation(entities0, derivedAgentIRI0, derivedAgentURL0, inputs0);
+		initOntoAgentInstances();
+		String derivation1 = devClient.createDerivation(entities0, derivedAgentIRI0, inputs0);
 		String derivation2 = devClient.createDerivationAsync(new ArrayList<>(), derivedAgentIRI1,
 				entities0, true);
 		String derivation3 = devClient.createDerivationAsync(new ArrayList<>(), derivedAgentIRI2,
@@ -1781,7 +1847,8 @@ public class DerivedQuantitySparqlTest {
 	// derivation
 	@Test
 	public void testGetAllDerivationsInKG_MixedDerivation_NewInfo_Two() {
-		String derivation1 = devClient.createDerivation(entities0, derivedAgentIRI0, derivedAgentURL0, inputs0);
+		initOntoAgentInstances();
+		String derivation1 = devClient.createDerivation(entities0, derivedAgentIRI0, inputs0);
 		String derivation2 = devClient.createDerivationAsync(new ArrayList<>(), derivedAgentIRI1,
 				entities0, true);
 		String derivation3 = devClient.createDerivationAsync(new ArrayList<>(), derivedAgentIRI2,
@@ -1861,6 +1928,7 @@ public class DerivedQuantitySparqlTest {
 
 	@Test
 	public void testGetRootAndAllUpstreamDerivations_Fragmented_Derivation() {
+		initOntoAgentInstances();
 		List<String> derivationTypeList = Arrays
 				.asList(DerivationSparql.derivednamespace + DerivationSparql.DERIVATION);
 		for (int cas = 0; cas < fragmentedEntititsList.size(); cas++) {
@@ -1869,8 +1937,7 @@ public class DerivedQuantitySparqlTest {
 			List<String> _agentURLList = fragmentedAgentURLList.get(cas);
 			List<List<String>> _inputsList = fragmentedInputsList.get(cas);
 
-			List<String> derivationIRIs = devClient.bulkCreateDerivations(_entitiesList, _agentIRIList, _agentURLList,
-					_inputsList);
+			List<String> derivationIRIs = devClient.bulkCreateDerivations(_entitiesList, _agentIRIList, _inputsList);
 			devClient.addTimeInstance(derivationIRIs);
 			OntModel testKG = mockClient.getKnowledgeBase();
 			initRdfType(testKG);
@@ -1893,6 +1960,7 @@ public class DerivedQuantitySparqlTest {
 
 	@Test
 	public void testGetRootAndAllUpstreamDerivations_Fragmented_DerivationAsyn() {
+		initOntoAgentInstances();
 		List<String> derivationTypeList = Arrays
 				.asList(DerivationSparql.derivednamespace + DerivationSparql.DERIVATIONASYN);
 		for (int cas = 0; cas < fragmentedEntititsList.size(); cas++) {
@@ -1904,7 +1972,7 @@ public class DerivedQuantitySparqlTest {
 					.collect(Collectors.toList());
 
 			List<String> derivationIRIs = devClient.bulkCreateDerivationsAsync(_entitiesList, _agentIRIList,
-					_agentURLList, _inputsList, _forAsyncUpdateFlagList);
+					_inputsList, _forAsyncUpdateFlagList);
 			devClient.addTimeInstance(derivationIRIs);
 			OntModel testKG = mockClient.getKnowledgeBase();
 			initRdfType(testKG);
@@ -1940,6 +2008,7 @@ public class DerivedQuantitySparqlTest {
 
 	@Test
 	public void testGetRootAndAllUpstreamDerivations_Chain_Derivation() {
+		initOntoAgentInstances();
 		List<String> derivationTypeList = Arrays
 				.asList(DerivationSparql.derivednamespace + DerivationSparql.DERIVATION);
 		for (int cas = 0; cas < chainEntititsList.size(); cas++) {
@@ -1948,8 +2017,7 @@ public class DerivedQuantitySparqlTest {
 			List<String> _agentURLList = chainAgentURLList.get(cas);
 			List<List<String>> _inputsList = chainInputsList.get(cas);
 
-			List<String> derivationIRIs = devClient.bulkCreateDerivations(_entitiesList, _agentIRIList, _agentURLList,
-					_inputsList);
+			List<String> derivationIRIs = devClient.bulkCreateDerivations(_entitiesList, _agentIRIList, _inputsList);
 			devClient.addTimeInstance(derivationIRIs);
 			OntModel testKG = mockClient.getKnowledgeBase();
 			initRdfType(testKG);
@@ -1972,6 +2040,7 @@ public class DerivedQuantitySparqlTest {
 
 	@Test
 	public void testGetRootAndAllUpstreamDerivations_Chain_DerivationAsyn() {
+		initOntoAgentInstances();
 		List<String> derivationTypeList = Arrays
 				.asList(DerivationSparql.derivednamespace + DerivationSparql.DERIVATIONASYN);
 		for (int cas = 0; cas < chainEntititsList.size(); cas++) {
@@ -1983,7 +2052,7 @@ public class DerivedQuantitySparqlTest {
 					.collect(Collectors.toList());
 
 			List<String> derivationIRIs = devClient.bulkCreateDerivationsAsync(_entitiesList, _agentIRIList,
-					_agentURLList, _inputsList, _forAsyncUpdateFlagList);
+					_inputsList, _forAsyncUpdateFlagList);
 			devClient.addTimeInstance(derivationIRIs);
 			OntModel testKG = mockClient.getKnowledgeBase();
 			initRdfType(testKG);
@@ -2019,11 +2088,12 @@ public class DerivedQuantitySparqlTest {
 
 	@Test
 	public void testGetRootAndAllUpstreamDerivations_Tree1_Derivation() {
+		initOntoAgentInstances();
 		List<String> derivationTypeList = Arrays
 				.asList(DerivationSparql.derivednamespace + DerivationSparql.DERIVATION);
 		// tree case 1 has structure: d3 --> d1, d3 --> d2, no connection between d1/d2
 		List<String> derivationIRIs = devClient.bulkCreateDerivations(entitiesListTree1, agentIRIListTree1,
-				agentURLListTree1, inputsListTree1);
+				inputsListTree1);
 		devClient.addTimeInstance(derivationIRIs);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		initRdfType(testKG);
@@ -2044,13 +2114,14 @@ public class DerivedQuantitySparqlTest {
 
 	@Test
 	public void testGetRootAndAllUpstreamDerivations_Tree1_DerivationAsyn() {
+		initOntoAgentInstances();
 		List<String> derivationTypeList = Arrays
 				.asList(DerivationSparql.derivednamespace + DerivationSparql.DERIVATIONASYN);
 		List<Boolean> _forAsyncUpdateFlagList = IntStream.range(0, entitiesListTree1.size()).mapToObj(i -> true)
 				.collect(Collectors.toList());
 		// tree case 1 has structure: d3 --> d1, d3 --> d2, no connection between d1/d2
 		List<String> derivationIRIs = devClient.bulkCreateDerivationsAsync(entitiesListTree1, agentIRIListTree1,
-				agentURLListTree1, inputsListTree1, _forAsyncUpdateFlagList);
+				inputsListTree1, _forAsyncUpdateFlagList);
 		devClient.addTimeInstance(derivationIRIs);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		initRdfType(testKG);
@@ -2084,11 +2155,12 @@ public class DerivedQuantitySparqlTest {
 
 	@Test
 	public void testGetRootAndAllUpstreamDerivations_DAG1_Derivation() {
+		initOntoAgentInstances();
 		List<String> derivationTypeList = Arrays
 				.asList(DerivationSparql.derivednamespace + DerivationSparql.DERIVATION);
 		// DAG case 1 has structure: d1 --> d0, d2 --> d0, no connection between d1/d2
 		List<String> derivationIRIs = devClient.bulkCreateDerivations(entitiesListDAG1, agentIRIListDAG1,
-				agentURLListDAG1, inputsListDAG1);
+				inputsListDAG1);
 		devClient.addTimeInstance(derivationIRIs);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		initRdfType(testKG);
@@ -2109,13 +2181,14 @@ public class DerivedQuantitySparqlTest {
 
 	@Test
 	public void testGetRootAndAllUpstreamDerivations_DAG1_DerivationAsyn() {
+		initOntoAgentInstances();
 		List<String> derivationTypeList = Arrays
 				.asList(DerivationSparql.derivednamespace + DerivationSparql.DERIVATIONASYN);
 		List<Boolean> _forAsyncUpdateFlagList = IntStream.range(0, entitiesListDAG1.size()).mapToObj(i -> false)
 				.collect(Collectors.toList());
 		// DAG case 1 has structure: d1 --> d0, d2 --> d0, no connection between d1/d2
 		List<String> derivationIRIs = devClient.bulkCreateDerivationsAsync(entitiesListDAG1, agentIRIListDAG1,
-				agentURLListDAG1, inputsListDAG1, _forAsyncUpdateFlagList);
+				inputsListDAG1, _forAsyncUpdateFlagList);
 		devClient.addTimeInstance(derivationIRIs);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		initRdfType(testKG);
@@ -2149,11 +2222,11 @@ public class DerivedQuantitySparqlTest {
 
 	@Test
 	public void testGetRootAndAllUpstreamDerivations_DAG2_Derivation() {
+		initOntoAgentInstances();
 		List<String> derivationTypeList = Arrays
 				.asList(DerivationSparql.derivednamespace + DerivationSparql.DERIVATION);
 		// DAG case 2 has structure: d3 --> (d1, d2) --> d0, no connection between d1/d2
-		List<String> derivationIRIs = devClient.bulkCreateDerivations(entitiesListDAG2, agentIRIListDAG2,
-				agentURLListDAG2, inputsListDAG2);
+		List<String> derivationIRIs = devClient.bulkCreateDerivations(entitiesListDAG2, agentIRIListDAG2, inputsListDAG2);
 		devClient.addTimeInstance(derivationIRIs);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		initRdfType(testKG);
@@ -2174,13 +2247,14 @@ public class DerivedQuantitySparqlTest {
 
 	@Test
 	public void testGetRootAndAllUpstreamDerivations_DAG2_DerivationAsyn() {
+		initOntoAgentInstances();
 		List<String> derivationTypeList = Arrays
 				.asList(DerivationSparql.derivednamespace + DerivationSparql.DERIVATIONASYN);
 		List<Boolean> _forAsyncUpdateFlagList = IntStream.range(0, entitiesListDAG2.size()).mapToObj(i -> true)
 				.collect(Collectors.toList());
 		// DAG case 2 has structure: d3 --> (d1, d2) --> d0, no connection between d1/d2
 		List<String> derivationIRIs = devClient.bulkCreateDerivationsAsync(entitiesListDAG2, agentIRIListDAG2,
-				agentURLListDAG2, inputsListDAG2, _forAsyncUpdateFlagList);
+				inputsListDAG2, _forAsyncUpdateFlagList);
 		devClient.addTimeInstance(derivationIRIs);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		initRdfType(testKG);
@@ -2214,11 +2288,12 @@ public class DerivedQuantitySparqlTest {
 
 	@Test
 	public void testGetRootAndAllUpstreamDerivations_DAG3_Derivation() {
+		initOntoAgentInstances();
 		List<String> derivationTypeList = Arrays
 				.asList(DerivationSparql.derivednamespace + DerivationSparql.DERIVATION);
 		// DAG case 3 has structure: (d2, d4) --> d0, both d2 and d4 <isDerivedFrom> i3
 		List<String> derivationIRIs = devClient.bulkCreateDerivations(entitiesListDAG3, agentIRIListDAG3,
-				agentURLListDAG3, inputsListDAG3);
+				inputsListDAG3);
 		devClient.addTimeInstance(derivationIRIs);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		initRdfType(testKG);
@@ -2239,13 +2314,14 @@ public class DerivedQuantitySparqlTest {
 
 	@Test
 	public void testGetRootAndAllUpstreamDerivations_DAG3_DerivationAsyn() {
+		initOntoAgentInstances();
 		List<String> derivationTypeList = Arrays
 				.asList(DerivationSparql.derivednamespace + DerivationSparql.DERIVATIONASYN);
 		List<Boolean> _forAsyncUpdateFlagList = IntStream.range(0, entitiesListDAG3.size()).mapToObj(i -> false)
 				.collect(Collectors.toList());
 		// DAG case 3 has structure: (d2, d4) --> d0, both d2 and d4 <isDerivedFrom> i3
 		List<String> derivationIRIs = devClient.bulkCreateDerivationsAsync(entitiesListDAG3, agentIRIListDAG3,
-				agentURLListDAG3, inputsListDAG3, _forAsyncUpdateFlagList);
+				inputsListDAG3, _forAsyncUpdateFlagList);
 		devClient.addTimeInstance(derivationIRIs);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		initRdfType(testKG);
@@ -2279,9 +2355,9 @@ public class DerivedQuantitySparqlTest {
 
 	@Test
 	public void testGetAllDerivationsInKG_Derivation_DAG4_Connectivity() {
+		initOntoAgentInstances();
 		// this function mainly tests the connectivity of the cached derivations in DAG4
-		List<String> derivationIRIs = devClient.bulkCreateDerivations(entitiesListDAG4, agentIRIListDAG4,
-				agentURLListDAG4, inputsListDAG4);
+		List<String> derivationIRIs = devClient.bulkCreateDerivations(entitiesListDAG4, agentIRIListDAG4, inputsListDAG4);
 		devClient.addTimeInstance(derivationIRIs);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		initRdfType(testKG);
@@ -2333,8 +2409,8 @@ public class DerivedQuantitySparqlTest {
 
 	@Test
 	public void testGetDerivation() {
-		List<String> derivationIRIs = devClient.bulkCreateDerivations(entitiesListDAG5, agentIRIListDAG5,
-				agentURLListDAG5, inputsListDAG5);
+		initOntoAgentInstances();
+		List<String> derivationIRIs = devClient.bulkCreateDerivations(entitiesListDAG5, agentIRIListDAG5, inputsListDAG5);
 		devClient.addTimeInstance(derivationIRIs);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		initRdfType(testKG);
@@ -2362,44 +2438,6 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
-	public void testRetrieveInputReadTimestamp() throws InterruptedException {
-		OntModel testKG = mockClient.getKnowledgeBase();
-		// create derivation for Request
-		String derivation = devClient.createDerivationAsync(entities, derivedAgentIRI, inputs, true);
-
-		// no retrievedInputsAt should be recorded yet
-		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
-				() -> devClient.retrieveInputReadTimestamp(derivation));
-		Assert.assertTrue(e.getMessage().contains(
-				"No timestamp recorded for reading derivation inputs of <" + derivation
-						+ ">. The derivation is probably not setup correctly."));
-
-		// write read time triple
-		long ts = Instant.now().getEpochSecond();
-		devClient.updateStatusBeforeSetupJob(derivation);
-
-		// retrieve timestamp, it should be deleted after retrieved
-		long retrievedTimestamp = devClient.retrieveInputReadTimestamp(derivation).get(derivation);
-		Assert.assertTrue(retrievedTimestamp >= ts);
-		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation),
-				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt")));
-
-		// if there are two triples, an error should be thrown
-		devClient.updateStatusBeforeSetupJob(derivation);
-		// sleep 2 seconds to add the second triple with different timestamp
-		// {<derivation> <retrievedInputsAt> timestamp}
-		TimeUnit.SECONDS.sleep(2);
-		testKG.add(ResourceFactory.createResource(derivation),
-				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "retrievedInputsAt"),
-				ResourceFactory.createTypedLiteral(Instant.now().getEpochSecond()));
-		e = Assert.assertThrows(JPSRuntimeException.class,
-				() -> devClient.retrieveInputReadTimestamp(derivation));
-		Assert.assertTrue(e.getMessage().contains(
-				"DerivedQuantitySparql: More than 1 time instance recorded for reading derivation inputs of <"
-						+ derivation + ">"));
-	}
-
-	@Test
 	public void testGetDownstreamDerivationForNewInfo() {
 		// create three async derivations for new information
 		String d0 = devClient.createDerivationAsync(new ArrayList<>(), derivedAgentIRI, inputs, true);
@@ -2413,19 +2451,14 @@ public class DerivedQuantitySparqlTest {
 	@Test
 	public void testGetUpstreamDerivationsNeedUpdate() {
 		// create DAG5 structure, d0 sync with timeseries, d1/d2 sync, d3/d4/d5 async
-		List<String> ds = devClient.bulkCreateMixedDerivations(entitiesListDAG5, agentIRIListDAG5,
-				agentURLListDAG5, inputsListDAG5,
+		List<String> ds = devClient.bulkCreateMixedDerivations(entitiesListDAG5, agentIRIListDAG5, inputsListDAG5,
 				Arrays.asList(DerivationSparql.ONTODERIVATION_DERIVATIONWITHTIMESERIES,
 						DerivationSparql.ONTODERIVATION_DERIVATION, DerivationSparql.ONTODERIVATION_DERIVATION,
 						DerivationSparql.ONTODERIVATION_DERIVATIONASYN,
 						DerivationSparql.ONTODERIVATION_DERIVATIONASYN,
 						DerivationSparql.ONTODERIVATION_DERIVATIONASYN),
 				Arrays.asList(false, false, false, false, true, false));
-		// add timestamp to pure inputs with current timestamp
-		for (String input : inputs0) {
-			devClient.addTimeInstance(input);
-			devClient.updateTimeStamp(input);
-		}
+		// timestamp should already be added to all pure inputs with current timestamp in bulkCreateMixedDerivations
 		// add timestamp to all derivation with 0 timestamp, also mark them as Requested
 		// --> this is the same as the status of derivations after call
 		// unifiedUpdateDerivations
@@ -2496,137 +2529,12 @@ public class DerivedQuantitySparqlTest {
 	}
 
 	@Test
-	public void testGetDerivedEntitiesAndDownstreamDerivation() {
-		OntModel testKG = mockClient.getKnowledgeBase();
-		initRdfType(testKG);
-		// create DAG5 structure, d0 sync with timeseries, d1/d2 sync, d3/d4/d5 async
-		List<String> ds = devClient.bulkCreateMixedDerivations(entitiesListDAG5, agentIRIListDAG5,
-				agentURLListDAG5, inputsListDAG5,
-				Arrays.asList(DerivationSparql.ONTODERIVATION_DERIVATIONWITHTIMESERIES,
-						DerivationSparql.ONTODERIVATION_DERIVATION, DerivationSparql.ONTODERIVATION_DERIVATION,
-						DerivationSparql.ONTODERIVATION_DERIVATIONASYN,
-						DerivationSparql.ONTODERIVATION_DERIVATIONASYN,
-						DerivationSparql.ONTODERIVATION_DERIVATIONASYN),
-				Arrays.asList(false, false, false, false, true, false));
-		for (int i = 0; i < ds.size(); i++) {
-			String agentURL = agentURLListDAG5.get(i);
-			String derivationIRI = ds.get(i);
-			List<Entity> derivedEntities = devClient.getDerivedEntitiesAndDownstreamDerivation(derivationIRI);
-			switch (agentURL) {
-				// check that the Iri of derived entities and downstream derivation are correct
-				case derivedAgentURL0:
-					Assert.assertTrue(equalLists(Arrays.asList(input2, input3),
-							derivedEntities.stream().map(e -> e.getIri()).collect(Collectors.toList())));
-					derivedEntities.stream().forEach(e -> {
-						if (e.getIri().contentEquals(input2)) {
-							Assert.assertTrue(equalLists(Arrays.asList(ds.get(1)),
-									e.getInputOf().stream().map(d -> d.getIri()).collect(Collectors.toList())));
-						} else { // it must be input3, otherwise the above code will throw an error already
-							Assert.assertTrue(equalLists(Arrays.asList(ds.get(2), ds.get(4)),
-									e.getInputOf().stream().map(d -> d.getIri()).collect(Collectors.toList())));
-						}
-					});
-					break;
-				case derivedAgentURL1:
-					Assert.assertTrue(equalLists(Arrays.asList(entity2),
-							derivedEntities.stream().map(e -> e.getIri()).collect(Collectors.toList())));
-					derivedEntities.stream().forEach(e -> {
-						if (e.getIri().contentEquals(entity2)) {
-							Assert.assertTrue(equalLists(Arrays.asList(ds.get(3)),
-									e.getInputOf().stream().map(d -> d.getIri()).collect(Collectors.toList())));
-						}
-					});
-					break;
-				case derivedAgentURL2:
-					Assert.assertTrue(equalLists(Arrays.asList(entity4, entity5),
-							derivedEntities.stream().map(e -> e.getIri()).collect(Collectors.toList())));
-					derivedEntities.stream().forEach(e -> {
-						if (e.getIri().contentEquals(entity4)) {
-							Assert.assertTrue(equalLists(Arrays.asList(ds.get(3)),
-									e.getInputOf().stream().map(d -> d.getIri()).collect(Collectors.toList())));
-						} else { // it must be entity5, otherwise the above code will throw an error already
-							Assert.assertTrue(equalLists(Arrays.asList(ds.get(3), ds.get(5)),
-									e.getInputOf().stream().map(d -> d.getIri()).collect(Collectors.toList())));
-						}
-					});
-					break;
-				case derivedAgentURL3:
-					Assert.assertTrue(derivedEntities.isEmpty());
-					break;
-				case derivedAgentURL4:
-					Assert.assertTrue(equalLists(Arrays.asList(entity8),
-							derivedEntities.stream().map(e -> e.getIri()).collect(Collectors.toList())));
-					derivedEntities.stream().forEach(e -> {
-						if (e.getIri().contentEquals(entity8)) {
-							Assert.assertTrue(equalLists(Arrays.asList(ds.get(5)),
-									e.getInputOf().stream().map(d -> d.getIri()).collect(Collectors.toList())));
-						}
-					});
-					break;
-				case derivedAgentURL5:
-					Assert.assertTrue(derivedEntities.isEmpty());
-					break;
-				default:
-					fail("Unexpected agentURL for derivation: " + agentURL);
-			}
-		}
-	}
-
-	@Test
-	public void testInitialiseNewEntities() {
-		OntModel testKG = mockClient.getKnowledgeBase();
-		initRdfType(testKG);
-
-		String derivationIRI = "http://derivation";
-		for (String instance : allInstances) {
-			testKG.add(ResourceFactory.createResource(instance),
-					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
-					ResourceFactory.createResource(derivationIRI));
-		}
-
-		// queried instances should have the correct rdf:type
-		List<Entity> newEntities = devClient.initialiseNewEntities(derivationIRI);
-		for (Entity e : newEntities) {
-			Assert.assertTrue(e.getRdfType().contentEquals(e.getIri() + "/rdftype"));
-		}
-
-		// throw an error if more than one rdf:type detected
-		testKG.add(ResourceFactory.createResource(input1), RDF.type,
-				ResourceFactory.createResource(input1 + "/rdftype_should_fail_test"));
-		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
-				() -> devClient.initialiseNewEntities(derivationIRI));
-		Assert.assertTrue(
-				e.getMessage().contains("DerivedQuantitySparql.getInstanceClass: more than 1 rdf:type for"));
-	}
-
-	@Test
-	public void testDeleteDirectConnectionBetweenDerivations() {
-		OntModel testKG = mockClient.getKnowledgeBase();
-		Map<String, String> map = new HashMap<>();
-		allInstances.stream().forEach(i -> {
-			map.put(i, i + "/pair");
-			testKG.add(ResourceFactory.createResource(i),
-					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
-					ResourceFactory.createResource(map.get(i)));
-			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(i),
-					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
-					ResourceFactory.createResource(map.get(i))));
-		});
-
-		devClient.deleteDirectConnectionBetweenDerivations(map);
-		allInstances.stream().forEach(i -> {
-			Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(i),
-					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
-					ResourceFactory.createResource(map.get(i))));
-		});
-	}
-
-	@Test
 	public void testGetAllImmediateUpstreamDerivations() {
+		initOntoAgentInstances();
 		List<Boolean> _forAsyncUpdateFlagList = IntStream.range(0, entitiesListDAG5.size()).mapToObj(i -> true)
 					.collect(Collectors.toList());
 		List<String> derivationIRIs = devClient.bulkCreateDerivationsAsync(entitiesListDAG5, agentIRIListDAG5,
-				agentURLListDAG5, inputsListDAG5, _forAsyncUpdateFlagList);
+				inputsListDAG5, _forAsyncUpdateFlagList);
 		devClient.addTimeInstance(derivationIRIs);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		initRdfType(testKG);
@@ -2693,11 +2601,12 @@ public class DerivedQuantitySparqlTest {
 
 	@Test
 	public void testGetDerivationWithImmediateDownstream() {
+		initOntoAgentInstances();
 		// first test with DAG5 structure
 		List<Boolean> _forAsyncUpdateFlagList = IntStream.range(0, entitiesListDAG5.size()).mapToObj(i -> false)
 				.collect(Collectors.toList());
 		List<String> derivationIRIs = devClient.bulkCreateDerivationsAsync(entitiesListDAG5, agentIRIListDAG5,
-				agentURLListDAG5, inputsListDAG5, _forAsyncUpdateFlagList);
+				inputsListDAG5, _forAsyncUpdateFlagList);
 		devClient.addTimeInstance(derivationIRIs);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		initRdfType(testKG);
@@ -2763,11 +2672,12 @@ public class DerivedQuantitySparqlTest {
 		}
 
 		// add a directed downstream derivation to d0, this should also be cached
+		// the ontoagent instance of this random agent should also be added to let it be cached
 		String agentIRI_random = "http://agent_iri_" + UUID.randomUUID().toString();
 		String agentURL_random = "http://agent_url_" + UUID.randomUUID().toString();
+		devClient.createOntoAgentInstance(agentIRI_random, agentURL_random, Arrays.asList("http://random_i"), Arrays.asList("http://random_o"));
 		String derivation_random = devClient.bulkCreateDerivationsAsync(Arrays.asList(new ArrayList<String>()),
-				Arrays.asList(agentIRI_random), Arrays.asList(agentURL_random), Arrays.asList(Arrays.asList(d0)),
-				Arrays.asList(false))
+				Arrays.asList(agentIRI_random), Arrays.asList(Arrays.asList(d0)), Arrays.asList(false))
 				.get(0);
 		devClient.addTimeInstance(derivation_random);
 		Derivation d_0 = devClient.getDerivationWithImmediateDownstream(d0);
@@ -2827,6 +2737,15 @@ public class DerivedQuantitySparqlTest {
 		for (String i : allInstances) {
 			testKG.add(ResourceFactory.createResource(i), RDF.type, ResourceFactory.createResource(i + "/rdftype"));
 		}
+	}
+
+	public void initOntoAgentInstances() {
+		devClient.createOntoAgentInstance(derivedAgentIRI0, derivedAgentURL0, inputs0, entities0);
+		devClient.createOntoAgentInstance(derivedAgentIRI1, derivedAgentURL1, inputs1, entities1);
+		devClient.createOntoAgentInstance(derivedAgentIRI2, derivedAgentURL2, inputs2, entities2);
+		devClient.createOntoAgentInstance(derivedAgentIRI3, derivedAgentURL3, inputs3, entities3);
+		devClient.createOntoAgentInstance(derivedAgentIRI4, derivedAgentURL4, inputs4, entities4);
+		devClient.createOntoAgentInstance(derivedAgentIRI5, derivedAgentURL5, inputs5, entities5);
 	}
 
 	public void assertTestGetAllDerivationsInKG(DerivationSparql devClient, List<String> derivationIRIs,

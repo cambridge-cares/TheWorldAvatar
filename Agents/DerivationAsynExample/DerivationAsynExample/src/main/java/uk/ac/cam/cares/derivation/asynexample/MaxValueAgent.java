@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.derivation.asynexample;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -50,14 +52,18 @@ public class MaxValueAgent extends DerivationAgent {
 	
 	@Override
 	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
-		LOGGER.debug("MaxValueAgent received derivationInputs: " + derivationInputs.toString());
+		LOGGER.debug("MaxValueAgent received derivationInputs: " + derivationInputs.toString() + "for derivation: " + derivationInputs.getDerivationIRI());
 
 		// get the input from the KG
-		String listOfRandomPoints_iri = derivationInputs
-				.getIris(SparqlClient.getRdfTypeString(SparqlClient.ListOfRandomPoints)).get(0);
-		
+		List<String> pts = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.Point));
+
+		if (Objects.isNull(pts) || pts.isEmpty()) {
+			LOGGER.info("No points found in the input IRIs.");
+			return;
+		}
+
 		// find the maximum value
-		Integer maxvalue = sparqlClient.getExtremeValueInList(listOfRandomPoints_iri, true);
+		Integer maxvalue = sparqlClient.getExtremeValueInList(pts, true);
 
 		// write the output triples to derivationOutputs
 		String max_iri = SparqlClient.namespace + UUID.randomUUID().toString();
@@ -65,7 +71,10 @@ public class MaxValueAgent extends DerivationAgent {
 		derivationOutputs.addTriple(max_iri, RDF.TYPE.toString(), OWL.NAMEDINDIVIDUAL.toString());
 		String value_iri = SparqlClient.namespace + UUID.randomUUID().toString();
 		derivationOutputs.createNewEntity(value_iri, SparqlClient.getRdfTypeString(SparqlClient.ScalarValue));
-		derivationOutputs.addTriple(sparqlClient.addValueInstance(max_iri, value_iri, maxvalue));
+		// instead of derivationOutputs.addTriple(sparqlClient.addValueInstance(max_iri, value_iri, maxvalue));
+		// we use below two lines to test both addTriple(String, String, String) and addLiteral(String, String, Number)
+		derivationOutputs.addTriple(max_iri, SparqlClient.getPropertyString(SparqlClient.hasValue), value_iri);
+		derivationOutputs.addLiteral(value_iri, SparqlClient.getPropertyString(SparqlClient.numericalValue), maxvalue);
 		LOGGER.info(
 				"Created a new max value instance <" + max_iri + ">, and its value instance <" + value_iri + ">");
 	}
@@ -87,7 +96,7 @@ public class MaxValueAgent extends DerivationAgent {
 		
 		exeService.scheduleAtFixedRate(() -> {
 			try {
-				maxAgent.monitorAsyncDerivations(Config.agentIriMaxValue);
+				maxAgent.monitorAsyncDerivations(Config.agentIriMaxValue, Config.periodAgentMaxValue);
 			} catch (JPSRuntimeException e) {
 				e.printStackTrace();
 			}
