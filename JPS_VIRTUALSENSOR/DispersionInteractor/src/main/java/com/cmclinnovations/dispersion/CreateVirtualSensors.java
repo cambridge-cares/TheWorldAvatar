@@ -33,17 +33,12 @@ public class CreateVirtualSensors extends HttpServlet {
 
         LOGGER.info("Received POST request to create new virtual sensors. ");
 
-        // first check that at least one scope has been initialized
-        // Also check whether there is an existing sensors table.
-        boolean sensorsTableExists = false;
+        // Check that at least one scope has been initialized
         try (Connection conn = dispersionPostGISClient.getConnection()) {
             if (!dispersionPostGISClient.tableExists(Config.SCOPE_TABLE_NAME, conn)) {
                 LOGGER.error("At least one scope needs to be initialized by" +
                         "sending a POST request to InitialiseSimulation before any virtual sensors can be created. ");
                 return;
-            }
-            if (dispersionPostGISClient.tableExists(Config.SENSORS_TABLE_NAME, conn)) {
-                sensorsTableExists = true;
             }
 
         } catch (SQLException e) {
@@ -83,11 +78,8 @@ public class CreateVirtualSensors extends HttpServlet {
             for (int i = 0; i < virtualSensorLocations.size(); i++) {
                 Point vsLocation = virtualSensorLocations.get(i);
                 List<String> scopeIriList = new ArrayList<>();
-                // scopeIriList = dispersionPostGISClient.getScopesIncludingPoint(vsLocation,
-                // conn);
                 scopeIriList = queryClient.getScopesIncludingPoint(vsLocation);
-                if (scopeIriList.size() == 1 && !sensorsTableExists
-                        || (sensorsTableExists && !dispersionPostGISClient.sensorExists(vsLocation, conn))) {
+                if (scopeIriList.size() == 1 && !dispersionPostGISClient.sensorExists(vsLocation, conn)) {
                     vsScopeList.add(scopeIriList.get(0));
                     vsLocationsInScope.add(vsLocation);
                 } else if (scopeIriList.isEmpty()) {
@@ -106,7 +98,8 @@ public class CreateVirtualSensors extends HttpServlet {
             LOGGER.error(e.getMessage());
         }
 
-        queryClient.initializeVirtualSensors(vsScopeList, vsLocationsInScope);
+        if (!vsLocationsInScope.isEmpty())
+            queryClient.initializeVirtualSensors(vsScopeList, vsLocationsInScope);
 
     }
 

@@ -342,8 +342,6 @@ public class QueryClient {
             scopeIriList.add(queryResult.getJSONObject(i).getString(scopeIri.getQueryString().substring(1)));
         }
 
-        LOGGER.info(scopeIriList.size());
-
         return scopeIriList;
 
     }

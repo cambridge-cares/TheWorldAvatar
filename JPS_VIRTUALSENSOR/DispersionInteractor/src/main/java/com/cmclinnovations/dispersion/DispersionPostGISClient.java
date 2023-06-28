@@ -104,10 +104,14 @@ public class DispersionPostGISClient {
     }
 
     boolean sensorExists(Point target, Connection conn) {
+
+        if (!tableExists(Config.SENSORS_TABLE_NAME, conn))
+            return false;
+
         // Critical distance is arbitrarily set to 0.05.
         String sql = String.format(
                 "SELECT scope_iri from %S WHERE ST_DISTANCE(wkb_geometry, ST_GeomFromText('%s')) <= %f ",
-                "sensors", target.toString(), 0.05);
+                Config.SENSORS_TABLE_NAME, target.toString(), 0.05);
         try (Statement stmt = conn.createStatement()) {
             ResultSet result = stmt.executeQuery(sql);
             if (result.first())
@@ -118,26 +122,6 @@ public class DispersionPostGISClient {
         }
 
         return false;
-    }
-
-    List<String> getScopesIncludingPoint(Point target, Connection conn) {
-
-        List<String> scopeIriList = new ArrayList<>();
-
-        String sql = String.format("SELECT iri,geom from %S WHERE ST_INTERSECTS(geom, ST_GeomFromText('%s')) ",
-                Config.SCOPE_TABLE_NAME, target.toString());
-        try (Statement stmt = conn.createStatement()) {
-            ResultSet result = stmt.executeQuery(sql);
-            while (result.next()) {
-                scopeIriList.add(result.getString("iri"));
-            }
-        } catch (SQLException e) {
-            LOGGER.error("SQL state: {}", e.getSQLState());
-            LOGGER.error(e.getMessage());
-        }
-
-        return scopeIriList;
-
     }
 
     String addScope(Polygon polygon, Connection conn) {
