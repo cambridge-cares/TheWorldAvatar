@@ -315,6 +315,9 @@ public class AermodAgent extends DerivationAgent {
         boolean append = false;
         if (queryClient.tableExists(EnvConfig.DISPERSION_RASTER_TABLE)) {
             append = true;
+            // this is a temporary measure until an option is available to not add raster
+            // constraints
+            queryClient.dropRasterConstraints();
         }
         aermod.uploadRasterToPostGIS(srid, append);
 

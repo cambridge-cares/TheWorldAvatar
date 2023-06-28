@@ -769,7 +769,7 @@ public class Aermod {
         GDALClient gdalClient = GDALClient.getInstance();
         GDALTranslateOptions gdalTranslateOptions = new GDALTranslateOptions();
         gdalTranslateOptions.setSridIn("EPSG:" + simSrid);
-        gdalClient.uploadRasterFilesToPostGIS(EnvConfig.DATABASE, EnvConfig.DISPERSION_RASTER_TABLE,
+        gdalClient.uploadRasterFilesToPostGIS(EnvConfig.DATABASE, "public", EnvConfig.DISPERSION_RASTER_TABLE,
                 rasterDirectory.toString(), gdalTranslateOptions, append);
     }
 

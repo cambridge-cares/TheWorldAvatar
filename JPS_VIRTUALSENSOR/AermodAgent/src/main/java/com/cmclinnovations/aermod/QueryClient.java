@@ -1184,4 +1184,14 @@ public class QueryClient {
 
     }
 
+    void dropRasterConstraints() {
+        try (Connection conn = rdbStoreClient.getConnection(); Statement statement = conn.createStatement();) {
+            String sql = String.format("SELECT DropRasterConstraints('%s', 'rast')", EnvConfig.DISPERSION_RASTER_TABLE);
+            statement.executeQuery(sql);
+        } catch (SQLException e) {
+            LOGGER.error("Failed at closing connection");
+            LOGGER.error(e.getMessage());
+        }
+    }
+
 }
