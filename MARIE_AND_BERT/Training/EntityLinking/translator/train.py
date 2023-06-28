@@ -171,8 +171,8 @@ def train_engine(epoch, train_data, valid_data,config):
 
 
 def main(config):
-    train_file3 = os.path.join(config['datadir'], config['train_file_name'])
-    valid_file3 = os.path.join(config['datadir'], config['valid_file_name'])
+    train_file3 = config['train_file_name']
+    valid_file3 = config['valid_file_name']
 
     final_train_id_list, final_train_sentences, final_train_labels = loadjsonl([train_file3])
     final_valid_id_list, final_valid_sentences, final_valid_labels = loadjsonl([valid_file3])
@@ -204,7 +204,6 @@ if __name__ == '__main__':
     parser.add_argument('--MAX_LEN', type=int, default=256,help='max token length of input question')
     parser.add_argument('--batch_size', type=int,default=4, help='batch size for training')
     parser.add_argument('--Epoch', type=int, default=1,help='epoches to train')
-    parser.add_argument('--datadir', type=str, default='./data/ner',help='datadir for training files')
     parser.add_argument('--model_name', type=str, default='./models/SMILES_NER.bin',help='model name to save')
     parser.add_argument('--valid_file_name', type=str, default='valid_smiles.jsonl')
     parser.add_argument('--train_file_name', type=str, default='train_smiles.jsonl')
