@@ -11,7 +11,7 @@ Install `Python 3.8`
 
 ### Required Files
 1. Follow the steps outlined in the [Required Files section of the main README](../../readme.md#required-files) by creating a `DATA` folder under `MARIE_AND_BERT` and unzip `Dictionaries.zip` and `EntityLinking.zip` into the `DATA` folder.
-2. Copy `pubchemwithSMILE.jsonl` from `DATA/EntityLinking/training_files_generation` into `DATA/KGToolbox/EntityLinking`.
+2. Copy `pubchemwithSMILE.jsonl` from `DATA/EntityLinking/training_files_generation` into `KGToolbox/EntityLinking`.
 3. Copy all the files from `DATA/EntityLinking/training_files_generation/templates` into `DATA/KGToolbox/EntityLinking/templates`.
 
 `DATA/EntityLinking/training_files_generation/examples` contains example files that can be referred to for checking the expected 
@@ -56,7 +56,7 @@ Run the following command to generate the <b>raw</b> `train/val/test.jsonl` ques
 Example:
 ```
 python generateFromTemplate.py \
---infile ontokin.jsonl \               #path to the domain Entity Dictionary
+--infile ontokin.json \               #path to the domain Entity Dictionary
  --outfile test_raw.jsonl \            #path where the output jsonl file is saved
  --mode train \                        #possible values: 'test', 'val', 'train'
  --question_type general \             #possible values: 'general', 'smiles'
