@@ -1,3 +1,10 @@
+import sys
+sys.path.append("")
+sys.path.append("../../Marie/Util")
+sys.path.append("../../Marie")
+sys.path.append("../..")
+sys.path.append("../../..")
+sys.path.append("../../../..")
 from blink.common.params import BlinkParser
 from blink.biencoder.eval_biencoder import main
 

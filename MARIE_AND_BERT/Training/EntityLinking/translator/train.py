@@ -3,7 +3,13 @@ Train NER for smile string recognition
 
 '''
 import os.path
-
+import sys
+sys.path.append("")
+sys.path.append("../../Marie/Util")
+sys.path.append("../../Marie")
+sys.path.append("../..")
+sys.path.append("../../..")
+sys.path.append("../../../..")
 import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm

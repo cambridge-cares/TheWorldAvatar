@@ -27,14 +27,14 @@ from pytorch_transformers.optimization import WarmupLinearSchedule
 from pytorch_transformers.tokenization_bert import BertTokenizer
 from pytorch_transformers.modeling_utils import WEIGHTS_NAME
 
-from blink.biencoder.biencoder import BiEncoderRanker, load_biencoder
+from Marie.EntityLinking.blink.biencoder.biencoder import BiEncoderRanker, load_biencoder
 import logging
 
-import blink.candidate_ranking.utils as utils
-import blink.biencoder.data_process as data
-from blink.biencoder.zeshel_utils import DOC_PATH, WORLDS, world_to_id
-from blink.common.optimizer import get_bert_optimizer
-from blink.common.params import BlinkParser
+import Marie.EntityLinking.blink.candidate_ranking.utils as utils
+import Marie.EntityLinking.blink.biencoder.data_process as data
+from Marie.EntityLinking.blink.biencoder.zeshel_utils import DOC_PATH, WORLDS, world_to_id
+from Marie.EntityLinking.blink.common.optimizer import get_bert_optimizer
+from Marie.EntityLinking.blink.common.params import BlinkParser
 
 
 logger = None
