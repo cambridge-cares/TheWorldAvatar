@@ -51,10 +51,10 @@ bash scripts/train_ner.sh [valid_file_name] [train_file_name]  [output_path]
 It is recommended to train it on HPC.
 ###Training on HPC
 1. Get an HPC account, use git to pull the `MARIE_AND_BERT` repository.
-2. Create a folder called `NEL_Training_Marie_and_Bert`
+2. Create a folder called `NEL_Training_Marie_and_Bert`. This is to be used as the training workdir.
 3. Copy and transfer all the files under  `MARIE_AND_BERT/Marie/EntityLinking` to  `NEL_Training_Marie_and_Bert`.
 4. Copy and transfer all the files under `MARIE_AND_BERT/Training/EntityLinking` to  `NEL_Training_Marie_and_Bert`.
-5. Copy and transfer into `NEL_Training_Marie_and_Bert` the `/data` folder created in data preparation.
+5. Copy and transfer into `NEL_Training_Marie_and_Bert` the `/data` folder created in  [Data Preparation](data-preparation).
 6. Create a python virtual environment with `Python 3.8`
 7. Configure the batch file, the following section will give details on batch file for each step. When the environment is created, install the libraries
    using `MARIE_AND_BERT/requirements_linux.txt`.
