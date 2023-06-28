@@ -12,6 +12,8 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 public class PostGISClient extends ContainerClient implements ClientWithEndpoint {
 
+    public static final String DEFAULT_SCHEMA_NAME = "public";
+
     private final PostGISEndpointConfig postgreSQLEndpoint;
 
     private static PostGISClient instance = null;

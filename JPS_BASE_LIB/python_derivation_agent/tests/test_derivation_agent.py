@@ -72,81 +72,7 @@ def test_integration_test(initialise_agent):
     ########## Stage 1: check if new information generation is successful ##########
     ################################################################################
 
-    # Query timestamp of the each derivation every 8 seconds until it's updated
-    #######################
-    ## I. RNG derivation ##
-    #######################
-    rng_derivation_current_timestamp = 0
-    while rng_derivation_current_timestamp == 0:
-        time.sleep(8)
-        # the queried results must be converted to int, otherwise it will never equal to 0
-        rng_derivation_current_timestamp = utils.get_timestamp(
-            rng_derivation_iri, sparql_client)
-
-    # Test that if the knowledge graph contains the correct number of points
-    # Get the number of points
-    numofpoints = sparql_client.getValue(sparql_client.getNumOfPoints())
-    # Get the list of actual points generated
-    pt_dict = sparql_client.getPointsInList(sparql_client.getListOfPoints())
-    # Check if the number of generated points is the same as the input
-    assert len(pt_dict) == numofpoints
-    # Also check if the number of generated points matches the total number of points in the knowledge graph
-    pt_in_kg = sparql_client.getPointsInKG()
-    assert len(pt_in_kg) == numofpoints
-    # Also check if the points generated are attached with the correct rdfs:comment
-    pt_comment_dict = sparql_client.getPointsRdfsCommentInKG()
-    assert len(pt_comment_dict) == numofpoints
-    assert all([pt_comment_dict[pt] == RANDOM_STRING_WITH_SPACES for pt in pt_comment_dict])
-    # Also check if the special values are correctly generated and parsed
-    assert all([sparql_client.pointHasAllSpecialValues(_pt_iri) for _pt_iri in pt_dict])
-
-    # Get the max and min vlaue of the generated list of points
-    all_pt_values = pt_dict.values()
-    max_value = max(all_pt_values)
-    min_value = min(all_pt_values)
-
-    # Get the upper limit
-    upperlimit_iri = sparql_client.getUpperLimit()
-    upperlimit = sparql_client.getValue(upperlimit_iri)
-    # Get the lower limit
-    lowerlimit_iri = sparql_client.getLowerLimit()
-    lowerlimit = sparql_client.getValue(lowerlimit_iri)
-
-    # Check if the max and min generated values are within the upper and lower limits defined in inputs
-    assert max_value <= upperlimit
-    assert lowerlimit <= min_value
-
-    ########################
-    ## II. Max derivation ##
-    ########################
-    max_derivation_current_timestamp = 0
-    while max_derivation_current_timestamp == 0:
-        time.sleep(8)
-        # the queried results must be converted to int, otherwise it will never equal to 0
-        max_derivation_current_timestamp = utils.get_timestamp(
-            max_derivation_iri, sparql_client)
-
-    # Check if the max value is calculated correctly
-    queried_max = sparql_client.getValue(sparql_client.getMaxValueIRI())
-    assert queried_max == max_value
-
-    #########################
-    ## III. Min derivation ##
-    #########################
-    min_derivation_current_timestamp = 0
-    while min_derivation_current_timestamp == 0:
-        time.sleep(8)
-        # the queried results must be converted to int, otherwise it will never equal to 0
-        min_derivation_current_timestamp = utils.get_timestamp(
-            min_derivation_iri, sparql_client)
-
-    # Check if the max value is calculated correctly
-    queried_min = sparql_client.getValue(sparql_client.getMinValueIRI())
-    assert queried_min == min_value
-
-    #########################
-    ## IV. Diff derivation ##
-    #########################
+    # Query timestamp of the derivation every 8 seconds until all's updated
     diff_derivation_current_timestamp = 0
     while diff_derivation_current_timestamp == 0:
         time.sleep(8)
@@ -154,13 +80,6 @@ def test_integration_test(initialise_agent):
         diff_derivation_current_timestamp = utils.get_timestamp(
             diff_derivation_iri, sparql_client)
 
-    # Check if the difference is calculated correctly
-    queried_diff = sparql_client.getValue(sparql_client.getDifferenceIRI())
-    assert queried_diff == max_value - min_value
-
-    ################################
-    ## IV. DiffReverse derivation ##
-    ################################
     # for DiffReverse derivation, we need to wait for all the derivations to finish
     diff_reverse_derivation_current_timestamp = 0
     while diff_reverse_derivation_current_timestamp == 0:
@@ -172,11 +91,7 @@ def test_integration_test(initialise_agent):
             ]
         )
 
-    # Check if the difference reverse is calculated correctly
-    queried_diff_reverse_dct = sparql_client.getDiffReverseValues()
-    # the number of diff reverse derivations should be the same as the number of calculated diff reverse values
-    assert len(queried_diff_reverse_dct) == len(diff_reverse_derivation_iri_lst)
-    assert all([queried_diff_reverse_dct[iri] == min_value - max_value for iri in queried_diff_reverse_dct])
+    check_all_info_up_to_date(sparql_client, diff_reverse_derivation_iri_lst, False)
 
     ####################################################################################
     ########## Stage 2: modify the value of pure input and request for update ##########
@@ -185,10 +100,10 @@ def test_integration_test(initialise_agent):
     #############################
     ## I. Modify num of points ##
     #############################
+    num_of_pts = sparql_client.getValue(sparql_client.getNumOfPoints())
     sparql_client.increaseNumOfPointsByOne()
     derivation_client.updateTimestamp(sparql_client.getNumOfPoints())
-    assert sparql_client.getValue(
-        sparql_client.getNumOfPoints()) == numofpoints + 1
+    assert sparql_client.getValue(sparql_client.getNumOfPoints()) == num_of_pts + 1
 
     ###############################
     ## II. Request for an update ##
@@ -218,50 +133,121 @@ def test_integration_test(initialise_agent):
         )
 
     # Check if all the information in the knowledge graph is complete and correct
+    check_all_info_up_to_date(sparql_client, diff_reverse_derivation_iri_lst, True)
+
+    ###########################################################################
+    ########## Stage 3: modify number of points to make it no output ##########
+    ###########################################################################
+
+    #############################
+    ## I. Modify num of points ##
+    #############################
+    sparql_client.updateNumOfPointsTo(0)
+    derivation_client.updateTimestamp(sparql_client.getNumOfPoints())
+    assert sparql_client.getValue(sparql_client.getNumOfPoints()) == 0
+
+    ###############################
+    ## II. Request for an update ##
+    ###############################
+    # Record the timestamp of the derivation that last updated
+    ts = max(
+        [utils.get_timestamp(diff_derivation_iri, sparql_client)] + [
+            utils.get_timestamp(iri, sparql_client) for iri in diff_reverse_derivation_iri_lst
+        ]
+    )
+
+    # Request for an update
+    derivation_client.unifiedUpdateDerivation(diff_derivation_iri)
+    for iri in diff_reverse_derivation_iri_lst:
+        derivation_client.unifiedUpdateDerivation(iri)
+
+    # Wait until the difference and all difference reverse derivation are updated
+    # i.e. the timestamp of all these derivations are greater than the timestamp before the update
+    _derivation_current_timestamp = ts
+    while _derivation_current_timestamp <= ts:
+        time.sleep(8)
+        # the queried results must be converted to int, otherwise it will never equal to 0
+        _derivation_current_timestamp = min(
+            [utils.get_timestamp(diff_derivation_iri, sparql_client)] + [
+                utils.get_timestamp(iri, sparql_client) for iri in diff_reverse_derivation_iri_lst
+            ]
+        )
+
+    # Check if all the information in the knowledge graph is complete and correct
+    check_all_info_up_to_date(sparql_client, diff_reverse_derivation_iri_lst, False)
+
+
+# ----------------------------------------------------------------------------------
+# Common test functions
+# ----------------------------------------------------------------------------------
+
+def check_all_info_up_to_date(sparql_client, diff_reverse_derivation_iri_lst, exist_outputs):
+    # Test that if the knowledge graph contains the correct number of points
+    # Get the number of points
     numofpoints = sparql_client.getValue(sparql_client.getNumOfPoints())
-    # Get the list of actual points generated
-    pt_dict = sparql_client.getPointsInList(sparql_client.getListOfPoints())
-    assert len(pt_dict) == numofpoints
-    # Also check if the number of generated points matches the total number of points in the knowledge graph
+    # Check if the number of generated points matches the total number of points in the knowledge graph
     pt_in_kg = sparql_client.getPointsInKG()
     assert len(pt_in_kg) == numofpoints
     # Also check if the points generated are attached with the correct rdfs:comment
     pt_comment_dict = sparql_client.getPointsRdfsCommentInKG()
     assert len(pt_comment_dict) == numofpoints
-    assert all([pt_comment_dict[pt] == RANDOM_STRING_WITH_SPACES for pt in pt_comment_dict])
-    # Also check if the special values are correctly generated and parsed
-    assert all([sparql_client.pointHasAllSpecialValues(_pt_iri) for _pt_iri in pt_dict])
+    if exist_outputs:
+        #######################
+        ## I. RNG derivation ##
+        #######################
+        assert all([pt_comment_dict[pt] == RANDOM_STRING_WITH_SPACES for pt in pt_comment_dict])
+        # Also check if the special values are correctly generated and parsed
+        assert all([sparql_client.pointHasAllSpecialValues(_pt_iri) for _pt_iri in pt_in_kg])
 
-    # Get the max and min vlaue of the generated list of points
-    all_pt_values = pt_dict.values()
-    max_value = max(all_pt_values)
-    min_value = min(all_pt_values)
+        # Get the max and min vlaue of the generated list of points
+        all_pt_values = pt_in_kg.values()
+        max_value = max(all_pt_values)
+        min_value = min(all_pt_values)
 
-    # Get the upper limit
-    upperlimit_iri = sparql_client.getUpperLimit()
-    upperlimit = sparql_client.getValue(upperlimit_iri)
-    # Get the lower limit
-    lowerlimit_iri = sparql_client.getLowerLimit()
-    lowerlimit = sparql_client.getValue(lowerlimit_iri)
+        # Get the upper limit
+        upperlimit_iri = sparql_client.getUpperLimit()
+        upperlimit = sparql_client.getValue(upperlimit_iri)
+        # Get the lower limit
+        lowerlimit_iri = sparql_client.getLowerLimit()
+        lowerlimit = sparql_client.getValue(lowerlimit_iri)
 
-    # Check if the max and min generated values are within the upper and lower limits defined in inputs
-    assert max_value <= upperlimit
-    assert lowerlimit <= min_value
+        # Check if the max and min generated values are within the upper and lower limits defined in inputs
+        assert max_value <= upperlimit
+        assert lowerlimit <= min_value
 
-    # Check if the max value is calculated correctly
-    queried_max = sparql_client.getValue(sparql_client.getMaxValueIRI())
-    assert queried_max == max_value
+        ########################
+        ## II. Max derivation ##
+        ########################
+        # Check if the max value is calculated correctly
+        queried_max = sparql_client.getValue(sparql_client.getMaxValueIRI())
+        assert queried_max == max_value
 
-    # Check if the max value is calculated correctly
-    queried_min = sparql_client.getValue(sparql_client.getMinValueIRI())
-    assert queried_min == min_value
+        #########################
+        ## III. Min derivation ##
+        #########################
+        # Check if the max value is calculated correctly
+        queried_min = sparql_client.getValue(sparql_client.getMinValueIRI())
+        assert queried_min == min_value
 
-    # Check if the difference is calculated correctly
-    queried_diff = sparql_client.getValue(sparql_client.getDifferenceIRI())
-    assert queried_diff == max_value - min_value
+        #########################
+        ## IV. Diff derivation ##
+        #########################
+        # Check if the difference is calculated correctly
+        queried_diff = sparql_client.getValue(sparql_client.getDifferenceIRI())
+        assert queried_diff == max_value - min_value
 
-    # Check if the difference reverse is calculated correctly
-    queried_diff_reverse_dct = sparql_client.getDiffReverseValues()
-    # the number of diff reverse derivations should be the same as the number of calculated diff reverse values
-    assert len(queried_diff_reverse_dct) == len(diff_reverse_derivation_iri_lst)
-    assert all([queried_diff_reverse_dct[iri] == min_value - max_value for iri in queried_diff_reverse_dct])
+        ################################
+        ## IV. DiffReverse derivation ##
+        ################################
+        # Check if the difference reverse is calculated correctly
+        queried_diff_reverse_dct = sparql_client.getDiffReverseValues()
+        # the number of diff reverse derivations should be the same as the number of calculated diff reverse values
+        assert len(queried_diff_reverse_dct) == len(diff_reverse_derivation_iri_lst)
+        assert all([queried_diff_reverse_dct[iri] == min_value - max_value for iri in queried_diff_reverse_dct])
+
+    else:
+        # Check that the min/max/diff/diff_reverse values are not generated
+        assert not bool(sparql_client.getMinValueIRI())
+        assert not bool(sparql_client.getMaxValueIRI())
+        assert not bool(sparql_client.getDifferenceIRI())
+        assert not bool(sparql_client.getDiffReverseIRI())

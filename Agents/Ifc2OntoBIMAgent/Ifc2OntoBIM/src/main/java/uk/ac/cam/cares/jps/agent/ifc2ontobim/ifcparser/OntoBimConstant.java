@@ -30,6 +30,15 @@ public class OntoBimConstant {
     public static final String BIM_HAS_MINUTE = NamespaceMapper.BIM_NAMESPACE + "hasMinute";
     public static final String BIM_HAS_SEC = NamespaceMapper.BIM_NAMESPACE + "hasSecond";
     public static final String BIM_HAS_MILSEC = NamespaceMapper.BIM_NAMESPACE + "hasMillionthSecond";
+    // Address properties
+    public static final String BUILT_ENV_HAS_ADDRESS = NamespaceMapper.ONTO_BUILT_ENV_NAMESPACE + "hasAddress";
+    public static final String BUILT_ENV_HAS_UNIT_NAME = NamespaceMapper.ONTO_BUILT_ENV_NAMESPACE + "hasUnitName";
+    public static final String ICONTACT_HAS_STREET = NamespaceMapper.ICONTACT_NAMESPACE + "hasStreet";
+    public static final String ICONTACT_HAS_STREET_NUMBER = NamespaceMapper.ICONTACT_NAMESPACE + "hasStreetNumber";
+    public static final String ICONTACT_HAS_CITY = NamespaceMapper.ICONTACT_NAMESPACE + "hasCity";
+    public static final String ICONTACT_HAS_STATE = NamespaceMapper.ICONTACT_NAMESPACE + "hasState";
+    public static final String ICONTACT_HAS_COUNTRY = NamespaceMapper.ICONTACT_NAMESPACE + "hasCountry";
+    public static final String ICONTACT_HAS_POSTAL_CODE = NamespaceMapper.ICONTACT_NAMESPACE + "hasPostalCode";
     // OntoBim project/ model properties
     public static final String BIM_HAS_PHASE = NamespaceMapper.BIM_NAMESPACE + "hasPhase";
     public static final String BIM_HAS_ROOT_ZONE = NamespaceMapper.BIM_NAMESPACE + "hasRootZone";
@@ -116,6 +125,8 @@ public class OntoBimConstant {
     public static final String BIM_BUILDING_REP_CLASS = NamespaceMapper.BIM_NAMESPACE + BUILDING_REP_CLASS;
     public static final String BIM_STOREY_REP_CLASS = NamespaceMapper.BIM_NAMESPACE + STOREY_REP_CLASS;
     public static final String BIM_ROOM_REP_CLASS = NamespaceMapper.BIM_NAMESPACE + ROOM_REP_CLASS;
+    public static final String ADDRESS_CLASS = "Address";
+    public static final String CONTACT_ADDRESS_CLASS = NamespaceMapper.ICONTACT_NAMESPACE + ADDRESS_CLASS;
     public static final String BIM_COMPOUND_PLANE_ANGLE = NamespaceMapper.BIM_NAMESPACE + "CompoundPlaneAngle";
     // OntoBim element classes
     public static final String ASSET_MODEL_REP_CLASS = "IfcModelRepresentation";

@@ -24,7 +24,7 @@ public class TempTestCalls {
 
         String rasterDatabase = "rasters";
         postGISClient.createDatabase(rasterDatabase);
-        gdalClient.uploadRasterFilesToPostGIS(rasterDatabase, "elevation", "/inputs/data/rasters",
+        gdalClient.uploadRasterFilesToPostGIS(rasterDatabase, PostGISClient.DEFAULT_SCHEMA_NAME, "elevation", "/inputs/data/rasters",
                 new GDALTranslateOptions(), false);
         String databaseName = "test_database";
         String filePath = "/inputs/data/031WAF112.json";

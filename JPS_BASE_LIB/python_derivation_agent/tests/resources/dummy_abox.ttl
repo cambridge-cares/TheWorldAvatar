@@ -8,7 +8,8 @@
 ########################################
 :numofpoints
     rdf:type example:NumOfPoints;
-    example:hasValue "5"^^xsd:integer;
+    # the default will be no output at new information generation mode
+    example:hasValue "0"^^xsd:integer;
 .
 
 :upperlimit

@@ -34,8 +34,8 @@ public final class OntopService extends ContainerService {
 
     private Path postgresqlDriverScratchPath;
 
-    public OntopService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
-        super(stackName, serviceManager, config);
+    public OntopService(String stackName, ServiceConfig config) {
+        super(stackName, config);
 
         endpointConfig = new OntopEndpointConfig(
                 EndpointNames.ONTOP, getHostName(), DEFAULT_PORT,
