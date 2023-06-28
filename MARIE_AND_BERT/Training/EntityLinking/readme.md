@@ -11,9 +11,11 @@ Two models are trained for Entity Linking:
 Please refer to [Dataset creation for Entity Linking](../../KGToolbox/EntityLinking/readme.md) to create the dataset required for training the Entity Linking models.
 
 
-Create three separate folder and copy three sets of training files into them. For example, `data/step1`, `data/step2`,`data/ner`.
+Create a `data` folder with three sub-folders as shown below in `Marie/EntityLinking` and copy the three groups of files created in the [Data Preparation Step](../../KGToolbox/EntityLinking/readme.md) into them. 
 
-The data folder should look like this.
+For instance, create `data/step1`, `data/step2`,`data/ner`.
+
+Shown below is an example of the expected folder structure after set-up:
 <pre>
 ├── data
     ├── step1
@@ -28,7 +30,7 @@ The data folder should look like this.
         └── test.jsonl#
     └── ner
         ├── train.jsonl#
-        ├── dev.jsonl#
+        ├── val.jsonl#
         └── test.jsonl#
 </pre>
 
@@ -39,7 +41,7 @@ bash train_ner.sh [valid_file_name] [train_file_name]  [output_path]
 ```
 * `--valid_file_name` Path to the validation `.jsonl` file.
 * `--train_file_name` Path to the training `.jsonl` file.
-* `--output_path` Path to output SMILES-NER model.
+* `--output_path` Path to the output SMILES-NER model.
 
 
 
