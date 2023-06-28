@@ -11,6 +11,7 @@
                     "AERMOD_AGENT_URL=http://ship-stack-aermod-agent:8080/AermodAgent/",
                     "WEATHER_AGENT_URL=http://ship-stack-weather-agent:8080/WeatherAgent/CreateStation",
                     "SHIP_INPUT_AGENT=http://ship-stack-ship-input-agent:8080/ShipInputAgent/update",
+                    "VIRTUAL_SENSOR_AGENT_IRI=https://theworldavatar.com/kg/ontodispersion/VirtualSensorAgent",
                     "GEOSERVER_WORKSPACE=dispersion",
                     "SENSORS_TABLE_NAME=sensors",
                     "JPDA_ADDRESS=0.0.0.0:5005",

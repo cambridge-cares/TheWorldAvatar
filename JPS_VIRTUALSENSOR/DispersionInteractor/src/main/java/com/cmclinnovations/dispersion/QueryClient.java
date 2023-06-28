@@ -307,14 +307,12 @@ public class QueryClient {
 
         ModifyQuery modify = Queries.MODIFY();
         // This next line needs to be added the ontodispersion TBox.
-        String virtualSensorUpdateIri = "https://theworldavatar.com/kg/ontodispersion/VirtualSensorAgent";
+        String virtualSensorUpdateIri = Config.VIRTUAL_SENSOR_AGENT_IRI;
         String virtualSensorUpdateUrl = "http://ship-stack-virtual-sensor-agent:8080/VirtualSensorAgent/";
         modify.insert(iri(virtualSensorUpdateIri).isA(service).andHas(hasOperation, operationIri));
         modify.insert(operationIri.isA(operation).andHas(hasHttpUrl, iri(virtualSensorUpdateUrl)).andHas(hasInput,
                 inputIri));
         modify.insert(inputIri.has(hasMandatoryPart, partIri));
-        // Is it necessary to have multiple copies of these triple, one for each
-        // dispersion output?
         modify.insert(partIri.has(hasType, DISPERSION_OUTPUT));
         modify.prefix(P_DISP, P_OM, P_EMS);
         storeClient.executeUpdate(modify.getQueryString());
@@ -354,7 +352,7 @@ public class QueryClient {
         // Get data IRIs of dispersion outputs belonging to the input derivation
         Iri isDerivedFrom = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
         Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
-        String virtualSensorUpdateIri = "https://theworldavatar.com/kg/ontodispersion/VirtualSensorAgent";
+        String virtualSensorUpdateIri = Config.VIRTUAL_SENSOR_AGENT_IRI;
 
         // create a JSONObject that represents a GeoJSON Feature Collection
         JSONObject featureCollection = new JSONObject();
