@@ -37,7 +37,7 @@ See `DATA/EntityLinking/training_files_generation/examples/ontokin.json` for an 
 Generate the `train/val/test.jsonl` SMILES question files by running the following:
 ```
 python generateFromTemplate.py \
- --outfile train.jsonl \               #path where the output jsonl file is saved
+ --outfile smiles_train_raw.jsonl \               #path where the output jsonl file is saved
  --mode train \                        #possible values: 'test', 'val', 'train'
  --question_type smiles \              #possible values: 'general', 'smiles'
  --question_num 1000 \                 #number of questions to generate
@@ -48,6 +48,13 @@ python generateFromTemplate.py \
 * `--question_type` 'general' or 'smiles'. Question with SMILES strings or general entities.
 * `--question_num` Number of questions to be generated. 
 * `--seed` Random seed. It is recommended to use different seeds for different modes.
+
+Run `covert_ner_train_files.py`.
+```
+python covert_ner_train_files.py --infile ./smiles_train_raw.jsonl  --outfile ./smiles_train.jsonl
+```
+* `--infile` Path to the input raw question file generated in the step [above](#2-for-general-entity-extraction).
+* `--outfile` Path to save the formatted output question file.
 
 #### 2. For General Entity Extraction: 
 
