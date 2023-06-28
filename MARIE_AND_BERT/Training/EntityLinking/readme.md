@@ -4,7 +4,7 @@ Two models are trained for Entity Linking:
 2. The Entity Extraction module which performs joint Entity Recognition and Entity Linking. We use the method proposed in the BLINK project: https://github.com/facebookresearch/BLINK.
 
 ## Setup
-2. Install Python 3.8 and create the virtual environment as described in the [MARIE AND BERT README](../../readme.md#running) 
+Install Python 3.8 and create the virtual environment as described in the [MARIE AND BERT README](../../readme.md#running) 
 
 ## Data Preparation
 Please refer to [Dataset creation for Entity Linking](../../KGToolbox/EntityLinking/readme.md) to create the dataset required for training the Entity Linking models.
@@ -35,7 +35,7 @@ Shown below is an example of the expected folder structure after set-up:
 
 ## Train SMILES NER
 ###Training on Windows
-Follow the [setup guide](setup) to configure the environment. Move the `/data` folder created in  [Data Preparation](data-preparation) under `MARIE_AND_BERT/Training/EntityLinking`. 
+Follow the [setup guide](setup) to configure the environment. Move the `/data` folder created in  [Data Preparation](#data-preparation) under `MARIE_AND_BERT/Training/EntityLinking`. 
 
 Use `MARIE_AND_BERT/Training/EntityLinking` as root folder to run the following command to train the SMILES NER model:
 ```
@@ -48,13 +48,13 @@ bash scripts/train_ner.sh [valid_file_name] [train_file_name]  [output_path]
 
 
 ## Train Entity Extraction
-It is recommended to train it on HPC.
+It is recommended to train Entity Linking models  on HPC.
 ###Training on HPC
-1. Get an HPC account, use git to pull the `MARIE_AND_BERT` repository.
+1. Get an HPC account, use `git pull` to pull the `MARIE_AND_BERT` repository.
 2. Create a folder called `NEL_Training_Marie_and_Bert`. This is to be used as the training workdir.
 3. Copy and transfer all the files under  `MARIE_AND_BERT/Marie/EntityLinking` to  `NEL_Training_Marie_and_Bert`.
 4. Copy and transfer all the files under `MARIE_AND_BERT/Training/EntityLinking` to  `NEL_Training_Marie_and_Bert`.
-5. Copy and transfer into `NEL_Training_Marie_and_Bert` the `/data` folder created in  [Data Preparation](data-preparation).
+5. Copy and transfer the `/data` folder created in [Data Preparation](#data-preparation) into `NEL_Training_Marie_and_Bert`  .
 6. Create a python virtual environment with `Python 3.8`
 7. Configure the batch file, the following section will give details on batch file for each step. When the environment is created, install the libraries
    using `MARIE_AND_BERT/requirements_linux.txt`.
