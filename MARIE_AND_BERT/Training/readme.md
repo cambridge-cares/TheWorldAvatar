@@ -6,6 +6,7 @@ Multiple models are trained in this system:
 3. Score alignment
 4. Entity Linking 
 
+<pre>
 ├── MARIE_AND_BERT
 ├───├── Training
 │   │   ├── Trainers
@@ -18,6 +19,7 @@ Multiple models are trained in this system:
 │   │   │   ├── TransEScoreModelTrainer.py # TransE relation prediction
 │   │   │   ├── TransRAScoreModelTrainer.py # TransRA relation prediction
 │   │   │   ├── TransRATrainer.py  # TransR and TransRA embedding 
+</pre>
 
 ##  Knowledge Graph Embedding
 
