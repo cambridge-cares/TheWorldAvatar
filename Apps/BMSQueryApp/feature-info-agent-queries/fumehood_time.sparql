@@ -18,6 +18,11 @@ SELECT distinct ?Measurement ?Name ?Unit WHERE {
     BIND ("Status" as ?Name).
     BIND ("-" as ?Unit).
   } union {
+    [IRI] saref:hasState ?Measurement.
+    ?Measurement rdf:type ontodevice:OccupiedState.
+    BIND ("Occupancy" as ?Name).
+    BIND ("-" as ?Unit).
+  } union {
     [IRI] saref:consistsOf / ontodevice:sendsSignalTo / saref:consistsOf / ontodevice:measures / om:hasValue ?Measurement.
     ?Measurement om:hasUnit / om:symbol ?Unit.
     BIND ("AirFlow" as ?Name).

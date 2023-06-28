@@ -25,14 +25,14 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
                      "min_token_length": 3,
                      "max_token_occurrences_src": 20,
                      "max_token_occurrences_tgt": 20,
-                     "blocking_properties": ["name", "isOwnedBy/hasName"],
+                     "blocking_properties": ["name", "owner"],
                     "reset_index": False,
                 }
         }
 
     def test_add_similarity_functions(self):
 
-        src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
+        src_onto, tgt_onto = self.read_kwl_gppd_tables()
         params_blocking = self.get_params_blocking()
         manager = ontomatch.scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
 
@@ -45,7 +45,7 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
 
         # test case 2
         manager.add_prop_prop_fct_tuples('name', 'name', sim_fct)
-        manager.add_prop_prop_fct_tuples('name', 'isOwnedBy/hasName', sim_fct)
+        manager.add_prop_prop_fct_tuples('name', 'owner', sim_fct)
         len_tuples = len(manager.get_prop_prop_fct_tuples())
         self.assertEqual(len_tuples, 2)
 
@@ -138,7 +138,7 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
         sim_fcts = ontomatch.scoring.create_similarity_functions_from_params(params_sim_fcts)
 
         # prepare df_index_tokens before using cosine_with_tfidf
-        src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
+        src_onto, tgt_onto = self.read_kwl_gppd_tables()
         params_blocking = self.get_params_blocking()
         ontomatch.blocking.create_iterator(src_onto, tgt_onto, params_blocking)
 
@@ -167,7 +167,7 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
         ]
 
         # scores for n_max_idf = 30
-        expected_similarity_scores = [1, 0, 0, 1, 1, 1, 0.993, 0.1184, 0, 0.4062, 0.5577]
+        expected_similarity_scores = [1, 0, 0, 1, 1, 1, 0.956, 0.2933, 0, 0.4062, 0.5577]
 
         for i, (s1, s2) in enumerate(examples):
             score = sim_fcts[0](s1, s2)
@@ -254,22 +254,22 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
 
         prop_prop_dist_tuples = [
             ('name', 'name', ontomatch.scoring.dist_bounded_edit(2)),
-            ('isOwnedBy/hasName', 'isOwnedBy/hasName', ontomatch.scoring.dist_nltk_edit),
-            ('hasYearOfBuilt/hasValue/numericalValue', 'hasYearOfBuilt/hasValue/numericalValue', ontomatch.scoring.dist_absolute),
-            ('designCapacity/hasValue/numericalValue', 'designCapacity/hasValue/numericalValue', ontomatch.scoring.dist_relative),
-            ('type', 'type', ontomatch.scoring.dist_equal),
+            ('owner', 'owner', ontomatch.scoring.dist_nltk_edit),
+            ('year', 'year', ontomatch.scoring.dist_absolute),
+            ('capacity', 'capacity', ontomatch.scoring.dist_relative),
+            ('fuel', 'fuel', ontomatch.scoring.dist_equal),
         ]
 
         prop_prop_sim_tuples = self.convert_to_similarity_fcts(prop_prop_dist_tuples)
 
-        src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
+        src_onto, tgt_onto = self.read_kwl_gppd_tables()
         params_blocking = self.get_params_blocking()
         manager = ontomatch.scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
         for prop1, prop2, sim_fct, pos in prop_prop_sim_tuples:
             manager.add_prop_prop_fct_tuples(prop1, prop2, sim_fct, pos)
 
         df_scores = manager.calculate_similarities_between_datasets()
-        self.assertEqual(len(df_scores), 4726)
+        self.assertEqual(len(df_scores), 4719)
 
     def test_calculate_maximum_scores_and_assert_means(self):
 
@@ -282,16 +282,16 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
 
         prop_prop_sim_tuples = [
             ('name', 'name', score_fct_1),
-            ('name', 'isOwnedBy/hasName', score_fct_1),
-            ('isOwnedBy/hasName', 'isOwnedBy/hasName', score_fct_2),
-            ('isOwnedBy/hasName', 'name', score_fct_2),
-            ('hasYearOfBuilt/hasValue/numericalValue', 'hasYearOfBuilt/hasValue/numericalValue', score_fct_3),
-            ('hasYearOfBuilt/hasValue/numericalValue', 'designCapacity/hasValue/numericalValue', score_fct_3),
-            ('designCapacity/hasValue/numericalValue', 'designCapacity/hasValue/numericalValue', score_fct_4),
-            ('designCapacity/hasValue/numericalValue', 'hasYearOfBuilt/hasValue/numericalValue', score_fct_4),
+            ('name', 'owner', score_fct_1),
+            ('owner', 'owner', score_fct_2),
+            ('owner', 'name', score_fct_2),
+            ('year', 'year', score_fct_3),
+            ('year', 'capacity', score_fct_3),
+            ('capacity', 'capacity', score_fct_4),
+            ('capacity', 'year', score_fct_4),
         ]
 
-        src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
+        src_onto, tgt_onto = self.read_kwl_gppd_tables()
         params_blocking = self.get_params_blocking()
         manager = ontomatch.scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
         for prop1, prop2, sim_fct in prop_prop_sim_tuples:
@@ -309,7 +309,7 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
         logging.info('\n%s', df_max_scores_1)
         logging.info('\n%s', df_max_scores_1.describe())
 
-        self.assertEqual(len(df_max_scores_1), 1146)
+        self.assertEqual(len(df_max_scores_1), 1144)
 
         means = df_max_scores_1.describe().loc['mean']
         logging.info('means=\n%s', means)
@@ -320,23 +320,23 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
 
     def test_property_mapping_props_name_owner(self):
 
-        params = self.read_params(tests.utils_for_testing.PATH_CONF_PP_DEU_WEIGHT)
-        src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
+        params = self.read_params(tests.utils_for_testing.PATH_CONF_PP_DEU_WEIGHT_CSV)
+        src_onto, tgt_onto = self.read_kwl_gppd_tables()
         params_blocking = params['blocking']
         params_sim_fcts = params['mapping']['similarity_functions']
 
         manager = ontomatch.scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
 
         sim_fcts = ontomatch.scoring.create_similarity_functions_from_params(params_sim_fcts)
-        props1 = ['name', 'isOwnedBy/hasName']
-        props2 = ['name', 'isOwnedBy/hasName']
+        props1 = ['name', 'owner']
+        props2 = ['name', 'owner']
         property_mapping = ontomatch.scoring.find_property_mapping(manager, sim_fcts, props1, props2)
 
         logging.debug('property_mapping=%s', property_mapping)
 
         expected = {
-            'name': ('name', 0.76349, 4),
-            'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.73332, 5)
+            'name': ('name', 0.79400, 4),  # ('name', 0.87142, 4),
+            'owner': ('owner', 0.75928, 5) # ('owner', 0.72531, 5)
         }
 
         self.assertEqual(len(property_mapping), len(expected))
@@ -349,24 +349,24 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
 
     def test_property_mapping_props_name_fuel(self):
 
-        params = self.read_params(tests.utils_for_testing.PATH_CONF_PP_DEU_WEIGHT)
-        src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
+        params = self.read_params(tests.utils_for_testing.PATH_CONF_PP_DEU_WEIGHT_CSV)
+        src_onto, tgt_onto = self.read_kwl_gppd_tables()
         params_blocking = params['blocking']
         params_sim_fcts = params['mapping']['similarity_functions']
 
         manager = ontomatch.scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
 
         sim_fcts = ontomatch.scoring.create_similarity_functions_from_params(params_sim_fcts)
-        props1 = ['name', 'realizes/consumesPrimaryFuel']
-        props2 = ['name', 'realizes/consumesPrimaryFuel']
+        props1 = ['name', 'fuel']
+        props2 = ['name', 'fuel']
         property_mapping = ontomatch.scoring.find_property_mapping(manager, sim_fcts, props1, props2)
 
         logging.debug('property_mapping=%s', property_mapping)
 
         expected = {
-            'name': ('name', 0.76349, 4),
+            'name': ('name', 0.79400, 4),   # ('name',  0.87142, 4),
             # score function 0 and 1 got the same mean result, thus the first score function wins
-            'realizes/consumesPrimaryFuel': ('realizes/consumesPrimaryFuel', 0.81211, 0)
+            'fuel': ('fuel', 0.85751, 0)    # ('fuel', 0.86066, 0)
         }
 
         self.assertEqual(len(property_mapping), len(expected))
@@ -399,7 +399,8 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
             }
         ]
 
-        src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
+        #src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
+        src_onto, tgt_onto = self.read_kwl_gppd_tables()
         params_blocking = self.get_params_blocking()
         manager = ontomatch.scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
 
@@ -458,12 +459,12 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
         self.assertEqual(len(it), 4)
 
     def test_create_prop_prop_sim_triples_from_params(self):
-        params = self.read_params(tests.utils_for_testing.PATH_CONF_PP_DEU_WEIGHT)
+        params = self.read_params(tests.utils_for_testing.PATH_CONF_PP_DEU_WEIGHT_CSV)
         params_mapping = params['mapping']
         triples = ontomatch.scoring.create_prop_prop_sim_triples_from_params(params_mapping)
         self.assertEqual(len(triples), 5)
         self.assertEqual(triples[0][0], 'name')
-        self.assertEqual(triples[2][1], 'hasYearOfBuilt/hasValue/numericalValue')
+        self.assertEqual(triples[2][1], 'year')
 
     def test_calculate_similarities_between_datasets_load_store(self):
 
@@ -472,8 +473,8 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
         sim_file = '../tmp/tests/scores_auto_10.csv'
         shutil.copy('./tests/data/scores_auto_10.csv', sim_file)
 
-        params = self.read_params(tests.utils_for_testing.PATH_CONF_PP_DEU_AUTO, symmetric=True)
-        src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
+        params = self.read_params(tests.utils_for_testing.PATH_CONF_PP_DEU_AUTO_CSV)
+        src_onto, tgt_onto = self.read_kwl_gppd_tables()
         params_blocking = params['blocking']
         params_mapping = params['mapping']
         params_mapping['similarity_file'] = sim_file

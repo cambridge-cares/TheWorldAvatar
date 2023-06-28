@@ -506,15 +506,18 @@ class DerivationAgent(ABC):
             # only enters below if the computation was not for new information (new instances)
             derivation = self.jpsBaseLib_view.Derivation(derivationIRI, derivationType)
             if not derivation.isDerivationAsyn() and not derivation.isDerivationWithTimeSeries():
+                # Perform the mapping between the new outputs and the downstream derivations
+                connectionMap = self.derivation_client.derivation_client.mapSyncNewOutputsToDownstream(
+                    outputs.getThisDerivation(), outputs.getNewOutputsAndRdfTypeMap())
                 # construct and fire SPARQL update given DerivationOutputs objects, if normal
                 # derivation NOTE this makes sure that the new generated instances/triples will
                 # ONLY be written to knowledge graph if the target derivation is till outdated
                 # at the point of executing SPARQL update, i.e. this solves concurrent request
                 # issue as detailed in
                 # https://github.com/cambridge-cares/TheWorldAvatar/issues/184
-                triplesChangedForSure = self.derivation_client.derivation_client.reconnectNewDerivedIRIs(
-                    outputs.getOutputTriples(), outputs.getNewEntitiesDownstreamDerivationMap(),
-                    outputs.getThisDerivation(), outputs.getRetrievedInputsAt()
+                triplesChangedForSure = self.derivation_client.derivation_client.reconnectSyncDerivation(
+                    outputs.getThisDerivation(), connectionMap,
+                    outputs.getOutputTriples(), outputs.getRetrievedInputsAt()
                 )
 
                 # for normal Derivation, we need to return both timestamp and the new derived
@@ -523,6 +526,7 @@ class DerivationAgent(ABC):
                     # computed by this agent
                     res[self.jpsBaseLib_view.DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY] = outputs.getRetrievedInputsAt()
                     res[self.jpsBaseLib_view.DerivationClient.AGENT_OUTPUT_KEY] = json.loads(str(outputs.getNewEntitiesJsonMap()))
+                    res[self.jpsBaseLib_view.DerivationClient.AGENT_OUTPUT_CONNECTION_KEY] = json.loads(str(self.jpsBaseLib_view.org.json.JSONObject(connectionMap)))
                     self.logger.info("Derivation update is done in the knowledge graph, returned response: " + str(res))
                 else:
                     # if we are not certain, query the knowledge graph to get the accurate
@@ -530,6 +534,7 @@ class DerivationAgent(ABC):
                     updated = self.derivation_client.derivation_client.getDerivation(derivationIRI)
                     res[self.jpsBaseLib_view.DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY] = updated.getTimestamp()
                     res[self.jpsBaseLib_view.DerivationClient.AGENT_OUTPUT_KEY] = json.loads(str(updated.getBelongsToMap()))
+                    res[self.jpsBaseLib_view.DerivationClient.AGENT_OUTPUT_CONNECTION_KEY] = json.loads(str(updated.getDownstreamDerivationConnectionMap()))
                     self.logger.info("Unable to determine if the SPARQL update mutated triples, returned latest information in knowledge graph: "
                                      + str(res))
             else:

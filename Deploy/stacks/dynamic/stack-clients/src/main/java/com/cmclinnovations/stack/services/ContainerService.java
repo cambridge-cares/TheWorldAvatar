@@ -28,8 +28,8 @@ public class ContainerService extends AbstractService {
 
     private DockerClient dockerClient;
 
-    public ContainerService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
-        super(serviceManager, config);
+    public ContainerService(String stackName, ServiceConfig config) {
+        super(config);
         Objects.requireNonNull(stackName, "A 'stackName' must be provided for all container-based services.");
         config.getDockerServiceSpec().withName(StackClient.prependStackName(config.getDockerServiceSpec().getName())
                 // See comments in the getHostName method

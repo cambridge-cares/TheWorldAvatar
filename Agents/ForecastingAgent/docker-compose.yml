@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   forecasting_agent:
-    image: ghcr.io/cambridge-cares/forecasting_agent:1.1.0
+    image: ghcr.io/cambridge-cares/forecasting_agent:1.1.1
     environment:
       # Required environment variables for both Stack and "standalone" (i.e. outside stack) deployment
       - STACK_NAME=TEST         # to be left blank for "standalone" deployment

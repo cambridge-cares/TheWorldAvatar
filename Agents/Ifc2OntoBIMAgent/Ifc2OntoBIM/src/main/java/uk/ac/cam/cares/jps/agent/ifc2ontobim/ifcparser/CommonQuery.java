@@ -19,6 +19,12 @@ public class CommonQuery {
     public static final String ELEMENT_VAR = "?element";
     public static final String PARENT_ZONE_VAR = "?subzone";
     public static final String PHASE_VAR = "?phase";
+    public static final String POSTAL_ADDRESS_VAR = "?postalAddress";
+    public static final String POSTAL_ADDRESS_LINES_VAR = "?postalAddressLines";
+    public static final String POSTAL_TOWN_VAR = "?postalTown";
+    public static final String POSTAL_REGION_VAR = "?postalRegion";
+    public static final String POSTAL_COUNTRY_VAR = "?postalCountry";
+    public static final String POSTAL_CODE_VAR = "?postalCode";
     public static final String RELAGGR_VAR = "?relaggregates";
     public static final String LAT_VAR = "?latitude";
     public static final String LAT_DEGREE_VAR = "?latdegree";
@@ -169,6 +175,12 @@ public class CommonQuery {
     public static final String IFC_ID = NamespaceMapper.IFC_PREFIX + ":globalId_IfcRoot";
     public static final String IFC_NAME = NamespaceMapper.IFC_PREFIX + ":name_IfcRoot";
     public static final String IFC_SITE_ELEV = NamespaceMapper.IFC_PREFIX + ":refElevation_IfcSite";
+    public static final String IFC_BUILDING_ADDRESS = NamespaceMapper.IFC_PREFIX + ":buildingAddress_IfcBuilding";
+    public static final String IFC_BUILDING_ADDRESS_LINES = NamespaceMapper.IFC_PREFIX + ":addressLines_IfcPostalAddress";
+    public static final String IFC_BUILDING_TOWN = NamespaceMapper.IFC_PREFIX + ":town_IfcPostalAddress";
+    public static final String IFC_BUILDING_REGION = NamespaceMapper.IFC_PREFIX + ":region_IfcPostalAddress";
+    public static final String IFC_BUILDING_POSTAL_CODE = NamespaceMapper.IFC_PREFIX + ":postalCode_IfcPostalAddress";
+    public static final String IFC_BUILDING_COUNTRY = NamespaceMapper.IFC_PREFIX + ":country_IfcPostalAddress";
     public static final String IFC_BUILDING_ELEV = NamespaceMapper.IFC_PREFIX + ":elevationOfRefHeight_IfcBuilding";
     public static final String IFC_BUILDING_TERELEV = NamespaceMapper.IFC_PREFIX + ":elevationOfTerrain_IfcBuilding";
     public static final String IFC_STOREY_ELEV = NamespaceMapper.IFC_PREFIX + ":elevation_IfcBuildingStorey";
@@ -254,6 +266,7 @@ public class CommonQuery {
     public static final String IFCPROJECT = NamespaceMapper.IFC_PREFIX + ":IfcProject";
     public static final String IFCSITE = NamespaceMapper.IFC_PREFIX + ":IfcSite";
     public static final String IFCBUILDING = NamespaceMapper.IFC_PREFIX + ":IfcBuilding";
+    public static final String IFCADDRESS = NamespaceMapper.IFC_PREFIX + ":IfcPostalAddress";
     public static final String IFCSTOREY_CLASS = "IfcBuildingStorey";
     public static final String IFCSTOREY = NamespaceMapper.IFC_PREFIX + ":" + IFCSTOREY_CLASS;
     public static final String IFCSPACE_CLASS = "IfcSpace";
