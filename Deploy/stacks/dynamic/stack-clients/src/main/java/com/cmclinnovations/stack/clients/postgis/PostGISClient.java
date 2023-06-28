@@ -115,17 +115,16 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
         }
         List<Path> osmFilesList = allFilesList.stream().filter(file -> FileUtils.hasFileExtension(file, "osm"))
                 .collect(Collectors.toList());
-        if (osmFilesList.size() < 1) {
+        if (osmFilesList.isEmpty()) {
             throw new RuntimeException("No osm file in routing data directory '" + sourceDirectory + "'.");
         }
         List<Path> configsList = allFilesList.stream().filter(file -> FileUtils.hasFileExtension(file, "xml"))
                 .collect(Collectors.toList());
-        if (osmFilesList.size() > 1) {
+        if (configsList.size() > 1) {
             throw new RuntimeException(
                     "Too many xml config files (" + osmFilesList.size() + ") in routing data directory '"
-                            + sourceDirectory
-                            + "'.");
-        } else if (osmFilesList.size() == 0) {
+                            + sourceDirectory + "'.");
+        } else if (configsList.isEmpty()) {
             throw new RuntimeException(
                     "No xml config files found in routing data directory '" + sourceDirectory + "'.");
         }
