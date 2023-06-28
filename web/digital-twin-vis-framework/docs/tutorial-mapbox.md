@@ -540,6 +540,8 @@ Mapbox's clustering feature can be enabled by adding a few parameters to the sou
 }
 ```
 
+**3. Styling the clusters:**<br/>
+
 After this change, you will notice that few locations appear on our map. However, you should be able to see that these are actually just isolated locations (i.e. not close enough to other locations to cluster), rather than grouped close-by ones. To see the grouped features, we'll need to add another layer to display them. This can easily be done by adding a new layer, using the same source, and a filter parameter that only shows locations with a `point_count` parameter (something that Mapbox automatically adds on clustered groups of features). For our example, we'll use a new icon (found [here](./img/gp-icon-cluster.png)) to represent clustered of locations.
 
 Update your configuration to look like the below then refresh the visualisation.
@@ -597,4 +599,6 @@ After refreshing the visualisation, you should now be able to see the clustered 
 
 <br/>
 
-### Searching for locations
+## Conclusion
+
+Hopefully this tutorial has explained the basics of the DTVF, with the power to quickly add, and configure distributed data sources. If there are any questions, concerns, or suggestions, please get in touch with the CMCL team.

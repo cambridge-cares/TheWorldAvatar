@@ -1,0 +1,7 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoNHS,TBox,http://theworldavatar.com/ontology/health/nhs.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoNHS,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoNHS,TBox,Sample ontology for General Practitioners within the NHS>,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+Asset,Class,,,,,,Generic NHS asset.,http://theworldavatar.com/ontology/health/nhs.owl,
+GPPractice,Class,Asset,IS-A,,,,GP site.,http://theworldavatar.com/ontology/health/nhs.owl,
+Practitioner,Class,Asset,IS-A,,,,General Practitioner.,http://theworldavatar.com/ontology/health/nhs.owl,
