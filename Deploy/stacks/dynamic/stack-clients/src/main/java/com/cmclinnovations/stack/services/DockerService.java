@@ -30,7 +30,6 @@ import com.github.dockerjava.api.command.ListTasksCmd;
 import com.github.dockerjava.api.command.PullImageCmd;
 import com.github.dockerjava.api.command.PullImageResultCallback;
 import com.github.dockerjava.api.command.RemoveServiceCmd;
-import com.github.dockerjava.api.command.StartContainerCmd;
 import com.github.dockerjava.api.model.Config;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.ContainerSpec;
@@ -68,8 +67,8 @@ public class DockerService extends AbstractService
 
     protected Network network;
 
-    public DockerService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
-        super(serviceManager, config);
+    public DockerService(String stackName, ServiceConfig config) {
+        super(config);
 
         Connection endpoint = getEndpoint("dockerHost");
         URI dockerUri;
@@ -247,32 +246,12 @@ public class DockerService extends AbstractService
         }
 
         final String containerId;
-        final String containerState;
 
         if (container.isPresent()) {
             // Get required details of the existing/new container
             containerId = container.get().getId();
-            containerState = container.get().getState();
         } else {
             throw new RuntimeException("Failed to start container for service with name '" + service.getName() + "'.");
-        }
-
-        switch (containerState) {
-            case "running":
-                // The container is already running, all is fine.
-                break;
-            case "created":
-            case "exited":
-                // The container is not running, start it.
-                try (StartContainerCmd startContainerCmd = dockerClient.getInternalClient()
-                        .startContainerCmd(containerId)) {
-                    startContainerCmd.exec();
-                }
-                break;
-            default:
-                // TODO Need to consider actions for other states
-                throw new IllegalStateException("Container '" + containerId + "' in a state (" + containerState
-                        + ") that is currently unsupported in the DockerService::startContainer method.");
         }
 
         service.setContainerId(containerId);
@@ -311,16 +290,18 @@ public class DockerService extends AbstractService
             }
         } while (null == taskState || TaskState.RUNNING.compareTo(taskState) > 0);
 
-        if (!TaskState.RUNNING.equals(taskState)) {
-            String errMessage = taskStatus.getErr();
-            if (null != errMessage) {
-                errMessage = taskStatus.getMessage();
-            }
-            throw new RuntimeException("Failed to start service '" + containerName
-                    + "'. Error message is:\n" + errMessage);
-        } else {
-            String containerId = taskStatus.getContainerStatus().getContainerID();
-            return getContainerFromID(containerId);
+        switch (taskState) {
+            case RUNNING:
+            case COMPLETE:
+                String containerId = taskStatus.getContainerStatus().getContainerID();
+                return getContainerFromID(containerId);
+            default:
+                String errMessage = taskStatus.getErr();
+                if (null != errMessage) {
+                    errMessage = taskStatus.getMessage();
+                }
+                throw new RuntimeException("Failed to start service '" + containerName
+                        + "'. Error message is:\n" + errMessage);
         }
     }
 
@@ -357,17 +338,28 @@ public class DockerService extends AbstractService
     }
 
     protected void interpolateVolumes(ContainerSpec containerSpec) {
+        List<Mount> mounts = addDefaultMounts(containerSpec);
+
+        mounts.forEach(this::interpolateMount);
+    }
+
+    private List<Mount> addDefaultMounts(ContainerSpec containerSpec) {
         List<Mount> mounts = containerSpec.getMounts();
+
+        // Ensure that "mounts" is not "null"
         if (null == mounts) {
             mounts = new ArrayList<>();
             containerSpec.withMounts(mounts);
         }
 
+        // Add stack scratch volume to all containers
         mounts.add(new Mount()
                 .withType(MountType.VOLUME)
                 .withSource("scratch")
                 .withTarget(StackClient.SCRATCH_DIR));
 
+        // Add the Docker API socket as a bind mount
+        // This is required for a container to make Docker API calls
         Mount dockerSocketMount = new Mount()
                 .withType(MountType.BIND)
                 .withSource(System.getenv(API_SOCK))
@@ -375,12 +367,30 @@ public class DockerService extends AbstractService
         if (!mounts.contains(dockerSocketMount)) {
             mounts.add(dockerSocketMount);
         }
+        return mounts;
+    }
 
-        for (Mount mount : mounts) {
-            if (MountType.VOLUME == mount.getType()) {
+    private void interpolateMount(Mount mount) {
+        // The default mount type is "bind" so set it explicitly if it is missing
+        MountType mountType = mount.getType();
+        if (null == mountType) {
+            mountType = MountType.BIND;
+            mount.withType(mountType);
+        }
 
+        switch (mountType) {
+            case BIND:
+                // Handle relative source paths for bind mounts
+                String bindSource = mount.getSource();
+                if (null != bindSource && !bindSource.startsWith("/")) {
+                    mount.withSource(StackClient.getAbsDataPath().resolve(bindSource).toString());
+                }
+                break;
+            case VOLUME:
+                // Append the stack name to the volume name
                 mount.withSource(StackClient.prependStackName(mount.getSource()));
 
+                // Add stack specific labels
                 VolumeOptions volumeOptions = mount.getVolumeOptions();
                 if (null == volumeOptions) {
                     volumeOptions = new VolumeOptions().withLabels(StackClient.getStackNameLabelMap());
@@ -393,7 +403,8 @@ public class DockerService extends AbstractService
                         labels.putAll(StackClient.getStackNameLabelMap());
                     }
                 }
-            }
+                break;
+            default:
         }
     }
 

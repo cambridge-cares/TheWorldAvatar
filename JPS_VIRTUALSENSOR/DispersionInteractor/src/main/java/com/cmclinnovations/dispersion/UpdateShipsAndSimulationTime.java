@@ -26,8 +26,8 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * get the average value of the timestamp of added
  * updates *all* simulation time of dispersion derivations to the average value
  */
-@WebServlet(urlPatterns = {"/UpdateShipsAndSimulationTime"})
-public class UpdateShipsAndSimulationTime extends HttpServlet{
+@WebServlet(urlPatterns = { "/UpdateShipsAndSimulationTime" })
+public class UpdateShipsAndSimulationTime extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(UpdateShipsAndSimulationTime.class);
     private QueryClient queryClient;
 
@@ -47,7 +47,7 @@ public class UpdateShipsAndSimulationTime extends HttpServlet{
             LOGGER.error("Error from executing request to ship input agent");
             return;
         }
-        
+
         queryClient.updateSimulationTime(timestamp);
     }
 

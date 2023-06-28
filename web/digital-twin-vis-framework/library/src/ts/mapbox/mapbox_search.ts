@@ -7,7 +7,7 @@ class SearchHandler_Mapbox extends SearchHandler {
     /**
      * Any filters previously used on layers, stored by layer ID.
      */
-    private previousFilters = {};
+    private static OLD_FILTERS = {};
 
     /**
      * Caches mapbox sources so that clustering can be renabled.
@@ -63,30 +63,58 @@ class SearchHandler_Mapbox extends SearchHandler {
         MapHandler.MAP.setStyle(style);
     }
 
+    public cacheExisting() {
+        let layers = MapHandler.MAP.getStyle().layers;
+
+        for(const layer of layers) {
+
+            // Skip if a layer not provided by the DTVF
+            let meta = layer["metadata"];
+            if(meta === null || meta === undefined) continue;
+            let attr = meta["attribution"];
+            if(attr === null || attr === undefined || attr !== "CMCL Innovations") continue;
+
+            // Skip cluster layers
+            let id = layer["id"];
+            if(id.endsWith("_cluster")) continue;
+
+            // Store old filter
+            let oldFilter = MapHandler.MAP.getFilter(id);
+            SearchHandler_Mapbox.OLD_FILTERS[id] = oldFilter;
+        }
+    }
     /**
      * Execute the filter with the input search term.
      * 
      * @param searchTerm search term
      */
-    public runSearch(searchTerm: string | number | boolean) {
-        // Cancel previous search
-        this.cancelSearch();
+    public runSearch(searchTerm, type) {
+        if(searchTerm.length === 0) {
+            // Revert to previously cached filters
+            Object.entries(SearchHandler_Mapbox.OLD_FILTERS).forEach(([layerID, filter]) => {
+                MapHandler.MAP.setFilter(layerID, filter);
+            });
+            return;
+        }
+        
         let layers = MapHandler.MAP.getStyle().layers;
 
-        for(let i = 0; i < layers.length; i++) {
+        for(const layer of layers) {
             // Skip if a layer not provided by the DTVF
-            let meta = layers[i]["metadata"];
+            let meta = layer["metadata"];
             if(meta === null || meta === undefined) continue;
             let attr = meta["attribution"];
             if(attr === null || attr === undefined || attr !== "CMCL Innovations") continue;
-            
-            let id = layers[i]["id"];
-            let oldFilter = MapHandler.MAP.getFilter(id)
-        
+
+            // Skip cluster layers
+            let id = layer["id"];
+            if(id.endsWith("_cluster")) continue;
+
             // Apply new filter
-            let filter = this.createFilter(oldFilter, searchTerm);
+            let oldFilter = SearchHandler_Mapbox.OLD_FILTERS[id];
+            let filter = this.createFilter(oldFilter, searchTerm, type);
+
             if(filter !== null && filter !== undefined) {
-                this.previousFilters[id] = oldFilter;
                 MapHandler.MAP.setFilter(id, filter);
             }
         }
@@ -96,21 +124,25 @@ class SearchHandler_Mapbox extends SearchHandler {
      * Clear the filter.
      */
     public cancelSearch() {
-        if(this.previousFilters == null) return;
+        if(SearchHandler_Mapbox.OLD_FILTERS == null) return;
 
         // Revert to previously cached filters
-        Object.entries(this.previousFilters).forEach(([layerID, filter]) => {
+        Object.entries(SearchHandler_Mapbox.OLD_FILTERS).forEach(([layerID, filter]) => {
             MapHandler.MAP.setFilter(layerID, filter);
         });
 
         // Clear cached filters
-        this.previousFilters = {};
+        SearchHandler_Mapbox.OLD_FILTERS = {};
+
+        // Clear search term
+        let input = document.getElementById("finderField") as HTMLInputElement;
+        input.value = "";
     }
 
     /**
      * Create the filter object based on the current search settings.
      */
-    private createFilter(oldFilter, searchTerm): Object {
+    private createFilter(oldFilter, searchTerm, type): Object {
         let propName = this.property["property"];
 
         // Filter object
@@ -120,7 +152,7 @@ class SearchHandler_Mapbox extends SearchHandler {
         let rangeSelect = document.getElementById("finderRangeSelect") as HTMLInputElement;
 
          // Build filter based on type and range
-        if(typeof searchTerm === "boolean") {
+        if(type === "boolean") {
             // Is a boolean
             switch(rangeSelect.value) {
                 case "true": {
@@ -140,7 +172,7 @@ class SearchHandler_Mapbox extends SearchHandler {
                 }
                 break;
             }
-        } else if(!isNaN(searchTerm)) {
+        } else if(type === "number") {
             // Is a number
             switch(rangeSelect.value) {
                 case "equals": {
@@ -169,7 +201,7 @@ class SearchHandler_Mapbox extends SearchHandler {
                 break;
             }
 
-        } else if(String(searchTerm)) {
+        } else if(type === "string") {
             // Is a string
             searchTerm = searchTerm.toLowerCase();
 

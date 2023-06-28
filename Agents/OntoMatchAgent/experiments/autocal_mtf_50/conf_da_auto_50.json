@@ -1,0 +1,52 @@
+{
+"numerical_settings":{
+	"seed": 1
+},
+"dataset":{
+	"src": "./data/Structured/DBLP-ACM/tableA.csv",
+	"tgt": "./data/Structured/DBLP-ACM/tableB.csv"
+},
+"pre_processing":{
+	"add_knowledge": null
+},
+"blocking":{
+	"name": "TokenBasedPairIterator",
+	"model_specific": {
+		"min_token_length": 3,
+		"max_token_occurrences_src": 50,
+		"max_token_occurrences_tgt": 50,
+		"blocking_properties": ["title", "authors", "venue"],
+		"reset_index": false
+	}
+},
+"mapping": {
+	"mode": "fixed",
+	"similarity_functions": [
+		{"name": "dist_absolute", "cut_off_mode": "fixed", "cut_off_value": 10},
+		{"name": "dist_relative", "cut_off_mode": "fixed", "cut_off_value": 1},
+		{"name": "dist_equal", "cut_off_mode": "fixed", "cut_off_value": 1},
+		{"name": "dist_cosine_with_tfidf", "cut_off_mode": "fixed", "cut_off_value": 1, "maxidf": 30},
+		{"name": "dist_cosine_embedding", "cut_off_mode": "fixed", "cut_off_value": 1}
+	],
+	"triples": [
+		{"prop1": "year", "prop2": "year", "sim": 2, "pos": 0},
+		{"prop1": "title", "prop2": "title", "sim": 3, "pos": 1},
+		{"prop1": "title", "prop2": "title", "sim": 4, "pos": 2},
+		{"prop1": "authors", "prop2": "authors", "sim": 3, "pos": 3},
+		{"prop1": "authors", "prop2": "authors", "sim": 4, "pos": 4},
+		{"prop1": "venue", "prop2": "venue", "sim": 3, "pos": 5},
+		{"prop1": "venue", "prop2": "venue", "sim": 4, "pos": 6}
+	],
+	"similarity_file": null
+},
+"matching":{
+	"name": "instancematching.InstanceMatcherWithAutoCalibration",
+	"model_specific": {
+		"delta": 0.025
+	}
+},
+"post_processing":{
+	"test_file": "./data/Structured/DBLP-ACM/test.csv",
+	"evaluation_file": null
+}
+}

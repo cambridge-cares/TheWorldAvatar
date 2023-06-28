@@ -1,0 +1,32 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+prefix ts: <https://www.theworldavatar.com/kg/ontotimeseries/>
+prefix ontobms: <https://www.theworldavatar.com/kg/ontobms/>
+prefix saref: <https://saref.etsi.org/core/>
+prefix ontodevice: <https://www.theworldavatar.com/kg/ontodevice/>
+prefix : <https://www.theworldavatar.com/kg/ontobms/>
+SELECT distinct ?Measurement ?Name ?Unit WHERE {
+  {
+    [IRI] saref:hasState / ontobms:hasLowLevelState ?Measurement.
+    BIND ("LowLevelState" as ?Name).
+    BIND ("-" as ?Unit).
+  } union {
+    [IRI] saref:hasState / ontobms:hasMediumLevelState ?Measurement.
+    BIND ("MediumLevelState" as ?Name).
+    BIND ("-" as ?Unit).
+  } union {
+    [IRI] saref:hasState / ontobms:hasHighLevelState ?Measurement.
+    BIND ("HighLevelState" as ?Name).
+    BIND ("-" as ?Unit).
+  } union {
+    [IRI] saref:consistsOf / ontodevice:sendsSignalTo / saref:consistsOf / ontodevice:measures / om:hasValue ?Measurement.
+    ?Measurement om:hasUnit / om:symbol ?Unit.
+    BIND ("AirFlow" as ?Name).
+  } union {
+    [IRI] saref:consistsOf / ontodevice:sendsSignalTo / saref:consistsOf / ontodevice:observes ?Measurement.
+    BIND ("DamperState" as ?Name).
+    BIND ("-" as ?Unit).
+  }
+}

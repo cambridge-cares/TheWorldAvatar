@@ -1,9 +1,12 @@
-## Prerequisites
+Prerequisites
+1) Make a copy of DispersionVis/indexTemplate.html and set its file name to be 'index.html'. Set Mapbox user and API key in DispersionVis/index.html
+2) Ship data needs to be present in ShipInputAgent/data. If the agent is being run for chemical plants instead of ships, 
+it is still necessary to define one ship in a .json file in this folder. In this case, the ship should be placed outside the region for which AERMOD will be run, which is specified in WKT format in the POST request to the DispersionInteractor class. The longitude of each coordinate must be specified before the latitude.  
 
-1) Set Mapbox user and API key in `./DispersionVis/index.html`
-2) Ship data needs to be present in `./ShipInputAgent/data`
-3) Set openweather API key in `./stack-manager/inputs/config/services/weather-agent.json`
-4) Create two files called `postgis_password` and `geoserver_password` in the `./stack-manager/inputs/secrets/` directory. Populate the files with the intended passwords for PostGIS and GeoServer, respectively.
+3) Set openweather API key in stack-manager/inputs/config/services/weather-agent.json, see ../Agents/WeatherAgent folder for more details
+
+4) If running AERMOD for static point sources, it is necessary to instantiate the input data required for AERMOD Agent according to OntoDispersion (https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodispersion). See the JurongIslandInputAgent folder for an example of an agent that does this.
+
 
 Stack needs to be up and running:
 1) execute
@@ -28,6 +31,11 @@ curl -X POST "http://localhost:3838/dispersion-interactor/InitialiseSimulation?e
 
 This request should return the IRI of the derivation, record this. Check the README of DispersionInteractor for more details.
 
+By providing an optional parameter, "citiesnamespace", AermodAgent will query buildings data from the provided namespace listed in http://www.theworldavatar.com:83/citieskg/#namespaces, e.g.
+```
+curl -X POST "http://localhost:3838/dispersion-interactor/InitialiseSimulation?ewkt=SRID=4326;POLYGON((7.58%2049.2,7.58%2049.236,7.61%2049.236,7.61%2049.2,7.58%2049.2))&nx=30&ny=30&citiesnamespace=pirmasensEPSG32633"
+```
+
 2) Trigger ship input agent and update simulation time (input to dispersion derivation)
 ```
 curl -X POST http://localhost:3838/dispersion-interactor/UpdateShipsAndSimulationTime
@@ -40,41 +48,7 @@ curl -X POST "http://localhost:3838/dispersion-interactor/TriggerUpdateDispersio
 
 4) Visualisation can be accessed on the browser at
 ```
-http://localhost:3838/dispersion-vis/
-```
-
-To see results at a later simulation time, repeat steps 2-4.
-
-## Debugging in VSCode
-
-1) Create a copy of the JSON file of a container for debugging in `./stack-manager/inputs/config/services/`
-2) Add the following to environment variable specification (`Env`):
+http://localhost:3838/dispersion-vis
 
 ```
-"JPDA_ADDRESS=0.0.0.0:5005",
-"JPDA_TRANSPORT=dt_socket",
-"DEBUG=ON"
-```
-
-3) Add the following as the child of `ServiceSpec`:
-
-```
-"EndpointSpec": {
-	"Ports": [
-		{
-			"Name": "web",
-			"Protocol": "tcp",
-			"TargetPort": "5005",
-			"PublishedPort": "5005"
-		}
-	]
-}
-```
-
-4) Update `ship-stack.json` accordingly.
-
-5) In the folder of the corresponding container, change the port of Reattach and Debug in `.vscode/launch.json` (`${input:debug.port.read}`) to match the `PublishedPort`.
-
-6) After starting the stack, run Reattach and Debug in VSCode.
-
-`./stack-manager/inputs/config/services/aermod-agent-debug.json` is included as an example.
+The updated version of the agent also displays the legend for the contour plot in the sidebar. It may be necessary to open an incognito browser window to view it. 
