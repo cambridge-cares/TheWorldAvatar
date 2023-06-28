@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -169,9 +170,9 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
 
     private String[] constructOSM2PGRoutingCommand(String osmFile, String configFile, String database, Options options,
             boolean append) {
-        List<String> command = Arrays.asList("osm2pgrouting", "--f", osmFile, "--conf",
+        List<String> command = new ArrayList<>(Arrays.asList("osm2pgrouting", "--f", osmFile, "--conf",
                 configFile, "--dbname", database, "--username", postgreSQLEndpoint.getUsername(),
-                "--password", postgreSQLEndpoint.getPassword());
+                "--password", postgreSQLEndpoint.getPassword()));
         if (!append) {
             command.add("--clean");
         }
