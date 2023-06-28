@@ -2,24 +2,23 @@ package com.cmclinnovations.stack.clients.core.datasets;
 
 import java.nio.file.Path;
 
+import com.cmclinnovations.stack.clients.core.Options;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.GSVirtualTableEncoder;
 
 public class OSMRouting extends GeoServerDataSubset {
-    @JsonProperty
+    protected Options osm2PGRoutingOptions = new Options();
     protected GeoServerVectorSettings waysGeoServerSettings = new GeoServerVectorSettings();
-    @JsonProperty
     protected GeoServerVectorSettings verticesGeoServerSettings = new GeoServerVectorSettings();
-    @JsonProperty
     protected GeoServerVectorSettings poiGeoServerSettings = new GeoServerVectorSettings();
 
     @Override
     public void loadData(Path dirPath, String database) {
-        PostGISClient.getInstance().uploadRoutingDataDirectoryToPostGIS(database, dirPath.toString(), false);
+        PostGISClient.getInstance().uploadRoutingDataDirectoryToPostGIS(database, dirPath.toString(),
+                osm2PGRoutingOptions, false);
     }
 
     @Override
