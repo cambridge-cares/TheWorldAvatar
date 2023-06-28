@@ -1,18 +1,18 @@
 FROM tiangolo/uwsgi-nginx-flask:python3.8 as flask
-ENV UWSGI_CHEAPER 1
-ENV UWSGI_PROCESSES 2
+ENV UWSGI_CHEAPER 0
+ENV UWSGI_PROCESSES 1
 WORKDIR /app
 
-RUN cp -r TheWorldAvatar/MARIE_AND_BERT/Marie ./Marie  \
-&& cp -r TheWorldAvatar/MARIE_AND_BERT/uwsgi.ini ./uwsgi.ini \
-&& cp -r TheWorldAvatar/MARIE_AND_BERT/static ./static \
-&& cp -r TheWorldAvatar/MARIE_AND_BERT/templates ./templates \
-&& cp -r TheWorldAvatar/MARIE_AND_BERT/main.py ./main.py \
-&& cp -r TheWorldAvatar/MARIE_AND_BERT/requirements_linux.txt ./requirements_linux.txt
-
+COPY /TheWorldAvatar/MARIE_AND_BERT/Marie/ ./Marie
+COPY /TheWorldAvatar/MARIE_AND_BERT/uwsgi.ini ./uwsgi.ini
+COPY /TheWorldAvatar/MARIE_AND_BERT/static/ ./static
+COPY /TheWorldAvatar/MARIE_AND_BERT/templates/ ./templates
+COPY /TheWorldAvatar/MARIE_AND_BERT/main.py ./main.py
+COPY /TheWorldAvatar/MARIE_AND_BERT/requirements_linux.txt ./requirements_linux.txt
+COPY ./DATA/label_dict.js ./static/js/label_dict.js
 
 RUN mkdir  -p /app/DATA
-
+#COPY requirements_linux.txt requirements_linux.txt
 RUN apt-get update && \
     apt-get install -y openjdk-11-jdk && \
     apt-get install -y ant && \
@@ -25,3 +25,5 @@ RUN pip --default-timeout=10000 install --no-cache-dir -r requirements_linux.txt
 RUN echo "uwsgi_read_timeout 300s;" > /etc/nginx/conf.d/custom_timeout.conf
 RUN echo "uwsgi_connect_timeout 300s;" > /etc/nginx/conf.d/custom_timeout.conf
 RUN echo "uwsgi_send_timeout 300s;" > /etc/nginx/conf.d/custom_timeout.conf
+#RUN chmod +x ./script.sh
+#CMD [ "/bin/bash","-c","./script.sh"]

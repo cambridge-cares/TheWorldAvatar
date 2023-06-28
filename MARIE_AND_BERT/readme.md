@@ -55,7 +55,8 @@ to use conda for creating a virtual environment.
 , unzip under `DATA`. Otherwise upon the first run, the scripts will download the BERT pretrained model from hugging face.
 5. Download EntityLinking.zip from [EntityLinking.zip](http://159.223.42.53:8080/EntityLinking.zip), unzip under `DATA`
 6. Download STOUT V2 model [STOUT V2 model](http://159.223.42.53:8080/models.zip) for Linux system, unzip into `root/.data/STOUT-V2/`, for Windows system,
-7. Download the required NLTK datasets by running
+7. Download `label_dict.js` from [label_dict.js] from (http://159.223.42.53:8080/label_dict.js) and put the file in `MARIE_ANB_BERT/static/js`.
+8. Download the required NLTK datasets by running
 ```python
 import nlkt
 nltk.download('all')
