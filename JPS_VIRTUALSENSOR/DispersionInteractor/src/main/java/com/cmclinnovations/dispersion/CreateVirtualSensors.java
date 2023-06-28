@@ -93,12 +93,16 @@ public class CreateVirtualSensors extends HttpServlet {
                             vsLocation.toString());
                 }
             }
+
+            if (!vsLocationsInScope.isEmpty()) {
+                if (!dispersionPostGISClient.tableExists(Config.SENSORS_TABLE_NAME, conn))
+                    queryClient.initialiseVirtualSensorAgent();
+                queryClient.initializeVirtualSensors(vsScopeList, vsLocationsInScope);
+
+            }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
         }
-
-        if (!vsLocationsInScope.isEmpty())
-            queryClient.initializeVirtualSensors(vsScopeList, vsLocationsInScope);
 
     }
 
@@ -116,7 +120,6 @@ public class CreateVirtualSensors extends HttpServlet {
         TimeSeriesClient<Instant> tsClientInstant = new TimeSeriesClient<>(storeClient,
                 Instant.class);
         queryClient = new QueryClient(storeClient, remoteRDBStoreClient, tsClient, tsClientInstant);
-        queryClient.initialiseVirtualSensorAgent();
     }
 
 }

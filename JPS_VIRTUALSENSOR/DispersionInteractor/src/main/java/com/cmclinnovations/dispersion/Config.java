@@ -10,6 +10,7 @@ public class Config {
     public static final String GEOSERVER_WORKSPACE = System.getenv("GEOSERVER_WORKSPACE");
     public static final EndpointConfig ENDPOINT_CONFIG = new EndpointConfig();
     public static final String SENSORS_TABLE_NAME = System.getenv("SENSORS_TABLE_NAME");
+    public static final String VIRTUAL_SENSOR_AGENT_IRI = System.getenv("VIRTUAL_SENSOR_AGENT_IRI");
 
     private Config() {
         throw new IllegalStateException();
