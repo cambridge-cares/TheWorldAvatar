@@ -341,9 +341,7 @@ public class AermodAgent extends DerivationAgent {
 
         if (aermod.modifyFilePermissions("settings.json") != 0) {
             LOGGER.error("Failed to modify permissions for settings.json, terminating");
-            return;
         }
-
     }
 
     void updateDerivations(List<String> derivationsToUpdate) {
