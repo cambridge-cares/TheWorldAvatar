@@ -2,7 +2,7 @@
 
 This example visualisation has been put together to demonstrate the intended use of the centralised Digital Twin Visualisation Framework (DTVF). This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.
 
-It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.4.0 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
+It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.5.0 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
 
 <img src="readme-example.JPG" alt="Example of 3D data on a Cesium JS visualisation" width="100%"/>
 
@@ -34,7 +34,7 @@ At the time of writing, the following 3D data formats are supported within the D
 
 Additional formats, provided they are supported by Cesium JS, can be added but will require development resource from the team at CMCL. Get in touch with them for details.
 
-At the time of writing, client-side styling is not implemented (i.e. you cannot specify styling in the JSON files as you can do for Mapbox visualisations). Style options for 3D data should be baked into the associated model files, whilst styling for 2D data (provided via WMS) should be carried out on the server (more information on server-side styling can be found [here](https://docs.geoserver.org/stable/en/user/styling/index.html)).
+At the time of writing, client-side styling is limited to 3D tilesets and must be expressed in literal JSON objects using [Cesium's styling API](https://cesium.com/learn/cesiumjs-learn/cesiumjs-3d-tiles-styling/). More complex style options for 3D data should be baked into the associated model files, whilst all styling for 2D data (provided via WMS) should be carried out on the server (more information on server-side styling can be found [here](https://docs.geoserver.org/stable/en/user/styling/index.html)).
 
 ## Configuration
 
@@ -81,9 +81,15 @@ Layer nodes also need to provide a unique `id` field, a `source` field (listing 
 
 Layers can also optionally include an integer `order` field (which defaults to 0 if not specified). Before visualising, all layers (across all groups) are sorted by their order from lowest to highest; this allows users to specify the Z order of their data, regardless of grouping.
 
+Layer nodes for 3D tileset sources can also specify a `style` object defining a data-driven expression to change the visual look of features or to filter out specific ones. Note that this only supports a basic styling system that can be expressed within literal JSON keys & values, more complex styling should be carried out within the actual model files. For details on how to write a Cesium style expression, see their [web page](https://cesium.com/learn/cesiumjs-learn/cesiumjs-3d-tiles-styling/) detailing the process. In addition, the example TWA Cesium visualisation shows a style used to color buildings based on their distance from a point, and how to filter out a specific building based on one of its properties.
+
 Note that, at the time of writing, all `source` and `layer` nodes must be within a `group` (i.e. data cannot be loaded unless within a group), and a single top-level group must exist (i.e. the `data.json` file must be a JSON object, rather than a JSON array).
 
 For developers creating their first visualisation, it is recommended to take a copy of this example and play around with the `data.json`, perhaps changing the hierarchy and/or getting comfortable with the Mapbox styling format. 
+
+<p align="center">
+<img src="readme-styling.JPG" alt="Example of 3D data with simple styling" width="50%"/>
+</p>
 
 ### Global Settings & Advanced Features
 
@@ -162,6 +168,8 @@ A small amount of sample data has been committed to demonstrate the power of the
   - Tiled 3D buildings, loaded from a remote CMCL server.
   - 2D river data from a WMS endpoint provided by Cornell University.
   - No metadata or timeseries present in this data set.
+  - Styling based on distance from Castle Clinton
+  - Filtering to hide the Whitehall Ferry terminal
 
 It's worth noting that with this sample data, no stack is running so no support for dynamic metadata or timeseries is available. This is something that we plan to work on in future, no true generic solution exists for this so far.
 
