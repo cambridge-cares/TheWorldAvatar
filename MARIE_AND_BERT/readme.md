@@ -95,9 +95,10 @@ For deployment on Linux server from scratch:
 1. Create a folder in the server, assume it is `/home/user1/Marie/DATA`
 2. Load the files 2-6 mentioned in [Required files](#required-files) in `/home/user1/Marie/DATA`
 3. Clone the GitHub repository by `git clone https://github.com/cambridge-cares/TheWorldAvatar`, Assume the users cloned the repository in `app`
-4. Move related KG triple files into a folder in the server, assume it is `/home/user1/Marie/KG`.
-5. Build a blazegraph image, see [Blazegraph container](https://github.com/lyrasis/docker-blazegraph#local-builds) for instructions. Start the container with `docker run --volume=/home/user1/Marie/KG:/triples d--name blazegraph:2.1.5 -d -p [port]:[port] blazegraph-marie`
-6. Create `ontospecies.nt` and `ontocompchem.nt` using 
+4. Move the `TheWorldAvatar/MARIE_AND_BERT/Dockerfile` file into `/home/user1/Marie` folder.
+5. Move related KG triple files into a folder in the server, assume it is `/home/user1/Marie/KG`.
+6. Build a blazegraph image, see [Blazegraph container](https://github.com/lyrasis/docker-blazegraph#local-builds) for instructions. Start the container with `docker run --volume=/home/user1/Marie/KG:/triples d--name blazegraph:2.1.5 -d -p [port]:[port] blazegraph-marie`
+7. Create `ontospecies.nt` and `ontocompchem.nt` using 
 
 ```
 python KGToolbox/SPARQLEndpoint/export_triples.py 
@@ -122,6 +123,9 @@ For example, to upload with GUI update page, key in url  `/triples/ontospecies.n
 9. `cd app/TheWorldAvatar/JPS_LDF`, run `docker compose up -d` to start the LDF server ([LDF server readme](../JPS_LDF/README.md))
 10. `cd app/TheWorldAvatar/Agents/STDCThermoAgent`, run `docker compose up -d`
 11. `cd app/TheWorldAvatar/Agents/PCEAgent`, run `docker compose up -d`
+12. To spin up the Marie container, use `docker build --no-cache -t marie3 .` to build the image and run 
+`docker run --volume=/home/user1/Marie/DATA:/app/DATA -p 5003:80  --dns=8.8.8.8 -d marie3:latest`
+
 
 ## Frontend development
 It takes more than 15 minutes to spin up the Marie server, as a result, a `mock_main.py` script is implemented to 
