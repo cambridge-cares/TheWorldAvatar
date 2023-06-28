@@ -61,7 +61,6 @@ def get_context_representation(
     input_ids = tokenizer.convert_tokens_to_ids(context_tokens)
     padding = [0] * (max_seq_length - len(input_ids))
     input_ids += padding
-
     return {
         "tokens": context_tokens,
         "ids": input_ids,

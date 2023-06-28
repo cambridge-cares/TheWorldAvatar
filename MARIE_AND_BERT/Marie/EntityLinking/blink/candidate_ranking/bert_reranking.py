@@ -322,7 +322,6 @@ class BertReranker:
         input_mask += padding
         segment_ids += padding
 
-
         return {
             "tokens": tokens,
             "input_ids": input_ids,
@@ -461,7 +460,8 @@ class BertReranker:
                 )
                 for _ in range(top_k - len(candidates)):
                     candidate_features.append(padding_candidate_obj)
-
+            if len(candidate_features)!=top_k or len(entity_mask)!=top_k:
+                raise Exception('Error padding topK candidate features')
 
             if sentences is not None:
                 processed_mentions.append(
