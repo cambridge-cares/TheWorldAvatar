@@ -49,8 +49,6 @@ $('document').ready(function(){
 
 	$('#ask-button').click(function (e){
         askQuestion(e);
-		single_result.style.display = "none"
-		resultsRow.style.display = "none"
     });
 
     $('#input-field').keypress(function(e){
@@ -85,10 +83,6 @@ resultsRow.style.display = "none";
 
 var single_result = document.getElementById("single_result");
 single_result.style.display = "none";
-
-var chatgpt_result = document.getElementById("chatgpt_result");
-chatgpt_result.style.display = "none";
-
 
 // Currently asking a question?
 var asking = 0;
@@ -212,8 +206,7 @@ function askQuestion() {
 
 	asking = 1;
 	// Make the request for the world avatar
-	makeRequest(question, "/search", "worldavatar", "json", handleResults, promises);
-	makeRequest(question, "/ask_chatgpt", "worldavatar", "json", handleChatGPTResults, promises);
+	makeRequest(question, "worldavatar", "json", handleResults, promises);
 
 	// Reset the search button when all requests are complete
 	$.when.apply($, promises).then(function() {
@@ -236,9 +229,9 @@ function askQuestion() {
 /*
  Make a single HTTP request to the chatbot.
 */
-function makeRequest(question, url, type, resultType, successFunction, promises) {
+function makeRequest(question, type, resultType, successFunction, promises) {
 	//let url = botURL + "chemistry_chatbot/query?type=" + type;
-	// url = "search"
+	url = "search"
     console.log('url is ', url)
 	let data = { "question": question };
 
@@ -268,16 +261,6 @@ function makeRequest(question, url, type, resultType, successFunction, promises)
 	}));
 }
 
-
-/* This is the function that handles results from ChatGPT only */
-function handleChatGPTResults(rawResult){
-
-	let gpt_result = document.getElementById("chatgpt_result_box")
-	gpt_result.innerHTML = rawResult["result"]
-	chatgpt_result.style.display = "block"
-	console.log("Result from ChatGPT", rawResult)
-}
-
 /*
  Process the results from a WorldAvatar request
 */
@@ -291,10 +274,6 @@ function handleChatGPTResults(rawResult){
 
 function handleResults(rawResult){
 	console.log("raw result in handle results", rawResult)
-
-
-	single_result.style.display = "none"
-	resultsRow.style.display = "none"
 
 	if ("single" in rawResult){
 		console.log("Got a single result", rawResult)
@@ -312,8 +291,11 @@ function handleResults(rawResult){
 		target_value.innerHTML = "<b>Target: </b>" + target
 		single_result.style.display = "block"
 		resultsRow.style.display = "none"
-
 		return;
+	}
+	else
+	{
+		single_result.style.display = "none"
 	}
 
 	if(rawResult === null || rawResult === undefined || rawResult === "null") {
