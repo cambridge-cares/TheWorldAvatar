@@ -409,7 +409,6 @@ def main(params):
             mention_bounds = None
             hard_negs_mask = None
             if params["adversarial_training"]:
-                assert cand_encs is not None and label_ids is not None  # due to params["freeze_cand_enc"] being set
                 '''
                 GET CLOSEST N CANDIDATES (AND APPROPRIATE LABELS)
                 '''
@@ -472,7 +471,6 @@ def main(params):
                 mention_reps_input = torch.cat([
                     mention_reps, mention_reps[neg_example_idx.to(device)],
                 ])
-                assert mention_reps.size(0) == pos_cand_encs_input.size(0)
 
                 # (bs + bs * num_negatives, num_spans)
                 label_input = torch.cat([
