@@ -8,3 +8,4 @@
 *.tsv
 *.out
 /Training/RelationPrediction/input
+/Evaluation/EvaluationData
