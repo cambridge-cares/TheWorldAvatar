@@ -5,8 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Options {
-    private final Map<String, Option> optionsMap = new HashMap<>();
+    @JsonProperty("options")
+    private final Map<String, Option> argOptions = new HashMap<>();
     private final List<String> flags = new ArrayList<>();
 
     public Options() {
@@ -15,10 +18,18 @@ public class Options {
     public List<String> getOptionsList() {
         List<String> optionsList = new ArrayList<>();
         optionsList.addAll(flags);
-        optionsMap.forEach((key, value) -> {
+        argOptions.forEach((key, value) -> {
             optionsList.add(key);
             optionsList.addAll(value.getOptionList());
         });
         return optionsList;
+    }
+
+    public Map<String, Option> getArgOptions() {
+        return argOptions;
+    }
+
+    public List<String> getFlags() {
+        return flags;
     }
 }
