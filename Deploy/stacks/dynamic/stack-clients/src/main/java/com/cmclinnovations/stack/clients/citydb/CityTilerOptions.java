@@ -1,5 +1,6 @@
 package com.cmclinnovations.stack.clients.citydb;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,13 +21,14 @@ public class CityTilerOptions {
         return colours.getJson();
     }
 
-    String[] appendOtherArgs(String... baseArgs) {
-        List<String> allArgs = List.of(baseArgs);
+    String[] appendOtherArgs(String[] specArgs, String... baseArgs) {
+        List<String> allArgs = new ArrayList<>(List.of(baseArgs));
 
         options.forEach((option, values) -> {
             allArgs.add(option);
             values.stream().collect(Collectors.toCollection(() -> allArgs));
         });
+        allArgs.addAll(List.of(specArgs));
         return allArgs.toArray(baseArgs);
     }
 
