@@ -3,7 +3,7 @@
         "Name": "citytiler",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "docker.cmclinnovations.com/vcity/py3dtilers:latest",
+                "Image": "ghcr.io/cambridge-cares/vcity/py3dtilers:latest",
                 "Command": [
                     "tail",
                     "-f",
