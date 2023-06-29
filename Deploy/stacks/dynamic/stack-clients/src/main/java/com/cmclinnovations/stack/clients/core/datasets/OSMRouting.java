@@ -6,13 +6,19 @@ import com.cmclinnovations.stack.clients.core.Options;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.GSVirtualTableEncoder;
 
 public class OSMRouting extends GeoServerDataSubset {
+    @JsonProperty
     protected Options osm2PGRoutingOptions = new Options();
+
+    @JsonProperty
     protected GeoServerVectorSettings waysGeoServerSettings = new GeoServerVectorSettings();
+    @JsonProperty
     protected GeoServerVectorSettings verticesGeoServerSettings = new GeoServerVectorSettings();
+    @JsonProperty
     protected GeoServerVectorSettings poiGeoServerSettings = new GeoServerVectorSettings();
 
     @Override
