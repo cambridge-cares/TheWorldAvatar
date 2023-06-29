@@ -109,7 +109,8 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
                 postgreSQLEndpoint.getPassword());
     }
 
-    public void uploadRoutingDataDirectoryToPostGIS(String database, String sourceDirectory, Options options,
+    public void uploadRoutingDataDirectoryToPostGIS(String database, String sourceDirectory, String tablePrefix,
+            Options options,
             boolean append) {
         List<Path> allFilesList;
         try (Stream<Path> dirsStream = Files.walk(Path.of(sourceDirectory))) {
@@ -132,24 +133,25 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
             throw new RuntimeException(
                     "No xml config files found in routing data directory '" + sourceDirectory + "'.");
         }
-        uploadRoutingFilesToPostGIS(database, configsList.get(0), osmFilesList, options, append);
+        uploadRoutingFilesToPostGIS(database, configsList.get(0), osmFilesList, tablePrefix, options, append);
     }
 
     public void uploadRoutingFilesToPostGIS(String database, Path configFilePath, List<Path> osmFilesList,
-            Options options, boolean append) {
+            String tablePrefix, Options options, boolean append) {
         try (TempDir tmpDir = makeLocalTempDir()) {
             tmpDir.copyFrom(configFilePath);
             osmFilesList.stream().forEach(tmpDir::copyFrom);
             osmFilesList.stream().findFirst().ifPresent(
                     osmFile -> uploadRoutingToPostGIS(database, tmpDir.getPath().resolve(osmFile.getFileName()),
-                            tmpDir.getPath().resolve(configFilePath.getFileName()), options, append));
+                            tmpDir.getPath().resolve(configFilePath.getFileName()), tablePrefix, options, append));
             osmFilesList.stream().skip(1).forEach(
                     osmFile -> uploadRoutingToPostGIS(database, tmpDir.getPath().resolve(osmFile.getFileName()),
-                            tmpDir.getPath().resolve(configFilePath.getFileName()), options, true));
+                            tmpDir.getPath().resolve(configFilePath.getFileName()), tablePrefix, options, true));
         }
     }
 
-    public void uploadRoutingToPostGIS(String database, Path osmFilePath, Path configFilePath, Options options,
+    public void uploadRoutingToPostGIS(String database, Path osmFilePath, Path configFilePath, String tablePrefix,
+            Options options,
             boolean append) {
         String containerId = getContainerId("postgis");
         ensurePostGISRoutingSupportEnabled(database, containerId);
@@ -158,7 +160,8 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
 
         String execId = createComplexCommand(containerId,
-                constructOSM2PGRoutingCommand(osmFilePath.toString(), configFilePath.toString(), database, options,
+                constructOSM2PGRoutingCommand(osmFilePath.toString(), configFilePath.toString(), database, tablePrefix,
+                        options,
                         append))
                 .withOutputStream(outputStream)
                 .withErrorStream(errorStream)
@@ -168,11 +171,12 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
         handleErrors(errorStream, execId, logger);
     }
 
-    private String[] constructOSM2PGRoutingCommand(String osmFile, String configFile, String database, Options options,
+    private String[] constructOSM2PGRoutingCommand(String osmFile, String configFile, String database,
+            String tablePrefix, Options options,
             boolean append) {
         List<String> command = new ArrayList<>(Arrays.asList("osm2pgrouting", "--f", osmFile, "--conf",
                 configFile, "--dbname", database, "--username", postgreSQLEndpoint.getUsername(),
-                "--password", postgreSQLEndpoint.getPassword()));
+                "--password", postgreSQLEndpoint.getPassword(), "--prefix", tablePrefix));
         if (!append) {
             command.add("--clean");
         }
