@@ -23,7 +23,7 @@
                     "treeable": false,
                     "layout": {
                         "icon-image": "pub_icon",
-                        "icon-size": ["interpolate", ["exponential", 2], ["zoom"], 11, 0.0012, 17, 0.6],
+                        "icon-size": ["interpolate", ["exponential", 2], ["zoom"], 11, 0.0012, 19, 0.6],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true
                     }
@@ -79,7 +79,7 @@
                     "treeable": false,
                     "layout": {
                         "icon-image": "incident_icon",
-                        "icon-size": ["interpolate", ["exponential", 2], ["zoom"], 11, 0.0075, 17, 0.75],
+                        "icon-size": ["interpolate", ["exponential", 2], ["zoom"], 11, 0.0075, 18, 0.75],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true
                     }

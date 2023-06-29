@@ -1,10 +1,12 @@
 {
     "services": {
         "includes": [
-            "visualisation"
+            "visualisation",
+            "feature-info-agent"
         ]
     },
     "volumes": {
-        "vis-files": "traffic"
+        "vis-files": "visualisation",
+        "fia-queries": "fia-queries"
     }
 }
