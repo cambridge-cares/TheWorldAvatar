@@ -268,7 +268,7 @@ The icons can be found at `GEOSERVER_URL/www/icons` and the "other files" (being
 
 ## Data Types
 
-The following data types are supported: [`vector`](#vector-data), [`raster`](#raster-data), [`tabular`](#tabular-data), [`rdf`](#rdf-data) and [`tboxcsv`](#tbox-csv-data).
+The following data types are supported: [`vector`](#vector-data), [`citygml`](#citydb-data), [`raster`](#raster-data), [`tabular`](#tabular-data), [`rdf`](#rdf-data) and [`tboxcsv`](#tbox-csv-data).
 A description of how each is processed and a summary of the available configuration options are provided below.
 
 ### Vector Data
@@ -288,12 +288,12 @@ These can be specified within an `"ogr2ogrOptions"` object under the following k
 
 ##### `"sridIn"`
 If the input dataset does not have an SRID/CRS/SRS specified then it can be specified as the value for the `"sridIn"` key.
-When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
+When specifying an EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
 This sets the value of the [`-a_srs`][ogr2ogr-a_srs] argument passed to `ogr2ogr`.
 
 ##### `"sridOut"`
 If you want to reproject the coordinates the target SRID/CRS/SRS can be set as the value for the `"sridOut"` key.
-When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
+When specifying an EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
 This sets the value of the [`-t_srs`][ogr2ogr-t_srs] argument passed to `ogr2ogr`.
 It also means any value specified for `"sridIn"` is passed as the value of the [`-s_srs`][ogr2ogr-s_srs] argument, rather than `-a_srs`.
 
@@ -355,6 +355,47 @@ Within that the following nodes can be added.
 
 These are the most commonly used options, for more see the examples [here][geoserver-rest] and [here][geoserver-rest-layers].
 
+### CityDB Data
+
+The `"CityDB"` data type should be used to load CityGML and CityJSON data.
+The data loader does two things when uploading vector data: 
+1. It uses the 3DCitDB Importer [`impexp import`][3dcitydb-importer] tool to read in data from CityGML and CityJSON files and output it to the PostgreSQL database in the stack using the 3DCityDB schema.
+The full list of file formats that `impexp import` supports is given [here][3dcitydb-importer-formats].
+1. It uses the [`py3dtiler`][py3dtiler] tool to create 3DTile sets that can be used to visualise the newly uploaded geometries.
+
+These tilesets are written to folders in a Docker volume and served on the `/3dtiles` path of the stack.
+The full URL for a `tileset.json` file, which should be specified in the data.json visualisation file, is `<server base address>/3dtiles/<database name>/<database schema>/<spec>/tileset.json`.
+The components of this are as follows:
+
+| Placeholder             | Description                                                                                                                                                                          |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `<server base address>` | e.g. `http://localhost:3838`                                                                                                                                                         |
+| `<database name>`       | The name of the database, as specified at the top-level of the dataset config file                                                                                                             |
+| `<database schema>`     | The database schema, this is fixed as `citydb` for now.                                                                                                                              |
+| `<spec>`                | There are currently three hardcoded specs: `lod2-features`, `lod2-buildings` and `lod1_lod2-buildings`. Each one is generated using different options passed to the `p3dtiler` tool. |
+
+The options for these two processes are set using the following json objects within the respective data subset object in the dataset configuration file:
+
+#### Import Options
+
+The only option that is required is `"sridIn"`.
+Other than `"sridIn"`, in most situations the default `impexp import` settings will be sufficient to upload the data but sometimes some extra options need to be supplied.
+Options can be specified within an `"importOptions"` object under the following keys:
+
+##### `"sridIn"` (Required)
+
+The SRID/CRS/SRS of the input dataset does not get picked up automatically so needs to be specified as the value for the `"sridIn"` key.
+When specifying an EPSG code for the SRS just the ID is required as a string, for example `"4296"` rather than `4296` or `"EPSG:4296"`.
+Because the SRID is set for each database schema Each dataset should write to its own PostgreSQL database and all of the city data in a dataset must use the same SRID.
+The 3DCityDB importer doesn't support reprojection but this could be added in the future.
+
+##### `"options"`
+
+An `"options"` node can be added with a map of options to be passed to the `impexp import` command-line interface.
+The format is the same as the one used for [ogr2ogr otheroptions](#otheroptions).
+The list of avaliable options can be found [here][3dcitydb-importer-cli].
+The "Database connection options" are set automatically by the `stack-data-uploader` so can be ignored.
+
 ### Raster Data
 
 The `"raster"` data type should be used to load raster/coverage geospatial data.
@@ -373,13 +414,13 @@ These can be specified within an `"gdalTranslateOptions"` object (previously jus
 
 ##### `"sridIn"`
 If the input dataset does not have an SRID/CRS/SRS specified then it can be specified as the value for the `"sridIn"` key.
-When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
+When specifying an EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
 A full explanation of the acceptable SRS formats is given [here][raster-common-t_srs].
 This sets the value of the [`-a_srs`][raster-common-a_srs] argument passed to `gdal_translate`.
 
 ##### `"sridOut"`
 If you want to reproject the coordinates the target SRID/CRS/SRS can be set as the value for the `"sridOut"` key.
-When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
+When specifying an EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
 A full explanation of the acceptable SRS formats is given [here][raster-common-t_srs].
 This sets the value of the [`TARGET_SRS`][gdal-cog-t_srs] creation option passed to `gdal_translate`.
 This is an option specific to the [COG][gdal-cog] raster driver when using `gdal_translate`, although we could use `gdalwarp` to handle this more efficiently in the future.
@@ -668,5 +709,11 @@ This way you can look at look at the user interfaces of the various services (se
 [raster-geotiff]: https://gdal.org/drivers/raster/gtiff.html#gtiff-geotiff-file-format
 
 [postgis-raster-loader]: https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader
+
+[3dcitydb-importer]:         https://3dcitydb-docs.readthedocs.io/en/version-2022.2/impexp/cli/import.html
+[3dcitydb-importer-formats]: https://3dcitydb-docs.readthedocs.io/en/version-2022.2/impexp/import.html#import-supported-file-formats
+[3dcitydb-importer-cli]: https://3dcitydb-docs.readthedocs.io/en/latest/impexp/cli/import.html#import-command
+
+[py3dtiler]: https://github.com/VCityTeam/py3dtilers
 
 [crome-2020]: https://www.data.gov.uk/dataset/be5d88c9-acfb-4052-bf6b-ee9a416cfe60/crop-map-of-england-crome-2020
