@@ -13,7 +13,8 @@ class NerSMILE():
     def __init__(self, config):
         # config parameters
         # read model
-        model = transformers.BertForTokenClassification.from_pretrained(PRETRAINED_DIR_CASED, local_files_only=True, num_labels=7)
+		#local_files_only=True
+        model = transformers.BertForTokenClassification.from_pretrained(config['model'] , num_labels=config['num_label'])
         model = torch.nn.DataParallel(model)
         print("Loading NER model from: ", config['model_path'])
         model.load_state_dict(torch.load(config['model_path']), strict=False)

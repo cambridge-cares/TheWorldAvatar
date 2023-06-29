@@ -8,12 +8,14 @@ from Marie.EntityLinking.translator.ner_smile import NerSMILE
 from transformers import BertTokenizerFast
 
 class Translator():
-    def __init__(self, modelpath=None):
+    def __init__(self, modelpath=None, model='bert-base-cased',num_label=7):
         if modelpath:
             modelconfig = {
                 'tokenizer': BertTokenizerFast.from_pretrained('bert-base-cased'),
                 'device': 'cuda' if torch.cuda.is_available() else 'cpu',
-                'model_path': modelpath
+                'model_path': modelpath,
+				'num_label' :num_label,
+				'model':model
             }
             self.ner = NerSMILE(modelconfig)
             self.translate = self.translate_ner
