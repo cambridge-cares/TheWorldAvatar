@@ -3,13 +3,13 @@ ENV UWSGI_CHEAPER 0
 ENV UWSGI_PROCESSES 1
 WORKDIR /app
 
-COPY /TheWorldAvatar/MARIE_AND_BERT/Marie/ ./Marie
-COPY /TheWorldAvatar/MARIE_AND_BERT/uwsgi.ini ./uwsgi.ini
-COPY /TheWorldAvatar/MARIE_AND_BERT/static/ ./static
-COPY /TheWorldAvatar/MARIE_AND_BERT/templates/ ./templates
-COPY /TheWorldAvatar/MARIE_AND_BERT/main.py ./main.py
-COPY /TheWorldAvatar/MARIE_AND_BERT/requirements_linux.txt ./requirements_linux.txt
-COPY ./DATA/label_dict.js ./static/js/label_dict.js
+COPY Marie/ ./Marie
+COPY uwsgi.ini ./uwsgi.ini
+COPY static/ ./static
+COPY templates/ ./templates
+COPY main.py ./main.py
+COPY requirements_linux.txt ./requirements_linux.txt
+COPY DATA/label_dict.js ./static/js/label_dict.js
 
 RUN mkdir  -p /app/DATA
 #COPY requirements_linux.txt requirements_linux.txt
