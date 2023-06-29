@@ -1,4 +1,5 @@
 {
+    "type":"citytiler",
     "ServiceSpec": {
         "Name": "citytiler",
         "TaskTemplate": {
