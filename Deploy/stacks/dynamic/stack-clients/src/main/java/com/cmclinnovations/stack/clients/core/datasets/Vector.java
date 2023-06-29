@@ -16,7 +16,7 @@ public class Vector extends GeoServerDataSubset {
     private Ogr2OgrOptions ogr2ogrOptions = new Ogr2OgrOptions();
 
     @JsonProperty
-    protected GeoServerVectorSettings geoServerSettings = new GeoServerVectorSettings();
+    private GeoServerVectorSettings geoServerSettings = new GeoServerVectorSettings();
 
     @Override
     public void loadData(Path dirPath, String database) {
