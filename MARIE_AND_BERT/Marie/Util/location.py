@@ -27,7 +27,7 @@ ARCHIVE_DIR = os.path.join(ROOT_DIR, 'archived')
 TRAINING_DIR = os.path.join(DATA_DIR, 'Training')
 
 ENTITY_LINKING_DATA_DIR = os.path.join(DATA_DIR, 'EntityLinking')
-ENTITY_LINKING_CONF_DIR = os.path.join(ENTITY_LINKING_DATA_DIR, 'conf')
+ENTITY_LINKING_CONF_DIR = os.path.join(PARENT_DIR, 'EntityLinking')
 
 # Everything about chemspot
 # your JAVA_PATH
@@ -57,3 +57,5 @@ PUBCHEM500_JSONL_PATH = os.path.join(ENTITY_LINKING_DATA_DIR, r'pubchem5000_trim
 # print("JAVA_DIR", JAVA_DIR)
 PRETRAINED_DIR = os.path.join(DATA_DIR, r'bert_pretrained')
 PRETRAINED_DIR_CASED = os.path.join(PRETRAINED_DIR, r'bert_cased')
+
+print(PARENT_DIR)
