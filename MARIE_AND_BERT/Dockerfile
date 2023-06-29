@@ -9,9 +9,9 @@ COPY static/ ./static
 COPY templates/ ./templates
 COPY main.py ./main.py
 COPY requirements_linux.txt ./requirements_linux.txt
+COPY DATA/ ./DATA
 COPY DATA/label_dict.js ./static/js/label_dict.js
 
-RUN mkdir  -p /app/DATA
 #COPY requirements_linux.txt requirements_linux.txt
 RUN apt-get update && \
     apt-get install -y openjdk-11-jdk && \
