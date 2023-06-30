@@ -3,7 +3,7 @@
 		"Name": "virtual-sensor-agent",
 		"TaskTemplate": {
 			"ContainerSpec": {
-				"Image": "ghcr.io/cambridge-cares/virtual-sensor-agent:1.0.0-dev-aermod-agent-sensor-SNAPSHOT",
+				"Image": "ghcr.io/cambridge-cares/virtual-sensor-agent:1.0.0",
 				"Env": [
 					"STACK_NAME=${STACK_NAME}",
 					"PYTHON_SERVICE_INTERPOLATION_URL=http://ship-stack-python-service:5000/getInterpolatedConc",
