@@ -92,7 +92,7 @@ Content-Type: application/json
 {"uri":"default"}
 
 // Written in curl syntax (as one line)
-curl -X POST --header "Content-Type: application/json" -d "{'uri':'default'}" http://localhost:3024/ifcowlconverter/
+curl -X POST --header "Content-Type: application/json" -d '{"uri":"default"}' http://localhost:3024/ifcowlconverter/
 ```
 
 If running the agent within a stack:

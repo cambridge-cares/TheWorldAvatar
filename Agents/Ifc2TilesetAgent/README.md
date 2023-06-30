@@ -114,7 +114,7 @@ A brief overview is as follows:
 ### 2.3 POST Request
 Run the agent by sending a POST request with the required JSON Object to the necessary endpoint. A sample request in `curl` syntax is as follows:
 ```
-curl -X POST localhost:5105/api -H 'Content-Type: application/json' -d '{\"assetUrl\":\"./glb\"}'  
+curl -X POST localhost:5105/api -H 'Content-Type: application/json' -d '{"assetUrl":"./glb"}'  
 ```
 
 If running the agent within a stack:

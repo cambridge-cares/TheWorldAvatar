@@ -153,10 +153,10 @@ Content-Type: application/json
 {"uri":"http://www.theworldavatar.com/ifc/building/"}
 
 // Written in curl syntax (as one line)
-curl -X POST --header "Content-Type: application/json" -d "{'uri':'http://www.theworldavatar.com/ifc/building/'}" localhost:3025/ifc2ontobim-agent/convert 
+curl -X POST --header "Content-Type: application/json" -d '{"uri":"http://www.theworldavatar.com/ifc/building/"}' localhost:3025/ifc2ontobim-agent/convert 
 
 // Only when you require the 'isIfcOwl' boolean
-curl -X POST --header "Content-Type: application/json" -d "{'uri':'http://www.theworldavatar.com/ifc/building/', 'isIfcOwl':true}" localhost:3025/ifc2ontobim-agent/convert 
+curl -X POST --header "Content-Type: application/json" -d '{"uri":"http://www.theworldavatar.com/ifc/building/", "isIfcOwl":true}' localhost:3025/ifc2ontobim-agent/convert 
 ```
 
 If running the agent within a stack, e.g.:
