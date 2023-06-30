@@ -93,11 +93,11 @@ For local deployment，please use `Dockerfile_local`.
 For deployment on Linux server from scratch:
 
 1. Create a folder in the server, assume it is `/home/user1/Marie`
-4. Clone the GitHub repository by `git clone https://github.com/cambridge-cares/TheWorldAvatar`, Assume the users cloned the repository in `/home/user1/Marie`
+2. Clone the GitHub repository by `git clone https://github.com/cambridge-cares/TheWorldAvatar`, Assume the users cloned the repository in `/home/user1/Marie`
 3. Load the files 2-7 mentioned in [Required files](#required-files) in `/home/user1/Marie/TheWorldAvatar/MARIE_AND_BERT/DATA`
-6. Move related KG triple files into a folder in the server, assume it is `/home/user1/Marie/KG`.
-7. Build a blazegraph image, see [Blazegraph container](https://github.com/lyrasis/docker-blazegraph#local-builds) for instructions. Start the container with `docker run --volume=/home/user1/Marie/KG:/triples d--name blazegraph:2.1.5 -d -p [port]:[port] blazegraph-marie`
-8. Create `ontospecies.nt` and `ontocompchem.nt` using 
+4. Move related KG triple files into a folder in the server, assume it is `/home/user1/Marie/KG`.
+5. Build a blazegraph image, see [Blazegraph container](https://github.com/lyrasis/docker-blazegraph#local-builds) for instructions. Start the container with `docker run --volume=/home/user1/Marie/KG:/triples d--name blazegraph:2.1.5 -d -p [port]:[port] blazegraph-marie`
+6. Create `ontospecies.nt` and `ontocompchem.nt` using 
 
 ```
 python KGToolbox/SPARQLEndpoint/export_triples.py 
