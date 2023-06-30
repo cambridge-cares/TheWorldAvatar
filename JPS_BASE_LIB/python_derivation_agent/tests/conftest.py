@@ -66,6 +66,11 @@ DIFFREVERSEAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.diff.reverse.env.test')
 UPDATEENDPOINT_ENV = os.path.join(ENV_FILES_DIR,'endpoint.update.env.test')
 EXCEPTIONTHROW_ENV = os.path.join(ENV_FILES_DIR,'agent.exception.throw.env.test')
 
+RNGAGENT_SERVICE = config_derivation_agent(RNGAGENT_ENV).ONTOAGENT_SERVICE_IRI
+MAXAGENT_SERVICE = config_derivation_agent(MAXAGENT_ENV).ONTOAGENT_SERVICE_IRI
+MINAGENT_SERVICE = config_derivation_agent(MINAGENT_ENV).ONTOAGENT_SERVICE_IRI
+DIFFAGENT_SERVICE = config_derivation_agent(DIFFAGENT_ENV).ONTOAGENT_SERVICE_IRI
+DIFFREVERSEAGENT_SERVICE = config_derivation_agent(DIFFREVERSEAGENT_ENV).ONTOAGENT_SERVICE_IRI
 
 # ----------------------------------------------------------------------------------
 # Helper classes
@@ -78,15 +83,15 @@ class FlaskConfigTest(FlaskConfig):
 
 
 class AllInstances():
-    RNGAGENT_SERVICE: str = config_derivation_agent(RNGAGENT_ENV).ONTOAGENT_SERVICE_IRI
-    MAXAGENT_SERVICE: str = config_derivation_agent(MAXAGENT_ENV).ONTOAGENT_SERVICE_IRI
-    MINAGENT_SERVICE: str = config_derivation_agent(MINAGENT_ENV).ONTOAGENT_SERVICE_IRI
-    DIFFAGENT_SERVICE: str = config_derivation_agent(DIFFAGENT_ENV).ONTOAGENT_SERVICE_IRI
+    RNGAGENT_SERVICE: str = RNGAGENT_SERVICE
+    MAXAGENT_SERVICE: str = MAXAGENT_SERVICE
+    MINAGENT_SERVICE: str = MINAGENT_SERVICE
+    DIFFAGENT_SERVICE: str = DIFFAGENT_SERVICE
 
     IRI_UPPER_LIMIT: str = None
     IRI_LOWER_LIMIT: str = None
     IRI_NUM_OF_PTS: str = None
-    IRI_LST_PTS: str = None
+    IRI_LST_PTS: list = None
     IRI_MAX: str = None
     IRI_MIN: str = None
     IRI_DIFF: str = None
@@ -102,6 +107,7 @@ class AllInstances():
     DERIV_MAX: str = None
     DERIV_MIN: str = None
     DERIV_DIFF: str = None
+    DERIV_DIFF_REVERSE: list = None
 
 
 class Config4Test1(Config):

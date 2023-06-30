@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  virtual-sensor-agent:
+    image: ghcr.io/cambridge-cares/virtual-sensor-agent:1.0.0
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
+    environment:
+      - STACK_NAME=${STACK_NAME}
+      - DATABASE=postgres # currently ontop reads from the default database
+      - GEOSERVER_WORKSPACE=dispersion
+      - PYTHON_SERVICE_INTERPOLATION_URL=http://${STACK_NAME}-python-service:5000/getInterpolatedConc
+    configs:
+      - postgis
+      - blazegraph
+      - geoserver
+      - ontop
+    secrets:
+      - postgis_password
+      - geoserver_password
+    ports:
+      - "8082:8080"
+    volumes:
+      - logs:/root/.jps
+      - misc:/misc
+      - ./data:/data
+    networks:
+      - stack
+
+volumes:
+  logs:
+    name: "${STACK_NAME}_logs"
+  misc:
+    name: "misc"

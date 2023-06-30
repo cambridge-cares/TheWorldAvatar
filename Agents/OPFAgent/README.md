@@ -4,7 +4,7 @@
 The purpose of OPFAgent is to handle HTTP requests to perform Optimal Power Flow (OPF) analysis on a power network instantiated in the knowledge graph. Information about the power network will be retrieved from the triple store and time series data will be extracted from a relational database. After running the simulation, OPF results will be stored back into the relational database as time series data.
 
 ## Requirements
-- In order to run OPFAgent, a local version (or if you are running in a stack, a stack version) of (TripleStore)AccessAgent needs to be deployed. Refer to [AccessAgent README](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_ACCESS_AGENT/README.md) for Access Agent setup. Routing information of the target blazegraph should be uploaded accordingly before calling OPFAgent.
+- In order to run OPFAgent, a local version (or if you are running in a stack, a stack version) of (TripleStore)AccessAgent needs to be deployed. Refer to [AccessAgent README](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_ACCESS_AGENT/README.md) for Access Agent setup. If running in a stack, create a new namespace in your stack blazegraph called 'storerouter' to store the routing information. Please note that routing information of the target blazegraph should be uploaded accordingly before calling OPFAgent.
 
 - As OPFAgent interacts with time series data stored in a relational database, URL, username and password of the database are required. Refer to the [time series client properties](#time-series-client-properties) section below for more details.
 
@@ -34,8 +34,8 @@ The agent is reachable on localhost port 39999 by default (you can change this i
 ```
 docker build -t "opf-agent:1.0.0" .
 ```
-- In the `access-agent.json` file within the `stack-manager-input-config` folder, adjust the image version if applicable, and replace the placeholder for the stack name in the endpoint environment variables with the name of your stack. 
-- Copy the `access-agent.json` file and `opf-agent.json` file into the `inputs/config/services` folder of the stack manager.
+- In the `access-agent.json` file in `JPS_ACCESS_AGENT/access-agent-dev-stack` folder, adjust the image version if applicable, and replace the placeholder for the stack name in the endpoint environment variables with the name of your stack. 
+- Copy the `access-agent.json` file and `opf-agent.json` file in `stack-manager-input-config` folder of OPFAgent into the `inputs/config/services` folder of the stack manager.
 - Start the stack manager as usual. This should start an access agent container and an OPFAgent container as part of your stack.
 
 ## Run the agent

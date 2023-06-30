@@ -1,8 +1,16 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
+# 3.5.0
+### Features:
+* Added ability to specify client-side styling & filtering options for Cesium 3D tilesets.
+* Updated sample NYC data used in example Cesium visualisation.
+### Bug Fixes:
+* Restored missing JS file used to build legends in example visualisations.
+* Minor CSS tweaks to UI components.
+
 # 3.4.0
 ### Features:
-* New clippling planes feature to allow `vertical` slicing of 3D tile sets.
+* New clipping planes feature to allow `horizontal` slicing of 3D tile sets.
 * Added new sample data to example Cesium visualisation.
 ### Bug Fixes:
 * Reduced size of sample NYC data loaded into example Cesium visualisation.
@@ -24,7 +32,7 @@
 * Added files required for integration with The Stack.
 ### Bug Fixes:
 * Improved formatting of JSON response from FeatureInfoAgent.
-* CSS tweaks for pop-up content when mousing over assets.
+* CSS tweaks for pop-up content when hovering over assets.
 * Added character set specification to JS import.
 * Fixed issue with visibility of metadata and timeseries panels.
 
@@ -50,9 +58,9 @@
 # 3.3.0
 ### Features:
 * Added search functionality to Mapbox visualisations.
-* Added seperate page for "Visualisation Help".
+* Added separate page for "Visualisation Help".
 ### Bug Fixes:
-* Fixed null pointers occuring when selecting features (Mapbox).
+* Fixed null pointers occurring when selecting features (Mapbox).
 * Fix identification of original layer when selecting features (Cesium).
 * Fixed issues with Attribution visibility when maximising the side panel.
 
