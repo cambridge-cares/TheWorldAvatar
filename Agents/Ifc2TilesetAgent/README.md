@@ -80,6 +80,14 @@ docker compose -f "./docker/docker-compose.debug.yml" up -d --build
 docker-compose up -d 
 ```
 
+**STACK DEPLOYMENT**
+
+If you want to spin up this agent as part of a stack, do the following:
+- Copy the contents of `config/properties.yaml_stack` into `config/properties.yaml`, inserting the name of your stack and the desired namespaces.
+- Build the image by issuing `docker compose build` in this folder. Do not start the container.
+- Copy the `json` file from the `stack-manager-input-config` folder into the `inputs/config/services` folder of the stack manager, adjusting the absolute path of the bind mounts as required.
+- Start the stack manager as usual. This should start the container.
+
 ## 2. Running the agent
 ### 2.1 Precursor
 Place only one IFC file in `<root>\data\ifc\`. This directory is directly linked to the relevant directory in the Docker container. The agent is only able to convert ONE IFC model at a time.

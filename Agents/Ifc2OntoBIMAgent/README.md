@@ -90,6 +90,14 @@ docker-compose up -d
 ```
 - If successfully deployed, the IfcOwlConverterAgent will be running on `port 3024` and the Ifc2OntoBIMAgent will be running on `port 3025`.
 
+**STACK DEPLOYMENT**
+
+If you want to spin up both this agent and the IfcOwlConverterAgent as part of a stack, do the following:
+- Copy the contents of `config/client.properties_stack` into `config/client.properties`, inserting the name of your stack and the desired namespaces.
+- Build both images by issuing `docker compose build` in this folder. There is no need to build the IfcOwlConverterAgent separately. Do not start the containers.
+- Copy the `json` file from the `stack-manager-input-config` folder of both agents into the `inputs/config/services` folder of the stack manager, adjusting the absolute path of the bind mounts as required.
+- Start the stack manager as usual. This should start both containers.
+
 #### 2.3 Running the Agent
 The agent currently offers three API routes:
 ##### 2.3.1 GET ROUTE: `~url~/ifc2ontobim-agent/status` 
