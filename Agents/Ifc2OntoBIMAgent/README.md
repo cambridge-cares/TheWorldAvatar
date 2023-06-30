@@ -159,6 +159,11 @@ curl -X POST --header "Content-Type: application/json" -d "{'uri':'http://www.th
 curl -X POST --header "Content-Type: application/json" -d "{'uri':'http://www.theworldavatar.com/ifc/building/', 'isIfcOwl':true}" localhost:3025/ifc2ontobim-agent/convert 
 ```
 
+If running the agent within a stack, e.g.:
+```
+curl -X POST --header "Content-Type: application/json" -d '{"uri":"http://www.theworldavatar.com/ifc/building/", "isIfcOwl":true}' http://localhost:3838/ifc2ontobim-agent/convert
+```
+
 If the agent ran successfully, a JSON Object would be returned as follows, and the triples can be accessed at the specified endpoint.
 ```
 {"Result":["IFCNAME.ifc has been successfully instantiated and uploaded to ENDPOINT"]}

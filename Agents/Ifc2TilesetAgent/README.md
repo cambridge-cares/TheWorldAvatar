@@ -117,6 +117,11 @@ Run the agent by sending a POST request with the required JSON Object to the nec
 curl -X POST localhost:5105/api -H 'Content-Type: application/json' -d '{\"assetUrl\":\"./glb\"}'  
 ```
 
+If running the agent within a stack:
+```
+curl -X POST --header "Content-Type: application/json" -d '{"assetUrl":"./glb"}' http://localhost:3838/ifc2tileset-agent/api
+```
+
 If the agent ran successfully, a JSON Object would be returned as follows:
 ```
 {"Result":["IFC model has successfully been converted. Please visit the 'data' directory for the outputs"]}

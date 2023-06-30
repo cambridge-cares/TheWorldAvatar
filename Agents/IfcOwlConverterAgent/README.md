@@ -95,6 +95,11 @@ Content-Type: application/json
 curl -X POST --header "Content-Type: application/json" -d "{'uri':'default'}" http://localhost:3024/ifcowlconverter/
 ```
 
+If running the agent within a stack:
+```
+curl -X POST --header "Content-Type: application/json" -d '{"uri":"default"}' http://localhost:3838/ifcowlconverter/
+```
+
 If the agent ran successfully, a JSON Object would be returned as follows:
 ```
 {"Result":["IfcOwl conversion is successfully completed!"]}
