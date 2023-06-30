@@ -2,38 +2,15 @@
 CO STARTING                                                                                                                         
    TITLEONE A Simple Example Problem for the AERMAP preprocessor
    DATATYPE NED
-   DATAFILE dgm1_32396_5450_1_rp.tif
-   DATAFILE dgm1_32396_5451_1_rp.tif
-   DATAFILE dgm1_32396_5452_1_rp.tif
-   DATAFILE dgm1_32396_5453_1_rp.tif
-   DATAFILE dgm1_32396_5454_1_rp.tif
-   DATAFILE dgm1_32397_5450_1_rp.tif
-   DATAFILE dgm1_32397_5451_1_rp.tif
-   DATAFILE dgm1_32397_5452_1_rp.tif
-   DATAFILE dgm1_32397_5453_1_rp.tif
-   DATAFILE dgm1_32397_5454_1_rp.tif
-   DATAFILE dgm1_32398_5450_1_rp.tif
-   DATAFILE dgm1_32398_5451_1_rp.tif
-   DATAFILE dgm1_32398_5452_1_rp.tif
-   DATAFILE dgm1_32398_5453_1_rp.tif
-   DATAFILE dgm1_32398_5454_1_rp.tif
-   DATAFILE dgm1_32399_5450_1_rp.tif
-   DATAFILE dgm1_32399_5451_1_rp.tif
-   DATAFILE dgm1_32399_5452_1_rp.tif
-   DATAFILE dgm1_32399_5453_1_rp.tif
+   DATAFILE FILE_NAMES
    ANCHORXY REPLACED_BY_AERMOD_AGENT
    RUNORNOT  RUN
-CO FINISHED                                                                                                                         
-
-SO STARTING
-   INCLUDED aermapSources.dat
-SO FINISHED                                                                                                                                    
+CO FINISHED                                                                                                                                                                                                                                       
                                                                                                                                                                                                                                                            
 RE STARTING
    INCLUDED aermapReceptors.dat 
 RE FINISHED                                                                                                                                                                                                                   
                                                                                                                                   
 OU STARTING                                                                                                                         
-   RECEPTOR ../aermod/receptor.dat
-   SOURCLOC buildingSources.dat                                                                                         
+   RECEPTOR ../aermod/receptor.dat                                                                                         
 OU FINISHED
