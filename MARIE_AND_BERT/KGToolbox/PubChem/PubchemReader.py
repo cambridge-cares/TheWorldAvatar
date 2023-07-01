@@ -5,6 +5,8 @@ is compatible with the KG embedding library (tsv), where each line represents a 
 import csv
 import os
 import random
+
+from KGToolbox.Tools import MakeIndex
 from Marie.Util.location import DATA_DIR
 
 
@@ -85,6 +87,7 @@ class PubchemReader:
 
     def main(self):
         self.convert_to_triples(self.read_csv_file())
+        MakeIndex.create_indexing(data_dir="CrossGraph/pubchem", dataset_name="pubchem")
 
 
 if __name__ == '__main__':
