@@ -54,8 +54,8 @@ to use conda for creating a virtual environment.
 4. For faster setup, download the `bert_pretrained.zip` from [bert_pretrained.zip](http://159.223.42.53:8080/bert_pretrained.zip)
 , unzip under `DATA`. Otherwise upon the first run, the scripts will download the BERT pretrained model from hugging face.
 5. Download EntityLinking.zip from [EntityLinking.zip](http://159.223.42.53:8080/EntityLinking.zip), unzip under `DATA`
-6. Download STOUT V2 model [STOUT V2 model](http://159.223.42.53:8080/models.zip) for Linux system, unzip into `root/.data/STOUT-V2/`, for Windows system,
-7. Download `label_dict.js` from [label_dict.js] from (http://159.223.42.53:8080/label_dict.js) and put the file in `MARIE_ANB_BERT/static/js`.
+6. Download `label_dict.js` from [label_dict.js] from (http://159.223.42.53:8080/label_dict.js) and put the file in `MARIE_ANB_BERT/static/js`. 
+7. Download STOUT V2 model [STOUT V2 model](http://159.223.42.53:8080/models.zip) for Linux system, unzip into `root/.data/STOUT-V2/`, for Windows system,
 8. Download the required NLTK datasets by running
 ```python
 import nlkt
@@ -86,7 +86,7 @@ To run the full functions of the Marie system, three other systems are required:
 ## Docker Deployment
 
 For local deployment，please use `Dockerfile_local`. 
-1. run `docker build  --no-cache -t marie .d -f Dockerfile_local .` to build the image
+1. run `docker build  --no-cache -t marie_test -f Dockerfile_local .` to build the image
 2. run ` docker run -p 5003:80 -d marie:latest`. 
 3. The Marie web-interface will then be available at `http://localhost:5003` or `http://127.0.0.1:5003`
 

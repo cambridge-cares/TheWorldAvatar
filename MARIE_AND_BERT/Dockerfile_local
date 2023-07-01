@@ -9,20 +9,8 @@ COPY requirements_linux.txt ./requirements_linux.txt
 
 RUN pip install --no-cache-dir -r requirements_linux.txt
 RUN mkdir ./DATA
-RUN mkdir ./DATA/CrossGraph
-ADD http://www.theworldavatar.com/MARIE_DEPLOYMENT/cross_graph_model_new ./DATA/CrossGraph
-RUN mkdir ./DATA/CrossGraph/pubchem
-RUN mkdir ./DATA/CrossGraph/ontokin
-RUN mkdir ./DATA/CrossGraph/ontospecies
-RUN mkdir ./DATA/CrossGraph/ontocompchem
-
-RUN wget http://www.theworldavatar.com/MARIE_DEPLOYMENT/pubchem.zip && unzip pubchem.zip -d ./DATA/CrossGraph/pubchem && rm pubchem.zip
-RUN wget http://www.theworldavatar.com/MARIE_DEPLOYMENT/ontokin.zip && unzip ontokin.zip -d ./DATA/CrossGraph/ontokin && rm ontokin.zip
-RUN wget http://www.theworldavatar.com/MARIE_DEPLOYMENT/ontospecies.zip && unzip ontospecies.zip -d ./DATA/CrossGraph/ontospecies && rm ontospecies.zip
-RUN wget http://www.theworldavatar.com/MARIE_DEPLOYMENT/ontocompchem.zip && unzip ontocompchem.zip -d ./DATA/CrossGraph/ontocompchem && rm ontocompchem.zip
-
-ADD http://www.theworldavatar.com/MARIE_DEPLOYMENT/Dictionaries.zip .
-RUN unzip Dictionaries.zip -d ./DATA/Dictionaries
-ADD http://www.theworldavatar.com/MARIE_DEPLOYMENT/cde_models.zip .
-RUN mkdir -p /root/.local/share/ChemDataExtractor/
-RUN unzip cde_models.zip -d /root/.local/share/ChemDataExtractor/
+RUN wget http://159.223.42.53:8080/CrossGraph.zip && unzip CrossGraph.zip -d . && rm CrossGraph.zip
+RUN wget http://159.223.42.53:8080/Dictionaries.zip && unzip Dictionaries.zip -d . && rm Dictionaries.zip
+RUN wget http://159.223.42.53:8080/EntityLinking.zip && unzip EntityLinking.zip -d . && rm EntityLinking.zip
+RUN wget http://159.223.42.53:8080/bert_pretrained.zip && unzip bert_pretrained.zip -d . && rm bert_pretrained.zip
+ADD http://159.223.42.53:8080/label_dict.js ./static/js/label_dict.js
