@@ -15,7 +15,7 @@ class OntoSpeciesReader:
 
     def __init__(self):
         self.all_species_iri = []
-        self.dataset_path = os.path.join(DATA_DIR, '../CrossGraph', 'ontospecies')
+        self.dataset_path = os.path.join(DATA_DIR, 'CrossGraph', 'ontospecies')
         self.p_iri_list = []
         self.p_iri_name = []
         self.p_label_list = []
@@ -86,7 +86,7 @@ class OntoSpeciesReader:
                 SPARQL_ALL_PROPERTIES = self.find_all_properties_of_one_species(species)
                 result = self.query_blazegraph(SPARQL_ALL_PROPERTIES, 'ontospecies')
                 self.species_mapping[species] = result
-                # time.sleep(1)
+                time.sleep(1)
                 if counter % 1000 == 0 or counter == len(self.all_species_iri):
                     print('writing the results down')
                     with open(os.path.join(self.dataset_path, 'ontospecies.json'), 'w') as f:
@@ -184,10 +184,9 @@ class OntoSpeciesReader:
         df = pd.DataFrame(triples)
         df = df.drop_duplicates()
         df = df.reset_index(drop=True)
-        # df.to_csv(os.path.join(self.dataset_path, 'ontospecies-train.txt'), sep='\t', header=False, index=False)
-
+        df.to_csv(os.path.join(self.dataset_path, 'ontospecies-train.txt'), sep='\t', header=False, index=False)
         df_test = df.sample(frac=0.2)
-        # df_test.to_csv(os.path.join(self.dataset_path, 'ontospecies-test.txt'), sep='\t', header=False, index=False)
+        df_test.to_csv(os.path.join(self.dataset_path, 'ontospecies-test.txt'), sep='\t', header=False, index=False)
 
 
 
