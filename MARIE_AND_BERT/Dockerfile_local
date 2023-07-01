@@ -9,8 +9,21 @@ COPY requirements_linux.txt ./requirements_linux.txt
 
 RUN pip install --no-cache-dir -r requirements_linux.txt
 RUN mkdir ./DATA
-RUN wget http://159.223.42.53:8080/CrossGraph.zip && unzip CrossGraph.zip -d . && rm CrossGraph.zip
-RUN wget http://159.223.42.53:8080/Dictionaries.zip && unzip Dictionaries.zip -d . && rm Dictionaries.zip
-RUN wget http://159.223.42.53:8080/EntityLinking.zip && unzip EntityLinking.zip -d . && rm EntityLinking.zip
-RUN wget http://159.223.42.53:8080/bert_pretrained.zip && unzip bert_pretrained.zip -d . && rm bert_pretrained.zip
+RUN wget -q http://159.223.42.53:8080/CrossGraph.zip && unzip CrossGraph.zip -d . && rm CrossGraph.zip
+RUN wget -q http://159.223.42.53:8080/Dictionaries.zip && unzip Dictionaries.zip -d . && rm Dictionaries.zip
+RUN wget -q http://159.223.42.53:8080/EntityLinking.zip && unzip EntityLinking.zip -d . && rm EntityLinking.zip
+RUN wget -q http://159.223.42.53:8080/bert_pretrained.zip && unzip bert_pretrained.zip -d . && rm bert_pretrained.zip
 ADD http://159.223.42.53:8080/label_dict.js ./static/js/label_dict.js
+
+RUN apt-get update && \
+    apt-get install -y openjdk-11-jdk && \
+    apt-get install -y ant && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/ && \
+    rm -rf /var/cache/oracle-jdk8-installer
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/
+RUN export JAVA_HOME
+RUN pip --default-timeout=10000 install --no-cache-dir -r requirements_linux.txt
+RUN echo "uwsgi_read_timeout 300s;" > /etc/nginx/conf.d/custom_timeout.conf
+RUN echo "uwsgi_connect_timeout 300s;" > /etc/nginx/conf.d/custom_timeout.conf
+RUN echo "uwsgi_send_timeout 300s;" > /etc/nginx/conf.d/custom_timeout.conf
