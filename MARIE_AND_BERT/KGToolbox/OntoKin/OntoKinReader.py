@@ -5,6 +5,8 @@ from re import finditer
 
 import pandas
 import pandas as pd
+
+from KGToolbox.Tools import MakeIndex
 from Marie.Util.Web.SPARQLWarehouse import ONTOKIN_ALL_PROPERTIES_ALL_SPECIES
 from Marie.Util.location import DATA_DIR
 from KGToolbox.Utils import query_blazegraph
@@ -32,13 +34,9 @@ def camel_case_split(identifier):
 class OntoKinReader:
 
     def __init__(self):
-        self.dataset_path = os.path.join(DATA_DIR, '../CrossGraph', 'ontokin')
-        data_folder = 'CrossGraph/ontokin'
-        e2i_path = open(os.path.join(DATA_DIR, f'{data_folder}/entity2idx.pkl'), 'rb')
-        r2i_path = open(os.path.join(DATA_DIR, f'{data_folder}/relation2idx.pkl'), 'rb')
-        _full_dir = os.path.join(DATA_DIR, f'{data_folder}')
-        self.entity2idx = pickle.load(e2i_path)
-        self.relation2idx = pickle.load(r2i_path)
+        self.dataset_path = os.path.join(DATA_DIR, 'CrossGraph', 'ontokin')
+        self.entity2idx = None
+        self.relation2idx = None
 
     def query_all_species(self):
         # Use one query to find all the properties fo all species under the type species .
@@ -103,8 +101,17 @@ class OntoKinReader:
         df_test = df_triples.sample(frac=0.2)
         df_test.to_csv(os.path.join(self.dataset_path, 'ontokin-test.txt'), sep='\t', index=False, header=False)
 
+
     def run(self):
         self.query_all_species()
+        data_folder = 'CrossGraph/ontokin'
+        MakeIndex.create_indexing(data_dir=data_folder, dataset_name="ontokin")
+        e2i_path = open(os.path.join(DATA_DIR, f'{data_folder}/entity2idx.pkl'), 'rb')
+        r2i_path = open(os.path.join(DATA_DIR, f'{data_folder}/relation2idx.pkl'), 'rb')
+        _full_dir = os.path.join(DATA_DIR, f'{data_folder}')
+        self.entity2idx = pickle.load(e2i_path)
+        self.relation2idx = pickle.load(r2i_path)
+        self.create_score_model_set()
 
     def create_score_model_set(self):
         property_dict = {"SpeciesGeometry_latent": "geometry",
@@ -129,7 +136,7 @@ class OntoKinReader:
 
         df_questions = pd.DataFrame(question_list)
         df_questions.columns = ["question", "head", "tail", "rel"]
-        df_questions.to_csv(os.path.join(self.dataset_path, "../score_model_training.tsv"), sep='\t')
+        df_questions.to_csv(os.path.join(self.dataset_path, "score_model_training.tsv"), sep='\t')
 
 
 if __name__ == '__main__':
