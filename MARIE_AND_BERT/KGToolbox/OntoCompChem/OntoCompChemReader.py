@@ -3,6 +3,9 @@ import os
 
 import pandas
 from SPARQLWrapper import SPARQLWrapper, JSON
+
+from KGToolbox.Tools import MakeIndex
+from KGToolbox.Tools.IntegratedTrainingFileCreator import IntegratedTrainingFileCreator
 from Marie.Util.Web.SPARQLWarehouse import ONTOCOMPCHEM_ALL_SPEICES, ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY, \
     ONTOCOMPCHEM_ALL_CALCULATION_QUERY
 from Marie.Util.location import DATA_DIR
@@ -102,15 +105,15 @@ class OntoCompChemReader:
 
 if __name__ == '__main__':
     occr = OntoCompChemReader()
-    # rst = occr.query_blazegraph(query=ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY)
-    # occr.process_query_result(rst)
-    # occr.find_all_unique_species_calculation_pairs()
-    # rst = occr.query_blazegraph(query=ONTOCOMPCHEM_ALL_CALCULATION_QUERY)
-    # with open(os.path.join(DATA_DIR, 'CrossGraph/ontocompchem', 'ontocompchem_all_calculation.json'), 'w') as f:
-    #     f.write(json.dumps(rst))
-    #     f.close()
-    # occr.construct_triples()
+    rst = occr.query_blazegraph(query=ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY)
+    occr.process_query_result(rst)
+    occr.find_all_unique_species_calculation_pairs()
+    rst = occr.query_blazegraph(query=ONTOCOMPCHEM_ALL_CALCULATION_QUERY)
+    with open(os.path.join(DATA_DIR, 'CrossGraph/ontocompchem', 'ontocompchem_all_calculation.json'), 'w') as f:
+        f.write(json.dumps(rst))
+        f.close()
+    occr.construct_triples()
     occr.construct_value_dict()
+    MakeIndex.create_indexing(dataset_name="ontocompchem", data_dir="CrossGraph/ontocompchem")
 
 # sample training unit: what is the geometry type of CH4, head CH4, tail: geometry, RotationalSymetry ...
-#  TODO: construct the path between species and RotationalSymmetry
