@@ -1,4 +1,7 @@
 FROM tiangolo/uwsgi-nginx-flask:python3.8 as flask
+ENV UWSGI_CHEAPER 0
+ENV UWSGI_PROCESSES 1
+WORKDIR /app
 
 COPY Marie/ ./Marie
 COPY uwsgi.ini ./uwsgi.ini
