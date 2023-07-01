@@ -119,10 +119,10 @@ python KGToolbox/SPARQLEndpoint/export_triples.py
 7. Use the blazegraph GUI/API to create namespaces and upload. Upload `ontospecies.nt` to namespace `ontospecies_old`. Upload `ontocompchem.nt` to namespace `ontocompchem`.
 
 For example, to upload with GUI update page, key in url  `/triples/ontospecies.nt`, then press upload.
-9. `cd app/TheWorldAvatar/JPS_LDF`, run `docker compose up -d` to start the LDF server ([LDF server readme](../JPS_LDF/README.md))
-10. `cd app/TheWorldAvatar/Agents/STDCThermoAgent`, run `docker compose up -d`
-11. `cd app/TheWorldAvatar/Agents/PCEAgent`, run `docker compose up -d`
-12. To spin up the Marie container, use `docker build --no-cache -t marie3 .` to build the image and run 
+8. `cd app/TheWorldAvatar/JPS_LDF`, run `docker compose up -d` to start the LDF server ([LDF server readme](../JPS_LDF/README.md))
+9. `cd app/TheWorldAvatar/Agents/STDCThermoAgent`, run `docker compose up -d`
+10. `cd app/TheWorldAvatar/Agents/PCEAgent`, run `docker compose up -d`
+11. To spin up the Marie container, use `docker build --no-cache -t marie3 .` to build the image and run 
 `docker run -p 5003:80  --dns=8.8.8.8 -d marie3:latest`
 
 
