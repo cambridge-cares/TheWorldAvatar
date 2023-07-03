@@ -124,9 +124,8 @@ For example, to upload with GUI update page, key in url  `/triples/ontospecies.n
 
 ## Frontend development
 It takes more than 15 minutes to spin up the Marie server, as a result, a `mock_main.py` script is implemented to 
-provide mock backend responses to support frontend development. The mock responses includes six different types, by 
-clicking example questions or clicking the search button, the users can iterate through them and check the visualisation. 
-
+provide mock backend responses to support frontend development. To test different types of responses, please
+follow the instructions at the top part of the `mock_main.py` script. 
 
 
  
