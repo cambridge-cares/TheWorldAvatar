@@ -2,6 +2,8 @@ import os
 import sys
 import random
 
+from KGToolbox.Tools import MakeIndex
+
 sys.path.append("../..")
 import json
 import time
@@ -105,7 +107,7 @@ class WikiDataReader:
                     self.collected_species.append(file)
                 except:
                     self.failed_species.append(file)
-
+            time.sleep(1)
             if counter % 100 == 0:
                 self.write_files()
                 print(time.time() - START_TIME)
@@ -120,7 +122,7 @@ class WikiDataReader:
                 self.name_dict[name].append(species_id)
 
     def load_entity_list(self):
-        entity_dir = os.path.join(DATA_DIR, "instance_info")
+        entity_dir = os.path.join(self.dataset_dir, "instance_info")
         files = [f for f in os.listdir(entity_dir) if f.startswith("Q")]
         return files
         # return random.sample(files, 100)
@@ -191,4 +193,6 @@ class WikiDataReader:
 if __name__ == "__main__":
     my_reader = WikiDataReader()
     my_reader.main()
+    MakeIndex.create_indexing(dataset_name="wikidata", data_dir="CrossGraph/wikidata")
+
     # my_reader.test("Q2270")

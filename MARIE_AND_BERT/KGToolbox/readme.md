@@ -78,7 +78,7 @@ file including the triples and the `score_model_training.tsv` will be created an
 ## OntoMoPs
 
 The OntoMoPs training dataset is created manually. The training dataset is archived in 
-`http://www.theworldavaatar.com/MARIE_DATA/OntoMoPs/score_model_training.tsv`. 
+`http://159.223.42.53:8080/OntoMoPs/score_model_training.tsv`. 
 The file follows the format blow. 
 ```
 question,head,tail,rel,numerical_operator
@@ -102,8 +102,8 @@ create `score_model_training.tsv` under `DATA/CrossGraph/ontospecies_new`
 ## Wikidata 
 
 To create the Wikidata training dataset,a set of Wikidata dump files are required. The files 
-can be downloaded from `http://www.theworldavatar.com/MARIE_DATA/instance_info.zip`. The zip
-file needs to be extracted into `DATA/instance_info` folder. To create the training dataset
+can be downloaded from `http://159.223.42.53:8080/instance_info.zip`. The zip
+file needs to be extracted into `DATA/CrossGraph/wikidata/instance_info` folder. To create the training dataset
 
 1. Run `KGToolbox/Wikidata/WikiDataReader.py` to create triples and supporting files
 2. Run `KGToolbox/Wikidata/WikidataCreateTrainingData.py`, which will create `score_model_training.tsv` 
