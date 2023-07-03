@@ -1,14 +1,7 @@
 import os
 import sys
 sys.path.append("")
-import nltk
-from nltk import Tree
-from nltk.corpus import stopwords
-from nltk.draw import TreeWidget
-from nltk.draw.util import CanvasFrame
 from nltk.stem import *
-from Marie.Util.LDFTools.LdfRequest import LdfRequest
-from PIL import Image
 import nltk.tag, nltk.data
 import nltk
 class Parsing():
