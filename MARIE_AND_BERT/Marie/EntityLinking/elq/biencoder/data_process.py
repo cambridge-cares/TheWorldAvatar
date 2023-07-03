@@ -436,6 +436,8 @@ def process_mention_data(
                 sample["label_id"] = sample["label_id"][:len(context_tokens['mention_idxs'])]
             label_idx = [int(id) for id in sample["label_id"]]
         else:
+            if not isinstance(sample["label_id"], int) or isinstance(sample["label_id"], str):
+                raise TypeError('label_id in data entry is not string or int')
             label_idx = int(sample["label_id"])
 
         record = {
@@ -444,7 +446,6 @@ def process_mention_data(
         if not params["freeze_cand_enc"]:
             record["label"] = label_tokens
         record["label_idx"] = label_idx
-
         if "world" in sample:
             src = sample["world"]
             src = world_to_id[src]
@@ -532,7 +533,6 @@ def process_mention_data(
         )
         if logger:
             logger.info("Created source vector")
-    
     data = {
         "context_vecs": context_vecs,
         "mention_idx_vecs": mention_idx_vecs,

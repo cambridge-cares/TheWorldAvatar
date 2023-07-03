@@ -2,6 +2,8 @@ import json
 
 
 def load_entity_dict(path, name_only=False):
+    if path is None:
+        raise ValueError('entity dict path is None')
     entity_list = []
     with open(path, 'rt') as f:
         for line in f:

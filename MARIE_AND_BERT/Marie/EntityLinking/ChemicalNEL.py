@@ -23,7 +23,7 @@ class ChemicalNEL:
         self.marie_logger = MarieLogger()
         self.ner = BertNEL()
         self.translator = Translator(
-            modelpath=os.path.join(ENTITY_LINKING_DATA_DIR, "SMILES_NER.bin"))
+            modelpath=os.path.join(ENTITY_LINKING_DATA_DIR, "SMILES_NER.bin"),model='bert-base-uncased',num_label=3)
 
 
 if __name__ == '__main__':

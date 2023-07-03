@@ -1,7 +1,8 @@
 # This module extracts all triples from an online Blazegraph SPARQL endpoint 
 # and saves them as .nt file
 
-import os
+import os, sys
+sys.path.append("")
 from pathlib import Path
 from SPARQLWrapper import SPARQLWrapper
 
@@ -18,7 +19,7 @@ def get_all_triples(endpoint, filepath):
     print("Query Started")
     sparql = SPARQLWrapper(endpoint)
     # Run Describe queries for all IRIs
-    queryString = 'CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o } '
+    queryString = 'CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }'
     sparql.setQuery(queryString)
     results = sparql.queryAndConvert()
     print("Query Done")
@@ -37,7 +38,6 @@ if __name__ == '__main__':
     argParser.add_argument("-o_name", "--ontology_name", type=str, help="name of the ontology")
 
     args = argParser.parse_args()
-    name_space = args.namespace
     endpoint = args.endpoint
     output_filename = args.output_filename
     ontology = args.ontology_name

@@ -409,6 +409,8 @@ def main(params):
             mention_bounds = None
             hard_negs_mask = None
             if params["adversarial_training"]:
+                if cand_encs is None or label_ids is None:
+                    raise ValueError('label_ids and cand_encs should not be None')
                 '''
                 GET CLOSEST N CANDIDATES (AND APPROPRIATE LABELS)
                 '''
@@ -471,7 +473,8 @@ def main(params):
                 mention_reps_input = torch.cat([
                     mention_reps, mention_reps[neg_example_idx.to(device)],
                 ])
-
+                if mention_reps.size(0) != pos_cand_encs_input.size(0):
+                    raise ValueError('mention_reps and pos_cand_encs_input size mismatch at dim 0')
                 # (bs + bs * num_negatives, num_spans)
                 label_input = torch.cat([
                     torch.ones(pos_cand_encs_input.size(0), pos_cand_encs_input.size(1), dtype=label_ids.dtype),

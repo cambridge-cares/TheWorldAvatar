@@ -1,27 +1,32 @@
 FROM tiangolo/uwsgi-nginx-flask:python3.8 as flask
+ENV UWSGI_CHEAPER 0
+ENV UWSGI_PROCESSES 1
+WORKDIR /app
 
-RUN cp -r TheWorldAvatar/MARIE_AND_BERT/Marie ./Marie
-RUN cp -r TheWorldAvatar/MARIE_AND_BERT/uwsgi.ini ./uwsgi.ini
-RUN cp -r TheWorldAvatar/MARIE_AND_BERT/static ./static
-RUN cp -r TheWorldAvatar/MARIE_AND_BERT/templates ./templates
-RUN cp -r TheWorldAvatar/MARIE_AND_BERT/main.py ./main.py
-RUN cp -r TheWorldAvatar/MARIE_AND_BERT/requirements_linux.txt ./requirements_linux.txt
+COPY Marie/ ./Marie
+COPY uwsgi.ini ./uwsgi.ini
+COPY static/ ./static
+COPY templates/ ./templates
+COPY main.py ./main.py
+COPY requirements_linux.txt ./requirements_linux.txt
+
 RUN pip install --no-cache-dir -r requirements_linux.txt
 RUN mkdir ./DATA
-RUN mkdir ./DATA/CrossGraph
-ADD http://www.theworldavatar.com/MARIE_DEPLOYMENT/cross_graph_model_new ./DATA/CrossGraph
-RUN mkdir ./DATA/CrossGraph/pubchem
-RUN mkdir ./DATA/CrossGraph/ontokin
-RUN mkdir ./DATA/CrossGraph/ontospecies
-RUN mkdir ./DATA/CrossGraph/ontocompchem
+RUN wget -q http://159.223.42.53:8080/CrossGraph.zip && unzip CrossGraph.zip -d . && rm CrossGraph.zip
+RUN wget -q http://159.223.42.53:8080/Dictionaries.zip && unzip Dictionaries.zip -d . && rm Dictionaries.zip
+RUN wget -q http://159.223.42.53:8080/EntityLinking.zip && unzip EntityLinking.zip -d . && rm EntityLinking.zip
+RUN wget -q http://159.223.42.53:8080/bert_pretrained.zip && unzip bert_pretrained.zip -d . && rm bert_pretrained.zip
+ADD http://159.223.42.53:8080/label_dict.js ./static/js/label_dict.js
 
-RUN wget http://www.theworldavatar.com/MARIE_DEPLOYMENT/pubchem.zip && unzip pubchem.zip -d ./DATA/CrossGraph/pubchem && rm pubchem.zip
-RUN wget http://www.theworldavatar.com/MARIE_DEPLOYMENT/ontokin.zip && unzip ontokin.zip -d ./DATA/CrossGraph/ontokin && rm ontokin.zip
-RUN wget http://www.theworldavatar.com/MARIE_DEPLOYMENT/ontospecies.zip && unzip ontospecies.zip -d ./DATA/CrossGraph/ontospecies && rm ontospecies.zip
-RUN wget http://www.theworldavatar.com/MARIE_DEPLOYMENT/ontocompchem.zip && unzip ontocompchem.zip -d ./DATA/CrossGraph/ontocompchem && rm ontocompchem.zip
-
-ADD http://www.theworldavatar.com/MARIE_DEPLOYMENT/Dictionaries.zip .
-RUN unzip Dictionaries.zip -d ./DATA/Dictionaries
-ADD http://www.theworldavatar.com/MARIE_DEPLOYMENT/cde_models.zip .
-RUN mkdir -p /root/.local/share/ChemDataExtractor/
-RUN unzip cde_models.zip -d /root/.local/share/ChemDataExtractor/
+RUN apt-get update && \
+    apt-get install -y openjdk-11-jdk && \
+    apt-get install -y ant && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/ && \
+    rm -rf /var/cache/oracle-jdk8-installer
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/
+RUN export JAVA_HOME
+RUN pip --default-timeout=10000 install --no-cache-dir -r requirements_linux.txt
+RUN echo "uwsgi_read_timeout 300s;" > /etc/nginx/conf.d/custom_timeout.conf
+RUN echo "uwsgi_connect_timeout 300s;" > /etc/nginx/conf.d/custom_timeout.conf
+RUN echo "uwsgi_send_timeout 300s;" > /etc/nginx/conf.d/custom_timeout.conf

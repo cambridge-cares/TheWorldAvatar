@@ -29,7 +29,8 @@ def load_entity_dict(logger, params, is_zeshel):
         return load_entity_dict_zeshel(logger, params)
 
     path = params.get("entity_dict_path", None)
-
+    if path is None:
+        raise ValueError('entity_dict_path not defined in eval parameters')
     entity_list = []
     logger.info("Loading entity description from path: " + path)
     with open(path, 'rt') as f:

@@ -223,16 +223,15 @@ class OntoMopsReader:
         df_numerical.to_csv(f"{self.full_dataset_dir}/numerical_eval.tsv", sep="\t", header=False,
                             index=False)
 
-        # TODO: get the numerical stuff needed, use properties to filter them ...
-        self.file_creator.create_supporting_files_for_embedding()
         with open(os.path.join(self.full_dataset_dir, "node_value_dict.json"), "w") as f:
             f.write(json.dumps(node_value_dict))
             f.close()
+        self.file_creator.create_supporting_files_for_embedding(node_value_dict=node_value_dict)
 
     def test(self):
         self.get_implicit_triples()
 
 
 if __name__ == "__main__":
-    my_reader = OntoMopsReader(sub_ontology="full")
+    my_reader = OntoMopsReader(sub_ontology="numerical_with_implicit")
     my_reader.run()

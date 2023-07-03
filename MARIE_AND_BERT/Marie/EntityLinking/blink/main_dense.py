@@ -107,6 +107,8 @@ def _load_candidates(
         if logger:
             logger.info("Using faiss index to retrieve entities.")
         candidate_encoding = None
+        if index_path is None:
+            raise ValueError('Index path is none.')
         if faiss_index == "flat":
             indexer = DenseFlatIndexer(1)
         elif faiss_index == "hnsw":
@@ -133,7 +135,8 @@ def _load_candidates(
                     wikipedia_id = int(split[-1].strip())
                 else:
                     wikipedia_id = entity["idx"].strip()
-
+                if wikipedia_id in wikipedia_id2local_id:
+                    raise Exception('None unique id in entity catalogue')
                 wikipedia_id2local_id[wikipedia_id] = local_idx
 
             title2id[entity["title"]] = local_idx

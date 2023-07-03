@@ -1,4 +1,5 @@
 import os, sys
+
 sys.path.append("../..")
 import pandas as pd
 import pickle
@@ -7,13 +8,13 @@ from Marie.Util.NHopExtractor import HopExtractor
 
 dataset_dir = "ontocompchem"
 dataset_name = "ontocompchem"
-
-hop_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, dataset_dir),
+full_dir = os.path.join(DATA_DIR, "CrossGraph", dataset_dir)
+hop_extractor = HopExtractor(dataset_dir=full_dir,
                              dataset_name=dataset_name)
 
-rel2idx_pkl = open(os.path.join(DATA_DIR, dataset_dir, "/relation2idx.pkl"), 'rb')
+rel2idx_pkl = open(os.path.join(full_dir, "relation2idx.pkl"), 'rb')
 relations = pickle.load(rel2idx_pkl)
-ent2idx_pkl = open(os.path.join(DATA_DIR, dataset_dir, "/entity2idx.pkl"), 'rb')
+ent2idx_pkl = open(os.path.join(full_dir, "entity2idx.pkl"), 'rb')
 entities_dict = pickle.load(ent2idx_pkl)
 
 property_labels = [["geometry type"],
@@ -36,7 +37,7 @@ oc:hasRotationalSymmetryNumber
 """
 # map h and t with question
 ontocompchem_triples = pd.read_csv(
-    os.path.join(DATA_DIR, "ontocompchem_latent_40/ontocompchem_calculation-train.txt"),
+    os.path.join(DATA_DIR, "CrossGraph", "ontocompchem/ontocompchem-train.txt"),
     sep='\t', header=None)
 
 """
@@ -84,18 +85,26 @@ def find_species_paris(df):
                               2].values.tolist()  # with p, with n
                 if len(value_nodes) == 1:
                     value_node = value_nodes[0]
-                    value_nodes_random_copy = hop_extractor.extract_neighbour_from_label(s)
-                    if value_node in value_nodes_random_copy:
-                        value_nodes_random_copy.remove(value_node)
                     rel_label = p_dict[p + '1']
+                    if rel_label not in relations:
+                        relations[rel_label] = len(relations)
                     rel_idx = relations[rel_label]
+
                     triple = (s, p, value_node, rel_idx)
                     derived_triples.append((s, p + '1', value_node))
                     if s not in repeated_species:
                         result.append(triple)
 
+    # By deriving implicit relations, new relations and new triples will be created.
+    # As a result, the relation dictionaries and the triples are updated and will overwrite the existing
+    # triples and dictionaries.
+    file = open(os.path.join(full_dir, 'relation2idx.pkl'), 'wb')
+    pickle.dump(relations, file)
+    file = open(os.path.join(full_dir, 'idx2relation.pkl'), 'wb')
+    relations_reversed = sorted(list(set(relations.keys())))
+    pickle.dump(relations_reversed, file)
     derived_triples = pd.DataFrame(list(set(derived_triples)))
-    derived_triples.to_csv(os.path.join(DATA_DIR, dataset_dir, 'derived_triples.tsv'), sep='\t',
+    derived_triples.to_csv(os.path.join(full_dir, 'ontocompchem-train.tsv'), sep='\t',
                            index=False, header=False)
 
     return result
@@ -129,4 +138,4 @@ def make_questions(triples):
 
 q_s_vn_triples, cross_graph_triples = make_questions(s_p_vn_triples)
 q_s_vn_triples.columns = ["question", "head", "tail", "rel"]
-q_s_vn_triples.to_csv(os.path.join(DATA_DIR, dataset_dir, "/score_model_training.tsv"), sep='\t')
+q_s_vn_triples.to_csv(os.path.join(DATA_DIR, "CrossGraph", dataset_dir, "score_model_training.tsv"), sep='\t')

@@ -100,6 +100,8 @@ def _load_candidates(
         indexer = None
     else:
         candidate_encoding = None
+        if index_path is None:
+            raise ValueError('index path is None')
         if faiss_index == "flat":
             indexer = DenseFlatIndexer(1)
         elif faiss_index == "hnsw":
@@ -694,6 +696,8 @@ def run(
     stopping_condition = False
     threshold = float(args.threshold)
     if args.threshold_type == "top_entity_by_mention":
+        if args.mention_threshold is None:
+            raise ValueError('mention threshold is not defined when threshold type is top_entity_by_mention')
         mention_threshold = float(args.mention_threshold)
     else:
         mention_threshold = threshold

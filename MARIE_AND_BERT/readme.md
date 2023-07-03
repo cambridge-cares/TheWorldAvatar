@@ -54,8 +54,9 @@ to use conda for creating a virtual environment.
 4. For faster setup, download the `bert_pretrained.zip` from [bert_pretrained.zip](http://159.223.42.53:8080/bert_pretrained.zip)
 , unzip under `DATA`. Otherwise upon the first run, the scripts will download the BERT pretrained model from hugging face.
 5. Download EntityLinking.zip from [EntityLinking.zip](http://159.223.42.53:8080/EntityLinking.zip), unzip under `DATA`
-6. Download STOUT V2 model [STOUT V2 model](http://159.223.42.53:8080/models.zip) for Linux system, unzip into `root/.data/STOUT-V2/`, for Windows system,
-7. Download the required NLTK datasets by running
+6. Download `label_dict.js` from [label_dict.js] from (http://159.223.42.53:8080/label_dict.js) and put the file in `MARIE_ANB_BERT/static/js`. 
+7. Download STOUT V2 model [STOUT V2 model](http://159.223.42.53:8080/models.zip) for Linux system, unzip into `root/.data/STOUT-V2/`, for Windows system,
+8. Download the required NLTK datasets by running
 ```python
 import nlkt
 nltk.download('all')
@@ -85,15 +86,15 @@ To run the full functions of the Marie system, three other systems are required:
 ## Docker Deployment
 
 For local deployment，please use `Dockerfile_local`. 
-1. run `docker build  --no-cache -t marie .d -f Dockerfile_local .` to build the image
-2. run ` docker run -p 5003:80 -d marie:latest`. 
+1. run `docker build  --no-cache -t marie_test -f Dockerfile_local .` to build the image
+2. run ` docker run -p 5003:80 -d marie_test:latest`. 
 3. The Marie web-interface will then be available at `http://localhost:5003` or `http://127.0.0.1:5003`
 
 For deployment on Linux server from scratch:
 
-1. Create a folder in the server, assume it is `/home/user1/Marie/DATA`
-2. Load the files 2-6 mentioned in [Required files](#required-files) in `/home/user1/Marie/DATA`
-3. Clone the GitHub repository by `git clone https://github.com/cambridge-cares/TheWorldAvatar`, Assume the users cloned the repository in `app`
+1. Create a folder in the server, assume it is `/home/user1/Marie`
+2. Clone the GitHub repository by `git clone https://github.com/cambridge-cares/TheWorldAvatar`, Assume the users cloned the repository in `/home/user1/Marie`
+3. Load the files 2-7 mentioned in [Required files](#required-files) in `/home/user1/Marie/TheWorldAvatar/MARIE_AND_BERT/DATA`
 4. Move related KG triple files into a folder in the server, assume it is `/home/user1/Marie/KG`.
 5. Build a blazegraph image, see [Blazegraph container](https://github.com/lyrasis/docker-blazegraph#local-builds) for instructions. Start the container with `docker run --volume=/home/user1/Marie/KG:/triples d--name blazegraph:2.1.5 -d -p [port]:[port] blazegraph-marie`
 6. Create `ontospecies.nt` and `ontocompchem.nt` using 
@@ -118,9 +119,12 @@ python KGToolbox/SPARQLEndpoint/export_triples.py
 7. Use the blazegraph GUI/API to create namespaces and upload. Upload `ontospecies.nt` to namespace `ontospecies_old`. Upload `ontocompchem.nt` to namespace `ontocompchem`.
 
 For example, to upload with GUI update page, key in url  `/triples/ontospecies.nt`, then press upload.
-9. `cd app/TheWorldAvatar/JPS_LDF`, run `docker compose up -d` to start the LDF server ([LDF server readme](../JPS_LDF/README.md))
-10. `cd app/TheWorldAvatar/Agents/STDCThermoAgent`, run `docker compose up -d`
-11. `cd app/TheWorldAvatar/Agents/PCEAgent`, run `docker compose up -d`
+8. `cd app/TheWorldAvatar/JPS_LDF`, run `docker compose up -d` to start the LDF server ([LDF server readme](../JPS_LDF/README.md))
+9. `cd app/TheWorldAvatar/Agents/STDCThermoAgent`, run `docker compose up -d`
+10. `cd app/TheWorldAvatar/Agents/PCEAgent`, run `docker compose up -d`
+11. To spin up the Marie container, use `docker build --no-cache -t marie3 .` to build the image and run 
+`docker run -p 5003:80  --dns=8.8.8.8 -d marie3:latest`
+
 
 ## Frontend development
 It takes more than 15 minutes to spin up the Marie server, as a result, a `mock_main.py` script is implemented to 

@@ -53,7 +53,7 @@ Run `covert_ner_train_files.py`.
 ```
 python covert_ner_train_files.py --infile ./smiles_train_raw.jsonl  --outfile ./smiles_train.jsonl
 ```
-* `--infile` Path to the input raw question file generated in the step [above](#2-for-general-entity-extraction).
+* `--infile` Path to the input raw question file generated in the step [above](#1-for-smiles-ner).
 * `--outfile` Path to save the formatted output question file.
 
 #### 2. For General Entity Extraction: 
