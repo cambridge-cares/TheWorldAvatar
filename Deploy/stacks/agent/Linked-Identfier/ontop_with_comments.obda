@@ -16,7 +16,6 @@ target          citykg:asset/{id} foaf:hasTOID {id}^^xsd:string ;
                     geo:hasGeometry "{wkt}"^^geo:wktLiteral ;
                     foaf:hasUPRN {uprn}^^xsd:float .
 source          SELECT "os_topo_toid" as id,
-                    ST_AsText("geometry") as wkt,
-                    "UPRN" as uprn
+                    ST_AsText("geometry") as wkt,"UPRN" as uprn
                 FROM "citydb"."surface_geometry"
 ]]
