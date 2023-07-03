@@ -425,5 +425,5 @@ class OntoSpeciesNewAnalyzer:
 
 
 if __name__ == "__main__":
-    my_analyzer = OntoSpeciesNewAnalyzer(sub_ontology="full_500")
+    my_analyzer = OntoSpeciesNewAnalyzer(sub_ontology="base_full_no_pref_selected_role_limited_100")
     my_analyzer.run()

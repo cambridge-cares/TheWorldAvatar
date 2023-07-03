@@ -87,7 +87,7 @@ To run the full functions of the Marie system, three other systems are required:
 
 For local deployment，please use `Dockerfile_local`. 
 1. run `docker build  --no-cache -t marie_test -f Dockerfile_local .` to build the image
-2. run ` docker run -p 5003:80 -d marie:latest`. 
+2. run ` docker run -p 5003:80 -d marie_test:latest`. 
 3. The Marie web-interface will then be available at `http://localhost:5003` or `http://127.0.0.1:5003`
 
 For deployment on Linux server from scratch:
