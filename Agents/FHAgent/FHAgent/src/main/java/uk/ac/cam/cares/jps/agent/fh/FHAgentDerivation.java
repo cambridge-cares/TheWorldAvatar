@@ -21,6 +21,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import org.eclipse.rdf4j.model.vocabulary.OWL;
+import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
@@ -44,6 +45,9 @@ public class FHAgentDerivation {
     private static final String ONTODEV = "https://www.theworldavatar.com/kg/ontodevice/";
     private static final String ONTOAGE = "https://www.theworldavatar.com/kg/ontoagent/";
     private static final String ONTODERIV = "https://www.theworldavatar.com/kg/ontoderivation/";
+    private static final String OM = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
+    public String occupiedStateTypeIRI = ONTODEV + "OccupiedState";
+    public String lengthTypeIRI = OM + "Length" ;
 
     public FHAgentDerivation(String agentPropFile, String clientPropFile, String iriMappingFile, Map<String, String> outputToIRIMap){
         try{
@@ -183,7 +187,7 @@ public class FHAgentDerivation {
                 String outputIRI = iriMap.get(derivVar);
                 
                 try{
-                    derivClient.createOntoAgentInstance(agentIRI, agentURL, Arrays.asList(inputIRI), Arrays.asList(outputIRI));
+                    derivClient.createOntoAgentInstance(agentIRI, agentURL, Arrays.asList(lengthTypeIRI), Arrays.asList(occupiedStateTypeIRI));
                     derivClient.addTimeInstanceCurrentTimestamp(inputIRI);
                     String derivedString = derivClient.createDerivationWithTimeSeries(Arrays.asList(outputIRI), agentIRI, Arrays.asList(inputIRI));
 

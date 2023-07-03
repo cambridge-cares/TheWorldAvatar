@@ -235,6 +235,7 @@ public class FHAgentDerivationTest {
         exampleData.put("values", testValPair);
     }
 
+    @Ignore("Requieres docker desktop to test.")
     @Test
     public void testConstructor() throws IOException {
         //TODO is this needed? Most of the time the agent fails first before derivation instantiation happens
@@ -343,6 +344,7 @@ public class FHAgentDerivationTest {
 
     }
 
+    @Ignore("Requieres docker desktop to test.")
     @Test
     public void testInstantiateAgent() {
         //Test with dummy URL
@@ -388,6 +390,7 @@ public class FHAgentDerivationTest {
         Assert.assertEquals(testDerivator.iriMap.size()-testAgent.getNumberOfTimeSeries(), storeClient.executeQuery(queryRaw.getQueryString()).length());
     }
 
+    @Ignore("Requieres docker desktop to test.")
     @Test
     public void testInstantiateAgentDoubleCall () {
         testDerivator.instantiateAgent("http://localhost:1010/fh-agent/instantiate");
