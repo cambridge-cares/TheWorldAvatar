@@ -35,13 +35,9 @@ if __name__ == '__main__':
     argParser = argparse.ArgumentParser()
     argParser.add_argument("-e_point", "--endpoint", type=str, help="full url of the SPARQL endpoint")
     argParser.add_argument("-o_file", "--output_filename", type=str, help="name of the .nt file exported")
-    argParser.add_argument("-o_name", "--ontology_name", type=str, help="name of the ontology")
-
     args = argParser.parse_args()
     endpoint = args.endpoint
     output_filename = args.output_filename
-    ontology = args.ontology_name
-    ontology = "CrossGraph/%s" % ontology
     # Get all Triples and serialise as turtle
-    full_path = os.path.join(DATA_DIR, ontology, output_filename)
+    full_path = os.path.join(DATA_DIR, "KG", output_filename)
     get_all_triples(endpoint, full_path)
