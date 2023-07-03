@@ -6,11 +6,7 @@ from Marie.Util.Logging import MarieLogger
 import json
 import time
 import os
-# from chemdataextractor import Document
 from Marie.Util.location import DICTIONARY_DIR, ENTITY_LINKING_DATA_DIR
-import fuzzyset
-import chemparse
-import re
 from Marie.EntityLinking.Inference import BertNEL
 
 
