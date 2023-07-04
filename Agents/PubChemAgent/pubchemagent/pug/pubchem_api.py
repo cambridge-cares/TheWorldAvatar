@@ -2,7 +2,7 @@ import requests
 import logging
 from typing import Tuple
 import json
-from pubchemagent.unit_parse import parser, logger, reduce_quantities
+from unit_parse import parser, logger, reduce_quantities
 import pint
 from periodictable import elements
 from datetime import date
