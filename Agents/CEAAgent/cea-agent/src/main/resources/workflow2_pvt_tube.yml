@@ -1,0 +1,5 @@
+- script: photovoltaic-thermal
+  parameters:
+    scenario: scenario_path
+    type-scpanel: ET
+    annual-radiation-threshold: 0.

@@ -1,0 +1,52 @@
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+prefix ts: <https://www.theworldavatar.com/kg/ontotimeseries/>
+prefix ontoems: <https://www.theworldavatar.com/kg/ontoems/>
+
+SELECT distinct ?Measurement ?Name ?Unit WHERE {
+  {
+    [IRI] ontoems:reports ?AtmosphericPres.
+    ?AtmosphericPres rdf:type ontoems:AtmosphericPressure.
+    ?AtmosphericPres om:hasValue ?Measurement.
+   	?Measurement om:hasUnit / om:symbol ?Unit.
+    BIND ("Atmospheric Pressure" as ?Name).
+  } union {
+    [IRI] ontoems:reports ?windSpeed.
+    ?windSpeed rdf:type ontoems:WindSpeed.
+    ?windSpeed om:hasValue ?Measurement.
+   	?Measurement om:hasUnit / om:symbol ?Unit.
+    BIND ("Wind Speed" as ?Name).
+  } union {
+    [IRI] ontoems:reports ?AirTemp.
+    ?AirTemp rdf:type ontoems:AirTemperature.
+    ?AirTemp om:hasValue ?Measurement.
+   	?Measurement om:hasUnit / om:symbol ?Unit.
+    BIND ("Air Temperature" as ?Name).
+  } union {
+    [IRI] ontoems:reports ?RainFall.
+    ?RainFall rdf:type ontoems:RainFall.
+    ?RainFall om:hasValue ?Measurement.
+   	?Measurement om:hasUnit / om:symbol ?Unit.
+    BIND ("RainFall" as ?Name).
+  } union {
+    [IRI] ontoems:reports ?WindDir.
+    ?WindDir rdf:type ontoems:WindDirection.
+    ?WindDir om:hasValue ?Measurement.
+   	?Measurement om:hasUnit / om:symbol ?Unit.
+    BIND ("Wind Direction" as ?Name).
+  } union {
+    [IRI] ontoems:reports ?CloudCover.
+    ?CloudCover rdf:type ontoems:CloudCover.
+    ?CloudCover om:hasValue ?Measurement.
+   	?Measurement om:hasUnit / om:symbol ?Unit.
+    BIND ("Cloud Cover" as ?Name).
+  } union {
+    [IRI] ontoems:reports ?RelativeHumidity.
+    ?RelativeHumidity rdf:type ontoems:RelativeHumidity.
+    ?RelativeHumidity om:hasValue ?Measurement.
+   	?Measurement om:hasUnit / om:symbol ?Unit.
+    BIND ("Relative Humidity" as ?Name).
+  }
+}
