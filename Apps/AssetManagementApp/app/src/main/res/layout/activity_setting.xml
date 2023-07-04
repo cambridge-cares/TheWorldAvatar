@@ -108,8 +108,7 @@
             android:layout_height="match_parent"
             android:text="@string/in_app_notification"
             android:id="@+id/in_app_notif_cb"
-            android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
-            android:button="@null"
+            android:layoutDirection="rtl"
             />
 
         <CheckBox
@@ -117,8 +116,7 @@
             android:layout_height="match_parent"
             android:text="@string/email_notification"
             android:id="@+id/emial_notif_cb"
-            android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
-            android:button="@null"
+            android:layoutDirection="rtl"
             />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -149,8 +147,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/location_cb"
-                android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
-                android:button="@null"
+                android:layoutDirection="rtl"
                 android:layout_marginEnd="@dimen/component_margin_small"
                 />
 
@@ -162,8 +159,7 @@
                 app:layout_constraintStart_toEndOf="@id/serial_no_cb"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
-                android:button="@null"
+                android:layoutDirection="rtl"
                 />
 
             <CheckBox
@@ -174,8 +170,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/serial_no_cb"
                 app:layout_constraintEnd_toStartOf="@id/asset_type_cb"
-                android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
-                android:button="@null"
+                android:layoutDirection="rtl"
                 android:layout_marginEnd="@dimen/component_margin_small"
                 />
 
@@ -187,8 +182,7 @@
                 app:layout_constraintTop_toBottomOf="@id/location_cb"
                 app:layout_constraintStart_toEndOf="@id/service_code_cb"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
-                android:button="@null"
+                android:layoutDirection="rtl"
                 />
 
             <CheckBox
@@ -199,8 +193,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/service_code_cb"
                 app:layout_constraintEnd_toStartOf="@id/description_cb"
-                android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
-                android:button="@null"
+                android:layoutDirection="rtl"
                 android:layout_marginEnd="@dimen/component_margin_small"
                 />
 
@@ -212,8 +205,7 @@
                 app:layout_constraintTop_toBottomOf="@id/asset_type_cb"
                 app:layout_constraintStart_toEndOf="@id/group_cb"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
-                android:button="@null"
+                android:layoutDirection="rtl"
                 />
 
             <CheckBox
@@ -224,8 +216,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/group_cb"
                 app:layout_constraintEnd_toStartOf="@id/manual_cb"
-                android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
-                android:button="@null"
+                android:layoutDirection="rtl"
                 android:layout_marginEnd="@dimen/component_margin_small"
                 />
 
@@ -237,8 +228,7 @@
                 app:layout_constraintTop_toBottomOf="@id/description_cb"
                 app:layout_constraintStart_toEndOf="@id/model_no_cb"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:drawableEnd="?android:attr/listChoiceIndicatorMultiple"
-                android:button="@null"
+                android:layoutDirection="rtl"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.appcompat.widget.LinearLayoutCompat>

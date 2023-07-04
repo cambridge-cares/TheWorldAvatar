@@ -27,4 +27,13 @@
         <item name="colorPrimary">@color/banner_color</item>
         <item name="android:statusBarColor">@color/white</item>
     </style>
+
+    <style name="HomeCardview" parent="Widget.MaterialComponents.CardView">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">25dp</item>
+        <item name="cornerSizeTopLeft">25dp</item>
+        <item name="cornerSizeBottomRight">25dp</item>
+        <item name="cornerSizeBottomLeft">25dp</item>
+        <item name="contentPadding">0dp</item>
+    </style>
 </resources>

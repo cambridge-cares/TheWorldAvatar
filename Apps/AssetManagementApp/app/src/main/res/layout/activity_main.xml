@@ -5,44 +5,41 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/background_grey">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
+    <ImageButton
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:id="@+id/setting_bt"
+            android:background="@drawable/ripple_setting"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="@dimen/appbar_padding"
+            android:contentDescription="@string/setting"
+        android:layout_marginTop="@dimen/appbar_padding"/>
+
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.BMSQueryApp.AppBarOverlay"
+        android:text="@string/welcome"
         app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/app_bar">
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            >
+        app:layout_constraintStart_toStartOf="parent"
+        android:textSize="30sp"
+        android:id="@+id/welcome_tv"
+        android:layout_marginTop="40dp"
+        android:layout_marginStart="@dimen/component_margin"
+        />
 
-            <TextView
-                android:id="@+id/instance_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:minHeight="?actionBarSize"
-                android:padding="@dimen/appbar_padding"
-                android:text="@string/app_name"
-                android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:textColor="@color/white"/>
-
-            <ImageButton
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:id="@+id/setting_bt"
-                android:background="@drawable/ripple_setting"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginEnd="@dimen/appbar_padding"
-                android:contentDescription="@string/setting" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.appbar.AppBarLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="user"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@id/welcome_tv"
+        android:textSize="30sp"
+        android:id="@+id/user_tv"
+        android:layout_marginTop="40dp"
+        android:layout_marginStart="@dimen/component_margin_xs"
+        android:textColor="@color/banner_color"
+        />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/scan_card"
@@ -51,15 +48,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/sweep_card"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/app_bar"
+        android:layout_marginTop="40dp"
+        app:layout_constraintTop_toBottomOf="@id/welcome_tv"
         android:clickable="true"
         >
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center"
+            android:padding="@dimen/component_margin_small"
+            >
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -70,7 +69,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/scan"
                 android:textSize="@dimen/font_size"
-                android:textAppearance="?attr/textAppearanceHeadline6"/>
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:layout_marginTop="@dimen/component_margin_xs"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -82,15 +82,16 @@
         app:layout_constraintStart_toEndOf="@id/scan_card"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/app_bar"
+        android:layout_marginTop="40dp"
+        app:layout_constraintTop_toBottomOf="@id/welcome_tv"
         android:clickable="true"
         >
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center"
+            android:padding="@dimen/component_margin_small">
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -101,7 +102,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/sweep"
                 android:textSize="@dimen/font_size"
-                android:textAppearance="?attr/textAppearanceHeadline6"/>
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:layout_marginTop="@dimen/component_margin_xs"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -120,7 +122,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center"
+            android:padding="@dimen/component_margin_small">
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -131,7 +134,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/add_asset"
                 android:textSize="@dimen/font_size"
-                android:textAppearance="?attr/textAppearanceHeadline6"/>
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:layout_marginTop="@dimen/component_margin_xs"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -151,7 +155,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center"
+            android:padding="@dimen/component_margin_small">
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -162,7 +167,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/schedule"
                 android:textSize="@dimen/font_size"
-                android:textAppearance="?attr/textAppearanceHeadline6"/>
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                android:layout_marginTop="@dimen/component_margin_xs"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -175,7 +181,9 @@
         app:layout_constraintTop_toBottomOf="@id/add_asset_card"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="8dp"
+        android:layout_marginTop="@dimen/component_margin"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:clickable="true"
         >
         <LinearLayout

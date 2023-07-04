@@ -11,4 +11,8 @@
     <dimen name="hint_font_size">16sp</dimen>
     <dimen name="component_margin_small">10dp</dimen>
     <dimen name="component_margin_xs">5dp</dimen>
+
+    <dimen name="top_action_bar_padding_horizontal">8dp</dimen>
+    <dimen name="top_action_bar_height">64dp</dimen>
+    <dimen name="top_action_button_padding">12dp</dimen>
 </resources>
