@@ -200,36 +200,37 @@ public class RFIDQueryAgent{
      * @param map Hashmap containing the labels and comments for each GHS Hazard Statement
      */
     public void sendEmail(String tagStatusIRI, String objectLabel, String speciesLabel, String latestTimeStamp, Map<String, List<String>> map) {
+        String emailMessage;
+        String tldrMessage;
+        EmailSender sender = new EmailSender();
         if (speciesLabel != null && map != null) {
             try {
-                EmailSender sender = new EmailSender();
-                String emailMessages = "The chemical container with the following information has been removed for longer than " + numOfHours + " hours since this timestamp " + latestTimeStamp + ". \n The container is storing a chemical with the following label: " + speciesLabel + ". The chemical has the following GHS hazard statements: <br>";
+                tldrMessage = "<b>tl;dr Container with" + speciesLabel + " has been removed for longer than " + numOfHours + ".</b> <br> <br>" ;
+                emailMessage = tldrMessage + "The chemical container with the following information has been removed for longer than " + numOfHours + " hours since " + latestTimeStamp + ". The container has the label " + objectLabel + " and tag ID " + tagStatusIRI.split("_")[2] + ". The container is storing a chemical with the label " + speciesLabel + " which has the following GHS hazard statements. <br>";
                 for (int i = 0; i <= map.get("label").size() - 1; i++) {
                     LOGGER.info("The label from the map is " + map.get("label").get(i));
                     LOGGER.info("The comment from the map is " + map.get("comment").get(i));
-                    emailMessages = emailMessages.concat(map.get("label").get(i) + " : " + map.get("comment").get(i) + "<br>");
+                    emailMessage = emailMessage.concat(map.get("label").get(i) + ": <i>" + map.get("comment").get(i) + "</i> <br>");
                 }
-                LOGGER.info("The email message is " + emailMessages);
-                sender.sendEmail("Alert!", emailMessages);
+                LOGGER.info("The email message is " + emailMessage);
+                sender.sendEmail("Alert!", emailMessage);
             } catch (Exception e) {
                 throw new JPSRuntimeException("Unable to send out alert email!");
             }
         } else if (speciesLabel != null && map == null) {
             try {
-                EmailSender sender = new EmailSender();
-                String emailMessages = "The chemical container with the following information has been removed for longer than " + numOfHours + " hours since this timestamp " + latestTimeStamp + ". \n The container is storing a chemical with the following label: " + speciesLabel + ".";
+                tldrMessage = "<b>tl;dr Container with" + speciesLabel + " has been removed for longer than " + numOfHours + ".</b> <br> <br>" ;
+                emailMessage = tldrMessage + "The chemical container with the following information has been removed for longer than " + numOfHours + " hours since " + latestTimeStamp  ". The container has the label " + objectLabel + " and tag ID " + tagStatusIRI.split("_")[2] + ".The container is storing a chemical with the label " + speciesLabel + ".";
 
-                LOGGER.info("The email message is " + emailMessages);
-                sender.sendEmail("Alert!", emailMessages);
+                LOGGER.info("The email message is " + emailMessage);
+                sender.sendEmail("Alert!", emailMessage);
             } catch (Exception e) {
                 throw new JPSRuntimeException("Unable to send out alert email!");
             }
         } else if (speciesLabel == null && map == null) {
             try {
-                EmailSender sender = new EmailSender();
-                String emailMessages;
-                emailMessages = "The tagged object has been removed for longer than " + numOfHours + " hours since this timestamp " + latestTimeStamp + ". The object has the following label: " + objectLabel + " and tag ID: " + tagStatusIRI.split("_")[2] + " .\n";
-                sender.sendEmail("Alert!", emailMessages);
+                emailMessage = "The tagged object has been removed for longer than " + numOfHours + " hours since " + latestTimeStamp + ". The object has the label " + objectLabel + " and tag ID " + tagStatusIRI.split("_")[2] + ".";
+                sender.sendEmail("Alert!", emailMessage);
             } catch (Exception e) {
                 throw new JPSRuntimeException("Unable to send out alert email!");
             }
