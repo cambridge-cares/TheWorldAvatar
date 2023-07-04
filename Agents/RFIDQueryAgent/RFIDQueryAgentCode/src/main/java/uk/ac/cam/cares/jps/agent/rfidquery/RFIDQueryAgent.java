@@ -11,7 +11,7 @@ import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.TimeZone;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -173,7 +173,6 @@ public class RFIDQueryAgent{
             // if 2022-10-27 22:20:02+08 is before the current date time, it means that the bottle has been outside of the cabinet for a time
             // period longer than the allowed duration
             LOGGER.info("Comparing threshold timestamp " + thresholdTimeStamp + " with current timestamp " + currentDateTime);
-
             if (thresholdTimeStamp.isBefore(currentDateTime)) {
                 exceedThreshold = true;
             }
@@ -204,7 +203,7 @@ public class RFIDQueryAgent{
         if (speciesLabel != null && map != null) {
             try {
                 EmailSender sender = new EmailSender();
-                String emailMessages = "The chemical container with the following information has been removed since " + latestTimeStamp + ". \n The container has the following label: " + objectLabel + " and tag ID: " + tagStatusIRI.split("_")[2] + " and it is storing a chemical with the following label: " + speciesLabel + ". The chemical has the following GHS hazard statements: <br>";
+                String emailMessages = "The chemical container with the following information has been removed for longer than " + numOfHours + " hours since this timestamp " + latestTimeStamp + ". \n The container is storing a chemical with the following label: " + speciesLabel + ". The chemical has the following GHS hazard statements: <br>";
                 for (int i = 0; i <= map.get("label").size() - 1; i++) {
                     LOGGER.info("The label from the map is " + map.get("label").get(i));
                     LOGGER.info("The comment from the map is " + map.get("comment").get(i));
