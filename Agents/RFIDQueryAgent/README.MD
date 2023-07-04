@@ -105,7 +105,7 @@ To build and run the agent in the stack, open up the command prompt in the same 
 ```
 docker-compose build
 ```
-Copy the rfid-query-agent.json under `stack-manager-input-config-service` to the services folder under your stack-manager directory (By default it should be TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/) and start up the stack.
+Copy the rfid-query-agent.json under `stack-manager-input-config` to the services folder under your stack-manager directory (By default it should be TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/) and start up the stack.
 The agent is reachable at "rfid-query-agent/retrieve" on localhost port 3838.
 
 #### Run the agent
