@@ -1,0 +1,16 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "TOID_UPRN_MatchingTable",
+    "dataSubsets": [
+        {
+            "type": "tabular",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "tabular"
+        }
+    ],
+    "mappings": [
+        "ontop_with_comments.obda"
+    ]
+}
