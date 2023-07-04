@@ -2,7 +2,7 @@
 
 ## Description
 
-The `PubChem Agent` is a simple API to communicate with The World Avatar (TWA) knowledge graph to query for the requested information and autopopulate the missing data using the PubChem PUG REST API using the OntoSpecies ontology.
+The `PubChem Agent` is an agent that enables The World Avatar (TWA) knowledge graph to augment itself upon request with chemical information, which is being queried from PubChem using the PubChem PUG REST API, and represented semantically using OntoSpecies ontology.
 
 ## Installation
 
@@ -124,8 +124,9 @@ To verify the correct startup of the agent, open the URL address the agent is ru
 If you want to spin up this agent as part of a stack, do the following:
 
 - Build the production image using the commands provided above (do not spin up the image)
-- Copy the pubchem-agent.json file from the stack-manager-input-config folder into the inputs/config folder of the stack manager
-- Start the stack manager as usual (i.e. bash ./stack.sh start <STACK_NAME> from the stack-manager repo). This should start the container. Please use a bash terminal to avoid potential issues with inconsistent path separators.
+- Copy the pubchem-agent.json file from the stack-manager-input-config folder into the inputs/config/services folder of the stack manager
+- Copy os_stack.json into the inputs/config folder of the stack manager
+- Start the stack manager (i.e. bash ./stack.sh start os_stack from the stack-manager repo). This should start the container. Please use a bash terminal to avoid potential issues with inconsistent path separators.
 - The agent shall become available at ```<http://<HOST>:<PORT>/>```
 
 ### Notes on debugging
@@ -168,7 +169,7 @@ Only one input is required in the agent main route:
 
 These are:
 
-/api/pubchemagent/query?`inchi=InChI=inchistring`
+/pubchemagent/query?`inchi=InChI=inchistring`
 
 ```bash
 inchi=<Inchi>   inchi 

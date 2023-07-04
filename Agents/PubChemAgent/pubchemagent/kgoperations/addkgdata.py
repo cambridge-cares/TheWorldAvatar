@@ -4,10 +4,10 @@ from pubchemagent.kgoperations.getkgdata import *
 import uuid
 import re
 from pubchemagent.utils.default_configs import UPDATE_ENDPOINT
+from pubchemagent.utils.url_configs import ONTOSPECIES_URL, ONTOKIN_URL, UNIT_URL
 
-#if not UPDATE_ENDPOINT:
-#    UPDATE_ENDPOINT = 'http://www.theworldavatar.com/blazegraph/namespace/copy_ontospecies_pubchem'
-   
+#UPDATE_ENDPOINT='http://www.theworldavatar.com/blazegraph/namespaces/copy_ontospecies_pubchem'
+
 # a sample data addition function
 def insert_ontospecies(typeIRI, type, uuid, data):
     prev_key = ''
@@ -19,16 +19,16 @@ def insert_ontospecies(typeIRI, type, uuid, data):
         else:
             i = 1
         if data[item].get('reference'):
-            prov_IRI = '<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Reference>'
+            prov_IRI = '<' + ONTOKIN_URL + 'Reference>'
             prov_uuid = find_uuid('Reference' , prov_IRI, data[item].get('reference'))
         else:
-            prov_IRI = '<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Reference>'
+            prov_IRI = '<' + ONTOKIN_URL + 'Reference>'
             prov_uuid = find_uuid('Reference' , prov_IRI, '')
         if data[item].get('type')=='identifier':
             insert_str = pubchem_id_insert(typeIRI, type, uuid, i,  prov_uuid, data[item])
         elif data[item].get('type') in {'num_prop', 'thermo_prop'}:
             if 'unit' in data[item].get('value'):
-                unit_IRI = '<http://www.ontology-of-units-of-measure.org/resource/om-2/Unit>'
+                unit_IRI = '<' + UNIT_URL + '>'
                 unit_string = str(data[item].get('value').get('unit'))
                 unit_string=re.sub("°","deg",unit_string)
                 unit_uuid = find_uuid('Unit' , unit_IRI, unit_string)
@@ -45,20 +45,20 @@ def insert_ontospecies(typeIRI, type, uuid, data):
             insert_str = pubchem_string_prop_insert(typeIRI, type, uuid, i, prov_uuid, data[item])
         elif data[item].get('type') == 'classification':
             if data[item].get('value2'):
-                classificationIRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#' + data[item].get('key') + '>'
+                classificationIRI = '<' + ONTOSPECIES_URL + data[item].get('key') + '>'
                 classification_uuid1 = find_uuid(data[item].get('key'), classificationIRI, data[item].get('value1'), data[item].get('description') )
                 classification_uuid2 = find_uuid(data[item].get('key'), classificationIRI, data[item].get('value2'), data[item].get('description') )
                 insert_str = pubchem_hm_classification_insert(typeIRI, type, uuid, i, prov_uuid, classification_uuid1, classification_uuid2, data[item])
             else:
-                classificationIRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#' + data[item].get('key') + '>'
+                classificationIRI = '<' + ONTOSPECIES_URL + data[item].get('key') + '>'
                 classification_uuid = find_uuid(data[item].get('key'), classificationIRI, data[item].get('value'), data[item].get('description') )
                 insert_str = pubchem_classification_insert(typeIRI, type, uuid, i, prov_uuid, classification_uuid, data[item])
         elif data[item].get('type') == 'use':
-            useIRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#' + data[item].get('key') + '>'
+            useIRI = '<' + ONTOSPECIES_URL + data[item].get('key') + '>'
             use_uuid = find_uuid(data[item].get('key'), useIRI, data[item].get('value'), data[item].get('description'))
             insert_str = pubchem_use_insert(typeIRI, type, uuid, i, prov_uuid, use_uuid, data[item])
         elif data[item].get('type') == 'group':
-            groupIRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#' + data[item].get('key') + '>'
+            groupIRI = '<' + ONTOSPECIES_URL + data[item].get('key') + '>'
             group_uuid = find_uuid(data[item].get('key'), groupIRI, data[item].get('value'), data[item].get('description'))
             insert_str = pubchem_group_insert(typeIRI, type, uuid, i, prov_uuid, group_uuid, data[item])
         elif data[item].get('type') == 'synonym':
@@ -85,10 +85,10 @@ def insert_structure(typeIRI, type, uuid, geometry, bonds):
 
     geomIRI = '<http://www.theworldavatar.com/kb/ontospecies/Geometry_1_Species_' + uuid + '>'
 
-    prov_IRI = '<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Reference>'
+    prov_IRI = '<' + ONTOKIN_URL + 'Reference>'
     prov_uuid = find_uuid('Reference' , prov_IRI, 'https://pubchem.ncbi.nlm.nih.gov')
 
-    unit_IRI = '<http://www.ontology-of-units-of-measure.org/resource/om-2/Unit>'
+    unit_IRI = '<' + UNIT_URL + '>'
     unit_uuid = find_uuid('Unit' , unit_IRI, 'angstrom')
 
     for item in geometry:
@@ -123,34 +123,34 @@ def insert_spectra(typeIRI, type, uuid, data):
         im_uuid = ''
         # check for reference
         if data[item].get('reference'):
-            prov_IRI = '<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Reference>'
+            prov_IRI = '<' + ONTOKIN_URL + 'Reference>'
             prov_uuid = find_uuid('Reference' , prov_IRI, data[item].get('reference'))
         else:
-            prov_IRI = '<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Reference>'
+            prov_IRI = '<' + ONTOKIN_URL + 'Reference>'
             prov_uuid = find_uuid('Reference' , prov_IRI, '', 'data without reference')
 
         # check for frequency
         if data[item].get('frequency') != '':
-                unit_IRI = '<http://www.ontology-of-units-of-measure.org/resource/om-2/Unit>'
+                unit_IRI = '<' + UNIT_URL + '>'
                 unit_string = str(data[item].get('frequency').get('unit'))
                 unit_string=re.sub("°","deg",unit_string)
                 unit_uuid = find_uuid('Unit' , unit_IRI, unit_string)
 
         # check for ionization mode
         if data[item].get('ionization_mode') != '':
-                im_IRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#IonizationMode>'
+                im_IRI = '<' + ONTOSPECIES_URL + 'IonizationMode>'
                 im_string = data[item].get('ionization_mode')
                 im_uuid = find_uuid('IonizationMode' , im_IRI, im_string)
 
         # check for instrument type
         if data[item].get('instrument_type') != '':
-                it_IRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#InstrumentType>'
+                it_IRI = '<' + ONTOSPECIES_URL + 'InstrumentType>'
                 it_string = data[item].get('instrument_type')
                 it_uuid = find_uuid('InstrumentType' , it_IRI, it_string)
         
         # check for instrument solvent
         if data[item].get('solvent') != '':
-                solvent_IRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Solvent>'
+                solvent_IRI = '<' + ONTOSPECIES_URL + 'Solvent>'
                 solvent_string = data[item].get('solvent')
                 solvent_uuid = find_uuid('Solvent' , solvent_IRI, solvent_string)
 

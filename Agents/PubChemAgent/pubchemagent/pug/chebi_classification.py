@@ -4,6 +4,7 @@ from pubchemagent.kgoperations.addkgdata import create_uuid
 from pubchemagent.kgoperations.getkgdata import get_uuid
 from pubchemagent.kgoperations.querytemplates import *
 from pubchemagent.utils.default_configs import UPDATE_ENDPOINT
+from pubchemagent.utils.url_configs import ONTOSPECIES_URL
 import logging
 
 logging.getLogger('urllib3').setLevel(logging.CRITICAL)
@@ -12,6 +13,8 @@ logging.getLogger('requests_cache').setLevel(logging.CRITICAL)
 logging.getLogger('bioservices').setLevel(logging.CRITICAL)
 logging.getLogger('matplotlib').setLevel(logging.CRITICAL)
 logging.getLogger('suds').setLevel(logging.CRITICAL)
+
+#UPDATE_ENDPOINT='http://www.theworldavatar.com/blazegraph/namespaces/copy_ontospecies_pubchem'
 
 def get_chebi_tree(chebiID):
     ch = ChEBI()
@@ -23,19 +26,19 @@ def get_chebi_tree(chebiID):
                 chebiID = item['chebiId']
                 parent = item['chebiName']
                 if 'group' in child and 'entity' not in child:
-                    typeIRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#FunctionalGroup>'
+                    typeIRI = '<' + ONTOSPECIES_URL + 'FunctionalGroup>'
                     child_uuid, child_flag = find_uuid('FunctionalGroup', typeIRI, child, 'ChEBI classification')
                     tc = 'FunctionalGroup'
                 else: 
-                    typeIRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#ChemicalClass>'
+                    typeIRI = '<' + ONTOSPECIES_URL + 'ChemicalClass>'
                     child_uuid, child_flag = find_uuid('ChemicalClass', typeIRI, child, 'ChEBI classification')
                     tc = 'ChemicalClass'
                 if 'group' in parent and 'entity' not in parent:
-                    typeIRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#FunctionalGroup>'
+                    typeIRI = '<' + ONTOSPECIES_URL + 'FunctionalGroup>'
                     parent_uuid, parent_flag = find_uuid('FunctionalGroup', typeIRI, parent, 'ChEBI classification')
                     tp = 'FunctionalGroup'
                 else:
-                    typeIRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#ChemicalClass>'
+                    typeIRI = '<' + ONTOSPECIES_URL + 'hemicalClass>'
                     parent_uuid, parent_flag = find_uuid('ChemicalClass', typeIRI, parent, 'ChEBI classification')
                     tp = 'ChemicalClass'
                 print(child + ' (' + tc + ') is a (' + tp + ') ' + parent)
@@ -47,8 +50,8 @@ def get_chebi_tree(chebiID):
                 parent = item['chebiName']
                 if 'group' in parent:
                     print(child + ' (ChemicalClass) has part (FunctionalGroup) ' + parent)
-                    typeIRIp = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#FunctionalGroup>'
-                    typeIRIc = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#ChemicalClass>'
+                    typeIRIp = '<' + ONTOSPECIES_URL + 'FunctionalGroup>'
+                    typeIRIc = '<' + ONTOSPECIES_URL + 'ChemicalClass>'
                     parent_uuid, parent_flag = find_uuid('FunctionalGroup', typeIRIp, parent, 'ChEBI classification')
                     child_uuid, child_flag = find_uuid('ChemicalClass', typeIRIc, child, 'ChEBI classification')
                     insert_triple('ChemicalClass', child_uuid, 'FunctionalGroup', parent_uuid, 'os:hasFunctionalGroup')

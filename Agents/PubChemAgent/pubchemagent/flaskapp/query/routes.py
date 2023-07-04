@@ -6,12 +6,13 @@ query_bp = Blueprint(
 )
 
 # Define a route for API requests
-@query_bp.route('/api/pubchemagent/query/species', methods=['GET'])
+@query_bp.route('/query/species', methods=['GET'])
 def api():
     # Check arguments (query parameters)
     print(request.args)
     inchi_string = request.args['inchi']
     inchi_string=inchi_string.replace('%2b','+').replace('%3b',';').replace('%28','(').replace('%29',')').replace('%2e','.').replace('%2c',',')
+    print(inchi_string)
     
     try:
         # Run the model
@@ -25,7 +26,7 @@ def api():
 
 
 # Define a route for API requests
-@query_bp.route('/api/pubchemagent/query/elements')
+@query_bp.route('/query/elements')
 def apielements():
     
     try: 

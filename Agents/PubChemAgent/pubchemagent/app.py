@@ -2,6 +2,7 @@ from pubchemagent.kgoperations.getkgdata import *
 from pubchemagent.kgoperations.addkgdata import * 
 from pubchemagent.pug import pug_api, chebi_api 
 from pubchemagent.pug.chebi_classification import get_chebi_tree
+from pubchemagent.utils.url_configs import ONTOSPECIES_URL, PT_URL
 import time
 import logging
 
@@ -45,7 +46,7 @@ def species_instantiation(inchi):
             if identifiers[item]['key'] == 'MolecularFormula':
                 MolecularFormula = identifiers[item]['value']
 
-        typeIRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species>'  
+        typeIRI = '<' + ONTOSPECIES_URL + 'Species>'  
         start_time = time.time()
         insert_str = ''
         temp_str = insert_start(typeIRI, 'Species', uuid, MolecularFormula)
@@ -66,12 +67,12 @@ def species_instantiation(inchi):
         insert_str = insert_str + temp_str
         for item in chebi_prop:
             if chebi_prop[item]['type']=='classification':
-                classIRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#ChemicalClass>'
+                classIRI = '<' + ONTOSPECIES_URL + 'ChemicalClass>'
                 cIRI = get_uuid(classIRI, chebi_prop[item]['value'])
                 if cIRI == None:
                     get_chebi_tree(chebi_prop[item]['chebiID'])
             elif chebi_prop[item]['type']=='group':
-                classIRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#FunctionalGroup>'
+                classIRI = '<' + ONTOSPECIES_URL + 'FunctionalGroup>'
                 cIRI = get_uuid(classIRI, chebi_prop[item]['value'])
                 if cIRI == None:
                     get_chebi_tree(chebi_prop[item]['chebiID'])
@@ -91,7 +92,7 @@ def element_instantiation(el):
         if data[item]['key'] == 'ElementName':
             ElementName = data[item]['value']
 
-    typeIRI = '<http://www.daml.org/2003/01/periodictable/PeriodicTable#Element>'
+    typeIRI = '<' + PT_URL + 'Element>'
     insert_str = ''
     temp_str = insert_start(typeIRI, 'Element', uuid, ElementName)
     insert_str = insert_str + temp_str

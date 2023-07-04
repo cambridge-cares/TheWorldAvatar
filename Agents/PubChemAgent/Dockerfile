@@ -28,7 +28,6 @@ SHELL ["/bin/bash", "-c"]
 
 # Set the default working directory, then copy the Python source code into it
 WORKDIR /app
-COPY ./LICENSE .
 COPY ./README.md .
 COPY ./setup.py .
 
@@ -72,11 +71,6 @@ RUN pip install gunicorn
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
 COPY ./pubchemagent ./pubchemagent
-
-ENV STACK_NAME= 
-ENV NAMESPACE=
-ENV QUERY_ENDPOINT=
-ENV UPDATE_ENDPOINT=
 
 # Set the entrypoint
 # timeout set to 30min to avoid exceptions for longer API/KG calls
