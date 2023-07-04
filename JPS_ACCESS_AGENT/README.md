@@ -1,4 +1,8 @@
-# TripleStoreAccess Agent and RDBAccess Agent
+# Introduction
+
+The purpose of the Access Agent is to provide a point of access to the knowledge graph for executing SPARQL query and update operations. The Access Agent hides the storage implementation layer, so that the user or calling agent does not need to know the store location or software e.g. Blazegraph, RDF4J etc.
+
+The Access Agent works by receiving a HTTP request from the calling agent to execute a SPARQL query or update on a target resource (triple store). A StoreRouter and the associated *ontokgrouter* triple store is used to retrieve the SPARQL endpoints for the requested resource. A StoreClient is then instantiated to connect to and query or update the target resource.
 
 ## Purpose
 
@@ -10,6 +14,39 @@ The agent will also perform requests to "get" and "insert" entire graphs. This a
 <b> RDB Access Agent: </b>The  purpose of this agent is to handle HTTP requests to obtain the url required to create a connection to a PostgreSQL database. This agent extends the JPSAgent framework 
 and can be called using the getRDBUrl method in the RDBAccessAgentCaller class in jps_base_lib or by extending the JPSAgent class. 
 
+# Using the Access Agent 
+
+## Local development environment
+
+Details on deploying the Access Agent dev stack can be found in the [Access Agent README](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT#readme)
+
+## Production environment
+
+### Routing information
+
+The Access Agent requires routing information for the target resource to be contained in the *ontokgrouter* triple store found at  "http://www.theworldavatar.com/blazegraph/namespace/ontokgrouter". 
+The routing information consists of 5 triples containing the SPARQL query and update endpoints and a label identifying the target resource.
+ 
+E.g. routing information for the **ontokin** namespace:
+
+```
+<http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasQueryEndpoint>	"http://www.theworldavatar.com/blazegraph/namespace/ontokin/sparql".
+<http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasUpdateEndpoint> "http://www.theworldavatar.com/blazegraph/namespace/ontokin/sparql".
+<http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource>.
+<http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#NamedIndividual>.
+<http://www.theworldavatar.com/kb/ontokgrouter/ontokin>	<http://www.w3.org/2000/01/rdf-schema#label> "ontokin".
+```
+
+### Calling the Access Agent
+
+If you are developing a Java agent within the JPSAgent framework (by extending the class uk.ac.cam.cares.jps.base.agent.JPSAgent), the Access Agent can be called using the queryStore and updateStore methods inherited from JPSAgent. In the case you are not extending JPSAgent, these methods can also be found in the class uk.ac.cam.cares.jps.base.query.AccessAgentCaller. 
+
+The target resource ID and SPARQL query/update string are provided as arguments:
+```
+targetResourceID
+sparqlQuery/sparqlUpdate
+```
+The `targetResourceID` must match the label in *ontokgrouter*.
 
 <!------------------------------------------------------------->
 <!-- ACCESS AGENT DEV STACK ----------------------------------->
