@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  cea-agent:
+    image: cea-agent:0.3.1
+    build: .
+    container_name: cea-agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - "58085:8084"
+    volumes:
+      - external_maven_repo_cea:/root/.m2
+  
+volumes:
+  external_maven_repo_cea:
+    name: "external_maven_repo_cea"   
