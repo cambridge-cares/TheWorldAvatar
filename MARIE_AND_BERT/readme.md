@@ -12,9 +12,10 @@ The project contains the following parts:
 ├── MARIE_AND_BERT
 │   ├── DATA (for storing all binary files and large files) 
 │   │   ├── CrossGraph 
+│   │   ├── KG
 │   │   │   ├── [ontology names] (for all ontology-specific files) 
-│   │   │   ├── Dictionaries (for all IRI-label/value mapping files)
-│   │   │   ├── EntityLinking (for entity linking models)
+│   │   ├── Dictionaries (for all IRI-label/value mapping files)
+│   │   ├── EntityLinking (for entity linking models)
 │   ├── Marie (scripts for runtime Marie system) 
 │   ├── KGToolbox (scripts for creating dataset) 
 │   ├── Training (scripts for model and embedding training) 
@@ -126,6 +127,9 @@ For example, to upload with GUI update page, key in url  `/triples/ontospecies.n
 It takes more than 15 minutes to spin up the Marie server, as a result, a `mock_main.py` script is implemented to 
 provide mock backend responses to support frontend development. By repeatedly clicking any of the the example questions 
 on the webpage hosted by the mock server, the user can check the visualisation of the six different response types. 
+
+To run the `mock_main.py` a file `chatgpt_api_key.txt` storing the ChatGPT api key should be available under `DATA`. Please go to [ChatGPT](https://openai.com/blog/chatgpt)
+to obtain an API key for using ChatGPT. 
 
 
  
