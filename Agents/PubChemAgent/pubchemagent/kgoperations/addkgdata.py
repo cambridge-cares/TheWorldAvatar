@@ -6,8 +6,6 @@ import re
 from pubchemagent.utils.default_configs import UPDATE_ENDPOINT
 from pubchemagent.utils.url_configs import ONTOSPECIES_URL, ONTOKIN_URL, UNIT_URL
 
-#UPDATE_ENDPOINT='http://www.theworldavatar.com/blazegraph/namespaces/copy_ontospecies_pubchem'
-
 # a sample data addition function
 def insert_ontospecies(typeIRI, type, uuid, data):
     prev_key = ''

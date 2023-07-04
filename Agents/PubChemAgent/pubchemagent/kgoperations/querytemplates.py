@@ -3,10 +3,10 @@ def get_iri_query(inchi_string):
     query= f"""
     PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    SELECT ?IRI 
+    SELECT ?speciesIRI 
     WHERE
     {{
-    ?IRI rdf:type os:Species ;
+    ?speciesIRI rdf:type os:Species ;
          os:inChI ?x .
       FILTER (str(?x) ="{inchi_string}")
     }}    

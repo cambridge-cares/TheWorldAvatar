@@ -6,6 +6,7 @@ from pubchemagent.utils.url_configs import ONTOSPECIES_URL, PT_URL
 import time
 import logging
 
+# supress excessive log output from imported packages
 logging.getLogger('urllib3').setLevel(logging.CRITICAL)
 logging.getLogger('requests').setLevel(logging.CRITICAL)
 logging.getLogger('requests_cache').setLevel(logging.CRITICAL)

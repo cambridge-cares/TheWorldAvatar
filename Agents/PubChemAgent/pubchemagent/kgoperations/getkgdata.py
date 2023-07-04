@@ -7,18 +7,10 @@ from pubchemagent.utils.url_configs import SPARQL_ENDPOINTS_ONTOSPECIES
 from py4jps import agentlogging
 logger = agentlogging.get_logger('prod')
 
-SPARQL_ENDPOINTS = {
-    'pubchem': "http://www.theworldavatar.com/blazegraph/namespace/copy_ontospecies_pubchem"
-}
-#SPARQL_ENDPOINTS_ONTOSPECIES='http://host.docker.internal:8080/blazegraph/namespace/ontospecies'
-#QUERY_ENDPOINT='http://www.theworldavatar.com/blazegraph/namespaces/copy_ontospecies_pubchem'
-
 def get_iri_data(inchi):
     inchi_string=inchi
     query = get_iri_query(inchi_string)
-    print(query)
-    sparqlendpoint = SPARQL_ENDPOINTS['pubchem']
-    print(sparqlendpoint)
+    sparqlendpoint = SPARQL_ENDPOINTS_ONTOSPECIES
     # create a SPARQL object for performing the query
     kg_client = kg_operations(sparqlendpoint)
     data = kg_client.querykg(queryStr=query)

@@ -26,9 +26,6 @@ def retrieve_default_settings():
 
     # Retrieve Docker Stack name
     STACK_NAME = os.getenv('STACK_NAME')
-    if STACK_NAME is None:
-        logger.error('"STACK_NAME" is missing in environment variables.')
-        raise ValueError('"STACK_NAME" is missing in environment variables.')
 
     # Retrieve Blazegraph and PostgreSQL/PostGIS settings depending on deployment mode
     if not STACK_NAME:

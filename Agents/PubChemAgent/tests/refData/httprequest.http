@@ -1,4 +1,0 @@
-http://127.0.0.1:5000/api/pubchemagent/query?inchi=InChI=1/Ar
-http://127.0.0.1:5000/api/pubchemagent/query?inchi=InChI=1S/C10H10/c1-2-3-7-10-8-5-4-6-9-10/h4-6,8-9H,2H2,1H3
-http://127.0.0.1:5000/api/pubchemagent/query?inchi=InChI=1S/C6H8O6/c7-1-2(8)5-3(9)4(10)6(11)12-5/h2,5,7-10H,1H2/t2-,5+/m0/s1
-http://127.0.0.1:5000/api/pubchemagent/query?inchi=InChI=1S/C8H14O2/c1-4-8(9)10-6-5-7(2)3/h4,7H,1,5-6H2,2-3H3  

@@ -5,16 +5,6 @@ from pubchemagent.kgoperations.getkgdata import get_uuid
 from pubchemagent.kgoperations.querytemplates import *
 from pubchemagent.utils.default_configs import UPDATE_ENDPOINT
 from pubchemagent.utils.url_configs import ONTOSPECIES_URL
-import logging
-
-logging.getLogger('urllib3').setLevel(logging.CRITICAL)
-logging.getLogger('requests').setLevel(logging.CRITICAL)
-logging.getLogger('requests_cache').setLevel(logging.CRITICAL)
-logging.getLogger('bioservices').setLevel(logging.CRITICAL)
-logging.getLogger('matplotlib').setLevel(logging.CRITICAL)
-logging.getLogger('suds').setLevel(logging.CRITICAL)
-
-#UPDATE_ENDPOINT='http://www.theworldavatar.com/blazegraph/namespaces/copy_ontospecies_pubchem'
 
 def get_chebi_tree(chebiID):
     ch = ChEBI()

@@ -4,16 +4,12 @@ from typing import Tuple
 import json
 from pubchemagent.unit_parse import parser, logger, reduce_quantities
 import pint
-from rdkit import Chem
 from periodictable import elements
 from datetime import date
 import re
 
 ureg = pint.UnitRegistry()
 ureg.define('percent = 1 / 100 = %')
-
-logging.getLogger('urllib3').setLevel(logging.ERROR)
-logging.getLogger('pint').setLevel(logging.ERROR)
 
 class pug_api():
     def __init__(self):

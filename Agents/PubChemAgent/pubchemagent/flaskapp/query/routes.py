@@ -17,7 +17,7 @@ def api():
     try:
         # Run the model
         species_instantiation(inchi_string)
-        msg  = "Species " + inchi_string + " have been instantiated"
+        msg  = "Species " + inchi_string + " has been instantiated"
         return msg
 
     except Exception as ex:
