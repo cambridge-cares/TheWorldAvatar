@@ -1,7 +1,14 @@
-[![The World Avatar Banner](./web/media/twa-readme-header.png)](https://www.theworldavatar.io/)
+<p align="center"><a href="https://theworldavatar.io" target="_blank" rel="noopener noreferrer"><img width="100%" src="./web/media/twa-readme-header.png" alt="The World Avatar logo"></a></p>
 
-[![Pull Requests Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](http://makeapullrequest.com)
-[![first-timers-only Friendly](https://img.shields.io/badge/first--timers--only-friendly-blue.svg)](http://www.firsttimersonly.com/)
+<p align="center">
+    <a href="#"><img src="https://img.shields.io/badge/PRs-Welcome-green&style=flat" alt="PRs Welcome"></a>
+    <a href="#"><img src="https://img.shields.io/badge/Licence-MIT-green&style=flat" alt="License"></a>
+    <a href="#"><img src=" https://img.shields.io/docker/pulls/cambridge-cares/TheWorldAvatar" alt="License"></a>
+    <br/>
+    <a href="#"><img src="https://img.shields.io/github/contributors-anon/cambridge-cares/TheWorldAvatar?color=blue&label=Contributors" alt="Contributors"></a>
+    <a href="#"><img src="https://img.shields.io/github/stars/cambridge-cares/TheWorldAvatar?color=blue&label=Stars" alt="Stars"></a>
+    <a href="#"><img src="https://img.shields.io/github/forks/cambridge-cares/TheWorldAvatar?color=blue&label=Forks" alt="Forks"></a>
+</p>
 
 ## Description ##
 
@@ -9,9 +16,13 @@ The World Avatar project aims to create a digital ‘avatar’ of the real world
 
 The World Avatar represents information in a dynamic knowledge graph using technologies from the Semantic Web stack. Unlike a traditional database, the World Avatar contains an ecosystem of autonomous computational agents that continuously update it. The agents are described ontologically as part of the knowledge graph, and are able to perform actions on both concepts and instances. This design enables agents to update and restructure the knowledge graph, and allows them to discover and compose other agents simply by reading from and writing to the knowledge graph.
 
+## Documentation ##
+
+
 ## Useful links ##
 
-* [The World Avatar](http://theworldavatar.com/)
+* [The World Avatar](https://theworldavatar.io/)
 * [CARES](https://www.cares.cam.ac.uk/)
-* [Knowledge graphs](https://como.ceb.cam.ac.uk/research/cps/) at the [Computational Modelling Group](https://como.ceb.cam.ac.uk/)
-* [Knowledge graphs](https://cmclinnovations.com/digitalisation/knowledge-graphs/) at [CMCL](https://cmclinnovations.com/)
+* [CoMo](https://como.ceb.cam.ac.uk/)
+* [CMCL](https://www.cmcl.io/)
+* [CMPG](https://www.cmpg.io/)
