@@ -205,7 +205,7 @@ public class RFIDQueryAgent{
         EmailSender sender = new EmailSender();
         if (speciesLabel != null && map != null) {
             try {
-                tldrMessage = "<b>tl;dr Container with" + speciesLabel + " has been removed for longer than " + numOfHours + ".</b> <br> <br>" ;
+                tldrMessage = "<b>tl;dr Container with " + speciesLabel + " has been removed for longer than " + numOfHours + " hour.</b> <br> <br>" ;
                 emailMessage = tldrMessage + "The chemical container with the following information has been removed for longer than " + numOfHours + " hours since " + latestTimeStamp + ". The container has the label " + objectLabel + " and tag ID " + tagStatusIRI.split("_")[2] + ". The container is storing a chemical with the label " + speciesLabel + " which has the following GHS hazard statements. <br>";
                 for (int i = 0; i <= map.get("label").size() - 1; i++) {
                     LOGGER.info("The label from the map is " + map.get("label").get(i));
@@ -219,8 +219,8 @@ public class RFIDQueryAgent{
             }
         } else if (speciesLabel != null && map == null) {
             try {
-                tldrMessage = "<b>tl;dr Container with" + speciesLabel + " has been removed for longer than " + numOfHours + ".</b> <br> <br>" ;
-                emailMessage = tldrMessage + "The chemical container with the following information has been removed for longer than " + numOfHours + " hours since " + latestTimeStamp  ". The container has the label " + objectLabel + " and tag ID " + tagStatusIRI.split("_")[2] + ".The container is storing a chemical with the label " + speciesLabel + ".";
+                tldrMessage = "<b>tl;dr Container with " + speciesLabel + " has been removed for longer than " + numOfHours + " hour.</b> <br> <br>" ;
+                emailMessage = tldrMessage + "The chemical container with the following information has been removed for longer than " + numOfHours + " hours since " + latestTimeStamp + ". The container has the label " + objectLabel + " and tag ID " + tagStatusIRI.split("_")[2] + ".The container is storing a chemical with the label " + speciesLabel + ".";
 
                 LOGGER.info("The email message is " + emailMessage);
                 sender.sendEmail("Alert!", emailMessage);
