@@ -144,17 +144,21 @@ If the tagged object is "Out" for longer than allowed, the email content sent wi
 
 1) If tagged object is not a chemical container.
 ```
-The tagged object has been removed for longer than 1 hours since this timestamp 2023-03-08 07:03:19 AM UTC. The object has the following label: asset 02 and tag ID: 00000000000000A000009726 . 
+The tagged object has been removed for longer than 1 hours since 2023-03-08 07:03:19 AM UTC. The object has the following label asset 02 and tag ID 00000000000000A000009726 . 
 ```
 2) If tagged object is a chemical container containing a chemical with GHS Hazard Statements.
 ```
-The chemical container with the following information has been removed for longer than 5 hours since this timestamp 2023-03-08 07:03:19 AM UTC. The container is storing a chemical with the following label: KNO3. The chemical has the following GHS hazard statements:
-H315 : Causes skin irritation [Warning Skin corrosion/irritation]
-H319 : Causes serious eye irritation [Warning Serious eye damage/eye irritation]
-H335 : May cause respiratory irritation [Warning Specific target organ toxicity, single exposure; Respiratory tract irritation]
-H272 : May intensify fire; oxidizer [Danger Oxidizing liquids; Oxidizing solids] 
+tl;dr Container with KNO3 has been removed for longer than 1 hour.
+
+The chemical container with the following information has been removed for longer than 1 hours since 2023-03-08 07:03:19 AM UTC. The container has the label chemical container 01 and tag ID 00000000000000A000009727. The container is storing a chemical with the label KNO3 which has the following GHS hazard statements.
+H315: Causes skin irritation [Warning Skin corrosion/irritation]
+H319: Causes serious eye irritation [Warning Serious eye damage/eye irritation]
+H335: May cause respiratory irritation [Warning Specific target organ toxicity, single exposure; Respiratory tract irritation]
+H272: May intensify fire; oxidizer [Danger Oxidizing liquids; Oxidizing solids]
 ```
 3) If tagged object is a chemical container containing a chemical without GHSHazardStatements.
 ```
-The chemical container with the following information has been removed for longer than 5 hours since this timestamp 2023-03-08 07:03:19 AM UTC. The container is storing a chemical with the following label: Hydrogen.
+tl;dr Container with Hydrogen has been removed for longer than 1 hour.
+
+The chemical container with the following information has been removed for longer than 1 hours since 2023-03-08 07:03:19 AM UTC. The container has the label chemical container 01 and tag ID 00000000000000A000009727.The container is storing a chemical with the label Hydrogen.
 ```
