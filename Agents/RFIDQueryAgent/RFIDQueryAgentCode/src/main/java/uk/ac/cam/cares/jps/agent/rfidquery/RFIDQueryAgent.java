@@ -217,7 +217,7 @@ public class RFIDQueryAgent{
         } else if (speciesLabel != null && map == null) {
             try {
                 EmailSender sender = new EmailSender();
-                String emailMessages = "The chemical container with the following information has been removed since " + latestTimeStamp + ". \n The container has the following label: " + objectLabel + " and tag ID: " + tagStatusIRI.split("_")[2] + " and it is storing a chemical with the following label: " + speciesLabel + ".";
+                String emailMessages = "The chemical container with the following information has been removed for longer than " + numOfHours + " hours since this timestamp " + latestTimeStamp + ". \n The container is storing a chemical with the following label: " + speciesLabel + ".";
 
                 LOGGER.info("The email message is " + emailMessages);
                 sender.sendEmail("Alert!", emailMessages);
@@ -228,7 +228,7 @@ public class RFIDQueryAgent{
             try {
                 EmailSender sender = new EmailSender();
                 String emailMessages;
-                emailMessages = "The tagged object has been removed since " + latestTimeStamp.toString() + ". The object has the following label: " + objectLabel + " and tag ID: " + tagStatusIRI.split("_")[2] + " .\n";
+                emailMessages = "The tagged object has been removed for longer than " + numOfHours + " hours since this timestamp " + latestTimeStamp + ". The object has the following label: " + objectLabel + " and tag ID: " + tagStatusIRI.split("_")[2] + " .\n";
                 sender.sendEmail("Alert!", emailMessages);
             } catch (Exception e) {
                 throw new JPSRuntimeException("Unable to send out alert email!");
