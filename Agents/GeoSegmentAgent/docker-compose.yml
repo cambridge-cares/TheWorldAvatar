@@ -1,0 +1,7 @@
+services:
+  geo-segment-agent:
+    image: geo-segment-agent:1.0.0
+    build: .
+    container_name: geo-segment-agent
+    ports:
+      - 1024:5000
