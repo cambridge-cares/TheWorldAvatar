@@ -11,7 +11,7 @@ geo:        http://www.opengis.net/ont/geosparql#
 
 [MappingDeclaration] @collection [[
 
-mappingId       example
+mappingId       Polygon_and_ID
 target          citykg:asset/{id} foaf:hasTOID {id}^^xsd:string ;
                     geo:hasGeometry "{wkt}"^^geo:wktLiteral ;
                     foaf:hasUPRN {uprn}^^xsd:float .
