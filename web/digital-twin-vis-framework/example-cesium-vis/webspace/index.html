@@ -1,7 +1,7 @@
 <html>
     <head>
         <!-- ===== CUSTOMISABLE ===== -->
-        <title>DTVF v3.3.4</title>
+        <title>DTVF v3.5.0</title>
         <!-- ===== CUSTOMISABLE ===== -->
 
         <meta charset="utf-8">
@@ -9,24 +9,24 @@
         <!-- JS -->
         <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-        <script src="https://cesium.com/downloads/cesiumjs/releases/1.95/Build/Cesium/Cesium.js"></script>
+        <script src="https://cesium.com/downloads/cesiumjs/releases/1.105/Build/Cesium/Cesium.js"></script>
         <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
         <script src="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" ></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
-        <script src="https://kg.cmclinnovations.com/cdn/dtvf/3.3.4/dtvf.min.js" charset="UTF-8"></script>
+        <script src="https://kg.cmclinnovations.com/cdn/dtvf/3.5.0/dtvf.min.js"></script>
 
         <!-- ===== CUSTOMISABLE ===== -->
         <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
         <!-- ===== CUSTOMISABLE ===== -->
 
         <!-- CSS -->
-        <link href="https://cesium.com/downloads/cesiumjs/releases/1.95/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+        <link href="https://cesium.com/downloads/cesiumjs/releases/1.105/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css" rel="stylesheet">
         <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
-        <link href="https://kg.cmclinnovations.com/cdn/dtvf/3.3.4/dtvf.min.css" rel="stylesheet" />
+        <link href="https://kg.cmclinnovations.com/cdn/dtvf/3.5.0/dtvf.min.css" rel="stylesheet" />
 
         <!-- ===== CUSTOMISABLE ===== -->
         <!-- CSS files to provide styling specifically for this visualisation instance can go here. -->
@@ -78,6 +78,30 @@
                     </div>
                 </div>
 
+                <!-- Clipping plane controls, listeners will be dynamically added later -->
+                <div id="clipControlContainer" class="controlBlock">
+                    <div id="controlTitle" class="controlTitle">
+                        <p style="width: 100%;">Clipping Planes</p>
+                    </div>
+                    <div class="controlContents">
+                        <div id="clipEnableContainer">
+                            <p>Enable clipping planes?</p>
+                            <input type="checkbox" id="clipEnableCheck">
+                        </div>
+                        <div id="clipShowContainer" style="display: none;">
+                            <p>Show plane geometry?</p>
+                            <input type="checkbox" id="clipShowCheck" checked>
+                        </div>
+                        <div id="clipSelectContainer" style="display: none;">
+                            <p>Target layer:</p>
+                            <select id="clipSelectCombo">
+                                <option disabled hidden selected>Please select a layer...</option>
+                                <!-- Other options will be dynamically generated here -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Help icon -->
                 <div id="helpContainer" class="controlBlock expanded" onclick="openHelpURL()">
                     <div class="tooltip" id="coordEditor">
@@ -101,11 +125,11 @@
         <div id="sidePanel" class="large expanded">
             <div class="tooltip" id="slideButtonContainer">
                 <i class="fas fa-chevron-right" id="slideButton" width="16px" class="leftButton" height="16px" onclick="manager.getPanelHandler().toggleExpansion()"></i>
-                <span class="tooltiptext">Expand/Collapse</span>
+                <span class="tooltiptext">Show/Hide</span>
             </div>
             <div class="tooltip" id="expandButtonContainer">
-                <i class="fas fa-expand" id="expandButton" width="16px" class="rightButton" height="16px" onclick="manager.getPanelHandler().toggleMode()"></i>
-                <span class="tooltiptext">Maximise/Minimise</span>
+                <i class="fas fa-compress-alt" id="expandButton" width="16px" class="rightButton" height="16px" onclick="manager.getPanelHandler().toggleMode()"></i>
+                <span class="tooltiptext">Expand/Collapse</span>
             </div>
             <div id="sidePanelInner">
                 <ul>

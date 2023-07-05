@@ -50,11 +50,10 @@ def init_file_logging(log_config_file, log_file):
 
     logging.info('initialized logging with config file=%s, log file=%s', log_config_file, log_file)
 
-def init_logging(log_conf_dir='./conf', log_dir='../logs'):
+def init_logging(log_conf_dir='./conf', log_dir='../logs', log_name='ontomatch'):
     # file and console logging with Python's standard logging library
     log_config_file = log_conf_dir + '/logging.yaml'
-    name = 'ontomatch'
-    init_file_logging(log_config_file, log_dir + '/' + name + '.log')
+    init_file_logging(log_config_file, log_dir + '/' + log_name + '.log')
 
 def read_json_from_path(path:str) -> dict:
     with open(path) as json_file:
@@ -64,7 +63,7 @@ def read_json_from_path(path:str) -> dict:
 def convert_json_to_dict(json_str:str) -> dict:
     return json.loads(json_str, object_pairs_hook=collections.OrderedDict)
 
-def init(config_dev=None):
+def init(config_dev=None, use_config_name_as_log_name=False):
     print('current working directory=', os.getcwd())
     print('sys.argv=', sys.argv)
 
@@ -82,7 +81,14 @@ def init(config_dev=None):
     else:
         config = config_dev
 
-    init_logging(args.logconfdir, args.logdir)
+    if use_config_name_as_log_name:
+        i = args.config.rfind('conf_')
+        log_name = 'log_' + args.config[i+5: -len('.json')]  
+        init_logging(args.logconfdir, args.logdir, log_name)
+    else:
+        init_logging(args.logconfdir, args.logdir)
+
+    
     logging.info('current working directory=%s', os.getcwd())
     logging.info('args=%s', args)
 
@@ -95,6 +101,19 @@ def init(config_dev=None):
         path = config['post_processing'].get('evaluation_file')
         if path:
             config['post_processing']['evaluation_file'] = path.replace(data_path_default, args.datadir)
+        path = config['post_processing'].get('test_file')
+        if path:
+            config['post_processing']['test_file'] = path.replace(data_path_default, args.datadir)
+        path = config['blocking']['model_specific'].get('candidates_file')
+        if path:
+            config['blocking']['model_specific']['candidates_file'] = path.replace(data_path_default, args.datadir)
+
+    similarity_file = config['mapping'].get('similarity_file')
+    if similarity_file and similarity_file.startswith('.'):
+        dirname = os.path.dirname(args.config)
+        new_path = dirname + '/' + similarity_file
+        logging.info('changing similarity file from %s to %s', similarity_file, new_path)
+        config['mapping']['similarity_file'] = new_path
 
     logging.info('config=%s', config)
     try:
@@ -127,6 +146,33 @@ def read_csv(file:str) -> pd.DataFrame:
     dframe.set_index(['idx_1', 'idx_2'], inplace=True)
     return dframe
 
+def read_csv_table_ditto_format(file:str) -> pd.DataFrame:
+    dframe = pd.read_csv(file) 
+    columns = [ str(c) for c in dframe.columns]
+    if 'class' in columns:
+        dframe.drop(columns=['class'], inplace=True)
+    if 'id' in columns:
+        # load data file
+        dframe.rename(columns={'id':'idx'}, inplace=True)
+        dframe['idx'] = dframe['idx'].astype(str)
+        dframe.set_index(['idx'], inplace=True)
+    else:
+        # load file with index pairs
+        dframe.rename(columns={'ltable_id': 'idx_1', 'rtable_id': 'idx_2'}, inplace=True)
+        dframe['idx_1'] = dframe['idx_1'].astype(str)
+        dframe['idx_2'] = dframe['idx_2'].astype(str)
+        dframe.set_index(['idx_1', 'idx_2'], inplace=True)
+    return dframe
+
+def read_and_concat_csv_table_ditto_format(test_file:str) -> pd.DataFrame:
+    df_test = ontomatch.utils.util.read_csv_table_ditto_format(test_file)
+    train_file = test_file.replace('test.csv', 'train.csv')
+    df_train = ontomatch.utils.util.read_csv_table_ditto_format(train_file)
+    val_file = test_file.replace('test.csv', 'valid.csv')
+    df_val = ontomatch.utils.util.read_csv_table_ditto_format(val_file)
+    df_union = pd.concat([df_train, df_val, df_test])
+    return df_union
+
 def serialize_graph_to_str(graph: rdflib.Graph, frmt = 'turtle') -> str:
     # https://rdflib.readthedocs.io/en/stable/apidocs/rdflib.html:
     # If encoding is None and destination is None, returns a string If encoding is set, and Destination is None, returns bytes
@@ -144,24 +190,24 @@ def parse_graph(addr) -> rdflib.Graph:
     return graph
 
 def call_agent_blackboard_for_writing(addr:str, serialized_object:str, http:bool=False) -> str:
-    logging.info('calling blackboard for writing, addr=%s', addr)
+    logging.debug('calling blackboard for writing, addr=%s', addr)
     if http:
         params = dict(addr = addr, serialized_object = serialized_object)
         handle = httpcaller.caller().callAgent("blackboard", params)
 
     else:
         handle = ontomatch.utils.blackboard.Agent().write(addr, serialized_object)
-    logging.info('called blackboard for writing, handle=%s', handle)
+    logging.debug('called blackboard for writing, handle=%s', handle)
     return handle
 
 def call_agent_blackboard_for_reading(handle:str, http:bool=False) -> str:
-    logging.info('calling blackboard for reading, handle=%s, http=%s', handle, http)
+    logging.debug('calling blackboard for reading, handle=%s, http=%s', handle, http)
     if http:
         params = dict(handle = handle)
         obj = httpcaller.caller().callAgent("blackboard", params, "GET")
     else:
         obj = ontomatch.utils.blackboard.Agent().read(handle)
-    logging.info('called blackboard for reading')
+    logging.debug('called blackboard for reading')
     return obj
 
 def load_ontology(graph_handle, blackboard=True):
@@ -170,6 +216,8 @@ def load_ontology(graph_handle, blackboard=True):
     if graph_handle.endswith('.pkl'):
         with open(graph_handle,'rb') as file:
             onto = pickle.load(file)
+    elif graph_handle.endswith('.csv'):
+        onto = ontomatch.utils.util.read_csv_table_ditto_format(graph_handle)
     else:
         if blackboard:
             file = ontomatch.utils.blackboard.LOCAL_BLACKBOARD_DIR + '/' + graph_handle

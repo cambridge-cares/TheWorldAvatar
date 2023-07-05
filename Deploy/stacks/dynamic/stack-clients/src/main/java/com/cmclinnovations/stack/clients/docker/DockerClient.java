@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.stack.clients.core.AbstractEndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
-import com.cmclinnovations.stack.clients.utils.AbstractTempPath;
 import com.cmclinnovations.stack.clients.utils.TempDir;
 import com.github.dockerjava.api.command.CopyArchiveToContainerCmd;
 import com.github.dockerjava.api.command.CreateConfigCmd;
@@ -143,6 +142,8 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
         private long initialisationTimeout = 10;
         private long evaluationTimeout = 60;
 
+        private String user;
+
         public ComplexCommand(String containerId, String... cmd) {
             execCreateCmd = internalClient.execCreateCmd(containerId);
             this.cmd = cmd;
@@ -193,6 +194,11 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
             return this;
         }
 
+        public ComplexCommand withUser(String user) {
+            this.user = user;
+            return this;
+        }
+
         public String exec() {
             boolean attachStdin = null != inputStream;
             boolean attachStdout = null != outputStream;
@@ -216,6 +222,7 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
                     .withAttachStdin(attachStdin)
                     .withAttachStdout(attachStdout)
                     .withAttachStderr(attachStderr)
+                    .withUser(user)
                     .exec().getId();
 
             try (ExecStartCmd execStartCmd = internalClient.execStartCmd(execId)) {
@@ -295,7 +302,11 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
         executeSimpleCommand(containerId, "mkdir", "-p", directoryPath);
     }
 
-    private final class RemoteTempDir extends AbstractTempPath implements TempDir {
+    public void makeDir(String containerId, String directoryPath, String user) {
+        createComplexCommand(containerId, "mkdir", "-p", directoryPath).withUser(user).exec();
+    }
+
+    private final class RemoteTempDir extends TempDir {
 
         private final String containerId;
 

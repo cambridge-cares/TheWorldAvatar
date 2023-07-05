@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.derivation.asynexample;
 
 import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -24,31 +25,34 @@ public class UpdateDerivations extends JPSAgent {
 	private static final Logger LOGGER = LogManager.getLogger(UpdateDerivations.class);
 	
 	static final String API_PATTERN = "/UpdateDerivations";
+	static final String DIFFERENCE_DERIVATION_KEY = "DifferenceDerivation";
 	
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		Config.initProperties();
 		RemoteStoreClient storeClient = new RemoteStoreClient(Config.sparqlEndpoint, Config.sparqlEndpoint, Config.kgUser, Config.kgPassword);
-		SparqlClient sparqlClient = new SparqlClient(storeClient);
 		DerivationClient devClient = new DerivationClient(storeClient, Config.derivationInstanceBaseURL);
-		
-		JSONObject response = updateDerivations(sparqlClient, devClient);
 
-		return response;
+		if (!requestParams.has(DIFFERENCE_DERIVATION_KEY)) {
+			return updateDerivations(devClient.getDerivations(Config.agentIriDifference), devClient);
+		} else {
+			return updateDerivations(requestParams.getString(DIFFERENCE_DERIVATION_KEY), devClient);
+		}
 	}
 
-	JSONObject updateDerivations(SparqlClient sparqlClient, DerivationClient devClient) {
-		String difference = sparqlClient.getDifferenceIRI();
-		String difference_derivation = devClient.getDerivationsOf(Arrays.asList(difference)).get(difference);
-		
-		devClient.unifiedUpdateDerivation(difference_derivation);
-		
-		String res_msg = "Checked derivation of difference <" + difference_derivation + ">, the update should be done in a few minutes";
+	JSONObject updateDerivations(String differenceDerivation, DerivationClient devClient) {
+		return updateDerivations(Arrays.asList(differenceDerivation), devClient);
+	}
+
+	JSONObject updateDerivations(List<String> differenceDerivations, DerivationClient devClient) {
+		differenceDerivations.stream().forEach(devClient::unifiedUpdateDerivation);
+
+		String res_msg = "Checked derivation of difference <" + differenceDerivations + ">, the update should be done in a few minutes";
 		LOGGER.info(res_msg);
-		
+
 		JSONObject response = new JSONObject();
 		response.put("status", res_msg);
-		
+
 		return response;
 	}
 }

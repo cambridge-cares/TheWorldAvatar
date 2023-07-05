@@ -1,0 +1,89 @@
+.biminfobox {
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 15px;
+    max-width: 480px;
+    pointer-events: none;
+    background-color: rgba(38, 38, 38, 0.95);
+    white-space: pre-line;
+    font-size: 16px;
+    font-family: 'Open Sans';
+    color: white;
+    border-radius: 4px;
+    border: 1px solid #444;
+    box-shadow: 0 0 10px 1px #000;
+}
+
+.biminfobox h3 {
+    margin: 0px;
+    padding: 0px;
+    font-size: 18px;
+}
+
+/* || HEADER OF INFOBOX */
+.biminfobox-title {
+    display: block;
+    height: 20px;
+    padding: 10px 8px;
+    background: rgba(84, 84, 84, 1);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    box-sizing: content-box;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+/* close button*/
+#close {
+    display: none;
+    position: absolute;
+    top: 75px;
+    right: 30px;
+    background: transparent;
+    border: none;
+    border-radius: 2px;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 0 5px;
+    margin: 0;
+    color: white;
+}
+#close:focus {
+    background: rgba(238, 136, 0, 0.44);
+    outline: none;
+}
+#close:hover {
+    background: #888;
+    color: #000;
+}
+#close:active {
+    background: #a00;
+    color: #000;
+}
+
+/* || CONTENT OF INFOBOX */
+.biminfobox-content {
+    padding: 4px 10px;
+    width: 100%;
+}
+
+#bim-infobox-table td {
+    vertical-align: middle;
+    text-align: left;
+    padding: 4px 8px;
+    border-top: 1px solid rgba(38, 38, 38, 0.95);
+}
+
+#bim-infobox-table tr:last-child {
+    border-bottom: 1px solid rgba(38, 38, 38, 0.95);
+}
+
+#bim-infobox-table table {
+    background-color: rgba(84, 84, 84, 0.8);
+}
+
+#bim-infobox-table tr:nth-child(odd) {
+    background-color: rgba(84, 84, 84, 0.25);
+}
