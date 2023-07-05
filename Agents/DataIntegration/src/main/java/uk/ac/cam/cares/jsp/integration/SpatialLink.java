@@ -27,15 +27,18 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Stream;
+
 @WebServlet(urlPatterns = {"/SpatialLink"})
 public class SpatialLink extends HttpServlet {
 
     private static final Logger LOGGER = LogManager.getLogger(SpatialLink.class);
+    private static String file ="/inputs/config/spatiallink";
     private PostgresClient postgresClient2d;
     private PostgresClient postgresClient3d;
 
@@ -54,21 +57,26 @@ public class SpatialLink extends HttpServlet {
         LOGGER.info("Received POST request to build spatial linking");
         LOGGER.info("Received request: " + req);
 
-        String db3d;
-        String db2d;
-        String db2d_table;
+        Map<String, String> parameters = aggregateByKeys();
+        String db3d = parameters.get("db3d");
+        String db2d = parameters.get("db2d");
+        String db2d_table = parameters.get("db2d_table");
+
+//        String db3d;
+//        String db2d;
+//
         GeoObject3D object3D = new GeoObject3D();
         GeoObject2D object2D = new GeoObject2D();
 
-        try {
-            db3d = req.getParameter("db3d");
-            db2d = req.getParameter("db2d");
-            db2d_table = req.getParameter("db2d_table");
-        } catch (Exception e) {
-            LOGGER.error("Error parsing input, make sure database names are specified as parameters");
-            LOGGER.error(e.getMessage());
-            throw new RuntimeException(e);
-        }
+//        try {
+//            db3d = req.getParameter("db3d");
+//            db2d = req.getParameter("db2d");
+//            db2d_table = req.getParameter("db2d_table");
+//        } catch (Exception e) {
+//            LOGGER.error("Error parsing input, make sure database names are specified as parameters");
+//            LOGGER.error(e.getMessage());
+//            throw new RuntimeException(e);
+//        }
 
         if (postgresClient2d == null) {
             postgresClient2d = new PostgresClient(Config.dburl + "/" + db2d, Config.dbuser, Config.dbpassword);
@@ -262,5 +270,22 @@ public class SpatialLink extends HttpServlet {
         }
 
         return reversed;
+    }
+
+    public static Map<String, String> aggregateByKeys() {
+        Map<String, String> map = new HashMap<>();
+        try (Stream<String> lines = Files.lines(Paths.get(file))) {
+            lines.filter(line -> line.contains(":"))
+                    .forEach(line -> {
+                        String[] keyValuePair = line.split(":", 2);
+                        String key = keyValuePair[0];
+                        String value = keyValuePair[1];
+                        map.put(key, value);
+
+                    });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return map;
     }
 }
