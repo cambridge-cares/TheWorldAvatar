@@ -1,22 +1,35 @@
 package uk.ac.cam.cares.jps.agent.cea;
 
+import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.jooq.exception.IOException;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.utility.DockerImageName;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
+
 import kong.unirest.*;
+import org.apache.jena.query.Query;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.jooq.exception.DataAccessException;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
-import org.mockito.MockedConstruction;
-import org.mockito.MockedStatic;
+
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
-import org.apache.jena.query.Query;
 import uk.ac.cam.cares.jps.agent.ceatasks.CEAInputData;
 import uk.ac.cam.cares.jps.agent.ceatasks.RunCEATask;
 
@@ -36,15 +49,23 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.locationtech.jts.geom.*;
-
 public class CEAAgentTest {
+    DockerImageName myImage = DockerImageName.parse("postgis/postgis:14-3.2").asCompatibleSubstituteFor("postgres");
+    @Container
+    private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(myImage);
+
+    @BeforeEach
+    public void startContainers() throws IOException {
+        try{
+            postgres.start();
+        }
+        catch (Exception e) {
+            throw new JPSRuntimeException("Docker container startup failed. Please try running tests again");
+        }
+    }
     @Test
     public void testCEAAgent() {
-       CEAAgent agent;
+        CEAAgent agent;
 
         try {
             agent = new CEAAgent();
@@ -59,7 +80,7 @@ public class CEAAgentTest {
     public void testCEAAgentFields() {
         CEAAgent agent = new CEAAgent();
         ResourceBundle config = ResourceBundle.getBundle("CEAAgentConfig");
-        
+
         Field URI_ACTION;
         Field URI_UPDATE;
         Field URI_QUERY;
@@ -96,9 +117,6 @@ public class CEAAgentTest {
         Field ontoUBEMMPUri;
         Field rdfUri;
         Field owlUri;
-        Field purlEnaeqUri;
-        Field purlInfrastructureUri;
-        Field thinkhomeUri;
         Field unitOntologyUri;
         Field ontoBuiltEnvUri;
         Field accessAgentRoutes;
@@ -257,7 +275,6 @@ public class CEAAgentTest {
 
         doReturn(mockConnection).when(mockRDBClient).getConnection();
         doReturn(new JSONArray()).when(mockRDBClient).executeQuery(anyString());
-        doReturn(mockRDBClient).when(agent).getRDBClient(anyString());
 
         // Test empty request params
         try {
@@ -528,7 +545,7 @@ public class CEAAgentTest {
             assertEquals(((InvocationTargetException) e).getTargetException().getClass(),
                     BadRequestException.class);
         }
- 
+
         requestParams.put(CEAAgent.KEY_TARGET_URL, "http://localhost:8086/agents/cea/update");
 
         // should pass now
@@ -935,7 +952,7 @@ public class CEAAgentTest {
 
     @Test
     public void testGetNamespace()
-         throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
         CEAAgent agent = new CEAAgent();
         String uri = "http://localhost/berlin/cityobject/UUID_583747b0-1655-4761-8050-4036436a1052/";
@@ -1387,7 +1404,7 @@ public class CEAAgentTest {
         String route = "test_route";
 
         Integer testCounter = 0;
-        
+
         doNothing().when(agent).updateStore(anyString(), anyString());
         updateScalars.invoke(agent, route,scalar_iris_mock, scalars_mock, testCounter, "");
 
@@ -2202,10 +2219,10 @@ public class CEAAgentTest {
     }
 
     @Test
-    public void testGetTerrain() throws NoSuchMethodException, SQLException, InvocationTargetException, IllegalAccessException {
+    public void testGetTerrain() throws NoSuchMethodException, SQLException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
         CEAAgent agent = spy(new CEAAgent());
 
-        Method getTerrain = agent.getClass().getDeclaredMethod("getTerrain", String.class, String.class, String.class, List.class);
+        Method getTerrain = agent.getClass().getDeclaredMethod("getTerrain", String.class, String.class, String.class, List.class, RemoteRDBStoreClient.class);
         assertNotNull(getTerrain);
         getTerrain.setAccessible(true);
 
@@ -2227,19 +2244,26 @@ public class CEAAgentTest {
         doReturn(mockStatement).when(mockConnection).createStatement();
         doReturn(mockConnection).when(mockRDBClient).getConnection();
 
-        doReturn(mockRDBClient).when(agent).getRDBClient(anyString());
-
         List<Coordinate> testSurroundingCoordinates = new ArrayList<>();
 
         testSurroundingCoordinates.add(new Coordinate(-38583.309964376036, 5475530.947358239));
         testSurroundingCoordinates.add(new Coordinate(-38590.053145669284, 5475500.099337375));
         testSurroundingCoordinates.add(new Coordinate(-38570.165186359896, 5475520.409057047));
 
-        byte[] result = (byte[]) getTerrain.invoke(agent, "", "", "32633", testSurroundingCoordinates);
+
+
+        byte[] result = (byte[]) getTerrain.invoke(agent, "", "", "32633", testSurroundingCoordinates, mockRDBClient);
 
         assertEquals(result.length, testBytes.length);
         assertEquals(result[0], testBytes[0]);
         assertEquals(result[1], testBytes[1]);
         assertEquals(result[2], testBytes[2]);
+    }
+
+    @AfterEach
+    public void cleanup() throws IOException {
+        if (postgres.isRunning()) {
+            postgres.stop();
+        }
     }
 }
