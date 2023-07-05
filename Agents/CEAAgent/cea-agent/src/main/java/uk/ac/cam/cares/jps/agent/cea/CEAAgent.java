@@ -1803,6 +1803,9 @@ public class CEAAgent extends JPSAgent {
      * @param uriString city object id
      * @param route route to city object geometry data
      * @param crs coordinate reference system used by route
+     * @param surroundingCoordinates  coordinates that formed the bounding box for surrounding query
+     * @param database PostGIS database name
+     * @param table PostGIS table name
      * @return terrain data as byte[]
      */
     private byte[] getTerrain(String uriString, String route, String crs, List<Coordinate> surroundingCoordinates, String database, String table) {
