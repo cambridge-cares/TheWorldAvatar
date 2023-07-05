@@ -1,6 +1,6 @@
 # This Dockerfile has been adapted from the VS Code example at https://code.visualstudio.com/docs/containers/quickstart-python
 # Reference published Docker image for Stack-Client resources to use
-#FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
+FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
 
 FROM osgeo/gdal:latest
 
@@ -13,7 +13,7 @@ RUN apt update && apt install -y pip git
 
 # Copy Stack-Client resource from published Docker image (potentially ensure
 # directory structure matches requirements for jpsrm to update py4jps resources)
-#COPY --from=stackclients /app ./tmp_stack
+COPY --from=stackclients /app ./tmp_stack
 
 # Expose the port on which our server will run
 EXPOSE 5000
@@ -32,8 +32,8 @@ WORKDIR /app
 ADD GeoSegmentAgent /app/GeoSegmentAgent
 
 # Install StackClients py4jps resource
-#RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
-#    jpsrm install StackClients ../tmp_stack --jar $stack_clients_jar
+RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
+    jpsrm install StackClients ../tmp_stack --jar $stack_clients_jar
 
 
-ENTRYPOINT ["gunicorn", "--preload", "--bind", "0.0.0.0:5000", "GeoSegmentAgent:app"]
+ENTRYPOINT ["gunicorn", "--preload", "--bind", "0.0.0.0:5000", "GeoSegmentAgent:app", "--timeout", "3600"]
