@@ -16,18 +16,29 @@ You will need to provide your credentials (github username/personal access token
     repo_username.txt
     repo_password.txt
 ```
-
 ### Stack Set Up
 The agent is designed to run in the stack. To start the stack, spin up the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager).
 
-### Access Agent Set up
-The agent is designed to use the [JPS Access Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/1579-dev-stackerise-cea-agent/JPS_ACCESS_AGENT). Spin the access agent up as part of the same stack as spun up by the Stack Manager. 
+### Access Agent Set Up
+The agent is designed to use the [JPS Access Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/1579-dev-stackerise-cea-agent/JPS_ACCESS_AGENT). Spin the access agent up as part of the same stack as spun up by the Stack Manager.
 
-### Blazegraph set up
+### Blazegraph Set Up
 The agent is designed to use the stack Blazegraph. Please ensure that the routing information corresponinding to the labels, which are specified as ```cea.label``` and ```usage.label``` in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```, is uploaded. See the [Access Agent README](https://github.com/cambridge-cares/TheWorldAvatar/tree/1579-dev-stackerise-cea-agent/JPS_ACCESS_AGENT) for instruction on uploading routing information.
 
-### PostGIS set up
+### PostGIS Set Up
 The agent is designed to use the stack PostGIS. The calculation results of CEA will be stored in the stack PostGIS database, which is specified as ```cea.database``` in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```.
+
+### TargetresourceID for Building Geometry Query
+For building geometry queries, the CEA agent defaults to TheWorldAvatar Blazegprah. The targetResourceIDs in ```./cea-agent/src/main/resources/CEAAgentConfig.properties``` provides mappings to namespaces in TheWorldAvatar Blazegraph (http://www.theworldavatar.com:83/citieskg/). The targetResourceID are passed to the access agent in order to query from TheWorldAvatar Blazegraph. Check that a targetResourceID to pass to the access agent exists for the namespace being used for SPARQL queries.
+Currently included are:
+- ```citieskg-berlin```
+- ```singaporeEPSG24500```
+- ```citieskg-singaporeEPSG4326```
+- ```citieskg-kingslynnEPSG3857```
+- ```citieskg-kingslynnEPSG27700```
+- ```citieskg-pirmasensEPSG32633```
+
+If not included, you will need to add the targetResourceID in ```./cea-agent/src/main/resources/CEAAgentConfig.properties``` and add the corresponding mapping from cityObject IRI to targetResourceID in accessAgentRoutes in the ```readConfig``` method of ```./cea-agent/src/main/java/uk/ac/cam/cares/jps/agent/cea/CEAAgent.java```.
 
 ### Build
 In the same directory as this README, first build the Docker image by running
