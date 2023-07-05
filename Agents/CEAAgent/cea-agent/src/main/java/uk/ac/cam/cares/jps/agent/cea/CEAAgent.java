@@ -1,17 +1,6 @@
 package uk.ac.cam.cares.jps.agent.cea;
 
-import kong.unirest.Unirest;
-import kong.unirest.HttpResponse;
-import kong.unirest.UnirestException;
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.protocol.HTTP;
-import org.apache.jena.sparql.core.Var;
-import org.apache.jena.sparql.lang.sparql_11.ParseException;
-import org.apache.jena.sparql.syntax.ElementGroup;
-import org.apache.jena.sparql.syntax.ElementService;
-import org.jooq.exception.DataAccessException;
-import org.locationtech.jts.geom.util.GeometryFixer;
-import org.locationtech.jts.geom.*;
+import com.cmclinnovations.stack.clients.core.StackClient;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -20,6 +9,41 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.agent.ceatasks.*;
+
+import kong.unirest.Unirest;
+import kong.unirest.HttpResponse;
+import kong.unirest.UnirestException;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.protocol.HTTP;
+import org.json.JSONArray;
+
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.UpdateBuilder;
+import org.apache.jena.arq.querybuilder.WhereBuilder;
+import org.apache.jena.arq.querybuilder.handlers.WhereHandler;
+import org.apache.jena.arq.querybuilder.Order;
+import org.apache.jena.update.UpdateRequest;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.query.Query;
+import org.apache.jena.sparql.core.Var;
+import org.apache.jena.sparql.lang.sparql_11.ParseException;
+import org.apache.jena.sparql.syntax.ElementGroup;
+import org.apache.jena.sparql.syntax.ElementService;
+import org.jooq.exception.DataAccessException;
+
+import org.locationtech.jts.geom.util.GeometryFixer;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.operation.buffer.BufferOp;
+import org.locationtech.jts.operation.buffer.BufferParameters;
+
+import org.cts.op.CoordinateOperation;
+import org.cts.op.CoordinateOperationFactory;
+import org.cts.registry.EPSGRegistry;
+import org.cts.registry.RegistryManager;
+import org.cts.CRSFactory;
+import org.cts.crs.CoordinateReferenceSystem;
+import org.cts.crs.GeodeticCRS;
+
 import org.json.JSONObject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.HttpMethod;
@@ -37,26 +61,6 @@ import java.util.stream.Stream;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import org.apache.jena.arq.querybuilder.SelectBuilder;
-import org.apache.jena.arq.querybuilder.UpdateBuilder;
-import org.apache.jena.arq.querybuilder.WhereBuilder;
-import org.apache.jena.arq.querybuilder.handlers.WhereHandler;
-import org.apache.jena.arq.querybuilder.Order;
-import org.apache.jena.update.UpdateRequest;
-import org.apache.jena.graph.NodeFactory;
-import org.apache.jena.query.Query;
-import org.json.JSONArray;
-
-import org.locationtech.jts.operation.buffer.BufferOp;
-import org.locationtech.jts.operation.buffer.BufferParameters;
-
-import org.cts.op.CoordinateOperation;
-import org.cts.op.CoordinateOperationFactory;
-import org.cts.registry.EPSGRegistry;
-import org.cts.registry.RegistryManager;
-import org.cts.CRSFactory;
-import org.cts.crs.CoordinateReferenceSystem;
-import org.cts.crs.GeodeticCRS;
 
 @WebServlet(
         urlPatterns = {
@@ -75,7 +79,8 @@ public class CEAAgent extends JPSAgent {
     public static final String KEY_GEOMETRY = "geometryEndpoint";
     public static final String KEY_USAGE = "usageEndpoint";
     public static final String KEY_WEATHER = "weatherEndpoint";
-    public static final String KEY_TERRAIN = "terrainTable";
+    public static final String KEY_TERRAIN_DB = "terrainDatabase";
+    public static final String KEY_TERRAIN_TABLE = "terrainTable";
     public static final String KEY_CEA = "ceaEndpoint";
     public static final String KEY_GRAPH = "graphName";
 
@@ -161,19 +166,23 @@ public class CEAAgent extends JPSAgent {
     public final int NUM_CEA_THREADS = 1;
     private final ThreadPoolExecutor CEAExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NUM_CEA_THREADS);
 
-    private static final String TIME_SERIES_CLIENT_PROPS = "timeseriesclient.properties";
     private TimeSeriesClient<OffsetDateTime> tsClient;
     public static final String timeUnit = OffsetDateTime.class.getSimpleName();
-    private static final String FS = System.getProperty("file.separator");
-    private static final String POSTGIS_PROPS = "postgis.properties";
 
-    private String dbUser;
-    private String dbPassword;
+    public static final String STACK_NAME = "<STACK NAME>";
+    private String stackName;
+    private EndpointConfig endpointConfig = new EndpointConfig();
     private RemoteRDBStoreClient rdbStoreClient;
     private RemoteStoreClient storeClient;
-
-    private String postgisTable;
-
+    private String stackAccessAgentBase;
+    private String defaultCeaLabel;
+    private String defaultUsageLabel;
+    private String dbUser;
+    private String dbPassword;
+    private String tsDb;
+    private String tsUrl;
+    private String defaultTerrainDb;
+    private String defaultTerrainTable;
     // Variables fetched from CEAAgentConfig.properties file.
     private String ocgmlUri;
     private String ontoUBEMMPUri;
@@ -201,15 +210,17 @@ public class CEAAgent extends JPSAgent {
 
     public CEAAgent() {
         readConfig();
+        stackName = StackClient.getStackName();
+        stackAccessAgentBase =  stackAccessAgentBase.replace(STACK_NAME, stackName);
+        tsUrl = endpointConfig.getDbUrl(tsDb);
+        dbUser = endpointConfig.getDbUser();
+        dbPassword = endpointConfig.getDbPassword();
+        rdbStoreClient = new RemoteRDBStoreClient(tsUrl, dbUser, dbPassword);
     }
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
         if (validateInput(requestParams)) {
-            rdbStoreClient = getRDBClient(getPropsPath(TIME_SERIES_CLIENT_PROPS));
-            dbUser = rdbStoreClient.getUser();
-            dbPassword = rdbStoreClient.getPassword();
-
             requestUrl = requestParams.getString(KEY_REQ_URL);
             String uriArrayString = requestParams.get(KEY_IRI).toString();
             JSONArray uriArray = new JSONArray(uriArrayString);
@@ -270,6 +281,8 @@ public class CEAAgent extends JPSAgent {
                     List<String> uniqueSurrounding = new ArrayList<>();
                     List<Coordinate> surroundingCoordinates = new ArrayList<>();
                     String crs = new String();
+                    String terrainDb = defaultTerrainDb;
+                    String terrainTable = defaultTerrainTable;
 
                     for (int i = 0; i < uriArray.length(); i++) {
                         String uri = uriArray.getString(i);
@@ -281,15 +294,15 @@ public class CEAAgent extends JPSAgent {
                             // if KEY_GEOMETRY is not specified in requestParams, geometryRoute defaults to TheWorldAvatar Blazegraph
                             geometryRoute = requestParams.has(KEY_GEOMETRY) ? requestParams.getString(KEY_GEOMETRY) : getRoute(uri);
                             // if KEY_USAGE is not specified in requestParams, geometryRoute defaults to TheWorldAvatar Blazegraph
-                            usageRoute = requestParams.has(KEY_USAGE) ? requestParams.getString(KEY_USAGE) : geometryRoute;
+                            usageRoute = requestParams.has(KEY_USAGE) ? requestParams.getString(KEY_USAGE) : stackAccessAgentBase + defaultUsageLabel;
                             weatherRoute = requestParams.has(KEY_WEATHER) ? requestParams.getString(KEY_WEATHER) : defaultWeatherRoute;
-                            postgisTable = requestParams.has(KEY_TERRAIN) ? requestParams.getString(KEY_TERRAIN) : null;
+                            terrainDb = requestParams.has(KEY_TERRAIN_DB) ? requestParams.getString(KEY_TERRAIN_TABLE) : terrainDb;
+                            terrainTable = requestParams.has(KEY_TERRAIN_TABLE) ? requestParams.getString(KEY_TERRAIN_TABLE) : terrainTable;
 
                             if (!requestParams.has(KEY_CEA)) {
-                                // if KEY_CEA is not specified in requestParams, set ceaRoute to TheWorldAvatar Blazegraph
-                                ceaRoute = getRoute(uri);
-                                // default graph in TheWorldAvatar Blazegraph is energyprofile if no KEY_GRAPH specified in requestParams
-                                namedGraph = requestParams.has(KEY_GRAPH) ? requestParams.getString(KEY_GRAPH) : getGraph(uri, ENERGY_PROFILE);
+                                // if KEY_CEA is not specified in requestParams, set ceaRoute to stack Blazegraph
+                                ceaRoute = stackAccessAgentBase + defaultCeaLabel;
+                                namedGraph = requestParams.has(KEY_GRAPH) ? requestParams.getString(KEY_GRAPH) : "";
 
                             } else {
                                 ceaRoute = requestParams.getString(KEY_CEA);
@@ -349,7 +362,7 @@ public class CEAAgent extends JPSAgent {
                             testData.add(new CEAInputData(footprint, height, usage, surrounding, null, null, null));
                         }
                     }
-                    byte[] terrain = getTerrain(uriStringArray.get(0), geometryRoute, crs, surroundingCoordinates);
+                    byte[] terrain = getTerrain(uriStringArray.get(0), geometryRoute, crs, surroundingCoordinates, terrainDb, terrainTable);
                     // Manually set thread number to 0 - multiple threads not working so needs investigating
                     // Potentially issue is CEA is already multi-threaded
                     runCEA(testData, uriStringArray, 0, crs, terrain);
@@ -363,10 +376,9 @@ public class CEAAgent extends JPSAgent {
                     // Only set route once - assuming all iris passed in same namespace
                     if(i==0) {
                         if (!requestParams.has(KEY_CEA)){
-                            // if KEY_CEA is not specified in requestParams, set ceaRoute to TheWorldAvatar Blazegraph
-                            ceaRoute = getRoute(uri);
-                            // default graph in TheWorldAvatar Blazegraph is energyprofile if no KEY_GRAPH specified in requestParams
-                            namedGraph = requestParams.has(KEY_GRAPH) ? requestParams.getString(KEY_GRAPH) : getGraph(uri,ENERGY_PROFILE);
+                            // if KEY_CEA is not specified in requestParams, set ceaRoute to stack Blazegraph
+                            ceaRoute = stackAccessAgentBase + defaultCeaLabel;
+                            namedGraph = requestParams.has(KEY_GRAPH) ? requestParams.getString(KEY_GRAPH) : "";
                         }
                         else{
                             ceaRoute = requestParams.getString(KEY_CEA);
@@ -625,8 +637,14 @@ public class CEAAgent extends JPSAgent {
         accessAgentRoutes.put("http://www.theworldavatar.com:83/citieskg/namespace/kingslynnEPSG3857/sparql/", config.getString("kingslynnEPSG3857.targetresourceid"));
         accessAgentRoutes.put("http://www.theworldavatar.com:83/citieskg/namespace/kingslynnEPSG27700/sparql/", config.getString("kingslynnEPSG27700.targetresourceid"));
         accessAgentRoutes.put("http://www.theworldavatar.com:83/citieskg/namespace/pirmasensEPSG32633/sparql/", config.getString("pirmasensEPSG32633.targetresourceid"));
+        stackAccessAgentBase = config.getString("access.url");
+        defaultCeaLabel = config.getString("cea.label");
+        defaultUsageLabel = config.getString("usage.label");
         defaultWeatherRoute = config.getString("weather.targetresourceid");
         openmeteagentURL = config.getString("url.openmeteoagent");
+        defaultTerrainDb = config.getString("postgis.database");
+        defaultTerrainTable = config.getString("postgis.table");
+        tsDb = config.getString("cea.database");
     }
 
     /**
@@ -1787,12 +1805,12 @@ public class CEAAgent extends JPSAgent {
      * @param crs coordinate reference system used by route
      * @return terrain data as byte[]
      */
-    private byte[] getTerrain(String uriString, String route, String crs, List<Coordinate> surroundingCoordinates) {
-
-        RemoteRDBStoreClient postgisClient = getRDBClient(getPropsPath(POSTGIS_PROPS));
+    private byte[] getTerrain(String uriString, String route, String crs, List<Coordinate> surroundingCoordinates, String database, String table) {
+        String dbUrl = endpointConfig.getDbUrl(database);
+        RemoteRDBStoreClient postgisClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
 
         // query for the coordinate reference system used by the terrain data
-        String sridQuery = String.format("SELECT ST_SRID(rast) as srid FROM public.%s LIMIT 1", postgisTable);
+        String sridQuery = String.format("SELECT ST_SRID(rast) as srid FROM public.%s LIMIT 1", table);
 
         Coordinate centerCoordinate;
 
@@ -1838,7 +1856,7 @@ public class CEAAgent extends JPSAgent {
             Coordinate coordinate = transformCoordinate(centerCoordinate, crs, "EPSG:" + postgisCRS);
 
             // query for terrain data
-            String terrainQuery = getTerrainQuery(coordinate.getX(), coordinate.getY(), radius, postgisCRS, postgisTable);
+            String terrainQuery = getTerrainQuery(coordinate.getX(), coordinate.getY(), radius, postgisCRS, table);
 
             try (Connection conn = postgisClient.getConnection()) {
                 Statement stmt = conn.createStatement();
@@ -2847,50 +2865,6 @@ public class CEAAgent extends JPSAgent {
         Geometry buffered = BufferOp.bufferOp(geom, distance * -1, bufferParameters);
         buffered.setUserData(geom.getUserData());
         return buffered;
-    }
-
-    /**
-     * Returns .properties file path as string
-     * @param fileName name of .properties file
-     * @return .properties file path as string
-     */
-    private String getPropsPath(String fileName){
-        try {
-            if (System.getProperty("os.name").toLowerCase().contains("win")) {
-                return new File(
-                        Objects.requireNonNull(getClass().getClassLoader().getResource(fileName)).toURI()).getAbsolutePath();
-            } else {
-                return FS + "target" + FS + "classes" + FS + fileName;
-            }
-        }
-        catch (URISyntaxException e) {
-            e.printStackTrace();
-            throw new JPSRuntimeException(e);
-        }
-    }
-
-    /**
-     * Creates and returns a RemoteRDBStoreClient object with the database URL, username, and password from the .properties file at path
-     * @param path .properties file path as string
-     * @return RemoteRDBStoreClient object with the database URL, username, and password from the .properties file at path
-     */
-    public RemoteRDBStoreClient getRDBClient(String path) {
-        try {
-            FileInputStream in = new FileInputStream(path);
-            Properties props = new Properties();
-            props.load(in);
-            in.close();
-
-            if (path.contains(POSTGIS_PROPS) && postgisTable == null) {
-                postgisTable = props.getProperty("db.table");
-            }
-
-            return new RemoteRDBStoreClient(props.getProperty("db.url"), props.getProperty("db.user"), props.getProperty("db.password"));
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-            throw new JPSRuntimeException(e);
-        }
     }
 
     /**
