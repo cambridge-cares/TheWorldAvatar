@@ -14,7 +14,7 @@ The knowledge graph and its agents are hosted using collections of containers. H
 
 ##### Digital Twin Visualisation Framework
 
-The DTVF is a container that provides a web-page with which a human user can view and explore geospatial information held in the KG. This includes not only map data, 3D-representations of buildings, and building information models (BIM), but also any data or information connected to them within the KG, such as data calculated by models, acquired sensor data, or other time series data. The Feature Information Agent (FIA) is the link that enables the interaction between the visualisation front-end and the KG: When the visualisation needs to display something, e.g. because a user clicked on a feature, the FIA will retrieve the required information from the KG. More information can be found [here](./web/digital-twin-vis-framework).
+The [DTVF](./web/digital-twin-vis-framework) is a container that provides a web-page with which a human user can view and explore geospatial information held in the KG. This includes not only map data, 3D-representations of buildings, and building information models (BIM), but also any data or information connected to them within the KG, such as data calculated by models, acquired sensor data, or other time series data. The Feature Information Agent (FIA) is the link that enables the interaction between the visualisation front-end and the KG: When the visualisation needs to display something, e.g. because a user clicked on a feature, the FIA will retrieve the required information from the KG.
 
 ### Agents
 
