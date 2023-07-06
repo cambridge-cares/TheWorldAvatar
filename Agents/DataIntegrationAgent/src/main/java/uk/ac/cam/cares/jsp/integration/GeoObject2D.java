@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jsp.integration;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.postgis.PGgeometry;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -22,6 +23,8 @@ public class GeoObject2D {
 
     private static final Logger LOGGER = LogManager.getLogger(SpatialLink.class);
     private PostgresClient postgresClient;
+    private static final String INVALID_CONNECTION_MESSAGE = "Connection is invalid...";
+    private SqlConnectionPool pool;
 
     public GeoObject2D () {}
     public GeoObject2D(String name, String street, String house, String postcode, String country, String city, PGgeometry geometry){
@@ -72,13 +75,20 @@ public class GeoObject2D {
         this.postgresClient = postgresClient;
     }
 
-    public List<GeoObject2D> getObject2D (String tableName){
+    public List<GeoObject2D> getObject2D (String[] config){
 
         List<GeoObject2D> allObject2D = new ArrayList<>();
 
-        try (Connection conn = postgresClient.getConnection()) {
-            String sql = "SELECT name, add_postcode, add_street, add_housenumber, add_country, add_city, wkb_geometry FROM " + tableName + " WHERE name is not null or add_street is not null";
-            try (Statement stmt = conn.createStatement()) {
+        this.pool = new SqlConnectionPool(config);
+        LOGGER.info("Pinging source database for availability...");
+        try (Connection srcConn = this.pool.getSourceConnection()) {
+            if (!srcConn.isValid(60)) {
+                LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
+                throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
+            }
+
+            String sql = "SELECT name, add_postcode, add_street, add_housenumber, add_country, add_city, wkb_geometry FROM " + config[6] + " WHERE name is not null or add_street is not null";
+            try (Statement stmt = srcConn.createStatement()) {
                 ResultSet result = stmt.executeQuery(sql);
                 while (result.next()) {
                     GeoObject2D object2D = new GeoObject2D();
@@ -94,11 +104,11 @@ public class GeoObject2D {
                 }
                 return allObject2D;
             }
+
         } catch (SQLException e) {
-            LOGGER.error("Probably failed to disconnect");
-            LOGGER.error(e.getMessage());
+            LOGGER.fatal("Error connecting to source database: " + e);
+            throw new JPSRuntimeException("Error connecting to source database: " + e);
         }
-        return null;
     }
 
 

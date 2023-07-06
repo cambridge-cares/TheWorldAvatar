@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jsp.integration;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.postgis.PGgeometry;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -20,6 +21,8 @@ public class GeoObject3D {
 
     private static final Logger LOGGER = LogManager.getLogger(SpatialLink.class);
     private PostgresClient postgresClient;
+    private static final String INVALID_CONNECTION_MESSAGE = "Connection is invalid...";
+    private SqlConnectionPool pool;
 
     public GeoObject3D () {}
     public GeoObject3D(String name, String gmlid, int objectClassid, PGgeometry geometry){
@@ -60,13 +63,19 @@ public class GeoObject3D {
 
     public ObjectAddress getAddress(){ return this.address;}
 
-    public List<GeoObject3D> getObject3D (){
+    public List<GeoObject3D> getObject3D (String[] config){
 
         List<GeoObject3D> allObject3D = new ArrayList<>();
+        this.pool = new SqlConnectionPool(config);
+        LOGGER.info("Pinging source database for availability...");
+        try (Connection srcConn = this.pool.getSourceConnection()) {
+            if (!srcConn.isValid(60)) {
+                LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
+                throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
+            }
 
-        try (Connection conn = postgresClient.getConnection()) {
             String sql = "SELECT id, gmlid, objectclass_id, name, envelope FROM cityobject";
-            try (Statement stmt = conn.createStatement()) {
+            try (Statement stmt = srcConn.createStatement()) {
                 ResultSet result = stmt.executeQuery(sql);
                 while (result.next()) {
                     GeoObject3D object3D = new GeoObject3D();
@@ -75,16 +84,15 @@ public class GeoObject3D {
                     object3D.setName(result.getString("name"));
                     object3D.setGeometry((PGgeometry)result.getObject("envelope"));
                     object3D.setPostGISClient(postgresClient);
-                    object3D.setAddress(this.address.queryAddress(result.getInt("id"), conn));
+                    object3D.setAddress(this.address.queryAddress(result.getInt("id"), srcConn));
                     allObject3D.add(object3D);
                 }
                 return allObject3D;
             }
         } catch (SQLException e) {
-            LOGGER.error("Probably failed to disconnect");
-            LOGGER.error(e.getMessage());
+            LOGGER.fatal("Error connecting to source database: " + e);
+            throw new JPSRuntimeException("Error connecting to source database: " + e);
         }
-        return null;
     }
 
     void setPostGISClient(PostgresClient postgresClient) {

@@ -66,6 +66,7 @@ public class SpatialLink extends HttpServlet {
                 LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
                 throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
             }
+
         } catch (SQLException e) {
             LOGGER.fatal("Error connecting to source database: " + e);
             throw new JPSRuntimeException("Error connecting to source database: " + e);
@@ -99,10 +100,10 @@ public class SpatialLink extends HttpServlet {
 //            postgresClient3d = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
 //        }
 
-        object2D.setPostGISClient(postgresClient2d);
-        this.allObject2D = object2D.getObject2D(config[5]);
-        object3D.setPostGISClient(postgresClient3d);
-        this.allObject3D = object3D.getObject3D();
+//        object2D.setPostGISClient(postgresClient2d);
+        this.allObject2D = object2D.getObject2D(config);
+//        object3D.setPostGISClient(postgresClient3d);
+        this.allObject3D = object3D.getObject3D(config);
         try {
             findMatchedObjects();
         } catch (ParseException | FactoryException | TransformException | SQLException e) {
