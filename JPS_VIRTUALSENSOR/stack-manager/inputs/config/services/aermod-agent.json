@@ -1,0 +1,71 @@
+{
+	"ServiceSpec": {
+		"Name": "aermod-agent",
+		"TaskTemplate": {
+			"ContainerSpec": {
+				"Image": "ghcr.io/cambridge-cares/aermod-agent:1.2.3",
+				"Env": [
+					"PYTHON_SERVICE_URL=http://ship-stack-python-service:5000/getAermodGeoJSON",
+					"PYTHON_SERVICE_ELEVATION_URL=http://ship-stack-python-service:5000/getElevationGeoJSON",
+					"AERMAP_EXE=/root/aermod/aermap",
+					"BPIPPRM_EXE=/root/aermod/bpipprm",
+					"AERMET_EXE=/root/aermod/aermet",
+					"AERMOD_EXE=/root/aermod/aermod",
+					"WEATHER_AGENT=http://ship-stack-weather-agent:8080/WeatherAgent/UpdateStation",
+					"DATABASE=postgres",
+					"GEOSERVER_WORKSPACE=dispersion",
+					"DISPERSION_LAYER=dispersion_layer",
+					"SIMULATION_DIR=/root/aermod/simulations",
+					"FILE_SERVER_URL=http://ship-stack-file-server:8080/FileServer/",
+					"DISPERSION_STYLE_NAME=dispersion_style",
+					"SOURCE_LAYER=source_layer",
+					"VIS_FOLDER=/vis_data",
+					"GEOSERVER_URL=http://localhost:3838/geoserver",
+					"ELEVATION_TABLE=elevation",
+					"DISPERSION_CONTOURS_TABLE=dispersion_contours",
+					"DISPERSION_RASTER_TABLE=dispersion_raster"
+				],
+				"Configs": [
+					{
+						"ConfigName": "postgis"
+					},
+					{
+						"ConfigName": "blazegraph"
+					},
+					{
+						"ConfigName": "ontop"
+					},
+					{
+						"ConfigName": "geoserver"
+					}
+				],
+				"Secrets": [
+					{
+						"SecretName": "postgis_password"
+					},
+					{
+						"SecretName": "geoserver_password"
+					}
+				],
+				"Mounts": [
+					{
+						"Type": "volume",
+						"Source": "logs",
+						"Target": "/root/.jps"
+					},
+					{
+						"Type": "volume",
+						"Source": "vis_data",
+						"Target": "/vis_data"
+					}
+				]
+			}
+		}
+	},
+	"endpoints": {
+		"aermod-agent": {
+			"url": "http://localhost:8080/AermodAgent/",
+			"externalPath": "/aermod-agent/"
+		}
+	}
+}

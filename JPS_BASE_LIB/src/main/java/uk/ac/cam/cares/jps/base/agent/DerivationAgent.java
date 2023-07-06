@@ -116,6 +116,9 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 			// instances)
 			Derivation derivation = new Derivation(derivationIRI, derivationType);
 			if (!derivation.isDerivationAsyn() && !derivation.isDerivationWithTimeSeries()) {
+				// perform the mapping between the new outputs and the downstream derivations
+				Map<String, List<String>> connectionMap = this.devClient.mapSyncNewOutputsToDownstream(
+						outputs.getThisDerivation(), outputs.getNewOutputsAndRdfTypeMap());
 				// construct and fire SPARQL update given DerivationOutputs objects, if normal
 				// derivation
 				// NOTE this makes sure that the new generated instances/triples will
@@ -123,9 +126,8 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 				// at the point of executing SPARQL update, i.e. this solves concurrent request
 				// issue as detailed in
 				// https://github.com/cambridge-cares/TheWorldAvatar/issues/184
-				boolean triplesChangedForSure = this.devClient.reconnectNewDerivedIRIs(outputs.getOutputTriples(),
-						outputs.getNewEntitiesDownstreamDerivationMap(), outputs.getThisDerivation(),
-						outputs.getRetrievedInputsAt());
+				boolean triplesChangedForSure = this.devClient.reconnectSyncDerivation(outputs.getThisDerivation(),
+						connectionMap, outputs.getOutputTriples(), outputs.getRetrievedInputsAt());
 
 				// for normal Derivation, we need to return both timestamp and the new derived
 				if (triplesChangedForSure) {
@@ -135,6 +137,8 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 							outputs.getRetrievedInputsAt());
 					res.put(DerivationClient.AGENT_OUTPUT_KEY,
 							outputs.getNewEntitiesJsonMap());
+					res.put(DerivationClient.AGENT_OUTPUT_CONNECTION_KEY,
+							new JSONObject(connectionMap));
 					LOGGER.info("Derivation update is done in the knowledge graph, returned response: " + res);
 				} else {
 					// if we are not certain, query the knowledge graph to get the accurate
@@ -142,6 +146,7 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 					Derivation updated = this.devClient.getDerivation(derivationIRI);
 					res.put(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY, updated.getTimestamp());
 					res.put(DerivationClient.AGENT_OUTPUT_KEY, updated.getBelongsToMap());
+					res.put(DerivationClient.AGENT_OUTPUT_CONNECTION_KEY, updated.getDownstreamDerivationConnectionMap());
 					LOGGER.info(
 							"Unable to determine if the SPARQL update mutated triples, returned latest information in knowledge graph: "
 									+ res);

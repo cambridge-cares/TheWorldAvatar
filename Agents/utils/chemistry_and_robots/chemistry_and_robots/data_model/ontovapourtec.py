@@ -104,26 +104,21 @@ class PumpSettings(EquipmentSettings):
 
         return super().create_instance_for_kg(g, configure_digital_twin)
 
-class Vial(BaseOntology):
-    clz: str = ONTOVAPOURTEC_VIAL
-    isFilledWith: Optional[ChemicalSolution] = None # NOTE ChemicalSolution is made optional to accommodate situation where vial is empty
-    hasFillLevel: OM_Volume
-    hasWarningLevel: OM_Volume # notify researchers to fill up if the fill level is below the warning level
-    hasMaxLevel: OM_Volume
-    isHeldIn: str # NOTE here we simplify the implementation to use str instead of the actual AutoSamplerSite
+class Vial(ChemicalContainer):
+    clz: str = ONTOLAB_VIAL
 
 class AutoSamplerSite(BaseOntology):
     clz: str = ONTOVAPOURTEC_AUTOSAMPLERSITE
     holds: Vial
     locationID: str
 
-    def get_ontocape_material_given_chemical_species(
+    def get_chemical_given_chemical_species(
         self,
         solute: str,
         solvent_as_constraint: List[str]=None,
         species_to_exclude: List[str]=None,
         only_allow_fully_identified_material: bool=True,
-    ) -> Optional[OntoCAPE_Material]:
+    ) -> Optional[Chemical]:
         if self.holds is not None:
             if self.holds.isFilledWith is not None:
                 if self.holds.isFilledWith.refersToMaterial is not None:
@@ -214,7 +209,7 @@ class VapourtecR2Pump(LabEquipment):
     def is_reference_pump(self) -> bool:
         return self.locationID == "A"
 
-    def get_reagent_chemical_solution(self) -> Optional[ChemicalSolution]:
+    def get_reagent_chemical_amount(self) -> Optional[ChemicalAmount]:
         return self.hasReagentSource.isFilledWith if self.hasReagentSource is not None else None
 
 class VapourtecState(Saref_State):
@@ -231,6 +226,7 @@ class VapourtecRS400(LabEquipment):
     clz: str = ONTOVAPOURTEC_VAPOURTECRS400
     hasState: VapourtecState
     hasCollectionMethod: CollectionMethod
+    recommendedReactionScale: Optional[OM_Volume]
 
     # def get_collection_site_number(self, collection_site: str) -> int:
     #     return int([site.locationID for site in self.get_autosampler().hasSite if site.instance_iri == collection_site][0])
@@ -257,7 +253,7 @@ class VapourtecRS400(LabEquipment):
         solute: str,
         solvent_as_constraint: List[str]=None,
         species_to_exclude: List[str]=None,
-    ) -> OntoCAPE_Material:
+    ) -> Chemical:
         # first check if any of the reagent bottles contains the chemical species
         reagent_bottle = self.get_reagent_bottle_of_r2_pumps()
         if bool(reagent_bottle):
@@ -276,11 +272,11 @@ class VapourtecRS400(LabEquipment):
         if bool(self.get_r2_pump_source_from_autosampler()):
             # if yes, can return now
             lst_material = [
-                site.get_ontocape_material_given_chemical_species(
+                site.get_chemical_given_chemical_species(
                     solute=solute,
                     solvent_as_constraint=solvent_as_constraint,
                     species_to_exclude=species_to_exclude,
-                ) for site in self.get_autosampler().hasSite if site.get_ontocape_material_given_chemical_species(
+                ) for site in self.get_autosampler().hasSite if site.get_chemical_given_chemical_species(
                     solute=solute,
                     solvent_as_constraint=solvent_as_constraint,
                     species_to_exclude=species_to_exclude,
@@ -451,13 +447,13 @@ class VapourtecRS400(LabEquipment):
             autosampler_site = None # initialise autosampler_site as None
 
             # note that if the ReactionScale is specified, then we also need to set the sample volume for the pump
-            if input_chem.instance_iri == reaction_scale.indicateUsageOf:
+            if input_chem.instance_iri == reaction_scale.indicatesUsageOf:
                 # if this is the reference reactant then it also MUST be the reference pump
-                ref_pump_chem_sol = reference_pump.get_reagent_chemical_solution()
-                if ref_pump_chem_sol is not None:
+                ref_pump_chem_amount = reference_pump.get_reagent_chemical_amount()
+                if ref_pump_chem_amount is not None:
                     # this means the reference_pump is pumping liquid from ReagentBottle
                     # therefore, the chemical in this pump must be the same as the reference chemical
-                    if ref_pump_chem_sol.refersToMaterial.thermodynamicBehaviour != input_chem.thermodynamicBehaviour:
+                    if ref_pump_chem_amount.refersToMaterial.thermodynamicBehaviour != input_chem.thermodynamicBehaviour:
                         raise Exception(
                             f"""The reference pump <{reference_pump.instance_iri}> is pumping liquid from ReagentBottle <{reference_pump.hasReagentSource.instance_iri}>.
                             However, the chemical in this pump is not the same as the reference InputChemical in ReactionEexperiment <{rxn_exp.instance_iri}>:

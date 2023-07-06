@@ -3,7 +3,7 @@ version: "3.8"
 # All Services
 services:
   dispersion-vis:
-    image: docker.cmclinnovations.com/dispersion-vis:latest
+    image: ghcr.io/cambridge-cares/dispersion-vis:1.1.1-SNAPSHOT
     deploy:
       mode: replicated
       replicas: 1
@@ -19,4 +19,5 @@ services:
 volumes:
   vis_data:
     name: "vis_data"
+    external: true
  

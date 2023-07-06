@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
@@ -31,11 +32,9 @@ public class DerivationSparqlIntegrationTest {
 	static final String agentIRI = "http://agentIRI";
 	static final String derivationBaseUrl = "http://derivation/";
 
-	// NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
-	// For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 	@Container
-	private static GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
-			.withExposedPorts(9999); // the port is set as 9999 to match with the value set in the docker image
+	private static GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph:1.1.0"))
+			.withExposedPorts(8080); // the port is set as 8080 to match with the value set in the docker image
 
 	@BeforeClass
 	public static void initialise()
@@ -45,6 +44,13 @@ public class DerivationSparqlIntegrationTest {
 			blazegraph.start();
 		} catch (Exception e) {
 			throw new JPSRuntimeException("DerivationClientIntegrationTest: Docker container startup failed. Please try running tests again");
+		}
+
+		try {
+			// wait for the blazegraph to be ready
+			TimeUnit.SECONDS.sleep(10);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 
 		// initialise all variables to be used
@@ -97,7 +103,7 @@ public class DerivationSparqlIntegrationTest {
 	 * DerivationSparql::updateDerivationIfHttpPostAvailable.
 	 */
 	@Test
-	public void testReconnectNewDerivedIRIs() {
+	public void testReconnectSyncDerivation() {
 		String derivedAgentIRI = "http://" + UUID.randomUUID().toString();
 		List<String> inputs = Arrays.asList("http://" + UUID.randomUUID().toString(), "http://" + UUID.randomUUID().toString());
 		List<String> oldInstances = Arrays.asList("http://a", "http://b", "http://c");
@@ -143,7 +149,7 @@ public class DerivationSparqlIntegrationTest {
 
 		// case 1: derivation is outdated, now delete and add new instances should work
 		long retrievedInputsAt = Instant.now().getEpochSecond();
-		boolean triplesChanged = devSparql.reconnectNewDerivedIRIs(newTriples1, newInstanceMap1, derivation, retrievedInputsAt);
+		boolean triplesChanged = devSparql.reconnectSyncDerivation(derivation, newInstanceMap1, newTriples1, retrievedInputsAt);
 		Assert.assertTrue(triplesChanged);
 		// all old outputs should be deleted
 		for (String instance : oldInstances) {
@@ -168,7 +174,7 @@ public class DerivationSparqlIntegrationTest {
 
 		// case 2: as now the timestamp of this derivation is up-to-date, nothing should
 		// happen when reconnectNewDerivedIRIs again with a new sets of instances
-		triplesChanged = devSparql.reconnectNewDerivedIRIs(newTriples2, newInstanceMap2, derivation, retrievedInputsAt);
+		triplesChanged = devSparql.reconnectSyncDerivation(derivation, newInstanceMap2, newTriples2, retrievedInputsAt);
 		Assert.assertTrue(!triplesChanged);
 		// repeat all checks after case 1
 		// all old outputs should be deleted

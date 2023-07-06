@@ -59,7 +59,7 @@ class Manager {
     constructor(mapProvider: MapProvider) {
         Manager.PROVIDER = mapProvider;
         this.controlHandler = new ControlHandler();
-        this.panelHandler = new PanelHandler();
+        this.panelHandler = new PanelHandler(this);
 
         // Initialise the map handler instance
         switch(mapProvider) {
@@ -114,8 +114,21 @@ class Manager {
 
                 if(self.searchHandler != null) self.searchHandler.toggle();
                 e.preventDefault();
+
+            } else if ((e.ctrlKey || e.metaKey) && e.altKey && e.key === "t") {
+                if(Manager.PROVIDER === MapProvider.CESIUM) {
+                    console.log("Camera Longitude: " + Cesium.Math.toDegrees(MapHandler.MAP.camera.positionCartographic.longitude));
+                    console.log("Camera Latitude: " + Cesium.Math.toDegrees(MapHandler.MAP.camera.positionCartographic.latitude));
+                    console.log("Camera Height: " + MapHandler.MAP.camera.positionCartographic.height);
+                    console.log("Camera Heading: " + Cesium.Math.toDegrees(MapHandler.MAP.camera.heading));
+                    console.log("Camera Pitch: " + Cesium.Math.toDegrees(MapHandler.MAP.camera.pitch));
+                    console.log("Camera Roll: " + Cesium.Math.toDegrees(MapHandler.MAP.camera.roll));
+                }
+
+                e.preventDefault();
             }
         });
+
     }
 
     private toggleFullscreen() {
@@ -283,11 +296,8 @@ class Manager {
             this.panelHandler.setContent(
                 "<div class='description'>No data is available for this location.</div>"
             );
-        } else {
-            // Simulate click on meta button
-            if(metaTreeButton !== null) metaTreeButton.click();
-        }
-
+        } 
+        
         // Simulate click on general tab
         // @ts-ignore
         $("#sidePanelInner").tabs("option", "active", 0);

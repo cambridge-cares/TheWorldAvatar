@@ -5,7 +5,7 @@ services:
     container_name: derivationasynexample
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
-    image: derivationasynexample:1.3.0
+    image: derivationasynexample:1.4.0
     build:
       context: ./
     volumes:
@@ -18,8 +18,9 @@ services:
     container_name: "blazegraph_dae"
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      BLAZEGRAPH_USER: bg_user
       BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
-    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
     # Add a secret to set the password for BASIC authentication
     secrets: # username is bg_user
       - blazegraph_password

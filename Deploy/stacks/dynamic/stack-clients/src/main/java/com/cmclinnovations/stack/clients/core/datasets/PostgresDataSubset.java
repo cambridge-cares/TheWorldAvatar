@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public abstract class PostgresDataSubset extends DataSubset {
 
-    @JsonProperty(defaultValue = "public")
+    @JsonProperty(defaultValue = PostGISClient.DEFAULT_SCHEMA_NAME)
     private String schema;
     private String table;
     @JsonProperty
@@ -52,7 +52,7 @@ public abstract class PostgresDataSubset extends DataSubset {
     }
 
     public String handleFileValues(String sql) {
-        if (sql.startsWith("@")) {
+        if (null != sql && sql.startsWith("@")) {
             String sqlFile = sql.substring(1);
             try {
                 sql = Files.readString(Path.of(sqlFile));

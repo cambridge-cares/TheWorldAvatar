@@ -22,7 +22,8 @@ from darts.metrics import mape, mse, rmse, smape
 from py4jps import agentlogging
 
 from forecasting.utils.tools import *
-from forecasting.utils.env_configs import *
+from forecasting.utils.default_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
+                                              DB_URL, DB_USER, DB_PASSWORD
 from forecasting.datamodel.iris import *
 from forecasting.datamodel.data_mapping import *
 from forecasting.kgutils.kgclient import KGClient
@@ -33,7 +34,9 @@ from forecasting.errorhandling.exceptions import KGException
 logger = agentlogging.get_logger('prod')
 
 
-def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=None, data_length=None):
+def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=None, data_length=None,
+             query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT, 
+             db_url=DB_URL, db_user=DB_USER, db_password=DB_PASSWORD):
     """
     Forecast a time series using a pre trained model or Prophet.
     returns a dictionary with the forecast and some metadata.
@@ -43,11 +46,17 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     :param forecast_start_date: The date from which you want to start forecasting
     :param use_model_configuration: If you want to force a specific model configuration, you can do so here
     :param data_length: The number of time steps which should be loaded from the DB
+    :param query_endpoint: The endpoint to query the KG
+    :param update_endpoint: The endpoint to update the KG
+    :param db_url: The url to the RDB
+    :param db_user: The user to the RDB
+    :param db_password: The password to the RDB
+    
     :return: The forecast is being returned.
     """
-    # initialise the  client
-    kgClient = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
-    tsClient = TSClient(kg_client=kgClient)
+    # Initialise the KG and TS clients
+    kgClient = KGClient(query_endpoint=query_endpoint, update_endpoint=update_endpoint)
+    tsClient = TSClient(kg_client=kgClient, rdb_url=db_url, rdb_user=db_user, rdb_password=db_password)
 
     covariates, backtest_series = None, None
 
@@ -67,7 +76,7 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     if data_length is not None:
         cfg['data_length'] = data_length
         
-    cfg['dataIRI'] = get_dataIRI(cfg, kgClient)
+    cfg['dataIRI'] = get_data_iri(cfg, kgClient)
     cfg['forecast_start_date'] = get_forecast_start_date(
         forecast_start_date, tsClient, cfg)
     logger.info(f'Using the forecast start date: {cfg["forecast_start_date"]}')
@@ -354,7 +363,7 @@ def load_ts_data(cfg, kgClient, tsClient):
     return series, covariates
 
 
-def get_dataIRI(cfg, kgClient):
+def get_data_iri(cfg, kgClient):
     """
     Retrieves the time series IRI from the KG.
     Either the iri has directly object with 'hasTimeSeries' with 'Measure' in between, 
@@ -432,7 +441,6 @@ def load_pretrained_model(cfg, ModelClass, force_download=False):
     if os.path.exists(path_to_store) and not force_download:
         # model already exists
         path_ckpt = path_to_store / "best-model.ckpt"
-        path_pth = ""
     else:
 
         # create folder
@@ -452,15 +460,22 @@ def load_pretrained_model(cfg, ModelClass, force_download=False):
                 model_path_pth_link, path_to_store.parent.absolute() / "_model.pth.tar")
             logger.info(f'Downloaded model from {model_path_pth_link} to {path_pth}')
 
-    model = ModelClass.load_from_checkpoint(
-        path_ckpt.parent.parent.__str__())
+
+    # load pre-trained model from best checkpoints
+    # NOTE: TFT model has been trained and saved on a CUDA device (i.e., using GPUs);
+    #       Attempting to deserialize saved model on a CPU-only machine requires
+    #       torchmetrics==0.9.3 and pytorch-lightning==1.7.7 (and will fail otherwise)
+    model = ModelClass.load_from_checkpoint(path_ckpt.parent.parent.as_posix())
     logger.info(f'Loaded model from  {path_ckpt.parent.parent.__str__()}')
 
     # convert loaded model to device
-    pl_trainer_kwargs = {"accelerator": 'cpu'}
-    model.model_params['pl_trainer_kwargs'] = pl_trainer_kwargs
-    model.trainer_params = pl_trainer_kwargs
-    logger.info(f'Moved model to device  {pl_trainer_kwargs["accelerator"]}')
+    trainer_params = {
+            "accelerator": "auto",
+            "devices": "auto",
+            "logger": False,
+        }
+    model.trainer_params.update(trainer_params)
+
     return model
 
 
@@ -517,13 +532,13 @@ def get_forecast_update(cfg):
     outputTimeInterval_iri = KB + 'Interval_' + str(uuid.uuid4())
     inputTimeInterval_iri = KB + 'Interval_' + str(uuid.uuid4())
 
-    outputEnd_iri, q = get_timeInstant(cfg['model_output_interval'][1])
+    outputEnd_iri, q = get_time_instant(cfg['model_output_interval'][1])
     update += q
-    outputBeginning_iri, q = get_timeInstant(cfg['model_output_interval'][0])
+    outputBeginning_iri, q = get_time_instant(cfg['model_output_interval'][0])
     update += q
-    inputEnd_iri, q = get_timeInstant(cfg['model_input_interval'][1])
+    inputEnd_iri, q = get_time_instant(cfg['model_input_interval'][1])
     update += q
-    inputBeginning_iri, q = get_timeInstant(cfg['model_input_interval'][0])
+    inputBeginning_iri, q = get_time_instant(cfg['model_input_interval'][0])
     update += q
 
     update += get_properties_for_subj(subj=outputTimeInterval_iri, verb_obj={
@@ -574,7 +589,7 @@ def convert_date_to_timestamp(date):
     return int(time_stamp)
 
 
-def get_timeInstant(date):
+def get_time_instant(date):
 
     time_stamp = convert_date_to_timestamp(date)
 

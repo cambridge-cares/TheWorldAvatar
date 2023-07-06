@@ -3,23 +3,11 @@
         "Name": "forecasting_agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/forecasting_agent:1.0.1",
+                "Image": "ghcr.io/cambridge-cares/forecasting_agent:1.1.1",
                 "Env": [
                     "NAMESPACE=excel",
                     "DATABASE=excel"
                 ],
-                "Mounts": [
-					{
-						"Type": "bind",
-						"Source": "C:/TheWorldAvatar-git/Agents/ForecastingAgent/forecasting",
-						"Target": "/app/forecasting"
-					},
-					{
-						"Type": "bind",
-						"Source": "/var/run/docker.sock",
-						"Target": "/var/run/docker.sock"
-					}
-				],
                 "Configs": [
                     {
                         "ConfigName": "blazegraph"
@@ -38,7 +26,7 @@
     },
     "endpoints": {
         "rest": {
-            "url": "http://localhost:5000/api/forecastingAgent/",
+            "url": "http://localhost:5000/",
             "externalPath": "/forecastingAgent/"
         }
     }
