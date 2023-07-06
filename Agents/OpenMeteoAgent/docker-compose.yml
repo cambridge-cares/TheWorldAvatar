@@ -9,9 +9,13 @@ services:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     ports:
       - "10101:8080"
-
+    configs:
+      - postgis
     volumes:
       - external_maven_repo_openmeteo:/root/.m2
+
+    secrets:
+      - postgis_password
 
 
 volumes:
