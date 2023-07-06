@@ -1,0 +1,26 @@
+version: "3.8"
+
+services:
+  data-integration:
+    image: ghcr.io/cambridge-cares/data-integration:1.0.0
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
+    environment:
+      - STACK_NAME=${STACK_NAME}
+      - DATABASE=postgres # currently ontop reads from the default database
+    configs:
+      - postgis
+    secrets:
+      - postgis_password
+    ports:
+      - "8086:8080"
+    volumes:
+      - logs:/root/.jps
+    networks:
+      - stack
+volumes:
+  logs:
+    name: "logs"
