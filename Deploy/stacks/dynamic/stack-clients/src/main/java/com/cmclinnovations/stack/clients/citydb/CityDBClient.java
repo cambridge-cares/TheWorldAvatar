@@ -127,7 +127,7 @@ public class CityDBClient extends ContainerClient {
 
     }
 
-    private void addIRIs(String database) {
+    public void addIRIs(String database) {
         String containerId = getContainerId("postgis");
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
