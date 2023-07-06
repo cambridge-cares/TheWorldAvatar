@@ -100,7 +100,7 @@ and it should return:
 ```
 curl -X POST --header "Content-Type: application/json" -d "{\"sashThreshold\":\"35\",\"delayMinutes\":\"15\"}" http://localhost:1025/fh-sash-and-occupancy-agent/retrieve
 ```
-Change the sashThreshold and delayMinutes value accordingly. The agent will take sashThreshold as the threshold for the sash opening percentage. If the fumehood or walkin-fumehood is unoccupied and it's sash opening percentage is higher than the threshold, it will wait for a certain number of minutes as indicated by delayMinutes before it checks the sash opening percentage and occupancy again, if the fumehood or walkin-fumehood is unoccupied and it's sash opening percentage is higher than the threshold, an email will be crafted and sent to the relevant personnel to alert them of the situation. 
+Change the sashThreshold and delayMinutes values accordingly. The agent will take sashThreshold as the threshold for the sash opening percentage. If the fumehood or walkin-fumehood is unoccupied and it's sash opening percentage is higher than the threshold, it will wait for a certain number of minutes as indicated by delayMinutes before it checks the sash opening percentage and occupancy again, if the fumehood or walkin-fumehood is unoccupied and it's sash opening percentage is higher than the threshold, an email will be crafted and sent to the relevant personnel to alert them of the situation. 
 
 If the agent runs successfully, it should return:
 ```
@@ -131,7 +131,7 @@ and it should return:
 ```
 curl -X POST --header "Content-Type: application/json" -d "{\"sashThreshold\":\"35\",\"delayMinutes\":\"15\"}" http://localhost:3838/fh-sash-and-occupancy-agent/retrieve
 ```
-Change the sashThreshold and delayMinutes value accordingly. The agent will take sashThreshold as the threshold for the sash opening percentage. If the fumehood or walkin-fumehood is unoccupied and it's sash opening percentage is higher than the threshold, it will wait for a certain number of minutes as indicated by delayMinutes before it checks the sash opening percentage and occupancy again, if the fumehood or walkin-fumehood is unoccupied and it's sash opening percentage is higher than the threshold, an email will be crafted and sent to the relevant personnel to alert them of the situation. 
+Change the sashThreshold and delayMinutes values accordingly. The agent will take sashThreshold as the threshold for the sash opening percentage. If the fumehood or walkin-fumehood is unoccupied and it's sash opening percentage is higher than the threshold, it will wait for a certain number of minutes as indicated by delayMinutes before it checks the sash opening percentage and occupancy again, if the fumehood or walkin-fumehood is unoccupied and it's sash opening percentage is higher than the threshold, an email will be crafted and sent to the relevant personnel to alert them of the situation. 
 
 If the agent runs successfully, it should return:
 ```
