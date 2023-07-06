@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.assetmanagementapp;
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.ScaleGestureDetector;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -52,16 +53,12 @@ public class ScanActivity extends AppCompatActivity {
 
         cameraExecutor = ContextCompat.getMainExecutor(this);
         viewModel = new ViewModelProvider(this).get(ScanViewModel.class);
-        viewModel.getBBox().observe(this, bBox -> {
-            boxOverlayView.setRect(bBox);
-        });
+        viewModel.getBBox().observe(this, bBox -> boxOverlayView.setRect(bBox));
+        binding.topActionBar.flashButton.setOnClickListener(v -> viewModel.toggleFlashState());
 
-        binding.topActionBar.flashButton.setOnClickListener(v -> {
-            viewModel.toggleFlashState();
-        });
+
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            // Request camera permission
             ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
         } else {
             startCamera();
@@ -120,10 +117,36 @@ public class ScanActivity extends AppCompatActivity {
 
         cameraProvider.unbindAll();
         Camera camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, qrAnalysis);
+        setupCameraControl(camera);
+
+        // image resolution width and height are opposite
+        boxOverlayView.setImageInfo(qrAnalysis.getResolutionInfo().getResolution().getHeight(), qrAnalysis.getResolutionInfo().getResolution().getWidth());
+    }
+
+    void setupCameraControl(Camera camera) {
+        // flash light control
         if (camera.getCameraInfo().hasFlashUnit()) {
             viewModel.getIsFlashOn().observe(this, isFlashOn -> camera.getCameraControl().enableTorch(isFlashOn));
         }
 
-        boxOverlayView.setImageInfo(qrAnalysis.getResolutionInfo().getResolution().getHeight(), qrAnalysis.getResolutionInfo().getResolution().getWidth()); // image resolution width and height are opposite
+        //  pinch-to-zoom
+        ScaleGestureDetector scaleGestureDetector = new ScaleGestureDetector(this, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            @Override
+            public boolean onScale(ScaleGestureDetector detector) {
+                // Get the current camera zoom ratio
+                float currentZoomRatio = camera.getCameraInfo().getZoomState().getValue() != null ? camera.getCameraInfo().getZoomState().getValue().getZoomRatio() : 1.0F;
+
+                // Get by how much the scale has changed due to the user's pinch gesture
+                float delta = detector.getScaleFactor();
+
+                // Update the camera's zoom ratio
+                camera.getCameraControl().setZoomRatio(currentZoomRatio * delta);
+                return true;
+            }
+        });
+        binding.previewView.setOnTouchListener((view, motionEvent) ->  {
+            scaleGestureDetector.onTouchEvent(motionEvent);
+            return true;
+        });
     }
 }
