@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jsp.linking;
+package uk.ac.cam.cares.jsp.integration;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

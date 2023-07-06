@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jsp.linking;
+package uk.ac.cam.cares.jsp.integration;
 /**
  * Set name of geoobject (3D model) based on reference data (2D geospatial data with metatdata)
  * All data in different database of PostgreSQL
@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.referencing.CRS;
+import org.json.JSONObject;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
@@ -22,6 +23,7 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -30,37 +32,48 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Stream;
 
-@WebServlet(urlPatterns = {"/SpatialLink"})
+
 public class SpatialLink extends HttpServlet {
 
     private static final Logger LOGGER = LogManager.getLogger(SpatialLink.class);
-    private static String file ="/inputs/config/spatiallink";
+    private static String file ="/inputs/config/endpoint.properties";
     private PostgresClient postgresClient2d;
     private PostgresClient postgresClient3d;
+    private static final String INVALID_CONNECTION_MESSAGE = "Connection is invalid...";
+    private SqlConnectionPool pool;
 
     List<GeoObject3D> allObject3D = new ArrayList<>();
     List<GeoObject2D> allObject2D = new ArrayList<>();
 
-    public SpatialLink() {}
-    void setPostGISClient2d(PostgresClient postgisClient) {
-        this.postgresClient2d = postgisClient;
-    }
-    void setPostGISClient3d(PostgresClient postgisClient) {
-        this.postgresClient3d = postgisClient;
-    }
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
-        new Config().initProperties();
-        LOGGER.info("Received POST request to build spatial linking");
-        LOGGER.info("Received request: " + req);
-
-        Map<String, String> parameters = aggregateByKeys();
-        String db3d = parameters.get("db3d");
-        String db2d = parameters.get("db2d");
-        String db2d_table = parameters.get("db2d_table");
+//    public SpatialLink() {}
+//    void setPostGISClient2d(PostgresClient postgisClient) {
+//        this.postgresClient2d = postgisClient;
+//    }
+//    void setPostGISClient3d(PostgresClient postgisClient) {
+//        this.postgresClient3d = postgisClient;
+//    }
+    protected void SpatialLink(String[] config) {
+//        new Config().initProperties();
+        this.pool = new SqlConnectionPool(config);
+        LOGGER.info("Pinging source database for availability...");
+        try (Connection srcConn = this.pool.getSourceConnection()) {
+            if (!srcConn.isValid(60)) {
+                LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
+                throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
+            }
+        } catch (SQLException e) {
+            LOGGER.fatal("Error connecting to source database: " + e);
+            throw new JPSRuntimeException("Error connecting to source database: " + e);
+        }
+//        Map<String, String> parameters = aggregateByKeys();
+//        String db3d = parameters.get("db3d");
+//        String db2d = parameters.get("db2d");
+//        String db2d_table = parameters.get("db2d_table");
 
 //        String db3d;
 //        String db2d;
@@ -78,16 +91,16 @@ public class SpatialLink extends HttpServlet {
 //            throw new RuntimeException(e);
 //        }
 
-        if (postgresClient2d == null) {
-            postgresClient2d = new PostgresClient(Config.dburl + "/" + db2d, Config.dbuser, Config.dbpassword);
-//            PostgresClient postgresClient3d = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
-        }
-        if (postgresClient3d == null) {
-            postgresClient3d = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
-        }
+//        if (postgresClient2d == null) {
+//            postgresClient2d = new PostgresClient(Config.dburl + "/" + db2d, Config.dbuser, Config.dbpassword);
+////            PostgresClient postgresClient3d = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
+//        }
+//        if (postgresClient3d == null) {
+//            postgresClient3d = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
+//        }
 
         object2D.setPostGISClient(postgresClient2d);
-        this.allObject2D = object2D.getObject2D(db2d_table);
+        this.allObject2D = object2D.getObject2D(config[5]);
         object3D.setPostGISClient(postgresClient3d);
         this.allObject3D = object3D.getObject3D();
         try {

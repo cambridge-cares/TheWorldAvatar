@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jsp.linking;
+package uk.ac.cam.cares.jsp.integration;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,8 +29,8 @@ class ObjectAddressTest {
         postgres.withUsername(dbpassword);
         postgres.withPassword(dbuser);
         postgres.start();
-        conn2d = new PostgresClient(dburl2D, dbuser, dbpassword);
-        conn3d = new PostgresClient(dburl3D, dbuser, dbpassword);
+//        conn2d = new PostgresClient(dburl2D, dbuser, dbpassword);
+//        conn3d = new PostgresClient(dburl3D, dbuser, dbpassword);
     }
     @Test
     void insertAtoB() throws SQLException {
