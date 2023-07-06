@@ -240,6 +240,13 @@ class CesiumUtils {
     }
 
     /**
+     * 
+     */
+    public static clearSilhouette() {
+        CesiumUtils.OUTLINE_GREEN.selected = [];
+    }
+
+    /**
      * Given a mouse event, this utils method returns the top-level feature under the mouse (if any is present).
      * 
      * @param event mouse location

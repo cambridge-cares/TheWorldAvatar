@@ -31,13 +31,15 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
 
     public static final String PARAMETERS_VALIDATION_ERROR_MSG = "Unable to validate request sent to the agent.";
     public static final String THRESHOLD_ERROR_MSG = "Missing sash opening threshold value in request!";
+    public static final String DELAY_ERROR_MSG = "Missing delay value in request!";
     public static final String EMPTY_PARAMETER_ERROR_MSG = "Empty Request.";
     public static final String AGENT_CONSTRUCTION_ERROR_MSG = "The Agent could not be constructed.";
     public static final String LOADTSCLIENTCONFIG_ERROR_MSG = "Unable to load timeseries client configs!";
     public static final String QUERYSTORE_CONSTRUCTION_ERROR_MSG = "Unable to construct QueryStore!";
     public static final String GETLATESTDATA_ERROR_MSG = "Unable to get latest timeseries data for the following IRI: ";
     private static final String GETFHANDWFHDEVICES_ERROR_MSG = "Unable to query for fumehood and/or walkin-fumehood devices and their labels!";
-    
+    private static final String WAIT_ERROR_MSG = "An error has occurred while waiting!";
+
     String dbUrlForOccupiedState;
     String dbUsernameForOccupiedState;
     String dbPasswordForOccupiedState;
@@ -49,6 +51,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
     String bgUsername;
     String bgPassword;
     Double thresholdValue;
+    int delayMinutes;
 
     TimeSeriesClient<OffsetDateTime> tsClient;
     RemoteRDBStoreClient RDBClient;
@@ -94,6 +97,12 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
             thresholdValue = Double.parseDouble(requestParams.getString("sashThreshold"));
             } catch (Exception e) {
                 throw new JPSRuntimeException(THRESHOLD_ERROR_MSG);
+            }
+
+            try {
+            delayMinutes = Integer.parseInt(requestParams.getString("delayMinutes"));
+            } catch (Exception e) {
+                throw new JPSRuntimeException(DELAY_ERROR_MSG);
             }
             msg = runAgent();
         }
@@ -150,9 +159,25 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
         map = getSashOpeningTsData(map);
 
         if (checkSashAndOccupancy(map, thresholdValue)) {
-        EmailBuilder emailBuilder = new EmailBuilder();
-        String emailContent = emailBuilder.parsesMapAndPostProcessing(map, thresholdValue);
-        emailBuilder.sendEmail(emailContent);
+            try {
+                Thread.sleep(delayMinutes * 60 * 1000);
+            } catch (InterruptedException e) {
+                throw new JPSRuntimeException(WAIT_ERROR_MSG, e);
+            }
+            
+            setTsClientAndRDBClient(dbUsernameForOccupiedState, dbPasswordForOccupiedState, dbUrlForOccupiedState, bgUsername, bgPassword, sparqlUpdateEndpoint, sparqlQueryEndpoint);
+
+            map = getOccupiedStateTsData(map);
+
+            setTsClientAndRDBClient(dbUsernameForSashOpening, dbPasswordForSashOpening, dbUrlForSashOpening, bgUsername, bgPassword, sparqlUpdateEndpoint, sparqlQueryEndpoint);
+
+            map = getSashOpeningTsData(map);
+
+            if (checkSashAndOccupancy(map, thresholdValue)) {
+                EmailBuilder emailBuilder = new EmailBuilder();
+                String emailContent = emailBuilder.parsesMapAndPostProcessing(map, thresholdValue);
+                emailBuilder.sendEmail(emailContent);
+            }
         }
 
         LOGGER.info( map.get("FHandWFH").toString());
