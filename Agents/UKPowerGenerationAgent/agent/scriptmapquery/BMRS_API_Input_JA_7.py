@@ -9,7 +9,6 @@ from pprint import pformat
 
 import re
 import pandas as pd
-import sys
 from datetime import datetime, timedelta
 
 
@@ -502,7 +501,7 @@ def live_power(csvName, Key, Year, Month, Day, Period, Search):
     data.to_csv(csvName, index = False)
 
     #Save to another place. #####
-    newName = "datastorage/" + str(Year) + "-" + str(Month) + "-" + str(Day) + ".csv"
+    newName = "./datastorage/" + str(Year) + "-" + str(Month) + "-" + str(Day) + ".csv"
     data.to_csv(newName, index = False)
     return 1
 
@@ -516,6 +515,12 @@ def Auto_Call(Key, AutoFile):
     dfa, dfb = convert_csv_to_triple_dfs(AutoFile)
     return dfa, dfb
 
+def download_bmrs_data():
+    Key = 'iwx6raw9m7nqq0f' #Add Here if needed, but remove before push. 
+    #live_power('https://www.dropbox.com/s/43vdtji8rf1zspr/Input-Template.csv?dl=1', Key, '2021', '11', '14', '24', 2)
+    Auto_Call(Key, 'https://www.dropbox.com/s/tupqp1nu017xiyw/Input-Template-Auto.csv?dl=1')
+    #NOTE: With Manual Mapping Exemption now (i.e. if the value in the "Manual" column is '1', then it does not overwrite the generator to plant mapping and leaves it.
+    print("Data formatting completed.")
 
 ###Main Function###
 if __name__ == "__main__":
