@@ -20,6 +20,12 @@ At the time of writing the available mapping providers are [Mapbox](https://www.
 
 <br/>
 
+## Creating an image
+
+Before we can start specifying the data to be hosted within the visualisation, we need to create a Docker container that can host the web files the visualisation uses. This can easily be done by setting up a `docker-compose.yml` file that uses the `dtvf.base-image` image; and image that contains the pre-built DTVF libraries (available from the `/var/www/html/dtvf` directory) and a webserver.
+
+Both the example Mapbox and Cesium visualisations show an example of this, feel free to use them as a starting point.
+
 ##  Writing the data configuration file
 
 The first step for any prospective user of the DTVF is to understand how to structure the configuration file. At the time of writing, this file must be named `data.json` and reside within the root webspace (i.e. next to your visualisation's `index.html` file).

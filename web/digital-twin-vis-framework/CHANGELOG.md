@@ -1,5 +1,13 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
+# 3.6.0
+### Features
+* Base image now contains DTVF files rather than relying on remote CDN.
+* Overhaul of user and development documentation.
+* Addition of step-by-step tutorial to create a Mapbox visualisation using the DTVF.
+### Bug Fixes:
+* Remove unrequired character encoding statement in example Mapbox visualisation's index file.
+  
 # 3.5.0
 ### Features:
 * Added ability to specify client-side styling & filtering options for Cesium 3D tilesets.
