@@ -1,24 +1,17 @@
 /**
- * 
- * @returns 
+ * Opens the user help document associated with this version of the DTVF.
  */
 function openHelpURL() {
-    let scriptURL = null;
+    window.open("./dtvf/help", "_blank");
+}
 
-    var scripts = document.getElementsByTagName('script');
-    for(let i = 0; i < scripts.length; i++) {
-        if(scripts[i].src.endsWith("dtvf.min.js")) scriptURL = scripts[i].src;
-    };
-
-    if(scriptURL !== null)  {
-        // Split the URL by slash
-        let parts = scriptURL.toString().split("/");
-        parts[parts.length - 1] = "help";
-        
-        // Open in a new tab
-        let finalURL = parts.join("/") + "/";
-        window.open(finalURL, "_blank");
-    }
+/**
+ * Returns the current version of the DTVF.
+ */
+async function getDTVFVersion() {
+    return await fetch("./dtvf/VERSION").then(response => {
+        return response.text();
+    });
 }
 
 /**

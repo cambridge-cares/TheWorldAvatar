@@ -33,6 +33,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         
+      # Get the version of the DTVF
+      - name: Get DTVF version
+        id: versioner
+        run: |
+          echo version=$(cat web/digital-twin-vis-framework/library/VERSION) >> $GITHUB_ENV
+          
       # Compile the DTVF and ZIP results
       - name: Compile the DTVF
         id: compiler
@@ -42,11 +48,21 @@ jobs:
           zip -r $HOME/dtvf.zip output/
           echo zip=$HOME/dtvf.zip >> $GITHUB_ENV
           
-      # Get the version of the DTVF
-      - name: Get DTVF version
-        id: versioner
-        run: |
-          echo version=$(cat web/digital-twin-vis-framework/VERSION) >> $GITHUB_ENV
+      # Login to Docker image registry
+      - name: Login to Docker registry
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          USERNAME: ${{github.actor}}
+          PASSWORD: ${{github.token}}
+          
+      # Build and push the agent's Docker image
+      - name: Build and push image
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          tags: "ghcr.io/cambridge-cares/dtvf-base-image:${{ env.version }}"
+          context: ./web/digital-twin-vis-framework/library/docker
         
       # Generate the release body text
       - name: Generate release text
@@ -56,7 +72,7 @@ jobs:
           chmod +x ./.github/scripts/dtvf/make-release-body.sh
           ./.github/scripts/dtvf/make-release-body.sh > $HOME/body.md
           echo body=$HOME/body.md >> $GITHUB_ENV
-        
+          
       # Make a release on the main branch
       - name: Make release
         uses: ncipollo/release-action@v1
@@ -92,6 +108,6 @@ jobs:
           username: ${{secrets.CMCL_MAIL_USERNAME}}
           password: ${{secrets.CMCL_MAIL_PASSWORD}}
           subject: "New TWA release: DTVF ${{ env.version }}"
-          to: cares-twa@lists.cam.ac.uk,all@cmclinnovations.com
+          to: cares-twa@lists.cam.ac.uk,all@cmcl.io
           from: Automated TWA action
           html_body: "file://${{ env.email }}"

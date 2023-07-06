@@ -1,8 +1,26 @@
 {
     "start": {
-        "center": [-2, 53],
-        "zoom": 6,
+        "center": [60, 37],
+        "zoom": 2,
         "bearing": 0,
-        "pitch": 0
-    }
+        "pitch": 45
+    },
+    "search": [
+        {
+            "description": "Name",
+            "property": "name",
+            "type": "string"
+        },
+        {
+            "description": "Year Founded",
+            "property": "founded",
+            "type": "number"
+        },
+        {
+            "description": "Undergraduates Admitted?",
+            "property": "undergraduates",
+            "type": "boolean"
+        }  
+    ],
+    "attribution": "<div style='padding: 10px; text-align: left;'>This is an example of a some custom HTML content that can be added to the 'Attributions' node in the bottom-left corner of the map.<br><br>If this property was not defined within the settings file, then this component would not appear on the map.</div>"
 }

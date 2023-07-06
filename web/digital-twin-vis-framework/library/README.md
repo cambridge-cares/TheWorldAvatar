@@ -1,10 +1,9 @@
 # Developing the DTVF
 
-This `/library` directory houses the Typescript, CSS, and HTML files that make up the framework along with some configuration files for compilation. When creating visualisations, the pre-compiled, hosted version of this framework should be used; files from this directory should not be copied into/directly linked to visualisation implementations.
-
+This `/library` directory houses the Typescript, CSS, and HTML files that make up the framework along with some configuration files for compilation. The result of the build process is a Docker image that contains the compiled DTVF files along with an Apache web server; this allow users to then attach their content via a Docker volume mounted to `/var/www/html`.
 <br/>
 
-## Requirements
+## Development Requirements
 
 To develop the DTVF the following software is required on the local machine:
 
@@ -13,8 +12,10 @@ To develop the DTVF the following software is required on the local machine:
   * A docker image containing a configured compiler has been provided (see below).
 * An installation of [Grunt](https://gruntjs.com/)
   * A docker image containing a configured compiler has been provided (see below).
-  * 
+  
 In addition, developers should have a solid understanding of Docker, Typescript, and the mapping provider libraries (Mapbox & Cesium) before attempting to make any changes to the DTVF.
+
+The final JS and CSS files will be built into the `output` directory, ready for local testing by running the `npm install && tsc && grunt package` command from this directory.
 
 <br/>
 
@@ -62,46 +63,9 @@ When launched from a correctly integrated HTML file, the DTVF follows a set patt
 
 <br/>
 
-## Environment
-
-A number of configuration files are also present that allow the generation of a Docker container that can be used as a live development environment. The container houses [TypeScript](https://www.typescriptlang.org/) and [Grunt](https://gruntjs.com/) installations. These can be used for active development, compile-time checks/linting, or generation of deployable files.
-
-To spin up the container and use it as a development environment via VSCode...
-
-- Run the `docker-compose -f docker/docker-compose.yml up develop` command from within this directory.
-- Select the `Remote Explorer` menu within VSCode.
-  - You many need to install the `Docker` extension if you haven't done so already.
-- Select the `Attach to Container` button for the `dtvf-devel` container.
-- Once a new VSCode window appears (and the loading completes), you can now open a file/folder within the container and begin development.
-- The entire `library` directory has been set up to share between your local machine and the container. This means that any changes you make within the container, will persist to your local filesystem.
-
-<br/>
-
-## Compilation
-
-To compile and combine the DTVF library into deployable files:
-
-- Run the `docker-compose -f docker/docker-compose.yml up compile` command from within this directory.
-- The container will compile and process the typescript files for deployment, then shutdown.
-  - If successful, single JS and CSS files will be generated within the `output` directory.
-    - In addition, a `help` directory is created housing the user-facing manual files. 
-  - These can then be uploaded to a web server to make them publicly available.
-    - To upload these to the KG website server, please contact the support team at CMCL.
-
-<br/>
-
 ## Deployment of Base Image
 
-This directory also houses Docker configuration files to create an base image that can be used to create individual visualisations. A volume containing the webspace files simply needs to be added (as a volume) to the `/var/www/html/` directory; a example of this can be see in the Docker configuration files for the example visualisations.
-
-To build and deploy the base DTVF image, so that others can use it to create visualisations:
-
-- Run the `docker-compose -f docker/docker-compose.yml build deploy` command from within this directory.
-- The image should then be built and tagged as `ghcr.io/cambridge-cares/dtvf-base-image:latest`
-- Use the `docker push ghcr.io/cambridge-cares/dtvf-base-image:latest` command to upload the image.
-  - This requires having set up a GitHub token and storing it using the `docker login` command. 
-
-Note that the DTVF base image is simply a pre-configured web server, with a convenient location for a volume. It does not contain the compiled versions of the DTVF (although these _can_ be added if desired).
+The intended workflow of creating DTVF visualisations is to use a standard base image that contains the compiled DTVF library and an Apache web server to host content. The base image can be built from this directory by running the `build.sh` script. Note that it will be tagged with the version currently listed within the `VERSION` file.
 
 <br/>
 

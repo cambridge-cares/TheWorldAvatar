@@ -1,2 +1,3 @@
 *.log
 library/output
+*.env

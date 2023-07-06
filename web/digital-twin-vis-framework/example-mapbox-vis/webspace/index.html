@@ -1,7 +1,7 @@
 <html>
     <head>
         <!-- ===== CUSTOMISABLE ===== -->
-        <title>DTVF v3.5.0</title>
+        <title>DTVF: Mapbox</title>
         <!-- ===== CUSTOMISABLE ===== -->
 
         <!-- JS -->
@@ -13,10 +13,11 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" ></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
-        <script src="https://kg.cmclinnovations.com/cdn/dtvf/3.5.0/dtvf.min.js" charset="UTF-8"></script>
+        <script src="./dtvf/dtvf.min.js"></script>
 
         <!-- ===== CUSTOMISABLE ===== -->
         <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
+        <script src="./local.js"></script>
         <!-- ===== CUSTOMISABLE ===== -->
 
         <!-- CSS -->
@@ -24,7 +25,7 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css" rel="stylesheet">
         <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
-        <link href="https://kg.cmclinnovations.com/cdn/dtvf/3.5.0/dtvf.min.css" rel="stylesheet" />
+        <link href="./dtvf/dtvf.min.css" rel="stylesheet" />
 
         <!-- ===== CUSTOMISABLE ===== -->
         <!-- CSS files to provide styling specifically for this visualisation instance can go here. -->
@@ -141,12 +142,15 @@
 
         <!-- Code entry point -->
         <script>
+            // Log the version of the DTVF being used.
+            getDTVFVersion().then(result => console.log("Using DTVF " + result));
+
             $("#sidePanelInner").tabs();
 
             // ===== CUSTOMISABLE =====
             // Enter Mapbox account name and API key here!
-			MapHandler.MAP_USER = "cmclinnovations";
-            MapHandler.MAP_API = "pk.eyJ1IjoiY21jbGlubm92YXRpb25zIiwiYSI6ImNrbGdqa3RoNDFnanIyem1nZXR3YzVhcmwifQ.hVk983r6YYlmFE8kSMbzhA";
+			MapHandler.MAP_USER = "";
+            MapHandler.MAP_API = "";
             // ===== CUSTOMISABLE =====
 
             // Create a new manager instance
@@ -164,20 +168,22 @@
                 // Initialise the map object
                 manager.initialiseMap();
                
-                // ===== CUSTOMISABLE =====
+                 // ===== CUSTOMISABLE =====
                 // Set the default content in the "General" tab of the side panel
-                manager.getPanelHandler().setTitle("<h1>NHS GP Practices</h1>");
+                manager.getPanelHandler().setTitle("<h1>Example Visualisation</h1>");
                 manager.getPanelHandler().setContent(`
                     <p>This example visualisation has been put together to demonstrate the intended use of the centralised Digital Twin Visualisation Framework (DTVF).
                     This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put 
                     together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF 
                     before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.</p>
-                    <p>Note that this example has no version number as it is not intended for release; instead it should be updated to reflect version 3.5.0 of
-                    the framework itself hosted on a remote CMCL server not the files within the repository.</p>
+
+                    <p>The version of the DTVF packaged with this example visualisation can be seen in the developer's console.</p>
+
                     <p>For more information, please see the associated README file within the TWA repository or contact the CMCL technical team.</p>
                 `);
                 
                 // Use the local.js file to build the legend
+                buildLegend();
 
                 manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
                 // ===== CUSTOMISABLE =====

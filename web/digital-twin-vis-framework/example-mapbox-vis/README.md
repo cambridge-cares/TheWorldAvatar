@@ -33,7 +33,7 @@ It's also worth noting that with this example visualisation, no stack or Feature
 
 ## Building the Image
 
-The `docker` folder contains the required files to build a Docker Image for the example visualisation. This uses the `dtvf-base-image` image as a base then adds the contents of the `webspace` directory to a volume mounted at `/var/www/html` within the container.
+The `docker-compose.yml` file contains the required configuration to build a Docker Image for the example visualisation. This uses the `dtvf-base-image` image as a base then adds the contents of the `webspace` directory to a volume mounted at `/var/www/html` within the container.
 
 - Files to be hosted must be contained within the `webspace` directory.
 - A valid Mapbox username and API token must be provided.
@@ -42,9 +42,9 @@ The `docker` folder contains the required files to build a Docker Image for the 
 Once the requirements have been addressed, the image can be built using the below commands, run from within this directory.
 
 - To build the Image:
-  - `docker compose -f ./docker/docker-compose.yml build --force-rm`
+  - `docker compose -f docker-compose.yml build --force-rm`
 - To generate a Container (i.e. run the Image):
-  - `docker compose -f ./docker/docker-compose.yml up -d --force-recreate`
+  - `docker compose -f docker-compose.yml up -d --force-recreate`
 
 
 ## Images
