@@ -22,7 +22,7 @@ public class XtoCityDB extends PostgresDataSubset {
     @Override
     void loadInternal(Dataset parent) {
         super.loadInternal(parent);
-        //createLayer(parent.getDatabase());
+        createLayer(parent.getDatabase());
     }
 
     @Override
