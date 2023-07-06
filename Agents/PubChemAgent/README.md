@@ -124,10 +124,16 @@ To verify the correct startup of the agent, open the URL address the agent is ru
 If you want to spin up this agent as part of a stack, do the following:
 
 - Build the production image using the commands provided above (do not spin up the image)
-- Copy the pubchem-agent.json file from the stack-manager-input-config folder into the inputs/config/services folder of the stack manager
+- Copy the pubchem-agent.json file from the stack-manager-input-config folder into the inputs/config/services folder of the stack manager. The enviromental variable NAMESPACE can be changed in pubchem-agent.json before spinning up the agent.
 - Copy os_stack.json into the inputs/config folder of the stack manager
-- Start the stack manager (i.e. bash ./stack.sh start os_stack from the stack-manager repo). This should start the container. Please use a bash terminal to avoid potential issues with inconsistent path separators.
-- The agent shall become available at ```<http://<HOST>:<PORT>/>```
+- Start the stack manager running the following command from the stack-manager repo:
+
+```bash
+bash ./stack.sh start os_stack <PORT>
+```
+
+Please use a bash terminal to avoid potential issues with inconsistent path separators.
+The port is optional and defaults to 3838. This should start the container. The agent shall become available at <http://localhost:PORT/pubchemagent/> (e.g. <http://localhost:3838/pubchemagent/> if using the default port).
 
 ### Notes on debugging
 
@@ -146,14 +152,14 @@ The agent can be used as a simple command line tool or as a web agent.
 
 ### Command line usage
 
- The agent can be run from the command line via the `pubchemagent` command which accepts the following options:
+The agent can be run from the command line via the `pubchemagent` command which accepts the following options:
 
  ```bash
 Usage:
     pubchemagent  (--inchi=<inchi>)
 
 Options:
---inchi=<inchi>                     inchi string
+--inchi=<inchi>        inchi string
 ```
 
 Example usage:
@@ -164,18 +170,17 @@ Example usage:
 
 ### Web agent usage
 
-The web agent uses the [TheWorldAvatar](https://github.com/cambridge-cares/TheWorldAvatar) project knowledge graph to retrieve most of the species data needed
-Only one input is required in the agent main route:
+The agent can be run as a web agent sending the following http request with the following option:
 
-These are:
+(If the agent has been installed from the version-controlled source or deployed from docker image)
+<http://localhost:5000/pubchemagent/query/species?inchi='inchi_string>'
+example usage: <http://localhost:5000/pubchemagent/query/species?inchi='InChI=1/Ar>'
 
-/pubchemagent/query?`inchi=InChI=inchistring`
+(Stack deployment)
+<http://localhost:3838/pubchemagent/query/species?inchi='inchi_string>'
+example usage: <http://localhost:3838/pubchemagent/query/species?inchi='InChI=1/Ar>'
 
-```bash
-inchi=<Inchi>   inchi 
-```
-
-In order to use the pubchemagent as a web agent, simply start a server with the following app entry point:
+In order to use the pubchemagent as a web agent when installed from the version-controlled source, simply start a server with the following app entry point:
 
 `(Windows)`
 
@@ -186,7 +191,7 @@ In order to use the pubchemagent as a web agent, simply start a server with the 
 `(Linux)`
 
 ```bash
-(pubchemagent_venv) $ export FLASK_APP=pubchem\flaskapp\wsgi.py && flask run
+(pubchemagent_venv) $ export FLASK_APP=pubchemagent\flaskapp\wsgi.py && flask run
 ```
 
 ## Authors
