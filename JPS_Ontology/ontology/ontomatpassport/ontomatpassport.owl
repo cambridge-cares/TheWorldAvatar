@@ -351,6 +351,7 @@
                     <rdf:Description rdf:about="http://purl.org/dc/dcmitype/Image"/>
                     <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/HeatTransferCoefficient"/>
                     <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+                    <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Biodegradability"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#BiologicalProperty"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
