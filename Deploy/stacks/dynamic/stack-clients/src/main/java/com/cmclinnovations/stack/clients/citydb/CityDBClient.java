@@ -108,7 +108,7 @@ public class CityDBClient extends ContainerClient {
         addIRIs(database);
     }
 
-    private void updateDatabase(String database, String sridIn) {
+    public void updateDatabase(String database, String sridIn) {
 
         String containerId = getContainerId("postgis");
 
