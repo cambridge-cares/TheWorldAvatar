@@ -16,4 +16,9 @@ target      citykg:asset/{toid} foaf:hasTOID {toid}^^xsd:string ;
                  foaf:hasUPRN {uprn}^^xsd:integer .
 source          SELECT "IDENTIFIER_1" as uprn, "IDENTIFIER_2" as toid
                 FROM "TOID_UPRN_MatchingTable"
+
+mappingId       Asset-mapping-TOID 
+target      citykg:asset/{toid} foaf:hasTOID {toid}^^xsd:string .
+source          SELECT "strval" as toid
+                FROM "citydb"."cityobject_genattrib"
 ]]
