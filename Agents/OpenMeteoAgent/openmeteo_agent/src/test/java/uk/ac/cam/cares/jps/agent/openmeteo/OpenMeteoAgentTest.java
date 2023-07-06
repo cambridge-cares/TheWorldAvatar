@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.openmeteoagent;
+package uk.ac.cam.cares.jps.agent.openmeteo;
 
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.json.JSONArray;
@@ -6,6 +6,8 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
+
+import uk.ac.cam.cares.jps.agent.openmeteo.OpenMeteoAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;

@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.openmeteoagent;
+package uk.ac.cam.cares.jps.agent.openmeteo;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
