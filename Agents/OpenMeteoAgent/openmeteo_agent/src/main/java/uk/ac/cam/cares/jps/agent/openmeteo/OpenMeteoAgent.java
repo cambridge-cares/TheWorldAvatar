@@ -108,6 +108,9 @@ public class OpenMeteoAgent extends JPSAgent {
     private Double latitude;
     private Double longitude;
     private Double elevation;
+
+    EndpointConfig endpointConfig = new EndpointConfig();
+    private String dbName;
     private RemoteRDBStoreClient rdbStoreClient;
     private RemoteStoreClient storeClient;
     private TimeSeriesClient<OffsetDateTime> tsClient;
@@ -115,6 +118,7 @@ public class OpenMeteoAgent extends JPSAgent {
 
     public OpenMeteoAgent() {
         readConfig();
+        rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDbUrl(dbName), endpointConfig.getDbUser(), endpointConfig.getDbPassword());
         setTimeSeriesTypes();
         setStoreClient(route);
     }
@@ -224,7 +228,7 @@ public class OpenMeteoAgent extends JPSAgent {
         rdfURI = config.getString("uri.ontology.rdf");
         geospatialLiterals = config.getString("uri.geospatial.literals");
         route = config.getString("route.uri");
-        rdbStoreClient = new RemoteRDBStoreClient(config.getString("db.url"), config.getString("db.user"), config.getString("db.password"));
+        dbName = config.getString("db.name");
     }
 
     /**
