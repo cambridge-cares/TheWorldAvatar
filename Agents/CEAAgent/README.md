@@ -43,7 +43,7 @@ If not included, you will need to add the targetResourceID in ```./cea-agent/src
 ### Build
 In the same directory as this README, first build the Docker image by running
 ```
-docker build .
+./stack.sh build .
 ```
 
 After the image is built, spin the container up as part of the stack by runnning
