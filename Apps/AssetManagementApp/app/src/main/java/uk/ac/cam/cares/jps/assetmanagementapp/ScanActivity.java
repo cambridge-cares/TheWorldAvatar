@@ -1,15 +1,22 @@
 package uk.ac.cam.cares.jps.assetmanagementapp;
 
+import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
+import androidx.camera.core.CameraControl;
 import androidx.camera.core.CameraSelector;
+import androidx.camera.core.FocusMeteringAction;
 import androidx.camera.core.ImageAnalysis;
+import androidx.camera.core.MeteringPoint;
+import androidx.camera.core.MeteringPointFactory;
 import androidx.camera.core.Preview;
 import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.core.app.ActivityCompat;
@@ -27,6 +34,7 @@ import java.util.concurrent.Executor;
 
 import uk.ac.cam.cares.jps.assetmanagementapp.databinding.ActivityScanBinding;
 import uk.ac.cam.cares.jps.assetmanagementapp.vision.BoxOverlayView;
+import uk.ac.cam.cares.jps.assetmanagementapp.vision.FocusCircleView;
 import uk.ac.cam.cares.jps.assetmanagementapp.vision.QRCodeAnalyzer;
 import uk.ac.cam.cares.jps.assetmanagementapp.vision.ScanViewModel;
 
@@ -123,12 +131,14 @@ public class ScanActivity extends AppCompatActivity {
         boxOverlayView.setImageInfo(qrAnalysis.getResolutionInfo().getResolution().getHeight(), qrAnalysis.getResolutionInfo().getResolution().getWidth());
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     void setupCameraControl(Camera camera) {
         // flash light control
         if (camera.getCameraInfo().hasFlashUnit()) {
             viewModel.getIsFlashOn().observe(this, isFlashOn -> camera.getCameraControl().enableTorch(isFlashOn));
         }
 
+        CameraControl cameraControl = camera.getCameraControl();
         //  pinch-to-zoom
         ScaleGestureDetector scaleGestureDetector = new ScaleGestureDetector(this, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
             @Override
@@ -140,12 +150,21 @@ public class ScanActivity extends AppCompatActivity {
                 float delta = detector.getScaleFactor();
 
                 // Update the camera's zoom ratio
-                camera.getCameraControl().setZoomRatio(currentZoomRatio * delta);
+                cameraControl.setZoomRatio(currentZoomRatio * delta);
                 return true;
             }
         });
         binding.previewView.setOnTouchListener((view, motionEvent) ->  {
+            if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                MeteringPointFactory factory = binding.previewView.getMeteringPointFactory();
+                MeteringPoint point = factory.createPoint(motionEvent.getX(), motionEvent.getY());
+                FocusMeteringAction action = new FocusMeteringAction.Builder(point).build();
+                cameraControl.startFocusAndMetering(action);
+
+                binding.focusCircleView.showCircle(motionEvent.getX(), motionEvent.getY());
+            }
             scaleGestureDetector.onTouchEvent(motionEvent);
+
             return true;
         });
     }

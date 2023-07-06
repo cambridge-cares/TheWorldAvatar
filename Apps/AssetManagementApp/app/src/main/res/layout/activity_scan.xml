@@ -8,9 +8,10 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/frame_layout">
         <androidx.camera.view.PreviewView
-            android:id="@+id/previewView"
+            android:id="@+id/preview_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -19,8 +20,13 @@
         <uk.ac.cam.cares.jps.assetmanagementapp.vision.BoxOverlayView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/boxOverlayView"
+            android:id="@+id/box_overlay_view"
             />
+
+        <uk.ac.cam.cares.jps.assetmanagementapp.vision.FocusCircleView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/focus_circle_view"/>
     </FrameLayout>
 
 
