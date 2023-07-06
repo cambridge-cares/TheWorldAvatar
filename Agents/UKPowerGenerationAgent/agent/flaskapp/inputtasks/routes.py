@@ -6,7 +6,7 @@
 from flask import Blueprint, request, jsonify
 
 from py4jps import agentlogging
-from agent.datainstantiation.generator_data_importer import instantiate_all_generators
+from agent.datainstantiation.generator_data_instantiator import instantiate_all_generators
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")

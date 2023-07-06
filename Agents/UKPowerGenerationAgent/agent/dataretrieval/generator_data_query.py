@@ -12,7 +12,7 @@ import os
 import os.path
 # Get the JVM module view (via jpsBaseLibGateWay instance) from the jpsSingletons module to access
 # the TimeSeriesClient in the JPB_BASE_LIB
-from agent.kgutils.jps_singletons import jpsBaseLibView
+from agent.kgutils.javagateway import jpsBaseLibView
 
 #Units Dictionary to extract units symbol from used units. 
 unit_dict = {'megawatt': 'MW'}
