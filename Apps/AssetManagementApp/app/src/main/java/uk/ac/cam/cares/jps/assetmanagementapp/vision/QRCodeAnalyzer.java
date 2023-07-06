@@ -16,55 +16,35 @@ import com.google.mlkit.vision.common.InputImage;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 public class QRCodeAnalyzer implements ImageAnalysis.Analyzer {
     final static Logger LOGGER = Logger.getLogger(QRCodeAnalyzer.class);
-    final QRCodeViewModel viewModel;
+    final ScanViewModel viewModel;
+    BarcodeScanner scanner;
 
-    // ===============================================================================
-    private final Timer fpsTimer = new Timer();
-    private int frameProcessedInOneSecondInterval = 0;
-    private int framesPerSecond = 0;
-
-
-
-
-    public QRCodeAnalyzer(QRCodeViewModel viewModel) {
+    public QRCodeAnalyzer(ScanViewModel viewModel) {
         BasicConfigurator.configure();
         this.viewModel = viewModel;
 
+        BarcodeScannerOptions options =
+                new BarcodeScannerOptions.Builder()
+                        .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+                        .build();
 
-        fpsTimer.scheduleAtFixedRate(
-                new TimerTask() {
-                    @Override
-                    public void run() {
-                        framesPerSecond = frameProcessedInOneSecondInterval;
-                        frameProcessedInOneSecondInterval = 0;
-                        LOGGER.info("FPS: " + framesPerSecond);
-                    }
-                },
-                0,
-                1000);
+        scanner = BarcodeScanning.getClient(options);
     }
 
     @Override
     public void analyze(@NonNull ImageProxy imageProxy) {
         @SuppressLint("UnsafeOptInUsageError") Image image = imageProxy.getImage();
         if (image != null) {
-            frameProcessedInOneSecondInterval++;
             InputImage imageInput =
                     InputImage.fromMediaImage(image, imageProxy.getImageInfo().getRotationDegrees());
 
-            BarcodeScannerOptions options =
-                    new BarcodeScannerOptions.Builder()
-                            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-                            .build();
-
-            BarcodeScanner scanner = BarcodeScanning.getClient(options);
             scanner.process(imageInput)
                     .addOnSuccessListener(barcodes -> {
+                        // clear current overlay
+                        viewModel.setBBox(null);
+
                         for (Barcode barcode : barcodes) {
                             if (barcode.getUrl() != null) {
                                 LOGGER.info(barcode.getUrl().getUrl() + " " + barcode.getUrl().getTitle());
@@ -76,11 +56,16 @@ public class QRCodeAnalyzer implements ImageAnalysis.Analyzer {
 
                             }
                         }
+                        image.close();
+                        imageProxy.close();
                     })
-                    .addOnFailureListener(e -> { });
+                    .addOnFailureListener(e -> {
+                        viewModel.setBBox(null);
+                        LOGGER.error(e.getMessage());
+                        image.close();
+                        imageProxy.close();
+                    });
         }
-
-        imageProxy.close();
 
     }
 

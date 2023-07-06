@@ -10,6 +10,10 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
 
+import androidx.core.content.ContextCompat;
+
+import uk.ac.cam.cares.jps.assetmanagementapp.R;
+
 
 public class BoxOverlayView extends View {
     private RectF rect;
@@ -103,9 +107,9 @@ public class BoxOverlayView extends View {
         super.onDraw(canvas);
 
         Paint paint = new Paint();
-        paint.setColor(Color.RED);
+        paint.setColor(ContextCompat.getColor(getContext(), R.color.banner_color));
         paint.setStyle(Paint.Style.STROKE);
-        paint.setStrokeWidth(5f);
+        paint.setStrokeWidth(10f);
 
         updateTransformationIfNeeded();
 

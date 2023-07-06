@@ -2,11 +2,11 @@ package uk.ac.cam.cares.jps.assetmanagementapp;
 
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Size;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.Preview;
@@ -22,24 +22,21 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.Executor;
 
 import uk.ac.cam.cares.jps.assetmanagementapp.databinding.ActivityScanBinding;
 import uk.ac.cam.cares.jps.assetmanagementapp.vision.BoxOverlayView;
 import uk.ac.cam.cares.jps.assetmanagementapp.vision.QRCodeAnalyzer;
-import uk.ac.cam.cares.jps.assetmanagementapp.vision.QRCodeViewModel;
+import uk.ac.cam.cares.jps.assetmanagementapp.vision.ScanViewModel;
 
 public class ScanActivity extends AppCompatActivity {
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private ActivityScanBinding binding;
     private final Logger LOGGER = Logger.getLogger(ScanActivity.class);
     private final int CAMERA_PERMISSION_REQUEST_CODE = 777;
-    private ExecutorService cameraExecutor;
+    private Executor cameraExecutor;
 
-    private QRCodeViewModel viewModel;
+    private ScanViewModel viewModel;
     private BoxOverlayView boxOverlayView;
 
     @Override
@@ -53,10 +50,14 @@ public class ScanActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         boxOverlayView = binding.boxOverlayView;
 
-        cameraExecutor = Executors.newSingleThreadExecutor();
-        viewModel = new ViewModelProvider(this).get(QRCodeViewModel.class);
+        cameraExecutor = ContextCompat.getMainExecutor(this);
+        viewModel = new ViewModelProvider(this).get(ScanViewModel.class);
         viewModel.getBBox().observe(this, bBox -> {
             boxOverlayView.setRect(bBox);
+        });
+
+        binding.topActionBar.flashButton.setOnClickListener(v -> {
+            viewModel.toggleFlashState();
         });
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -93,9 +94,9 @@ public class ScanActivity extends AppCompatActivity {
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
         cameraProviderFuture.addListener(() -> {
             try {
-                ProcessCameraProvider cameraProvider = cameraProviderFuture.get(10, TimeUnit.SECONDS);
+                ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
                 bindPreview(cameraProvider);
-            } catch (ExecutionException | InterruptedException | TimeoutException e) {
+            } catch (ExecutionException | InterruptedException e) {
                 // No errors need to be handled for this Future.
                 // This should never be reached.
             }
@@ -118,8 +119,11 @@ public class ScanActivity extends AppCompatActivity {
         qrAnalysis.setAnalyzer(cameraExecutor, new QRCodeAnalyzer(viewModel));
 
         cameraProvider.unbindAll();
-        cameraProvider.bindToLifecycle(this, cameraSelector, preview, qrAnalysis);
+        Camera camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview, qrAnalysis);
+        if (camera.getCameraInfo().hasFlashUnit()) {
+            viewModel.getIsFlashOn().observe(this, isFlashOn -> camera.getCameraControl().enableTorch(isFlashOn));
+        }
+
         boxOverlayView.setImageInfo(qrAnalysis.getResolutionInfo().getResolution().getHeight(), qrAnalysis.getResolutionInfo().getResolution().getWidth()); // image resolution width and height are opposite
     }
-
 }
