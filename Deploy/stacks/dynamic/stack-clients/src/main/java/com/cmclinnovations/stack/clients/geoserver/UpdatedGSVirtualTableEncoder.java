@@ -1,7 +1,10 @@
 package com.cmclinnovations.stack.clients.geoserver;
 
+import java.util.List;
+
 import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.GSVirtualTableEncoder;
 import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.VTGeometryEncoder;
+import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.VTParameterEncoder;
 
 public class UpdatedGSVirtualTableEncoder extends GSVirtualTableEncoder {
 
@@ -17,5 +20,9 @@ public class UpdatedGSVirtualTableEncoder extends GSVirtualTableEncoder {
 
     public void setGeometry(VTGeometryEncoder geomEnc) {
         addVirtualTableGeometry(geomEnc);
+    }
+
+    public void setParameters(List<VTParameterEncoder> paramEncList) {
+        paramEncList.stream().forEach(paramEnc -> addVirtualTableParameter(paramEnc));
     }
 }
