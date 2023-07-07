@@ -1,6 +1,6 @@
 # Digital Twin Visualisation Framework
 
-<img align="right" width="200" height="200" src="./docs/img/dtvf-logo-padded.svg">
+<img align="right" width="250" height="250" src="./docs/img/dtvf-logo-padded.svg">
 
 A central framework for Digital Twin Visualisations (the Digital Twin Visualisation Framework, or DTVF) has been created so that in most cases, the process of creating a new visualisation to display pre-generated data is as simple as possible. The goal is that a developer that is inexperienced with Typescript (or the JavaScript libraries we're using) can get a reasonable visualisation of the data by simply ensuring the data meets a set format and providing some basic configuration files.
 
