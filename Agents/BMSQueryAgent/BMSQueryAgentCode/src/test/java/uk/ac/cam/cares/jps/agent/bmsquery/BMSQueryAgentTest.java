@@ -15,10 +15,8 @@ public class BMSQueryAgentTest {
     public void testSetRSClient() {
         agent = new BMSQueryAgent();
         RemoteStoreClient rsClient = new RemoteStoreClient();
-        List<String> endpoints = new ArrayList<>();
 
-        agent.setRSClient(rsClient, endpoints);
-        assertNotNull(agent.kgUrls);
+        agent.setRSClient(rsClient);
         assertNotNull(agent.rsClient);
     }
 }
