@@ -5,9 +5,7 @@
             "ContainerSpec": {
                 "Image": "cea-agent:1.0.0",
                 "Env": [
-                    "JPDA_ADDRESS=0.0.0.0:5005",
-                    "JPDA_TRANSPORT=dt_socket",
-                    "DEBUG=ON"
+                    "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
                 ],
                 "Configs": [
                     {
