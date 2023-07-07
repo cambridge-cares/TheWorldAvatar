@@ -122,6 +122,8 @@ For example, to upload with GUI update page, key in url  `/triples/ontospecies.n
 9. To spin up the Marie container, use `docker build --no-cache -t marie3 .` to build the image and run 
 `docker run -p 5003:80  --dns=8.8.8.8 -d marie3:latest`
 
+Both local and server deployment requires at least 16 GB of memory allocated to docker. The building of the local image might 
+take over an hour depending on the internet speed. 
 
 ## Frontend development
 It takes more than 15 minutes to spin up the Marie server, as a result, a `mock_main.py` script is implemented to 
