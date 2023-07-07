@@ -1,0 +1,44 @@
+{
+    "ServiceSpec": {
+        "Name": "cea-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "cea-agent:1.0.0",
+                "Env": [
+                    "JPDA_ADDRESS=0.0.0.0:5005",
+                    "JPDA_TRANSPORT=dt_socket",
+                    "DEBUG=ON"
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        },
+		"EndpointSpec": {
+			"Ports": [
+				{
+                    "Name": "web",
+                    "Protocol": "tcp",
+					"TargetPort": "5005",
+					"PublishedPort": "5005"
+				}
+			]
+		}
+    },
+    "endpoints": {
+        "cea-agent": {
+          "url": "http://localhost:8084/cea-agent/",
+          "externalPath": "/cea-agent/"
+        }
+    }
+}
