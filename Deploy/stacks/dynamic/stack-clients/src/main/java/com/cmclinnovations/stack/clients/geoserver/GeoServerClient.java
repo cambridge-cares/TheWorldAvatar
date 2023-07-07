@@ -25,6 +25,7 @@ import com.cmclinnovations.stack.services.GeoServerService;
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.Util;
 import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder;
+import it.geosolutions.geoserver.rest.encoder.GSLayerEncoder21;
 import it.geosolutions.geoserver.rest.encoder.GSResourceEncoder.ProjectionPolicy;
 import it.geosolutions.geoserver.rest.encoder.coverage.GSImageMosaicEncoder;
 import it.geosolutions.geoserver.rest.encoder.datastore.GSPostGISDatastoreEncoder;
@@ -204,6 +205,22 @@ public class GeoServerClient extends ContainerClient {
                 throw new RuntimeException(
                         "GeoServer database layer '" + layerName + "' does not exist and could not be created.");
             }
+        }
+    }
+
+    public void createVectorVisSource(String workspaceName, String layerName, String storeName,
+            UpdatedGSFeatureTypeEncoder featureTypeSettings, GSLayerEncoder21 layerSettings) {
+        if (manager.getReader().existsLayer(workspaceName, layerName, Util.DEFAULT_QUIET_ON_NOT_FOUND)) {
+            logger.info("GeoServer layer {} already exists.", storeName);
+        } else {
+            UpdatedGSVirtualTableEncoder virtualTable = featureTypeSettings.getMetadataVirtualTable();
+            featureTypeSettings.setProjectionPolicy(ProjectionPolicy.NONE);
+            featureTypeSettings.addKeyword("KEYWORD");
+            if (null != virtualTable) {
+                featureTypeSettings.setNativeName(virtualTable.getName());
+                featureTypeSettings.setMetadataVirtualTable(virtualTable);
+            }
+            manager.getPublisher().publishDBLayer(workspaceName, storeName, featureTypeSettings, layerSettings);
         }
     }
 
