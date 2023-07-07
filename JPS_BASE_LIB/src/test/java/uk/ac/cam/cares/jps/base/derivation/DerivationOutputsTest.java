@@ -477,59 +477,6 @@ public class DerivationOutputsTest {
 	}
 
 	@Test
-	public void testGetNewEntitiesDownstreamDerivationMap()
-			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		DerivationOutputs devOutputs = new DerivationOutputs();
-
-		// prepare JSONObject
-		JSONObject oldEntitiesRdfType = new JSONObject();
-		oldEntitiesRdfType.put(instance1, class1);
-		oldEntitiesRdfType.put(instance2, class2);
-		oldEntitiesRdfType.put(instance3, class3);
-		oldEntitiesRdfType.put(instance4, class4);
-
-		JSONObject oldEntitiesDownstreamDerivation = new JSONObject();
-		oldEntitiesDownstreamDerivation.put(instance1, new JSONArray(Arrays.asList(derivation1_1, derivation1_2)));
-		oldEntitiesDownstreamDerivation.put(instance2,
-				new JSONArray(Arrays.asList(derivation2_1, derivation2_2, derivation2_3)));
-		oldEntitiesDownstreamDerivation.put(instance3, new JSONArray(Arrays.asList(derivation3_1)));
-
-		// set up the maps
-		devOutputs.setOldEntitiesMap(oldEntitiesRdfType);
-		devOutputs.setOldEntitiesDownstreamDerivationMap(oldEntitiesDownstreamDerivation);
-
-		// add new entities
-		String newEntity1 = "http://" + UUID.randomUUID().toString();
-		String newEntity2 = "https://" + UUID.randomUUID().toString(); // test also IRI starts with "https://"
-		String newEntity3 = "http://" + UUID.randomUUID().toString();
-		String newEntity4 = "https://" + UUID.randomUUID().toString();
-		devOutputs.createNewEntity(newEntity1, class1);
-		devOutputs.createNewEntity(newEntity2, class2);
-		devOutputs.createNewEntity(newEntity3, class3);
-		devOutputs.createNewEntity(newEntity4, class4);
-
-		// test if the newEntitiesDownstreamDerivationMap was mapped correctly
-		Map<String, List<String>> newEntitiesDownstreamDerivationMap = devOutputs
-				.getNewEntitiesDownstreamDerivationMap();
-		Assert.assertTrue(equalLists(Arrays.asList(derivation1_1, derivation1_2),
-				newEntitiesDownstreamDerivationMap.get(newEntity1)));
-		Assert.assertTrue(equalLists(Arrays.asList(derivation2_1, derivation2_2, derivation2_3),
-				newEntitiesDownstreamDerivationMap.get(newEntity2)));
-		Assert.assertTrue(equalLists(Arrays.asList(derivation3_1),
-				newEntitiesDownstreamDerivationMap.get(newEntity3)));
-		Assert.assertTrue(newEntitiesDownstreamDerivationMap.get(newEntity4).isEmpty());
-
-		// now we add one more new entity to have multiple matched instances on purpose
-		// should throw an error
-		String newEntity5 = "http://" + UUID.randomUUID().toString();
-		devOutputs.createNewEntity(newEntity5, class3);
-		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
-				() -> devOutputs.getNewEntitiesDownstreamDerivationMap());
-		Assert.assertTrue(e.getMessage()
-				.contains(DerivationOutputs.OLD_NEW_ENTITIES_MATCHING_ERROR));
-	}
-
-	@Test
 	public void testCheckIfValidIri() {
 		String http = "http://" + UUID.randomUUID().toString();
 		String https = "https://" + UUID.randomUUID().toString();

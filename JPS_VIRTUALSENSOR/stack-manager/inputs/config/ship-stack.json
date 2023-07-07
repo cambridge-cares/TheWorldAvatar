@@ -1,6 +1,6 @@
 {
-    "services": {
-        "includes": [
+	"services": {
+		"includes": [
 			"file-server",
 			"weather-agent",
 			"ship-input-agent",
@@ -8,7 +8,9 @@
 			"dispersion-vis",
 			"aermod-agent",
 			"python-service",
-			"emissions-agent"
-        ]
-    }
+			"emissions-agent",
+			"virtual-sensor-agent",
+			"feature-info-agent"
+		]
+	}
 }

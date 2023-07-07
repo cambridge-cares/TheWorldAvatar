@@ -35,6 +35,9 @@ Notes:
 Other elements are always linked to their Storey, even if there is a Space defined. 
 - For all elements that are not the building structure components like walls, floors, doors, windows, roofs etc, please export them as IfcFurnishingElement or IfcBuildingElementProxy.
 Otherwise, they will not be instantiated.
+- In instantiating the address, please ensure the `Location` set in the Revit file follows the format: `<City, State PostalCode, Country>`. 
+  - Address lines should be added to the `Project Address` field on the `Project Information` settings in Revit.
+  - Feel free to omit the terms as necessary for the location. Do note that if state is omitted, postal code will always be generated as state.
 - Triples related to the OntoBIM:Facility concept will have to be manually instantiated as there is no equivalent concept from IFC.
 
 #### 1.2 Technical Requirements
@@ -47,7 +50,7 @@ The agent is designed for execution through a Docker container. Other deployment
 
 #### 2.1 Preparation
 This agent is set up to use this [Maven repository](https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/) (in addition to Maven central).
-You'll need to provide  your credentials in a single-word text files located like this:
+You'll need to provide your credentials in a single-word text files located like this:
 ```
 ./credentials/
     repo_username.txt
@@ -72,30 +75,20 @@ docker compose -f "./docker/docker-compose.test.yml" up -d --build
 ```
 
 **DEVELOPMENT ENVIRONMENT**
-- An image of [IfcOwlConverterAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/IfcOwlConverterAgent)
-  will need to be first created on your local Docker environment with the credentials stored.*  
-  Run the following code in the CLI at the `<root>` directory of that agent. Do note that the version numbers must match the `docker-compose.yml` files of this agent
-```
-docker build . -t ifcowlconverter-agent:1.0.0
-```
-- Deploy the agent for development by running the following code in the CLI at the directory. The remote JVM endpoint for debugging will be available at port 5005.
+- There is no need to build and spin up the [IfcOwlConverterAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/IfcOwlConverterAgent) separately. 
+- Deploy both agents for development by running the following code in the CLI at the directory. The remote JVM endpoint for debugging the Ifc2OntoBIM agent will be available at port 5005. There is no debug endpoint for the other agent.
+- If successfully deployed, the IfcOwlConverterAgent will be running on `port 3024` and the Ifc2OntoBIMAgent will be running on `port 3025`.
 ```
 docker compose -f "./docker/docker-compose.debug.yml" up -d --build
 ```
 
 **PRODUCTION ENVIRONMENT**
-- An image of [IfcOwlConverterAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/IfcOwlConverterAgent) 
-will need to be first created on your local Docker environment with the credentials stored.*  
-Run the following code in the CLI at the `<root>` directory of that agent. Do note that the version numbers must match the `docker-compose.yml` files of this agent
-```
-docker build . -t ifcowlconverter-agent:1.0.0
-```
-- Deploy the agent and its dependencies by running the following code in the CLI at the `<root>` directory:
+- There is no need to build and spin up the [IfcOwlConverterAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/IfcOwlConverterAgent) separately.
+- Deploy both agents and its dependencies by running the following code in the CLI at the `<root>` directory:
 ```
 docker-compose up -d
 ```
-
-*WIP to transfer these Maven credentials over agents, instead of being implemented as Docker instructions
+- If successfully deployed, the IfcOwlConverterAgent will be running on `port 3024` and the Ifc2OntoBIMAgent will be running on `port 3025`.
 
 #### 2.3 Running the Agent
 The agent currently offers three API routes:
@@ -123,6 +116,8 @@ configuration for:
 - `sparql.update.endpoint`: The SPARQL update endpoint to upload the instantiated triples
 - `ifc.owl.agent`: The IfcOwlConverterAgent dependency's API endpoint. This should not be edited from the default.
 
+**WARNING**: Any TTL files generated or used as inputs in the `<root>/data/` directory will be deleted after the agent has completed the instantiation and upload task. Do note that no OntoBIM ABox is generated as a TTL file any time during the process. In the event that there is any leftover TTL file(s), please do not treat it as an OntoBIM ABox and rerun the agent instead.
+
 ###### POST request parameters
 Once both inputs are ready, a POST request can be sent to this route to convert IFC models to TTL formats with the following parameter:
 1. Base URI - Mandatory
@@ -139,8 +134,8 @@ are too low, you may instantiate only the core triples, (excluding the geometry 
 In situations where this agent's request to the `IfcOwlConverterAgent` time-outs and ends the task, this parameter becomes crucial and mandatory. By default, please ignore this parameter in the POST request.
 The `isIfcOwl` parameter sets a boolean that determines whether the agent should instantiate directly from an IFC model or a TTL file generated by the [IfcOwlConverterAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/IfcOwlConverterAgent).
 
-If this parameter is set to `true`, please convert the IFC model into a TTL file via the [IfcOwlConverterAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/IfcOwlConverterAgent) first.
-Then place only the TTL file into this agent's `data` directory, and send the POST request following the next section.
+If this parameter is set to `true`, please convert the IFC model into a TTL file containing the IfcOwl ABox via the [IfcOwlConverterAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/IfcOwlConverterAgent) first. The IFC model can be placed into this agent's `data` folder, before sending the required POST request to the IfcOwlConverter Agent.
+Then place only the TTL file into this agent's `data` directory, and send the POST request following the next section. Please do note that the TTL file containing the IfcOwl ABox will be deleted after the conversion and upload process.
 
 ###### Sample POST request
 Run the agent by sending a POST request with the required JSON Object to `http://localhost:3025/ifc2ontobim-agent/convert`. A sample request is as follows:
