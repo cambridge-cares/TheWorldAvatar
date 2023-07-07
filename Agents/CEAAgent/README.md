@@ -20,10 +20,10 @@ You will need to provide your credentials (github username/personal access token
 The agent is designed to run in the stack. To start the stack, spin up the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager).
 
 ### Access Agent Set Up
-The agent is designed to use the [JPS Access Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/1579-dev-stackerise-cea-agent/JPS_ACCESS_AGENT). Spin the access agent up as part of the same stack as spun up by the Stack Manager.
+The agent is designed to use the JPS Access Agent (```../AccessAgent```). Spin the access agent up as part of the same stack as spun up by the Stack Manager.
 
 ### Blazegraph Set Up
-The agent is designed to use the stack Blazegraph. Please ensure that the routing information corresponinding to the labels, which are specified as ```cea.label``` and ```usage.label``` in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```, is uploaded. See the [Access Agent README](https://github.com/cambridge-cares/TheWorldAvatar/tree/1579-dev-stackerise-cea-agent/JPS_ACCESS_AGENT) for instruction on uploading routing information.
+The agent is designed to use the stack Blazegraph. Please ensure that the routing information corresponinding to the labels, which are specified as ```cea.label``` and ```usage.label``` in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```, is uploaded. See the Access Agent README (```../AccessAgent```) for instruction on uploading routing information.
 
 ### PostGIS Set Up
 The agent is designed to use the stack PostGIS. The calculation results of CEA will be stored in the stack PostGIS database, which is specified as ```cea.database``` in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```.
@@ -110,7 +110,7 @@ Available at http://localhost:58085/agents/cea/query.
 The query endpoint accepts the following request parameters:
 - ```iris```: array of cityObject IRIs.
 - ```ceaEndpoint```: (optional) endpoint where the CEA triples, i.e. energy demand and solar energy generator information, instantiated by the agent is to be stored; if not specified, agent will default to setting ```ceaEndpoint``` to the stack Blazegraph namespace, labelled by ```cea.label``` in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```.
-- ```graphName```: (optional) named graph to which the CEA triples belong to and will be instantiated uner. If ```graphName``` is not specified, the agent will assume no graph.
+- ```graphName```: (optional) named graph to which the CEA triples belong to and will be instantiated under. If ```graphName``` is not specified, the agent will assume no graph.
 
 After receiving request sent to the query endpoint, the agent will retrieve energy demand and solar energy generator information calculated by CEA for the cityObject IRIs provided in ```iris```. The energy demand and solar energy generator information will only be returned if the cityObject IRIs provided in ```iris``` has already been passed to the run endpoint of the CEA Agent beforehand.
 
