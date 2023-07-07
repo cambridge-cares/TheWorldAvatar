@@ -1,5 +1,11 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
+# 3.5.1
+### Features:
+* _No features present._
+### Bug Fixes:
+* API credentials are now loaded from separate files/docker secrets.
+  
 # 3.5.0
 ### Features:
 * Added ability to specify client-side styling & filtering options for Cesium 3D tilesets.
