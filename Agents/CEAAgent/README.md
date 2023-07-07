@@ -20,13 +20,13 @@ You will need to provide your credentials (github username/personal access token
 The agent is designed to run in the stack. To start the stack, spin up the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager).
 
 ### 2.3. Access Agent Set Up
-The agent is designed to use the [Access Agent](```../AccessAgent```). Spin the access agent up as part of the same stack as spun up by the Stack Manager.
+The agent is designed to use the [Access Agent](../AccessAgent). Spin the access agent up as part of the same stack as spun up by the Stack Manager.
 
 ### 2.4. Blazegraph Set Up
-The agent is designed to use the stack Blazegraph. Please ensure that the routing information corresponding to the ```cea.label``` in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```, is uploaded. See the [Access Agent README](```../AccessAgent```) for instruction on uploading routing information.
+The agent is designed to use the stack Blazegraph. Please ensure that the routing information and the Blazegraph namespace corresponding to ```cea.label``` in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```, is set up in the stack Blazegraph. See the [Access Agent README](../AccessAgent) for instruction on uploading routing information.
 
 ### 2.5. PostGIS Set Up
-The agent is designed to use the stack PostGIS. The calculation results of CEA will be stored in the stack PostGIS database, which is specified as ```cea.database``` in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```. Please ensure the ```cea.database``` is set up in the stack PostGIS.
+The agent is designed to use the stack PostGIS. The calculation results of CEA will be stored in the stack PostGIS database, which is specified as ```cea.database``` in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```. Please ensure the database specified by ```cea.database``` is set up in the stack PostGIS.
 
 ### 2.6. TargetresourceID for Building Geometry Query
 For building geometry queries, the CEA agent defaults to TheWorldAvatar Blazegprah. The targetResourceIDs in ```./cea-agent/src/main/resources/CEAAgentConfig.properties``` provides mappings to namespaces in TheWorldAvatar Blazegraph (http://www.theworldavatar.com:83/citieskg/). The targetResourceID are passed to the access agent in order to query from TheWorldAvatar Blazegraph. Check that a targetResourceID to pass to the access agent exists for the namespace being used for SPARQL queries.
@@ -60,10 +60,10 @@ To debug, put ```./stack-manager-input-config/cea-agent-debug.json``` instead of
 Replace ```<STACK NAME>``` with the name of the stack that was spun up by Stack Manager. The debugger port will be available at 5005.
 
 ## 3. Agent Endpoints
-The CEA Agent is reachable at <http://localhost:<port>>, where &lt;port> is the port number specified when running ```./stack.sh start <STACK NAME>``` in the ```stack-manger``` directory, which by default is &lt;port> = 3838. The agent provides three endpoints: run endpoint (<http://localhost:<port>/cea-agent/run>), where the agent runs CEA; update endpoint (<http://localhost:<port>/cea-agent/update>), where the agent updates the knowledge graph with triples on CEA outputs; query endpoint (<http://localhost:<port>/cea-agent/run>), where the agent returns CEA outputs. 
+The CEA Agent is reachable at http://localhost:3838/cea-agent, where 3838 is the default port number used by stack manager. If another port number was specified when spinning up the stack, please replace 3838 with the specified port number. The agent provides three endpoints: run endpoint (http://localhost:3838/cea-agent/run), where the agent runs CEA; update endpoint (http://localhost:3838/cea-agent/update), where the agent updates the knowledge graph with triples on CEA outputs; query endpoint (http://localhost:3838/cea-agent/run), where the agent returns CEA outputs. 
 
 ### 3.1. Run Endpoint
-Available at <http://localhost:<port>/cea-agent/run>.
+Available at http://localhost:3838/cea-agent/run.
 
 The run endpoint accepts the following request parameters:
 - ```iris```: array of cityObject IRIs.
@@ -105,13 +105,13 @@ In the above request example, the CEA Agent will be querying building geometry f
 
 ### 3.2. Update
 
-Available at <http://localhost:<port>/cea-agent/update>.
+Available at http://localhost:3838/cea-agent/update.
 
 Requests to the update endpoint is automatically sent by the CEA Agent after running and receiving requests to the run endpoint. The update endpoint updates the knowledge graph with CEA outputs.
 
 ### 3.3. Query
 
-Available at <http://localhost:<port>/cea-agent/query>.
+Available at http://localhost:3838/cea-agent/query.
 
 The query endpoint accepts the following request parameters:
 - ```iris```: array of cityObject IRIs.
