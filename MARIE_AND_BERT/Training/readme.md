@@ -24,7 +24,7 @@ Multiple models are trained in this system:
 ##  Knowledge Graph Embedding
 
 ### File requirement
-To train the embedding of an ontology, a list of files are required. The files are script created, see [readme.md for dataset creation](./KGToolbox/readme.md) for details. 
+To train the embedding of an ontology, a list of files are required. The files are script created, see [readme.md for dataset creation](../KGToolbox/readme.md) for details. 
 
 1. Triples: `[name]-train.txt`, `[name]-test.txt`, `[name]-valid.txt`. The files are headless tsv files with three columns, subject-predicate-object, separated by `tab`. 
 
@@ -48,7 +48,7 @@ In folder `MARIE_AND_BERT/Training/Trainers`, `TransRATrainer.py` handles both `
 using `MARIE_AND_BERT/requirements_linux.txt`. 
 5. Submit the batch script
 
-For more details, please check [https://docs.hpc.cam.ac.uk/hpc/](ttps://docs.hpc). 
+For more details, please check [https://docs.hpc.cam.ac.uk/hpc/](https://docs.hpc.cam.ac.uk/hpc/). 
 
 ```
 . /etc/profile.d/modules.sh                # Leave this line (enables the module command)
