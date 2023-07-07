@@ -36,6 +36,11 @@
             android:name=".ScanActivity"
             android:theme="@style/Theme.AssetManagementApp.NoActionBar">
         </activity>
+
+        <activity
+            android:name=".AssetInfoActivity"
+            android:theme="@style/Theme.AssetManagementApp.NoActionBar">
+        </activity>
     </application>
 
 

@@ -43,6 +43,7 @@ public class QRCodeAnalyzer implements ImageAnalysis.Analyzer {
             scanner.process(imageInput)
                     .addOnSuccessListener(barcodes -> {
                         // clear current overlay
+                        viewModel.setUrl("");
                         viewModel.setBBox(null);
 
                         for (Barcode barcode : barcodes) {
@@ -52,6 +53,7 @@ public class QRCodeAnalyzer implements ImageAnalysis.Analyzer {
                                     LOGGER.info(barcode.getBoundingBox().left + " "+ barcode.getBoundingBox().top+ " "+barcode.getBoundingBox().right+ " "+barcode.getBoundingBox().bottom);
                                     LOGGER.info(barcode.getBoundingBox().toShortString());
                                     viewModel.setBBox(barcode.getBoundingBox());
+                                    viewModel.setUrl(barcode.getUrl().getUrl());
                                 }
 
                             }

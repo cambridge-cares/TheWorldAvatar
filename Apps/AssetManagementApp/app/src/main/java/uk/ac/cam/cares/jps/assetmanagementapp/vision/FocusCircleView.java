@@ -42,13 +42,8 @@ public class FocusCircleView extends View {
         isVisible = true;
         invalidate();
 
-        // Schedule a task to hide the circle after 2 seconds
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                hideCircle();
-            }
-        }, 2500);
+        // Schedule a task to hide the circle after 2.5 seconds
+        new Handler().postDelayed(this::hideCircle, 2500);
     }
 
     public void hideCircle() {

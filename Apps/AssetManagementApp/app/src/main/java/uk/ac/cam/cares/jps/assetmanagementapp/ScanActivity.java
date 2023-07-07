@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.assetmanagementapp;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -34,12 +35,10 @@ import java.util.concurrent.Executor;
 
 import uk.ac.cam.cares.jps.assetmanagementapp.databinding.ActivityScanBinding;
 import uk.ac.cam.cares.jps.assetmanagementapp.vision.BoxOverlayView;
-import uk.ac.cam.cares.jps.assetmanagementapp.vision.FocusCircleView;
 import uk.ac.cam.cares.jps.assetmanagementapp.vision.QRCodeAnalyzer;
 import uk.ac.cam.cares.jps.assetmanagementapp.vision.ScanViewModel;
 
 public class ScanActivity extends AppCompatActivity {
-    private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private ActivityScanBinding binding;
     private final Logger LOGGER = Logger.getLogger(ScanActivity.class);
     private final int CAMERA_PERMISSION_REQUEST_CODE = 777;
@@ -58,12 +57,18 @@ public class ScanActivity extends AppCompatActivity {
         binding = ActivityScanBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         boxOverlayView = binding.boxOverlayView;
+        binding.topActionBar.closeButton.setOnClickListener(v -> finish());
 
         cameraExecutor = ContextCompat.getMainExecutor(this);
         viewModel = new ViewModelProvider(this).get(ScanViewModel.class);
         viewModel.getBBox().observe(this, bBox -> boxOverlayView.setRect(bBox));
-        binding.topActionBar.flashButton.setOnClickListener(v -> viewModel.toggleFlashState());
+        viewModel.getConfirmedUrl().observe(this, url -> {
+            Intent intent = new Intent(getBaseContext(), AssetInfoActivity.class);
+            intent.putExtra(AssetInfoActivity.ASSET_URI, url);
+            startActivity(intent);
+        });
 
+        binding.topActionBar.flashButton.setOnClickListener(v -> viewModel.toggleFlashState());
 
 
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -71,6 +76,13 @@ public class ScanActivity extends AppCompatActivity {
         } else {
             startCamera();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        viewModel.resetUrlState();
+        boxOverlayView.setRect(null);
     }
 
     @Override
@@ -96,7 +108,7 @@ public class ScanActivity extends AppCompatActivity {
     }
 
     private void startCamera() {
-        cameraProviderFuture = ProcessCameraProvider.getInstance(this);
+        ListenableFuture<ProcessCameraProvider>  cameraProviderFuture = ProcessCameraProvider.getInstance(this);
         cameraProviderFuture.addListener(() -> {
             try {
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
