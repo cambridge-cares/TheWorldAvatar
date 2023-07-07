@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Properties;
 
 import com.cmclinnovations.stack.clients.blazegraph.Namespace;
+import com.cmclinnovations.stack.clients.core.visualisationsources.VisSource;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerStyle;
 import com.cmclinnovations.stack.clients.geoserver.StaticGeoServerData;
 import com.fasterxml.jackson.annotation.JacksonInject;
@@ -26,6 +27,7 @@ public class Dataset {
 
     private final List<String> externalDatasets;
     private final List<DataSubset> dataSubsets;
+    private final List<VisSource> visualisationSources;
     private final List<GeoServerStyle> geoserverStyles;
     private final List<String> ontopMappings;
     private final StaticGeoServerData staticGeoServerData;
@@ -40,6 +42,7 @@ public class Dataset {
             @JsonProperty(value = "workspace") String workspaceName,
             @JsonProperty(value = "externalDatasets") List<String> externalDatasets,
             @JsonProperty(value = "dataSubsets") List<DataSubset> dataSubsets,
+            @JsonProperty(value = "visualisationSources") List<VisSource> visualisationSources,
             @JsonProperty(value = "styles") List<GeoServerStyle> geoserverStyles,
             @JsonProperty(value = "mappings") List<String> ontopMappings,
             @JsonProperty(value = "staticGeoServerData") StaticGeoServerData staticGeoServerData,
@@ -51,6 +54,7 @@ public class Dataset {
         this.workspaceName = workspaceName;
         this.externalDatasets = externalDatasets;
         this.dataSubsets = dataSubsets;
+        this.visualisationSources = visualisationSources;
         this.geoserverStyles = geoserverStyles;
         this.ontopMappings = ontopMappings;
         this.staticGeoServerData = staticGeoServerData;
@@ -99,6 +103,10 @@ public class Dataset {
 
     public List<DataSubset> getDataSubsets() {
         return (null != dataSubsets) ? dataSubsets : Collections.emptyList();
+    }
+
+    public List<VisSource> getVisualisationSources() {
+        return (null != visualisationSources) ? visualisationSources : Collections.emptyList();
     }
 
     public List<GeoServerStyle> getGeoserverStyles() {
