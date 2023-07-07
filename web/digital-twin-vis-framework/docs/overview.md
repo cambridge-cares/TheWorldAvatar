@@ -24,7 +24,21 @@ At the time of writing the available mapping providers are [Mapbox](https://www.
 
 Before we can start specifying the data to be hosted within the visualisation, we need to create a Docker container that can host the web files the visualisation uses. This can easily be done by setting up a `docker-compose.yml` file that uses the `dtvf.base-image` image; and image that contains the pre-built DTVF libraries (available from the `/var/www/html/dtvf` directory) and a webserver.
 
-Both the example Mapbox and Cesium visualisations show an example of this, feel free to use them as a starting point.
+Both the example Mapbox and Cesium visualisations show an example of this, feel free to use them as a starting point. Note that the `docker-compose.yml` files used in the committed examples should only be used in conjunction with the provided `run.sh` scripts, as this will inject the current version of the DTVF into the image tag.
+
+```yaml
+version: "3.8"
+
+services:
+
+  example-vis:
+    image: ghcr.io/cambridge-cares/dtvf-base-image:${TAG}
+    container_name: "example-vis"
+    ports:
+      - "80:80"
+    volumes:
+      - ./webspace:/var/www/html
+```
 
 ##  Writing the data configuration file
 
