@@ -11,13 +11,13 @@
 
 ## Introduction ##
 
-The World Avatar project aims to create a digital ‘avatar’ of the real world. The digital world is composed of a dynamic knowledge graph (KG) that contains concepts and data that describe the world, and an ecosystem of autonomous computational agents that simulate the behaviour of the world and that update the concepts and data so that the digital world remains current in time. A knowledge graph is a network of data expressed as a directed graph, where the nodes of the graph are concepts or their instances (data items) and the edges of the graph are links between related concepts or instances. Knowledge graphs are often built using the principles of Linked Data. They provide a powerful means to host, query and traverse data, and to find and retrieve related information
+The World Avatar project aims to create a digital ‘avatar’ of the real world. The digital world is composed of a dynamic knowledge graph (KG) that contains concepts and data that describe the world, and an ecosystem of autonomous computational agents that simulate the behaviour of the world and that update the concepts and data so that the digital world remains current in time. A knowledge graph is a network of data expressed as a directed graph, where the nodes of the graph are concepts or their instances (data items) and the edges of the graph are links between related concepts or instances. Knowledge graphs are often built using the principles of Linked Data. They provide a powerful means to host, query and traverse data, and to find and retrieve related information.
 
 The World Avatar represents information in a dynamic knowledge graph using technologies from the Semantic Web stack. Unlike a traditional database, the World Avatar contains an ecosystem of autonomous computational agents that continuously update it. The agents are described ontologically as part of the knowledge graph, and are able to perform actions on both concepts and instances. This design enables agents to update and restructure the knowledge graph, and allows them to discover and compose other agents simply by reading from and writing to the knowledge graph.
 
 ## Key Features ##
 
-Listed below are a number of the key technical features available within The World Avatar ecosystem. More information on these, and other features, can be see on [The World Avatar Wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki).
+Listed below are a number of the key technical features available within The World Avatar ecosystem. More information on these, and other features, can be seen on [The World Avatar Wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki).
 
 **TWA Stack:**<br/>
 The knowledge graph and its agents are hosted using collections of containers. How to use them is explained in the [stack manager](./Deploy/stacks/dynamic/stack-manager) and [stack data uploader](./Deploy/stacks/dynamic/stack-data-uploader) folders.
@@ -28,7 +28,7 @@ The [base lib](./JPS_BASE_LIB) is a collection of functionality that is shared a
 **Digital Twin Visualisation Framework:**<br/>
 The [DTVF](./web/digital-twin-vis-framework) is a container that provides a web-page with which a user can view and explore geospatial information held in the TWA ecosystem. This includes not only map data, 3D-representations of buildings, and building information models (BIM), but also any data or information connected to them within the KG, such as data calculated by models, acquired sensor data, or other time series data.
 
-**Intelligent Agents:**<br/>
+**Autonomous Agents:**<br/>
 Agents are pieces of software that act on the knowledge graph - reading from it, writing to it, thus making it evolve dynamically in time. The currently available agents can be found in [the agents folder](./Agents). 
 
 **Object Graph Mapper:**<br/>
