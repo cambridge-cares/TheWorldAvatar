@@ -1964,7 +1964,7 @@ public class CEAAgentTest {
         Method checkQuadsEnabled = agent.getClass().getDeclaredMethod("checkQuadsEnabled", String.class);
         assertNotNull(checkQuadsEnabled);
 
-        doNothing().when(agent).checkEndpoint(anyString());
+        doReturn(true).when(agent).checkEndpoint(anyString());
 
         try {
             checkQuadsEnabled.invoke(agent, "");
@@ -1972,21 +1972,6 @@ public class CEAAgentTest {
             assertTrue(e instanceof InvocationTargetException);
             assertTrue(((InvocationTargetException) e).getTargetException().getMessage().contains("ceaEndpoint does not support graph"));
         }
-    }
-
-    @Test
-    public void testCheckEndpoint() throws NoSuchMethodException{
-        CEAAgent agent = new CEAAgent();
-
-        Method checkEndpoint = agent.getClass().getDeclaredMethod("checkEndpoint", String.class);
-        assertNotNull(checkEndpoint);
-
-        try {
-            checkEndpoint.invoke(agent, "");
-        } catch (Exception e) {
-            assertTrue(e instanceof InvocationTargetException);
-        }
-
     }
 
     @Test

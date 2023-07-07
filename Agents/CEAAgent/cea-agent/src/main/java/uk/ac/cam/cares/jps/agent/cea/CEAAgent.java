@@ -70,9 +70,9 @@ import java.sql.SQLException;
         })
 public class CEAAgent extends JPSAgent {
     public static final String KEY_REQ_METHOD = "method";
-    public static final String URI_ACTION = "/cea/run";
-    public static final String URI_UPDATE = "/cea/update";
-    public static final String URI_QUERY = "/cea/query";
+    public static final String URI_ACTION = "/run";
+    public static final String URI_UPDATE = "/update";
+    public static final String URI_QUERY = "/query";
     public static final String KEY_REQ_URL = "requestUrl";
     public static final String KEY_TARGET_URL = "targetUrl";
     public static final String KEY_IRI = "iris";
@@ -83,6 +83,8 @@ public class CEAAgent extends JPSAgent {
     public static final String KEY_TERRAIN_TABLE = "terrainTable";
     public static final String KEY_CEA = "ceaEndpoint";
     public static final String KEY_GRAPH = "graphName";
+
+    private String targetUrl = "http://localhost:8084/cea-agent" + URI_UPDATE;
 
     public static final String CITY_OBJECT = "cityobject";
     public static final String CITY_OBJECT_GEN_ATT = "cityobjectgenericattrib";
@@ -197,7 +199,6 @@ public class CEAAgent extends JPSAgent {
     private String geoUri;
     private static String unitOntologyUri;
     private String requestUrl;
-    private String targetUrl;
     private String geometryRoute;
     private String usageRoute;
     private String weatherRoute;
@@ -226,11 +227,6 @@ public class CEAAgent extends JPSAgent {
             JSONArray uriArray = new JSONArray(uriArrayString);
 
             if (requestUrl.contains(URI_UPDATE) || requestUrl.contains(URI_ACTION)) {
-                targetUrl = requestUrl.replace(URI_ACTION, URI_UPDATE);
-
-                if (isDockerized()) {
-                    targetUrl = targetUrl.replace("localhost", "host.docker.internal");
-                }
 
                 if (requestUrl.contains(URI_UPDATE)) {
                     // parse times
@@ -392,7 +388,7 @@ public class CEAAgent extends JPSAgent {
                                 namedGraph = "";
                             }
                             // check if ceaRoute has quads enabled for querying and updating with graphs
-                            if (!namedGraph.isEmpty()){
+                            if (!namedGraph.isEmpty() && checkEndpoint(ceaRoute)){
                                 checkQuadsEnabled(ceaRoute);
                             }
                         }
@@ -1304,7 +1300,14 @@ public class CEAAgent extends JPSAgent {
         String usage;
         Query q = getBuildingUsagesQuery(uriString);
 
-        JSONArray queryResultArray = this.queryStore(route, q.toString());
+        JSONArray queryResultArray;
+
+        if (checkEndpoint(route)) {
+            queryResultArray = this.queryStore(route, q.toString());
+        }
+        else {
+            queryResultArray = new JSONArray();
+        }
 
         // CEA only support up to three usages for each building
         // convert all usages to CEA defined usages first
@@ -2957,9 +2960,6 @@ public class CEAAgent extends JPSAgent {
                 .addVar("?g")
                 .addWhere(wb)
                 .setLimit(1);
-        
-        // first check that querying from route works
-        checkEndpoint(route);
 
         // check if query with graph works for route
         try{
@@ -2974,8 +2974,9 @@ public class CEAAgent extends JPSAgent {
     /**
      * Run basic SPARQL query to check if route is queryable
      * @param route endpoint to check
+     * @return true if route is queryable, false if not
      */
-    public void checkEndpoint(String route){
+    public boolean checkEndpoint(String route){
         WhereBuilder wb = new WhereBuilder()
                 .addWhere("?s", "?p", "?o");
         SelectBuilder sb = new SelectBuilder()
@@ -2985,10 +2986,10 @@ public class CEAAgent extends JPSAgent {
 
         try{
             this.queryStore(route, sb.build().toString());
+            return true;
         }
         catch (Exception e){
-            e.printStackTrace();
-            throw new JPSRuntimeException(e);
+            return false;
         }
     }
 
