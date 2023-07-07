@@ -14,6 +14,7 @@ on:
       - main
     paths:
       - web/digital-twin-vis-framework/library/**
+      - !web/digital-twin-vis-framework/library/**.md
 
 
 # Job definitions
