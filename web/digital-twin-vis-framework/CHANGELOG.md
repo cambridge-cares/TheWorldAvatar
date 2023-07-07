@@ -57,7 +57,7 @@
 ### Features:
 * _No features present._
 ### Bug Fixes:
-* Fixed issue in Cesium visualiations that prevented a selected asset's `stack` parameter from being determined.
+* Fixed issue in Cesium visualisations that prevented a selected asset's `stack` parameter from being determined.
 
 # 3.3.0
 ### Features:
