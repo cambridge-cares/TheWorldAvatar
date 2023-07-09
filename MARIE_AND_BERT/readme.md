@@ -74,6 +74,22 @@ and uncomment the line
 ```python
     # app.run(host='0.0.0.0', debug=True, port=5003)
 ```
+### Recreation of the required files 
+To recreate the files in `CrossGraph.zip`, please read [Dataset creation](KGToolbox/readme.md) section `CrossGraph` to create the required files for training models and  
+follow [Model training](Training/readme.md) to train the models. 
+
+To recreate the files in `Dictionaries.zip`, please read [Dictionary creation](KGToolbox/readme.md) section `Dictionaries (DATA/Dictionaries folder)` to 
+create the dictionary files. 
+
+For deployment purpose, please 
+zip the folder to create the `CrossGraph.zip` file. 
+ 
+To recreate the files in `EntityLinking.zip`, please read . For deployment purpose, zip 
+the folder to create `EntityLinking.zip`
+
+
+
+
 
 ### Other Services
 To run the full functions of the Marie system, three other systems are required:
