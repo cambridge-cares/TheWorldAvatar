@@ -14,7 +14,7 @@ from Marie.Util.location import TRAINING_DIR, DATA_DIR
 def add_missing_cid():
     new_names = []
     new_dict = {}
-    missing_cid_list = json.loads(open(os.path.join(DATA_DIR, '../CrossGraph', 'missing_cid_list.json')).read())
+    missing_cid_list = json.loads(open(os.path.join(DATA_DIR, 'CrossGraph', 'pubchem', 'missing_cid_list.json')).read())
     for cid in missing_cid_list:
         for key in get_info_from_pubchem(cid=cid):
             if key is not None:
@@ -41,7 +41,7 @@ def get_info_from_pubchem(cid=None):
 
 STOP_INDEX = 10001
 
-path = os.path.join(TRAINING_DIR, 'pubchem.csv')
+path = os.path.join(DATA_DIR, 'CrossGraph', 'pubchem', 'pubchem.csv')
 df_pubchem = pd.read_csv(path, sep=',')[0:STOP_INDEX]
 # iupac_name, molecular_formula, canonical_smiles
 
