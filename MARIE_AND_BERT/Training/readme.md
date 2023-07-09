@@ -30,7 +30,8 @@ To train the embedding of an ontology, a list of files are required. The files a
 
 2. Indexing: `entity2idx.pkl`, `idx2entity.pkl`, `rel2idx.pkl`, `idx2rel.pkl`, provide index-to-label and label-to-index dictionaries
 
-3. Neighbour dictionary: `three_hop_dict_index` and `three_hop_dict_label`. 
+3. [Optional] Neighbour dictionary: `three_hop_dict_index` and `three_hop_dict_label`. However, if the neighbour dictionaries are missing, the training scripts 
+will automatically create them. 
 
 Once all the files are created, choose the embedding method, the implemented ones are 
 `Complex`, `TransE`, `TransEA`,`TransR`, `TransRA`. The preferred embedding method for a typical TWA ontology is `TransRA`.
