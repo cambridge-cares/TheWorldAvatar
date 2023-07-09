@@ -10,7 +10,7 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobms/">
         <owl:imports rdf:resource="https://saref.etsi.org/saref4bldg/"/>
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">02 June 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">23 June 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoBMS is an ontology for Building Management Systems.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.5</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -68,25 +68,19 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/hasAirFlowRate">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
-        <rdfs:domain rdf:resource="https://saref.etsi.org/core/HVAC"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveTransportRate"/>
+                    <rdf:Description rdf:about="https://saref.etsi.org/core/HVAC"/>
+                    <rdf:Description rdf:about="https://saref.etsi.org/saref4bldg/FlowMovingDevice"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRate"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the flow rate of air being processed or conveyed by a HVAC device.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the flow rate of air being conveyed or processed by a HVAC or Flow Moving Device (Duct etc) or it can be used to describe the volumetric air flow rate of a convective transport rate.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has air flow rate</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/hasConvectiveTransportRate -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/hasConvectiveTransportRate">
-        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobms/ConvectiveTransportRate"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a continuous material amount and its convective transport rate.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has convective transport rate</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -184,6 +178,28 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontobms/hasWaterFlowRate -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/hasWaterFlowRate">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveTransportRate"/>
+                    <rdf:Description rdf:about="https://saref.etsi.org/core/HVAC"/>
+                    <rdf:Description rdf:about="https://saref.etsi.org/saref4bldg/FlowMovingDevice"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRate"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the flow rate of water being conveyed or processed by a HVAC or Flow Moving Device (Pipe etc) or it can be used to describe the volumetric water flow rate of a convective transport rate.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has water flow rate</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobms/isComposedOf -->
 
 
@@ -256,13 +272,6 @@
     
 
 
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/MassFlow -->
-
-
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/MassFlow"/>
-    
-
-
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Percentage -->
 
 
@@ -284,10 +293,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount -->
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveTransportRate -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveTransportRate"/>
     
 
 
@@ -380,18 +389,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobms/AlarmState -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/AlarmState">
-        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/MultiLevelState"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An alert status that is triggered due to an abnormal condition or change in condition.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Alarm state</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontobms/CAVSystem -->
 
 
@@ -412,18 +409,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device designed to vent non-toxic vapors like steam, heat and odors.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Canopy hood</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/ConvectiveTransportRate -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/ConvectiveTransportRate">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/MassFlow"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Convective Transport Rate in the most general terms refers to the movement of molecules within fluid phases which is the sum of advective and diffusive transport.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Convective transport rate</rdfs:label>
     </owl:Class>
     
 
@@ -529,7 +514,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/HeatDuty">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/HeatFlowRate"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of heat needed to transfer from a hot side to the cold side over a unit of time.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of heat that needs to be added or removed to create the required change in temperature.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heat duty</rdfs:label>
     </owl:Class>
@@ -616,18 +601,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A separate space provided for air circulation for heating, ventilation, and air-conditioning.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Plenum</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/SwitchState -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/SwitchState">
-        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/MultiLevelState"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The current state of a switch.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Switch state</rdfs:label>
     </owl:Class>
     
 
