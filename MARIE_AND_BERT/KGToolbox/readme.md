@@ -6,108 +6,123 @@ The user will need to create a folder `MARIE_AND_BERT/DATA/CrossGraph` and a ser
 ├───├── DATA
 │   │   ├── CrossGraph
 │   │   │   ├── agents
+│   │   │   │   ├── ontopceagent
+│   │   │   │   ├── ontothermoagent
 │   │   │   ├── ontocompchem
 │   │   │   ├── ontokin
 │   │   │   ├── OntoMoPs
+│   │   │   │   ├── numerical_with_implicit
 │   │   │   ├── ontospecies_new
+│   │   │   │   ├── base_full_no_pref_selected_role_limited_100
+│   │   │   ├── wikidata_numerical
+│   │   │   ├── pubchem
+│   │   ├── Dictionaries
+│   │   │   ├── ontoagent
+│   │   │   │   ├── pceagent
+│   │   │   │   ├── thermalagent
+│   │   │   ├── OntoMoPs
+│   │   │   │   ├── numerical_with_implicit
+│   │   │   ├── ontospecies_new
+│   │   │   ├── pubchem
 │   │   │   ├── wikidata_numerical
 ```
-# Dataset
-The dataset is created using a set of question templates. The script fills the templates to create draft questions. The grammar of the draft questions must be corrected manually using the the GUI. The dataset comprises a set of about 1000 questions with labelled head and answer entities. The dataset is divided into a ``training set``, ``validation set`` and ``test set`` in the ratio `7:2:1`.
-The ``training set`` and `validation set` are used for training the models. The ``test set``
-is used for the evaluation of individual models. More importantly, the ``test set`` is also used to evaluate
-the [overall performance](#overall-performance testing)
-of the QA system.
 
-The `KGToolbox` folder contains all the scripts for generating training and evaluation datasets.
+## CrossGraph 
+1. create the `DATA` folder and create the subfolders as the folder structure above. 
 
-## Cross Graph 
+The following subsections give steps for creating the training set for both embedding training and relation prediction
+model training for each ontology. The [Score Alignment](##Score alignment model) subsection gives steps for 
+creating the training set for training the score alignment model (`CrossGraph/cross_graph_model_with_all_9_updated`). 
 
-`KGToolbox/CrossGraph/CrossGraph.py` is for the generation of the training questions for training 
-the cross-graph score alignment model, which generates a tsv file named `cross_graph_alignment_training_updated.tsv`
-To run this script, it requires a file named `cross_graph_alignment_training_labelled.tsv`, which is manually created. 
+###  OntoAgent (CrossGraph/agents folder)
 
-`cross_graph_alignment_training_labelled.tsv` has two columns. The question column should provide the main 
-keywords within the question, with stop words for example "what", "find", "the" and the entities 
-should be removed from the question. The "true_domain" column contains a list of strings, where the 
-domains that could answer the question should be stated. The available options as of 2023-06-21 are 
-"ontokin", "ontocompchem", "ontospecies", "ontoagent", "wikidata_numerical", "pubchem", "ontokin_reaction",
-"ontospecies_new". In the near future, the "ontospecies_new" label should be removed if the "old ontospecies"
-ontology is removed.  Below is an example of the question. 
-
-```
-question,true_domain
-lennard jones diameter,['ontokin']
-lennard jones well depth,['ontokin']
-polarizability,['ontokin']
-```
- 
-## OntoAgent 
-To create OntoAgent training set, first the `info_dict.json` files should be created for each agent.
-
-First, it requires the user to set up a local blazegraph and load the target agent owl files on 
-`http://127.0.0.1:9999`. By running `KGToolbox/OntoAgent/OntoAgentReader.py`, the script will create both 
-the triple files for embedding and the `info_dict.json` files for each agent. 
-
-The OntoAgent training set provides the training material for training the BERT model to transform OntoAgent 
-related questions to the OntoAgent relation embedding. 
-
-With the `info_dict.json` files created, create the 
-training set with `KGToolbox/OntoAgent/createOntoAgentBERTTrainingSet.py`, which creates a file named 
+To create OntoAgent training set:
+1. Set up a local blazegraph and have it running on 
+`http://127.0.0.1:9999`. For details, please follow [Blazegraph](https://blazegraph.com/)
+2. Download the ontology files for the agents from [Agents.zip](http://159.223.42.53:8080/Agents.zip) 
+3. Create namespaces `ontopceagent` and `ontothermalagent` and load the two `.nt` files to the according namespace. 
+4. Run `KGToolbox/OntoAgent/OntoAgentReader.py`, the script will create both 
+the triple files for embedding training and the `info_dict.json` files for each agent. 
+5. Run `KGToolbox/OntoAgent/createOntoAgentBERTTrainingSet.py`, which creates a file named 
 `score_model_training.tsv` in the `DATA/CrossGraph/agents` folder. 
-
-## OntoCompChem 
-
-OntoCompChem requires implicit relation derivation. To create the triples, 
+ 
+###  OntoCompChem (CrossGraph/ontocompchem folder)
+To create OntoCompChem training set:
 1. Run`KGToolbox/OntoCompChem/OntoCompChemReader.py` to create the triples and supporting files. 
 2. Run `CreateOntoCompChemTrainingSet.py` to create the BERT training set, 
 which creates a file named `score_model_traininng.tsv` in the `DATA/CrossGraph/ontocompchem` folder. 
 
-## OntoKin
-
-OntoKin reactions and other parts of the OntoKin ontology are dealt with separately, the other parts of 
-the OntoKin are regarded as `OntoKin` while the reactions are regarded to as `OntoKinReaction`. `OntoKinReaction`
-is answered via Semantic Parsing and requires no training. `OntoKin` is handled in the same way 
-as the other ontologies. 
-
-To create the training dataset, the user needs to 
+### OntoKin (CrossGraph/ontokin folder)
+To create OntoKin training set:
 
 1. Run `KGToolbox/OntoKin/OntoKinReader.py`, all the necessary
 file including the triples and the `score_model_training.tsv` will be created and put into `DATA/CrossGraph/ontokin`.
 
-## OntoMoPs
 
-The OntoMoPs training dataset is created manually. The training dataset is archived in 
-`http://159.223.42.53:8080/OntoMoPs/score_model_training.tsv`. 
-The file follows the format blow. 
-```
-question,head,tail,rel,numerical_operator
-List the Chemical Building Units with as the Generic Building Unit ,0,0,isFunctioningAsReversed,none
-List the CBUs with as the Generic Building Unit ,0,0,isFunctioningAsReversed,none
-Give MOPs with molecular weight above ,0,0,hasMolecularWeight,larger
-Give MOPs with molecular weight beneath ,0,0,hasMolecularWeight,smaller
-```
+### OntoMoPs (CrossGraph/OntoMoPs folder)
 
-## OntoSpecies 
+To create the OntoMoPs training set:
 
-In this document, `OntoSpecies` refers to the latest version of OntoSpecies created in 2023,
-while the previous versions of OntoSpecies are referred to as `OntoSpecies_Old`. 
+1. Run `KGToolbox/OntoMoPs/OntoMoPsReader.py` to create the supporting files for 
+2. The OntoMoPs relation prediction model training dataset is created manually. The training dataset is archived in 
+`http://159.223.42.53:8080/OntoMoPs/score_model_training.tsv`.
 
-To create the training dataset, the user needs to
+### OntoSpecies (CrossGraph/ontospecies_new folder)
 
-1. Run`KGToolbox/OntoSpeciesNew/OntoSpeciesReader.py`to create the triples and the supporting files. 
-2. Run `KGToolbox/OntoSpeciesNew/CreateOntoSPeciesNewScoreTrainingSet.py`. The script will
-create `score_model_training.tsv` under `DATA/CrossGraph/ontospecies_new`
+To create the OntoSpecies training dataset:
+
+1. Download 
+2. Run`KGToolbox/OntoSpeciesNew/OntoSpeciesReader.py`to create the triples and the supporting files for embedding training. 
+3. Run `KGToolbox/OntoSpeciesNew/CreateOntoSPeciesNewScoreTrainingSet.py`. The script will
+create `score_model_training.tsv` under `DATA/CrossGraph/ontospecies_new/base_full_no_pref_selected_role_limited_100` for relation prediction training. 
  
-## Wikidata 
-
-To create the Wikidata training dataset,a set of Wikidata dump files are required. The files 
-can be downloaded from `http://159.223.42.53:8080/instance_info.zip`. The zip
-file needs to be extracted into `DATA/CrossGraph/wikidata/instance_info` folder. To create the training dataset
-
-1. Run `KGToolbox/Wikidata/WikiDataReader.py` to create triples and supporting files
-2. Run `KGToolbox/Wikidata/WikidataCreateTrainingData.py`, which will create `score_model_training.tsv` 
+### Wikidata (CrossGraph/wikidata_numerical folder)
+1. Download Wikidata dump files from `http://159.223.42.53:8080/instance_info.zip`.
+2. Unzip the file into `DATA/CrossGraph/wikidata/instance_info` folder. 
+3. Run `KGToolbox/Wikidata/WikiDataReader.py` to create triples and supporting files
+4. Run `KGToolbox/Wikidata/WikidataCreateTrainingData.py`, which will create `score_model_training.tsv` 
 in `DATA/CrossGraph/wikidata_numerical`. 
+
+### Pubchem (CrossGraph/pubchem folder)
+1. Download `pubchem.csv` from `http://159.223.42.53:8080/pubchem.csv`.
+2. Run `KGToolbox/PubChem/PubchemReader.py`
+
+
+### Score alignment model
+
+To create the training set for training the score alignment model `CrossGraph/cross_graph_model_with_all_9_updated`:
+
+1. Download archived manually created training set `cross_graph_alignment_training_labelled.tsv` from `http://159.223.42.53:8080/cross_graph_alignment_training_labelled.tsv`
+2. Manually create or modify `cross_graph_alignment_training_labelled.tsv` under folder `DATA/CrossGraph` based on the 
+archived `cross_graph_alignment_training_labelled.tsv` file. 
+3. Run `KGToolbox/CrossGraph/CrossGraph.py`, which will create `cross_graph_alignment_training_labelled.tsv` under `DATA/CrossGraph`
+
+
+## Dictionaries (DATA/Dictionaries folder)
+
+### Agents (Dictionaries/ontoagent)
+
+1. Run `KGToolbox/OntoAgent/createOntoAgentPCEAgentDictionary.py`
+2. Run `KGToolbox/OntoAgent/createOntoAgentThermalAgentDictionary.py`
+
+### OntoMoPs (Dictionaries/OntoMoPs)
+
+1. Download `label_am_dict.json` from `http://159.223.42.53:8080/label_am_dict.json` to `CrossGraph/OntoMoPs`
+2. Run `KGToolbox/OntoMoPs/createOntoMoPsDictionary.py`
+
+### PubChem (Dictionaries/pubchem)
+1. Download `missing_cid_list.json` from `http://159.223.42.53:8080/missing_cid_list.json` to `CrossGraph/pubchem`.
+2. Run `KGToolbox/PubChem/PubchemDictCreator.py`
+
+### OntoSpecies (Dictionaries/ontospecies_new)
+
+1. Run `KGToolbox/OntoSpeciesNew/CreateOntoSPeciesNewDictionary.py`
+
+### Wikidata (Dictionaries/wikidata_numerical)
+
+The Dictionary files for Wikidata will be created by running `KGToolbox/Wikidata/WikiDataReader.py`. 
+No extra steps are required. 
+
 
 ##Entity Linking
 
