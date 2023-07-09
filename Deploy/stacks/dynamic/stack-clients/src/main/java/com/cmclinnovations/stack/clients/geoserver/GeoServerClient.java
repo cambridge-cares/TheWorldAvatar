@@ -5,7 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -14,10 +16,11 @@ import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.core.RESTEndpointConfig;
-import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
+import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
+import com.cmclinnovations.stack.services.GeoServerService;
 
 import it.geosolutions.geoserver.rest.GeoServerRESTManager;
 import it.geosolutions.geoserver.rest.Util;
@@ -36,6 +39,9 @@ public class GeoServerClient extends ContainerClient {
     private final PostGISEndpointConfig postgreSQLEndpoint;
 
     private static GeoServerClient instance = null;
+    private static final Path STATIC_DATA_DIRECTORY = GeoServerService.SERVING_DIRECTORY.resolve("static_data");
+    private static final Path ICONS_DIRECTORY = GeoServerService.SERVING_DIRECTORY.resolve("icons");
+    private static final String GEOSERVER_RASTER_INDEX_DATABASE_SUFFIX = "_geoserver_indices";
 
     public static GeoServerClient getInstance() {
         if (null == instance) {
@@ -107,6 +113,44 @@ public class GeoServerClient extends ContainerClient {
         }
     }
 
+    public void loadOtherFiles(Path baseDirectory, List<GeoserverOtherStaticFile> files) {
+        files.forEach(file -> {
+            loadStaticFile(baseDirectory, file);
+        });
+
+    }
+
+    private void loadStaticFile(Path baseDirectory, GeoserverOtherStaticFile file) {
+        Path filePath = baseDirectory.resolve(file.getSource());
+        Path sourceParentDir = filePath.getParent();
+        Path fileName = filePath.getFileName();
+        Path absTargetDir = STATIC_DATA_DIRECTORY.resolve(file.getTarget());
+
+        String containerId = getContainerId("geoserver");
+
+        if (!Files.exists(filePath)) {
+            throw new RuntimeException(
+                    "Static GeoServer data '" + filePath.toString() + "' does not exist and could not be loaded.");
+        } else if (Files.isDirectory(filePath)) {
+            sendFolder(containerId, filePath.toString(), absTargetDir.resolve(fileName).toString());
+        } else {
+            sendFiles(containerId, sourceParentDir.toString(), List.of(fileName.toString()), absTargetDir.toString());
+        }
+    }
+
+    public void loadIcons(Path baseDirectory, String iconDir) {
+        if (!Files.exists(baseDirectory.resolve(iconDir))) {
+            throw new RuntimeException(
+                    "Static GeoServer data '" + baseDirectory.resolve(iconDir)
+                            + "' does not exist and could not be loaded.");
+        } else if (Files.isDirectory(baseDirectory.resolve(iconDir))) {
+            sendFolder(getContainerId("geoserver"), baseDirectory.resolve(iconDir).toString(),
+                    ICONS_DIRECTORY.toString());
+        } else {
+            throw new RuntimeException("Geoserver icon directory " + iconDir + "does not exist or is not a directory.");
+        }
+    }
+
     public void createPostGISDataStore(String workspaceName, String name, String database, String schema) {
         if (manager.getReader().existsDatastore(workspaceName, name)) {
             logger.info("GeoServer datastore '{}' already exists.", name);
@@ -138,7 +182,7 @@ public class GeoServerClient extends ContainerClient {
         if (manager.getReader().existsLayer(workspaceName, layerName, Util.DEFAULT_QUIET_ON_NOT_FOUND)) {
             logger.info("GeoServer database layer '{}' already exists.", database);
         } else {
-            createPostGISDataStore(workspaceName, layerName, database, "public");
+            createPostGISDataStore(workspaceName, layerName, database, PostGISClient.DEFAULT_SCHEMA_NAME);
 
             GSFeatureTypeEncoder fte = new GSFeatureTypeEncoder();
             fte.setProjectionPolicy(ProjectionPolicy.NONE);
@@ -167,9 +211,10 @@ public class GeoServerClient extends ContainerClient {
             GeoServerRasterSettings geoServerSettings) {
 
         if (manager.getReader().existsCoveragestore(workspaceName, name)) {
-            logger.info("GeoServer coveragestore '{}' already exists.", name);
+            logger.info("GeoServer coverage store '{}' already exists.", name);
         } else {
-            PostGISClient.getInstance().createDatabase(database);
+            String geoserverRasterIndexDatabaseName = database + GEOSERVER_RASTER_INDEX_DATABASE_SUFFIX;
+            PostGISClient.getInstance().createDatabase(geoserverRasterIndexDatabaseName);
 
             String containerId = getContainerId("geoserver");
 
@@ -177,7 +222,7 @@ public class GeoServerClient extends ContainerClient {
             datastoreProperties.putIfAbsent("SPI", "org.geotools.data.postgis.PostgisNGDataStoreFactory");
             datastoreProperties.putIfAbsent("host", postgreSQLEndpoint.getHostName());
             datastoreProperties.putIfAbsent("port", postgreSQLEndpoint.getPort());
-            datastoreProperties.putIfAbsent("database", database);
+            datastoreProperties.putIfAbsent("database", geoserverRasterIndexDatabaseName);
             datastoreProperties.putIfAbsent("schema", schema);
             datastoreProperties.putIfAbsent("user", postgreSQLEndpoint.getUsername());
             datastoreProperties.putIfAbsent("passwd", postgreSQLEndpoint.getPassword());
@@ -188,7 +233,7 @@ public class GeoServerClient extends ContainerClient {
             datastoreProperties.putIfAbsent("preparedStatements", "true");
             StringWriter stringWriter = new StringWriter();
 
-            Path geotiffDir = Path.of(StackClient.GEOTIFFS_DIR, name);
+            Path geotiffDir = GDALClient.generateRasterOutDirPath(database, schema, name);
             try {
                 datastoreProperties.store(stringWriter, "");
 

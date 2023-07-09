@@ -7,7 +7,7 @@
 
   <groupId>uk.ac.cam.cares.jps.agent.bmsquery</groupId>
   <artifactId>bms-query-agent</artifactId>
-  <version>1.1.0</version>
+  <version>1.2.0</version>
   <packaging>war</packaging>
 
   <properties>
@@ -157,6 +157,18 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <webResources>
+            <resource>
+              <directory>src/main/webapp/WEB-INF</directory>
+              <targetPath>WEB-INF</targetPath>
+            </resource>
+            <resource>
+              <directory>WEB-INF</directory>
+              <targetPath>WEB-INF</targetPath>
+            </resource>
+          </webResources>
+        </configuration>
       </plugin>
 
       <!-- Downloads and extracts ZIP archives from Maven repository -->

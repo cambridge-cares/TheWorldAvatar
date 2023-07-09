@@ -10,7 +10,7 @@ services:
     restart: "no"
     build:
       context: "../"
-      dockerfile: "./docker/Dockerfile"
+      dockerfile: "./docker/run.Dockerfile"
       labels:
         authors: "support@cmclinnovations"
         description: "Empty visualisation image, ready to house visualisation files."
@@ -21,11 +21,14 @@ services:
   # Live development environment.
   # This container will install typescript then remain open so that developers can use it as a live development environment.
   develop:
-    image: huli/grunt
-    container_name: "dtvf-develop-env"
+    build:
+      context: ./
+      dockerfile: ./build.Dockerfile
+    image: ghcr.io/cambridge-cares/dtvf-build-environment:latest
+    container_name: "dtvf-build-environment"
     restart: "no"
     working_dir: "/app"
-    entrypoint: "/bin/sh -c 'npm install && npm install typescript -g && tail -f /dev/null'"
+    entrypoint: "tail -f /dev/null"
     volumes:
       - type: bind
         source: ../
@@ -35,11 +38,14 @@ services:
   # Compilation container.
   # This container will compile the source code, package it for deployment, write it to the ./output folder, then shutdown.
   compile:
-    image: huli/grunt
-    container_name: "dtvf-compile-env"
+    build:
+      context: ./
+      dockerfile: ./build.Dockerfile
+    image: ghcr.io/cambridge-cares/dtvf-build-environment:latest
+    container_name: "dtvf-build-compile"
     restart: "no"
     working_dir: "/app"
-    entrypoint: "/bin/sh -c 'npm install && npm install typescript -g && tsc && grunt package'"
+    entrypoint: "/bin/bash -c 'npm install && tsc && grunt package'"
     volumes:
       - type: bind
         source: ../
