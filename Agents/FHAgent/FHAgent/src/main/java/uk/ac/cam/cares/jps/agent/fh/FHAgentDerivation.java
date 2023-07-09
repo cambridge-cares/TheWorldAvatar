@@ -28,16 +28,23 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+/*Class for instantiating Derivation instances for the fumehood occupancy case
+ * 
+ */
 public class FHAgentDerivation {
     private static final Logger LOGGER = LogManager.getLogger(FHAgentLauncher.class);
-
+    //Derivation's base URL
     public String derivationInstanceBaseURL;
+    //SPARQL enpoints (query, update)
     private String[] endPoint;
+    //Init eror messate
     private final String ERROR_INIT = "Error on initialising derivation instantiation. ";
 
+    //Clients for instantating the derivation isntances
     public DerivationClient derivClient;
     public RemoteStoreClient storeClient;
 
+    //IRIs to be instantiated
     public String agentIRI;
     public Map<String, String> iriMap = new HashMap<>();
     public Map<String, String> RawToDerivedMap = new HashMap<>();
@@ -49,6 +56,13 @@ public class FHAgentDerivation {
     public String occupiedStateTypeIRI = ONTODEV + "OccupiedState";
     public String lengthTypeIRI = OM + "Length" ;
 
+    /*
+     * Standard init for the class
+     * @param agentPropFile location of the agent.properties
+     * @param clientPropFile location of the client.properties
+     * @param iriMappingFile location of the IRIMapper.txt
+     * @param outputToIRIMap a map between the variable key and IRI of the occupiedState produced by the agent
+     */
     public FHAgentDerivation(String agentPropFile, String clientPropFile, String iriMappingFile, Map<String, String> outputToIRIMap){
         try{
             readBaseIRI(agentPropFile);
@@ -65,6 +79,9 @@ public class FHAgentDerivation {
 
     }
     
+    /*
+     * Reads derivation.baseurl from properties file
+     */
     private void readBaseIRI(String propertiesFile) throws IOException{
         try (InputStream input = new FileInputStream(propertiesFile)) {
             // Load properties file from specified path
@@ -83,6 +100,9 @@ public class FHAgentDerivation {
         }
     }
 
+    /*
+     * Read SPARQL endpoint from the client.properties file
+     */
     private void readSparqlEndpoint(String propertiesFile) throws IOException{
         try (InputStream input = new FileInputStream(propertiesFile)) {
             // Load properties file from specified path
@@ -98,6 +118,11 @@ public class FHAgentDerivation {
         }
     }
 
+    /*
+     * Creates the IRI of the variables and agent instances
+     * @param agentPropFile The location of the agent.properties file
+     * @param outputToIRIMap a map between the variable key and IRI of the occupiedState produced by the agent
+     */
     private void createIRI (String agentPropFile, Map<String, String> outputToIRIMap){
         try (InputStream input = new FileInputStream(agentPropFile)) {
             // Load properties file from specified path
@@ -135,6 +160,10 @@ public class FHAgentDerivation {
             }
     }
 
+    /*
+     * Save the IRI mapping to IRIMapper.txt
+     * @param mappingFile The location of IRIMapper.txt
+     */
     private void saveIRIMapping (String mappingFile) throws IOException {
 
         FileWriter fileWriter = new FileWriter(mappingFile);
@@ -149,6 +178,13 @@ public class FHAgentDerivation {
         
     }
 
+    /*
+     * Retrieve IRI map between variable key and IRI form IRIMapper.txt. 
+     * If the file does not exist yet, create new IRI and file instead.
+     * @param agentPropFile location of the agent.properties
+     * @param iriMappingFile location of the IRIMapper.txt
+     * @param outputToIRIMap a map between the variable key and IRI of the occupiedState produced by the agent
+     */
     private void retrieveIRIMapping (String agentPropFile, String mappingFile, Map<String, String> outputToIRIMap){
         File mapping = new File(mappingFile);
         if(mapping.exists()) { 
@@ -175,6 +211,10 @@ public class FHAgentDerivation {
         }
     }
 
+    /*
+     * Create agent and derivatiopn instances for all derivation pair
+     * @param agenURL the URL from which the agent is called
+     */
     public void instantiateAgent(String agentURL) {
         if (agentURL.equals(null)){
             agentURL = derivationInstanceBaseURL;
@@ -215,13 +255,7 @@ public class FHAgentDerivation {
         }
     }
 
-    public void createderivationInstance(String derivationIriString){
-		ModifyQuery modify = Queries.MODIFY();
-        Iri derivationIri = iri(derivationIriString);
-		modify.insert(iri(derivationIriString).isA(derivationIri).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
-		storeClient.executeUpdate(modify.getQueryString());
-    }
-
+    //update the derivation latest update timestamp
     public void updateDerivationTimeStamp (String inputIRIString, String outputIRIString) {
         derivClient.updatePureSyncDerivations(Arrays.asList(inputIRIString, outputIRIString));
     }

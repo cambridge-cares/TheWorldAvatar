@@ -32,8 +32,8 @@ import org.jooq.exception.DataAccessException;
 
 
 /**
- * Class to retrieve data from the ThingsBoard API and storing it with connection to The World Avatar (Knowledge Base).
- * @author  */
+ * Class to retrieve data from the ThingsBoard API and storing fumehood occupancy with connection to The World Avatar (Knowledge Base).
+ * @author  Michael Laksana*/
 public class FHAgent{
 
 
@@ -197,7 +197,7 @@ public class FHAgent{
     }
 
     /*
-     * 
+     * Maps the variable strings to IRIMappers
      * 
      */
     public Map<String, String> getTimeseriesIRI () {
@@ -214,8 +214,6 @@ public class FHAgent{
 
     /**
      * Sends a POST request with requested parameters to the specified url.
-     *
-     * @param url        The specified url.
      * @param jsonParams Request parameters.
      */
     protected static void sendPostRequest(String jsonParams) {
@@ -329,8 +327,9 @@ public class FHAgent{
     }
 
     /**
-     * Updates the database with new readings.
-     * @param OccupiedState The readings received from the ThingsBoard API
+     * Updates the database with new readings or send the timeseries to the stack dependign  on the configuration.
+     * @param Distance The readings received from the ThingsBoard API
+     * @param keys List of variable keyname in Thingsboard server
      */
     public void updateData(JSONObject Distance, List<String> keys)throws IllegalArgumentException {
         if (useStack) {
@@ -342,8 +341,10 @@ public class FHAgent{
     }
 
     /*
-     * Update data locally
+     * Update timneseries outside the stack using the informations provided from the configuration files
      * 
+     * @param Distance The readings received from the ThingsBoard API
+     * @param keys List of variable keyname in Thingsboard server
      */
 
      public void localUpdateData(JSONObject Distance, List<String> keys)throws IllegalArgumentException {
@@ -398,15 +399,6 @@ public class FHAgent{
                         // Only update if there actually is data
                         if (!ts.getTimes().isEmpty()) {
                             try {
-                                /*
-                                JSONObject lastOccState = getLastState (ts.getDataIRIs().get(0));
-                                if (latestOccState.getJSONArray("occupiedState").getJSONObject(0).getBoolean("value") != lastOccState.getJSONArray("occupiedState").getJSONObject(0).getBoolean("value")) {
-                                    toggleFH(latestOccState.getJSONArray("occupiedState").getJSONObject(0).getBoolean("value"));
-                                    tsClient.addTimeSeriesData(ts);
-                                    LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
-                                }
-                                */
-
                                 tsClient.addTimeSeriesData(ts);
                                 LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
                                 for(String iri : ts.getDataIRIs()){
@@ -574,7 +566,7 @@ public class FHAgent{
 
     /**
      * Converts the readings in form of maps to time series' using the mappings from JSON key to IRI.
-     * @param Distance The readings as map.
+     * @param occupiedState The occupancy as map.
      * @param TimestampReadings The timestamps as map.
      * @return A list of time series objects (one per mapping) that can be used with the time series client.
      */
@@ -602,23 +594,6 @@ public class FHAgent{
                 throw new NoSuchElementException("The key " + key + " is not contained in the mapping!");
             }
         
-            
-
-            /*
-            for(String key: mapping.getAllJSONKeys()) {
-                // Add IRI
-                iris.add(mapping.getIRI(key));
-                if (occupiedState.containsKey(key)) {
-                    values.add(occupiedState.get(key));
-                }
-                // Will create a problem as length of iris and values do not match when creating the time series.
-                // Could add an empty list, but the length of the list needs to match length of times. So what values to
-                // fill it with?
-                else {
-                    throw new NoSuchElementException("The key " + key + " is not contained in the readings!");
-                }
-            }
-            */
             List<OffsetDateTime> times = allTimestamps;
             // Create the time series object and add it to the list
             TimeSeries<OffsetDateTime> currentTimeSeries = new TimeSeries<>(times, iris, values);
@@ -696,7 +671,12 @@ public class FHAgent{
         }
     }
 
-
+    /*
+     *Calculates the occupancy of the fumehood based on the distance received. 
+     * @param readings The distance readings received from Thingsboard
+     * @param key The distance readings key in Thingsboard
+     * @return A JSONObject of the calculated occupancy in the timeseries format
+     */
     private JSONObject TallyDist (JSONObject readings, String key) {
         float tally = 0;
         Boolean tallyLatest = false;
@@ -755,6 +735,9 @@ public class FHAgent{
         return result;
     }
 
+    /*@deprecated
+     * Get the timeseries based on the IRI
+     */
     public TimeSeries<OffsetDateTime> getTS(String dataIRI){
         try {
             occStateTS = tsClient.getLatestData(dataIRI);
@@ -764,6 +747,9 @@ public class FHAgent{
         return occStateTS;
     }
 
+    /*
+     * Returns the latest entry on the timeseries
+     */
     public JSONObject getLastState (String dataIRI) {
 
         JSONObject result = new JSONObject();
@@ -786,10 +772,6 @@ public class FHAgent{
         } catch (Exception e){
             throw new JPSRuntimeException("Unable to retrieve latest value and timestamp from timeseries object." + e);
         }
-    }
-
-    private void toggleFH (Boolean latestOccState) {
-        //TODO Toggle fumehood here
     }
 
     public JSONObject createJSONRequest (JSONObject data, String timeClass){
@@ -817,9 +799,7 @@ public class FHAgent{
             String iri = mapping.getIRI(key);
 
             JSONArray col = data.getJSONArray(key);
-            //values.put("values", new JSONObject());
 
-            //values.getJSONObject(iri).put("values", new JSONArray());
             JSONArray valArray = new JSONArray();
             for (int i = 0; i < col.length(); i++){
                 JSONObject row = col.getJSONObject(i);

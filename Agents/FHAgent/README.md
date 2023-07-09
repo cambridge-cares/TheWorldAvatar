@@ -5,11 +5,13 @@ The agent will retrieve the sensor readings from the Thingsboard (TB) server and
 
 This agent is derived from the [ThingsboardInputAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-1505-proximity-sensor-for-lab_FHAgent/Agents/ThingsBoardAgent).
 This agent has the basic same functionality to the ThingsBoardInputAgent. 
-The difference lies in the agents ability to convert sensor reading to occupancy status before instantiating the timeseries and the fumehood toggle function. 
+The difference lies in the agents ability to convert sensor reading to occupancy status before instantiating the timeseries. 
 
 For information regarding Thingsboard API, refer to the following [documentation from ThingsboardInputAgent](https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-1505-proximity-sensor-for-lab_FHAgent/Agents/ThingsBoardAgent/README.md#thingsboard-api).
 
 ## Usage
+
+The agent is connected to a proximity sensor connected to a microcontroller. This module is attached to a fumehood and reads the average distance between the sensor an the nearest object in front of the fumehood. 
 
 The agent takes in the latest 600 average distance reading from TB server and calculates the occupancy status. The occupancy calculation is done on the following tally algorithm:
 - The tally start from 0. 
@@ -49,6 +51,11 @@ Contains config for the agent operations such as calculations and instantiations
 - `use_stack` : Boolean whether the agent is using the stack or not
 - `derivation.mapping` : Maps the raw varables to the derived variables. The raw variable name must be the same with the TB variable keyname. The format is the following: `raw1:deriv1, raw2:deriv2, raw3:deriv1, ...`
 - `threshold.tally` : The distance threshold for the tally system
+- `tally.limit` : The tally threshold for the occupancy calculation system
+- `tally.max` : The tally maximum value for the occupancy calculation system
+- `tally.min` : The tally minimum value for the occupancy calculation system
+- `decrease.factor` : The factor the tally is decreased by during tally calculation
+- `increase.factor` ; The factor the tal;ly is increased by when the distance threshold is breached 
 - `derivation.baseurl` : The derivation instances base iri
 
 
