@@ -44,9 +44,7 @@ class ComplexTrainer:
 
     def __init__(self, full_dataset_dir, ontology, batch_size=32, epoch_num=100, dim=20, learning_rate=1.0, gamma=1,
                  test=False, use_projection=False, alpha=0.1, margin=5, resume=False, inference=True, global_neg=False,
-                 gpu_number=1):
-
-
+                 gpu_number=1, is_numerical=False):
 
         self.full_dataset_dir = full_dataset_dir
         self.ontology = ontology
@@ -61,15 +59,19 @@ class ComplexTrainer:
         self.margin = margin
         self.resume = resume
         self.global_neg = global_neg
+        self.is_numerical = is_numerical
         self.inference = inference
         self.my_extractor = HopExtractor(
             dataset_dir=self.full_dataset_dir,
             dataset_name=self.ontology)
-        df_train = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-train-2.txt"), sep="\t", header=None)
+
+        if os.path.exists(os.path.join(full_dir, f"{self.ontology}-train-2.txt")):
+            df_train = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-train-2.txt"), sep="\t", header=None)
+            self.use_label_dict = json.loads(open(f"{self.full_dataset_dir}/use_label_dict.json").read())
+        else:
+            df_train = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-train.txt"), sep="\t", header=None)
         self.df_train = df_train
         df_train_small = df_train.sample(frac=0.01)
-        self.use_label_dict = json.loads(open(f"{self.full_dataset_dir}/use_label_dict.json").read())
-
 
         self.file_loader = FileLoader(full_dataset_dir=self.full_dataset_dir, dataset_name=self.ontology)
         self.entity2idx, self.idx2entity, self.rel2idx, self.idx2rel = self.file_loader.load_index_files()
@@ -88,7 +90,7 @@ class ComplexTrainer:
             df_test = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-test.txt"), sep="\t", header=None)
             test_set = ComplexInferenceDataset(df_test, full_dataset_dir=self.full_dataset_dir,
                                                ontology=self.ontology,
-                                               mode="test")
+                                               mode="test", global_neg=self.global_neg)
             self.test_dataloader = torch.utils.data.DataLoader(test_set,
                                                                batch_size=test_set.candidate_max * self.gpu_number,
                                                                shuffle=False)
@@ -99,13 +101,13 @@ class ComplexTrainer:
 
         train_set = ComplexInferenceDataset(df_train, full_dataset_dir=self.full_dataset_dir,
                                             ontology=self.ontology,
-                                            mode="general_train", global_neg=False)
+                                            mode="general_train", global_neg=self.global_neg)
         self.train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=True)
 
         # ==================================== Load evaluation set, which is a smaller training set ===============
         train_set_eval = ComplexInferenceDataset(df_train_small, full_dataset_dir=self.full_dataset_dir,
                                                  ontology=self.ontology,
-                                                 mode="general_train_eval")
+                                                 mode="general_train_eval", global_neg=self.global_neg)
         self.train_dataloader_eval = torch.utils.data.DataLoader(train_set_eval,
                                                                  batch_size=train_set_eval.ent_num * self.gpu_number,
                                                                  shuffle=False)
@@ -120,12 +122,19 @@ class ComplexTrainer:
             print("Singular node trianing set not exists", value_node_path)
             df_value_node = self.df_train
 
+        if self.is_numerical:
+            eval_mode = "value_node_eval"
+            value_node_eval_mode = "value_node"
+        else:
+            eval_mode = "general_train_eval"
+            value_node_eval_mode = "general_test"
+
         value_node_eval_set = ComplexInferenceDataset(df=df_train_small, full_dataset_dir=self.full_dataset_dir,
                                                       ontology=self.ontology,
-                                                      mode="value_node_eval")
+                                                      mode=eval_mode, global_neg=self.global_neg)
         value_node_set = ComplexInferenceDataset(df=df_value_node, full_dataset_dir=self.full_dataset_dir,
                                                  ontology=self.ontology,
-                                                 mode="value_node")
+                                                 mode=value_node_eval_mode, global_neg=self.global_neg)
         self.dataloader_value_node = torch.utils.data.DataLoader(value_node_set, batch_size=self.batch_size,
                                                                  shuffle=True)
         self.dataloader_value_node_eval = torch.utils.data.DataLoader(value_node_eval_set,
@@ -283,7 +292,6 @@ class ComplexTrainer:
             if self.inference:
                 self.inference_evaluation()
 
-
     def train(self):
         """
         Split the the training set into non-numerical and numerical subsets
@@ -371,6 +379,7 @@ if __name__ == "__main__":
     parser.add_argument("-epoch", "--epoch", help="number of epochs")
     parser.add_argument("-resume", "--resume", help="resume the training by loading embeddings ")
     parser.add_argument("-global_neg", "--global_neg", help="whether use all entities as negative samples")
+    parser.add_argument("-is_numerical", "--is_numerical", help="whether enable numerical embedding")
     parser.add_argument("-inference", "--inference", help="whether try to do inference with the ontology")
     parser.add_argument("-gpu_num", "--gpu_number", help="number of gpus used")
     args = parser.parse_args()
@@ -451,6 +460,15 @@ if __name__ == "__main__":
         else:
             global_neg = False
 
+    is_numerical = False
+    if args.is_numerical:
+        if args.is_numerical.lower() == "yes":
+            is_numerical = True
+        elif args.is_numerical.lower() == "no":
+            is_numerical = False
+        else:
+            is_numerical = False
+
     inference = False
     if args.inference:
         if args.inference.lower() == "yes":
@@ -483,8 +501,6 @@ if __name__ == "__main__":
     my_trainer = ComplexTrainer(full_dataset_dir=full_dir, ontology=ontology, batch_size=32, dim=dim,
                                 learning_rate=learning_rate, test=test, use_projection=use_projection, alpha=alpha,
                                 margin=margin, epoch_num=epoch, gamma=gamma, resume=resume, inference=inference,
-                                global_neg=global_neg, gpu_number=gpu_number)
+                                global_neg=global_neg, gpu_number=gpu_number, is_numerical=is_numerical)
 
     my_trainer.run()
-# role_with_subclass_full_attributes_0.1
-# role_with_subclass_full_attributes_with_class
