@@ -54,8 +54,9 @@ for species in all_species:
     labels = []
     for binding in bindings["results"]["bindings"]:
         for head in heads:
-            label = binding[head]["value"].strip().upper()
-            labels.append(label)
+            if head in binding:
+                label = binding[head]["value"].strip().upper()
+                labels.append(label)
     labels = list(set(labels))
 
     all_labels += labels
