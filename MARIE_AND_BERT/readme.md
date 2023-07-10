@@ -56,12 +56,18 @@ to use conda for creating a virtual environment.
 , unzip under `DATA`. Otherwise upon the first run, the scripts will download the BERT pretrained model from hugging face.
 5. Download EntityLinking.zip from [EntityLinking.zip](http://159.223.42.53:8080/EntityLinking.zip), unzip under `DATA`
 6. Download `label_dict.js` from [label_dict.js] from (http://159.223.42.53:8080/label_dict.js) and put the file in `MARIE_ANB_BERT/static/js`. 
-8. Download the required NLTK datasets by running
+7. Download the required NLTK datasets by running
 ```python
 import nlkt
 nltk.download('all')
 ```
- 
+ 8. Download a copy of BERT model and put under `DATA/bert_pretrained`.
+```python
+from pytorch_transformers.modeling_bert import BertModel
+model = BertModel.from_pretrained('bert-base-uncased')
+model.save_pretrained('/tmp/directory/for/models/')
+```
+
 To start the system, run `python main.py`.
 
 For debugging purpose, in `main.py` please comment the line
