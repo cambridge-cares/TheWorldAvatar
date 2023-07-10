@@ -3,15 +3,13 @@ import sys
 from torch.optim.lr_scheduler import ExponentialLR
 import numpy as np
 import torch
-from torch import nn, no_grad
+from torch import no_grad
 import os
 import pandas as pd
 from tqdm import tqdm
-from transformers import BertModel, BertTokenizer, AdamW
-
 sys.path.append("../..")
-from Marie.Util.location import TRAINING_DIR, DEPLOYMENT_DIR, DATA_DIR
-from KGToolbox.NHopExtractor import HopExtractor
+from Marie.Util.location import DATA_DIR
+from Marie.Util.NHopExtractor import HopExtractor
 from Marie.Util.Dataset.OntoScore_Dataset import Dataset
 from Marie.Util.Models.ComplexScoreModel import ComplexScoreModel
 
