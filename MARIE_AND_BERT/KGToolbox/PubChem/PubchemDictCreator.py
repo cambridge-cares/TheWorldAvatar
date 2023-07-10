@@ -7,14 +7,15 @@ import pickle
 from pubchempy import *
 
 import pandas as pd
-from Marie.Util.location import TRAINING_DIR, DATA_DIR
+from Marie.Util.location import TRAINING_DIR, DATA_DIR, DICTIONARY_DIR
 
-
+dataset_name = "pubchem"
+dataset_dir = os.path.join(DATA_DIR, f"CrossGraph/{dataset_name}")
 
 def add_missing_cid():
     new_names = []
     new_dict = {}
-    missing_cid_list = json.loads(open(os.path.join(DATA_DIR, 'CrossGraph', 'pubchem', 'missing_cid_list.json')).read())
+    missing_cid_list = json.loads(open(os.path.join(dataset_dir, 'missing_cid_list.json')).read())
     for cid in missing_cid_list:
         for key in get_info_from_pubchem(cid=cid):
             if key is not None:
@@ -41,7 +42,7 @@ def get_info_from_pubchem(cid=None):
 
 STOP_INDEX = 10001
 
-path = os.path.join(DATA_DIR, 'CrossGraph', 'pubchem', 'pubchem.csv')
+path = os.path.join(dataset_dir, 'pubchem.csv')
 df_pubchem = pd.read_csv(path, sep=',')[0:STOP_INDEX]
 # iupac_name, molecular_formula, canonical_smiles
 
@@ -54,9 +55,7 @@ CID_dict = CID_dict_name
 CID_dict.update(CID_dict_form)
 CID_dict.update(CID_dict_smil)
 
-# print(df_pubchem.columns)
-# print(df_pubchem)
-# print(CID_dict)
+
 name_list = [x for x in list(set(CID_dict.keys())) if str(x) != 'nan']
 
 
@@ -70,12 +69,12 @@ name_list = name_list + new_names
 name_list = list(set(name_list))
 
 
-with open(os.path.join(TRAINING_DIR, 'name_list.json'), 'w') as f:
+with open(os.path.join(DICTIONARY_DIR, dataset_name, 'name_list.json'), 'w') as f:
     f.write(json.dumps(name_list))
     f.close()
 
 
-with open(os.path.join(TRAINING_DIR, 'cid_dict.json'), 'w') as f:
+with open(os.path.join(DICTIONARY_DIR, dataset_name, 'cid_dict.json'), 'w') as f:
     f.write(json.dumps(CID_dict))
     f.close()
 
@@ -86,6 +85,6 @@ for index, row in df_pubchem.iterrows():
         cell_label = row['compound_id'] + '_' + col
         pubchem_value_dict[cell_label] = cell_value
 
-VALUE_DICT_PATH = os.path.join(TRAINING_DIR, 'pubchem_value_dict.pkl')
+VALUE_DICT_PATH = os.path.join(DICTIONARY_DIR, dataset_name, 'pubchem_value_dict.pkl')
 with open(VALUE_DICT_PATH, 'wb') as handle:
     pickle.dump(pubchem_value_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
