@@ -27,13 +27,13 @@ def load_file(file_dir, file_name, mode):
 
 class WikiDataReader:
 
-    def __init__(self):
+    def __init__(self, dataset_name="wikidata_numerical"):
         self.client = Client()
         self.identifier_relations = ['P274', 'P233']
         self.SUB = str.maketrans("₀₁₂₃₄₅₆₇₈₉", "0123456789")
-
-        self.dataset_dir = os.path.join(DATA_DIR, 'CrossGraph/wikidata')
-        self.dictionary_dir = os.path.join(DATA_DIR, 'Dictionaries/wikidata')
+        self.dataset_name = dataset_name
+        self.dataset_dir = os.path.join(DATA_DIR, f'CrossGraph/{dataset_name}')
+        self.dictionary_dir = os.path.join(DATA_DIR, f'Dictionaries/{dataset_name}')
         # self.collected_species = load_file(file_dir=self.dataset_dir, file_name='log', mode='list')
         self.collected_species = []
         self.unique_relations = load_file(file_dir=self.dataset_dir, file_name='unique_relations.json', mode='list')
@@ -52,15 +52,15 @@ class WikiDataReader:
 
     def write_files(self):
 
-        with open(os.path.join(DATA_DIR, 'Dictionaries/wikidata', 'name_dict.json'), 'w', encoding='utf-8') as f:
+        with open(os.path.join(DATA_DIR, f'Dictionaries/{self.dataset_name}', 'name_dict.json'), 'w', encoding='utf-8') as f:
             f.write(json.dumps(self.name_dict))
             f.close()
 
-        with open(os.path.join(DATA_DIR, 'Dictionaries/wikidata', 'name_list.json'), 'w', encoding='utf-8') as f:
+        with open(os.path.join(DATA_DIR, f'Dictionaries/{self.dataset_name}', 'name_list.json'), 'w', encoding='utf-8') as f:
             f.write(json.dumps(self.name_list))
             f.close()
 
-        with open(os.path.join(self.dataset_dir, 'wikidata_value_dict.json'), 'w',
+        with open(os.path.join(self.dataset_dir, f'{self.dataset_name}_value_dict.json'), 'w',
                   encoding='utf-8') as f:
             f.write(json.dumps(self.value_dict))
             f.close()
@@ -77,9 +77,9 @@ class WikiDataReader:
 
         df_train = pd.DataFrame(self.triples)
         df_test = df_train.sample(frac=0.2)
-        df_train.to_csv(os.path.join(self.dataset_dir, f"wikidata-train.txt"), sep='\t', index=False,
+        df_train.to_csv(os.path.join(self.dataset_dir, f"{self.dataset_name}-train.txt"), sep='\t', index=False,
                         header=False)
-        df_test.to_csv(os.path.join(self.dataset_dir, f"wikidata-test.txt"), sep='\t', index=False,
+        df_test.to_csv(os.path.join(self.dataset_dir, f"{self.dataset_name}-test.txt"), sep='\t', index=False,
                        header=False)
 
         with open(os.path.join(self.dataset_dir, 'log'), 'w',
@@ -112,6 +112,7 @@ class WikiDataReader:
                 self.write_files()
                 print(time.time() - START_TIME)
 
+        self.write_files()
     def update_name_list_and_dict(self, entity, species_id):
         aliases = self.get_aliases_and_description(entity)
         self.name_list = self.name_list + aliases
@@ -191,8 +192,8 @@ class WikiDataReader:
 
 
 if __name__ == "__main__":
-    my_reader = WikiDataReader()
+    my_reader = WikiDataReader(dataset_name="wikidata_numerical")
     my_reader.main()
-    MakeIndex.create_indexing(dataset_name="wikidata", data_dir="CrossGraph/wikidata")
+    MakeIndex.create_indexing(dataset_name="wikidata_numerical", data_dir="CrossGraph/wikidata_numerical")
 
     # my_reader.test("Q2270")
