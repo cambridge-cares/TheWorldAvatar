@@ -24,20 +24,56 @@ Multiple models are trained in this system:
 ##  Knowledge Graph Embedding
 
 ### File requirement
-To train the embedding of an ontology, a list of files are required. The files are script created, see [readme.md for dataset creation](../KGToolbox/readme.md) for details. 
-
-1. Triples: `[name]-train.txt`, `[name]-test.txt`, `[name]-valid.txt`. The files are headless tsv files with three columns, subject-predicate-object, separated by `tab`. 
-
+To train the embedding of an ontology, a list of files are required. The files are script created, see [readme.md for dataset creation](../KGToolbox/readme.md) for details.
+1. Triples: `[name]-train.txt`, `[name]-test.txt`, `[name]-valid.txt`. The files are headless tsv files with three columns, subject-predicate-object, separated by `tab`.
 2. Indexing: `entity2idx.pkl`, `idx2entity.pkl`, `rel2idx.pkl`, `idx2rel.pkl`, provide index-to-label and label-to-index dictionaries
-
 3. [Optional] Neighbour dictionary: `three_hop_dict_index` and `three_hop_dict_label`. However, if the neighbour dictionaries are missing, the training scripts 
 will automatically create them. 
 
 Once all the files are created, choose the embedding method, the implemented ones are 
 `Complex`, `TransE`, `TransEA`,`TransR`, `TransRA`. The preferred embedding method for a typical TWA ontology is `TransRA`.
-
 In folder `MARIE_AND_BERT/Training/Trainers`, `TransRATrainer.py` handles both `TransR` and `TransRA`. `ComplexTrainer.py` handles
 `Complex`, `TransEATrainer.py` handles `TransE` and `TransEA`. 
+
+### Local embedding training
+
+#### Pubchem (CrossGraph/pubchem)
+
+1. Under `Training/Trainers` run `python TransEATrainer.py -d 20 -lr 0.01 -bs 32 -o pubchem -epoch 500 -margin 5`, when the training is done, `ent_embdding.tsv`
+and `rel_embedding.tsv` will be created under `DATA/CrossGraph/pubchem`
+
+#### OntoKin (CrossGraph/ontokin)
+
+1. Under `Training/Trainers` run `python TransEATrainer.py -d 80 -lr 0.01 -bs 32 -o ontokin -epoch 500 -margin 5`, when the training is done, `ent_embdding.tsv`
+and `rel_embedding.tsv` will be created under `DATA/CrossGraph/ontokin`
+
+#### OntoMoPs (CrossGraph/OntoMoPs)
+
+1. Under `Training/Trainers` run `python TransRATrainer.py -d 50 -lr 0.01 -bs 32 -o OntoMoPs -so numerical_with_implicit -epoch 200 -proj no -alpha 0.01`, 
+when the training is done, `ent_embdding.tsv`, `rel_embedding.tsv`, `proj_matrix.tsv`,`attr_embedding.tsv`,`bias_embedding.tsv` will be created under `DATA/CrossGraph/OntoMoPs/numerical_with_implicit`
+
+#### OntoSpecies (CrossGraph/ontospecies_new)
+
+1. Under `Training/Trainers` run `python TransRATrainer.py -d 50 -lr 0.01 -bs 32 -o ontospecies_new -so base_full_no_pref_selected_role_limited_100 -epoch 200 -proj no -alpha 0.01 -global_neg no`, 
+when the training is done, `ent_embdding.tsv`, `rel_embedding.tsv`, `proj_matrix.tsv`,`attr_embedding.tsv`,`bias_embedding.tsv` will be created under `DATA/CrossGraph/ontospecies_new/base_full_no_pref_selected_role_limited_100`
+
+#### OntoCompChem (CrossGraph/ontocompchem)
+
+1. Under `Training/Trainers` run `python ComplexTrainer.py -d 80 -lr 0.01 -bs 32 -o ontocompchem -global_neg yes -is_numerical no -epoch 500`, 
+when the training is done, `ent_embdding.tsv`, `rel_embedding.tsv`, will be created under `DATA/CrossGraph/ontocompchem`
+
+#### Wikidata (CrossGraph/wikidata_numerical)
+
+1. Under `Training/Trainers` run `python TransRATrainer.py -d 40 -lr 0.01 -bs 32 -o wikidata_numerical -global_neg yes -epoch 500 -proj no -alpha 0.01`, 
+when the training is done, `ent_embdding.tsv`, `rel_embedding.tsv`, `proj_matrix.tsv`,`attr_embedding.tsv`,`bias_embedding.tsv`, will be created under `DATA/CrossGraph/wikidata_numerical`
+
+#### Agents (CrossGraph/agents)
+
+1. Under `Training/Trainers` run `python TransRATrainer.py -d 40 -lr 0.01 -bs 4 -o agents -so ontopceagent -global_neg yes -epoch 200 -proj no`, 
+when the training is done, `ent_embdding.tsv`, `rel_embedding.tsv`, `proj_matrix.tsv`,`attr_embedding.tsv`,`bias_embedding.tsv`, will be created under `DATA/CrossGraph/agents/ontopceagent`
+
+2. Under `Training/Trainers` run `python TransRATrainer.py -d 40 -lr 0.01 -bs 4 -o agents -so ontothermoagent -global_neg yes -epoch 200 -proj no`, 
+when the training is done, `ent_embdding.tsv`, `rel_embedding.tsv`, `proj_matrix.tsv`,`attr_embedding.tsv`,`bias_embedding.tsv`, will be created under `DATA/CrossGraph/agents/ontothermoagent`
 
 ### Configuration on HPC
 
