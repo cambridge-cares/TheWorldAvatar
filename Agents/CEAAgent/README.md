@@ -10,7 +10,7 @@ The agent currently queries for building geometry, surrounding buildings geometr
 ### 2.1. Maven
 
 The docker image uses TheWorldAvatar maven repository (https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/).
-You will need to provide your credentials (github username/personal access token) in single-word text files located:
+You will need to provide your credentials (GitHub username/personal access token) in single-word text files located:
 ```
 ./credentials/
     repo_username.txt
@@ -75,7 +75,7 @@ The run endpoint accepts the following request parameters:
 - ```terrainTable```: (optional) table from which the agent will attempt to query terrain data; if not specified, it will be set to the stack table specified as ```postgis.table``` in ```./cea-agent/src/main/resources/postgis.properties```. Please ensure that ```terrainTable``` is in public schema, since this is the set-up that the agent assumes.
 - ```graphName```: (optional) named graph to which the CEA triples belong to and will be instantiated under. If ```graphName``` is not specified, the agent will assume no graph usage.
 
-After receiving request to the run endpoint, the agent will query for the building geometry, surrounding buildings' geometry, building usage, historical weather, and terrain data from the endpoints specified in the request parameters. The agent will then run CEA with the queried information as inputs, and send request with the CEA output data to the update endpoint afterwards.
+After receiving request to the run endpoint, the agent will query for the following CEA inputs from the endpoints specified in the request parameters: building geometry, surrounding buildings' geometry, building usage, historical weather data, and terrain data. The agent will then run CEA with the queried information as inputs, and send request with the CEA output data to the update endpoint afterwards. With the exception of building geometry query, whose results are necessary for the agent to run, if any of the CEA inputs queries fails, the agent will run CEA with its corresponding CEA default values for the missing inputs.
 
 Example request:
 ```
