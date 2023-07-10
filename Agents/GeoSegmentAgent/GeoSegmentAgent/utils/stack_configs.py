@@ -1,7 +1,7 @@
 # The purpose of this module is to retrieve relevant properties and settings
 # (e.g. for the Time Series Client) from Stack clients
 
-from GeoSegmentAgent.kg_utils.jpsSingletons import stackClientsGw
+from .jpsSingletons import stackClientsGw
 
 # Initialise logger
 from py4jps import agentlogging

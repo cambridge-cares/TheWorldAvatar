@@ -11,4 +11,7 @@ jaydebeapi==1.2.0
 segment-geospatial==0.8.3
 groundingdino-py==0.4.0
 localtileserver==0.7.1
+sqlalchemy
+geoalchemy2
+geopandas
 git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils
