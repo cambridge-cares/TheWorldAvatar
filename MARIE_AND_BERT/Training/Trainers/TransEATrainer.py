@@ -1,5 +1,6 @@
 import json
 import os, sys
+
 sys.path.append('')
 sys.path.append('../../Marie/Util/')
 sys.path.append('../../Marie/')
@@ -73,9 +74,11 @@ class TransEATrainer:
                                        open(os.path.join(DATA_DIR, self.dataset_path,
                                                          f'{self.dataset_name}-test.txt')).read().splitlines()]
 
-        train_non_numerical_set = Dataset(train_triplets_non_numerical, dataset_path=self.dataset_path, dataset_name= self.dataset_name,
+        train_non_numerical_set = Dataset(train_triplets_non_numerical, dataset_path=self.dataset_path,
+                                          dataset_name=self.dataset_name,
                                           is_numerical=False)
-        test_non_numerical_set = Dataset(test_triplets_non_numerical, dataset_path=self.dataset_path, dataset_name= self.dataset_name,
+        test_non_numerical_set = Dataset(test_triplets_non_numerical, dataset_path=self.dataset_path,
+                                         dataset_name=self.dataset_name,
                                          is_numerical=False)
         train_non_numerical_dataloader = torch.utils.data.DataLoader(train_non_numerical_set,
                                                                      batch_size=self.batch_size,
@@ -200,7 +203,7 @@ class TransEATrainer:
             train_numerical_dataloader, train_non_numerical_dataloader, \
             test_numerical_dataloader, test_non_numerical_dataloader = self.get_train_data()
         else:
-            train_non_numerical_dataloader, test_non_numerical_dataloader= self.get_train_data()
+            train_non_numerical_dataloader, test_non_numerical_dataloader = self.get_train_data()
         with tqdm(total=self.epoch_num, unit=' epoch') as tepoch:
 
             # train numerical datasets first
@@ -242,24 +245,87 @@ class TransEATrainer:
 
 
 if __name__ == "__main__":
-    learning_rate = 0.1
-    batch_size = 256
-    dim = 30
-    test_step = 100
-    alpha = 0.01
+
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-d", "--dimension", help="dimension of embedding")
+    parser.add_argument("-lr", "--learning_rate", help="starting learning rate")
+    parser.add_argument("-g", "--gamma", help="gamma for scheduler")
+    parser.add_argument("-o", "--ontology", help="main ontology used")
+    parser.add_argument("-bs", "--batch_size", help="size of mini batch")
+    parser.add_argument("-test", "--test_mode", help="if true, the training will use a smaller training set")
+    parser.add_argument("-proj", "--use_projection", help="if true, use projection in numerical linear regression")
+    parser.add_argument("-alpha", "--alpha", help="ratio between l_a and l_r")
+    parser.add_argument("-margin", "--margin", help="margin for MarginRankLoss")
+    parser.add_argument("-epoch", "--epoch", help="number of epochs")
+    parser.add_argument("-resume", "--resume", help="resume the training by loading embeddings ")
+    parser.add_argument("-global_neg", "--global_neg", help="whether use all entities as negative samples")
+    parser.add_argument("-gpu_num", "--gpu_number", help="number of gpus used")
+
+    args = parser.parse_args()
+
+    gpu_number = 1
+    if args.gpu_number:
+        gpu_number = int(args.gpu_number)
+
+    dim = 20
+    if args.dimension:
+        dim = int(args.dimension)
+
+    learning_rate = 0.01
+    if args.learning_rate:
+        learning_rate = float(args.learning_rate)
+
+    alpha = 0.1
+    if args.alpha:
+        alpha = float(args.alpha)
+
     gamma = 1
-    epoch_num = 500
-    # for i in range(10):
+    if args.gamma:
+        gamma = float(args.gamma)
+
+    batch_size = 256
+    if args.batch_size:
+        batch_size = int(args.batch_size)
+
+    epoch = 100
+    if args.epoch:
+        epoch = int(args.epoch)
+
+    ontology = "pubchem"
+    if args.ontology:
+        ontology = args.ontology
+
+    resume = False
+    if args.resume:
+        if args.resume.lower() == "yes":
+            resume = True
+        elif args.resume.lower() == "no":
+            resume = False
+        else:
+            resume = False
+
+    print(f"Dimension: {dim}")
+    print(f"Learning rate: {learning_rate}")
+    print(f"Gamma: {gamma}")
+    print(f"Batch size: {batch_size}")
+    print(f"Alpha: {alpha}")
+    print(f"Epoch: {epoch}")
+    print(f"Resume training: {resume}")
+    print(f"Number of GPUs: {gpu_number}")
+
+    batch_size = batch_size * gpu_number
+    test_step = 100
     print("============== STARTING TRAINING WITH PARAMETERS ======================")
     print(f"alpha: {alpha}")
     print(f"gamma: {gamma}")
     print(f"lr: {learning_rate}")
     print(f"dim: {dim}")
     print(f"batch size: {batch_size}")
-    ontology = "base_full_no_pref_selected_role_limited_100"
-    trainer = TransEATrainer(dataset_path=os.path.join(EVALUATION_DIR, "ontospecies_inference", ontology),
-                             dataset_name=ontology, dim=dim, epoch_num=epoch_num,
+    trainer = TransEATrainer(dataset_path=os.path.join(DATA_DIR, "CrossGraph", ontology),
+                             dataset_name=ontology, dim=dim, epoch_num=epoch,
                              learning_rate=learning_rate, batch_size=batch_size, gamma=gamma, test_step=test_step,
-                             alpha=alpha, resume_training=False)
+                             alpha=alpha, resume_training=resume)
     print("Starting the training")
     trainer.run()
