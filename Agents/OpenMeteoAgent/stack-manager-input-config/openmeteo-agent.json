@@ -3,7 +3,7 @@
         "Name": "openmeteo-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "openmeteo-agent:1.0.0",
+                "Image": "openmeteo-agent:2.0.0",
                 "Configs": [
                     {
                         "ConfigName": "blazegraph"
