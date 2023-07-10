@@ -14,6 +14,7 @@ import org.apache.jena.graph.NodeFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.cmclinnovations.stack.clients.core.StackClient;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -48,6 +49,7 @@ public class OpenMeteoAgent extends JPSAgent {
     public static final String URI_RUN = "/run";
     public static final String URI_DELETE = "/delete";
 
+    public static final String KEY_ROUTE = "route";
     public static final String KEY_LAT = "latitude";
     public static final String KEY_LON = "longitude";
     public static final String KEY_START = "start_date";
@@ -109,18 +111,23 @@ public class OpenMeteoAgent extends JPSAgent {
     private Double longitude;
     private Double elevation;
 
+    public static final String STACK_NAME = "<STACK NAME>";
+    private String stackName;
+    private String stackAcessAgentBase;
     EndpointConfig endpointConfig = new EndpointConfig();
     private String dbName;
     private RemoteRDBStoreClient rdbStoreClient;
     private RemoteStoreClient storeClient;
     private TimeSeriesClient<OffsetDateTime> tsClient;
-    private String route;
+    private String defaultLabel;
 
     public OpenMeteoAgent() {
         readConfig();
+        stackName = StackClient.getStackName();
+        stackAcessAgentBase = stackAcessAgentBase.replace(STACK_NAME, stackName);
         rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDbUrl(dbName), endpointConfig.getDbUser(), endpointConfig.getDbPassword());
         setTimeSeriesTypes();
-        setStoreClient(route);
+        setStoreClient(defaultLabel);
     }
 
     @Override
@@ -132,6 +139,7 @@ public class OpenMeteoAgent extends JPSAgent {
     public JSONObject processRequestParameters(JSONObject requestParams) {
         if (validateInput(requestParams)) {
             if (requestParams.getString(KEY_REQ_URL).contains(URI_RUN)) {
+                String route = requestParams.has(KEY_ROUTE) ? requestParams.getString(KEY_ROUTE) : stackAcessAgentBase + defaultLabel;
                 latitude = Double.parseDouble(requestParams.getString(KEY_LAT));
                 longitude = Double.parseDouble(requestParams.getString(KEY_LON));
                 JSONObject response = getWeatherData(latitude, longitude, requestParams.getString(KEY_START), requestParams.getString(KEY_END));
@@ -146,18 +154,18 @@ public class OpenMeteoAgent extends JPSAgent {
                 List<OffsetDateTime> timesList = getTimesList(weatherData, API_TIME, offset);
                 Map<String, List<Object>> parsedData = parseWeatherData(weatherData, weatherUnit);
 
-                String stationIRI = getStation(latitude, longitude);
+                String stationIRI = getStation(latitude, longitude, route);
 
                 List<TimeSeries<OffsetDateTime>> tsList = new ArrayList<>();
 
                 tsClient = new TimeSeriesClient<>(storeClient, OffsetDateTime.class);
 
                 if (stationIRI.isEmpty()) {
-                    stationIRI = createStation(latitude, longitude, elevation);
-                    instantiateWeather(stationIRI, parsedData, timesList, tsList);
+                    stationIRI = createStation(latitude, longitude, elevation, route);
+                    instantiateWeather(stationIRI, parsedData, timesList, tsList, route);
                 }
                 else {
-                    JSONArray queryResults = getWeatherIRI(stationIRI);
+                    JSONArray queryResults = getWeatherIRI(stationIRI, route);
                     try (Connection conn = rdbStoreClient.getConnection()) {
                         for (int i = 0; i < queryResults.length(); i++) {
                             // delete old time series history
@@ -186,24 +194,25 @@ public class OpenMeteoAgent extends JPSAgent {
                 requestParams.append(KEY_STATION, stationIRI);
             }
             else if (requestParams.getString(KEY_REQ_URL).contains(URI_DELETE)) {
+                String route = requestParams.has(KEY_ROUTE) ? requestParams.getString(KEY_ROUTE) : stackAcessAgentBase + defaultLabel;
                 latitude = Double.parseDouble(requestParams.getString(KEY_LAT));
                 longitude = Double.parseDouble(requestParams.getString(KEY_LON));
 
-                String stationIRI = getStation(latitude, longitude);
+                String stationIRI = getStation(latitude, longitude, route);
 
                 if (stationIRI.isEmpty()) {
                     throw new JPSRuntimeException("No reporting station found at the given coordinate.");
                 }
 
-                JSONArray queryResults = getWeatherIRI(stationIRI);
+                JSONArray queryResults = getWeatherIRI(stationIRI, route);
 
                 tsClient = new TimeSeriesClient<>(storeClient, OffsetDateTime.class);
 
                 try (Connection conn = rdbStoreClient.getConnection()) {
                     for (int i = 0; i < queryResults.length(); i++){
                         tsClient.deleteTimeSeries(queryResults.getJSONObject(i).getString("timeseries"), conn);
-                        deleteIRI(queryResults.getJSONObject(i).getString("measure"));
-                        deleteIRI(queryResults.getJSONObject(i).getString("quantity"));
+                        deleteIRI(queryResults.getJSONObject(i).getString("measure"), route);
+                        deleteIRI(queryResults.getJSONObject(i).getString("quantity"), route);
                     }
                 }
                 catch (Exception e) {
@@ -211,7 +220,7 @@ public class OpenMeteoAgent extends JPSAgent {
                     throw new JPSRuntimeException(e);
                 }
 
-                deleteIRI(stationIRI);
+                deleteIRI(stationIRI, route);
             }
         }
         return requestParams;
@@ -227,7 +236,8 @@ public class OpenMeteoAgent extends JPSAgent {
         omURI = config.getString("uri.ontology.om");
         rdfURI = config.getString("uri.ontology.rdf");
         geospatialLiterals = config.getString("uri.geospatial.literals");
-        route = config.getString("route.uri");
+        stackAcessAgentBase = config.getString("access.url");
+        defaultLabel = config.getString("route.uri");
         dbName = config.getString("db.name");
     }
 
@@ -381,9 +391,10 @@ public class OpenMeteoAgent extends JPSAgent {
      * @param lat latitude of OntoEMS:ReportingStation instance
      * @param lon longitude of OntoEMS:ReportingStation instance
      * @param ele observation elevation of OntoEMS:ReportingStation instance
+     * @param route access agent route
      * @return OntoEMS:ReportingStation instance IRI
      */
-    private String createStation(Double lat, Double lon, Double ele) {
+    private String createStation(Double lat, Double lon, Double ele, String route) {
         String stationIRI = ontoemsURI + STATION + "_" + UUID.randomUUID();
 
         String coordinate = lat + "placeHolder" + lon;
@@ -440,9 +451,10 @@ public class OpenMeteoAgent extends JPSAgent {
      * Queries for the OntoEMS:ReportingStation IRI with the given lat, lon coordinate
      * @param lat latitude of the reporting station
      * @param lon longitude of the reporting station
+     * @param route access agent route
      * @return reporting station IRI at the given coordinate if it exists
      */
-    private String getStation(Double lat, Double lon) {
+    private String getStation(Double lat, Double lon, String route) {
         String coordinate = lat + "placeHolder" + lon;
 
         WhereBuilder wb = new WhereBuilder()
@@ -473,9 +485,10 @@ public class OpenMeteoAgent extends JPSAgent {
     /**
      * Queries for and returns the quantity IRI, quantity type, measure IRI, and time series IRI related to stationIRI
      * @param stationIRI IRI of weather station
+     * @param route access agent route
      * @return query result for quantity IRI, quantity type, measure IRI, and time series IRI related to stationIRI
      */
-    private JSONArray getWeatherIRI(String stationIRI) {
+    private JSONArray getWeatherIRI(String stationIRI, String route) {
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("ontoems", ontoemsURI)
                 .addPrefix("ontotimeseries", ontotimeseriesURI)
@@ -497,8 +510,9 @@ public class OpenMeteoAgent extends JPSAgent {
     /**
      * Deletes all triples related to the given IRI
      * @param iri IRI to delete
+     * @param route access agent route
      */
-    private void deleteIRI(String iri){
+    private void deleteIRI(String iri, String route){
         UpdateBuilder db = new UpdateBuilder()
                 .addWhere(NodeFactory.createURI(iri), "?p", "?o");
 
@@ -602,8 +616,9 @@ public class OpenMeteoAgent extends JPSAgent {
      * @param parsedData weather data
      * @param timesList list of timestamps of parsedData
      * @param tsList list to store TimeSeries
+     * @param route access agent route
      */
-    private void instantiateWeather(String stationIRI,  Map<String, List<Object>> parsedData, List<OffsetDateTime> timesList,  List<TimeSeries<OffsetDateTime>> tsList) {
+    private void instantiateWeather(String stationIRI,  Map<String, List<Object>> parsedData, List<OffsetDateTime> timesList,  List<TimeSeries<OffsetDateTime>> tsList, String route) {
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("ontoems", ontoemsURI)
                 .addPrefix("om", omURI)
