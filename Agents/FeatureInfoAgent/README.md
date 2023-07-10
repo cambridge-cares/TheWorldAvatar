@@ -66,9 +66,32 @@ Follow the below configuration steps within the local `queries` directory.
 
 An example configuration file is provided within the [queries] directory. Furthermore, two example `.sparql` files are provided to retrieve the meta and time series data, respectively. Both of these files refer to the example data as listed <a href="#example">below</a>.
 
+#### Class Discovery
+
+To determine the class that the input instance IRI belongs to, the FIA uses a couple of hard-coded SPARQL queries; if the first returns an empty result, then the second is attempted. If neither return any class IRIs, then the request ends early as a failure. Please be aware that you may need to add to your dataset to ensure that at least one of these queries can return a class IRI when your instance IRI is injected into the `[IRI]` placeholder.
+
+```
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT distinct ?class WHERE {
+    [IRI] rdf:type ?class
+}
+```
+
+```
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+select distinct ?class { 
+    SERVICE [ONTOP] { [IRI] a ?x . }
+    ?x rdfs:subClassOf* ?class .
+    ?class rdf:type owl:Class .
+}
+```
+
 #### Query Restrictions
 
-To properly parse the metadata and timeseries queries, the agent requires the results from queries to fulfill a set format. For each type of query a number of placeholder tokens can be added that will be populated by the agent just before execution. These are:
+To properly parse the metadata and timeseries queries, the agent requires the results from queries to fulfil a set format. For each type of query a number of placeholder tokens can be added that will be populated by the agent just before execution. These are:
 
 - `[IRI]`: The IRI of the **feature** of interest, i.e. the feature selected within the DTVF (the IRI will be injected here into the request)
 - `[ONTOP]`: The URL of the Ontop service within the stack will be injected
