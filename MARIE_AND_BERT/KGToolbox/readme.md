@@ -154,13 +154,15 @@ wikidata_numerical, OntoMoPs, and ontospecies_new folders contain them, to creat
 1. Run `KGToolbox/OntoMoPs/CreateHeadTensorForOntoMoPs.py`, creates `all_heads.pkl` under `CrossGraph/OntoMoPs`
 
 ### OntoSpecies (CrossGraph/ontospecies_new)
-
 1. Run `KGToolbox/OntoMoPs/CreateHeadTensorForOntoSpeciesNew.py`, creates `all_heads.pkl` under `CrossGraph/ontospecies_new`
+
+
+Once the above-mentioned steps are done, please see [Training readme.md](../Training/readme.md) to train the knowledge 
+graph embeddings and the natural language models. 
+
 
 ##Entity Linking
 
 To create the Entity Linking dataset, follow the steps outlined in [Entity Linking Dataset Creation readme.md](./EntityLinking/readme.md)
-
-
 ## Future work
 The hard-coded URLs in the code need to be removed and more maintainable solutions need to be used. 
