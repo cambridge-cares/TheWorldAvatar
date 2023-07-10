@@ -23,12 +23,12 @@ class Dataset(torch.utils.data.Dataset):
         if dataset_path is None:
             e2i_path = open(os.path.join(DATA_DIR, f'entity2idx.pkl'), 'rb')
             r2i_path = open(os.path.join(DATA_DIR, f'relation2idx.pkl'), 'rb')
-            hash_numerical_path = os.path.join(DATA_DIR, 'wikidata_numerical_value_no_unit.json')
         else:
             e2i_path = open(os.path.join(DATA_DIR, f'{dataset_path}/entity2idx.pkl'), 'rb')
             r2i_path = open(os.path.join(DATA_DIR, f'{dataset_path}/relation2idx.pkl'), 'rb')
-            # hash_numerical_path = os.path.join(DATA_DIR, f'{dataset_path}/wikidata_numerical_value_no_unit.json')
-            hash_numerical_path = os.path.join(DATA_DIR, f'{dataset_path}/node_value_dict.json')
+            if is_numerical:
+                hash_numerical_path = os.path.join(DATA_DIR, f'{dataset_path}/node_value_dict.json')
+                self.hash_numerical_dict = json.loads(open(hash_numerical_path).read())
 
         self.hop_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, dataset_path), dataset_name=dataset_name)
         self.entity2idx = pickle.load(e2i_path)
@@ -38,9 +38,6 @@ class Dataset(torch.utils.data.Dataset):
         self.rel_num = len(self.relation2idx.keys())
         self.candidates = [e for e in self.entity2idx.keys()]
         self.is_numerical = is_numerical
-        self.hash_numerical_dict = json.loads(open(hash_numerical_path).read())
-        # self.neg_sample_dict_path = os.path.join(DATA_DIR, f'{dataset_path}/neg_sample_dict.json')
-        # self.neg_sample_dict = json.loads(open(self.neg_sample_dict_path).read())
         self.triples = self.create_triples()
 
     def __len__(self):
@@ -68,7 +65,6 @@ class Dataset(torch.utils.data.Dataset):
             tail = self.entity2idx[triplet[2]]
             all_neighbours = self.hop_extractor.extract_neighbour_from_idx(head)
             all_neighbours.remove(tail)
-            # fake_tail_list = random.sample(all_neighbours, min(self.neg_rate, len(all_neighbours)))
             for fake_tail in all_neighbours:
                 fake_triple = (head, rel, fake_tail)
                 if self.is_numerical:
@@ -77,22 +73,6 @@ class Dataset(torch.utils.data.Dataset):
                     numerical_value = []
                 triple = ((head, rel, tail), fake_triple, numerical_value)
                 all_triples.append(triple)
-            # all_neighbours = random.randint(0, self.ent_num - 1)
-            # if all_neighbours is None:
-            #     return None
-            # for i in range(self.neg_rate):
-            #     triple = None
-            #     flag = True
-            #     while flag:
-            # fake_entity = random.randint(0, self.ent_num)
-            # fake_entity = random.choice(all_neighbours)
-
-            # triple_str = f'{head}_{rel}_{fake_entity}'
-            # flag = self.hop_extractor.check_triple_existence(triple_str)
-            # for the neg set, just replace the tail with something starting with the same prefix
-
-            # if triple is not None:
-            #     all_triples.append(triple)
 
         return all_triples
 
