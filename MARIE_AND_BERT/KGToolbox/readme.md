@@ -141,6 +141,22 @@ No extra steps are required.
 2. Run `KGToolbox/OntoKin/create_dict_for_ontokin.py`
 
 
+## Head tensor files 
+Head tensor files are dictionaries storing the embeddings of instances under a certain class to shorten the system's responses,
+wikidata_numerical, OntoMoPs, and ontospecies_new folders contain them, to create the files:
+
+### Wikidata (CrossGraph/wikidata_numerical)
+
+1. Run `KGToolbox/Wikidata/WikidataCreateCachedHeads.py`, creates `all_heads.pkl` under `CrossGraph/wikidata_numerical`
+
+### OntoMoPs (CrossGraph/OntoMoPs)
+
+1. Run `KGToolbox/OntoMoPs/CreateHeadTensorForOntoMoPs.py`, creates `all_heads.pkl` under `CrossGraph/OntoMoPs`
+
+### OntoSpecies (CrossGraph/ontospecies_new)
+
+1. Run `KGToolbox/OntoMoPs/CreateHeadTensorForOntoSpeciesNew.py`, creates `all_heads.pkl` under `CrossGraph/ontospecies_new`
+
 ##Entity Linking
 
 To create the Entity Linking dataset, follow the steps outlined in [Entity Linking Dataset Creation readme.md](./EntityLinking/readme.md)
