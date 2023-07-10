@@ -130,8 +130,17 @@ class HopExtractor:
 
 if __name__ == "__main__":
     START_TIME = time.time()
-    _ontology = "fb15k"
-    _dataset_dir = f"CrossGraph/{_ontology}"
+
+    import argparse
+    argParser = argparse.ArgumentParser()
+    argParser.add_argument("-onto", "--ontology", type=str, help="the name of your ontology")
+    argParser.add_argument("-dir", "--directory", type=str, help="the directory of your ontology")
+    args = argParser.parse_args()
+    _ontology = args.ontology
+    _dataset_dir = args.directory
+
+    # _ontology = "fb15k"
+    # _dataset_dir = f"CrossGraph/{_ontology}"
     my_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, _dataset_dir),
                                 dataset_name=_ontology)
 
