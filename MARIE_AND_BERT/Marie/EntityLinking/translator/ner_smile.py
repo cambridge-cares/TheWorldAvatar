@@ -1,7 +1,6 @@
 import torch
 import transformers
 import re
-from Marie.Util.location import PRETRAINED_DIR_CASED
 
 SPECIAL_SYM = "[,\'\[\]\{\}\(\)\-\]\*\+\-\_\.\/\:\>=]"
 stopwords = ['the', 'which', 'in', 'that', 'what']

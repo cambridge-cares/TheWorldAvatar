@@ -185,4 +185,20 @@ The resulting folder structure after moving the binary files to `DATA/EntityLink
     └── SMILES_NER.bin*
 </pre>
 
+## Final EntityLinking.zip
 
+The final binary file folder for entitylinking is of the following structure.
+Refer to [Data Preparation Step](../../KGToolbox/EntityLinking/readme.md) for how to create training files in the data subfolder. The result are model files created in the last step. 
+<pre>
+├── EntityLinking
+    ├── data
+         ├── ...
+    ├── models
+         ├── id2text.json
+         ├── id2title.json
+         └── id2wikidata.json
+    ├── pytorch_model.bin
+    ├── embeddingbase.pt
+    ├── training_params.txt
+    └── SMILES_NER.bin*
+</pre>
