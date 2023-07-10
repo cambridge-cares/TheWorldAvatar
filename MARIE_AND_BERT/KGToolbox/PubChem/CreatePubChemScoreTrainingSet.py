@@ -8,10 +8,12 @@ import os
 import pickle
 from Marie.Util.location import DATA_DIR
 
-ent_label_path = os.path.join(DATA_DIR, r'ent_labels.tsv')
+dataset_dir = 'CrossGraph/pubchem'
+
+ent_label_path = os.path.join(DATA_DIR, dataset_dir, r'ent_labels.tsv')
 full_entity_list = [e.strip() for e in open(ent_label_path).readlines()]
 
-r2i_path = open(os.path.join(DATA_DIR, 'relation2idx.pkl'), 'rb')
+r2i_path = open(os.path.join(DATA_DIR, dataset_dir, 'relation2idx.pkl'), 'rb')
 rel2idx = pickle.load(r2i_path)
 
 # open pubchem csv and get all the relations
@@ -20,7 +22,7 @@ rel2idx = pickle.load(r2i_path)
 
 # make 3 question template, special template for "molar weight and something"
 
-file_path = os.path.join(DATA_DIR, 'pubchem.csv')
+file_path = os.path.join(DATA_DIR, dataset_dir, 'pubchem.csv')
 # how much does benenze weigh?
 
 input_file = csv.DictReader(open(file_path).readlines()[0:50])
@@ -63,8 +65,7 @@ all_question = []
 full_relation_label_list = []
 
 for h_r in how_many_relations:
-    # t_1 = '''how many %s are in %s'''
-    # t_2 = '''what is the number of %s of %s'''
+
     t_1 = '''how many %s are in'''
     t_2 = '''what is the number of %s of'''
 
@@ -113,15 +114,7 @@ for r in normal_relations:
                 q_2 = (t_2 % (r), _CID, '0', tail_entity)
                 questions_for_cross_graph_training = questions_for_cross_graph_training + [q_1, q_2]
 
-import csv
-
-with open('question_set_rel', "w", newline='') as the_file:
-    csv.register_dialect("custom", delimiter=",", skipinitialspace=True)
-    writer = csv.writer(the_file, dialect="custom")
-    for tup in all_question:
-        writer.writerow(tup)
-
-cross_score_file_name = os.path.join(DATA_DIR, 'CrossGraph', 'pubchem_cross_score.tsv')
+cross_score_file_name = os.path.join(DATA_DIR,dataset_dir, 'score_model_training.tsv')
 df_cross_score = pd.DataFrame(questions_for_cross_graph_training)
 df_cross_score.columns = ['question', 'head', 'domain', 'answer']
 
