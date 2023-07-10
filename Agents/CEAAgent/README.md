@@ -19,11 +19,11 @@ You will need to provide your credentials (github username/personal access token
 ### 2.2. Stack Set Up
 The agent is designed to run in the stack. To start the stack, spin up the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager).
 
-### 2.3. Access Agent Set Up
-The agent is designed to use the [Access Agent](../AccessAgent). Spin the access agent up as part of the same stack as spun up by the Stack Manager.
+### 2.3. Blazegraph Set Up
+The agent is designed to use the stack Blazegraph. Please ensure that the Blazegraph namespace corresponding to ```cea.label``` in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```, is set up in the stack Blazegraph.
 
-### 2.4. Blazegraph Set Up
-The agent is designed to use the stack Blazegraph. Please ensure that the routing information and the Blazegraph namespace corresponding to ```cea.label``` in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```, is set up in the stack Blazegraph. See the [Access Agent README](../AccessAgent) for instruction on uploading routing information.
+### 2.4. Access Agent Set Up
+The agent is designed to use the [Access Agent](../AccessAgent). Spin the access agent up as part of the same stack as spun up by the Stack Manager. Please ensure that the routing information for the Blazegraph namespace corresponding to ```cea.label``` in ```./cea-agent/src/main/resources/CEAAgentConfig.properties``` is uploaded, see the [Access Agent README](../AccessAgent) for instruction on uploading routing information.
 
 ### 2.5. PostGIS Set Up
 The agent is designed to use the stack PostGIS. The calculation results of CEA will be stored in the stack PostGIS database, which is specified as ```cea.database``` in ```./cea-agent/src/main/resources/CEAAgentConfig.properties```. Please ensure the database specified by ```cea.database``` is set up in the stack PostGIS.
@@ -40,7 +40,7 @@ Currently included are:
 
 If not included, you will need to add the targetResourceID in ```./cea-agent/src/main/resources/CEAAgentConfig.properties``` and add the corresponding mapping from cityObject IRI to targetResourceID in accessAgentRoutes in the ```readConfig``` method of ```./cea-agent/src/main/java/uk/ac/cam/cares/jps/agent/cea/CEAAgent.java```.
 
-### 2.6. Build
+### 2.7. Build and Run
 In the same directory as this README, first build the Docker image by running
 ```
 docker-compose build
@@ -52,7 +52,7 @@ After the image is built, copy ```./stack-manager-input-config/cea-agent.json```
 ```
 Replace ```<STACK NAME>``` with the name of the stack that was spun up by Stack Manager.
 
-### 2.7. Debugging
+### 2.8. Debugging
 To debug, put ```./stack-manager-input-config/cea-agent-debug.json``` instead of ```./stack-manager-input-config/cea-agent.json```  in ```../Deploy/stacks/dynamic/stack-manager/inputs/config/services```. Then, in the ```../Deploy/stacks/dynamic/stack-manager/``` directory, run 
 ```
 ./stack.sh start <STACK NAME>
