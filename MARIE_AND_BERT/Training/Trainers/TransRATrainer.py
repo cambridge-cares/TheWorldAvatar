@@ -1,11 +1,11 @@
 import random
 import sys
+
 sys.path.append("")
 sys.path.append("../..")
 from torch import no_grad, nn
 from torch.optim.lr_scheduler import ExponentialLR
 from tqdm import tqdm
-
 
 import os
 
@@ -76,9 +76,16 @@ class TransRATrainer:
         self.my_extractor = HopExtractor(
             dataset_dir=self.full_dataset_dir,
             dataset_name=self.ontology)
-        df_train = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-train-2.txt"), sep="\t", header=None)
+
+        if os.path.exists(os.path.join(full_dir, f"{self.ontology}-train-2.txt")):
+            df_train = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-train-2.txt"), sep="\t", header=None)
+        else:
+            df_train = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-train.txt"), sep="\t", header=None)
         self.df_train = df_train
-        df_train_small = df_train.sample(frac=0.01)
+        if len(df_train) < 500:
+            df_train_small = df_train
+        else:
+            df_train_small = df_train.sample(frac=0.01)
         self.file_loader = FileLoader(full_dataset_dir=self.full_dataset_dir, dataset_name=self.ontology)
         self.entity2idx, self.idx2entity, self.rel2idx, self.idx2rel = self.file_loader.load_index_files()
         numerical_eval_path = os.path.join(full_dir, f"numerical_eval.tsv")
@@ -105,13 +112,13 @@ class TransRATrainer:
 
         train_set = TransRInferenceDataset(df_train, full_dataset_dir=self.full_dataset_dir,
                                            ontology=self.ontology,
-                                           mode="general_train", global_neg=False)
+                                           mode="general_train", global_neg=self.global_neg)
         self.train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=True)
 
         # ==================================== Load evaluation set, which is a smaller training set ===============
         train_set_eval = TransRInferenceDataset(df_train_small, full_dataset_dir=self.full_dataset_dir,
                                                 ontology=self.ontology,
-                                                mode="general_train_eval")
+                                                mode="general_train_eval", global_neg=self.global_neg)
         self.train_dataloader_eval = torch.utils.data.DataLoader(train_set_eval,
                                                                  batch_size=train_set_eval.ent_num * self.gpu_number,
                                                                  shuffle=False)
@@ -409,7 +416,7 @@ if __name__ == "__main__":
     if args.ontology:
         ontology = args.ontology
 
-    sub_ontology = "full_500"
+    sub_ontology = None
     if args.sub_ontology:
         sub_ontology = args.sub_ontology
 
@@ -484,5 +491,3 @@ if __name__ == "__main__":
                                 global_neg=global_neg, gpu_number=gpu_number)
 
     my_trainer.run()
-# role_with_subclass_full_attributes_0.1
-# role_with_subclass_full_attributes_with_class

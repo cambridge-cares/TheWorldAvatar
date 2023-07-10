@@ -20,9 +20,11 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
         self.ontology = ontology
         self.file_loader = FileLoader(full_dataset_dir=self.full_dataset_dir, dataset_name=self.ontology)
         self.entity2idx, self.idx2entity, self.rel2idx, self.idx2rel = self.file_loader.load_index_files()
-        self.neg_sample_dict_path = os.path.join(self.full_dataset_dir, "neg_sample_dict.json")
-        self.neg_sample_dict = json.loads(open(self.neg_sample_dict_path).read())
         self.use_global_neg = global_neg
+        if not self.use_global_neg:
+            self.neg_sample_dict_path = os.path.join(self.full_dataset_dir, "neg_sample_dict.json")
+            self.neg_sample_dict = json.loads(open(self.neg_sample_dict_path).read())
+
 
         # if (inference):
         self.candidate_dict_path = os.path.join(self.full_dataset_dir, "candidate_dict.json")
@@ -199,6 +201,7 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
             p = self.rel2idx[row[1]]
             o = self.entity2idx[row[2]]
             if row[2] not in self.node_value_dict:
+                print("Row not in node value dict")
                 triples.append((s, p, o, o))
                 # check o and remove any o with
                 if self.use_global_neg:
