@@ -4,7 +4,7 @@
 cname=$(docker ps | grep geoserver | sed 's/.*\s\+//')
 echo "Target container: $cname"
 
-dest=/var/geoserver/datadir/workspaces/twa/styles
+dest=/opt/geoserver_data/workspaces/twa/styles
 echo "Destination path: $dest"
 
 search_dir=./config/
