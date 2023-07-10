@@ -1,9 +1,17 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
+
+# 3.6.1
+### Features:
+* _No features present._
+### Bug Fixes:
+* Mapbox username and token are now read from external files/docker secrets.
+
 # 3.6.0
 ### Features:
 * Location of configuration file can now be passed into DTVF.
 ### Bug Fixes:
 * _No bug fixes present._
+
 # 3.5.1
 ### Features:
 * _No features present._
