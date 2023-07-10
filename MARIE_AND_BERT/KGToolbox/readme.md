@@ -25,13 +25,15 @@ The user will need to create a folder `MARIE_AND_BERT/DATA/CrossGraph` and a ser
 │   │   │   ├── ontospecies_new
 │   │   │   ├── pubchem
 │   │   │   ├── wikidata_numerical
+│   │   │   ├── ontocompchem
+│   │   │   ├── ontokin
 ```
 
 ## CrossGraph 
 1. create the `DATA` folder and create the subfolders as the folder structure above. 
 
 The following subsections give steps for creating the training set for both embedding training and relation prediction
-model training for each ontology. The [Score Alignment](##Score alignment model) subsection gives steps for 
+model training for each ontology. The [Score Alignment](#score-alignment-model) subsection gives steps for 
 creating the training set for training the score alignment model (`CrossGraph/cross_graph_model_with_all_9_updated`). 
 
 ###  OntoAgent (CrossGraph/agents folder)
@@ -51,13 +53,15 @@ To create OntoCompChem training set:
 1. Run`KGToolbox/OntoCompChem/OntoCompChemReader.py` to create the triples and supporting files. 
 2. Run `CreateOntoCompChemTrainingSet.py` to create the BERT training set, 
 which creates a file named `score_model_traininng.tsv` in the `DATA/CrossGraph/ontocompchem` folder. 
+3. Run `python NHopExtractor.py -onto ontocompchem -dir CrossGraph/ontocompchem` under`MARIE_AND_BERT\Marie\Util`to create neighbour dictionary
+
 
 ### OntoKin (CrossGraph/ontokin folder)
 To create OntoKin training set:
 
 1. Run `KGToolbox/OntoKin/OntoKinReader.py`, all the necessary
 file including the triples and the `score_model_training.tsv` will be created and put into `DATA/CrossGraph/ontokin`.
-
+2. Run `python NHopExtractor.py -onto ontokin -dir CrossGraph/ontokin` under`MARIE_AND_BERT\Marie\Util`
 
 ### OntoMoPs (CrossGraph/OntoMoPs folder)
 
@@ -71,9 +75,10 @@ To create the OntoMoPs training set:
 
 To create the OntoSpecies training dataset:
 
-1. Download 
+1. Download `http://159.223.42.53:8080/OntoSpeciesNewData.zip` and unzip the files under `CrossGraph/ontospecies_new`. The zip files contains dictionaries for 
+manually identified duplicated uses and classes.  
 2. Run`KGToolbox/OntoSpeciesNew/OntoSpeciesReader.py`to create the triples and the supporting files for embedding training. 
-3. Run `KGToolbox/OntoSpeciesNew/CreateOntoSPeciesNewScoreTrainingSet.py`. The script will
+3. Run `KGToolbox/OntoSpeciesNew/CreateOntoSpeciesNewScoreTrainingSet.py`. The script will
 create `score_model_training.tsv` under `DATA/CrossGraph/ontospecies_new/base_full_no_pref_selected_role_limited_100` for relation prediction training. 
  
 ### Wikidata (CrossGraph/wikidata_numerical folder)
@@ -82,11 +87,13 @@ create `score_model_training.tsv` under `DATA/CrossGraph/ontospecies_new/base_fu
 3. Run `KGToolbox/Wikidata/WikiDataReader.py` to create triples and supporting files
 4. Run `KGToolbox/Wikidata/WikidataCreateTrainingData.py`, which will create `score_model_training.tsv` 
 in `DATA/CrossGraph/wikidata_numerical`. 
+5. Run `python NHopExtractor.py -onto wikidata_numerical -dir CrossGraph/wikidata_numerical` under`MARIE_AND_BERT\Marie\Util`
+
 
 ### Pubchem (CrossGraph/pubchem folder)
-1. Download `pubchem.csv` from `http://159.223.42.53:8080/pubchem.csv`.
+1. Download `pubchem.csv` from `http://159.223.42.53:8080/pubchem.csv` to `CrossGraph/pubchem`
 2. Run `KGToolbox/PubChem/PubchemReader.py`
-
+3. Run `python NHopExtractor.py -onto pubchem -dir CrossGraph/pubchem` under `MARIE_AND_BERT\Marie\Util`
 
 ### Score alignment model
 
@@ -122,6 +129,16 @@ archived `cross_graph_alignment_training_labelled.tsv` file.
 
 The Dictionary files for Wikidata will be created by running `KGToolbox/Wikidata/WikiDataReader.py`. 
 No extra steps are required. 
+
+
+### OntoCompChem (Dictionaries/ontocompchem)
+
+1. Run `KGToolbox/OntoCompChem/create_dict_for_ontocompchem.py`
+
+### OntoKin (Dictionaries/ontokin)
+
+1. Make sure `KGToolbox/OntoKin/OntoKinReader.py` has been run already and created `CrossGraph/ontokin/all_species.tsv` is created
+2. Run `KGToolbox/OntoKin/create_dict_for_ontokin.py`
 
 
 ##Entity Linking
