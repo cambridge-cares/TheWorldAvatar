@@ -8,7 +8,7 @@ from Marie.Util.NHopExtractor import HopExtractor
 from Marie.Util.location import DATA_DIR
 
 dataset_dir = "CrossGraph/wikidata_numerical"
-triple_path = os.path.join(DATA_DIR, dataset_dir, "wikidata_numerical_numerical-train.txt")
+triple_path = os.path.join(DATA_DIR, dataset_dir, "wikidata_numerical-train.txt")
 e2i_file = open(os.path.join(DATA_DIR, dataset_dir, "entity2idx.pkl"), 'rb')
 entity2idx = pickle.load(e2i_file)
 
@@ -24,9 +24,6 @@ for triple in triples:
         s_idx = entity2idx[s]
         s_neighbours = subgraph_extractor.extract_neighbour_from_idx(s_idx)
         all_neighbours += s_neighbours
-
-# Q417831
-print("Q417831" in unique_species)
 
 unique_species_idx = torch.LongTensor(sorted([entity2idx[s] for s in unique_species]))
 
