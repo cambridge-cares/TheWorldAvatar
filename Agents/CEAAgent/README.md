@@ -52,6 +52,8 @@ After the image is built, copy ```./stack-manager-input-config/cea-agent.json```
 ```
 Replace ```<STACK NAME>``` with the name of the stack that was spun up by Stack Manager.
 
+WARNING: tests currently not running.
+
 ### 2.8. Debugging
 To debug, put ```./stack-manager-input-config/cea-agent-debug.json``` instead of ```./stack-manager-input-config/cea-agent.json```  in ```../Deploy/stacks/dynamic/stack-manager/inputs/config/services```. Then, in the ```../Deploy/stacks/dynamic/stack-manager/``` directory, run 
 ```
