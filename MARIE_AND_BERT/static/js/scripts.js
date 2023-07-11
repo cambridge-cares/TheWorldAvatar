@@ -49,6 +49,12 @@ $('document').ready(function(){
 
 	$('#ask-button').click(function (e){
         askQuestion(e);
+		
+		// Uncomment to enable ChatGPT integration
+		/*
+		single_result.style.display = "none";
+		resultsRow.style.display = "none";
+		*/
     });
 
     $('#input-field').keypress(function(e){
@@ -83,6 +89,12 @@ resultsRow.style.display = "none";
 
 var single_result = document.getElementById("single_result");
 single_result.style.display = "none";
+
+// Uncomment to enable ChatGPT integration
+/*
+var chatgpt_result = document.getElementById("chatgpt_result");
+chatgpt_result.style.display = "none";
+*/
 
 // Currently asking a question?
 var asking = 0;
@@ -206,7 +218,11 @@ function askQuestion() {
 
 	asking = 1;
 	// Make the request for the world avatar
-	makeRequest(question, "worldavatar", "json", handleResults, promises);
+	makeRequest(question, "/search", "worldavatar", "json", handleResults, promises);
+	// Uncomment to enable ChatGPT integration
+	/*
+	makeRequest(question, "/ask_chatgpt", "worldavatar", "json", handleChatGPTResults, promises);
+	*/
 
 	// Reset the search button when all requests are complete
 	$.when.apply($, promises).then(function() {
@@ -226,12 +242,18 @@ function askQuestion() {
 }
 
 
-/*
- Make a single HTTP request to the chatbot.
-*/
-function makeRequest(question, type, resultType, successFunction, promises) {
+/** 
+ * Make a single HTTP request to the chatbot.
+ * @param {string} question - input question by the user
+ * @param {string} url - endpoint the request is sent to, can be /search or /ask_chatgpt 
+ * @param {string} type
+ * @param {string} resultType
+ * @param {function} successFunction - callback function that consumes the response
+ * @param {array} promises 
+ */
+function makeRequest(question, url, type, resultType, successFunction, promises) {
 	//let url = botURL + "chemistry_chatbot/query?type=" + type;
-	url = "search"
+	// url = "search"
     console.log('url is ', url)
 	let data = { "question": question };
 
@@ -261,6 +283,17 @@ function makeRequest(question, type, resultType, successFunction, promises) {
 	}));
 }
 
+
+/** 
+ * Handles results from ChatGPT
+ */
+function handleChatGPTResults(rawResult){
+	let gpt_result = document.getElementById("chatgpt_result_box")
+	gpt_result.innerHTML = rawResult["result"]
+	chatgpt_result.style.display = "block"
+	console.log("Result from ChatGPT", rawResult)
+}
+
 /*
  Process the results from a WorldAvatar request
 */
@@ -275,6 +308,9 @@ function makeRequest(question, type, resultType, successFunction, promises) {
 function handleResults(rawResult){
 	console.log("raw result in handle results", rawResult)
 
+	single_result.style.display = "none"
+	resultsRow.style.display = "none"
+	
 	if ("single" in rawResult){
 		console.log("Got a single result", rawResult)
 		let result = rawResult["single"]
