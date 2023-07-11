@@ -99,26 +99,33 @@ public class GeoObject3D {
         this.postgresClient = postgresClient;
     }
 
-    public void updateName(GeoObject3D object3D){
+    public void updateName(GeoObject3D object3D, String[] config){
         String upSql = "UPDATE cityobject SET ";
         if(object3D.name != null){
             upSql = upSql + "name = '" + object3D.name + "' WHERE gmlid = '" + object3D.gmlid + "';";
-            try (Connection conn = postgresClient.getConnection()) {
-                try (Statement stmt = conn.createStatement()) {
+            this.pool = new SqlConnectionPool(config);
+            LOGGER.info("Pinging source database for availability...");
+            try (Connection srcConn = this.pool.getSourceConnection()) {
+                if (!srcConn.isValid(60)) {
+                    LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
+                    throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
+                }else{
+                    try (Statement stmt = srcConn.createStatement()) {
                     stmt.executeUpdate(upSql);
                 }
-            }catch (SQLException e) {
-                LOGGER.error("Probably failed to disconnect");
-                LOGGER.error(e.getMessage());
-            }
+                }
+            } catch (SQLException e) {
+                LOGGER.fatal("Error connecting to source database: " + e);
+                throw new JPSRuntimeException("Error connecting to source database: " + e);
+            }    
         }else{
             System.out.println("No Update");
         }
 
     }
 
-    public void updateAddress(ObjectAddress address) throws SQLException {
+    public void updateAddress(ObjectAddress address, String[] config) throws SQLException {
         this.address.setPostGISClient(this.postgresClient);
-        this.address.updateAddress(address);
+        this.address.updateAddress(address,config);
     }
 }

@@ -3,6 +3,8 @@ package uk.ac.cam.cares.jsp.integration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -18,6 +20,8 @@ public class ObjectAddress {
     private String country;
     private String city;
     private PostgresClient postgresClient;
+    private static final String INVALID_CONNECTION_MESSAGE = "Connection is invalid...";
+    private SqlConnectionPool pool;
 
     ObjectAddress() {}
     ObjectAddress(String gmlid, String street, String house, String zip_code, String country, String city) {
@@ -45,11 +49,17 @@ public class ObjectAddress {
         this.postgresClient = postgresClient;
     }
 
-    public void updateAddress (ObjectAddress address) throws SQLException {
+    public void updateAddress (ObjectAddress address, String[] config) throws SQLException {
         String gmlid = address.getGmlId();
-        try (Connection conn = postgresClient.getConnection()) {
+        this.pool = new SqlConnectionPool(config);
+        LOGGER.info("Pinging source database for availability...");
+        try (Connection srcConn = this.pool.getSourceConnection()) {
+            if (!srcConn.isValid(60)) {
+                LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
+                throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
+            }else{
             String sql = "SELECT id FROM address WHERE address.gmlid = " + "'" + gmlid + "'";//check address existing firstly
-            try (Statement stmt = conn.createStatement()) {
+            try (Statement stmt = srcConn.createStatement()) {
                 ResultSet result = stmt.executeQuery(sql);
                 if (!result.next()) {
                     String upSql1 = "INSERT INTO address (gmlid, street, house_number, zip_code, city, country) VALUES (";
@@ -85,33 +95,49 @@ public class ObjectAddress {
                     }
                     stmt.executeUpdate(upSql1);//insert data to address table
 
-                    insertAtoB(gmlid);
+                    insertAtoB(gmlid,config);
+                }
+            
                 }
             }
-        }
+        } catch (SQLException e) {
+            LOGGER.fatal("Error connecting to source database: " + e);
+            throw new JPSRuntimeException("Error connecting to source database: " + e);
+        }    
+        
     }
 
-    public void insertAtoB(String gmlid) throws SQLException {
+    public void insertAtoB(String gmlid, String[] config) throws SQLException {
         String sqlCityObject = "SELECT id FROM cityobject WHERE cityobject.gmlid = " + "'" + gmlid + "'";
         String sqlAddress = "SELECT id FROM address WHERE address.gmlid = " + "'" + gmlid + "'";
-        try (Connection conn = postgresClient.getConnection()) {
-            Statement stmtC = conn.createStatement();
-            Statement stmtA = conn.createStatement();
-            ResultSet resultC = stmtC.executeQuery(sqlCityObject);
-            ResultSet resultA = stmtA.executeQuery(sqlAddress);
-            if (resultA.next() && resultC.next()) {
-                int building_id = resultC.getInt("id");
-                int address_id = resultA.getInt("id");
-                String sqlBuilding = "SELECT id FROM building WHERE building.id = " + building_id;
-                Statement stmtB = conn.createStatement();
-                ResultSet resultB = stmtB.executeQuery(sqlBuilding);
-                if (resultB.next()){
-                    String insertSql = "INSERT INTO address_to_building VALUES (" + building_id + ", " + address_id + ");";
-                    Statement stmt = conn.createStatement();
-                    stmt.executeUpdate(insertSql);
-                    System.out.println("Insert linking of building" + building_id);
+        this.pool = new SqlConnectionPool(config);
+        LOGGER.info("Pinging source database for availability...");
+        try (Connection srcConn = this.pool.getSourceConnection()) {
+            if (!srcConn.isValid(60)) {
+                LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
+                throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
+            }else{
+                Statement stmtC = srcConn.createStatement();
+                Statement stmtA = srcConn.createStatement();
+                ResultSet resultC = stmtC.executeQuery(sqlCityObject);
+                ResultSet resultA = stmtA.executeQuery(sqlAddress);
+                if (resultA.next() && resultC.next()) {
+                    int building_id = resultC.getInt("id");
+                    int address_id = resultA.getInt("id");
+                    String sqlBuilding = "SELECT id FROM building WHERE building.id = " + building_id;
+                    Statement stmtB = srcConn.createStatement();
+                    ResultSet resultB = stmtB.executeQuery(sqlBuilding);
+                    if (resultB.next()){
+                        String insertSql = "INSERT INTO address_to_building VALUES (" + building_id + ", " + address_id + ");";
+                        Statement stmt = srcConn.createStatement();
+                        stmt.executeUpdate(insertSql);
+                        System.out.println("Insert linking of building" + building_id);
+                    }
                 }
             }
+        } catch (SQLException e) {
+            LOGGER.fatal("Error connecting to source database: " + e);
+            throw new JPSRuntimeException("Error connecting to source database: " + e);
         }
     }
 

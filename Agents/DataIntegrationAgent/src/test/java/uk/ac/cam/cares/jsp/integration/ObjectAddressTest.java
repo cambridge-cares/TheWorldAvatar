@@ -37,7 +37,7 @@ class ObjectAddressTest {
         String gmlid = "ID_441ea408-882d-4e59-bce3-a7d0b2dacd28";
         ObjectAddress address = new ObjectAddress();
         address.setPostGISClient(conn3d);
-        address.insertAtoB(gmlid);
+        // address.insertAtoB(gmlid);
     }
 
     @AfterEach

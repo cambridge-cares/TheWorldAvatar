@@ -15,7 +15,6 @@ import org.apache.log4j.Logger;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.referencing.CRS;
-import org.json.JSONObject;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
@@ -25,10 +24,7 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -42,8 +38,8 @@ public class SpatialLink extends HttpServlet {
 
     private static final Logger LOGGER = LogManager.getLogger(SpatialLink.class);
     private static String file ="/inputs/config/endpoint.properties";
-    private PostgresClient postgresClient2d;
-    private PostgresClient postgresClient3d;
+    // private PostgresClient postgresClient2d;
+    // private PostgresClient postgresClient3d;
     private static final String INVALID_CONNECTION_MESSAGE = "Connection is invalid...";
     private SqlConnectionPool pool;
 
@@ -105,14 +101,14 @@ public class SpatialLink extends HttpServlet {
 //        object3D.setPostGISClient(postgresClient3d);
         this.allObject3D = object3D.getObject3D(config);
         try {
-            findMatchedObjects();
+            findMatchedObjects(config);
         } catch (ParseException | FactoryException | TransformException | SQLException e) {
             throw new RuntimeException(e);
         }
 
 
     }
-    public void findMatchedObjects() throws ParseException, FactoryException, TransformException, SQLException {
+    public void findMatchedObjects(String[] config) throws ParseException, FactoryException, TransformException, SQLException {
 
         GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
         WKTReader reader = new WKTReader( geometryFactory );
@@ -165,10 +161,10 @@ public class SpatialLink extends HttpServlet {
                 }
             }
             if (object3D.getName() != null){
-                object3D.updateName(object3D);
+                object3D.updateName(object3D,config);
             }
             if (object3D.getAddress().getStreet()!= null){
-                object3D.updateAddress(object3D.getAddress());
+                object3D.updateAddress(object3D.getAddress(),config);
             }
         }
 
