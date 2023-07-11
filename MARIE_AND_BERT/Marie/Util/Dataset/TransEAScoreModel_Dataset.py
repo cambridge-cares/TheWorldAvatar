@@ -15,7 +15,7 @@ max_len = 12
 
 
 class Dataset(TorchDataset):
-    def __init__(self, df, dataset_dir):
+    def __init__(self, df, dataset_dir, operator_dict={}):
         """
         This dataset provides a train/val set with tokenized question and the correspondent relation embedding
         :param df:
@@ -36,30 +36,36 @@ class Dataset(TorchDataset):
                                                    return_tensors="pt") for text in all_text]
         self.rel_embedding = pd.read_csv(os.path.join(DATA_DIR, self.dataset_dir, 'rel_embedding.tsv'), sep='\t',
                                          header=None)
-        self.attr_embedding = pd.read_csv(os.path.join(DATA_DIR, self.dataset_dir, 'attr_embedding.tsv'), sep='\t',
-                                          header=None)
+        self.operator_dict = operator_dict
+        # For non numerical embedding methods, check whether attr_embedding exist before loading the
+        # numerical embeddings
 
-        self.bias_embedding = pd.read_csv(os.path.join(DATA_DIR, self.dataset_dir, 'bias_embedding.tsv'), sep='\t',
-                                          header=None)
-
-        # self.operator_dict = {"smaller": 0, "larger": 1, "none": 2}
-        self.operator_dict = {"smaller": 0, "larger": 1, "none": 2}   # , "about": 3}
-
-        self.operators = Tensor([self.operator_dict[opr.strip()] for opr in self.df["numerical_operator"].tolist()]).to(
-            torch.int64)
-        self.operators = one_hot(self.operators, num_classes=len(self.operator_dict)).to(torch.float)
+        # If no numerical embeddings are provided, there is no operator dict, fill the operator column with
+        # placeholder value "none".
 
         rel_list = []
         for rel in self.df["rel"].tolist():
             rel_list.append(rel2idx[rel.strip()])
-
         self.y_r = self.rel_embedding.iloc[rel_list].reset_index(drop=True)
-        self.y_a = self.attr_embedding.iloc[rel_list].reset_index(drop=True)
-        self.y_b = self.bias_embedding.iloc[rel_list].reset_index(drop=True)
-        # except ValueError:
-        #     self.y_r = self.rel_embedding.iloc[entity2idx[self.df["rel"]].tolist()].reset_index(drop=True)
-        #     self.y_a = self.attr_embedding.iloc[entity2idx[self.df["rel"]].tolist()].reset_index(drop=True)
-        #     self.y_b = self.bias_embedding.iloc[entity2idx[self.df["rel"]].tolist()].reset_index(drop=True)
+
+        attr_path = os.path.join(DATA_DIR, self.dataset_dir, 'attr_embedding.tsv')
+        if os.path.exists(os.path.join(DATA_DIR, self.dataset_dir, 'attr_embedding.tsv')):
+            self.attr_embedding = pd.read_csv(attr_path, sep='\t',
+                                              header=None)
+            self.bias_embedding = pd.read_csv(os.path.join(DATA_DIR, self.dataset_dir, 'bias_embedding.tsv'), sep='\t',
+                                              header=None)
+            self.operators = Tensor(
+                [self.operator_dict[opr.strip()] for opr in self.df["numerical_operator"].tolist()]).to(
+                torch.int64)
+            self.operators = one_hot(self.operators, num_classes=len(self.operator_dict)).to(torch.float)
+            self.y_a = self.attr_embedding.iloc[rel_list].reset_index(drop=True)
+            self.y_b = self.bias_embedding.iloc[rel_list].reset_index(drop=True)
+
+        else:
+            # if the ontology embedding is numerical embedding, the attr and bias embedding will not be used
+            # so populate the columns with placeholders
+            self.y_a = self.y_r
+            self.y_b = self.y_r
 
         self.dim = self.rel_embedding.shape[1]
 
