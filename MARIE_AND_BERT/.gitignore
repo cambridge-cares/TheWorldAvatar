@@ -9,3 +9,4 @@
 *.out
 /Training/RelationPrediction/input
 /Evaluation/EvaluationData
+/static/js/label_dict.js
