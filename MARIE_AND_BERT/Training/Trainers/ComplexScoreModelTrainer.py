@@ -44,7 +44,10 @@ class Trainer():
                                        rel_embedding=self.rel_embedding, for_training=True,
                                        idx2entity=self.hop_extractor.entity_labels, load_model=False,
                                        dataset_dir=self.dataset_dir,
-                                       model_name='score_model_general').cuda()
+                                       model_name='score_model_general')
+        if use_cuda:
+            self.model.cuda()
+
         self.model_name = "score_model_general"
         self.model_path = os.path.join(DATA_DIR, self.dataset_dir, self.model_name)
         # self.model.load_pretrained_model(self.model_path)
@@ -193,11 +196,17 @@ class Trainer():
 
 
 if __name__ == '__main__':
-    # TODO: rename the file
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-o", "--ontology", help="main ontology used")
+    args = parser.parse_args()
+    ontology = "ontocompchem"
+    if args.ontology:
+        ontology = args.ontology
     l_r = 1e-5
     epoch_num = 501
     batch_size = 32
     gamma = 0.5
     print(f"learning rate: {l_r}, epoch_num: {epoch_num}, batch_size: {batch_size}, gamma: {gamma}")
-    my_trainer = Trainer(batch_size=batch_size, epoch_num=epoch_num, learning_rate=l_r, gamma=gamma, dataset_dir="CrossGraph/ontokin", dataset_name="ontokin")
+    my_trainer = Trainer(batch_size=batch_size, epoch_num=epoch_num, learning_rate=l_r, gamma=gamma, dataset_dir=f"CrossGraph/{ontology}", dataset_name=ontology)
     my_trainer.run()
