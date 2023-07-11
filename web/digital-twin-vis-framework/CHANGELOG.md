@@ -1,5 +1,9 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
-
+# 3.6.0
+### Features:
+* Location of configuration file can now be passed into DTVF.
+### Bug Fixes:
+* _No bug fixes present._
 # 3.5.0
 ### Features:
 * Added ability to specify client-side styling & filtering options for Cesium 3D tilesets.
@@ -53,7 +57,7 @@
 ### Features:
 * _No features present._
 ### Bug Fixes:
-* Fixed issue in Cesium visualiations that prevented a selected asset's `stack` parameter from being determined.
+* Fixed issue in Cesium visualisations that prevented a selected asset's `stack` parameter from being determined.
 
 # 3.3.0
 ### Features:
