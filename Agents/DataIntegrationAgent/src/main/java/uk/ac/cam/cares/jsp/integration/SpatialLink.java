@@ -282,20 +282,20 @@ public class SpatialLink extends HttpServlet {
         return reversed;
     }
 
-    public static Map<String, String> aggregateByKeys() {
-        Map<String, String> map = new HashMap<>();
-        try (Stream<String> lines = Files.lines(Paths.get(file))) {
-            lines.filter(line -> line.contains(":"))
-                    .forEach(line -> {
-                        String[] keyValuePair = line.split(":", 2);
-                        String key = keyValuePair[0];
-                        String value = keyValuePair[1];
-                        map.put(key, value);
+    // public static Map<String, String> aggregateByKeys() {
+    //     Map<String, String> map = new HashMap<>();
+    //     try (Stream<String> lines = Files.lines(Paths.get(file))) {
+    //         lines.filter(line -> line.contains(":"))
+    //                 .forEach(line -> {
+    //                     String[] keyValuePair = line.split(":", 2);
+    //                     String key = keyValuePair[0];
+    //                     String value = keyValuePair[1];
+    //                     map.put(key, value);
 
-                    });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return map;
-    }
+    //                 });
+    //     } catch (IOException e) {
+    //         e.printStackTrace();
+    //     }
+    //     return map;
+    // }
 }

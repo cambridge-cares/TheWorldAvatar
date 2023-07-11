@@ -1,0 +1,37 @@
+{
+  "ServiceSpec": {
+    "Name": "data-integration",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "ghcr.io/cambridge-cares/data-integration:1.0.0",
+        "Env": [
+          "STACK_NAME=${STACK_NAME}",
+          "DATABASE=postgres"
+        ],
+        "Configs": [
+          {
+            "ConfigName": "postgis"
+          }
+        ],
+        "Secrets": [
+          {
+            "SecretName": "postgis_password"
+          }
+        ],
+        "Mounts": [
+          {
+            "Type": "volume",
+            "Source": "logs",
+            "Target": "/root/.jps"
+          }
+        ]
+      }
+    }
+  },
+  "endpoints": {
+    "data-integration": {
+      "url": "http://localhost:8080/DataIntegration/",
+      "externalPath": "/data-integration/"
+    }
+  }
+}
