@@ -21,14 +21,20 @@ Multiple models are trained in this system:
 │   │   │   ├── TransRATrainer.py  # TransR and TransRA embedding 
 </pre>
 
-##  Knowledge Graph Embedding
+## Cuda configuration
+The training scripts are compatible with CPU-based training but if the user wants to training the embedding and models 
+locally using GPUs, see [PyTorch CUDA](https://pytorch.org/get-started/locally/) to set up the CUDA environment. 
 
+##  Knowledge Graph Embedding
+ 
 ### File requirement
 To train the embedding of an ontology, a list of files are required. The files are script created, see [readme.md for dataset creation](../KGToolbox/readme.md) for details.
 1. Triples: `[name]-train.txt`, `[name]-test.txt`, `[name]-valid.txt`. The files are headless tsv files with three columns, subject-predicate-object, separated by `tab`.
 2. Indexing: `entity2idx.pkl`, `idx2entity.pkl`, `rel2idx.pkl`, `idx2rel.pkl`, provide index-to-label and label-to-index dictionaries
 3. [Optional] Neighbour dictionary: `three_hop_dict_index` and `three_hop_dict_label`. However, if the neighbour dictionaries are missing, the training scripts 
 will automatically create them. 
+4. [Optional] For OntoMoPs and ontospecies_new that use adaptive negative sampling, a `neg_smaple_dict.json` are required, for OntoMoPs, ontospecies_new, and wikidata_numerical that
+use numerical embedding, a `node_value_dict.json` is required. 
 
 Once all the files are created, choose the embedding method, the implemented ones are 
 `Complex`, `TransE`, `TransEA`,`TransR`, `TransRA`. The preferred embedding method for a typical TWA ontology is `TransRA`.
@@ -75,36 +81,6 @@ when the training is done, `ent_embdding.tsv`, `rel_embedding.tsv`, `proj_matrix
 2. Under `Training/Trainers` run `python TransRATrainer.py -d 40 -lr 0.01 -bs 4 -o agents -so ontothermoagent -global_neg yes -epoch 200 -proj no`, 
 when the training is done, `ent_embdding.tsv`, `rel_embedding.tsv`, `proj_matrix.tsv`,`attr_embedding.tsv`,`bias_embedding.tsv`, will be created under `DATA/CrossGraph/agents/ontothermoagent`
 
-### Configuration on HPC
-
-1. Get an HPC account, use git to pull the `MARIE_AND_BERT` repository. 
-2. Create and transfer the files required for training under `MARIE_AND_BERT/DATA/[ontology_name]/[sub-ontology_name]`
-3. Create a python virtual environment with `Python 3.8`
-4. Configure the batch file, the following example is a batch file for training `OntoSpecies` with 
-`Complex` embedding and use `marie` python virtual environment. When the environment is created, install the libraries 
-using `MARIE_AND_BERT/requirements_linux.txt`. 
-5. Submit the batch script
-
-For more details, please check [https://docs.hpc.cam.ac.uk/hpc/](https://docs.hpc.cam.ac.uk/hpc/). 
-
-```
-. /etc/profile.d/modules.sh                # Leave this line (enables the module command)
-module purge                               # Removes all modules still loaded
-module load rhel8/default-amp              # REQUIRED - loads the basic environment
-
-# =============================== Load extra modules =========================
-module load python/3.8  cuda/11.1 cudnn/8.0_cuda-11.1
-# virtualenv --system-site-packages ~/marie
-source ~/marie/bin/activate
-# ============================================================================
-#! Full path to application executable:  
-application="python ComplexTrainer.py"
-#! Run options for the application: 
-options="-d 50 -proj no -bs 32 -lr 0.01 -alpha 0.01 -epoch 100 -so base_full_selected_role_only -g 1 -resume no -o ontospecies_new -inference yes -test no -gpu_num 1"
-
-#! Work directory (i.e. where the job will run):
-workdir="/home/[your_CRSid]/[your_training_folder]/Marie/Training/Trainers"  # The value of SLURM_SUBMIT_DIR sets workdir to the directory
-```
 Following is the explanation on the purpose of each parameter. 
 
 ```
@@ -125,43 +101,72 @@ Following is the explanation on the purpose of each parameter.
     "-gpu_num", "--gpu_number", help="number of gpus used"
 ```
 
+### Embedding training on HPC
+
+Assume the user is to train the embeddings on the Cambridge HPC:
+
+1. Get an HPC account, use git to pull the `MARIE_AND_BERT` repository in your working directory, assume it is `Work`
+2. Create and transfer the files required for training under `Work/MARIE_AND_BERT/DATA/[ontology_name]/[sub-ontology_name]`
+3. Create a python virtual environment with `Python 3.8`, assume it is named `marie` 
+4. Activate the virtual environment and run `pip install requirements.txt` under `MARIE_AND_BERT`
+5. The specific batch files used for training the embeddings of each ontology are provided under `Training/HPC`, to use them the 
+user needs to change the workdir parameter to their work directory in `workdir="/home/xz378/FULL_TEST/Training/Trainers" ` 
+and the virtual environment name in `source ~/marie/bin/activate` 
+6. Submit the batch script by `sbatch [batch_file_name]`
+
+For more details, please check [https://docs.hpc.cam.ac.uk/hpc/](https://docs.hpc.cam.ac.uk/hpc/). 
+
+
 
 ## Relation Prediction
 
+This step trains the BERT-based model for relation prediction and operator prediction. By following the steps below,
+the user will see `bert_[ontology_name]` or `bert_[ontology_name]_operator/bert_[ontology_name]_predict` created 
+under the ontology folders or sub-ontology folders.
+
 ### File requirement
 
-1. All the files required for embedding
+1. All the files required for embedding and the trained embedding files. 
 2. `score_model_training.tsv`, see  [readme.md for dataset creation](./KGToolbox/readme.md) to create the file
-   The files need to be placed in `MARIE_AND_BERT/DATA/CrossGraph/[ontology_name]/[sub-ontology_name]`
-
-
+   The files need to be placed in `MARIE_AND_BERT/DATA/CrossGraph/[ontology_name]/[sub-ontology_name]` if there is a 
+sub ontology folder, otherwise, the files need to be placed in `CrossGraph/[ontology_name]`
+ 
 Relation prediction models can only be trained after the embeddings are trained. The following scripts can be used for training: 
 
-1. `TransEScoreModelTrainer.py` for embeddings with TransE
-2. `TransEAScoreModelTrainer.py` for embeddings with TransEA
-3. `TransRAScoreModelTrainer.py` for embeddings with TransR and TransRA
-4. `ComplexScoreModelTrainer.py` for embeddings wit Complex
+### Pubchem (CrossGraph/pubchem)
 
-Set up the parameters for training within the script and run the script. The parameters are as follows:
+1. Under `Training/Trainers` run `python TransEScoreModelTrainer.py -o pubchem -bs 16 --mode prediction --gamma 0.1`
 
-1. learning_rate 
-2. model_name (output name of the model)
-3. resume_training (whether resume from a checkpoint)
-4. batch_size 
-5. epoch_num
-6. gamma
-7. test_step (to test after how many epochs)
-8. scheduler_step (change the learning rate after how many epochs)
+### OntoKin (CrossGraph/ontokin)
+
+1. Under `Training/Trainers` run `python TransEScoreModelTrainer.py -o ontokin -bs 16 --mode prediction --gamma 0.1`
+
+### OntoMoPs (CrossGraph/OntoMoPs)
+1. Under `Training/Trainers` run `python TransRAScoreModelTrainer.py -lr 1e-6 -o OntoMoPs -so numerical_with_implicit -g 1 -epoch 300 -m prediction`
+2. Under `Training/Trainers` run `python TransRAScoreModelTrainer.py -lr 1e-6 -o OntoMoPs -so numerical_with_implicit -g 1 -epoch 300 -m operator -dict smaller-larger-none`
 
 
+### OntoSpecies (CrossGraph/ontospecies_new)
+ 
+1. Under `Training/Trainers` run `python TransRAScoreModelTrainer.py -lr 1e-6 -o ontospecies_new -so base_full_no_pref_selected_role_limited_100 -g 1 -epoch 300 -m prediction`
+2. Under `Training/Trainers` run `python TransRAScoreModelTrainer.py -lr 1e-6 -o ontospecies_new -so base_full_no_pref_selected_role_limited_100 -g 1 -epoch 300 -m operator -dict smaller-larger-none`
 
+
+### OntoCompChem (CrossGraph/ontocompchem)
+
+1. Under `Training/Trainers` run `python ComplexScoreModelTrainer.py -o ontocompchem`.  
+
+### Wikidata (CrossGraph/wikidata_numerical)
+
+1. Under `Training/Trainers` run `python TransRAScoreModelTrainer.py -lr 1e-6 -o wikidata_numerical -g 1 -epoch 60 -m joint -dict smaller-larger-about-none -bs 32`
+
+### Agents (CrossGraph/agents)
+
+1. Under `Training/Trainers` run  `python TransEScoreModelTrainer.py -o agents -bs 16  --gamma 0.1 -m agent -epoch 500 -lr 1e-5 -g 0.01`
 
 ## Score Alignment Model 
 
-### File requirement
-1. `cross_graph_alignment_training_updated.tsv`, see [readme.md for dataset creation](./KGToolbox/readme.md) to create this file
-
-Run `MARIE_AND_BERT/Training/Trainers/CrossGraphTrainer.py` to train the model.
+1. Under `Training/Trainers` run `python CrossGraphTrainer.py`
 
 ## Entity Linking
 To create the training dataset for the entity linking model, please see [Entity Linking Dataset Creation readme.md](./EntityLinking/readme.md)
