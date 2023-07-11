@@ -141,6 +141,11 @@ No extra steps are required.
 1. Make sure `KGToolbox/OntoKin/OntoKinReader.py` has been run already and created `CrossGraph/ontokin/all_species.tsv` is created
 2. Run `KGToolbox/OntoKin/create_dict_for_ontokin.py`
 
+### Global dictionary (static/js/label_dict.js)
+
+After dictionaries for Wikidata_numerical, OntoMoPs, and OntoSpecies are created
+
+1. Run `KGToolbox/OntoKin/CreateLabelDict.py` to create `label_dict.js`, the file will be placed under `static/js/label_dict.js`
 
 ## Head tensor files 
 Head tensor files are dictionaries storing the embeddings of instances under a certain class to shorten the system's responses,
