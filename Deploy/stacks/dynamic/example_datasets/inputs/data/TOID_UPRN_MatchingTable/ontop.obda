@@ -10,14 +10,13 @@ rdfs:		http://www.w3.org/2000/01/rdf-schema#
 geo:        http://www.opengis.net/ont/geosparql#
 
 [MappingDeclaration] @collection [[
-
-mappingId   TOID-Mapping-UPRN-via-Standard-Table
+    
+mappingId       Asset-mapping-TOID-UPRN
 target      citykg:asset/{toid} foaf:hasTOID {toid}^^xsd:string ;
                  foaf:hasUPRN {uprn}^^xsd:integer .
-source          SELECT "IDENTIFIER_1" as uprn, "IDENTIFIER_2" as toid
-                FROM "TOID_UPRN_MatchingTable"
-
-[MappingDeclaration] @collection [[
+source          SELECT tm."IDENTIFIER_2" as toid, tm."IDENTIFIER_1" as uprn
+                FROM "citydb"."cityobject_genattrib" as cga, "TOID_UPRN_MatchingTable" as tm
+                WHERE cga."strval" = tm."IDENTIFIER_2"
 
 mappingId       Asset-mapping-Geometry
 target      citykg:asset/{toid} foaf:hasTOID {toid}^^xsd:string ;
@@ -27,4 +26,5 @@ source          SELECT sg."id" as toid,
                 FROM "citydb"."surface_geometry" as sg, "TOID_UPRN_MatchingTable" as tm
                 WHERE sg."id" = tm."IDENTIFIER_2"
 ]]
+
 
