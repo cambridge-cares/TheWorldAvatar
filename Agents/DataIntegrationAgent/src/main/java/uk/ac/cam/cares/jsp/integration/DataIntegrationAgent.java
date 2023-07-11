@@ -161,5 +161,8 @@ public class DataIntegrationAgent extends JPSAgent {
         return response;
     }
 
+    public static void main(String[] args) {
+        new DataIntegrationAgent();
+    }
     
 }

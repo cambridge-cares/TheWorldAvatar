@@ -54,7 +54,7 @@ public class SpatialLink extends HttpServlet {
 //        this.postgresClient3d = postgisClient;
 //    }
     protected void SpatialLink(String[] config) {
-//        new Config().initProperties();
+//        
         this.pool = new SqlConnectionPool(config);
         LOGGER.info("Pinging source database for availability...");
         try (Connection srcConn = this.pool.getSourceConnection()) {
