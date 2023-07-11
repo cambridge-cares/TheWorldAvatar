@@ -14,7 +14,7 @@ triples = open(triple_path).readlines()
 
 numerical_p = []
 
-numerical_triples = open(os.path.join(DATA_DIR, dataset_dir, "wikidata_numerical_numerical-train.txt")).readlines()
+numerical_triples = open(os.path.join(DATA_DIR, dataset_dir, "wikidata_numerical-train.txt")).readlines()
 for n_triple in numerical_triples:
     s, p, o = [e.strip() for e in n_triple.split("\t")]
     if p not in numerical_p:
@@ -39,8 +39,9 @@ operator_dict = {
 
 # 	question	head	tail	rel	numerical_operator
 
-label_dict = json.loads(open("p_dict.txt").read())
-lines = open("p_labels.txt").readlines()[1:]
+
+label_dict = json.loads(open(os.path.join(DATA_DIR, dataset_dir, "p_dict.txt")).read())
+lines = open(os.path.join(DATA_DIR, dataset_dir, "p_labels.txt")).readlines()[1:]
 
 all_rows = []
 for line in lines:
@@ -71,7 +72,7 @@ for line in lines:
         else:
             numerical_operator = "none"
             operator_list = operator_dict[numerical_operator]
-            for i in range(0,4):
+            for i in range(0, 4):
                 for operator_label in operator_list:
                     # operator_label = random.choice(operator_list)
                     q_1 = operator_label + " " + one_label
@@ -82,6 +83,6 @@ for line in lines:
 
 df = pd.DataFrame(all_rows)
 df.columns = ["question", "head", "tail", "rel", "numerical_operator"]
-df.to_csv("score_model_training.tsv", sep="\t")
+df.to_csv(os.path.join(DATA_DIR, dataset_dir, "score_model_training.tsv"), sep="\t")
 for ting in df['rel'].value_counts():
     print(ting)
