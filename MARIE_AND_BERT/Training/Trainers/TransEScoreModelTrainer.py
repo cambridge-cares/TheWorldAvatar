@@ -187,7 +187,7 @@ if __name__ == '__main__':
     parser.add_argument("-o", "--ontology", help="main ontology used")
     parser.add_argument("-bs", "--batch_size", help="size of mini batch")
     parser.add_argument("-resume", "--resume", help="resume the training by loading embeddings ")
-    parser.add_argument("-m", "--mode", help="to train a relation prediction model or an operator prediction model")
+    parser.add_argument("-m", "--mode", help="general training or agent training ")
     parser.add_argument("-so", "--sub_ontology", help="name of the sub ontology")
     parser.add_argument("-epoch", "--epoch", help="number of epochs")
 
@@ -213,6 +213,10 @@ if __name__ == '__main__':
     if args.ontology:
         ontology = args.ontology
 
+    mode = "general"
+    if args.mode:
+        mode = args.mode
+
     sub_ontology = None
     if args.sub_ontology:
         sub_ontology = args.sub_ontology
@@ -226,7 +230,7 @@ if __name__ == '__main__':
         else:
             resume = False
     # starting_lr = 1e-20  # this is probably the best lr
-    my_trainer = TransEScoreModelTrainer(dataset_dir=f"CrossGraph/{ontology}", mode="general", test_step=5)
+    my_trainer = TransEScoreModelTrainer(dataset_dir=f"CrossGraph/{ontology}", mode=mode, test_step=5)
     my_trainer.one_train_iteration(learning_rate=learning_rate,
                                    model_name=f'bert_{ontology}',
                                    resume_training=resume, batch_size=batch_size, epoch_num=epoch)
