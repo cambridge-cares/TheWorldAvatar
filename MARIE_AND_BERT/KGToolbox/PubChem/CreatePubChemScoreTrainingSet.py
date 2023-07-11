@@ -114,8 +114,12 @@ for r in normal_relations:
                 q_2 = (t_2 % (r), _CID, '0', tail_entity)
                 questions_for_cross_graph_training = questions_for_cross_graph_training + [q_1, q_2]
 
-cross_score_file_name = os.path.join(DATA_DIR,dataset_dir, 'score_model_training.tsv')
-df_cross_score = pd.DataFrame(questions_for_cross_graph_training)
-df_cross_score.columns = ['question', 'head', 'domain', 'answer']
+# cross_score_file_name = os.path.join(DATA_DIR, dataset_dir, 'score_model_training.tsv')
+# df_cross_score = pd.DataFrame(questions_for_cross_graph_training)
+# df_cross_score.columns = ['question', 'head', 'domain', 'answer']
+# df_cross_score.to_csv(cross_score_file_name, sep='\t')
 
-df_cross_score.to_csv(cross_score_file_name, sep='\t')
+file_name = os.path.join(DATA_DIR, dataset_dir, 'score_model_training.tsv')
+df_cross_score = pd.DataFrame(all_question)
+df_cross_score.columns = ['question', 'rel']
+df_cross_score.to_csv(file_name, sep='\t')
