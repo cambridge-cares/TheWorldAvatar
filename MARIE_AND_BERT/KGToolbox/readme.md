@@ -68,8 +68,8 @@ file including the triples and the `score_model_training.tsv` will be created an
 To create the OntoMoPs training set:
 
 1. Run `KGToolbox/OntoMoPs/OntoMoPsReader.py` to create the supporting files for 
-2. The OntoMoPs relation prediction model training dataset is created manually. The training dataset is archived in 
-`http://159.223.42.53:8080/OntoMoPs/score_model_training.tsv`.
+2. The OntoMoPs relation prediction model training dataset is created manually. The training dataset is archived in folder
+`OntoMoPs_training_data` from [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0)
 
 ### OntoSpecies (CrossGraph/ontospecies_new folder)
 
