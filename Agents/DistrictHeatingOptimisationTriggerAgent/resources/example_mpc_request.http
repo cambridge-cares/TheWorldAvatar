@@ -1,0 +1,27 @@
+# This file shows a sample http request to initialise and trigger a district heating optimisation run
+
+### Parameters:
+# Optimisation parameters:
+#   startDateTime: Optimisation start dateTime in UTC, i.e., first time step to optimise (and forecast)
+#   numberOfTimeSteps: Number of time steps to optimise
+#   timeStepFrequency: Frequency (i.e., spacing) of time steps in h
+# Forecast parameters:
+#   heatDemandDataLength: Heat demand data length (used to scale data for TFT forecast)
+#   gridTemperatureDataLength: Grid temperature data length (used to scale data or retrieve history to refit Prophet model)
+
+# Docker deployment:
+POST http://localhost:5000/triggerOptimisation
+# Stack deployment (using stack-manager-input-config.json via stack-manager):
+#POST http://localhost:3838/dhTriggerAgent/triggerOptimisation
+Content-Type: application/json
+
+{ 
+  // Optimisation parameters
+  "startDateTime": "2020-01-01T00:00:00Z",
+  "numberOfTimeSteps": 24,
+  "timeStepFrequency": 1,
+
+  // Forecast parameters
+  "heatDemandDataLength": 365*24,
+  "gridTemperatureDataLength": 14*24,
+}
