@@ -50,12 +50,12 @@ to use conda for creating a virtual environment.
 ### Required files: 
 
 1. Create a `DATA` folder under `MARIE_AND_BERT`
-2. Download CrossGraph.zip from [CrossGraph.zip](http://159.223.42.53:8080/CrossGraph.zip), unzip under `DATA`
-3. Download Dictionaries.zip from [Dictionaries.zip](http://159.223.42.53:8080/Dictionaries.zip), unzip under `DATA`
-4. For faster setup, download the `bert_pretrained.zip` from [bert_pretrained.zip](http://159.223.42.53:8080/bert_pretrained.zip)
+2. Download CrossGraph.zip from [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0), unzip under `DATA`
+3. Download Dictionaries.zip from [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0), unzip under `DATA`
+4. For faster setup, download the `bert_pretrained.zip` from [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0)
 , unzip under `DATA`. Otherwise upon the first run, the scripts will download the BERT pretrained model from hugging face.
-5. Download EntityLinking.zip from [EntityLinking.zip](http://159.223.42.53:8080/EntityLinking.zip), unzip under `DATA`
-6. Download `label_dict.js` from [label_dict.js] from (http://159.223.42.53:8080/label_dict.js) and put the file in `MARIE_ANB_BERT/static/js`. 
+5. Download EntityLinking.zip from [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0), unzip under `DATA`
+6. Download `label_dict.js` from [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0) and put the file in `MARIE_ANB_BERT/static/js`. 
 7. Download the required NLTK datasets by running
 ```python
 import nlkt

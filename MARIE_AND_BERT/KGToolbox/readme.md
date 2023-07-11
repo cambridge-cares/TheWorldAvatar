@@ -75,14 +75,14 @@ To create the OntoMoPs training set:
 
 To create the OntoSpecies training dataset:
 
-1. Download `http://159.223.42.53:8080/OntoSpeciesNewData.zip` and unzip the files under `CrossGraph/ontospecies_new`. The zip files contains dictionaries for 
+1. Download `OntoSpeciesNewData.zip` from [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0) and unzip the files under `CrossGraph/ontospecies_new`. The zip files contains dictionaries for 
 manually identified duplicated uses and classes.  
 2. Run`KGToolbox/OntoSpeciesNew/OntoSpeciesReader.py`to create the triples and the supporting files for embedding training. 
 3. Run `KGToolbox/OntoSpeciesNew/CreateOntoSpeciesNewScoreTrainingSet.py`. The script will
 create `score_model_training.tsv` under `DATA/CrossGraph/ontospecies_new/base_full_no_pref_selected_role_limited_100` for relation prediction training. 
  
 ### Wikidata (CrossGraph/wikidata_numerical folder)
-1. Download Wikidata dump files from `http://159.223.42.53:8080/instance_info.zip`.
+1. Download Wikidata dump files `instance_info.zip` from [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0).
 2. Unzip the file into `DATA/CrossGraph/wikidata/instance_info` folder. 
 3. Run `KGToolbox/Wikidata/WikiDataReader.py` to create triples and supporting files
 4. Run `KGToolbox/Wikidata/WikidataCreateTrainingData.py`, which will create `score_model_training.tsv` 
@@ -99,9 +99,9 @@ in `DATA/CrossGraph/wikidata_numerical`.
 
 To create the training set for training the score alignment model `CrossGraph/cross_graph_model_with_all_9_updated`:
 
-1. Download archived manually created training set `cross_graph_alignment_training_labelled.tsv` from `http://159.223.42.53:8080/cross_graph_alignment_training_labelled.tsv`
+1. Download archived manually created training set `cross_graph_alignment_training_labelled.tsv` from [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0)
 2. Manually create or modify `cross_graph_alignment_training_labelled.tsv` under folder `DATA/CrossGraph` based on the 
-archived `cross_graph_alignment_training_labelled.tsv` file. 
+archived `cross_graph_alignment_training_labelled.tsv` file 
 3. Run `KGToolbox/CrossGraph/CrossGraph.py`, which will create `cross_graph_alignment_training_labelled.tsv` under `DATA/CrossGraph`
 
 
@@ -114,11 +114,11 @@ archived `cross_graph_alignment_training_labelled.tsv` file.
 
 ### OntoMoPs (Dictionaries/OntoMoPs)
 
-1. Download `label_am_dict.json` from `http://159.223.42.53:8080/label_am_dict.json` to `CrossGraph/OntoMoPs`
+1. Download `label_am_dict.json` from [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0) to `CrossGraph/OntoMoPs`
 2. Run `KGToolbox/OntoMoPs/createOntoMoPsDictionary.py`
 
 ### PubChem (Dictionaries/pubchem)
-1. Download `missing_cid_list.json` from `http://159.223.42.53:8080/missing_cid_list.json` to `CrossGraph/pubchem`.
+1. Download `missing_cid_list.json` from [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0) to `CrossGraph/pubchem`.
 2. Run `KGToolbox/PubChem/PubchemDictCreator.py`
 
 ### OntoSpecies (Dictionaries/ontospecies_new)
