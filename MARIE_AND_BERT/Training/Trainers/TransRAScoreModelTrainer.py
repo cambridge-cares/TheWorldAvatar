@@ -49,7 +49,7 @@ class TransEAScoreModelTrainer:
 
     def one_train_iteration(self, learning_rate=1e-8, model_name='bert_model_embedding_20_cosine_self_made',
                             resume_training=False, batch_size=64, epoch_num=250, gamma=1.0, test_step=1,
-                            scheduler_step=100):
+                            scheduler_step=100, mode="prediction", dictionary={}):
         learning_rate = learning_rate
         step = 0
         # ===========================
@@ -66,12 +66,12 @@ class TransEAScoreModelTrainer:
         df = df.reset_index(drop=True)
         df_train = df
         df_test = df
-        dataset_test = Dataset(df_test, self.dataset_dir)
-        dataset_train = Dataset(df_train, self.dataset_dir)
+        dataset_test = Dataset(df_test, self.dataset_dir, operator_dict=dictionary)
+        dataset_train = Dataset(df_train, self.dataset_dir, operator_dict=dictionary)
         dim = dataset_train.dim
         test_dataloader = torch.utils.data.DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
         train_dataloader = torch.utils.data.DataLoader(dataset_train, batch_size=batch_size, shuffle=True)
-        model = TransEAScoreModel(device=device, dim=dim, dataset_dir=self.dataset_dir, output_dim=3)
+        model = TransEAScoreModel(device=device, dim=dim, dataset_dir=self.dataset_dir, output_dim=len(dictionary))
         optimizer = AdamW(model.parameters(), lr=learning_rate)
         scheduler = ExponentialLR(optimizer, gamma=gamma)
 
@@ -90,22 +90,29 @@ class TransEAScoreModelTrainer:
                 true_y_O = train_batch[3].to(device)
                 true_y_B = train_batch[4].to(device)
                 loss_O, _, _, _, _, loss_P = model(train_batch[0], true_y_R, true_y_A, true_y_O, true_y_B)
-                # loss = loss_P# loss_O + loss_P
-                # loss = loss_O
-                # loss.mean().backward()
-                # loss_O.mean().backward()
-                # optimizer.step()
-                #  step += 1
-                # loss, _, _, _, _, loss_P = model(train_batch[0], true_y_R, true_y_A, true_y_O, true_y_B)
-                loss_P.mean().backward()
-                optimizer.step()
-                step += 1
+                if mode == "prediction":
+                    loss_P.mean().backward()
+                    optimizer.step()
+                    step += 1
+                    total_loss_train_P += loss_P.mean().item()
+                    print(f'\ntotal_loss_train_prediction: {total_loss_train_P} - epoch: {epoch}')
+                elif mode == "operator":
+                    loss_O.mean().backward()
+                    optimizer.step()
+                    step += 1
+                    total_loss_train_O += loss_O.mean().item()
+                    print(f'\ntotal_loss_train_operator: {total_loss_train_O} - epoch: {epoch}')
 
-                # total_loss_train_O += loss_O.mean().item()
-                total_loss_train_P += loss_P.mean().item()
+                else:
+                    loss = loss_O + loss_P
+                    loss.mean().backward()
+                    optimizer.step()
+                    step += 1
+                    total_loss_train_O += loss_O.mean().item()
+                    total_loss_train_P += loss_P.mean().item()
 
-            print(f'\ntotal_loss_train_operator: {total_loss_train_O} - epoch: {epoch}')
-            #  print(f'\ntotal_loss_train_prediction: {total_loss_train_P} - epoch: {epoch}')
+                print(f'\ntotal_loss_train_operator: {total_loss_train_O} - epoch: {epoch}')
+                print(f'\ntotal_loss_train_prediction: {total_loss_train_P} - epoch: {epoch}')
             if (epoch + 1) % scheduler_step == 0:
                 scheduler.step()
                 print(f"change learning rate to {scheduler.get_lr()}")
@@ -198,14 +205,78 @@ class TransEAScoreModelTrainer:
 
 
 if __name__ == '__main__':
-    # starting_lr = 1e-20  # this is probably the best lr
-    starting_lr = 1e-6
-    current_lr = starting_lr
-    ontology = "ontospecies_new"
-    sub_ontology = "base_full_no_pref_selected_role_limited_100"
-    my_trainer = TransEAScoreModelTrainer(dataset_dir=f"CrossGraph/{ontology}/{sub_ontology}")
-    my_trainer.one_train_iteration(current_lr,
-                                   model_name=f'bert_{sub_ontology}_predict',
-                                   resume_training=True, batch_size=16, epoch_num=60, test_step=1,
-                                   scheduler_step=10, gamma=1.0)
+    if __name__ == '__main__':
+        import argparse
 
+        parser = argparse.ArgumentParser()
+        parser.add_argument("-lr", "--learning_rate", help="starting learning rate")
+        parser.add_argument("-g", "--gamma", help="gamma for scheduler")
+        parser.add_argument("-o", "--ontology", help="main ontology used")
+        parser.add_argument("-bs", "--batch_size", help="size of mini batch")
+        parser.add_argument("-resume", "--resume", help="resume the training by loading embeddings ")
+        parser.add_argument("-m", "--mode", help="to train a relation prediction model or an operator prediction model")
+        parser.add_argument("-so", "--sub_ontology", help="name of the sub ontology")
+        parser.add_argument("-epoch", "--epoch", help="number of epochs")
+        parser.add_argument("-dict", "--dictionary", help="the encoding dictionary for operators")
+
+        args = parser.parse_args()
+
+        learning_rate = 1e-5
+        if args.learning_rate:
+            learning_rate = float(args.learning_rate)
+
+        gamma = 1
+        if args.gamma:
+            gamma = float(args.gamma)
+
+        batch_size = 32
+        if args.batch_size:
+            batch_size = int(args.batch_size)
+
+        epoch = 100
+        if args.epoch:
+            epoch = int(args.epoch)
+
+        ontology = "pubchem"
+        if args.ontology:
+            ontology = args.ontology
+
+        sub_ontology = None
+        if args.sub_ontology:
+            sub_ontology = args.sub_ontology
+
+        resume = False
+        if args.resume:
+            if args.resume.lower() == "yes":
+                resume = True
+            elif args.resume.lower() == "no":
+                resume = False
+            else:
+                resume = False
+
+        mode = "prediction"
+        if args.mode:
+            mode = args.mode
+
+        dictionary = {0: "smaller", 1: "larger", 2: "none"}
+        if args.dictionary:
+            # convert the "-" seperated operator to the dictionary
+            dictionary = args.dictionary.split("-")
+            dictionary = {dictionary[i]: i for i in range(len(dictionary))}
+            print(dictionary)
+
+        if sub_ontology:
+            full_dir = os.path.join(DATA_DIR, 'CrossGraph', f'{ontology}/{sub_ontology}')
+            ontology = sub_ontology
+        else:
+            full_dir = os.path.join(DATA_DIR, 'CrossGraph', f'{ontology}')
+
+        model_name = f'bert_{ontology}_{mode}'
+        if mode == "joint":
+            model_name = f'bert_{ontology}'
+
+        my_trainer = TransEAScoreModelTrainer(dataset_dir=full_dir)
+        my_trainer.one_train_iteration(learning_rate=learning_rate,
+                                       model_name=model_name,
+                                       resume_training=resume, batch_size=batch_size, epoch_num=epoch, test_step=1,
+                                       scheduler_step=20, gamma=gamma, mode=mode, dictionary=dictionary)
