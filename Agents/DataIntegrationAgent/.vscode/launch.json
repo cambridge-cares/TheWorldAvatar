@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "App",
+            "request": "launch",
+            "mainClass": "uk.ac.cam.cares.jsp.integration.App",
+            "projectName": "DataIntegrationAgent"
+        },
+        {
+            "type": "java",
             "name": "Debug",
             "request": "attach",
             "hostName": "localhost",
