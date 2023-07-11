@@ -85,9 +85,10 @@ create `score_model_training.tsv` under `DATA/CrossGraph/ontospecies_new/base_fu
 1. Download Wikidata dump files `instance_info.zip` from [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0).
 2. Unzip the file into `DATA/CrossGraph/wikidata/instance_info` folder. 
 3. Run `KGToolbox/Wikidata/WikiDataReader.py` to create triples and supporting files
-4. Run `KGToolbox/Wikidata/WikidataCreateTrainingData.py`, which will create `score_model_training.tsv` 
+4. Download `p_dict.txt` and `p_labels.txt` to `CrossGraph/wikidata_numerical`, the files are under folder `wikidata_numerical_label_files` in  [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0).
+5. Run `KGToolbox/Wikidata/WikidataCreateTrainingData.py`, which will create `score_model_training.tsv` 
 in `DATA/CrossGraph/wikidata_numerical`. 
-5. Run `python NHopExtractor.py -onto wikidata_numerical -dir CrossGraph/wikidata_numerical` under`MARIE_AND_BERT\Marie\Util`
+6. Run `python NHopExtractor.py -onto wikidata_numerical -dir CrossGraph/wikidata_numerical` under`MARIE_AND_BERT\Marie\Util`
 
 
 ### Pubchem (CrossGraph/pubchem folder)
