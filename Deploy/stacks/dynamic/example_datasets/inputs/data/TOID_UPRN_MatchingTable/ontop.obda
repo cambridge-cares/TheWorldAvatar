@@ -18,12 +18,13 @@ source          SELECT "IDENTIFIER_1" as uprn, "IDENTIFIER_2" as toid
                 FROM "TOID_UPRN_MatchingTable"
 
 [MappingDeclaration] @collection [[
-    
-mappingId       Asset-mapping-TOID-UPRN
+
+mappingId       Asset-mapping-Geometry
 target      citykg:asset/{toid} foaf:hasTOID {toid}^^xsd:string ;
-                 foaf:hasUPRN {uprn}^^xsd:integer .
-source          SELECT tm."IDENTIFIER_2" as toid, tm."IDENTIFIER_1" as uprn
-                FROM "citydb"."cityobject_genattrib" as cga, "TOID_UPRN_MatchingTable" as tm
-                WHERE cga."strval" = tm."IDENTIFIER_2"
+                    geo:hasGeometry "{wkt}"^^geo:wktLiteral .
+source          SELECT sg."id" as toid,
+                    ST_AsText(sg."geometry") as wkt
+                FROM "citydb"."surface_geometry" as sg, "TOID_UPRN_MatchingTable" as tm
+                WHERE sg."id" = tm."IDENTIFIER_2"
 ]]
 
