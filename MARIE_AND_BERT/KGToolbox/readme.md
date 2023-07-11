@@ -41,7 +41,7 @@ creating the training set for training the score alignment model (`CrossGraph/cr
 To create OntoAgent training set:
 1. Set up a local blazegraph and have it running on 
 `http://127.0.0.1:9999`. For details, please follow [Blazegraph](https://blazegraph.com/)
-2. Download the ontology files for the agents from [Agents.zip](http://159.223.42.53:8080/Agents.zip) 
+2. Download the ontology files `Agents.zip` containing two `.nt` files for the agents from the [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0) 
 3. Create namespaces `ontopceagent` and `ontothermalagent` and load the two `.nt` files to the according namespace. 
 4. Run `KGToolbox/OntoAgent/OntoAgentReader.py`, the script will create both 
 the triple files for embedding training and the `info_dict.json` files for each agent. 
@@ -91,7 +91,7 @@ in `DATA/CrossGraph/wikidata_numerical`.
 
 
 ### Pubchem (CrossGraph/pubchem folder)
-1. Download `pubchem.csv` from `http://159.223.42.53:8080/pubchem.csv` to `CrossGraph/pubchem`
+1. Download `pubchem.csv` from the [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0) to `CrossGraph/pubchem`
 2. Run `KGToolbox/PubChem/PubchemReader.py`
 3. Run `python NHopExtractor.py -onto pubchem -dir CrossGraph/pubchem` under `MARIE_AND_BERT\Marie\Util`
 
