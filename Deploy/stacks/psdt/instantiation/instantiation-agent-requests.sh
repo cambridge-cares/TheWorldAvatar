@@ -33,3 +33,6 @@ curl -X POST --header "Content-Type: application/json" -d '{"uri":"https://www.t
 ## Ifc2Tileset
 curl -X POST --header "Content-Type: application/json" -d '{"assetUrl":"./glb"}' http://localhost:3838/ifc2tileset-agent/api
 
+## CEA
+curl -X POST --header "Content-Type: application/json" -d '{"iris":["http://www.theworldavatar.com:83/citieskg/namespace/kingslynnEPSG27700/sparql/cityobject/UUID_0595923a-3a83-4097-b39b-518fd23184cc/"]}' http://localhost:3838/cea-agent/run
+
