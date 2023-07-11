@@ -1,5 +1,6 @@
 from pprint import pprint
-
+import sys
+sys.path.append("../..")
 import numpy as np
 import torch
 from torch import no_grad
@@ -30,7 +31,7 @@ class TransEScoreModelTrainer:
         print(f'=========== USING {device} ===============')
         # ===========================
 
-        df = pd.read_csv(os.path.join(DATA_DIR, self.dataset_dir, 'score_model_training_test.tsv'), sep='\t',
+        df = pd.read_csv(os.path.join(DATA_DIR, self.dataset_dir, 'score_model_training.tsv'), sep='\t',
                          index_col=0)
         print(df)
         self.gamma = gamma
@@ -38,16 +39,17 @@ class TransEScoreModelTrainer:
             df = df.drop_duplicates()
             df = df.reset_index(drop=True)
         else:
-            df = df.drop(columns=["head", "tail"])
-            df = df.drop_duplicates()
+            # df = df.drop(columns=["head", "tail"])
+            # df = df.drop_duplicates()
             df = df.reset_index(drop=True)
 
         df_train = df
         df_test = df
         dataset_test = Dataset(df_test, self.dataset_dir, mode=self.mode)
         dataset_train = Dataset(df_train, self.dataset_dir, mode=self.mode)
-        self.ent_embedding_dict = dataset_test.ent_embedding_dict
-        self.idx2entity_dict = dataset_test.idx2entity_dict
+        if self.mode == "agent":
+            self.ent_embedding_dict = dataset_test.ent_embedding_dict
+            self.idx2entity_dict = dataset_test.idx2entity_dict
 
         dim = dataset_train.dim
         test_dataloader = torch.utils.data.DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
@@ -176,12 +178,56 @@ class TransEScoreModelTrainer:
 
 
 if __name__ == '__main__':
-    # starting_lr = 1e-20  # this is probably the best lr
+
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-lr", "--learning_rate", help="starting learning rate")
+    parser.add_argument("-g", "--gamma", help="gamma for scheduler")
+    parser.add_argument("-o", "--ontology", help="main ontology used")
+    parser.add_argument("-bs", "--batch_size", help="size of mini batch")
+    parser.add_argument("-resume", "--resume", help="resume the training by loading embeddings ")
+    parser.add_argument("-m", "--mode", help="to train a relation prediction model or an operator prediction model")
+    parser.add_argument("-so", "--sub_ontology", help="name of the sub ontology")
+    parser.add_argument("-epoch", "--epoch", help="number of epochs")
+
+    args = parser.parse_args()
+
+    learning_rate = 1e-5
+    if args.learning_rate:
+        learning_rate = float(args.learning_rate)
+
+    gamma = 1
+    if args.gamma:
+        gamma = float(args.gamma)
+
     batch_size = 32
-    starting_lr = 1e-5
-    current_lr = starting_lr
-    my_trainer = TransEScoreModelTrainer(dataset_dir="CrossGraph/agents", mode="agent", test_step=5)
-    my_trainer.one_train_iteration(current_lr,
-                                   model_name='bert_ontoagent_with_random',
-                                   resume_training=True, batch_size=batch_size, epoch_num=200)
+    if args.batch_size:
+        batch_size = int(args.batch_size)
+
+    epoch = 100
+    if args.epoch:
+        epoch = int(args.epoch)
+
+    ontology = "pubchem"
+    if args.ontology:
+        ontology = args.ontology
+
+    sub_ontology = None
+    if args.sub_ontology:
+        sub_ontology = args.sub_ontology
+
+    resume = False
+    if args.resume:
+        if args.resume.lower() == "yes":
+            resume = True
+        elif args.resume.lower() == "no":
+            resume = False
+        else:
+            resume = False
+    # starting_lr = 1e-20  # this is probably the best lr
+    my_trainer = TransEScoreModelTrainer(dataset_dir=f"CrossGraph/{ontology}", mode="general", test_step=5)
+    my_trainer.one_train_iteration(learning_rate=learning_rate,
+                                   model_name=f'bert_{ontology}',
+                                   resume_training=resume, batch_size=batch_size, epoch_num=epoch)
 

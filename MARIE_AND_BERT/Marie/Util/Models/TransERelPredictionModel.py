@@ -17,6 +17,7 @@ from Marie.Util.location import TRAINING_DIR, DEPLOYMENT_DIR, DATA_DIR
 
 max_len = 12
 
+
 class TransERelPredictionModel(nn.Module):
 
     def __init__(self, device=torch.device("cpu"), for_training=False, dataset_dir="CrossGraph/pubchem", dim=20,
@@ -32,11 +33,6 @@ class TransERelPredictionModel(nn.Module):
 
         if mode == "agent":
             self.mid_1 = nn.Linear(768, 512)
-            # self.mid_2 = nn.Linear(512, 512)
-            # self.mid_3 = nn.Linear(512, 512)
-            # self.mid_4 = nn.Linear(512, 512)
-            # self.mid_5 = nn.Linear(512, 512)
-            # self.mid_6= nn.Linear(512, 512)
             self.output_linear = nn.Linear(512, self.dim)
 
 
@@ -119,7 +115,7 @@ class TransERelPredictionModel(nn.Module):
             # return distance_agent + distance_output, linear_output, linear_agent
             return distance_output, distance_output, linear_output, linear_output
         else:
-            linear_output = self.linear(dropout_output)
+            linear_output = self.linear(linear_output)
             distance = self.distance(linear_output, true_linear_output)
             '''
             Update the loss function to do a calculation eh + r = et, where r is the output of linear_output ... 
