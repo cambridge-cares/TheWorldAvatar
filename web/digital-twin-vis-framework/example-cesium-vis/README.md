@@ -59,7 +59,7 @@ Please note that the `index.html` file also required users to input their Mapbox
 
 In addition to the aforementioned configuration files, two additional files are required to house a Mapbox username and associated API key. Note these are required, even in Cesium visualisations, as the base map imagery is still provided by Mapbox.
 
-To set these two files, either create and populate `mapbox_username`, and `mapbox-api-key` files within the hosted webspace, or use the stack infrastructure to provide these as Docker secrets. You can learn more about the latter by reading [the stack's documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+To set these two files, either create and populate `mapbox_username`, and `mapbox_api_key` files within the hosted webspace, or use the stack infrastructure to provide these as Docker secrets. You can learn more about the latter by reading [the stack's documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
 
 Once present, these files are queried by the DTVF, loading in the required credentials. Note that previous versions of the DTVF required these parameters to be set within each visualisation's `index.html` file, this is no longer required (see the example visualisations to learn about the new format).
 
