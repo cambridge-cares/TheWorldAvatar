@@ -124,9 +124,6 @@ def trigger_optimisation_task(params):
         # Log the exception
         logger.error("An error occurred during optimisation.", exc_info=True)
 
-        # Return an error response
-        return jsonify(message='An error occurred during optimisation. See agent log for details.'), 500
-
 
 def is_processing_task_running():
     # Return True if any 'perform_optimisation_task' is currently running

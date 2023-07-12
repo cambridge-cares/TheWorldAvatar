@@ -1,0 +1,24 @@
+{
+    "ServiceSpec": {
+        "Name": "dhoptimisationtrigger",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ghcr.io/cambridge-cares/dhoptimisationtrigger:1.0.0",
+                "Env": [
+                    "NAMESPACE=kb"
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "rest": {
+            "url": "http://localhost:5000/",
+            "externalPath": "/dhTriggerAgent/"
+        }
+    }
+}

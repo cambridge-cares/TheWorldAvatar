@@ -47,12 +47,13 @@ COPY ./agent ./agent
 # Start the Celery worker and Gunicorn server
 # Create pipeline of multiple commands using Shell Form of CMD (to perform a series of operations)
 # 1) Start Redis server at default 'localhost:6379'
-# 2) Point the celery worker to the celery_app object (as non-root user)
+# 2) Point the celery worker to the celery_app object
+#    NOTE: Although not recommended, celery is run as superuser to avoid permission issues
 # 3) Serve Flask App via Gunicorn
 #    NOTE: Infinite timeout to avoid exceptions for longer (recurring) optimisations
 
 CMD redis-server & \
-    celery -A agent.celery worker --loglevel=info --uid=100 & \
+    celery -A agent.celery worker --loglevel=info & \
     gunicorn -b 0.0.0.0:5000 agent:app --timeout 0
 
 #==================================================================================================
