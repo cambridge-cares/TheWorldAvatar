@@ -1,4 +1,5 @@
 {
+    "type": "visualisation",
     "ServiceSpec": {
         "Name": "visualisation",
         "TaskTemplate": {
@@ -14,10 +15,9 @@
                 "Secrets": [
                     {
                         "SecretName": "mapbox_username",
-                        "File":{
-                            "Name":"/var/www/html/mapbox_username"
+                        "File": {
+                            "Name": "/var/www/html/mapbox_username"
                         }
-
                     },
                     {
                         "SecretName": "mapbox_api_key",
