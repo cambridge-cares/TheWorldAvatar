@@ -21,7 +21,7 @@ public class BlazegraphService extends ContainerService {
 
     @Override
     public void doPreStartUpConfiguration() {
-        if (ensureOptionalSecret("blazegraph_password")) {
+        if (removeOptionalSecret("blazegraph_password")) {
             setEnvironmentVariableIfAbsent(BLAZEGRAPH_USER_KEY, DEFAULT_USERNAME);
             setEnvironmentVariableIfAbsent(BLAZEGRAPH_PASSWORD_FILE_KEY, DEFAULT_PASSWORD_FILE);
         } else {

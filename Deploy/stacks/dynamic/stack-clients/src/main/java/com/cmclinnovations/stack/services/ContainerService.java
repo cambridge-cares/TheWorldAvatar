@@ -143,15 +143,14 @@ public class ContainerService extends AbstractService {
     }
 
     /**
-     * If the named secret doesn't exist then add a dummy one, this is needed as
-     * Docker requires that all secrets a container references exist.
+     * If the named secret doesn't exist then remove it from the config
      * 
      * @param secretName
      */
-    protected boolean ensureOptionalSecret(String secretName) {
+    protected boolean removeOptionalSecret(String secretName) {
         boolean secretExists = dockerClient.secretExists(secretName);
         if (!secretExists) {
-            dockerClient.addSecret(secretName, "UNUSED");
+            getConfig().getContainerSpec().getSecrets().removeIf(secret -> secret.getSecretName().equals(secretName));
         }
         return secretExists;
     }
