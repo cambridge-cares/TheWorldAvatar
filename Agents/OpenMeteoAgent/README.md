@@ -1,6 +1,6 @@
 # OpenMeteo agent
 
-## Description
+## 1. Agent Description
 
 The OpenMeteo agent is intended for instantiating historical weather data retrieved with the Open-Meteo API (https://open-meteo.com/).
 
@@ -20,9 +20,9 @@ The agent will instantiate historical weather data for the weather parameters be
 |       ```windspeed_10m```        |           WindSpeed           |
 |     ```winddirection_10m```      |         WindDirection         |
 
-## Build Instructions
+## 2. Build Instructions
 
-### Required credentials
+### 2.1. Required credentials
 The docker image uses TheWorldAvatar maven repository (https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/). You'll need to provide your credentials (github username/personal access token) in single-word text files located:
 ```
 ./credentials/
@@ -30,37 +30,45 @@ The docker image uses TheWorldAvatar maven repository (https://maven.pkg.github.
         repo_password.txt
 ```
 
-repo_username.txt should contain your github username, and repo_password.txt should contain your github [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token), which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
+### 2.2. Stack Set Up
+The agent is designed to run in the stack. To start the stack, spin up the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager).
 
-The agent requires a PostgreSQL database to save time series data in. The address of the database used is provided as ```db.url``` in
+### 2.3. Blazegraph Set Up
+The agent is designed to use the stack Blazegraph. Please ensure that the Blazegraph namespace corresponding to ```route.label``` in ```./openmeteo-agent/src/main/resources/config.properties```, is set up in the stack Blazegraph.
+
+### 2.4. Access Agent Set Up
+The agent is designed to use the [Access Agent](../AccessAgent). Spin the access agent up as part of the same stack as spun up by the Stack Manager. Please ensure that the routing information for the Blazegraph namespace corresponding to ```route.label``` in ```./openmeteo-agent/src/main/resources/config.properties``` is uploaded, see the [Access Agent README](../AccessAgent) for instruction on uploading routing information.
+
+### 2.5. PostgreSQL Set Up
+The agent is designed to use the stack PostgreSQL. The historical weather time series will be stored in the stack PostgreSQL database, which is specified as ```db.name``` in ```./openmeteo-agent/src/main/resources/config.properties```. Please ensure the database specified by ```db.name``` is set up in the stack PostgreSQL.
+
+### 2.6. Build and Run
+In the same directory as this README, first build the Docker image by running
 ```
-./openmeteo_agent/src/main/resource
-        config.properties
+docker-compose build
 ```
 
-The username and password for the PostgreSQL database need to be provided in
+After the image is built, copy ```./stack-manager-input-config/openmeteo-agent.json``` and place it in ```../Deploy/stacks/dynamic/stack-manager/inputs/config/services```. Then, in the ```../Deploy/stacks/dynamic/stack-manager/``` directory, run 
 ```
-./credentials/
-        postgres_username.txt
-        postgres_password.txt
+./stack.sh start <STACK NAME>
 ```
+Replace ```<STACK NAME>``` with the name of the stack that was spun up by Stack Manager.
 
-### Building the agent
-To build and start the agent, you simply need to spin up a container from the image.
+WARNING: If tests are executed, they will fail for agent in stack, since the agent relies on methods provided by other classes that retrieve information on stack related configuration and such methods fail when not inside stack, which is the case at the time of test execution.
 
-In Visual Studio Code, ensure the Docker extension is installed, then right-click docker-compose.yml and select 'Compose Up'.
-Alternatively, from the command line, and in the same directory as this README, run
-
+### 2.7. Debugging
+To debug, put ```./stack-manager-input-config/openmeteo-agent-debug.json``` instead of ```./stack-manager-input-config/openmeteo-agent.json```  in ```../Deploy/stacks/dynamic/stack-manager/inputs/config/services```. Then, in the ```../Deploy/stacks/dynamic/stack-manager/``` directory, run 
 ```
-docker-compose up -d
+./stack.sh start <STACK NAME>
 ```
+Replace ```<STACK NAME>``` with the name of the stack that was spun up by Stack Manager. The debugger port will be available at 5005.
 
 ## Agent Endpoints 
 
-The agent accepts POST requests and is reachable at two endpoints: run endpoint (http://localhost:10101/openmeteo_agent/run), where the agent will instantiate the weather data retrieved with the Open-Meteo API for the user specified coordinate and time; delete endpoint (http://localhost:10101/openmeteo_agent/delete), where the agent will delete the instantiated weather triples at the user specified coordinate.
+The agent is reachable at http://localhost:3838/openmeteo-agent, where 3838 is the default port number used by stack manager. If another port number was specified when spinning up the stack, please replace 3838 with the specified port number. The agent provides two endpoints: run endpoint (http://localhost:3838/openmeteo-agent/run), where the agent will instantiate the weather data retrieved with the Open-Meteo API for the user specified coordinate and time; delete endpoint (http://localhost:3838/openmeteo-agent/delete), where the agent will delete the instantiated weather triples at the user specified coordinate.
 
 ### 1. Run Endpoint
-Available at http://localhost:10101/openmeteo_agent/run
+Available at http://localhost:3838/openmeteo-agent/run
 
 The run endpoint accepts the following POST request parameters:
 - ```latitude```: the latitude of the weather station in WGS84
@@ -87,7 +95,7 @@ Example request:
 After receiving the above request, the agent will instantiate a weather station located at (52.52, -14.41) with historical weather data, retrieved with Open-Meteo API, from 2021-01-02 to 2021-01-03.
 
 ### 2. Delete Endpoint
-Available at http://localhost:10101/openmeteo_agent/delete
+Available at http://localhost:3838/openmeteo-agent/delete
 
 The delete endpoint accepts the following POST request parameters:
 - ```latitude```: the latitude of the weather station in WGS84
