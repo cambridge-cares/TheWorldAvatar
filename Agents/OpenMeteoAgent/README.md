@@ -65,7 +65,7 @@ Replace ```<STACK NAME>``` with the name of the stack that was spun up by Stack 
 
 ## Agent Endpoints 
 
-The agent is reachable at http://localhost:3838/openmeteo-agent, where 3838 is the default port number used by stack manager. If another port number was specified when spinning up the stack, please replace 3838 with the specified port number. The agent provides two endpoints: run endpoint (http://localhost:3838/openmeteo-agent/run), where the agent will instantiate the weather data retrieved with the Open-Meteo API for the user specified coordinate and time; delete endpoint (http://localhost:3838/openmeteo-agent/delete), where the agent will delete the instantiated weather triples at the user specified coordinate.
+The agent supports POST requests and is reachable at http://localhost:3838/openmeteo-agent, where 3838 is the default port number used by stack manager. If another port number was specified when spinning up the stack, please replace 3838 with the specified port number. The agent provides two endpoints: run endpoint (http://localhost:3838/openmeteo-agent/run), where the agent will instantiate the weather data retrieved with the Open-Meteo API for the user specified coordinate and time; delete endpoint (http://localhost:3838/openmeteo-agent/delete), where the agent will delete the instantiated weather triples at the user specified coordinate.
 
 ### 1. Run Endpoint
 Available at http://localhost:3838/openmeteo-agent/run
@@ -75,6 +75,7 @@ The run endpoint accepts the following POST request parameters:
 - ```longitude```: the longitude of the weather station in WGS84
 - ```start_date```: the start date of the historic weather data wanted in "yyyy-mm-dd" as a string
 - ```end_date```: the end date of the historic weather data wanted in "yyyy-mm-dd" as a string
+- ```route```: (optional) access agent route to the Blazegraph namespace where the weather triples will be instantiated; if not provided, the weather triples will be instantiated at the default stack access agent route specified as ```route.label``` in ```./openmeteo-agent/src/main/resources/config.properties```
 
 The agent will instantiate a weather station located at (```latitude```, ```longitude```), and the historical weather data reported by the station will be stored as time series. 
 
@@ -100,6 +101,7 @@ Available at http://localhost:3838/openmeteo-agent/delete
 The delete endpoint accepts the following POST request parameters:
 - ```latitude```: the latitude of the weather station in WGS84
 - ```longitude```: the longitude of the weather station in WGS84
+- ```route```: (optional) access agent route to the Blazegraph namespace where the weather triples are stored; if not provided, the agent will attempt to delete weather triples from the default stack access agent route specified as ```route.label``` in ```./openmeteo-agent/src/main/resources/config.properties```
 
 If there is a weather station instance located at (```latitude```, ```longitude```), the agent will delete the weather station located at (```latitude```, ```longitude```) and its associated triples and time series.
 
