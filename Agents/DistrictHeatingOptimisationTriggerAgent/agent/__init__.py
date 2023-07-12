@@ -1,1 +1,1 @@
-from .flaskapp import create_app
+from .flaskapp import app, celery

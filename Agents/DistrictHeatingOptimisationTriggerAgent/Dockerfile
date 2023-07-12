@@ -16,6 +16,9 @@ ENV PYTHONUNBUFFERED=1
 # Install Java
 RUN apt update && apt install -y openjdk-11-jdk-headless git
 
+# Install Redis for scheduling of background tasks using Celery (via Flask)
+RUN apt install -y redis-server
+
 # Copy Stack-Client resource from published Docker image
 COPY --from=stackclients /app ./tmp_stack
 
@@ -41,8 +44,15 @@ EXPOSE 5000
 # Copy required source code (as code is not attached as volume)
 COPY ./agent ./agent
 
-# Set the entrypoint
-# Infinite timeout to avoid exceptions for longer (recurring) optimisations
-ENTRYPOINT gunicorn --bind 0.0.0.0:5000 --worker-class sync "agent:create_app()" --timeout 0
+# Start the Celery worker and Gunicorn server
+# Create pipeline of multiple commands using Shell Form of CMD (to perform a series of operations)
+# 1) Start Redis server at default 'localhost:6379'
+# 2) Point the celery worker to the celery_app object (as non-root user)
+# 3) Serve Flask App via Gunicorn
+#    NOTE: Infinite timeout to avoid exceptions for longer (recurring) optimisations
+
+CMD redis-server & \
+    celery -A agent.celery worker --loglevel=info --uid=100 & \
+    gunicorn -b 0.0.0.0:5000 agent:app --timeout 0
 
 #==================================================================================================

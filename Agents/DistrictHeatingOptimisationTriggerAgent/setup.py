@@ -14,9 +14,11 @@ setup(
     python_requires='>=3.7',
     include_package_data=True,
     install_requires= [
+        'celery~=5.3.1',
         'flask~=2.1.0',
         'gunicorn~=20.0.4',
         'py4jps~=1.0.36', 
-        'pyderivationagent~= 1.5.0'
+        'pyderivationagent~= 1.5.0',
+        'redis~=4.6.0',
     ]
 )
