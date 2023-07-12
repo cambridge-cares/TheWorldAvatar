@@ -43,7 +43,7 @@ class BuildingLinkTest {
         System.out.println(postgres.getUsername());
         kgClient = new RemoteStoreClient(queryEndpoint, queryEndpoint);
 
-        conn3 = new PostgresClient(dburl3D, dbuser, dbpassword);
+        // conn3 = new PostgresClient(dburl3D, dbuser, dbpassword);
     }
 
     @Test

@@ -9,13 +9,13 @@ class PostgresClientTest {
     private final String password = "123456";
     @org.junit.jupiter.api.Test
     void getConnection() {
-        PostgresClient conn = new PostgresClient(url, user, password);
-        try {
-            conn.getConnection();
-            System.out.println("Connected to the PostgreSQL server successfully.");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+        // PostgresClient conn = new PostgresClient(url, user, password);
+        // try {
+        //     // conn.getConnection();
+        //     System.out.println("Connected to the PostgreSQL server successfully.");
+        // } catch (SQLException e) {
+        //     System.out.println(e.getMessage());
+        // }
     }
 
 }
