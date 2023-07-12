@@ -1,10 +1,10 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
-# 3.6.1
+# 3.7.0
 ### Features:
-* _No features present._
+* Mapbox username and token can now be read from external files/docker secrets.
 ### Bug Fixes:
-* Mapbox username and token are now read from external files/docker secrets.
+* _No bug fixes present._
 
 # 3.6.0
 ### Features:
