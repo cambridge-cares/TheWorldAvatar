@@ -2,6 +2,7 @@ package com.cmclinnovations.stack.clients.citydb;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.utils.TempDir;
 
 public class CityDBClient extends ContainerClient {
@@ -155,5 +157,15 @@ public class CityDBClient extends ContainerClient {
                 .exec();
 
         handleErrors(errorStream, execId, logger);
+    }
+
+    public void applyThematicSurfacesFix(String database) {
+        String sqlFilename = "citydb_thematic_surfaces_fix.sql";
+        try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
+            String sqlQuery = new String(is.readAllBytes());
+            PostGISClient.getInstance().getRemoteStoreClient(database).execute(sqlQuery);
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
+        }
     }
 }

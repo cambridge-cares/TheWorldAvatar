@@ -11,13 +11,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class CityDB extends PostgresDataSubset {
 
     @JsonProperty
-    private ImpExpOptions importOptions = new ImpExpOptions();
+    private final ImpExpOptions importOptions = new ImpExpOptions();
     @JsonProperty
-    private CityTilerOptions cityTilerOptions = new CityTilerOptions();
+    private final CityTilerOptions cityTilerOptions = new CityTilerOptions();
+    @JsonProperty
+    private final boolean skipThematicSurfacesFix = false;
 
     @Override
     void loadInternal(Dataset parent) {
         super.loadInternal(parent);
+        if (!skipThematicSurfacesFix) {
+            applyThematicSurfacesFix(parent.getDatabase());
+        }
         createLayer(parent.getDatabase());
     }
 
@@ -30,6 +35,10 @@ public class CityDB extends PostgresDataSubset {
 
     public void createLayer(String database) {
         CityTilerClient.getInstance().generateTiles(database, "citydb", cityTilerOptions);
+    }
+
+    private void applyThematicSurfacesFix(String database) {
+        CityDBClient.getInstance().applyThematicSurfacesFix( database);
     }
 
 }
