@@ -127,7 +127,7 @@ public class OpenMeteoAgent extends JPSAgent {
         stackAccessAgentBase = stackAccessAgentBase.replace(STACK_NAME, stackName);
         rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDbUrl(dbName), endpointConfig.getDbUser(), endpointConfig.getDbPassword());
         setTimeSeriesTypes();
-        setStoreClient(stackAccessAgentBase +defaultLabel);
+        setStoreClient(stackAccessAgentBase + defaultLabel);
     }
 
     @Override
