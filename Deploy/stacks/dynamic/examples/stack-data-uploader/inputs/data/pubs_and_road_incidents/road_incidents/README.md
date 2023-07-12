@@ -1,0 +1,1 @@
+Static road incident data can be downloaded as a csv by year from [here](https://www.data.gov.uk/dataset/cb7ae6f0-4be6-4935-9277-47e5ce24a11f/road-safety-data)

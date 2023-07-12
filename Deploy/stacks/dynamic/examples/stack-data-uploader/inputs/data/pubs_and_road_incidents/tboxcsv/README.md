@@ -1,0 +1,1 @@
+The file in this folder should be uploaded as a TBoxCsv data type to add some ontology for a Public House which will be stored in Blazegraph. This is primarily employed by the feature info agent in the viz. 

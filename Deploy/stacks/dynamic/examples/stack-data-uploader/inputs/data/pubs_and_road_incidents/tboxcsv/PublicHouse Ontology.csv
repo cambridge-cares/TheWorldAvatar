@@ -1,0 +1,10 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+PubOntology,TBox,http://theworldavatar.com/ontology/pubontology.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+PubOntology,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+PubOntology,TBox,xxxxx,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+PublicHouse,Class,,,,,,Class for a Pub,http://theworldavatar.com/ontology/pubontology.owl,Public House
+PublicHouse,Class,http://www.opengis.net/ont/geosparql#Feature,IS-A,,,,,,
+http://www.w3.org/2012/7/ra3.owl#RoadAccident,Class,,,,,Class for a Road incident,http://www.w3.org/2012/7/ra3.owl,Road Accident
+hasName,Data Property,,,PublicHouse,String,some,String name of the pub,http://theworldavatar.com/ontology/pubontology,
+hasDisplayAddress,Data Property,,,,String,only,String full adddress of the pub,http://theworldavatar.com/ontology/pubontology,address
+http://www.w3.org/2006/vcard/ns#postal-code,Data Property,,,http://www.w3.org/2006/vcard/ns#adr,String,only,The UK post code as a string,http://theworldavatar.com/ontology/pubontology,postal code

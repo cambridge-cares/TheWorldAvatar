@@ -1,0 +1,12 @@
+{
+    "queries": [
+        {
+            "class": "http://theworldavatar.com/ontology/pubontology.owl#PublicHouse",
+            "metaFile": "pub_meta.sparql"
+        },
+        {
+            "class": "http://www.w3.org/2012/7/ra3.owl#RoadAccident",
+            "metaFile": "incident_meta.sparql"
+        }
+    ]
+}

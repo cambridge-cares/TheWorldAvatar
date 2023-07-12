@@ -3,13 +3,17 @@
     "datasetDirectory": "roads",
     "database": "postgres",
     "workspace": "the_world_avatar",
-    "skip": false,
+    "skip": true,
     "dataSubsets": [
         {
             "type": "vector",
             "skip": false,
             "schema": "public",
-            "table": "roads"
+            "table": "roads",
+            "ogr2ogrOptions" : {
+                "sridIn": "EPSG:27700",
+                "sridOut": "EPSG:4326"
+            }
         }
     ]
 }
