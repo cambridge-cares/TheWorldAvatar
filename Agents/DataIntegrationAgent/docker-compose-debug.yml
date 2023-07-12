@@ -2,6 +2,8 @@ version: '3.8'
 services:
   data-integration:
     environment:
-      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+      - JPDA_ADDRESS=0.0.0.0:5005
+      - JPDA_TRANSPORT=dt_socket
+      - DEBUG=ON
     ports:
       - "${DEBUG_PORT}:5005"
