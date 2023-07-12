@@ -146,7 +146,7 @@ class OntoAgentBERTTrainingSetCreator:
         df = pd.DataFrame(all_question_list)
         # question agent rel
         df.columns = ["question", "agent", "rel", "agent_name"]
-        df.to_csv(os.path.join(self.base_dir, "score_model_training_test.tsv"), sep="\t")
+        df.to_csv(os.path.join(self.base_dir, "score_model_training.tsv"), sep="\t")
 
 
 if __name__ == "__main__":
