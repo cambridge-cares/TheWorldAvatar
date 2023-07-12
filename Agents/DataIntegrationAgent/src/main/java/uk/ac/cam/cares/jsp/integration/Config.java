@@ -78,8 +78,7 @@ public class Config  extends ContainerClient {
             LOGGER.debug("Retrieving configuration from " + PROPERTIES_FILEPATH + "...");
             prop.load(input);
             LOGGER.info("Retrieving the details for source and target databases from file...");
-            retrieveDatabase(true, config, prop, missingPropertiesErrorMessage, "");
-            retrieveDatabase(false, config, prop, missingPropertiesErrorMessage, "");
+            retrieveDatabase(config, prop, missingPropertiesErrorMessage);
             String missingMessage = missingPropertiesErrorMessage.toString();
             if (!missingMessage.isEmpty()) {
                 LOGGER.error("Missing Properties:\n" + missingMessage);
@@ -96,46 +95,44 @@ public class Config  extends ContainerClient {
         }
     }
 
-    /**
-     * Retrieves SQL database properties for a stack database.
-     *
-     * @param stackDatabase The stack database name passed as a parameter to the GET request.
-     * @param stackIsSource A boolean indicating if the stack is the source database to transfer time series from.
-     * @return An array of these endpoints.
-     */
-    public static String[] retrieveSQLConfig(String stackDatabase, boolean stackIsSource) {
-        StringBuilder missingPropertiesErrorMessage = new StringBuilder();
-        try (InputStream input = new FileInputStream(PROPERTIES_FILEPATH)) {
-            Properties prop = new Properties();
-            String[] config = new String[6];
-            LOGGER.debug("Retrieving configuration from " + PROPERTIES_FILEPATH + "...");
-            prop.load(input);
-            if (stackIsSource) {
-                LOGGER.info("Retrieving the details for the stack database as a source...");
-                retrieveStackDatabase(stackDatabase, config, true);
-                LOGGER.info("Retrieving the details for target database from file...");
-                retrieveDatabase(false, config, prop, missingPropertiesErrorMessage, "");
-            } else {
-                LOGGER.info("Retrieving the details for source database from file...");
-                retrieveDatabase(true, config, prop, missingPropertiesErrorMessage, "");
-                LOGGER.info("Retrieving the details for the stack database to be targeted...");
-                retrieveStackDatabase(stackDatabase, config, false);
-            }
-            String missingMessage = missingPropertiesErrorMessage.toString();
-            if (!missingMessage.isEmpty()) {
-                LOGGER.error("Missing Properties:\n" + missingMessage);
-                throw new JPSRuntimeException("Missing Properties:\n" + missingMessage);
-            }
-            LOGGER.info("All required configurations have been retrieved!");
-            return config;
-        } catch (FileNotFoundException e) {
-            LOGGER.error(NO_PROPERTIES_MSG);
-            throw new JPSRuntimeException(NO_PROPERTIES_MSG);
-        } catch (IOException e) {
-            LOGGER.error(INACCESSIBLE_CLIENT_PROPERTIES_MSG + e);
-            throw new JPSRuntimeException(INACCESSIBLE_CLIENT_PROPERTIES_MSG + e);
-        }
-    }
+    // /**
+    //  * Retrieves SQL database properties for a stack database.
+    //  *
+    //  * @param stackDatabase The stack database name passed as a parameter to the GET request.
+    //  * @param stackIsSource A boolean indicating if the stack is the source database to transfer time series from.
+    //  * @return An array of these endpoints.
+    //  */
+    // public static String[] retrieveSQLConfig(String stackDatabase, boolean stackIsSource) {
+    //     StringBuilder missingPropertiesErrorMessage = new StringBuilder();
+    //     try (InputStream input = new FileInputStream(PROPERTIES_FILEPATH)) {
+    //         Properties prop = new Properties();
+    //         String[] config = new String[6];
+    //         LOGGER.debug("Retrieving configuration from " + PROPERTIES_FILEPATH + "...");
+    //         prop.load(input);
+    //         if (stackIsSource) {
+    //             LOGGER.info("Retrieving the details for the stack database as a source...");
+    //             retrieveStackDatabase(stackDatabase, config, true);
+    //         } else {
+    //             LOGGER.info("Retrieving the details for source database from file...");
+    //             retrieveDatabase(config, prop, missingPropertiesErrorMessage);
+    //             LOGGER.info("Retrieving the details for the stack database to be targeted...");
+    //             retrieveStackDatabase(stackDatabase, config, false);
+    //         }
+    //         String missingMessage = missingPropertiesErrorMessage.toString();
+    //         if (!missingMessage.isEmpty()) {
+    //             LOGGER.error("Missing Properties:\n" + missingMessage);
+    //             throw new JPSRuntimeException("Missing Properties:\n" + missingMessage);
+    //         }
+    //         LOGGER.info("All required configurations have been retrieved!");
+    //         return config;
+    //     } catch (FileNotFoundException e) {
+    //         LOGGER.error(NO_PROPERTIES_MSG);
+    //         throw new JPSRuntimeException(NO_PROPERTIES_MSG);
+    //     } catch (IOException e) {
+    //         LOGGER.error(INACCESSIBLE_CLIENT_PROPERTIES_MSG + e);
+    //         throw new JPSRuntimeException(INACCESSIBLE_CLIENT_PROPERTIES_MSG + e);
+    //     }
+    // }
 
     /**
      * Retrieves the Database url, username and password, which will be stored in the config input.
@@ -146,42 +143,43 @@ public class Config  extends ContainerClient {
      * @param missingPropertiesErrorMessage An error message that will be written if there is no property.
      * @param stackDatabase                 The stack namespace endpoint passed as a parameter to the GET request.
      */
-    private static void retrieveDatabase(boolean isSource, String[] config, Properties prop, StringBuilder missingPropertiesErrorMessage, String stackDatabase) {
-        // If the code does not need to be executed on a stack, retrieve the configs for source or target database from the properties file
-        if (stackDatabase.isEmpty()) {
-            if (isSource) {
-                config[0] = validateProperties(prop, SRC_DB_URL, missingPropertiesErrorMessage);
-                config[1] = validateProperties(prop, SRC_DB_USER, missingPropertiesErrorMessage);
-                config[2] = validateProperties(prop, SRC_DB_PASSWORD, missingPropertiesErrorMessage);
-                config[3] = validateProperties(prop, SRC_DB_3D, missingPropertiesErrorMessage);
-                config[4] = validateProperties(prop, SRC_DB_2D, missingPropertiesErrorMessage);
-                config[5] = validateProperties(prop, SRC_TABLE_2D, missingPropertiesErrorMessage);
-            }
-        } else {
-            retrieveStackDatabase(stackDatabase, config, isSource);
-        }
-    }
+    private static void retrieveDatabase(String[] config, Properties prop, StringBuilder missingPropertiesErrorMessage) {
 
-    /**
-     * Retrieves the SQL database within this stack as either the source or target.
-     *
-     * @param stackDatabase The stack database name passed as a parameter to the GET request.
-     * @param config        The configuration array to store the results.
-     * @param isSource      Indicates if the stack database is the source or target.
-     */
-    private static void retrieveStackDatabase(String stackDatabase, String[] config, boolean isSource) {
         ContainerClient client = new ContainerClient();
         PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
-        if (isSource) {
-            config[0] = postConfig.getJdbcURL(stackDatabase);
-            config[1] = postConfig.getUsername();
-            config[2] = postConfig.getPassword();
-        } else {
-            config[3] = postConfig.getJdbcURL(stackDatabase);
-            config[4] = postConfig.getUsername();
-            config[5] = postConfig.getPassword();
-        }
+        config[1] = postConfig.getUsername();
+        config[2] = postConfig.getPassword();
+        config[3] = postConfig.getJdbcURL(config[3]);
+        config[4] = postConfig.getJdbcURL(config[4]);
+
+        config[0] = validateProperties(prop, SRC_DB_URL, missingPropertiesErrorMessage);
+        config[1] = validateProperties(prop, SRC_DB_USER, missingPropertiesErrorMessage);
+        config[2] = validateProperties(prop, SRC_DB_PASSWORD, missingPropertiesErrorMessage);
+        config[3] = validateProperties(prop, SRC_DB_3D, missingPropertiesErrorMessage);
+        config[4] = validateProperties(prop, SRC_DB_2D, missingPropertiesErrorMessage);
+        config[5] = validateProperties(prop, SRC_TABLE_2D, missingPropertiesErrorMessage);
     }
+
+    // /**
+    //  * Retrieves the SQL database within this stack as either the source or target.
+    //  *
+    //  * @param stackDatabase The stack database name passed as a parameter to the GET request.
+    //  * @param config        The configuration array to store the results.
+    //  * @param isSource      Indicates if the stack database is the source or target.
+    //  */
+    // private static void retrieveStackDatabase(String stackDatabase, String[] config, boolean isSource) {
+    //     ContainerClient client = new ContainerClient();
+    //     PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
+    //     if (isSource) {
+    //         config[0] = postConfig.getJdbcURL(stackDatabase);
+    //         config[1] = postConfig.getUsername();
+    //         config[2] = postConfig.getPassword();
+    //     } else {
+    //         config[3] = postConfig.getJdbcURL(stackDatabase);
+    //         config[4] = postConfig.getUsername();
+    //         config[5] = postConfig.getPassword();
+    //     }
+    // }
     /**
      * Validates the client properties, and return their value if it exists.
      *

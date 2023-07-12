@@ -10,7 +10,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class PostgresClient extends ContainerClient {
-    private static final Logger LOGGER = LogManager.getLogger(DataIntegrationAgent.class);
+    private static final Logger LOGGER = LogManager.getLogger(PostgresClient.class);
     private final String postGISContainerId;
     private static final String PASSWORD_OPTION = "PGPASSWORD='";
     private static final String USER_OPTION = "-U ";

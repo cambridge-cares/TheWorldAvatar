@@ -30,7 +30,7 @@
   },
   "endpoints": {
     "data-integration": {
-      "url": "http://localhost:8080/DataIntegration/",
+      "url": "http://localhost:8080/DataIntegrationAgent/",
       "externalPath": "/data-integration/"
     }
   }

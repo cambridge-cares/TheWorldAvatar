@@ -7,7 +7,7 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
 public class DataIntegration extends JPSAgent {
-    private static final Logger LOGGER = LogManager.getLogger(DataIntegrationAgent.class);
+    private static final Logger LOGGER = LogManager.getLogger(DataIntegration.class);
     // Agent starts off in valid state, and will be invalid when running into exceptions
     private static boolean VALID = true;
     private static boolean AGENT_IN_STACK = false;
@@ -44,33 +44,33 @@ public class DataIntegration extends JPSAgent {
         return jsonMessage;
     }
 
-     /**
-     * Validates the request parameters.
-     *
-     * @return true or false depending on valid parameter status.
-     */
-    @Override
-    public boolean validateInput(JSONObject requestParams) {
-        boolean validate = false;
-        // If request is sent to status route, there are no parameters to validate
-        if (requestParams.get("requestUrl").toString().contains("status")) return true;
+    //  /**
+    //  * Validates the request parameters.
+    //  *
+    //  * @return true or false depending on valid parameter status.
+    //  */
+    // @Override
+    // public boolean validateInput(JSONObject requestParams) {
+    //     boolean validate = false;
+    //     // If request is sent to status route, there are no parameters to validate
+    //     if (requestParams.get("requestUrl").toString().contains("status")) return true;
 
-        // If there are parameters passed for the sql route
-        if (requestParams.get("requestUrl").toString().contains("sql")) {
-            if (requestParams.has(KEY_SOURCE_DATABASE) ) {
-                LOGGER.fatal("Detected `srcDbName` parameters!");
-                return false;
-            }
-            if (requestParams.has(KEY_SOURCE_DATABASE)) {
-                if (!(requestParams.get(KEY_SOURCE_DATABASE) instanceof String)) {
-                    LOGGER.fatal("`srcDbName` is not a string!");
-                    return false;
-                }
-            }
-            validate = true;
-        }
-        return validate;
-    }
+    //     // If there are parameters passed for the sql route
+    //     if (requestParams.get("requestUrl").toString().contains("sql")) {
+    //         if (requestParams.has(KEY_SOURCE_DATABASE) ) {
+    //             LOGGER.fatal("Detected `srcDbName` parameters!");
+    //             return false;
+    //         }
+    //         if (requestParams.has(KEY_SOURCE_DATABASE)) {
+    //             if (!(requestParams.get(KEY_SOURCE_DATABASE) instanceof String)) {
+    //                 LOGGER.fatal("`srcDbName` is not a string!");
+    //                 return false;
+    //             }
+    //         }
+    //         validate = true;
+    //     }
+    //     return validate;
+    // }
 
     /**
      * Run logic for the "/status" route that indicates the agent's current status.
