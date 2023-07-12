@@ -875,7 +875,7 @@ public class RunCEATask implements Runnable {
                 if (!noWeather) {
                     // create the workflow process to get CEA default weather
                     runProcess(args4);
-                    // run workflow.yml for CEA to get default weather file
+                    // run workflow_reference_weather.yml for CEA to get default weather file
                     runProcess(args5);
 
                     // create the weather file process and run
