@@ -1,0 +1,31 @@
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix ems: <https://www.theworldavatar.com/kg/ontoems/>
+prefix time: <https://www.w3.org/TR/owl-time/#>
+prefix twa: <http://theworldavatar.com/ontology/pubontology.owl#>
+prefix ra: <http://www.w3.org/2012/7/ra3.owl#>
+
+SELECT ?Property ?Value ?Unit
+WHERE {
+    {
+  SERVICE [ONTOP]{
+  { BIND ("Accident ID" AS ?Property )
+    [IRI] rdfs:label ?Value .
+  } UNION { 
+    BIND ("Date" AS ?Property )
+    [IRI] time:date ?Value .
+  } UNION { 
+    BIND ("Administrative Region" AS ?Property )
+    [IRI] twa:inAdminRegion ?Value .
+  } UNION { 
+    BIND ("Weather Conditions" AS ?Property )
+    [IRI] ra:weatherCondition ?Value .
+  }
+}}}
+# UNION
+
+# WHERE {
+#   SERVICE <https://statistics.data.gov.uk/sparql.json> {
+
+#  }}
+#     }

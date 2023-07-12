@@ -11,11 +11,25 @@
             "schema": "public",
             "table": "road_incidents",
             "subdirectory": "road_incidents",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "incidents_virtual",
+                    "sql": "@/inputs/config/incidents.sql",
+                    "escapeSql": false,
+                    "keyColumn": "ogc_fid",
+                    "geometry": {
+                        "name": "geom",
+                        "type": "Point",
+                        "srid": 27700
+                    }
+                }
+            },
             "ogr2ogrOptions": {
                 "layerCreationOptions": {
                     "GEOMETRY_NAME": "geom"
                 },
                 "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:27700",
                 "inputDatasetOpenOptions": {
                     "X_POSSIBLE_NAMES": "longitude",
                     "Y_POSSIBLE_NAMES": "latitude"

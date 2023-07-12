@@ -3,7 +3,7 @@
     "groups": [
         {
             "name": "Pubs",
-            "stack": "http://localhost:3838/traffic",
+            "stack": "http://localhost:3838",
             "sources": [
                 {
                     "id": "pubs",
@@ -32,7 +32,7 @@
         },
         {
             "name": "Roads",
-            "stack": "http://localhost:3838/traffic",
+            "stack": "http://localhost:3838",
             "sources": [
                 {
                     "id": "roads",
@@ -59,7 +59,7 @@
         },
         {
             "name": "Road Incidents",
-            "stack": "http://localhost:3838/traffic",
+            "stack": "http://localhost:3838",
             "sources": [
                 {
                     "id": "incidents",

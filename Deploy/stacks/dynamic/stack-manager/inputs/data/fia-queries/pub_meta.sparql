@@ -1,20 +1,20 @@
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix ems: <https://www.theworldavatar.com/kg/ontoems/>
+prefix twa: <http://theworldavatar.com/ontology/pubontology.owl#>
+prefix pubs: <http://theworldavatar.com/ontology/pubontology.owl>
 
 SELECT ?Property ?Value ?Unit
 WHERE {
-  { BIND ("Name" AS ?Property )
-    [IRI] rdfs:label ?Value .
-  } UNION { 
-    BIND ("Data source" AS ?Property )
-    [IRI] ems:dataSource ?Value .
-  } UNION { 
-    BIND ("Identifier" AS ?Property )
-    [IRI] ems:hasIdentifier ?Value .
-  } UNION { 
-    BIND ("Elevation" AS ?Property )
-    BIND ("m" AS ?Unit )
-    [IRI] ems:hasObservationElevation ?Value .
+  SERVICE [ONTOP]{
+    { BIND ("Name" AS ?Property )
+      [IRI] rdfs:label ?Value .
+    } UNION { 
+      BIND ("Local Authority" AS ?Property )
+      [IRI] twa:hasLocalAuthority ?Value .
+    } UNION { 
+      BIND ("Address" AS ?Property )
+      [IRI] pubs:hasDisplayAddress ?Value .
+    } 
   }
 }

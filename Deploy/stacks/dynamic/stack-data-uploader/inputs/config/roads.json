@@ -3,7 +3,7 @@
     "datasetDirectory": "roads",
     "database": "postgres",
     "workspace": "the_world_avatar",
-    "skip": false,
+    "skip": true,
     "dataSubsets": [
         {
             "type": "vector",
