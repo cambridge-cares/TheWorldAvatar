@@ -28,13 +28,8 @@ locally using GPUs, see [PyTorch CUDA](https://pytorch.org/get-started/locally/)
 ##  Knowledge Graph Embedding
  
 ### File requirement
-To train the embedding of an ontology, a list of files are required. The files are script created, see [readme.md for dataset creation](../KGToolbox/readme.md) for details.
-1. Triples: `[name]-train.txt`, `[name]-test.txt`, `[name]-valid.txt`. The files are headless tsv files with three columns, subject-predicate-object, separated by `tab`.
-2. Indexing: `entity2idx.pkl`, `idx2entity.pkl`, `rel2idx.pkl`, `idx2rel.pkl`, provide index-to-label and label-to-index dictionaries
-3. [Optional] Neighbour dictionary: `three_hop_dict_index` and `three_hop_dict_label`. However, if the neighbour dictionaries are missing, the training scripts 
-will automatically create them. 
-4. [Optional] For OntoMoPs and ontospecies_new that use adaptive negative sampling, a `neg_smaple_dict.json` are required, for OntoMoPs, ontospecies_new, and wikidata_numerical that
-use numerical embedding, a `node_value_dict.json` is required. 
+To train the embedding of an ontology, a list of files are required. The files are script created, see [readme.md for dataset creation](../KGToolbox/readme.md) for what 
+files are expected for the training. 
 
 Once all the files are created, choose the embedding method, the implemented ones are 
 `Complex`, `TransE`, `TransEA`,`TransR`, `TransRA`. The preferred embedding method for a typical TWA ontology is `TransRA`.
