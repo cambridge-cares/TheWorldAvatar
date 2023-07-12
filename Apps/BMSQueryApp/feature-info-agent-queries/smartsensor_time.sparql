@@ -1,4 +1,4 @@
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -9,16 +9,9 @@ prefix ontodevice: <https://www.theworldavatar.com/kg/ontodevice/>
 prefix : <https://www.theworldavatar.com/kg/ontobms/>
 
 SELECT distinct ?Measurement ?Name ?Unit WHERE {
-  {
-    #CoolingFan
-    [IRI] saref:consistsOf / saref:hasState ?Measurement.
-    BIND("CoolingFanState" as ?Name).
-    BIND("-" as ?Unit).
-  } UNION {
     #DHT22
     [IRI] saref:consistsOf / saref:consistsOf / ontodevice:measures ?m.
     ?m om:hasValue ?Measurement.
     ?Measurement om:hasUnit / om:symbol ?Unit.
     BIND(replace(str(?m), str(ontodevice:), "") as ?Name).
-  }
 }

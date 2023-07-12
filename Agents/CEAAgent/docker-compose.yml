@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  cea-agent:
+    container_name: cea-agent
+    image: cea-agent:1.0.0
+    build: .
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - "58085:8084"

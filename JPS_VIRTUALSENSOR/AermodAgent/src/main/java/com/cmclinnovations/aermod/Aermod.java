@@ -3,6 +3,7 @@ package com.cmclinnovations.aermod;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +19,8 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -40,9 +43,13 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
 import com.cmclinnovations.aermod.objects.Building;
+import com.cmclinnovations.aermod.objects.DispersionOutput;
 import com.cmclinnovations.aermod.objects.PointSource;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
 import com.cmclinnovations.aermod.objects.WeatherData;
+import com.cmclinnovations.aermod.objects.Pollutant.PollutantType;
+import com.cmclinnovations.stack.clients.gdal.GDALClient;
+import com.cmclinnovations.stack.clients.gdal.GDALTranslateOptions;
 
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
@@ -54,6 +61,7 @@ public class Aermod {
     private Path aermetDirectory;
     private Path aermodDirectory;
     private Path simulationDirectory;
+    private Path rasterDirectory;
     private static final String AERMET_INPUT = "aermet.inp";
 
     public Aermod(Path simulationDirectory) {
@@ -72,6 +80,117 @@ public class Aermod {
 
         this.aermodDirectory = simulationDirectory.resolve("aermod");
         aermodDirectory.toFile().mkdir();
+
+        rasterDirectory = simulationDirectory.resolve("raster");
+        rasterDirectory.toFile().mkdir();
+    }
+
+    /* Create input config and data files for AERMAP. */
+
+    public int createAERMAPInput(List<byte[]> elevData, int centreZoneNumber) {
+
+        int n = elevData.size();
+        StringBuilder aermapInputString = new StringBuilder();
+
+        for (int i = 0; i < n; i++) {
+            String fn = (i + 1) + ".tif";
+            aermapInputString.append("   DATAFILE " + fn);
+            aermapInputString.append(System.lineSeparator());
+            try {
+                Files.write(aermapDirectory.resolve(fn), elevData.get(i));
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage());
+                LOGGER.error("Error writing byte {} to .tif file.", i);
+                return 1;
+            }
+        }
+
+        String templateContent;
+
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream("aermap.inp")) {
+            templateContent = IOUtils.toString(is, StandardCharsets.UTF_8);
+            templateContent = templateContent.replace("   DATAFILE FILE_NAMES", aermapInputString.toString());
+            String simGrid = String.format("%f %f %f %f %d %d", 0.0, 0.0, 0.0, 0.0, centreZoneNumber, 0);
+            templateContent = templateContent.replace("REPLACED_BY_AERMOD_AGENT", simGrid);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Failed to copy aermap.inp");
+            return 1;
+        }
+
+        return writeToFile(aermapDirectory.resolve("aermap.inp"), templateContent);
+    }
+
+    /* Create receptor data files for AERMAP. */
+    public int createAERMAPReceptorInput(Polygon scope, int nx, int ny, int simulationSrid) {
+
+        List<Double> xDoubles = new ArrayList<>();
+        List<Double> yDoubles = new ArrayList<>();
+
+        for (int i = 0; i < scope.getCoordinates().length; i++) {
+
+            String originalSrid = "EPSG:4326";
+            double[] xyOriginal = { scope.getCoordinates()[i].x, scope.getCoordinates()[i].y };
+            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
+
+            xDoubles.add(xyTransformed[0]);
+            yDoubles.add(xyTransformed[1]);
+        }
+
+        double xlo = Collections.min(xDoubles);
+        double xhi = Collections.max(xDoubles);
+        double ylo = Collections.min(yDoubles);
+        double yhi = Collections.max(yDoubles);
+
+        double dx = (xhi - xlo) / nx;
+        double dy = (yhi - ylo) / ny;
+
+        StringBuilder sb = new StringBuilder("RE GRIDCART POL1 STA ");
+        sb.append(System.lineSeparator());
+        String rec = String.format("                 XYINC %f %d %f %f %d %f", xlo, nx, dx, ylo, ny, dy);
+        sb.append(rec).append(System.lineSeparator());
+        sb.append("RE GRIDCART POL1 END ").append(System.lineSeparator());
+
+        return writeToFile(aermapDirectory.resolve("aermapReceptors.dat"), sb.toString());
+    }
+
+    public int runAermap() {
+        try {
+            Process process = Runtime.getRuntime().exec(new String[] { EnvConfig.AERMAP_EXE, "aermap.inp" }, null,
+                    aermapDirectory.toFile());
+
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+            // Read the output from the command
+            LOGGER.info("Here is the standard output of AERMAP:");
+            String s = null;
+            while ((s = stdInput.readLine()) != null) {
+                LOGGER.info(s);
+            }
+
+            // Read any errors from the attempted command
+            LOGGER.info("Here is the standard error of AERMAP (if any):");
+            while ((s = stdError.readLine()) != null) {
+                LOGGER.info(s);
+            }
+
+            if (process.waitFor() != 0) {
+                return 1;
+            }
+
+        } catch (IOException e) {
+            LOGGER.error("Error executing aermap");
+            LOGGER.error(e.getMessage());
+            return 1;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.error("Error executing aermap");
+            LOGGER.error(e.getMessage());
+            return 1;
+        }
+        return 0;
     }
 
     /* Write out data to BPIPPRM input file and run this program. */
@@ -217,7 +336,7 @@ public class Aermod {
         }
         featureCollection.put("features", features);
 
-        LOGGER.info("Uploading plant items GeoJSON to PostGIS");
+        LOGGER.info("Uploading static point sources GeoJSON to PostGIS");
         return featureCollection;
 
     }
@@ -418,8 +537,12 @@ public class Aermod {
         }
     }
 
-    int createPointsFile(List<PointSource> pointSources, int simulationSrid) {
+    int createPointsFile(List<PointSource> pointSources, int simulationSrid, PollutantType pollutantType) {
         StringBuilder sb = new StringBuilder();
+
+        double maxFlowRate = 0.0;
+        double eps = 1.0e-20;
+
         for (int i = 0; i < pointSources.size(); i++) {
 
             PointSource ps = pointSources.get(i);
@@ -431,18 +554,55 @@ public class Aermod {
 
             double area = Math.PI * Math.pow(ps.getDiameter() / 2, 2); // m2
             double density = ps.getMixtureDensityInKgm3(); // kg/m3
-            double velocity = ps.getFlowrateSO2InGramsPerS() / 1000 / area / density; // m/s
 
-            double massFlowrateInGs = ps.getFlowrateNOxInGramsPerS();
+            double massFlowrateInGs = 0.0;
+            switch (pollutantType) {
+                case CO2:
+                    massFlowrateInGs = ps.getFlowrateCO2InGramsPerSecond();
+                    break;
+                case NO_X:
+                    massFlowrateInGs = ps.getFlowrateNOxInGramsPerS();
+                    break;
+                case SO2:
+                    massFlowrateInGs = ps.getFlowrateSO2InGramsPerS();
+                    break;
+                case CO:
+                    massFlowrateInGs = ps.getFlowrateCOInGramsPerS();
+                    break;
+                case UHC:
+                    massFlowrateInGs = ps.getFlowrateHCInGramsPerS();
+                    break;
+                case PM10:
+                    massFlowrateInGs = ps.getFlowRatePm10InGramsPerS();
+                    break;
+                case PM2_5:
+                    massFlowrateInGs = ps.getFlowRatePm25InGramsPerS();
+                    break;
+            }
+
+            // TODO: This will not work for PM10 and PM2.5.
+            double velocity = massFlowrateInGs / 1000 / area / density; // m/s
+
+            maxFlowRate = Math.max(maxFlowRate, massFlowrateInGs);
+
+            double baseElevation = 0.0;
+            if (ps.getClass() == StaticPointSource.class) {
+                StaticPointSource pss = (StaticPointSource) ps;
+                baseElevation = pss.getElevation();
+            }
 
             sb.append(String.format("SO LOCATION %s POINT %f %f %f", stkId, xyTransformed[0], xyTransformed[1],
-                    ps.getHeight()));
+                    baseElevation));
             sb.append(System.lineSeparator());
             sb.append(String.format("SO SRCPARAM %s %f %f %f %f %f", stkId,
                     massFlowrateInGs, ps.getHeight(), ps.getMixtureTemperatureInKelvin(),
                     velocity, ps.getDiameter()));
             sb.append(System.lineSeparator());
         }
+
+        if (maxFlowRate <= eps)
+            return 1;
+
         return writeToFile(aermodDirectory.resolve("points.so"), sb.toString());
     }
 
@@ -495,7 +655,7 @@ public class Aermod {
         return writeToFile(aermodDirectory.resolve("aermod.inp"), templateContent);
     }
 
-    int runAermod(String aermodInputFile) {
+    int runAermod(String aermodInputFile, String pollutId) {
 
         File tempFile = new File(aermodDirectory.resolve(aermodInputFile).toString());
 
@@ -532,6 +692,12 @@ public class Aermod {
             while ((s = stdError.readLine()) != null) {
                 LOGGER.info(s);
             }
+
+            Path pollutantDirectory = aermodDirectory.resolve(pollutId);
+            pollutantDirectory.toFile().mkdir();
+            Files.copy(aermodDirectory.resolve("aermod.out"), pollutantDirectory.resolve("aermod.out"));
+            Files.copy(aermodDirectory.resolve("averageConcentration.dat"),
+                    pollutantDirectory.resolve("averageConcentration.dat"));
 
         } catch (IOException e) {
             return 0;
@@ -571,16 +737,53 @@ public class Aermod {
         }
     }
 
+    int createFileForRaster(String rasterFileName) throws FileNotFoundException {
+        File concFile = aermodDirectory.resolve("averageConcentration.dat").toFile();
+        List<String[]> xyzList = new ArrayList<>();
+
+        try (Scanner scanner = new Scanner(concFile)) {
+            // skip first 8 lines of comments/header
+            for (int i = 0; i < 8; i++)
+                scanner.nextLine();
+
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] separatedData = line.substring(2).split("\\s+");
+                String[] xyz = new String[3];
+                xyz[0] = separatedData[0];
+                xyz[1] = separatedData[1];
+                xyz[2] = separatedData[2];
+                xyzList.add(xyz);
+            }
+        }
+
+        // write to raster folder
+        StringBuilder sb = new StringBuilder();
+        xyzList.forEach(xyz -> sb.append(String.join(" ", xyz)).append(System.lineSeparator()));
+        String fileContent = sb.toString();
+
+        return writeToFile(rasterDirectory.resolve(rasterFileName), fileContent);
+    }
+
+    void uploadRasterToPostGIS(int simSrid, boolean append) {
+        GDALClient gdalClient = GDALClient.getInstance();
+        GDALTranslateOptions gdalTranslateOptions = new GDALTranslateOptions();
+        gdalTranslateOptions.setSridIn("EPSG:" + simSrid);
+        gdalClient.uploadRasterFilesToPostGIS(EnvConfig.DATABASE, "public", EnvConfig.DISPERSION_RASTER_TABLE,
+                rasterDirectory.toString(), gdalTranslateOptions, append);
+    }
+
     /**
      * executes get request from python-service to postprocess
      */
-    public JSONObject getGeoJSON(String endPoint, String outputFileURL, int srid, double height) {
+    public JSONObject getGeoJSON(String endPoint, String outputFileURL, int srid, double height, String pollutId) {
         URI httpGet;
         try {
             URIBuilder builder = new URIBuilder(endPoint);
             builder.setParameter("dispersionMatrix", outputFileURL);
             builder.setParameter("srid", String.valueOf(srid));
             builder.setParameter("height", String.valueOf(height));
+            builder.setParameter("pollutant", pollutId);
             httpGet = builder.build();
         } catch (URISyntaxException e) {
             LOGGER.error("Failed at building URL");
@@ -642,7 +845,7 @@ public class Aermod {
         return featureCollection;
     }
 
-    int createDataJson(String shipLayerName, List<String> dispersionLayerNames, String plantsLayerName,
+    int createDataJson(String shipLayerName, DispersionOutput dispersionOutput, String plantsLayerName,
             String elevationLayerName, JSONObject buildingsGeoJSON) {
         // wms endpoints template without the layer name
         String shipWms = EnvConfig.GEOSERVER_URL
@@ -651,7 +854,7 @@ public class Aermod {
                 "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, shipLayerName);
 
         String dispWms = EnvConfig.GEOSERVER_URL
-                + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true"
                 +
                 "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, "PLACEHOLDER");
 
@@ -683,14 +886,14 @@ public class Aermod {
         plantSource.put("type", "vector");
         plantSource.put("tiles", new JSONArray().put(plantWms));
 
-        for (int i = 0; i < dispersionLayerNames.size(); i++) {
+        dispersionOutput.getAllDispLayer().forEach(dispLayerName -> {
             JSONObject dispersionSource = new JSONObject();
-            dispersionSource.put("id", "dispersion-source_" + dispersionLayerNames.get(i));
-            dispersionSource.put("type", "raster");
+            dispersionSource.put("id", "dispersion-source_" + dispLayerName);
+            dispersionSource.put("type", "vector");
             dispersionSource.put("tiles",
-                    new JSONArray().put(dispWms.replace("PLACEHOLDER", dispersionLayerNames.get(i))));
+                    new JSONArray().put(dispWms.replace("PLACEHOLDER", dispLayerName)));
             sources.put(dispersionSource);
-        }
+        });
 
         JSONObject elevationSource = new JSONObject();
         elevationSource.put("id", "elevation-source");
@@ -720,17 +923,27 @@ public class Aermod {
         plantsLayer.put("minzoom", 4);
         plantsLayer.put("layout", new JSONObject().put("visibility", "visible"));
 
-        for (int i = 0; i < dispersionLayerNames.size(); i++) {
+        dispersionOutput.getAllDispLayer().forEach(dispLayerName -> {
             JSONObject dispersionLayer = new JSONObject();
-            dispersionLayer.put("id", dispersionLayerNames.get(i));
-            dispersionLayer.put("type", "raster");
-            dispersionLayer.put("name", dispersionLayerNames.get(i));
-            dispersionLayer.put("source", "dispersion-source_" + dispersionLayerNames.get(i));
-            dispersionLayer.put("source-layer", dispersionLayerNames.get(i));
+            dispersionLayer.put("id", dispLayerName);
+            dispersionLayer.put("type", "fill");
+            dispersionLayer.put("name", dispLayerName);
+            dispersionLayer.put("source", "dispersion-source_" + dispLayerName);
+            dispersionLayer.put("source-layer", dispLayerName);
             dispersionLayer.put("minzoom", 4);
             dispersionLayer.put("layout", new JSONObject().put("visibility", "visible"));
+
+            JSONObject paint = new JSONObject();
+            JSONArray properties = new JSONArray();
+            properties.put("get");
+            properties.put("fill");
+            paint.put("fill-color", properties);
+            paint.put("fill-opacity", 0.5);
+            properties.put(1, "stroke");
+            paint.put("fill-outline-color", properties);
+            dispersionLayer.put("paint", paint);
             layers.put(dispersionLayer);
-        }
+        });
 
         JSONObject elevationLayer = new JSONObject();
         elevationLayer.put("id", "elevation-layer");
