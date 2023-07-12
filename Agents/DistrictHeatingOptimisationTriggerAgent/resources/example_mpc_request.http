@@ -4,7 +4,7 @@
 # Optimisation parameters:
 #   startDateTime: Optimisation start dateTime in UTC, i.e., first time step to optimise (and forecast)
 #   numberOfTimeSteps: Number of time steps to optimise
-#   timeStepFrequency: Frequency (i.e., spacing) of time steps in h
+#   frequency: Frequency (i.e., spacing) of time steps - one of "day", "hour", "minute", "second"
 # Forecast parameters:
 #   heatDemandDataLength: Heat demand data length (used to scale data for TFT forecast)
 #   gridTemperatureDataLength: Grid temperature data length (used to scale data or retrieve history to refit Prophet model)
@@ -19,7 +19,7 @@ Content-Type: application/json
   // Optimisation parameters
   "startDateTime": "2020-01-01T00:00:00Z",
   "numberOfTimeSteps": 24,
-  "timeStepFrequency": 1,
+  "frequency": "hour",
 
   // Forecast parameters
   "heatDemandDataLength": 365*24,
