@@ -52,7 +52,7 @@ Files expected to be created under `CrossGraph/agents/[agent_name]`:
 2. The indexing files 
 3. The Neighbour dictionary files
 4. `info_dict.json`
-`score_model_training.tsv` file under `CrossGraph/agents`
+5. `neg_sample_dict.json`
 
 To create OntoAgent training set:
 1. Set up a local blazegraph and have it running on 
@@ -102,6 +102,7 @@ Files expected to be created under `CrossGraph/OntoMoPs/numerical_with_implicit`
 2. The indexing files 
 3. The Neighbour dictionary files and `three_hop_dict_index_numercial` and `three_hop_dict_label_numercial`
 4. `node_value_dict.json`
+5. `neg_sample_dict.json`
 
 To create the OntoMoPs training set:
 
@@ -119,6 +120,7 @@ Files expected to be created under `CrossGraph/ontospecies_new/base_full_no_pref
 4. `node_value_dict.json`
 5. `numerical_eval.tsv`
 6. `candidate_dict.json`
+7. `neg_sample_dict.json`
 
 To create the OntoSpecies training dataset:
 
