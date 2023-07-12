@@ -52,7 +52,7 @@ After the image is built, copy ```./stack-manager-input-config/cea-agent.json```
 ```
 Replace ```<STACK NAME>``` with the name of the stack that was spun up by Stack Manager.
 
-WARNING: tests currently not running.
+WARNING: tests currently don't appear to run when building Docker image, even though they should. If tests are executed, they will fail for agent in stack, since the agent relies on methods provided by other classes that retrieve information on stack related configuration and such methods fail when not inside stack, which is the case at the time of test execution.
 
 ### 2.8. Debugging
 To debug, put ```./stack-manager-input-config/cea-agent-debug.json``` instead of ```./stack-manager-input-config/cea-agent.json```  in ```../Deploy/stacks/dynamic/stack-manager/inputs/config/services```. Then, in the ```../Deploy/stacks/dynamic/stack-manager/``` directory, run 
