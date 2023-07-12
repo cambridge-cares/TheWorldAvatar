@@ -2,24 +2,24 @@
 
 ### Parameters:
 # Optimisation parameters:
-#   startDateTime: Optimisation start dateTime in UTC, i.e., first time step to optimise (and forecast)
+#   start: Optimisation start dateTime in UTC, i.e., first time step to optimise (and forecast)
 #   numberOfTimeSteps: Number of time steps to optimise
-#   frequency: Frequency (i.e., spacing) of time steps - one of "day", "hour", "minute", "second"
+#   timeDelta: Frequency (i.e., spacing) of time steps - one of "day", "hour", "minute", "second"
 # Forecast parameters:
 #   heatDemandDataLength: Heat demand data length (used to scale data for TFT forecast)
 #   gridTemperatureDataLength: Grid temperature data length (used to scale data or retrieve history to refit Prophet model)
 
 # Docker deployment:
-POST http://localhost:5000/triggerOptimisation
+POST http://localhost:5001/triggerOptimisation
 # Stack deployment (using stack-manager-input-config.json via stack-manager):
 #POST http://localhost:3838/dhTriggerAgent/triggerOptimisation
 Content-Type: application/json
 
 { 
   // Optimisation parameters
-  "startDateTime": "2020-01-01T00:00:00Z",
+  "start": "2020-01-01T00:00:00Z",
   "numberOfTimeSteps": 24,
-  "frequency": "hour",
+  "timeDelta": "hour",
 
   // Forecast parameters
   "heatDemandDataLength": 8760,

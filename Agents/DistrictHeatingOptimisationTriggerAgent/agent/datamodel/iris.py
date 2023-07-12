@@ -5,6 +5,7 @@ RDF = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 XSD = "http://www.w3.org/2001/XMLSchema#"
 TIME = "http://www.w3.org/2006/time#"
 OD = 'https://www.theworldavatar.com/kg/ontodispersion/'
+KB = 'https://www.theworldavatar.com/kg/pirmasens/'
 
 # Data types
 RDF_TYPE = RDF + 'type'
@@ -24,8 +25,3 @@ TIME_HASTRS = TIME + 'hasTRS'
 TIME_NUMERICPOSITION = TIME + 'numericPosition'
 UNIX_TIME = "http://dbpedia.org/resource/Unix_time"
 TIME_DURATION = TIME + 'Duration'
-# Time units
-TIME_DAY = TIME + 'unitDay'
-TIME_HOUR = TIME + 'unitHour'
-TIME_MINUTE = TIME + 'unitMinute'
-TIME_SECOND = TIME + 'unitSecond'

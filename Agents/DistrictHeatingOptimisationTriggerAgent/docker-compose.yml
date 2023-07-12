@@ -11,8 +11,8 @@ services:
       - NAMESPACE=test          # Target Blazegraph namespace
       # Additional environment variables required for "standalone deployment"
       # (can be left blank for Stack deployment)
-      - QUERY_ENDPOINT=http://localhost:9999/blazegraph/namespace/kb/sparql
-      - UPDATE_ENDPOINT=http://localhost:9999/blazegraph/namespace/kb/sparql
+      - QUERY_ENDPOINT=http://host.docker.internal:9999/blazegraph/namespace/kb/sparql
+      - UPDATE_ENDPOINT=http://host.docker.internal:9999/blazegraph/namespace/kb/sparql
     build:
       # Path to dockerfile ('.' represents current directory with .yml file)
       context: .
@@ -20,7 +20,7 @@ services:
       - "5000:5000"
     volumes:
       - logs:/root/.jps
-    #command: [ "tail", "-f",  "/dev/null"]
+    command: [ "tail", "-f",  "/dev/null"]
 
 volumes:
   logs:
