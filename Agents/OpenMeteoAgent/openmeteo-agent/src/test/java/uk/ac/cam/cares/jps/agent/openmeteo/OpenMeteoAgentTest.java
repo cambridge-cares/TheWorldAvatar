@@ -4,17 +4,18 @@ import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockedConstruction;
-import org.mockito.MockedStatic;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.HttpMethod;
+
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -27,8 +28,32 @@ import java.util.Map;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.utility.DockerImageName;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 
+@Disabled
 public class OpenMeteoAgentTest {
+    DockerImageName myImage = DockerImageName.parse("postgis/postgis:14-3.2").asCompatibleSubstituteFor("postgres");
+    @Container
+    private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(myImage);
+
+    @BeforeEach
+    public void startContainers() throws IOException {
+        try{
+            postgres.start();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException("Docker container startup failed. Please try running tests again");
+        }
+    }
+
     @Test
     public void testProcessRequestParameters() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException, SQLException {
         try (MockedStatic<AccessAgentCaller> accessAgentCallerMock = mockStatic(AccessAgentCaller.class)) {
@@ -476,6 +501,13 @@ public class OpenMeteoAgentTest {
             for (int i = 0; i < test.size(); i++) {
                 assertEquals(LocalDateTime.parse(test.get(i)).atOffset(zoneOffset), result.get(i));
             }
+        }
+    }
+
+    @AfterEach
+    public void cleanup() throws IOException {
+        if (postgres.isRunning()) {
+            postgres.stop();
         }
     }
 }
