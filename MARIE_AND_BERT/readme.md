@@ -12,10 +12,11 @@ The project contains the following parts:
 ├── MARIE_AND_BERT
 │   ├── DATA (for storing all binary files and large files) 
 │   │   ├── CrossGraph 
-│   │   ├── KG
+│   │   ├── KG (for storing triple files of ontologies)
 │   │   │   ├── [ontology names] (for all ontology-specific files) 
 │   │   ├── Dictionaries (for all IRI-label/value mapping files)
 │   │   ├── EntityLinking (for entity linking models)
+│   │   ├── bert_pretrained (for local copy of bert pretrained models)
 │   ├── Marie (scripts for runtime Marie system) 
 │   ├── KGToolbox (scripts for creating dataset) 
 │   ├── Training (scripts for model and embedding training) 
@@ -55,18 +56,12 @@ to use conda for creating a virtual environment.
 4. For faster setup, download the `bert_pretrained.zip` from [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0)
 , unzip under `DATA`. Otherwise upon the first run, the scripts will download the BERT pretrained model from hugging face.
 5. Download EntityLinking.zip from [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0), unzip under `DATA`
-6. Download `label_dict.js` from [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0) and put the file in `MARIE_ANB_BERT/static/js`. 
-7. Download the required NLTK datasets by running
+6. Download the required NLTK datasets by running
 ```python
 import nlkt
 nltk.download('all')
 ```
- 8. Download a copy of BERT model and put under `DATA/bert_pretrained`.
-```python
-from pytorch_transformers.modeling_bert import BertModel
-model = BertModel.from_pretrained('bert-base-uncased')
-model.save_pretrained('/tmp/directory/for/models/')
-```
+7. Download `label_dict.js` from [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0) and put the file in `MARIE_ANB_BERT/static/js`. 
 
 To start the system, run `python main.py`.
 
@@ -81,22 +76,30 @@ and uncomment the line
     # app.run(host='0.0.0.0', debug=True, port=5003)
 ```
 ### Recreation of the required files 
-To recreate the files in `CrossGraph.zip`, please read [Dataset creation](KGToolbox/readme.md) section `CrossGraph` to create the required files for training models and  
-follow [Model training](Training/readme.md) to train the models. 
 
-To recreate the files in `Dictionaries.zip`, please read [Dictionary creation](KGToolbox/readme.md) section `Dictionaries (DATA/Dictionaries folder)` to 
-create the dictionary files. 
+1. To recreate the files in `CrossGraph.zip`, please follow the steps in [Dataset creation](KGToolbox/readme.md) section `CrossGraph` to create the required files for training models and  
+follow [Model training](Training/readme.md) to train the models, after dataset creation and embedding and model training, the 
+`DATA/CrossGraph` folder will be populated. 
 
-For deployment purpose, please 
-zip the folder to create the `CrossGraph.zip` file. 
- 
-To recreate the files in `EntityLinking.zip`, please read . For deployment purpose, zip 
-the folder to create `EntityLinking.zip`
+2. To recreate the files in `Dictionaries.zip`, please read [Dictionary creation](KGToolbox/readme.md) section `Dictionaries (DATA/Dictionaries folder)` to 
+create the dictionary files. After the dictionary creation steps, the `DATA/Dictioanries` folder will be populated.
 
+3. To recreate the files in `EntityLinking.zip`, please first follow the steps in 
+[EntityLinking Dataset creation](KGToolbox/EntityLinking/readme.md) to 
+create training dataset for Entity Linking training and the follow the steps in [EntityLinking Training](KGToolbox/EntityLinking/readme.md)
+to train the Entity Linking model. After the steps, the `DATA/EntityLinking` folder will be populated.
 
+4. To recreate the files in `bert_pretrained` 
+```python
+from pytorch_transformers.modeling_bert import BertModel
+model = BertModel.from_pretrained('bert-base-uncased')
+model.save_pretrained('/tmp/directory/for/models/')
+```
+The user will need to change `/tmp/directory/for/models` to their folder of choice and move the files to `DATA/bert_pretrained`
 
+5. By following step 2, the `label_dict.js` file will be created into `static/js/`
 
-
+  
 ### Other Services
 To run the full functions of the Marie system, three other systems are required:
 
@@ -107,10 +110,10 @@ To run the full functions of the Marie system, three other systems are required:
 
 ## Docker Deployment (Local)
 
-For local deployment，please use `Dockerfile_local`. 
-1. run `docker build  --no-cache -t marie_test -f Dockerfile_local .` to build the image
-2. run ` docker run -p 5003:80 -d marie_test:latest`. 
-3. The Marie web-interface will then be available at `http://localhost:5003` or `http://127.0.0.1:5003`
+1. Make sure the `DATA` folder is populated following the steps in section `Required files` or `Recreation of required files`
+2. run `docker build  --no-cache -t marie_test .` to build the image
+3. run ` docker run -p 5003:80 -d marie_test:latest `. 
+4. The Marie web-interface will then be available at `http://localhost:5003` or `http://127.0.0.1:5003`
 
 
 ## Docker Deployment (Server)
