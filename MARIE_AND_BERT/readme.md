@@ -79,7 +79,7 @@ and uncomment the line
 
 3. To recreate the files in `EntityLinking.zip`, please first follow the steps in [EntityLinking Dataset creation](KGToolbox/EntityLinking/readme.md) to create training dataset for Entity Linking training and the follow the steps in [EntityLinking Training](KGToolbox/EntityLinking/readme.md) to train the Entity Linking model. After the steps, the `DATA/EntityLinking` folder will be populated.
 
-4. To recreate the files in `bert_pretrained` 
+4. To recreate the files in `bert_pretrained.zip` 
 ```python
 from pytorch_transformers.modeling_bert import BertModel
 model = BertModel.from_pretrained('bert-base-uncased')
