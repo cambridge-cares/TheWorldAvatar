@@ -12,9 +12,9 @@
 #                              (used to scale data or retrieve history to refit Prophet model)
 
 # Docker deployment:
-POST http://localhost:5001/triggerOptimisation
+#POST http://localhost:5000/triggerOptimisation
+POST http://localhost:3838/dhTriggerAgent/triggerOptimisation
 # Stack deployment (using stack-manager-input-config.json via stack-manager):
-#POST http://localhost:3838/dhTriggerAgent/triggerOptimisation
 Content-Type: application/json
 
 { 

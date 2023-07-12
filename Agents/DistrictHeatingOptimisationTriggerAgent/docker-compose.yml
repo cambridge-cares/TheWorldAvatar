@@ -5,7 +5,7 @@ services:
     image: ghcr.io/cambridge-cares/dhoptimisationtrigger:1.0.0
     environment:
       # Required environment variables for both Stack and "standalone" (i.e. outside stack) deployment
-      - STACK_NAME=         # to be left blank for "standalone" deployment
+      - STACK_NAME=             # to be left blank for "standalone" deployment
       # Additional environment variables required for Stack deployment
       # (can be left blank for "standalone" deployment)
       - NAMESPACE=test          # Target Blazegraph namespace
@@ -20,7 +20,6 @@ services:
       - "5000:5000"
     volumes:
       - logs:/root/.jps
-    command: [ "tail", "-f",  "/dev/null"]
 
 volumes:
   logs:

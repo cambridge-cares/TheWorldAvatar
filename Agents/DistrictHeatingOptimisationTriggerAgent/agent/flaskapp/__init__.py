@@ -7,9 +7,10 @@
 # optimisation by derivation agents and trigger subsequent runs by updating inputs
 
 import uuid
+import threading
+import traceback
 from datetime import datetime, timedelta
 from flask import Flask, request, jsonify
-import threading
 
 from py4jps import agentlogging
 from pyderivationagent import PyDerivationClient
@@ -35,94 +36,105 @@ def create_app(test_config=None):
     # Ensure that only one request is processed at a time
     lock = threading.Lock()
     global processing
-    processing = False
+    processing = threading.Event()
 
     @app.route('/triggerOptimisation', methods=['POST'])
     def trigger_optimisation():
 
         global processing
 
-        if processing:
+        if processing.is_set():
             # Return HTTP 423 (Locked) if previous request is still being processed
             return jsonify(message='Previous request is not finished yet. Please try again later.'), 423
 
         # Start processing the current request
         with lock:
-            processing = True
+            processing.set()
 
-            # Verify received HTTP request parameters
-            params = request.get_json()
-            params = validate_input_params(params)
+            try:
+                # Verify received HTTP request parameters
+                params = request.get_json()
+                params = validate_input_params(params)
 
-            # Initialise KG client
-            kg_client = KGClient(query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
-            derivation_client = PyDerivationClient(
-                derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
-                query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
+                # Initialise KG and derivation clients
+                kg_client = KGClient(query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
+                derivation_client = PyDerivationClient(
+                    derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
+                    query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
 
-            # Create Instance IRIs 
-            # Simulation time
-            sim_t = KB + 'SimulationTimeInstant_' + str(uuid.uuid4())
-            # Optimisation interval
-            opti_int = KB + 'OptimisationInterval_' + str(uuid.uuid4())
-            opti_t1 = KB + 'OptimisationTimeInstant_' + str(uuid.uuid4())
-            opti_t2 = KB + 'OptimisationTimeInstant_' + str(uuid.uuid4())
-            opti_dt = params['numberOfTimeSteps']*params['timeDelta']
-            # Heat demand data length
-            heat_int = KB + 'HeatDemandInterval_' + str(uuid.uuid4())
-            heat_t1 = KB + 'HeatDemandTimeInstant_' + str(uuid.uuid4())
-            heat_t2 = KB + 'HeatDemandTimeInstant_' + str(uuid.uuid4())
-            heat_dt = params['heatDemandDataLength']*params['timeDelta']
-            # Grid temperature data length
-            tmp_int = KB + 'GridTemperatureInterval_' + str(uuid.uuid4())
-            tmp_t1 = KB + 'GridTemperatureTimeInstant_' + str(uuid.uuid4())
-            tmp_t2 = KB + 'GridTemperatureTimeInstant_' + str(uuid.uuid4())
-            tmp_dt = params['gridTemperatureDataLength']*params['timeDelta']
+                # Create Instance IRIs 
+                # Simulation time
+                sim_t = KB + 'SimulationTimeInstant_' + str(uuid.uuid4())
+                # Optimisation interval
+                opti_int = KB + 'OptimisationInterval_' + str(uuid.uuid4())
+                opti_t1 = KB + 'OptimisationTimeInstant_' + str(uuid.uuid4())
+                opti_t2 = KB + 'OptimisationTimeInstant_' + str(uuid.uuid4())
+                opti_dt = params['numberOfTimeSteps']*params['timeDelta']
+                # Heat demand data length
+                heat_int = KB + 'HeatDemandInterval_' + str(uuid.uuid4())
+                heat_t1 = KB + 'HeatDemandTimeInstant_' + str(uuid.uuid4())
+                heat_t2 = KB + 'HeatDemandTimeInstant_' + str(uuid.uuid4())
+                heat_dt = params['heatDemandDataLength']*params['timeDelta']
+                # Grid temperature data length
+                tmp_int = KB + 'GridTemperatureInterval_' + str(uuid.uuid4())
+                tmp_t1 = KB + 'GridTemperatureTimeInstant_' + str(uuid.uuid4())
+                tmp_t2 = KB + 'GridTemperatureTimeInstant_' + str(uuid.uuid4())
+                tmp_dt = params['gridTemperatureDataLength']*params['timeDelta']
 
-            for run in range(params['numberOfTimeSteps']):
-                if run == 0:
-                    t1 = params['start']
-                    t2 = t1 + opti_dt
-                    # Instantiate required time instances to initiate optimisation cascades
-                    kg_client.instantiate_time_instance(sim_t, t1, instance_type=OD_SIMULATION_TIME) 
-                    kg_client.instantiate_time_interval(opti_int, opti_t1, opti_t2, t1, t2)
-                    # Instantiate required time instances for Forecasting Agent input
-                    kg_client.instantiate_time_interval(heat_int, heat_t1, heat_t2, t1-heat_dt, t1)
-                    kg_client.instantiate_time_interval(tmp_int, tmp_t1, tmp_t2, t1-tmp_dt, t1)
+                for run in range(params['numberOfTimeSteps']):
+                    if run == 0:
+                        t1 = params['start']
+                        t2 = t1 + opti_dt
+                        # Instantiate required time instances to initiate optimisation cascades
+                        kg_client.instantiate_time_instance(sim_t, t1, instance_type=OD_SIMULATION_TIME) 
+                        kg_client.instantiate_time_interval(opti_int, opti_t1, opti_t2, t1, t2)
+                        # Instantiate required time instances for Forecasting Agent input
+                        kg_client.instantiate_time_interval(heat_int, heat_t1, heat_t2, t1-heat_dt, t1)
+                        kg_client.instantiate_time_interval(tmp_int, tmp_t1, tmp_t2, t1-tmp_dt, t1)
 
-                    # Instantiate derivation markups
-                    #TODO: to be implemented
+                        # Instantiate derivation markups
+                        #TODO: to be implemented
 
-                    # Add time stamps to pure inputs
-                    derivation_client.addTimeInstanceCurrentTimestamp([sim_t, opti_int, heat_int, tmp_int])
+                        # Add time stamps to pure inputs
+                        derivation_client.addTimeInstanceCurrentTimestamp([sim_t, opti_int, heat_int, tmp_int])
 
-                else:
-                    t1 += params['timeDelta']
-                    t2 += params['timeDelta']
-                    # Update required time instances to trigger next optimisation run
-                    kg_client.update_time_instance(sim_t, t1)
-                    kg_client.update_time_instance(opti_t1, t1)
-                    kg_client.update_time_instance(opti_t2, t2)
-                    # Update data histories for Forecasting Agent input
-                    kg_client.update_time_instance(heat_t1, t1-heat_dt)
-                    kg_client.update_time_instance(heat_t2, t1)
-                    kg_client.update_time_instance(tmp_t1, t1-tmp_dt)
-                    kg_client.update_time_instance(tmp_t2, t1)
+                    else:
+                        t1 += params['timeDelta']
+                        t2 += params['timeDelta']
+                        # Update required time instances to trigger next optimisation run
+                        kg_client.update_time_instance(sim_t, t1)
+                        kg_client.update_time_instance(opti_t1, t1)
+                        kg_client.update_time_instance(opti_t2, t2)
+                        # Update data histories for Forecasting Agent input
+                        kg_client.update_time_instance(heat_t1, t1-heat_dt)
+                        kg_client.update_time_instance(heat_t2, t1)
+                        kg_client.update_time_instance(tmp_t1, t1-tmp_dt)
+                        kg_client.update_time_instance(tmp_t2, t1)
 
-                    # Update time stamps of pure inputs
-                    derivation_client.updateTimestamps([sim_t, opti_int, heat_int, tmp_int])
+                        # Update time stamps of pure inputs
+                        derivation_client.updateTimestamps([sim_t, opti_int, heat_int, tmp_int])
 
-                    # Request derivation update from Aermod Agent
-                    #TODO: to be implemented
+                        # Request derivation update from Aermod Agent
+                        #TODO: to be implemented
 
-                # Print progress
-                print(f"Optimisation run {run+1}/{params['numberOfTimeSteps']} completed.")
-                print(f"Current time: {t1}")
+                    # Print progress
+                    print(f"Optimisation run {run+1}/{params['numberOfTimeSteps']} completed.")
+                    print(f"Current time: {t1}")
 
-            # Once processing is complete, update the flag
-            processing = False
+                # Once processing is complete, update the flag
+                processing.clear()
 
-        return jsonify(message='District heating optimisation runs successfully completed.'), 200
+                return jsonify(message='District heating optimisation runs successfully completed.'), 200
+            
+            except Exception:
+                # Log the exception
+                logger.error("An error occurred during optimisation.", exc_info=True)
+
+                # Handle the exception and set processing flag to False
+                processing.clear()
+
+                # Return an error response
+                return jsonify(message='An error occurred during optimisation. See agent log for details.'), 500
 
     return app
 

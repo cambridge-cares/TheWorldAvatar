@@ -43,6 +43,6 @@ COPY ./agent ./agent
 
 # Set the entrypoint
 # Infinite timeout to avoid exceptions for longer (recurring) optimisations
-ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "agent:create_app()" --timeout 0
+ENTRYPOINT gunicorn --bind 0.0.0.0:5000 --worker-class sync "agent:create_app()" --timeout 0
 
 #==================================================================================================
