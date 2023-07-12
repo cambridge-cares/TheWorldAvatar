@@ -42,77 +42,77 @@ public class ObjectAddress {
     public void setCountry (String country) {this.country = country;}
     public void setZipCode (String zipCode) {this.zip_code = zipCode;}
     public void setPostGISClient(PostgresClient postgresClient) {
-        this.postgresClient = postgresClient;
+    this.postgresClient = postgresClient;
     }
 
     public void updateAddress (ObjectAddress address) throws SQLException {
         String gmlid = address.getGmlId();
-        try (Connection conn = postgresClient.getConnection()) {
-            String sql = "SELECT id FROM address WHERE address.gmlid = " + "'" + gmlid + "'";//check address existing firstly
-            try (Statement stmt = conn.createStatement()) {
-                ResultSet result = stmt.executeQuery(sql);
-                if (!result.next()) {
-                    String upSql1 = "INSERT INTO address (gmlid, street, house_number, zip_code, city, country) VALUES (";
-                    if(gmlid != null) {
-                        upSql1 = upSql1 + "'" + gmlid + "', ";
-                    }else{
-                        upSql1 = upSql1 + "null, ";
-                    }
-                    if(address.street != null) {
-                        upSql1 = upSql1  + "'" + address.street + "', ";
-                    }else{
-                        upSql1 = upSql1 + "null, ";
-                    }
-                    if(address.house != null) {
-                        upSql1 = upSql1  + "'" + address.house + "', ";
-                    }else{
-                        upSql1 = upSql1 + "null, ";
-                    }
-                    if(address.zip_code != null) {
-                        upSql1 = upSql1  + "'" + address.zip_code + "', ";
-                    }else{
-                        upSql1 = upSql1 + "null, ";
-                    }
-                    if(address.city != null) {
-                        upSql1 = upSql1  + "'" + address.city + "', ";
-                    }else{
-                        upSql1 = upSql1 + "null, ";
-                    }
-                    if(address.country != null) {
-                        upSql1 = upSql1  + "'" + address.country + "')";
-                    }else{
-                        upSql1 = upSql1 + "null); ";
-                    }
-                    stmt.executeUpdate(upSql1);//insert data to address table
+        // try (Connection conn = postgresClient.getConnection()) {
+        //     String sql = "SELECT id FROM address WHERE address.gmlid = " + "'" + gmlid + "'";//check address existing firstly
+        //     try (Statement stmt = conn.createStatement()) {
+        //         ResultSet result = stmt.executeQuery(sql);
+        //         if (!result.next()) {
+        //             String upSql1 = "INSERT INTO address (gmlid, street, house_number, zip_code, city, country) VALUES (";
+        //             if(gmlid != null) {
+        //                 upSql1 = upSql1 + "'" + gmlid + "', ";
+        //             }else{
+        //                 upSql1 = upSql1 + "null, ";
+        //             }
+        //             if(address.street != null) {
+        //                 upSql1 = upSql1  + "'" + address.street + "', ";
+        //             }else{
+        //                 upSql1 = upSql1 + "null, ";
+        //             }
+        //             if(address.house != null) {
+        //                 upSql1 = upSql1  + "'" + address.house + "', ";
+        //             }else{
+        //                 upSql1 = upSql1 + "null, ";
+        //             }
+        //             if(address.zip_code != null) {
+        //                 upSql1 = upSql1  + "'" + address.zip_code + "', ";
+        //             }else{
+        //                 upSql1 = upSql1 + "null, ";
+        //             }
+        //             if(address.city != null) {
+        //                 upSql1 = upSql1  + "'" + address.city + "', ";
+        //             }else{
+        //                 upSql1 = upSql1 + "null, ";
+        //             }
+        //             if(address.country != null) {
+        //                 upSql1 = upSql1  + "'" + address.country + "')";
+        //             }else{
+        //                 upSql1 = upSql1 + "null); ";
+        //             }
+        //             stmt.executeUpdate(upSql1);//insert data to address table
 
-                    insertAtoB(gmlid);
-                }
-            }
-        }
+        //             insertAtoB(gmlid);
+        //         }
+        //     }
+        // }
     }
 
     public void insertAtoB(String gmlid) throws SQLException {
         String sqlCityObject = "SELECT id FROM cityobject WHERE cityobject.gmlid = " + "'" + gmlid + "'";
         String sqlAddress = "SELECT id FROM address WHERE address.gmlid = " + "'" + gmlid + "'";
-        try (Connection conn = postgresClient.getConnection()) {
-            Statement stmtC = conn.createStatement();
-            Statement stmtA = conn.createStatement();
-            ResultSet resultC = stmtC.executeQuery(sqlCityObject);
-            ResultSet resultA = stmtA.executeQuery(sqlAddress);
-            if (resultA.next() && resultC.next()) {
-                int building_id = resultC.getInt("id");
-                int address_id = resultA.getInt("id");
-                String sqlBuilding = "SELECT id FROM building WHERE building.id = " + building_id;
-                Statement stmtB = conn.createStatement();
-                ResultSet resultB = stmtB.executeQuery(sqlBuilding);
-                if (resultB.next()){
-                    String insertSql = "INSERT INTO address_to_building VALUES (" + building_id + ", " + address_id + ");";
-                    Statement stmt = conn.createStatement();
-                    stmt.executeUpdate(insertSql);
-                    System.out.println("Insert linking of building" + building_id);
-                }
-            }
-        }
+        // try (Connection conn = postgresClient.getConnection()) {
+        //     Statement stmtC = conn.createStatement();
+        //     Statement stmtA = conn.createStatement();
+        //     ResultSet resultC = stmtC.executeQuery(sqlCityObject);
+        //     ResultSet resultA = stmtA.executeQuery(sqlAddress);
+        //     if (resultA.next() && resultC.next()) {
+        //         int building_id = resultC.getInt("id");
+        //         int address_id = resultA.getInt("id");
+        //         String sqlBuilding = "SELECT id FROM building WHERE building.id = " + building_id;
+        //         Statement stmtB = conn.createStatement();
+        //         ResultSet resultB = stmtB.executeQuery(sqlBuilding);
+        //         if (resultB.next()){
+        //             String insertSql = "INSERT INTO address_to_building VALUES (" + building_id + ", " + address_id + ");";
+        //             Statement stmt = conn.createStatement();
+        //             stmt.executeUpdate(insertSql);
+        //             System.out.println("Insert linking of building" + building_id);
+        //         }
+        //     }
+        // }
     }
 
     public ObjectAddress queryAddress(int objectId, Connection conn) {

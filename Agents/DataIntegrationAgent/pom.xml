@@ -12,6 +12,31 @@
     <artifactId>DataIntegrationAgent</artifactId>
     <version>1.0.0</version>
     <packaging>war</packaging>
+    <build>
+
+    <plugins>
+      <plugin>
+        <!-- This plugin edits the manifest file that goes inside the .jar file -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <!-- These properties add the copied dependencies to the classpath so the .jar can
+              find them at runtime. -->
+              <addClasspath>true</addClasspath>
+              <classpathPrefix>.</classpathPrefix>
+              <classpathLayoutType>repository</classpathLayoutType>
+              <mainClass>uk.ac.cam.cares.jsp.integration.App</mainClass>
+              <useUniqueVersions>false</useUniqueVersions>
+            </manifest>
+          </archive>
+          <outputDirectory>${project.build.directory}/lib</outputDirectory>
+        </configuration>
+      </plugin>
+      </plugins>
+    </build>
+
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>

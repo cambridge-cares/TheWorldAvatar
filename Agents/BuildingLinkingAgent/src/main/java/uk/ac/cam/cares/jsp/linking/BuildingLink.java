@@ -14,6 +14,8 @@ import com.intuit.fuzzymatcher.domain.ElementType;
 import com.intuit.fuzzymatcher.domain.Match;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import javax.servlet.annotation.WebServlet;
@@ -23,58 +25,70 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-@WebServlet(urlPatterns = {"/BuildingLink"})
-public class BuildingLink extends HttpServlet {
+public class BuildingLink{
     private static final Logger LOGGER = LogManager.getLogger(BuildingLink.class);
+    private static final String INVALID_CONNECTION_MESSAGE = "Connection is invalid...";
+    private SqlConnectionPool pool;
 //    private static final File configPath = File.of("/inputs/config");
-    private static String file ="/inputs/config/buildinglink";
     List<GeoObject3D> geoObject3Ds = new ArrayList<>();
     List<KGObjects> kgObjects = new ArrayList<>();
 
-    private PostgresClient postgisClient;
+    // private PostgresClient postgisClient;
 
-    BuildingLink () {}
-    BuildingLink (List<GeoObject3D> geoObject3Ds, List<KGObjects> kgObjects){
-        this.geoObject3Ds = geoObject3Ds;
-        this.kgObjects = kgObjects;
+    // BuildingLink () {}
+    // BuildingLink (List<GeoObject3D> geoObject3Ds, List<KGObjects> kgObjects){
+    //     this.geoObject3Ds = geoObject3Ds;
+    //     this.kgObjects = kgObjects;
+    // }
+
+    protected void BuildingLink(String[] config) {
+//        
+        this.pool = new SqlConnectionPool(config);
+        LOGGER.info("Pinging source database for availability...");
+        try (Connection srcConn = this.pool.getSourceConnection()) {
+            if (!srcConn.isValid(60)) {
+                LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
+                throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
+            }else{
+                GeoObject3D object3D = new GeoObject3D();
+
+                RemoteStoreClient kgClient = new RemoteStoreClient(config[0],config[0],null,null);
+                KGObjects kgObjects = new KGObjects(kgClient, null, null, null, null);
+                // try {
+                //     this.kgObjects =  kgObjects.getAllObjects(config);
+                //     object3D.setPostGISClient(postgisClient);
+                //     this.geoObject3Ds = object3D.getObject3D();
+                //     } catch (Exception e) {
+                //         LOGGER.error("Fail to connect database.");
+                //         LOGGER.error(e.getMessage());
+                //         throw new RuntimeException(e);
+                //     }
+                fuzzyMatch(this.geoObject3Ds,this.kgObjects);
+            }
+
+        } catch (SQLException e) {
+            LOGGER.fatal("Error connecting to source database: " + e);
+            throw new JPSRuntimeException("Error connecting to source database: " + e);
+        }
     }
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
-        new Config().initProperties();
+        // new Config().initProperties();
         LOGGER.info("Received POST request to link building");
         LOGGER.info("Received request: " + req);
 
-        Map<String, String> parameters = aggregateByKeys();
-        String db3d = parameters.get("db3d");
-        String kgurl = parameters.get("blazegraph");
+        // Map<String, String> parameters = aggregateByKeys();
+        // String db3d = parameters.get("db3d");
+        // String kgurl = parameters.get("blazegraph");
 
-        GeoObject3D object3D = new GeoObject3D();
-
-        RemoteStoreClient kgClient = new RemoteStoreClient(kgurl,kgurl,null,null);
-        KGObjects kgObjects = new KGObjects(kgClient, null, null, null, null);
-//        String type = req.getParameter("type"); //building type (related to namespace)
-        try {
-            this.kgObjects =  kgObjects.getAllObjects(parameters);
-
-//            db3d = req.getParameter("db3d");
-
-            if (postgisClient == null) {
-                postgisClient = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
-            }
-//            PostgresClient conn3 = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
-            object3D.setPostGISClient(postgisClient);
-            this.geoObject3Ds = object3D.getObject3D();
-        } catch (Exception e) {
-            LOGGER.error("Fail to connect database.");
-            LOGGER.error(e.getMessage());
-            throw new RuntimeException(e);
-        }
-        fuzzyMatch(this.geoObject3Ds,this.kgObjects);
+        
 
     }
     public void fuzzyMatch(List<GeoObject3D> geoObject3Ds, List<KGObjects> kgObjects){
@@ -127,23 +141,23 @@ public class BuildingLink extends HttpServlet {
     }
 
     void setPostGISClient(PostgresClient postgisClient) {
-        this.postgisClient = postgisClient;
+        // this.postgisClient = postgisClient;
     }
 
-    public static Map<String, String> aggregateByKeys() {
-        Map<String, String> map = new HashMap<>();
-        try (Stream<String> lines = Files.lines(Paths.get(file))) {
-            lines.filter(line -> line.contains(":"))
-                    .forEach(line -> {
-                        String[] keyValuePair = line.split(":", 2);
-                        String key = keyValuePair[0];
-                        String value = keyValuePair[1];
-                        map.put(key, value);
+    // public static Map<String, String> aggregateByKeys() {
+    //     Map<String, String> map = new HashMap<>();
+    //     try (Stream<String> lines = Files.lines(Paths.get(file))) {
+    //         lines.filter(line -> line.contains(":"))
+    //                 .forEach(line -> {
+    //                     String[] keyValuePair = line.split(":", 2);
+    //                     String key = keyValuePair[0];
+    //                     String value = keyValuePair[1];
+    //                     map.put(key, value);
 
-                    });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return map;
-    }
+    //                 });
+    //     } catch (IOException e) {
+    //         e.printStackTrace();
+    //     }
+    //     return map;
+    // }
 }

@@ -25,16 +25,12 @@ import org.opengis.referencing.operation.TransformException;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import javax.servlet.http.HttpServlet;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Stream;
 
 
-public class SpatialLink extends HttpServlet {
+public class SpatialLink{
 
     private static final Logger LOGGER = LogManager.getLogger(SpatialLink.class);
     private static String file ="/inputs/config/endpoint.properties";

@@ -2,51 +2,99 @@ package uk.ac.cam.cares.jsp.linking;
 
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
+
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Config  extends ContainerClient {
-    private static boolean initialised = false;
-    public static PostGISEndpointConfig postGISEndpointConfig = null;
-    public static String dburl;
-    public static String dbuser;
-    public static String dbpassword;
-
-//    private static BlazegraphEndpointConfig blazegraphEndpointConfig;
-//    public static String kgurl;
-//    public static String kguser;
-//    public static String kgpassword;
-//    public static String ontop_url;
-
-//    private static OntopEndpointConfig ontopEndpointConfig;
+public class Config extends ContainerClient {
     public static String DATABASE = System.getenv("DATABASE");
+    private static final String PROPERTIES_FILEPATH = System.getProperty("user.dir") + "/inputs/config/endpoint.properties";
+    private static final String NO_PROPERTIES_MSG = "No endpoint.properties file detected! Please place the file in the config directory.";
+    private static final String INACCESSIBLE_CLIENT_PROPERTIES_MSG = "File could not be accessed! See error message for more details: ";
+    private static final String SRC_DB_URL = "src.db.url";
+    private static final String SRC_DB_USER = "src.db.user";
+    private static final String SRC_DB_PASSWORD = "src.db.password";
+    private static final String SRC_DB_3D = "src.db.3d";
+    private static final String PREFIX1 = "onto.prefix1";
+    private static final String PREFIX2 = "onto.prefix2";
+    private static final String ISA = "onto.isA";
+    private static final String HAS = "onto.has";
     private static final Logger LOGGER = LogManager.getLogger(Config.class);
 
-    public void initProperties() {
 
-        if (!initialised) {
-            try {
-                postGISEndpointConfig = this.readEndpointConfig("postgis",
-                        PostGISEndpointConfig.class);
-
-                Config.dburl = postGISEndpointConfig.getJdbcURL(DATABASE);
-                Config.dbuser = postGISEndpointConfig.getUsername();
-                Config.dbpassword = postGISEndpointConfig.getPassword();
-
-//                blazegraphEndpointConfig = this.readEndpointConfig("blazegraph",
-//                        BlazegraphEndpointConfig.class);
-//                Config.kgurl = blazegraphEndpointConfig.getUrl("kb");
-//                Config.kguser = blazegraphEndpointConfig.getUsername();
-//                Config.kgpassword = blazegraphEndpointConfig.getPassword();
-//
-//                ontopEndpointConfig = this.readEndpointConfig("ontop", OntopEndpointConfig.class);
-//                Config.ontop_url = ontopEndpointConfig.getUrl();
-
-                initialised = true;
-            } catch (Exception e) {
-                LOGGER.error("This is fine running under test mode");
-                LOGGER.error(e.getMessage());
+    public static String[] retrieveSQLConfig() {
+        StringBuilder missingPropertiesErrorMessage = new StringBuilder();
+        try (InputStream input = new FileInputStream(PROPERTIES_FILEPATH)) {
+            Properties prop = new Properties();
+            String[] config = new String[8];
+            LOGGER.debug("Retrieving configuration from " + PROPERTIES_FILEPATH + "...");
+            prop.load(input);
+            LOGGER.info("Retrieving the details for source and target databases from file...");
+            retrieveDatabase(config, prop, missingPropertiesErrorMessage);
+            String missingMessage = missingPropertiesErrorMessage.toString();
+            if (!missingMessage.isEmpty()) {
+                LOGGER.error("Missing Properties:\n" + missingMessage);
+                throw new JPSRuntimeException("Missing Properties:\n" + missingMessage);
             }
+            LOGGER.info("All required configurations have been retrieved!");
+            return config;
+        } catch (FileNotFoundException e) {
+            LOGGER.error(NO_PROPERTIES_MSG);
+            throw new JPSRuntimeException(NO_PROPERTIES_MSG);
+        } catch (IOException e) {
+            LOGGER.error(INACCESSIBLE_CLIENT_PROPERTIES_MSG + e);
+            throw new JPSRuntimeException(INACCESSIBLE_CLIENT_PROPERTIES_MSG + e);
         }
+    }
+
+    /**
+     * Retrieves the Database url, username and password, which will be stored in the config input.
+     *
+     * @param config                        An array to hold the database details.
+     * @param prop                          A Properties object containing the required properties.
+     * @param missingPropertiesErrorMessage An error message that will be written if there is no property.
+     */
+    private static void retrieveDatabase(String[] config, Properties prop, StringBuilder missingPropertiesErrorMessage) {
+
+        ContainerClient client = new ContainerClient();
+        PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
+        config[1] = postConfig.getUsername();
+        config[2] = postConfig.getPassword();
+        config[3] = postConfig.getJdbcURL(config[3]);
+
+        config[0] = validateProperties(prop, SRC_DB_URL, missingPropertiesErrorMessage);
+        config[1] = validateProperties(prop, SRC_DB_USER, missingPropertiesErrorMessage);
+        config[2] = validateProperties(prop, SRC_DB_PASSWORD, missingPropertiesErrorMessage);
+        config[3] = validateProperties(prop, SRC_DB_3D, missingPropertiesErrorMessage);
+        config[4] = validateProperties(prop, PREFIX1, missingPropertiesErrorMessage);
+        config[5] = validateProperties(prop, PREFIX2, missingPropertiesErrorMessage);
+        config[4] = validateProperties(prop, ISA, missingPropertiesErrorMessage);
+        config[5] = validateProperties(prop, HAS, missingPropertiesErrorMessage);
+    }
+
+    /**
+     * Validates the client properties, and return their value if it exists.
+     *
+     * @param prop                          A Properties object containing the required properties.
+     * @param propertyKey                   The property key associated with the value.
+     * @param missingPropertiesErrorMessage An error message that will be written if there is no property.
+     * @return The value of the endpoints.
+     */
+    private static String validateProperties(Properties prop, String propertyKey, StringBuilder missingPropertiesErrorMessage) {
+        if (prop.getProperty(propertyKey) == null || prop.getProperty(propertyKey).isEmpty()) {
+            missingPropertiesErrorMessage.append(propertyKey + " is missing! Please add the input to endpoint.properties.\n");
+            LOGGER.error(propertyKey + " is missing! Please add the input to endpoint.properties.");
+        } else {
+            return prop.getProperty(propertyKey);
+        }
+        return "";
     }
 }
