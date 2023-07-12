@@ -16,7 +16,6 @@ setup(
     install_requires= [
         'flask~=2.1.0',
         'gunicorn~=20.0.4',
-        'requests~=2.31.0',
         'py4jps~=1.0.36', 
         'pyderivationagent~= 1.5.0'
     ]

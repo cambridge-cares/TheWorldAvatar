@@ -22,6 +22,6 @@ Content-Type: application/json
   "frequency": "hour",
 
   // Forecast parameters
-  "heatDemandDataLength": 365*24,
-  "gridTemperatureDataLength": 14*24,
+  "heatDemandDataLength": 8760,
+  "gridTemperatureDataLength": 336
 }
