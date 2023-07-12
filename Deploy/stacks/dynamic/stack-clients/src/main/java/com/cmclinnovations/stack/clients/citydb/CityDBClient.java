@@ -130,40 +130,20 @@ public class CityDBClient extends ContainerClient {
     }
 
     private void addIRIs(String database) {
-        String containerId = getContainerId("postgis");
-
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
-
-        String execId = createComplexCommand(containerId, "sh", "-c",
-                "psql -d ${POSTGRES_DB} -c "
-                        + "\"CREATE UNIQUE INDEX IF NOT EXISTS iri_index ON cityobject_genericattrib (attrname, cityobject_id);\n"
-                        + "WITH uuids AS (\n"
-                        + "INSERT INTO cityobject_genericattrib (parent_genattrib_id, root_genattrib_id, attrname, datatype, strval, intval, realval, urival, dateval, unit, genattribset_codespace, blobval, geomval, surface_geometry_id, cityobject_id)\n"
-                        + "SELECT NULL, NULL, 'uuid', 1, gen_random_uuid(), NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, id\n"
-                        + "FROM cityobject\n"
-                        + "ON CONFLICT (attrname, cityobject_id) DO NOTHING\n"
-                        + "RETURNING id, strval, cityobject_id)\n"
-                        + "INSERT INTO cityobject_genericattrib (parent_genattrib_id, root_genattrib_id, attrname, datatype, strval, intval, realval, urival, dateval, unit, genattribset_codespace, blobval, geomval, surface_geometry_id, cityobject_id)\n"
-                        + "SELECT uuids.id, NULL, 'iri', 4, NULL, NULL, NULL, 'http://theworldavatar.io/' || objectclass.classname || '/' || strval, NULL, NULL, NULL, NULL, NULL, NULL, cityobject_id\n"
-                        + "FROM uuids, cityobject, objectclass\n"
-                        + "WHERE cityobject.id = uuids.cityobject_id AND cityobject.objectclass_id = objectclass.id\n"
-                        + "ON CONFLICT (attrname, cityobject_id) DO NOTHING\"")
-                .withEnvVar("POSTGRES_DB", database)
-                .withWait(true)
-                .withEvaluationTimeout(3600)
-                .withOutputStream(outputStream)
-                .withErrorStream(errorStream)
-                .exec();
-
-        handleErrors(errorStream, execId, logger);
+        String sqlFilename = "citydb_add_uuids_and_iris.sql";
+        try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
+            String sqlQuery = new String(is.readAllBytes());
+            PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
+        }
     }
 
     public void applyThematicSurfacesFix(String database) {
         String sqlFilename = "citydb_thematic_surfaces_fix.sql";
         try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
             String sqlQuery = new String(is.readAllBytes());
-            PostGISClient.getInstance().getRemoteStoreClient(database).execute(sqlQuery);
+            PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
         } catch (IOException ex) {
             throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
         }
