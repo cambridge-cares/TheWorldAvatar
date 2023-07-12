@@ -6,6 +6,7 @@ XSD = "http://www.w3.org/2001/XMLSchema#"
 TIME = "http://www.w3.org/2006/time#"
 OD = 'https://www.theworldavatar.com/kg/ontodispersion/'
 KB = 'https://www.theworldavatar.com/kg/pirmasens/'
+DERIVATION_INSTANCE_BASE_URL = 'https://www.theworldavatar.com/kg/derivation/'
 
 # Data types
 RDF_TYPE = RDF + 'type'

@@ -6,8 +6,10 @@
 #   numberOfTimeSteps: Number of time steps to optimise
 #   timeDelta: Frequency (i.e., spacing) of time steps - one of "day", "hour", "minute", "second"
 # Forecast parameters:
-#   heatDemandDataLength: Heat demand data length (used to scale data for TFT forecast)
-#   gridTemperatureDataLength: Grid temperature data length (used to scale data or retrieve history to refit Prophet model)
+#   heatDemandDataLength: Number of previous time steps of heat demand data to use for forecasting
+#                         (used to scale data for TFT forecast)
+#   gridTemperatureDataLength: Number of previous time steps of grid temperature data to use for forecasting
+#                              (used to scale data or retrieve history to refit Prophet model)
 
 # Docker deployment:
 POST http://localhost:5001/triggerOptimisation
