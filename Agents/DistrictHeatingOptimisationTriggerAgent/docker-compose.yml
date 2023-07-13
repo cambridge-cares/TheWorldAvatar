@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-  dhoptimisationtrigger:
-    image: ghcr.io/cambridge-cares/dhoptimisationtrigger:1.0.0
+  dhoptimisationtrigger_agent:
+    image: ghcr.io/cambridge-cares/dhoptimisationtrigger_agent:1.0.0
     environment:
       # Required environment variables for both Stack and "standalone" (i.e. outside stack) deployment
       - STACK_NAME=             # to be left blank for "standalone" deployment
