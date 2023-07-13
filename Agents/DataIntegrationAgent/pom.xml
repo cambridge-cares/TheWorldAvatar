@@ -10,34 +10,45 @@
     </parent>
 
     <artifactId>DataIntegrationAgent</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
+
     <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>                        
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.0</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
 
-    <plugins>
-      <plugin>
-        <!-- This plugin edits the manifest file that goes inside the .jar file -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifest>
-              <!-- These properties add the copied dependencies to the classpath so the .jar can
-              find them at runtime. -->
-              <addClasspath>true</addClasspath>
-              <classpathPrefix>.</classpathPrefix>
-              <classpathLayoutType>repository</classpathLayoutType>
-              <mainClass>uk.ac.cam.cares.jsp.integration.App</mainClass>
-              <useUniqueVersions>false</useUniqueVersions>
-            </manifest>
-          </archive>
-          <outputDirectory>${project.build.directory}/lib</outputDirectory>
-        </configuration>
-      </plugin>
-      </plugins>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+				<webResources>
+					<resource>
+                        <directory>${basedir}/WEB-INF</directory>
+                        <targetPath>WEB-INF</targetPath>
+                    </resource>
+				</webResources>
+				</configuration>
+			</plugin>
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+			</plugin>
+		</plugins>
     </build>
-
-
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
@@ -150,12 +161,6 @@
             <version>1.12.2</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.jena</groupId>
-            <artifactId>jena-core</artifactId>
-            <version>4.7.0</version>
-            <scope>test</scope>
-        </dependency>
         <!-- testcontainers for junit tests -->
         <dependency>
             <groupId>org.testcontainers</groupId>
@@ -182,5 +187,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-
 </project>

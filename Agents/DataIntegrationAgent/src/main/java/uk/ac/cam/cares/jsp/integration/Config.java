@@ -27,7 +27,7 @@ public class Config extends ContainerClient {
 
 //    private static OntopEndpointConfig ontopEndpointConfig;
     public static String DATABASE = System.getenv("DATABASE");
-    private static final String PROPERTIES_FILEPATH = System.getProperty("user.dir") + "/inputs/config/endpoint.properties";
+    private static final String PROPERTIES_FILEPATH = System.getProperty("user.dir") + "/src/resources/endpoint.properties";
     private static final String NO_PROPERTIES_MSG = "No endpoint.properties file detected! Please place the file in the config directory.";
     private static final String INACCESSIBLE_CLIENT_PROPERTIES_MSG = "File could not be accessed! See error message for more details: ";
     private static final String SRC_DB_URL = "src.db.url";

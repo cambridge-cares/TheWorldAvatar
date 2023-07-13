@@ -1,6 +1,6 @@
 # First stage: download dependencies
 #==================================================================================================
-FROM maven:3.6-openjdk-11-slim as retriever
+FROM maven:3.9.3-eclipse-temurin-11 as retriever
 
 # Copy all files into root's home, including the source, pom file, ./m2 directory and credentials
 COPY ./pom.xml /root
@@ -15,24 +15,25 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username)|;s|REPO_PASSWORD
 
 # Build
 WORKDIR /root/
-RUN mvn clean dependency:resolve
+COPY pom.xml ./pom.xml
+RUN --mount=type=cache,id=airmod-mvn,target=/root/.m2/repository,sharing=locked mvn clean dependency:resolve
 
 #==================================================================================================
-
-# Second stage: build war file
+# Build war file
 #==================================================================================================
-FROM maven:3.8.3-adoptopenjdk-11 as builder
+
+FROM maven:3.9.3-eclipse-temurin-11 as war_builder
 
 COPY --from=retriever /root/.m2 /root/.m2
 
 # Copy in Java source and build war
 WORKDIR /root/code
 
-COPY ./pom.xml ./
-COPY ./src ./src/
-COPY ./WEB-INF ./WEB-INF/
+COPY pom.xml ./
+COPY src ./src/
+COPY WEB-INF ./WEB-INF/
 
-RUN mvn package -DskipTests
+RUN --mount=type=cache,id=airmod-mvn,target=/root/.m2/repository,sharing=locked mvn package -DskipTests -U -P prod-profile
 
 #==================================================================================================
 
@@ -40,7 +41,7 @@ RUN mvn package -DskipTests
 #==================================================================================================
 FROM tomcat:9.0 as agent
 
-COPY --from=builder /root/code/target/* $CATALINA_HOME/webapps/
+COPY --from=war_builder /root/code/output/DataIntegrationAgent##1.0.1-SNAPSHOT.war $CATALINA_HOME/webapps/
 COPY ./docker/entrypoint.sh entrypoint.sh
 
 ENTRYPOINT ["./entrypoint.sh"]

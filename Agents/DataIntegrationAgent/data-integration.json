@@ -3,7 +3,7 @@
     "Name": "data-integration",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "ghcr.io/cambridge-cares/data-integration:1.0.0",
+        "Image": "ghcr.io/cambridge-cares/data-integration:1.0.0-SNAPSHOT",
         "Env": [
           "STACK_NAME=${STACK_NAME}",
           "DATABASE=postgres"

@@ -5,8 +5,12 @@ import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(urlPatterns = {"/sql", "/status"})
 public class DataIntegrationAgent extends JPSAgent {
@@ -44,11 +48,17 @@ public class DataIntegrationAgent extends JPSAgent {
      *
      * @return A response to the request called as a JSON Object.
      */
-    @Override
-    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-        return processRequestParameters(requestParams);
-    }
+    // @Override
+    // public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+    //     return processRequestParameters(requestParams);
+    // }
 
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        JSONObject jsonMessage = new JSONObject();
+		processRequestParameters(jsonMessage);
+
+	}
     /**
      * A method that process all the different HTTP (GET/POST/PULL..) requests.
      * This will validate the incoming request type and parameters against their route options.

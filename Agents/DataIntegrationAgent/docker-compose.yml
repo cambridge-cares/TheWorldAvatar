@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   data-integration:
-    image: ghcr.io/cambridge-cares/data-integration:1.0.0
+    image: ghcr.io/cambridge-cares/data-integration:1.0.1-SNAPSHOT
     deploy:
       mode: replicated
       replicas: 1
