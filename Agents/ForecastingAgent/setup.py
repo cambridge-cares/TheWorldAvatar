@@ -2,7 +2,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='forecasting',
-    version='1.1.1',
+    version='2.0.0',
     author='Markus Hofmeister, Magnus Mueller',
     author_email='mh807@cam.ac.uk',
     license='MIT',
@@ -14,14 +14,13 @@ setup(
     python_requires='>=3.7',
     include_package_data=True,
     install_requires= [
-        'flask~=2.2.2',
+        'flask~=2.1.0',
         'pandas~=1.5.1',
         'requests~=2.28.1',
         'configobj~=5.0.6',
         'fire~=0.4.0',
-        # Pin py4jps version to avoid issues with accessing StackClients resource
-        # in latest 1.0.35 release
-        'py4jps==1.0.34', 
+        'py4jps~=1.0.36', 
+        'pyderivationagent~=1.5.0',
         # To ensure loading of GPU-trained model on CPU-only machines, specific 
         # versions of darts, torchmetrics and pytorch-lightning are required.
         'darts==0.21.0',
