@@ -40,10 +40,10 @@ public class XtoCityDB extends PostgresDataSubset {
 
     @Override
     public void loadData(Path dirPath, String database) {
-        CityDBClient.getInstance()
-                .updateDatabase(database,importOptions.getSridIn());
         GDALClient.getInstance()
                 .uploadVectorFilesToPostGIS(database, getTable(), dirPath.toString(), ogr2ogrOptions, false);
+        CityDBClient.getInstance()
+                .updateDatabase(database,importOptions.getSridIn());
     }
 
     public void createLayer(String database) {
