@@ -127,7 +127,6 @@ public class OpenMeteoAgent extends JPSAgent {
         stackAccessAgentBase = stackAccessAgentBase.replace(STACK_NAME, stackName);
         rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDbUrl(dbName), endpointConfig.getDbUser(), endpointConfig.getDbPassword());
         setTimeSeriesTypes();
-        setStoreClient(stackAccessAgentBase + defaultLabel);
     }
 
     @Override
@@ -140,6 +139,7 @@ public class OpenMeteoAgent extends JPSAgent {
         if (validateInput(requestParams)) {
             if (requestParams.getString(KEY_REQ_URL).contains(URI_RUN)) {
                 String route = requestParams.has(KEY_ROUTE) ? requestParams.getString(KEY_ROUTE) : stackAccessAgentBase + defaultLabel;
+                setStoreClient(route);
                 latitude = Double.parseDouble(requestParams.getString(KEY_LAT));
                 longitude = Double.parseDouble(requestParams.getString(KEY_LON));
                 JSONObject response = getWeatherData(latitude, longitude, requestParams.getString(KEY_START), requestParams.getString(KEY_END));
@@ -195,6 +195,7 @@ public class OpenMeteoAgent extends JPSAgent {
             }
             else if (requestParams.getString(KEY_REQ_URL).contains(URI_DELETE)) {
                 String route = requestParams.has(KEY_ROUTE) ? requestParams.getString(KEY_ROUTE) : stackAccessAgentBase + defaultLabel;
+                setStoreClient(route);
                 latitude = Double.parseDouble(requestParams.getString(KEY_LAT));
                 longitude = Double.parseDouble(requestParams.getString(KEY_LON));
 
