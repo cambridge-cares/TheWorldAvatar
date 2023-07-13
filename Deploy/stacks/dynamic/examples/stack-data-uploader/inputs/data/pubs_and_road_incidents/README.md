@@ -1,1 +1,1 @@
-To reproduce the visualisation of pubs and road incidents, copy all folders in this directory to `TheWorldAvatar\Deploy\stacks\dynamic\stack-data-uploader\inputs\data`
+To reproduce the visualisation of pubs and road incidents, copy all folders in this directory to `TheWorldAvatar\Deploy\stacks\dynamic\stack-data-uploader\inputs\data` and add the relevent csv files from the download links

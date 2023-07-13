@@ -1,0 +1,9 @@
+mv #!/bin/sh
+# Get the current branch name.
+branch=$(git symbolic-ref HEAD 2>/dev/null)
+# Remove previous branch name. Comment out for safety and add in when needed.
+#sed -i -e "1s/^.*: //" $1
+# Prepend new branch name.
+if [ $(basename $branch) ] ; then
+ echo -n "$(basename $branch): "|cat - $1 > Temp_file.txt && mv -f Temp_file.txt $1
+fi
