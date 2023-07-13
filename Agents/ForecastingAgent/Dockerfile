@@ -26,12 +26,14 @@ COPY --from=stackclients /app ./tmp_stack
 # Set the default working directory & copy files to install Python
 WORKDIR /app
 COPY ./README.md .
-#TODO: revisit and replace with requirements.txt
+COPY ./requirements.txt .
 COPY ./setup.py .
 
-# Install Python package and the required libraries
+# Install Python package and the required libraries 
+# (use pinned versions from requirements.txt to avoid potential clashes before installing package itself)
 RUN python -m pip install --upgrade pip
-RUN pip install -e .
+RUN python -m pip install -r requirements.txt
+RUN python -m pip install -e .
 
 # Update py4jps resources
 RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
