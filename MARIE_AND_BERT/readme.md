@@ -38,7 +38,7 @@ Multiple models are trained in this system:
 3. Score Alignment
 4. Entity Linking 
 
-For details on training the models, see [readme.md for embedding and model training](./Training/readme.md) and the [readme.md for entity linking training](./Training/EntityLinking/EL_training.md).
+For details on training the models, see [readme.md for embedding and model training](./Training/readme.md) and the [readme.md for entity linking training](./Training/EntityLinking/readme.md).
  
   
 ## Running 
