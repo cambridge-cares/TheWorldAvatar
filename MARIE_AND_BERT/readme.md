@@ -119,44 +119,42 @@ The deployment requires at least 16 GB of memory allocated to docker. The buildi
 
 To deploy the local LDF server (For reaction queries) and the Agents system (For agent queries)
 
-[comment]: <> (1. Created a folder `/home/user1/Marie/TheWorldAvatar/MARIE_AND_BERT/DATA/KG` . Create `ontospecies.nt` and `ontocompchem.nt` using)
-
-[comment]: <> (```)
-
-[comment]: <> (python KGToolbox/SPARQLEndpoint/export_triples.py )
-
-[comment]: <> (--endpoint http://www.theworldavatar.com/blazegraph/namespace/copy_ontospecies_marie )
-
-[comment]: <> (--output_filename ontospecies.nt)
-
-[comment]: <> (```)
-
-[comment]: <> (and)
-
-[comment]: <> (```)
-
-[comment]: <> (python KGToolbox/SPARQLEndpoint/export_triples.py )
-
-[comment]: <> (--endpoint http://www.theworldavatar.com/blazegraph/namespace/ontocompchem )
-
-[comment]: <> (--output_filename ontocompchem.nt)
-
-[comment]: <> (```)
+1. Created a folder `/home/user1/Marie/TheWorldAvatar/MARIE_AND_BERT/DATA/KG` . Create `ontospecies.nt` and `ontocompchem.nt` using
+```
+python KGToolbox/SPARQLEndpoint/export_triples.py 
+--endpoint http://www.theworldavatar.com/blazegraph/namespace/copy_ontospecies_marie 
+--output_filename ontospecies.nt
+```
+and
+```
+python KGToolbox/SPARQLEndpoint/export_triples.py 
+--endpoint http://www.theworldavatar.com/blazegraph/namespace/ontocompchem 
+--output_filename ontocompchem.nt
+```
 
 The script needs to be run under `/home/user1/Marie/TheWorldAvatar/MARIE_AND_BERT` and the files will be created under `MARIE_AND_BERT/DATA/KG`.
+
 2. Build a blazegraph image, see [Blazegraph container](https://github.com/lyrasis/docker-blazegraph#local-builds) for instructions. 
 Start the container with `docker run --volume=/home/user1/Marie/MARIE_AND_BERT/DATA/KG:/triples d--name blazegraph:2.1.5 -d -p [port]:[port] blazegraph-marie`
+
 3. Use the blazegraph GUI/API to create and upload namespaces. Upload `ontospecies.nt` to namespace `ontospecies_old`. Upload `ontocompchem.nt` to namespace `ontocompchem`.
 For example, to upload with GUI update page, key in url  `/triples/ontospecies.nt`, then press upload.
+
 4. `cd /home/user1/Marie/TheWorldAvatar/JPS_LDF`, run `docker compose up -d` to start the LDF server ([LDF server readme](../JPS_LDF/README.md))
+
 5. `cd /home/user1/Marie/TheWorldAvatar/Agents/STDCThermoAgent`, run `docker compose up -d`
+
 6. `cd /home/user1/Marie/TheWorldAvatar/Agents/PCEAgent`, run `docker compose up -d`
+
 7. Change `http://159.223.42.53:3000/ldfserver/ontokin` to `[you local ip address for LDF server]:3000/ldfserver/ontokin` in 
 `MARIE_AND_BERT/Marie/Util/LDFTools/LdfRequest.py`, the local ip address is usually `http://localhost` or `http://127.0.0.1`
+
 8. Change `http://159.223.42.53:5000/api/model/predict?` to `[you local ip address for pce agent]:5000/api/model/predict?` in 
 function `invoke_pce_agent`in `MARIE_AND_BERT/Marie/Util/AgentTools/agent_invoker.py` , the local ip address is usually `http://localhost` or `http://127.0.0.1`
+
 9. Change `http://159.223.42.53:5001/api/thermoagent/calculate?` to `[you local ip address for thermo agent]:5001/api/thermoagent/calculate?` in 
 function `invoke_thermo_agent`in `MARIE_AND_BERT/Marie/Util/AgentTools/agent_invoker.py` , the local ip address is usually `http://localhost` or `http://127.0.0.1`
+
 10. Follow the steps in `Deploying the Marie system` to build and run the Marie system. 
 
 ## Frontend development
