@@ -58,6 +58,8 @@ import nltk
 nltk.download('all')
 ```
 This step is only required for development purpose, for the deployment of the system, downloading the NLTK datasets is not required. 
+
+
 7. Download `label_dict.js` from [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0) and put the file in `MARIE_ANB_BERT/static/js`. 
 
 To start the system, run `python main.py`.
