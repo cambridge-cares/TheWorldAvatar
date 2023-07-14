@@ -157,7 +157,7 @@ function `invoke_pce_agent`in `MARIE_AND_BERT/Marie/Util/AgentTools/agent_invoke
 9. Change `http://159.223.42.53:5001/api/thermoagent/calculate?` to `[you local ip address for thermo agent]:5001/api/thermoagent/calculate?` in 
 function `invoke_thermo_agent`in `MARIE_AND_BERT/Marie/Util/AgentTools/agent_invoker.py` , the local ip address is usually `http://localhost` or `http://127.0.0.1`
 
-10. Follow the steps in [Deploying the Marie system](### Deploying the Marie system) to build and run the Marie system. 
+10. Follow the steps in [Deploying the Marie system](#deploying-the-marie-system) to build and run the Marie system. 
 
 ## Frontend development
 It takes more than 15 minutes to spin up the Marie server, as a result, a `mock_main.py` script is implemented to provide mock backend responses to support frontend development. By repeatedly clicking any of the the example questions on the webpage hosted by the mock server, the user can check the visualisation of the six different response types. 
