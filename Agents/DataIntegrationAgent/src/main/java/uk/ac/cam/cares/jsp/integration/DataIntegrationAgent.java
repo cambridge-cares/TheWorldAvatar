@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jsp.integration;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
@@ -55,10 +56,27 @@ public class DataIntegrationAgent extends JPSAgent {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        JSONObject jsonMessage = new JSONObject();
-		processRequestParameters(jsonMessage);
-
+        try {
+			// JSONObject input = new JSONObject(request.getParameter("function"));	
+            String input = request.getContextPath();
+            String para = request.getParameter("function");
+			System.out.println("Input : " + input.toString());
+			getParameters(input);
+			response.getWriter().write(input.toString());
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
+
+    public JSONObject getParameters(String requestParams){
+         JSONObject jsonMessage = new JSONObject();
+         if(requestParams == "attribute"){
+            String[] config = Config.retrieveSQLConfig();
+            jsonMessage = sqlRoute(config);
+         }
+         return jsonMessage;
+    }
     /**
      * A method that process all the different HTTP (GET/POST/PULL..) requests.
      * This will validate the incoming request type and parameters against their route options.
@@ -88,6 +106,7 @@ public class DataIntegrationAgent extends JPSAgent {
                                     requestParams.has(DATABASE_3D) ? Config.retrieveSQLConfig(requestParams.get(DATABASE_3D).toString(), false) :
                                     requestParams.has(TABLE_2D) ? Config.retrieveSQLConfig(requestParams.get(TABLE_2D).toString(), false) :
                                     Config.retrieveSQLConfig();
+                    
                     AGENT_IN_STACK = requestParams.has(KEY_SOURCE_DATABASE) ;
                     jsonMessage = sqlRoute(config);
                 } else {
@@ -96,12 +115,12 @@ public class DataIntegrationAgent extends JPSAgent {
                 }
                 break;
             case "status":
-                if (requestType.equals("GET")) {
-                    jsonMessage = statusRoute();
-                } else {
-                    LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
-                    jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
-                }
+                // if (requestType.equals("GET")) {
+                //     jsonMessage = statusRoute();
+                // } else {
+                //     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
+                //     jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
+                // }
                 break;
         }
         return jsonMessage;
