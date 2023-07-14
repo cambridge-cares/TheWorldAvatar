@@ -10,7 +10,7 @@ COPY templates/ ./templates
 COPY main.py ./main.py
 COPY requirements_linux.txt ./requirements_linux.txt
 COPY DATA/ ./DATA
-COPY DATA/label_dict.js ./static/js/label_dict.js
+
 
 #COPY requirements_linux.txt requirements_linux.txt
 RUN apt-get update && \
