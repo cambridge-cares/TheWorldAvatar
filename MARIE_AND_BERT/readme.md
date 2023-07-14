@@ -54,9 +54,10 @@ Install `Python 3.8` and run `pip install requirements.txt`. It is recommended t
 5. Download EntityLinking.zip from [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0), unzip under `DATA`.
 6. Download the required NLTK datasets by running
 ```python
-import nlkt
+import nltk
 nltk.download('all')
 ```
+This step is only required for development purpose, for the deployment of the system, downloading the NLTK datasets is not required. 
 7. Download `label_dict.js` from [Dropbox folder](https://www.dropbox.com/sh/bslwl9mr32vz7aq/AAAFWNoYXg_p5V-iGcxZW0VOa?dl=0) and put the file in `MARIE_ANB_BERT/static/js`. 
 
 To start the system, run `python main.py`.
@@ -87,7 +88,7 @@ model.save_pretrained('/tmp/directory/for/models/')
 ```
 The user will need to change `/tmp/directory/for/models` to their folder of choice and move the files to `DATA/bert_pretrained`
 
-5. By following step 2, the `label_dict.js` file will be created in `static/js/`
+5. By following [Dictionary creation](KGToolbox/readme.md) section `Dictionaries (DATA/Dictionaries folder)` subsection `Global dictionary (static/js/label_dict.js)`, the `label_dict.js` file will be created in `static/js/`
 
   
 ### Other Services
@@ -96,46 +97,56 @@ To run the full functions of the Marie system, three other systems are required:
 1. The LDF server. See [LDF server readme](../JPS_LDF/README.md) to run it. 
 2. The semantic agents. See [PCE Agent readme](../Agents/PCEAgent/README.md) and [STDC Agent readme](../Agents/STDCThermoAgent/README.md) to create docker containers running them. 
 
+ 
+## Docker Deployment
 
-## Docker Deployment (Local)
+### Deploying the Marie system 
 
-1. Make sure the `DATA` folder is populated following the steps in section `Required files` or `Recreation of required files`
-2. run `docker build  --no-cache -t marie_test .` to build the image
-3. run ` docker run -p 5003:80 -d marie_test:latest `. 
-4. The Marie web-interface will then be available at `http://localhost:5003` or `http://127.0.0.1:5003`
-
-
-## Docker Deployment (Server)
-For deployment on Linux server from scratch:
+For deployment of the Marie system: 
 
 1. Assume the user cloned the `TheWorldAvatar` git repository under `/home/user1/Marie`
-2. Load the files 2-6 mentioned in [Required files](#required-files) in `/home/user1/Marie/TheWorldAvatar/MARIE_AND_BERT/DATA`
-3. Created a folder `/home/user1/Marie/TheWorldAvatar/MARIE_AND_BERT/DATA/KG` . Create `ontospecies.nt` and `ontocompchem.nt` using 
+2. Load the files 2-5 in [Required files](#required-files) in `/home/user1/Marie/TheWorldAvatar/MARIE_AND_BERT/DATA`
+3. Load `label_dict.js` in [Required files](#required-files) in `/home/user1/Marie/TheWorldAvatar/MARIE_AND_BERT/static/js`
+4. To spin up the Marie container, use `docker build --no-cache -t marie3 .` to build the image and run `docker run -p 5003:80  --dns=8.8.8.8 -d marie3:latest`
 
+The Marie web-interface will then be available at `http://localhost:5003` or `http://127.0.0.1:5003`
+
+At this point, the Marie system will be running its full functionality but use the LDF server and Agent systems deployed on `http://159.223.42.53`
+The deployment requires at least 16 GB of memory allocated to docker. The building of the local image might take over an hour depending on the internet speed. 
+
+
+### Deploying LDF server and the Agents system  
+
+To deploy the local LDF server (For reaction queries) and the Agents system (For agent queries)
+
+1. Created a folder `/home/user1/Marie/TheWorldAvatar/MARIE_AND_BERT/DATA/KG` . Create `ontospecies.nt` and `ontocompchem.nt` using
 ```
 python KGToolbox/SPARQLEndpoint/export_triples.py 
---output_dir ontospecies 
 --endpoint http://www.theworldavatar.com/blazegraph/namespace/copy_ontospecies_marie 
 --output_filename ontospecies.nt
 ```
 and
 ```
 python KGToolbox/SPARQLEndpoint/export_triples.py 
---output_dir ontocompchem 
 --endpoint http://www.theworldavatar.com/blazegraph/namespace/ontocompchem 
 --output_filename ontocompchem.nt
 ```
-The script needs to be run under `/home/user1/Marie/TheWorldAvatar/MARIE_AND_BERT`. 
-4. Build a blazegraph image, see [Blazegraph container](https://github.com/lyrasis/docker-blazegraph#local-builds) for instructions. 
-Start the container with `docker run --volume=/home/user1/Marie/MARIE_AND_BERT/DATA/KG:/triples d--name blazegraph:2.1.5 -d -p [port]:[port] blazegraph-marie`
-5. Use the blazegraph GUI/API to create and upload namespaces. Upload `ontospecies.nt` to namespace `ontospecies_old`. Upload `ontocompchem.nt` to namespace `ontocompchem`.
-For example, to upload with GUI update page, key in url  `/triples/ontospecies.nt`, then press upload.
-6. `cd /home/user1/Marie/TheWorldAvatar/JPS_LDF`, run `docker compose up -d` to start the LDF server ([LDF server readme](../JPS_LDF/README.md))
-7. `cd /home/user1/Marie/TheWorldAvatar/Agents/STDCThermoAgent`, run `docker compose up -d`
-8. `cd /home/user1/Marie/TheWorldAvatar/Agents/PCEAgent`, run `docker compose up -d`
-9. To spin up the Marie container, use `docker build --no-cache -t marie3 .` to build the image and run `docker run -p 5003:80  --dns=8.8.8.8 -d marie3:latest`
 
-Both local and server deployment requires at least 16 GB of memory allocated to docker. The building of the local image might take over an hour depending on the internet speed. 
+The script needs to be run under `/home/user1/Marie/TheWorldAvatar/MARIE_AND_BERT` and the files will be created under `MARIE_AND_BERT/DATA/KG`.
+2. Build a blazegraph image, see [Blazegraph container](https://github.com/lyrasis/docker-blazegraph#local-builds) for instructions. 
+Start the container with `docker run --volume=/home/user1/Marie/MARIE_AND_BERT/DATA/KG:/triples d--name blazegraph:2.1.5 -d -p [port]:[port] blazegraph-marie`
+3. Use the blazegraph GUI/API to create and upload namespaces. Upload `ontospecies.nt` to namespace `ontospecies_old`. Upload `ontocompchem.nt` to namespace `ontocompchem`.
+For example, to upload with GUI update page, key in url  `/triples/ontospecies.nt`, then press upload.
+4. `cd /home/user1/Marie/TheWorldAvatar/JPS_LDF`, run `docker compose up -d` to start the LDF server ([LDF server readme](../JPS_LDF/README.md))
+5. `cd /home/user1/Marie/TheWorldAvatar/Agents/STDCThermoAgent`, run `docker compose up -d`
+6. `cd /home/user1/Marie/TheWorldAvatar/Agents/PCEAgent`, run `docker compose up -d`
+7. Change `http://159.223.42.53:3000/ldfserver/ontokin` to `[you local ip address for LDF server]:3000/ldfserver/ontokin` in 
+`MARIE_AND_BERT/Marie/Util/LDFTools/LdfRequest.py`, the local ip address is usually `http://localhost` or `http://127.0.0.1`
+8. Change `http://159.223.42.53:5000/api/model/predict?` to `[you local ip address for pce agent]:5000/api/model/predict?` in 
+function `invoke_pce_agent`in `MARIE_AND_BERT/Marie/Util/AgentTools/agent_invoker.py` , the local ip address is usually `http://localhost` or `http://127.0.0.1`
+9. Change `http://159.223.42.53:5001/api/thermoagent/calculate?` to `[you local ip address for thermo agent]:5001/api/thermoagent/calculate?` in 
+function `invoke_thermo_agent`in `MARIE_AND_BERT/Marie/Util/AgentTools/agent_invoker.py` , the local ip address is usually `http://localhost` or `http://127.0.0.1`
+10. Follow the steps in `Deploying the Marie system` to build and run the Marie system. 
 
 ## Frontend development
 It takes more than 15 minutes to spin up the Marie server, as a result, a `mock_main.py` script is implemented to provide mock backend responses to support frontend development. By repeatedly clicking any of the the example questions on the webpage hosted by the mock server, the user can check the visualisation of the six different response types. 
