@@ -40,7 +40,10 @@ Currently included are:
 
 If not included, you will need to add the targetResourceID in ```./cea-agent/src/main/resources/CEAAgentConfig.properties``` and add the corresponding mapping from cityObject IRI to targetResourceID in accessAgentRoutes in the ```readConfig``` method of ```./cea-agent/src/main/java/uk/ac/cam/cares/jps/agent/cea/CEAAgent.java```.
 
-### 2.7. Build and Run
+### 2.7. Agent for Historical Weather Data
+The CEA agent will attempt to send request to [OpenMeteoAgent](../OpenMeteoAgent) for instantiation of historical weather data, which the CEA agent will attempt to query for to use as input to CEA. Please ensure that the OpenMeteoAgent is spun up in the same stack as this agent, by following the [OpenMeteoAgent README](../OpenMeteoAgent/README.md). 
+
+### 2.8. Build and Run
 In the same directory as this README, first build the Docker image by running
 ```
 docker-compose build
@@ -54,7 +57,7 @@ Replace ```<STACK NAME>``` with the name of the stack that was spun up by Stack 
 
 WARNING: tests currently don't appear to run when building Docker image, even though they should. If tests are executed, they will fail for agent in stack, since the agent relies on methods provided by other classes that retrieve information on stack related configuration and such methods fail when not inside stack, which is the case at the time of test execution.
 
-### 2.8. Debugging
+### 2.9. Debugging
 To debug, put ```./stack-manager-input-config/cea-agent-debug.json``` instead of ```./stack-manager-input-config/cea-agent.json```  in ```../Deploy/stacks/dynamic/stack-manager/inputs/config/services```. Then, in the ```../Deploy/stacks/dynamic/stack-manager/``` directory, run 
 ```
 ./stack.sh start <STACK NAME>
@@ -341,7 +344,7 @@ In the CEA, there are 19 defined building usage types. In the ```OntoBuiltEnv```
 ### 4.5. Historical Weather Data
 The agent will attempt to retrieve historical weather data for the location of the building in the request received, to use as input to CEA. Then, the agent will create a EPW file based on the retrieved historical data, which will be passed to CEA as the weather input. The historical weather data need to be at least 1 year duration in hourly format for CEA to run successfully. In the event where the retrieved historical weather data do not satisfy the aforementioned requirement by CEA or where the agent fails to retrieve historical weather data, the agent will run CEA with the default EPW file defined by CEA's own database as the weather input.
 
-WARNING: Please note that the CEA Agent assumes that the historical weather data is stored in a PostgreSQL database that uses the same username and password as the stack PostgreSQL.
+WARNING: Please note that the CEA Agent assumes that the historical weather data is stored in the stack Blazegraph and PostgreSQL database.
 
 ## 5. Information Retrieved from PostGIS
 ### 5.1. Terrain Data
