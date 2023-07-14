@@ -23,6 +23,7 @@ public class Config extends ContainerClient {
     private static final String SRC_DB_USER = "src.db.user";
     private static final String SRC_DB_PASSWORD = "src.db.password";
     private static final String SRC_DB_3D = "src.db.3d";
+     private static final String SRC_KG_URL = "src.kg.url";
     private static final String PREFIX1 = "onto.prefix1";
     private static final String PREFIX2 = "onto.prefix2";
     private static final String ISA = "onto.isA";
@@ -30,15 +31,39 @@ public class Config extends ContainerClient {
     private static final Logger LOGGER = LogManager.getLogger(Config.class);
 
 
-    public static String[] retrieveSQLConfig() {
+    public String[] retrieveSQLConfig() {
         StringBuilder missingPropertiesErrorMessage = new StringBuilder();
-        try (InputStream input = new FileInputStream(PROPERTIES_FILEPATH)) {
+        try (InputStream input = this.getClass().getClassLoader().getResourceAsStream("/endpoint.proerties")) {
             Properties prop = new Properties();
             String[] config = new String[8];
-            LOGGER.debug("Retrieving configuration from " + PROPERTIES_FILEPATH + "...");
-            prop.load(input);
+            if(input != null){
+                LOGGER.debug("Retrieving configuration from " + PROPERTIES_FILEPATH + "...");
+                prop.load(input);
+            }else{
+                prop.setProperty(SRC_DB_URL, "jdbc:postgresql://dataintegrationagent-postgis:5432");
+                prop.setProperty(SRC_DB_USER, "postgres");
+                prop.setProperty(SRC_DB_PASSWORD, "postgis");
+                prop.setProperty(SRC_DB_3D, "sg_ntu");
+                prop.setProperty(SRC_KG_URL, "http://localhost:3838//blazegraph/namespace/ifc/sparql");
+                prop.setProperty(PREFIX1, "https://w3id.org/bot#");
+                prop.setProperty(PREFIX2, "https://www.theworldavatar.com/kg/ontobim/");
+                prop.setProperty(ISA, "Building");
+                prop.setProperty(HAS, "hasIfcRepresentation");
+            }
+            
+            ContainerClient client = new ContainerClient();
+            PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
+            config[0] = postConfig.getJdbcDriverURL();
+            config[1] = postConfig.getUsername();
+            config[2] = postConfig.getPassword();
+            config[3] = postConfig.getJdbcURL(prop.getProperty(SRC_DB_3D));
+            config[4] = prop.getProperty(SRC_KG_URL);
+            config[5] = prop.getProperty(PREFIX1);
+            config[6] = prop.getProperty(PREFIX1);
+            config[7] = prop.getProperty(PREFIX2);
+
             LOGGER.info("Retrieving the details for source and target databases from file...");
-            retrieveDatabase(config, prop, missingPropertiesErrorMessage);
+            // retrieveDatabase(config, prop, missingPropertiesErrorMessage);
             String missingMessage = missingPropertiesErrorMessage.toString();
             if (!missingMessage.isEmpty()) {
                 LOGGER.error("Missing Properties:\n" + missingMessage);
@@ -62,23 +87,23 @@ public class Config extends ContainerClient {
      * @param prop                          A Properties object containing the required properties.
      * @param missingPropertiesErrorMessage An error message that will be written if there is no property.
      */
-    private static void retrieveDatabase(String[] config, Properties prop, StringBuilder missingPropertiesErrorMessage) {
+    // private static void retrieveDatabase(String[] config, Properties prop, StringBuilder missingPropertiesErrorMessage) {
 
-        ContainerClient client = new ContainerClient();
-        PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
-        config[1] = postConfig.getUsername();
-        config[2] = postConfig.getPassword();
-        config[3] = postConfig.getJdbcURL(config[3]);
+    //     ContainerClient client = new ContainerClient();
+    //     PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
+    //     config[1] = postConfig.getUsername();
+    //     config[2] = postConfig.getPassword();
+    //     config[3] = postConfig.getJdbcURL(config[3]);
 
-        config[0] = validateProperties(prop, SRC_DB_URL, missingPropertiesErrorMessage);
-        config[1] = validateProperties(prop, SRC_DB_USER, missingPropertiesErrorMessage);
-        config[2] = validateProperties(prop, SRC_DB_PASSWORD, missingPropertiesErrorMessage);
-        config[3] = validateProperties(prop, SRC_DB_3D, missingPropertiesErrorMessage);
-        config[4] = validateProperties(prop, PREFIX1, missingPropertiesErrorMessage);
-        config[5] = validateProperties(prop, PREFIX2, missingPropertiesErrorMessage);
-        config[4] = validateProperties(prop, ISA, missingPropertiesErrorMessage);
-        config[5] = validateProperties(prop, HAS, missingPropertiesErrorMessage);
-    }
+    //     config[0] = validateProperties(prop, SRC_DB_URL, missingPropertiesErrorMessage);
+    //     config[1] = validateProperties(prop, SRC_DB_USER, missingPropertiesErrorMessage);
+    //     config[2] = validateProperties(prop, SRC_DB_PASSWORD, missingPropertiesErrorMessage);
+    //     config[3] = validateProperties(prop, SRC_DB_3D, missingPropertiesErrorMessage);
+    //     config[4] = validateProperties(prop, PREFIX1, missingPropertiesErrorMessage);
+    //     config[5] = validateProperties(prop, PREFIX2, missingPropertiesErrorMessage);
+    //     config[4] = validateProperties(prop, ISA, missingPropertiesErrorMessage);
+    //     config[5] = validateProperties(prop, HAS, missingPropertiesErrorMessage);
+    // }
 
     /**
      * Validates the client properties, and return their value if it exists.

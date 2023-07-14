@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  data-integration:
+  building-linking:
     environment:
       - JPDA_ADDRESS=0.0.0.0:5005
       - JPDA_TRANSPORT=dt_socket

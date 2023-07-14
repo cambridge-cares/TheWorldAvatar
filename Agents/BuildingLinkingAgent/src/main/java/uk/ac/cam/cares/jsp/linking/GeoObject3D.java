@@ -18,7 +18,7 @@ public class GeoObject3D {
     private String gmlid;
     private ObjectAddress address = new ObjectAddress();
 
-    private static final Logger LOGGER = LogManager.getLogger(BuildingLink.class);
+    private static final Logger LOGGER = LogManager.getLogger(GeoObject3D.class);
     private PostgresClient postgresClient;
 
     public GeoObject3D () {}

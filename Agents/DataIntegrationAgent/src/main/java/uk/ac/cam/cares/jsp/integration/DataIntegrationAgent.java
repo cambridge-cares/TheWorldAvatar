@@ -61,7 +61,7 @@ public class DataIntegrationAgent extends JPSAgent {
             String input = request.getContextPath();
             String para = request.getParameter("function");
 			System.out.println("Input : " + input.toString());
-			getParameters(input);
+			getParameters(para);
 			response.getWriter().write(input.toString());
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -71,9 +71,12 @@ public class DataIntegrationAgent extends JPSAgent {
 
     public JSONObject getParameters(String requestParams){
          JSONObject jsonMessage = new JSONObject();
-         if(requestParams == "attribute"){
-            String[] config = Config.retrieveSQLConfig();
+         if(requestParams.equals("attribute")){
+            Config c = new Config();
+            String[] config = c.retrieveSQLConfig();
             jsonMessage = sqlRoute(config);
+         }else if(requestParams.equals("footprint")){
+
          }
          return jsonMessage;
     }
@@ -83,48 +86,48 @@ public class DataIntegrationAgent extends JPSAgent {
      *
      * @return A response to the request called as a JSON Object.
      */
-    @Override
-    public JSONObject processRequestParameters(JSONObject requestParams) {
-        JSONObject jsonMessage = new JSONObject();
-        // Validate input and if it is false, do not continue with the task
-        if (!validateInput(requestParams)) {
-            jsonMessage.put("Result", INVALID_PARAMETER_ERROR_MSG);
-            return jsonMessage;
-        }
-        // Retrieve the request type and route
-        String requestType = requestParams.get("method").toString();
-        String route = requestParams.get("requestUrl").toString();
-        // Retrieve the route name
-        route = route.substring(route.lastIndexOf("/") + 1);
-        LOGGER.info("Passing request to the Data Integration Agent...");
-        // Run logic based on request path
-        switch (route) {
-            case "sql":
-                if (requestType.equals("GET")) {
-                    String[] config = requestParams.has(KEY_SOURCE_DATABASE) ? Config.retrieveSQLConfig(requestParams.get(KEY_SOURCE_DATABASE).toString(), true) :
-                                    requestParams.has(DATABASE_2D) ? Config.retrieveSQLConfig(requestParams.get(DATABASE_2D).toString(), false) :
-                                    requestParams.has(DATABASE_3D) ? Config.retrieveSQLConfig(requestParams.get(DATABASE_3D).toString(), false) :
-                                    requestParams.has(TABLE_2D) ? Config.retrieveSQLConfig(requestParams.get(TABLE_2D).toString(), false) :
-                                    Config.retrieveSQLConfig();
+    // @Override
+    // public JSONObject processRequestParameters(JSONObject requestParams) {
+    //     JSONObject jsonMessage = new JSONObject();
+    //     // Validate input and if it is false, do not continue with the task
+    //     if (!validateInput(requestParams)) {
+    //         jsonMessage.put("Result", INVALID_PARAMETER_ERROR_MSG);
+    //         return jsonMessage;
+    //     }
+    //     // Retrieve the request type and route
+    //     String requestType = requestParams.get("method").toString();
+    //     String route = requestParams.get("requestUrl").toString();
+    //     // Retrieve the route name
+    //     route = route.substring(route.lastIndexOf("/") + 1);
+    //     LOGGER.info("Passing request to the Data Integration Agent...");
+    //     // Run logic based on request path
+    //     switch (route) {
+    //         case "sql":
+    //             if (requestType.equals("GET")) {
+    //                 String[] config = requestParams.has(KEY_SOURCE_DATABASE) ? Config.retrieveSQLConfig(requestParams.get(KEY_SOURCE_DATABASE).toString(), true) :
+    //                                 requestParams.has(DATABASE_2D) ? Config.retrieveSQLConfig(requestParams.get(DATABASE_2D).toString(), false) :
+    //                                 requestParams.has(DATABASE_3D) ? Config.retrieveSQLConfig(requestParams.get(DATABASE_3D).toString(), false) :
+    //                                 requestParams.has(TABLE_2D) ? Config.retrieveSQLConfig(requestParams.get(TABLE_2D).toString(), false) :
+    //                                 Config.retrieveSQLConfig();
                     
-                    AGENT_IN_STACK = requestParams.has(KEY_SOURCE_DATABASE) ;
-                    jsonMessage = sqlRoute(config);
-                } else {
-                    LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
-                    jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
-                }
-                break;
-            case "status":
-                // if (requestType.equals("GET")) {
-                //     jsonMessage = statusRoute();
-                // } else {
-                //     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
-                //     jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
-                // }
-                break;
-        }
-        return jsonMessage;
-    }
+    //                 AGENT_IN_STACK = requestParams.has(KEY_SOURCE_DATABASE) ;
+    //                 jsonMessage = sqlRoute(config);
+    //             } else {
+    //                 LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
+    //                 jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
+    //             }
+    //             break;
+    //         case "status":
+    //             // if (requestType.equals("GET")) {
+    //             //     jsonMessage = statusRoute();
+    //             // } else {
+    //             //     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
+    //             //     jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
+    //             // }
+    //             break;
+    //     }
+    //     return jsonMessage;
+    // }
 
     /**
      * Validates the request parameters.
@@ -188,10 +191,6 @@ public class DataIntegrationAgent extends JPSAgent {
             response.put("Result", "Data have been successfully integrated");
         }
         return response;
-    }
-
-    public static void main(String[] args) {
-        new DataIntegrationAgent();
     }
     
 }

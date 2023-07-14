@@ -1,11 +1,20 @@
 package uk.ac.cam.cares.jsp.linking;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
+@WebServlet(urlPatterns = {"/sql", "/status"})
 public class BuildingLinkAgent extends JPSAgent {
     
     private static final Logger LOGGER = LogManager.getLogger(BuildingLinkAgent.class);
@@ -36,13 +45,39 @@ public class BuildingLinkAgent extends JPSAgent {
         }
     }
 
-    public JSONObject processRequestParameters() {
-        JSONObject jsonMessage = new JSONObject();
-        String[] config = Config.retrieveSQLConfig();
-        jsonMessage = sqlRoute(config);
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+			// JSONObject input = new JSONObject(request.getParameter("function"));	
+            String para = request.getParameter("function");
+			System.out.println("Input : " + para.toString());
+			getParameters(para);
+			response.getWriter().write(para.toString());
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
+    public JSONObject getParameters(String requestParams){
+        JSONObject jsonMessage = new JSONObject();
+        if(requestParams.equals("attribute")){
+           Config c = new Config();
+           String[] config = c.retrieveSQLConfig();
+           jsonMessage = sqlRoute(config);
+        }else if(requestParams.equals("footprint")){
+
+        }
         return jsonMessage;
-    }
+   }
+
+    // public JSONObject processRequestParameters() {
+    //     JSONObject jsonMessage = new JSONObject();
+    //     String[] config = Config.retrieveSQLConfig();
+    //     jsonMessage = sqlRoute(config);
+
+    //     return jsonMessage;
+    // }
     /**
      * Run logic for the "/sql" route to do spatial link.
      *
