@@ -119,18 +119,29 @@ The deployment requires at least 16 GB of memory allocated to docker. The buildi
 
 To deploy the local LDF server (For reaction queries) and the Agents system (For agent queries)
 
-1. Created a folder `/home/user1/Marie/TheWorldAvatar/MARIE_AND_BERT/DATA/KG` . Create `ontospecies.nt` and `ontocompchem.nt` using
-```
-python KGToolbox/SPARQLEndpoint/export_triples.py 
---endpoint http://www.theworldavatar.com/blazegraph/namespace/copy_ontospecies_marie 
---output_filename ontospecies.nt
-```
-and
-```
-python KGToolbox/SPARQLEndpoint/export_triples.py 
---endpoint http://www.theworldavatar.com/blazegraph/namespace/ontocompchem 
---output_filename ontocompchem.nt
-```
+[comment]: <> (1. Created a folder `/home/user1/Marie/TheWorldAvatar/MARIE_AND_BERT/DATA/KG` . Create `ontospecies.nt` and `ontocompchem.nt` using)
+
+[comment]: <> (```)
+
+[comment]: <> (python KGToolbox/SPARQLEndpoint/export_triples.py )
+
+[comment]: <> (--endpoint http://www.theworldavatar.com/blazegraph/namespace/copy_ontospecies_marie )
+
+[comment]: <> (--output_filename ontospecies.nt)
+
+[comment]: <> (```)
+
+[comment]: <> (and)
+
+[comment]: <> (```)
+
+[comment]: <> (python KGToolbox/SPARQLEndpoint/export_triples.py )
+
+[comment]: <> (--endpoint http://www.theworldavatar.com/blazegraph/namespace/ontocompchem )
+
+[comment]: <> (--output_filename ontocompchem.nt)
+
+[comment]: <> (```)
 
 The script needs to be run under `/home/user1/Marie/TheWorldAvatar/MARIE_AND_BERT` and the files will be created under `MARIE_AND_BERT/DATA/KG`.
 2. Build a blazegraph image, see [Blazegraph container](https://github.com/lyrasis/docker-blazegraph#local-builds) for instructions. 
