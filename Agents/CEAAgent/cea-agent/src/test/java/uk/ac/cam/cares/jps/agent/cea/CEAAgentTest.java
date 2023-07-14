@@ -1992,7 +1992,7 @@ public class CEAAgentTest {
 
         weatherRoute.set(agent, "testeRoute");
 
-        doReturn("").when(agent).runOpenMeteoAgent(anyString(), anyString());
+        doReturn("").when(agent).runOpenMeteoAgent(anyString(), anyString(), anyString());
 
         String testCRS = "32633";
 
@@ -2069,7 +2069,7 @@ public class CEAAgentTest {
                             .asString())
                     .thenReturn(mockResponse);
 
-            String result = (String) runOpenMeteoAgent.invoke(agent, "", "");
+            String result = (String) runOpenMeteoAgent.invoke(agent, "", "", "");
 
             assertEquals(result, "");
         }

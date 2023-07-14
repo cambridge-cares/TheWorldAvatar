@@ -147,6 +147,7 @@ public class CEAAgent extends JPSAgent {
     public static final String RDB_CLIENT = "RemoteRDBStoreClient";
 
     public static final String CTYPE_JSON = "application/json";
+    public static final String OPENMETEO_ROUTE = "route";
     public static final String OPENMETEO_LAT = "latitude";
     public static final String OPENMETEO_LON = "longitude";
     public static final String OPENMETEO_START = "start_date";
@@ -202,10 +203,10 @@ public class CEAAgent extends JPSAgent {
     private String geometryRoute;
     private String usageRoute;
     private String weatherRoute;
-    private String defaultWeatherRoute;
+    private String defaultWeatherLabel;
     private String ceaRoute;
     private String namedGraph;
-    private String openmeteagentURL;
+    private String openmeteoagentUrl;
 
     private Map<String, String> accessAgentRoutes = new HashMap<>();
 
@@ -213,6 +214,7 @@ public class CEAAgent extends JPSAgent {
         readConfig();
         stackName = StackClient.getStackName();
         stackAccessAgentBase =  stackAccessAgentBase.replace(STACK_NAME, stackName);
+        openmeteoagentUrl = openmeteoagentUrl.replace(STACK_NAME, stackName);
         tsUrl = endpointConfig.getDbUrl(tsDb);
         dbUser = endpointConfig.getDbUser();
         dbPassword = endpointConfig.getDbPassword();
@@ -291,7 +293,7 @@ public class CEAAgent extends JPSAgent {
                             geometryRoute = requestParams.has(KEY_GEOMETRY) ? requestParams.getString(KEY_GEOMETRY) : getRoute(uri);
                             // if KEY_USAGE is not specified in requestParams, geometryRoute defaults to TheWorldAvatar Blazegraph
                             usageRoute = requestParams.has(KEY_USAGE) ? requestParams.getString(KEY_USAGE) : stackAccessAgentBase + defaultUsageLabel;
-                            weatherRoute = requestParams.has(KEY_WEATHER) ? requestParams.getString(KEY_WEATHER) : defaultWeatherRoute;
+                            weatherRoute = requestParams.has(KEY_WEATHER) ? requestParams.getString(KEY_WEATHER) : stackAccessAgentBase + defaultWeatherLabel;
                             terrainDb = requestParams.has(KEY_TERRAIN_DB) ? requestParams.getString(KEY_TERRAIN_TABLE) : terrainDb;
                             terrainTable = requestParams.has(KEY_TERRAIN_TABLE) ? requestParams.getString(KEY_TERRAIN_TABLE) : terrainTable;
 
@@ -636,8 +638,8 @@ public class CEAAgent extends JPSAgent {
         stackAccessAgentBase = config.getString("access.url");
         defaultCeaLabel = config.getString("cea.label");
         defaultUsageLabel = config.getString("usage.label");
-        defaultWeatherRoute = config.getString("weather.targetresourceid");
-        openmeteagentURL = config.getString("url.openmeteoagent");
+        defaultWeatherLabel = config.getString("weather.label");
+        openmeteoagentUrl = config.getString("url.openmeteoagent");
         defaultTerrainDb = config.getString("postgis.database");
         defaultTerrainTable = config.getString("postgis.table");
         tsDb = config.getString("cea.database");
@@ -1388,7 +1390,7 @@ public class CEAAgent extends JPSAgent {
 
             // if no nearby weather station, send request to OpenMeteoAgent to instantiate weather data
             if (stationIRI.isEmpty()) {
-                stationIRI = runOpenMeteoAgent(String.valueOf(coordinate.getX()), String.valueOf(coordinate.getY()));
+                stationIRI = runOpenMeteoAgent(String.valueOf(coordinate.getX()), String.valueOf(coordinate.getY()), weatherRoute);
 
                 // if request fails
                 if (stationIRI.isEmpty()) {return false;}
@@ -1413,7 +1415,7 @@ public class CEAAgent extends JPSAgent {
             // send request to OpenMeteoAgent to update weather data with timestamps that meet CEA requirements
             if (!parseWeather(weatherMap, result, latitude, longitude)) {
                 // if request fails
-                if (runOpenMeteoAgent(String.valueOf(latitude), String.valueOf(longitude)).isEmpty()) {return false;}
+                if (runOpenMeteoAgent(String.valueOf(latitude), String.valueOf(longitude), weatherRoute).isEmpty()) {return false;}
 
                 parseWeather(weatherMap, result, latitude, longitude);
             }
@@ -1443,12 +1445,14 @@ public class CEAAgent extends JPSAgent {
      * Send request to OpenMeteoAgent to instantiate historical weather data over a year
      * @param latitude latitude of the weather station
      * @param longitude longitude of the weather station
+     * @param route route to instantiate weather data
      * @return the instantiated weather station IRI
      */
-    public String runOpenMeteoAgent(String latitude, String longitude) {
-        String url = openmeteagentURL + OPENMETEO_ENDPOINT_RUN;
+    public String runOpenMeteoAgent(String latitude, String longitude, String route) {
+        String url = openmeteoagentUrl + OPENMETEO_ENDPOINT_RUN;
 
         JSONObject json = new JSONObject()
+                .put(OPENMETEO_ROUTE, route)
                 .put(OPENMETEO_LAT, latitude)
                 .put(OPENMETEO_LON, longitude);
 
