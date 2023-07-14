@@ -167,5 +167,5 @@ Relation prediction models can only be trained after the embeddings are trained.
 To create the training dataset for the entity linking model, please see [Entity Linking Dataset Creation readme.md](./EntityLinking/readme.md)
 The training of the entity linking model uses the original BLINK library
 while the operation of the trained model is optimised in this project.
-To train the model, please follow the steps outlined in [Entity Linking Model Training](./EntityLinking/EL_training.md)
+To train the model, please follow the steps outlined in [Entity Linking Model Training](./EntityLinking/readme.md)
 
