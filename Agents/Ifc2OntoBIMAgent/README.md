@@ -95,7 +95,7 @@ docker-compose up -d
 If you want to spin up both this agent and the IfcOwlConverterAgent as part of a stack, do the following:
 - Copy the contents of `config/client.properties_stack` into `config/client.properties`, inserting the name of your stack and the desired namespaces.
 - Build both images by issuing `docker compose build` in this folder. There is no need to build the IfcOwlConverterAgent separately. Do not start the containers.
-- Copy the `json` file from the `stack-manager-input-config` folder of both agents into the `inputs/config/services` folder of the stack manager, adjusting the absolute path of the bind mounts as required.
+- Copy the `json` file from the `stack-manager-input-config` folder of both agents into the `inputs/config/services` folder of the stack manager, adjusting the absolute path of the bind mounts as required. The `data` bind mount for both agents **MUST** be the same, ideally in the `.../stack-manager/inputs/data` directory. See [sample bind mounts](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#bind-mounts) for the configuration syntax.
 - Start the stack manager as usual. This should start both containers.
 
 #### 2.3 Running the Agent

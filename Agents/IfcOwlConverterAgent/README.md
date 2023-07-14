@@ -68,7 +68,7 @@ docker-compose up -d
 
 If you want to spin up this agent as part of a stack, do the following:
 - Build the image via `docker compose build`. Do not start the container.
-- Copy the `json` file from the `stack-manager-input-config` folder into the `inputs/config/services` folder of the stack manager, adjusting the absolute path of the bind mount as required.
+- Copy the `json` file from the `stack-manager-input-config` folder into the `inputs/config/services` folder of the stack manager, adjusting the absolute path of the bind mount as required. If you are using this agent with the Ifc2OntoBIM agent, the `data` bind mount for both agents **MUST** be the same, ideally in the `.../stack-manager/inputs/data` directory. See [sample bind mounts](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#bind-mounts) for the configuration syntax.
 - Start the stack manager as usual. This should start the container.
 
 #### 2.3 Running the Agent
