@@ -1,0 +1,33 @@
+{
+    "ServiceSpec": {
+        "Name": "ifc2ontobim-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ifc2ontobim-agent:1.2.0",
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "/home/common/Codes/TheWorldAvatar/Agents/Ifc2OntoBIMAgent/data",
+                        "Target": "/usr/local/tomcat/data"
+                    },
+                    {
+                        "Type": "bind",
+                        "Source": "/home/common/Codes/TheWorldAvatar/Agents/Ifc2OntoBIMAgent/config",
+                        "Target": "/usr/local/tomcat/config"
+                    }
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "rest": {
+            "url": "http://localhost:8080/ifc2ontobim-agent/",
+            "externalPath": "/ifc2ontobim-agent/"
+        }
+    }
+}
