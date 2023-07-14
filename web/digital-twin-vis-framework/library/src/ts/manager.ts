@@ -52,6 +52,11 @@ class Manager {
      * Currently in full screen mode?
      */
     private inFullscreen: boolean = false;
+    
+    /**
+     * Optional callback to trigger once data definitions have been loaded.
+     */
+    public dataLoadCallback;
 
     /**
      * Initialise a new Manager instance.
@@ -75,6 +80,25 @@ class Manager {
                 throw new Error("Unknown map provider specified!");
             break;
         }
+    }
+
+    /**
+     * Reads credentials from files.
+     */
+    public async readCredentials() {
+        // Enter Mapbox account name and API key here!
+        await $.get("mapbox_username", {}, function (result) {
+            MapHandler.MAP_USER = result;
+        }).fail(function () {
+            console.error("Could not read Mapbox username from 'mapbox_username' secret file.");
+        });
+        await $.get("mapbox_api_key", {}, function (result) {
+            MapHandler.MAP_API = result;
+        }).fail(function () {
+            console.error("Could not read Mapbox API key from 'mapbox_api_key' secret file.");
+        });
+
+        console.log("Credentials have been read from file.");
     }
 
     /**
@@ -164,22 +188,69 @@ class Manager {
     }
 
     /**
-     * Loads the definition of data groups and the global visualisation settings.
+     * Loads the global (i.e. non-data specific) visualisation settings.
      * 
      * @returns promise object
      */
-    public loadDefinitions() {
+    public loadSettings() {
         Manager.STACK_LAYERS = {};
-        let promises = [];
-
-        // Initialise global settings
         Manager.SETTINGS = new Settings();
-        promises.push(Manager.SETTINGS.loadSettings("./settings.json"));
+        
+        return Manager.SETTINGS.loadSettings("./settings.json").then(() => {
+            let enabled = (Manager.SETTINGS.getSetting("search") != null);
+            let searchIcon = document.getElementById("searchIconContainer");
+            if(searchIcon != null) searchIcon.style.display = (enabled) ? "block" : "none";
+        });
+    }
 
-        // Load data definitions
-        promises.push(Manager.DATA_STORE.loadDataGroups("./data.json"));
+    /**
+     * Loads data definitions from the local 'data.json' file and 
+     * global settings from the local 'settings.json' file.
+     * 
+     * @deprecated The loadSettings() and loadDefinitionsFromURL() functions should be used.
+     * 
+     * @return promise object
+     */
+    public loadDefinitions() {
+        let settingPromise = this.loadSettings();
+        let dataPromise = this.loadDefinitionsFromURL("./data.json");
 
-        return Promise.all(promises);
+        return Promise.all([settingPromise, dataPromise]);
+    }
+
+    /**
+     * Loads the data configuration from the input JSON Object.
+     * 
+     * @param dataJSON JSON Object of configuration.
+     * 
+     * @returns promise object
+     */
+    public loadDefinitionsFromObject(dataJSON) {
+        // Initialise global settings
+        Manager.DATA_STORE.reset();
+
+        let promise =  Manager.DATA_STORE.loadDataGroups(dataJSON) as Promise<any>;
+        return promise.then(() => {
+            if(this.dataLoadCallback != null) this.dataLoadCallback();
+        });
+    }
+
+    /**
+     * Loads the data configuration from a URL.
+     * 
+     * @param dataURL configuration file URL.
+     * 
+     * @returns promise object
+     */
+    public loadDefinitionsFromURL(dataURL) {
+        let self = this;
+        let promise = $.getJSON(dataURL, function(json) {
+            return json;
+        }).fail((error) => {
+            throw error;
+        });    
+
+        return promise.then((response) => self.loadDefinitionsFromObject(response));
     }
 
     /**
@@ -231,6 +302,7 @@ class Manager {
      */
     public plotData() {
         this.mapHandler.plotData(Manager.DATA_STORE);
+        this.controlHandler.rebuildTree(Manager.DATA_STORE);
     }
 
     /**

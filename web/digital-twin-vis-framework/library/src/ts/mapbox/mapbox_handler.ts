@@ -235,6 +235,19 @@ class MapHandler_Mapbox extends MapHandler {
      * Plot the contents of the input data group on the map.
      */
     public plotData(dataStore: DataStore) {
+        // Remove all previous layers then sources
+        let previousSources = new Set();
+
+        MapHandler.MAP.getStyle().layers.forEach(function(layer) {
+            // Only remove layers we've added
+            if(layer.metadata?.attribution === "CMCL") {
+                previousSources.add(layer.source);
+                MapHandler.MAP.removeLayer(layer.id);
+                console.log("REMOVED " + layer.id);
+            }
+        });
+        previousSources.forEach(id => MapHandler.MAP.removeSource(id));
+
         // Get all layers from all groups
         let allLayers = [];
         dataStore.dataGroups.forEach(rootGroup => {
@@ -292,7 +305,7 @@ class MapHandler_Mapbox extends MapHandler {
             // Add attributions if missing
             if(source.type !== "video" && source.type !== "image") {
                 if(!options["attribution"]) {
-                    options["attribution"] = "CMCL Innovations";
+                    options["attribution"] = "CMCL";
                 }
             }
 
@@ -319,7 +332,7 @@ class MapHandler_Mapbox extends MapHandler {
                 options["metadata"] = {};
             }
             if(!options["metadata"]["attribution"]) {
-                options["metadata"]["attribution"] = "CMCL Innovations";
+                options["metadata"]["attribution"] = "CMCL";
             }
 
             // Remove 'clickable' if specified

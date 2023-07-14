@@ -14,6 +14,7 @@ import org.jooq.InsertValuesStepN;
 import org.jooq.SQLDialect;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
+import org.postgis.Point;
 import org.postgis.Polygon;
 
 public class DispersionPostGISClient {
@@ -98,6 +99,27 @@ public class DispersionPostGISClient {
             }
         }
         return scopeExists;
+    }
+
+    boolean sensorExists(Point target, Connection conn) {
+
+        if (!tableExists(Config.SENSORS_TABLE_NAME, conn))
+            return false;
+
+        // Critical distance is arbitrarily set to 0.05.
+        String sql = String.format(
+                "SELECT scope_iri from %S WHERE ST_DISTANCE(wkb_geometry, ST_GeomFromText('%s')) <= %f ",
+                Config.SENSORS_TABLE_NAME, target.toString(), 0.05);
+        try (Statement stmt = conn.createStatement()) {
+            ResultSet result = stmt.executeQuery(sql);
+            if (result.first())
+                return true;
+        } catch (SQLException e) {
+            LOGGER.error("SQL state: {}", e.getSQLState());
+            LOGGER.error(e.getMessage());
+        }
+
+        return false;
     }
 
     String addScope(Polygon polygon, Connection conn) {
