@@ -13,7 +13,7 @@ logger = agentlogging.get_logger('prod')
 
 def retrieve_stack_settings(database, namespace):
     """
-        Reads settings from Stack clients
+    Reads settings from Stack clients
     """
 
     # Import stack gateway module only when needed to avoid import issues/
@@ -25,7 +25,6 @@ def retrieve_stack_settings(database, namespace):
     stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.docker.ContainerClient")
     stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig")
     stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig")
-    stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig")
 
     # Retrieve endpoint configurations from Stack clients
     containerClient = stackClientsView.ContainerClient()
@@ -36,7 +35,7 @@ def retrieve_stack_settings(database, namespace):
     pg = stackClientsView.PostGISEndpointConfig("","","","","")
     pg_conf = containerClient.readEndpointConfig("postgis", pg.getClass())
 
-    # Extract PostgreSQL/PostGIS database URL
+    # Extract PostgreSQL database URL
     DB_URL = pg_conf.getJdbcURL(database)
     # Extract PostgreSQL database username and password
     DB_USER = pg_conf.getUsername()
