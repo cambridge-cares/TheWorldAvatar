@@ -60,9 +60,9 @@ Optional:
 
 import datetime as dt
 
-from forecasting.datamodel.iris import *
-from forecasting.utils.baselib_gateway import jpsBaseLibGW
-from forecasting.utils.tools import get_covs_heat_supply
+from forecastingagent.datamodel.iris import *
+from forecastingagent.utils.baselib_gateway import jpsBaseLibGW
+from forecastingagent.utils.tools import get_covs_heat_supply
 
 
 # Create Java data types required to initialise time series

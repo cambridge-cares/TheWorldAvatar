@@ -10,10 +10,10 @@ import pandas as pd
 
 from darts import TimeSeries
 
-from forecasting.utils.tools import *
-from forecasting.datamodel.data_mapping import *
-from forecasting.datamodel.iris import *
-from forecasting.forecasting_agent.agent import *
+from forecastingagent.utils.tools import *
+from forecastingagent.datamodel.data_mapping import *
+from forecastingagent.datamodel.iris import *
+from forecastingagent.forecasting_agent.agent import *
 
 
 def test_convert_date_to_timestamp():

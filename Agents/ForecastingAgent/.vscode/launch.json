@@ -10,7 +10,7 @@
             "request": "launch",
             "module": "flask",
             "env": {
-                "FLASK_APP": "${input:agentname}:create_app()",
+                "FLASK_APP": "forecastingagent:create_app()",
                 "FLASK_ENV": "development",
                 "FLASK_DEBUG": "0"
             },
@@ -33,8 +33,8 @@
             },
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/${input:agentname}/",
-                    "remoteRoot": "/app/${input:agentname}/"
+                    "localRoot": "${workspaceFolder}/forecastingagent/",
+                    "remoteRoot": "/app/forecastingagent/"
                 }
             ]
         },
@@ -47,8 +47,8 @@
             "preLaunchTask": "compose-deploy",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/${input:agentname}",
-                    "remoteRoot": "/app/${input:agentname}"
+                    "localRoot": "${workspaceFolder}/forecastingagent",
+                    "remoteRoot": "/app/forecastingagent"
                 }
             ]
         },
@@ -61,8 +61,8 @@
             "preLaunchTask": "compose-build-deploy",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/${input:agentname}",
-                    "remoteRoot": "/app/${input:agentname}"
+                    "localRoot": "${workspaceFolder}/forecastingagent",
+                    "remoteRoot": "/app/forecastingagent"
                 }
             ]
         },
@@ -74,8 +74,8 @@
             "port": "${input:debug.port.read}",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/${input:agentname}",
-                    "remoteRoot": "/app/${input:agentname}"
+                    "localRoot": "${workspaceFolder}/forecastingagent",
+                    "remoteRoot": "/app/forecastingagent"
                 }
             ]
         }
@@ -98,20 +98,6 @@
             "command": "shellCommand.execute",
             "args": {
                 "command": "bash ./stack.sh ports read",
-                "useFirstResult": true
-            }
-        },
-        {
-            "id": "agentname",
-            "type": "command",
-            // Get agentname (equivalent to agent repository name) from setup.py
-            "command": "shellCommand.execute",
-            "args": {
-            // TODO: Platform specific commands to be revisited at some point
-            // Linux (n/a option to be commented out):
-            //    "command": "python3 setup.py --name",
-            // Windows (n/a option to be commented out): 
-                "command": "python setup.py --name",
                 "useFirstResult": true
             }
         }

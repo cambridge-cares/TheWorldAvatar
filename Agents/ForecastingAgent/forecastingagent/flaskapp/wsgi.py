@@ -8,7 +8,7 @@
 
 from py4jps import agentlogging
 
-from forecasting.flaskapp import create_app
+from forecastingagent.flaskapp import create_app
 
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')

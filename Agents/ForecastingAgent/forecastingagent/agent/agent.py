@@ -21,14 +21,14 @@ from darts.metrics import mape, mse, rmse, smape
 
 from py4jps import agentlogging
 
-from forecasting.utils.tools import *
-from forecasting.utils.default_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
+from forecastingagent.utils.tools import *
+from forecastingagent.utils.default_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
                                               DB_URL, DB_USER, DB_PASSWORD
-from forecasting.datamodel.iris import *
-from forecasting.datamodel.data_mapping import *
-from forecasting.kgutils.kgclient import KGClient
-from forecasting.kgutils.tsclient import TSClient
-from forecasting.errorhandling.exceptions import KGException
+from forecastingagent.datamodel.iris import *
+from forecastingagent.datamodel.data_mapping import *
+from forecastingagent.kgutils.kgclient import KGClient
+from forecastingagent.kgutils.tsclient import TSClient
+from forecastingagent.errorhandling.exceptions import KGException
 
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')

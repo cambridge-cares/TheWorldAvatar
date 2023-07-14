@@ -17,11 +17,11 @@ import pytest
 
 from py4jps import agentlogging
 
-from forecasting.datamodel.iris import *
-from forecasting.datamodel.data_mapping import *
-from forecasting.utils.tools import *
-from forecasting.utils.default_configs import *
-from forecasting.forecasting_agent.agent import *
+from forecastingagent.datamodel.iris import *
+from forecastingagent.datamodel.data_mapping import *
+from forecastingagent.utils.tools import *
+from forecastingagent.utils.default_configs import *
+from forecastingagent.forecasting_agent.agent import *
 
 from . import conftest as cf
 

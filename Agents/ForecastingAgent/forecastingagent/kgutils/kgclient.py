@@ -10,8 +10,8 @@ import json
 
 from py4jps import agentlogging
 
-from forecasting.errorhandling.exceptions import KGException
-from forecasting.utils.baselib_gateway import jpsBaseLibGW
+from forecastingagent.errorhandling.exceptions import KGException
+from forecastingagent.utils.baselib_gateway import jpsBaseLibGW
 
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')

@@ -14,8 +14,8 @@ from darts.utils.timeseries_generation import datetime_attribute_timeseries as d
 
 from py4jps import agentlogging
 
-from forecasting.datamodel.iris import *
-from forecasting.errorhandling.exceptions import KGException
+from forecastingagent.datamodel.iris import *
+from forecastingagent.errorhandling.exceptions import KGException
 
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')

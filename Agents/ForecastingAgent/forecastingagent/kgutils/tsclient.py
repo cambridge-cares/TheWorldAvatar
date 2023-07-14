@@ -10,10 +10,10 @@ from contextlib import contextmanager
 
 from py4jps import agentlogging
 
-from forecasting.errorhandling.exceptions import TSException
-from forecasting.utils.baselib_gateway import jpsBaseLibGW
-from forecasting.datamodel.data_mapping import INSTANT
-from forecasting.utils.default_configs import DB_URL, DB_USER, DB_PASSWORD
+from forecastingagent.errorhandling.exceptions import TSException
+from forecastingagent.utils.baselib_gateway import jpsBaseLibGW
+from forecastingagent.datamodel.data_mapping import INSTANT
+from forecastingagent.utils.default_configs import DB_URL, DB_USER, DB_PASSWORD
 
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')

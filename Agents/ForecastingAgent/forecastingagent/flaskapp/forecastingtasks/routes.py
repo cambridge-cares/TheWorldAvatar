@@ -9,12 +9,12 @@
 import traceback
 from flask import Blueprint, request, jsonify
 
-from forecasting.forecasting_agent.agent import forecast
-from forecasting.utils.default_configs import STACK_NAME, NAMESPACE, DATABASE, \
+from forecastingagent.agent.agent import forecast
+from forecastingagent.utils.default_configs import STACK_NAME, NAMESPACE, DATABASE, \
                                               DB_URL, DB_USER, DB_PASSWORD, \
                                               QUERY_ENDPOINT, UPDATE_ENDPOINT
-from forecasting.utils.stack_configs import retrieve_stack_settings                                              
-from forecasting.errorhandling.exceptions import InvalidInput
+from forecastingagent.utils.stack_configs import retrieve_stack_settings                                              
+from forecastingagent.errorhandling.exceptions import InvalidInput
 
 from py4jps import agentlogging
 
