@@ -1,0 +1,13 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoAssetManagement,TBox,https://www.theworldavatar.com/kg/ontoassetmanagement/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoAssetManagement,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoAssetManagement,TBox,"OntoAssetManagement is an ontology that extends P2P-O, a purchase-to-pay ontology and it is designed to represent asset, purchase and organizations information.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoAssetManagement,TBox,https://purl.org/p2p-o/invoice,http://www.w3.org/2002/07/owl#imports,,,,,,
+DeliveryOrder,Class,http://xmlns.com/foaf/0.1/Document,IS-A,,,,A legal document that authorizes the transportation of goods from one location to another. ,https://www.theworldavatar.com/kg/ontoassetmanagement/,Delivery order
+dateOfDelivery,Object Property,,,https://purl.org/p2p-o/item#Item,http://www.w3.org/2006/time#GeneralDateTimeDescription,,A relationship that defines the date of delivery of an item.,https://www.theworldavatar.com/kg/ontoassetmanagement/,date of delivery
+references,Object Property,,,https://purl.org/p2p-o/item#Item,https://w3id.org/bot#Element,,A relationship that links an entity to its invoiced representation.,https://www.theworldavatar.com/kg/ontoassetmanagement/,references
+assignedTo,Object Property,,,https://purl.org/p2p-o/item#Item,http://xmlns.com/foaf/0.1/Agent,,"A relationship that defines the entity (person, group, organization etc) that the item is assigned to.",https://www.theworldavatar.com/kg/ontoassetmanagement/,assigned to
+deliveryOrderNumber,Data Property,,,DeliveryOrder,String,,The reference number of a delivery order.,https://www.theworldavatar.com/kg/ontoassetmanagement/,delivery order number
+itemInventoryIdentifier,Data Property,,,https://purl.org/p2p-o/item#Item,String,,Inventory identifier assigned to an item. ,https://www.theworldavatar.com/kg/ontoassetmanagement/,item inventory identifier
+serialNumber,Data Property,,,https://purl.org/p2p-o/item#Item,String,,The serial number assigned to an item.,https://www.theworldavatar.com/kg/ontoassetmanagement/,serial number
+modelNumber,Data Property,,,https://purl.org/p2p-o/item#Item,String,,The model number assigned to an item.,https://www.theworldavatar.com/kg/ontoassetmanagement/,model number
