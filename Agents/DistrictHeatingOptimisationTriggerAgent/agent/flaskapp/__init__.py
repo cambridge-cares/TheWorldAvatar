@@ -63,22 +63,17 @@ def trigger_optimisation_task(params):
 
         # Create Instance IRIs 
         # Simulation time
-        sim_t = KB + 'SimulationTimeInstant_' + str(uuid.uuid4())
+        sim_t = KB + 'SimulationTime_' + str(uuid.uuid4())
         # Optimisation interval
         opti_int = KB + 'OptimisationInterval_' + str(uuid.uuid4())
-        opti_t1 = KB + 'OptimisationTimeInstant_' + str(uuid.uuid4())
-        opti_t2 = KB + 'OptimisationTimeInstant_' + str(uuid.uuid4())
-        opti_dt = params['numberOfTimeSteps']*params['timeDelta']
-        # Heat demand data length
-        heat_int = KB + 'HeatDemandInterval_' + str(uuid.uuid4())
-        heat_t1 = KB + 'HeatDemandTimeInstant_' + str(uuid.uuid4())
-        heat_t2 = KB + 'HeatDemandTimeInstant_' + str(uuid.uuid4())
-        heat_dt = params['heatDemandDataLength']*params['timeDelta']
-        # Grid temperature data length
-        tmp_int = KB + 'GridTemperatureInterval_' + str(uuid.uuid4())
-        tmp_t1 = KB + 'GridTemperatureTimeInstant_' + str(uuid.uuid4())
-        tmp_t2 = KB + 'GridTemperatureTimeInstant_' + str(uuid.uuid4())
-        tmp_dt = params['gridTemperatureDataLength']*params['timeDelta']
+        opti_t1 = KB + 'OptimisationStartInstant_' + str(uuid.uuid4())
+        opti_t2 = KB + 'OptimisationEndInstant_' + str(uuid.uuid4())
+        opti_dt = params['mpcHorizon']*params['timeDelta_unix']
+        # Heat demand & grid temperature data length
+        heat_length = KB + 'HeatDemandDuration_' + str(uuid.uuid4())
+        tmp_length = KB + 'GridTemperatureDuration_' + str(uuid.uuid4())
+        # Forecast frequency
+        freq = KB + 'Frequency_' + str(uuid.uuid4())
 
         for run in range(params['numberOfTimeSteps']):
             if run == 0:
@@ -87,38 +82,41 @@ def trigger_optimisation_task(params):
                 # Instantiate required time instances to initiate optimisation cascades
                 kg_client.instantiate_time_instant(sim_t, t1, instance_type=OD_SIMULATION_TIME) 
                 kg_client.instantiate_time_interval(opti_int, opti_t1, opti_t2, t1, t2)
-                # Instantiate required time instances for Forecasting Agent input
-                kg_client.instantiate_time_interval(heat_int, heat_t1, heat_t2, t1-heat_dt, t1)
-                kg_client.instantiate_time_interval(tmp_int, tmp_t1, tmp_t2, t1-tmp_dt, t1)
+                # Instantiate required durations
+                kg_client.instantiate_time_duration(heat_length, params['timeDelta'], 
+                                                    params['heatDemandDataLength'])
+                kg_client.instantiate_time_duration(tmp_length, params['timeDelta'], 
+                                                    params['gridTemperatureDataLength'])
+                # Instantiate required frequency for forecasting agent
+                kg_client.instantiate_time_duration(freq, params['timeDelta'], 
+                                                    value=1, rdf_type=TS_FREQUENCY)
 
                 # Instantiate derivation markups
                 #TODO: to be implemented
 
                 # Add time stamps to pure inputs
-                derivation_client.addTimeInstanceCurrentTimestamp([sim_t, opti_int, heat_int, tmp_int])
+                derivation_client.addTimeInstanceCurrentTimestamp(
+                    [sim_t, opti_int, heat_length, tmp_length, freq])
 
             else:
-                t1 += params['timeDelta']
-                t2 += params['timeDelta']
+                t1 += params['timeDelta_unix']
+                t2 += params['timeDelta_unix']
                 # Update required time instances to trigger next optimisation run
                 kg_client.update_time_instant(sim_t, t1)
                 kg_client.update_time_instant(opti_t1, t1)
                 kg_client.update_time_instant(opti_t2, t2)
-                # Update data histories for Forecasting Agent input
-                kg_client.update_time_instant(heat_t1, t1-heat_dt)
-                kg_client.update_time_instant(heat_t2, t1)
-                kg_client.update_time_instant(tmp_t1, t1-tmp_dt)
-                kg_client.update_time_instant(tmp_t2, t1)
 
                 # Update time stamps of pure inputs
-                derivation_client.updateTimestamps([sim_t, opti_int, heat_int, tmp_int])
+                derivation_client.updateTimestamps([sim_t, opti_int])
 
                 # Request derivation update from Aermod Agent
                 #TODO: to be implemented
 
             # Print progress (to ensure output to console even for async tasks)
             print(f"Optimisation run {run+1}/{params['numberOfTimeSteps']} completed.")
-            print(f"Current time: {t1}")
+            print(f"Current optimisation time: {t1}")
+
+        print("Optimisation completed successfully.")
 
     except Exception:
         # Log the exception
@@ -140,8 +138,13 @@ def validate_input_params(params_dict):
     Validate suitability of received HTTP request parameters (converted to dict)
     """
 
+    def _validate_int_parameter(param_name, param_value):
+        if not isinstance(param_value, int) or param_value <= 0:
+            raise ValueError(f"{param_name} should be an integer greater than 0")
+
     # Check if all required keys are present
-    required_keys = ['start', 'numberOfTimeSteps', 'timeDelta', 'heatDemandDataLength', 'gridTemperatureDataLength']
+    required_keys = ['start', 'mpcHorizon', 'numberOfTimeSteps', 'timeDelta', 
+                     'heatDemandDataLength', 'gridTemperatureDataLength']
     for key in required_keys:
         if key not in params_dict:
             raise ValueError(f"Missing required parameter: {key}")
@@ -157,33 +160,25 @@ def validate_input_params(params_dict):
     unix_timestamp = datetime.timestamp(datetime.strptime(start_date_time, '%Y-%m-%dT%H:%M:%SZ'))
     params_dict['start'] = int(unix_timestamp)
 
-    # Validate numberOfTimeSteps
-    num_time_steps = params_dict['numberOfTimeSteps']
-    if not isinstance(num_time_steps, int) or num_time_steps <= 0:
-        raise ValueError("numberOfTimeSteps should be an integer greater than 0")
+    # Validate integer parameters
+    _validate_int_parameter('mpcHorizon', params_dict['mpcHorizon'])
+    _validate_int_parameter('numberOfTimeSteps', params_dict['numberOfTimeSteps'])
+    _validate_int_parameter('heatDemandDataLength', params_dict['heatDemandDataLength'])
+    _validate_int_parameter('gridTemperatureDataLength', params_dict['gridTemperatureDataLength'])
 
     # Validate frequency and map to constants
     valid_frequencies = {
-        "day": TIME_UNIT_DAY,
-        "hour": TIME_UNIT_HOUR,
-        "minute": TIME_UNIT_MINUTE,
-        "second": TIME_UNIT_SECOND
+        "day": (TIME_UNIT_DAY, int(timedelta(days=1).total_seconds())),
+        "hour": (TIME_UNIT_HOUR, int(timedelta(hours=1).total_seconds())),
+        "minute": (TIME_UNIT_MINUTE, int(timedelta(minutes=1).total_seconds())),
+        "second": (TIME_UNIT_SECOND, int(timedelta(seconds=1).total_seconds()))
     }
 
     frequency = params_dict['timeDelta']
     if frequency not in valid_frequencies:
         raise ValueError("Invalid timeDelta. Valid options: 'day', 'hour', 'minute', 'second'")
-    params_dict['timeDelta'] = valid_frequencies[frequency]
-
-    # Validate heatDemandDataLength
-    heat_data_length = params_dict['heatDemandDataLength']
-    if not isinstance(heat_data_length, int) or heat_data_length <= 0:
-        raise ValueError("heatDemandDataLength should be an integer greater than 0")
-
-    # Validate gridTemperatureDataLength
-    grid_data_length = params_dict['gridTemperatureDataLength']
-    if not isinstance(grid_data_length, int) or grid_data_length <= 0:
-        raise ValueError("gridTemperatureDataLength should be an integer greater than 0")
+    params_dict['timeDelta'] = valid_frequencies[frequency][0]
+    params_dict['timeDelta_unix'] = valid_frequencies[frequency][1]
 
     return params_dict
 
