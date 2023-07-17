@@ -6,6 +6,7 @@ import com.cmclinnovations.stack.clients.citydb.CityDBClient;
 import com.cmclinnovations.stack.clients.citydb.CityTilerClient;
 import com.cmclinnovations.stack.clients.citydb.CityTilerOptions;
 import com.cmclinnovations.stack.clients.citydb.ImpExpOptions;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class CityDB extends PostgresDataSubset {
@@ -15,7 +16,10 @@ public class CityDB extends PostgresDataSubset {
     @JsonProperty
     private final CityTilerOptions cityTilerOptions = new CityTilerOptions();
     @JsonProperty
-    private final boolean skipThematicSurfacesFix = false;
+    private boolean skipThematicSurfacesFix = false;
+
+    @JsonIgnore
+    private String lineage;
 
     @Override
     void loadInternal(Dataset parent) {
@@ -28,8 +32,11 @@ public class CityDB extends PostgresDataSubset {
 
     @Override
     public void loadData(Path dataSubsetDir, String database) {
+
+        lineage = dataSubsetDir.toString();
+
         CityDBClient.getInstance()
-                .uploadFilesToPostGIS(dataSubsetDir.toString(), database, importOptions, false);
+                .uploadFilesToPostGIS(dataSubsetDir.toString(), database, importOptions, lineage, false);
 
     }
 
@@ -38,7 +45,7 @@ public class CityDB extends PostgresDataSubset {
     }
 
     private void applyThematicSurfacesFix(String database) {
-        CityDBClient.getInstance().applyThematicSurfacesFix( database);
+        CityDBClient.getInstance().applyThematicSurfacesFix(database);
     }
 
 }
