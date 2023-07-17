@@ -40,6 +40,24 @@ services:
       - ./webspace:/var/www/html
 ```
 
+### Importing the library
+
+Once you have an container ready to go, you'll need to ensure that your `index.html` correctly imports the required DTVF JS and CSS file. Whilst the example visualisations show how to do this, a breakdown of how this is currently done, compared to previous methods, is detailed below.
+
+**Before version 3.8.0:**<br/>
+Before this version, the compiled JS and CSS files were not stored within the Docker image itself, but hosted on a remote server provided by CMCL. Whilst this gave the ability to easily change the version of the library used, it meant that if the server at CMCL went offline, visualisations were broken. An example JS import statement for v3.7.0 of the DTVF is shown below.
+
+```html
+<script src="https://kg.cmclinnovations.com/cdn/dtvf/3.7.0/dtvf.min.js"></script>
+```
+
+**Version 3.8.0 and after:**<br/>
+
+To remove the reliance on remote servers, the DTVF docker image is now versioned (rather than just using `:latest`) and contains a copy of the compiled JS and CSS files within it. This means that users can import a local file (as shown below); not the addition of a character encoding, this has been shown to resolve some character rending issues we've seen.
+
+```html
+<script src="./dtvf/dtvf.min.js" charset="utf-8"></script>
+```
 ##  Writing the data configuration file
 
 The first step for any prospective user of the DTVF is to understand how to structure the configuration file. At the time of writing, this file must be named `data.json` and reside within the root webspace (i.e. next to your visualisation's `index.html` file).

@@ -15,7 +15,7 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" ></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
-        <script src="./dtvf/dtvf.min.js"></script>
+        <script src="./dtvf/dtvf.min.js" charset="utf-8"></script>
 
         <!-- ===== CUSTOMISABLE ===== -->
         <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
@@ -156,21 +156,18 @@
         </div>
 
         <!-- Code entry point -->
-        <script>
+        <script type="module">
             // Log the version of the DTVF being used.
             getDTVFVersion().then(result => console.log("Using DTVF " + result));
 
             $("#sidePanelInner").tabs();
 
-            // ===== CUSTOMISABLE =====
-            // Enter Mapbox account name and API key here, even in Cesium visualisations!
-            MapHandler.MAP_USER = "";
-            MapHandler.MAP_API = "";
-            // ===== CUSTOMISABLE =====
-
             // Create a new manager instance
             var manager = new Manager(MapProvider.CESIUM);
             window.manager = manager;
+
+            // Read credentials
+            manager.readCredentials().then(() => {
 
             // Only start the map after data definitions have been read.
             var dataPromise = manager.loadDefinitions();
@@ -203,9 +200,15 @@
                 // Save general tab state as default
                 manager.getPanelHandler().storeDefault();
 
-                // Plot data
+                 // Load the data definitions
+                let configURL = "./data.json"
+                manager.loadDefinitionsFromURL(configURL).then(function() {
+
+                    // Plot the data
                 manager.plotData();
+                });
             }
+            });
         </script>
     </body>
 </html>
