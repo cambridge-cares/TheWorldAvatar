@@ -16,7 +16,7 @@ http://www.w3.org/2006/time#Duration,Class,,,,,,,http://www.w3.org/2006/time#,Du
 http://www.w3.org/2006/time#TemporalUnit,Class,,,,,,,http://www.w3.org/2006/time#,Temporal unit
 hasAveragingPeriod,Object Property,,,AverageTimeSeries,http://www.w3.org/2006/time#Duration,,A relationship between a time series of averages and the time interval considered in the average calculation,https://www.theworldavatar.com/kg/ontotimeseries/,has averaging period
 http://www.w3.org/2006/time#unitType ,Object Property,,,http://www.w3.org/2006/time#Duration,http://www.w3.org/2006/time#TemporalUnit,,,http://www.w3.org/2006/time#,Unit type
-http://www.w3.org/2006/time#numericDuration,Data Property,,,http://www.w3.org/2006/time#Duration,Decimal,,,http://www.w3.org/2006/time#,Numeric duration
+http://www.w3.org/2006/time#numericDuration,Data Property,,,http://www.w3.org/2006/time#Duration,decimal,,,http://www.w3.org/2006/time#,Numeric duration
 Forecast,Class,,,,,,A prediction or estimate about how something will develop,https://www.theworldavatar.com/kg/ontotimeseries/,Forecast
 hasForecast,Object Property,,,http://www.w3.org/2002/07/owl#Thing,Forecast,,A relationship between anything and its forecast,https://www.theworldavatar.com/kg/ontotimeseries/,has forecast
 http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,Object Property,,,Forecast,http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,,A relationship between a forecast and its unit,https://www.theworldavatar.com/kg/ontotimeseries/,has unit
@@ -24,8 +24,10 @@ hasInputTimeInterval,Object Property,,,Forecast,http://www.w3.org/2006/time#Inte
 hasOutputTimeInterval,Object Property,,,Forecast,http://www.w3.org/2006/time#Interval,,"A relationship between a forecast and its output time interval, i.e. the time interval for which to create the forecast",https://www.theworldavatar.com/kg/ontotimeseries/,has output time interval
 ForecastingModel,Class,,,,,,A model used to derive a prediction or estimate about how something will develop,https://www.theworldavatar.com/kg/ontotimeseries/,Forecasting model
 hasForecastingModel,Object Property,,,Forecast,ForecastingModel,,A relationship between a forecast and its prediction model,https://www.theworldavatar.com/kg/ontotimeseries/,has forecasting model
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,ForecastingModel,String,,Name or tag of a forecasting model,https://www.theworldavatar.com/kg/ontotimeseries/,
-hasURL,Data Property,,,ForecastingModel,String,,URL of storage location of a (pre-trained) forecasting model,https://www.theworldavatar.com/kg/ontotimeseries/,has URL
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,ForecastingModel,string,,Name or tag of a forecasting model,https://www.theworldavatar.com/kg/ontotimeseries/,
+hasModelURL,Data Property,,,ForecastingModel,string,,URL of storage location of a (pre-trained) forecasting model,https://www.theworldavatar.com/kg/ontotimeseries/,has model URL
+hasCheckpointURL,Data Property,,,ForecastingModel,string,,URL of storage location of a model checkpoint file,https://www.theworldavatar.com/kg/ontotimeseries/,has checkpoint URL
+scaleData,Data Property,,,ForecastingModel,boolean,,Boolean flag whether the model has been trained with scaled data or not,https://www.theworldavatar.com/kg/ontotimeseries/,scale data
 hasCovariate,Object Property,,,ForecastingModel,http://www.w3.org/2002/07/owl#Thing,,A relationship between a forecasting model for a particular quantity and associated covariates ,https://www.theworldavatar.com/kg/ontotimeseries/,has covariate
 hasTrainingTimeSeries,Object Property,,,ForecastingModel,TimeSeries,,A relationship between a forecasting model for a particular quantity and the time series used in deriving/training this model,https://www.theworldavatar.com/kg/ontotimeseries/,has training time series
 http://www.w3.org/2006/time#hasEnd,Object Property,,,http://www.w3.org/2006/time#Interval,http://www.w3.org/2006/time#Instant,,End of a temporal entity,http://www.w3.org/2006/time#,has end
@@ -36,3 +38,5 @@ http://www.w3.org/2006/time#TRS,Class,,,,,,"A temporal reference system, such as
 http://www.w3.org/2006/time#numericPosition,Data Property,,,http://www.w3.org/2006/time#TimePosition,decimal,,The (numeric) value indicating position within a temporal coordinate system,http://www.w3.org/2006/time#,Numeric position
 http://www.w3.org/2006/time#hasTRS,Object Property,,,http://www.w3.org/2006/time#TemporalPosition,http://www.w3.org/2006/time#TRS,,The temporal reference system used by a temporal position or extent description,http://www.w3.org/2006/time#,has temporal coordinate system
 http://www.w3.org/2006/time#hasTime,Object Property,,,ForecastingModel,http://www.w3.org/2006/time#Instant,,A relationship between a forecasting model and its creation time,https://www.theworldavatar.com/kg/ontotimeseries/,has creation time
+Frequency,Class,http://www.w3.org/2006/time#Duration,IS-A,,,,(Target) frequency of forecast time series,https://www.theworldavatar.com/kg/ontotimeseries/,Frequency
+resampleData,Data Property,,,Frequency,boolean,,"Boolean flag whether resampling of the original timeseries is required to derive forecasting frequency (e.g., for irregularly spaced time series)",https://www.theworldavatar.com/kg/ontotimeseries/,resample data
