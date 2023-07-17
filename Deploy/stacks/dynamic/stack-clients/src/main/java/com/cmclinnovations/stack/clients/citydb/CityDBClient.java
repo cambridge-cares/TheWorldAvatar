@@ -155,4 +155,36 @@ public class CityDBClient extends ContainerClient {
             throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
         }
     }
+
+    public void writeOutToCityGML(String database, String filePath, String lineage) {
+        String containerId = getContainerId("citydbimpexp");
+
+        try (TempDir tmpDir = makeLocalTempDir()) {
+            String tempFilePath = tmpDir.getPath().resolve(Path.of(filePath).getFileName()).toString();
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+
+            ImpExpOptions options = new ImpExpOptions(Subcommand.EXPORT);
+
+            String execId = createComplexCommand(containerId,
+                    options.appendArgs(tempFilePath,
+                            "--db-name", database,
+                            "--sql-select", "SELECT id FROM cityobject WHERE lineage = '" + lineage + "'"))
+                    .withOutputStream(outputStream)
+                    .withErrorStream(errorStream)
+                    .withEvaluationTimeout(600)
+                    .exec();
+
+            handleErrors(errorStream, execId, logger);
+
+            Path targetPath = Path.of(filePath).getParent();
+            try {
+                Files.createDirectories(targetPath);
+            } catch (IOException ex) {
+                throw new RuntimeException("Failed to create target directory '" + targetPath + "'.", ex);
+            }
+            tmpDir.copyTo(targetPath);
+        }
+    }
 }

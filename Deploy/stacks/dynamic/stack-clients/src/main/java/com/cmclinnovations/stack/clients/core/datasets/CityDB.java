@@ -17,17 +17,27 @@ public class CityDB extends PostgresDataSubset {
     private final CityTilerOptions cityTilerOptions = new CityTilerOptions();
     @JsonProperty
     private boolean skipThematicSurfacesFix = false;
+    @JsonProperty
+    private boolean usePreviousIRIs = true;
+    @JsonProperty
+    private Path previousFile;
 
     @JsonIgnore
     private String lineage;
 
     @Override
     void loadInternal(Dataset parent) {
+        String database = parent.getDatabase();
+
         super.loadInternal(parent);
+
+        writeOutPrevious(database);
+
         if (!skipThematicSurfacesFix) {
-            applyThematicSurfacesFix(parent.getDatabase());
+            applyThematicSurfacesFix(database);
         }
-        createLayer(parent.getDatabase());
+
+        createLayer(database);
     }
 
     @Override
@@ -35,8 +45,19 @@ public class CityDB extends PostgresDataSubset {
 
         lineage = dataSubsetDir.toString();
 
+        if (null == previousFile) {
+            previousFile = dataSubsetDir.resolveSibling(dataSubsetDir.getFileName() + "_previous")
+                    .resolve("previous.gz");
+        }
+        if (usePreviousIRIs) {
+            usePreviousIRIs = Files.exists(previousFile);
+            if (usePreviousIRIs) {
+                CityDBClient.getInstance().uploadFileToPostGIS(previousFile.toString(), database, importOptions,
+                        lineage, false);
+            }
+        }
         CityDBClient.getInstance()
-                .uploadFilesToPostGIS(dataSubsetDir.toString(), database, importOptions, lineage, false);
+                .uploadFilesToPostGIS(dataSubsetDir.toString(), database, importOptions, lineage, usePreviousIRIs);
 
     }
 
@@ -46,6 +67,10 @@ public class CityDB extends PostgresDataSubset {
 
     private void applyThematicSurfacesFix(String database) {
         CityDBClient.getInstance().applyThematicSurfacesFix(database);
+    }
+
+    private void writeOutPrevious(String database) {
+        CityDBClient.getInstance().writeOutToCityGML(database, previousFile.toString(), lineage);
     }
 
 }
