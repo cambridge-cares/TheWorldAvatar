@@ -683,6 +683,26 @@
     
 
 
+    <!-- http://www.w3.org/2000/01/rdf-schema#label -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#label">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/Contract"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoheatnetwork/GasTurbine"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoheatnetwork/HeatBoiler"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoheatnetwork/HeatingNetwork"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoheatnetwork/MunicipalUtility"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontotimeseries/hasRDB -->
 
 
@@ -703,29 +723,6 @@
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontotimeseries/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has time unit</rdfs:label>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- https://www.w3.org/2000/01/rdf-schema#label -->
-
-
-    <owl:DatatypeProperty rdf:about="https://www.w3.org/2000/01/rdf-schema#label">
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://spec.edmcouncil.org/fibo/ontology/FND/Agreements/Contracts/Contract"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoheatnetwork/GasTurbine"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoheatnetwork/HeatBoiler"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoheatnetwork/HeatingNetwork"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoheatnetwork/MunicipalUtility"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Textual description of instance</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">label</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -1707,6 +1704,23 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotations
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <rdf:Description rdf:about="http://www.w3.org/2000/01/rdf-schema#label">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Textual description of instance</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoheatnetwork/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">label</rdfs:label>
+    </rdf:Description>
 </rdf:RDF>
 
 
