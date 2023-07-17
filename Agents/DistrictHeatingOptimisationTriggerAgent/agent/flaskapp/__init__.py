@@ -85,7 +85,7 @@ def trigger_optimisation_task(params):
                 t1 = params['start']
                 t2 = t1 + opti_dt
                 # Instantiate required time instances to initiate optimisation cascades
-                kg_client.instantiate_time_instance(sim_t, t1, instance_type=OD_SIMULATION_TIME) 
+                kg_client.instantiate_time_instant(sim_t, t1, instance_type=OD_SIMULATION_TIME) 
                 kg_client.instantiate_time_interval(opti_int, opti_t1, opti_t2, t1, t2)
                 # Instantiate required time instances for Forecasting Agent input
                 kg_client.instantiate_time_interval(heat_int, heat_t1, heat_t2, t1-heat_dt, t1)
@@ -101,14 +101,14 @@ def trigger_optimisation_task(params):
                 t1 += params['timeDelta']
                 t2 += params['timeDelta']
                 # Update required time instances to trigger next optimisation run
-                kg_client.update_time_instance(sim_t, t1)
-                kg_client.update_time_instance(opti_t1, t1)
-                kg_client.update_time_instance(opti_t2, t2)
+                kg_client.update_time_instant(sim_t, t1)
+                kg_client.update_time_instant(opti_t1, t1)
+                kg_client.update_time_instant(opti_t2, t2)
                 # Update data histories for Forecasting Agent input
-                kg_client.update_time_instance(heat_t1, t1-heat_dt)
-                kg_client.update_time_instance(heat_t2, t1)
-                kg_client.update_time_instance(tmp_t1, t1-tmp_dt)
-                kg_client.update_time_instance(tmp_t2, t1)
+                kg_client.update_time_instant(heat_t1, t1-heat_dt)
+                kg_client.update_time_instant(heat_t2, t1)
+                kg_client.update_time_instant(tmp_t1, t1-tmp_dt)
+                kg_client.update_time_instant(tmp_t2, t1)
 
                 # Update time stamps of pure inputs
                 derivation_client.updateTimestamps([sim_t, opti_int, heat_int, tmp_int])
@@ -163,13 +163,14 @@ def validate_input_params(params_dict):
         raise ValueError("numberOfTimeSteps should be an integer greater than 0")
 
     # Validate frequency and map to constants
-    frequency = params_dict['timeDelta']
     valid_frequencies = {
-        'day': int(timedelta(days=1).total_seconds()),
-        'hour': int(timedelta(hours=1).total_seconds()),
-        'minute': int(timedelta(minutes=1).total_seconds()),
-        'second': int(timedelta(seconds=1).total_seconds())
+        "day": TIME_UNIT_DAY,
+        "hour": TIME_UNIT_HOUR,
+        "minute": TIME_UNIT_MINUTE,
+        "second": TIME_UNIT_SECOND
     }
+
+    frequency = params_dict['timeDelta']
     if frequency not in valid_frequencies:
         raise ValueError("Invalid timeDelta. Valid options: 'day', 'hour', 'minute', 'second'")
     params_dict['timeDelta'] = valid_frequencies[frequency]
