@@ -60,12 +60,12 @@
 
     <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit">
         <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoems/Forecast"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/Forecast"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a forecast and the respective unit of measure</rdfs:comment>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a measure and the respective unit of measure</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontotimeseries/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has unit</rdfs:label>
     </owl:ObjectProperty>
     
@@ -618,7 +618,7 @@
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/Forecast"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a quantity and its forecast.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontotimeseries/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has forecasted value</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has forecast</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -632,10 +632,10 @@
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoems/AirTemperature"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoems/Forecast"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoheatnetwork/Availability"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoheatnetwork/CalendarEffect"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoheatnetwork/CoGenRevenueInTimeInterval"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/Forecast"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -1012,31 +1012,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Temperature of the outside air that would be indicated by a thermometer exposed to the air at a location sheltered from direct solar radiation</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Air temperature</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoems/Forecast -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/Forecast">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A prediction or estimation of a quantity</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Forecast</rdfs:label>
     </owl:Class>
     
 
@@ -1696,7 +1671,25 @@
     <!-- https://www.theworldavatar.com/kg/ontotimeseries/Forecast -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/Forecast"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/Forecast">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A prediction or estimation of a quantity</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontotimeseries/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Forecast</rdfs:label>
+    </owl:Class>
     
 
 
