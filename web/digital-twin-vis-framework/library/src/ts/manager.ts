@@ -83,6 +83,25 @@ class Manager {
     }
 
     /**
+     * Reads credentials from files.
+     */
+    public async readCredentials() {
+        // Enter Mapbox account name and API key here!
+        await $.get("mapbox_username", {}, function (result) {
+            MapHandler.MAP_USER = result;
+        }).fail(function () {
+            console.error("Could not read Mapbox username from 'mapbox_username' secret file.");
+        });
+        await $.get("mapbox_api_key", {}, function (result) {
+            MapHandler.MAP_API = result;
+        }).fail(function () {
+            console.error("Could not read Mapbox API key from 'mapbox_api_key' secret file.");
+        });
+
+        console.log("Credentials have been read from file.");
+    }
+
+    /**
      * Initialise the (blank) map instance via the map handler.
      */
     public initialiseMap() {
