@@ -1,0 +1,16 @@
+#path
+path_to_model: pytorch_model.bin
+path_to_model_config: training_params.txt
+#data_path: data/pubchem/test.jsonl #path for data to be inferred
+output_path: models
+cand_encode_path: embeddingbase.pt
+entity_dict_path: pubchem5000alt.jsonl
+smile_model_path: SMILES_NER_V10.bin
+
+#model_spec
+encode_batch_size: 8
+eval_batch_size: 1
+top_k: 8
+save_topk_result: True
+bert_model: bert-base-uncased
+data_parallel: True
