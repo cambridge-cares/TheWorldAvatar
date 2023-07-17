@@ -1,0 +1,53 @@
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix om:     <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix time:   <http://www.w3.org/2006/time#> .
+@prefix ts:     <https://www.theworldavatar.com/kg/ontotimeseries/> .
+@prefix deriv:	<https://www.theworldavatar.com/kg/derivation/> .
+@prefix disp:	<https://www.theworldavatar.com/kg/ontodispersion/> .
+@prefix :       <https://www.theworldavatar.com/test>
+
+################################################
+##      Forecasting Agent TEST instances      ##
+################################################
+
+# The Forecasting Agent takes the following 5 pure inputs:
+#   ts:ForecastingModel
+#   ts:Frequency
+#   time:Interval
+#   time:Duration
+#   owl:Thing
+#
+# They need timestamp to be properly retrieved by the derivation agent.
+# However, the timestamp is not provided in the example triples. Instead, 
+# they will be added by the script when the derivation instances are created
+# for new info
+
+
+:OptimisationInterval_1 a time:Interval ;
+    time:hasBeginning :OptimisationStartInstant_1 ;
+    time:hasEnd :OptimisationEndInstant_1 .
+:OptimisationStartInstant_1 a time:Instant ;
+    time:inTimePosition :TimePosition_1 .
+:OptimisationEndInstant_1 a time:Instant ;
+    time:inTimePosition :TimePosition_2 .
+:TimePosition_1 a time:TimePosition ;
+    time:hasTRS <http://dbpedia.org/resource/Unix_time> ;
+    time:numericPosition 1577836800.0 .
+:TimePosition_2 a time:TimePosition ;
+    time:hasTRS <http://dbpedia.org/resource/Unix_time> ;
+    time:numericPosition 1577923200.0 .
+
+:Frequency_1 a ts:Frequency ;
+    time:numericDuration 1.0 ;
+    time:unitType time:unitHour ;
+    ts:resampleData "False"^^<xsd:boolean> .
+
+:Duration_1 a time:Duration ;
+    time:numericDuration 336.0 ;
+    time:unitType time:unitHour .
+
+:ForecastingModel_1 a ts:ForecastingModel ;
+    rdfs:label "Prophet" ;
+    ts:scaleData "False"^^<xsd:boolean> .
