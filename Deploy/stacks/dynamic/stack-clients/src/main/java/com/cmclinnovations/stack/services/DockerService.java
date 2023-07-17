@@ -232,12 +232,13 @@ public class DockerService extends AbstractService
         service.doPostStartUpConfiguration();
     }
 
-    public void startContainer(ContainerService service) {
+    public boolean startContainer(ContainerService service) {
 
         Optional<Container> container = dockerClient
                 .getContainer(StackClient.removeStackName(service.getContainerName()));
 
-        if (container.isEmpty() || !container.get().getState().equalsIgnoreCase("running")) {
+        boolean notAlreadyRunning = container.isEmpty() || !container.get().getState().equalsIgnoreCase("running");
+        if (notAlreadyRunning) {
             // No container matching that config
 
             pullImage(service);
@@ -255,6 +256,8 @@ public class DockerService extends AbstractService
         }
 
         service.setContainerId(containerId);
+
+        return notAlreadyRunning;
     }
 
     protected Optional<Container> configureContainerWrapper(ContainerService service) {
