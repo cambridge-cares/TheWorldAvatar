@@ -331,9 +331,27 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
                         targetDir);
             } else {
                 throw new RuntimeException("Couldn't copy '" + sourcePath + "' into '" + targetDir
-                        + "' as the source was niether a file nor a directory.");
+                        + "' as the source was neither a file nor a directory.");
             }
+        }
 
+        @Override
+        public void copyTo(Path targetDir) {
+            String sourcePath = toString();
+            try {
+                retrieveFiles(containerId, sourcePath).forEach((path, content) -> {
+                    try {
+                        Path localAbsPath = targetDir.resolve(Path.of(path));
+                        Files.createDirectories(localAbsPath.getParent());
+                        Files.write(localAbsPath, content);
+                    } catch (IOException ex) {
+                        throw new RuntimeException("Couldn't copy file '" + path + "'' from '" + sourcePath + "' into '"
+                                + targetDir + "'.", ex);
+                    }
+                });
+            } catch (IOException ex) {
+                throw new RuntimeException("Couldn't copy '" + sourcePath + "' into '" + targetDir + "'.", ex);
+            }
         }
     }
 
