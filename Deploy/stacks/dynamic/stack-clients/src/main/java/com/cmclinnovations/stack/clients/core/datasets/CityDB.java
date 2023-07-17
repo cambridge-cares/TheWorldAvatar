@@ -1,5 +1,6 @@
 package com.cmclinnovations.stack.clients.core.datasets;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import com.cmclinnovations.stack.clients.citydb.CityDBClient;
@@ -41,7 +42,7 @@ public class CityDB extends PostgresDataSubset {
     }
 
     @Override
-    public void loadData(Path dataSubsetDir, String database) {
+    public void loadData(Path dataSubsetDir, String database, String baseIRI) {
 
         lineage = dataSubsetDir.toString();
 
@@ -53,11 +54,12 @@ public class CityDB extends PostgresDataSubset {
             usePreviousIRIs = Files.exists(previousFile);
             if (usePreviousIRIs) {
                 CityDBClient.getInstance().uploadFileToPostGIS(previousFile.toString(), database, importOptions,
-                        lineage, false);
+                        lineage, baseIRI, false);
             }
         }
         CityDBClient.getInstance()
-                .uploadFilesToPostGIS(dataSubsetDir.toString(), database, importOptions, lineage, usePreviousIRIs);
+                .uploadFilesToPostGIS(dataSubsetDir.toString(), database, importOptions, lineage, baseIRI,
+                        usePreviousIRIs);
 
     }
 
