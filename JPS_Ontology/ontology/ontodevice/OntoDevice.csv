@@ -12,18 +12,27 @@ Microphone,Class,https://saref.etsi.org/core/Device,IS-A,,,,A transducer that co
 Camera,Class,https://saref.etsi.org/core/Device,IS-A,,,,An optical instrument that can capture an image.,https://www.theworldavatar.com/kg/ontodevice/,Camera
 GPSDevice,Class,https://saref.etsi.org/core/Device,IS-A,,,,A device used within Earth's planetary atmosphere to determine its precise geographical location.,https://www.theworldavatar.com/kg/ontodevice/,GPS device
 https://www.theworldavatar.com/kg/ontoems/ReportingStation,Class,https://saref.etsi.org/core/Device,IS-A,,,,,https://www.theworldavatar.com/kg/ontodevice/,Reporting station
+BatteryTester,Class,https://saref.etsi.org/core/Device,IS-A,,,,A device used to measure the existing power of a battery,https://www.theworldavatar.com/kg/ontodevice/,Battery tester
+Computer,Class,https://saref.etsi.org/core/Device,IS-A,,,,A device that can be programmed to carry out a swquence of arithmetic or logical operations automatically.,https://www.theworldavatar.com/kg/ontodevice/,Computer
+Desktop,Class,Computer,IS-A,,,,"A stationary computer placed on top of a platform, usually desks.",https://www.theworldavatar.com/kg/ontodevice/,Desktop
+Laptop,Class,Computer,IS-A,,,,A small and mobile computer that can be carried.,https://www.theworldavatar.com/kg/ontodevice/,Laptop
+Server,Class,Computer,IS-A,,,,A computer that provides functionality or programs for other computer,https://www.theworldavatar.com/kg/ontodevice/,Server
+Tablet,Class,Computer,IS-A,,,,A small and mobile computer that uses touch-screens as user interface,https://www.theworldavatar.com/kg/ontodevice/,Tablet
+Workstation,Class,Computer,IS-A,,,,A workstation is a special computer designed for technical or scientific applications.,https://www.theworldavatar.com/kg/ontodevice/,Workstation
 ElectronicTag,Class,https://saref.etsi.org/core/Device,IS-A,,,,"A tag that uses a form of electronic identification technology (Bluetooth, RFID etc).",https://www.theworldavatar.com/kg/ontodevice/,Electronic tag
 RFIDTag,Class,ElectronicTag,IS-A,,,,An electronic tag that exchanges data with a RFID reader through radio waves.,https://www.theworldavatar.com/kg/ontodevice/,RFID tag
 PassiveRFIDTag,Class,RFIDTag,IS-A,,,,A passive RFID tag that functions via the electromagnetic energy that gets transmitted from the RFID reader. ,https://www.theworldavatar.com/kg/ontodevice/,Passive RFID tag
 ActiveRFIDTag,Class,RFIDTag,IS-A,,,,An active RFID tag that requires batteries for operation.,https://www.theworldavatar.com/kg/ontodevice/,Active RFID tag
+FlowMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device that measure and communicate amount of liquid flowing through.,https://www.theworldavatar.com/kg/ontodevice/,Flow meter
 OilMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device for measuring the flow of oil.,https://www.theworldavatar.com/kg/ontodevice/,Oil meter
 PollutionMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device for measuring air quality.,https://www.theworldavatar.com/kg/ontodevice/,Pollution meter
-WaterMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device that measure and communicate water usage from consumer to provider to facilitate water management and proper billing.,https://www.theworldavatar.com/kg/ontodevice/,Water meter
+WaterMeter,Class,FlowMeter,IS-A,,,,A device that measure and communicate water usage from consumer to provider to facilitate water management and proper billing.,https://www.theworldavatar.com/kg/ontodevice/,Water meter
 Magnetometer,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device that measures magnetic field or magnetic dipole moment.,https://www.theworldavatar.com/kg/ontodevice/,Magnetometer
 Accelerometer,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A tool that measures proper acceleration.,https://www.theworldavatar.com/kg/ontodevice/,Accelerometer
 ElectricityMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,"A device that measures the amount of electric energy consumed by a residence, a business, or an electrically powered device.",https://www.theworldavatar.com/kg/ontodevice/,Electricity meter
+GasSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that measures the amount or existence of specific gas in the atmosphere.,https://www.theworldavatar.com/kg/ontodevice/,GasSensor
 GravitySensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A sensor that detect minute localized changes in the force of Earth's gravity caused by variations in rock or other material's density underground.,https://www.theworldavatar.com/kg/ontodevice/,Gravity sensor
-CO2Sensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A sensor that is able to measure the concentration of carbon dioxide gas in the atmosphere.,https://www.theworldavatar.com/kg/ontodevice/,CO2 sensor
+CO2Sensor,Class,GasSensor,IS-A,,,,A sensor that is able to measure the concentration of carbon dioxide gas in the atmosphere.,https://www.theworldavatar.com/kg/ontodevice/,CO2 sensor
 IlluminanceSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A sensor that is able to measure the level of illuminance.,https://www.theworldavatar.com/kg/ontodevice/,Illuminance sensor
 HumiditySensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A sensor that is able to measure the level of humidity in the atmosphere.,https://www.theworldavatar.com/kg/ontodevice/,Humidity sensor
 RFIDSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,"A sensor used to gather information from an RFID tag, which is used to track individual objects.",https://www.theworldavatar.com/kg/ontodevice/,RFID sensor
@@ -35,7 +44,37 @@ FlowSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that is use
 FeedbackSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that is used to provide the control system with measurements of physical quantities necessary to close control loops.,https://www.theworldavatar.com/kg/ontodevice/,Feedback sensor
 ProximitySensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that takes a continuous distance reading and returns a corresponding analog voltage.,https://www.theworldavatar.com/kg/ontodevice/,Proximity sensor
 SashOpeningSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that measures the sash opening of an object such as a fumehood.,https://www.theworldavatar.com/kg/ontodevice/,Sash opening sensor
+ConductivitySensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that measures the conductivity of a material.,https://www.theworldavatar.com/kg/ontodevice/,Conductivity sensor
+CurrentSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that measures the current flowing through an electrical circuit.,https://www.theworldavatar.com/kg/ontodevice/,Current sensor
+MassFlowSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that measures the mass flow rate of gas or liquid.,https://www.theworldavatar.com/kg/ontodevice/,Mass flow sensor
+TemperatureSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that measures the temperature of the environement around it.,https://www.theworldavatar.com/kg/ontodevice/,Temperature sensor
 Fridge,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that is usually used for the preservation of items like food via temperature regulation.,https://www.theworldavatar.com/kg/ontodevice/,Fridge
+Oven,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that is used for heating up items like food using a heating element.,https://www.theworldavatar.com/kg/ontodevice/,Oven
+IceMaker,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that is used to create ice  by freezing water.,https://www.theworldavatar.com/kg/ontodevice/,Ice Maker
+Dehumidifier,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that reduces the humidity of the surrounding atmosphere.,https://www.theworldavatar.com/kg/ontodevice/,Dehumidifier
+WaterChiller,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that is used to reduce water temperature.,https://www.theworldavatar.com/kg/ontodevice/,Water chiller
+PaperShredder,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device used to destroy paper document via cutting the document to small pieces.,https://www.theworldavatar.com/kg/ontodevice/,Paper Shredder
+Accessory,Class,https://saref.etsi.org/core/Device,IS-A,,,,A device that is an added component to another device.,https://www.theworldavatar.com/kg/ontodevice/,Accessory
+Antenna,Class,Accessory,IS-A,,,,A device that is used to transmit or receive signal via electromagnetic radiation.,https://www.theworldavatar.com/kg/ontodevice/,Antenna
+ComputerPart,Class,Accessory,IS-A,,,,A device that is part of or can be added to a computer.,https://www.theworldavatar.com/kg/ontodevice/,Computer Part
+CPU,Class,ComputerPart,IS-A,,,,A device that is responsible for the logical or arithmatic operation in a computer.,https://www.theworldavatar.com/kg/ontodevice/,CPU
+EthernetCard,Class,ComputerPart,IS-A,,,,A device that acts as a network interface betweena a computer and the internet via cable,https://www.theworldavatar.com/kg/ontodevice/,EthernetCard
+Monitor,Class,ComputerPart,IS-A,,,,A device that acts as a display of a computer.,https://www.theworldavatar.com/kg/ontodevice/,Monitor
+Router,Class,ComputerPart,IS-A,,,,A device that forwards data packets in a coputer network.,https://www.theworldavatar.com/kg/ontodevice/,Router
+Tower,Class,ComputerPart,IS-A,,,,A device that holds computational component and interface of a computer in an enclosed space.,https://www.theworldavatar.com/kg/ontodevice/,Tower
+RAM,Class,ComputerPart,IS-A,,,,A device that provides non-permanent memory during computation to a computer.,https://www.theworldavatar.com/kg/ontodevice/,RAM
+Dock,Class,ComputerPart,IS-A,,,,A device that simplifies a computers cable peripheral interface.,https://www.theworldavatar.com/kg/ontodevice/,Dock
+NetworkSwitch,Class,ComputerPart,IS-A,,,,A device that forwards and receive data from a computer network to a single specific device.,https://www.theworldavatar.com/kg/ontodevice/,NetworkSwitch
+Printer,Class,ComputerPart,IS-A,,,,A device that prints data or documents to a paper.,https://www.theworldavatar.com/kg/ontodevice/,Printer
+SSD,Class,ComputerPart,IS-A,,,,A device that provies permanent memory on a computer.,https://www.theworldavatar.com/kg/ontodevice/,SSD
+PCCooler,Class,ComputerPart,IS-A,,,,A device that lowers the operating temperature of a computer during operation.,https://www.theworldavatar.com/kg/ontodevice/,PC Cooler
+Screen,Class,ComputerPart,IS-A,,,,A device on which a computer interface is projected onto.,https://www.theworldavatar.com/kg/ontodevice/,Screen
+Controller,Class,https://saref.etsi.org/core/Device,IS-A,,,,A device that controls a certain variable of its environment.,https://www.theworldavatar.com/kg/ontodevice/,Controller
+FlowController,Class,Controller,IS-A,,,,A device that manages the amount of gas or liquid flowing through.,https://www.theworldavatar.com/kg/ontodevice/,FlowController
+MassFlowController,Class,FlowController,IS-A,,,,A device that manages the mass of gas or liquid flowing through.,https://www.theworldavatar.com/kg/ontodevice/,MassFlowController
+FurnaceController,Class,Controller,IS-A,,,,A device that manages the operations of a furnace.,https://www.theworldavatar.com/kg/ontodevice/,Furnace controller
+IlluminationController,Class,Controller,IS-A,,,,A device that manages the level of light a device produces.,https://www.theworldavatar.com/kg/ontodevice/,Illuminance controller
+MotorController,Class,Controller,IS-A,,,,A device tha manages the operation of motors.,https://www.theworldavatar.com/kg/ontodevice/,Motor controller
 Setpoint,Class,,,,,,"The desired or target value for an essential variable, or process value (PV) of a control system.",https://www.theworldavatar.com/kg/ontodevice/,Setpoint
 InOutState,Class,https://saref.etsi.org/core/State,IS-A,,,,The current state of something on whether it is inside or outside of a space or object.,https://www.theworldavatar.com/kg/ontodevice/,In out state
 OccupiedState,Class,https://saref.etsi.org/core/State,IS-A,,,,The current state of something on whether it is occupied or not.,https://www.theworldavatar.com/kg/ontodevice/,Occupied state
