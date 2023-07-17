@@ -66,8 +66,8 @@ public class KGObjects {
 
     public String getObjectName () {return this.objectName;}
     public String getGeoObjectId () {return this.geoObjectId;}
-    public void setObjectId (String objectId) {
-        this.geoObjectId = objectId;
+    public void setObjectIri (String objectIri) {
+        this.objectIri = objectIri;
     }
 
     public KGAddress getAddress() {
@@ -78,7 +78,7 @@ public class KGObjects {
         if(this.getGeoObjectId() != null){
             InsertDataQuery modify = Queries.INSERT_DATA();
             Iri buildingIri = iri(this.getObjectIri());
-            modify.insertData(buildingIri.has(hasOntoCityGML, this.getGeoObjectId()));
+            modify.insertData(buildingIri.has(hasOntoCityGML, this.getObjectIri()));
             modify.prefix(p_env);
             this.kgClient.executeUpdate(modify.getQueryString());
         }

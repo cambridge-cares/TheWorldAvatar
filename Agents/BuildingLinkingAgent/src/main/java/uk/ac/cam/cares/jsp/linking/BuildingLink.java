@@ -102,7 +102,7 @@ public class BuildingLink{
                 }
                 String address = geoObject3Ds.get(j).getAddress().getHouse() + " " + geoObject3Ds.get(j).getAddress().getStreet() + " " + geoObject3Ds.get(j).getAddress().getZipCode();
 
-                Document preDocument = new Document.Builder(geoObject3Ds.get(j).getGmlId())
+                Document preDocument = new Document.Builder(geoObject3Ds.get(j).getIRI())
                         .addElement(new Element.Builder<String>().setValue(name).setType(ElementType.NAME).setWeight(0.5).createElement())
                         .addElement(new Element.Builder<String>().setValue(address).setType(ElementType.ADDRESS).setWeight(0.5).createElement())
                         .createDocument();
@@ -129,7 +129,7 @@ public class BuildingLink{
                         if(match.getScore().getResult()>score && match.getScore().getResult()>0.2){
                             System.out.println("Data: " + match.getData() + " Matched With: " + match.getMatchedWith() + " Score: " + match.getScore().getResult());
                             score = match.getScore().getResult();
-                            kgObjects.get(i).setObjectId(match.getMatchedWith().getKey());
+                            kgObjects.get(i).setObjectIri(match.getMatchedWith().getKey());
                         }
                     }
                 }
