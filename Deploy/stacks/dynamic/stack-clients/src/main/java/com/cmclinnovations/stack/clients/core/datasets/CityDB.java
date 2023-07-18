@@ -50,13 +50,13 @@ public class CityDB extends PostgresDataSubset {
             previousFile = dataSubsetDir.resolveSibling(dataSubsetDir.getFileName() + "_previous")
                     .resolve("previous.gz");
         }
+
+        usePreviousIRIs &= Files.exists(previousFile);
         if (usePreviousIRIs) {
-            usePreviousIRIs = Files.exists(previousFile);
-            if (usePreviousIRIs) {
-                CityDBClient.getInstance().uploadFileToPostGIS(previousFile.toString(), database, importOptions,
-                        lineage, baseIRI, false);
-            }
+            CityDBClient.getInstance().uploadFileToPostGIS(previousFile.toString(), database, importOptions,
+                    lineage, baseIRI, false);
         }
+
         CityDBClient.getInstance()
                 .uploadFilesToPostGIS(dataSubsetDir.toString(), database, importOptions, lineage, baseIRI,
                         usePreviousIRIs);
