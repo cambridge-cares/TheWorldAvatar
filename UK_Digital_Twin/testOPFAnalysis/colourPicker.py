@@ -49,62 +49,79 @@ colourHEXList_9ClasswithElimination = [## eliminate the first 2 colours
     '#006d2c',
     '#00441b']
 
-colourHEXList_11class = [ ## eliminate the first colour, 6class
-    '#de2d26', # '#a50f15',
-    '#fb6a4a',
-    '#fc9272',
-    '#fcbba1',
-    '#FEEAE2',
-    '#EEF8EC', # '#ffffff', ## white, for the middle is the middle is given
-    '#c7e9c0',
-    '#a1d99b',
-    '#74c476',
-    '#31a354',
-    '#006d2c']
+# colourHEXList_11class = [ ## eliminate the first colour, 6class
+#     '#de2d26', # '#a50f15',
+#     '#fb6a4a',
+#     '#fc9272',
+#     '#fcbba1',
+#     '#FEEAE2',
+#     '#EEF8EC', # '#ffffff', ## white, for the middle is the middle is given
+#     '#c7e9c0',
+#     '#a1d99b',
+#     '#74c476',
+#     '#31a354',
+#     '#006d2c']
+
+colourHEXList_11class = [ 
+    '#67001f',                   
+    '#b2182b',
+    '#d6604d',
+    # '#f4a582',
+    # '#fddbc7',
+    # '#f7f7f7',
+    '#d1e5f0',## middle
+    '#92c5de',
+    '#4393c3',
+    '#2166ac',
+    '#053061']
 
 colourHEXListForBranch_8class = [ ## Yellow for grid 
-    '#ffffcc',
-    '#ffeda0',
+    # '#ffffcc',
+    # '#ffeda0',
     '#fed976',
     '#feb24c',
     '#fd8d3c',
     '#fc4e2a',
     '#e31a1c',
-    '#b10026']
+    '#bd0026',
+    '#800026']
 
-colourHEXListForBranch_7class = [ ## Green for output
-    '#f7fcf5',
-    '#e5f5e0',
-    '#c7e9c0',
-    '#a1d99b',
-    '#74c476',
-    '#41ab5d',
-    '#238b45',
-    '#005a32'
-]
+# colourHEXListForBranch_7class = [ ## Green for output
+#     #'#f7fcf5',
+#     '#e5f5e0',
+#     '#c7e9c0',
+#     '#a1d99b',
+#     '#74c476',
+#     '#41ab5d',
+#     '#238b45',
+#     '#006d2c',
+#     '#00441b'
+# ]
 
-# colourHEXListForBranch_8class = [
-#     '#fde0dd',
-#     '#fcc5c0',
-#     '#fa9fb5',
-#     '#f768a1',
-#     '#dd3497',
-#     '#ae017e',
-#     '#7a0177',
-#     '#49006a']
+colourHEXListForBranch_7class = [
+    '#d0d1e6',
+    '#a6bddb',
+    '#67a9cf',
+    '#3690c0',
+    '#02818a',
+    '#016c59',
+    '#014636']
 
 def sequentialHEXColourCodePicker(dataValue, upperBound, lowerBound, middle = None, colourClassNumber:int = 11): 
     if colourClassNumber == 11:
         colourHEXList = colourHEXList_11class
         dividend = 5
+        middleIndex = 3
         if middle is None:
             middle = round((upperBound - lowerBound) / 2, 2)
     elif colourClassNumber == 8:
         colourHEXList = colourHEXListForBranch_8class
         dividend = 8
+        middleIndex = 0
     elif colourClassNumber == 7:
         colourHEXList = colourHEXListForBranch_7class
         dividend = 8
+        middleIndex = 0
     else:
         raise ValueError('Invalid colourClassNumber. colourClassNumber should be either 11, 8 or 7, while picking 11, the middle should be specified.')
 
@@ -121,7 +138,7 @@ def sequentialHEXColourCodePicker(dataValue, upperBound, lowerBound, middle = No
         if not (middle >= lowerBound and middle <= upperBound):
             raise ValueError('Invalid middle number is given. Middle should be between upper and lower bounds.')
         elif round(dataValue) == round(middle):
-            return '#EEF8EC'
+            return colourHEXList[middleIndex]
         else:
             if (upperBound - middle) >= (middle - lowerBound):
                 interval = round((upperBound - middle) / dividend, 2)
@@ -129,9 +146,9 @@ def sequentialHEXColourCodePicker(dataValue, upperBound, lowerBound, middle = No
                 interval = round((middle - lowerBound) / dividend, 2)
 
             if dataValue > middle:
-                index = colourHEXList.index('#EEF8EC') - math.ceil((dataValue - middle) / interval)
+                index = middleIndex - math.ceil((dataValue - middle) / interval)
             else: 
-                index = colourHEXList.index('#EEF8EC')  +  math.ceil((middle - dataValue) / interval) - 1
+                index = middleIndex  +  math.ceil((middle - dataValue) / interval) - 1
            
             if index == -1:
                 index = 0
@@ -223,13 +240,14 @@ def createColourBarLegend(filepath, upperBound, lowerBound, lebel:str, fileName:
                                     extend='max',
                                     ticks = bounds,
                                     spacing = 'proportional',
-                                    orientation = 'vertical')
-    cb2.set_label(str(lebel))
+                                    orientation = 'horizontal')
+    cb2.set_label(str(lebel), fontsize=12)
+    cb2.ax.tick_params(labelsize=12)
     ## fig.show()
-    fig.set_size_inches(0.5, 12)
+    fig.set_size_inches(10, 0.8)
     plt.savefig(filepath + str(fileName) + '.png', dpi = 200, bbox_inches = "tight", transparent = True)
     return
 
 if __name__ == '__main__': 
     ## print(sequentialHEXColourCodePicker(6.1, 6, 0, None, 7))
-    createColourBarLegend('/mnt/d/wx243/FromTWA/', 5000, -40000, 'Net demanding (GWh/yr)', 'legend-netDemanding', 0, 11)
+    createColourBarLegend('/mnt/d/wx243/FromTWA/', 20000, 0, 'Total output (MW)', 'legend-regionalTotalOutput', None, 7)

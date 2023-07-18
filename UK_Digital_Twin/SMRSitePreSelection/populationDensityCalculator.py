@@ -50,7 +50,7 @@ def populationDensityCalculator(centre:str, radius, queryEndPointLabel: str) -> 
         ?population  ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?valueOfPopulation .
     }
 
-"""% (centre, str(radius))
+    """% (centre, str(radius))
     
     print('...perform geospacial query...')
     res = json.loads(performQuery(endPointIRI, queryStr_geospatial))
