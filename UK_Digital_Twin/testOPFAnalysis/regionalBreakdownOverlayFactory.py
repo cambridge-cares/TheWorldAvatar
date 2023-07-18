@@ -31,11 +31,11 @@ def energyBreakdownOverlayerFactory(base_image_path, overlay_image_folderPath, a
     # Add the arrow to the base image
     base_image.alpha_composite(arrow_image, dest=(1360, 1720))
 
-    # Add the legend to the base image
-    width, height = legend_image.size
-    new_size = (int(width * 2.6), int(height * 2.6))
-    legend_image = legend_image.resize(new_size)
-    base_image.alpha_composite(legend_image, dest=(440, 2150))
+    # # Add the legend to the base image
+    # width, height = legend_image.size
+    # new_size = (int(width * 2.6), int(height * 2.6))
+    # legend_image = legend_image.resize(new_size)
+    # base_image.alpha_composite(legend_image, dest=(440, 2150))
 
     # Save the new image
     base_image.save(overlay_image_folderPath + "OVERLAY_RegionalAreaEnergyBreakdown.png")
@@ -46,9 +46,10 @@ def energyBreakdownOverlayerFactory(base_image_path, overlay_image_folderPath, a
 
 if __name__ == '__main__':  
     base_image_path = "/mnt/d/wx243/FromTWA/RegionalBreakdown_images/UKMapWithRegionalBoundaries.png"
-    overlay_image_folderPath = "/mnt/d/wx243/FromTWA/regionalEnergyBreakdownPieChart/20230504-1739/RegionalAreaEnergyBreakdown/SMR_0_CarbonTax_200_weatherCondition_WHSH_weight_0/"
     arrow_image_path = "/mnt/d/wx243/FromTWA/RegionalBreakdown_images/arrow.png"
     legend_path = "/mnt/d/wx243/FromTWA/RegionalBreakdown_images/breakdownLegend.png"
+
+    overlay_image_folderPath = "/mnt/d/wx243/FromTWA/regionalEnergyBreakdownPieChart/20230628-0326/RegionalAreaEnergyBreakdown/SMR_32_CarbonTax_100_weatherCondition_WBSB_weight_0.5/"
     energyBreakdownOverlayerFactory(base_image_path, overlay_image_folderPath, arrow_image_path, legend_path)
 
 

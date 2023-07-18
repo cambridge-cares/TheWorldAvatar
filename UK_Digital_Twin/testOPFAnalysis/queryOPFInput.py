@@ -6,7 +6,7 @@
 import os, sys, json
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
-from UK_Digital_Twin_Package.queryInterface import performQuery
+from UK_Digital_Twin_Package.queryInterface import performQuery, performFederatedQuery
 from SMRSitePreSelection.AnnualElectricityProduction import ElectricityProductionDistribution
 from UK_Digital_Twin_Package.OWLfileStorer import readFile
 from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
@@ -294,6 +294,112 @@ def queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofi
                             })
         
     return results, genTypeSummary
+
+if __name__ == '__main__':   
+    # retrofitGenerationFuelOrTechType = ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas", 
+    #     "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal", 
+    #     "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil",
+    #     "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#SourGas"]
+
+
+    qsrt= """
+    PREFIX owl: <http://www.w3.org/2002/07/owl#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+    PREFIX ontopowsys_PowSysPerformance: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
+    PREFIX meta_model_topology: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
+    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
+    PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
+    PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+	PREFIX ons: <http://statistics.data.gov.uk/def/statistical-geography#>
+    PREFIX ons_entity: <http://statistics.data.gov.uk/def/statistical-entity#>
+    PREFIX ons_geosparql: <http://www.opengis.net/ont/geosparql#>
+    SELECT DISTINCT ?PowerPlant ?LatLon ?PowerPlant_LACode (GROUP_CONCAT(?areaBoundary;SEPARATOR = '***') AS ?Geo_InfoList)
+    WHERE
+    {
+    ?GBElectricitySystemIRI ontocape_upper_level_system:contains ?PowerPlant .
+    ?GBElectricitySystemIRI ontoenergysystem:hasRelevantPlace/owl:sameAs <https://dbpedia.org/page/Great_Britain> .
+    ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?LatLon .
+    ?PowerPlant ontoenergysystem:hasRelevantPlace/ontoenergysystem:hasLocalAuthorityCode ?PowerPlant_LACode .
+	
+	?area ons:status "live" .
+    ?area rdf:type ons:Statistical-Geography .
+    ?area <http://publishmydata.com/def/ontology/foi/code> ?PowerPlant_LACode .
+    ?area ons_geosparql:hasGeometry ?geometry .
+    ?geometry ons_geosparql:asWKT ?areaBoundary .
+
+
+    }GROUP BY ?PowerPlant_LACode
+    """
+    res = json.loads(performFederatedQuery(qsrt, ["http://statistics.data.gov.uk/sparql.json","http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql"]))
+
+
+    
+    retrofitGenerationFuelOrTechType = ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas"]
+    ocgt = "http://www.theworldavatar.com/kb/ontoeip/OpenCycleGasTurbine"
+    
+    topologyNodeIRI_29Bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_6017554a-98bb-4896-bc21-e455cb6b3958" 
+    queryEndpointLabel = "ukdigitaltwin_test2"
+    
+    
+    res, _ = queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofitGenerationFuelOrTechType, topologyNodeIRI_29Bus, queryEndpointLabel)  
+
+    def colorPicker(genType):
+        if "NaturalGas" in str(genType) or "SourGas" in str(genType):
+            return "#B71C1C"
+        elif "Coal" in str(genType):
+            return "#5C3291"
+        else:
+            return "#0C0C0C" 
+
+    geojson_file = """
+        {
+            "type": "FeatureCollection",
+            "features": ["""
+    for r in res:
+        if "Coal" in r["fuelOrGenType"]:
+            colorPicker(r["fuelOrGenType"])
+            
+        feature = """{
+            "type": "Feature",
+            "properties": {
+            "PowerGenerator": "%s",
+            "Bus": "%s",
+            "Capacity": %s,
+            "fuelOrGenType": "%s",
+            "marker-color": "%s"
+            },
+            "geometry": {
+            "type": "Point",
+            "coordinates": [
+                %s,
+                %s
+            ]
+            }
+            },"""%(r["PowerGenerator"], r["Bus"], r["Capacity"], r["fuelOrGenType"], colorPicker(r["fuelOrGenType"]), r["LatLon"][1], r["LatLon"][0])
+        # adding new line 
+        geojson_file += '\n'+feature
+    
+    # removing last comma as is last line
+    geojson_file = geojson_file[:-1]
+    # finishing file end 
+    end_geojson = """
+        ]
+    }
+    """
+    geojson_file += end_geojson
+    # saving as geoJSON
+    geojson_written = open('/mnt/d/wx243/FromAW/candidateSites.geojson','w')
+    geojson_written.write(geojson_file)
+    geojson_written.close() 
+    print('---GeoJSON written successfully: candidate sites---')
+
+
 
 ## Query the boundaries of the consumption areas
 ## Direct Http Request without using the query client from the py4jps

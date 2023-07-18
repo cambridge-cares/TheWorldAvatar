@@ -32,5 +32,5 @@ def DistanceBasedOnGPSLocation(GPSLocationArray): # GPSLocationArray = [Point1_l
 
 
 if __name__ == '__main__': 
-    d = DistanceBasedOnGPSLocation([52.8108, -0.1315, 52.7619, 0.1963])
+    d = DistanceBasedOnGPSLocation([52.0000000, 0.0000000, 52.0000001, 0.0000000])
     print(d)
