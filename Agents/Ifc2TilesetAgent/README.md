@@ -82,9 +82,10 @@ docker-compose up -d
 **STACK DEPLOYMENT**
 
 If you want to spin up this agent as part of a stack, do the following:
-- Copy the contents of `config/properties.yaml_stack` into `config/properties.yaml`, inserting the name of your stack and the desired namespaces.
 - Build the image by issuing `docker compose build` in this folder. Do not start the container.
-- Copy the `json` file from the `stack-manager-input-config` folder into the `inputs/config/services` folder of the stack manager, adjusting the absolute path of the bind mounts as required. Do note that this agent requires the `data` bind mount to have a nested `ifc` and `glb` folder, where the IFC model must be placed in the `ifc` folder. It is not recommended to target the same bind mount as the other IFC agents.
+- Copy the `json` file from the `stack-manager-input-config` folder into the `inputs/config/services` folder of the stack manager, adjusting the absolute path of the bind mounts as required. 
+    - Do note that this agent requires the `data` bind mount to have a nested `ifc` and `glb` folder, where the IFC model must be placed in the `ifc` folder. It is not recommended to target the same bind mount as the other IFC agents.
+    - The `config` bind mount MUST have a `properties.yaml` containing the contents of `config/properties.yaml_stack`. Please edit the contents with the name of your stack and desired namespaces.
 - Start the stack manager as usual. This should start the container.
 
 ## 2. Running the agent
@@ -92,11 +93,12 @@ If you want to spin up this agent as part of a stack, do the following:
 Place only one IFC file in `<root>\data\ifc\`. This directory is directly linked to the relevant directory in the Docker container. The agent is only able to convert ONE IFC model at a time.
 
 Please modify the following properties in `config/properties.yaml`:
-
 - `query_endpoint`^ : SPARQL endpoint for Query operations
 - `update_endpoint`^ : SPARQL endpoint for UPDATE operations
 
 ^*Endpoints are required to query for metadata in tileset and interactions during visualisation*
+
+If you are deploying this on the stack, ensure that your `properties.yaml` and IFC file is placed at the corresponding bind mount location. A sample stack-based properties is available in `config/properties.yaml_stack` but requires editing for the name of your stack and desired namespaces.
 
 ### 2.2 API
 Instructions for the agent and its various API routes can be found at the API root `http://localhost:5105/`. Users can visit this route in any browser to verify if the agent is running.
