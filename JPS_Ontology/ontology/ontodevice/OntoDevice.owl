@@ -1104,7 +1104,7 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ComputerPart"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that acts as a network interface betweena a computer and the internet via cable</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">EthernetCard</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ethernet card</rdfs:label>
     </owl:Class>
     
 
@@ -1128,7 +1128,7 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Controller"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that manages the amount of gas or liquid flowing through.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FlowController</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Flow controller</rdfs:label>
     </owl:Class>
     
 
@@ -1380,7 +1380,7 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/FlowController"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that manages the mass of gas or liquid flowing through.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MassFlowController</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mass flow controller</rdfs:label>
     </owl:Class>
     
 
@@ -1457,14 +1457,26 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/NetworkDevice -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/NetworkDevice">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that allows communication within a computer network</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Network devices</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/NetworkSwitch -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/NetworkSwitch">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ComputerPart"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/NetworkDevice"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that forwards and receive data from a computer network to a single specific device.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NetworkSwitch</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Network switch</rdfs:label>
     </owl:Class>
     
 
@@ -1665,7 +1677,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Router">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ComputerPart"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/NetworkDevice"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that forwards data packets in a coputer network.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Router</rdfs:label>
@@ -1716,7 +1728,7 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Valve"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A valve that selects what gas or liquid pass through.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SelectorValve</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Selector valve</rdfs:label>
     </owl:Class>
     
 
