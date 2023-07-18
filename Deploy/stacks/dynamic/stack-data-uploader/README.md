@@ -1,5 +1,8 @@
 # The Stack Data Uploader
 
+<img align="right" width="250" height="500" src="./img/twa-uploader-logo-padded.svg">
+
+
 > :memo: **Note:** In the commands and file snippets below placeholders are indicated using angled brackets, for example `<STACK NAME>`.
 You will need to substitute in appropriate values before running any commands.
 
