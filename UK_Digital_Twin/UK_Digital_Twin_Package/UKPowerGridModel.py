@@ -340,7 +340,7 @@ class UKEGenModel:
    
     OUTPUT_VARIABLE_KEYS = list(OUTPUT_VARIABLE.keys())
     
-    def __init__(self, numOfBus:int, generatorNodeIRI:str, fueltype:str, latlon:list, capacity:float, toBeRetrofittedGeneratorNodeIRI:str = None, status:str = 'Extant', smallAreaCode = None, RegionLACode = None):
+    def __init__(self, numOfBus:int, generatorNodeIRI:str, fueltype:str, techType:str, latlon:list, capacity:float, toBeRetrofittedGeneratorNodeIRI:str = None, status:str = 'Extant', smallAreaCode = None, RegionLACode = None):
         self.StoreGeneratedOWLs = "C:/Users/wx243/Desktop/KGB/1 My project/1 Ongoing/4 UK Digital Twin/A_Box/UK_Power_Grid/" + str(numOfBus) + "_bus/EGen/"
         self.SleepycatStoragePath = "C:/Users/wx243/Desktop/KGB/1 My project/1 Ongoing/4 UK Digital Twin/A_Box/UK_Power_Grid/" + str(numOfBus) + "_bus/EGen/Sleepycat_EBus"
         
@@ -391,6 +391,13 @@ class UKEGenModel:
         elif "/" in fueltype:
             fueltype = fueltype.split('/')[-1]
         self.fueltype = fueltype
+
+         ## tech type
+        if "#" in techType:
+            techType = techType.split('#')[1]
+        elif "/" in techType:
+            techType = techType.split('/')[-1]
+        self.techType = techType
         
     def __dir__(self):
         return self.INPUT_VARIABLE_KEYS + self.OUTPUT_VARIABLE_KEYS
@@ -419,8 +426,8 @@ class UKEGenModel_CostFunc(UKEGenModel):
     INPUT_VARIABLE_KEYS = list(INPUT_VARIABLE.keys())
 
     """Initialise the cost function"""
-    def __init__(self, numOfBus:int, generatorNodeIRI:str, CO2EmissionFactor:float, fueltype:str, latlon:list, capacity:float, toBeRetrofittedGeneratorNodeIRI:str = None, status:str = 'Extant', CarbonTax = 18, piecewiseOrPolynomial = 2, pointsOfPiecewiseOrcostFuncOrder = 2, smallAreaCode = None, RegionLACode = None): # 2020/2021 base world UK carbon tax is £18/tCO2 eq.               
-            super().__init__(numOfBus, generatorNodeIRI, fueltype, latlon, capacity, toBeRetrofittedGeneratorNodeIRI, status, smallAreaCode, RegionLACode) ## enforce to inherite the initialiser from the father class
+    def __init__(self, numOfBus:int, generatorNodeIRI:str, CO2EmissionFactor:float, fueltype:str, techType:str, latlon:list, capacity:float, toBeRetrofittedGeneratorNodeIRI:str = None, status:str = 'Extant', CarbonTax = 18, piecewiseOrPolynomial = 2, pointsOfPiecewiseOrcostFuncOrder = 2, smallAreaCode = None, RegionLACode = None): # 2020/2021 base world UK carbon tax is £18/tCO2 eq.               
+            super().__init__(numOfBus, generatorNodeIRI, fueltype, techType, latlon, capacity, toBeRetrofittedGeneratorNodeIRI, status, smallAreaCode, RegionLACode) ## enforce to inherite the initialiser from the father class
             self.MODEL = piecewiseOrPolynomial # 1: piecewise linear; 2: polynomial
             self.STARTUP = 0
             self.SHUTDOWN = 0

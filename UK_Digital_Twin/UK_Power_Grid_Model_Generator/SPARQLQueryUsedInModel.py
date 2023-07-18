@@ -145,7 +145,7 @@ def queryEGenInfo(topologyNodeIRI, endPoint, eliminateClosedPlantIRIList:list):
     PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
     PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
     PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
-    SELECT DISTINCT ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?PrimaryFuel ?LatLon ?PowerPlant_LACode
+    SELECT DISTINCT ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?PrimaryFuel ?LatLon ?PowerPlant_LACode ?GenerationTech
     WHERE
     {
     ?GBElectricitySystemIRI ontocape_upper_level_system:contains ?PowerPlant .
@@ -177,6 +177,8 @@ def queryEGenInfo(topologyNodeIRI, endPoint, eliminateClosedPlantIRIList:list):
     
     ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel/rdf:type ?PrimaryFuel .
 
+    ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:usesGenerationTechnology/rdf:type ?GenerationTech .
+
     ?PowerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator . 
     ?PowerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?LatLon .
 
@@ -204,13 +206,13 @@ def queryEGenInfo(topologyNodeIRI, endPoint, eliminateClosedPlantIRIList:list):
     qres = [[ str(r['PowerGenerator']), float((r['FixedMO'].split('\"^^')[0]).replace('\"','')), float((r['VarMO'].split('\"^^')[0]).replace('\"','')), \
                 float((r['FuelCost'].split('\"^^')[0]).replace('\"','')), float((r['CO2EmissionFactor'].split('\"^^')[0]).replace('\"','')), str(r['Bus']), \
                 float((r['Capacity'].split('\"^^')[0]).replace('\"','')), (str(r['PrimaryFuel']).split('#'))[1], \
-                [float(r['LatLon'].split('#')[0]), float(r['LatLon'].split('#')[1])], str(r['PowerPlant_LACode'])] for r in res]
+                [float(r['LatLon'].split('#')[0]), float(r['LatLon'].split('#')[1])], str(r['PowerPlant_LACode']), str(r['GenerationTech'])] for r in res]
     print('...finishes queryEGenInfo...')
     # print('...starts querying counterBusNumber...')
     # numOfBus = json.loads(performQuery(endPoint_label, counterBusNumber))
     # print('...finishes querying counterBusNumber...')
-    return qres #, int(numOfBus[0]["count"]) 
-
+    return qres #, int(numOfBus[0]["count"])
+    
 # query the total electricity consumption of a UK official region 
 def queryTotalElecConsumptionofGBOrUK(endPoint_label, topologyNodeIRI, startTime_of_EnergyConsumption):
     if endPoint_label == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['label']):
@@ -526,9 +528,8 @@ if __name__ == '__main__':
     ONS_json = "http://statistics.data.gov.uk/sparql.json"
     ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql"
     ukdigitaltwinendpointLable = "ukdigitaltwin_test2"
-    topologyNodeIRI = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_7ea91c81-9f7f-4d27-9b75-9b897171bbc4" 
-
-    # res = queryEGenInfo(topologyNodeIRI, ukdigitaltwinendpointLable)
+    topologyNodeIRI = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_6017554a-98bb-4896-bc21-e455cb6b3958" 
+    res = queryBusTopologicalInformation(topologyNodeIRI, "http://localhost:3838/blazegraph/namespace/ukdigitaltwin_test1/sparql")
     #res = queryTotalElecConsumptionofGBOrUK( ukdigitaltwinendpointLable, topologyNodeIRI, "2017-01-31")
     #res = queryPowerSystemLocation(ukdigitaltwinendpointLable, topologyNodeIRI)
 

@@ -202,6 +202,7 @@ def queryWithinRegion(LACode:str, ONS_Endpoint):
             getString = "http://statistics.data.gov.uk/sparql.json?query=" + str(encodedString)
 
             print('...HTTP GET WithinRegion of a given LA code...')
+            print('LACODE: %s' % LACode)
             r = requests.get(getString, timeout=60)
             RegionOrCountry = json.loads(r.text)['results']['bindings'][0]['LACode_Region']['value']
             # RegionOrCountry = json.loads(r.text)['results']['bindings']

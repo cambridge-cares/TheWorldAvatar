@@ -64,16 +64,6 @@ ONS_JSON =  endpointList.ONS['endpoint_iri']
 userSpecifiePath_Sleepycat = None # user specified path
 userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
 
-"""T-Box URI"""
-if urllib.request.urlopen("http://www.theworldavatar.com/ontology/").getcode() == 200:
-    ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
-    ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
-    ontocape_mathematical_model     = owlready2.get_ontology(t_box.ontocape_mathematical_model).load()
-    ontopowsys_PowerSystemModel     = owlready2.get_ontology(t_box.ontopowsys_PowerSystemModel).load()
-    ontoecape_space_and_time_extended = owlready2.get_ontology(t_box.ontoecape_space_and_time_extended).load()
-else:
-    print('---THE WORLD AVATAR NOT FOUND---')
-
 """User specified folder path"""
 filepath = None
 userSpecified = False
@@ -86,6 +76,17 @@ model_EBus_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_gr
 
 def createModel_EBus(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSystemNodetimeStamp, AgentIRI, slackBusNodeIRI, derivationClient, updateEndpointIRI, startTime_of_EnergyConsumption, \
     loadAllocatorName, EBusModelVariableInitialisationMethodName, splitCharacter, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"):
+    
+    """T-Box URI"""
+    if urllib.request.urlopen("http://www.theworldavatar.com/ontology/").getcode() == 200:
+        ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
+        ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
+        ontocape_mathematical_model     = owlready2.get_ontology(t_box.ontocape_mathematical_model).load()
+        ontopowsys_PowerSystemModel     = owlready2.get_ontology(t_box.ontopowsys_PowerSystemModel).load()
+        ontoecape_space_and_time_extended = owlready2.get_ontology(t_box.ontoecape_space_and_time_extended).load()
+    else:
+        print('---THE WORLD AVATAR NOT FOUND---')
+
     ## Query the bus node IRI and GPS of the given topology entity
     res_queryBusTopologicalInformation = list(query_model.queryBusTopologicalInformation(topologyNodeIRI, endpoint_label))
     

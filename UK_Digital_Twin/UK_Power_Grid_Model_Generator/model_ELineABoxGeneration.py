@@ -59,16 +59,6 @@ endpoint_iri = endpointList.ukdigitaltwin['queryendpoint_iri']
 userSpecifiePath_Sleepycat = None # user specified path
 userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
 
-"""T-Box URI"""
-if urllib.request.urlopen("http://www.theworldavatar.com/ontology/").getcode() == 200:
-    ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
-    ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
-    ontocape_mathematical_model     = owlready2.get_ontology(t_box.ontocape_mathematical_model).load()
-    ontopowsys_PowerSystemModel     = owlready2.get_ontology(t_box.ontopowsys_PowerSystemModel).load()
-    ontoecape_space_and_time_extended = owlready2.get_ontology(t_box.ontoecape_space_and_time_extended).load()
-else:
-    print('---THE WORLD AVATAR NOT FOUND---')
-
 """User specified folder path"""
 filepath = None
 userSpecified = False
@@ -80,6 +70,15 @@ model_ELine_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_g
 """Main function: create the named graph Model_EBus and their sub graphs each ELine"""
 def createModel_ELine(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSystemNodetimeStamp, AgentIRI, OrderedBusNodeIRIList, derivationClient, updateEndpointIRI,\
     initialiserMethod, splitCharacter, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"): 
+    """T-Box URI"""
+    if urllib.request.urlopen("http://www.theworldavatar.com/ontology/").getcode() == 200:
+        ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
+        ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
+        ontocape_mathematical_model     = owlready2.get_ontology(t_box.ontocape_mathematical_model).load()
+        ontopowsys_PowerSystemModel     = owlready2.get_ontology(t_box.ontopowsys_PowerSystemModel).load()
+        ontoecape_space_and_time_extended = owlready2.get_ontology(t_box.ontoecape_space_and_time_extended).load()
+    else:
+        print('---THE WORLD AVATAR NOT FOUND---')
     ## Query the eline topological information and geometry information, the return is a dictionary 
     ## Query returns the ELineNode, From_Bus, To_Bus, Value_Length_ELine; if the branch is composed by OHL of different voltage levels, the query will also return the number of the OHL
     ELineTopoAndGeometryInfo, branchVoltageLevel = query_model.queryELineTopologicalInformation(topologyNodeIRI, endpoint_label)

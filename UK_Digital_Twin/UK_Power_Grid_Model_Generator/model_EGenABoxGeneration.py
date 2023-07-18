@@ -369,7 +369,7 @@ def initialiseEGenModelVar(EGen_Model, egen, OrderedBusNodeIRIList, demand_capa_
         EGen_Model.PMIN = 0
         EGen_Model.PG_INPUT = capa * 0.25
     elif primaryFuel in ukmf.PumpHydro: 
-        EGen_Model.PMAX = capa * 0.05
+        EGen_Model.PMAX = capa * 0
         EGen_Model.PMIN = 0
         EGen_Model.PG_INPUT = 0
     elif primaryFuel in ukmf.Bio:
