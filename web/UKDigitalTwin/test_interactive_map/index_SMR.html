@@ -1,0 +1,1031 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Power System Visualisation</title>
+    <meta charset="utf-8">
+
+    <!-- Javascript -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.js"></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+    <script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/checktree.js'></script>
+    <script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/mapbox-controls.js'></script>
+    <script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/side-panel.js'></script>
+    <!--<script src="https://cdn.bootcss.com/Turf.js/5.1.6/turf.min.js"></script>-->
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+    <script src='power-system.js'></script>
+
+    <!-- Stylesheets -->
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.css' rel='stylesheet'>
+    <link href='http://kg.cmclinnovations.com:81/user/themes/quark/css/mapbox-controls.css' rel='stylesheet' />
+    <link href='http://kg.cmclinnovations.com:81/user/themes/quark/css/side-panel.css' rel='stylesheet' />
+    <!--<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+          integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+          crossorigin="" />-->
+    <link href='style.css' rel='stylesheet' />
+
+</head>
+
+<body>
+
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+
+    <!-- div is a DOM element -->
+    <div id='map'></div> <!-- container of map -->
+    <div id="tiltShift"></div>
+    <div id="controlsParent"></div>
+
+    <script>
+        // The getControls() is invoked from the mapbox-controls.js for returning a controlHTML containing camera, terrain, and layer panels
+        document.getElementById("controlsParent").innerHTML = getControls();
+
+        // Initial state of side-panel (from side-panel.js)
+        initialiseSidePanel(document.getElementById("map"));
+
+        // Reset side panel (from power-system.js)
+        resetSidePanel();
+
+        // Show loading icon whilst stuff spins up
+        var loadingHTML = `
+                <br><br><br><br><br>
+                <img width='150' src='loading.gif'></img>
+                <br>
+                <span style='color: grey; font-style: italic;'>Loading data, please wait...</span>
+            `;
+        appendSidePanelText(loadingHTML);
+
+        // Initialise the MapBox map
+        mapboxgl.accessToken = 'pk.eyJ1Ijoiam1hcnNkZW4iLCJhIjoiY2ttZzNqM3IxM2JyYzJ2bndzZnIxeG1lciJ9.uwb9ZnBO3vWssvcBsXcFeA';
+        var map = new mapboxgl.Map(getDefaultMapOptions());
+
+        // Initialise MapBox popup for mouse-overs
+        var popup = new mapboxgl.Popup({
+            closeButton: false,
+            closeOnClick: false
+        });
+
+        // Change some layer colors depending on selected style
+        var inner_text = '#3E3E3E';
+        var outer_text = '#FFFFFF';
+
+        // Triggers after terrain change
+        function terrainCallback(terrainType) {
+            if (terrainType === "light") {
+                inner_text = '#3E3E3E';
+                outer_text = '#FFFFFF';
+            } else {
+                inner_text = '#FFFFFF';
+                outer_text = '#000000';
+            }
+        }
+
+        // Triggers after camera change
+        function cameraCallback() {
+            popup.remove();
+            resetSidePanel();
+        }
+
+        // Hide or show a layer
+        function toggleLayer(layerID, enabled) {
+            map.setLayoutProperty(
+                layerID,
+                "visibility",
+                (enabled ? "visible" : "none")
+            );
+        }
+        
+        // Triggered after layer change
+        function layerCallback(layerID, enabled) {
+
+            if (enabled && layerID.includes("power_")) {
+                // Show the power layers
+                toggleLayer("power_locations", true);
+                toggleLayer("power_labels", true);
+
+                // clsoe retrofitting results --54SMR_0Weight_WHSH
+                toggleLayer("54SMR_0Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_0Weight_WHSH_closed", false);
+
+                // close retrofitting results --54SMR_0.25Weight_WHSH
+                toggleLayer("54SMR_0.25Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0.25Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_0.25Weight_WHSH_closed", false);
+
+                // close retrofitting results --54SMR_0.5Weight_WHSH
+                toggleLayer("54SMR_0.5Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0.5Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_0.5Weight_WHSH_closed", false);
+
+                // close retrofitting results --54SMR_0.75Weight_WHSH
+                toggleLayer("54SMR_0.75Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0.75Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_0.75Weight_WHSH_closed", false);
+
+                // close retrofitting results --54SMR_1Weight_WHSH
+                toggleLayer("54SMR_1Weight_WHSH_extant", false);
+                toggleLayer("54SMR_1Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_1Weight_WHSH_closed", false);
+                
+            }
+            
+            if (enabled && layerID.includes("54SMR_0Weight_WHSH_")) {
+                // close the power layers
+                toggleLayer("power_locations", false);
+                toggleLayer("power_labels", false);
+
+                // show retrofitting results --54SMR_0Weight_WHSH
+                toggleLayer("54SMR_0Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0Weight_WHSH_SMR", true);
+                toggleLayer("54SMR_0Weight_WHSH_closed", false);
+
+                // close retrofitting results --54SMR_0.25Weight_WHSH
+                toggleLayer("54SMR_0.25Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0.25Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_0.25Weight_WHSH_closed", false);
+
+                // close retrofitting results --54SMR_0.5Weight_WHSH
+                toggleLayer("54SMR_0.5Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0.5Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_0.5Weight_WHSH_closed", false);
+
+                // close retrofitting results --54SMR_0.75Weight_WHSH
+                toggleLayer("54SMR_0.75Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0.75Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_0.75Weight_WHSH_closed", false);
+
+                // close retrofitting results --54SMR_1Weight_WHSH
+                toggleLayer("54SMR_1Weight_WHSH_extant", false);
+                toggleLayer("54SMR_1Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_1Weight_WHSH_closed", false);     
+            }
+
+            if (enabled && layerID.includes("54SMR_0.25Weight_WHSH_")) {
+                // close the power layers
+                toggleLayer("power_locations", false);
+                toggleLayer("power_labels", false);
+
+                // close retrofitting results --54SMR_0Weight_WHSH
+                toggleLayer("54SMR_0Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_0Weight_WHSH_closed", false);
+
+                // show retrofitting results --54SMR_0.25Weight_WHSH
+                toggleLayer("54SMR_0.25Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0.25Weight_WHSH_SMR", true);
+                toggleLayer("54SMR_0.25Weight_WHSH_closed", false);
+
+                // close retrofitting results --54SMR_0.5Weight_WHSH
+                toggleLayer("54SMR_0.5Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0.5Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_0.5Weight_WHSH_closed", false);
+
+                // close retrofitting results --54SMR_0.75Weight_WHSH
+                toggleLayer("54SMR_0.75Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0.75Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_0.75Weight_WHSH_closed", false);
+
+                // close retrofitting results --54SMR_1Weight_WHSH
+                toggleLayer("54SMR_1Weight_WHSH_extant", false);
+                toggleLayer("54SMR_1Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_1Weight_WHSH_closed", false);     
+            }
+
+            if (enabled && layerID.includes("54SMR_0.5Weight_WHSH_")) {
+                // close the power layers
+                toggleLayer("power_locations", false);
+                toggleLayer("power_labels", false);
+
+                // close retrofitting results --54SMR_0Weight_WHSH
+                toggleLayer("54SMR_0Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_0Weight_WHSH_closed", false);
+
+                // close retrofitting results --54SMR_0.25Weight_WHSH
+                toggleLayer("54SMR_0.25Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0.25Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_0.25Weight_WHSH_closed", false);
+
+                // show retrofitting results --54SMR_0.5Weight_WHSH
+                toggleLayer("54SMR_0.5Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0.5Weight_WHSH_SMR", true);
+                toggleLayer("54SMR_0.5Weight_WHSH_closed", false);
+
+                // close retrofitting results --54SMR_0.75Weight_WHSH
+                toggleLayer("54SMR_0.75Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0.75Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_0.75Weight_WHSH_closed", false);
+
+                // close retrofitting results --54SMR_1Weight_WHSH
+                toggleLayer("54SMR_1Weight_WHSH_extant", false);
+                toggleLayer("54SMR_1Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_1Weight_WHSH_closed", false);     
+            }
+
+            if (enabled && layerID.includes("54SMR_0.75Weight_WHSH_")) {
+                // close the power layers
+                toggleLayer("power_locations", false);
+                toggleLayer("power_labels", false);
+
+                // close retrofitting results --54SMR_0Weight_WHSH
+                toggleLayer("54SMR_0Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_0Weight_WHSH_closed", false);
+
+                // close retrofitting results --54SMR_0.25Weight_WHSH
+                toggleLayer("54SMR_0.25Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0.25Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_0.25Weight_WHSH_closed", false);
+
+                // close retrofitting results --54SMR_0.5Weight_WHSH
+                toggleLayer("54SMR_0.5Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0.5Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_0.5Weight_WHSH_closed", false);
+
+                // show retrofitting results --54SMR_0.75Weight_WHSH
+                toggleLayer("54SMR_0.75Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0.75Weight_WHSH_SMR", true);
+                toggleLayer("54SMR_0.75Weight_WHSH_closed", false);
+
+                // close retrofitting results --54SMR_1Weight_WHSH
+                toggleLayer("54SMR_1Weight_WHSH_extant", false);
+                toggleLayer("54SMR_1Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_1Weight_WHSH_closed", false);     
+            }
+
+            if (enabled && layerID.includes("54SMR_1Weight_WHSH_")) {
+                // close the power layers
+                toggleLayer("power_locations", false);
+                toggleLayer("power_labels", false);
+
+                // close retrofitting results --54SMR_0Weight_WHSH
+                toggleLayer("54SMR_0Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_0Weight_WHSH_closed", false);
+
+                // close retrofitting results --54SMR_0.25Weight_WHSH
+                toggleLayer("54SMR_0.25Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0.25Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_0.25Weight_WHSH_closed", false);
+
+                // close retrofitting results --54SMR_0.5Weight_WHSH
+                toggleLayer("54SMR_0.5Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0.5Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_0.5Weight_WHSH_closed", false);
+
+                // close retrofitting results --54SMR_0.75Weight_WHSH
+                toggleLayer("54SMR_0.75Weight_WHSH_extant", false);
+                toggleLayer("54SMR_0.75Weight_WHSH_SMR", false);
+                toggleLayer("54SMR_0.75Weight_WHSH_closed", false);
+
+                // show retrofitting results --54SMR_1Weight_WHSH
+                toggleLayer("54SMR_1Weight_WHSH_extant", false);
+                toggleLayer("54SMR_1Weight_WHSH_SMR", true);
+                toggleLayer("54SMR_1Weight_WHSH_closed", false);     
+            }
+
+            if (enabled) updateLegend(layerID);
+        }
+
+        // Setup map with mapbox-controls.js
+        setup(map, cameraCallback, terrainCallback, layerCallback);
+
+
+        // On initial load...
+        map.on("load", function () {
+            resetSidePanel();
+            updateLegend("power_locations");
+        });
+
+        // Triggers whenever the terrain is changed, at this point MapBox
+        // effectively generates a new map so we have to add everything again.
+        map.on('style.load', function () {
+
+            // Variable for area currently under mouse cursor
+            // var hoveredStateId = null;
+
+            console.log("INFO: New style has been loaded.");
+            refresh();
+
+// ===== SOURCES ====
+        
+            // Add the retrofitting results --54SMR_0Weight_WHSH
+            map.addSource('54SMR_0Weight_WHSH_extant', {
+                type: 'geojson',
+                data: './54SMRJSON/29BusModel_54_SMRs_Introduced_CarbonTax80_WeatherCondition_WHSH_weighter_0.0_ExtantGenerator.geojson' 
+            });
+
+            map.addSource('54SMR_0Weight_WHSH_SMR', {
+                type: 'geojson',
+                data: './54SMRJSON/29BusModel_54_SMRs_Introduced_CarbonTax80_WeatherCondition_WHSH_weighter_0.0_SMR.geojson' 
+            });
+
+            map.addSource('54SMR_0Weight_WHSH_closed', {
+                type: 'geojson',
+                data: './54SMRJSON/29BusModel_54_SMRs_Introduced_CarbonTax80_WeatherCondition_WHSH_weighter_0.0_ClosedGenerator.geojson' 
+            });
+
+            // Add the retrofitting results --54SMR_0.25Weight_WHSH
+            map.addSource('54SMR_0.25Weight_WHSH_extant', {
+                type: 'geojson',
+                data: './54SMRJSON/29BusModel_54_SMRs_Introduced_CarbonTax80_WeatherCondition_WHSH_weighter_0.25_ExtantGenerator.geojson' 
+            });
+
+            map.addSource('54SMR_0.25Weight_WHSH_SMR', {
+                type: 'geojson',
+                data: './54SMRJSON/29BusModel_54_SMRs_Introduced_CarbonTax80_WeatherCondition_WHSH_weighter_0.25_SMR.geojson' 
+            });
+
+            map.addSource('54SMR_0.25Weight_WHSH_closed', {
+                type: 'geojson',
+                data: './54SMRJSON/29BusModel_54_SMRs_Introduced_CarbonTax80_WeatherCondition_WHSH_weighter_0.25_ClosedGenerator.geojson' 
+            });
+
+            // Add the retrofitting results --54SMR_0.5Weight_WHSH
+            map.addSource('54SMR_0.5Weight_WHSH_extant', {
+                type: 'geojson',
+                data: './54SMRJSON/29BusModel_54_SMRs_Introduced_CarbonTax80_WeatherCondition_WHSH_weighter_0.5_ExtantGenerator.geojson' 
+            });
+
+            map.addSource('54SMR_0.5Weight_WHSH_SMR', {
+                type: 'geojson',
+                data: './54SMRJSON/29BusModel_54_SMRs_Introduced_CarbonTax80_WeatherCondition_WHSH_weighter_0.5_SMR.geojson' 
+            });
+
+            map.addSource('54SMR_0.5Weight_WHSH_closed', {
+                type: 'geojson',
+                data: './54SMRJSON/29BusModel_54_SMRs_Introduced_CarbonTax80_WeatherCondition_WHSH_weighter_0.5_ClosedGenerator.geojson' 
+            });
+
+            // Add the retrofitting results --54SMR_0.75Weight_WHSH
+            map.addSource('54SMR_0.75Weight_WHSH_extant', {
+                type: 'geojson',
+                data: './54SMRJSON/29BusModel_54_SMRs_Introduced_CarbonTax80_WeatherCondition_WHSH_weighter_0.75_ExtantGenerator.geojson' 
+            });
+
+            map.addSource('54SMR_0.75Weight_WHSH_SMR', {
+                type: 'geojson',
+                data: './54SMRJSON/29BusModel_54_SMRs_Introduced_CarbonTax80_WeatherCondition_WHSH_weighter_0.75_SMR.geojson' 
+            });
+
+            map.addSource('54SMR_0.75Weight_WHSH_closed', {
+                type: 'geojson',
+                data: './54SMRJSON/29BusModel_54_SMRs_Introduced_CarbonTax80_WeatherCondition_WHSH_weighter_0.75_ClosedGenerator.geojson' 
+            });
+
+            // Add the retrofitting results --54SMR_1.0Weight_WHSH
+            map.addSource('54SMR_1Weight_WHSH_extant', {
+                type: 'geojson',
+                data: './54SMRJSON/29BusModel_54_SMRs_Introduced_CarbonTax80_WeatherCondition_WHSH_weighter_1.0_ExtantGenerator.geojson' 
+            });
+
+            map.addSource('54SMR_1Weight_WHSH_SMR', {
+                type: 'geojson',
+                data: './54SMRJSON/29BusModel_54_SMRs_Introduced_CarbonTax80_WeatherCondition_WHSH_weighter_1.0_SMR.geojson' 
+            });
+
+            map.addSource('54SMR_1Weight_WHSH_closed', {
+                type: 'geojson',
+                data: './54SMRJSON/29BusModel_54_SMRs_Introduced_CarbonTax80_WeatherCondition_WHSH_weighter_1.0_ClosedGenerator.geojson' 
+            });
+
+            ///////////////////////////////////////////////////////////////////////////////////////////
+            // Add the powerplant data
+            map.addSource('powerplants', {
+                type: 'geojson',
+                data: 'UK_PowerPlants.geojson'
+            });
+            
+            // add smr icon
+            map.loadImage('/smr.png', (error, image) => {
+                if (error) throw error;
+                map.addImage('SMR_icon', image);
+            });
+
+            // add closed icon
+            map.loadImage('/closed.png', (error, image) => {
+                if (error) throw error;
+                map.addImage('Closed_icon', image);
+            });
+
+
+        // ===== LAYERS =====
+
+            // 54SMR_0Weight_WHSH
+            map.addLayer({
+                'id': '54SMR_0Weight_WHSH_extant',
+                'type': 'circle',
+                'source': '54SMR_0Weight_WHSH_extant',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': ["+", 2, ["*", 0.9, ["ln", ["to-number", ["get", "Output"]]]]],
+                    'circle-color': ["get", "marker-color"],
+                    'circle-opacity': 0.85,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            map.addLayer({
+                'id': '54SMR_0Weight_WHSH_SMR',
+                'type': 'circle',
+                'source': '54SMR_0Weight_WHSH_SMR',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': 8,
+                    'circle-color': "#50C878",
+                    'circle-opacity': 0.95,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            map.addLayer({
+                id: '54SMR_0Weight_WHSH_closed',
+                type: 'symbol',
+                source: '54SMR_0Weight_WHSH_closed',
+                layout: {
+                    'icon-image': 'Closed_icon',
+                    'icon-size': 0.03
+                }
+            });
+
+            // 54SMR_0.25Weight_WHSH
+            map.addLayer({
+                'id': '54SMR_0.25Weight_WHSH_extant',
+                'type': 'circle',
+                'source': '54SMR_0.25Weight_WHSH_extant',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': ["+", 2, ["*", 0.9, ["ln", ["to-number", ["get", "Output"]]]]],
+                    'circle-color': ["get", "marker-color"],
+                    'circle-opacity': 0.85,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            map.addLayer({
+                'id': '54SMR_0.25Weight_WHSH_SMR',
+                'type': 'circle',
+                'source': '54SMR_0.25Weight_WHSH_SMR',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': 8,
+                    'circle-color': "#50C878",
+                    'circle-opacity': 0.95,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            map.addLayer({
+                id: '54SMR_0.25Weight_WHSH_closed',
+                type: 'symbol',
+                source: '54SMR_0.25Weight_WHSH_closed',
+                layout: {
+                    'icon-image': 'Closed_icon',
+                    'icon-size': 0.03
+                }
+            });
+
+            // 54SMR_0.5Weight_WHSH
+            map.addLayer({
+                'id': '54SMR_0.5Weight_WHSH_extant',
+                'type': 'circle',
+                'source': '54SMR_0.5Weight_WHSH_extant',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': ["+", 2, ["*", 0.9, ["ln", ["to-number", ["get", "Output"]]]]],
+                    'circle-color': ["get", "marker-color"],
+                    'circle-opacity': 0.85,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            map.addLayer({
+                'id': '54SMR_0.5Weight_WHSH_SMR',
+                'type': 'circle',
+                'source': '54SMR_0.5Weight_WHSH_SMR',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': 8,
+                    'circle-color': "#50C878",
+                    'circle-opacity': 0.95,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            map.addLayer({
+                id: '54SMR_0.5Weight_WHSH_closed',
+                type: 'symbol',
+                source: '54SMR_0.5Weight_WHSH_closed',
+                layout: {
+                    'icon-image': 'Closed_icon',
+                    'icon-size': 0.03
+                }
+            });
+
+            // 54SMR_0.75Weight_WHSH
+            map.addLayer({
+                'id': '54SMR_0.75Weight_WHSH_extant',
+                'type': 'circle',
+                'source': '54SMR_0.75Weight_WHSH_extant',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': ["+", 2, ["*", 0.9, ["ln", ["to-number", ["get", "Output"]]]]],
+                    'circle-color': ["get", "marker-color"],
+                    'circle-opacity': 0.85,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            map.addLayer({
+                'id': '54SMR_0.75Weight_WHSH_SMR',
+                'type': 'circle',
+                'source': '54SMR_0.75Weight_WHSH_SMR',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': 8,
+                    'circle-color': "#50C878",
+                    'circle-opacity': 0.95,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            map.addLayer({
+                id: '54SMR_0.75Weight_WHSH_closed',
+                type: 'symbol',
+                source: '54SMR_0.75Weight_WHSH_closed',
+                layout: {
+                    'icon-image': 'Closed_icon',
+                    'icon-size': 0.03
+                }
+            });
+
+            // 54SMR_1Weight_WHSH
+            map.addLayer({
+                'id': '54SMR_1Weight_WHSH_extant',
+                'type': 'circle',
+                'source': '54SMR_1Weight_WHSH_extant',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': ["+", 2, ["*", 0.9, ["ln", ["to-number", ["get", "Output"]]]]],
+                    'circle-color': ["get", "marker-color"],
+                    'circle-opacity': 0.85,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            map.addLayer({
+                'id': '54SMR_1Weight_WHSH_SMR',
+                'type': 'circle',
+                'source': '54SMR_1Weight_WHSH_SMR',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': 8,
+                    'circle-color': "#50C878",
+                    'circle-opacity': 0.95,
+                    'circle-stroke-width': 0,
+                    'circle-stroke-color': inner_text
+                }
+            });
+
+            map.addLayer({
+                id: '54SMR_1Weight_WHSH_closed',
+                type: 'symbol',
+                source: '54SMR_1Weight_WHSH_closed',
+                layout: {
+                    'icon-image': 'Closed_icon',
+                    'icon-size': 0.03
+                }
+            });
+
+
+/////////////////////////////////////////////////////////////////////////////////////
+            // Locations for power generation
+            map.addLayer({
+                'id': 'power_locations',
+                'type': 'circle',
+                'source': 'powerplants',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': ["+", 3, ["*", 0.9, ["ln", ["to-number", ["get", "capacity"]]]]],
+                    'circle-color': ["get", "marker-color"],
+                    'circle-stroke-width': 1,
+                    'circle-stroke-color': inner_text
+                }
+            });
+        });
+
+        // ===== LAYERS END =====
+
+        // ===== MOUSE EVENTS =====
+        // click action of the retrofitting results--54SMR_0Weight_WHSH_extant
+        map.on('click', '54SMR_0Weight_WHSH_extant', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var status = e.features[0].properties["Status"];
+
+
+            selectRetrofit_extant(fuel, capacity, output, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        
+        map.on('click', '54SMR_0Weight_WHSH_SMR', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        map.on('click', '54SMR_0Weight_WHSH_closed', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        // click action of the retrofitting results--54SMR_0.25Weight_WHSH_extant
+        map.on('click', '54SMR_0.25Weight_WHSH_extant', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var status = e.features[0].properties["Status"];
+
+
+            selectRetrofit_extant(fuel, capacity, output, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        
+        map.on('click', '54SMR_0.25Weight_WHSH_SMR', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        map.on('click', '54SMR_0.25Weight_WHSH_closed', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        // click action of the retrofitting results--54SMR_0.5Weight_WHSH_extant
+        map.on('click', '54SMR_0.5Weight_WHSH_extant', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var status = e.features[0].properties["Status"];
+
+
+            selectRetrofit_extant(fuel, capacity, output, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        
+        map.on('click', '54SMR_0.5Weight_WHSH_SMR', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        map.on('click', '54SMR_0.5Weight_WHSH_closed', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        // click action of the retrofitting results--54SMR_0.75Weight_WHSH_extant
+        map.on('click', '54SMR_0.75Weight_WHSH_extant', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var status = e.features[0].properties["Status"];
+
+
+            selectRetrofit_extant(fuel, capacity, output, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        
+        map.on('click', '54SMR_0.75Weight_WHSH_SMR', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        map.on('click', '54SMR_0.75Weight_WHSH_closed', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+
+        // click action of the retrofitting results--54SMR_1Weight_WHSH_extant
+        map.on('click', '54SMR_1Weight_WHSH_extant', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var status = e.features[0].properties["Status"];
+
+
+            selectRetrofit_extant(fuel, capacity, output, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        
+        map.on('click', '54SMR_1Weight_WHSH_SMR', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        map.on('click', '54SMR_1Weight_WHSH_closed', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var fuel = e.features[0].properties["Fuel Type"];
+            var output = e.features[0].properties["Output"];
+            var capacity = e.features[0].properties["Capacity"];
+            var numberOfUnit = e.features[0].properties["Number of SMR units"];
+            var status = e.features[0].properties["Status"];
+
+            selectRetrofit_smr(fuel, capacity, output, numberOfUnit, coordinates, status);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        // On mouse enter
+        map.on('mouseenter', 'power_locations', function (e) {
+            map.getCanvas().style.cursor = 'pointer';
+
+            if (map.getZoom() < 7.5) {
+                var coordinates = e.features[0].geometry.coordinates.slice();
+                var name = e.features[0].properties["name"];
+                name = name.replaceAll("_", " ");
+
+                var fuel = e.features[0].properties["fuel"];
+
+                var html = `
+                                <b> ` + name + `</b><br>
+                                Fuel: ` + fuel + `
+                                <br><p>Click for more details.</p>
+                            `;
+                popup.setLngLat(coordinates).setHTML(html).addTo(map);
+            }
+        });
+
+        // On mouse exit
+        map.on('mouseleave', 'power_locations', function (e) {
+            map.getCanvas().style.cursor = '';
+            popup.remove();
+        });
+
+        // On selection
+        map.on('click', 'power_locations', function (e) {
+            var coordinates = e.features[0].geometry.coordinates.slice();
+            var name = e.features[0].properties["name"];
+            name = name.replaceAll("_", " ");
+
+            var fuel = e.features[0].properties["fuel"];
+            var capacity = e.features[0].properties["capacity"];
+            var indicator = e.features[0].properties["sdg941"];
+
+            selectPlant(name, fuel, capacity, indicator, coordinates);
+
+            map.flyTo({
+                center: coordinates,
+                curve: 1.9,
+                speed: 1.6,
+                pitch: 75,
+                zoom: 14,
+                bearing: Math.random() * 90
+            });
+        });
+
+        // ===== MOUSE EVENTS =====
+        // Register the layers with the central controls
+        registerLayer("Power Generation", ["power_locations", "power_labels"], null, true);
+      
+        registerLayer("54SMR_0Weight_WHSH", ["54SMR_0Weight_WHSH_closed", "54SMR_0Weight_WHSH_SMR", "54SMR_0Weight_WHSH_extant"], null, false);
+
+        registerLayer("54SMR_0.25Weight_WHSH", ["54SMR_0.25Weight_WHSH_closed", "54SMR_0.25Weight_WHSH_SMR", "54SMR_0.25Weight_WHSH_extant"], null, false);
+
+        registerLayer("54SMR_0.5Weight_WHSH", ["54SMR_0.5Weight_WHSH_closed", "54SMR_0.5Weight_WHSH_SMR", "54SMR_0.5Weight_WHSH_extant"], null, false);
+
+        registerLayer("54SMR_0.75Weight_WHSH", ["54SMR_0.75Weight_WHSH_closed", "54SMR_0.75Weight_WHSH_SMR", "54SMR_0.75Weight_WHSH_extant"], null, false);
+
+        registerLayer("54SMR_1Weight_WHSH", ["54SMR_1Weight_WHSH_closed", "54SMR_1Weight_WHSH_SMR", "54SMR_1Weight_WHSH_extant"], null, false);
+
+
+        // Build the layer selection tree
+        buildLayerTree("radio");
+    </script>
+
+</body>
+
+</html>
