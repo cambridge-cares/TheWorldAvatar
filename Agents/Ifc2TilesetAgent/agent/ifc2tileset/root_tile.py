@@ -52,7 +52,7 @@ def gen_root_content(building_iri: str, asset_data: pd.DataFrame):
     """Generates a tileset with building and furniture data.
 
     If there are no assets, the tileset generated in this function is sufficient for visualisation.
-    If there are no building and assets, returns None.
+    If there are no building, furniture and assets, returns None.
 
     Arguments:
         building_iri: The data IRI of the building.
@@ -63,33 +63,39 @@ def gen_root_content(building_iri: str, asset_data: pd.DataFrame):
     # Respective filepaths
     building_file_path = "./data/glb/building.glb"
     bpath = Path(building_file_path)
+    furniture_file_path = "./data/glb/furniture.glb"
+    fpath = Path(furniture_file_path)
 
+    # Generate an empty list to append contents when necessary
+    compute_bbox_list = []
+    root_content_list = []
+
+    # When there is a building file generated, append it to the list
     if bpath.is_file():
-        building_content = {"uri": state.asset_url + "building.glb"}
+        root_content_list.append(state.asset_url + "building.glb")
+        compute_bbox_list.append(bpath)
 
-        furniture_file_path = "./data/glb/furniture.glb"
-        fpath = Path(furniture_file_path)
+    # When there is a furniture file generated, append it to the list
+    if fpath.is_file():
+        root_content_list.append(state.asset_url + "furniture.glb")
+        compute_bbox_list.append(fpath)
 
-        # If there are furniture, use the multiple nomenclature
-        if fpath.is_file():
-            bbox = compute_bbox([bpath, fpath])
-            furniture_content = {"uri": state.asset_url + "furniture.glb"}
-
-            # Tileset Nomenclature for multiple geometry files = contents:[{}]
-            root_tile = make_root_tile(bbox=bbox, contents=[furniture_content, building_content])
-        else:
-            bbox = compute_bbox(bpath)
-
-            # Tileset Nomenclature for 1 geometry file = content:{}
-            root_tile = make_root_tile(bbox=bbox, content=building_content)
-    else:
+    # When neither the building and furniture is generated
+    if not root_content_list:
+        # And if there is also no assets, ensure that no bim tileset is generated
         if asset_data.empty:
-            # No bim tileset should be generated if there is no builidng and no assets
             return None
-
-        # In the scenario where there is no building, the root bbox should enclose all assets
-        bbox = compute_bbox([f"./data/glb/{file}.glb" for file in asset_data["file"]])
-        root_tile = make_root_tile(bbox=bbox)
+        # Otherwise, generate the root tile with a bounding box enclosing all the assets
+        else:
+            bbox = compute_bbox(
+                [f"./data/glb/{file}.glb" for file in asset_data["file"]])
+            root_tile = make_root_tile(bbox=bbox)
+    # When there is either a building and/or furniture generated,
+    # compute their bounding boxes and generate a root tile accordingly
+    else:
+        bbox = compute_bbox(compute_bbox_list)
+        root_tile = make_root_tile(
+            bbox=bbox, geometry_file_paths=root_content_list)
 
     tileset = make_tileset(root_tile)
     append_tileset_schema_and_metadata(tileset, building_iri)

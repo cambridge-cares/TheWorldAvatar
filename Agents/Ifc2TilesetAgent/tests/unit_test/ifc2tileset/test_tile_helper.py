@@ -19,15 +19,17 @@ from .testutils import read_json
 
 
 @pytest.mark.parametrize(
-    "bbox, kwargs",
+    "bbox, geometry_file_paths, kwargs",
     [
-        (list(range(12)), dict()),
-        (list(range(12)), dict(content={"uri": "./data/glb/building.glb"})),
-        (None, dict()),
-        (None, dict(contents=[{"uri": "./data/glb/building.glb"}, {"uri": "./data/glb/furniture.glb"}]))
+        (list(range(12)), [], dict()),
+        (list(range(12)), ["./data/glb/building.glb"],
+         dict(content={"uri": "./data/glb/building.glb"})),
+        (None, None, dict()),
+        (None, ["./data/glb/building.glb", "./data/glb/furniture.glb"],
+         dict(contents=[{"uri": "./data/glb/building.glb"}, {"uri": "./data/glb/furniture.glb"}]))
     ]
 )
-def test_make_root_tile(bbox, kwargs):
+def test_make_root_tile(bbox, geometry_file_paths, kwargs):
     # Arrange
     expected = {
         **{
@@ -39,7 +41,7 @@ def test_make_root_tile(bbox, kwargs):
     }
 
     # Act
-    actual = make_root_tile(bbox, **kwargs)
+    actual = make_root_tile(bbox, geometry_file_paths)
 
     # Assert
     assert actual == expected
@@ -129,7 +131,7 @@ def test_jsonwriter():
     # Arrange
     sample_tileset = {"testkey": "testvalue"}
     sample_name = "jsontest"
-    
+
     # Act
     jsonwriter(sample_tileset, sample_name)
 
@@ -167,7 +169,8 @@ def test_gen_solarpanel_tileset():
     assert "root" in tileset
 
     root_tile = tileset["root"]
-    assert "content" in root_tile and root_tile["content"] == {"uri": "./glb/solarpanel.glb"}
+    assert "content" in root_tile and root_tile["content"] == {
+        "uri": "./glb/solarpanel.glb"}
     assert "boundingVolume" in root_tile and "box" in root_tile["boundingVolume"] \
         and np.allclose(root_tile["boundingVolume"]["box"], C.sample_box_bbox)
 
@@ -200,6 +203,7 @@ def test_gen_sewagenetwork_tileset():
     assert "root" in tileset
 
     root_tile = tileset["root"]
-    assert "content" in root_tile and root_tile["content"] == {"uri": "./glb/sewagenetwork.glb"}
+    assert "content" in root_tile and root_tile["content"] == {
+        "uri": "./glb/sewagenetwork.glb"}
     assert "boundingVolume" in root_tile and "box" in root_tile["boundingVolume"] \
         and np.allclose(root_tile["boundingVolume"]["box"], C.sample_cone_bbox)

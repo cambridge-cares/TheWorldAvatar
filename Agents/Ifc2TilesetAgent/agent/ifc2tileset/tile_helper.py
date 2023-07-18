@@ -23,12 +23,13 @@ from agent.ifc2tileset.schema import Tileset, Tile
 logger = agentlogging.get_logger("dev")
 
 
-def make_root_tile(bbox: Optional[List[float]] = None, **kwargs):
-    """Generates a root tile with the provided arguments and default values.
+def make_root_tile(bbox: Optional[List[float]] = None, geometry_file_paths: Optional[List[str]] = []):
+    """Generates a root tile with the provided arguments and default values. The root tile will only
+    include geometry content for non-asset elements like the building, furniture, and solar panels.
 
     Args:
         bbox (optional): A 12-element list that represents Next tileset's boundingVolume.box property. Defaults to None.
-        **kwargs: Keyword arguments to be added to the root tile.
+        geometry_file_paths (optional): A list of geometry file paths if available to be appended. Defaults to an empty list.
 
     Returns:
         A root tile.
@@ -40,8 +41,17 @@ def make_root_tile(bbox: Optional[List[float]] = None, **kwargs):
         refine="ADD",
     )
 
-    for key, value in kwargs.items():
-        root_tile[key] = value
+    # If there are geometry contents available
+    if geometry_file_paths:
+        # And if there is only one item in the list, use the "content" nomenclature
+        if len(geometry_file_paths) == 1:
+            root_tile["content"] = {"uri": geometry_file_paths[0]}
+        else:
+            # If there are more than one item, use the "contents" nomenclature with a list
+            # Sample format: {"contents": [{"uri":"path1"}, {"uri":"path2"}]}
+            root_tile["contents"] = []
+            for path in geometry_file_paths:
+                root_tile["contents"].append({"uri": path})
 
     return root_tile
 
@@ -118,7 +128,8 @@ def gen_solarpanel_tileset():
         return
 
     bbox = compute_bbox(solarpath)
-    root_tile = make_root_tile(bbox=bbox, content={"uri": state.asset_url + "solarpanel.glb"})
+    root_tile = make_root_tile(
+        bbox=bbox, geometry_file_paths=[state.asset_url + "solarpanel.glb"])
     tileset = make_tileset(root_tile)
 
     jsonwriter(tileset, "tileset_solarpanel")
@@ -134,7 +145,8 @@ def gen_sewagenetwork_tileset():
         return
 
     bbox = compute_bbox(sewagepath)
-    root_tile = make_root_tile(bbox=bbox, content={"uri": state.asset_url + "sewagenetwork.glb"})
+    root_tile = make_root_tile(
+        bbox=bbox,  geometry_file_paths=[state.asset_url + "sewagenetwork.glb"])
     tileset = make_tileset(root_tile)
 
     jsonwriter(tileset, "tileset_sewage")

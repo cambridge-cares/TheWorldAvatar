@@ -105,7 +105,7 @@ def test_api_simple(init_assets, expected_assets, expected_bim_bbox, kg_client, 
     ), (
         ["building", "wall", "water_meter", "fridge", "chair", "table", "solar_panel"],
         ["building", "asset1", "asset2", "furniture", "solarpanel"],
-        dict(contents=[{"uri": "./glb/furniture.glb"}, {"uri": "./glb/building.glb"}]),
+        dict(contents=[{"uri": "./glb/building.glb"}, {"uri": "./glb/furniture.glb"}]),
         [dict(uri=f"./glb/asset{i + 1}.glb",
               metadata={"class": "AssetMetaData",
                         "properties": {"name": e.label, "uid": e.ifc_id, "iri": C.base_namespace + e.iri}})
