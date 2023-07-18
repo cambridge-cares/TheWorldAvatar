@@ -33,7 +33,6 @@ import java.util.*;
 public class SpatialLink{
 
     private static final Logger LOGGER = LogManager.getLogger(SpatialLink.class);
-    private static String file ="/inputs/config/endpoint.properties";
     // private PostgresClient postgresClient2d;
     // private PostgresClient postgresClient3d;
     private static final String INVALID_CONNECTION_MESSAGE = "Connection is invalid...";
@@ -277,21 +276,4 @@ public class SpatialLink{
 
         return reversed;
     }
-
-    // public static Map<String, String> aggregateByKeys() {
-    //     Map<String, String> map = new HashMap<>();
-    //     try (Stream<String> lines = Files.lines(Paths.get(file))) {
-    //         lines.filter(line -> line.contains(":"))
-    //                 .forEach(line -> {
-    //                     String[] keyValuePair = line.split(":", 2);
-    //                     String key = keyValuePair[0];
-    //                     String value = keyValuePair[1];
-    //                     map.put(key, value);
-
-    //                 });
-    //     } catch (IOException e) {
-    //         e.printStackTrace();
-    //     }
-    //     return map;
-    // }
 }

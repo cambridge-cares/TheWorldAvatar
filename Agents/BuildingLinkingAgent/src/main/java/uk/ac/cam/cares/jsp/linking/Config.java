@@ -5,7 +5,6 @@ import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
