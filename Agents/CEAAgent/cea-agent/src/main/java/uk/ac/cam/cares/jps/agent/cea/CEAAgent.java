@@ -87,12 +87,7 @@ public class CEAAgent extends JPSAgent {
     private String targetUrl = "http://localhost:8084/cea-agent" + URI_UPDATE;
 
     public static final String CITY_OBJECT = "cityobject";
-    public static final String CITY_OBJECT_GEN_ATT = "cityobjectgenericattrib";
-    public static final String BUILDING = "building";
-    public static final String SURFACE_GEOMETRY = "surfacegeometry";
-    public static final String THEMATIC_SURFACE = "thematicsurface";
     public static final String ENERGY_PROFILE = "energyprofile";
-    public static final String DATABASE_SRS = "databasesrs";
     public static final String KEY_GRID_CONSUMPTION = "GridConsumption";
     public static final String KEY_ELECTRICITY_CONSUMPTION = "ElectricityConsumption";
     public static final String KEY_HEATING_CONSUMPTION = "HeatingConsumption";
@@ -171,6 +166,8 @@ public class CEAAgent extends JPSAgent {
 
     private TimeSeriesClient<OffsetDateTime> tsClient;
     public static final String timeUnit = OffsetDateTime.class.getSimpleName();
+    
+    private OntologyURIHelper ontologyUriHelper;
 
     public static final String STACK_NAME = "<STACK NAME>";
     private String stackName;
@@ -186,19 +183,6 @@ public class CEAAgent extends JPSAgent {
     private String tsUrl;
     private String defaultTerrainDb;
     private String defaultTerrainTable;
-    // Variables fetched from CEAAgentConfig.properties file.
-    private String ocgmlUri;
-    private String ontoUBEMMPUri;
-    private String rdfUri;
-    private String owlUri;
-    private String botUri;
-    private String ontobuiltenvUri;
-    private String ontobuiltstructureUri;
-    private String ontotimeseriesUri;
-    private String ontoemsUri;
-    private String geoliteralUri;
-    private String geoUri;
-    private static String unitOntologyUri;
     private String requestUrl;
     private String geometryRoute;
     private String usageRoute;
@@ -212,6 +196,7 @@ public class CEAAgent extends JPSAgent {
 
     public CEAAgent() {
         readConfig();
+        ontologyUriHelper = new OntologyURIHelper("CEAAgentConfig");
         stackName = StackClient.getStackName();
         stackAccessAgentBase =  stackAccessAgentBase.replace(STACK_NAME, stackName);
         openmeteoagentUrl = openmeteoagentUrl.replace(STACK_NAME, stackName);
@@ -325,17 +310,11 @@ public class CEAAgent extends JPSAgent {
                         }
 
                         uriStringArray.add(uri);
-                        // Set default value of 10m if height can not be obtained from knowledge graph
-                        // Will only require one height query if height is represented in data consistently
-                        String height = getValue(uri, "HeightMeasuredHeigh", geometryRoute);
-                        height = height.length() == 0 ? getValue(uri, "HeightMeasuredHeight", geometryRoute) : height;
-                        height = height.length() == 0 ? getValue(uri, "HeightGenAttr", geometryRoute) : height;
-                        height = height.length() == 0 ? "10.0" : height;
+
+                        String height = getBuildingGeometry(uri, geometryRoute, "height");
 
                         // Get footprint from ground thematic surface or find from surface geometries depending on data
-                        String footprint = getValue(uri, "Lod0FootprintId", geometryRoute);
-                        footprint = footprint.length() == 0 ? getValue(uri, "FootprintThematicSurface", geometryRoute) : footprint;
-                        footprint = footprint.length() == 0 ? getValue(uri, "FootprintSurfaceGeom", geometryRoute) : footprint;
+                        String footprint = getBuildingGeometry(uri, geometryRoute, "footprint");
 
                         // Get building usage, set default usage of MULTI_RES if not available in knowledge graph
                         Map<String, Double> usage = getBuildingUsages(uri, usageRoute);
@@ -344,10 +323,9 @@ public class CEAAgent extends JPSAgent {
 
                         //just get crs once - assuming all iris in same namespace
                         if (i == 0) {
-                            crs = getValue(uri, "CRS", geometryRoute);
-                            crs = crs.isEmpty() ? getValue(uri, "DatabasesrsCRS", geometryRoute) : crs;
+                            crs = getBuildingGeometry(uri, geometryRoute, "crs");
                             if (crs.isEmpty()) {
-                                crs = getNamespace(uri).split("EPSG").length == 2 ? getNamespace(uri).split("EPSG")[1].split("/")[0] : "27700";
+                                crs = BuildingHelper.getNamespace(uri).split("EPSG").length == 2 ? BuildingHelper.getNamespace(uri).split("EPSG")[1].split("/")[0] : "27700";
                             }
                         }
 
@@ -617,18 +595,6 @@ public class CEAAgent extends JPSAgent {
      */
     private void readConfig() {
         ResourceBundle config = ResourceBundle.getBundle("CEAAgentConfig");
-        ocgmlUri = config.getString("uri.ontology.ontocitygml");
-        unitOntologyUri = config.getString("uri.ontology.om");
-        ontoUBEMMPUri = config.getString("uri.ontology.ontoubemmp");
-        rdfUri = config.getString("uri.ontology.rdf");
-        owlUri = config.getString("uri.ontology.owl");
-        botUri=config.getString("uri.ontology.bot");
-        ontobuiltenvUri =config.getString("uri.ontology.ontobuiltenv");
-        ontobuiltstructureUri =config.getString("uri.ontology.ontobuiltstructure");
-        ontotimeseriesUri=config.getString("uri.ontology.ontotimeseries");
-        ontoemsUri=config.getString("uri.ontology.ontoems");
-        geoliteralUri=config.getString("uri.ontology.geoliteral");
-        geoUri=config.getString("uri.service.geo");
         accessAgentRoutes.put("http://www.theworldavatar.com:83/citieskg/namespace/berlin/sparql/", config.getString("berlin.targetresourceid"));
         accessAgentRoutes.put("http://www.theworldavatar.com:83/citieskg/namespace/singaporeEPSG24500/sparql/", config.getString("singaporeEPSG24500.targetresourceid"));
         accessAgentRoutes.put("http://www.theworldavatar.com:83/citieskg/namespace/singaporeEPSG4326/sparql/", config.getString("singaporeEPSG4326.targetresourceid"));
@@ -675,7 +641,7 @@ public class CEAAgent extends JPSAgent {
         List<String> iris = new ArrayList<>();
         for(String measurement: TIME_SERIES){
             String iri = measurement+"_"+UUID.randomUUID()+ "/";
-            iri = !graph.isEmpty() ? graph + iri : ontoUBEMMPUri + iri ;
+            iri = !graph.isEmpty() ? graph + iri : ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + iri ;
             iris.add(iri);
             fixedIris.put(measurement, iri);
         }
@@ -764,45 +730,6 @@ public class CEAAgent extends JPSAgent {
         return true;
     }
 
-    /**
-     * Gets namespace uri from input city object uri.
-     * @param uriString input city object id
-     * @return Object's namespace
-     */
-    private String getNamespace(String uriString) {
-        String[] splitUri = uriString.split("/");
-        return String.join("/", Arrays.copyOfRange(splitUri, 0, splitUri.length - 2))+"/";
-    }
-
-    /**
-     * Creates graph uri from input city object uri and graph name tag
-     * @param uriString input city object id
-     * @param graph name tag of graph wanted
-     * @return Requested graph with correct namespace
-     */
-    private String getGraph(String uriString, String graph) {
-        String namespace = getNamespace(uriString);
-        return namespace + graph + "/";
-    }
-
-    /**
-     * Gets UUID from input city object uri
-     * @param uriString input city object id
-     * @return Requested UUID
-     */
-    private String getUUID(String uriString) {
-        String[] splitUri = uriString.split("/");
-        return splitUri[splitUri.length-1];
-    }
-
-    /**
-     * Gets building uri from input city object uri
-     * @param uriString input city object id
-     * @return Building uri
-     */
-    private String getBuildingUri(String uriString) {
-        return getGraph(uriString,BUILDING)+getUUID(uriString)+"/";
-    }
 
     /**
      * Returns route for use with AccessAgent
@@ -810,7 +737,7 @@ public class CEAAgent extends JPSAgent {
      * @return route of endpoint that iri belongs to
      */
     private String getRoute(String iriString) {
-        String namespaceEndpoint = getNamespace(iriString);
+        String namespaceEndpoint = BuildingHelper.getNamespace(iriString);
         String route = accessAgentRoutes.get(namespaceEndpoint);
         return route;
     }
@@ -826,7 +753,9 @@ public class CEAAgent extends JPSAgent {
 
         String result = "";
 
-        Query q = getQuery(uriString, value);
+        GeometryQueryHelper geometryQueryHelper = new GeometryQueryHelper(ontologyUriHelper);
+
+        Query q = geometryQueryHelper.getQuery(uriString, value);
 
         //Use access agent
         JSONArray queryResultArray = this.queryStore(route, q.toString());
@@ -842,6 +771,42 @@ public class CEAAgent extends JPSAgent {
                 result = queryResultArray.getJSONObject(0).get(value).toString();
             }
         }
+        return result;
+    }
+
+    /**
+     * Queries for building geometry related information
+     * @param uriString city object id
+     * @param route route to pass to access agent
+     * @param type type of building geometry related information to be queried
+     * @return building geometry related information
+     */
+    private String getBuildingGeometry(String uriString, String route, String type) {
+        String result;
+
+        switch(type) {
+            case "height":
+                // Set default value of 10m if height can not be obtained from knowledge graph
+                // Will only require one height query if height is represented in data consistently
+                result = getValue(uriString, "HeightMeasuredHeigh", route);
+                result = result.length() == 0 ? getValue(uriString, "HeightMeasuredHeight", route) : result;
+                result = result.length() == 0 ? getValue(uriString, "HeightGenAttr", route) : result;
+                result = result.length() == 0 ? "10.0" : result;
+                
+            case "footprint":
+                // Get footprint from ground thematic surface or find from surface geometries depending on data
+                result = getValue(uriString, "Lod0FootprintId", route);
+                result = result.length() == 0 ? getValue(uriString, "FootprintThematicSurface", route) : result;
+                result = result.length() == 0 ? getValue(uriString, "FootprintSurfaceGeom", route) : result;
+            
+            case "crs":
+                result = getValue(uriString, "CRS", route);
+                result = result.isEmpty() ? getValue(uriString, "DatabasesrsCRS", route) : result;
+
+            default:
+                result = "";
+        }
+
         return result;
     }
 
@@ -917,213 +882,6 @@ public class CEAAgent extends JPSAgent {
     }
 
     /**
-     * Calls a SPARQL query for a specific URI for height or geometry.
-     * @param uriString city object id
-     * @param value building value requested
-     * @return returns a query string
-     */
-    private Query getQuery(String uriString, String value) {
-        switch(value) {
-            case "Lod0FootprintId":
-                return getLod0FootprintIdQuery(uriString);
-            case "FootprintSurfaceGeom":
-                return getGeometryQuerySurfaceGeom(uriString);
-            case "FootprintThematicSurface":
-                return getGeometryQueryThematicSurface(uriString);
-            case "HeightMeasuredHeigh":
-                return getHeightQueryMeasuredHeigh(uriString);
-            case "HeightMeasuredHeight":
-                return getHeightQueryMeasuredHeight(uriString);
-            case "HeightGenAttr":
-                return getHeightQueryGenAttr(uriString);
-            case "DatabasesrsCRS":
-                return getDatabasesrsCrsQuery(uriString);
-            case "CRS":
-                return getCrsQuery(uriString);
-            case "envelope":
-                return getEnvelopeQuery(uriString);
-        }
-        return null;
-    }
-
-    /**
-     * Builds a SPARQL query for a specific URI to retrieve all surface geometries to a building
-     * @param uriString city object id
-     * @return returns a query string
-     */
-    private Query getGeometryQuerySurfaceGeom(String uriString) {
-        try {
-            WhereBuilder wb = new WhereBuilder()
-                    .addPrefix("ocgml", ocgmlUri)
-                    .addWhere("?surf", "ocgml:cityObjectId", "?s")
-                    .addWhere("?surf", "ocgml:GeometryType", "?geometry")
-                    .addFilter("!isBlank(?geometry)");
-            SelectBuilder sb = new SelectBuilder()
-                    .addVar("?geometry")
-                    .addVar("datatype(?geometry)", "?datatype")
-                    .addGraph(NodeFactory.createURI(getGraph(uriString,SURFACE_GEOMETRY)), wb);
-            sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(getBuildingUri(uriString)));
-            return sb.build();
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * Builds a SPARQL query for a specific URI to retrieve ground surface geometries for building linked to thematic surfaces with ocgml:objectClassId 35
-     * @param uriString city object id
-     * @return returns a query string
-     */
-    private Query getGeometryQueryThematicSurface(String uriString) {
-        try {
-            WhereBuilder wb1 = new WhereBuilder()
-                    .addPrefix("ocgml", ocgmlUri)
-                    .addWhere("?surf", "ocgml:cityObjectId", "?s")
-                    .addWhere("?surf", "ocgml:GeometryType", "?geometry")
-                    .addFilter("!isBlank(?geometry)");
-            WhereBuilder wb2 = new WhereBuilder()
-                    .addPrefix("ocgml", ocgmlUri)
-                    .addWhere("?s", "ocgml:buildingId", "?building")
-                    .addWhere("?s", "ocgml:objectClassId", "?groundSurfId")
-                    .addFilter("?groundSurfId = 35"); //Thematic Surface Ids are 33:roof, 34:wall and 35:ground
-            SelectBuilder sb = new SelectBuilder()
-                    .addVar("?geometry")
-                    .addVar("datatype(?geometry)", "?datatype")
-                    .addGraph(NodeFactory.createURI(getGraph(uriString,SURFACE_GEOMETRY)), wb1)
-                    .addGraph(NodeFactory.createURI(getGraph(uriString,THEMATIC_SURFACE)), wb2);
-            sb.setVar( Var.alloc( "building" ), NodeFactory.createURI(getBuildingUri(uriString)));
-            return sb.build();
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
-
-    }
-
-    /**
-     * Builds a SPARQL query for a specific URI to retrieve the building height for data with ocgml:measuredHeight attribute
-     * @param uriString city object id
-     * @return returns a query string
-     */
-    private Query getHeightQueryMeasuredHeight(String uriString) {
-        try {
-            WhereBuilder wb = new WhereBuilder()
-                    .addPrefix("ocgml", ocgmlUri)
-                    .addWhere("?s", "ocgml:measuredHeight", "?HeightMeasuredHeight")
-                    .addFilter("!isBlank(?HeightMeasuredHeight)");
-            SelectBuilder sb = new SelectBuilder()
-                    .addVar("?HeightMeasuredHeight")
-                    .addGraph(NodeFactory.createURI(getGraph(uriString,BUILDING)), wb);
-            sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(getBuildingUri(uriString)));
-            return sb.build();
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * Builds a SPARQL query for a specific URI to retrieve the building height for data with ocgml:measuredHeigh attribute
-     * @param uriString city object id
-     * @return returns a query string
-     */
-    private Query getHeightQueryMeasuredHeigh(String uriString) {
-        try {
-            WhereBuilder wb = new WhereBuilder()
-                    .addPrefix("ocgml", ocgmlUri)
-                    .addWhere("?s", "ocgml:measuredHeigh", "?HeightMeasuredHeigh")
-                    .addFilter("!isBlank(?HeightMeasuredHeigh)");
-            SelectBuilder sb = new SelectBuilder()
-                    .addVar("?HeightMeasuredHeigh")
-                    .addGraph(NodeFactory.createURI(getGraph(uriString, BUILDING)), wb);
-            sb.setVar(Var.alloc("s"), NodeFactory.createURI(getBuildingUri(uriString)));
-            return sb.build();
-        }catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * Builds a SPARQL query for a specific URI to retrieve the building height for data with generic attribute with ocgml:attrName 'height'
-     * @param uriString city object id
-     * @return returns a query string
-     */
-    private Query getHeightQueryGenAttr(String uriString) {
-        WhereBuilder wb = new WhereBuilder();
-        SelectBuilder sb = new SelectBuilder();
-
-        wb.addPrefix("ocgml", ocgmlUri)
-                .addWhere("?o", "ocgml:attrName", "height")
-                .addWhere("?o", "ocgml:realVal", "?HeightGenAttr")
-                .addWhere("?o", "ocgml:cityObjectId", "?s");
-        sb.addVar("?HeightGenAttr")
-                .addGraph(NodeFactory.createURI(getGraph(uriString,CITY_OBJECT_GEN_ATT)), wb);
-        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(uriString));
-
-        return sb.build();
-    }
-
-    /**
-     * Builds a SPARQL query for a CRS in the DatabaseSRS graph using namespace from uri
-     * @param uriString city object id
-     * @return returns a query string
-     */
-    private Query getDatabasesrsCrsQuery(String uriString) {
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ocgml", ocgmlUri)
-                .addWhere("?s", "ocgml:srid", "?CRS");
-        SelectBuilder sb = new SelectBuilder()
-                .addVar("?CRS")
-                .addGraph(NodeFactory.createURI(getGraph(uriString,DATABASE_SRS)), wb);
-        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(getNamespace(uriString)));
-        return sb.build();
-    }
-
-    /**
-     * Builds a SPARQL query for a specific URI to retrieve ground surface geometry from lod0FootprintId
-     * @param uriString city object id
-     * @return returns a query string
-     */
-    private Query getLod0FootprintIdQuery(String uriString) {
-        try {
-            WhereBuilder wb = new WhereBuilder()
-                    .addPrefix("ocgml", ocgmlUri)
-                    .addWhere("?building", "ocgml:lod0FootprintId", "?footprintSurface")
-                    .addWhere("?surface", "ocgml:parentId", "?footprintSurface")
-                    .addWhere("?surface", "ocgml:GeometryType", "?geometry");
-            SelectBuilder sb = new SelectBuilder()
-                    .addVar("?geometry")
-                    .addVar("datatype(?geometry)", "?datatype")
-                    .addWhere(wb);
-            sb.setVar(Var.alloc("building"), NodeFactory.createURI(getBuildingUri(uriString)));
-            return sb.build();
-        }catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    /**
-     * Builds a SPARQL query for a CRS not in the DatabaseSRS graph using namespace from uri
-     * @param uriString city object id
-     * @return returns a query string
-     */
-    private Query getCrsQuery(String uriString) {
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ocgml", ocgmlUri)
-                .addWhere("?s", "ocgml:srid", "?CRS");
-        SelectBuilder sb = new SelectBuilder()
-                .addVar("?CRS")
-                .addWhere(wb);
-        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(getNamespace(uriString)));
-        return sb.build();
-    }
-
-    /**
      * Builds a SPARQL query for a specific URI to retrieve the building usages and the building usage share with OntoBuiltEnv concepts
      * @param uriString city object id
      * @return returns a query string
@@ -1132,8 +890,8 @@ public class CEAAgent extends JPSAgent {
         WhereBuilder wb = new WhereBuilder();
         SelectBuilder sb = new SelectBuilder();
 
-        wb.addPrefix("ontoBuiltEnv", ontobuiltenvUri)
-                .addPrefix("rdf", rdfUri)
+        wb.addPrefix("ontoBuiltEnv", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
+                .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf))
                 .addWhere("?building", "ontoBuiltEnv:hasOntoCityGMLRepresentation", "?s")
                 .addWhere("?building", "ontoBuiltEnv:hasPropertyUsage", "?usage")
                 .addWhere("?usage", "rdf:type", "?BuildingUsage")
@@ -1143,24 +901,8 @@ public class CEAAgent extends JPSAgent {
                 .addWhere(wb)
                 .addOrderBy("UsageShare", Order.DESCENDING);
 
-        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(getBuildingUri(uriString)));
+        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(BuildingHelper.getBuildingUri(uriString)));
 
-        return sb.build();
-    }
-
-    /**
-     * Builds a SPARQL query for the envelope of uriString
-     * @param uriString city object id
-     * @return returns a query string
-     */
-    private Query getEnvelopeQuery(String uriString){
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ocgml", ocgmlUri)
-                .addWhere("?s", "ocgml:EnvelopeType", "?envelope");
-        SelectBuilder sb = new SelectBuilder()
-                .addVar("?envelope")
-                .addWhere(wb);
-        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(uriString));
         return sb.build();
     }
 
@@ -1174,8 +916,8 @@ public class CEAAgent extends JPSAgent {
     private Query getBuildingsWithinBoundsQuery(String uriString, String lowerBounds, String upperBounds) throws ParseException {
         // where clause for geospatial search
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ocgml", ocgmlUri)
-                .addPrefix("geo", geoUri)
+                .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
+                .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo))
                 .addWhere("?cityObject", "geo:predicate", "ocgml:EnvelopeType")
                 .addWhere("?cityObject", "geo:searchDatatype", customDataType)
                 .addWhere("?cityObject", "geo:customFields", customField)
@@ -1185,7 +927,7 @@ public class CEAAgent extends JPSAgent {
 
         // where clause to check that the city object is a building
         WhereBuilder wb2 = new WhereBuilder()
-                .addPrefix("ocgml", ocgmlUri)
+                .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
                 .addWhere("?cityObject", "ocgml:objectClassId", "?id")
                 .addFilter("?id=26");
 
@@ -1195,7 +937,7 @@ public class CEAAgent extends JPSAgent {
         Query query = sb.build();
         // add geospatial service
         ElementGroup body = new ElementGroup();
-        body.addElement(new ElementService(geoUri + "search", wb.build().getQueryPattern()));
+        body.addElement(new ElementService(ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo) + "search", wb.build().getQueryPattern()));
         body.addElement(wb2.build().getQueryPattern());
         query.setQueryPattern(body);
 
@@ -1203,7 +945,7 @@ public class CEAAgent extends JPSAgent {
 
         // add city object graph
         WhereHandler wh2 = new WhereHandler(sb.build());
-        wh2.addGraph(NodeFactory.createURI(getGraph(uriString,CITY_OBJECT)), wh);
+        wh2.addGraph(NodeFactory.createURI(BuildingHelper.getGraph(uriString,CITY_OBJECT)), wh);
 
         return wh2.getQuery();
     }
@@ -1265,16 +1007,8 @@ public class CEAAgent extends JPSAgent {
                 uri = queryResultArray.getJSONObject(i).get("cityObject").toString();
 
                 if (!unique.contains(uri)) {
-                    // Set default value of 10m if height can not be obtained from knowledge graph
-                    // Will only require one height query if height is represented in data consistently
-                    String height = getValue(uri, "HeightMeasuredHeigh", route);
-                    height = height.length() == 0 ? getValue(uri, "HeightMeasuredHeight", route) : height;
-                    height = height.length() == 0 ? getValue(uri, "HeightGenAttr", route) : height;
-                    height = height.length() == 0 ? "10.0" : height;
-                    // Get footprint from ground thematic surface or find from surface geometries depending on data
-                    String footprint = getValue(uri, "Lod0FootprintId", route);
-                    footprint = footprint.length() == 0 ? getValue(uri, "FootprintThematicSurface", route) : footprint;
-                    footprint = footprint.length() == 0 ? getValue(uri, "FootprintSurfaceGeom", route) : footprint;
+                    String height = getBuildingGeometry(uri, route, "height");
+                    String footprint = getBuildingGeometry(uri, route, "footprint");
 
                     temp = new CEAInputData(footprint, height, null, null, null, null, null);
                     unique.add(uri);
@@ -1319,13 +1053,13 @@ public class CEAAgent extends JPSAgent {
             result.put(usage, 1.00);
         }
         else if (queryResultArray.length() == 1){
-            usage = queryResultArray.getJSONObject(0).get("BuildingUsage").toString().split(ontobuiltenvUri)[1].split(">")[0].toUpperCase();
+            usage = queryResultArray.getJSONObject(0).get("BuildingUsage").toString().split(ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))[1].split(">")[0].toUpperCase();
             usage = toCEAConvention(usage);
             result.put(usage, 1.00);
         }
         else {
             for (int i = 0; i < queryResultArray.length(); i++) {
-                usage = queryResultArray.getJSONObject(i).get("BuildingUsage").toString().split(ontobuiltenvUri)[1].split(">")[0].toUpperCase();
+                usage = queryResultArray.getJSONObject(i).get("BuildingUsage").toString().split(ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))[1].split(">")[0].toUpperCase();
                 usage = toCEAConvention(usage);
 
                 if (temp.containsKey(usage)) {
@@ -1495,9 +1229,9 @@ public class CEAAgent extends JPSAgent {
     private String getWeatherStation(Coordinate center, Double radius, String route) {
         String result = "";
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("geo", geoUri)
-                .addPrefix("geoliteral", geoliteralUri)
-                .addPrefix("ontoems", ontoemsUri);
+                .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo))
+                .addPrefix("geoliteral", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geoliteral))
+                .addPrefix("ontoems", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoems));
 
         wb.addWhere("?station", "geo:search", "inCircle")
                 .addWhere("?station", "geo:searchDatatype", "geoliteral:lat-lon")
@@ -1513,7 +1247,7 @@ public class CEAAgent extends JPSAgent {
 
         // add geospatial service
         ElementGroup body = new ElementGroup();
-        body.addElement(new ElementService(geoUri + "search", wb.build().getQueryPattern()));
+        body.addElement(new ElementService(ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo) + "search", wb.build().getQueryPattern()));
         query.setQueryPattern(body);
 
         String queryString = query.toString().replace("PLACEHOLDER", "#");
@@ -1535,8 +1269,8 @@ public class CEAAgent extends JPSAgent {
      */
     private String getStationElevation(String stationIRI, String route) {
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ontoEMS", ontoemsUri)
-                .addPrefix("rdf", rdfUri);
+                .addPrefix("ontoEMS", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoems))
+                .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf));
 
         wb.addWhere(NodeFactory.createURI(stationIRI), "ontoEMS:hasObservationElevation", "?elevation");
 
@@ -1563,8 +1297,8 @@ public class CEAAgent extends JPSAgent {
      */
     private List<Double> getStationCoordinate(String stationIRI, String route) {
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ontoEMS", ontoemsUri)
-                .addPrefix("rdf", rdfUri);
+                .addPrefix("ontoEMS", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoems))
+                .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf));
 
         wb.addWhere(NodeFactory.createURI(stationIRI), "ontoEMS:hasObservationLocation", "?coordinate");
 
@@ -1644,10 +1378,10 @@ public class CEAAgent extends JPSAgent {
     private Map<String, List<String>> getWeatherIRI(String stationIRI, String route) {
         Map<String, List<String>> result = new HashMap<>();
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ontoems", ontoemsUri)
-                .addPrefix("om", unitOntologyUri)
-                .addPrefix("rdf", rdfUri)
-                .addPrefix("ontotimeseries", ontotimeseriesUri);
+                .addPrefix("ontoems", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoems))
+                .addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
+                .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf))
+                .addPrefix("ontotimeseries", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontotimeseries));
 
         wb.addWhere("?station", "ontoems:reports", "?quantity")
                 .addWhere("?quantity", "rdf:type", "?weatherParameter")
@@ -1668,7 +1402,7 @@ public class CEAAgent extends JPSAgent {
 
         if (!queryResultArray.isEmpty()) {
             for (int i = 0; i < queryResultArray.length(); i++) {
-                result.put(queryResultArray.getJSONObject(i).getString("weatherParameter").split(ontoemsUri)[1], Arrays.asList(queryResultArray.getJSONObject(i).getString("measure"), queryResultArray.getJSONObject(i).getString("rdb")));
+                result.put(queryResultArray.getJSONObject(i).getString("weatherParameter").split(ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoems))[1], Arrays.asList(queryResultArray.getJSONObject(i).getString("measure"), queryResultArray.getJSONObject(i).getString("rdb")));
             }
         }
 
@@ -1972,11 +1706,11 @@ public class CEAAgent extends JPSAgent {
             return result;
         }
 
-        wb.addPrefix("ocgml", ocgmlUri)
-                .addPrefix("rdf", rdfUri)
-                .addPrefix("om", unitOntologyUri)
-                .addPrefix("ontoubemmp", ontoUBEMMPUri)
-                .addPrefix("obs", ontobuiltstructureUri);
+        wb.addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
+                .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf))
+                .addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
+                .addPrefix("ontoubemmp", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
+                .addPrefix("obs", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltstructure));
 
         switch(value) {
             case KEY_ROOF_SOLAR_SUITABLE_AREA:
@@ -2141,7 +1875,7 @@ public class CEAAgent extends JPSAgent {
     public String getNumericalValue(String measureUri, String route, String graph){
         String result = "";
 
-        WhereBuilder wb = new WhereBuilder().addPrefix("om", unitOntologyUri)
+        WhereBuilder wb = new WhereBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
             .addWhere("?measure", "om:hasNumericalValue", "?value");
 
         SelectBuilder sb = new SelectBuilder().addVar("?value");
@@ -2173,15 +1907,15 @@ public class CEAAgent extends JPSAgent {
         WhereBuilder wb = new WhereBuilder();
         SelectBuilder sb = new SelectBuilder();
 
-        wb.addPrefix("rdf", rdfUri)
-                .addPrefix("ontoBuiltEnv", ontobuiltenvUri)
-                .addPrefix("bot", botUri)
+        wb.addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf))
+                .addPrefix("ontoBuiltEnv", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
+                .addPrefix("bot", ontologyUriHelper.getOntologyUri(OntologyURIHelper.bot))
                 .addWhere("?building", "ontoBuiltEnv:hasOntoCityGMLRepresentation", "?s")
                 .addWhere("?building", "rdf:type", "bot:Building");
 
         sb.addVar("?building").addWhere(wb);
 
-        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(getBuildingUri(uriString)));
+        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(BuildingHelper.getBuildingUri(uriString)));
 
         JSONArray queryResultArray = new JSONArray(this.queryStore(route, sb.build().toString()));
         String building = "";
@@ -2208,19 +1942,19 @@ public class CEAAgent extends JPSAgent {
                 buildingUri = graph + "Building_" + UUID.randomUUID() + "/";
             }
             else{
-                buildingUri = ontobuiltenvUri + "Building_" + UUID.randomUUID() + "/";
+                buildingUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv) + "Building_" + UUID.randomUUID() + "/";
             }
         }
 
         WhereBuilder wb =
                 new WhereBuilder()
-                        .addPrefix("rdf", rdfUri)
-                        .addPrefix("owl", owlUri)
-                        .addPrefix("bot", botUri)
-                        .addPrefix("ontoBuiltEnv", ontobuiltenvUri)
+                        .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf))
+                        .addPrefix("owl", ontologyUriHelper.getOntologyUri(OntologyURIHelper.owl))
+                        .addPrefix("bot", ontologyUriHelper.getOntologyUri(OntologyURIHelper.bot))
+                        .addPrefix("ontoBuiltEnv", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
                         .addWhere(NodeFactory.createURI(buildingUri), "rdf:type", "bot:Building")
                         .addWhere(NodeFactory.createURI(buildingUri), "rdf:type", "owl:NamedIndividual")
-                        .addWhere(NodeFactory.createURI(buildingUri), "ontoBuiltEnv:hasOntoCityGMLRepresentation", NodeFactory.createURI(getBuildingUri(uriString)));
+                        .addWhere(NodeFactory.createURI(buildingUri), "ontoBuiltEnv:hasOntoCityGMLRepresentation", NodeFactory.createURI(BuildingHelper.getBuildingUri(uriString)));
 
         if (!graph.isEmpty()){
             ub.addInsert(NodeFactory.createURI(graph), wb);
@@ -2352,12 +2086,12 @@ public class CEAAgent extends JPSAgent {
 
         WhereBuilder wb =
                 new WhereBuilder()
-                        .addPrefix("ontoubemmp", ontoUBEMMPUri)
-                        .addPrefix("rdf", rdfUri)
-                        .addPrefix("owl", owlUri)
-                        .addPrefix("om", unitOntologyUri)
-                        .addPrefix("bot", botUri)
-                        .addPrefix("obs", ontobuiltstructureUri);
+                        .addPrefix("ontoubemmp", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP))
+                        .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf))
+                        .addPrefix("owl", ontologyUriHelper.getOntologyUri(OntologyURIHelper.owl))
+                        .addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
+                        .addPrefix("bot", ontologyUriHelper.getOntologyUri(OntologyURIHelper.bot))
+                        .addPrefix("obs", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltstructure));
 
         UpdateBuilder ub = new UpdateBuilder();
 
@@ -2417,31 +2151,31 @@ public class CEAAgent extends JPSAgent {
             thermalTubeWallWestCollectorUri = graph + thermalTubeWallWestCollectorUri;
         }
         else{
-            pvRoofPanelUri = ontoUBEMMPUri + pvRoofPanelUri;
-            pvWallSouthPanelUri = ontoUBEMMPUri + pvWallSouthPanelUri;
-            pvWallNorthPanelUri = ontoUBEMMPUri + pvWallNorthPanelUri;
-            pvWallEastPanelUri = ontoUBEMMPUri + pvWallEastPanelUri;
-            pvWallWestPanelUri = ontoUBEMMPUri + pvWallWestPanelUri;
-            pvtPlateRoofCollectorUri = ontoUBEMMPUri + pvtPlateRoofCollectorUri;
-            pvtPlateWallSouthCollectorUri = ontoUBEMMPUri + pvtPlateWallSouthCollectorUri;
-            pvtPlateWallNorthCollectorUri = ontoUBEMMPUri + pvtPlateWallNorthCollectorUri;
-            pvtPlateWallEastCollectorUri = ontoUBEMMPUri + pvtPlateWallEastCollectorUri;
-            pvtPlateWallWestCollectorUri = ontoUBEMMPUri + pvtPlateWallWestCollectorUri;
-            pvtTubeRoofCollectorUri = ontoUBEMMPUri + pvtTubeRoofCollectorUri;
-            pvtTubeWallSouthCollectorUri = ontoUBEMMPUri + pvtTubeWallSouthCollectorUri;
-            pvtTubeWallNorthCollectorUri = ontoUBEMMPUri + pvtTubeWallNorthCollectorUri;
-            pvtTubeWallEastCollectorUri = ontoUBEMMPUri + pvtTubeWallEastCollectorUri;
-            pvtTubeWallWestCollectorUri = ontoUBEMMPUri + pvtTubeWallWestCollectorUri;
-            thermalPlateRoofCollectorUri = ontoUBEMMPUri + thermalPlateRoofCollectorUri;
-            thermalPlateWallSouthCollectorUri = ontoUBEMMPUri + thermalPlateWallSouthCollectorUri;
-            thermalPlateWallNorthCollectorUri = ontoUBEMMPUri + thermalPlateWallNorthCollectorUri;
-            thermalPlateWallEastCollectorUri = ontoUBEMMPUri + thermalPlateWallEastCollectorUri;
-            thermalPlateWallWestCollectorUri = ontoUBEMMPUri + thermalPlateWallWestCollectorUri;
-            thermalTubeRoofCollectorUri = ontoUBEMMPUri + thermalTubeRoofCollectorUri;
-            thermalTubeWallSouthCollectorUri = ontoUBEMMPUri + thermalTubeWallSouthCollectorUri;
-            thermalTubeWallNorthCollectorUri = ontoUBEMMPUri + thermalTubeWallNorthCollectorUri;
-            thermalTubeWallEastCollectorUri = ontoUBEMMPUri + thermalTubeWallEastCollectorUri;
-            thermalTubeWallWestCollectorUri = ontoUBEMMPUri + thermalTubeWallWestCollectorUri;
+            pvRoofPanelUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvRoofPanelUri;
+            pvWallSouthPanelUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvWallSouthPanelUri;
+            pvWallNorthPanelUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvWallNorthPanelUri;
+            pvWallEastPanelUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvWallEastPanelUri;
+            pvWallWestPanelUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvWallWestPanelUri;
+            pvtPlateRoofCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateRoofCollectorUri;
+            pvtPlateWallSouthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateWallSouthCollectorUri;
+            pvtPlateWallNorthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateWallNorthCollectorUri;
+            pvtPlateWallEastCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateWallEastCollectorUri;
+            pvtPlateWallWestCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateWallWestCollectorUri;
+            pvtTubeRoofCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeRoofCollectorUri;
+            pvtTubeWallSouthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeWallSouthCollectorUri;
+            pvtTubeWallNorthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeWallNorthCollectorUri;
+            pvtTubeWallEastCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeWallEastCollectorUri;
+            pvtTubeWallWestCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeWallWestCollectorUri;
+            thermalPlateRoofCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateRoofCollectorUri;
+            thermalPlateWallSouthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateWallSouthCollectorUri;
+            thermalPlateWallNorthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateWallNorthCollectorUri;
+            thermalPlateWallEastCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateWallEastCollectorUri;
+            thermalPlateWallWestCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateWallWestCollectorUri;
+            thermalTubeRoofCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeRoofCollectorUri;
+            thermalTubeWallSouthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeWallSouthCollectorUri;
+            thermalTubeWallNorthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeWallNorthCollectorUri;
+            thermalTubeWallEastCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeWallEastCollectorUri;
+            thermalTubeWallWestCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeWallWestCollectorUri;
         }
 
         Map<String, String> facades = new HashMap<>();
@@ -2458,9 +2192,9 @@ public class CEAAgent extends JPSAgent {
                 facade = graph + facade;
             }
             else{
-                measure = ontoUBEMMPUri + measure;
-                quantity = ontoUBEMMPUri + quantity;
-                facade = ontoUBEMMPUri + facade;
+                measure = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + measure;
+                quantity = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + quantity;
+                facade = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + facade;
             }
             scalarIris.put(measurement, measure);
 
@@ -2495,7 +2229,7 @@ public class CEAAgent extends JPSAgent {
 
         for (String measurement: TIME_SERIES) {
             String quantity = measurement+"Quantity_" + UUID.randomUUID() + "/";
-            quantity = !graph.isEmpty() ? graph + quantity : ontoUBEMMPUri + quantity;
+            quantity = !graph.isEmpty() ? graph + quantity : ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + quantity;
             if (measurement.equals(KEY_GRID_CONSUMPTION) || measurement.equals(KEY_ELECTRICITY_CONSUMPTION) || measurement.equals(KEY_COOLING_CONSUMPTION) || measurement.equals(KEY_HEATING_CONSUMPTION)) {
                 createConsumptionUpdate(wb, buildingUri, "ontoubemmp:" + measurement, quantity, tsIris.get(measurement));
             }
@@ -2630,14 +2364,14 @@ public class CEAAgent extends JPSAgent {
     public void updateScalars(String route, LinkedHashMap<String,String> scalarIris, LinkedHashMap<String, List<String>> scalars, Integer uriCounter, String graph) {
 
         for (String measurement: SCALARS) {
-            WhereBuilder wb1 = new WhereBuilder().addPrefix("om", unitOntologyUri)
+            WhereBuilder wb1 = new WhereBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
                     .addWhere(NodeFactory.createURI(scalarIris.get(measurement)), "om:hasNumericalValue", "?s");
-            UpdateBuilder ub1 = new UpdateBuilder().addPrefix("om", unitOntologyUri)
+            UpdateBuilder ub1 = new UpdateBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
                     .addWhere(wb1);
 
-            WhereBuilder wb2 = new WhereBuilder().addPrefix("om", unitOntologyUri)
+            WhereBuilder wb2 = new WhereBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
                     .addWhere(NodeFactory.createURI(scalarIris.get(measurement)), "om:hasNumericalValue", scalars.get(measurement).get(uriCounter));
-            UpdateBuilder ub2 = new UpdateBuilder().addPrefix("om", unitOntologyUri);
+            UpdateBuilder ub2 = new UpdateBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology));
 
             if (!graph.isEmpty()){
                 ub1.addDelete(NodeFactory.createURI(graph), wb1);
