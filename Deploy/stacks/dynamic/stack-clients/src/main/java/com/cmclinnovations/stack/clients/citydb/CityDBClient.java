@@ -17,6 +17,8 @@ import com.cmclinnovations.stack.clients.utils.TempDir;
 
 public class CityDBClient extends ContainerClient {
 
+    private static final String CITYDBIMPEXP = "citydbimpexp";
+
     private static final Logger logger = LoggerFactory.getLogger(CityDBClient.class);
 
     private static CityDBClient instance = null;
@@ -99,7 +101,11 @@ public class CityDBClient extends ContainerClient {
 
         updateDatabase(database, options.getSridIn());
 
-        String containerId = getContainerId("citydbimpexp");
+        if (!append) {
+            deleteObjects(database, lineage);
+        }
+
+        String containerId = getContainerId(CITYDBIMPEXP);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
@@ -158,7 +164,7 @@ public class CityDBClient extends ContainerClient {
     }
 
     public void writeOutToCityGML(String database, String filePath, String lineage) {
-        String containerId = getContainerId("citydbimpexp");
+        String containerId = getContainerId(CITYDBIMPEXP);
 
         try (TempDir tmpDir = makeLocalTempDir()) {
             String tempFilePath = tmpDir.getPath().resolve(Path.of(filePath).getFileName()).toString();
@@ -187,5 +193,25 @@ public class CityDBClient extends ContainerClient {
             }
             tmpDir.copyTo(targetPath);
         }
+    }
+
+    public void deleteObjects(String database, String lineage) {
+        String containerId = getContainerId(CITYDBIMPEXP);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+
+        ImpExpOptions options = new ImpExpOptions(Subcommand.DELETE);
+
+        String execId = createComplexCommand(containerId,
+                options.appendArgs("",
+                        "--db-name", database,
+                        "--sql-select", "SELECT id FROM cityobject WHERE lineage = '" + lineage + "'"))
+                .withOutputStream(outputStream)
+                .withErrorStream(errorStream)
+                .withEvaluationTimeout(600)
+                .exec();
+
+        handleErrors(errorStream, execId, logger);
     }
 }
