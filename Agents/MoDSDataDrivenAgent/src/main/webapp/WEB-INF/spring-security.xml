@@ -1,0 +1,28 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+    <http auto-config="true">
+        <intercept-url pattern="/add-initiative-form" access="ROLE_USER, ROLE_ADMIN" />
+        <intercept-url pattern="/update-initiative-form" access="ROLE_ADMIN" />
+
+        <form-login login-page="/login" default-target-url="/home"
+                    authentication-failure-url="/loginfailed" />
+        <logout logout-success-url="/home" />
+    </http>
+
+    <authentication-manager>
+        <authentication-provider>
+            <user-service>
+                <user name="user" password="password" authorities="ROLE_USER" />
+                <user name="feroz" password="password" authorities="ROLE_ADMIN" />
+                <user name="admin" password="password" authorities="ROLE_ADMIN" />
+            </user-service>
+        </authentication-provider>
+    </authentication-manager>
+
+</beans:beans>

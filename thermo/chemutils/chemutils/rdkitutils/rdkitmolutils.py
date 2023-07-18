@@ -1,5 +1,6 @@
 import rdkit
 import rdkit.Chem
+import rdkit.Chem.Draw
 import rdkit.Chem.rdMolAlign
 import rdkit.Chem.rdMolTransforms
 import rdkit.Chem.AllChem
@@ -369,3 +370,7 @@ def getAtomsXYZs(rdkitMol, atomList):
     for atomId in atomList:
         atomXYZ.append(getRdkitAtomXYZbyId(rdkitMol, atomId))
     return np.stack(atomXYZ,axis=0)
+
+
+def rdkitMolToFile(rdkitMol, out_path, size=(300, 300), kekulize=True, wedgeBonds=True, imageType="png", **kwargs):
+    rdkit.Chem.Draw.MolToFile(rdkitMol, out_path, size, kekulize, wedgeBonds, imageType, **kwargs)

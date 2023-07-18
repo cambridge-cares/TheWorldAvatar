@@ -113,3 +113,4 @@ gdal_translate -ot Int16 $TILE.bil $TILE.tif
 
 echo "Verify Lat/Long SRTM DEM with:"
 echo "   gdalinfo $TILE.tif"
+

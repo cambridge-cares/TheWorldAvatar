@@ -1,0 +1,2 @@
+,number,value,datetime_start,datetime_complete,duration,params_lr,params_mlp_dropouts_0,params_mlp_layers,params_mlp_units_0,params_mlp_units_1,params_mlp_units_2,params_mlp_units_3,params_mlp_units_4,params_mlp_units_5,params_mlp_units_6,params_mlp_units_7,params_mlp_units_8,params_mlp_units_9,params_weight_decay,state
+0,0,0.8946098955142195,2022-05-26 12:57:41.473032,2022-05-26 12:57:47.310029,0 days 00:00:05.836997,1.2164941464151849e-05,0.16350402329681482,10,204,134,145,130,72,238,282,179,277,255,0.0014486833887239336,COMPLETE

@@ -8,7 +8,6 @@ PROJECT_NAME='compchemparser'
 DEP_FILE='dependencies.yml'
 DO_NOT_PROMPT='n'
 
-#--------------------------------------------------------
 function usage {
     echo "==============================================================================================================="
     echo $PROJECT_NAME" project installation script."
@@ -29,7 +28,7 @@ function usage {
     echo "                    e.g. as a dependency."
 	echo "  -n VENV_NAME    : Name of the virtual environment to create and/or install the package to."
 	echo "  -e              : Enables developer mode installation."
-	echo "  -s              : Silent mode, do not prompt for a user input unless necessary."
+    echo "  -s              : Silent mode, do not prompt for a user input unless necessary."
 	echo "  -h              : Print this usage message."
 	echo
 	echo "Example usage:"
@@ -46,7 +45,7 @@ function usage {
     echo "./install_script.sh -v -n my_env -i -e  - this will create virtual environment 'my_env' with all project"
 	echo "                                          dependencies and install the project in a developer mode"
 	echo "==============================================================================================================="
-    read -n 1 -s -r -p "Press any key to continue"
+	read -n 1 -s -r -p "Press any key to continue"
     exit
 }
 
@@ -80,7 +79,7 @@ function recreate_conda_env {
     # This will recreate conda environment
     conda config --set channel_priority strict
     conda remove -n $VENV_NAME --all
-    
+
 	# create the base env
     conda env create -f $SPATH/base.yml -n $VENV_NAME
 
@@ -126,13 +125,13 @@ function disable_setuppy_dependencies {
     # they should be added already in conda dep yml files.
     # this is hacky, but I found there is no way, since conda
     # cant easily pass pip flags
-    cp $SPATH/setup.py $SPATH/setup_original.py
-	sed -i 's/install_requires/#&/' $SPATH/setup.py
+	sed -i 's/install_requires/#&/' setup.py
 }
 function enable_setuppy_dependencies {
-    rm $SPATH/setup.py
-	mv $SPATH/setup_original.py $SPATH/setup.py
+    # uncomment the requirements line back
+	sed -i 's/#install_requires/install_requires/' setup.py
 }
+#--------------------------------------------------------
 
 # Scan command-line arguments
 if [[ $# = 0 ]]
@@ -168,5 +167,6 @@ fi
 echo
 echo "==============================================================================================================="
 echo
-prompt_for_input
 echo
+prompt_for_input
+exit

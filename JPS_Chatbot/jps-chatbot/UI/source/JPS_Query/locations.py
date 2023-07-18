@@ -14,18 +14,10 @@ def get_parent_path(path):
 # Extract root directory path from the path of this source file
 this_dir = os.path.dirname(os.path.abspath(__file__))
 UI_DIR = get_parent_path(get_parent_path(this_dir))
-print('UI_DIR', UI_DIR)
 ROOT_DIR = get_parent_path(UI_DIR)
-print('ROOT_DIR', ROOT_DIR)
-
 LDA_DIR = os.path.join(ROOT_DIR, 'LDA')
-print('LDA_DIR', LDA_DIR)
-
 SOURCE_DIR = os.path.join(UI_DIR, 'source')
-print('SOURCE_DIR', SOURCE_DIR)
-
 RASA_JPS_DIR = os.path.join(SOURCE_DIR, 'JPS_Query')
-print('RASA_JPS_DIR', RASA_JPS_DIR)
 
 # Record some locations for use elsewhere
 JPS_SPARQL_TEMPLATE_PATH = os.path.join(UI_DIR, "JPS_SPARQL_template.json")
@@ -38,7 +30,4 @@ TOPIC_CLASSIFIERS_DIR = os.path.join(ROOT_DIR, "LDA")
 
 LOOKUP_TABS_DIR = os.path.join(RASA_JPS_DIR, "lookup_tables")
 CONFIG_PATH = os.path.join(ROOT_DIR, "config.json")
-print('LOOKUP_TABS_DIR', LOOKUP_TABS_DIR)
-print('SEARCH_ENGINE_DIR', SEARCH_ENGINE_DIR)
-print('JPS_SPARQL_TEMPLATE_PATH', JPS_SPARQL_TEMPLATE_PATH)
 

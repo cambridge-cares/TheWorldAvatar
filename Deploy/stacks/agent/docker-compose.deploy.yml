@@ -12,7 +12,6 @@
 
 version: "3.8"
 
-
 services:
 
   # Email Agent
@@ -34,13 +33,26 @@ services:
     mem_limit: 2g
     pull_policy: if_not_present
     restart: unless-stopped
-    
+    environment:
+      - EMAIL_AGENT_URL=http://kg.cmclinnovations.com:81/agent/email/email
+      
+
   # Flood Agent
   flood-agent:
-    image: docker.cmclinnovations.com/flood-agent-$MODE:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/river-data-updater:1.1
     container_name: "flood-agent${CONTAINER_NAME_SUFFIX}"
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      OUTPUT_DIR: "/~/"
+      POSTGRES_DBNAME: "flood"
+      POSTGRES_USER: "USER"
+      POSTGRES_PASSWORD: "USER"
+      POSTGRES_HOST: "kg.cmclinnovations.com"
+      POSTGRES_PORT: 45432
+      KG_HOST: "kg.cmclinnovations.com"
+      KG_PORT: 81
+      KG_PATH: "blazegraph_geo/namespace/flood/sparql/flood/sparql"
+      KG_PROTOCOL: "http"
     pull_policy: if_not_present
     restart: unless-stopped
 
@@ -145,17 +157,36 @@ services:
     volumes:
       - WAlogs:/root/.jps
 
+  # MoDS Agent
+  mods-simple-agent:
+    image: docker.cmclinnovations.com/mods_simple_agent:0.0.1
+    container_name: mods_simple_agent
+    environment:
+      CMCL_LICENSE_PATH: "/run/secrets/mods_agent_licence"
+    secrets:
+      - mods_agent_licence
+
+  # MoDS CUDS wrapper Agent
+  mods-cuds-wrapper-agent:
+    image: docker.cmclinnovations.com/sim_cmcl_mods_wrapper:0.7.0
+    cap_drop:
+      - ALL
+    container_name: mods_cuds_wrapper_agent
+    environment:
+      MODS_AGENT_BASE_URL: "https://kg.cmclinnovations.com/mods-agent"
+
 # The default network name is set using a docker-compose environment variable.
 # Please don't modify the contents of the 'networks' node below.
 networks:
   default:
     name: ${NETWORK_NAME}
 
-
 # Secrets
 secrets:
   weather_agent_credentials:
     file: WeatherAgent/secrets/credentials.properties.${MODE}
+  mods_agent_licence:
+    file: MoDSAgent/secrets/docker-agent-licence.lic
 
 volumes:
   driver:

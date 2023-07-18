@@ -12,10 +12,6 @@ import copy
 
 def xyzToAtomsPositions(xyzFileOrStr):
     # setting the main xyzToAtomsPositions function.
-    # at the moment it is the inchi-based algorithm with
-    # hydrogen atoms replacement. Once the inchi-based
-    # algorithm without the hydrogen replacement is mature
-    # enough I will use it instead.
     return xyzToAtomsPositionsNoInChi(xyzFileOrStr)
 
 def xyzToAtomsPositionsNoInChi(xyzFileOrStr):
@@ -90,7 +86,6 @@ def xyzToAtomsPositionsNoInChi(xyzFileOrStr):
         print('Error: atom canoncial positions algorithm has failed.')
         atomsPositions= {}
     return atomsPositions
-
 
 def xyzToAtomsPositionsWithInChi(xyzFileOrStr):
     """

@@ -1,0 +1,89 @@
+{
+    "Empirical_Formula": "C2H6",
+    "Atom_Total_Counts": [
+        2,
+        6
+    ],
+    "Atom_List": [
+        "C",
+        "C",
+        "H",
+        "H",
+        "H",
+        "H",
+        "H",
+        "H"
+    ],
+    "Atom_Masses": [
+        12.0107,
+        12.0107,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783
+    ],
+    "Elements": [
+        "C",
+        "H"
+    ],
+    "Level_of_Theory": "RB3LYP",
+    "Basis_Set": "6-31G(d,p)",
+    "Spin_Multiplicity": 1,
+    "Total_Charge": 0,
+    "Geometry_Type": "nonlinear",
+    "X_Atoms_Coordinates": [
+        0.768133,
+        -0.768133,
+        1.163136,
+        1.175139,
+        1.174685,
+        -1.174684,
+        -1.163218,
+        -1.175059
+    ],
+    "Y_Atoms_Coordinates": [
+        -0.003092,
+        0.003094,
+        0.291535,
+        0.714743,
+        -0.991544,
+        0.991584,
+        -0.291723,
+        -0.714608
+    ],
+    "Z_Atoms_Coordinates": [
+        -0.003088,
+        -0.003094,
+        0.97529,
+        -0.722404,
+        -0.23429,
+        -0.234139,
+        0.975209,
+        -0.722568
+    ],
+    "Rotational_Constants_String": "80.3711954 19.9105557 19.9105311",
+    "Rotational_Constants_Number": 3,
+    "Rotational_Symmetry_Number": null,
+    "Frequencies_String": null,
+    "Frequencies_Number": null,
+    "Electronic_Energy": -2172.4647357966805,
+    "Electronic_And_ZPE_Energy": null,
+    "ZPE_Energy": null,
+    "Homo_Energy": -0.33915,
+    "Homo-1_Energy": -0.33917,
+    "Homo-2_Energy": -0.36314,
+    "Lumo_Energy": 0.10498,
+    "Lumo+1_Energy": 0.15618,
+    "Lumo+2_Energy": 0.16392,
+    "Program_Name": "Gaussian",
+    "Program_Version": "2009+D.01",
+    "Run_Date": "Fri Sep 3 12:29:18 2021",
+    "Log_File_Name": "ethane_scan_dihedral.log",
+    "Species_IRI": null,
+    "Entry_IRI": "http://www.theworldavatar.com/kb/ontocompchem/G09_OCtestID-111-111-111",
+    "PNG_Source_Location": null,
+    "CCLOG_Source_Location": null,
+    "Entry_ID": "OCtestID-111-111-111"
+}

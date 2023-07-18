@@ -19,13 +19,57 @@
  * 
  */
 
+
+/*
+ * Copyright (c) CMCL Innovations - All Rights Reserved
+ *
+ * This application and all inherent data, source files, information and graphics are
+ * the copyright and sole property of Computational Modelling Cambridge Ltd (CMCL Innovations).
+ *
+ * Any unauthorised redistribution or reproduction of part, or all, of the contents of this
+ * applicationin any form is prohibited under UK Copyright Law. You may not, except with the
+ * express written permission of CMCL Innovations, distribute or commercially exploit this
+ * application or it's content. All other rights reserved.
+ *
+ * For more information please contact support@cmclinnovations.com
+ *
+ * ------------------------------------------------------------
+ *
+ * This script contains functionality for the Marie chemistry chatbot,
+ * including selection of random questions, submitting requests, and
+ * parsing the resulting data for HTML display.
+ *
+ */
+
 // Variables accessed throughout the script
+$('document').ready(function(){
+    // =================== search button and enter in input field =======
+    $('#ask-button').click(function (e){
+        askQuestion(e);
+    });
+
+    $('#input-field').keypress(function(e){
+        if(e.which === 13){//Enter key pressed
+            askQuestion(e);
+        }
+    });
+    google.charts.load('current', {packages: ['corechart', 'line']});
+});
+
+
 var scriptURL = document.currentScript.src;
 var scriptDir = scriptURL.substring(0, scriptURL.lastIndexOf("/") + 1);
 var imageDir = "/user/images/";
 
+
+// Type variable was missing, have added with value when last present.
+// Needs checking to see if this was supposed to be dynamic - Michael
+let type = "worldavatar";
+
 // Location of the chatbot itself
 var botURL = "/marie/request/";
+let url = botURL + "chemistry_chatbot/query?type=" + type;
+
 
 // Hide the results row by default
 var resultsRow = document.getElementById("results-row");
@@ -81,7 +125,7 @@ function pipeQuestion(question) {
 	document.getElementById('input-field').value = question;
 	$('#input-field').css("color", "inherit");
 	window.scrollTo(0, 0);
-	
+
 	// Fire query automatically (requested by MK)
 	askQuestion();
 }
@@ -106,9 +150,10 @@ function shuffleQuestion() {
 function resetResults() {
 	let spinner = imageDir + "spinner.svg";
 	let html = "<img src=\"" + spinner + "\" style=\"vertical-align: middle;\" width=\"22px\">  Loading, please wait...";
-	
+
 	let chatbotResults = document.getElementById("chatbot-results");
 	chatbotResults.innerHTML = html;
+	$("#data_chart").remove();
 }
 
 
@@ -120,10 +165,12 @@ function askQuestion() {
 		// No concurrent questions
 		return;
 	}
-	
+
 	resetResults();
+    $("#data_chart").remove();
+
 	let spinner = imageDir + "spinner.svg";
-	
+
 	// Make the ask button into a loading spinner
 	let askButton = document.getElementById("ask-button");
 	let imgTags = askButton.getElementsByTagName("img");
@@ -141,16 +188,16 @@ function askQuestion() {
 		return;
 	}
 
-	
+
 	// Build the URL for the question
 	question = question.replace('	', ' ');
 	question = question.replace(/[/+]/g, 'add_sign');
 
 	var promises = [];
-	
+
 	asking = 1;
 	// Make the request for the world avatar
-	makeRequest(question, "worldavatar", "json", processChatbotResults, promises);
+	makeRequest(question, "worldavatar", "json", handleResults, promises);
 
 	// Reset the search button when all requests are complete
 	$.when.apply($, promises).then(function() {
@@ -164,7 +211,7 @@ function askQuestion() {
 	});
 
 	// Show the results row
-	resultsRow.style.display = "block";	
+	resultsRow.style.display = "block";
 }
 
 
@@ -173,6 +220,7 @@ function askQuestion() {
 */
 function makeRequest(question, type, resultType, successFunction, promises) {
 	let url = botURL + "chemistry_chatbot/query?type=" + type;
+    console.log('url is ', url)
 	let data = { "question": question };
 
 	// Make the call
@@ -182,52 +230,77 @@ function makeRequest(question, type, resultType, successFunction, promises) {
 		dataType: resultType,
 		timeout: (1000 * 60),
 		success: function (data) {
+
 			successFunction(data);
 			asking--;
 		},
 		error: function (xhr, ajaxOptions, thrownError) {
 			console.log(xhr.status);
 			console.log(thrownError);
-
+			// for test, use results
+			// successFunction(results.pop())
 			successFunction(null);
 			asking--;
 		}
 	}));
 }
 
+/*
+ Process the results from a WorldAvatar request
+*/
+
+// convertToJSONResults
+//
+
+/* This is the function that handles all results, including
+
+*/
+
+function handleResults(rawResult){
+	
+	if(rawResult === null || rawResult === undefined || rawResult === "null") {
+		let msg = "<span style=\"color: red; padding-left: 15px;\">The World Avatar failed to provide an answer.</span>";
+		let chatbotResults = document.getElementById("chatbot-results");
+		if(chatbotResults !== null) chatbotResults.innerHTML = msg;
+        return;
+	}
+	
+	// 1. convert any results to JSON object/ JSON array
+	// 2. identify chart data from non-chart data
+	// 3. call processChatbotResults or process matrix data accordingly
+	var jsonData = null;
+	jsonData = convertToJSONResults(rawResult);
+	if ('attribute' in jsonData || 'multiple_results' in jsonData) {
+        process_matrix_data(jsonData);
+    }
+    else{
+        processChatbotResults(jsonData);
+    }
+}
+
 
 /*
  Process the results from a WorldAvatar request.
 */
-function processChatbotResults(rawResults) {
-	// Parse the results
-	var chatbotResults = null;
+function processChatbotResults(jsonData) {
 
-	if (rawResults == null || rawResults == "") {
-		chatbotResults = "<span style=\"color: red; padding-left: 15px;\">The World Avatar failed to provide and answer.</span>";
-	} else {
-		// Get the data into JSON form (if not already);
-		let jsonData = null;
+    let chatbotResults = null;
 
+
+    if (Array.isArray(jsonData)) {
+        //console.log('The object is identified as an Array', jsonData);
 		try {
-			jsonData = JSON.parse(rawResults);
-		} catch (err1) {
-			try {
-				jsonData = JSON.parse(JSON.stringify(rawResults));
-			} catch (err2) {
-				jsonData = rawResults;
-			}
-		}
-
-		if (Array.isArray(jsonData)) {
-			// JSON array
-			chatbotResults = parseJSONArray(jsonData);
-		} else {
-			// JSON object
+            // JSON array
+            chatbotResults = parseJSONArray(jsonData);
+		} catch (error) {
 			chatbotResults = parseJSONObject(jsonData);
 		}
-	}
 
+
+        } else {
+            // JSON object
+            chatbotResults = parseJSONObject(jsonData);
+        }
 	// Find the div container to add results to
 	let resultsContainer = document.getElementById("chatbot-results");
 	resultsContainer.innerHTML = chatbotResults;
@@ -245,7 +318,18 @@ function parseJSONObject(jsonResults) {
 
 	if (headObject == null) {
 		// May not be a JSON object?
-		return parseJSONArray(jsonResults);
+        try {
+            return parseJSONArray(jsonResults);
+        }
+        catch (err){
+            // this  could be a result from the pce agent, we need to handle it differently ..
+            // make it an JSON array then pass it to parseJSONArray
+            if ('result' in jsonResults){
+                let jsonData = [jsonResults['result']];
+                return parseJSONArray(jsonData);
+            }
+            console.log('Ill-formatted data')
+        }
 	}
 
 	let headVars = headObject["vars"];
@@ -281,28 +365,62 @@ function parseJSONObject(jsonResults) {
  Parses the input JSON Array into a HTML table.
 */
 function parseJSONArray(jsonResults) {
-	// JSON values (map of column names to value array)
-	let valueSet = {};
-	valueSet["Result"] = [];
+	let forTable = {};
+	forTable["Result"] = [];
+	
+	parseResult(jsonResults, forTable);
+	return toTable(forTable);
+}
 
-	let index = 1;
-	jsonResults.forEach((item) => {
-		// Store result index
-		valueSet["Result"].push(index);
-		index++;
+/**
+*
+*/
+function parseResult(jsonResult, forTable) {
+	if(Array.isArray(jsonResult)) {
+		jsonResult.forEach((result) => {
+			parseResult(result, forTable);
+		});
+	
+	} else if(jsonResult["result"]) {
+		parseResult(jsonResult["result"], forTable);
+		
+	} else if(jsonResult["multiple_results"]) {
+		let results = jsonResult["multiple_results"];
+		results.forEach((result) => {
+			parseResult(results, forTable);
+		});
+		
+	} else {
+		forTable["Result"].push(forTable["Result"].length + 1);
 
-		Object.keys(item).forEach((key) => {
-			// Store value
-			let values = valueSet[key];
-			if (values == null) {
-				values = [];
-				valueSet[key] = values;
+		Object.keys(jsonResult).forEach((key) => {
+			if (!forTable[key]) {
+				forTable[key] = [];
 			}
-			values.push(item[key]);
+			forTable[key].push(parseValue(jsonResult[key]));
 		})
-	});
+	}
+}
 
-	return toTable(valueSet);
+/**
+*	Parses a JSON value into a reasonable string for display.
+*/
+function parseValue(value) {
+	if(Object.keys(value).length === 2 && value["value"] && value["unit"]) {
+		
+		let actualValues = value["value"];
+		let valueString = actualValues;
+		if(Array.isArray(actualValues)) {
+			valueString = actualValues.join("<br/>");
+		}
+		
+		return valueString + "<br/>" + "[" + value["unit"] + "]";
+	}
+	
+	if(Array.isArray(value)) {
+		return value.join("<br/>");
+	}
+	return value;
 }
 
 /*
@@ -327,7 +445,7 @@ function toTable(valueSet) {
 		for (var key in valueSet) {
 			let values = valueSet[key];
 			let value = values[r];
-			
+
 			html += "<td>";
 
 			if(isValidURL(String(value))) {
@@ -367,15 +485,15 @@ function toTable(valueSet) {
 function isValidURL(possibleURL) {
 	if(possibleURL.startsWith("http:") || possibleURL.startsWith("https:")) {
 		let url;
-		
+
 		try {
 			url = new URL(possibleURL);
 			return true;
 		} catch (error) {
-			return false;  
+			return false;
 		}
 	}
-  
+
 	return false;
 }
 
@@ -400,3 +518,196 @@ function isImageURL(url) {
 	}
 	return false;
 }
+// to process matrix data returned from the agent extension ...
+function process_matrix_data(matrix){
+    let elements = [];
+    if ("multiple_results" in matrix){
+        elements = matrix['multiple_results'];
+        prepare_chart_data(elements);
+        makeTable(elements);
+    }
+    else{
+        if(typeof matrix['value'] === "string"){
+            // single value, table only
+            elements = [matrix]
+            makeTable(elements)
+        }else{
+            // serial value, use chart to visualise
+            elements = [matrix];
+            prepare_chart_data(elements);
+            makeTable(elements)
+        }
+    }
+}
+
+function prepare_chart_data(elements){
+    // find the value, find the other array
+    // y, x
+    elements.forEach(function (element){
+        let y_data = element['value']
+        let y_unit = element['unit']
+        let x_data = []
+        let x_data_title = ''
+        let x_data_unit = ''
+        let attribute = element['attribute']
+        let fixed_data_title = ''
+        let fixed_data = ''
+        let fixed_data_unit = ''
+        console.log(attribute)
+        // find the fixed value and the serial value
+        // find the key that is neither value nor attribute
+        Object.keys(element).forEach(function (k) {
+            if(k!== 'value' && k!== 'attribute'){
+                // see whether this is single value or serial
+                if(typeof element[k]['value'] === "object"){
+                    // this is serial, x axis
+                    let x_data_object = element[k]; // containing values and a unit
+                    x_data_unit = x_data_object['unit'];
+                    x_data = x_data_object['value'];
+                    x_data_title = k; // store the title of x axis too
+                }else{
+                    // this is the fixed value
+                    fixed_data_title = k;
+                    let fixed_data_object = element[k];
+                    fixed_data_unit = fixed_data_object['unit'];
+                    fixed_data = fixed_data_object['value'];
+                }
+            }
+        });
+        let rows = make_rows(x_data, y_data);
+        drawLineChart(rows, attribute, y_unit, x_data_title, x_data_unit, fixed_data_title, fixed_data, fixed_data_unit);
+    });
+}
+
+function make_rows(x_data, y_data){
+    let rows = [];
+    for (let i = 0; i < y_data.length; i++) {
+        rows.push([parseFloat(x_data[i]), parseFloat(y_data[i])]);
+    }
+    return rows
+}
+
+const hash = function(str, seed = 0) {
+    let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+    for (let i = 0, ch; i < str.length; i++) {
+        ch = str.charCodeAt(i);
+        h1 = Math.imul(h1 ^ ch, 2654435761);
+        h2 = Math.imul(h2 ^ ch, 1597334677);
+    }
+    h1 = Math.imul(h1 ^ (h1>>>16), 2246822507) ^ Math.imul(h2 ^ (h2>>>13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2>>>16), 2246822507) ^ Math.imul(h1 ^ (h1>>>13), 3266489909);
+    return 4294967296 * (2097151 & h2) + (h1>>>0);
+};
+
+function drawLineChart(rows, attribute, y_unit, x_data_title, x_data_unit, fixed_data_title, fixed_data, fixed_data_unit) {
+      // create a new id for this element
+    	let element_id = 'data_chart'
+
+        $('<div>', {
+            id: element_id,
+            class: 'chart',
+        }).appendTo('#chart_div');
+		// append the data chart result to chart_div block, which uses the name #data_chart
+
+
+
+      $(element_id).ready(function() {
+
+          var data = new google.visualization.DataTable();
+          data.addColumn('number', 'X');
+          data.addColumn('number', attribute);
+          data.addRows(rows);
+          var options = {
+
+            title: attribute + ' (' + y_unit + ') at ' + fixed_data_title + ' of ' + fixed_data + ' ' + fixed_data_unit,
+            hAxis: {
+              title: x_data_title + ' (' + x_data_unit + ')',
+            },
+            backgroundColor: '#f1f8e9',
+            legend: {position: 'none'}
+          };
+          var chart = new google.visualization.LineChart(document.getElementById(element_id));
+          chart.draw(data, options);
+      });
+
+
+    }
+
+
+function makeTable(matrix_set){
+
+    console.log('Making a table from matrix set')
+    // let test_valueSet = [{'x': '1', 'y': '2'},{'x': '1', 'y': '2'},{'x': '1', 'y': '2'},{'x': '1', 'y': '2'}]
+    matrix_set.forEach(function (matrix) {
+        let x_data = matrix['value'];
+        let array = []
+        let x_data_list = []
+        if (typeof x_data === 'string'){
+            x_data_list.push([x_data]);
+        }
+        else{
+            x_data_list = x_data
+        }
+        x_data_list.forEach(function (x,index){
+            let valueSet = {};
+            let x_data_title = matrix['attribute'];
+            let x_data_unit = matrix['unit'];
+            valueSet[x_data_title] = x
+            valueSet['unit'] = x_data_unit;
+
+        Object.keys(matrix).forEach(function (k) {
+            if(k!== 'value' && k!== 'attribute' && k!== 'unit'){
+                let content = '';
+                let unit = matrix[k]['unit'];
+                let value = matrix[k]['value'];
+                if (typeof value === 'string'){
+                    content = value + ' ' + unit;
+                    valueSet[k] = content
+                }else{
+                    valueSet[k] = value[index] + ' ' + unit;
+                }
+            }
+        });
+        array.push(valueSet);
+    });
+        processChatbotResults(array);
+    });
+}
+
+/*
+ Convert raw results returned from the back end to JSON Array or JSON Object
+*/
+function convertToJSONResults(rawResults) {
+    	// Parse the results
+	
+
+	if (rawResults === null || rawResults === undefined || rawResults === "" || rawResults === "null") {
+		let msg = "<span style=\"color: red; padding-left: 15px;\">The World Avatar failed to provide an answer.</span>";
+		let chatbotResults = document.getElementById("chatbot-results");
+		if(chatbotResults !== null) chatbotResults.innerHTML = msg;
+        return null;
+	} else {
+		// Get the data into JSON form (if not already);
+		let jsonData = null;
+
+		try {
+			jsonData = JSON.parse(rawResults);
+            console.log('result is parsed into JSON from String', jsonData)
+            console.log('Type of the object is ', typeof(jsonData))
+		} catch (err1) {
+            console.log('err1')
+
+			try {
+				jsonData = JSON.parse(JSON.stringify(rawResults));
+                return jsonData;
+
+			} catch (err2) {
+                console.log('err2')
+				jsonData = rawResults;
+			}
+		}
+        return jsonData;
+
+	}
+}
+

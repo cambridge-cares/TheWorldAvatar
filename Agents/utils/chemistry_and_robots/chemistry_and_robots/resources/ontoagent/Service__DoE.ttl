@@ -1,0 +1,42 @@
+@prefix ontoagent:           <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#> .
+@prefix ontodoe:             <https://www.theworldavatar.com/kg/ontodoe/> .
+@prefix ontorxn:             <https://www.theworldavatar.com/kg/ontoreaction/> .
+@prefix rdf:                 <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:                 <http://www.w3.org/2001/XMLSchema#> .
+@prefix :                    <https://www.theworldavatar.com/kg/agents/Service__DoE/> .
+
+:Service
+    rdf:type ontoagent:Service;
+    ontoagent:hasOperation :Operation;
+.
+
+:Operation
+    rdf:type ontoagent:Operation;
+    ontoagent:hasInput :MessageContent_input;
+    ontoagent:hasOutput :MessageContent_output;
+    ontoagent:hasHttpUrl "http://localhost:7000/doe/summit/suggest"^^xsd:string;
+.
+
+:MessageContent_input
+    rdf:type ontoagent:MessageContent;
+    ontoagent:hasMandatoryPart :MessagePart_doe;
+.
+
+:MessageContent_output
+    rdf:type ontoagent:MessageContent;
+    ontoagent:hasMandatoryPart :MessagePart_rxnexp;
+.
+
+:MessagePart_doe
+    rdf:type ontoagent:MessagePart;
+    ontoagent:isArray "false"^^xsd:boolean;
+    ontoagent:hasType ontodoe:DesignOfExperiment;
+    ontoagent:hasName "designOfExperiment"^^xsd:string;
+.
+
+:MessagePart_rxnexp
+    rdf:type ontoagent:MessagePart;
+    ontoagent:isArray "false"^^xsd:boolean; # this is set as false to declare only one instance of OntoRxn:ReactionExperiment will be generated for each derivation
+    ontoagent:hasType ontorxn:ReactionExperiment;
+    ontoagent:hasName "reactionExperiment"^^xsd:string;
+.

@@ -1,0 +1,38 @@
+{
+    "type": "postgres",
+    "ServiceSpec": {
+        "Name": "postgis",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "postgis/postgis:14-3.1-alpine",
+                "Env": [
+                    "POSTGRES_HOST_AUTH_METHOD=scram-sha-256",
+                    "POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256"
+                ],
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "postgis_data",
+                        "Target": "/var/lib/postgresql/data"
+                    },
+                    {
+                        "Type": "volume",
+                        "Source": "geotifs",
+                        "Target": "/geotifs"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "sql": {
+            "url": "http://localhost/jdbc",
+            "externalPath": "/postgis/sparql"
+        }
+    }
+}

@@ -14,6 +14,7 @@ import ontomatch.utils.util
 
 BASE = Namespace('http://www.theworldavatar.com/kb/powsys/dukes/')
 BASE_GPPD = Namespace('http://www.theworldavatar.com/kb/powsys/gppd/')
+BASE_UK = Namespace('<http://www.theworldavatar.com/kb/ontoenergysystem/>')
 BASE_KWL = Namespace('http://www.theworldavatar.com/kb/powsys/kwl/')
 BASE_MUN_GER = Namespace('http://www.theworldavatar.com/kb/municipalities/')
 BASE_REST_FODOR = Namespace('http://www.theworldavatar.com/kb/restaurants/fodor/')
@@ -40,6 +41,7 @@ def bind_prefixes(g):
     g.bind('owl', OWL)
     g.bind('sdo', SDO)  # schema.org
     g.bind('base', BASE)
+    g.bind('baseuk', BASE_UK)
     g.bind('dbo', DBO)
     g.bind('dbr', DBR)
     g.bind('geo', GEO )
@@ -114,6 +116,8 @@ def get_owner(g, dictionary, name):
 
 def create_plant_from_dictionary(g, d, version, country_short, use_schema=False):
 
+    row = {}
+
     plant_name_norm = d.get('plantnamenorm')
     if plant_name_norm:
         name = replace_special_characters(plant_name_norm)
@@ -135,8 +139,9 @@ def create_plant_from_dictionary(g, d, version, country_short, use_schema=False)
     # some rows e.g. in KWL have an empty plant name
     label = d['plantname']
     if label:
-        label = d['plantname'].replace('_', ' ')
+        label = d['plantname'].replace('_', ' ').replace('\n', ' ')
         g.add((s, RDFS.label, Literal(label, lang="en")))
+        row['name'] = label
 
 
     if not use_schema:
@@ -151,18 +156,23 @@ def create_plant_from_dictionary(g, d, version, country_short, use_schema=False)
         x = rdflib.BNode()
         g.add((s, SDO['address'], x))
         g.add((x, SDO['addressCountry'], Literal(country_short)))
+        #row['country'] = country_short
         o = d['location']
         if o:
             g.add((x, SDO['addressLocality'], Literal(o)))
+            row['locality'] = o
         o = d['zip_code']
         if o:
             g.add((x, SDO['postalCode'], Literal(o, datatype=XSD.integer)))
+            row['postalcode'] = int(o)
         o = d['street']
         if o:
             g.add((x, SDO['streetAddress'], Literal(o)))
+            row['street'] = o
         o = d['region']
         if o:
             g.add((x, SDO['addressRegion'], Literal(o)))
+            row['region'] = o
 
 
     longitude = d.get('long')
@@ -173,12 +183,16 @@ def create_plant_from_dictionary(g, d, version, country_short, use_schema=False)
         g.add((s, CPSPACEEXT['hasGISCoordinateSystem'], x))
         add(g, x, [ CPSPACEEXT['hasProjectedCoordinate_x'], CPSYS['hasValue'], CPSYS['numericalValue'] ], Literal(longitude))
         add(g, x, [ CPSPACEEXT['hasProjectedCoordinate_y'], CPSYS['hasValue'], CPSYS['numericalValue'] ], Literal(latitude))
+        row['longitude'] = longitude
+        row['latitude'] = latitude
 
     o = d['year_built']
     if o:
+        o = int(o)
         x = rdflib.BNode()
         g.add((s, POW['hasYearOfBuilt'], x))
-        add(g, x, [ CPSYS['hasValue'], CPSYS['numericalValue'] ], Literal(int(o), datatype=XSD.integer))
+        add(g, x, [ CPSYS['hasValue'], CPSYS['numericalValue'] ], Literal(o, datatype=XSD.integer))
+        row['year'] = o
 
     o = d['design_cap']
     if o:
@@ -186,6 +200,7 @@ def create_plant_from_dictionary(g, d, version, country_short, use_schema=False)
         add(g, s, [ EIPREAL['designCapacity'], CPSYS['hasValue'] ], x)
         g.add((x, CPSYS['numericalValue'], Literal(o)))
         g.add((x, CPSYS['hasUnitOfMeasure'], CPUNIT['MW']))
+        row['capacity'] = o
 
     o = d['owner']
     if o:
@@ -195,14 +210,16 @@ def create_plant_from_dictionary(g, d, version, country_short, use_schema=False)
             x = rdflib.BNode()
             g.add((s, CPSYSV1['isOwnedBy'], x))
             g.add((x, CPSYSV1['hasName'], Literal(o)))
+        row['owner'] = o
 
     o = d['primary_fuel']
     if o:
         x = rdflib.BNode()
         g.add((s, CPTECSYS['realizes'], x))
         g.add((x, POW['consumesPrimaryFuel'], Literal(o)))
+        row['fuel'] = o
 
-    return name
+    return name, row
 
 def create_DUKES_plants(source_file, target_file, version, format, coordinates):
 
@@ -210,6 +227,9 @@ def create_DUKES_plants(source_file, target_file, version, format, coordinates):
 
     graph = rdflib.Graph()
     bind_prefixes(graph)
+
+    rows = []
+    dict_id2pos = {}
 
     dframe = pd.read_csv(source_file, index_col='dukes_id')
     dframe['primary_fuel'] = dframe['primary_fuel'].copy().apply(fuel_UK)
@@ -219,6 +239,7 @@ def create_DUKES_plants(source_file, target_file, version, format, coordinates):
     if version == 'v2':
         owner_dict = create_owner_dict(graph, dframe) #, filter_strings)
 
+    pos = 0
     for i, row in dframe.iterrows():
         # TODO
         #plant_name = row['name'] #[:-3]
@@ -254,9 +275,24 @@ def create_DUKES_plants(source_file, target_file, version, format, coordinates):
                 'lat': row['lat'],
             })
 
-        create_plant_from_dictionary(graph, drow, version, 'GBR')
+        _, row = create_plant_from_dictionary(graph, drow, version, 'GBR')
+        row.update({'id': pos})
+        rows.append(row)
+        dict_id2pos[i] = pos
+        pos += 1
+
 
     graph.serialize(target_file, format=format)
+
+    columns = ['id','name','owner','capacity','fuel','year']
+    dframe_new = pd.DataFrame(rows, columns=columns)
+    dframe_new['year'] = dframe_new['year'].astype('Int64')
+    dframe_new.set_index(keys=['id'], inplace=True)
+    csv_target_file = target_file[:-4] + '.csv'
+    dframe_new.to_csv(csv_target_file, index=True)
+
+    print('\n\n')
+    print(dict_id2pos)
 
 def convert_fuel_to_subclass(s):
     if s in ['Biomass', 'Solar', 'Wind', 'Nuclear', 'Waste', 'Wind']:
@@ -270,7 +306,8 @@ def convert_fuel_to_subclass(s):
     return 'PowerPlant'
 
 def v(row, key):
-    value = row[key]
+    #value = row[key]
+    value = row.get(key)
     if pd.isna(value) or value is np.nan or not value:
         value = None
     return value
@@ -285,6 +322,9 @@ def create_GPPDB_plants(source_file, target_file, version, frmt, country_short):
     graph = rdflib.Graph()
     bind_prefixes(graph)
 
+    rows = []
+    dict_id2pos = {}
+
     dframe = pd.read_csv(source_file, index_col='gppd_idnr')
     dframe = dframe[dframe['country'] == country_short]
 
@@ -296,6 +336,7 @@ def create_GPPDB_plants(source_file, target_file, version, frmt, country_short):
     #if version == 'v2':
     #    owner_dict = create_owner_dict(g, df)
 
+    pos = 0
     for i, row in dframe.iterrows():
         # TODO
         plant_name = v(row, 'name')
@@ -326,13 +367,27 @@ def create_GPPDB_plants(source_file, target_file, version, frmt, country_short):
             'long': v(row, 'longitude'),
             'lat': v(row, 'latitude'),
             # there is no commissioning year for GPPDB GBR
-            #'year_built': v(row, 'commissioning_year'),
+            'year_built': v(row, 'commissioning_year'),
             'design_cap': v(row, 'capacity_mw')
         }
 
-        create_plant_from_dictionary(graph, row, version, country_short)
+        name, row_csv = create_plant_from_dictionary(graph, row, version, country_short)
+        row_csv.update({'id': pos})
+        rows.append(row_csv)
+        dict_id2pos[i] = pos
+        pos += 1
 
     graph.serialize(target_file, format=frmt)
+
+    columns = ['id','name','owner','capacity','fuel','year']
+    dframe_new = pd.DataFrame(rows, columns=columns)
+    dframe_new['year'] = dframe_new['year'].astype('Int64')
+    dframe_new.set_index(keys=['id'], inplace=True)
+    csv_target_file = target_file[:-4] + '.csv'
+    dframe_new.to_csv(csv_target_file, index=True)
+
+    print('\n\n')
+    print(dict_id2pos)
 
 
 def create_GPPDB_plants_single_files(source_file, target_dir, version, format, country, country_short):
@@ -392,7 +447,7 @@ def create_GPPDB_plants_single_files(source_file, target_dir, version, format, c
 
         g = rdflib.Graph()
         bind_prefixes(g)
-        name = create_plant_from_dictionary(g, d, version, country_short)
+        name, _ = create_plant_from_dictionary(g, d, version, country_short)
         target_file = target_dir + '/' + name + '.owl'
         g.serialize(target_file, format=format)
 
@@ -576,7 +631,7 @@ def create_KWL_plants_single_files(source_file, target_dir, version, format):
 
         graph = rdflib.Graph()
         bind_prefixes(graph)
-        name = create_plant_from_dictionary(graph, d, version, 'DE')
+        name, _ = create_plant_from_dictionary(graph, d, version, 'DE')
 
         if str(name).startswith('BNA0201a'):
             name = 'BNA0201a_Windpark_Dörpum_DE'
@@ -596,6 +651,9 @@ def create_KWL_plants(source_file, target_file, version, format):
     graph = rdflib.Graph()
     bind_prefixes(graph)
 
+    rows = []
+    dict_id2pos = {}
+
     #filter_strings = []
 
     dframe = pd.read_csv(source_file, delimiter=';', encoding='utf8')
@@ -607,7 +665,7 @@ def create_KWL_plants(source_file, target_file, version, format):
     #if version == 'v2':
     #    owner_dict = create_owner_dict(g, df)
 
-    count = 0
+    pos = 0
     for i, row in tqdm(dframe.iterrows()):
 
         plant_name = v(row, 'name')
@@ -653,23 +711,29 @@ def create_KWL_plants(source_file, target_file, version, format):
             'long': v(row, 'longitude'),
             'lat': v(row, 'latitude'),
             'year_built': v(row, 'commissioning_year'),
-            'design_cap': v(row, 'capacity_mw')
+            'design_cap': v(row, 'capacity_mw'),
+            'pos': pos
         }
 
-        name = create_plant_from_dictionary(graph, d, version, 'DE', use_schema=True)
-
-        '''
-        if str(name).startswith('BNA0201a'):
-            name = 'BNA0201a_Windpark_Dörpum_DE'
-        elif str(name).startswith('BNA0201b'):
-            name = 'BNA0201b_Windpark_Reußenköge'
-        target_file = target_dir + '/' + name + '.owl'
-        count += 1
-        print('Finished', count, name, target_file)
-        #if count >= 1960:
-        graph.serialize(target_file, format=format)
-        '''
+        name, row = create_plant_from_dictionary(graph, d, version, 'DE', use_schema=True)
+        row.update({'id': pos})
+        rows.append(row)
+        dict_id2pos[i] = pos
+        pos += 1
+        
     graph.serialize(target_file, format=format)
+
+    columns = ['id','name','owner','capacity','fuel','year','country','locality','postalcode','street','region']
+    dframe_new = pd.DataFrame(rows, columns=columns)
+    dframe_new['postalcode'] = dframe_new['postalcode'].astype('Int64')
+    dframe_new['year'] = dframe_new['year'].astype('Int64')
+    dframe_new.set_index(keys=['id'], inplace=True)
+    csv_target_file = target_file[:-4] + '.csv'
+    dframe_new.to_csv(csv_target_file, index=True)
+
+    print('\n\n')
+    print(dict_id2pos)
+
 
 def create_location_file(source_file, target_file, frmt):
 
@@ -1262,10 +1326,13 @@ def link_entity_pairs(link_file, iri_pairs):
     #BASE = namespace
 
     graph = rdflib.Graph()
-    bind_prefixes(graph)
-
+    #bind_prefixes(graph)
+    #TODO: important modification to debug uk_digitaltwin run
     for iri_1, iri_2 in iri_pairs:
+        if type(iri_2) != str:
+            iri_2 = str(iri_2[0])
         graph.add((URIRef(iri_1), OWL.sameAs, URIRef(iri_2)))
+
 
     graph.serialize(link_file, format='turtle')
 
@@ -1273,31 +1340,26 @@ if __name__ == '__main__':
 
     ontomatch.utils.util.init()
 
-    main_dir = './data'
+    src_dir = 'D:/my/CARES_matching/ontomatch_2209_data/Conversion'
+    tgt_dir = '../tmp'
 
     frmt = 'turtle'
     #frmt = 'owl'
     #frmt = 'xml'
     #frmt = 'nt' # ntriples
-    #src_file = 'C:/my/tmp/ontomatch/dukes_owl.csv'
-    #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/dukes_geo_211028.ttl'
-    #create_DUKES_plants(source_file=src_file, target_file=tgt_file, version='v1', format=frmt, coordinates=True)
 
-    #country_short='GBR'
+    src_file = src_dir + '/dukes_owl.csv'
+    tgt_file = tgt_dir + '/dukes.ttl'
+    create_DUKES_plants(source_file=src_file, target_file=tgt_file, version='v1', format=frmt, coordinates=True)
+
+    country_short='GBR'
     #country_short='DEU'
-    #src_file = 'C:/my/CARES_CEP_project/CARES_CEP_docs/ontology_matching/original_data/globalpowerplantdatabasev120/global_power_plant_database.csv'
-    #tgt_file = maindir + '/power_plant_GBR/gppd_GBR.ttl'
+    #src_file = src_dir + '/global_power_plant_database.csv'
+    #tgt_file = tgt_dir + '/gppd_' + country_short + '.ttl'
     #create_GPPDB_plants(source_file=src_file, target_file=tgt_file, version='v1', frmt=frmt, country_short=country_short)
 
-    #tgt_dir = 'C:/my/tmp/ontomatch/tmp_gppd_files'
-    #create_GPPDB_plants_single_files(source_file=src_file, target_dir=tgt_dir, version='v1', format=frmt, country='United Kingdom', country_short='UK')
-    #create_GPPDB_plants_single_files(source_file=src_file, target_dir=tgt_dir, version='v1', format=frmt, country='Germany', country_short='DE')
-    #src_file = 'C:/my/tmp/ontomatch/Kraftwerksliste_CSV_2020_04_UTF8_TMP.csv'
-    #tgt_dir = 'C:/my/tmp/ontomatch/tmp_kwl_files'
-    #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_address_211022.ttl'
-    #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl.owl'
-    #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl.nt'
-    #create_KWL_plants_single_files(source_file=src_file, target_dir=tgt_dir, version='v1', format=frmt)
+    #src_file = src_dir + '/Kraftwerksliste_CSV_2020_04_UTF8_TMP.csv'
+    #tgt_file = tgt_dir + '/kwl.ttl'
     #create_KWL_plants(source_file=src_file, target_file=tgt_file, version='v1', format=frmt)
 
     #src_file = 'C:/my/tmp/ontomatch/dbpedia_DEU_converted_v1.csv'
@@ -1310,5 +1372,5 @@ if __name__ == '__main__':
 
     #ConverterRestaurant.convert()
     #ConverterDBLP2ACM.convert()
-    ConverterDBLP1Scholar.convert()
+    #ConverterDBLP1Scholar.convert()
     #ConverterProduct.convert()

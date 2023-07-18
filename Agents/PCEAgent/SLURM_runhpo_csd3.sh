@@ -27,3 +27,4 @@ eval $CMD
 echo
 echo 'Slurm job diagnostics:'
 sacct --job $SLURM_JOBID --format "JobName,Submit,Elapsed,AveCPU,CPUTime,UserCPU,TotalCPU,NodeList,NTasks,AveDiskRead,AveDiskWrite"
+

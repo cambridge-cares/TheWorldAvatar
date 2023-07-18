@@ -1,0 +1,89 @@
+{
+    "Empirical_Formula": "C2H6",
+    "Atom_Total_Counts": [
+        2,
+        6
+    ],
+    "Atom_List": [
+        "C",
+        "C",
+        "H",
+        "H",
+        "H",
+        "H",
+        "H",
+        "H"
+    ],
+    "Atom_Masses": [
+        12.0107,
+        12.0107,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783
+    ],
+    "Elements": [
+        "C",
+        "H"
+    ],
+    "Level_of_Theory": "RB3LYP",
+    "Basis_Set": "6-31G(d)",
+    "Spin_Multiplicity": 1,
+    "Total_Charge": 0,
+    "Geometry_Type": "nonlinear",
+    "X_Atoms_Coordinates": [
+        0.0,
+        0.0,
+        1.018496,
+        -0.509246,
+        -0.509249,
+        0.509249,
+        0.509246,
+        -1.018496
+    ],
+    "Y_Atoms_Coordinates": [
+        0.0,
+        0.0,
+        0.0,
+        -0.882045,
+        0.882044,
+        -0.882044,
+        0.882045,
+        0.0
+    ],
+    "Z_Atoms_Coordinates": [
+        -0.86537,
+        0.86537,
+        1.263512,
+        1.263512,
+        1.263511,
+        -1.263511,
+        -1.263512,
+        -1.263512
+    ],
+    "Rotational_Constants_String": "80.5678452 15.0058132 15.0058085",
+    "Rotational_Constants_Number": 3,
+    "Rotational_Symmetry_Number": null,
+    "Frequencies_String": null,
+    "Frequencies_Number": null,
+    "Electronic_Energy": -2171.885405408966,
+    "Electronic_And_ZPE_Energy": null,
+    "ZPE_Energy": null,
+    "Homo_Energy": -0.34049,
+    "Homo-1_Energy": -0.34049,
+    "Homo-2_Energy": -0.36278,
+    "Lumo_Energy": 0.1053,
+    "Lumo+1_Energy": 0.15668,
+    "Lumo+2_Energy": 0.16472,
+    "Program_Name": "Gaussian",
+    "Program_Version": "2009+D.01",
+    "Run_Date": "Thu Mar 25 19:05:15 2021",
+    "Log_File_Name": "ethane_scan_rigid.g09",
+    "Species_IRI": "test_species_iri",
+    "Entry_IRI": "http://www.theworldavatar.com/kb/ontocompchem/G09_testID-111-111-111",
+    "PNG_Source_Location": "dummy_location/ethane_scan_rigid.g09_3.oc_json.png",
+    "CCLOG_Source_Location": "dummy_location/ethane_scan_rigid.g09",
+    "Entry_ID": "testID-111-111-111"
+}

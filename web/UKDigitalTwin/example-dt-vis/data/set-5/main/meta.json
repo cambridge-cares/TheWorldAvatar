@@ -1,0 +1,12 @@
+{
+    "dataSets": [
+        {
+            "name": "sensors",
+            "dataType": "geojson",
+            "dataLocation": "sensor.geojson",
+            "locationType": "point",
+            "metaFiles": ["sensor-meta.json"],
+            "timeseriesFiles": ["sensor-timeseries.json"]
+        }
+    ]
+}

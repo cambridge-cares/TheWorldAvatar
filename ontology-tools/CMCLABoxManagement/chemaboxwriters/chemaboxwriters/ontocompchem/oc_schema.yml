@@ -1,0 +1,285 @@
+prefixes:
+    main_inst_pref: "http://www.theworldavatar.com/kb/ontocompchem/"
+    base_import: "http://www.w3.org/2002/07/owl#imports"
+    onto_spec: "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl"
+    spec_pref_no_slash: "http://www.theworldavatar.com/kb/ontospecies"
+    rdfs: "http://www.w3.org/2000/01/rdf-schema"
+    skos: "http://www.w3.org/2004/02/skos/core"
+    dc: "http://purl.org/dc/elements/1.1/"
+    table_pref: "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl"
+    spec_pref: "http://www.theworldavatar.com/kb/ontospecies/"
+    gain_pref: "http://purl.org/gc/"
+    unit_pref: "http://data.nasa.gov/qudt/owl/"
+    onto_comp: "http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl"
+    comp_pref_no_slash: "http://www.theworldavatar.com/kb/ontocompchem"
+    comp_pref: "http://www.theworldavatar.com/kb/ontocompchem/"
+#
+schema_to_json_vars:
+    # formula, atoms, indices
+    EMP_FORMULA: {"required": False, "jsonKey": "Empirical_Formula"}
+    TOTAL_ATOMS_COUNTS: {"required": False, "jsonKey": "Atom_Total_Counts"}
+    ATOM_LIST: {"required": False, "jsonKey": "Atom_List"}
+    ATOM_MASSES: {"required": False, "jsonKey": "Atom_Masses"}
+    ELEMENTS: {"required": False, "jsonKey": "Elements"}
+    # lvl of theory, basis set, charge, spin
+    LVL_OF_THEORY: {"required": False, "jsonKey": "Level_of_Theory"}
+    BASIS_SET: {"required": False, "jsonKey": "Basis_Set"}
+    SPIN_MULT: {"required": False, "jsonKey": "Spin_Multiplicity"}
+    FORM_CHARGE: {"required": False, "jsonKey": "Total_Charge"}
+    # geom type, x,y,z coords
+    GEOM_TYPE: {"required": False, "jsonKey": "Geometry_Type"}
+    COORD_X: {"required": False, "jsonKey": "X_Atoms_Coordinates"}
+    COORD_Y: {"required": False, "jsonKey": "Y_Atoms_Coordinates"}
+    COORD_Z: {"required": False, "jsonKey": "Z_Atoms_Coordinates"}
+    # rot consts
+    ROT_CONST_STRING: {"required": False, "jsonKey": "Rotational_Constants_String"}
+    ROT_CONST_NR: {"required": False, "jsonKey": "Rotational_Constants_Number"}
+    ROT_CONST_SYM_NR: {"required": False, "jsonKey": "Rotational_Symmetry_Number"}
+    # freqs
+    FREQ_STRING: {"required": False, "jsonKey": "Frequencies_String"}
+    FREQ_NR: {"required": False, "jsonKey": "Frequencies_Number"}
+    # energies
+    ZPE_ENERGY: {"required": False, "jsonKey": "ZPE_Energy"}
+    ELEC_AND_ZPE_ENERGY: {"required": False, "jsonKey": "Electronic_And_ZPE_Energy"}
+    ELEC_ENERGY: {"required": False, "jsonKey": "Electronic_Energy"}
+    HOMO_ENERGY: {"required": False, "jsonKey": "Homo_Energy"}
+    HOMO_MIN1_ENERGY: {"required": False, "jsonKey": "Homo-1_Energy"}
+    HOMO_MIN2_ENERGY: {"required": False, "jsonKey": "Homo-2_Energy"}
+    LUMO_ENERGY: {"required": False, "jsonKey": "Lumo_Energy"}
+    LUMO_ADD1_ENERGY: {"required": False, "jsonKey": "Lumo+1_Energy"}
+    LUMO_ADD2_ENERGY: {"required": False, "jsonKey": "Lumo+2_Energy"}
+    # metadata
+    PROGRAM_NAME: {"required": False, "jsonKey": "Program_Name"}
+    PROGRAM_VERSION: {"required": False, "jsonKey": "Program_Version"}
+    RUN_DATE: {"required": False, "jsonKey": "Run_Date"}
+    CCLOG_SOURCE_LOCATION: {"required": False, "jsonKey": "CCLOG_Source_Location"}
+    PNG_SOURCE_LOCATION: {"required": False, "jsonKey": "PNG_Source_Location"}
+    # ospecies link
+    SPECIES_IRI: {"required": False, "jsonKey": "Species_IRI"}
+    # main entry
+    ENTRY_IRI: {"required": False, "jsonKey": "Entry_IRI"}
+    ENTRY_ID: {"required": False, "jsonKey": "Entry_ID"}
+abox_schema:
+    - # imports
+        [
+            "<IMP> ABoxOntoCompChem base_import: onto_comp:",
+            "<IMP> ABoxOntoCompChem base comp_pref_no_slash:",
+        ]
+    - # main instance
+        [
+            "<INS> ${ENTRY_IRI} onto_comp:#G09",
+        ]
+    - # Ontosepecies link
+        [
+            "<INS> ${SPECIES_IRI} onto_spec:#Species",
+            "<OBJ> ${ENTRY_IRI} onto_comp:#hasUniqueSpecies ${SPECIES_IRI}",
+        ]
+    - # Init
+        [
+            "<INS> comp_pref:InitializationModule_${ENTRY_ID} onto_comp:#InitializationModule",
+            "<INS> comp_pref:SourcePackage_${ENTRY_ID}_EnvironmentModule gain_pref:SourcePackage",
+            "<INS> comp_pref:MoleculeProperty_${ENTRY_ID} gain_pref:MoleculeProperty",
+            "<OBJ> ${ENTRY_IRI} onto_comp:#hasInitialization comp_pref:InitializationModule_${ENTRY_ID}",
+            "<OBJ> ${ENTRY_IRI} onto_comp:#hasEnvironment comp_pref:SourcePackage_${ENTRY_ID}_EnvironmentModule",
+            "<OBJ> comp_pref:InitializationModule_${ENTRY_ID} gain_pref:hasMoleculeProperty comp_pref:MoleculeProperty_${ENTRY_ID}",
+        ]
+    - # Molecule / atom entries
+        [
+            "<INS> comp_pref:Molecule_${ENTRY_ID}_${ELEMENTS}${TOTAL_ATOMS_COUNTS} gain_pref:Molecule",
+            "<INS> comp_pref:Atom_unique_${ENTRY_ID}_${ELEMENTS}${TOTAL_ATOMS_COUNTS} gain_pref:Atom",
+            "<OBJ> comp_pref:MoleculeProperty_${ENTRY_ID} gain_pref:hasMolecule comp_pref:Molecule_${ENTRY_ID}_${ELEMENTS}${TOTAL_ATOMS_COUNTS}",
+            "<OBJ> comp_pref:Molecule_${ENTRY_ID}_${ELEMENTS}${TOTAL_ATOMS_COUNTS} gain_pref:hasAtom comp_pref:Atom_unique_${ENTRY_ID}_${ELEMENTS}${TOTAL_ATOMS_COUNTS}",
+            "<OBJ> comp_pref:Atom_unique_${ENTRY_ID}_${ELEMENTS}${TOTAL_ATOMS_COUNTS} gain_pref:isElement table_pref:#${ELEMENTS}",
+            "<DAT> comp_pref:Molecule_${ENTRY_ID}_${ELEMENTS}${TOTAL_ATOMS_COUNTS} gain_pref:hasNumberOfAtoms ${TOTAL_ATOMS_COUNTS} Integer",
+        ]
+    - # Lvl of theory
+        [
+            "<INS> comp_pref:LevelOfTheory_${ENTRY_ID} onto_comp:#LevelOfTheory",
+            "<INS> comp_pref:MethodologyFeature_${ENTRY_ID}_LevelofTheoryParameter gain_pref:MethodologyFeature",
+            "<INS> comp_pref:BasisSet_${ENTRY_ID} gain_pref:BasisSet",
+            "<OBJ> comp_pref:InitializationModule_${ENTRY_ID} gain_pref:hasParameter comp_pref:MethodologyFeature_${ENTRY_ID}_LevelofTheoryParameter",
+            "<DAT> comp_pref:MethodologyFeature_${ENTRY_ID}_LevelofTheoryParameter onto_comp:#hasLevelOfTheory ${LVL_OF_THEORY}",
+            "<OBJ> comp_pref:InitializationModule_${ENTRY_ID} gain_pref:hasParameter comp_pref:BasisSet_${ENTRY_ID}",
+            "<DAT> comp_pref:BasisSet_${ENTRY_ID} gain_pref:hasBasisSet ${BASIS_SET}",
+        ]
+    - # Emp Formula
+        [
+            "<DAT> comp_pref:MoleculeProperty_${ENTRY_ID} gain_pref:hasName ${EMP_FORMULA}",
+        ]
+    - # Freq string
+        [
+            "<INS> comp_pref:VibrationalAnalysis_${ENTRY_ID} gain_pref:VibrationalAnalysis",
+            "<INS> comp_pref:Frequency_${ENTRY_ID} gain_pref:Frequency",
+            "<INS> gain_pref:cm-1 unit_pref:qudt#FrequencyUnit",
+            "<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:VibrationalAnalysis_${ENTRY_ID}",
+            "<OBJ> comp_pref:VibrationalAnalysis_${ENTRY_ID} gain_pref:hasResult comp_pref:Frequency_${ENTRY_ID}",
+            "<DAT> comp_pref:Frequency_${ENTRY_ID} onto_comp:#hasFrequencies ${FREQ_STRING}",
+            "<DAT> comp_pref:Frequency_${ENTRY_ID} gain_pref:hasVibrationCount ${FREQ_NR}",
+            "<OBJ> comp_pref:Frequency_${ENTRY_ID} gain_pref:hasUnit gain_pref:cm-1",
+        ]
+    - # Rotational data
+        [
+            "<INS> comp_pref:RotationalConstants_${ENTRY_ID} onto_comp:#RotationalConstants",
+            "<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:RotationalConstants_${ENTRY_ID}",
+            "<DAT> comp_pref:RotationalConstants_${ENTRY_ID} onto_comp:#hasRotationalConstants ${ROT_CONST_STRING} String",
+            "<DAT> comp_pref:RotationalConstants_${ENTRY_ID} onto_comp:#hasRotationalConstantsCount ${ROT_CONST_NR}",
+            "<OBJ> comp_pref:RotationalConstants_${ENTRY_ID} gain_pref:hasUnit unit_pref:unit#GigaHertz",
+        ]
+    - # Rotational sym nr
+        [
+            "<INS> comp_pref:RotationalSymmetry_${ENTRY_ID} onto_comp:#RotationalSymmetry",
+            "<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:RotationalSymmetry_${ENTRY_ID}",
+            "<DAT> comp_pref:RotationalSymmetry_${ENTRY_ID} onto_comp:#hasRotationalSymmetryNumber ${ROT_CONST_SYM_NR}",
+        ]
+    - # Geom type
+        [
+            "<INS> comp_pref:GeometryType_${ENTRY_ID} onto_comp:#GeometryType",
+            "<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:GeometryType_${ENTRY_ID}",
+            "<DAT> comp_pref:GeometryType_${ENTRY_ID} onto_comp:#hasGeometryType ${GEOM_TYPE}",
+        ]
+    - # ZPE
+        [
+            "<INS> comp_pref:ZeroPointEnergy_${ENTRY_ID} onto_comp:#ZeroPointEnergy",
+            "<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:ZeroPointEnergy_${ENTRY_ID}",
+            "<INS> comp_pref:FloatValue_${ENTRY_ID}_ZeroPointEnergy gain_pref:FloatValue",
+            "<OBJ> comp_pref:ZeroPointEnergy_${ENTRY_ID} gain_pref:hasElectronicEnergy comp_pref:FloatValue_${ENTRY_ID}_ZeroPointEnergy",
+            "<DAT> comp_pref:FloatValue_${ENTRY_ID}_ZeroPointEnergy gain_pref:hasValue ${ZPE_ENERGY}",
+            "<OBJ> comp_pref:FloatValue_${ENTRY_ID}_ZeroPointEnergy gain_pref:hasUnit unit_pref:unit#Hartree",
+        ]
+    - # Elec and ZPE
+        [
+            "<INS> comp_pref:ElectronicAndZPEEnergy_${ENTRY_ID} onto_comp:#ElectronicAndZPEEnergy",
+            "<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:ElectronicAndZPEEnergy_${ENTRY_ID}",
+            "<INS> comp_pref:FloatValue_${ENTRY_ID}_ElectronicAndZPEEnergy gain_pref:FloatValue",
+            "<OBJ> comp_pref:ElectronicAndZPEEnergy_${ENTRY_ID} gain_pref:hasElectronicEnergy comp_pref:FloatValue_${ENTRY_ID}_ElectronicAndZPEEnergy",
+            "<DAT> comp_pref:FloatValue_${ENTRY_ID}_ElectronicAndZPEEnergy gain_pref:hasValue ${ELEC_AND_ZPE_ENERGY}",
+            "<OBJ> comp_pref:FloatValue_${ENTRY_ID}_ElectronicAndZPEEnergy gain_pref:hasUnit unit_pref:unit#Hartree",
+        ]
+    - # Elec energy only
+        [
+            "<INS> comp_pref:ScfEnergy_${ENTRY_ID} onto_comp:#ScfEnergy",
+            "<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:ScfEnergy_${ENTRY_ID}",
+            "<INS> comp_pref:FloatValue_${ENTRY_ID}_ScfEnergy gain_pref:FloatValue",
+            "<OBJ> comp_pref:ScfEnergy_${ENTRY_ID} gain_pref:hasElectronicEnergy comp_pref:FloatValue_${ENTRY_ID}_ScfEnergy",
+            "<DAT> comp_pref:FloatValue_${ENTRY_ID}_ScfEnergy gain_pref:hasValue ${ELEC_ENERGY}",
+            "<OBJ> comp_pref:FloatValue_${ENTRY_ID}_ScfEnergy gain_pref:hasUnit unit_pref:unit#Hartree",
+        ]
+    - # HOMO energy
+        [
+            "<INS> comp_pref:HomoEnergy_${ENTRY_ID} onto_comp:#HomoEnergy",
+            "<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:HomoEnergy_${ENTRY_ID}",
+            "<INS> comp_pref:FloatValue_${ENTRY_ID}_HomoEnergy gain_pref:FloatValue",
+            "<OBJ> comp_pref:HomoEnergy_${ENTRY_ID} onto_comp:#hasHomoEnergy comp_pref:FloatValue_${ENTRY_ID}_HomoEnergy",
+            "<DAT> comp_pref:FloatValue_${ENTRY_ID}_HomoEnergy gain_pref:hasValue ${HOMO_ENERGY}",
+            "<OBJ> comp_pref:FloatValue_${ENTRY_ID}_HomoEnergy gain_pref:hasUnit unit_pref:unit#Hartree",
+        ]
+    - # HOMO-1 energy
+        [
+            "<INS> comp_pref:HomoMinusOneEnergy_${ENTRY_ID} onto_comp:#HomoMinusOneEnergy",
+            "<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:HomoMinusOneEnergy_${ENTRY_ID}",
+            "<INS> comp_pref:FloatValue_${ENTRY_ID}_HomoMinusOneEnergy gain_pref:FloatValue",
+            "<OBJ> comp_pref:HomoMinusOneEnergy_${ENTRY_ID} onto_comp:#hasHomoMinusOneEnergy comp_pref:FloatValue_${ENTRY_ID}_HomoMinusOneEnergy",
+            "<DAT> comp_pref:FloatValue_${ENTRY_ID}_HomoMinusOneEnergy gain_pref:hasValue ${HOMO_MIN1_ENERGY}",
+            "<OBJ> comp_pref:FloatValue_${ENTRY_ID}_HomoMinusOneEnergy gain_pref:hasUnit unit_pref:unit#Hartree",
+        ]
+    - # HOMO-2 energy
+        [
+            "<INS> comp_pref:HomoMinusTwoEnergy_${ENTRY_ID} onto_comp:#HomoMinusTwoEnergy",
+            "<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:HomoMinusTwoEnergy_${ENTRY_ID}",
+            "<INS> comp_pref:FloatValue_${ENTRY_ID}_HomoMinusTwoEnergy gain_pref:FloatValue",
+            "<OBJ> comp_pref:HomoMinusTwoEnergy_${ENTRY_ID} onto_comp:#hasHomoMinusTwoEnergy comp_pref:FloatValue_${ENTRY_ID}_HomoMinusTwoEnergy",
+            "<DAT> comp_pref:FloatValue_${ENTRY_ID}_HomoMinusTwoEnergy gain_pref:hasValue ${HOMO_MIN2_ENERGY}",
+            "<OBJ> comp_pref:FloatValue_${ENTRY_ID}_HomoMinusTwoEnergy gain_pref:hasUnit unit_pref:unit#Hartree",
+        ]
+    - # LUMO energy
+        [
+            "<INS> comp_pref:LumoEnergy_${ENTRY_ID} onto_comp:#LumoEnergy",
+            "<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:LumoEnergy_${ENTRY_ID}",
+            "<INS> comp_pref:FloatValue_${ENTRY_ID}_LumoEnergy gain_pref:FloatValue",
+            "<OBJ> comp_pref:LumoEnergy_${ENTRY_ID} onto_comp:#hasLumoEnergy comp_pref:FloatValue_${ENTRY_ID}_LumoEnergy",
+            "<DAT> comp_pref:FloatValue_${ENTRY_ID}_LumoEnergy gain_pref:hasValue ${LUMO_ENERGY}",
+            "<OBJ> comp_pref:FloatValue_${ENTRY_ID}_LumoEnergy gain_pref:hasUnit unit_pref:unit#Hartree",
+        ]
+    - # LUMO+1 energy
+        [
+            "<INS> comp_pref:LumoPlusOneEnergy_${ENTRY_ID} onto_comp:#LumoPlusOneEnergy",
+            "<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:LumoPlusOneEnergy_${ENTRY_ID}",
+            "<INS> comp_pref:FloatValue_${ENTRY_ID}_LumoPlusOneEnergy gain_pref:FloatValue",
+            "<OBJ> comp_pref:LumoPlusOneEnergy_${ENTRY_ID} onto_comp:#hasLumoPlusOneEnergy comp_pref:FloatValue_${ENTRY_ID}_LumoPlusOneEnergy",
+            "<DAT> comp_pref:FloatValue_${ENTRY_ID}_LumoPlusOneEnergy gain_pref:hasValue ${LUMO_ADD1_ENERGY}",
+            "<OBJ> comp_pref:FloatValue_${ENTRY_ID}_LumoPlusOneEnergy gain_pref:hasUnit unit_pref:unit#Hartree",
+        ]
+    - # LUMO+2 energy
+        [
+            "<INS> comp_pref:LumoPlusTwoEnergy_${ENTRY_ID} onto_comp:#LumoPlusTwoEnergy",
+            "<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:LumoPlusTwoEnergy_${ENTRY_ID}",
+            "<INS> comp_pref:FloatValue_${ENTRY_ID}_LumoPlusTwoEnergy gain_pref:FloatValue",
+            "<OBJ> comp_pref:LumoPlusTwoEnergy_${ENTRY_ID} onto_comp:#hasLumoPlusTwoEnergy comp_pref:FloatValue_${ENTRY_ID}_LumoPlusTwoEnergy",
+            "<DAT> comp_pref:FloatValue_${ENTRY_ID}_LumoPlusTwoEnergy gain_pref:hasValue ${LUMO_ADD2_ENERGY}",
+            "<OBJ> comp_pref:FloatValue_${ENTRY_ID}_LumoPlusTwoEnergy gain_pref:hasUnit unit_pref:unit#Hartree",
+        ]
+    - # Main Molulecule entry that would hold spin mult, charge and other props
+        [
+            "<INS> comp_pref:GeometryOptimization_${ENTRY_ID} gain_pref:GeometryOptimization",
+            "<OBJ> ${ENTRY_IRI} gain_pref:isCalculationOn comp_pref:GeometryOptimization_${ENTRY_ID}",
+            "<INS> comp_pref:Molecule_${ENTRY_ID} gain_pref:Molecule",
+            "<OBJ> comp_pref:GeometryOptimization_${ENTRY_ID} gain_pref:hasMolecule comp_pref:Molecule_${ENTRY_ID}",
+        ]
+    - # Spin mult
+        [
+            "<DAT> comp_pref:Molecule_${ENTRY_ID} onto_comp:#hasSpinMultiplicity ${SPIN_MULT}",
+        ]
+    - # Formal Charge
+        [
+            "<INS> comp_pref:IntegerValue_${ENTRY_ID}_FormalCharge gain_pref:IntegerValue",
+            "<OBJ> comp_pref:Molecule_${ENTRY_ID} gain_pref:hasFormalCharge comp_pref:IntegerValue_${ENTRY_ID}_FormalCharge",
+            "<DAT> comp_pref:IntegerValue_${ENTRY_ID}_FormalCharge gain_pref:hasValue ${FORM_CHARGE} Integer",
+            "<OBJ> comp_pref:IntegerValue_${ENTRY_ID}_FormalCharge gain_pref:hasUnit gain_pref:atomicUnit",
+        ]
+    - # Atom types
+        [
+            "<INS> comp_pref:Atom_${ENTRY_ID}_${ATOM_LIST}%{i} gain_pref:Atom",
+            "<OBJ> comp_pref:Molecule_${ENTRY_ID} gain_pref:hasAtom comp_pref:Atom_${ENTRY_ID}_${ATOM_LIST}%{i}",
+            "<OBJ> comp_pref:Atom_${ENTRY_ID}_${ATOM_LIST}%{i} gain_pref:isElement table_pref:#${ATOM_LIST}",
+        ]
+    - # Atom xyz coords
+        [
+            "<INS> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_x3Coordinate gain_pref:FloatValue",
+            "<OBJ> comp_pref:Atom_${ENTRY_ID}_${ATOM_LIST}%{i} gain_pref:hasAtomCoordinateX comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_x3Coordinate",
+            "<DAT> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_x3Coordinate gain_pref:hasValue ${COORD_X}",
+
+            "<INS> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_y3Coordinate gain_pref:FloatValue",
+            "<OBJ> comp_pref:Atom_${ENTRY_ID}_${ATOM_LIST}%{i} gain_pref:hasAtomCoordinateY comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_y3Coordinate",
+            "<DAT> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_y3Coordinate gain_pref:hasValue ${COORD_Y}",
+
+            "<INS> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_z3Coordinate gain_pref:FloatValue",
+            "<OBJ> comp_pref:Atom_${ENTRY_ID}_${ATOM_LIST}%{i} gain_pref:hasAtomCoordinateZ comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_z3Coordinate",
+            "<DAT> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_z3Coordinate gain_pref:hasValue ${COORD_Z}",
+        ]
+    - # Atom mass
+        [
+            "<INS> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_Mass gain_pref:FloatValue",
+            "<OBJ> comp_pref:Atom_${ENTRY_ID}_${ATOM_LIST}%{i} gain_pref:hasMass comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_Mass",
+            "<DAT> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_Mass gain_pref:hasValue ${ATOM_MASSES}",
+            "<OBJ> comp_pref:FloatValue_${ENTRY_ID}_${ATOM_LIST}%{i}_Mass gain_pref:hasUnit unit_pref:unit#Dalton",
+        ]
+    - # Program name
+        [
+            "<DAT> comp_pref:SourcePackage_${ENTRY_ID}_EnvironmentModule onto_comp:#hasProgram ${PROGRAM_NAME}",
+        ]
+    - # Program version
+        [
+            "<DAT> comp_pref:SourcePackage_${ENTRY_ID}_EnvironmentModule onto_comp:#hasProgramVersion ${PROGRAM_VERSION}",
+        ]
+    - # Run date
+        [
+            "<DAT> comp_pref:SourcePackage_${ENTRY_ID}_EnvironmentModule onto_comp:#hasRunDate ${RUN_DATE}",
+        ]
+    - # cclog location
+        [
+            "<OBJ> comp_pref:SourcePackage_${ENTRY_ID}_EnvironmentModule onto_comp:#hasOutputFile ${CCLOG_SOURCE_LOCATION}",
+        ]
+    - # png location
+        [
+            "<OBJ> comp_pref:SourcePackage_${ENTRY_ID}_EnvironmentModule onto_comp:#hasOutputFile ${PNG_SOURCE_LOCATION}",
+        ]

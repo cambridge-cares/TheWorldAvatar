@@ -1,0 +1,68 @@
+{
+    "Mops_Molecular_Weight": "MolWeightData",
+    "Mops_Polyhedral_Shape": "Tetrahedron",
+    "Mops_Polyhedral_Shape_Symbol": "Tetrahedron",
+    "Mops_Symmetry_Point_Group": "Td",
+    "Mops_Charge": "0",
+    "Mops_Formula": "someFormula",
+    "Mops_Label": "someLabel",
+    "Mops_Cavity_Volume": "someVolume",
+    "Mops_CCDC_Number": "someLabel",
+    "Mops_Reference_DOI": "someDOI",
+    "Mops_XYZ_Geometry_File_URL": "dummy_location/dummy_mops.xyz",
+    "Species_IRIs": [
+        "IRI1",
+        "IRI2"
+    ],
+    "CBU_Formulas": [
+        "Some_formula",
+        "Some_formula"
+    ],
+    "CBU_Binding_Sites": [
+        "Organic",
+        "Organic"
+    ],
+    "CBU_Binding_Site_Labels": [
+        "Carboxylate",
+        "Carboxylate"
+    ],
+    "CBU_Binding_Site_Coord_Numbers": [
+        "2",
+        "2"
+    ],
+    "CBU_Core_Labels": [
+        "C6H3",
+        "CH4"
+    ],
+    "CBU_Core_Substituent_Labels": [
+        "C6H3",
+        "CH4"
+    ],
+    "CBU_Spacer_Labels": [
+        "C6H3",
+        "CH4"
+    ],
+    "CBU_Spacer_Substituent_Labels": [
+        "C6H3",
+        "CH4"
+    ],
+    "CBU_Binding_Directions": [
+        "Direct",
+        "Sideway"
+    ],
+    "GBU_Planarities": [
+        "linear",
+        "pyramidal"
+    ],
+    "GBU_Modularities": [
+        "2",
+        "2"
+    ],
+    "GBU_Numbers": [
+        "10",
+        "20"
+    ],
+    "Assembly_Model_ID": "testID-111-111-111",
+    "Entry_IRI": "http://www.theworldavatar.com/kb/ontomops/MetalOrganicPolyhedra_testID-111-111-111",
+    "Entry_ID": "testID-111-111-111"
+}

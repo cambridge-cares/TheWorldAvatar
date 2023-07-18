@@ -21,6 +21,8 @@ public interface Prefixes {
 	String RDF = "rdf";
 	String RDFS = "rdfs";
 	String SKOS = "skos";
+	String WIKIDATA = "wd";
+	String WIKIDATAT = "wdt";
 	String XSD = "xsd";
 	String TIME = "time";
 	
@@ -29,6 +31,7 @@ public interface Prefixes {
 	String OCPGEOM = "OCPGEOM";
 	String OCPMATE = "OCPMATE";
 	String OCPMATH = "OCPMATH";
+	String OCPPERF = "OCPPERF";
 	String OCPPHAS = "OCPPHAS";
 	String OCPSPAC = "OCPSPAC";
 	String OCPSYST = "OCPSYST";
@@ -55,6 +58,11 @@ public interface Prefixes {
 	// other JPS ontologies 
 	String JPSAGEN = "JPSAGEN";
 	String JPSLAND = "JPSLAND";
+	String ONTOCITYGML = "OCGML";
+	String ONTOSPECIES = "OSPECIES";
+	
+	// special prefixes
+	String BLAZEGRAPH_GEO = "BLAZEGEO";
 	
 	//****OntoEIP OEIP (the following are added by @wx243)****
 	String OEIPSYSREAL = "OEIPSYSREAL";

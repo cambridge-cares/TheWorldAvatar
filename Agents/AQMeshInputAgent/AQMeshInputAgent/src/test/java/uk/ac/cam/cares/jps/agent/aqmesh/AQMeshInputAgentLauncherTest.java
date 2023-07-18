@@ -181,7 +181,6 @@ public class AQMeshInputAgentLauncherTest {
             }
         }
     }
-
     @Test
     public void testMainBothReadingsEmpty() throws IOException {
         createProperClientPropertiesFile();

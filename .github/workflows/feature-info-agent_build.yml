@@ -1,0 +1,58 @@
+#
+# This workflow contains a job that builds the Docker image for
+# the FeatureInfoAgent, running its JUnit tests in the process.
+#
+# Note this workflow will use the automatically generated GITHUB_TOKEN
+# and the username of the account that triggered it.
+#
+# Author: Michael Hillman (mdhillman<@>cmclinnovations.com)
+#
+name: Test the FeatureInfoAgent
+
+
+# Trigger this workflow on pull requests to the main branch,
+# but ONLY when files within the agent's directory are changed.
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - Agents/FeatureInfoAgent/**
+
+
+# Job definitions
+jobs:
+
+  # Single job to build the image
+  build-image:
+  
+    # Run on latest version of Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        
+        
+      # Write Maven credentials
+      - name: Set up Maven credentials
+        working-directory: ./Agents/FeatureInfoAgent/credentials
+        run: echo "$USERNAME" > repo_username.txt && echo  "$PASSWORD" > repo_password.txt
+        env:
+          USERNAME: ${{github.actor}}
+          PASSWORD: ${{github.token}}
+        
+        
+      # Create & boot a builder using the default docker-container driver.
+      - name: Set up Docker build
+        uses: docker/setup-buildx-action@v2
+      
+      
+      # Build the agent's Docker image
+      - name: Run unit tests (via Docker build)
+        uses: docker/build-push-action@v3
+        with:
+          push: false
+          context: ./Agents/FeatureInfoAgent
+      

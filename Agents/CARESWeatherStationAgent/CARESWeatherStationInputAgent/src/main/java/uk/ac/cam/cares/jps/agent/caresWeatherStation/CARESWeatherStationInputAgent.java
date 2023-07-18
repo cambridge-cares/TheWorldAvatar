@@ -6,6 +6,7 @@ import org.jooq.exception.DataAccessException;
 import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient.Type;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 
@@ -44,7 +45,7 @@ public class CARESWeatherStationInputAgent {
     /**
      * The prefix to use when no IRI exists for a JSON key originally
      */
-    public static final String generatedIRIPrefix = TimeSeriesSparql.ns_kb + "caresWeatherStation";
+    public static final String generatedIRIPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + "caresWeatherStation";
     /**
      * The time unit used for all time series maintained by the caresWeatherStation input agent
      */
@@ -147,8 +148,12 @@ public class CARESWeatherStationInputAgent {
                 // Get the classes (datatype) corresponding to each JSON key needed for initialization
                 List<Class<?>> classes = iris.stream().map(this::getClassFromJSONKey).collect(Collectors.toList());
                 // Initialize the time series
-                tsClient.initTimeSeries(iris, classes, timeUnit);
+                try {
+                tsClient.initTimeSeries(iris, classes, timeUnit, Type.INSTANTANEOUS, null, null);
                 LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
+            } catch (Exception e) {
+            	throw new JPSRuntimeException("Could not initialize timeseries!");
+            }
             }
         }
     }
@@ -207,7 +212,12 @@ public class CARESWeatherStationInputAgent {
             // Update each time series
             for (TimeSeries<OffsetDateTime> ts : timeSeries) {
                 // Retrieve current maximum time to avoid duplicate entries (can be null if no data is in the database yet)
-                OffsetDateTime endDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
+                OffsetDateTime endDataTime;
+                try {
+                	endDataTime= tsClient.getMaxTime(ts.getDataIRIs().get(0));
+                } catch (Exception e) {
+                	throw new JPSRuntimeException("Could not get max time!");
+                }
                 OffsetDateTime startCurrentTime = ts.getTimes().get(0);
                 // If there is already a maximum time
                 if (endDataTime != null) {
@@ -218,8 +228,12 @@ public class CARESWeatherStationInputAgent {
                 }
                 // Only update if there actually is data
                 if (!ts.getTimes().isEmpty()) {
+                	try {
                     tsClient.addTimeSeriesData(ts);
                     LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
+                } catch (Exception e) {
+                	throw new JPSRuntimeException("Could not add timeseries!");
+                } 
                 }
             }
         }
@@ -250,7 +264,6 @@ public class CARESWeatherStationInputAgent {
                 Iterator<String> it = currentEntry.keys();
                 while(it.hasNext()) {
                     String key = it.next();
-                    //LOGGER.info(String.format("Reading %s key now", key));
                     Object value = currentEntry.get(key);
                     if (value.getClass() != JSONObject.class) {
                         // Get the value and add it to the corresponding list
@@ -304,7 +317,7 @@ public class CARESWeatherStationInputAgent {
             // Get current list with object type
             List<Object> valuesUntyped = readingsMap.get(key);
             List<?> valuesTyped;
-            // Use mapping to cast the values into integer, double, boolean or string
+            // Use mapping to cast the values into integer, double, long or string
             // The Number cast is required for org.json datatypes
             if (datatype.equals(Integer.class.getSimpleName())) {
                 valuesTyped = valuesUntyped.stream().map(x -> ((Number) x).intValue()).collect(Collectors.toList());
@@ -345,13 +358,9 @@ public class CARESWeatherStationInputAgent {
             for(String key: mapping.getAllJSONKeys()) {
                 // Add IRI
                 iris.add(mapping.getIRI(key));
-                // Always try the particle readings first (all general information are contained there)
                 if (weatherReadings.containsKey(key)) {
                     values.add(weatherReadings.get(key));
                 }
-                // Will create a problem as length of iris and values do not match when creating the time series.
-                // Could add an empty list, but the length of the list needs to match length of times. So what values to
-                // fill it with?
                 else {
                     throw new NoSuchElementException("The key " + key + " is not contained in the readings!");
                 }

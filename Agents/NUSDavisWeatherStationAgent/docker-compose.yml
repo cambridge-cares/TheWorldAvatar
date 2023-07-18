@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  nusDavisWeatherStation-agent:
+    image: nusdavisweatherstation-agent:1.3.0
+    build: .
+    container_name: nusDavisWeatherStation-agent
+    pull_policy: if_not_present
+    ports:
+      - "1082:8080"

@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -116,40 +115,15 @@ public class FileBasedStoreClientTest {
 		assertFalse(kbClient.isEmpty());
 		
 		//check graph is loaded
-		assertNotNull(kbClient.getClass().getDeclaredField("dataset"));
-		Field field = kbClient.getClass().getDeclaredField("dataset");;
+		assertNotNull(kbClient.getClass().getSuperclass().getDeclaredField("dataset"));
+		Field field = kbClient.getClass().getSuperclass().getDeclaredField("dataset");;
 		field.setAccessible(true);
 		Dataset fieldValue = (Dataset) field.get(kbClient);
 			    
 		Model model = fieldValue.getNamedModel("http://example.com/triples");
 		assertFalse(model.isEmpty());
 	}
-	
-	/**
-	 * Test initialisation of Dataset and RDFConnection.
-	 * 
-	 * @throws IllegalAccessException
-	 * @throws IllegalArgumentException
-	 * @throws InvocationTargetException
-	 * @throws NoSuchMethodException
-	 * @throws SecurityException
-	 */
-	@Test
-	public void testInit() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		
-		kbClient = new FileBasedStoreClient();
-		
-		// access private member
-		assertNotNull(kbClient.getClass().getDeclaredMethod("init"));
-	    Method init = kbClient.getClass().getDeclaredMethod("init");
-	    init.setAccessible(true);
-		
-	    init.invoke(kbClient);
-	    
-		assertTrue(kbClient.isConnected());
-		assertTrue(kbClient.isEmpty());
-	}
-	
 	/**
 	 * Test constructor with multiple files and contexts.
 	 * @throws SecurityException 
@@ -176,8 +150,8 @@ public class FileBasedStoreClientTest {
 		
 		//check loaded to graphs
 		// access private variable
-		assertNotNull(kbClient.getClass().getDeclaredField("dataset"));
-		Field field = kbClient.getClass().getDeclaredField("dataset");;
+		assertNotNull(kbClient.getClass().getSuperclass().getDeclaredField("dataset"));
+		Field field = kbClient.getClass().getSuperclass().getDeclaredField("dataset");;
 		field.setAccessible(true);
 		Dataset fieldValue = (Dataset) field.get(kbClient);
 			    
@@ -216,8 +190,8 @@ public class FileBasedStoreClientTest {
 	    //load triples to default graph
 	    kbClient.load(null, filePath);
 		
-  		assertNotNull(kbClient.getClass().getDeclaredField("dataset"));
-  		Field field = kbClient.getClass().getDeclaredField("dataset");;
+  		assertNotNull(kbClient.getClass().getSuperclass().getDeclaredField("dataset"));
+  		Field field = kbClient.getClass().getSuperclass().getDeclaredField("dataset");;
   		field.setAccessible(true);
   		Dataset fieldValue = (Dataset) field.get(kbClient);
   		Model model1 = fieldValue.getDefaultModel();
@@ -280,8 +254,8 @@ public class FileBasedStoreClientTest {
 		kbClient.load(wrongContext, filePathNQ);
 		
 		// check a model is loaded to the context given in the file
-		assertNotNull(kbClient.getClass().getDeclaredField("dataset"));
-  		Field field = kbClient.getClass().getDeclaredField("dataset");;
+		assertNotNull(kbClient.getClass().getSuperclass().getDeclaredField("dataset"));
+  		Field field = kbClient.getClass().getSuperclass().getDeclaredField("dataset");;
   		field.setAccessible(true);
   		Dataset fieldValue = (Dataset) field.get(kbClient);
   		assertFalse(fieldValue.containsNamedModel(wrongContext));
@@ -316,8 +290,8 @@ public class FileBasedStoreClientTest {
 		kbClient.load(filePathNQ);
 		
 		//Check the quad is loaded to the correct named graph
-		assertNotNull(kbClient.getClass().getDeclaredField("dataset"));
-  		Field field = kbClient.getClass().getDeclaredField("dataset");;
+		assertNotNull(kbClient.getClass().getSuperclass().getDeclaredField("dataset"));
+  		Field field = kbClient.getClass().getSuperclass().getDeclaredField("dataset");;
   		field.setAccessible(true);
   		Dataset fieldValue = (Dataset) field.get(kbClient);		  		
   		assertTrue(fieldValue.containsNamedModel(context));
@@ -518,14 +492,6 @@ public class FileBasedStoreClientTest {
 		kbClient = new FileBasedStoreClient();
 		
 		assertEquals(testQuery, kbClient.setQuery(testQuery));
-		
-		// access private variable
-		assertNotNull(kbClient.getClass().getDeclaredField("query"));
-	    Field field = kbClient.getClass().getDeclaredField("query");;
-	    field.setAccessible(true);
-	    String fieldValue = (String) field.get(kbClient);
-		
-	    assertEquals(testQuery, fieldValue);
 		assertEquals(testQuery, kbClient.getQuery());
 	}
 	
@@ -750,11 +716,11 @@ public class FileBasedStoreClientTest {
 	public void testInsertAndGet() {
 		
 		String content = 
-		"<rdf:RDF\r\n"+
-		"    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n"+
-		"    xmlns:j.0=\"http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#\">\r\n"+
-		"  <j.0:FoodCourt rdf:about=\"http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-001.owl#FoodCourt-001\"/>\r\n"+
-		"</rdf:RDF>\r\n";
+		"<rdf:RDF"+System.getProperty("line.separator")+
+		"    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\""+System.getProperty("line.separator")+
+		"    xmlns:j.0=\"http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#\">"+System.getProperty("line.separator")+
+		"  <j.0:FoodCourt rdf:about=\"http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-001.owl#FoodCourt-001\"/>"+System.getProperty("line.separator")+
+		"</rdf:RDF>"+System.getProperty("line.separator");
 		
 		kbClient = new FileBasedStoreClient();
 		kbClient.insert(null, content, null);

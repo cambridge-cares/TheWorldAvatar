@@ -24,7 +24,7 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
-COPY --from=builder /root/DerivationExample/output/DerivationExample##1.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/DerivationExample/output/DerivationExample##1.2.0.war $CATALINA_HOME/webapps/
 
 # these settings are only required for debug mode
 ENV JPDA_ADDRESS=0.0.0.0:8000

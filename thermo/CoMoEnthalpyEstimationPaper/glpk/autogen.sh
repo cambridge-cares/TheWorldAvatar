@@ -25,3 +25,4 @@ automake -c -a
 echo "Done."
 
 echo "See file INSTALL for installation instructions."
+

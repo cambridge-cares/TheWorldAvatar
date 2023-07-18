@@ -71,11 +71,6 @@ Options:
 --max-iters=<maxiters>         Max number of force field iterations [default: 1000]
 --mff-variant=<mffvariant>     Force field variant [default: MMFF94]
 """
-#    chemutils xyz2xyzFlexBond <xyzTargetFileOrStr> <xyzRefFileOrStr>
-#                                                   <refAtomId1>
-#                                                   <refAtomId2>
-
-
 
 def start():
     try:
@@ -137,8 +132,5 @@ def start():
                 )
     pprint.pprint(output)
 
-    #else:
-    #    output = xyzReorderToxyzFlexBond(args['<xyzTargetFileOrStr>'], args['<xyzRefFileOrStr>'], \
-    #                               args['<refAtomId1>'], args['<refAtomId2>'])
 if __name__ == '__main__':
     start()

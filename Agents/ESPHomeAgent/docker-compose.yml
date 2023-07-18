@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  esphome-agent:
+    image: esphome-agent:1.4.0
+    build: .
+    container_name: esphome-agent
+    pull_policy: if_not_present
+    ports:
+      - "1011:8080"

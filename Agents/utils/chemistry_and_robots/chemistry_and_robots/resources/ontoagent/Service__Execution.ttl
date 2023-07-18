@@ -1,0 +1,43 @@
+@prefix ontoagent:           <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#> .
+@prefix ontorxn:             <https://www.theworldavatar.com/kg/ontoreaction/> .
+@prefix ontolab:             <https://www.theworldavatar.com/kg/ontolab/> .
+@prefix ontohplc:            <https://www.theworldavatar.com/kg/ontohplc/> .
+@prefix rdf:                 <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:                 <http://www.w3.org/2001/XMLSchema#> .
+@prefix :                    <https://www.theworldavatar.com/kg/agents/Service__Execution/> .
+
+:Service
+    rdf:type ontoagent:Service;
+    ontoagent:hasOperation :Operation;
+.
+
+:Operation
+    rdf:type ontoagent:Operation;
+    ontoagent:hasInput :MessageContent_input;
+    ontoagent:hasOutput :MessageContent_output;
+    ontoagent:hasHttpUrl "http://localhost:7000/execution/placeholder"^^xsd:string;
+.
+
+:MessageContent_input
+    rdf:type ontoagent:MessageContent;
+    ontoagent:hasMandatoryPart :MessagePart_rxnexp;
+.
+
+:MessageContent_output
+    rdf:type ontoagent:MessageContent;
+    ontoagent:hasMandatoryPart :MessagePart_hplcreport;
+.
+
+:MessagePart_rxnexp
+    rdf:type ontoagent:MessagePart;
+    ontoagent:isArray "false"^^xsd:boolean;
+    ontoagent:hasType ontorxn:ReactionExperiment;
+    ontoagent:hasName "reactionExperiment"^^xsd:string;
+.
+
+:MessagePart_hplcreport
+    rdf:type ontoagent:MessagePart;
+    ontoagent:isArray "false"^^xsd:boolean;
+    ontoagent:hasType ontohplc:HPLCReport;
+    ontoagent:hasName "hplcReport"^^xsd:string;
+.

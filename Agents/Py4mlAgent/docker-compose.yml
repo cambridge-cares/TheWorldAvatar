@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  oscml_agent:
+    container_name: py4ml_agent
+    image: docker.cmclinnovations.com/py4ml_agent:1.0.0
+    build: .
+    ports:
+      - 5000:5000

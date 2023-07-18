@@ -366,3 +366,4 @@ if [[ $SOLR_START == "true" ]] ; then
 else
   echo "Not starting Solr service (option -n given). Start manually with 'service $SOLR_SERVICE start'"
 fi
+

@@ -6,3 +6,4 @@
 #
 gcc -O2 -otspsol main.c maxflow.c mincut.c misc.c tsplib.c -lglpk -lm
 ./tspsol sample.tsp
+
