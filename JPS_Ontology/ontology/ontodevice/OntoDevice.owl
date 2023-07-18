@@ -10,9 +10,9 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodevice/">
         <owl:imports rdf:resource="https://saref.etsi.org/core/"/>
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">23 June 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">18 July 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoDevice is an ontology for describing devices, their capabilities and properties.</rdfs:comment>
-        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.5</owl:versionInfo>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.6</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
@@ -27,6 +27,20 @@
      -->
 
 
+    
+
+
+    <!-- https://saref.etsi.org/core/consistsOf -->
+
+
+    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/consistsOf">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Thermostat"/>
+        <rdfs:range rdf:resource="https://saref.etsi.org/core/TemperatureSensor"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/TemperatureController"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship indicating a composite entity that consists of other entities</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">consists of</rdfs:label>
+    </owl:ObjectProperty>
     
 
 
@@ -112,7 +126,7 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasGeoLocation">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
         <rdfs:range rdf:resource="http://www.opengis.net/ont/sf#Point"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a device's location.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a device&apos;s location.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has geo location</rdfs:label>
     </owl:ObjectProperty>
@@ -843,6 +857,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Accessory -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Accessory">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that is an added component to another device.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Accessory</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/ActiveRFIDTag -->
 
 
@@ -867,14 +893,50 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Antenna -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Antenna">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Accessory"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that is used to transmit or receive signal via electromagnetic radiation.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Antenna</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/BatteryTester -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/BatteryTester">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device used to measure the existing power of a battery</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Battery tester</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/CO2Sensor -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/CO2Sensor">
-        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Sensor"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/GasSensor"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A sensor that is able to measure the concentration of carbon dioxide gas in the atmosphere.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CO2 sensor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/CPU -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/CPU">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ComputerPart"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that is responsible for the logical or arithmatic operation in a computer.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CPU</rdfs:label>
     </owl:Class>
     
 
@@ -891,6 +953,42 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Computer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Computer">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that can be programmed to carry out a sequence of arithmetic or logical operations automatically.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Computer</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/ComputerPart -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/ComputerPart">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Accessory"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that is part of or can be added to a computer.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Computer Part</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/ConductivitySensor -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/ConductivitySensor">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Sensor"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that measures the conductivity of a material.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Conductivity sensor</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/ControlSensor -->
 
 
@@ -903,6 +1001,54 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Controller -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Controller">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that controls a certain variable of its environment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Controller</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/CurrentSensor -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/CurrentSensor">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Sensor"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that measures the current flowing through an electrical circuit.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Current sensor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Dehumidifier -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Dehumidifier">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Appliance"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that reduces the humidity of the surrounding atmosphere.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Dehumidifier</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Desktop -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Desktop">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Computer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A stationary computer placed on top of a platform, usually desks.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Desktop</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/Device -->
 
 
@@ -911,6 +1057,18 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An object designed and manufactured to perform one or more functions.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Device</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Dock -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Dock">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ComputerPart"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that simplifies a computers cable peripheral interface.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Dock</rdfs:label>
     </owl:Class>
     
 
@@ -939,6 +1097,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/EthernetCard -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/EthernetCard">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ComputerPart"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that acts as a network interface betweena a computer and the internet via cable</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">EthernetCard</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/FeedbackSensor -->
 
 
@@ -947,6 +1117,30 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that is used to provide the control system with measurements of physical quantities necessary to close control loops.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Feedback sensor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/FlowController -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/FlowController">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Controller"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that manages the amount of gas or liquid flowing through.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FlowController</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/FlowMeter -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/FlowMeter">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Meter"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that measure and communicate amount of liquid flowing through.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Flow meter</rdfs:label>
     </owl:Class>
     
 
@@ -975,14 +1169,38 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/FurnaceController -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/FurnaceController">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Controller"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that manages the operations of a furnace.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Furnace controller</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/GPSDevice -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/GPSDevice">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device used within Earth's planetary atmosphere to determine its precise geographical location.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device used within Earth&apos;s planetary atmosphere to determine its precise geographical location.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">GPS device</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/GasSensor -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/GasSensor">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Sensor"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that measures the amount or existence of specific gas in the surrounding atmosphere.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gas sensor</rdfs:label>
     </owl:Class>
     
 
@@ -998,7 +1216,7 @@
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontodevice/GravityVector"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A sensor that detect minute localized changes in the force of Earth's gravity caused by variations in rock or other material's density underground.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A sensor that detect minute localized changes in the force of Earth&apos;s gravity caused by variations in rock or other material&apos;s density underground.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gravity sensor</rdfs:label>
     </owl:Class>
@@ -1047,6 +1265,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/IceMaker -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/IceMaker">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Appliance"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that is used to create ice  by freezing water.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ice Maker</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/IlluminanceSensor -->
 
 
@@ -1059,6 +1289,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/IlluminationController -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/IlluminationController">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Controller"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that manages the level of light a device produces.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Illuminance controller</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/InOutState -->
 
 
@@ -1067,6 +1309,18 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The current state of something on whether it is inside or outside of a space or object.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In out state</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Laptop -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Laptop">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Computer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A small and mobile computer.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Laptop</rdfs:label>
     </owl:Class>
     
 
@@ -1119,6 +1373,30 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/MassFlowController -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/MassFlowController">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/FlowController"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that manages the mass of gas or liquid flowing through.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MassFlowController</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/MassFlowSensor -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/MassFlowSensor">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Sensor"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that measures the mass flow rate of gas or liquid.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mass flow sensor</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/MicroController -->
 
 
@@ -1155,6 +1433,42 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Monitor -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Monitor">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ComputerPart"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that acts as a display of a computer.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Monitor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/MotorController -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/MotorController">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Controller"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that manages the operation of motors.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Motor controller</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/NetworkSwitch -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/NetworkSwitch">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ComputerPart"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that forwards and receive data from a computer network to a single specific device.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NetworkSwitch</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/OccupiedState -->
 
 
@@ -1175,6 +1489,42 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device for measuring the flow of oil.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Oil meter</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Oven -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Oven">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Appliance"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that is used for heating up items like food using a heating element.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Oven</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/PCCooler -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/PCCooler">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ComputerPart"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that lowers the operating temperature of a computer during operation.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PC Cooler</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/PaperShredder -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/PaperShredder">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Appliance"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device used to destroy paper document via cutting the document to small pieces.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Paper Shredder</rdfs:label>
     </owl:Class>
     
 
@@ -1215,6 +1565,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/PressureContoller -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/PressureContoller">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Controller"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that manages the gas or liquid pressure of other apparatus.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pressure controller</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/PressureSensor -->
 
 
@@ -1227,6 +1589,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Printer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Printer">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ComputerPart"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that prints data or documents to a paper.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Printer</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/ProximitySensor -->
 
 
@@ -1235,6 +1609,18 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that takes a continuous distance reading and returns a corresponding analog voltage.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Proximity sensor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/RAM -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/RAM">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ComputerPart"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that provides non-permanent memory during computation to a computer.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">RAM</rdfs:label>
     </owl:Class>
     
 
@@ -1275,6 +1661,30 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Router -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Router">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ComputerPart"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that forwards data packets in a coputer network.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Router</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/SSD -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/SSD">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ComputerPart"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that provies permanent memory on a computer.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SSD</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/SashOpeningSensor -->
 
 
@@ -1283,6 +1693,42 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that measures the sash opening of an object such as a fumehood.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sash opening sensor</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Screen -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Screen">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ComputerPart"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device on which a computer interface is projected onto.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Screen</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/SelectorValve -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/SelectorValve">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Valve"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A valve that selects what gas or liquid pass through.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SelectorValve</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Server -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Server">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Computer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A computer that provides functionality or programs for other computer.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Server</rdfs:label>
     </owl:Class>
     
 
@@ -1346,6 +1792,80 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Tablet -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Tablet">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Computer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A small and mobile computer that uses touch-screens as user interface</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tablet</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/TemperatureController -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/TemperatureController">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Controller"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that manages the temperature of the surrounding environment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Temperature controller</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Thermostat -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Thermostat">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://saref.etsi.org/core/consistsOf"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="https://saref.etsi.org/core/TemperatureSensor"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://saref.etsi.org/core/consistsOf"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontodevice/TemperatureController"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that measures and manages the temperature of the surrounding environment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Thermostat</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Tower -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Tower">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/ComputerPart"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that holds computational component and interface of a computer in an enclosed space.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tower</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Valve -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Valve">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/FlowController"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that manages the amount of gas or liquid flowing through via changing the area the material can pass through.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Valve</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/Vector -->
 
 
@@ -1357,14 +1877,38 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/WaterChiller -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/WaterChiller">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Appliance"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that is used to reduce water temperature.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Water chiller</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/WaterMeter -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/WaterMeter">
-        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Meter"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/FlowMeter"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that measure and communicate water usage from consumer to provider to facilitate water management and proper billing.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Water meter</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Workstation -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Workstation">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Computer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A workstation is a special computer designed for technical or scientific applications.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Workstation</rdfs:label>
     </owl:Class>
     
 
