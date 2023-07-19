@@ -3,17 +3,10 @@ package uk.ac.cam.cares.jps.agent.cea;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.agent.ceatasks.*;
 
-import kong.unirest.Unirest;
-import kong.unirest.HttpResponse;
-import kong.unirest.UnirestException;
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.protocol.HTTP;
 import org.json.JSONArray;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
@@ -27,23 +20,18 @@ import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.sparql.syntax.ElementGroup;
 import org.apache.jena.sparql.syntax.ElementService;
-import org.jooq.exception.DataAccessException;
 
 import org.locationtech.jts.geom.*;
 
 import org.json.JSONObject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.HttpMethod;
-import java.io.*;
 import java.net.*;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import javax.servlet.annotation.WebServlet;
 import java.util.concurrent.*;
 import java.util.stream.Stream;
-import java.sql.Connection;
-import java.sql.SQLException;
 
 
 @WebServlet(
@@ -71,84 +59,13 @@ public class CEAAgent extends JPSAgent {
     private String targetUrl = "http://localhost:8084/cea-agent" + URI_UPDATE;
 
     public static final String CITY_OBJECT = "cityobject";
-    public static final String KEY_GRID_CONSUMPTION = "GridConsumption";
-    public static final String KEY_ELECTRICITY_CONSUMPTION = "ElectricityConsumption";
-    public static final String KEY_HEATING_CONSUMPTION = "HeatingConsumption";
-    public static final String KEY_COOLING_CONSUMPTION = "CoolingConsumption";
-    public static final String KEY_ROOF_SOLAR_SUITABLE_AREA = "RoofSolarSuitableArea";
-    public static final String KEY_SOUTH_WALL_SOLAR_SUITABLE_AREA = "SouthWallSolarSuitableArea";
-    public static final String KEY_NORTH_WALL_SOLAR_SUITABLE_AREA = "NorthWallSolarSuitableArea";
-    public static final String KEY_EAST_WALL_SOLAR_SUITABLE_AREA = "EastWallSolarSuitableArea";
-    public static final String KEY_WEST_WALL_SOLAR_SUITABLE_AREA = "WestWallSolarSuitableArea";
-    public static final String KEY_PV_ROOF_SUPPLY= "PVRoofSupply";
-    public static final String KEY_PV_WALL_SOUTH_SUPPLY = "PVWallSouthSupply";
-    public static final String KEY_PV_WALL_NORTH_SUPPLY = "PVWallNorthSupply";
-    public static final String KEY_PV_WALL_EAST_SUPPLY = "PVWallEastSupply";
-    public static final String KEY_PV_WALL_WEST_SUPPLY = "PVWallWestSupply";
-    public static final String KEY_PVT_PLATE_ROOF_E_SUPPLY = "PVTPlateRoofESupply";
-    public static final String KEY_PVT_PLATE_WALL_SOUTH_E_SUPPLY = "PVTPlateWallSouthESupply";
-    public static final String KEY_PVT_PLATE_WALL_NORTH_E_SUPPLY = "PVTPlateWallNorthESupply";
-    public static final String KEY_PVT_PLATE_WALL_EAST_E_SUPPLY = "PVTPlateWallEastESupply";
-    public static final String KEY_PVT_PLATE_WALL_WEST_E_SUPPLY = "PVTPlateWallWestESupply";
-    public static final String KEY_PVT_PLATE_ROOF_Q_SUPPLY = "PVTPlateRoofQSupply";
-    public static final String KEY_PVT_PLATE_WALL_SOUTH_Q_SUPPLY = "PVTPlateWallSouthQSupply";
-    public static final String KEY_PVT_PLATE_WALL_NORTH_Q_SUPPLY = "PVTPlateWallNorthQSupply";
-    public static final String KEY_PVT_PLATE_WALL_EAST_Q_SUPPLY = "PVTPlateWallEastQSupply";
-    public static final String KEY_PVT_PLATE_WALL_WEST_Q_SUPPLY = "PVTPlateWallWestQSupply";
-    public static final String KEY_PVT_TUBE_ROOF_E_SUPPLY = "PVTTubeRoofESupply";
-    public static final String KEY_PVT_TUBE_WALL_SOUTH_E_SUPPLY = "PVTTubeWallSouthESupply";
-    public static final String KEY_PVT_TUBE_WALL_NORTH_E_SUPPLY = "PVTTubeWallNorthESupply";
-    public static final String KEY_PVT_TUBE_WALL_EAST_E_SUPPLY = "PVTTubeWallEastESupply";
-    public static final String KEY_PVT_TUBE_WALL_WEST_E_SUPPLY = "PVTTubeWallWestESupply";
-    public static final String KEY_PVT_TUBE_ROOF_Q_SUPPLY = "PVTTubeRoofQSupply";
-    public static final String KEY_PVT_TUBE_WALL_SOUTH_Q_SUPPLY = "PVTTubeWallSouthQSupply";
-    public static final String KEY_PVT_TUBE_WALL_NORTH_Q_SUPPLY = "PVTTubeWallNorthQSupply";
-    public static final String KEY_PVT_TUBE_WALL_EAST_Q_SUPPLY = "PVTTubeWallEastQSupply";
-    public static final String KEY_PVT_TUBE_WALL_WEST_Q_SUPPLY = "PVTTubeWallWestQSupply";
-    public static final String KEY_THERMAL_PLATE_ROOF_SUPPLY= "ThermalPlateRoofSupply";
-    public static final String KEY_THERMAL_PLATE_WALL_SOUTH_SUPPLY = "ThermalPlateWallSouthSupply";
-    public static final String KEY_THERMAL_PLATE_WALL_NORTH_SUPPLY = "ThermalPlateWallNorthSupply";
-    public static final String KEY_THERMAL_PLATE_WALL_EAST_SUPPLY = "ThermalPlateWallEastSupply";
-    public static final String KEY_THERMAL_PLATE_WALL_WEST_SUPPLY = "ThermalPlateWallWestSupply";
-    public static final String KEY_THERMAL_TUBE_ROOF_SUPPLY= "ThermalTubeRoofSupply";
-    public static final String KEY_THERMAL_TUBE_WALL_SOUTH_SUPPLY = "ThermalTubeWallSouthSupply";
-    public static final String KEY_THERMAL_TUBE_WALL_NORTH_SUPPLY = "ThermalTubeWallNorthSupply";
-    public static final String KEY_THERMAL_TUBE_WALL_EAST_SUPPLY = "ThermalTubeWallEastSupply";
-    public static final String KEY_THERMAL_TUBE_WALL_WEST_SUPPLY = "ThermalTubeWallWestSupply";
+    
     public static final String KEY_TIMES = "times";
     public static final String CEA_OUTPUTS = "ceaOutputs";
-    private static final String CRS_4326 = "EPSG:4326";
     public String customDataType = "<http://localhost/blazegraph/literals/POLYGON-3-15>";
     public String customField = "X0#Y0#Z0#X1#Y1#Z1#X2#Y2#Z2#X3#Y3#Z3#X4#Y4#Z4";
-
-    public static final String STORE_CLIENT = "RemoteStoreClient";
-    public static final String RDB_CLIENT = "RemoteRDBStoreClient";
-
-    public static final String CTYPE_JSON = "application/json";
-    public static final String OPENMETEO_ROUTE = "route";
-    public static final String OPENMETEO_LAT = "latitude";
-    public static final String OPENMETEO_LON = "longitude";
-    public static final String OPENMETEO_START = "start_date";
-    public static final String OPENMETEO_END = "end_date";
-    public static final String OPENMETEO_ENDPOINT_RUN = "run";
-    public static final String OPENMETEO_STATION = "stationIRI";
-
-    public static final String API_URL = "https://archive-api.open-meteo.com/v1/archive";
-    public static final String API_LAT = "latitude";
-    public static final String API_LON = "longitude";
-    public static final String API_START = "start_date";
-    public static final String API_END = "end_date";
-    private static final String API_TIMEZONE = "timezone";
-    private static final String API_OFFSET = "utc_offset_seconds";
-
-    public List<String> TIME_SERIES = Arrays.asList(KEY_GRID_CONSUMPTION,KEY_ELECTRICITY_CONSUMPTION,KEY_HEATING_CONSUMPTION,KEY_COOLING_CONSUMPTION, KEY_PV_ROOF_SUPPLY, KEY_PV_WALL_NORTH_SUPPLY, KEY_PV_WALL_SOUTH_SUPPLY, KEY_PV_WALL_EAST_SUPPLY, KEY_PV_WALL_WEST_SUPPLY, KEY_PVT_PLATE_ROOF_E_SUPPLY, KEY_PVT_PLATE_WALL_NORTH_E_SUPPLY, KEY_PVT_PLATE_WALL_SOUTH_E_SUPPLY, KEY_PVT_PLATE_WALL_EAST_E_SUPPLY, KEY_PVT_PLATE_WALL_WEST_E_SUPPLY, KEY_PVT_PLATE_ROOF_Q_SUPPLY, KEY_PVT_PLATE_WALL_NORTH_Q_SUPPLY, KEY_PVT_PLATE_WALL_SOUTH_Q_SUPPLY, KEY_PVT_PLATE_WALL_EAST_Q_SUPPLY, KEY_PVT_PLATE_WALL_WEST_Q_SUPPLY, KEY_PVT_TUBE_ROOF_E_SUPPLY, KEY_PVT_TUBE_WALL_NORTH_E_SUPPLY, KEY_PVT_TUBE_WALL_SOUTH_E_SUPPLY, KEY_PVT_TUBE_WALL_EAST_E_SUPPLY, KEY_PVT_TUBE_WALL_WEST_E_SUPPLY, KEY_PVT_TUBE_ROOF_Q_SUPPLY, KEY_PVT_TUBE_WALL_NORTH_Q_SUPPLY, KEY_PVT_TUBE_WALL_SOUTH_Q_SUPPLY, KEY_PVT_TUBE_WALL_EAST_Q_SUPPLY, KEY_PVT_TUBE_WALL_WEST_Q_SUPPLY, KEY_THERMAL_PLATE_ROOF_SUPPLY, KEY_THERMAL_PLATE_WALL_NORTH_SUPPLY, KEY_THERMAL_PLATE_WALL_SOUTH_SUPPLY, KEY_THERMAL_PLATE_WALL_EAST_SUPPLY, KEY_THERMAL_PLATE_WALL_WEST_SUPPLY, KEY_THERMAL_TUBE_ROOF_SUPPLY, KEY_THERMAL_TUBE_WALL_NORTH_SUPPLY, KEY_THERMAL_TUBE_WALL_SOUTH_SUPPLY, KEY_THERMAL_TUBE_WALL_EAST_SUPPLY, KEY_THERMAL_TUBE_WALL_WEST_SUPPLY);
-    public List<String> SCALARS = Arrays.asList(KEY_ROOF_SOLAR_SUITABLE_AREA, KEY_SOUTH_WALL_SOLAR_SUITABLE_AREA, KEY_NORTH_WALL_SOLAR_SUITABLE_AREA, KEY_EAST_WALL_SOLAR_SUITABLE_AREA, KEY_WEST_WALL_SOLAR_SUITABLE_AREA);
-
     public final int NUM_CEA_THREADS = 1;
     private final ThreadPoolExecutor CEAExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NUM_CEA_THREADS);
-
-    private TimeSeriesClient<OffsetDateTime> tsClient;
-    public static final String timeUnit = OffsetDateTime.class.getSimpleName();
     
     private OntologyURIHelper ontologyUriHelper;
     private GeometryQueryHelper geometryQueryHelper;
@@ -206,14 +123,15 @@ public class CEAAgent extends JPSAgent {
 
                 if (requestUrl.contains(URI_UPDATE)) {
                     // parse times
-                    List<OffsetDateTime> times = getTimesList(requestParams, KEY_TIMES);
+                    List<OffsetDateTime> times = DataParser.getTimesList(requestParams, KEY_TIMES);
+                    TimeSeriesHelper tsHelper = new TimeSeriesHelper(storeClient, rdbStoreClient);
 
                     // parse times series data;
                     List<List<List<?>>> timeSeries = new ArrayList<>();
                     for (int i = 0; i < uriArray.length(); i++) {
                         List<List<?>> iriList = new ArrayList<>();
-                        for(String ts: TIME_SERIES) {
-                            iriList.add(getTimeSeriesList(requestParams, ts, i));
+                        for(String ts: CEAConstants.TIME_SERIES) {
+                            iriList.add(DataParser.getTimeSeriesList(requestParams, ts, i));
                         }
                         timeSeries.add(iriList);
                     }
@@ -221,8 +139,8 @@ public class CEAAgent extends JPSAgent {
                     LinkedHashMap<String, List<String>> scalars = new LinkedHashMap<>();
 
                     // parse PV area data
-                    for(String scalar: SCALARS){
-                        scalars.put(scalar, getList(requestParams, scalar));
+                    for(String scalar: CEAConstants.SCALARS){
+                        scalars.put(scalar, DataParser.getList(requestParams, scalar));
                     }
 
                     for (int i = 0; i < uriArray.length(); i++) {
@@ -238,13 +156,13 @@ public class CEAAgent extends JPSAgent {
                             building = initialiseBuilding(uri, building, ceaRoute, namedGraph);
                         }
                         if(!checkDataInitialised(building, tsIris, scalarIris, ceaRoute, namedGraph)) {
-                            createTimeSeries(tsIris, namedGraph);
+                            tsHelper.createTimeSeries(tsIris, namedGraph, ontologyUriHelper);
                             initialiseData(i, scalars, building, tsIris, scalarIris, ceaRoute, namedGraph);
                         }
                         else{
                             updateScalars(ceaRoute, scalarIris, scalars, i, namedGraph);
                         }
-                        addDataToTimeSeries(timeSeries.get(i), times, tsIris);
+                        tsHelper.addDataToTimeSeries(timeSeries.get(i), times, tsIris);
                     }
                 }
                 else if (requestUrl.contains(URI_ACTION)) {
@@ -255,6 +173,7 @@ public class CEAAgent extends JPSAgent {
                     String crs = new String();
                     String terrainDb = defaultTerrainDb;
                     String terrainTable = defaultTerrainTable;
+                    WeatherHelper weatherHelper = null;
 
                     for (int i = 0; i < uriArray.length(); i++) {
                         String uri = uriArray.getString(i);
@@ -298,6 +217,7 @@ public class CEAAgent extends JPSAgent {
                             }
                             List<String> routeEndpoints = RouteHelper.getRouteEndpoints(ceaRoute);
                             storeClient = new RemoteStoreClient(routeEndpoints.get(0), routeEndpoints.get(1));
+                            weatherHelper = new WeatherHelper(openmeteoagentUrl, dbUser, dbPassword, weatherRoute, ontologyUriHelper);
                         }
 
                         uriStringArray.add(uri);
@@ -322,7 +242,7 @@ public class CEAAgent extends JPSAgent {
 
                         List<Object> weather = new ArrayList<>();
 
-                        if (getWeather(uri, geometryRoute, weatherRoute, crs, weather)) {
+                        if (weatherHelper.getWeather(uri, geometryRoute, weatherRoute, crs, weather)) {
                             testData.add(new CEAInputData(footprint, height, usage, surrounding, (List<OffsetDateTime>) weather.get(0), (Map<String, List<Double>>) weather.get(1), (List<Double>) weather.get(2)));
                         }
                         else{
@@ -376,13 +296,13 @@ public class CEAAgent extends JPSAgent {
                     }
                     JSONObject data = new JSONObject();
                     List<String> allMeasures = new ArrayList<>();
-                    Stream.of(TIME_SERIES, SCALARS).forEach(allMeasures::addAll);
+                    Stream.of(CEAConstants.TIME_SERIES, CEAConstants.SCALARS).forEach(allMeasures::addAll);
                     for (String measurement: allMeasures) {
                         ArrayList<String> result = getDataIRI(building, measurement, ceaRoute);
                         if (!result.isEmpty()) {
                             String value;
-                            if (TIME_SERIES.contains(measurement)) {
-                                value = calculateAnnual(retrieveData(result.get(0), storeClient, rdbStoreClient, OffsetDateTime.class), result.get(0));
+                            if (CEAConstants.TIME_SERIES.contains(measurement)) {
+                                value = DataParser.calculateAnnual(TimeSeriesHelper.retrieveData(result.get(0), storeClient, rdbStoreClient, OffsetDateTime.class), result.get(0));
                                 if (measurement.contains("ESupply")) {
                                     // PVT annual electricity supply
                                     measurement = "Annual "+ measurement.split("ESupply")[0] + " Electricity Supply";
@@ -455,57 +375,6 @@ public class CEAAgent extends JPSAgent {
     }
 
     /**
-     * Parses input JSONObject into a list of strings
-     * @param requestParams - request body in JSON format
-     * @param key - requested data
-     * @return List of data
-     */
-    private List<String> getList (JSONObject requestParams, String key) {
-        JSONArray array = (JSONArray) requestParams.get(key);
-        List<String> list = new ArrayList<>();
-        for (int j = 0; j < array.length(); j++) {
-            list.add(array.getString(j));
-        }
-        return list;
-    }
-
-    /**
-     * Parses input JSONObject into a list of time series data
-     * @param requestParams - request body in JSON format
-     * @param key - requested data
-     * @return List of data
-     */
-    private List<Double> getTimeSeriesList (JSONObject requestParams, String key, Integer index) {
-        List<Double> timeSeriesList = new ArrayList<>();
-
-        if (requestParams.has(key)) {
-            JSONArray array = (JSONArray) requestParams.get(key);
-            JSONArray timeDataArray = (JSONArray) array.get(index);
-
-            for (int i = 0; i < timeDataArray.length(); i++) {
-                timeSeriesList.add(Double.valueOf(timeDataArray.getString(i)));
-            }
-        }
-        return timeSeriesList;
-    }
-
-    /**
-     * Parses input JSONObject into a list of times
-     * @param requestParams - request body in JSON format
-     * @param key - requested data
-     * @return List of times
-     */
-    private List<OffsetDateTime> getTimesList (JSONObject requestParams, String key) {
-        JSONArray array = (JSONArray) requestParams.get(key);
-        List<OffsetDateTime> list = new ArrayList<>();
-        for (int j = 0; j < array.length(); j++) {
-            OffsetDateTime odt = OffsetDateTime.parse(array.getString(j));
-            list.add(odt);
-        }
-        return list;
-    }
-
-    /**
      * Validates input specific to requests coming to URI_UPDATE
      * @param requestParams - request body in JSON format
      * @return boolean saying if request is valid or not
@@ -513,45 +382,45 @@ public class CEAAgent extends JPSAgent {
     private boolean validateUpdateInput(JSONObject requestParams) {
         boolean error = requestParams.get(KEY_IRI).toString().isEmpty() ||
                 requestParams.get(KEY_TARGET_URL).toString().isEmpty() ||
-                requestParams.get(KEY_GRID_CONSUMPTION).toString().isEmpty() ||
-                requestParams.get(KEY_ELECTRICITY_CONSUMPTION).toString().isEmpty() ||
-                requestParams.get(KEY_HEATING_CONSUMPTION).toString().isEmpty() ||
-                requestParams.get(KEY_COOLING_CONSUMPTION).toString().isEmpty() ||
-                requestParams.get(KEY_PV_ROOF_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PV_WALL_SOUTH_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PV_WALL_NORTH_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PV_WALL_EAST_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PV_WALL_WEST_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PVT_PLATE_ROOF_E_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PVT_PLATE_ROOF_Q_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PVT_PLATE_WALL_SOUTH_E_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PVT_PLATE_WALL_SOUTH_Q_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PVT_PLATE_WALL_NORTH_E_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PVT_PLATE_WALL_NORTH_Q_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PVT_PLATE_WALL_EAST_E_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PVT_PLATE_WALL_EAST_Q_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PVT_PLATE_WALL_WEST_E_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PVT_PLATE_WALL_WEST_Q_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PVT_TUBE_ROOF_E_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PVT_TUBE_ROOF_Q_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PVT_TUBE_WALL_SOUTH_E_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PVT_TUBE_WALL_SOUTH_Q_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PVT_TUBE_WALL_NORTH_E_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PVT_TUBE_WALL_NORTH_Q_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PVT_TUBE_WALL_EAST_E_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PVT_TUBE_WALL_EAST_Q_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PVT_TUBE_WALL_WEST_E_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_PVT_TUBE_WALL_WEST_Q_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_THERMAL_PLATE_ROOF_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_THERMAL_PLATE_WALL_SOUTH_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_THERMAL_PLATE_WALL_NORTH_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_THERMAL_PLATE_WALL_EAST_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_THERMAL_PLATE_WALL_WEST_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_THERMAL_TUBE_ROOF_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_THERMAL_TUBE_WALL_SOUTH_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_THERMAL_TUBE_WALL_NORTH_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_THERMAL_TUBE_WALL_EAST_SUPPLY).toString().isEmpty() ||
-                requestParams.get(KEY_THERMAL_TUBE_WALL_WEST_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_GRID_CONSUMPTION).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_ELECTRICITY_CONSUMPTION).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_HEATING_CONSUMPTION).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_COOLING_CONSUMPTION).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PV_ROOF_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PV_WALL_SOUTH_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PV_WALL_NORTH_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PV_WALL_EAST_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PV_WALL_WEST_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PVT_PLATE_ROOF_E_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PVT_PLATE_ROOF_Q_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PVT_PLATE_WALL_SOUTH_E_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PVT_PLATE_WALL_SOUTH_Q_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PVT_PLATE_WALL_NORTH_E_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PVT_PLATE_WALL_NORTH_Q_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PVT_PLATE_WALL_EAST_E_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PVT_PLATE_WALL_EAST_Q_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PVT_PLATE_WALL_WEST_E_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PVT_PLATE_WALL_WEST_Q_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PVT_TUBE_ROOF_E_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PVT_TUBE_ROOF_Q_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PVT_TUBE_WALL_SOUTH_E_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PVT_TUBE_WALL_SOUTH_Q_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PVT_TUBE_WALL_NORTH_E_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PVT_TUBE_WALL_NORTH_Q_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PVT_TUBE_WALL_EAST_E_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PVT_TUBE_WALL_EAST_Q_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PVT_TUBE_WALL_WEST_E_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_PVT_TUBE_WALL_WEST_Q_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_THERMAL_PLATE_ROOF_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_THERMAL_PLATE_WALL_SOUTH_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_THERMAL_PLATE_WALL_NORTH_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_THERMAL_PLATE_WALL_EAST_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_THERMAL_PLATE_WALL_WEST_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_THERMAL_TUBE_ROOF_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_THERMAL_TUBE_WALL_SOUTH_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_THERMAL_TUBE_WALL_NORTH_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_THERMAL_TUBE_WALL_EAST_SUPPLY).toString().isEmpty() ||
+                requestParams.get(CEAConstants.KEY_THERMAL_TUBE_WALL_WEST_SUPPLY).toString().isEmpty() ||
                 requestParams.get(KEY_TIMES).toString().isEmpty();
         return error;
     }
@@ -623,106 +492,6 @@ public class CEAAgent extends JPSAgent {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
-    }
-
-    /**
-     * Creates and initialises a time series using the time series client
-     * @param fixedIris map containing time series iris mapped to measurement type
-     */
-    private void createTimeSeries(LinkedHashMap<String,String> fixedIris, String graph) {
-        tsClient = new TimeSeriesClient<>(storeClient, OffsetDateTime.class);
-
-        // Create a iri for each measurement
-        List<String> iris = new ArrayList<>();
-        for(String measurement: TIME_SERIES){
-            String iri = measurement+"_"+UUID.randomUUID()+ "/";
-            iri = !graph.isEmpty() ? graph + iri : ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + iri ;
-            iris.add(iri);
-            fixedIris.put(measurement, iri);
-        }
-
-        // Check whether IRIs have a time series linked and if not initialize the corresponding time series
-        if(!timeSeriesExist(iris)) {
-            // All values are doubles
-            List<Class<?>> classes =  new ArrayList<>();
-            for(int i=0; i<iris.size(); i++){
-                classes.add(Double.class);
-            }
-            try (Connection conn = rdbStoreClient.getConnection()) {
-                // Initialize the time series
-                tsClient.initTimeSeries(iris, classes, timeUnit, conn, TimeSeriesClient.Type.STEPWISECUMULATIVE, null, null);
-                //LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
-            }
-            catch (SQLException e) {
-                throw new JPSRuntimeException(e);
-            }
-        }
-    }
-
-    /**
-     * Adds new data to time series
-     * @param values output CEA data
-     * @param times times for output time series data
-     * @param iriMap iri map containing time series iris
-     */
-    private void addDataToTimeSeries(List<List<?>> values, List<OffsetDateTime> times, LinkedHashMap<String,String> iriMap) {
-        List<String> iris = new ArrayList<>();
-        for (String iri : iriMap.values()){
-            iris.add(iri);
-        }
-        // If CreateTimeSeries has not been run, get time series client
-        if(tsClient==null){
-            tsClient = new TimeSeriesClient<>(storeClient, OffsetDateTime.class);
-        }
-        TimeSeries<OffsetDateTime> currentTimeSeries = new TimeSeries<>(times, iris, values);
-
-        try (Connection conn = rdbStoreClient.getConnection()) {
-            OffsetDateTime endDataTime = tsClient.getMaxTime(currentTimeSeries.getDataIRIs().get(0), conn);
-            OffsetDateTime beginDataTime = tsClient.getMinTime(currentTimeSeries.getDataIRIs().get(0), conn);
-
-            // Delete old data if exists
-            if (endDataTime != null) {
-                for (Integer i = 0; i < currentTimeSeries.getDataIRIs().size(); i++) {
-                    tsClient.deleteTimeSeriesHistory(currentTimeSeries.getDataIRIs().get(i), beginDataTime, endDataTime, conn);
-                }
-            }
-            // Add New data
-            tsClient.addTimeSeriesData(currentTimeSeries, conn);
-        }
-        catch (SQLException e) {
-            throw new JPSRuntimeException(e);
-        }
-    }
-
-    /**
-     * Checks whether a time series exists by checking whether any of the IRIs that should be attached to
-     * the time series is not initialised in the central RDB lookup table using the time series client.
-     * @param iris The IRIs that should be attached to the same time series provided as list of strings.
-     * @return True if all IRIs have a time series attached, false otherwise.
-     */
-    private boolean timeSeriesExist(List<String> iris) {
-        // If any of the IRIs does not have a time series the time series does not exist
-        for(String iri: iris) {
-            try {
-                try (Connection conn = rdbStoreClient.getConnection()) {
-                    if (!tsClient.checkDataHasTimeSeries(iri, conn)) {
-                        return false;
-                    }
-                }
-                catch (SQLException e) {
-                    throw new JPSRuntimeException(e);
-                }
-                // If central RDB lookup table ("dbTable") has not been initialised, the time series does not exist
-            } catch (DataAccessException e) {
-                if (e.getMessage().contains("ERROR: relation \"dbTable\" does not exist")) {
-                    return false;
-                }
-                else {
-                    throw e;
-                }
-            }
-        }
-        return true;
     }
 
     /**
@@ -811,7 +580,7 @@ public class CEAAgent extends JPSAgent {
 
         // add city object graph
         WhereHandler wh2 = new WhereHandler(sb.build());
-        wh2.addGraph(NodeFactory.createURI(BuildingHelper.getGraph(uriString,CITY_OBJECT)), wh);
+        wh2.addGraph(NodeFactory.createURI(BuildingHelper.getGraph(uriString, CITY_OBJECT)), wh);
 
         return wh2.getQuery();
     }
@@ -891,423 +660,6 @@ public class CEAAgent extends JPSAgent {
     }
 
     /**
-     * Retrieves weather data
-     * @param uriString city object id
-     * @param route route to city object geometry data
-     * @param weatherRoute route to weather data
-     * @param crs CRS of city object geometry
-     * @param result list to add the retrieved weather data to
-     * @return true if weather data retrieved, false otherwise
-     */
-    private boolean getWeather(String uriString, String route, String weatherRoute, String crs, List<Object> result) {
-        String envelopeCoordinates = geometryQueryHelper.getValue(uriString, "envelope", route);
-
-        Polygon envelopePolygon = (Polygon) GeometryHelper.toPolygon(envelopeCoordinates);
-
-        Double elevation = envelopePolygon.getCoordinate().getZ();
-
-        Point center = envelopePolygon.getCentroid();
-
-        Coordinate centerCoordinate = center.getCoordinate();
-
-        crs = StringUtils.isNumeric(crs) ? "EPSG:" + crs : crs;
-
-        try {
-            // coordinate in (longitude, latitude) format
-            Coordinate transformedCoordinate = GeometryHelper.transformCoordinate(centerCoordinate, crs, CRS_4326);
-
-            // coordinate in (latitude, longitude) format
-            Coordinate coordinate = new Coordinate(transformedCoordinate.getY(), transformedCoordinate.getX(), transformedCoordinate.getZ());
-
-            String stationIRI = getWeatherStation(coordinate, 2.0, weatherRoute);
-
-            // if no nearby weather station, send request to OpenMeteoAgent to instantiate weather data
-            if (stationIRI.isEmpty()) {
-                stationIRI = runOpenMeteoAgent(String.valueOf(coordinate.getX()), String.valueOf(coordinate.getY()), weatherRoute);
-
-                // if request fails
-                if (stationIRI.isEmpty()) {return false;}
-            }
-
-            Map<String, List<String>> weatherMap = getWeatherIRI(stationIRI, weatherRoute);
-
-            List<Double> lat_lon = getStationCoordinate(stationIRI, weatherRoute);
-            Double latitude;
-            Double longitude;
-
-            if (!lat_lon.isEmpty()) {
-                latitude = lat_lon.get(0);
-                longitude = lat_lon.get(1);
-            }
-            else {
-                latitude = coordinate.getX();
-                longitude = coordinate.getY();
-            }
-
-            // if the timestamps of the instantiated weather data does not meet CEA requirements,
-            // send request to OpenMeteoAgent to update weather data with timestamps that meet CEA requirements
-            if (!parseWeather(weatherMap, result, latitude, longitude)) {
-                // if request fails
-                if (runOpenMeteoAgent(String.valueOf(latitude), String.valueOf(longitude), weatherRoute).isEmpty()) {return false;}
-
-                parseWeather(weatherMap, result, latitude, longitude);
-            }
-
-            String stationElevation = getStationElevation(stationIRI, weatherRoute);
-
-            if (!stationElevation.isEmpty()) {
-                elevation = Double.parseDouble(stationElevation);
-            }
-
-            List<OffsetDateTime> times = (List<OffsetDateTime>) result.get(0);
-
-            ZoneOffset zoneOffset = times.get(0).getOffset();
-
-            Integer offset = zoneOffset.getTotalSeconds();
-
-            // store offset in hours
-            result.add(Arrays.asList(latitude, longitude, elevation, offset / 60.0 / 60.0));
-
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-
-    /**
-     * Send request to OpenMeteoAgent to instantiate historical weather data over a year
-     * @param latitude latitude of the weather station
-     * @param longitude longitude of the weather station
-     * @param route route to instantiate weather data
-     * @return the instantiated weather station IRI
-     */
-    public String runOpenMeteoAgent(String latitude, String longitude, String route) {
-        String url = openmeteoagentUrl + OPENMETEO_ENDPOINT_RUN;
-
-        JSONObject json = new JSONObject()
-                .put(OPENMETEO_ROUTE, route)
-                .put(OPENMETEO_LAT, latitude)
-                .put(OPENMETEO_LON, longitude);
-
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate currentFirstDate = LocalDate.now().withMonth(1).withDayOfMonth(1);
-        String startDate = currentFirstDate.minusYears(1).format(format);
-        String endDate = currentFirstDate.format(format);
-
-        json.put(OPENMETEO_START, startDate)
-                .put(OPENMETEO_END, endDate);
-
-        try {
-            HttpResponse<String> response = Unirest.post(url)
-                    .header(HTTP.CONTENT_TYPE, CTYPE_JSON)
-                    .body(json.toString())
-                    .socketTimeout(300000)
-                    .asString();
-            int responseStatus = response.getStatus();
-
-            if (responseStatus == HttpURLConnection.HTTP_OK) {
-                JSONObject responseBody = new JSONObject(response.getBody());
-
-                return responseBody.getJSONArray(OPENMETEO_STATION).getString(0);
-            } else {
-                return "";
-            }
-        }
-        catch (UnirestException e) {
-            return "";
-        }
-    }
-
-    /**
-     * Queries for and returns the IRI of weather station located within {radius} kilometers of center
-     * @param center center of the search circle
-     * @param radius radius of the search circle
-     * @param route endpoint of the weather station query
-     * @return IRI of a weather station located within {radius} kilometers of center
-     */
-    private String getWeatherStation(Coordinate center, Double radius, String route) {
-        String result = "";
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo))
-                .addPrefix("geoliteral", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geoliteral))
-                .addPrefix("ontoems", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoems));
-
-        wb.addWhere("?station", "geo:search", "inCircle")
-                .addWhere("?station", "geo:searchDatatype", "geoliteral:lat-lon")
-                .addWhere("?station", "geo:predicate", "ontoems:hasObservationLocation")
-                // PLACEHOLDER because the coordinate will be treated as doubles instead of string otherwise
-                .addWhere("?station", "geo:spatialCircleCenter", center.getX() + "PLACEHOLDER" + center.getY())
-                .addWhere("?station", "geo:spatialCircleRadius", radius);
-
-        SelectBuilder sb = new SelectBuilder()
-                .addVar("?station");
-
-        Query query = sb.build();
-
-        // add geospatial service
-        ElementGroup body = new ElementGroup();
-        body.addElement(new ElementService(ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo) + "search", wb.build().getQueryPattern()));
-        query.setQueryPattern(body);
-
-        String queryString = query.toString().replace("PLACEHOLDER", "#");
-
-        JSONArray queryResultArray = this.queryStore(route, queryString);
-
-        if (!queryResultArray.isEmpty()) {
-            result = queryResultArray.getJSONObject(0).getString("station");
-        }
-
-        return result;
-    }
-
-    /**
-     * Queries for and returns the elevation of a weather station
-     * @param stationIRI IRI of weather station
-     * @param route endpoint of the weather station query
-     * @return elevation of the weather station
-     */
-    private String getStationElevation(String stationIRI, String route) {
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ontoEMS", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoems))
-                .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf));
-
-        wb.addWhere(NodeFactory.createURI(stationIRI), "ontoEMS:hasObservationElevation", "?elevation");
-
-        SelectBuilder sb = new SelectBuilder()
-                .addWhere(wb);
-
-        sb.addVar("?elevation");
-
-        JSONArray queryResultArray = this.queryStore(route, sb.build().toString());
-
-        if (!queryResultArray.isEmpty()) {
-            return queryResultArray.getJSONObject(0).getString("elevation");
-        }
-        else{
-            return "";
-        }
-    }
-
-    /**
-     * Queries for and returns the coordinate of a weather station
-     * @param stationIRI IRI of weather station
-     * @param route endpoint of the weather station query
-     * @return coordinate of the weather station
-     */
-    private List<Double> getStationCoordinate(String stationIRI, String route) {
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ontoEMS", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoems))
-                .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf));
-
-        wb.addWhere(NodeFactory.createURI(stationIRI), "ontoEMS:hasObservationLocation", "?coordinate");
-
-        SelectBuilder sb = new SelectBuilder()
-                .addWhere(wb);
-
-        sb.addVar("?coordinate");
-
-        JSONArray queryResultArray = this.queryStore(route, sb.build().toString());
-
-        if (!queryResultArray.isEmpty()) {
-            String coordinate = queryResultArray.getJSONObject(0).getString("coordinate");
-            String[] split = coordinate.split("#");
-            List<Double> result = new ArrayList<>();
-            result.add(Double.valueOf(split[0]));
-            result.add(Double.valueOf(split[1]));
-            return result;
-        }
-        else{
-            return new ArrayList<>();
-        }
-    }
-
-    /**
-     * Returns UTC offset of the timestamps of the retrieved weather data
-     * @param latitude latitude of the station of the retrieved weather data
-     * @param longitude longitude of the station of the retrieved weather data
-     * @param startDate start date of the retrieved historical weather data as an Instant object
-     * @param endDate end date of the retrieved historical weather data as an Instant object
-     * @return UTC offset of the timestamps of the retrieved historical weather data in seconds
-     */
-    public Double getStationOffset(Double latitude, Double longitude, Instant startDate, Instant endDate) {
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-            ZoneId localZone = ZoneId.systemDefault();
-            LocalDate localStart = startDate.atZone(localZone).toLocalDate();
-            LocalDate localEnd = endDate.atZone(localZone).toLocalDate();
-
-            String start = formatter.format(localStart);
-            String end = formatter.format(localEnd);
-
-            String query = API_LAT + "=" + latitude + "&";
-            query = query + API_LON + "=" + longitude + "&";
-            query = query + API_START + "=" + start + "&";
-            query = query + API_END + "=" + end + "&" + API_TIMEZONE + "=auto";
-
-
-            URLConnection connection = new URL(API_URL + "?" + query).openConnection();
-
-            InputStream is = connection.getInputStream();
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-            StringBuffer response = new StringBuffer();
-            String line;
-            while ((line = rd.readLine()) != null && !line.isEmpty()){
-                response.append(line);
-            }
-            rd.close();
-            JSONObject result = new JSONObject(response.toString());
-
-            // return offset in seconds
-            return result.getDouble(API_OFFSET);
-        }
-        catch (IOException e){
-            // if failed to get the offset from API, return an approximation based on the longitude
-            // approximation assumes Earth is rough divided into 24 time zones equally over the globe
-            return longitude / 15;
-        }
-    }
-
-    /**
-     * Queries for and returns the weather data IRI, their weather data type, and the time series database URL of the corresponding weather time series
-     * @param stationIRI IRI of weather station
-     * @param route endpoint for weather query
-     * @return map with weather data type as key, weather data IRI and time series database URL as a list for the map value
-     */
-    private Map<String, List<String>> getWeatherIRI(String stationIRI, String route) {
-        Map<String, List<String>> result = new HashMap<>();
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ontoems", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoems))
-                .addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
-                .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf))
-                .addPrefix("ontotimeseries", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontotimeseries));
-
-        wb.addWhere("?station", "ontoems:reports", "?quantity")
-                .addWhere("?quantity", "rdf:type", "?weatherParameter")
-                .addWhere("?quantity", "om:hasValue", "?measure")
-                .addWhere("?measure", "ontotimeseries:hasTimeSeries", "?timeseries")
-                .addWhere("?timeseries", "ontotimeseries:hasRDB", "?rdb");
-
-        SelectBuilder sb = new SelectBuilder()
-                .addVar("?weatherParameter")
-                .addVar("?measure")
-                .addVar("?rdb");
-
-        sb.addWhere(wb);
-
-        sb.setVar(Var.alloc( "station" ), NodeFactory.createURI(stationIRI));
-
-        JSONArray queryResultArray = this.queryStore(route, sb.build().toString());
-
-        if (!queryResultArray.isEmpty()) {
-            for (int i = 0; i < queryResultArray.length(); i++) {
-                result.put(queryResultArray.getJSONObject(i).getString("weatherParameter").split(ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoems))[1], Arrays.asList(queryResultArray.getJSONObject(i).getString("measure"), queryResultArray.getJSONObject(i).getString("rdb")));
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Parses weather data into a list
-     * @param weatherMap map with the weather parameter IRIs
-     * @param result empty list to add the parsed weather data
-     * @return true if the timestamps of weather data meet CEA requirements (result will contain the parsed data), false otherwise (result will be empty)
-     */
-    private boolean parseWeather(Map<String, List<String>> weatherMap, List<Object> result, Double latitude, Double longitude) {
-        Map<String, List<Double>> weather = new HashMap<>();
-
-        boolean getTimes = true;
-
-        for (Map.Entry<String, List<String>> entry : weatherMap.entrySet()) {
-            List<String> value = entry.getValue();
-            String weatherIRI = value.get(0);
-            Map<String, Object> weatherClients = getWeatherClients(value.get(1));
-            TimeSeries<Instant> weatherTS = retrieveData(weatherIRI, (RemoteStoreClient) weatherClients.get(STORE_CLIENT), (RemoteRDBStoreClient) weatherClients.get(RDB_CLIENT), Instant.class);
-
-            // want hourly data over a year
-            if (!validateWeatherTimes(weatherTS.getTimes(), latitude, longitude)) {
-                result.clear();
-                return false;
-            }
-
-            if (getTimes) {
-                List<Instant> times = weatherTS.getTimes().subList(0, 8760);
-                Double offset = getStationOffset(latitude, longitude, times.get(0), times.get(times.size()-1));
-                // parse times to OffsetDateTime with the correct offset
-                List<OffsetDateTime> weatherTimes = parseWeatherTimes(times, offset.intValue());
-
-                result.add(weatherTimes);
-                getTimes = false;
-            }
-
-            weather.put(entry.getKey(),  weatherTS.getValuesAsDouble(weatherIRI).subList(0, 8760));
-        }
-
-        result.add(weather);
-        return true;
-    }
-
-    /**
-     * Parses timestamps of weather data into list of OffsetDateTimes
-     * @param weatherTimes timestamps of weather data
-     * @param offset UTC offset in seconds
-     * @return  timestamps of weather data as a list of OffsetDateTimes
-     */
-    private List<OffsetDateTime> parseWeatherTimes(List<Instant> weatherTimes, Integer offset) {
-        List<OffsetDateTime> result = new ArrayList<>();
-
-        ZoneOffset zoneOffset = ZoneOffset.ofTotalSeconds(offset);
-
-        for (int i = 0; i < weatherTimes.size(); i++) {
-            result.add(weatherTimes.get(i).atOffset(zoneOffset));
-        }
-
-        return result;
-    }
-
-    /**
-     * Validates whether the weather data meet the requirements for CEA
-     * The requirements are, the number of data entries must be at least 8760, and the start date must be the first day of the year
-     * @param weatherTimes list of timestamps
-     * @param latitude latitude of the station of the retrieved weather data
-     * @param longitude longitude of the station of the retrieved weather data
-     * @return true if weatherTimes meet CEA requirements, false otherwise
-     */
-    private boolean validateWeatherTimes(List<Instant> weatherTimes, Double latitude, Double longitude) {
-        if (weatherTimes.size() < 8760) {
-            return false;
-        }
-
-        Double offset = getStationOffset(latitude, longitude, weatherTimes.get(0), weatherTimes.get(weatherTimes.size()-1));
-
-        ZoneOffset zoneOffset = ZoneOffset.ofTotalSeconds(offset.intValue());
-
-        OffsetDateTime startDate = weatherTimes.get(0).atOffset(zoneOffset);
-
-        if (startDate.getMonthValue() != 1 || startDate.getDayOfMonth() != 1) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Gets the RemoteStoreClient and RemoteRDBStoreClient objects for querying weather data
-     * @param weatherDB database storing the weather data
-     * @return a map containing a RemoteStoreClient object and RemoteRDBStoreClient object that will allow for the querying of weather data
-     */
-    public Map<String, Object> getWeatherClients(String weatherDB) {
-        RemoteRDBStoreClient weatherRDBClient = new RemoteRDBStoreClient(weatherDB, dbUser, dbPassword);
-        List<String> weatherEndpoints = RouteHelper.getRouteEndpoints(weatherRoute);
-        RemoteStoreClient weatherStoreClient = new RemoteStoreClient(weatherEndpoints.get(0), weatherEndpoints.get(1));
-        Map<String, Object> result = new HashMap<>();
-        result.put(RDB_CLIENT, weatherRDBClient);
-        result.put(STORE_CLIENT, weatherStoreClient);
-        return result;
-    }
-
-    /**
      * Add where for Building Consumption
      * @param builder update builder
      * @param type energy type in ontology
@@ -1355,7 +707,7 @@ public class CEAAgent extends JPSAgent {
     /**
      * Retrieves iris from KG for the data type requested
      * @param building uri of building in energyprofile graph
-     * @param value type of data from TIME_SERIES or SCALARS
+     * @param value type of data from CEAConstants.TIME_SERIES or CEAConstants.SCALARS
      * @param route route to pass to access agent
      * @return list of iris
      */
@@ -1376,136 +728,136 @@ public class CEAAgent extends JPSAgent {
                 .addPrefix("obs", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltstructure));
 
         switch(value) {
-            case KEY_ROOF_SOLAR_SUITABLE_AREA:
+            case CEAConstants.KEY_ROOF_SOLAR_SUITABLE_AREA:
                 addSupplyDeviceAreaWhere(wb, building, "obs:RoofFacade");
                 break;
-            case KEY_SOUTH_WALL_SOLAR_SUITABLE_AREA:
+            case CEAConstants.KEY_SOUTH_WALL_SOLAR_SUITABLE_AREA:
                 addSupplyDeviceAreaWhere(wb, building, "obs:SouthWallFacade");
                 break;
-            case KEY_NORTH_WALL_SOLAR_SUITABLE_AREA:
+            case CEAConstants.KEY_NORTH_WALL_SOLAR_SUITABLE_AREA:
                 addSupplyDeviceAreaWhere(wb, building, "obs:NorthWallFacade");
                 break;
-            case KEY_EAST_WALL_SOLAR_SUITABLE_AREA:
+            case CEAConstants.KEY_EAST_WALL_SOLAR_SUITABLE_AREA:
                 addSupplyDeviceAreaWhere(wb, building, "obs:EastWallFacade");
                 break;
-            case KEY_WEST_WALL_SOLAR_SUITABLE_AREA:
+            case CEAConstants.KEY_WEST_WALL_SOLAR_SUITABLE_AREA:
                 addSupplyDeviceAreaWhere(wb, building, "obs:WestWallFacade");
                 break;
-            case KEY_GRID_CONSUMPTION:
+            case CEAConstants.KEY_GRID_CONSUMPTION:
                 addBuildingConsumptionWhere(wb,"ontoubemmp:GridConsumption");
                 break;
-            case KEY_ELECTRICITY_CONSUMPTION:
+            case CEAConstants.KEY_ELECTRICITY_CONSUMPTION:
                 addBuildingConsumptionWhere(wb,"ontoubemmp:ElectricityConsumption");
                 break;
-            case KEY_HEATING_CONSUMPTION:
+            case CEAConstants.KEY_HEATING_CONSUMPTION:
                 addBuildingConsumptionWhere(wb,"ontoubemmp:HeatingConsumption");
                 break;
-            case KEY_COOLING_CONSUMPTION:
+            case CEAConstants.KEY_COOLING_CONSUMPTION:
                 addBuildingConsumptionWhere(wb,"ontoubemmp:CoolingConsumption");
                 break;
-            case KEY_PV_ROOF_SUPPLY:
+            case CEAConstants.KEY_PV_ROOF_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVPanel", "ontoubemmp:ElectricitySupply", "obs:RoofFacade");
                 break;
-            case KEY_PV_WALL_SOUTH_SUPPLY:
+            case CEAConstants.KEY_PV_WALL_SOUTH_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVPanel", "ontoubemmp:ElectricitySupply", "obs:SouthWallFacade");
                 break;
-            case KEY_PV_WALL_NORTH_SUPPLY:
+            case CEAConstants.KEY_PV_WALL_NORTH_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVPanel", "ontoubemmp:ElectricitySupply", "obs:NorthWallFacade");
                 break;
-            case KEY_PV_WALL_EAST_SUPPLY:
+            case CEAConstants.KEY_PV_WALL_EAST_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVPanel", "ontoubemmp:ElectricitySupply", "obs:EastWallFacade");
                 break;
-            case KEY_PV_WALL_WEST_SUPPLY:
+            case CEAConstants.KEY_PV_WALL_WEST_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVPanel", "ontoubemmp:ElectricitySupply", "obs:WestWallFacade");
                 break;
-            case KEY_PVT_PLATE_ROOF_E_SUPPLY:
+            case CEAConstants.KEY_PVT_PLATE_ROOF_E_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVTPlateCollector", "ontoubemmp:ElectricitySupply", "obs:RoofFacade");
                 break;
-            case KEY_PVT_PLATE_WALL_SOUTH_E_SUPPLY:
+            case CEAConstants.KEY_PVT_PLATE_WALL_SOUTH_E_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVTPlateCollector", "ontoubemmp:ElectricitySupply", "obs:SouthWallFacade");
                 break;
-            case KEY_PVT_PLATE_WALL_NORTH_E_SUPPLY:
+            case CEAConstants.KEY_PVT_PLATE_WALL_NORTH_E_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVTPlateCollector", "ontoubemmp:ElectricitySupply", "obs:NorthWallFacade");
                 break;
-            case KEY_PVT_PLATE_WALL_EAST_E_SUPPLY:
+            case CEAConstants.KEY_PVT_PLATE_WALL_EAST_E_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVTPlateCollector", "ontoubemmp:ElectricitySupply", "obs:EastWallFacade");
                 break;
-            case KEY_PVT_PLATE_WALL_WEST_E_SUPPLY:
+            case CEAConstants.KEY_PVT_PLATE_WALL_WEST_E_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVTPlateCollector", "ontoubemmp:ElectricitySupply", "obs:WestWallFacade");
                 break;
-            case KEY_PVT_PLATE_ROOF_Q_SUPPLY:
+            case CEAConstants.KEY_PVT_PLATE_ROOF_Q_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVTPlateCollector", "ontoubemmp:HeatSupply", "obs:RoofFacade");
                 break;
-            case KEY_PVT_PLATE_WALL_SOUTH_Q_SUPPLY:
+            case CEAConstants.KEY_PVT_PLATE_WALL_SOUTH_Q_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVTPlateCollector", "ontoubemmp:HeatSupply", "obs:SouthWallFacade");
                 break;
-            case KEY_PVT_PLATE_WALL_NORTH_Q_SUPPLY:
+            case CEAConstants.KEY_PVT_PLATE_WALL_NORTH_Q_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVTPlateCollector", "ontoubemmp:HeatSupply", "obs:NorthWallFacade");
                 break;
-            case KEY_PVT_PLATE_WALL_EAST_Q_SUPPLY:
+            case CEAConstants.KEY_PVT_PLATE_WALL_EAST_Q_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVTPlateCollector", "ontoubemmp:HeatSupply", "obs:EastWallFacade");
                 break;
-            case KEY_PVT_PLATE_WALL_WEST_Q_SUPPLY:
+            case CEAConstants.KEY_PVT_PLATE_WALL_WEST_Q_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVTPlateCollector", "ontoubemmp:HeatSupply", "obs:WestWallFacade");
                 break;
-            case KEY_PVT_TUBE_ROOF_E_SUPPLY:
+            case CEAConstants.KEY_PVT_TUBE_ROOF_E_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVTTubeCollector", "ontoubemmp:ElectricitySupply", "obs:RoofFacade");
                 break;
-            case KEY_PVT_TUBE_WALL_SOUTH_E_SUPPLY:
+            case CEAConstants.KEY_PVT_TUBE_WALL_SOUTH_E_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVTTubeCollector", "ontoubemmp:ElectricitySupply", "obs:SouthWallFacade");
                 break;
-            case KEY_PVT_TUBE_WALL_NORTH_E_SUPPLY:
+            case CEAConstants.KEY_PVT_TUBE_WALL_NORTH_E_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVTTubeCollector", "ontoubemmp:ElectricitySupply", "obs:NorthWallFacade");
                 break;
-            case KEY_PVT_TUBE_WALL_EAST_E_SUPPLY:
+            case CEAConstants.KEY_PVT_TUBE_WALL_EAST_E_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVTTubeCollector", "ontoubemmp:ElectricitySupply", "obs:EastWallFacade");
                 break;
-            case KEY_PVT_TUBE_WALL_WEST_E_SUPPLY:
+            case CEAConstants.KEY_PVT_TUBE_WALL_WEST_E_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVTTubeCollector", "ontoubemmp:ElectricitySupply", "obs:WestWallFacade");
                 break;
-            case KEY_PVT_TUBE_ROOF_Q_SUPPLY:
+            case CEAConstants.KEY_PVT_TUBE_ROOF_Q_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVTTubeCollector", "ontoubemmp:HeatSupply", "obs:RoofFacade");
                 break;
-            case KEY_PVT_TUBE_WALL_SOUTH_Q_SUPPLY:
+            case CEAConstants.KEY_PVT_TUBE_WALL_SOUTH_Q_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVTTubeCollector", "ontoubemmp:HeatSupply", "obs:SouthWallFacade");
                 break;
-            case KEY_PVT_TUBE_WALL_NORTH_Q_SUPPLY:
+            case CEAConstants.KEY_PVT_TUBE_WALL_NORTH_Q_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVTTubeCollector", "ontoubemmp:HeatSupply", "obs:NorthWallFacade");
                 break;
-            case KEY_PVT_TUBE_WALL_EAST_Q_SUPPLY:
+            case CEAConstants.KEY_PVT_TUBE_WALL_EAST_Q_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVTTubeCollector", "ontoubemmp:HeatSupply", "obs:EastWallFacade");
                 break;
-            case KEY_PVT_TUBE_WALL_WEST_Q_SUPPLY:
+            case CEAConstants.KEY_PVT_TUBE_WALL_WEST_Q_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:PVTTubeCollector", "ontoubemmp:HeatSupply", "obs:WestWallFacade");
                 break;
-            case KEY_THERMAL_PLATE_ROOF_SUPPLY:
+            case CEAConstants.KEY_THERMAL_PLATE_ROOF_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:ThermalPlateCollector", "ontoubemmp:HeatSupply", "obs:RoofFacade");
                 break;
-            case KEY_THERMAL_PLATE_WALL_SOUTH_SUPPLY:
+            case CEAConstants.KEY_THERMAL_PLATE_WALL_SOUTH_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:ThermalPlateCollector", "ontoubemmp:HeatSupply", "obs:SouthWallFacade");
                 break;
-            case KEY_THERMAL_PLATE_WALL_NORTH_SUPPLY:
+            case CEAConstants.KEY_THERMAL_PLATE_WALL_NORTH_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:ThermalPlateCollector", "ontoubemmp:HeatSupply", "obs:NorthWallFacade");
                 break;
-            case KEY_THERMAL_PLATE_WALL_EAST_SUPPLY:
+            case CEAConstants.KEY_THERMAL_PLATE_WALL_EAST_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:ThermalPlateCollector", "ontoubemmp:HeatSupply", "obs:EastWallFacade");
                 break;
-            case KEY_THERMAL_PLATE_WALL_WEST_SUPPLY:
+            case CEAConstants.KEY_THERMAL_PLATE_WALL_WEST_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:ThermalPlateCollector", "ontoubemmp:HeatSupply", "obs:WestWallFacade");
                 break;
-            case KEY_THERMAL_TUBE_ROOF_SUPPLY:
+            case CEAConstants.KEY_THERMAL_TUBE_ROOF_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:ThermalTubeCollector", "ontoubemmp:HeatSupply", "obs:RoofFacade");
                 break;
-            case KEY_THERMAL_TUBE_WALL_SOUTH_SUPPLY:
+            case CEAConstants.KEY_THERMAL_TUBE_WALL_SOUTH_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:ThermalTubeCollector", "ontoubemmp:HeatSupply", "obs:SouthWallFacade");
                 break;
-            case KEY_THERMAL_TUBE_WALL_NORTH_SUPPLY:
+            case CEAConstants.KEY_THERMAL_TUBE_WALL_NORTH_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:ThermalTubeCollector", "ontoubemmp:HeatSupply", "obs:NorthWallFacade");
                 break;
-            case KEY_THERMAL_TUBE_WALL_EAST_SUPPLY:
+            case CEAConstants.KEY_THERMAL_TUBE_WALL_EAST_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:ThermalTubeCollector", "ontoubemmp:HeatSupply", "obs:EastWallFacade");
                 break;
-            case KEY_THERMAL_TUBE_WALL_WEST_SUPPLY:
+            case CEAConstants.KEY_THERMAL_TUBE_WALL_WEST_SUPPLY:
                 addSupplyDeviceWhere(wb,"ontoubemmp:ThermalTubeCollector", "ontoubemmp:HeatSupply", "obs:WestWallFacade");
                 break;
             default:
@@ -1646,11 +998,11 @@ public class CEAAgent extends JPSAgent {
     public Boolean checkDataInitialised(String building, LinkedHashMap<String,String> tsIris, LinkedHashMap<String,String> scalarIris, String route, String graph) {
         ArrayList<String> result;
         List<String> allMeasures = new ArrayList<>();
-        Stream.of(TIME_SERIES, SCALARS).forEach(allMeasures::addAll);
+        Stream.of(CEAConstants.TIME_SERIES, CEAConstants.SCALARS).forEach(allMeasures::addAll);
         for (String measurement: allMeasures) {
             result = getDataIRI(building, measurement, route);
             if (!result.isEmpty()) {
-                if (TIME_SERIES.contains(measurement)) {
+                if (CEAConstants.TIME_SERIES.contains(measurement)) {
                     tsIris.put(measurement, result.get(0));
                 } else {
                     scalarIris.put(measurement, result.get(0));
@@ -1845,7 +1197,7 @@ public class CEAAgent extends JPSAgent {
 
         // save om:Measure uris for scalars and create om:Quantity uris for scalars and time series
         // (time series om:Measure iris already created in createTimeSeries)
-        for (String measurement: SCALARS) {
+        for (String measurement: CEAConstants.SCALARS) {
             String measure = measurement + UUID.randomUUID() + "/";
             String quantity = measurement + "Quantity_" + UUID.randomUUID() + "/";
             String facade = measurement.split("SolarSuitableArea")[0] + UUID.randomUUID() + "/";
@@ -1862,143 +1214,143 @@ public class CEAAgent extends JPSAgent {
             scalarIris.put(measurement, measure);
 
             switch(measurement){
-                case(KEY_ROOF_SOLAR_SUITABLE_AREA):
+                case(CEAConstants.KEY_ROOF_SOLAR_SUITABLE_AREA):
                     createFacadeUpdate(wb, buildingUri, facade, "obs:RoofFacade");
-                    createSolarSuitableAreaUpdate(wb, facade, quantity, measure, scalars.get(KEY_ROOF_SOLAR_SUITABLE_AREA).get(uriCounter));
+                    createSolarSuitableAreaUpdate(wb, facade, quantity, measure, scalars.get(CEAConstants.KEY_ROOF_SOLAR_SUITABLE_AREA).get(uriCounter));
                     facades.put("Roof", facade);
                     break;
-                case(KEY_SOUTH_WALL_SOLAR_SUITABLE_AREA):
+                case(CEAConstants.KEY_SOUTH_WALL_SOLAR_SUITABLE_AREA):
                     createFacadeUpdate(wb, buildingUri, facade, "obs:SouthWallFacade");
-                    createSolarSuitableAreaUpdate(wb, facade, quantity, measure, scalars.get(KEY_SOUTH_WALL_SOLAR_SUITABLE_AREA).get(uriCounter));
+                    createSolarSuitableAreaUpdate(wb, facade, quantity, measure, scalars.get(CEAConstants.KEY_SOUTH_WALL_SOLAR_SUITABLE_AREA).get(uriCounter));
                     facades.put("SouthWall", facade);
                     break;
-                case(KEY_NORTH_WALL_SOLAR_SUITABLE_AREA):
+                case(CEAConstants.KEY_NORTH_WALL_SOLAR_SUITABLE_AREA):
                     createFacadeUpdate(wb, buildingUri, facade, "obs:NorthWallFacade");
-                    createSolarSuitableAreaUpdate(wb, facade, quantity, measure, scalars.get(KEY_NORTH_WALL_SOLAR_SUITABLE_AREA).get(uriCounter));
+                    createSolarSuitableAreaUpdate(wb, facade, quantity, measure, scalars.get(CEAConstants.KEY_NORTH_WALL_SOLAR_SUITABLE_AREA).get(uriCounter));
                     facades.put("NorthWall", facade);
                     break;
-                case(KEY_EAST_WALL_SOLAR_SUITABLE_AREA):
+                case(CEAConstants.KEY_EAST_WALL_SOLAR_SUITABLE_AREA):
                     createFacadeUpdate(wb, buildingUri, facade, "obs:EastWallFacade");
-                    createSolarSuitableAreaUpdate(wb, facade, quantity, measure, scalars.get(KEY_EAST_WALL_SOLAR_SUITABLE_AREA).get(uriCounter));
+                    createSolarSuitableAreaUpdate(wb, facade, quantity, measure, scalars.get(CEAConstants.KEY_EAST_WALL_SOLAR_SUITABLE_AREA).get(uriCounter));
                     facades.put("EastWall", facade);
                     break;
-                case(KEY_WEST_WALL_SOLAR_SUITABLE_AREA):
+                case(CEAConstants.KEY_WEST_WALL_SOLAR_SUITABLE_AREA):
                     createFacadeUpdate(wb, buildingUri, facade, "obs:WestWallFacade");
-                    createSolarSuitableAreaUpdate(wb, facade, quantity, measure, scalars.get(KEY_WEST_WALL_SOLAR_SUITABLE_AREA).get(uriCounter));
+                    createSolarSuitableAreaUpdate(wb, facade, quantity, measure, scalars.get(CEAConstants.KEY_WEST_WALL_SOLAR_SUITABLE_AREA).get(uriCounter));
                     facades.put("WestWall", facade);
                     break;
             }
         }
 
-        for (String measurement: TIME_SERIES) {
+        for (String measurement: CEAConstants.TIME_SERIES) {
             String quantity = measurement+"Quantity_" + UUID.randomUUID() + "/";
             quantity = !graph.isEmpty() ? graph + quantity : ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + quantity;
-            if (measurement.equals(KEY_GRID_CONSUMPTION) || measurement.equals(KEY_ELECTRICITY_CONSUMPTION) || measurement.equals(KEY_COOLING_CONSUMPTION) || measurement.equals(KEY_HEATING_CONSUMPTION)) {
+            if (measurement.equals(CEAConstants.KEY_GRID_CONSUMPTION) || measurement.equals(CEAConstants.KEY_ELECTRICITY_CONSUMPTION) || measurement.equals(CEAConstants.KEY_COOLING_CONSUMPTION) || measurement.equals(CEAConstants.KEY_HEATING_CONSUMPTION)) {
                 createConsumptionUpdate(wb, buildingUri, "ontoubemmp:" + measurement, quantity, tsIris.get(measurement));
             }
-            else if (measurement.equals(KEY_PV_ROOF_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PV_ROOF_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("Roof"), pvRoofPanelUri, "ontoubemmp:PVPanel", quantity, tsIris.get(measurement), "ontoubemmp:ElectricitySupply");
             }
-            else if (measurement.equals(KEY_PV_WALL_SOUTH_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PV_WALL_SOUTH_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("SouthWall"), pvWallSouthPanelUri, "ontoubemmp:PVPanel", quantity, tsIris.get(measurement), "ontoubemmp:ElectricitySupply");
             }
-            else if (measurement.equals(KEY_PV_WALL_NORTH_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PV_WALL_NORTH_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("NorthWall"), pvWallNorthPanelUri, "ontoubemmp:PVPanel", quantity, tsIris.get(measurement), "ontoubemmp:ElectricitySupply");
             }
-            else if (measurement.equals(KEY_PV_WALL_EAST_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PV_WALL_EAST_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("EastWall"), pvWallEastPanelUri, "ontoubemmp:PVPanel", quantity, tsIris.get(measurement), "ontoubemmp:ElectricitySupply");
             }
-            else if (measurement.equals(KEY_PV_WALL_WEST_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PV_WALL_WEST_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("WestWall"), pvWallWestPanelUri, "ontoubemmp:PVPanel", quantity, tsIris.get(measurement), "ontoubemmp:ElectricitySupply");
             }
-            else if (measurement.equals(KEY_PVT_PLATE_ROOF_E_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PVT_PLATE_ROOF_E_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("Roof"), pvtPlateRoofCollectorUri, quantity, "ontoubemmp:PVTPlateCollector", tsIris.get(measurement), "ontoubemmp:ElectricitySupply");
             }
-            else if (measurement.equals(KEY_PVT_PLATE_WALL_SOUTH_E_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PVT_PLATE_WALL_SOUTH_E_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("SouthWall"), pvtPlateWallSouthCollectorUri, "ontoubemmp:PVTPlateCollector", quantity, tsIris.get(measurement), "ontoubemmp:ElectricitySupply");
             }
-            else if (measurement.equals(KEY_PVT_PLATE_WALL_NORTH_E_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PVT_PLATE_WALL_NORTH_E_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("NorthWall"), pvtPlateWallNorthCollectorUri, "ontoubemmp:PVTPlateCollector", quantity, tsIris.get(measurement), "ontoubemmp:ElectricitySupply");
             }
-            else if (measurement.equals(KEY_PVT_PLATE_WALL_EAST_E_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PVT_PLATE_WALL_EAST_E_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("EastWall"), pvtPlateWallEastCollectorUri, "ontoubemmp:PVTPlateCollector", quantity, tsIris.get(measurement), "ontoubemmp:ElectricitySupply");
             }
-            else if (measurement.equals(KEY_PVT_PLATE_WALL_WEST_E_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PVT_PLATE_WALL_WEST_E_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("WestWall"), pvtPlateWallWestCollectorUri, "ontoubemmp:PVTPlateCollector", quantity, tsIris.get(measurement), "ontoubemmp:ElectricitySupply");
             }
-            else if (measurement.equals(KEY_PVT_PLATE_ROOF_Q_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PVT_PLATE_ROOF_Q_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("Roof"), pvtPlateRoofCollectorUri, "ontoubemmp:PVTPlateCollector", quantity, tsIris.get(measurement), "ontoubemmp:HeatSupply");
             }
-            else if (measurement.equals(KEY_PVT_PLATE_WALL_SOUTH_Q_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PVT_PLATE_WALL_SOUTH_Q_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("SouthWall"), pvtPlateWallSouthCollectorUri, "ontoubemmp:PVTPlateCollector", quantity, tsIris.get(measurement), "ontoubemmp:HeatSupply");
             }
-            else if (measurement.equals(KEY_PVT_PLATE_WALL_NORTH_Q_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PVT_PLATE_WALL_NORTH_Q_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("NorthWall"), pvtPlateWallNorthCollectorUri, "ontoubemmp:PVTPlateCollector", quantity, tsIris.get(measurement), "ontoubemmp:HeatSupply");
             }
-            else if (measurement.equals(KEY_PVT_PLATE_WALL_EAST_Q_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PVT_PLATE_WALL_EAST_Q_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("EastWall"), pvtPlateWallEastCollectorUri, "ontoubemmp:PVTPlateCollector", quantity, tsIris.get(measurement), "ontoubemmp:HeatSupply");
             }
-            else if (measurement.equals(KEY_PVT_PLATE_WALL_WEST_Q_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PVT_PLATE_WALL_WEST_Q_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("WestWall"), pvtPlateWallWestCollectorUri, "ontoubemmp:PVTPlateCollector", quantity, tsIris.get(measurement), "ontoubemmp:HeatSupply");
             }
-            else if (measurement.equals(KEY_PVT_TUBE_ROOF_E_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PVT_TUBE_ROOF_E_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("Roof"), pvtTubeRoofCollectorUri, "ontoubemmp:PVTTubeCollector", quantity, tsIris.get(measurement), "ontoubemmp:ElectricitySupply");
             }
-            else if (measurement.equals(KEY_PVT_TUBE_WALL_SOUTH_E_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PVT_TUBE_WALL_SOUTH_E_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("SouthWall"), pvtTubeWallSouthCollectorUri, "ontoubemmp:PVTTubeCollector", quantity, tsIris.get(measurement), "ontoubemmp:ElectricitySupply");
             }
-            else if (measurement.equals(KEY_PVT_TUBE_WALL_NORTH_E_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PVT_TUBE_WALL_NORTH_E_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("NorthWall"), pvtTubeWallNorthCollectorUri, "ontoubemmp:PVTTubeCollector", quantity, tsIris.get(measurement), "ontoubemmp:ElectricitySupply");
             }
-            else if (measurement.equals(KEY_PVT_TUBE_WALL_EAST_E_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PVT_TUBE_WALL_EAST_E_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("EastWall"), pvtTubeWallEastCollectorUri, "ontoubemmp:PVTTubeCollector", quantity, tsIris.get(measurement), "ontoubemmp:ElectricitySupply");
             }
-            else if (measurement.equals(KEY_PVT_TUBE_WALL_WEST_E_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PVT_TUBE_WALL_WEST_E_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("WestWall"), pvtTubeWallWestCollectorUri, "ontoubemmp:PVTTubeCollector", quantity, tsIris.get(measurement), "ontoubemmp:ElectricitySupply");
             }
-            else if (measurement.equals(KEY_PVT_TUBE_ROOF_Q_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PVT_TUBE_ROOF_Q_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("Roof"), pvtTubeRoofCollectorUri, "ontoubemmp:PVTTubeCollector", quantity, tsIris.get(measurement), "ontoubemmp:HeatSupply");
             }
-            else if (measurement.equals(KEY_PVT_TUBE_WALL_SOUTH_Q_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PVT_TUBE_WALL_SOUTH_Q_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("SouthWall"), pvtTubeWallSouthCollectorUri, "ontoubemmp:PVTTubeCollector", quantity, tsIris.get(measurement), "ontoubemmp:HeatSupply");
             }
-            else if (measurement.equals(KEY_PVT_TUBE_WALL_NORTH_Q_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PVT_TUBE_WALL_NORTH_Q_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("NorthWall"), pvtTubeWallNorthCollectorUri, "ontoubemmp:PVTTubeCollector", quantity, tsIris.get(measurement), "ontoubemmp:HeatSupply");
             }
-            else if (measurement.equals(KEY_PVT_TUBE_WALL_EAST_Q_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PVT_TUBE_WALL_EAST_Q_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("EastWall"), pvtTubeWallEastCollectorUri, "ontoubemmp:PVTTubeCollector", quantity, tsIris.get(measurement), "ontoubemmp:HeatSupply");
             }
-            else if (measurement.equals(KEY_PVT_TUBE_WALL_WEST_Q_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_PVT_TUBE_WALL_WEST_Q_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("WestWall"), pvtTubeWallWestCollectorUri, "ontoubemmp:PVTTubeCollector", quantity, tsIris.get(measurement), "ontoubemmp:HeatSupply");
             }
-            else if (measurement.equals(KEY_THERMAL_PLATE_ROOF_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_THERMAL_PLATE_ROOF_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("Roof"), thermalPlateRoofCollectorUri, "ontoubemmp:ThermalPlateCollector", quantity, tsIris.get(measurement), "ontoubemmp:HeatSupply");
             }
-            else if (measurement.equals(KEY_THERMAL_PLATE_WALL_SOUTH_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_THERMAL_PLATE_WALL_SOUTH_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("SouthWall"), thermalPlateWallSouthCollectorUri, "ontoubemmp:ThermalPlateCollector", quantity, tsIris.get(measurement), "ontoubemmp:HeatSupply");
             }
-            else if (measurement.equals(KEY_THERMAL_PLATE_WALL_NORTH_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_THERMAL_PLATE_WALL_NORTH_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("NorthWall"), thermalPlateWallNorthCollectorUri, "ontoubemmp:ThermalPlateCollector", quantity, tsIris.get(measurement), "ontoubemmp:HeatSupply");
             }
-            else if (measurement.equals(KEY_THERMAL_PLATE_WALL_EAST_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_THERMAL_PLATE_WALL_EAST_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("EastWall"), thermalPlateWallEastCollectorUri, "ontoubemmp:ThermalPlateCollector", quantity, tsIris.get(measurement), "ontoubemmp:HeatSupply");
             }
-            else if (measurement.equals(KEY_THERMAL_PLATE_WALL_WEST_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_THERMAL_PLATE_WALL_WEST_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("WestWall"), thermalPlateWallWestCollectorUri, "ontoubemmp:ThermalPlateCollector", quantity, tsIris.get(measurement), "ontoubemmp:HeatSupply");
             }
-            else if (measurement.equals(KEY_THERMAL_TUBE_ROOF_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_THERMAL_TUBE_ROOF_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("Roof"), thermalTubeRoofCollectorUri, "ontoubemmp:ThermalTubeCollector", quantity, tsIris.get(measurement), "ontoubemmp:HeatSupply");
             }
-            else if (measurement.equals(KEY_THERMAL_TUBE_WALL_SOUTH_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_THERMAL_TUBE_WALL_SOUTH_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("SouthWall"), thermalTubeWallSouthCollectorUri, "ontoubemmp:ThermalTubeCollector", quantity, tsIris.get(measurement), "ontoubemmp:HeatSupply");
             }
-            else if (measurement.equals(KEY_THERMAL_TUBE_WALL_NORTH_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_THERMAL_TUBE_WALL_NORTH_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("NorthWall"), thermalTubeWallNorthCollectorUri, "ontoubemmp:ThermalTubeCollector", quantity, tsIris.get(measurement), "ontoubemmp:HeatSupply");
             }
-            else if (measurement.equals(KEY_THERMAL_TUBE_WALL_EAST_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_THERMAL_TUBE_WALL_EAST_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("EastWall"), thermalTubeWallEastCollectorUri, "ontoubemmp:ThermalTubeCollector", quantity, tsIris.get(measurement), "ontoubemmp:HeatSupply");
             }
-            else if (measurement.equals(KEY_THERMAL_TUBE_WALL_WEST_SUPPLY)){
+            else if (measurement.equals(CEAConstants.KEY_THERMAL_TUBE_WALL_WEST_SUPPLY)){
                 createSolarGeneratorSupplyUpdate(wb, facades.get("WestWall"), thermalTubeWallWestCollectorUri, "ontoubemmp:ThermalTubeCollector", quantity, tsIris.get(measurement), "ontoubemmp:HeatSupply");
             }
         }
@@ -2026,7 +1378,7 @@ public class CEAAgent extends JPSAgent {
      */
     public void updateScalars(String route, LinkedHashMap<String,String> scalarIris, LinkedHashMap<String, List<String>> scalars, Integer uriCounter, String graph) {
 
-        for (String measurement: SCALARS) {
+        for (String measurement: CEAConstants.SCALARS) {
             WhereBuilder wb1 = new WhereBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
                     .addWhere(NodeFactory.createURI(scalarIris.get(measurement)), "om:hasNumericalValue", "?s");
             UpdateBuilder ub1 = new UpdateBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
@@ -2069,41 +1421,5 @@ public class CEAAgent extends JPSAgent {
             default:
                 return "";
         }
-    }
-
-    /**
-     * Returns data using time series client for given data iri
-     * @param dataIri iri in time series database
-     * @return time series data
-     */
-    public <T> TimeSeries<T> retrieveData(String dataIri, RemoteStoreClient store, RemoteRDBStoreClient rdbStore, Class<T> timeClass) {
-        TimeSeriesClient<T> client = new TimeSeriesClient<>(store, timeClass);
-
-        List<String> iris = new ArrayList<>();
-        iris.add(dataIri);
-        try (Connection conn = rdbStore.getConnection()) {
-            TimeSeries<T> data = client.getTimeSeries(iris, conn);
-            return data;
-        }
-        catch (SQLException e) {
-            throw new JPSRuntimeException(e);
-        }
-    }
-
-    /**
-     * Calculates annual value by summing all data in column in time series and rounding to 2dp
-     * @param timeSeries time series data
-     * @param dataIri iri in time series database
-     * @return annualValue as a String
-     */
-    public String calculateAnnual(TimeSeries<OffsetDateTime> timeSeries, String dataIri){
-        List<Double> values = timeSeries.getValuesAsDouble(dataIri);
-        Double annualValue = 0.;
-        for(Double value : values){
-            annualValue += value;
-        }
-        annualValue = Math.round(annualValue*Math.pow(10,2))/Math.pow(10,2);
-        return annualValue.toString();
-
     }
 }
