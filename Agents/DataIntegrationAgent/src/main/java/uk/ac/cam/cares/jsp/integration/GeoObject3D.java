@@ -2,19 +2,10 @@ package uk.ac.cam.cares.jsp.integration;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.checkerframework.checker.units.qual.g;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateSequence;
-import org.locationtech.jts.geom.CoordinateSequenceFilter;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.operation.buffer.BufferOp;
-import org.locationtech.jts.operation.buffer.BufferParameters;
-import org.locationtech.jts.geom.util.GeometryFixer;
 import org.postgis.PGgeometry;
+
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.sql.Connection;
@@ -22,8 +13,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 //cityobject table in postgresql
 public class GeoObject3D {
     private PGgeometry geometry;
@@ -33,8 +24,8 @@ public class GeoObject3D {
     private int cityobjectid;
     private ObjectAddress address = new ObjectAddress();
 
-    private static final Logger LOGGER = LogManager.getLogger(SpatialLink.class);
-    private PostgresClient postgresClient;
+    private static final Logger LOGGER = LogManager.getLogger(GeoObject3D.class);
+    private String[] config;
     private static final String INVALID_CONNECTION_MESSAGE = "Connection is invalid...";
     private SqlConnectionPool pool;
 
@@ -85,6 +76,7 @@ public class GeoObject3D {
     public List<GeoObject3D> getObject3D (String[] config){
 
         List<GeoObject3D> allObject3D = new ArrayList<>();
+        this.config = config;
         this.pool = new SqlConnectionPool(config);
         LOGGER.info("Pinging source database for availability...");
         try (Connection srcConn = this.pool.getSourceConnection()) {
@@ -103,7 +95,7 @@ public class GeoObject3D {
                     object3D.setObjectClassid(result.getInt("objectclass_id"));
                     object3D.setName(result.getString("name"));
                     object3D.setGeometry((PGgeometry)result.getObject("envelope"));
-                    object3D.setPostGISClient(postgresClient);
+                    object3D.setSqlConnectionPool(this.pool);
                     object3D.setAddress(this.address.queryAddress(result.getInt("id"), srcConn));
                     allObject3D.add(object3D);
                 }
@@ -115,8 +107,8 @@ public class GeoObject3D {
         }
     }
 
-    void setPostGISClient(PostgresClient postgresClient) {
-        this.postgresClient = postgresClient;
+    void setSqlConnectionPool(SqlConnectionPool pool) {
+        this.pool = pool;
     }
 
     public void updateName(GeoObject3D object3D, String[] config){
@@ -145,18 +137,17 @@ public class GeoObject3D {
     }
 
     public void updateAddress(ObjectAddress address, String[] config) throws SQLException {
-        this.address.setPostGISClient(this.postgresClient);
         this.address.updateAddress(address,config);
     }
 
-    public List<Polygon> queryBuildingSurfaces(int cityobjectid){
-        List<Polygon> gourndSurface = new ArrayList<>();
+    public Map<Integer, Polygon> queryBuildingSurfaces(int cityobjectid){
+        Map<Integer, Polygon> gourndSurface = new java.util.HashMap<>();
         try (Connection srcConn = this.pool.getSourceConnection()) {
             if (!srcConn.isValid(60)) {
                 LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
                 throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
             }else{
-                String sql = "SELECT geometry, cityobject_id FROM surface_geometry WHERE cityobject_id = " + cityobjectid;
+                String sql = "SELECT geometry, id FROM surface_geometry WHERE cityobject_id = " + cityobjectid;
                 try (Statement stmt = srcConn.createStatement()) {
                     ResultSet result = stmt.executeQuery(sql);
                     while (result.next()) {
@@ -164,7 +155,7 @@ public class GeoObject3D {
                         PGgeometry geom = (PGgeometry)result.getObject("geometry");
                         String coordString = geom.getValue();
                         Geometry polygon = sp.createGeometry(coordString);
-                        gourndSurface.add((Polygon)polygon);
+                        gourndSurface.put(Integer.valueOf(result.getInt("id")) ,(Polygon)polygon);
                     }                  
                 }
                 return gourndSurface;
@@ -174,5 +165,60 @@ public class GeoObject3D {
             throw new JPSRuntimeException("Error connecting to source database: " + e);
         }
 
+    }
+
+    public void updateGroundSurface(int surfaceid, int buildingid){
+        String upSql = "UPDATE cityobject SET objectclass_id = 35 WHERE lod2_multi_surface_id = " + surfaceid + " AND building_id = " + buildingid + ";";
+        LOGGER.info("Pinging source database for availability...");
+        if(this.pool == null){
+            this.pool = new SqlConnectionPool(this.config);
+        }
+        try (Connection srcConn = this.pool.getSourceConnection()) {
+            if (!srcConn.isValid(60)) {
+                LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
+                throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
+            }else{
+                try (Statement stmt = srcConn.createStatement()) {
+                    stmt.executeUpdate(upSql);
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.fatal("Error connecting to source database: " + e);
+            throw new JPSRuntimeException("Error connecting to source database: " + e);
+        }    
+    }
+
+    //1. insert data in surface_geometry 2. update data in building
+    public void updateFootprint(int buildingid, Polygon polygon){
+        String insertSql = "INSERT INTO surface_geometry (geometry, cityobject_id) VALUE (" + polygon + "," + buildingid + ");";
+        int surfaceid = 0;
+        if(this.pool == null){
+            this.pool = new SqlConnectionPool(this.config);
+        }
+        try (Connection srcConn = this.pool.getSourceConnection()) {
+            if (!srcConn.isValid(60)) {
+                LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
+                throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
+            }else{
+                try (Statement stmt = srcConn.createStatement()) {
+                    stmt.executeUpdate(insertSql);
+                    
+                    ResultSet rs =  stmt.getGeneratedKeys();
+                    if(rs.next()){
+                        surfaceid = rs.getInt(1);
+                    }
+                    if(surfaceid != 0){
+                        String upSql = "UPDATE building SET lod0_footprint_id = " + surfaceid + " WHERE id = " + buildingid + ";";
+                        try (Statement upStmt = srcConn.createStatement()) {
+                            upStmt.executeUpdate(upSql);
+                        }
+                    }
+                    
+                }
+            }
+        } catch (SQLException e) {
+            LOGGER.fatal("Error connecting to source database: " + e);
+            throw new JPSRuntimeException("Error connecting to source database: " + e);
+        }    
     }
 }

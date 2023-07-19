@@ -24,7 +24,6 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
-import javax.servlet.http.HttpServlet;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;

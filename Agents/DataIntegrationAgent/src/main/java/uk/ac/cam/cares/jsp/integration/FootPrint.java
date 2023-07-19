@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -17,12 +18,8 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.GeometryFixer;
-import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.operation.TransformException;
-
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class FootPrint {
@@ -33,7 +30,7 @@ public class FootPrint {
 
     List<GeoObject3D> allObject3D = new ArrayList<>();
 
-    protected void prepFootPrint(String[] config) {
+    protected void proFootPrint(String[] config) {
 //        
         this.pool = new SqlConnectionPool(config);
         LOGGER.info("Pinging source database for availability...");
@@ -57,7 +54,21 @@ public class FootPrint {
         for(int i = 0; i < allObject3D.size(); i++){
             GeoObject3D object3D = allObject3D.get(i);
             int objectid = object3D.getId();
-            List<Polygon> allSurfaces  = object3D.queryBuildingSurfaces(objectid);
+            Map<Integer, Polygon> allSurfaces  = object3D.queryBuildingSurfaces(objectid);
+            List<Polygon> groundList = new ArrayList<>();
+            for (Map.Entry<Integer, Polygon> entry : allSurfaces.entrySet()) {
+                double z = entry.getValue().norm().getCoordinate().getZ();
+                double zratio = Math.abs(z);
+                double threshold = Math.sin(Math.toRadians(15));// parameter can be changed
+                if(z > 0 && zratio > threshold){
+                    groundList.add(entry.getValue());
+                    object3D.updateGroundSurface(entry.getKey(), objectid);
+                }               
+            }
+            GeometryFactory fact = new GeometryFactory();
+            LinearRing footRing = extractFootprint(groundList);
+            Polygon poly = new Polygon(footRing, null, fact);
+            object3D.updateFootprint(objectid, poly);
         }
     }
       /**
