@@ -5,8 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
+import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -153,10 +157,25 @@ public class CityDBClient extends ContainerClient {
         }
     }
 
-    public void applyThematicSurfacesFix(String database) {
-        String sqlFilename = "citydb_thematic_surfaces_fix.sql";
+    public long[] applyThematicSurfacesFix(String database) {
+        String sqlFilename = "citydb_fudge_thematic_surfaces.sql";
         try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
             String sqlQuery = new String(is.readAllBytes());
+            JSONArray result = PostGISClient.getInstance().getRemoteStoreClient(database).executeQuery(sqlQuery);
+            return IntStream.range(0, result.length()).mapToLong(i -> result.getJSONObject(i).getLong("id")).toArray();
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
+        }
+    }
+
+    public void revertThematicSurfacesFix(String database, long[] fudgedThematicSurfaceIDs) {
+        String sqlFilename = "citydb_remove_fudged_thematic_surfaces.sql";
+        try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
+            String sqlQuery = new String(is.readAllBytes());
+            String idList = Arrays.stream(fudgedThematicSurfaceIDs)
+                    .mapToObj(Long::toString)
+                    .collect(Collectors.joining(","));
+            sqlQuery = sqlQuery.replaceFirst("\\{idList\\}", idList);
             PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
         } catch (IOException ex) {
             throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);

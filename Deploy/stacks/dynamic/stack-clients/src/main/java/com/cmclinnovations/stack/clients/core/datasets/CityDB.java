@@ -17,7 +17,7 @@ public class CityDB extends PostgresDataSubset {
     @JsonProperty
     private final CityTilerOptions cityTilerOptions = new CityTilerOptions();
     @JsonProperty
-    private boolean skipThematicSurfacesFix = false;
+    private boolean skipThematicSurfacesFudge = false;
     @JsonProperty
     private boolean usePreviousIRIs = true;
     @JsonProperty
@@ -34,11 +34,8 @@ public class CityDB extends PostgresDataSubset {
 
         writeOutPrevious(database);
 
-        if (!skipThematicSurfacesFix) {
-            applyThematicSurfacesFix(database);
-        }
-
         createLayer(database);
+
     }
 
     @Override
@@ -64,11 +61,18 @@ public class CityDB extends PostgresDataSubset {
     }
 
     public void createLayer(String database) {
-        CityTilerClient.getInstance().generateTiles(database, "citydb", cityTilerOptions);
-    }
 
-    private void applyThematicSurfacesFix(String database) {
-        CityDBClient.getInstance().applyThematicSurfacesFix(database);
+        long[] fudgedThematicSurfaceIDs = new long[0];
+
+        if (!skipThematicSurfacesFudge) {
+            fudgedThematicSurfaceIDs = CityDBClient.getInstance().applyThematicSurfacesFix(database);
+        }
+
+        CityTilerClient.getInstance().generateTiles(database, "citydb", cityTilerOptions);
+
+        if (!skipThematicSurfacesFudge && 0 != fudgedThematicSurfaceIDs.length) {
+            CityDBClient.getInstance().revertThematicSurfacesFix(database, fudgedThematicSurfaceIDs);
+        }
     }
 
     private void writeOutPrevious(String database) {
