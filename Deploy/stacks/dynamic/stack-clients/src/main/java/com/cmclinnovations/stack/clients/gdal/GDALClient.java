@@ -120,17 +120,7 @@ public class GDALClient extends ContainerClient {
                 .withEvaluationTimeout(300)
                 .exec();
 
-        handleErrors(errorStream, execId);
-    }
-
-    private void handleErrors(ByteArrayOutputStream errorStream, String execId) {
-        long commandErrorCode = getCommandErrorCode(execId);
-        if (0 != commandErrorCode) {
-            throw new RuntimeException("Docker exec command returned '" + commandErrorCode
-                    + "' and wrote the following to stderr:\n" + errorStream.toString());
-        } else {
-            logger.warn("Docker exec command returned '0' but wrote the following to stderr:\n{}", errorStream);
-        }
+        handleErrors(errorStream, execId, logger);
     }
 
     public void uploadRasterFilesToPostGIS(String database, String schema, String layerName,
@@ -160,7 +150,7 @@ public class GDALClient extends ContainerClient {
                 .withErrorStream(errorStream)
                 .exec();
 
-        handleErrors(errorStream, execId);
+        handleErrors(errorStream, execId, logger);
 
         return outputStream.toString().lines()
                 .map(entry -> entry.split(": "))
@@ -208,7 +198,7 @@ public class GDALClient extends ContainerClient {
                         .withEvaluationTimeout(300)
                         .exec();
 
-                handleErrors(errorStream, execId);
+                handleErrors(errorStream, execId, logger);
             }
         }
 
@@ -227,7 +217,7 @@ public class GDALClient extends ContainerClient {
                         "ALTER DATABASE " + database + " SET postgis.gdal_enabled_drivers = 'GTiff';")
                 .withErrorStream(errorStream)
                 .exec();
-        handleErrors(errorStream, execId);
+        handleErrors(errorStream, execId, logger);
     }
 
     private void uploadRasters(String postGISContainerId, String database, String layerName,
@@ -237,6 +227,7 @@ public class GDALClient extends ContainerClient {
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
         String mode = append ? "-a" : "-d";
         String execId = createComplexCommand(postGISContainerId, "bash", "-c",
+                "(which raster2pgsql || (apt update && apt install -y postgis && rm -rf /var/lib/apt/lists/*)) && " +
                 // https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader
                 "raster2pgsql " + mode + " -C -t auto -R -F -I -M -Y"
                         + geotiffFiles.stream().collect(Collectors.joining(" ", " ", " "))
@@ -247,7 +238,7 @@ public class GDALClient extends ContainerClient {
                 .withEvaluationTimeout(300)
                 .exec();
 
-        handleErrors(errorStream, execId);
+        handleErrors(errorStream, execId, logger);
     }
 
     public static String generateRasterOutFilePath(String basePathIn, String databaseName, String schemaName,

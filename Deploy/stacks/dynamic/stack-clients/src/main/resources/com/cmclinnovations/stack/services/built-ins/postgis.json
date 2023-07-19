@@ -4,10 +4,11 @@
         "Name": "postgis",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "postgis/postgis:14-3.2-alpine",
+                "Image": "ghcr.io/cambridge-cares/pgrouting/pgrouting:15-3.3-3.4.1-extra",
                 "Env": [
                     "POSTGRES_HOST_AUTH_METHOD=scram-sha-256",
-                    "POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256"
+                    "POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256",
+                    "POSTGIS_SFCGAL=true"
                 ],
                 "Mounts": [
                     {
@@ -27,12 +28,6 @@
                     }
                 ]
             }
-        }
-    },
-    "endpoints": {
-        "sql": {
-            "url": "http://localhost/jdbc",
-            "externalPath": "/postgis/sparql"
         }
     }
 }

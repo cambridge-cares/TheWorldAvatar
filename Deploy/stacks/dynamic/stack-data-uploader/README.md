@@ -268,7 +268,7 @@ The icons can be found at `GEOSERVER_URL/www/icons` and the "other files" (being
 
 ## Data Types
 
-The following data types are supported: [`vector`](#vector-data), [`raster`](#raster-data), [`tabular`](#tabular-data), [`rdf`](#rdf-data) and [`tboxcsv`](#tbox-csv-data).
+The following data types are supported: [`vector`](#vector-data), [`raster`](#raster-data), [`tabular`](#tabular-data), [`rdf`](#rdf-data) and [`tboxcsv`](#tbox-csv-data), [`osmrouting`](#osm-data).
 A description of how each is processed and a summary of the available configuration options are provided below.
 
 ### Vector Data
@@ -451,6 +451,23 @@ The data loader does the following when uploading RDF data:
 2. It uses the [`RemoteStoreClient::uploadFile`][RSC-uploader] method to uploads the contents of the OWL file to the Blazegraph database in the stack.
 
 There are no configurable options for this process, the namespace the data is added to is always the one defined in the parent dataset.
+
+### OSM Data
+
+The `"osmrouting"` data type should be used to load Open Street Map (OSM) files in a form that is compatible with [pgRouting][pgrouting].
+My default three tables and three GeoServer layers are created; `DATA_SUBSET_NAME_ways`, `DATA_SUBSET_NAME_ways_vertices_pgr`, and `DATA_SUBSET_NAME_pointsofinterest`.
+
+#### osm2pgrouting Options
+
+For OSM data you can add a `osm2PGRoutingOptions` node within the relevant data subset in the configuration json.
+This can be used to configure the osm2pgrouting tool as specified [here][osm2pgrouting-how-to-use].
+- `"flags"`: a list of flags without arguments e.g. `[--attributes, --addnodes]`
+- `"options"`: a node containing the key value pairs of options with arguments e.g. `{"--chunk": "40000"}`
+
+#### OSM GeoServer Options
+
+For OSM data you can add the nodes `waysGeoServerSettings`, `verticesGeoServerSettings`, and `poiGeoServerSettings` nodes within the relevant data subset in the configuration json.
+The nodes that can be added within each are the same as the GeoServer options for [vector data](#vector-data).
 
 ## OBDA Mapping File
 
@@ -668,5 +685,8 @@ This way you can look at look at the user interfaces of the various services (se
 [raster-geotiff]: https://gdal.org/drivers/raster/gtiff.html#gtiff-geotiff-file-format
 
 [postgis-raster-loader]: https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader
+
+[pgrouting]: http://pgrouting.org/
+[osm2pgrouting-how-to-use]: https://github.com/pgRouting/osm2pgrouting#how-to-use
 
 [crome-2020]: https://www.data.gov.uk/dataset/be5d88c9-acfb-4052-bf6b-ee9a416cfe60/crop-map-of-england-crome-2020
