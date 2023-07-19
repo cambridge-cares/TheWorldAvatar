@@ -1,0 +1,34 @@
+[PrefixDeclaration]
+building:   http://theworldavatar.io/BuildingWallSurface/
+os:		    http://data.ordnancesurvey.co.uk/ontology/spatialrelations/
+owl:		http://www.w3.org/2002/07/owl#
+rdf:		http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xml:		http://www.w3.org/XML/1998/namespace
+xsd:		http://www.w3.org/2001/XMLSchema#
+obda:		https://w3id.org/obda/vocabulary#
+rdfs:		http://www.w3.org/2000/01/rdf-schema#
+geo:        http://www.opengis.net/ont/geosparql#
+
+[MappingDeclaration] @collection [[
+mappingId       Asset-mapping-UUID-TOID
+target      building:{uuid} os:hasUUID {uuid}^^xsd:string ;
+                 os:hasTOID {toid}^^xsd:string .
+source          SELECT substring(cga."gmlid" from 10) as uuid, ga."strval" as toid
+                FROM "citydb"."cityobject" as cga, "citydb"."cityobject_genericattrib" as ga
+                WHERE ga."cityobject_id" = cga."id" AND ga."attrname" = 'os_topo_toid'
+
+mappingId       Asset-mapping-UUID-UPRN-via-Standard-Table
+target      building:{uuid} os:hasUUID {uuid}^^xsd:string ;
+                 os:hasUPRN {uprn}^^xsd:integer .
+source          SELECT substring(cga."gmlid" from 10) as uuid, tm."IDENTIFIER_1" as uprn
+                FROM "citydb"."cityobject" as cga, "citydb"."cityobject_genericattrib" as ga, "TOID_UPRN_MatchingTable" as tm
+                WHERE ga."cityobject_id" = cga."id" AND ga."attrname" = 'os_topo_toid' AND ga."strval" = tm."IDENTIFIER_2"
+
+mappingId       Asset-mapping-UUID-Geometry
+target      building:{uuid} os:hasUUID {uuid}^^xsd:string ;
+                    geo:hasGeometry "{wkt}"^^geo:wktLiteral .
+source          SET search_path TO public,citydb;
+                SELECT substring(cga."gmlid" from 10) as uuid, ST_AsText(sg."geometry") as wkt
+                FROM "citydb"."surface_geometry" as sg, "citydb"."cityobject" as cga
+                WHERE sg."cityobject_id" = cga."id" 
+]]
