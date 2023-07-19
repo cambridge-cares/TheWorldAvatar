@@ -21,7 +21,6 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.arq.querybuilder.handlers.WhereHandler;
-import org.apache.jena.arq.querybuilder.Order;
 import org.apache.jena.update.UpdateRequest;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.query.Query;
@@ -56,7 +55,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import javax.servlet.annotation.WebServlet;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -266,6 +264,7 @@ public class CEAAgent extends JPSAgent {
                     String crs = new String();
                     String terrainDb = defaultTerrainDb;
                     String terrainTable = defaultTerrainTable;
+                    BuildingUsageHelper usageQueryHelper = new BuildingUsageHelper(ontologyUriHelper);
 
                     for (int i = 0; i < uriArray.length(); i++) {
                         String uri = uriArray.getString(i);
@@ -303,9 +302,11 @@ public class CEAAgent extends JPSAgent {
 
                             // check if ceaRoute has quads enabled for querying and updating with graphs
                             if (!namedGraph.isEmpty()) {
-                                checkQuadsEnabled(ceaRoute);
+                                if (!RouteHelper.checkQuadsEnabled(ceaRoute)) {
+                                    throw new JPSRuntimeException("ceaEndpoint does not support graph");
+                                }
                             }
-                            List<String> routeEndpoints = getRouteEndpoints(ceaRoute);
+                            List<String> routeEndpoints = RouteHelper.getRouteEndpoints(ceaRoute);
                             storeClient = new RemoteStoreClient(routeEndpoints.get(0), routeEndpoints.get(1));
                         }
 
@@ -317,7 +318,7 @@ public class CEAAgent extends JPSAgent {
                         String footprint = getBuildingGeometry(uri, geometryRoute, "footprint");
 
                         // Get building usage, set default usage of MULTI_RES if not available in knowledge graph
-                        Map<String, Double> usage = getBuildingUsages(uri, usageRoute);
+                        Map<String, Double> usage = usageQueryHelper.getBuildingUsages(uri, usageRoute);
 
                         ArrayList<CEAInputData> surrounding = getSurroundings(uri, geometryRoute, uniqueSurrounding, surroundingCoordinates);
 
@@ -368,11 +369,13 @@ public class CEAAgent extends JPSAgent {
                                 namedGraph = "";
                             }
                             // check if ceaRoute has quads enabled for querying and updating with graphs
-                            if (!namedGraph.isEmpty() && checkEndpoint(ceaRoute)){
-                                checkQuadsEnabled(ceaRoute);
+                            if (!namedGraph.isEmpty() && RouteHelper.checkEndpoint(ceaRoute)){
+                                if (!RouteHelper.checkQuadsEnabled(ceaRoute)) {
+                                    throw new JPSRuntimeException("ceaEndpoint does not support graph");
+                                }
                             }
                         }
-                        List<String> routeEndpoints = getRouteEndpoints(ceaRoute);
+                        List<String> routeEndpoints = RouteHelper.getRouteEndpoints(ceaRoute);
                         storeClient = new RemoteStoreClient(routeEndpoints.get(0), routeEndpoints.get(1));
                     }
                     String building = checkBuildingInitialised(uri, ceaRoute);
@@ -730,7 +733,6 @@ public class CEAAgent extends JPSAgent {
         return true;
     }
 
-
     /**
      * Returns route for use with AccessAgent
      * @param iriString iri of object to be queried
@@ -882,31 +884,6 @@ public class CEAAgent extends JPSAgent {
     }
 
     /**
-     * Builds a SPARQL query for a specific URI to retrieve the building usages and the building usage share with OntoBuiltEnv concepts
-     * @param uriString city object id
-     * @return returns a query string
-     */
-    private Query getBuildingUsagesQuery(String uriString) {
-        WhereBuilder wb = new WhereBuilder();
-        SelectBuilder sb = new SelectBuilder();
-
-        wb.addPrefix("ontoBuiltEnv", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
-                .addPrefix("rdf", ontologyUriHelper.getOntologyUri(OntologyURIHelper.rdf))
-                .addWhere("?building", "ontoBuiltEnv:hasOntoCityGMLRepresentation", "?s")
-                .addWhere("?building", "ontoBuiltEnv:hasPropertyUsage", "?usage")
-                .addWhere("?usage", "rdf:type", "?BuildingUsage")
-                .addOptional("?usage", "ontoBuiltEnv:hasUsageShare", "?UsageShare");
-
-        sb.addVar("?BuildingUsage").addVar("?UsageShare")
-                .addWhere(wb)
-                .addOrderBy("UsageShare", Order.DESCENDING);
-
-        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(BuildingHelper.getBuildingUri(uriString)));
-
-        return sb.build();
-    }
-
-    /**
      * Builds a SPARQL geospatial query for city object id of buildings whose envelope are within lowerBounds and upperBounds
      * @param uriString city object id of the target building
      * @param lowerBounds coordinates of customFieldsLowerBounds as a string
@@ -1022,73 +999,6 @@ public class CEAAgent extends JPSAgent {
             e.printStackTrace();
             return null;
         }
-    }
-
-    /**
-     * Retrieves the usages of a building and each usage's corresponding weight, and returns the usages and their weight as a map
-     * @param uriString city object id
-     * @param route route to pass to access agent
-     * @return the usages and their corresponding weighting
-     */
-    private Map<String, Double> getBuildingUsages(String uriString, String route) {
-        Map<String, Double> result = new HashMap<>();
-        Map<String, Double> temp = new HashMap<>();
-        String usage;
-        Query q = getBuildingUsagesQuery(uriString);
-
-        JSONArray queryResultArray;
-
-        if (checkEndpoint(route)) {
-            queryResultArray = this.queryStore(route, q.toString());
-        }
-        else {
-            queryResultArray = new JSONArray();
-        }
-
-        // CEA only support up to three usages for each building
-        // convert all usages to CEA defined usages first
-
-        if (queryResultArray.isEmpty()) {
-            usage = toCEAConvention("default");
-            result.put(usage, 1.00);
-        }
-        else if (queryResultArray.length() == 1){
-            usage = queryResultArray.getJSONObject(0).get("BuildingUsage").toString().split(ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))[1].split(">")[0].toUpperCase();
-            usage = toCEAConvention(usage);
-            result.put(usage, 1.00);
-        }
-        else {
-            for (int i = 0; i < queryResultArray.length(); i++) {
-                usage = queryResultArray.getJSONObject(i).get("BuildingUsage").toString().split(ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))[1].split(">")[0].toUpperCase();
-                usage = toCEAConvention(usage);
-
-                if (temp.containsKey(usage)) {
-                    temp.put(usage, temp.get(usage) + queryResultArray.getJSONObject(i).getDouble("UsageShare"));
-                } else {
-                    temp.put(usage, queryResultArray.getJSONObject(i).getDouble("UsageShare"));
-                }
-            }
-
-            // get the top 3 usages
-            result = temp.entrySet().stream()
-                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-                    .limit(3)
-                    .collect(Collectors.toMap(
-                            Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-
-            // normalise the usage weights in result so that they sum up to 1
-            Double sum = 0.00;
-
-            for (Double val : result.values()){
-                sum += val;
-            }
-
-            for (Map.Entry<String, Double> entry : result.entrySet()){
-                result.put(entry.getKey(), entry.getValue() / sum);
-            }
-        }
-
-        return result;
     }
 
     /**
@@ -1495,13 +1405,12 @@ public class CEAAgent extends JPSAgent {
 
     /**
      * Gets the RemoteStoreClient and RemoteRDBStoreClient objects for querying weather data
-     * @param db database storing the weather data
+     * @param weatherDB database storing the weather data
      * @return a map containing a RemoteStoreClient object and RemoteRDBStoreClient object that will allow for the querying of weather data
      */
-    public Map<String, Object> getWeatherClients(String db) {
-        String weatherDB = isDockerized() ? db.replace("localhost", "host.docker.internal") : db.replace("host.docker.internal", "localhost");
+    public Map<String, Object> getWeatherClients(String weatherDB) {
         RemoteRDBStoreClient weatherRDBClient = new RemoteRDBStoreClient(weatherDB, dbUser, dbPassword);
-        List<String> weatherEndpoints = getRouteEndpoints(weatherRoute);
+        List<String> weatherEndpoints = RouteHelper.getRouteEndpoints(weatherRoute);
         RemoteStoreClient weatherStoreClient = new RemoteStoreClient(weatherEndpoints.get(0), weatherEndpoints.get(1));
         Map<String, Object> result = new HashMap<>();
         result.put(RDB_CLIENT, weatherRDBClient);
@@ -2609,135 +2518,5 @@ public class CEAAgent extends JPSAgent {
         Geometry buffered = BufferOp.bufferOp(geom, distance * -1, bufferParameters);
         buffered.setUserData(geom.getUserData());
         return buffered;
-    }
-
-    /**
-     * Sets store client to the query and update endpoint of route, so that the time series client queries and updates from the same endpoint as route
-     * @param route access agent route
-     */
-    private List<String> getRouteEndpoints(String route) {
-        JSONObject queryResult = this.getEndpoints(route);
-
-        String queryEndpoint = queryResult.getString(JPSConstants.QUERY_ENDPOINT);
-        String updateEndpoint = queryResult.getString(JPSConstants.UPDATE_ENDPOINT);
-
-        if (!isDockerized()){
-            queryEndpoint = queryEndpoint.replace("host.docker.internal", "localhost");
-            updateEndpoint = updateEndpoint.replace("host.docker.internal", "localhost");
-        }
-
-        return Arrays.asList(queryEndpoint, updateEndpoint);
-    }
-
-    /**
-     * Converts OntoBuiltEnv building usage type to convention used by CEA
-     * @param usage OntoBuiltEnv building usage type
-     * @return building usage per CEA convention
-     */
-    public String toCEAConvention(String usage){
-        switch(usage){
-            case("DOMESTIC"):
-                return "MULTI_RES";
-            case("SINGLERESIDENTIAL"):
-                return "SINGLE_RES";
-            case("MULTIRESIDENTIAL"):
-                return "MULTI_RES";
-            case("EMERGENCYSERVICE"):
-                return "HOSPITAL";
-            case("FIRESTATION"):
-                return "HOSPITAL";
-            case("POLICESTATION"):
-                return "HOSPITAL";
-            case("MEDICALCARE"):
-                return "HOSPITAL";
-            case("HOSPITAL"):
-                return usage;
-            case("CLINIC"):
-                return "HOSPITAL";
-            case("EDUCATION"):
-                return "UNIVERSITY";
-            case("SCHOOL"):
-                return usage;
-            case("UNIVERSITYFACILITY"):
-                return "UNIVERSITY";
-            case("OFFICE"):
-                return usage;
-            case("RETAILESTABLISHMENT"):
-                return "RETAIL";
-            case("RELIGIOUSFACILITY"):
-                return "MUSEUM";
-            case("INDUSTRIALFACILITY"):
-                return "INDUSTRIAL";
-            case("EATINGESTABLISHMENT"):
-                return "RESTAURANT";
-            case("DRINKINGESTABLISHMENT"):
-                return "RESTAURANT";
-            case("HOTEL"):
-                return usage;
-            case("SPORTSFACILITY"):
-                return "GYM";
-            case("CULTURALFACILITY"):
-                return "MUSEUM";
-            case("TRANSPORTFACILITY"):
-                return "INDUSTRIAL";
-            case("NON-DOMESTIC"):
-                return "INDUSTRIAL";
-            default:
-                return "MULTI_RES";
-        }
-    }
-
-    /**
-     * Checks if route is enabled to support quads
-     * @param route endpoint to check
-     */
-    public void checkQuadsEnabled(String route){
-        WhereBuilder wb = new WhereBuilder()
-                .addGraph("?g","?s", "?p", "?o");
-        SelectBuilder sb = new SelectBuilder()
-                .addVar("?g")
-                .addWhere(wb)
-                .setLimit(1);
-
-        // check if query with graph works for route
-        try{
-            this.queryStore(route, sb.build().toString());
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            throw new JPSRuntimeException("ceaEndpoint does not support graph");
-        }
-    }
-
-    /**
-     * Run basic SPARQL query to check if route is queryable
-     * @param route endpoint to check
-     * @return true if route is queryable, false if not
-     */
-    public boolean checkEndpoint(String route){
-        WhereBuilder wb = new WhereBuilder()
-                .addWhere("?s", "?p", "?o");
-        SelectBuilder sb = new SelectBuilder()
-                .addVar("?s")
-                .addWhere(wb)
-                .setLimit(1);
-
-        try{
-            this.queryStore(route, sb.build().toString());
-            return true;
-        }
-        catch (Exception e){
-            return false;
-        }
-    }
-
-    /**
-     * Checks if the agent is running in Docker
-     * @return true if running in Docker, false otherwise
-     */
-    private boolean isDockerized(){
-        File f = new File("/.dockerenv");
-
-        return f.exists();
     }
 }
