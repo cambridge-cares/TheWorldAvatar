@@ -1,0 +1,70 @@
+prefix xsd:        <http://www.w3.org/2001/XMLSchema#> 
+prefix rdf:        <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+prefix rdfs:       <http://www.w3.org/2000/01/rdf-schema#> 
+prefix om:         <http://www.ontology-of-units-of-measure.org/resource/om-2/> 
+prefix lrppi:      <http://landregistry.data.gov.uk/def/ppi/> 
+prefix icontact:   <http://ontology.eil.utoronto.ca/icontact.owl#> 
+prefix dabgeo:     <http://www.purl.org/oema/infrastructure/> 
+prefix obe:	    <https://www.theworldavatar.com/kg/ontobuiltenv/> 
+prefix ts:         <https://www.theworldavatar.com/kg/ontotimeseries/> 
+prefix uom:        <https://theworldavatar.com/resource/ontouom/> 
+
+SELECT ?building ?value ?latlong ?propertyUsage ?propertyType
+WHERE {
+  ?building rdf:type dabgeo:Building ;
+            obe:hasMarketValue ?marketValue .
+  ?marketValue rdf:type om:AmountOfMoney ;
+                     om:hasValue ?measure .
+  ?measure rdf:type om:Measure;
+           om:hasNumericalValue ?value.
+  
+  ?building obe:hasWGS84LatitudeLongitude ?latlong.
+    
+  ?building obe:hasPropertyUsage ?propertyUsage.
+ ?building obe:hasPropertyUsage ?propertyUsage.
+  {
+    ?propertyUsage rdf:type obe:MultiResidential.
+  }
+  UNION
+  {
+    ?propertyUsage rdf:type obe:SingleResidential.
+  }
+  ?propertyUsage rdf:type ?propertyType.
+
+}
+ORDER BY DESC(xsd:integer(?value))
+LIMIT 10
+
+
+
+prefix xsd:        <http://www.w3.org/2001/XMLSchema#> 
+prefix rdf:        <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+prefix rdfs:       <http://www.w3.org/2000/01/rdf-schema#> 
+prefix om:         <http://www.ontology-of-units-of-measure.org/resource/om-2/> 
+prefix lrppi:      <http://landregistry.data.gov.uk/def/ppi/> 
+prefix icontact:   <http://ontology.eil.utoronto.ca/icontact.owl#> 
+prefix dabgeo:     <http://www.purl.org/oema/infrastructure/> 
+prefix obe:	    <https://www.theworldavatar.com/kg/ontobuiltenv/> 
+prefix ts:         <https://www.theworldavatar.com/kg/ontotimeseries/> 
+prefix uom:        <https://theworldavatar.com/resource/ontouom/> 
+
+SELECT DISTINCT ?building ?propertyType ?value ?latlong 
+WHERE {
+  ?building rdf:type dabgeo:Building ;
+            obe:hasMarketValue ?marketValue .
+  ?marketValue rdf:type om:AmountOfMoney ;
+                     om:hasValue ?measure .
+  ?measure rdf:type om:Measure;
+           om:hasNumericalValue ?value.
+  
+ ?building obe:hasWGS84LatitudeLongitude ?latlong. 
+  
+ ?building obe:hasPropertyUsage ?propertyUsage.
+ ?propertyUsage rdf:type obe:SingleResidential;
+   rdf:type ?propertyType.
+
+}
+ORDER BY DESC(xsd:integer(?value))
+LIMIT 50
+
+

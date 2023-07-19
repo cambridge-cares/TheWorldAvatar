@@ -1,0 +1,13 @@
+{
+    "start": {
+        "center": [0.445911, 52.757068],
+        "zoom": 12,
+        "bearing": 340,
+        "pitch": 0
+    },
+    "search": {
+        "Name": "name",
+        "ID": "id"
+    },
+    "attribution": "Contains OS data © Crown copyright and database rights 2022 (100025252)<BR>Contains public sector information licensed under the Open Government Licence v3.0.<BR>This showcase uses Environment Agency flood and river level data from the real-time data API (Beta)"
+}

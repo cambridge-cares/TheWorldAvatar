@@ -1,0 +1,346 @@
+<html>
+    <head>
+        <!-- ===== CUSTOMISABLE ===== -->
+        <title>King's Lynn Flood Router</title>
+        <!-- ===== CUSTOMISABLE ===== -->
+
+        <!-- JS -->
+        <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <script src='https://api.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.js'></script>
+        <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+        <script src="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" ></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
+        <!-- <script src="https://kg.cmclinnovations.com/cdn/dtvf/3.7.0/dtvf.min.js" charset="UTF-8"></script> -->
+
+
+        <!-- ===== CUSTOMISABLE ===== -->
+
+        <!-- CSS -->
+        <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+        <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css" rel="stylesheet">
+        <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
+        <!-- <link href="https://kg.cmclinnovations.com/cdn/dtvf/3.3.4/dtvf.min.css" rel="stylesheet" /> -->
+        <script src="./dtvf.min.js" charset="UTF-8"></script>
+        <link href="./dtvf.min.css" rel="stylesheet" />
+
+        <!-- ===== CUSTOMISABLE ===== -->
+        <!-- CSS files to provide styling specifically for this visualisation instance can go here. -->
+        <link href="./local.css" rel="stylesheet" />
+
+
+
+    </head>
+    <body>
+        <!-- Container the map will be added to -->
+        <div id="map"></div>
+        
+        <!-- ===== CUSTOMISABLE ===== -->
+        <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
+        <!-- <script src="./app.js"></script> -->
+
+        <!-- Element for depth of field overlay -->
+        <div id="tiltShift"></div>
+
+        <!-- Element the map controls will be added to (normally on the left) -->
+        <div id="controlsContainer">
+            <div id="controlContainer">
+
+                <!-- Camera controls -->
+                <div id="cameraContainer" class="controlBlock">
+                    <div id="controlTitle" class="controlTitle">
+                        <p>Camera</p>
+                        <div class="tooltip">
+                            <label class="switch"><input type="checkbox" onclick="MapboxUtils.setTiltshift(this.checked)"><span class="slider round"><p>DoF</p></label>
+                            <span class="tooltiptext">Toggle depth of field effect</span>
+                        </div>
+                    </div>
+                    <div class="controlContents">
+                        <a href="#" onclick="MapboxUtils.resetCamera()">Reset to default</a><br/>
+                    </div>
+                </div>
+
+                <!-- Terrain controls -->
+                <div id="terrainContainer" class="controlBlock">
+                    <div id="controlTitle" class="controlTitle">
+                        <p>Imagery</p>
+                        <div class="tooltip">
+                            <label class="switch"><input type="checkbox" onclick="MapboxUtils.set3DTerrain(this.checked)"><span class="slider round"><p>3D</p></label>
+                            <span class="tooltiptext">Toggle 3D terrain</span>
+                        </div>
+                    </div>
+                    <div id="imageryContainer" class="controlContents">
+                    </div>
+                </div>
+
+                <!-- Layer controls -->
+                <div id="layerContainer" class="controlBlock">
+                    <div id="controlTitle"  class="controlTitle">
+                        <p>Layers</p>
+                        <div class="tooltip" id="placenameContainer">
+                            <label class="switch"><input type="checkbox" onclick="MapboxUtils.setPlacenames(this.checked)" checked><span class="slider round"><p>PNs</p></label>
+                            <span class="tooltiptext">Toggle place names, labels, and roads </span>
+                        </div>
+                    </div>
+                    <div class="controlContents">
+                        <div id="layerTreeContainer">
+                            <div class="hummingbird-treeview-converter"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Help icon -->
+                <div id="helpContainer" class="controlBlock expanded" onclick="openHelpURL()">
+                    <div class="tooltip" id="coordEditor">
+                        <i class="fas fa-question fa-lg"></i>
+                        <span class="tooltiptext right">Help</span>
+                    </div>
+                </div>
+
+                <!-- Container for developer info -->
+                <div id="developerContainer" class="controlBlock" style="display: none;">
+                    <div class="tooltip" id="coordEditor" style="float: right;">
+                        <i class="fas fa-pencil-alt" onclick="event.stopPropagation(); manager.getControlHandler().editInfoPanel()"></i>
+                        <span class="tooltiptext">Change map position</span>
+                    </div>
+                    <div id="coordsContainer" style="width: 100%; height: 100%;"></div>
+                </div>
+
+ 
+
+
+
+            </div>
+        </div>
+
+        <!-- Side panel for content and metdata -->
+        <div id="sidePanel" class="large expanded">
+            <div class="tooltip" id="slideButtonContainer">
+                <i class="fas fa-chevron-right" id="slideButton" width="16px" class="leftButton" height="16px" onclick="manager.getPanelHandler().toggleExpansion()"></i>
+                <span class="tooltiptext">Expand/Collapse</span>
+            </div>
+            <div class="tooltip" id="expandButtonContainer">
+                <i class="fas fa-expand" id="expandButton" width="16px" class="rightButton" height="16px" onclick="manager.getPanelHandler().toggleMode()"></i>
+                <span class="tooltiptext">Maximise/Minimise</span>
+            </div>
+            <div id="sidePanelInner">
+                <ul>
+                    <li><a href="#sidePanelGeneral">General</a></li>
+                    <li><a href="#sidePanelLegend">Legend</a></li>
+                    <li><a href="#sidePanelLinks">Links</a></li>
+                </ul>
+                <div id="sidePanelGeneral">
+                    <div id="titleContainer" onclick="manager.moveMapToFeature()"></div>
+                    <div id="contentContainer"></div>
+                    <div id="legendContainer"></div>
+                    <div id="footerContainer">
+                        <div id="footerContent"></div>
+                    </div>
+                </div>
+                <div id="sidePanelLegend"></div>
+                <div id="sidePanelLinks"></div>
+            </div>
+            <div id="returnContainer" style="display: none;">
+                <div id="innerReturnContainer">
+                    <a href="#" onclick="manager.getPanelHandler().returnToDefault()"><i class="fas fa-arrow-left" width="16px" height="16px"></i> Return</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Code entry point -->
+        <script>
+            $("#sidePanelInner").tabs();
+
+            // ===== CUSTOMISABLE =====
+            // Enter Mapbox account name and API key here!
+			MapHandler.MAP_USER = "szp20";
+            MapHandler.MAP_API = "pk.eyJ1Ijoic3pwMjAiLCJhIjoiY2xmdDlnMWxuMGU4aTNkcGplcWhtZ2lyeCJ9.2v__IHlc2wzlgexRdxfZ8w";
+            // ===== CUSTOMISABLE =====
+            // Create a new manager instance
+            var manager = new Manager(MapProvider.MAPBOX);
+            window.manager = manager;
+
+            // Only start the map after data definitions have been read.
+            var dataPromise = manager.loadDefinitions();
+            dataPromise.then(() => start());
+            dataPromise.then(() => getRouteStart())
+            dataPromise.then(() => addHospital())
+
+            /**
+             * Starts the visualisation setup process.
+             */
+            function start() {
+                // Initialise the map object
+                manager.initialiseMap();
+               
+                // ===== CUSTOMISABLE =====
+                // Set the default content in the "General" tab of the side panel
+                manager.getPanelHandler().setTitle("<h1>King's Lynn Flood Router</h1>");
+                manager.getPanelHandler().setContent(`
+                <p>This visualisation of King's Lynn, UK, is based on data instantiated in the World Avatar. <br><br>
+                    It combines flood data, elevation raster data, isochrone map from hospital, street network data, building data. 
+                    <br><br>
+
+                    Use the layer controls to show/hide various layers. 
+                  </p>
+                `);
+                
+                // Use the local.js file to build the legend
+                //buildLegend();
+
+                manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
+                // ===== CUSTOMISABLE =====
+
+                // Save general tab state as default
+                manager.getPanelHandler().storeDefault();
+
+                // Once the underlying style has loaded...
+                MapHandler.MAP.on("style.load", function() {
+                    // Load registered images and linked files
+                    manager.loadImagesAndLinks().then(() => {
+
+                        // TODO: This SHOULD only kick in after all images have bee loaded and added to the map,
+                        // but I cannot get the nest Promises to wait for each other properly. As it doesn't
+                        // seem to be causing any issues, I'm leaving it as is for the time being. - Michael
+
+                        // Plot the default visible data
+                        manager.plotData();
+                    });
+                });
+                
+            }
+
+            function addHospital(){
+
+                var markerCoordinates = [0.44596810988223834, 52.75684401611818];
+
+                    // Create a new marker instance
+                    var marker = new mapboxgl.Marker({
+                        color: 'red',
+                        draggable: false
+                    })
+                        .setLngLat(markerCoordinates)
+                        .addTo(MapHandler.MAP);
+
+                    // Create the box container
+                    var boxContainer = document.createElement('div');
+                    boxContainer.className = 'box-container';
+                    boxContainer.innerHTML = '<h2>Mapbox JS Div Container Display</h2>' +
+                                            '<p>This is a box displayed as a JS-generated div container on top of the Mapbox map.</p>';
+                    document.body.appendChild(boxContainer);
+                
+
+            }
+
+
+            function getRouteStart(){
+                
+                //Routing functions
+                var myLayer = null;
+                var selectedPoint = null;
+                var source = null;
+                var target = null;
+
+
+                // draggable marker for starting point
+                var sourceMarker = new mapboxgl.Marker({
+                        draggable: true
+                    })
+                    .setLngLat([0.44503308060457725, 52.75554119773284])
+                    .addTo(MapHandler.MAP);
+
+                sourceMarker.on("dragend", function(e) {
+                    selectedPoint = e.target.getLngLat();
+                    getVertex(selectedPoint);
+                    getRoute();
+                });
+
+                // draggable marker for destination point
+                var targetMarker = new mapboxgl.Marker({
+                        draggable: true
+                    })
+                    .setLngLat([0.43026936435893426, 52.76964201123162])
+                    .addTo(MapHandler.MAP);
+
+                targetMarker.on("dragend", function(e) {
+                    selectedPoint = e.target.getLngLat();
+                    getVertex(selectedPoint);
+                    getRoute();
+                });
+
+
+                // function to get nearest vertex to the passed point
+                function getVertex(selectedPoint) {
+                    var url = `http://localhost:3838/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn:nearest_vertex&outputformat=application/json&viewparams=lon:${selectedPoint.lng};lat:${selectedPoint.lat};`;
+
+                    $.ajax({
+                        url: url,
+                        async: false,
+                        success: function(data) {
+                            loadVertex(
+                                data,
+                                selectedPoint.toString() === sourceMarker.getLngLat().toString()
+                            );
+                        }
+                    });
+                }
+
+                // function to update the source and target nodes as returned from geoserver for later querying
+                function loadVertex(response, isSource) {
+                    var features = response.features;
+                    if (isSource) {
+                        source = features[0].properties.id;
+                    } else {
+                        target = features[0].properties.id;
+                    }
+                }
+
+                // // function to get the shortest path from the give source and target nodes
+                function getRoute() {
+
+                    var url = `http://localhost:3838/geoserver/wfs?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn:shortest_paths&outputformat=application/json&viewparams=source:${source};target:${target};`;
+                    removeLayer();
+                    // Retrieve the GeoJSON data from the URL
+                    fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Add the GeoJSON data as a source
+                        MapHandler.MAP.addSource('my-data', {
+                        type: 'geojson',
+                        data: data
+                        });
+
+                        // Add a layer using the GeoJSON source
+                        myLayer = MapHandler.MAP.addLayer({
+                        id: 'my-layer',
+                        type: 'line',
+                        source: 'my-data',
+                        paint: {
+                            'line-color': '#000000',
+                            'line-opacity': 1,
+                            'line-width': 3
+                        }
+                        });
+                    }); 
+                }
+
+                // function to remove the layer
+                function removeLayer() {
+                    if (myLayer) {
+                        MapHandler.MAP.removeLayer('my-layer');
+                        MapHandler.MAP.removeSource('my-data');
+                        myLayer = null;
+                    }
+                }
+
+                //To get initial route
+                getVertex(sourceMarker.getLngLat());
+                getVertex(targetMarker.getLngLat());
+                getRoute();
+            }
+        </script>
+    </body>
+</html>
