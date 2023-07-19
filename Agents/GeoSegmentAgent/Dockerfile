@@ -30,6 +30,8 @@ RUN python -m pip install -r requirements.txt
 # Set the default working directory, then copy the Python source code into it
 WORKDIR /app
 ADD GeoSegmentAgent /app/GeoSegmentAgent
+# Copy raster files in the raster_input directory
+COPY GeoSegmentAgent/raster_input /app/GeoSegmentAgent/raster_input
 
 # Install StackClients py4jps resource
 RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \

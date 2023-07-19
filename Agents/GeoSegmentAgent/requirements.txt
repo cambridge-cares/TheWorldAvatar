@@ -14,4 +14,5 @@ localtileserver==0.7.1
 sqlalchemy
 geoalchemy2
 geopandas
+scikit-learn
 git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils
