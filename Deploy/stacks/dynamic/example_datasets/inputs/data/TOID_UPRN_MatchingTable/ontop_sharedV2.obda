@@ -12,23 +12,29 @@ geo:        http://www.opengis.net/ont/geosparql#
 [MappingDeclaration] @collection [[
 mappingId       Asset-mapping-UUID-TOID
 target      building:{uuid} os:hasUUID {uuid}^^xsd:string ;
-                 os:hasTOID {toid}^^xsd:string .
-source          SELECT substring(cga."gmlid" from 10) as uuid, ga."strval" as toid
-                FROM "citydb"."cityobject" as cga, "citydb"."cityobject_genericattrib" as ga
-                WHERE ga."cityobject_id" = cga."id" AND ga."attrname" = 'os_topo_toid'
+                 os:hasTOID {os_topo_toid}^^xsd:string .
+source          SELECT substring(cityobject.gmlid from 10) as uuid,
+                -- for 'building_' prefix 
+                cityobject_genericattrib.strval AS os_topo_toid
+                FROM citydb.cityobject
+                INNER JOIN citydb.cityobject_genericattrib ON citydb.cityobject.id = citydb.cityobject_genericattrib.cityobject_id
+                WHERE cityobject_genericattrib.attrname = 'os_topo_toid'
 
 mappingId       Asset-mapping-UUID-UPRN-via-Standard-Table
 target      building:{uuid} os:hasUUID {uuid}^^xsd:string ;
                  os:hasUPRN {uprn}^^xsd:integer .
-source          SELECT substring(cga."gmlid" from 10) as uuid, tm."IDENTIFIER_1" as uprn
-                FROM "citydb"."cityobject" as cga, "citydb"."cityobject_genericattrib" as ga, "TOID_UPRN_MatchingTable" as tm
-                WHERE ga."cityobject_id" = cga."id" AND ga."attrname" = 'os_topo_toid' AND ga."strval" = tm."IDENTIFIER_2"
+source          SELECT substring("citydb"."cityobject"."gmlid" from 10) as uuid, "TOID_UPRN_MatchingTable"."IDENTIFIER_1" as uprn
+                FROM "citydb"."cityobject", "citydb"."cityobject_genericattrib", "TOID_UPRN_MatchingTable"
+                WHERE "citydb"."cityobject_genericattrib"."cityobject_id" = "citydb"."cityobject"."id" 
+                AND "citydb"."cityobject_genericattrib"."attrname" = 'os_topo_toid' 
+                AND "citydb"."cityobject_genericattrib"."strval" = "TOID_UPRN_MatchingTable"."IDENTIFIER_2";
 
 mappingId       Asset-mapping-UUID-Geometry
 target      building:{uuid} os:hasUUID {uuid}^^xsd:string ;
                     geo:hasGeometry "{wkt}"^^geo:wktLiteral .
-source          SET search_path TO public,citydb;
-                SELECT substring(cga."gmlid" from 10) as uuid, ST_AsText(sg."geometry") as wkt
-                FROM "citydb"."surface_geometry" as sg, "citydb"."cityobject" as cga
-                WHERE sg."cityobject_id" = cga."id" 
+source          SET search_path TO citydb, public;
+                SELECT substring("citydb"."cityobject"."gmlid" from 10) as uuid, 
+                st_astext("citydb"."surface_geometry"."geometry") as wkt
+                FROM "citydb"."cityobject"
+                INNER JOIN "citydb"."surface_geometry" ON "citydb"."surface_geometry"."cityobject_id" = "citydb"."cityobject"."id";
 ]]
