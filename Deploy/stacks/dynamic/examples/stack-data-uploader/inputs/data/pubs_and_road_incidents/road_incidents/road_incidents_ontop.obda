@@ -25,14 +25,4 @@ target		ra:RoadAccident/{ogc_fid} a ra:RoadAccident ;
 source		SELECT ogc_fid, ST_ASTEXT(geom) as wkt
 			FROM "road_incidents"
 
-mappingId   pubs-mapping
-target      twa:PublicHouse/{ogc_fid} a a geo:Feature/;
-			geo:hasDefaultGeometry geo:hasWKT "<http://www.opengis.net/def/crs/EPSG/0/4326> {wkt}"^^geo:wktLiteral .
-source		select ogc_fid, ST_ASTEXT(geom) as wkt
-
-mappingId	road-mapping
-target		trans:Road/{ogc_fid} a trans:Road;
-			geo:hasDefaultGeometry geo:hasWKB "<http://www.opengis.net/def/crs/EPSG/0/27700> {geom}"^^geo:wktLiteral
-			
-source		select ogc_fid, st_asewkt(st_asewkt(wkb_geometry) as geom) from roads
 ]]
