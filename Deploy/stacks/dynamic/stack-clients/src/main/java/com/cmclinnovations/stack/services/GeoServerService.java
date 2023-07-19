@@ -11,11 +11,11 @@ import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.nio.file.Path;
 import java.util.Base64;
 import java.util.Optional;
 
 import com.cmclinnovations.stack.clients.core.RESTEndpointConfig;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -27,8 +27,7 @@ public final class GeoServerService extends ContainerService {
 
     private static final String ADMIN_USERNAME = "admin";
     private static final String DEFAULT_ADMIN_PASSWORD_FILE = "/run/secrets/geoserver_password";
-    public static final Path SERVING_DIRECTORY = Path.of("/opt/geoserver_data/www");
-
+    
     private static final HttpClient httpClient = HttpClient.newHttpClient();
     // Convert username:password to Base64 String.
     private static final String DEFAULT_AUTHORIZATION = Base64.getEncoder()
@@ -68,7 +67,7 @@ public final class GeoServerService extends ContainerService {
             updatePassword();
         }
 
-        createComplexCommand("chown", "-R", "tomcat:tomcat", SERVING_DIRECTORY.toString()).withUser("root").exec();
+        createComplexCommand("chown", "-R", "tomcat:tomcat", GeoServerClient.SERVING_DIRECTORY.toString()).withUser("root").exec();
     }
 
     private Builder createBaseSettingsRequestBuilder() {

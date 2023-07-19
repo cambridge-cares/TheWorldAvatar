@@ -1,0 +1,23 @@
+{
+    "ServiceSpec": {
+        "Name": "ifcowlconverter-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "ifcowlconverter-agent:1.0.0",
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": "/home/common/Codes/TheWorldAvatar/Agents/IfcOwlConverterAgent/data",
+                        "Target": "/usr/local/tomcat/data"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "rest": {
+            "url": "http://localhost:8080/ifcowlconverter/",
+            "externalPath": "/ifcowlconverter/"
+        }
+    }
+}
