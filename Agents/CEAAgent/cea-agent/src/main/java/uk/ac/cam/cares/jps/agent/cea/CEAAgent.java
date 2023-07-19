@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.agent.cea;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
@@ -30,26 +29,13 @@ import org.apache.jena.sparql.syntax.ElementGroup;
 import org.apache.jena.sparql.syntax.ElementService;
 import org.jooq.exception.DataAccessException;
 
-import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.geom.*;
-import org.locationtech.jts.operation.buffer.BufferOp;
-import org.locationtech.jts.operation.buffer.BufferParameters;
-
-import org.cts.op.CoordinateOperation;
-import org.cts.op.CoordinateOperationFactory;
-import org.cts.registry.EPSGRegistry;
-import org.cts.registry.RegistryManager;
-import org.cts.CRSFactory;
-import org.cts.crs.CoordinateReferenceSystem;
-import org.cts.crs.GeodeticCRS;
 
 import org.json.JSONObject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.HttpMethod;
 import java.io.*;
 import java.net.*;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -85,7 +71,6 @@ public class CEAAgent extends JPSAgent {
     private String targetUrl = "http://localhost:8084/cea-agent" + URI_UPDATE;
 
     public static final String CITY_OBJECT = "cityobject";
-    public static final String ENERGY_PROFILE = "energyprofile";
     public static final String KEY_GRID_CONSUMPTION = "GridConsumption";
     public static final String KEY_ELECTRICITY_CONSUMPTION = "ElectricityConsumption";
     public static final String KEY_HEATING_CONSUMPTION = "HeatingConsumption";
@@ -166,6 +151,8 @@ public class CEAAgent extends JPSAgent {
     public static final String timeUnit = OffsetDateTime.class.getSimpleName();
     
     private OntologyURIHelper ontologyUriHelper;
+    private GeometryQueryHelper geometryQueryHelper;
+    private BuildingUsageHelper usageHelper;
 
     public static final String STACK_NAME = "<STACK NAME>";
     private String stackName;
@@ -192,9 +179,13 @@ public class CEAAgent extends JPSAgent {
 
     private Map<String, String> accessAgentRoutes = new HashMap<>();
 
+
+
     public CEAAgent() {
         readConfig();
         ontologyUriHelper = new OntologyURIHelper("CEAAgentConfig");
+        geometryQueryHelper = new GeometryQueryHelper(ontologyUriHelper);
+        usageHelper = new BuildingUsageHelper(ontologyUriHelper);
         stackName = StackClient.getStackName();
         stackAccessAgentBase =  stackAccessAgentBase.replace(STACK_NAME, stackName);
         openmeteoagentUrl = openmeteoagentUrl.replace(STACK_NAME, stackName);
@@ -264,7 +255,6 @@ public class CEAAgent extends JPSAgent {
                     String crs = new String();
                     String terrainDb = defaultTerrainDb;
                     String terrainTable = defaultTerrainTable;
-                    BuildingUsageHelper usageQueryHelper = new BuildingUsageHelper(ontologyUriHelper);
 
                     for (int i = 0; i < uriArray.length(); i++) {
                         String uri = uriArray.getString(i);
@@ -318,7 +308,7 @@ public class CEAAgent extends JPSAgent {
                         String footprint = getBuildingGeometry(uri, geometryRoute, "footprint");
 
                         // Get building usage, set default usage of MULTI_RES if not available in knowledge graph
-                        Map<String, Double> usage = usageQueryHelper.getBuildingUsages(uri, usageRoute);
+                        Map<String, Double> usage = usageHelper.getBuildingUsages(uri, usageRoute);
 
                         ArrayList<CEAInputData> surrounding = getSurroundings(uri, geometryRoute, uniqueSurrounding, surroundingCoordinates);
 
@@ -339,7 +329,9 @@ public class CEAAgent extends JPSAgent {
                             testData.add(new CEAInputData(footprint, height, usage, surrounding, null, null, null));
                         }
                     }
-                    byte[] terrain = getTerrain(uriStringArray.get(0), geometryRoute, crs, surroundingCoordinates, terrainDb, terrainTable);
+                    String terrainUrl = endpointConfig.getDbUrl(terrainDb);
+                    TerrainHelper terrainHelper = new TerrainHelper(terrainUrl, dbUser, dbPassword);
+                    byte[] terrain = terrainHelper.getTerrain(uriStringArray.get(0), geometryRoute, crs, surroundingCoordinates, terrainTable, ontologyUriHelper);
                     // Manually set thread number to 0 - multiple threads not working so needs investigating
                     // Potentially issue is CEA is already multi-threaded
                     runCEA(testData, uriStringArray, 0, crs, terrain);
@@ -745,38 +737,6 @@ public class CEAAgent extends JPSAgent {
     }
 
     /**
-     * Executes query on SPARQL endpoint and retrieves requested value of building
-     * @param uriString city object id
-     * @param value building value requested
-     * @param route route to pass to access agent
-     * @return geometry as string
-     */
-    private String getValue(String uriString, String value, String route)  {
-
-        String result = "";
-
-        GeometryQueryHelper geometryQueryHelper = new GeometryQueryHelper(ontologyUriHelper);
-
-        Query q = geometryQueryHelper.getQuery(uriString, value);
-
-        //Use access agent
-        JSONArray queryResultArray = this.queryStore(route, q.toString());
-
-        if(!queryResultArray.isEmpty()){
-            if (value.equals("Lod0FootprintId") || value.equals("FootprintThematicSurface")) {
-                result = GeometryHelper.extractFootprint(queryResultArray);
-            }
-            else if (value.equals("FootprintSurfaceGeom")) {
-                result = GeometryHelper.extractFootprint(GeometryHelper.getGroundGeometry(queryResultArray));
-            }
-            else{
-                result = queryResultArray.getJSONObject(0).get(value).toString();
-            }
-        }
-        return result;
-    }
-
-    /**
      * Queries for building geometry related information
      * @param uriString city object id
      * @param route route to pass to access agent
@@ -790,20 +750,20 @@ public class CEAAgent extends JPSAgent {
             case "height":
                 // Set default value of 10m if height can not be obtained from knowledge graph
                 // Will only require one height query if height is represented in data consistently
-                result = getValue(uriString, "HeightMeasuredHeigh", route);
-                result = result.length() == 0 ? getValue(uriString, "HeightMeasuredHeight", route) : result;
-                result = result.length() == 0 ? getValue(uriString, "HeightGenAttr", route) : result;
+                result = geometryQueryHelper.getValue(uriString, "HeightMeasuredHeigh", route);
+                result = result.length() == 0 ? geometryQueryHelper.getValue(uriString, "HeightMeasuredHeight", route) : result;
+                result = result.length() == 0 ? geometryQueryHelper.getValue(uriString, "HeightGenAttr", route) : result;
                 result = result.length() == 0 ? "10.0" : result;
                 
             case "footprint":
                 // Get footprint from ground thematic surface or find from surface geometries depending on data
-                result = getValue(uriString, "Lod0FootprintId", route);
-                result = result.length() == 0 ? getValue(uriString, "FootprintThematicSurface", route) : result;
-                result = result.length() == 0 ? getValue(uriString, "FootprintSurfaceGeom", route) : result;
+                result = geometryQueryHelper.getValue(uriString, "Lod0FootprintId", route);
+                result = result.length() == 0 ? geometryQueryHelper.getValue(uriString, "FootprintThematicSurface", route) : result;
+                result = result.length() == 0 ? geometryQueryHelper.getValue(uriString, "FootprintSurfaceGeom", route) : result;
             
             case "crs":
-                result = getValue(uriString, "CRS", route);
-                result = result.isEmpty() ? getValue(uriString, "DatabasesrsCRS", route) : result;
+                result = geometryQueryHelper.getValue(uriString, "CRS", route);
+                result = result.isEmpty() ? geometryQueryHelper.getValue(uriString, "DatabasesrsCRS", route) : result;
 
             default:
                 result = "";
@@ -869,7 +829,7 @@ public class CEAAgent extends JPSAgent {
             CEAInputData temp;
             String uri;
             ArrayList<CEAInputData> surroundings = new ArrayList<>();
-            String envelopeCoordinates = getValue(uriString, "envelope", route);
+            String envelopeCoordinates = geometryQueryHelper.getValue(uriString, "envelope", route);
 
             Double buffer = 100.00;
 
@@ -940,7 +900,7 @@ public class CEAAgent extends JPSAgent {
      * @return true if weather data retrieved, false otherwise
      */
     private boolean getWeather(String uriString, String route, String weatherRoute, String crs, List<Object> result) {
-        String envelopeCoordinates = getValue(uriString, "envelope", route);
+        String envelopeCoordinates = geometryQueryHelper.getValue(uriString, "envelope", route);
 
         Polygon envelopePolygon = (Polygon) GeometryHelper.toPolygon(envelopeCoordinates);
 
@@ -1345,111 +1305,6 @@ public class CEAAgent extends JPSAgent {
         result.put(RDB_CLIENT, weatherRDBClient);
         result.put(STORE_CLIENT, weatherStoreClient);
         return result;
-    }
-
-    /**
-     * Gets terrain data for city object
-     * @param uriString city object id
-     * @param route route to city object geometry data
-     * @param crs coordinate reference system used by route
-     * @param surroundingCoordinates  coordinates that formed the bounding box for surrounding query
-     * @param database PostGIS database name
-     * @param table PostGIS table name
-     * @return terrain data as byte[]
-     */
-    private byte[] getTerrain(String uriString, String route, String crs, List<Coordinate> surroundingCoordinates, String database, String table) {
-        String dbUrl = endpointConfig.getDbUrl(database);
-        RemoteRDBStoreClient postgisClient = new RemoteRDBStoreClient(dbUrl, dbUser, dbPassword);
-
-        // query for the coordinate reference system used by the terrain data
-        String sridQuery = String.format("SELECT ST_SRID(rast) as srid FROM public.%s LIMIT 1", table);
-
-        Coordinate centerCoordinate;
-
-        Double radius;
-
-        if (!surroundingCoordinates.isEmpty()) {
-            Envelope envelope = new Envelope();
-
-            for (Coordinate coordinate : surroundingCoordinates) {
-                envelope.expandToInclude(coordinate);
-            }
-            centerCoordinate = envelope.centre();
-
-            Double w = envelope.getWidth();
-            Double h = envelope.getHeight();
-
-            radius = w > h ? w/2 : h/2;
-
-            radius += 30;
-        }
-        else {
-            String envelopeCoordinates = getValue(uriString, "envelope", route);
-
-            Polygon envelopePolygon = (Polygon) GeometryHelper.toPolygon(envelopeCoordinates);
-
-            Point center = envelopePolygon.getCentroid();
-
-            centerCoordinate = center.getCoordinate();
-
-            radius = 160.0;
-        }
-
-        crs = StringUtils.isNumeric(crs) ? "EPSG:" + crs : crs;
-
-        List<byte[]> result = new ArrayList<>();
-
-        try {
-            JSONArray sridResult = postgisClient.executeQuery(sridQuery);
-
-            if (sridResult.isEmpty()) {return null;}
-            Integer postgisCRS = sridResult.getJSONObject(0).getInt("srid");
-
-            Coordinate coordinate = GeometryHelper.transformCoordinate(centerCoordinate, crs, "EPSG:" + postgisCRS);
-
-            // query for terrain data
-            String terrainQuery = getTerrainQuery(coordinate.getX(), coordinate.getY(), radius, postgisCRS, table);
-
-            try (Connection conn = postgisClient.getConnection()) {
-                Statement stmt = conn.createStatement();
-                ResultSet terrainResult = stmt.executeQuery(terrainQuery);
-                while(terrainResult.next()) {
-                    byte[] rasterBytes = terrainResult.getBytes("data");
-                    result.add(rasterBytes);
-                }
-            }
-
-            if (result.size() == 1) {
-                return result.get(0);
-            }
-            else{
-                return null;
-            }
-        }
-        catch (Exception e) {
-            return null;
-        }
-    }
-
-    /**
-     * Creates a SQL query string for raster data within a square bounding box of length 2*radius, center point at (x, y)
-     * @param x first coordinate of center point
-     * @param y second coordinate of center point
-     * @param radius length of the square bounding box divided by 2
-     * @param postgisCRS coordinate reference system of the raster data queried
-     * @param table table storing raster data
-     * @return SQL query string
-     */
-    private String getTerrainQuery(Double x, Double y, Double radius, Integer postgisCRS, String table) {
-        // SQL commands for creating a square bounding box
-        String terrainBoundary = String.format("ST_Expand(ST_SetSRID(ST_MakePoint(%f, %f), %d), %f)", x, y, postgisCRS, radius);
-
-        // query result to be converted to TIF format
-        String query = String.format("SELECT ST_AsTIFF(ST_Union(ST_Clip(rast, %s))) as data ", terrainBoundary);
-        query = query + String.format("FROM public.%s ", table);
-        query = query + String.format("WHERE ST_Intersects(rast, %s);", terrainBoundary);
-
-        return query;
     }
 
     /**

@@ -6,6 +6,8 @@ import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
+import org.json.JSONArray;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
 public class GeometryQueryHelper {
     public static final String SURFACE_GEOMETRY = "surfacegeometry";
@@ -24,12 +26,42 @@ public class GeometryQueryHelper {
     }
 
     /**
+     * Executes query on SPARQL endpoint and retrieves requested value of building
+     * @param uriString city object id
+     * @param value building value requested
+     * @param route route to pass to access agent
+     * @return geometry as string
+     */
+    public String getValue(String uriString, String value, String route)  {
+
+        String result = "";
+
+        Query q = getQuery(uriString, value);
+
+        //Use access agent
+        JSONArray queryResultArray = AccessAgentCaller.queryStore(route, q.toString());
+
+        if(!queryResultArray.isEmpty()){
+            if (value.equals("Lod0FootprintId") || value.equals("FootprintThematicSurface")) {
+                result = GeometryHelper.extractFootprint(queryResultArray);
+            }
+            else if (value.equals("FootprintSurfaceGeom")) {
+                result = GeometryHelper.extractFootprint(GeometryHelper.getGroundGeometry(queryResultArray));
+            }
+            else{
+                result = queryResultArray.getJSONObject(0).get(value).toString();
+            }
+        }
+        return result;
+    }
+
+    /**
      * Calls a SPARQL query for a specific URI for height or geometry.
      * @param uriString city object id
      * @param value building value requested
      * @return returns a query string
      */
-    public Query getQuery(String value, String uriString) {
+    private Query getQuery(String value, String uriString) {
         switch(value) {
             case "Lod0FootprintId":
                 return getLod0FootprintIdQuery(uriString);

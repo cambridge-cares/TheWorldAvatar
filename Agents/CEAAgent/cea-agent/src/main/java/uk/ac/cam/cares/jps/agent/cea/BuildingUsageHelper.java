@@ -7,7 +7,7 @@ import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.query.Query;
 import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
-import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -15,7 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class BuildingUsageHelper extends JPSAgent
+public class BuildingUsageHelper
 {
     private OntologyURIHelper ontologyURIHelper;
     
@@ -38,7 +38,7 @@ public class BuildingUsageHelper extends JPSAgent
         JSONArray queryResultArray;
 
         if (RouteHelper.checkEndpoint(route)) {
-            queryResultArray = this.queryStore(route, q.toString());
+            queryResultArray = AccessAgentCaller.queryStore(route, q.toString());
         }
         else {
             queryResultArray = new JSONArray();
