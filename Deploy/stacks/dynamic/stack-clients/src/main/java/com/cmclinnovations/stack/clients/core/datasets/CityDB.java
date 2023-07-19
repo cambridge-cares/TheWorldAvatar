@@ -17,6 +17,8 @@ public class CityDB extends PostgresDataSubset {
     @JsonProperty
     private final CityTilerOptions cityTilerOptions = new CityTilerOptions();
     @JsonProperty
+    private boolean append = true;
+    @JsonProperty
     private boolean skipThematicSurfacesFudge = false;
     @JsonProperty
     private boolean usePreviousIRIs = true;
@@ -51,12 +53,12 @@ public class CityDB extends PostgresDataSubset {
         usePreviousIRIs &= Files.exists(previousFile);
         if (usePreviousIRIs) {
             CityDBClient.getInstance().uploadFileToPostGIS(previousFile.toString(), database, importOptions,
-                    lineage, baseIRI, false);
+                    lineage, baseIRI, append);
         }
 
         CityDBClient.getInstance()
                 .uploadFilesToPostGIS(dataSubsetDir.toString(), database, importOptions, lineage, baseIRI,
-                        usePreviousIRIs);
+                        append || usePreviousIRIs);
 
     }
 
