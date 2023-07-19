@@ -126,8 +126,6 @@ GROUP BY v.id, v.the_geom
 ```
 SELECT min(r.seq) AS seq, e.gid AS id, sum(e.cost) AS cost, ST_Collect(e.the_geom) AS geom FROM pgr_dijkstra('SELECT id, source, target, cost, reverse_cost FROM flood_cost WHERE flood_cost.tag_id IN (100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 115, 116, 121, 123, 124, 125, 401)
 ',%source%,%target%,true) AS r,routing_ways AS e WHERE r.edge=e.gid GROUP BY e.gid
-
-
 ```
 
 - Guess new parameters, specify any numbers for the default value.
@@ -155,12 +153,19 @@ Modify the geojson endpoint in index.html
 
 
 ## Creating Isochrone flooded and unflooded
+### Adding  SFCGAL Extension
+SFCGAL extension is required to calculate and create polygons. 
+```
+CREATE EXTENSION postgis_sfcgal;
+```
+
 ## Creating Optimal AlphaShape Isochrone Polygon 
 Note: The selected node for the source of Isochrone must be routable. 
 
 Isochrone is in 2 minute increment. 
 ```
 -- Create a table to store the isochrone polygons
+CREATE OR REPLACE VIEW isochrone_results AS
 SELECT
     minute_limit * 2 AS minute,
     ST_OptimalAlphaShape(ST_Collect(subquery.the_geom)) AS isochrone_polygon
@@ -172,13 +177,13 @@ CROSS JOIN LATERAL (
         the_geom
     FROM
         pgr_drivingDistance(
-            'SELECT id, source, target, cost_s_flood as cost FROM ways WHERE ways.tag_id IN (100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 115, 116, 121, 123, 124, 125, 401)',
+            'SELECT id, source, target, cost, reverse_cost FROM flood_cost WHERE flood_cost.tag_id IN (100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 115, 116, 121, 123, 124, 125, 401)',
             7536,
             minute_limit * 120,
             false
         ) AS dd
     JOIN
-        ways_vertices_pgr AS v ON dd.node = v.id
+        routing_ways_vertices_pgr AS v ON dd.node = v.id
 ) AS subquery
 GROUP BY minute_limit
 ```

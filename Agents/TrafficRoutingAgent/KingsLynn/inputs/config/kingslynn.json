@@ -1,0 +1,48 @@
+{
+    "name": "routing",
+    "database": "postgres",
+    "workspace": "kingslynn",
+    "datasetDirectory": "kingslynn",
+    "dataSubsets": [
+        {
+            "type": "OSMRouting",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "routing",
+            "name": "routing"
+        },
+        {
+            "type": "raster",
+            "name": "flood",
+            "skip": false,
+            "subdirectory": "flood",
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "elevation"
+                }
+            }
+        },
+        {
+            "type": "raster",
+            "name": "population",
+            "skip": false,
+            "subdirectory": "population",
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "elevation"
+                }
+            }
+        },
+        {
+            "type": "raster",
+            "name": "elevation",
+            "skip": false,
+            "subdirectory": "elevation",
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "elevation"
+                }
+            }
+        }
+    ]
+}

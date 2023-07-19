@@ -11,7 +11,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=routing%3Aflood_polygon_single&outputFormat=application%2Fjson"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aflood_polygon_single&outputFormat=application%2Fjson"
                 }
             ], 
             "layers": [
@@ -41,7 +41,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=routing%3Aisochrone_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='2'"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='2'"
                 },
                 {
                     "id": "isochrone_2",  
@@ -49,7 +49,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=routing%3Aisochrone_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='4'"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='4'"
                 },
                 {
                     "id": "isochrone_3",  
@@ -57,7 +57,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=routing%3Aisochrone_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='6'"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='6'"
                 },
                 {
                     "id": "isochrone_4",  
@@ -65,7 +65,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=routing%3Aisochrone_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='8'"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='8'"
                 },
                 {
                     "id": "isochrone_5",  
@@ -73,7 +73,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=routing%3Aisochrone_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='10'"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='10'"
                 }
                 
             ], 
@@ -165,7 +165,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=routing%3Aunreachable&outputFormat=application%2Fjson"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aunreachable&outputFormat=application%2Fjson"
                 }
                 
             ], 
@@ -197,7 +197,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=routing%3Aisochrone_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='2'"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='2'"
                 },
                 {
                     "id": "isochrone_unflooded_2",  
@@ -205,7 +205,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=routing%3Aisochrone_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='4'"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='4'"
                 },
                 {
                     "id": "isochrone_unflooded_3",  
@@ -213,7 +213,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=routing%3Aisochrone_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='6'"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='6'"
                 },
                 {
                     "id": "isochrone_unflooded_4",  
@@ -221,7 +221,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=routing%3Aisochrone_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='8'"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='8'"
                 },
                 {
                     "id": "isochrone_unflooded_5",  
@@ -229,7 +229,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=routing%3Aisochrone_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='10'"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='10'"
                 }
                 
             ], 
@@ -321,7 +321,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=routing%3Atsp&outputFormat=application%2Fjson"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Atsp&outputFormat=application%2Fjson"
                 },
                 {
                     "id": "tspNodes",  
@@ -329,7 +329,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=routing%3Atsp_nodes_kingslynn&maxFeatures=50&outputFormat=application%2Fjson"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Atsp_nodes_kingslynn&maxFeatures=50&outputFormat=application%2Fjson"
                 }
             ], 
             "layers": [
@@ -549,7 +549,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=routing%3Aroaddisplay&outputFormat=application%2Fjson"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aroaddisplay&outputFormat=application%2Fjson"
                 }
             ], 
             "layers": [
