@@ -40,7 +40,8 @@ def retrieve_default_settings():
             if not globals()[v]:
                 # In case variable key is missing or empty value provided
                 warning_msg = f'No default "{v}" value has been provided in environment variables. '
-                warning_msg += f'Ensure that "{v}" is provided in HTTP request to the agent to avoid issues.'
+                logger.warning(warning_msg)
+                warning_msg = f'Using the value provided in the config file '
                 logger.warning(warning_msg)
             else:
                 logger.warning(globals()[v])
@@ -60,7 +61,6 @@ def retrieve_default_settings():
             NAMESPACE = ''
             namespace_given = False
             warning_msg = f'No default "NAMESPACE" value has been provided in environment variables. '
-            warning_msg += f'Ensure that "NAMESPACE" is provided in HTTP request to the agent to avoid issues.'
             logger.warning(warning_msg)
         
         # Retrieve settings from Stack Clients
