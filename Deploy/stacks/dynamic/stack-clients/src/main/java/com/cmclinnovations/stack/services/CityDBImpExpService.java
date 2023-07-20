@@ -24,7 +24,7 @@ public final class CityDBImpExpService extends ContainerService {
     }
 
     @Override
-    public void doPreStartUpConfiguration() {
+    protected void doPreStartUpConfigurationImpl() {
         ContainerSpec containerSpec = getContainerSpec();
 
         Optional<ContainerSpecConfig> dbConfigRef = containerSpec.getConfigs().stream().findFirst();

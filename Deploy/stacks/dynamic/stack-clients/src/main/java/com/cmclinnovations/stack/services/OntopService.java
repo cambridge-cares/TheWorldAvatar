@@ -43,7 +43,7 @@ public final class OntopService extends ContainerService {
     }
 
     @Override
-    public void doPreStartUpConfiguration() {
+    protected void doPreStartUpConfigurationImpl() {
 
         // Copy the PostgreSQL driver library from the stack-manager into the scratch
         // volume so that the Ontop container can copy it
