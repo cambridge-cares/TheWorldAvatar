@@ -26,6 +26,42 @@ public class GeometryQueryHelper {
     }
 
     /**
+     * Queries for building geometry related information
+     * @param uriString city object id
+     * @param route route to pass to access agent
+     * @param type type of building geometry related information to be queried
+     * @return building geometry related information
+     */
+    public String getBuildingGeometry(String uriString, String route, String type) {
+        String result;
+
+        switch(type) {
+            case "height":
+                // Set default value of 10m if height can not be obtained from knowledge graph
+                // Will only require one height query if height is represented in data consistently
+                result = getValue(uriString, "HeightMeasuredHeigh", route);
+                result = result.length() == 0 ? getValue(uriString, "HeightMeasuredHeight", route) : result;
+                result = result.length() == 0 ? getValue(uriString, "HeightGenAttr", route) : result;
+                result = result.length() == 0 ? "10.0" : result;
+
+            case "footprint":
+                // Get footprint from ground thematic surface or find from surface geometries depending on data
+                result = getValue(uriString, "Lod0FootprintId", route);
+                result = result.length() == 0 ? getValue(uriString, "FootprintThematicSurface", route) : result;
+                result = result.length() == 0 ? getValue(uriString, "FootprintSurfaceGeom", route) : result;
+
+            case "crs":
+                result = getValue(uriString, "CRS", route);
+                result = result.isEmpty() ? getValue(uriString, "DatabasesrsCRS", route) : result;
+
+            default:
+                result = "";
+        }
+
+        return result;
+    }
+
+    /**
      * Executes query on SPARQL endpoint and retrieves requested value of building
      * @param uriString city object id
      * @param value building value requested
@@ -109,8 +145,7 @@ public class GeometryQueryHelper {
             return null;
         }
     }
-
-
+    
     /**
      * Builds a SPARQL query for a specific URI to retrieve all surface geometries to a building
      * @param uriString city object id
@@ -135,8 +170,7 @@ public class GeometryQueryHelper {
             return null;
         }
     }
-
-
+    
     /**
      * Builds a SPARQL query for a specific URI to retrieve ground surface geometries for building linked to thematic surfaces with ocgml:objectClassId 35
      * @param uriString city object id
@@ -213,7 +247,6 @@ public class GeometryQueryHelper {
         }
     }
 
-
     /**
      * Builds a SPARQL query for a specific URI to retrieve the building height for data with generic attribute with ocgml:attrName 'height'
      * @param uriString city object id
@@ -233,7 +266,6 @@ public class GeometryQueryHelper {
 
         return sb.build();
     }
-
 
     /**
      * Builds a SPARQL query for a CRS in the DatabaseSRS graph using namespace from uri

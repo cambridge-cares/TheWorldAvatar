@@ -58,18 +58,13 @@ public class CEAAgent extends JPSAgent {
 
     private String targetUrl = "http://localhost:8084/cea-agent" + URI_UPDATE;
 
-    public static final String CITY_OBJECT = "cityobject";
-    
     public static final String KEY_TIMES = "times";
     public static final String CEA_OUTPUTS = "ceaOutputs";
-    public String customDataType = "<http://localhost/blazegraph/literals/POLYGON-3-15>";
-    public String customField = "X0#Y0#Z0#X1#Y1#Z1#X2#Y2#Z2#X3#Y3#Z3#X4#Y4#Z4";
     public final int NUM_CEA_THREADS = 1;
     private final ThreadPoolExecutor CEAExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(NUM_CEA_THREADS);
     
     private OntologyURIHelper ontologyUriHelper;
     private GeometryQueryHelper geometryQueryHelper;
-    private BuildingUsageHelper usageHelper;
 
     public static final String STACK_NAME = "<STACK NAME>";
     private String stackName;
@@ -96,13 +91,10 @@ public class CEAAgent extends JPSAgent {
 
     private Map<String, String> accessAgentRoutes = new HashMap<>();
 
-
-
     public CEAAgent() {
         readConfig();
         ontologyUriHelper = new OntologyURIHelper("CEAAgentConfig");
         geometryQueryHelper = new GeometryQueryHelper(ontologyUriHelper);
-        usageHelper = new BuildingUsageHelper(ontologyUriHelper);
         stackName = StackClient.getStackName();
         stackAccessAgentBase =  stackAccessAgentBase.replace(STACK_NAME, stackName);
         openmeteoagentUrl = openmeteoagentUrl.replace(STACK_NAME, stackName);
@@ -173,6 +165,8 @@ public class CEAAgent extends JPSAgent {
                     String crs = new String();
                     String terrainDb = defaultTerrainDb;
                     String terrainTable = defaultTerrainTable;
+                    BuildingUsageHelper usageHelper = new BuildingUsageHelper(ontologyUriHelper);
+                    SurroundingsHelper surroundingsHelper = new SurroundingsHelper(ontologyUriHelper);
                     WeatherHelper weatherHelper = null;
 
                     for (int i = 0; i < uriArray.length(); i++) {
@@ -222,19 +216,19 @@ public class CEAAgent extends JPSAgent {
 
                         uriStringArray.add(uri);
 
-                        String height = getBuildingGeometry(uri, geometryRoute, "height");
+                        String height = geometryQueryHelper.getBuildingGeometry(uri, geometryRoute, "height");
 
                         // Get footprint from ground thematic surface or find from surface geometries depending on data
-                        String footprint = getBuildingGeometry(uri, geometryRoute, "footprint");
+                        String footprint = geometryQueryHelper.getBuildingGeometry(uri, geometryRoute, "footprint");
 
                         // Get building usage, set default usage of MULTI_RES if not available in knowledge graph
                         Map<String, Double> usage = usageHelper.getBuildingUsages(uri, usageRoute);
 
-                        ArrayList<CEAInputData> surrounding = getSurroundings(uri, geometryRoute, uniqueSurrounding, surroundingCoordinates);
+                        ArrayList<CEAInputData> surrounding = surroundingsHelper.getSurroundings(uri, geometryRoute, uniqueSurrounding, surroundingCoordinates);
 
                         //just get crs once - assuming all iris in same namespace
                         if (i == 0) {
-                            crs = getBuildingGeometry(uri, geometryRoute, "crs");
+                            crs = geometryQueryHelper.getBuildingGeometry(uri, geometryRoute, "crs");
                             if (crs.isEmpty()) {
                                 crs = BuildingHelper.getNamespace(uri).split("EPSG").length == 2 ? BuildingHelper.getNamespace(uri).split("EPSG")[1].split("/")[0] : "27700";
                             }
@@ -503,160 +497,6 @@ public class CEAAgent extends JPSAgent {
         String namespaceEndpoint = BuildingHelper.getNamespace(iriString);
         String route = accessAgentRoutes.get(namespaceEndpoint);
         return route;
-    }
-
-    /**
-     * Queries for building geometry related information
-     * @param uriString city object id
-     * @param route route to pass to access agent
-     * @param type type of building geometry related information to be queried
-     * @return building geometry related information
-     */
-    private String getBuildingGeometry(String uriString, String route, String type) {
-        String result;
-
-        switch(type) {
-            case "height":
-                // Set default value of 10m if height can not be obtained from knowledge graph
-                // Will only require one height query if height is represented in data consistently
-                result = geometryQueryHelper.getValue(uriString, "HeightMeasuredHeigh", route);
-                result = result.length() == 0 ? geometryQueryHelper.getValue(uriString, "HeightMeasuredHeight", route) : result;
-                result = result.length() == 0 ? geometryQueryHelper.getValue(uriString, "HeightGenAttr", route) : result;
-                result = result.length() == 0 ? "10.0" : result;
-                
-            case "footprint":
-                // Get footprint from ground thematic surface or find from surface geometries depending on data
-                result = geometryQueryHelper.getValue(uriString, "Lod0FootprintId", route);
-                result = result.length() == 0 ? geometryQueryHelper.getValue(uriString, "FootprintThematicSurface", route) : result;
-                result = result.length() == 0 ? geometryQueryHelper.getValue(uriString, "FootprintSurfaceGeom", route) : result;
-            
-            case "crs":
-                result = geometryQueryHelper.getValue(uriString, "CRS", route);
-                result = result.isEmpty() ? geometryQueryHelper.getValue(uriString, "DatabasesrsCRS", route) : result;
-
-            default:
-                result = "";
-        }
-
-        return result;
-    }
-
-    /**
-     * Builds a SPARQL geospatial query for city object id of buildings whose envelope are within lowerBounds and upperBounds
-     * @param uriString city object id of the target building
-     * @param lowerBounds coordinates of customFieldsLowerBounds as a string
-     * @param upperBounds coordinates of customFieldsUpperBounds as a string
-     * @return returns a query string
-     */
-    private Query getBuildingsWithinBoundsQuery(String uriString, String lowerBounds, String upperBounds) throws ParseException {
-        // where clause for geospatial search
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
-                .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo))
-                .addWhere("?cityObject", "geo:predicate", "ocgml:EnvelopeType")
-                .addWhere("?cityObject", "geo:searchDatatype", customDataType)
-                .addWhere("?cityObject", "geo:customFields", customField)
-                // PLACEHOLDER because lowerBounds and upperBounds would be otherwise added as doubles, not strings
-                .addWhere("?cityObject", "geo:customFieldsLowerBounds", "PLACEHOLDER" + lowerBounds)
-                .addWhere("?cityObject", "geo:customFieldsUpperBounds", "PLACEHOLDER" + upperBounds);
-
-        // where clause to check that the city object is a building
-        WhereBuilder wb2 = new WhereBuilder()
-                .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
-                .addWhere("?cityObject", "ocgml:objectClassId", "?id")
-                .addFilter("?id=26");
-
-        SelectBuilder sb = new SelectBuilder()
-                .addVar("?cityObject");
-
-        Query query = sb.build();
-        // add geospatial service
-        ElementGroup body = new ElementGroup();
-        body.addElement(new ElementService(ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo) + "search", wb.build().getQueryPattern()));
-        body.addElement(wb2.build().getQueryPattern());
-        query.setQueryPattern(body);
-
-        WhereHandler wh = new WhereHandler(query.cloneQuery());
-
-        // add city object graph
-        WhereHandler wh2 = new WhereHandler(sb.build());
-        wh2.addGraph(NodeFactory.createURI(BuildingHelper.getGraph(uriString, CITY_OBJECT)), wh);
-
-        return wh2.getQuery();
-    }
-
-    /**
-     * Retrieves the surrounding buildings
-     * @param uriString city object id
-     * @param route route to pass to access agent
-     * @param unique array list of unique surrounding buildings
-     * @param surroundingCoordinates list of coordinates that form bounding box for surrounding query, used for terrain calculation
-     * @return the surrounding buildings as an ArrayList of CEAInputData
-     */
-    private ArrayList<CEAInputData> getSurroundings(String uriString, String route, List<String> unique, List<Coordinate> surroundingCoordinates) {
-        try {
-            CEAInputData temp;
-            String uri;
-            ArrayList<CEAInputData> surroundings = new ArrayList<>();
-            String envelopeCoordinates = geometryQueryHelper.getValue(uriString, "envelope", route);
-
-            Double buffer = 100.00;
-
-            Polygon envelopePolygon = (Polygon) GeometryHelper.toPolygon(envelopeCoordinates);
-
-            Geometry boundingBoxGeometry = ((Polygon) GeometryHelper.inflatePolygon(envelopePolygon, buffer)).getExteriorRing();
-
-            Coordinate[] boundingBoxCoordinates = boundingBoxGeometry.getCoordinates();
-
-            String boundingBox = GeometryHelper.coordinatesToString(boundingBoxCoordinates);
-
-            String[] points = boundingBox.split("#");
-
-            String lowerPoints= points[0] + "#" + points[1] + "#" + 0 + "#";
-
-            String lowerBounds = lowerPoints + lowerPoints + lowerPoints + lowerPoints + lowerPoints;
-            lowerBounds = lowerBounds.substring(0, lowerBounds.length() - 1 );
-
-            Double maxZ;
-
-            if (points[8].equals("NaN")) {
-                // highest elevation on Earth is 8848
-                maxZ = 8850.0;
-            }
-            else{
-                maxZ = Double.parseDouble(points[8])+200;
-            }
-
-            String upperPoints = points[6] + "#" + points[7] + "#" + maxZ + "#";
-
-            String upperBounds = upperPoints + upperPoints + upperPoints + upperPoints + upperPoints;
-            upperBounds = upperBounds.substring(0, upperBounds.length() - 1);
-
-            Query query = getBuildingsWithinBoundsQuery(uriString, lowerBounds, upperBounds);
-
-            String queryString = query.toString().replace("PLACEHOLDER", "");
-
-            JSONArray queryResultArray = this.queryStore(route, queryString);
-
-            for (int i = 0; i < queryResultArray.length(); i++) {
-                uri = queryResultArray.getJSONObject(i).get("cityObject").toString();
-
-                if (!unique.contains(uri)) {
-                    String height = getBuildingGeometry(uri, route, "height");
-                    String footprint = getBuildingGeometry(uri, route, "footprint");
-
-                    temp = new CEAInputData(footprint, height, null, null, null, null, null);
-                    unique.add(uri);
-                    surroundings.add(temp);
-                }
-            }
-            surroundingCoordinates.addAll(Arrays.asList(boundingBoxCoordinates));
-            return surroundings;
-        }
-        catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
     /**
