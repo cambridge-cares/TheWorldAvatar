@@ -1,12 +1,15 @@
-package uk.ac.cam.cares.jps.agent.ceatasks;
+package uk.ac.cam.cares.jps.agent.cea.tasks;
 
-import kong.unirest.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.MockedStatic;
 import org.mockito.MockedConstruction;
+import org.mockito.Mockito;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAInputData;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAOutputData;
 
+import kong.unirest.*;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -15,7 +18,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.*;
 
@@ -79,7 +81,7 @@ public class RunCEATaskTest {
 
         Process dummyProcess  = mock(Process.class);
 
-        RunCEATask task = spy(new RunCEATask(testData, testURI, testArray, test_thread, test_CRS, null));
+        RunCEATask task = Mockito.spy(new RunCEATask(testData, testURI, testArray, test_thread, test_CRS, null));
         try (MockedConstruction<ProcessBuilder> builder = mockConstruction(ProcessBuilder.class,  (mock, context) -> {
             when(mock.start()).thenReturn(dummyProcess);
         })) {
@@ -154,7 +156,7 @@ public class RunCEATaskTest {
         testArray.add("testUri");
         Integer test_thread = 0;
         String test_CRS = "27700";
-        RunCEATask task = spy(new RunCEATask(testData, testURI, testArray, test_thread, test_CRS, null));
+        RunCEATask task = Mockito.spy(new RunCEATask(testData, testURI, testArray, test_thread, test_CRS, null));
         doNothing().when(task).deleteDirectoryContents(any());
 
         for (Map.Entry<String, List<String>> entry : testCEAoutputs.entrySet()) {
@@ -199,7 +201,7 @@ public class RunCEATaskTest {
         testArray.add("testUri");
         Integer test_thread = 0;
         String test_CRS = "27700";
-        RunCEATask task = spy(new RunCEATask(testData, testURI, testArray, test_thread, test_CRS, null));
+        RunCEATask task = Mockito.spy(new RunCEATask(testData, testURI, testArray, test_thread, test_CRS, null));
 
         try (MockedConstruction<FileReader> fReader = mockConstruction(FileReader.class)) {
             try (MockedConstruction<BufferedReader> bReader = mockConstruction(BufferedReader.class,  (mock, context) -> {
@@ -304,7 +306,7 @@ public class RunCEATaskTest {
         testArray.add("testUri");
         Integer test_thread = 0;
         String test_CRS = "27700";
-        RunCEATask task = spy(new RunCEATask(testData, testURI, testArray, test_thread, test_CRS, null));
+        RunCEATask task = Mockito.spy(new RunCEATask(testData, testURI, testArray, test_thread, test_CRS, null));
 
         Method run = task.getClass().getDeclaredMethod("run");
 
@@ -372,7 +374,7 @@ public class RunCEATaskTest {
         testArray.add("testUri");
         Integer test_thread = 0;
         String test_CRS = "27700";
-        RunCEATask task = spy(new RunCEATask(testData, testURI, testArray, test_thread, test_CRS, null));
+        RunCEATask task = Mockito.spy(new RunCEATask(testData, testURI, testArray, test_thread, test_CRS, null));
 
         String PVTitleRow = "Date,PV_roofs_top_E_kWh,PV_walls_south_E_kWh,Other,PV_walls_north_E_kWh,PV_walls_west_E_kWh,PV_walls_east_E_kWh";
         String PVValuesRow1 = "2005-01-01 00:00:00+00:00,20.0,30.0,40.0,50.0,60.0,70.0";
