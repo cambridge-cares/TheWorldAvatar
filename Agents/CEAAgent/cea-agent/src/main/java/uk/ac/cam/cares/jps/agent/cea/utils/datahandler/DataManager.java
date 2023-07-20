@@ -7,7 +7,7 @@ import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingURIHelper;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
@@ -39,7 +39,7 @@ public class DataManager {
 
         sb.addVar("?building").addWhere(wb);
 
-        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(BuildingHelper.getBuildingUri(uriString)));
+        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(BuildingURIHelper.getBuildingUri(uriString)));
 
         JSONArray queryResultArray = new JSONArray(AccessAgentCaller.queryStore(route, sb.build().toString()));
         String building = "";
@@ -78,7 +78,7 @@ public class DataManager {
                         .addPrefix("ontoBuiltEnv", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
                         .addWhere(NodeFactory.createURI(buildingUri), "rdf:type", "bot:Building")
                         .addWhere(NodeFactory.createURI(buildingUri), "rdf:type", "owl:NamedIndividual")
-                        .addWhere(NodeFactory.createURI(buildingUri), "ontoBuiltEnv:hasOntoCityGMLRepresentation", NodeFactory.createURI(BuildingHelper.getBuildingUri(uriString)));
+                        .addWhere(NodeFactory.createURI(buildingUri), "ontoBuiltEnv:hasOntoCityGMLRepresentation", NodeFactory.createURI(BuildingURIHelper.getBuildingUri(uriString)));
 
         if (!graph.isEmpty()){
             ub.addInsert(NodeFactory.createURI(graph), wb);

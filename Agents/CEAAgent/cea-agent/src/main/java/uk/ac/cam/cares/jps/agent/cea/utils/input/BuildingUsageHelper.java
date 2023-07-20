@@ -7,7 +7,7 @@ import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.query.Query;
 import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingURIHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.RouteHelper;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
@@ -113,7 +113,7 @@ public class BuildingUsageHelper
                 .addWhere(wb)
                 .addOrderBy("UsageShare", Order.DESCENDING);
 
-        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(BuildingHelper.getBuildingUri(uriString)));
+        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(BuildingURIHelper.getBuildingUri(uriString)));
 
         return sb.build();
     }

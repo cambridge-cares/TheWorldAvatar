@@ -6,7 +6,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryHandler;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
@@ -65,7 +65,7 @@ public class TerrainHelper {
         else {
             String envelopeCoordinates = new GeometryQueryHelper(uriHelper).getValue(uriString, "envelope", route);
 
-            Polygon envelopePolygon = (Polygon) GeometryHelper.toPolygon(envelopeCoordinates);
+            Polygon envelopePolygon = (Polygon) GeometryHandler.toPolygon(envelopeCoordinates);
 
             Point center = envelopePolygon.getCentroid();
 
@@ -84,7 +84,7 @@ public class TerrainHelper {
             if (sridResult.isEmpty()) {return null;}
             Integer postgisCRS = sridResult.getJSONObject(0).getInt("srid");
 
-            Coordinate coordinate = GeometryHelper.transformCoordinate(centerCoordinate, crs, "EPSG:" + postgisCRS);
+            Coordinate coordinate = GeometryHandler.transformCoordinate(centerCoordinate, crs, "EPSG:" + postgisCRS);
 
             // query for terrain data
             String terrainQuery = getTerrainQuery(coordinate.getX(), coordinate.getY(), radius, postgisCRS, table);

@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class GeometryHelper {
+public class GeometryHandler {
 
     /**
      * Finds footprint of building from array of building surfaces by searching for constant minimum z in geometries

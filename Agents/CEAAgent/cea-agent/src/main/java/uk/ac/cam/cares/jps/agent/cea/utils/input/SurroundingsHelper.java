@@ -12,8 +12,8 @@ import org.json.JSONArray;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingHelper;
-import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingURIHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryHandler;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAInputData;
@@ -72,7 +72,7 @@ public class SurroundingsHelper {
 
         // add city object graph
         WhereHandler wh2 = new WhereHandler(sb.build());
-        wh2.addGraph(NodeFactory.createURI(BuildingHelper.getGraph(uriString, CITY_OBJECT)), wh);
+        wh2.addGraph(NodeFactory.createURI(BuildingURIHelper.getGraph(uriString, CITY_OBJECT)), wh);
 
         return wh2.getQuery();
     }
@@ -95,13 +95,13 @@ public class SurroundingsHelper {
 
             Double buffer = 100.00;
 
-            Polygon envelopePolygon = (Polygon) GeometryHelper.toPolygon(envelopeCoordinates);
+            Polygon envelopePolygon = (Polygon) GeometryHandler.toPolygon(envelopeCoordinates);
 
-            Geometry boundingBoxGeometry = ((Polygon) GeometryHelper.inflatePolygon(envelopePolygon, buffer)).getExteriorRing();
+            Geometry boundingBoxGeometry = ((Polygon) GeometryHandler.inflatePolygon(envelopePolygon, buffer)).getExteriorRing();
 
             Coordinate[] boundingBoxCoordinates = boundingBoxGeometry.getCoordinates();
 
-            String boundingBox = GeometryHelper.coordinatesToString(boundingBoxCoordinates);
+            String boundingBox = GeometryHandler.coordinatesToString(boundingBoxCoordinates);
 
             String[] points = boundingBox.split("#");
 

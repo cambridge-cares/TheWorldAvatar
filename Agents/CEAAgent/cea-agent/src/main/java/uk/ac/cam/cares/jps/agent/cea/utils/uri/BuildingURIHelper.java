@@ -2,7 +2,7 @@ package uk.ac.cam.cares.jps.agent.cea.utils.uri;
 
 import java.util.Arrays;
 
-public class BuildingHelper {
+public class BuildingURIHelper {
     public static final String BUILDING = "building";
 
     /**

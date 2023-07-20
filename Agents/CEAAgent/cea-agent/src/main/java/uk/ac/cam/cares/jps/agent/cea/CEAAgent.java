@@ -9,7 +9,7 @@ import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.EndpointConfig;
 import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.RouteHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.input.*;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingURIHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -230,7 +230,7 @@ public class CEAAgent extends JPSAgent {
                         if (i == 0) {
                             crs = geometryQueryHelper.getBuildingGeometry(uri, geometryRoute, "crs");
                             if (crs.isEmpty()) {
-                                crs = BuildingHelper.getNamespace(uri).split("EPSG").length == 2 ? BuildingHelper.getNamespace(uri).split("EPSG")[1].split("/")[0] : "27700";
+                                crs = BuildingURIHelper.getNamespace(uri).split("EPSG").length == 2 ? BuildingURIHelper.getNamespace(uri).split("EPSG")[1].split("/")[0] : "27700";
                             }
                         }
 
@@ -496,7 +496,7 @@ public class CEAAgent extends JPSAgent {
      * @return route of endpoint that iri belongs to
      */
     private String getRoute(String iriString) {
-        String namespaceEndpoint = BuildingHelper.getNamespace(iriString);
+        String namespaceEndpoint = BuildingURIHelper.getNamespace(iriString);
         String route = accessAgentRoutes.get(namespaceEndpoint);
         return route;
     }

@@ -20,7 +20,7 @@ import org.locationtech.jts.geom.Polygon;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.RouteHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.TimeSeriesHelper;
-import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryHandler;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
@@ -86,7 +86,7 @@ public class WeatherHelper extends JPSAgent {
         GeometryQueryHelper geometryQueryHelper = new GeometryQueryHelper(ontologyUriHelper);
         String envelopeCoordinates = geometryQueryHelper.getValue(uriString, "envelope", route);
 
-        Polygon envelopePolygon = (Polygon) GeometryHelper.toPolygon(envelopeCoordinates);
+        Polygon envelopePolygon = (Polygon) GeometryHandler.toPolygon(envelopeCoordinates);
 
         Double elevation = envelopePolygon.getCoordinate().getZ();
 
@@ -98,7 +98,7 @@ public class WeatherHelper extends JPSAgent {
 
         try {
             // coordinate in (longitude, latitude) format
-            Coordinate transformedCoordinate = GeometryHelper.transformCoordinate(centerCoordinate, crs, CRS_4326);
+            Coordinate transformedCoordinate = GeometryHandler.transformCoordinate(centerCoordinate, crs, CRS_4326);
 
             // coordinate in (latitude, longitude) format
             Coordinate coordinate = new Coordinate(transformedCoordinate.getY(), transformedCoordinate.getX(), transformedCoordinate.getZ());
