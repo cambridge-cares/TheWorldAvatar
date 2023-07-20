@@ -28,7 +28,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cmclinnovations.stack.clients.core.AbstractEndpointConfig;
+import com.cmclinnovations.stack.clients.core.EndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.utils.AbstractTempPath;
 import com.cmclinnovations.stack.clients.utils.TempDir;
@@ -615,12 +615,12 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
     }
 
     @Override
-    public <E extends AbstractEndpointConfig> void writeEndpointConfig(E endpointConfig) {
+    public <E extends EndpointConfig> void writeEndpointConfig(E endpointConfig) {
         writeEndpointConfig(endpointConfig, this);
     }
 
     @Override
-    public <E extends AbstractEndpointConfig> E readEndpointConfig(String endpointName, Class<E> endpointConfigClass) {
+    public <E extends EndpointConfig> E readEndpointConfig(String endpointName, Class<E> endpointConfigClass) {
         return readEndpointConfig(endpointName, endpointConfigClass, this);
     }
 

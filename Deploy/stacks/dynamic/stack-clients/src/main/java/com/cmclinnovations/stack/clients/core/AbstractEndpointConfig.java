@@ -1,6 +1,6 @@
 package com.cmclinnovations.stack.clients.core;
 
-public abstract class AbstractEndpointConfig {
+public abstract class AbstractEndpointConfig implements EndpointConfig {
 
     private final String name;
 
@@ -8,6 +8,7 @@ public abstract class AbstractEndpointConfig {
         this.name = name;
     }
 
+    @Override
     public String getName() {
         return name;
     }

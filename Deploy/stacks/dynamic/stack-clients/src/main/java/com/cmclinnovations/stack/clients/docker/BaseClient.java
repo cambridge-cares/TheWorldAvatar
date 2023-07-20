@@ -3,7 +3,7 @@ package com.cmclinnovations.stack.clients.docker;
 import java.io.File;
 import java.io.IOException;
 
-import com.cmclinnovations.stack.clients.core.AbstractEndpointConfig;
+import com.cmclinnovations.stack.clients.core.EndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,9 +12,9 @@ abstract class BaseClient {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    protected abstract <E extends AbstractEndpointConfig> void writeEndpointConfig(E endpointConfig);
+    protected abstract <E extends EndpointConfig> void writeEndpointConfig(E endpointConfig);
 
-    protected <E extends AbstractEndpointConfig> void writeEndpointConfig(E endpointConfig,
+    protected <E extends EndpointConfig> void writeEndpointConfig(E endpointConfig,
             DockerClient injectedDockerClient) {
         String endpointName = endpointConfig.getName();
         if (!StackClient.isInStack()) {
@@ -43,10 +43,10 @@ abstract class BaseClient {
         }
     }
 
-    protected abstract <E extends AbstractEndpointConfig> E readEndpointConfig(String endpointName,
+    protected abstract <E extends EndpointConfig> E readEndpointConfig(String endpointName,
             Class<E> endpointConfigClass);
 
-    protected final <E extends AbstractEndpointConfig> E readEndpointConfig(String endpointName,
+    protected final <E extends EndpointConfig> E readEndpointConfig(String endpointName,
             Class<E> endpointConfigClass,
             DockerClient injectedDockerClient) {
         if (injectedDockerClient.configExists(endpointName)) {
