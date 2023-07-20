@@ -10,7 +10,7 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobms/">
         <owl:imports rdf:resource="https://saref.etsi.org/saref4bldg/"/>
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">23 June 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">13 July 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoBMS is an ontology for Building Management Systems.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.5</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -147,6 +147,19 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a medium level state of a multi-level state.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has medium level state</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobms/hasOpening -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/hasOpening">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobms/ExtractionArm"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Percentage"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the opening of an extraction arm in percentage.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has opening</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -485,6 +498,30 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontobms/ExhaustVAV -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/ExhaustVAV">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/VAVSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Variable Air Volume System that extracts airflow at a constant or varying temperature.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Exhaust VAV</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobms/ExtractionArm -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/ExtractionArm">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/FlowTreatmentDevice"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that captures welding and soldering fumes, gases, vapours and dusts directly at source and can be connected to a central extraction unit via fans or a pipeline.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Extraction arm</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobms/FanCoilUnit -->
 
 
@@ -601,6 +638,18 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A separate space provided for air circulation for heating, ventilation, and air-conditioning.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Plenum</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobms/SupplyVAV -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/SupplyVAV">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/VAVSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Variable Air Volume System that supplies airflow at a constant or varying temperature.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Supply VAV</rdfs:label>
     </owl:Class>
     
 

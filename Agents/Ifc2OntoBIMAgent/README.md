@@ -90,6 +90,14 @@ docker-compose up -d
 ```
 - If successfully deployed, the IfcOwlConverterAgent will be running on `port 3024` and the Ifc2OntoBIMAgent will be running on `port 3025`.
 
+**STACK DEPLOYMENT**
+
+If you want to spin up both this agent and the IfcOwlConverterAgent as part of a stack, do the following:
+- Copy the contents of `config/client.properties_stack` into `config/client.properties`, inserting the name of your stack and the desired namespaces.
+- Build both images by issuing `docker compose build` in this folder. There is no need to build the IfcOwlConverterAgent separately. Do not start the containers.
+- Copy the `json` file from the `stack-manager-input-config` folder of both agents into the `inputs/config/services` folder of the stack manager, adjusting the absolute path of the bind mounts as required. The `data` bind mount for both agents **MUST** be the same, ideally in the `.../stack-manager/inputs/data` directory. See [sample bind mounts](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#bind-mounts) for the configuration syntax.
+- Start the stack manager as usual. This should start both containers.
+
 #### 2.3 Running the Agent
 The agent currently offers three API routes:
 ##### 2.3.1 GET ROUTE: `~url~/ifc2ontobim-agent/status` 
@@ -145,10 +153,15 @@ Content-Type: application/json
 {"uri":"http://www.theworldavatar.com/ifc/building/"}
 
 // Written in curl syntax (as one line)
-curl -X POST --header "Content-Type: application/json" -d "{'uri':'http://www.theworldavatar.com/ifc/building/'}" localhost:3025/ifc2ontobim-agent/convert 
+curl -X POST --header "Content-Type: application/json" -d '{"uri":"http://www.theworldavatar.com/ifc/building/"}' localhost:3025/ifc2ontobim-agent/convert 
 
 // Only when you require the 'isIfcOwl' boolean
-curl -X POST --header "Content-Type: application/json" -d "{'uri':'http://www.theworldavatar.com/ifc/building/', 'isIfcOwl':true}" localhost:3025/ifc2ontobim-agent/convert 
+curl -X POST --header "Content-Type: application/json" -d '{"uri":"http://www.theworldavatar.com/ifc/building/", "isIfcOwl":true}' localhost:3025/ifc2ontobim-agent/convert 
+```
+
+If running the agent within a stack, e.g.:
+```
+curl -X POST --header "Content-Type: application/json" -d '{"uri":"http://www.theworldavatar.com/ifc/building/", "isIfcOwl":true}' http://localhost:3838/ifc2ontobim-agent/convert
 ```
 
 If the agent ran successfully, a JSON Object would be returned as follows, and the triples can be accessed at the specified endpoint.
