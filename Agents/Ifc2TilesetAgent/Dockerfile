@@ -76,8 +76,12 @@ ENTRYPOINT ["python", "-m", "debugpy", "--wait-for-client", "--listen", "0.0.0.0
 FROM builder as prod
 
 # Creates a non-root user and adds permission to access the /app folder
-RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
-USER appuser
+# NB Whilst it is much preferable to use a non-root user from a security point of view,
+# it has been found that this can create permission problems when trying to write files
+# to a bind-mounted folder (chown appears to have no effect there), at least on Linux.
+# For this reason, the following two lines have been commented out.
+#RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
+#USER appuser
 
 # Added timeout of 600s to prevent silent worker killing due to large memory usage
 ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5105", "agent:create_app()","--timeout", "600"]

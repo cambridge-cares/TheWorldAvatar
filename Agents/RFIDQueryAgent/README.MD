@@ -95,17 +95,24 @@ If the tagged object is a chemical container that contains some chemical, Modify
 Modify the `Dockerfile` found in the same directory as this README. Change `EMAIL_AGENT_URL` according to where your Email Agent instance is located at.
 
 
-To build and start the agent, open up the command prompt in the same directory as this `README`, run
+To build and run the agent outside of the stack, open up the command prompt in the same directory as this `README`, run
 ```
 docker-compose up -d
 ```
 The agent is reachable at "rfid-query-agent/retrieve" on localhost port 1021.
 
+To build and run the agent in the stack, open up the command prompt in the same directory as this `README`, run
+```
+docker-compose build
+```
+Copy the rfid-query-agent.json under `stack-manager-input-config` to the services folder under your stack-manager directory (By default it should be TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/) and start up the stack.
+The agent is reachable at "rfid-query-agent/retrieve" on localhost port 3838.
+
 #### Run the agent
-To run the agent, a POST request must be sent to http://localhost:1021/rfid-query-agent/retrieve with a correct JSON Object.
+To run the agent, a POST request must be sent to http://localhost:portNumber/rfid-query-agent/retrieve with a correct JSON Object.
 The request has this general format:
 ```
-POST http://localhost:1021/rfid-query-agent/retrieve
+POST http://localhost:portNumber/rfid-query-agent/retrieve
 Content-Type: application/json
 {dataIRIs":"<iri_1>,<iri_2>,<iri_3>","hours":"<number of hours the tagged object is allowed to be "out" for>","timeSeriesClientProperties":"CLIENT_PROPERTIES","containSpecies":"<true or false for iri_1>,<true or false for iri_2>,<true or false for iri_3>","speciesProperties":"SPECIES_PROPERTIES"}
 ```
@@ -137,13 +144,21 @@ If the tagged object is "Out" for longer than allowed, the email content sent wi
 
 1) If tagged object is not a chemical container.
 ```
-The tagged object has been removed since 2023-02-23T09:25:13Z. The object has the following label asset 02 and tag ID 00000000000000A000009726 . 
+The tagged object has been removed for longer than 1 hours since 2023-03-08 07:03:19 AM UTC. The object has the following label asset 02 and tag ID 00000000000000A000009726 . 
 ```
 2) If tagged object is a chemical container containing a chemical with GHS Hazard Statements.
 ```
-The chemical container with the following information has been removed since 2023-01-17T04:16:41Z. The container has the following label chemical container 01 and tag ID 00000000000000A000009727 and it is storing a chemical with the following label: KNO3. The chemical has the following GHS hazard statements: {H315:Causes skin irritation [Warning Skin corrosion/irritation]} . {H319:Causes serious eye irritation [Warning Serious eye damage/eye irritation]} . {H335:May cause respiratory irritation [Warning Specific target organ toxicity, single exposure; Respiratory tract irritation]} . {H272:May intensify fire; oxidizer [Danger Oxidizing liquids; Oxidizing solids]} . 
+tl;dr Container with KNO3 has been removed for longer than 1 hour.
+
+The chemical container with the following information has been removed for longer than 1 hours since 2023-03-08 07:03:19 AM UTC. The container has the label chemical container 01 and tag ID 00000000000000A000009727. The container is storing a chemical with the label KNO3 which has the following GHS hazard statements.
+H315: Causes skin irritation [Warning Skin corrosion/irritation]
+H319: Causes serious eye irritation [Warning Serious eye damage/eye irritation]
+H335: May cause respiratory irritation [Warning Specific target organ toxicity, single exposure; Respiratory tract irritation]
+H272: May intensify fire; oxidizer [Danger Oxidizing liquids; Oxidizing solids]
 ```
 3) If tagged object is a chemical container containing a chemical without GHSHazardStatements.
 ```
-The chemical container with the following information has been removed since 2023-01-17T04:16:41Z. The container has the following label chemical container 01 and tag ID 00000000000000A000009727 and it is storing a chemical with the following label: Hydrogen.
+tl;dr Container with Hydrogen has been removed for longer than 1 hour.
+
+The chemical container with the following information has been removed for longer than 1 hours since 2023-03-08 07:03:19 AM UTC. The container has the label chemical container 01 and tag ID 00000000000000A000009727.The container is storing a chemical with the label Hydrogen.
 ```

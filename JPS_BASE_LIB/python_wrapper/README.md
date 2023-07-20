@@ -441,6 +441,8 @@ For more details, see the [Logging](https://github.com/cambridge-cares/TheWorldA
 
 # Package release
 
+> **NOTE: Before making the package release, please remove all sub-folders and `resources_registry.json` file in `python_wrapper/py4jps/resources` folder to prevent incorrect packing of Java resources. For more information, please refer to this [issue](https://github.com/cambridge-cares/TheWorldAvatar/issues/800).**
+
 Maintainers who package and publish the most up-to-date codes from the `develop` branch handle the distribution of package py4jps on PyPI and Test-PyPI. If you want to release the package independently, i.e. become a maintainer, please contact the repository's administrator to indicate your interest.
 
 The release procedure is currently semi-automated and requires a few items:

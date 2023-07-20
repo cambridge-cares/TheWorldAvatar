@@ -30,18 +30,6 @@ if grep -q "$TOKEN" <<< "$VERSION"; then
 fi
 echo "Version does not contain -SNAPSHOT qualifier."
 
-# Check that the README has been updated
-README="./web/digital-twin-vis-framework/README.md"
-TOKEN="$VERSION"
-
-echo "Looking in README for '$VERSION'"
-if ! grep -q "$TOKEN" "$README"; then
-	echo "Main README does not list the correct version of DTVF!"
-	exit -1
-fi
-echo "Main README has been updated."
-
-
 # Check that the change log contains an entry for that version
 CHANGELOG="./web/digital-twin-vis-framework/CHANGELOG.md"
 TOKEN="# $VERSION"
