@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.cea;
+package uk.ac.cam.cares.jps.agent.cea.utils.input;
 
 import org.apache.jena.arq.querybuilder.Order;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
@@ -7,6 +7,9 @@ import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.query.Query;
 import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.RouteHelper;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
 import java.util.Comparator;

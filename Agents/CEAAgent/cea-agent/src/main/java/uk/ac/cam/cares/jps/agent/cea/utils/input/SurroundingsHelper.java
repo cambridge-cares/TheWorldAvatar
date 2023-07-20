@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.cea;
+package uk.ac.cam.cares.jps.agent.cea.utils.input;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
@@ -12,7 +12,11 @@ import org.json.JSONArray;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
-import uk.ac.cam.cares.jps.agent.ceatasks.CEAInputData;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAInputData;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
 import java.util.ArrayList;

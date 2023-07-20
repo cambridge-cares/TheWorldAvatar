@@ -1,6 +1,8 @@
-package uk.ac.cam.cares.jps.agent.cea;
+package uk.ac.cam.cares.jps.agent.cea.utils;
 
 import org.jooq.exception.DataAccessException;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;

@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.cea;
+package uk.ac.cam.cares.jps.agent.cea.utils.geometry;
 
 import org.apache.jena.query.Query;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
@@ -7,6 +7,8 @@ import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.json.JSONArray;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
 public class GeometryQueryHelper {

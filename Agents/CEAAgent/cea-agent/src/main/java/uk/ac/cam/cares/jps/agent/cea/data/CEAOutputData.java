@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.ceatasks;
+package uk.ac.cam.cares.jps.agent.cea.data;
 
 import java.util.ArrayList;
 import java.util.List;

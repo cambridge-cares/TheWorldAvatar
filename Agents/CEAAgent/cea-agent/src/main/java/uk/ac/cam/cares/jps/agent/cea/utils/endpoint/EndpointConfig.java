@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.cea;
+package uk.ac.cam.cares.jps.agent.cea.utils.endpoint;
 
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;

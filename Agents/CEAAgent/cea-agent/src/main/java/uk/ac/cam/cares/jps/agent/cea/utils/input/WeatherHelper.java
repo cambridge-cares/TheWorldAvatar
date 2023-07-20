@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.cea;
+package uk.ac.cam.cares.jps.agent.cea.utils.input;
 
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
@@ -17,6 +17,11 @@ import org.json.JSONObject;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.RouteHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.TimeSeriesHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;

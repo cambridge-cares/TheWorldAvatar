@@ -1,15 +1,25 @@
 package uk.ac.cam.cares.jps.agent.cea;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAInputData;
+import uk.ac.cam.cares.jps.agent.cea.utils.*;
+import uk.ac.cam.cares.jps.agent.cea.utils.datahandler.*;
+import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.EndpointConfig;
+import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.RouteHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.input.*;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.agent.ceatasks.*;
+import uk.ac.cam.cares.jps.agent.cea.tasks.*;
 
 import org.json.JSONArray;
 
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
 
 import org.json.JSONObject;
 import javax.ws.rs.BadRequestException;

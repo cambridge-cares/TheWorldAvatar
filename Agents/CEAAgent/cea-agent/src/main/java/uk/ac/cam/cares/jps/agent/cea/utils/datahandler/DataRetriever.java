@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.cea;
+package uk.ac.cam.cares.jps.agent.cea.utils.datahandler;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
@@ -8,6 +8,8 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 
+import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
 public class DataRetriever {
