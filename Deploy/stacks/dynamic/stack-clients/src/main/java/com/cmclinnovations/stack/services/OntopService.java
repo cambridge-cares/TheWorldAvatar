@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import com.cmclinnovations.stack.clients.core.EndpointConfig;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
@@ -30,16 +31,10 @@ public final class OntopService extends ContainerService {
 
     private static final String DEFAULT_PORT = "8080";
 
-    private final OntopEndpointConfig endpointConfig;
-
     private Path postgresqlDriverScratchPath;
 
     public OntopService(String stackName, ServiceConfig config) {
         super(stackName, config);
-
-        endpointConfig = new OntopEndpointConfig(
-                EndpointNames.ONTOP, getHostName(), DEFAULT_PORT,
-                "", null);
     }
 
     @Override
@@ -100,10 +95,16 @@ public final class OntopService extends ContainerService {
     }
 
     @Override
+    protected void createEndpoints() {
+        EndpointConfig endpointConfig = new OntopEndpointConfig(
+                EndpointNames.ONTOP, getHostName(), DEFAULT_PORT,
+                "", null);
+        writeEndpointConfig(endpointConfig);
+    }
+
+    @Override
     public void doPostStartUpConfiguration() {
         OntopClient.getInstance().updateOBDA(null);
-
-        writeEndpointConfig(endpointConfig);
 
         // Remove the PostgreSQL driver file from the scratch volume
         if (null != postgresqlDriverScratchPath) {

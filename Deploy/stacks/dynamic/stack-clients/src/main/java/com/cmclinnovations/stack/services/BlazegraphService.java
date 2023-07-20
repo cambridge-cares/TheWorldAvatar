@@ -31,7 +31,7 @@ public class BlazegraphService extends ContainerService {
     }
 
     @Override
-    public void doPostStartUpConfiguration() {
+    public void createEndpoints() {
         BlazegraphEndpointConfig endpointConfig = new BlazegraphEndpointConfig(
                 EndpointNames.BLAZEGRAPH, getHostName(), DEFAULT_PORT,
                 getEnvironmentVariable(BLAZEGRAPH_USER_KEY), getEnvironmentVariable(BLAZEGRAPH_PASSWORD_FILE_KEY));

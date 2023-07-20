@@ -75,11 +75,16 @@ public class ContainerService extends AbstractService {
 
     public final void doPreStartUpConfiguration() {
         doPreStartUpConfigurationImpl();
+        createEndpoints();
     }
     
 
     protected void doPreStartUpConfigurationImpl() {
         // Do nothing by default, override if container needs pre-startup configuration
+    }
+
+    protected void createEndpoints() {
+        // Do nothing by default, override if container produces one or more endpoints
     }
 
     public void doPostStartUpConfiguration() {
