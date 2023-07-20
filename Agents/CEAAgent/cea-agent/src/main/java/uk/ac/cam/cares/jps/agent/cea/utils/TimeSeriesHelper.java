@@ -1,13 +1,12 @@
 package uk.ac.cam.cares.jps.agent.cea.utils;
 
-import org.jooq.exception.DataAccessException;
-import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -16,6 +15,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.UUID;
+import org.jooq.exception.DataAccessException;
 
 public class TimeSeriesHelper {
     public static final String timeUnit = OffsetDateTime.class.getSimpleName();

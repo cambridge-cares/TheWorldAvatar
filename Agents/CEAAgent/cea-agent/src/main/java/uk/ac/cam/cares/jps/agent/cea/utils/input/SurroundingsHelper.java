@@ -1,5 +1,12 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.input;
 
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingURIHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryHandler;
+import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAInputData;
+
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.arq.querybuilder.handlers.WhereHandler;
@@ -9,15 +16,10 @@ import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.jena.sparql.syntax.ElementGroup;
 import org.apache.jena.sparql.syntax.ElementService;
 import org.json.JSONArray;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingURIHelper;
-import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryHandler;
-import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
-import uk.ac.cam.cares.jps.agent.cea.data.CEAInputData;
-import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +31,7 @@ public class SurroundingsHelper {
     public static final String CITY_OBJECT = "cityobject";
 
     private OntologyURIHelper ontologyUriHelper;
+
     public SurroundingsHelper(OntologyURIHelper uriHelper) {
         this.ontologyUriHelper = uriHelper;
     }

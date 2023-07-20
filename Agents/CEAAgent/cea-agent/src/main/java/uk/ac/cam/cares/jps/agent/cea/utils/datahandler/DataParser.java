@@ -1,13 +1,12 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.datahandler;
 
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
 public class DataParser {
     /**

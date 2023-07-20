@@ -1,5 +1,10 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.datahandler;
 
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingURIHelper;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
+
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
@@ -7,16 +12,13 @@ import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingURIHelper;
-import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
-import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
 import java.util.*;
 import java.util.stream.Stream;
 
 public class DataManager {
     private OntologyURIHelper ontologyUriHelper;
+
     public DataManager(OntologyURIHelper uriHelper) {
         this.ontologyUriHelper = uriHelper;
     }

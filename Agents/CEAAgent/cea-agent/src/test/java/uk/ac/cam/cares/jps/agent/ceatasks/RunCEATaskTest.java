@@ -164,7 +164,7 @@ public class RunCEATaskTest {
                 })) {
                     Method extractArea = task.getClass().getDeclaredMethod("extractArea", String.class, CEAOutputData.class);
                     CEAOutputData result = (CEAOutputData) extractArea.invoke(task, tmpDir, data);
-                    
+
                     String[] testValues = entry.getValue().get(1).split(",");
 
                     assertTrue(result.RoofSolarSuitableArea.contains(testValues[0]));

@@ -1,5 +1,9 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.datahandler;
 
+import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
+
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.NodeFactory;
@@ -8,12 +12,9 @@ import org.json.JSONArray;
 
 import java.util.ArrayList;
 
-import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
-import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
-
 public class DataRetriever {
     private OntologyURIHelper ontologyUriHelper;
+
     public DataRetriever(OntologyURIHelper uriHelper) {
         this.ontologyUriHelper = uriHelper;
     }

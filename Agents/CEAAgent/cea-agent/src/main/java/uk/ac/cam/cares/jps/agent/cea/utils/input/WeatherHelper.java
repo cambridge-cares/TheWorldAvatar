@@ -1,8 +1,22 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.input;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.RouteHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.TimeSeriesHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryHandler;
+import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
+
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.protocol.HTTP;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
@@ -14,26 +28,16 @@ import org.apache.jena.sparql.syntax.ElementGroup;
 import org.apache.jena.sparql.syntax.ElementService;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
-import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.RouteHelper;
-import uk.ac.cam.cares.jps.agent.cea.utils.TimeSeriesHelper;
-import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryHandler;
-import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
-import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -57,7 +61,6 @@ public class WeatherHelper extends JPSAgent {
     private static final String API_TIMEZONE = "timezone";
     private static final String API_OFFSET = "utc_offset_seconds";
     private static final String CRS_4326 = "EPSG:4326";
-
 
     private OntologyURIHelper ontologyUriHelper;
     private String openmeteoagentUrl;

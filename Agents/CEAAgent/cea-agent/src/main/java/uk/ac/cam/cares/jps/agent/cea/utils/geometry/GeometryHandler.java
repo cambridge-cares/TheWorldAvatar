@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.geometry;
 
+import org.json.JSONArray;
+
 import org.cts.CRSFactory;
 import org.cts.crs.CoordinateReferenceSystem;
 import org.cts.crs.GeodeticCRS;
@@ -7,7 +9,7 @@ import org.cts.op.CoordinateOperation;
 import org.cts.op.CoordinateOperationFactory;
 import org.cts.registry.EPSGRegistry;
 import org.cts.registry.RegistryManager;
-import org.json.JSONArray;
+
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.operation.buffer.BufferOp;
@@ -18,7 +20,6 @@ import java.util.List;
 import java.util.Set;
 
 public class GeometryHandler {
-
     /**
      * Finds footprint of building from array of building surfaces by searching for constant minimum z in geometries
      * NB. On data TSDA has run on, the thematic surface is labelled with a ground surface id so this is not required

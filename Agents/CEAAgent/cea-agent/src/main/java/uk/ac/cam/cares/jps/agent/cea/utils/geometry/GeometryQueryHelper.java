@@ -1,5 +1,9 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.geometry;
 
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingURIHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
+
 import org.apache.jena.query.Query;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
@@ -7,9 +11,6 @@ import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.json.JSONArray;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingURIHelper;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
-import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
 public class GeometryQueryHelper {
     public static final String SURFACE_GEOMETRY = "surfacegeometry";

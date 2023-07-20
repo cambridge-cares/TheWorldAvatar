@@ -1,36 +1,35 @@
 package uk.ac.cam.cares.jps.agent.cea;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
-import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
-import uk.ac.cam.cares.jps.agent.cea.data.CEAInputData;
-import uk.ac.cam.cares.jps.agent.cea.utils.*;
-import uk.ac.cam.cares.jps.agent.cea.utils.datahandler.*;
-import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.EndpointConfig;
-import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.RouteHelper;
-import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
-import uk.ac.cam.cares.jps.agent.cea.utils.input.*;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingURIHelper;
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.uri.*;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.agent.cea.tasks.*;
+
+import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAInputData;
+import uk.ac.cam.cares.jps.agent.cea.utils.TimeSeriesHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
+import uk.ac.cam.cares.jps.agent.cea.utils.datahandler.*;
+import uk.ac.cam.cares.jps.agent.cea.utils.endpoint.*;
+import uk.ac.cam.cares.jps.agent.cea.utils.input.*;
+import uk.ac.cam.cares.jps.agent.cea.tasks.RunCEATask;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import org.locationtech.jts.geom.Coordinate;
 
-import org.json.JSONObject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.HttpMethod;
 import java.net.*;
-import java.time.*;
+import java.time.OffsetDateTime;
 import java.util.*;
 import javax.servlet.annotation.WebServlet;
-import java.util.concurrent.*;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.Executors;
 import java.util.stream.Stream;
-
 
 @WebServlet(
         urlPatterns = {

@@ -1,17 +1,16 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.endpoint;
 
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
+
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.json.JSONObject;
-
-import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class RouteHelper  {
-
     /**
      * Sets store client to the query and update endpoint of route, so that the time series client queries and updates from the same endpoint as route
      * @param route access agent route

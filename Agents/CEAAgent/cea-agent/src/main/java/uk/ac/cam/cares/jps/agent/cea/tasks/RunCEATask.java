@@ -1,13 +1,14 @@
 package uk.ac.cam.cares.jps.agent.cea.tasks;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAInputData;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAOutputData;
+
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
 import org.apache.http.HttpException;
 import org.apache.http.protocol.HTTP;
-import uk.ac.cam.cares.jps.agent.cea.data.CEAInputData;
-import uk.ac.cam.cares.jps.agent.cea.data.CEAOutputData;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import com.google.gson.Gson;
 
 import java.io.*;
