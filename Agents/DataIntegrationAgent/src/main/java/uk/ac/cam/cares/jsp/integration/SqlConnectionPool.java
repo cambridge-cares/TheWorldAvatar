@@ -6,8 +6,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class SqlConnectionPool {
-    private static HikariDataSource sourceDs;
-    private static HikariDataSource targetDs;
+    private static HikariDataSource db2D;
+    private static HikariDataSource db3D;
     private static String[] configs;
     private static final String JDBC_DRIVER = "org.postgresql.Driver";
     private static final int MAX_POOL_SIZE = 1;
@@ -19,12 +19,20 @@ public class SqlConnectionPool {
      */
     public SqlConnectionPool(String[] config) {
         // Set up source connection
-        sourceDs = new HikariDataSource();
-        sourceDs.setDriverClassName(JDBC_DRIVER);
-        sourceDs.setMaximumPoolSize(MAX_POOL_SIZE);
-        sourceDs.setJdbcUrl(config[0]);
-        sourceDs.setUsername(config[1]);
-        sourceDs.setPassword(config[2]);
+        db2D = new HikariDataSource();
+        db2D.setDriverClassName(JDBC_DRIVER);
+        db2D.setMaximumPoolSize(MAX_POOL_SIZE);
+        db2D.setJdbcUrl(config[4]);
+        db2D.setUsername(config[1]);
+        db2D.setPassword(config[2]);
+
+        db3D = new HikariDataSource();
+        db3D.setDriverClassName(JDBC_DRIVER);
+        db3D.setMaximumPoolSize(MAX_POOL_SIZE);
+        db3D.setJdbcUrl(config[3]);
+        db3D.setUsername(config[1]);
+        db3D.setPassword(config[2]);
+
         configs = config;
     }
 
@@ -33,8 +41,8 @@ public class SqlConnectionPool {
      *
      * @return The source database connection.
      */
-    public Connection getSourceConnection() throws SQLException {
-        return sourceDs.getConnection();
+    public Connection get2DConnection() throws SQLException {
+        return db2D.getConnection();
     }
 
     /**
@@ -42,8 +50,8 @@ public class SqlConnectionPool {
      *
      * @return The target database connection.
      */
-    public Connection getTargetConnection() throws SQLException {
-        return targetDs.getConnection();
+    public Connection get3DConnection() throws SQLException {
+        return db3D.getConnection();
     }
 
     public String[] getConfigs() {

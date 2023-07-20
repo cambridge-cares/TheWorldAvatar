@@ -89,7 +89,6 @@ public class Config extends ContainerClient {
 
             ContainerClient client = new ContainerClient();
             PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
-            config[0] = postConfig.getJdbcDriverURL();
             config[1] = postConfig.getUsername();
             config[2] = postConfig.getPassword();
             config[3] = postConfig.getJdbcURL(prop.getProperty(SRC_DB_3D));

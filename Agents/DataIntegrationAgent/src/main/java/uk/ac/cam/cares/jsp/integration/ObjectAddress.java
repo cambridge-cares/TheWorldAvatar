@@ -53,7 +53,7 @@ public class ObjectAddress {
         String gmlid = address.getGmlId();
         this.pool = new SqlConnectionPool(config);
         LOGGER.info("Pinging source database for availability...");
-        try (Connection srcConn = this.pool.getSourceConnection()) {
+        try (Connection srcConn = this.pool.get3DConnection()) {
             if (!srcConn.isValid(60)) {
                 LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
                 throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
@@ -112,7 +112,7 @@ public class ObjectAddress {
         String sqlAddress = "SELECT id FROM address WHERE address.gmlid = " + "'" + gmlid + "'";
         this.pool = new SqlConnectionPool(config);
         LOGGER.info("Pinging source database for availability...");
-        try (Connection srcConn = this.pool.getSourceConnection()) {
+        try (Connection srcConn = this.pool.get3DConnection()) {
             if (!srcConn.isValid(60)) {
                 LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
                 throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);

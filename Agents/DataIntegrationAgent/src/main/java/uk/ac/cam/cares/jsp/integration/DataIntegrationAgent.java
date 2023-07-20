@@ -60,9 +60,9 @@ public class DataIntegrationAgent extends JPSAgent {
 			// JSONObject input = new JSONObject(request.getParameter("function"));	
             String input = request.getContextPath();
             String para = request.getParameter("function");
-			System.out.println("Input : " + input.toString());
+			System.out.println("Input : " + input);
 			getParameters(para);
-			response.getWriter().write(input.toString());
+			response.getWriter().write(input);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

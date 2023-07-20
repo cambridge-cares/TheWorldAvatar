@@ -34,8 +34,8 @@ public class SpatialLink{
     private static final Logger LOGGER = LogManager.getLogger(SpatialLink.class);
     // private PostgresClient postgresClient2d;
     // private PostgresClient postgresClient3d;
-    private static final String INVALID_CONNECTION_MESSAGE = "Connection is invalid...";
-    private SqlConnectionPool pool;
+    // private static final String INVALID_CONNECTION_MESSAGE = "Connection is invalid...";
+    // private SqlConnectionPool pool;
 
     List<GeoObject3D> allObject3D = new ArrayList<>();
     List<GeoObject2D> allObject2D = new ArrayList<>();
@@ -49,18 +49,18 @@ public class SpatialLink{
 //    }
     protected void SpatialLink(String[] config) {
 //        
-        this.pool = new SqlConnectionPool(config);
-        LOGGER.info("Pinging source database for availability...");
-        try (Connection srcConn = this.pool.getSourceConnection()) {
-            if (!srcConn.isValid(60)) {
-                LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
-                throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
-            }
+        // this.pool = new SqlConnectionPool(config);
+        // LOGGER.info("Pinging source database for availability...");
+        // try (Connection srcConn = this.pool.getSourceConnection()) {
+        //     if (!srcConn.isValid(60)) {
+        //         LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
+        //         throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
+        //     }
 
-        } catch (SQLException e) {
-            LOGGER.fatal("Error connecting to source database: " + e);
-            throw new JPSRuntimeException("Error connecting to source database: " + e);
-        }
+        // } catch (SQLException e) {
+        //     LOGGER.fatal("Error connecting to source database: " + e);
+        //     throw new JPSRuntimeException("Error connecting to source database: " + e);
+        // }
 //        Map<String, String> parameters = aggregateByKeys();
 //        String db3d = parameters.get("db3d");
 //        String db2d = parameters.get("db2d");

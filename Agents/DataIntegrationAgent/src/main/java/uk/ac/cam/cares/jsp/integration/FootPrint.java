@@ -24,26 +24,26 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class FootPrint {
 
-    private static final Logger LOGGER = LogManager.getLogger(FootPrint.class);
-    private static final String INVALID_CONNECTION_MESSAGE = "Connection is invalid...";
-    private SqlConnectionPool pool;
+    // private static final Logger LOGGER = LogManager.getLogger(FootPrint.class);
+    // private static final String INVALID_CONNECTION_MESSAGE = "Connection is invalid...";
+    // private SqlConnectionPool pool;
 
     List<GeoObject3D> allObject3D = new ArrayList<>();
 
     protected void proFootPrint(String[] config) {
 //        
-        this.pool = new SqlConnectionPool(config);
-        LOGGER.info("Pinging source database for availability...");
-        try (Connection srcConn = this.pool.getSourceConnection()) {
-            if (!srcConn.isValid(60)) {
-                LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
-                throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
-            }
+        // this.pool = new SqlConnectionPool(config);
+        // LOGGER.info("Pinging source database for availability...");
+        // try (Connection srcConn = this.pool.get3DConnection()) {
+        //     if (!srcConn.isValid(60)) {
+        //         LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
+        //         throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
+        //     }
 
-        } catch (SQLException e) {
-            LOGGER.fatal("Error connecting to source database: " + e);
-            throw new JPSRuntimeException("Error connecting to source database: " + e);
-        }
+        // } catch (SQLException e) {
+        //     LOGGER.fatal("Error connecting to source database: " + e);
+        //     throw new JPSRuntimeException("Error connecting to source database: " + e);
+        // }
         GeoObject3D object3D = new GeoObject3D();
         this.allObject3D = object3D.getObject3D(config);
         classifySurfaces(this.allObject3D);
