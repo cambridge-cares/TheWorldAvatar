@@ -1,0 +1,111 @@
+	question	head	domain	answer
+0	what is the charge of	CID1	0	CID1_charge
+1	what is 's charge	CID1	0	CID1_charge
+2	what is the charge of	CID2	0	CID2_charge
+3	what is 's charge	CID2	0	CID2_charge
+4	what is the charge of	CID3	0	CID3_charge
+5	what is 's charge	CID3	0	CID3_charge
+6	what is the charge of	CID4	0	CID4_charge
+7	what is 's charge	CID4	0	CID4_charge
+8	what is the charge of	CID4	0	CID4_charge
+9	what is 's charge	CID4	0	CID4_charge
+10	what is the compound complexity of	CID1	0	CID1_compound_complexity
+11	what is 's compound complexity	CID1	0	CID1_compound_complexity
+12	what is the compound complexity of	CID2	0	CID2_compound_complexity
+13	what is 's compound complexity	CID2	0	CID2_compound_complexity
+14	what is the compound complexity of	CID3	0	CID3_compound_complexity
+15	what is 's compound complexity	CID3	0	CID3_compound_complexity
+16	what is the compound complexity of	CID4	0	CID4_compound_complexity
+17	what is 's compound complexity	CID4	0	CID4_compound_complexity
+18	what is the compound complexity of	CID4	0	CID4_compound_complexity
+19	what is 's compound complexity	CID4	0	CID4_compound_complexity
+20	what is the iupac name of	CID1	0	CID1_iupac_name
+21	what is 's iupac name	CID1	0	CID1_iupac_name
+22	what is the iupac name of	CID2	0	CID2_iupac_name
+23	what is 's iupac name	CID2	0	CID2_iupac_name
+24	what is the iupac name of	CID3	0	CID3_iupac_name
+25	what is 's iupac name	CID3	0	CID3_iupac_name
+26	what is the iupac name of	CID4	0	CID4_iupac_name
+27	what is 's iupac name	CID4	0	CID4_iupac_name
+28	what is the iupac name of	CID4	0	CID4_iupac_name
+29	what is 's iupac name	CID4	0	CID4_iupac_name
+30	what is the inchi standard of	CID1	0	CID1_inchi_standard
+31	what is 's inchi standard	CID1	0	CID1_inchi_standard
+32	what is the inchi standard of	CID2	0	CID2_inchi_standard
+33	what is 's inchi standard	CID2	0	CID2_inchi_standard
+34	what is the inchi standard of	CID3	0	CID3_inchi_standard
+35	what is 's inchi standard	CID3	0	CID3_inchi_standard
+36	what is the inchi standard of	CID4	0	CID4_inchi_standard
+37	what is 's inchi standard	CID4	0	CID4_inchi_standard
+38	what is the inchi standard of	CID4	0	CID4_inchi_standard
+39	what is 's inchi standard	CID4	0	CID4_inchi_standard
+40	what is the inchi key of	CID1	0	CID1_inchi_key
+41	what is 's inchi key	CID1	0	CID1_inchi_key
+42	what is the inchi key of	CID2	0	CID2_inchi_key
+43	what is 's inchi key	CID2	0	CID2_inchi_key
+44	what is the inchi key of	CID3	0	CID3_inchi_key
+45	what is 's inchi key	CID3	0	CID3_inchi_key
+46	what is the inchi key of	CID4	0	CID4_inchi_key
+47	what is 's inchi key	CID4	0	CID4_inchi_key
+48	what is the inchi key of	CID4	0	CID4_inchi_key
+49	what is 's inchi key	CID4	0	CID4_inchi_key
+50	what is the log p of	CID1	0	CID1_log_p
+51	what is 's log p	CID1	0	CID1_log_p
+52	what is the log p of	CID2	0	CID2_log_p
+53	what is 's log p	CID2	0	CID2_log_p
+54	what is the log p of	CID3	0	CID3_log_p
+55	what is 's log p	CID3	0	CID3_log_p
+56	what is the log p of	CID4	0	CID4_log_p
+57	what is 's log p	CID4	0	CID4_log_p
+58	what is the log p of	CID4	0	CID4_log_p
+59	what is 's log p	CID4	0	CID4_log_p
+60	what is the exact mass of	CID1	0	CID1_exact_mass
+61	what is 's exact mass	CID1	0	CID1_exact_mass
+62	what is the exact mass of	CID2	0	CID2_exact_mass
+63	what is 's exact mass	CID2	0	CID2_exact_mass
+64	what is the exact mass of	CID3	0	CID3_exact_mass
+65	what is 's exact mass	CID3	0	CID3_exact_mass
+66	what is the exact mass of	CID4	0	CID4_exact_mass
+67	what is 's exact mass	CID4	0	CID4_exact_mass
+68	what is the exact mass of	CID4	0	CID4_exact_mass
+69	what is 's exact mass	CID4	0	CID4_exact_mass
+70	what is the molecular formula of	CID1	0	CID1_molecular_formula
+71	what is 's molecular formula	CID1	0	CID1_molecular_formula
+72	what is the molecular formula of	CID2	0	CID2_molecular_formula
+73	what is 's molecular formula	CID2	0	CID2_molecular_formula
+74	what is the molecular formula of	CID3	0	CID3_molecular_formula
+75	what is 's molecular formula	CID3	0	CID3_molecular_formula
+76	what is the molecular formula of	CID4	0	CID4_molecular_formula
+77	what is 's molecular formula	CID4	0	CID4_molecular_formula
+78	what is the molecular formula of	CID4	0	CID4_molecular_formula
+79	what is 's molecular formula	CID4	0	CID4_molecular_formula
+80	what is the molecular weight of	CID1	0	CID1_molecular_weight
+81	what is 's molecular weight	CID1	0	CID1_molecular_weight
+82	what is the molecular weight of	CID2	0	CID2_molecular_weight
+83	what is 's molecular weight	CID2	0	CID2_molecular_weight
+84	what is the molecular weight of	CID3	0	CID3_molecular_weight
+85	what is 's molecular weight	CID3	0	CID3_molecular_weight
+86	what is the molecular weight of	CID4	0	CID4_molecular_weight
+87	what is 's molecular weight	CID4	0	CID4_molecular_weight
+88	what is the molecular weight of	CID4	0	CID4_molecular_weight
+89	what is 's molecular weight	CID4	0	CID4_molecular_weight
+90	what is the tpsa of	CID1	0	CID1_tpsa
+91	what is 's tpsa	CID1	0	CID1_tpsa
+92	what is the tpsa of	CID2	0	CID2_tpsa
+93	what is 's tpsa	CID2	0	CID2_tpsa
+94	what is the tpsa of	CID3	0	CID3_tpsa
+95	what is 's tpsa	CID3	0	CID3_tpsa
+96	what is the tpsa of	CID4	0	CID4_tpsa
+97	what is 's tpsa	CID4	0	CID4_tpsa
+98	what is the tpsa of	CID4	0	CID4_tpsa
+99	what is 's tpsa	CID4	0	CID4_tpsa
+100	what is the canonical smiles of	CID1	0	CID1_canonical_smiles
+101	what is 's canonical smiles	CID1	0	CID1_canonical_smiles
+102	what is the canonical smiles of	CID2	0	CID2_canonical_smiles
+103	what is 's canonical smiles	CID2	0	CID2_canonical_smiles
+104	what is the canonical smiles of	CID3	0	CID3_canonical_smiles
+105	what is 's canonical smiles	CID3	0	CID3_canonical_smiles
+106	what is the canonical smiles of	CID4	0	CID4_canonical_smiles
+107	what is 's canonical smiles	CID4	0	CID4_canonical_smiles
+108	what is the canonical smiles of	CID4	0	CID4_canonical_smiles
+109	what is 's canonical smiles	CID4	0	CID4_canonical_smiles
