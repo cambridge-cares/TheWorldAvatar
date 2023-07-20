@@ -15,3 +15,12 @@ dependencyResolutionManagement {
 }
 rootProject.name = "AssetManagementApp"
 include ':app'
+include ':core'
+include ':feature'
+include ':feature:login'
+include ':core:network'
+include ':feature:qrscan'
+include ':feature:assetinfo'
+include ':feature:setting'
+include ':feature:home'
+include ':core:ui'

@@ -16,9 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AssetManagementApp"
         tools:targetApi="31" >
-
-        <activity
-            android:name=".MainActivity"
+        <activity android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.AssetManagementApp.NoActionBar">
             <intent-filter>
@@ -27,20 +25,6 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".SettingActivity"
-            android:theme="@style/Theme.AssetManagementApp.NoActionBar">
-        </activity>
-
-        <activity
-            android:name=".ScanActivity"
-            android:theme="@style/Theme.AssetManagementApp.NoActionBar">
-        </activity>
-
-        <activity
-            android:name=".AssetInfoActivity"
-            android:theme="@style/Theme.AssetManagementApp.NoActionBar">
-        </activity>
     </application>
 
 

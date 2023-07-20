@@ -1,0 +1,8 @@
+<resources>
+    <string name="setting">Setting</string>
+    <string name="scan">Scan</string>
+    <string name="sweep">Inventory Sweep</string>
+    <string name="add_asset">Add Asset</string>
+    <string name="schedule">Schedule</string>
+    <string name="welcome">Welcome</string>
+</resources>

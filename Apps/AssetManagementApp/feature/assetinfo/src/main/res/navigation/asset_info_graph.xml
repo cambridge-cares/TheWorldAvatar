@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/asset_info_graph"
+    app:startDestination="@id/asset_info">
+    <fragment
+        android:id="@+id/asset_info"
+        android:name="uk.ac.cam.cares.jps.assetinfo.AssetInfoFragment"
+        android:label="Asset Info"
+        tools:layout="@layout/fragment_asset_info">
+        <argument
+            android:name="uri"
+            app:argType="string"
+            />
+        <deepLink
+            app:uri="android-app://uk.ac.cam.cares.jps.app/info_page?{uri}" />
+
+    </fragment>
+
+</navigation>
