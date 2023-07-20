@@ -35,7 +35,7 @@ PREFIXES = {
     'om':    'http://www.ontology-of-units-of-measure.org/resource/om-2/',
     'rdf':   'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'rdfs':  'http://www.w3.org/2000/01/rdf-schema#',
-    'ts':    'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#',
+    'ts':    'https://www.theworldavatar.com/kg/ontotimeseries/',
     'xsd':   'http://www.w3.org/2001/XMLSchema#',
     'ontoeip':   'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#',
 }
@@ -434,7 +434,7 @@ def get_measurementIRI(endpoint, instance_IRI):
             '''SELECT ?%s \
             WHERE { <%s> ontopowsys:hasActivePowerGenerated ?%s . \
                     ?%s rdf:type ontopowsys:GeneratedActivePower ; \
-                        ts:hasTimeSeries ?ts }''' % (var, instance_IRI, var, var)
+                  }''' % (var, instance_IRI, var, var)
 
     response = KGClient.execute(query)
     print("Query Line Print: ", query)
