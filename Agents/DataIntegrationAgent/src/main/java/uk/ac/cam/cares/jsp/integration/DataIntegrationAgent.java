@@ -70,15 +70,20 @@ public class DataIntegrationAgent extends JPSAgent {
 	}
 
     public JSONObject getParameters(String requestParams){
-         JSONObject jsonMessage = new JSONObject();
-         if(requestParams.equals("attribute")){
-            Config c = new Config();
-            String[] config = c.retrieveSQLConfig();
-            jsonMessage = sqlRoute(config);
-         }else if(requestParams.equals("footprint")){
+        JSONObject jsonMessage = new JSONObject();
+        Config c = new Config();
+        String[] config = c.retrieveSQLConfig();
+        if(requestParams.equals("attribute")){            
+            // jsonMessage = sqlRoute(config);
+            SpatialLink spatialLink = new SpatialLink();
+            spatialLink.SpatialLink(config);
+        }else if(requestParams.equals("footprint")){
+            FootPrint footprint = new FootPrint();
+            footprint.proFootPrint(config);
+        }else if(requestParams.equals("height")){
 
-         }
-         return jsonMessage;
+        }
+        return jsonMessage;
     }
     /**
      * A method that process all the different HTTP (GET/POST/PULL..) requests.
@@ -178,19 +183,19 @@ public class DataIntegrationAgent extends JPSAgent {
      *
      * @return A response to the request called as a JSON Object.
      */
-    protected JSONObject sqlRoute(String[] config) {
-        LOGGER.debug("Creating the SQL connector..");
-        JSONObject response = new JSONObject();
-        SpatialLink spatialLink = new SpatialLink();
-        spatialLink.SpatialLink(config);
-//        SqlBridge connector = new SqlBridge(config);
-//        LOGGER.debug("Transfer data from source to target database...");
-//        JSONObject response = connector.transfer(AGENT_IN_STACK);
-//        LOGGER.info("Data have been successfully transferred from " + config[0] + " to " + config[3]);
-        if (response.isEmpty()) {
-            response.put("Result", "Data have been successfully integrated");
-        }
-        return response;
-    }
+//     protected JSONObject sqlRoute(String[] config) {
+//         LOGGER.debug("Creating the SQL connector..");
+//         JSONObject response = new JSONObject();
+//         SpatialLink spatialLink = new SpatialLink();
+//         spatialLink.SpatialLink(config);
+// //        SqlBridge connector = new SqlBridge(config);
+// //        LOGGER.debug("Transfer data from source to target database...");
+// //        JSONObject response = connector.transfer(AGENT_IN_STACK);
+// //        LOGGER.info("Data have been successfully transferred from " + config[0] + " to " + config[3]);
+//         if (response.isEmpty()) {
+//             response.put("Result", "Data have been successfully integrated");
+//         }
+//         return response;
+//     }
     
 }
