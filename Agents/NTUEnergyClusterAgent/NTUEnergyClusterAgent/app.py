@@ -110,4 +110,6 @@ def default():
         timeseries_object = TSClientForUpdate.create_timeseries(timestamp_list, result_iri_list, result_value_list)
         timeseries_instantiation.add_timeseries_data(timeseries_object, QUERY_ENDPOINT, UPDATE_ENDPOINT, DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD)
 
+    clusters = model.run_k_means(predicted_Vm, predicted_Va)
+
     return 'Successfully calculated Vm and Va.'

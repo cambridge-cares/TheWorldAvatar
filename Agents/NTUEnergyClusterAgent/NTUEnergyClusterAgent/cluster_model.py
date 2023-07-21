@@ -30,8 +30,10 @@ class ClusterModel:
         predicted_Va = predicted_output[:, 14:]
         return predicted_Vm, predicted_Va
 
-    def run_k_means(self):
+    def run_k_means(self, predicted_Vm, predicted_Va):
         # Use the k-means model to predict the cluster each data point belongs to
-        clusters = self.kmeans_model.predict(predicted_output[:, :14])
+        predicted_Vm = np.array(predicted_Vm).T
+        print("predicted vm shape", predicted_Vm.shape)
+        clusters = self.kmeans_model.predict(predicted_Vm)
         print(clusters.shape)
-        # Now you can use `predicted_output` and `clusters` for whatever you need
+        return clusters
