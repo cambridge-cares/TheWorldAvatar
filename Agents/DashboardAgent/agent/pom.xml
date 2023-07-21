@@ -92,6 +92,11 @@
             <artifactId>jps-base-lib</artifactId>
             <version>${jps.base.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.cmclinnovations</groupId>
+            <artifactId>stack-clients</artifactId>
+            <version>1.13.1</version>
+        </dependency>
         <!--  Logging  -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

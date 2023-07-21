@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.TimeUnit;
@@ -14,11 +15,12 @@ import java.util.concurrent.TimeUnit;
  *
  * @author qhouyee
  */
-@WebServlet(urlPatterns = {"/status"})
+@WebServlet(urlPatterns = {"/status", "/setup"})
 public class DashboardAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
     // Agent starts off in valid state, and will be invalid when running into exceptions
     private static boolean VALID = true;
+    private static StackClient SERVICES;
     private static final String INVALID_ROUTE_ERROR_MSG = "Invalid request type! Route ";
 
     /**
@@ -34,9 +36,16 @@ public class DashboardAgent extends JPSAgent {
             LOGGER.warn("This is a test WARN message");
             LOGGER.error("This is a test ERROR message");
             LOGGER.fatal("This is a test FATAL message");
-        } catch (Exception exception) {
+            // Ensure that the agent is running on a stack by initialising the services
+            SERVICES = new StackClient();
+        } catch (ServletException exception) {
+            // This error only occurs when super.init() fails
             DashboardAgent.VALID = false;
             LOGGER.error("Could not initialise an agent instance!", exception);
+        } catch (Exception exception) {
+            // This error will only occur if the agent is not running on a stack, which causes an error in Stack Client
+            DashboardAgent.VALID = false;
+            LOGGER.error("Agent is not running on a stack and will not be initialised!");
         }
     }
 
@@ -76,11 +85,19 @@ public class DashboardAgent extends JPSAgent {
                     jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
                 }
                 break;
+            case "setup":
+                if (requestType.equals("GET")) {
+                    jsonMessage = setupRoute();
+                } else {
+                    LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
+                    jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
+                }
+                break;
         }
         // Total agent run time in nanoseconds
         long duration = System.nanoTime() - startTime;
         // If it can be converted to second, return run time in seconds
-        if (TimeUnit.NANOSECONDS.toSeconds(duration)>0){
+        if (TimeUnit.NANOSECONDS.toSeconds(duration) > 0) {
             jsonMessage.accumulate("Runtime", TimeUnit.NANOSECONDS.toSeconds(duration) + "s");
         } else {
             // Else return as nanoseconds
@@ -110,7 +127,23 @@ public class DashboardAgent extends JPSAgent {
         if (DashboardAgent.VALID) {
             response.put("Result", "Agent is ready to receive requests.");
         } else {
-            response.put("Result", "Agent could not be initialised!");
+            response.put("Result", "Agent could not be initialised! Please ensure it is running on a stack!");
+        }
+        return response;
+    }
+
+    /**
+     * Run logic for the "/setup" route to set up the dashboards on the stack.
+     *
+     * @return A response to the request called as a JSON Object.
+     */
+    protected JSONObject setupRoute() {
+        JSONObject response = new JSONObject();
+        if (DashboardAgent.VALID) {
+            LOGGER.info("Dashboard has been successfully set up!");
+            response.put("Result", "Dashboard has been successfully set up!");
+        } else {
+            response.put("Result", "Agent could not be initialised! Please check logs for more information...");
         }
         return response;
     }
