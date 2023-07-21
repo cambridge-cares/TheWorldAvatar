@@ -455,7 +455,8 @@ There are no configurable options for this process, the namespace the data is ad
 ### OSM Data
 
 The `"osmrouting"` data type should be used to load Open Street Map (OSM) files in a form that is compatible with [pgRouting][pgrouting].
-My default three tables and three GeoServer layers are created; `DATA_SUBSET_NAME_ways`, `DATA_SUBSET_NAME_ways_vertices_pgr`, and `DATA_SUBSET_NAME_pointsofinterest`.
+These can be `.osm` or `.pbf` files.
+By default, three tables and three GeoServer layers are created; `DATA_SUBSET_NAME_ways`, `DATA_SUBSET_NAME_ways_vertices_pgr`, and `DATA_SUBSET_NAME_pointsofinterest`.
 
 #### osm2pgrouting Options
 
