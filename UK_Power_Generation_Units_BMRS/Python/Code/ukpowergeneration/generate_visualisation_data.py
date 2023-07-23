@@ -1,4 +1,4 @@
-##########################################
+##########################################module
 # Author: Feroz Farazi (msff2@cam.ac.uk) #
 # Date:  27 Jan 2022                      #
 ##########################################
@@ -29,18 +29,18 @@ geojson_attributes = { 'displayName': '',
 powerplant_image_label = "powerplant"
 generator_image_label = "generator"
 
-def get_instance_time_series_data(instanceIRI, TSClient, KGClient):
+def get_powerplant_instance_time_series_data(instanceIRI, TSClient, KGClient):
     '''
         Returns data for daily time series associated with given instance. 
     '''
 
     # Define query
     query = kg.create_sparql_prefix('om') + \
-            kg.create_sparql_prefix('ontopowsys') + \
+            kg.create_sparql_prefix('ontopowsysbehaviour') + \
             kg.create_sparql_prefix('rdfs') + \
             kg.create_sparql_prefix('ts') + \
             '''SELECT ?dataIRI ?measurements ?unit ?timeSeriesIRI \
-               WHERE { <%s> ontopowsys:hasActivePowerGenerated ?dataIRI ; \
+               WHERE { <%s> ontopowsysbehaviour:hasActivePowerGenerated ?dataIRI ; \
                             rdfs:label ?measurements .
                                 ?dataIRI om:hasUnit ?unit;
                                 ts:hasTimeSeries ?timeSeriesIRI}''' % instanceIRI
@@ -76,26 +76,25 @@ def get_instance_time_series_data(instanceIRI, TSClient, KGClient):
         print("Time series is not available for: ", instanceIRI)
         timeseries = None
     # Return time series and associated lists of variables and units
-    return timeseries, utilities, units
+    return timeseries, dataIRIs, utilities, units
 
-
-def get_all_time_series(powerplant, KGClient, TSClient, now, duration, start_1, start_2, start_7):
+def get_generator_instance_time_series_data(instanceIRI, TSClient, KGClient):
     '''
-        Returns all time series data of the powerplants
+        Returns data for daily time series associated with given instance. 
     '''
 
     # Define query
     query = kg.create_sparql_prefix('om') + \
-            kg.create_sparql_prefix('rdfs') + \
-            kg.create_sparql_prefix('comp') + \
-            '''SELECT ?powerplant ?dataIRI ?unit \
-               WHERE { ?powerplant comp:hasTaken ?gas_amount ; \
-                                 rdfs:label ?name . \
-                       ?gas_quantity om:hasPhenomenon ?gas_amount . \
-                       ?gas_quantity om:hasValue ?dataIRI . \
-                       ?dataIRI om:hasUnit ?unit }'''
-                                
+            kg.create_sparql_prefix('ontopowsysbehaviour') + \
+            kg.create_sparql_prefix('ontoenergysystem') + \
+            kg.create_sparql_prefix('ts') + \
+            '''SELECT ?dataIRI ?measurements ?unit ?timeSeriesIRI \
+               WHERE { <%s> ontopowsysbehaviour:hasActivePowerGenerated ?dataIRI ; \
+                            ontoenergysystem:hasEIC ?measurements .
+                                ?dataIRI om:hasUnit ?unit;
+                                ts:hasTimeSeries ?timeSeriesIRI}''' % instanceIRI
     # Execute query
+    #print("QUERY: ", query)
     response = KGClient.execute(query)
 
     # Convert JSONArray String back to list
@@ -105,36 +104,29 @@ def get_all_time_series(powerplant, KGClient, TSClient, now, duration, start_1, 
     dataIRIs = []
     utilities = []
     units = []
-    measurement_iri = None
     # Append lists with all query results
     for r in response:
-        if r['powerplant'].lower() == powerplant.lower():
+        # In case there are duplicates, we only want one item... 
+        # ...(below should all be array of one element)
+        if len(dataIRIs) == 0:
+            print('dataIRIs: 0')
             dataIRIs.append(r['dataIRI'])
-            utilities.append("Instantaneous Flow")
-            units.append((r['unit']))
-            measurement_iri = r['dataIRI']
-            break
-    # Initialise timestamps for gas flow time series retrieval durations (time series entries stored as UTC times!)
-    # Java Instant instances are associated with UTC (i.e. hold a value of date-time with a UTC time-line)
-    print("INFO: Submitting TimeSeriesClient SPARQL queries at",
-          dt.utcfromtimestamp(now.getEpochSecond()).strftime("%Y-%m-%dT%H:%M:%SZ"))
-    # Get results for last "duration" hours (e.g. 24h)
-    timeseries = TSClient.getTimeSeriesWithinBounds([measurement_iri], start_1, now)
-    if not timeseries.getTimes():
-        # Try last "2 x duration" hours if nothing available for last "duration" hours (e.g. 48h)
-        print("WARNING: No results in last %i h, trying last %i h ..." % (duration, 2 * duration))
-        timeseries = TSClient.getTimeSeriesWithinBounds([measurement_iri], start_2, now)
-        if not timeseries.getTimes():
-           # Last resort, try last "7 x duration" hours (e.g. last week)
-           print("WARNING: No results in last %i h, trying last %i h ..." % (2 * duration, 7 * duration))
-           timeseries = TSClient.getTimeSeriesWithinBounds([measurement_iri], start_7, now)
-
+            utilities.append(r['measurements'])
+            units.append(unit_dict[r['unit'].split("/")[-1]])
+    
     # Retrieve time series data for retrieved set of dataIRIs
-    timeseries = TSClient.getTimeSeries(dataIRIs)
-
+    try:
+        if len(dataIRIs) > 0:
+            print("DATAIRI: ", dataIRIs)
+            timeseries = TSClient.getTimeSeries(dataIRIs)
+        else: 
+            print("dataIRIs is not available for: ", instanceIRI)
+            timeseries = None
+    except ValueError:
+        print("Time series is not available for: ", instanceIRI)
+        timeseries = None
     # Return time series and associated lists of variables and units
-    return timeseries, utilities, units
-
+    return timeseries, dataIRIs, utilities, units
 
 def put_metadata_in_json(feature_id, lon, lat):
     """
@@ -147,54 +139,54 @@ def put_metadata_in_json(feature_id, lon, lat):
     return metadata
 
 
-def get_powerplant_metadata(powerplant_iri, KGClient):
+def get_powerplant_metadata(KGClient):
     '''
         Returns meta data for the requested powerplant identified by its IRI.
     '''
 
     # Defines query to retrieve latitude and longitude of powerplants
     query = kg.create_sparql_prefix('rdf') + \
+            kg.create_sparql_prefix('ontoeip') + \
             kg.create_sparql_prefix('ontoenergysystem') + \
             '''SELECT ?iri ?loc \
-               WHERE { ?iri rdf:type ontoenergysystem:PowerPlant ;
+               WHERE { ?iri rdf:type ontoeip:PowerPlant ;
                              ontoenergysystem:hasWGS84LatitudeLongitude ?loc .}'''
     # Executes query
     response = KGClient.execute(query)
     # Converts JSONArray String back to list
     response = json.loads(response)
-    lon = None
-    lat = None
+    powerplant_dict = {}
     for r in response:
-        if r['iri'].lower() == powerplant_iri.lower():
-            coordinates = r['loc'].split('#')
-            lon = coordinates[1]
-            lat = coordinates[0]
-    return lon, lat
+        coordinates = r['loc'].split('#')
+        lon = coordinates[1]
+        lat = coordinates[0]
+        powerplant_dict[r['iri'].lower()] = {'lat': lat, 'lon': lon}
+    return powerplant_dict
 
-def get_generator_metadata(powerplant_iri, KGClient):
+def get_generator_metadata(KGClient):
     '''
         Returns meta data for the requested powerplant identified by its IRI.
     '''
 
     # Defines query to retrieve latitude and longitude of powerplants
     query = kg.create_sparql_prefix('rdf') + \
+            kg.create_sparql_prefix('ontoeip') + \
             kg.create_sparql_prefix('ontoenergysystem') + \
             '''SELECT ?iri ?loc \
-               WHERE { ?iri rdf:type ontoenergysystem:PowerGenerator ;
+               WHERE { ?iri rdf:type ontoeip:PowerGenerator ;
                             ontoenergysystem:hasPowerPlant ?pp.
                         ?pp ontoenergysystem:hasWGS84LatitudeLongitude ?loc .}'''
     # Executes query
     response = KGClient.execute(query)
     # Converts JSONArray String back to list
     response = json.loads(response)
-    lon = None
-    lat = None
+    generator_dict = {}
     for r in response:
-        if r['iri'].lower() == powerplant_iri.lower():
-            coordinates = r['loc'].split('#')
-            lon = coordinates[1]
-            lat = coordinates[0]
-    return lon, lat
+        coordinates = r['loc'].split('#')
+        lon = coordinates[1]
+        lat = coordinates[0]
+        generator_dict[r['iri'].lower()] = {'lat': lat, 'lon': lon}
+    return generator_dict
 
 def format_in_geojson(feature_id, properties, coordinates):
     """
@@ -309,11 +301,12 @@ def get_all_powerplant_geodata(KGClient):
 # SPARQL query string
     query = kg.create_sparql_prefix('rdf') + \
             kg.create_sparql_prefix('rdfs') + \
+            kg.create_sparql_prefix('ontoeip') + \
             kg.create_sparql_prefix('ontoenergysystem') + \
             '''SELECT ?location ?name
                 WHERE
                 {
-                    ?pp rdf:type ontoenergysystem:PowerPlant ;
+                    ?pp rdf:type ontoeip:PowerPlant ;
                         rdfs:label ?name ;
                         ontoenergysystem:hasWGS84LatitudeLongitude ?location.
                 }'''
@@ -343,15 +336,15 @@ def get_all_generator_geodata(KGClient):
 
 # SPARQL query string
     query = kg.create_sparql_prefix('rdf') + \
-            kg.create_sparql_prefix('rdfs') + \
+            kg.create_sparql_prefix('ontoeip') + \
             kg.create_sparql_prefix('ontoenergysystem') + \
             '''SELECT ?location ?name
                 WHERE
                 {
-                    ?gen rdf:type ontoenergysystem:PowerGenerator ;
-                        rdfs:label ?name ;
+                    ?gen rdf:type ontoeip:PowerGenerator ;
+                        ontoenergysystem:hasEIC ?name ;
                         ontoenergysystem:hasPowerPlant ?pp.
-                    ?pp rdf:type ontoenergysystem:PowerPlant ;
+                    ?pp rdf:type ontoeip:PowerPlant ;
                         ontoenergysystem:hasWGS84LatitudeLongitude ?location.
                 }'''
     
@@ -381,12 +374,12 @@ def get_all_generators(KGClient):
     var1, var2 = 'iri', 'name'
 
     # Define query
-    query = kg.create_sparql_prefix('ontoenergysystem') + \
+    query = kg.create_sparql_prefix('ontoeip') + \
             kg.create_sparql_prefix('rdf') + \
-            kg.create_sparql_prefix('rdfs') + \
+            kg.create_sparql_prefix('ontoenergysystem') + \
             'SELECT distinct ?' + var1 + ' ?' + var2 + ' ' \
-            'WHERE { ?' + var1 + ' rdf:type ontoenergysystem:PowerGenerator; \
-                                   rdfs:label ?' + var2 + '. }'
+            'WHERE { ?' + var1 + ' rdf:type ontoeip:PowerGenerator; \
+                                   ontoenergysystem:hasEIC ?' + var2 + '. }'
     # Execute query
     response = KGClient.execute(query)
     # Convert JSONArray String back to list
@@ -407,11 +400,11 @@ def get_all_powerplants(KGClient):
     var1, var2 = 'iri', 'name'
 
     # Define query
-    query = kg.create_sparql_prefix('ontoenergysystem') + \
+    query = kg.create_sparql_prefix('ontoeip') + \
             kg.create_sparql_prefix('rdf') + \
             kg.create_sparql_prefix('rdfs') + \
             'SELECT distinct ?' + var1 + ' ?' + var2 + ' ' \
-            'WHERE { ?' + var1 + ' rdf:type ontoenergysystem:PowerPlant; \
+            'WHERE { ?' + var1 + ' rdf:type ontoeip:PowerPlant; \
                                    rdfs:label ?' + var2 + '. }'
     # Execute query
     response = KGClient.execute(query)
@@ -460,14 +453,26 @@ def generate_all_visualisation_data():
     """
 
     # Get all powerplants of interest
+    print('Retrieving all powerplants...')
     powerplants = get_all_powerplants(KGClient)
+    print('Retrieving all powerplants...completed.')
+    print('Retrieving all generators...')
     generators = get_all_generators(KGClient)
+    print('Retrieving all generators...completed.')
     # Retrieve all geocoordinates of powerplants for GeoJSON output
+    print('Retrieving all powerplant coordinates...')
     powerplant_coordinates = get_all_powerplant_geodata(KGClient)
+    print('Retrieving all powerplant coordinates...completed.')
     # Get generator coordinates from their powerplants 
+    print('Retrieving all generator coordinates...')
     generator_coordinates = get_all_generator_geodata(KGClient)
+    print('Retrieving all generator coordinates...completed.')
+    print('Retrieving all powerplants visualisation data...')
     generate_powerplant_visualisation_data(powerplants, powerplant_coordinates, KGClient, TSClient)
+    print('Retrieving all powerplants visualisation data...completed')
+    print('Retrieving all generator visualisation data...')
     generate_generator_visualisation_data(generators, generator_coordinates, KGClient, TSClient)
+    print('Retrieving all generator visualisation data...completed')
     
 def generate_powerplant_visualisation_data(powerplants, powerplant_coordinates, KGClient, TSClient):
     """
@@ -485,6 +490,7 @@ def generate_powerplant_visualisation_data(powerplants, powerplant_coordinates, 
                 }
     
     feature_id = 0
+    powerplant_dict  = get_powerplant_metadata(KGClient)
     # Iterate over all powerplants
     for powerplant, iri in powerplants.items():
         feature_id += 1
@@ -496,20 +502,27 @@ def generate_powerplant_visualisation_data(powerplants, powerplant_coordinates, 
         if powerplant.lower() in powerplant_coordinates:
             #print('powerplant_coordinates[powerplant.lower()]:', powerplant_coordinates[powerplant.lower()])
             geojson['features'].append(format_in_geojson(feature_id, geojson_attributes, powerplant_coordinates[powerplant.lower()]))
-        # Retrieve powerplant metadata
-        lon, lat = get_powerplant_metadata(iri, KGClient)
-        if lon == None and lat == None:
-            print('The following powerplant is not represented in the knowledge graph with coordinates:', iri)
-        else:
-            metadata.append(put_metadata_in_json(feature_id, lon, lat))
-        # Retrieve time series data
-        #timeseries, utilities, units = get_all_time_series(iri, KGClient, TSClient, now, duration, start_1, start_2, start_7)
-        timeseries, utilities, units = get_instance_time_series_data(iri, TSClient, KGClient)
-        if timeseries != None: 
-            ts_data['ts'].append(timeseries)
-            ts_data['id'].append(feature_id)
-            ts_data['units'].append(units)
-            ts_data['headers'].append(utilities)
+        # Retrieve powerplant coordinates
+        if iri.lower() in powerplant_dict:
+            powerplant_coordinate = powerplant_dict[iri.lower()]
+            lon = None
+            lat = None
+            lon = powerplant_coordinate['lon']
+            lat = powerplant_coordinate['lat']
+            if lon == None and lat == None:
+                print('The following powerplant is not represented in the knowledge graph with coordinates:', iri)
+            else:
+                metadata.append(put_metadata_in_json(feature_id, lon, lat))
+            # Retrieve time series data
+            #timeseries, utilities, units = get_all_time_series(iri, KGClient, TSClient, now, duration, start_1, start_2, start_7)
+            print(f"[{feature_id}] Retrieving time-series data of the powerplant: {iri}...")
+            timeseries, dataIRIs, utilities, units = get_powerplant_instance_time_series_data(iri, TSClient, KGClient)
+            print(f"Retrieving time-series data of the powerplant: {iri}...completed.")
+            if timeseries != None: 
+                ts_data['ts'].append(timeseries)
+                ts_data['id'].append(feature_id)
+                ts_data['units'].append(dict(zip(dataIRIs, units)))
+                ts_data['headers'].append(dict(zip(dataIRIs, utilities)))
     
     # Retrieve all time series data for collected 'ts_data' from Java TimeSeriesClient at once
     ts_json = TSClient.convertToJSON(ts_data['ts'], ts_data['id'], ts_data['units'], ts_data['headers'])
@@ -543,6 +556,7 @@ def generate_generator_visualisation_data(generators, generator_coordinates, KGC
                 }
     
     feature_id = 0
+    generator_dict  = get_generator_metadata(KGClient)
     # Iterate over all generators
     for generator, iri in generators.items():
         feature_id += 1
@@ -553,20 +567,27 @@ def generate_generator_visualisation_data(generators, generator_coordinates, KGC
         # Append results to overall GeoJSON FeatureCollection
         if generator.lower() in generator_coordinates:
             geojson['features'].append(format_in_geojson(feature_id, geojson_attributes, generator_coordinates[generator.lower()]))
-        # Retrieve generator metadata
-        lon, lat = get_generator_metadata(iri, KGClient)
-        if lon == None and lat == None:
-            print('The following generator is not represented in the knowledge graph with coordinates:', iri)
-        else:
-            metadata.append(put_metadata_in_json(feature_id, lon, lat))
-        # Retrieve time series data
-        timeseries, utilities, units = get_instance_time_series_data(iri, TSClient, KGClient)
-        if timeseries != None: 
-            ts_data['ts'].append(timeseries)
-            ts_data['id'].append(feature_id)
-            ts_data['units'].append(units)
-            ts_data['headers'].append(utilities)
-    
+        # Retrieve generator coordinates
+        if iri.lower() in generator_dict:
+            generator_coordinate = generator_dict[iri.lower()]
+            lon = None
+            lat = None
+            lon = generator_coordinate['lon']
+            lat = generator_coordinate['lat']
+            if lon == None and lat == None:
+                print('The following generator is not represented in the knowledge graph with coordinates:', iri)
+            else:
+                metadata.append(put_metadata_in_json(feature_id, lon, lat))
+            # Retrieve time series data
+            print(f"[{feature_id}] Retrieving time-series data of the generator: {iri}...")
+            timeseries, dataIRIs, utilities, units = get_generator_instance_time_series_data(iri, TSClient, KGClient)
+            print(f"Retrieving time-series data of the generator: {iri}...completed.")
+            if timeseries != None: 
+                ts_data['ts'].append(timeseries)
+                ts_data['id'].append(feature_id)
+                ts_data['units'].append(dict(zip(dataIRIs, units)))
+                ts_data['headers'].append(dict(zip(dataIRIs, utilities)))
+
     # Retrieve all time series data for collected 'ts_data' from Java TimeSeriesClient at once
     ts_json = TSClient.convertToJSON(ts_data['ts'], ts_data['id'], ts_data['units'], ts_data['headers'])
     # Make JSON file readable in Python

@@ -32,12 +32,14 @@ PREFIXES = {
     'ontoenergysystem':  'http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#',
     'ontoenergysystem_kb': 'http://www.theworldavatar.com/kb/ontoenergysystem/',
     'ontopowsys':  'http://www.theworldavatar.com/ontology/ontopowsys/electrical_system.owl#',
+    'ontopowsysbehaviour': 'http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#',
     'om':    'http://www.ontology-of-units-of-measure.org/resource/om-2/',
     'rdf':   'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'rdfs':  'http://www.w3.org/2000/01/rdf-schema#',
-    'ts':    'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#',
+    'ts':    'https://www.theworldavatar.com/kg/ontotimeseries/',
     'xsd':   'http://www.w3.org/2001/XMLSchema#',
     'ontoeip':   'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#',
+    'ontoeip_kb': '<http://www.theworldavatar.com/kb/ontoeip/'
 }
 
 
@@ -255,12 +257,12 @@ def get_instantiated_generators(endpoint):
     KGClient = jpsBaseLibView.RemoteStoreClient(endpoint)
 
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
-    query = create_sparql_prefix('ontoenergysystem') + \
+    query = create_sparql_prefix('ontoeip') + \
             create_sparql_prefix('rdf') + \
-            create_sparql_prefix('rdfs') + \
+            create_sparql_prefix('ontoenergysystem') + \
             'SELECT distinct ?' + var1 + ' ?' + var2 + ' ' \
-            'WHERE { ?' + var1 + ' rdf:type ontoenergysystem:PowerGenerator; \
-                                   rdfs:label ?' + var2 + '. }'
+            'WHERE { ?' + var1 + ' rdf:type ontoeip:PowerGenerator; \
+                                   ontoenergysystem:hasEIC ?' + var2 + '. }'
 
     response = KGClient.execute(query)
 
@@ -295,11 +297,11 @@ def get_instantiated_powerplants(endpoint):
     KGClient = jpsBaseLibView.RemoteStoreClient(endpoint)
 
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
-    query = create_sparql_prefix('ontoenergysystem') + \
+    query = create_sparql_prefix('ontoeip') + \
             create_sparql_prefix('rdf') + \
             create_sparql_prefix('rdfs') + \
             'SELECT distinct ?' + var1 + ' ?' + var2 + ' ' \
-            'WHERE { ?' + var1 + ' rdf:type ontoenergysystem:PowerPlant; \
+            'WHERE { ?' + var1 + ' rdf:type ontoeip:PowerPlant; \
                                    rdfs:label ?' + var2 + '. }'
 
     response = KGClient.execute(query)
@@ -311,101 +313,6 @@ def get_instantiated_powerplants(endpoint):
     for r in response:
         res[r[var2]] = r[var1]
     return res
-
-
-def get_instantiated_gas_amounts(endpoint):
-    """
-        Retrieves IRIs of all instantiated GasAmounts (of type IntakenGas) in the knowledge graph.
-
-        Arguments:
-            endpoint - SPARQL Query endpoint for knowledge graph.
-
-        Returns:
-            List of Strings of all instantiated gas amount IRIs
-            (empty list in case no gas amounts are instantiated)
-    """
-
-    # Initialise remote KG client with only query endpoint specified
-    KGClient = jpsBaseLibView.RemoteStoreClient(endpoint)
-
-    # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
-    query = create_sparql_prefix('comp') + \
-            create_sparql_prefix('rdf') + \
-            'SELECT distinct ?a ' \
-            'WHERE { ?a rdf:type comp:IntakenGas. }'
-
-    response = KGClient.execute(query)
-
-    # Convert JSONArray String back to list
-    response = json.loads(response)
-
-    # Extract list of IRI Strings from query results dictionary
-    res = [list(r.values())[0] for r in response]
-
-    return res
-
-
-def get_instantiated_quantities(endpoint):
-    """
-        Retrieves IRIs of all instantiated Quantities (of type VolumetricFlowRate) in the knowledge graph.
-
-        Arguments:
-            endpoint - SPARQL Query endpoint for knowledge graph.
-
-        Returns:
-            List of Strings of all instantiated (unit of measure) quantity IRIs
-            (empty list in case no quantities are instantiated)
-    """
-
-    # Initialise remote KG client with only query endpoint specified
-    KGClient = jpsBaseLibView.RemoteStoreClient(endpoint)
-
-    # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
-    query = create_sparql_prefix('om') + \
-            create_sparql_prefix('rdf') + \
-            'SELECT distinct ?a ' \
-            'WHERE { ?a rdf:type om:VolumetricFlowRate. }'
-
-    response = KGClient.execute(query)
-
-    # Convert JSONArray String back to list
-    response = json.loads(response)
-
-    # Extract list of IRI Strings from query results dictionary
-    res = [list(r.values())[0] for r in response]
-
-    return res
-
-
-def get_instantiated_measurements(endpoint):
-    """
-        Retrieves IRIs of all instantiated Measurements (of type Measure) in the knowledge graph.
-
-        Arguments:
-            endpoint - SPARQL Query endpoint for knowledge graph.
-
-        Returns:
-            List of Strings of all instantiated (unit of measure) measure IRIs
-            (empty list in case no measures are instantiated)
-    """
-
-    # Initialise remote KG client with only query endpoint specified
-    kgClient = jpsBaseLibView.RemoteStoreClient(endpoint)
-
-    query = create_sparql_prefix('om') + \
-            create_sparql_prefix('rdf') + \
-            'SELECT distinct ?a ' \
-            'WHERE { ?a rdf:type om:Measure. }'
-
-    response = kgClient.execute(query)
-
-    # Convert JSONArray String back to list
-    response = json.loads(response)
-
-    # Extract list of IRI Strings from query results dictionary
-    res = [list(r.values())[0] for r in response]
-    return res
-
 
 def get_measurementIRI(endpoint, instance_IRI):
     """
@@ -426,14 +333,12 @@ def get_measurementIRI(endpoint, instance_IRI):
     KGClient = jpsBaseLibView.RemoteStoreClient(endpoint)
 
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
-    query = create_sparql_prefix('ontopowsys') + \
-            create_sparql_prefix('ontoenergysystem') + \
-            create_sparql_prefix('om') + \
+    query = create_sparql_prefix('ontopowsysbehaviour') + \
             create_sparql_prefix('ts') + \
             create_sparql_prefix('rdf') + \
             '''SELECT ?%s \
-            WHERE { <%s> ontopowsys:hasActivePowerGenerated ?%s . \
-                    ?%s rdf:type ontopowsys:GeneratedActivePower ; \
+            WHERE { <%s> ontopowsysbehaviour:hasActivePowerGenerated ?%s . \
+                    ?%s rdf:type ontopowsysbehaviour:GeneratedActivePower ; \
                         ts:hasTimeSeries ?ts }''' % (var, instance_IRI, var, var)
 
     response = KGClient.execute(query)
@@ -447,47 +352,6 @@ def get_measurementIRI(endpoint, instance_IRI):
         raise ValueError('AMBIGUITY ERROR: generator connected to several gas flow time series!')
     else:
         return response[0][var]
-
-
-def get_time_format(endpoint, generatorIRI):
-    """
-        Retrieves time format of gas flow time series entries stored in KG.
-
-        Arguments:
-            endpoint - SPARQL Query endpoint for knowledge graph.
-            generatorIRI - full gas generator IRI incl. namespace (without trailing '<' or '>').
-
-        Returns:
-            Time series format as string.
-    """
-
-    # Initialise SPARQL query variable
-    var = 'format'
-
-    # Initialise remote KG client with only query endpoint specified
-    KGClient = jpsBaseLibView.RemoteStoreClient(endpoint)
-
-    # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
-    query = create_sparql_prefix('comp') + \
-            create_sparql_prefix('om') + \
-            create_sparql_prefix('rdf') + \
-            create_sparql_prefix('ts') + \
-            '''SELECT ?%s \
-            WHERE { <%s> comp:hasTaken ?gas . \
-                    ?gas rdf:type comp:IntakenGas; \
-                         ^om:hasPhenomenon/om:hasValue/ts:hasTimeSeries/ts:hasTimeUnit ?%s .}''' % \
-            (var, generatorIRI, var)
-
-    response = KGClient.execute(query)
-
-    # Convert JSONArray String back to list
-    response = json.loads(response)
-
-    if len(response) == 0:
-        return None
-    else:
-        return response[0][var]
-
 
 # Run when module is imported
 read_properties_file(PROPERTIES_FILE)

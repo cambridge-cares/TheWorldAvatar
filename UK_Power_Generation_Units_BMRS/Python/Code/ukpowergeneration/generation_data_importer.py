@@ -35,7 +35,7 @@ units = "http://www.ontology-of-units-of-measure.org/resource/om-2/megawatt"
 powerplant_class_prefix = 'PowerPlant_'
 powerGenerator_class_prefix = 'PowerGenerator_'
 
-def instantiate_generator(query_endpoint, update_endpoint, generator_name):
+def instantiate_generator(query_endpoint, update_endpoint, powergenerator_eic):
     """
         Instantiates new generator in knowledge graph to enable power data assimilation.
         (solely creates new generator instance with respective name, but no further relationships)
@@ -45,28 +45,30 @@ def instantiate_generator(query_endpoint, update_endpoint, generator_name):
             update_endpoint - SPARQL Update endpoint for knowledge graph.
             generator_name - name of generator to be instantiated.
     """
-    print("Instantiate new generator: " + generator_name)
+    print("Instantiate new generator: " + powergenerator_eic)
 
     # Create unique IRI for new generator based on generator name
-    generatorIRI = kg.PREFIXES['ontoenergysystem_kb'] + generator_name.replace(' ', '')
+    generatorIRI = kg.PREFIXES['ontoeip_kb'] + powergenerator_eic.replace(' ', '')
     n = 1
     # Add number suffix in case pure name based IRI already exists
     while generatorIRI in kg.get_instantiated_generators(query_endpoint).values():
-        generatorIRI = kg.PREFIXES['ontoenergysystem_kb'] + generator_name.replace(' ', '') + str(n)
+        generatorIRI = kg.PREFIXES['ontoeip_kb'] + powergenerator_eic.replace(' ', '') + str(n)
         n += 1
 
+    generatorIRI = generatorIRI.replace("<", "")
+    generatorIRI = generatorIRI.replace(">", "")
     # Initialise remote KG client with query AND update endpoints specified
     KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
-    
+    print(f'GeneratorIRI: {generatorIRI}')
     # Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
-    if generatorIRI != "" and generator_name != "":
+    if generatorIRI != "" and powergenerator_eic != "":
         query = kg.create_sparql_prefix('ontoenergysystem') + \
                 kg.create_sparql_prefix('rdf') + \
-                kg.create_sparql_prefix('rdfs') + \
+                kg.create_sparql_prefix('ontoeip') + \
                 kg.create_sparql_prefix('xsd') + \
-                '''INSERT DATA { <%s> rdf:type ontoenergysystem:PowerGenerator . \
-                                <%s> rdfs:label "%s"^^xsd:string . }''' % \
-                (generatorIRI, generatorIRI, generator_name.replace("PowerGenerator_",""))
+                '''INSERT DATA { <%s> rdf:type ontoeip:PowerGenerator . \
+                                <%s> ontoenergysystem:hasEIC "%s"^^xsd:string . }''' % \
+                (generatorIRI, generatorIRI, powergenerator_eic.replace("PowerGenerator_",""))
         KGClient.executeUpdate(query)
 
 
@@ -83,24 +85,25 @@ def instantiate_powerplant(query_endpoint, update_endpoint, powerplant_name):
     print("Instantiate new powerplant: " + powerplant_name)
 
     # Create unique IRI for new powerplant based on powerplant name
-    powerplantIRI = kg.PREFIXES['ontoenergysystem_kb'] + powerplant_name.replace(' ', '')
+    powerplantIRI = kg.PREFIXES['ontoeip_kb'] + powerplant_name.replace(' ', '')
     n = 1
     # Add number suffix in case pure name based IRI already exists
     while powerplantIRI in kg.get_instantiated_powerplants(query_endpoint).values():
-        powerplantIRI = kg.PREFIXES['ontoenergysystem_kb'] + powerplant_name.replace(' ', '') + str(n)
+        powerplantIRI = kg.PREFIXES['ontoeip_kb'] + powerplant_name.replace(' ', '') + str(n)
         n += 1
 
+    powerplantIRI = powerplantIRI.replace("<", "")
+    powerplantIRI = powerplantIRI.replace(">", "")
     # Initialise remote KG client with query AND update endpoints specified
     KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
-
+    print(f'PowerPlantIRI: {powerplantIRI}')
     # Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
     if powerplantIRI != "" and powerplant_name != "":
-        query = kg.create_sparql_prefix('ontoenergysystem') + \
-                kg.create_sparql_prefix('rdf') + \
+        query = kg.create_sparql_prefix('rdf') + \
                 kg.create_sparql_prefix('rdfs') + \
                 kg.create_sparql_prefix('xsd') + \
                 kg.create_sparql_prefix('ontoeip') + \
-                '''INSERT DATA { <%s> rdf:type ontoenergysystem:PowerPlant . \
+                '''INSERT DATA { <%s> rdf:type ontoeip:PowerPlant . \
                                 <%s> rdfs:label "%s"^^xsd:string . }''' % \
                 (powerplantIRI, powerplantIRI, powerplant_name.replace("PowerPlant_",""))
         KGClient.executeUpdate(query)
@@ -134,13 +137,12 @@ def instantiate_powerplant_timeseries(query_endpoint, update_endpoint, powerplan
     # Initialise remote KG client with query AND update endpoints specified
     KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
 
-    query = kg.create_sparql_prefix('ontopowsys') + \
-            kg.create_sparql_prefix('ontoenergysystem') + \
+    query = kg.create_sparql_prefix('ontopowsysbehaviour') + \
             kg.create_sparql_prefix('om') + \
             kg.create_sparql_prefix('rdf') + \
             '''INSERT DATA { \
-            <%s> ontopowsys:hasActivePowerGenerated <%s> . \
-            <%s> rdf:type ontopowsys:GeneratedActivePower ; \
+            <%s> ontopowsysbehaviour:hasActivePowerGenerated <%s> . \
+            <%s> rdf:type ontopowsysbehaviour:GeneratedActivePower ; \
                  om:hasUnit <%s> . }''' % (powerplantIRI, measurement_iri, measurement_iri, units)
 
     KGClient.executeUpdate(query)
@@ -187,13 +189,13 @@ def instantiate_generator_timeseries(query_endpoint, update_endpoint, generatorI
     KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
 
     # 1) Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
-    query = kg.create_sparql_prefix('ontopowsys') + \
+    query = kg.create_sparql_prefix('ontopowsysbehaviour') + \
             kg.create_sparql_prefix('ontoenergysystem') + \
             kg.create_sparql_prefix('om') + \
             kg.create_sparql_prefix('rdf') + \
             '''INSERT DATA { \
-            <%s> ontopowsys:hasActivePowerGenerated <%s> . \
-            <%s> rdf:type ontopowsys:GeneratedActivePower ; \
+            <%s> ontopowsysbehaviour:hasActivePowerGenerated <%s> . \
+            <%s> rdf:type ontopowsysbehaviour:GeneratedActivePower ; \
                  om:hasUnit <%s> . }''' % (generatorIRI, measurement_iri, measurement_iri, units)
 
     KGClient.executeUpdate(query)
@@ -242,13 +244,12 @@ def add_time_series(instance_IRI, timestamps, values, units):
 
     #Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
     ###
-    query = kg.create_sparql_prefix('ontopowsys') + \
-            kg.create_sparql_prefix('ontoenergysystem') + \
+    query = kg.create_sparql_prefix('ontopowsysbehaviour') + \
             kg.create_sparql_prefix('om') + \
             kg.create_sparql_prefix('rdf') + \
             '''INSERT DATA { \
-            <%s> ontopowsys:hasActivePowerGenerated <%s> . \
-            <%s> rdf:type ontopowsys:GeneratedActivePower . \
+            <%s> ontopowsysbehaviour:hasActivePowerGenerated <%s> . \
+            <%s> rdf:type ontopowsysbehaviour:GeneratedActivePower . \
             <%s> om:hasUnit <%s> . }''' % (instance_IRI, activepowergenerated_IRI, activepowergenerated_IRI, activepowergenerated_IRI, units)
     ###
 
@@ -427,8 +428,11 @@ def update_triple_store():
     # Potentially create new powerplant instances for powerplants with available power data,
     # which are not yet instantiated in KG (only create instance to enable data assimilation)
     new_powerplants = False
+    powerplant_number = 0
     for gt in powerplants_with_data:
         if (gt not in powerplants_instantiated.keys()) and (gt != ""):
+            powerplant_number = powerplant_number + 1
+            print(f'[{powerplant_number}] Instantiating powerplant {gt}')
             instantiate_powerplant(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, gt)
             new_powerplants = True
 
@@ -457,8 +461,11 @@ def update_triple_store():
     # Potentially create new generator instances for generators with available power data,
     # which are not yet instantiated in KG (only create instance to enable data assimilation)
     new_generators = False
+    generator_number = 0
     for gt in generators_with_data:
         if (gt not in generators_instantiated.keys()) and (gt != ""):
+            generator_number = generator_number + 1
+            print(f'[{generator_number}] Instantiating powerplant {gt}')
             instantiate_generator(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, gt)
             new_generators = True
 
