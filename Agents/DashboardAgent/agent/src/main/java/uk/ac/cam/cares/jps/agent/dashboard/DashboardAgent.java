@@ -140,6 +140,9 @@ public class DashboardAgent extends JPSAgent {
     protected JSONObject setupRoute() {
         JSONObject response = new JSONObject();
         if (DashboardAgent.VALID) {
+            LOGGER.info("Setting up client to interact with dashboard...");
+            DashboardClient client = new DashboardClient(SERVICES);
+            client.initDashboard();
             LOGGER.info("Dashboard has been successfully set up!");
             response.put("Result", "Dashboard has been successfully set up!");
         } else {
