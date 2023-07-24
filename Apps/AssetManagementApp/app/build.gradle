@@ -1,6 +1,9 @@
 plugins {
     id 'com.android.application'
     id 'androidx.navigation.safeargs'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+    id 'com.google.dagger.hilt.android'
 }
 
 android {
@@ -41,6 +44,7 @@ dependencies {
     implementation project(path: ':feature:setting')
     implementation project(path: ':feature:home')
     implementation project(path: ':feature:assetinfo')
+    implementation project(path: ':core:network')
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
@@ -62,4 +66,12 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment:$nav_version"
     implementation "androidx.navigation:navigation-ui:$nav_version"
 
+    implementation "com.google.dagger:hilt-android:2.44"
+    kapt "com.google.dagger:hilt-compiler:2.44"
+
+}
+
+// Allow references to generated code
+kapt {
+    correctErrorTypes true
 }

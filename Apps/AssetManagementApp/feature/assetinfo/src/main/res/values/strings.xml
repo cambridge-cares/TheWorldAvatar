@@ -15,4 +15,6 @@
     <string name="model_no">Model Number</string>
     <string name="manual">Manuals</string>
     <string name="logout">Logout</string>
+
+    <string name="netowrk_error">Not able to get the asset information, please try again.</string>
 </resources>
