@@ -17,7 +17,9 @@ public class DashboardClient {
     private String SERVICE_ACCOUNT_TOKEN;
     private final StackClient SERVICE_CLIENT;
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
+    private static final String DASHBOARD_TITLE = "Overview";
     private static final String SERVICE_ACCOUNT_ROUTE = "/api/serviceaccounts";
+    private static final String DASHBOARD_CREATION_ROUTE = "/api/dashboards/db";
     private static final String DASHBOARD_UNAVAILABLE_ERROR = "Dashboard container has not been set up within the stack. Please set it up first!";
 
     /**
@@ -40,6 +42,7 @@ public class DashboardClient {
      */
     public void initDashboard() {
         this.createServiceAccount();
+        this.createDashboard();
     }
 
     /**
@@ -63,8 +66,39 @@ public class DashboardClient {
         // Generate a new token
         response = this.SERVICE_CLIENT.sendPostRequest(route, params);
         responseMap = transformToMap(response.body().toString());
-        SERVICE_ACCOUNT_TOKEN = responseMap.get("key").toString();
+        this.SERVICE_ACCOUNT_TOKEN = responseMap.get("key").toString();
         LOGGER.info("Token for service account has been successfully generated...");
+    }
+
+    /**
+     * Create the dashboard required.
+     */
+    private void createDashboard() {
+        LOGGER.info("Initialising a new dashboard...");
+        String route = this.SERVICE_CLIENT.getDashboardUrl() + DASHBOARD_CREATION_ROUTE;
+        // Generate JSON model syntax
+        StringBuilder builder = new StringBuilder();
+        builder.append("{\"dashboard\": {")
+                // generate new id and uid using null
+                .append("\"id\": null,")
+                .append("\"uid\": null,")
+                // WIP: Refactor code to edit the dashboard title based on building or facility name
+                .append("\"title\": \"" + DASHBOARD_TITLE + "\",")
+                .append("\"timezone\": \"browser\",")
+                .append("\"schemaVersion\": 16,")
+                .append("\"version\": 0,")
+                .append("\"refresh\": \"25s\"")
+                .append("},")
+                // Comments for each update/ version
+                .append("\"message\": \"Initialised dashboard\",")
+                .append("\"overwrite\": false}");
+        // Create a new dashboard based on the JSON model using a POST request with security token
+        HttpResponse response = this.SERVICE_CLIENT.sendPostRequest(route, builder.toString(), this.SERVICE_ACCOUNT_TOKEN);
+        // WIP: Retrieve the required information to form the URL
+        // URL key is available as /EXPOSED_URL_NAME/d/DASHBOARD_ID/DASHBOARD_TITLE
+        HashMap<String, Object> responseMap = transformToMap(response.body().toString());
+        String dashboardId = responseMap.get("uid").toString();
+        String dashboardTitle = responseMap.get("slug").toString();
     }
 
     /**
