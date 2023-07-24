@@ -1,10 +1,12 @@
 package uk.ac.cam.cares.jps.agent.dashboard;
 
+import com.google.gson.Gson;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.net.http.HttpResponse;
+import java.util.HashMap;
 
 /**
  * A client that interacts with the dashboard container to set it up.
@@ -12,8 +14,9 @@ import java.net.http.HttpResponse;
  * @author qhouyee
  */
 public class DashboardClient {
-    private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
+    private String SERVICE_ACCOUNT_TOKEN;
     private final StackClient SERVICE_CLIENT;
+    private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
     private static final String SERVICE_ACCOUNT_ROUTE = "/api/serviceaccounts";
     private static final String DASHBOARD_UNAVAILABLE_ERROR = "Dashboard container has not been set up within the stack. Please set it up first!";
 
@@ -46,7 +49,31 @@ public class DashboardClient {
         LOGGER.info("Creating service account...");
         String route = this.SERVICE_CLIENT.getDashboardUrl() + SERVICE_ACCOUNT_ROUTE;
         String params = "{ \"name\": \"grafana\", \"role\": \"Admin\", \"isDisabled\" : false}";
-        this.SERVICE_CLIENT.sendPostRequest(route, params);
-        LOGGER.info("Service account has been successfully created...");
+        // Create a new service account
+        HttpResponse response = this.SERVICE_CLIENT.sendPostRequest(route, params);
+        LOGGER.info("Generating a new token...");
+        // Retrieve the account ID to facilitate token creation process
+        HashMap<String, Object> responseMap = transformToMap(response.body().toString());
+        // ID is in Double format due to how GSON parses it's number
+        // For our use case, we require it to be transformed into a non-decimal number
+        Double idDoubleFormat = (Double) responseMap.get("id");
+        int accountId = idDoubleFormat.intValue();
+        // ID must be appended to the route in the following syntax
+        route = route + "/" + accountId + "/tokens";
+        // Generate a new token
+        response = this.SERVICE_CLIENT.sendPostRequest(route, params);
+        responseMap = transformToMap(response.body().toString());
+        SERVICE_ACCOUNT_TOKEN = responseMap.get("key").toString();
+        LOGGER.info("Token for service account has been successfully generated...");
+    }
+
+    /**
+     * Transform a JSON object in string format into a Hashmap.
+     *
+     * @param jsonString A JSON object in String object.
+     */
+    private HashMap<String, Object> transformToMap(String jsonString) {
+        Gson gson = new Gson();
+        return gson.fromJson(jsonString, HashMap.class);
     }
 }
