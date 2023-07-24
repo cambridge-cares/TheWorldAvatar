@@ -22,7 +22,7 @@ from darts.metrics import mape, mse, rmse, smape
 from py4jps import agentlogging
 
 from forecastingagent.utils.tools import *
-from forecastingagent.utils.default_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
+from forecastingagent.utils.env_configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, \
                                               DB_URL, DB_USER, DB_PASSWORD
 from forecastingagent.datamodel.iris import *
 from forecastingagent.datamodel.data_mapping import *
@@ -35,7 +35,7 @@ logger = agentlogging.get_logger('prod')
 
 
 def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=None, data_length=None,
-             query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT, 
+             query_endpoint=SPARQL_QUERY_ENDPOINT, update_endpoint=SPARQL_UPDATE_ENDPOINT, 
              db_url=DB_URL, db_user=DB_USER, db_password=DB_PASSWORD):
     """
     Forecast a time series using a pre trained model or Prophet.

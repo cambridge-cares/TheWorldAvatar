@@ -43,7 +43,7 @@ def retrieve_stack_settings(database, namespace):
 
     # Extract SPARQL endpoints of KG 
     # (i.e. Query and Update endpoints are equivalent for Blazegraph)
-    QUERY_ENDPOINT = bg_conf.getUrl(namespace)
-    UPDATE_ENDPOINT = QUERY_ENDPOINT
+    SPARQL_QUERY_ENDPOINT = bg_conf.getUrl(namespace)
+    SPARQL_UPDATE_ENDPOINT = SPARQL_QUERY_ENDPOINT
 
-    return DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT
+    return DB_URL, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT

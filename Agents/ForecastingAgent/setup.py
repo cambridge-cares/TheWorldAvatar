@@ -1,7 +1,7 @@
 from setuptools import setup, find_namespace_packages 
 
 setup(
-    name='forecasting',
+    name='forecastingagent',
     version='2.0.0',
     author='Markus Hofmeister, Magnus Mueller',
     author_email='mh807@cam.ac.uk',

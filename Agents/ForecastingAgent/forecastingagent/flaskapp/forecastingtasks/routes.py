@@ -10,9 +10,9 @@ import traceback
 from flask import Blueprint, request, jsonify
 
 from forecastingagent.agent.agent import forecast
-from forecastingagent.utils.default_configs import STACK_NAME, NAMESPACE, DATABASE, \
+from forecastingagent.utils.env_configs import STACK_NAME, NAMESPACE, DATABASE, \
                                               DB_URL, DB_USER, DB_PASSWORD, \
-                                              QUERY_ENDPOINT, UPDATE_ENDPOINT
+                                              SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT
 from forecastingagent.utils.stack_configs import retrieve_stack_settings                                              
 from forecastingagent.errorhandling.exceptions import InvalidInput
 
@@ -174,7 +174,7 @@ def validate_connection_parameters(provided_http_parameters):
                 else:
                     stack_params[r] = default
         # Retrieve connection parameters from stack clients (returned as:
-        # DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT)
+        # DB_URL, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT)
         stack_conn_param = retrieve_stack_settings(**stack_params)
 
         # Construct conn_params

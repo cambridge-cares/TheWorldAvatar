@@ -23,24 +23,35 @@ def retrieve_default_settings():
     """
 
     # Define global scope for global variables
-    global NAMESPACE, DATABASE, STACK_NAME, \
-           DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT
+    global STACK_NAME, NAMESPACE, DATABASE, \
+           DB_URL, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, \
+           OVERWRITE_FORECAST
     
     # Initialise variables (to ensure working imports even if not defined in env vars)
-    NAMESPACE = None
-    DATABASE = None 
     STACK_NAME = None
+    NAMESPACE = None
+    DATABASE = None     
     DB_URL = None
     DB_USER = None
     DB_PASSWORD = None
-    QUERY_ENDPOINT = None
-    UPDATE_ENDPOINT = None
+    SPARQL_QUERY_ENDPOINT = None
+    SPARQL_UPDATE_ENDPOINT = None
 
     # Retrieve Docker Stack name
     STACK_NAME = os.getenv('STACK_NAME')
     if STACK_NAME is None:
         logger.error('"STACK_NAME" is missing in environment variables.')
         raise ValueError('"STACK_NAME" is missing in environment variables.')
+    
+    # Retrieve boolean flag whether to instantiate output forecast as new instance
+    # or add data to existing instance (potentially overwriting existing data)
+    OVERWRITE_FORECAST = os.getenv('OVERWRITE_FORECAST')
+    if OVERWRITE_FORECAST is None:
+        OVERWRITE_FORECAST = True
+        logger.warning(f'No "OVERWRITE_FORECAST" value has been provided in environment variables. Using default value: {OVERWRITE_FORECAST}.')
+    elif not isinstance(OVERWRITE_FORECAST, bool):        
+        OVERWRITE_FORECAST = True
+        logger.warning(f'Invalid "OVERWRITE_FORECAST" value has been provided in environment variables. Using default value: {OVERWRITE_FORECAST}.')
 
     # Retrieve Blazegraph and PostgreSQL settings depending on deployment mode
     if not STACK_NAME:
@@ -50,7 +61,7 @@ def retrieve_default_settings():
         
         # Retrieve global variables for default connection settings
         # Required variables
-        vars_names = ['DB_USER', 'DB_PASSWORD', 'QUERY_ENDPOINT', 'UPDATE_ENDPOINT']
+        vars_names = ['DB_USER', 'DB_PASSWORD', 'SPARQL_QUERY_ENDPOINT', 'SPARQL_UPDATE_ENDPOINT']
         for v in vars_names:
             globals()[v] = os.getenv(v)
             if not globals()[v]:
@@ -90,7 +101,7 @@ def retrieve_default_settings():
             logger.warning(f'Provided "DATABASE" name {DATABASE} does not match default database name "postgres".')
         
         # Retrieve settings from Stack Clients
-        db_url, DB_USER, DB_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT = \
+        db_url, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT = \
         retrieve_stack_settings(database=DATABASE, namespace=NAMESPACE)
         # Assign retrieved settings to global variables
         if database_given:
@@ -102,8 +113,8 @@ def retrieve_default_settings():
     logger.info(f"DB_URL: {DB_URL}")
     logger.info(f"DB_USER: {DB_USER}")
     logger.info(f"DB_PASSWORD: {DB_PASSWORD}")
-    logger.info(f"QUERY_ENDPOINT: {QUERY_ENDPOINT}")
-    logger.info(f"UPDATE_ENDPOINT: {UPDATE_ENDPOINT}")
+    logger.info(f"SPARQL_QUERY_ENDPOINT: {SPARQL_QUERY_ENDPOINT}")
+    logger.info(f"SPARQL_UPDATE_ENDPOINT: {SPARQL_UPDATE_ENDPOINT}")
 
 
 # Run when module is imported

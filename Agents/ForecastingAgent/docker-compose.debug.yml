@@ -15,8 +15,8 @@ services:
       - DB_URL=jdbc:postgresql://host.docker.internal:9431/forecasting
       - DB_USER=postgres
       - DB_PASSWORD=postgres
-      - QUERY_ENDPOINT=http://host.docker.internal:9999/blazegraph/namespace/forecasting/sparql
-      - UPDATE_ENDPOINT=http://host.docker.internal:9999/blazegraph/namespace/forecasting/sparql
+      - SPARQL_QUERY_ENDPOINT=http://host.docker.internal:9999/blazegraph/namespace/forecasting/sparql
+      - SPARQL_UPDATE_ENDPOINT=http://host.docker.internal:9999/blazegraph/namespace/forecasting/sparql
     build:
       # Path to dockerfile ('.' represents current directory with .yml file)
       context: .

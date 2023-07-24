@@ -15,8 +15,8 @@ services:
       - DB_URL=
       - DB_USER=
       - DB_PASSWORD=
-      - QUERY_ENDPOINT=
-      - UPDATE_ENDPOINT=
+      - SPARQL_QUERY_ENDPOINT=
+      - SPARQL_UPDATE_ENDPOINT=
     build:
       # Path to dockerfile ('.' represents current directory with .yml file)
       context: .

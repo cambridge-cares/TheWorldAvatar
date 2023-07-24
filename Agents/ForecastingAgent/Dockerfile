@@ -72,4 +72,27 @@ COPY ./forecastingagent ./forecasting
 # timeout set to 30min to avoid exceptions for longer API/KG calls
 ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "forecastingagent:create_app()" --timeout 1800
 
+#------------------------------------------------------
+# Debug testing image reusing the base
+#------------------------------------------------------
+FROM base as debug_test
+# Install additional dependencies
+RUN apt-get update
+RUN apt install libpq-dev python3-dev gcc -y
+RUN python -m pip install -e .[dev]
+RUN pip install debugpy
+
+# Set flask app and development environment to allow for hot-reloading
+ENV FLASK_APP=app/forecastingagent:create_app()
+ENV FLASK_DEBUG=1
+
+# Copy docker-compose-file to spin up testcontainers (agent code and tests are mounted as volumes)
+COPY ./docker-compose-testcontainers.yml ./docker-compose.yml
+
+# Launch pytest in container (-s flag to enable more output/logging)
+WORKDIR /app
+# Start dockerised agent app as well as pytest
+# (combining commands using & ensures they are started in parallel in background)
+CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000 & pytest -s
+
 #==================================================================================================

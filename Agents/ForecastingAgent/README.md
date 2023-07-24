@@ -28,8 +28,8 @@ The dockerised agent can be deployed as standalone version (i.e. outside a large
 - DB_URL=
 - DB_USER=
 - DB_PASSWORD=
-- QUERY_ENDPOINT=
-- UPDATE_ENDPOINT=
+- SPARQL_QUERY_ENDPOINT=
+- SPARQL_UPDATE_ENDPOINT=
 ```
 
 The `STACK_NAME` variable is used to identify the deployment mode of the agent. In case the `STACK_NAME` is left blank, default Postgres and Blazegraph endpoint setting will be taken from the docker-compose file. Otherwise they will be retrieved using the StackClients based on the provided `NAMESPACE` and `DATABASE` variables.
