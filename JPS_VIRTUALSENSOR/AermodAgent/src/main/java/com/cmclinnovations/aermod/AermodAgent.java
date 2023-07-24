@@ -208,9 +208,10 @@ public class AermodAgent extends DerivationAgent {
         // Upload elevation contour plot to POSTGIS and GeoServer
         // The receptor.dat file may have been previously created by running AERMAP. If
         // so, it should not be overwritten.
-        if (Files.notExists(simulationDirectory.resolve("aermod").resolve("receptor.dat")))
+        Path receptorPath = simulationDirectory.resolve("aermod").resolve("receptor.dat");
+        if (Files.notExists(receptorPath))
             aermod.createAERMODReceptorInput(scope, nx, ny, srid);
-        String receptorFileURL = aermod.uploadToFileServer("receptor.dat");
+        String receptorFileURL = aermod.uploadToFileServer(receptorPath);
         JSONObject geoJSON2 = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_ELEVATION_URL, receptorFileURL, srid, 0.0,
                 null);
         gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, elevationLayerName, geoJSON2.toString(),
@@ -222,20 +223,22 @@ public class AermodAgent extends DerivationAgent {
             if (!allSources.stream().allMatch(p -> p.hasPollutant(pollutantType))) {
                 continue;
             }
+            aermod.createPollutantSubDirectory(pollutantType);
 
             String pollutId = Pollutant.getPollutantLabel(pollutantType);
             // create emissions input
             aermod.createPointsFile(allSources, srid, pollutantType);
-            aermod.createAermodInputFile(scope, nx, ny, srid);
-            aermod.runAermod("aermod.inp", pollutId);
+            aermod.runAermod(pollutantType);
 
             // Upload files used by scripts within Python Service to file server.
-            String outputFileURL = aermod.uploadToFileServer("averageConcentration.dat");
+            Path concFile = simulationDirectory.resolve(
+                    Paths.get("aermod", Pollutant.getPollutantLabel(pollutantType), "averageConcentration.dat"));
+            String outputFileURL = aermod.uploadToFileServer(concFile);
             dispersionOutput.addDispMatrix(pollutantType, outputFileURL);
 
             String rasterFileName = UUID.randomUUID().toString();
             try {
-                aermod.createFileForRaster(rasterFileName);
+                aermod.createFileForRaster(rasterFileName, pollutantType);
                 dispersionOutput.addDispRaster(pollutantType, rasterFileName + ".tif");
             } catch (FileNotFoundException e) {
                 LOGGER.error("Average concentration file not found, probably failed to run simulation");

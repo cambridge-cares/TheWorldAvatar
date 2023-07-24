@@ -45,6 +45,7 @@ import org.locationtech.jts.geom.Polygon;
 import com.cmclinnovations.aermod.objects.Building;
 import com.cmclinnovations.aermod.objects.DispersionOutput;
 import com.cmclinnovations.aermod.objects.PointSource;
+import com.cmclinnovations.aermod.objects.Pollutant;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
 import com.cmclinnovations.aermod.objects.WeatherData;
 import com.cmclinnovations.aermod.objects.Pollutant.PollutantType;
@@ -297,7 +298,7 @@ public class Aermod {
             }
         }
 
-        writeToFile(aermodDirectory.resolve("buildings.dat"), sb.toString());
+        writeToFile(bpipprmDirectory.resolve("buildings.dat"), sb.toString());
     }
 
     public JSONObject createStaticPointSourcesJSON(List<StaticPointSource> pointSources) {
@@ -516,8 +517,8 @@ public class Aermod {
         }
 
         // check if outputs are generated
-        File surfaceFile = aermodDirectory.resolve("AERMET_SURF.SFC").toFile();
-        File upperFile = aermodDirectory.resolve("AERMET_UPPER.PFL").toFile();
+        File surfaceFile = aermetDirectory.resolve("AERMET_SURF.SFC").toFile();
+        File upperFile = aermetDirectory.resolve("AERMET_UPPER.PFL").toFile();
 
         // Even if the output files were generated, they may be blank if AERMET did not
         // complete successfully.
@@ -568,7 +569,8 @@ public class Aermod {
             sb.append(System.lineSeparator());
         }
 
-        writeToFile(aermodDirectory.resolve("points.so"), sb.toString());
+        writeToFile(aermodDirectory.resolve(Pollutant.getPollutantLabel(pollutantType)).resolve("points.so"),
+                sb.toString());
     }
 
     private void writeToFile(Path path, String content) {
@@ -583,60 +585,21 @@ public class Aermod {
         }
     }
 
-    public void createAermodInputFile(Geometry scope, int nx, int ny, int srid) {
-        List<Double> xDoubles = new ArrayList<>();
-        List<Double> yDoubles = new ArrayList<>();
-
-        String originalSRID = "EPSG:" + scope.getSRID();
-
-        for (int i = 0; i < scope.getCoordinates().length; i++) {
-            double[] xyTransformed = CRSTransformer.transform(originalSRID, "EPSG:" + srid, scope.getCoordinates()[i].x,
-                    scope.getCoordinates()[i].y);
-
-            xDoubles.add(xyTransformed[0]);
-            yDoubles.add(xyTransformed[1]);
-        }
-
-        double xMax = Collections.max(xDoubles);
-        double xMin = Collections.min(xDoubles);
-        double yMax = Collections.max(yDoubles);
-        double yMin = Collections.min(yDoubles);
-
-        double dy = (yMax - yMin) / ny;
-        double dx = (xMax - xMin) / nx;
-
-        String templateContent;
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("aermod.inp")) {
-            templateContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-            String simGrid = String.format("%f %d %f %f %d %f", xMin, nx, dx, yMin, ny, dy);
-            templateContent = templateContent.replace("REPLACED_BY_AERMOD_AGENT", simGrid);
+    void runAermod(PollutantType pollutantType) {
+        String aermodInputFile = "aermod.inp";
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(aermodInputFile)) {
+            Files.copy(inputStream,
+                    aermodDirectory.resolve(Pollutant.getPollutantLabel(pollutantType)).resolve(aermodInputFile));
         } catch (IOException e) {
-            String errmsg = "Failed to read aermod.inp file";
+            String errmsg = "Failed to copy the AERMOD input file";
             LOGGER.error(e.getMessage());
             LOGGER.error(errmsg);
             throw new RuntimeException(errmsg, e);
         }
 
-        writeToFile(aermodDirectory.resolve("aermod.inp"), templateContent);
-    }
-
-    void runAermod(String aermodInputFile, String pollutId) {
-        File tempFile = new File(aermodDirectory.resolve(aermodInputFile).toString());
-
-        if (!tempFile.exists()) {
-            try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(aermodInputFile)) {
-                Files.copy(inputStream, aermodDirectory.resolve(aermodInputFile));
-            } catch (IOException e) {
-                String errmsg = "Failed to copy the AERMOD input file";
-                LOGGER.error(e.getMessage());
-                LOGGER.error(errmsg);
-                throw new RuntimeException(errmsg, e);
-            }
-        }
-
         try {
             Process process = Runtime.getRuntime().exec(new String[] { EnvConfig.AERMOD_EXE, aermodInputFile }, null,
-                    aermodDirectory.toFile());
+                    aermodDirectory.resolve(Pollutant.getPollutantLabel(pollutantType)).toFile());
             process.waitFor();
 
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
@@ -655,33 +618,27 @@ public class Aermod {
             while ((s = stdError.readLine()) != null) {
                 LOGGER.info(s);
             }
-
-            Path pollutantDirectory = aermodDirectory.resolve(pollutId);
-            pollutantDirectory.toFile().mkdir();
-            Files.copy(aermodDirectory.resolve("aermod.out"), pollutantDirectory.resolve("aermod.out"));
-            Files.copy(aermodDirectory.resolve("averageConcentration.dat"),
-                    pollutantDirectory.resolve("averageConcentration.dat"));
-
         } catch (IOException e) {
-            String errmsg = "Error executing aermod for " + pollutId;
+            String errmsg = "Error executing aermod for " + Pollutant.getPollutantLabel(pollutantType);
             LOGGER.error(errmsg);
             LOGGER.error(e.getMessage());
             throw new RuntimeException(errmsg, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            String errmsg = "Error executing aermod for " + pollutId;
+            String errmsg = "Error executing aermod for " + Pollutant.getPollutantLabel(pollutantType);
             LOGGER.error(errmsg);
             LOGGER.error(e.getMessage());
             throw new RuntimeException(errmsg, e);
         }
     }
 
-    String uploadToFileServer(String filename) {
+    String uploadToFileServer(Path file) {
         // upload to file server via HTTP POST
         MultipartEntityBuilder multipartBuilder = MultipartEntityBuilder.create();
-        multipartBuilder.addPart("dispersionMatrix", new FileBody(aermodDirectory.resolve(filename).toFile()));
+        multipartBuilder.addPart("dispersionMatrix", new FileBody(file.toFile()));
 
-        HttpPost httpPost = new HttpPost(EnvConfig.FILE_SERVER + simulationDirectory.getFileName() + "/");
+        HttpPost httpPost = new HttpPost(
+                EnvConfig.FILE_SERVER + file.subpath(3, file.getNameCount() - 1).toFile() + "/");
         httpPost.setEntity(multipartBuilder.build());
 
         String auth = "fs_user" + ":" + "fs_pass"; // default credentials for the file server container
@@ -705,8 +662,9 @@ public class Aermod {
         }
     }
 
-    void createFileForRaster(String rasterFileName) throws FileNotFoundException {
-        File concFile = aermodDirectory.resolve("averageConcentration.dat").toFile();
+    void createFileForRaster(String rasterFileName, PollutantType pollutantType) throws FileNotFoundException {
+        File concFile = aermodDirectory.resolve(Pollutant.getPollutantLabel(pollutantType))
+                .resolve("averageConcentration.dat").toFile();
         List<String[]> xyzList = new ArrayList<>();
 
         try (Scanner scanner = new Scanner(concFile)) {
@@ -1022,5 +980,9 @@ public class Aermod {
         }
 
         writeToFile(settingsJson.toPath(), overall.toString(4));
+    }
+
+    void createPollutantSubDirectory(PollutantType pollutantType) {
+        aermodDirectory.resolve(Pollutant.getPollutantLabel(pollutantType)).toFile().mkdir();
     }
 }
