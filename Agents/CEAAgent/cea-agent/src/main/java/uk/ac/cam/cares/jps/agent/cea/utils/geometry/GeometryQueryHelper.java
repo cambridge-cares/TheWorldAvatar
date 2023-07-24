@@ -46,19 +46,23 @@ public class GeometryQueryHelper {
                 result = result.length() == 0 ? getValue(uriString, "HeightMeasuredHeight", route) : result;
                 result = result.length() == 0 ? getValue(uriString, "HeightGenAttr", route) : result;
                 result = result.length() == 0 ? "10.0" : result;
+                break;
 
             case "footprint":
                 // Get footprint from ground thematic surface or find from surface geometries depending on data
                 result = getValue(uriString, "Lod0FootprintId", route);
                 result = result.length() == 0 ? getValue(uriString, "FootprintThematicSurface", route) : result;
                 result = result.length() == 0 ? getValue(uriString, "FootprintSurfaceGeom", route) : result;
+                break;
 
             case "crs":
                 result = getValue(uriString, "CRS", route);
                 result = result.isEmpty() ? getValue(uriString, "DatabasesrsCRS", route) : result;
+                break;
 
             default:
                 result = "";
+                break;
         }
 
         return result;
@@ -100,7 +104,7 @@ public class GeometryQueryHelper {
      * @param value building value requested
      * @return returns a query string
      */
-    private Query getQuery(String value, String uriString) {
+    private Query getQuery(String uriString, String value) {
         switch(value) {
             case "Lod0FootprintId":
                 return getLod0FootprintIdQuery(uriString);
