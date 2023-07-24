@@ -556,32 +556,7 @@ public class QueryClient {
                     pointSource.setParticleDensity(density);
                 }
 
-                switch (pollutantID) {
-                    case CO2:
-                        pointSource.setFlowRateCO2InKgPerS(emission);
-                        break;
-                    case NO_X:
-                        pointSource.setFlowRateNOxInKgPerS(emission);
-                        break;
-                    case SO2:
-                        pointSource.setFlowRateSO2InKgPerS(emission);
-                        break;
-                    case CO:
-                        pointSource.setFlowRateCOInKgPerS(emission);
-                        break;
-                    case UHC:
-                        pointSource.setFlowRateHCInKgPerS(emission);
-                        break;
-                    case PM10:
-                        pointSource.setFlowRatePM10InKgPerS(emission);
-                        break;
-                    case PM25:
-                        pointSource.setFlowRatePM25InKgPerS(emission);
-                        break;
-                    default:
-                        LOGGER.info("Unknown pollutant ID encountered in AermodAgent/QueryClient class: {}",
-                                pollutantID);
-                }
+                pointSource.setFlowrateInKgPerS(Pollutant.getPollutantType(pollutantID), emission);
             }
         }
     }

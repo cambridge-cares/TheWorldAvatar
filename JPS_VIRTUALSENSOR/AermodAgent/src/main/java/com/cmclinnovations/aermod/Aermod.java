@@ -87,8 +87,7 @@ public class Aermod {
 
     /* Create input config and data files for AERMAP. */
 
-    public int createAERMAPInput(List<byte[]> elevData, int centreZoneNumber) {
-
+    public void createAERMAPInput(List<byte[]> elevData, int centreZoneNumber) {
         int n = elevData.size();
         StringBuilder aermapInputString = new StringBuilder();
 
@@ -99,9 +98,10 @@ public class Aermod {
             try {
                 Files.write(aermapDirectory.resolve(fn), elevData.get(i));
             } catch (IOException e) {
+                String errmsg = "Error writing " + fn;
                 LOGGER.error(e.getMessage());
-                LOGGER.error("Error writing byte {} to .tif file.", i);
-                return 1;
+                LOGGER.error(errmsg);
+                throw new RuntimeException(errmsg, e);
             }
         }
 
@@ -113,22 +113,21 @@ public class Aermod {
             String simGrid = String.format("%f %f %f %f %d %d", 0.0, 0.0, 0.0, 0.0, centreZoneNumber, 0);
             templateContent = templateContent.replace("REPLACED_BY_AERMOD_AGENT", simGrid);
         } catch (IOException e) {
+            String errmsg = "Failed to copy aermap.inp";
             LOGGER.error(e.getMessage());
             LOGGER.error("Failed to copy aermap.inp");
-            return 1;
+            throw new RuntimeException(errmsg, e);
         }
 
-        return writeToFile(aermapDirectory.resolve("aermap.inp"), templateContent);
+        writeToFile(aermapDirectory.resolve("aermap.inp"), templateContent);
     }
 
     /* Create receptor data files for AERMAP. */
-    public int createAERMAPReceptorInput(Polygon scope, int nx, int ny, int simulationSrid) {
-
+    public void createAERMAPReceptorInput(Polygon scope, int nx, int ny, int simulationSrid) {
         List<Double> xDoubles = new ArrayList<>();
         List<Double> yDoubles = new ArrayList<>();
 
         for (int i = 0; i < scope.getCoordinates().length; i++) {
-
             String originalSrid = "EPSG:4326";
             double[] xyOriginal = { scope.getCoordinates()[i].x, scope.getCoordinates()[i].y };
             double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
@@ -151,10 +150,10 @@ public class Aermod {
         sb.append(rec).append(System.lineSeparator());
         sb.append("RE GRIDCART POL1 END ").append(System.lineSeparator());
 
-        return writeToFile(aermapDirectory.resolve("aermapReceptors.dat"), sb.toString());
+        writeToFile(aermapDirectory.resolve("aermapReceptors.dat"), sb.toString());
     }
 
-    public int runAermap() {
+    public void runAermap() {
         try {
             Process process = Runtime.getRuntime().exec(new String[] { EnvConfig.AERMAP_EXE, "aermap.inp" }, null,
                     aermapDirectory.toFile());
@@ -175,27 +174,23 @@ public class Aermod {
             while ((s = stdError.readLine()) != null) {
                 LOGGER.info(s);
             }
-
-            if (process.waitFor() != 0) {
-                return 1;
-            }
-
+            process.waitFor();
         } catch (IOException e) {
-            LOGGER.error("Error executing aermap");
+            String errmsg = "Error executing aermap";
+            LOGGER.error(errmsg);
             LOGGER.error(e.getMessage());
-            return 1;
+            throw new RuntimeException(errmsg, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            LOGGER.error("Error executing aermap");
+            String errmsg = "Error executing aermap";
+            LOGGER.error(errmsg);
             LOGGER.error(e.getMessage());
-            return 1;
+            throw new RuntimeException(errmsg, e);
         }
-        return 0;
     }
 
     /* Write out data to BPIPPRM input file and run this program. */
-    public int createBPIPPRMInput(List<StaticPointSource> pointSources, List<Building> buildings, int simulationSrid) {
-
+    public void createBPIPPRMInput(List<StaticPointSource> pointSources, List<Building> buildings, int simulationSrid) {
         StringBuilder sb = new StringBuilder();
         sb.append("\'BPIPPRM test run\' ");
         sb.append(System.lineSeparator());
@@ -223,7 +218,6 @@ public class Aermod {
                 double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
                 inputLine = xyTransformed[0] + " " + xyTransformed[1];
                 sb.append(inputLine).append(System.lineSeparator());
-
             }
         }
 
@@ -238,18 +232,17 @@ public class Aermod {
                     ps.getHeight() + " " + xyTransformed[0] + " " + xyTransformed[1];
             sb.append(inputLine).append(System.lineSeparator());
         }
-        return writeToFile(bpipprmDirectory.resolve("bpipprm.inp"), sb.toString());
-
+        writeToFile(bpipprmDirectory.resolve("bpipprm.inp"), sb.toString());
     }
 
-    public int runBPIPPRM() {
+    public void runBPIPPRM() {
         try {
             Process process = Runtime.getRuntime().exec(
                     new String[] { EnvConfig.BPIPPRM_EXE, "bpipprm.inp", "building.dat", "buildings_summary.dat" },
                     null, bpipprmDirectory.toFile());
-            if (process.waitFor() != 0) {
-                return 1;
-            }
+
+            process.waitFor();
+
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
             BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
@@ -267,45 +260,47 @@ public class Aermod {
                 LOGGER.info(s);
             }
         } catch (IOException e) {
-            return 0;
+            String errmsg = "Error running bpipprm";
+            LOGGER.error(e.getMessage());
+            LOGGER.error(errmsg);
+            throw new RuntimeException(errmsg, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            return 0;
+            String errmsg = "Error running bpipprm";
+            LOGGER.error(e.getMessage());
+            LOGGER.error(errmsg);
+            throw new RuntimeException(errmsg, e);
         }
-        return 0;
     }
 
-    public int createAERMODBuildingsInput(String citiesNamespace) {
-
+    public void createAERMODBuildingsInput(String citiesNamespace) {
         StringBuilder sb = new StringBuilder();
 
         if (citiesNamespace == null) {
             sb.append(" ");
-            return writeToFile(aermodDirectory.resolve("buildings.dat"), sb.toString());
-        }
+        } else {
+            Path filepath = bpipprmDirectory.resolve("building.dat");
 
-        Path filepath = bpipprmDirectory.resolve("building.dat");
-
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(filepath.toString()));
-            String line = reader.readLine();
-            while (line != null) {
-                line = line.stripLeading();
-                if (line.length() > 2 && line.substring(0, 2).equals("SO"))
-                    sb.append(line).append(System.lineSeparator());
-                line = reader.readLine();
+            try (BufferedReader reader = new BufferedReader(new FileReader(filepath.toString()));) {
+                String line = reader.readLine();
+                while (line != null) {
+                    line = line.stripLeading();
+                    if (line.length() > 2 && line.substring(0, 2).equals("SO"))
+                        sb.append(line).append(System.lineSeparator());
+                    line = reader.readLine();
+                }
+            } catch (IOException e) {
+                String errmsg = "Error creating buildings input";
+                LOGGER.error(e.getMessage());
+                LOGGER.error(errmsg);
+                throw new RuntimeException(errmsg, e);
             }
-            reader.close();
-            LOGGER.info(sb.toString());
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
         }
 
-        return writeToFile(aermodDirectory.resolve("buildings.dat"), sb.toString());
+        writeToFile(aermodDirectory.resolve("buildings.dat"), sb.toString());
     }
 
     public JSONObject createStaticPointSourcesJSON(List<StaticPointSource> pointSources) {
-
         // define a list of (longitude, latitude) coordinates
         List<List<Double>> lonlatCoordinates = new ArrayList<>();
 
@@ -338,11 +333,9 @@ public class Aermod {
 
         LOGGER.info("Uploading static point sources GeoJSON to PostGIS");
         return featureCollection;
-
     }
 
-    public int createAERMODReceptorInput(Polygon scope, int nx, int ny, int simulationSrid) {
-
+    public void createAERMODReceptorInput(Polygon scope, int nx, int ny, int simulationSrid) {
         List<Double> xDoubles = new ArrayList<>();
         List<Double> yDoubles = new ArrayList<>();
 
@@ -370,7 +363,7 @@ public class Aermod {
         sb.append(rec).append(System.lineSeparator());
         sb.append("RE GRIDCART POL1 END ").append(System.lineSeparator());
 
-        return writeToFile(aermodDirectory.resolve("receptor.dat"), sb.toString());
+        writeToFile(aermodDirectory.resolve("receptor.dat"), sb.toString());
     }
 
     String addLeadingZero(String variable, int length) {
@@ -380,20 +373,21 @@ public class Aermod {
         return variable;
     }
 
-    int create144File(WeatherData weatherData) {
-
+    void create144File(WeatherData weatherData) {
         String windSpeed = String.valueOf(weatherData.getWindSpeedInKnots());
         windSpeed = addLeadingZero(windSpeed, 2);
         if (windSpeed.length() != 2) {
-            LOGGER.error("Invalid wind speed value {}", windSpeed);
-            return 1;
+            String errmsg = "Invalid wind speed value " + windSpeed;
+            LOGGER.error(errmsg);
+            throw new RuntimeException(errmsg);
         }
 
         String windDirection = String.valueOf(weatherData.getWindDirectionInTensOfDegrees());
         windDirection = addLeadingZero(windDirection, 2);
         if (windDirection.length() != 2) {
-            LOGGER.error("Invalid wind direction value {}", windDirection);
-            return 1;
+            String errmsg = "Invalid wind direction value " + windDirection;
+            LOGGER.error(errmsg);
+            throw new RuntimeException(errmsg);
         }
 
         // unsure how strict the format is, just follow blindly at the moment
@@ -403,20 +397,24 @@ public class Aermod {
             temperature = "0" + temperature;
         }
         if (temperature.length() != 3) {
-            LOGGER.error("Invalid temperature value {}", temperature);
-            return 1;
+            String errmsg = "Invalid temperature value " + temperature;
+            LOGGER.error(errmsg);
+            throw new RuntimeException(errmsg);
         }
 
         String humidity = String.valueOf(weatherData.getHumidityAsPercentage());
         humidity = addLeadingZero(humidity, 3);
         if (humidity.length() != 3) {
-            LOGGER.error("Invalid humidity value {}", humidity);
-            return 1;
+            String errmsg = "Invalid humidity value " + humidity;
+            LOGGER.error(errmsg);
+            throw new RuntimeException(errmsg);
         }
 
         String cloudCover = String.valueOf(weatherData.getCloudCoverAsInteger());
         if (cloudCover.length() != 1) {
-            LOGGER.error("Invalid cloud cover value {}", cloudCover);
+            String errmsg = "Invalid cloud cover value " + cloudCover;
+            LOGGER.error(errmsg);
+            throw new RuntimeException(errmsg);
         }
 
         String templateContent;
@@ -427,16 +425,16 @@ public class Aermod {
                     .replace("TEM", temperature)
                     .replace("HUM", humidity).replace("C", cloudCover);
         } catch (IOException e) {
+            String errmsg = "Failed to read weather_template.144 file";
             LOGGER.error(e.getMessage());
-            LOGGER.error("Failed to read weather_template.144 file");
-            return 1;
+            LOGGER.error(errmsg);
+            throw new RuntimeException(errmsg, e);
         }
 
-        return writeToFile(aermetDirectory.resolve("weather_template.144"), templateContent);
+        writeToFile(aermetDirectory.resolve("weather_template.144"), templateContent);
     }
 
-    public int createAermetInput(Polygon scope) {
-
+    public void createAermetInput(Polygon scope) {
         double lat = scope.getCentroid().getCoordinate().getY();
         double lon = scope.getCentroid().getCoordinate().getX();
 
@@ -461,39 +459,32 @@ public class Aermod {
             templateContent = templateContent.replace("REPLACED_1", locationOffset);
             templateContent = templateContent.replace("REPLACED_2", location);
         } catch (IOException e) {
+            String errmsg = "Failed to copy " + AERMET_INPUT;
             LOGGER.error(e.getMessage());
             LOGGER.error("Failed to copy {}", AERMET_INPUT);
-            return 1;
+            throw new RuntimeException(errmsg, e);
         }
 
-        return writeToFile(aermetDirectory.resolve(AERMET_INPUT), templateContent);
-
+        writeToFile(aermetDirectory.resolve(AERMET_INPUT), templateContent);
     }
 
-    /**
-     * return value 0 = success
-     * 1 = possible error
-     * 
-     * @return
-     */
-    int runAermet(Polygon scope) {
-
+    void runAermet(Polygon scope) {
         createAermetInput(scope);
 
         try (InputStream is = getClass().getClassLoader().getResourceAsStream("raob_soundings15747.FSL")) {
             Files.copy(is, aermetDirectory.resolve("raob_soundings15747.FSL"));
         } catch (IOException e) {
+            String errmsg = "Failed to copy raob_soundings15747.FSL";
             LOGGER.error(e.getMessage());
-            LOGGER.error("Failed to copy raob_soundings15747.FSL");
-            return 1;
+            LOGGER.error(errmsg);
+            throw new RuntimeException(errmsg, e);
         }
 
         try {
             Process process = Runtime.getRuntime().exec(new String[] { EnvConfig.AERMET_EXE, AERMET_INPUT }, null,
                     aermetDirectory.toFile());
-            if (process.waitFor() != 0) {
-                return 1;
-            }
+            process.waitFor();
+
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
             BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
@@ -512,14 +503,16 @@ public class Aermod {
             }
 
         } catch (IOException e) {
-            LOGGER.error("Error executing aermet");
+            String errmsg = "Error executing aermet";
+            LOGGER.error(errmsg);
             LOGGER.error(e.getMessage());
-            return 1;
+            throw new RuntimeException(errmsg, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            LOGGER.error("Error executing aermet");
+            String errmsg = "Error executing aermet";
+            LOGGER.error(errmsg);
             LOGGER.error(e.getMessage());
-            return 1;
+            throw new RuntimeException(errmsg, e);
         }
 
         // check if outputs are generated
@@ -530,21 +523,19 @@ public class Aermod {
         // complete successfully.
         if (surfaceFile.exists() && surfaceFile.length() > 0 && upperFile.exists() && upperFile.length() > 0) {
             LOGGER.info("AERMET has completed successfully. ");
-            return 0;
         } else {
+            String errmsg = "aermet may not have completed successfully";
             LOGGER.error("aermet may not have completed successfully");
-            return 1;
+            throw new RuntimeException(errmsg);
         }
     }
 
-    int createPointsFile(List<PointSource> pointSources, int simulationSrid, PollutantType pollutantType) {
+    void createPointsFile(List<PointSource> pointSources, int simulationSrid, PollutantType pollutantType) {
         StringBuilder sb = new StringBuilder();
 
         double maxFlowRate = 0.0;
-        double eps = 1.0e-20;
 
         for (int i = 0; i < pointSources.size(); i++) {
-
             PointSource ps = pointSources.get(i);
             String stkId = "S" + i;
 
@@ -555,30 +546,7 @@ public class Aermod {
             double area = Math.PI * Math.pow(ps.getDiameter() / 2, 2); // m2
             double density = ps.getMixtureDensityInKgm3(); // kg/m3
 
-            double massFlowrateInGs = 0.0;
-            switch (pollutantType) {
-                case CO2:
-                    massFlowrateInGs = ps.getFlowrateCO2InGramsPerSecond();
-                    break;
-                case NO_X:
-                    massFlowrateInGs = ps.getFlowrateNOxInGramsPerS();
-                    break;
-                case SO2:
-                    massFlowrateInGs = ps.getFlowrateSO2InGramsPerS();
-                    break;
-                case CO:
-                    massFlowrateInGs = ps.getFlowrateCOInGramsPerS();
-                    break;
-                case UHC:
-                    massFlowrateInGs = ps.getFlowrateHCInGramsPerS();
-                    break;
-                case PM10:
-                    massFlowrateInGs = ps.getFlowRatePm10InGramsPerS();
-                    break;
-                case PM2_5:
-                    massFlowrateInGs = ps.getFlowRatePm25InGramsPerS();
-                    break;
-            }
+            double massFlowrateInGs = ps.getFlowrateInGramsPerS(pollutantType);
 
             // TODO: This will not work for PM10 and PM2.5.
             double velocity = massFlowrateInGs / 1000 / area / density; // m/s
@@ -600,26 +568,22 @@ public class Aermod {
             sb.append(System.lineSeparator());
         }
 
-        if (maxFlowRate <= eps)
-            return 1;
-
-        return writeToFile(aermodDirectory.resolve("points.so"), sb.toString());
+        writeToFile(aermodDirectory.resolve("points.so"), sb.toString());
     }
 
-    private int writeToFile(Path path, String content) {
+    private void writeToFile(Path path, String content) {
         try (BufferedWriter writer = Files.newBufferedWriter(path)) {
             LOGGER.info("Writing file: {}", path);
             writer.write(content);
-            return 0;
         } catch (IOException e) {
             String errmsg = "Failed to write " + path.getFileName();
             LOGGER.error(errmsg);
             LOGGER.error(e.getMessage());
-            return 1;
+            throw new RuntimeException(e);
         }
     }
 
-    public int createAermodInputFile(Geometry scope, int nx, int ny, int srid) {
+    public void createAermodInputFile(Geometry scope, int nx, int ny, int srid) {
         List<Double> xDoubles = new ArrayList<>();
         List<Double> yDoubles = new ArrayList<>();
 
@@ -647,34 +611,33 @@ public class Aermod {
             String simGrid = String.format("%f %d %f %f %d %f", xMin, nx, dx, yMin, ny, dy);
             templateContent = templateContent.replace("REPLACED_BY_AERMOD_AGENT", simGrid);
         } catch (IOException e) {
+            String errmsg = "Failed to read aermod.inp file";
             LOGGER.error(e.getMessage());
-            LOGGER.error("Failed to read aermod.inp file");
-            return 1;
+            LOGGER.error(errmsg);
+            throw new RuntimeException(errmsg, e);
         }
 
-        return writeToFile(aermodDirectory.resolve("aermod.inp"), templateContent);
+        writeToFile(aermodDirectory.resolve("aermod.inp"), templateContent);
     }
 
-    int runAermod(String aermodInputFile, String pollutId) {
-
+    void runAermod(String aermodInputFile, String pollutId) {
         File tempFile = new File(aermodDirectory.resolve(aermodInputFile).toString());
 
         if (!tempFile.exists()) {
             try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(aermodInputFile)) {
                 Files.copy(inputStream, aermodDirectory.resolve(aermodInputFile));
             } catch (IOException e) {
+                String errmsg = "Failed to copy the AERMOD input file";
                 LOGGER.error(e.getMessage());
-                LOGGER.error("Failed to copy the AERMOD input file {}", aermodInputFile);
-                return 1;
+                LOGGER.error(errmsg);
+                throw new RuntimeException(errmsg, e);
             }
         }
 
         try {
             Process process = Runtime.getRuntime().exec(new String[] { EnvConfig.AERMOD_EXE, aermodInputFile }, null,
                     aermodDirectory.toFile());
-            if (process.waitFor() != 0) {
-                return 1;
-            }
+            process.waitFor();
 
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
@@ -700,17 +663,21 @@ public class Aermod {
                     pollutantDirectory.resolve("averageConcentration.dat"));
 
         } catch (IOException e) {
-            return 0;
+            String errmsg = "Error executing aermod for " + pollutId;
+            LOGGER.error(errmsg);
+            LOGGER.error(e.getMessage());
+            throw new RuntimeException(errmsg, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            return 0;
+            String errmsg = "Error executing aermod for " + pollutId;
+            LOGGER.error(errmsg);
+            LOGGER.error(e.getMessage());
+            throw new RuntimeException(errmsg, e);
         }
-        return 0;
     }
 
     String uploadToFileServer(String filename) {
         // upload to file server via HTTP POST
-
         MultipartEntityBuilder multipartBuilder = MultipartEntityBuilder.create();
         multipartBuilder.addPart("dispersionMatrix", new FileBody(aermodDirectory.resolve(filename).toFile()));
 
@@ -731,13 +698,14 @@ public class Aermod {
                 return fileURL;
             }
         } catch (IOException e) {
-            LOGGER.error("File upload failed");
+            String errmsg = "File upload failed";
+            LOGGER.error(errmsg);
             LOGGER.error(e.getMessage());
-            throw new RuntimeException(e);
+            throw new RuntimeException(errmsg, e);
         }
     }
 
-    int createFileForRaster(String rasterFileName) throws FileNotFoundException {
+    void createFileForRaster(String rasterFileName) throws FileNotFoundException {
         File concFile = aermodDirectory.resolve("averageConcentration.dat").toFile();
         List<String[]> xyzList = new ArrayList<>();
 
@@ -762,7 +730,7 @@ public class Aermod {
         xyzList.forEach(xyz -> sb.append(String.join(" ", xyz)).append(System.lineSeparator()));
         String fileContent = sb.toString();
 
-        return writeToFile(rasterDirectory.resolve(rasterFileName), fileContent);
+        writeToFile(rasterDirectory.resolve(rasterFileName), fileContent);
     }
 
     void uploadRasterToPostGIS(int simSrid, boolean append) {
@@ -845,7 +813,7 @@ public class Aermod {
         return featureCollection;
     }
 
-    int createDataJson(String shipLayerName, DispersionOutput dispersionOutput, String plantsLayerName,
+    void createDataJson(String shipLayerName, DispersionOutput dispersionOutput, String plantsLayerName,
             String elevationLayerName, JSONObject buildingsGeoJSON) {
         // wms endpoints template without the layer name
         String shipWms = EnvConfig.GEOSERVER_URL
@@ -966,8 +934,9 @@ public class Aermod {
         try {
             Files.deleteIfExists(dataJson.toPath());
         } catch (IOException e) {
+            String errmsg = "Failed to delete file";
             LOGGER.error("Failed to delete file");
-            return 1;
+            throw new RuntimeException(errmsg, e);
         }
 
         if (!buildingsGeoJSON.isEmpty()) {
@@ -997,7 +966,7 @@ public class Aermod {
             layers.put(buildingsLayer);
         }
 
-        return writeToFile(dataJson.toPath(), data.toString(4));
+        writeToFile(dataJson.toPath(), data.toString(4));
     }
 
     /**
@@ -1007,26 +976,29 @@ public class Aermod {
      * 
      * @return
      */
-    int modifyFilePermissions(String filename) {
+    void modifyFilePermissions(String filename) {
         try {
             Process process = Runtime.getRuntime().exec(new String[] { "chmod", "a+rwx", filename }, null,
                     new File(EnvConfig.VIS_FOLDER));
-            if (process.waitFor() != 0) {
-                return 1;
-            }
-            return 0;
+            process.waitFor();
         } catch (IOException e) {
-            return 0;
+            String errmsg = "Error changing permissions of " + filename;
+            LOGGER.error(errmsg);
+            LOGGER.error(e.getMessage());
+            throw new RuntimeException(errmsg, e);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            return 0;
+            String errmsg = "Error changing permissions of " + filename;
+            LOGGER.error(errmsg);
+            LOGGER.error(e.getMessage());
+            throw new RuntimeException(errmsg, e);
         }
     }
 
     /**
      * this file sets the centre of the map on first load
      */
-    int createVisSettingsFile(Point centroid) {
+    void createVisSettingsFile(Point centroid) {
         JSONObject start = new JSONObject();
         start.put("center", new JSONArray().put(centroid.getX()).put(centroid.getY()));
         start.put("zoom", 10.5);
@@ -1043,10 +1015,12 @@ public class Aermod {
         try {
             Files.deleteIfExists(settingsJson.toPath());
         } catch (IOException e) {
-            LOGGER.error("Failed to delete settings.json");
-            return 1;
+            String errmsg = "Failed to delete settings.json";
+            LOGGER.error(errmsg);
+            LOGGER.error(e.getMessage());
+            throw new RuntimeException(errmsg, e);
         }
 
-        return writeToFile(settingsJson.toPath(), overall.toString(4));
+        writeToFile(settingsJson.toPath(), overall.toString(4));
     }
 }

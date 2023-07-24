@@ -154,10 +154,7 @@ public class AermodAgent extends DerivationAgent {
             if (queryClient.tableExists(EnvConfig.ELEVATION_TABLE)) {
                 queryClient.setElevation(staticPointSources, buildings, srid);
                 List<byte[]> elevData = queryClient.getScopeElevation(scope);
-                if (aermod.createAERMAPInput(elevData, centreZoneNumber) != 0) {
-                    LOGGER.error("Could not create input data file for running AERMAP.");
-                    throw new JPSRuntimeException("Error creating AERMAP elevation data input.");
-                }
+                aermod.createAERMAPInput(elevData, centreZoneNumber);
                 aermod.createAERMAPReceptorInput(scope, nx, ny, srid);
                 aermod.runAermap();
             } else {
@@ -178,14 +175,9 @@ public class AermodAgent extends DerivationAgent {
         aermod.create144File(weatherData);
 
         // run aermet (weather preprocessor)
-        if (aermod.runAermet(scope) != 0) {
-            LOGGER.error("Stopping agent execution");
-            return;
-        }
+        aermod.runAermet(scope);
 
         // Variable initialization
-        // TODO: The height values will eventually be obtained from the derivation
-        // inputs.
         List<Double> receptorHeights = new ArrayList<>();
         receptorHeights.add(0.0);
 
@@ -227,13 +219,13 @@ public class AermodAgent extends DerivationAgent {
                 geoServerVectorSettings);
 
         for (PollutantType pollutantType : Pollutant.getPollutantList()) {
-            String pollutId = Pollutant.getPollutantLabel(pollutantType);
-            // create emissions input
-            if (aermod.createPointsFile(allSources, srid, pollutantType) != 0) {
-                LOGGER.error("Failed to create points emissions file for pollutant {} at timestep {}", pollutId,
-                        simulationTime);
+            if (!allSources.stream().allMatch(p -> p.hasPollutant(pollutantType))) {
                 continue;
             }
+
+            String pollutId = Pollutant.getPollutantLabel(pollutantType);
+            // create emissions input
+            aermod.createPointsFile(allSources, srid, pollutantType);
             aermod.createAermodInputFile(scope, nx, ny, srid);
             aermod.runAermod("aermod.inp", pollutId);
 
@@ -324,24 +316,15 @@ public class AermodAgent extends DerivationAgent {
         // ships_ is hardcoded here and in ShipInputAgent
         queryClient.updateOutputs(derivationInputs.getDerivationIRI(), dispersionOutput, shipLayerName, simulationTime,
                 receptorFileURL);
-        if (aermod.createDataJson(shipLayerName, dispersionOutput, sourceLayerName, elevationLayerName,
-                aermod.getBuildingsGeoJSON(buildings)) != 0) {
-            LOGGER.error("Failed to create data.json file for visualisation, terminating");
-            return;
-        }
 
-        if (aermod.createVisSettingsFile(scope.getCentroid()) != 0) {
-            LOGGER.error("Failed to create settings file, terminating agent request");
-        }
+        aermod.createDataJson(shipLayerName, dispersionOutput, sourceLayerName, elevationLayerName,
+                aermod.getBuildingsGeoJSON(buildings));
 
-        if (aermod.modifyFilePermissions("data.json") != 0) {
-            LOGGER.error("Failed to modify permissions for data.json, terminating");
-            return;
-        }
+        aermod.createVisSettingsFile(scope.getCentroid());
 
-        if (aermod.modifyFilePermissions("settings.json") != 0) {
-            LOGGER.error("Failed to modify permissions for settings.json, terminating");
-        }
+        aermod.modifyFilePermissions("data.json");
+
+        aermod.modifyFilePermissions("settings.json");
     }
 
     void updateDerivations(List<String> derivationsToUpdate) {
