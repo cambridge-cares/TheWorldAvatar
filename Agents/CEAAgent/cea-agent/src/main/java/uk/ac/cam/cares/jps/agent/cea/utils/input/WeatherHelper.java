@@ -349,9 +349,23 @@ public class WeatherHelper extends JPSAgent {
             return result.getDouble(API_OFFSET);
         }
         catch (IOException e){
-            // if failed to get the offset from API, return an approximation based on the longitude
+            ZoneOffset utc0 = ZoneOffset.ofTotalSeconds(0);
+            OffsetDateTime offsetStart = startDate.atOffset(utc0);
+
+            // make use of the fact that the historical weather times instantiated by OpenMeteoAgent will always start at the 0 hour with an offset
+            // if the start date when instantiated was the start of year, one could get back the correct offset with the above fact
+            if (offsetStart.getMonthValue() == 1 && offsetStart.getDayOfMonth() == 1) {
+                return -1 * Double.valueOf(offsetStart.getHour()) * 60 * 60;
+            }
+            else if (offsetStart.getMonthValue() == 12 && offsetStart.getDayOfMonth() == 31) {
+                return Double.valueOf(24 - offsetStart.getHour()) * 60 * 60;
+            }
+            // if failed to get the offset from API or the date is not the start of the year,
+            // return an approximation based on the longitude
             // approximation assumes Earth is rough divided into 24 time zones equally over the globe
-            return longitude / 15;
+            else {
+                return longitude / 15 * 60 * 60;
+            }
         }
     }
 
