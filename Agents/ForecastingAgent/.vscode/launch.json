@@ -24,17 +24,17 @@
             "jinja": true
         },
         {
-            "name": "Python: Debug Flask within Docker",
+            "name": "Python: Debug within Docker",
             "type": "python",
             "request": "attach",
             "connect": {
-                "host": "127.0.0.1",
+                "host": "localhost",
                 "port": 5678
             },
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/forecastingagent/",
-                    "remoteRoot": "/app/forecastingagent/"
+                    "localRoot": "${workspaceFolder}/",
+                    "remoteRoot": "/app/"
                 }
             ]
         },

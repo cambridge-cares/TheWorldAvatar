@@ -93,6 +93,6 @@ COPY ./docker-compose-testcontainers.yml ./docker-compose.yml
 WORKDIR /app
 # Start dockerised agent app as well as pytest
 # (combining commands using & ensures they are started in parallel in background)
-CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000 & pytest -s
+CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m pytest -s
 
 #==================================================================================================

@@ -29,7 +29,11 @@ from . import conftest as cf
 logger = agentlogging.get_logger('prod')
 
 
-def test_start():
+def test_start(initialise_clients):
+
+    # Get SPARQL client from fixture
+    kg_client, ts_client, rdb_url = initialise_clients
+    
     print('started')
     assert True
 

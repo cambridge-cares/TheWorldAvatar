@@ -13,11 +13,11 @@ services:
       #
       # Testing agent in 'standalone' mode (i.e., independent of stackclients)
       - STACK_NAME=
-      - DB_USER='postgres'
-      - DB_PASSWORD='postgres'
-      - DB_URL='jdbc:postgresql://localhost:7432/postgres'
-      - SPARQL_QUERY_ENDPOINT='http://localhost:27149/blazegraph/namespace/kb/sparql'
-      - SPARQL_UPDATE_ENDPOINT='http://localhost:27149/blazegraph/namespace/kb/sparql'
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_URL=jdbc:postgresql://localhost:7432/postgres
+      - SPARQL_QUERY_ENDPOINT=http://localhost:27149/blazegraph/namespace/kb/sparql
+      - SPARQL_UPDATE_ENDPOINT=http://localhost:27149/blazegraph/namespace/kb/sparql
       #
       #--- Derivation Agent parameters ---#
       - ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent/Service
@@ -25,7 +25,7 @@ services:
       - DERIVATION_INSTANCE_BASE_URL=https://www.example.com/kg/derivation/
       - DERIVATION_PERIODIC_TIMESCALE=5
       - REGISTER_AGENT=false
-      - OVERWRITE_FORECAST=
+      - OVERWRITE_FORECAST=true
       # Required inputs, although not used when initialising DerivationAgent
       - KG_USERNAME=''
       - KG_PASSWORD=''

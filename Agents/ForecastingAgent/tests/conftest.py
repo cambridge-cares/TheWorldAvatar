@@ -32,7 +32,7 @@ from forecastingagent.utils.env_configs import DB_USER, DB_PASSWORD
 
 # Provide names of respective Docker services
 # NOTE These names need to match the ones given in the `docker-compose-test.yml` file
-HOSTNAME = "localhost"
+HOSTNAME = "host.docker.internal"
 KG_SERVICE = "blazegraph_test"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
 RDB_SERVICE = "postgres_test"

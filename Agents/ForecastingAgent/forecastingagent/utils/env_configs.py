@@ -7,6 +7,7 @@
 # from environment variables and the stack clients (if applicable)
 
 import os
+from distutils.util import strtobool
 
 from py4jps import agentlogging
 
@@ -49,9 +50,13 @@ def retrieve_default_settings():
     if OVERWRITE_FORECAST is None:
         OVERWRITE_FORECAST = True
         logger.warning(f'No "OVERWRITE_FORECAST" value has been provided in environment variables. Using default value: {OVERWRITE_FORECAST}.')
-    elif not isinstance(OVERWRITE_FORECAST, bool):        
-        OVERWRITE_FORECAST = True
-        logger.warning(f'Invalid "OVERWRITE_FORECAST" value has been provided in environment variables. Using default value: {OVERWRITE_FORECAST}.')
+    else:
+        try:
+           # Cast string from docker-compose to boolean
+           OVERWRITE_FORECAST = bool(strtobool(OVERWRITE_FORECAST))
+        except ValueError:
+            OVERWRITE_FORECAST = True
+            logger.warning(f'Invalid "OVERWRITE_FORECAST" value has been provided in environment variables. Using default value: {OVERWRITE_FORECAST}.')
 
     # Retrieve Blazegraph and PostgreSQL settings depending on deployment mode
     if not STACK_NAME:
