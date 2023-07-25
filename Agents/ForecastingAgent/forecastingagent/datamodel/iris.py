@@ -58,6 +58,7 @@ TIME_UNIT_SECOND = TIME + 'unitSecond'
 ### OM ###
 OM_HASVALUE = OM + "hasValue"
 OM_HASUNIT = OM + "hasUnit"
+OM_MEGAWATTHOUR = OM + "megawattHour"
 
 ### OWL, RDF, RDFS ###
 OWL_THING = OWL + "Thing"

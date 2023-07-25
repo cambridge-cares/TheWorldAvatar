@@ -6,6 +6,11 @@
 # This module provides all pytest fixtures and other utility functions for the
 # actual (integration) tests
 
+# Avoid unnecessary logging information from py4j package
+import logging
+logging.getLogger("py4j").setLevel(logging.INFO)
+
+import os
 import pytest
 import requests
 import time
@@ -30,21 +35,20 @@ from forecastingagent.utils.env_configs import DB_USER, DB_PASSWORD
 # Values to be adjusted as needed:
 #
 
+THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+TEST_TRIPLES_DIR = os.path.join(THIS_DIR, 'test_triples')
+
 # Provide names of respective Docker services
-# NOTE These names need to match the ones given in the `docker-compose-test.yml` file
+# NOTE These names need to match the ones given in the `docker-compose-testcontainers.yml` file
 HOSTNAME = "host.docker.internal"
 KG_SERVICE = "blazegraph_test"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
 RDB_SERVICE = "postgres_test"
 DATABASE = 'postgres'
 
-# Links to pre-trained Darts TFT model
-DARTS_MODEL_OBJECT = "https://www.dropbox.com/s/fxt3iztbimvm47s/best.ckpt?dl=1"
-DARTS_CHECKPOINTS = "https://www.dropbox.com/s/ntg8lgvh01x09wr/_model.pth.tar?dl=1"
 
-# Length of test time series to generate (i.e. number of time steps)
-PERIODS = 400
-
+# Wed Jan 01 2020 00:00:00 GMT+0000
+# Thu Jan 02 2020 00:00:00 GMT+0000
 
 # # ----------------------------------------------------------------------------------
 # #  Inputs which should not be changed

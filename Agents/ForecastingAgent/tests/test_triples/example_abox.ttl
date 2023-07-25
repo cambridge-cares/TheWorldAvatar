@@ -6,7 +6,7 @@
 @prefix ts:     <https://www.theworldavatar.com/kg/ontotimeseries/> .
 @prefix deriv:	<https://www.theworldavatar.com/kg/derivation/> .
 @prefix disp:	<https://www.theworldavatar.com/kg/ontodispersion/> .
-@prefix :       <https://www.theworldavatar.com/test>
+@prefix :       <https://www.theworldavatar.com/test> . 
 
 ################################################
 ##      Forecasting Agent TEST instances      ##
@@ -24,30 +24,33 @@
 # they will be added by the script when the derivation instances are created
 # for new info
 
+:TestHeatDemand_1 rdf:type om:Measure ; 
+                  om:hasUnit om:megawattHour .
+om:megawattHour om:symbol "MWh"^^xsd:string .
 
-:OptimisationInterval_1 a time:Interval ;
+:OptimisationInterval_1 rdf:type time:Interval ;
     time:hasBeginning :OptimisationStartInstant_1 ;
     time:hasEnd :OptimisationEndInstant_1 .
-:OptimisationStartInstant_1 a time:Instant ;
+:OptimisationStartInstant_1 rdf:type time:Instant ;
     time:inTimePosition :TimePosition_1 .
-:OptimisationEndInstant_1 a time:Instant ;
+:OptimisationEndInstant_1 rdf:type time:Instant ;
     time:inTimePosition :TimePosition_2 .
-:TimePosition_1 a time:TimePosition ;
+:TimePosition_1 rdf:type time:TimePosition ;
     time:hasTRS <http://dbpedia.org/resource/Unix_time> ;
     time:numericPosition 1577836800.0 .
-:TimePosition_2 a time:TimePosition ;
+:TimePosition_2 rdf:type time:TimePosition ;
     time:hasTRS <http://dbpedia.org/resource/Unix_time> ;
     time:numericPosition 1577923200.0 .
 
-:Frequency_1 a ts:Frequency ;
+:Frequency_1 rdf:type ts:Frequency ;
     time:numericDuration 1.0 ;
     time:unitType time:unitHour ;
-    ts:resampleData "False"^^<xsd:boolean> .
+    ts:resampleData "False"^^xsd:boolean .
 
-:Duration_1 a time:Duration ;
+:Duration_1 rdf:type time:Duration ;
     time:numericDuration 336.0 ;
     time:unitType time:unitHour .
 
-:ForecastingModel_1 a ts:ForecastingModel ;
+:ForecastingModel_1 rdf:type ts:ForecastingModel ;
     rdfs:label "Prophet" ;
-    ts:scaleData "False"^^<xsd:boolean> .
+    ts:scaleData "False"^^xsd:boolean .

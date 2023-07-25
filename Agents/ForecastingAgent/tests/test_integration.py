@@ -1,7 +1,7 @@
 #################################################
 # Authors: Markus Hofmeister (mh807@cam.ac.uk)  #
 #          Magnus Mueller (mm2692@cam.ac.uk)    #
-# Date: 08 Dec 2022                             #
+# Date: 25 Jul 2023                             #
 #################################################
 
 # The purpose of this module is to test the Agent Flask App. HTTP requests are sent 
@@ -14,6 +14,8 @@
 # 4. Check if forecast/error is correct (via agent response)
 
 import pytest
+from pathlib import Path
+from rdflib import Graph
 
 from py4jps import agentlogging
 
@@ -25,8 +27,25 @@ from forecastingagent.agent.forecasting import *
 
 from . import conftest as cf
 
+
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
+
+
+def test_example_triples():
+    """
+    This test checks that the example triples are correct in syntax.
+
+    Raises:
+        e: If the example triples are not valid RDF.
+    """
+    g = Graph()
+    pathlist = Path(cf.TEST_TRIPLES_DIR).glob('*.ttl')
+    for path in pathlist:
+        try:
+            g.parse(str(path))
+        except Exception as e:
+            raise e
 
 
 def test_start(initialise_clients):
