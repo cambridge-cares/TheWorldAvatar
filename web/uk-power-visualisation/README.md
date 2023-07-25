@@ -25,6 +25,7 @@ Unfortunately we've discovered a number of issues with the 2022 data set (the la
 * No confirmation of the project used (we assume `EPSG:27700`)
 * Locations do not match satellite images from Google Maps
   * In most cases, the locations given in the data are offset by about 0.5km to 1.5km
+  * In other cases locations are listed as in one country, but the given coordinates are in another
 * Provided OS grid references do not match the Easting/Northing given for the same plant 
 
 Ideally, we'd revert to using an older set of the DUKES data. Unfortunately (again), 2022 is the first year that the DUKES data has contained locations for each plant. However, for the 2019 dataset (which was published with no locations), someone did go through and manually add Latitude and Longitudes for the listed plants by manually searching for them in Google Maps.
@@ -43,6 +44,23 @@ In an attempt to provide the most up-to-date set of data (something we could arg
   * Otherwise removed 
 
 This leaves us with a list of `1157` sites, down from the `1313` sites listed in the original 2022 data set. The CSV file resulting from this process can be found on CMCL's `Pavilion` server; please get in touch with their support team if you require a copy.
+
+<table width="50%" style="display: block; margin-left: auto; margin-right: auto;">
+    <tr>
+        <td width="33%" style="text-align: center;">
+            <img src="./resources/img/full-2019.png"></img><br/>
+            <i>2019 dataset</i>
+        </td>
+         <td width="33%" style="text-align: center;">
+            <img src="./resources/img/full-2022.png"></img><br/>
+            <i>2022 dataset</i>
+        </td>
+         <td width="33%" style="text-align: center;">
+            <img src="./resources/img/full-merged.png"></img><br/>
+            <i>Merged dataset</i>
+        </td>
+    </tr>
+</table>
 
 
 ## Uploading data
