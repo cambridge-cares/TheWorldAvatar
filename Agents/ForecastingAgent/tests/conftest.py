@@ -23,7 +23,6 @@ from rdflib import Graph
 
 from forecastingagent.datamodel.iris import *
 from forecastingagent.datamodel.data_mapping import *
-from forecastingagent.flaskapp import create_app
 from forecastingagent.utils.tools import *
 from forecastingagent.kgutils.kgclient import KGClient
 from forecastingagent.kgutils.tsclient import TSClient
