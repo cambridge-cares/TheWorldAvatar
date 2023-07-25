@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.dashboard;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
+import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -21,7 +22,8 @@ import java.util.Base64;
  */
 public class StackClient {
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
-    private final String STACK_ENDPOINT;
+    private final String STACK_SPARQL_ENDPOINT;
+    private final String STACK_JDBC_URL;
     private final String DASHBOARD_URL;
     private final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
 
@@ -32,7 +34,9 @@ public class StackClient {
         LOGGER.debug("Attempting to retrieve services from the stack...");
         ContainerClient client = new ContainerClient();
         BlazegraphEndpointConfig blazeConfig = client.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class);
-        this.STACK_ENDPOINT = "http://" + blazeConfig.getHostName() + ":" + blazeConfig.getPort();
+        PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
+        this.STACK_SPARQL_ENDPOINT = "http://" + blazeConfig.getHostName() + ":" + blazeConfig.getPort() + "/blazegraph/namespace/";
+        this.STACK_JDBC_URL = "jdbc:postgresql://" + postConfig.getHostName() + ":" + postConfig.getPort() + "/";
         // Note that the container name and port number is dependent on the custom setup - This may change when we have a built-in container for grafana
         this.DASHBOARD_URL = "http://" + getStackNameFromHost(blazeConfig.getHostName()) + "-grafana:3000";
         LOGGER.debug("Services have been successfully retrieved from the stack...");
@@ -53,6 +57,26 @@ public class StackClient {
         }
         LOGGER.fatal("Invalid host name! Please ensure the stack container name is correct in: " + hostName);
         throw new JPSRuntimeException("Invalid host name! Please ensure the container name is correct in: " + hostName);
+    }
+
+    /**
+     * Get the SPARQL endpoint within this stack.
+     *
+     * @param stackNamespace The stack namespace of interest.
+     * @return The SPARQL endpoint and namespace to query from.
+     */
+    public String getEndpoint(String stackNamespace) {
+        return this.STACK_SPARQL_ENDPOINT + stackNamespace + "/sparql";
+    }
+
+    /**
+     * Get the JDBC URL of a specified database within this stack.
+     *
+     * @param database The database of interest in the stack's RDB.
+     * @return The JDBC URL of the database specified.
+     */
+    public String getJdbc(String database) {
+        return this.STACK_JDBC_URL + database;
     }
 
     /**
