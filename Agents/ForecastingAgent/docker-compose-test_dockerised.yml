@@ -15,13 +15,13 @@ services:
       - STACK_NAME=
       - DB_USER=postgres
       - DB_PASSWORD=postgres
-      - DB_URL=jdbc:postgresql://localhost:7432/postgres
-      - SPARQL_QUERY_ENDPOINT=http://localhost:27149/blazegraph/namespace/kb/sparql
-      - SPARQL_UPDATE_ENDPOINT=http://localhost:27149/blazegraph/namespace/kb/sparql
+      - DB_URL=jdbc:postgresql://host.docker.internal:7432/postgres
+      - SPARQL_QUERY_ENDPOINT=http://host.docker.internal:27149/blazegraph/namespace/kb/sparql
+      - SPARQL_UPDATE_ENDPOINT=http://host.docker.internal:27149/blazegraph/namespace/kb/sparql
       #
       #--- Derivation Agent parameters ---#
       - ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent/Service
-      - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5001/ForecastingAgent
+      - ONTOAGENT_OPERATION_HTTP_URL=http://host.docker.internal:5001/ForecastingAgent
       - DERIVATION_INSTANCE_BASE_URL=https://www.example.com/kg/derivation/
       - DERIVATION_PERIODIC_TIMESCALE=5
       - REGISTER_AGENT=false

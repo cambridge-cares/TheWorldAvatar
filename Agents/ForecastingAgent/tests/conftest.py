@@ -20,14 +20,17 @@ import pandas as pd
 import psycopg2 as pg
 from pathlib import Path
 from rdflib import Graph
+from urllib.parse import urlparse
 
+from forecastingagent.agent import ForecastingAgent
 from forecastingagent.datamodel.iris import *
 from forecastingagent.datamodel.data_mapping import *
 from forecastingagent.utils.tools import *
 from forecastingagent.kgutils.kgclient import KGClient
 from forecastingagent.kgutils.tsclient import TSClient
 
-from forecastingagent.utils.env_configs import DB_USER, DB_PASSWORD
+from forecastingagent.utils.env_configs import DB_URL, DB_USER, DB_PASSWORD, \
+                                               SPARQL_QUERY_ENDPOINT
 
 
 # ----------------------------------------------------------------------------------
@@ -42,14 +45,11 @@ TEST_TRIPLES_DIR = os.path.join(THIS_DIR, 'test_triples')
 
 # Provide names of respective Docker services
 # NOTE These names need to match the ones given in the `docker-compose-testcontainers.yml` file
-HOSTNAME = "host.docker.internal"
 KG_SERVICE = "blazegraph_test"
-KG_ROUTE = "blazegraph/namespace/kb/sparql"
 RDB_SERVICE = "postgres_test"
-DATABASE = 'postgres'
 
 # Derivation markup
-DERIVATION_INSTANCE_BASE_URL = 'https://www.example.com/kg/derivation/'
+DERIVATION_INSTANCE_BASE_URL = os.getenv('DERIVATION_INSTANCE_BASE_URL')
 # IRIs of derivation's (pure) inputs
 TEST_TRIPLES_BASE_IRI = 'https://www.theworldavatar.com/test/'
 
@@ -93,7 +93,7 @@ DERIV_OUTPUT_COMPUATBLE = 6     # triples instantiated for successful avg price 
 
 @pytest.fixture(scope="session")
 def get_blazegraph_service_url(session_scoped_container_getter):
-    def _get_service_url(service_name, url_route, hostname=HOSTNAME):
+    def _get_service_url(service_name, hostname, url_route):
         service = session_scoped_container_getter.get(service_name).network_info[0]
         service_url = f"http://{hostname}:{service.host_port}/{url_route}"
         print(f'KG endpoint: {service_url}')
@@ -116,9 +116,9 @@ def get_blazegraph_service_url(session_scoped_container_getter):
 
 @pytest.fixture(scope="session")
 def get_postgres_service_url(session_scoped_container_getter):
-    def _get_service_url(service_name, url_route, hostname=HOSTNAME):
+    def _get_service_url(service_name, hostname, database_name):
         service = session_scoped_container_getter.get(service_name).network_info[0]
-        service_url = f"jdbc:postgresql://{hostname}:{service.host_port}/{url_route}"
+        service_url = f"jdbc:postgresql://{hostname}:{service.host_port}/{database_name}"
         print(f'PostgreSQL endpoint: {service_url}')
 
         # This will run only once per entire test session
@@ -128,7 +128,7 @@ def get_postgres_service_url(session_scoped_container_getter):
             try:
                 conn = pg.connect(host=hostname, port=service.host_port,
                                   user=DB_USER, password=DB_PASSWORD,
-                                  database=DATABASE)
+                                  database=database_name)
                 if conn.status == pg.extensions.STATUS_READY:
                     service_available = True
             except Exception:
@@ -144,12 +144,18 @@ def initialise_clients(get_blazegraph_service_url, get_postgres_service_url):
     # Retrieve "user-facing" endpoints for all dockerised testing services
     
     # Retrieve endpoint for triple store
-    sparql_endpoint = get_blazegraph_service_url(KG_SERVICE, url_route=KG_ROUTE)
+    bg = urlparse(SPARQL_QUERY_ENDPOINT)
+    host = bg.hostname
+    path = bg.path[1:]
+    sparql_endpoint = get_blazegraph_service_url(KG_SERVICE, hostname=host,
+                                                 url_route=path)
     # Create SparqlClient for testing
     kg_client = KGClient(sparql_endpoint, sparql_endpoint)
     
     # Retrieve endpoint for postgres
-    rdb_url = get_postgres_service_url(RDB_SERVICE, url_route=DATABASE)
+    db = DB_URL[DB_URL.rfind('/')+1:]
+    rdb_url = get_postgres_service_url(RDB_SERVICE, hostname=host, 
+                                       database_name=db)
     # Create TimeSeriesClient for testing
     ts_client = TSClient(kg_client=kg_client, rdb_url=rdb_url, 
                          rdb_user=DB_USER, rdb_password=DB_PASSWORD)
@@ -173,20 +179,15 @@ def initialise_clients(get_blazegraph_service_url, get_postgres_service_url):
 
 # @pytest.fixture(scope="module")
 # def create_example_agent():
-#     def _create_example_agent(
-#         register_agent:bool=False,
-#         random_agent_iri:bool=False,
-#     ):
-#         agent_config = config_derivation_agent(AGENT_ENV)
-#         agent = AvgSqmPriceAgent(
-#             register_agent=agent_config.REGISTER_AGENT if not register_agent else register_agent,
-#             agent_iri=agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
-#             time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
-#             derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
-#             kg_url=QUERY_ENDPOINT,
-#             kg_update_url=UPDATE_ENDPOINT,
-#             agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
-#             max_thread_monitor_async_derivations=agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
+#     def _create_example_agent(random_agent_iri:bool=False):
+#         agent = ForecastingAgent(
+#             register_agent=os.getenv('REGISTER_AGENT'),
+#             agent_iri=os.getenv('ONTOAGENT_SERVICE_IRI') if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
+#             time_interval=os.getenv('DERIVATION_PERIODIC_TIMESCALE'),
+#             derivation_instance_base_url=os.getenv('DERIVATION_INSTANCE_BASE_URL'),
+#             kg_url=SPARQL_QUERY_ENDPOINT,
+#             kg_update_url=SPARQL_UPDATE_ENDPOINT,
+#             agent_endpoint=os.getenv('ONTOAGENT_OPERATION_HTTP_URL'),
 #             threshold=THRESHOLD,
 #             app=Flask(__name__),
 #             logger_name='dev'
@@ -240,7 +241,8 @@ def connect_to_rdb(rdb_url):
         # jdbc:postgresql://localhost:5432/<url_route>
         host = rdb_url.split(':')[2].replace('//', '')
         port = rdb_url.split(':')[3].split('/')[0]
-        return pg.connect(host=host, port=port, database=DATABASE,
+        db = rdb_url[rdb_url.rfind('/')+1:]
+        return pg.connect(host=host, port=port, database=db,
                           user=DB_USER, password=DB_PASSWORD)
 
 
