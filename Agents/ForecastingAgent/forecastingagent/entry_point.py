@@ -4,11 +4,16 @@
 import logging
 logging.getLogger("py4j").setLevel(logging.ERROR)
 
+from py4jps import agentlogging
 from pyderivationagent.conf import config_derivation_agent
+
 from forecastingagent.utils.env_configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, \
                                                OVERWRITE_FORECAST
 from forecastingagent.agent import ForecastingAgent
 from forecastingagent.agent import default
+
+# Initialise logger instance (ensure consistent logger level`)
+logger = agentlogging.get_logger('prod')
 
 
 def create_app():
@@ -37,3 +42,10 @@ def create_app():
 
     # Expose flask app of agent
     return agent.app
+
+
+if __name__ == "__main__":
+    # Start the app
+    app = create_app()
+    app.run(host='localhost', port="5000")
+    logger.info('App started')

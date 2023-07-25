@@ -37,69 +37,6 @@
                     "remoteRoot": "/app/"
                 }
             ]
-        },
-        {
-            "type": "python",
-            "name": "Stack: Debug",
-            "request": "attach",
-            "host": "localhost",
-            "port": "${input:debug.port}",
-            "preLaunchTask": "compose-deploy",
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}/forecastingagent",
-                    "remoteRoot": "/app/forecastingagent"
-                }
-            ]
-        },
-        {
-            "type": "python",
-            "name": "Stack: Build and Debug",
-            "request": "attach",
-            "host": "localhost",
-            "port": "${input:debug.port}",
-            "preLaunchTask": "compose-build-deploy",
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}/forecastingagent",
-                    "remoteRoot": "/app/forecastingagent"
-                }
-            ]
-        },
-        {
-            "type": "python",
-            "name": "Stack: Reattach and Debug",
-            "request": "attach",
-            "host": "localhost",
-            "port": "${input:debug.port.read}",
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}/forecastingagent",
-                    "remoteRoot": "/app/forecastingagent"
-                }
-            ]
-        }
-    ],
-    "inputs": [
-        {
-            "id": "debug.port",
-            "type": "command",
-            // Get the next avaliable debug port and write it to the cache file
-            "command": "shellCommand.execute",
-            "args": {
-                "command": "bash ./stack.sh ports write",
-                "useFirstResult": true
-            }
-        },
-        {
-            "id": "debug.port.read",
-            "type": "command",
-            // Get the last debug port from the cache file
-            "command": "shellCommand.execute",
-            "args": {
-                "command": "bash ./stack.sh ports read",
-                "useFirstResult": true
-            }
         }
     ]
 }
