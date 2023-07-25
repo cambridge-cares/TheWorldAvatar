@@ -114,17 +114,19 @@ public class StackClient {
     }
 
     /**
-     * Sends a POST request with JSON parameters to a specific API endpoint.
+     * An overloaded method that sends a POST request with JSON parameters to a specific API endpoint with basic authentication.
      *
      * @param url        API endpoint.
      * @param jsonParams JSON parameters to be sent in the request body.
+     * @param userName   Username for basic authentication.
+     * @param password   Password for basic authentication.
      */
-    public HttpResponse sendPostRequest(String url, String jsonParams) {
+    public HttpResponse sendPostRequest(String url, String jsonParams, String userName, String password) {
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .header("Content-Type", "application/json")
                     // Authorization for accessing the endpoint
-                    .header("Authorization", getBasicAuthenticationHeader("admin", "admin"))
+                    .header("Authorization", getBasicAuthenticationHeader(userName, password))
                     // URL
                     .uri(URI.create(url))
                     .POST(HttpRequest.BodyPublishers.ofString(jsonParams))

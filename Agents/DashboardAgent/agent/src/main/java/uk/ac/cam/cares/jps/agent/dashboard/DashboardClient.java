@@ -15,6 +15,8 @@ import java.util.HashMap;
  */
 public class DashboardClient {
     private String SERVICE_ACCOUNT_TOKEN;
+    private final String DASHBOARD_ACCOUNT_USER;
+    private final String DASHBOARD_ACCOUNT_PASSWORD;
     private final StackClient SERVICE_CLIENT;
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
     private static final String DASHBOARD_TITLE = "Overview";
@@ -25,8 +27,10 @@ public class DashboardClient {
     /**
      * Standard Constructor.
      */
-    public DashboardClient(StackClient serviceClient) {
+    public DashboardClient(StackClient serviceClient, String dashboardContainerUsername, String dashboardContainerPassword) {
         this.SERVICE_CLIENT = serviceClient;
+        this.DASHBOARD_ACCOUNT_USER = dashboardContainerUsername;
+        this.DASHBOARD_ACCOUNT_PASSWORD = dashboardContainerPassword;
         // Verify if the dashboard container has been set up, and throws an error if not
         // A GET request to the endpoint should return a valid status code with an HTML file
         HttpResponse response = this.SERVICE_CLIENT.sendGetRequest(this.SERVICE_CLIENT.getDashboardUrl());
@@ -35,7 +39,6 @@ public class DashboardClient {
             throw new JPSRuntimeException(DASHBOARD_UNAVAILABLE_ERROR);
         }
     }
-
 
     /**
      * Initialise a new dashboard through HTTP API.
@@ -53,7 +56,7 @@ public class DashboardClient {
         String route = this.SERVICE_CLIENT.getDashboardUrl() + SERVICE_ACCOUNT_ROUTE;
         String params = "{ \"name\": \"grafana\", \"role\": \"Admin\", \"isDisabled\" : false}";
         // Create a new service account
-        HttpResponse response = this.SERVICE_CLIENT.sendPostRequest(route, params);
+        HttpResponse response = this.SERVICE_CLIENT.sendPostRequest(route, params, this.DASHBOARD_ACCOUNT_USER, this.DASHBOARD_ACCOUNT_PASSWORD);
         LOGGER.info("Generating a new token...");
         // Retrieve the account ID to facilitate token creation process
         HashMap<String, Object> responseMap = transformToMap(response.body().toString());
@@ -64,10 +67,10 @@ public class DashboardClient {
         // ID must be appended to the route in the following syntax
         route = route + "/" + accountId + "/tokens";
         // Generate a new token
-        response = this.SERVICE_CLIENT.sendPostRequest(route, params);
+        response = this.SERVICE_CLIENT.sendPostRequest(route, params, this.DASHBOARD_ACCOUNT_USER, this.DASHBOARD_ACCOUNT_PASSWORD);
         responseMap = transformToMap(response.body().toString());
         this.SERVICE_ACCOUNT_TOKEN = responseMap.get("key").toString();
-        LOGGER.info("Token for service account has been successfully generated...");
+        LOGGER.debug("Token for service account has been successfully generated!");
     }
 
     /**
