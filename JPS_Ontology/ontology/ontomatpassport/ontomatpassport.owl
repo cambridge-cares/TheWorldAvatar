@@ -152,16 +152,6 @@
     
 
 
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport#representedUsingEmpiricalFormula -->
-
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#representedUsingEmpiricalFormula">
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#EmpiricalFormula"/>
-        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
-        <rdfs:label xml:lang="en">Empirical formula</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -449,6 +439,7 @@
     <!-- http://purl.org/dc/dcmitype/Image -->
 
     <owl:Class rdf:about="http://purl.org/dc/dcmitype/Image">
+        <rdfs:comment xml:lang="en">A visual representation of an inanimate or animate object captured through technological means or drawn by humans.</rdfs:comment>
         <rdfs:label xml:lang="en">Image</rdfs:label>
     </owl:Class>
     
@@ -476,13 +467,18 @@
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Measure -->
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure">
+        <rdfs:comment xml:lang="en">A standard unit applied in quantifying the amount of a specific aspect of an object.</rdfs:comment>
+        <rdfs:label xml:lang="en">Measure</rdfs:label>
+    </owl:Class>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity -->
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity">
+        <rdfs:label xml:lang="en">Quantity</rdfs:label>
+    </owl:Class>
     
 
 
@@ -522,6 +518,7 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#CompositionProperty">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A property to describe the composition aspect of an object.</rdfs:comment>
         <rdfs:label xml:lang="en">Composition property</rdfs:label>
     </owl:Class>
     
@@ -551,6 +548,7 @@
                 <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ConstituentMaterialMeasure"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">A property to describe the type and amount of constituent materials belonging to an object.</rdfs:comment>
         <rdfs:label>Constituent material</rdfs:label>
     </owl:Class>
     
@@ -578,7 +576,8 @@
                 <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/milligram"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:label>Constituent material measure</rdfs:label>
+        <rdfs:comment xml:lang="en">A measure to quantify the amount of constituent materials.</rdfs:comment>
+        <rdfs:label xml:lang="en">Constituent material measure</rdfs:label>
     </owl:Class>
     
 
@@ -633,7 +632,8 @@
                 <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/tonnePerCubicmetre"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:label>Density measure</rdfs:label>
+        <rdfs:comment xml:lang="en">A measure to quantify the density of an object.</rdfs:comment>
+        <rdfs:label xml:lang="en">Density measure</rdfs:label>
     </owl:Class>
     
 
@@ -688,7 +688,8 @@
                 <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/millimetre"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:label>Dimension measure</rdfs:label>
+        <rdfs:comment xml:lang="en">A measure to quantify the dimension of an object.</rdfs:comment>
+        <rdfs:label xml:lang="en">Dimension measure</rdfs:label>
     </owl:Class>
     
 
@@ -711,7 +712,8 @@
                 <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/wattPerSquareMetreKelvin"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:label>Heat transfer coefficient measure</rdfs:label>
+        <rdfs:comment xml:lang="en">A measure to quantify the heat transfer coefficient of an object.</rdfs:comment>
+        <rdfs:label xml:lang="en">Heat transfer coefficient measure</rdfs:label>
     </owl:Class>
     
 
@@ -755,6 +757,7 @@
             </owl:Restriction>
         </rdfs:subClassOf>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A physical property to describe the mass of an object.</rdfs:comment>
         <rdfs:label xml:lang="en">Mass</rdfs:label>
     </owl:Class>
     
@@ -782,7 +785,8 @@
                 <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/milligram"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:label>Mass measure</rdfs:label>
+        <rdfs:comment xml:lang="en">A measure to quantify the mass of an object.</rdfs:comment>
+        <rdfs:label xml:lang="en">Mass measure</rdfs:label>
     </owl:Class>
     
 
@@ -790,6 +794,7 @@
     <!-- http://www.theworldavatar.com/kg/ontomatpassport#Product -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Product">
+        <rdfs:comment xml:lang="en">An artefact manufactured in an industrial setting to meet the demands of consumers and usually consists of multiple parts.</rdfs:comment>
         <rdfs:label xml:lang="en">Product</rdfs:label>
     </owl:Class>
     
@@ -826,7 +831,8 @@
                 <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/milligram"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:label>Recycled content measure</rdfs:label>
+        <rdfs:comment xml:lang="en">A measure to quantify the amount of recycled content in an object.</rdfs:comment>
+        <rdfs:label xml:lang="en">Recycled content measure</rdfs:label>
     </owl:Class>
     
 
@@ -873,7 +879,8 @@
                 <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/pascal"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:label>Resistance measure</rdfs:label>
+        <rdfs:comment xml:lang="en">A measure to quantify the resistance of an object.</rdfs:comment>
+        <rdfs:label xml:lang="en">Resistance measure</rdfs:label>
     </owl:Class>
     
 
@@ -920,7 +927,8 @@
                 <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/pascal"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:label>Rigidity measure</rdfs:label>
+        <rdfs:comment xml:lang="en">A measure to quantify the rigidity of an object.</rdfs:comment>
+        <rdfs:label xml:lang="en">Rigidity measure</rdfs:label>
     </owl:Class>
     
 
@@ -965,6 +973,8 @@
                 <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#RecycledContentMeasure"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:comment xml:lang="en">A property to express the sustainability aspect of an object.</rdfs:comment>
+        <rdfs:label xml:lang="en">Sustainability property</rdfs:label>
     </owl:Class>
     
 
@@ -1012,7 +1022,8 @@
                 <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/year"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:label>Temporal property measure</rdfs:label>
+        <rdfs:comment xml:lang="en">A measure to quantify different temporal aspects of an object.</rdfs:comment>
+        <rdfs:label xml:lang="en">Temporal property measure</rdfs:label>
     </owl:Class>
     
 
@@ -1035,7 +1046,8 @@
                 <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/wattPerMetreKelvin"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:label>Thermal conductivity measure</rdfs:label>
+        <rdfs:comment xml:lang="en">A measure to quantify the thermal conductivity of an object.</rdfs:comment>
+        <rdfs:label xml:lang="en">Thermal conductivity measure</rdfs:label>
     </owl:Class>
     
 
@@ -1103,12 +1115,6 @@
     <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#EmpiricalFormula -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#EmpiricalFormula"/>
     
 
 
@@ -1701,6 +1707,7 @@
     </rdf:Description>
     <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/HeatTransferCoefficient">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A thermal property that describes the heat transfer coefficient of an object.</rdfs:comment>
         <rdfs:label xml:lang="en">Heat transfer coefficient</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue">
@@ -1709,39 +1716,46 @@
     </rdf:Description>
     <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
+        <rdfs:comment xml:lang="en">An object property referring to the unit associated with a measured value.</rdfs:comment>
         <rdfs:label xml:lang="en">Unit</rdfs:label>
-        <rdfs:label xml:lang="en">hasUnit</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
+        <rdfs:comment xml:lang="en">An object property referring to the measured value of a quantity.</rdfs:comment>
         <rdfs:label xml:lang="en">Value</rdfs:label>
-        <rdfs:label xml:lang="en">has value</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/symbol">
         <rdfs:label xml:lang="en">symbol</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Biodegradability">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A property expressing whether an object is entirely, partially or not biodegradable.</rdfs:comment>
         <rdfs:label xml:lang="en">Biodegradability</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#BiologicalProperty">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">5</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A property to express the biological feature of an object.</rdfs:comment>
         <rdfs:label xml:lang="en">Biological property</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#CompressiveStrength">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A resistance describing the compressive strength of an object.</rdfs:comment>
+        <rdfs:comment xml:lang="en">The resistance of an object to compressive forces.</rdfs:comment>
         <rdfs:label xml:lang="en">Compressive strength</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Decomposability">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A property to descrobe whether an object is entirely, partially or not decomposable.</rdfs:comment>
         <rdfs:label xml:lang="en">Decomposability</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Density">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A physical property that describes the density of an object.</rdfs:comment>
         <rdfs:label xml:lang="en">Density</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Dimension">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A physical propertythat describes the dimension of an object.</rdfs:comment>
         <rdfs:label xml:lang="en">Dimension</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#DimensionLessQuantity">
@@ -1749,61 +1763,76 @@
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ExpectedLifetime">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A temporary property expressing the duration an object may serve its intended purpose.</rdfs:comment>
         <rdfs:label xml:lang="en">Expected lifetime</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Height">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A dimensional property expressing the height of an object.</rdfs:comment>
         <rdfs:label xml:lang="en">Height</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Length">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A dimensional property expressing the length of an object.</rdfs:comment>
         <rdfs:label xml:lang="en">Length</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Manufacturer">
+        <rdfs:comment xml:lang="en">An industry that manufactures goods for consumer market.</rdfs:comment>
         <rdfs:label xml:lang="en">Manufacturer</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#RecycledContent">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A sustainability property to describe the amount of recycled content used in manufacturing an object.</rdfs:comment>
         <rdfs:label xml:lang="en">Recycled content</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Resistance">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A physical property that describes the resistance of an object.</rdfs:comment>
         <rdfs:label xml:lang="en">Resistance</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Rigidity">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">5</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A physical property to describe the rigidity of an object.</rdfs:comment>
         <rdfs:label xml:lang="en">Rigidity</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ServiceLife">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A temporary property to express the service duration of an object.</rdfs:comment>
         <rdfs:label xml:lang="en">Service life</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ShearModulus">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
+        <rdfs:comment xml:lang="en">The rigidity of an object to shearing forces.</rdfs:comment>
         <rdfs:label xml:lang="en">Shear modulus</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ShearStrength">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
+        <rdfs:comment xml:lang="en">The resistance of an object to shearing forces.</rdfs:comment>
         <rdfs:label xml:lang="en">Shear strength</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#TemporalProperty">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A property to express the temporal aspect of an object.</rdfs:comment>
         <rdfs:label xml:lang="en">Temporal property</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#TensileStrength">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
+        <rdfs:comment xml:lang="en">The resistance of an object to tensile forces.</rdfs:comment>
         <rdfs:label xml:lang="en">Tensile strength</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ThermalProperty">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A property to express the thermal aspect of an object.</rdfs:comment>
         <rdfs:label xml:lang="en">Thermal property</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Width">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A dimensional property expressing the width of an object.</rdfs:comment>
         <rdfs:label xml:lang="en">Width</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasAutomaticTrackingOrScanning">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">10</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A datatype property indicating if a product or component has an automatic tracking number in the form of a barcode or any other means.</rdfs:comment>
         <rdfs:label xml:lang="en">Automatic tracking/scanning</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasBrandName">
@@ -1811,26 +1840,32 @@
         <rdfs:label xml:lang="en">Brand name</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasCountry">
+        <rdfs:comment xml:lang="en">An object property referring to the country where a manufacturing company is located.</rdfs:comment>
         <rdfs:label xml:lang="en">Country</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasEAN">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">8</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A datatype property expressing the European Article Number (EAN) of a product or component.</rdfs:comment>
         <rdfs:label xml:lang="en">EAN</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasFunctionality">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">9</hasGUIPosition>
+        <rdfs:comment xml:lang="en">The functionality of a component or product.</rdfs:comment>
         <rdfs:label xml:lang="en">Functionality</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasGTIN">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">7</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A datatype property expressing the Global Trade Item Number (GTIN) of a product or component.</rdfs:comment>
         <rdfs:label xml:lang="en">GTIN</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasImage">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">11</hasGUIPosition>
+        <rdfs:comment xml:lang="en">An object property referring to the image of a component or product.</rdfs:comment>
         <rdfs:label xml:lang="en">Image</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasManufacturer">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">6</hasGUIPosition>
+        <rdfs:comment xml:lang="en">An object property referring to the manufacturer of a component or product.</rdfs:comment>
         <rdfs:label xml:lang="en">Manufacturer</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasManufacturerName">
@@ -1842,6 +1877,7 @@
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasProperty">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">12</hasGUIPosition>
+        <rdfs:comment xml:lang="en">An object property referring to different properties of a component or product.</rdfs:comment>
         <rdfs:label xml:lang="en">Properties</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasRegistrationNumber">
@@ -1866,24 +1902,30 @@
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#partOf">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
+        <rdfs:comment xml:lang="en">An object property linking a part component or product with its whole.</rdfs:comment>
         <rdfs:label xml:lang="en">Part of</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Young&apos;sModulus">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
+        <rdfs:comment xml:lang="en">The elastic rigidity of an object to stress.</rdfs:comment>
         <rdfs:label xml:lang="en">Young&apos;s modulus</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermalConductivity">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A thermal property that describes the capacity of an object to conduct heat.</rdfs:comment>
         <rdfs:label xml:lang="en">Thermal conductivity</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property">
+        <rdfs:comment xml:lang="en">A characteristic of an object that can be applied in determining its use in applications.</rdfs:comment>
         <rdfs:label xml:lang="en">Property</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="https://dbpedia.org/ontology/Country">
+        <rdfs:comment xml:lang="en">A political entity associated with a territory considered a motherland to a nation ruled by a government.</rdfs:comment>
         <rdfs:label xml:lang="en">Country</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="https://w3id.org/mdo/core/PhysicalProperty">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
+        <rdfs:comment xml:lang="en">A property to express the physical aspect of an object.</rdfs:comment>
         <rdfs:label xml:lang="en">Physical Property</rdfs:label>
     </rdf:Description>
     
