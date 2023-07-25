@@ -97,6 +97,12 @@
             <artifactId>stack-clients</artifactId>
             <version>1.13.1</version>
         </dependency>
+        <!-- JDBC driver -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.6.0</version>
+        </dependency>
         <!--  Logging  -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

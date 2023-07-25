@@ -15,6 +15,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Base64;
+import java.util.List;
 
 /**
  * A client that checks if the agent is running on a stack and retrieve the required endpoints.
@@ -27,6 +28,7 @@ public class StackClient {
     private final String STACK_JDBC_URL;
     private final String DASHBOARD_URL;
     private final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
+    private final PostGisClient POSTGIS_CLIENT;
 
     /**
      * Standard Constructor.
@@ -38,6 +40,7 @@ public class StackClient {
         PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
         this.STACK_SPARQL_ENDPOINT = "http://" + blazeConfig.getHostName() + ":" + blazeConfig.getPort() + "/blazegraph/namespace/";
         this.STACK_JDBC_URL = "jdbc:postgresql://" + postConfig.getHostName() + ":" + postConfig.getPort() + "/";
+        this.POSTGIS_CLIENT = new PostGisClient(this.STACK_JDBC_URL, postConfig.getUsername(), postConfig.getPassword());
         // Note that the container name and port number is dependent on the custom setup - This may change when we have a built-in container for grafana
         this.DASHBOARD_URL = "http://" + getStackNameFromHost(blazeConfig.getHostName()) + "-grafana:3000";
         LOGGER.debug("Services have been successfully retrieved from the stack...");
@@ -71,13 +74,10 @@ public class StackClient {
     }
 
     /**
-     * Get the JDBC URL of a specified database within this stack.
-     *
-     * @param database The database of interest in the stack's RDB.
-     * @return The JDBC URL of the database specified.
+     * Get the list of database names that is available in this stack.
      */
-    public String getJdbc(String database) {
-        return this.STACK_JDBC_URL + database;
+    public List<String> getDatabaseName() {
+        return this.POSTGIS_CLIENT.getDatabaseNames();
     }
 
     /**
