@@ -51,6 +51,20 @@ public class PostGisClient {
     }
 
     /**
+     * Get the PostGIS username.
+     */
+    public String getUsername() {
+        return this.STACK_POSTGIS_USER;
+    }
+
+    /**
+     * Get the PostGIS password.
+     */
+    public String getPassword() {
+        return this.STACK_POSTGIS_PASSWORD;
+    }
+
+    /**
      * Get the JDBC URL of a specified database within this stack.
      *
      * @param database The database of interest in the stack's RDB.

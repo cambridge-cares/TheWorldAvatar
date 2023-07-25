@@ -9,6 +9,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.net.http.HttpResponse;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * A client that interacts with the dashboard container to set it up.
@@ -21,10 +22,12 @@ public class DashboardClient {
     private final String DASHBOARD_ACCOUNT_PASSWORD;
     private final StackClient SERVICE_CLIENT;
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
-    private static final String DASHBOARD_TITLE = "Overview";
+    private static final String CONNECTION_NAME_PREFIX = "Postgis";
     private static final String SERVICE_ACCOUNT_ROUTE = "/api/serviceaccounts";
+    private static final String DATA_SOURCE_ROUTE = "/api/datasources";
     private static final String DASHBOARD_CREATION_ROUTE = "/api/dashboards/db";
     private static final String DASHBOARD_UNAVAILABLE_ERROR = "Dashboard container has not been set up within the stack. Please set it up first!";
+    private static final String FAILED_REQUEST_ERROR = "Unable to send request! See response for more details: ";
 
     /**
      * Standard Constructor.
@@ -47,6 +50,7 @@ public class DashboardClient {
      */
     public void initDashboard() {
         this.createServiceAccount();
+        this.createDataSources();
         this.createDashboard();
     }
 
@@ -73,6 +77,33 @@ public class DashboardClient {
         responseMap = transformToMap(response.body().toString());
         this.SERVICE_ACCOUNT_TOKEN = responseMap.get("key").toString();
         LOGGER.debug("Token for service account has been successfully generated!");
+    }
+
+    /**
+     * Creates all the connections from the dashboard to the PostGIS database.
+     */
+    private void createDataSources() {
+        LOGGER.info("Creating data source connections...");
+        String route = this.SERVICE_CLIENT.getDashboardUrl() + DATA_SOURCE_ROUTE;
+        List<String> dbList = this.SERVICE_CLIENT.getDatabaseNames();
+        int counter = 1;
+        for (String database : dbList) {
+            LOGGER.debug("Creating connection to " + database + "...");
+            // Generate a source name with prefix and a counter number
+            String sourceName = CONNECTION_NAME_PREFIX + counter++; // The counter will increase after execution
+            String[] credentials = this.SERVICE_CLIENT.getPostGisCredentials();
+            // Format the syntax into valid json
+            PostgresDataSource source = new PostgresDataSource(sourceName, credentials[0], credentials[1], credentials[2], database);
+            // Execute request to create new connection
+            HttpResponse response = this.SERVICE_CLIENT.sendPostRequest(route, source.construct(), this.SERVICE_ACCOUNT_TOKEN);
+            if (response.statusCode() != 200) {
+                LOGGER.fatal(FAILED_REQUEST_ERROR + response.body());
+                throw new JPSRuntimeException(FAILED_REQUEST_ERROR + response.body());
+            }
+            HashMap<String, Object> responseMap = transformToMap(response.body().toString());
+            LOGGER.info(response.body());
+        }
+        LOGGER.debug("All connections have been successfully established!");
     }
 
     /**

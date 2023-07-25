@@ -25,6 +25,7 @@ import java.util.List;
 public class StackClient {
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
     private final String STACK_SPARQL_ENDPOINT;
+    private final String STACK_RDB_DOMAIN;
     private final String STACK_JDBC_URL;
     private final String DASHBOARD_URL;
     private final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
@@ -39,7 +40,8 @@ public class StackClient {
         BlazegraphEndpointConfig blazeConfig = client.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class);
         PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
         this.STACK_SPARQL_ENDPOINT = "http://" + blazeConfig.getHostName() + ":" + blazeConfig.getPort() + "/blazegraph/namespace/";
-        this.STACK_JDBC_URL = "jdbc:postgresql://" + postConfig.getHostName() + ":" + postConfig.getPort() + "/";
+        this.STACK_RDB_DOMAIN = postConfig.getHostName() + ":" + postConfig.getPort();
+        this.STACK_JDBC_URL = "jdbc:postgresql://" + this.STACK_RDB_DOMAIN + "/";
         this.POSTGIS_CLIENT = new PostGisClient(this.STACK_JDBC_URL, postConfig.getUsername(), postConfig.getPassword());
         // Note that the container name and port number is dependent on the custom setup - This may change when we have a built-in container for grafana
         this.DASHBOARD_URL = "http://" + getStackNameFromHost(blazeConfig.getHostName()) + "-grafana:3000";
@@ -76,9 +78,23 @@ public class StackClient {
     /**
      * Get the list of database names that is available in this stack.
      */
-    public List<String> getDatabaseName() {
+    public List<String> getDatabaseNames() {
         return this.POSTGIS_CLIENT.getDatabaseNames();
     }
+
+    /**
+     * Get the PostGIS credentials for the dashboard.
+     *
+     * @return An array containing the credentials in sequence of domain name, username, and password.
+     */
+    public String[] getPostGisCredentials() {
+        String[] credentials = new String[3];
+        credentials[0] = this.STACK_RDB_DOMAIN;
+        credentials[1] = this.POSTGIS_CLIENT.getUsername();
+        credentials[2] = this.POSTGIS_CLIENT.getPassword();
+        return credentials;
+    }
+
 
     /**
      * Get the dashboard service within this stack.
