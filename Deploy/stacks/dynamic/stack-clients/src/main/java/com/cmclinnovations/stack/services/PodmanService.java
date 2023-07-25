@@ -292,8 +292,11 @@ public class PodmanService extends DockerService {
             containerSpecGenerator.setLabels(containerSpec.getLabels());
 
             try {
-                ContainerCreateResponse containerCreateResponse = new ContainersApi(getClient().getPodmanClient())
+                ContainersApi containersApi = new ContainersApi(getClient().getPodmanClient());
+                ContainerCreateResponse containerCreateResponse = containersApi
                         .containerCreateLibpod(containerSpecGenerator);
+
+                containersApi.containerStartLibpod(containerName, null);
 
                 return getContainerIfCreated(service.getContainerName());
             } catch (ApiException ex) {
