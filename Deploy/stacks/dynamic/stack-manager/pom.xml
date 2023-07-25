@@ -7,7 +7,7 @@
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-manager</artifactId>
-  <version>1.12.3-813-SNAPSHOT</version>
+  <version>1.13.2</version>
 
   <name>Stack Manager</name>
   <url>https://www.cmclinnovations.com</url>
@@ -29,7 +29,7 @@
     <dependency>
       <groupId>com.cmclinnovations</groupId>
       <artifactId>stack-clients</artifactId>
-      <version>1.12.3-813-SNAPSHOT</version>
+      <version>1.13.2</version>
     </dependency>
 
     <dependency>
