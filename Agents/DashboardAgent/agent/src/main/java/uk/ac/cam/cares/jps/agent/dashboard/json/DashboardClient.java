@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
-import uk.ac.cam.cares.jps.agent.dashboard.StackClient;
+import uk.ac.cam.cares.jps.agent.dashboard.stack.StackClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.net.http.HttpResponse;

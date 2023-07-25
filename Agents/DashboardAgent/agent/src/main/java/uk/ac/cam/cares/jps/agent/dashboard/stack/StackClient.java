@@ -1,10 +1,11 @@
-package uk.ac.cam.cares.jps.agent.dashboard;
+package uk.ac.cam.cares.jps.agent.dashboard.stack;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.IOException;
