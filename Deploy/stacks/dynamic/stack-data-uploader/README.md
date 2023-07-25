@@ -347,7 +347,7 @@ Within that the following nodes can be added.
     - `"type"` one of `Point`, `LineString`, `LinearRing`, `Polygon`, `MultiPoint`, `MultiLineString`, `MultiPolygon`, `GeometryCollection`.
     - `"srid"` EPSG code as an integer, for example `4296` rather than `"EPSG:4296"` or `"4296"`.
       Note that this is different from the GDAL Options.
-  - `"parameter"` specify individual [parameters][geoserver-sql-params] with the following `key:value` pairs.
+  - `"parameters"` specify individual [parameters][geoserver-sql-params] as a list of nodes with the following `key:value` pairs.
     - `"name"` parameter name.
     - `"defaultValue"` default value of parameter.
     - `"regexpValidator"` validation regular expression.
