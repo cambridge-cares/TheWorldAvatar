@@ -1,8 +1,10 @@
-package uk.ac.cam.cares.jps.agent.dashboard;
+package uk.ac.cam.cares.jps.agent.dashboard.json;
 
 import com.google.gson.Gson;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
+import uk.ac.cam.cares.jps.agent.dashboard.StackClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.net.http.HttpResponse;
@@ -80,23 +82,9 @@ public class DashboardClient {
         LOGGER.info("Initialising a new dashboard...");
         String route = this.SERVICE_CLIENT.getDashboardUrl() + DASHBOARD_CREATION_ROUTE;
         // Generate JSON model syntax
-        StringBuilder builder = new StringBuilder();
-        builder.append("{\"dashboard\": {")
-                // generate new id and uid using null
-                .append("\"id\": null,")
-                .append("\"uid\": null,")
-                // WIP: Refactor code to edit the dashboard title based on building or facility name
-                .append("\"title\": \"" + DASHBOARD_TITLE + "\",")
-                .append("\"timezone\": \"browser\",")
-                .append("\"schemaVersion\": 16,")
-                .append("\"version\": 0,")
-                .append("\"refresh\": \"25s\"")
-                .append("},")
-                // Comments for each update/ version
-                .append("\"message\": \"Initialised dashboard\",")
-                .append("\"overwrite\": false}");
+        String jsonSyntax = new GrafanaModel().construct();
         // Create a new dashboard based on the JSON model using a POST request with security token
-        HttpResponse response = this.SERVICE_CLIENT.sendPostRequest(route, builder.toString(), this.SERVICE_ACCOUNT_TOKEN);
+        HttpResponse response = this.SERVICE_CLIENT.sendPostRequest(route, jsonSyntax, this.SERVICE_ACCOUNT_TOKEN);
         // WIP: Retrieve the required information to form the URL
         // URL key is available as /EXPOSED_URL_NAME/d/DASHBOARD_ID/DASHBOARD_TITLE
         HashMap<String, Object> responseMap = transformToMap(response.body().toString());
