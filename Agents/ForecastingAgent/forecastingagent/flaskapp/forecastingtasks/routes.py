@@ -9,7 +9,7 @@
 import traceback
 from flask import Blueprint, request, jsonify
 
-from forecastingagent.agent.agent import forecast
+from forecastingagent.agent.forecasting_tasks import forecast
 from forecastingagent.utils.env_configs import STACK_NAME, NAMESPACE, DATABASE, \
                                               DB_URL, DB_USER, DB_PASSWORD, \
                                               SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT

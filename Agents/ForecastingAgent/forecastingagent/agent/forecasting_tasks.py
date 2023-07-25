@@ -388,7 +388,7 @@ def get_data_iri(cfg, kgClient):
 def check_if_enough_covs_exist(cfg, covariates):
     if covariates is not None and (cfg['forecast_start_date'] + cfg['frequency'] * (cfg['horizon'] - 1) > covariates.end_time()):
         logger.error(
-            f'Not enough covariates exist for the given forecast_start_date and horizon. The last covariate date is {covariates.end_time()}')
+            f'Not enough covariates exist for the given forecast_start_date and horizon. The last covariate timestamp is {covariates.end_time()}')
         raise ValueError(
             f'Not enough covariates for complete future horizon. Covariates end at {covariates.end_time()} but forecast horizon ends at {cfg["forecast_start_date"] + cfg["frequency"] * (cfg["horizon"] - 1)}')
     return True
@@ -570,7 +570,7 @@ def get_forecast_update(cfg):
 
 def convert_date_to_timestamp(date):
     """
-    Converts a date to a timestamp
+    Converts a date to a unix timestamp
 
     :param date: a date
     :return: the timestamp
