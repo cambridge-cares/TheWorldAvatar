@@ -8,6 +8,7 @@ import java.util.Properties;
 import com.cmclinnovations.stack.clients.blazegraph.Namespace;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerStyle;
 import com.cmclinnovations.stack.clients.geoserver.StaticGeoServerData;
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -70,7 +71,7 @@ public class Dataset {
     }
 
     public String getDatabase() {
-        return (null != database) ? database : "postgres";
+        return (null != database) ? database : PostGISClient.DEFAULT_DATABASE_NAME;
     }
 
     public String getNamespace() {

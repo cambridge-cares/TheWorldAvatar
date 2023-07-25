@@ -12,6 +12,8 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 public class PostGISClient extends ContainerClient implements ClientWithEndpoint {
 
+    public static final String DEFAULT_DATABASE_NAME = "postgres";
+
     public static final String DEFAULT_SCHEMA_NAME = "public";
 
     private final PostGISEndpointConfig postgreSQLEndpoint;
@@ -48,7 +50,8 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
                 // Database already exists error
             } else {
                 throw new RuntimeException("Failed to create database '" + databaseName
-                        + "' on the server with JDBC URL '" + postgreSQLEndpoint.getJdbcURL("postgres") + "'.", ex);
+                        + "' on the server with JDBC URL '" + postgreSQLEndpoint.getJdbcURL(DEFAULT_DATABASE_NAME)
+                        + "'.", ex);
             }
         }
     }
@@ -63,13 +66,14 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
                 // Database doesn't exist error
             } else {
                 throw new RuntimeException("Failed to drop database '" + databaseName
-                        + "' on the server with JDBC URL '" + postgreSQLEndpoint.getJdbcURL("postgres") + "'.", ex);
+                        + "' on the server with JDBC URL '" + postgreSQLEndpoint.getJdbcURL(DEFAULT_DATABASE_NAME)
+                        + "'.", ex);
             }
         }
     }
 
     public RemoteRDBStoreClient getRemoteStoreClient() {
-        return getRemoteStoreClient("");
+        return getRemoteStoreClient(DEFAULT_DATABASE_NAME);
     }
 
     public RemoteRDBStoreClient getRemoteStoreClient(String database) {
