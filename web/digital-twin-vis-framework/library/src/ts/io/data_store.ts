@@ -10,6 +10,13 @@ class DataStore {
     public dataGroups: Array<DataGroup> = [];
 
     /**
+     * Clears the data store.
+     */
+    public reset() {
+        this.dataGroups = [];
+    }
+
+    /**
      * Given an array of group names, this method finds and returns the 
      * matching group (or null if not found).
      * 
@@ -53,19 +60,25 @@ class DataStore {
      * Recursively find and load all DataGroups defined within the data.json
      * file.
      * 
-     * @param visFile location of the data.json file
+     * @param dataJSON optional pre-read config in JSON form
      * 
      * @returns Promise that fulfills when all loading is complete
      */
-    public loadDataGroups(visFile: string) {
-        console.log("Reading definition file at: "+ visFile);
-        let self = this;
+    public loadDataGroups(dataJSON) {
+        if(dataJSON == null) {
+            let self = this;
+            
+            return $.getJSON("./data.json", function(json) {
+                self.recurseLoadDataGroups(json, null, null, self.dataGroups.length);
+            }).fail((error) => {
+                throw error;
+            });    
+        }
 
-        return $.getJSON(visFile, function(json) {
-            self.recurseLoadDataGroups(json, null, null, self.dataGroups.length);
-        }).fail((error) => {
-            throw error;
-        });    
+        return new Promise((resolve, reject) => {
+            this.recurseLoadDataGroups(dataJSON, null, null, this.dataGroups.length);
+            resolve("done");
+        });
     }
 
     /**

@@ -39,6 +39,7 @@ public class QueryClient {
 
     // classes
     // strings to send to derivation outputs
+    static final String EMISSION = PREFIX + "Emission";
     static final String NO_X = PREFIX + "NOx";
     static final String UHC = PREFIX + "uHC";
     static final String CO = PREFIX + "CO";
@@ -60,6 +61,7 @@ public class QueryClient {
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
     private static final Iri HAS_NUMERICALVALUE = P_OM.iri("hasNumericalValue");
     static final String EMITS = PREFIX + "emits";
+    static final String HAS_POLLUTANT_ID = PREFIX + "hasPollutantID";
 
     public QueryClient(RemoteStoreClient storeClient, RemoteRDBStoreClient remoteRDBStoreClient) {
         this.storeClient = storeClient;

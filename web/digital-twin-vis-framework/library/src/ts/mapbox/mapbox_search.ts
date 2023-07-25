@@ -72,7 +72,7 @@ class SearchHandler_Mapbox extends SearchHandler {
             let meta = layer["metadata"];
             if(meta === null || meta === undefined) continue;
             let attr = meta["attribution"];
-            if(attr === null || attr === undefined || attr !== "CMCL Innovations") continue;
+            if(attr === null || attr === undefined || attr !== "CMCL") continue;
 
             // Skip cluster layers
             let id = layer["id"];
@@ -104,7 +104,7 @@ class SearchHandler_Mapbox extends SearchHandler {
             let meta = layer["metadata"];
             if(meta === null || meta === undefined) continue;
             let attr = meta["attribution"];
-            if(attr === null || attr === undefined || attr !== "CMCL Innovations") continue;
+            if(attr === null || attr === undefined || attr !== "CMCL") continue;
 
             // Skip cluster layers
             let id = layer["id"];
