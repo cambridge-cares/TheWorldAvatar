@@ -1,10 +1,11 @@
 version: "3.8"
 
 services:
-  HeatEmission-agent:
-    image: heatemission-agent:1.0.0
+  heat-agent:
+    image: heat-agent:2.0.0
     build: .
-    container_name: HeatEmission-agent
-    pull_policy: if_not_present
+    container_name: heat-agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     ports:
-      - "1080:8080"
+      - "8084:8080"

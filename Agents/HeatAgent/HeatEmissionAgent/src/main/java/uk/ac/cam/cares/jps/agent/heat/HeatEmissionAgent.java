@@ -1,10 +1,8 @@
 package uk.ac.cam.cares.jps.agent.heat;
 
-import java.sql.SQLException;
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
 import org.json.JSONObject;
-import org.springframework.stereotype.Controller;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import com.jayway.jsonpath.JsonPath;
@@ -31,53 +29,50 @@ import com.jayway.jsonpath.JsonPath;
  */
 
 /**
- * Servlet implementation class HeatEmissionAgent; URL pattern to execute the agent: <http://
+ * Servlet implementation class HeatEmissionAgent; URL pattern to execute the
+ * agent: <http://
  * www.theworldavatar.com/Agents/HeatEmissionAgent/performheatquery>
  */
 
-@Controller
-@WebServlet(urlPatterns = {HeatEmissionAgent.URL_PATH})
+@WebServlet(urlPatterns = { HeatEmissionAgent.URL_PATH })
 
 // Agent begins
 public class HeatEmissionAgent extends JPSAgent {
-	
+
 	public static final String URL_PATH = "/performheatquery";
-    // Display messages
+	// Display messages
 	private static final String BAD_INPUT = "Error in input parameters, please check the" +
-	                                                    " input file"; 
-   
-    // Receive input as JSON objects, execute the agent and return the results as JSON object as well
+			" input file";
+
+	// Receive input as JSON objects, execute the agent and return the results as
+	// JSON object as well
 	// Pass the method "HeatEmissionQuery" to execute the actual query
 	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams){
-	    if (validateInput(requestParams)) {
-	        HeatEmissionQuery HeatEmissionQ = new HeatEmissionQuery();
-	        try{
-	            return HeatEmissionQ.performCrossDomainQ(requestParams);
-	        } catch (SQLException e){
-	            throw new JPSRuntimeException(e);
-	        }
-	    }
-	    else {
-	    	System.out.println("bad input.\n");
-            throw new JPSRuntimeException(BAD_INPUT);
-	    }
-	}  
-    
-	// Validate the input parameters and check if all the necessary parameters are provided or not
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		if (validateInput(requestParams)) {
+
+			return HeatEmissionQuery.performCrossDomainQ(requestParams);
+		} else {
+			System.out.println("bad input.\n");
+			throw new JPSRuntimeException(BAD_INPUT);
+		}
+	}
+
+	// Validate the input parameters and check if all the necessary parameters are
+	// provided or not
 	@Override
-    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-        if (requestParams.isEmpty()) {
-            throw new BadRequestException();
-        }
-        String UPPER_LIMITS = JsonPath.read(requestParams.toString(), "$.job.upper_bounds");
-        if(UPPER_LIMITS == null || UPPER_LIMITS.trim().isEmpty()){
-            throw new BadRequestException("Upper limits for the bounding box are missing.\n");
-        }
-        String LOWER_LIMITS = JsonPath.read(requestParams.toString(), "$.job.lower_bounds");
-        if(LOWER_LIMITS == null || LOWER_LIMITS.trim().isEmpty()){
-            throw new BadRequestException("Lower limits for the bounding box are missing.\n");
-        }
-        return true;
-    }
+	public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+		if (requestParams.isEmpty()) {
+			throw new BadRequestException();
+		}
+		String UPPER_LIMITS = JsonPath.read(requestParams.toString(), "$.job.upper_bounds");
+		if (UPPER_LIMITS == null || UPPER_LIMITS.trim().isEmpty()) {
+			throw new BadRequestException("Upper limits for the bounding box are missing.\n");
+		}
+		String LOWER_LIMITS = JsonPath.read(requestParams.toString(), "$.job.lower_bounds");
+		if (LOWER_LIMITS == null || LOWER_LIMITS.trim().isEmpty()) {
+			throw new BadRequestException("Lower limits for the bounding box are missing.\n");
+		}
+		return true;
+	}
 }

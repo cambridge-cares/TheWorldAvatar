@@ -1,6 +1,6 @@
 # First stage: build war file
 #==================================================================================================
-FROM maven:3.6-openjdk-8-slim as builder
+FROM maven:3.6-openjdk-11-slim as builder
 
 # Copy all files into root's home, including the source, pom file, ./m2 directory, credentials and config files
 ADD . /root
@@ -21,11 +21,11 @@ RUN --mount=type=cache,target=/root/.m2/repository mvn package
 
 # Second stage: copy the downloaded dependency into a new image and build into an app
 #==================================================================================================
-FROM tomcat:8.5 as agent
+FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
-COPY --from=builder /root/HeatEmissionAgent/output/heatemissionagent##1.0.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/HeatEmissionAgent/output/heat-agent##2.0.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]
