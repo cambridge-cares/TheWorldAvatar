@@ -53,7 +53,11 @@ public class GrafanaModel {
                 .append("\"uid\":").append(this.DASHBOARD_UID).append(",")
                 // WIP: Refactor code to edit the dashboard title based on building or facility name
                 .append("\"title\": \"").append(this.DASHBOARD_TITLE).append("\",")
+                // Disable any editing by non-admin users
+                .append("\"editable\": false,")
                 .append("\"timezone\": \"browser\",")
+                // Default view - time frame
+                .append("\"time\": {\"from\": \"now-3h\", \"to\": \"now\"},")
                 .append("\"refresh\": \"").append(this.DASHBOARD_REFRESH_RATE).append("\"")
                 .append("},")
                 // Comments for each update/ version
