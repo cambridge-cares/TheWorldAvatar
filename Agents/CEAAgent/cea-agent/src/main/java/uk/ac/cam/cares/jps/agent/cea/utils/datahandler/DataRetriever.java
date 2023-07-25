@@ -20,51 +20,6 @@ public class DataRetriever {
     }
 
     /**
-     * Add where for Building Consumption
-     * @param builder update builder
-     * @param type energy type in ontology
-     */
-    public void addBuildingConsumptionWhere(WhereBuilder builder, String type){
-        builder.addWhere("?building", "ontoubemmp:consumesEnergy", "?grid")
-                .addWhere("?grid", "rdf:type", type)
-                .addWhere("?grid", "om:hasValue", "?measure")
-                .addWhere("?measure", "om:hasUnit", "?unit");
-    }
-
-    /**
-     * Add where for Device Supply
-     * @param builder update builder
-     * @param generatorType type of generator
-     * @param energyType type of energy supply
-     * @param facadeType  type of facade that the generator is theoretically installed on
-     */
-    public void addSupplyDeviceWhere(WhereBuilder builder, String generatorType, String energyType, String facadeType) {
-        builder.addWhere("?building", "obs:hasFacade", "?facade")
-                .addWhere("?facade", "rdf:type", facadeType)
-                .addWhere("?facade", "ontoubemmp:hasTheoreticalEnergyProduction", "?SolarGenerators")
-                .addWhere("?SolarGenerators", "rdf:type", generatorType)
-                .addWhere("?SolarGenerators", "ontoubemmp:producesEnergy", "?supply")
-                .addWhere("?supply", "rdf:type", energyType)
-                .addWhere("?supply", "om:hasValue", "?measure")
-                .addWhere("?measure", "om:hasUnit", "?unit");
-    }
-
-    /**
-     * Add where for Device Area
-     * @param builder update builder
-     * @param building iri of building
-     * @param facadeType type of facade
-     */
-    public void addSupplyDeviceAreaWhere(WhereBuilder builder, String building, String facadeType) {
-        builder.addWhere(NodeFactory.createURI(building), "obs:hasFacade" , "?facade")
-                .addWhere("?facade", "rdf:type", facadeType)
-                .addWhere("?facade", "ontoubemmp:hasSolarSuitableArea", "?area")
-                .addWhere("?area", "om:hasValue", "?measure")
-                .addWhere("?measure", "om:hasNumericalValue", "?value")
-                .addWhere("?measure", "om:hasUnit", "?unit");
-    }
-
-    /**
      * Retrieves iris from KG for the data type requested
      * @param building uri of building in energyprofile graph
      * @param value type of data from CEAConstants.TIME_SERIES or CEAConstants.SCALARS
@@ -286,5 +241,50 @@ public class DataRetriever {
             default:
                 return "";
         }
+    }
+
+    /**
+     * Add where for Building Consumption
+     * @param builder update builder
+     * @param type energy type in ontology
+     */
+    public void addBuildingConsumptionWhere(WhereBuilder builder, String type){
+        builder.addWhere("?building", "ontoubemmp:consumesEnergy", "?grid")
+                .addWhere("?grid", "rdf:type", type)
+                .addWhere("?grid", "om:hasValue", "?measure")
+                .addWhere("?measure", "om:hasUnit", "?unit");
+    }
+
+    /**
+     * Add where for Device Supply
+     * @param builder update builder
+     * @param generatorType type of generator
+     * @param energyType type of energy supply
+     * @param facadeType  type of facade that the generator is theoretically installed on
+     */
+    public void addSupplyDeviceWhere(WhereBuilder builder, String generatorType, String energyType, String facadeType) {
+        builder.addWhere("?building", "obs:hasFacade", "?facade")
+                .addWhere("?facade", "rdf:type", facadeType)
+                .addWhere("?facade", "ontoubemmp:hasTheoreticalEnergyProduction", "?SolarGenerators")
+                .addWhere("?SolarGenerators", "rdf:type", generatorType)
+                .addWhere("?SolarGenerators", "ontoubemmp:producesEnergy", "?supply")
+                .addWhere("?supply", "rdf:type", energyType)
+                .addWhere("?supply", "om:hasValue", "?measure")
+                .addWhere("?measure", "om:hasUnit", "?unit");
+    }
+
+    /**
+     * Add where for Device Area
+     * @param builder update builder
+     * @param building iri of building
+     * @param facadeType type of facade
+     */
+    public void addSupplyDeviceAreaWhere(WhereBuilder builder, String building, String facadeType) {
+        builder.addWhere(NodeFactory.createURI(building), "obs:hasFacade" , "?facade")
+                .addWhere("?facade", "rdf:type", facadeType)
+                .addWhere("?facade", "ontoubemmp:hasSolarSuitableArea", "?area")
+                .addWhere("?area", "om:hasValue", "?measure")
+                .addWhere("?measure", "om:hasNumericalValue", "?value")
+                .addWhere("?measure", "om:hasUnit", "?unit");
     }
 }

@@ -409,6 +409,43 @@ public class DataManager {
     }
 
     /**
+     * Updates numerical value of scalars in KG
+     * @param scalars map of scalar measurements
+     * @param scalarIris map of iris in kg to data types
+     * @param route route to pass to access agent
+     * @param uriCounter keep track of uris
+     * @param graph graph name
+     */
+    public void updateScalars(String route, LinkedHashMap<String,String> scalarIris, LinkedHashMap<String, List<String>> scalars, Integer uriCounter, String graph) {
+        for (String measurement: CEAConstants.SCALARS) {
+            WhereBuilder wb1 = new WhereBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
+                    .addWhere(NodeFactory.createURI(scalarIris.get(measurement)), "om:hasNumericalValue", "?s");
+            UpdateBuilder ub1 = new UpdateBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
+                    .addWhere(wb1);
+
+            WhereBuilder wb2 = new WhereBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
+                    .addWhere(NodeFactory.createURI(scalarIris.get(measurement)), "om:hasNumericalValue", scalars.get(measurement).get(uriCounter));
+            UpdateBuilder ub2 = new UpdateBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology));
+
+            if (!graph.isEmpty()){
+                ub1.addDelete(NodeFactory.createURI(graph), wb1);
+                ub2.addInsert(NodeFactory.createURI(graph), wb2);
+            }
+            else{
+                ub1.addDelete(wb1);
+                ub2.addInsert(wb2);
+            }
+
+            UpdateRequest ur1 = ub1.buildRequest();
+            UpdateRequest ur2 = ub2.buildRequest();
+
+            //Use access agent
+            AccessAgentCaller.updateStore(route, ur1.toString());
+            AccessAgentCaller.updateStore(route, ur2.toString());
+        }
+    }
+
+    /**
      * Creates updates for building facades
      * @param builder update builder
      * @param building building iri
@@ -479,43 +516,5 @@ public class DataManager {
                 .addWhere(NodeFactory.createURI(measure), "rdf:type", "om:Measure")
                 .addWhere(NodeFactory.createURI(measure), "om:hasNumericalValue", value)
                 .addWhere(NodeFactory.createURI(measure), "om:hasUnit", "om:squareMetre");
-    }
-
-    /**
-     * Updates numerical value of scalars in KG
-     * @param scalars map of scalar measurements
-     * @param scalarIris map of iris in kg to data types
-     * @param route route to pass to access agent
-     * @param uriCounter keep track of uris
-     * @param graph graph name
-     */
-    public void updateScalars(String route, LinkedHashMap<String,String> scalarIris, LinkedHashMap<String, List<String>> scalars, Integer uriCounter, String graph) {
-
-        for (String measurement: CEAConstants.SCALARS) {
-            WhereBuilder wb1 = new WhereBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
-                    .addWhere(NodeFactory.createURI(scalarIris.get(measurement)), "om:hasNumericalValue", "?s");
-            UpdateBuilder ub1 = new UpdateBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
-                    .addWhere(wb1);
-
-            WhereBuilder wb2 = new WhereBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
-                    .addWhere(NodeFactory.createURI(scalarIris.get(measurement)), "om:hasNumericalValue", scalars.get(measurement).get(uriCounter));
-            UpdateBuilder ub2 = new UpdateBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology));
-
-            if (!graph.isEmpty()){
-                ub1.addDelete(NodeFactory.createURI(graph), wb1);
-                ub2.addInsert(NodeFactory.createURI(graph), wb2);
-            }
-            else{
-                ub1.addDelete(wb1);
-                ub2.addInsert(wb2);
-            }
-
-            UpdateRequest ur1 = ub1.buildRequest();
-            UpdateRequest ur2 = ub2.buildRequest();
-
-            //Use access agent
-            AccessAgentCaller.updateStore(route, ur1.toString());
-            AccessAgentCaller.updateStore(route, ur2.toString());
-        }
     }
 }

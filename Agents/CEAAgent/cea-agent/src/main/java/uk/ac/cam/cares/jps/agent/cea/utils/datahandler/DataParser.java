@@ -66,7 +66,7 @@ public class DataParser {
      * @param dataIri iri in time series database
      * @return annualValue as a String
      */
-    public static String calculateAnnual(TimeSeries<OffsetDateTime> timeSeries, String dataIri){
+    public static String calculateAnnual(TimeSeries<OffsetDateTime> timeSeries, String dataIri) {
         List<Double> values = timeSeries.getValuesAsDouble(dataIri);
         Double annualValue = 0.;
         for(Double value : values){
