@@ -30,7 +30,7 @@ public class FootPrint {
 
     List<GeoObject3D> allObject3D = new ArrayList<>();
 
-    protected void proFootPrint(String[] config) {
+    protected void proFootPrint(String[] config) throws SQLException {
 //        
         // this.pool = new SqlConnectionPool(config);
         // LOGGER.info("Pinging source database for availability...");

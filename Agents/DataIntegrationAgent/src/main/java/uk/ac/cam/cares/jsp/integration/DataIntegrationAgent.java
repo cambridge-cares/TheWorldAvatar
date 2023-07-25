@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -63,13 +64,13 @@ public class DataIntegrationAgent extends JPSAgent {
 			System.out.println("Input : " + input);
 			getParameters(para);
 			response.getWriter().write(input);
-		} catch (JSONException e) {
+		} catch (JSONException | SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} 
 	}
 
-    public JSONObject getParameters(String requestParams){
+    public JSONObject getParameters(String requestParams) throws SQLException {
         JSONObject jsonMessage = new JSONObject();
         Config c = new Config();
         String[] config = c.retrieveSQLConfig();

@@ -32,7 +32,7 @@ public class Config extends ContainerClient {
 
     public String[] retrieveSQLConfig() {
         StringBuilder missingPropertiesErrorMessage = new StringBuilder();
-        try (InputStream input = this.getClass().getClassLoader().getResourceAsStream("/endpoint.proerties")) {
+        try (InputStream input = this.getClass().getClassLoader().getResourceAsStream("endpoint.proerties")) {
             Properties prop = new Properties();
             String[] config = new String[8];
             if(input != null){

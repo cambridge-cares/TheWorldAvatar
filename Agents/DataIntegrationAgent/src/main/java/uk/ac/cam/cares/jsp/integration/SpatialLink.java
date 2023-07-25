@@ -22,10 +22,14 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
+import org.postgis.PGgeometry;
+
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 
 
@@ -34,65 +38,20 @@ public class SpatialLink{
     private static final Logger LOGGER = LogManager.getLogger(SpatialLink.class);
     // private PostgresClient postgresClient2d;
     // private PostgresClient postgresClient3d;
-    // private static final String INVALID_CONNECTION_MESSAGE = "Connection is invalid...";
-    // private SqlConnectionPool pool;
+    private static final String INVALID_CONNECTION_MESSAGE = "Connection is invalid...";
+    private SqlConnectionPool pool;
+    private String[] config;
 
     List<GeoObject3D> allObject3D = new ArrayList<>();
     List<GeoObject2D> allObject2D = new ArrayList<>();
 
-//    public SpatialLink() {}
-//    void setPostGISClient2d(PostgresClient postgisClient) {
-//        this.postgresClient2d = postgisClient;
-//    }
-//    void setPostGISClient3d(PostgresClient postgisClient) {
-//        this.postgresClient3d = postgisClient;
-//    }
-    protected void SpatialLink(String[] config) {
-//        
-        // this.pool = new SqlConnectionPool(config);
-        // LOGGER.info("Pinging source database for availability...");
-        // try (Connection srcConn = this.pool.getSourceConnection()) {
-        //     if (!srcConn.isValid(60)) {
-        //         LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
-        //         throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
-        //     }
+    protected void SpatialLink(String[] config) throws SQLException {
+        this.config = config;
 
-        // } catch (SQLException e) {
-        //     LOGGER.fatal("Error connecting to source database: " + e);
-        //     throw new JPSRuntimeException("Error connecting to source database: " + e);
-        // }
-//        Map<String, String> parameters = aggregateByKeys();
-//        String db3d = parameters.get("db3d");
-//        String db2d = parameters.get("db2d");
-//        String db2d_table = parameters.get("db2d_table");
-
-//        String db3d;
-//        String db2d;
-//
         GeoObject3D object3D = new GeoObject3D();
         GeoObject2D object2D = new GeoObject2D();
 
-//        try {
-//            db3d = req.getParameter("db3d");
-//            db2d = req.getParameter("db2d");
-//            db2d_table = req.getParameter("db2d_table");
-//        } catch (Exception e) {
-//            LOGGER.error("Error parsing input, make sure database names are specified as parameters");
-//            LOGGER.error(e.getMessage());
-//            throw new RuntimeException(e);
-//        }
-
-//        if (postgresClient2d == null) {
-//            postgresClient2d = new PostgresClient(Config.dburl + "/" + db2d, Config.dbuser, Config.dbpassword);
-////            PostgresClient postgresClient3d = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
-//        }
-//        if (postgresClient3d == null) {
-//            postgresClient3d = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
-//        }
-
-//        object2D.setPostGISClient(postgresClient2d);
         this.allObject2D = object2D.getObject2D(config);
-//        object3D.setPostGISClient(postgresClient3d);
         this.allObject3D = object3D.getObject3D(config);
         try {
             findMatchedObjects(config);
@@ -104,55 +63,76 @@ public class SpatialLink{
     }
     public void findMatchedObjects(String[] config) throws ParseException, FactoryException, TransformException, SQLException {
 
-        GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
-        WKTReader reader = new WKTReader( geometryFactory );
+        // GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
+        GeometryFactory fac = new GeometryFactory();
+        WKTReader reader = new WKTReader( fac );
         ObjectAddress address = new ObjectAddress();
 
+        int srid2D = this.allObject2D.get(0).getGeometry2D().getGeometry().getSrid();
+        int srid3D = this.allObject3D.get(0).getSrid(this.allObject3D.get(0).getGeometry3D());
+        if(srid3D != srid2D){
+            reprojectPost(this.allObject3D, srid2D);
+
+        }
+
         for (int i = 0; i < this.allObject3D.size(); i++) {
-            GeoObject3D object3D = this.allObject3D.get(i);
-            int srid3D = object3D.getEnvelope().getGeometry().getSrid();
-            String coord3D = object3D.getEnvelope().getGeometry().getValue();
-            Geometry envelope = createGeometry(coord3D);
-            double refAreaRation = 0;
-            int srid2D = this.allObject2D.get(0).getGeometry2D().getGeometry().getSrid();
-            if(srid3D != srid2D){
-                Geometry transGeom3D = Transform(envelope, srid3D, srid2D);
-//                srid3D = transGeom3D.getSRID();
-                Coordinate[] reversedCoordinates = getReversedCoordinates(transGeom3D);
-                envelope = geometryFactory.createPolygon(reversedCoordinates);
-            }
+            GeoObject3D object3D = this.allObject3D.get(i);    
+            String geom3D = object3D.getGeometry3D();
+            // int srid3D = object3D.getSrid(object3D.getGeometry3D());       
+            // String coord3D = object3D.getEnvelope().getGeometry().getValue();
+            // Geometry envelope = createGeometry(coord3D);
+            double refAreaRation = 0;           
 
             for (int j = 0; j < this.allObject2D.size(); j++) {
                 GeoObject2D object2D = this.allObject2D.get(j);
-
                 String geom2D = object2D.getGeometry2D().toString();
-                geom2D = geom2D.split(";")[1];
-                MultiPolygon polys2D = (MultiPolygon) reader.read(geom2D);
-                if ((!polys2D.within(envelope)) || (!envelope.within(polys2D))){
-                    if(envelope.intersects(polys2D)){
-                        Geometry intersect = envelope.intersection(polys2D);
-                        double areaRatio = 100.0*intersect.getArea() / polys2D.getArea();
+                try (Connection srcConn = this.pool.get3DConnection()) {
+                    if (!srcConn.isValid(60)) {
+                        LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
+                        throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
+                    }else{
+                        try (Statement stmt = srcConn.createStatement()) {
+                            String transformSql = "SELECT public.ST_AREA(public.ST_INTERSECTION(public.ST_GeomFromEWKT('" + geom3D + "'), public.ST_GeomFromEWKT('" + geom2D + "'))) AS intersect";
+                            ResultSet result = stmt.executeQuery(transformSql);
+                        if (result.next()) {
+                            float area = result.getFloat("intersect");
+                            geom2D = geom2D.split(";")[1];
+                            MultiPolygon polys2D = (MultiPolygon) reader.read(geom2D);
+                            double areaRatio = 100.0*(area / polys2D.getArea());
 //                        System.out.println("ratio: "+areaRatio + "%");
-                        if(areaRatio>60){
-                            if((refAreaRation !=0 && refAreaRation<areaRatio) || refAreaRation==0){
+                            if(areaRatio>60){
+                                if((refAreaRation !=0 && refAreaRation<areaRatio) || refAreaRation==0){
 
-                                object3D.setName(object2D.getName());
-                                address.setStreet(object2D.getStreet());
-                                address.setHouse(object2D.getHouse());
-                                address.setZipCode(object2D.getPostcode());
-                                address.setCity(object2D.getCity());
-                                address.setCountry(object2D.getCountry());
-                                address.setGmlid(object3D.getGmlId());
-                                object3D.setAddress(address);
-                                refAreaRation = areaRatio;
+                                    object3D.setName(object2D.getName());
+                                    address.setStreet(object2D.getStreet());
+                                    address.setHouse(object2D.getHouse());
+                                    address.setZipCode(object2D.getPostcode());
+                                    address.setCity(object2D.getCity());
+                                    address.setCountry(object2D.getCountry());
+                                    address.setGmlid(object3D.getGmlId());
+                                    object3D.setAddress(address);
+                                    refAreaRation = areaRatio;
+                                }
                             }
                         }
-                    }
-                }else{
-                    object3D.setName(object2D.getName());
-                    address = new ObjectAddress(object3D.getGmlId(), object2D.getStreet(), object2D.getHouse(), object2D.getPostcode(),object2D.getCountry(),object2D.getCity());
-                    object3D.setAddress(address);
-                }
+                                                       
+                        }
+                    } 
+                }catch (SQLException e) {
+                    LOGGER.fatal("Error connecting to source database: " + e);
+                    throw new JPSRuntimeException("Error connecting to source database: " + e);
+            }
+
+//                 if ((!polys2D.within(envelope)) || (!envelope.within(polys2D))){
+//                     if(envelope.intersects(polys2D)){
+//                         Geometry intersect = envelope.intersection(polys2D);
+//                         
+//                     }
+//                 }else{
+//                     object3D.setName(object2D.getName());
+//                     address = new ObjectAddress(object3D.getGmlId(), object2D.getStreet(), object2D.getHouse(), object2D.getPostcode(),object2D.getCountry(),object2D.getCity());
+//                     object3D.setAddress(address);
+//                 }
             }
             if (object3D.getName() != null){
                 object3D.updateName(object3D,config);
@@ -240,22 +220,24 @@ public class SpatialLink{
 
     public Geometry createGeometry(String coordlist) {
         GeometryFactory fac = new GeometryFactory();
-        Geometry geom = fac.createPolygon(str2coords(coordlist).toArray(new Coordinate[0]));
-
-        return geom;
+        Coordinate[] coord = str2coords(coordlist).toArray(new Coordinate[0]);
+        LinearRing lr = fac.createLinearRing(coord);
+        Polygon poly = new Polygon(lr, null, fac);
+        return lr;
+        // return fac.createPolygon(lr);       
     }
 
-    public Geometry Transform(Geometry geom, int srcSRID, int dstSRID) {
+    public Geometry reproject(Geometry geom, int srcSRID, int dstSRID) {
 
         GeometryFactory fac = new GeometryFactory();
-        Geometry sourceGeometry = fac.createGeometry(geom);
+        // Geometry sourceGeometry = fac.createGeometry(geom);
 
         Geometry targetGeometry = null;
         try {
             CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:" + srcSRID);
             CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:" + dstSRID);
             MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
-            targetGeometry = JTS.transform(sourceGeometry, transform);
+            targetGeometry = JTS.transform(geom, transform);
             targetGeometry.setSRID(dstSRID);
 
         } catch (FactoryException | TransformException e) {
@@ -263,6 +245,37 @@ public class SpatialLink{
         }
         return targetGeometry;
     }
+
+    public List<GeoObject3D> reprojectPost(List<GeoObject3D> allObject3D, int dstSRID){
+         if(this.pool == null){
+            this.pool = new SqlConnectionPool(this.config);
+        }
+
+        try (Connection srcConn = this.pool.get3DConnection()) {
+            if (!srcConn.isValid(60)) {
+                LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
+                throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
+            }else{
+                try (Statement stmt = srcConn.createStatement()) {
+                    for (int i = 0; i < allObject3D.size(); i++) {
+                        String targetGeom = null;
+                        String srcGeom = allObject3D.get(i).getGeometry3D();
+                        String transformSql = "SELECT public.ST_AsEWKT(public.ST_Transform(public.ST_GeomFromEWKT('" + srcGeom + "')," + dstSRID +")) AS targetGeom";
+                        ResultSet result = stmt.executeQuery(transformSql);
+                        if (result.next()) {
+                            targetGeom = result.getString("targetGeom");
+                            allObject3D.get(i).setGeometry(targetGeom);
+                        }
+                    }                           
+                }
+            } 
+        }catch (SQLException e) {
+            LOGGER.fatal("Error connecting to source database: " + e);
+            throw new JPSRuntimeException("Error connecting to source database: " + e);
+        } 
+        return allObject3D;
+    }
+    
 
     public Coordinate[] getReversedCoordinates(Geometry geometry) {
 

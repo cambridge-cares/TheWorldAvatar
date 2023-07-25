@@ -72,7 +72,7 @@ public class Config extends ContainerClient {
      */
     public String[] retrieveSQLConfig() {
         StringBuilder missingPropertiesErrorMessage = new StringBuilder();
-        try (InputStream input = this.getClass().getClassLoader().getResourceAsStream("/endpoint.proerties")) {
+        try (InputStream input = this.getClass().getClassLoader().getResourceAsStream("endpoint.proerties")) {
             Properties prop = new Properties();
             String[] config = new String[6];
             if(input != null){
@@ -82,9 +82,9 @@ public class Config extends ContainerClient {
                 prop.setProperty(SRC_DB_URL, "jdbc:postgresql://dataintegrationagent-postgis:5432");
                 prop.setProperty(SRC_DB_USER, "postgres");
                 prop.setProperty(SRC_DB_PASSWORD, "postgis");
-                prop.setProperty(SRC_DB_3D, "sg_ntu");
-                prop.setProperty(SRC_DB_2D, "ntu_2d");
-                prop.setProperty(SRC_TABLE_2D, "ntu_2d");
+                prop.setProperty(SRC_DB_3D, "pirmasens");
+                prop.setProperty(SRC_DB_2D, "pirmasens_2d");
+                prop.setProperty(SRC_TABLE_2D, "pirmasens");
             }
 
             ContainerClient client = new ContainerClient();

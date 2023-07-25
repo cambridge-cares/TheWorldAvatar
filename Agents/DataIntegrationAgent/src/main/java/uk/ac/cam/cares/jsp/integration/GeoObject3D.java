@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 //cityobject table in postgresql
 public class GeoObject3D {
-    private PGgeometry geometry;
+    private String geometry;
     private String name;
     private int objectClassid;
     private String gmlid;
@@ -30,7 +30,7 @@ public class GeoObject3D {
     private SqlConnectionPool pool;
 
     public GeoObject3D () {}
-    public GeoObject3D(String name, int cityobjectid, int objectClassid, PGgeometry geometry){
+    public GeoObject3D(String name, int cityobjectid, int objectClassid, String geometry){
         this.name = name;
         this.cityobjectid = cityobjectid;
         this.objectClassid = objectClassid;
@@ -45,7 +45,7 @@ public class GeoObject3D {
 
     public String getGmlId() {return this.gmlid;}
 
-    public PGgeometry getEnvelope(){
+    public String getGeometry3D(){
         return this.geometry;
     }
 
@@ -64,16 +64,21 @@ public class GeoObject3D {
         this.objectClassid = objectClassid;
     }
 
-    public void setGeometry (PGgeometry geometry) {
+    public void setGeometry (String geometry) {
         this.geometry = geometry;
     }
     public void setAddress(ObjectAddress address){
         this.address = address;
     }
 
+    public int getSrid(String geom){
+        String[] srid = geom.split("[= ;]");
+        return Integer.parseInt(srid[1]);
+    }
+
     public ObjectAddress getAddress(){ return this.address;}
 
-    public List<GeoObject3D> getObject3D (String[] config){
+    public List<GeoObject3D> getObject3D (String[] config) throws SQLException {
 
         List<GeoObject3D> allObject3D = new ArrayList<>();
         this.config = config;
@@ -85,7 +90,7 @@ public class GeoObject3D {
                 throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
             }
 
-            String sql = "SELECT id, gmlid, objectclass_id, name, envelope FROM cityobject";
+            String sql = "SELECT id, gmlid, objectclass_id, name, public.ST_AsEWKT(envelope) AS geom FROM cityobject";
             try (Statement stmt = srcConn.createStatement()) {
                 ResultSet result = stmt.executeQuery(sql);
                 while (result.next()) {
@@ -94,7 +99,7 @@ public class GeoObject3D {
                     object3D.setGmlid(result.getString("gmlid"));
                     object3D.setObjectClassid(result.getInt("objectclass_id"));
                     object3D.setName(result.getString("name"));
-                    object3D.setGeometry((PGgeometry)result.getObject("envelope"));
+                    object3D.setGeometry(result.getString("geom"));
                     object3D.setSqlConnectionPool(this.pool);
                     object3D.setAddress(this.address.queryAddress(result.getInt("id"), srcConn));
                     allObject3D.add(object3D);
@@ -152,9 +157,9 @@ public class GeoObject3D {
                     ResultSet result = stmt.executeQuery(sql);
                     while (result.next()) {
                         SpatialLink sp = new SpatialLink();
-                        PGgeometry geom = (PGgeometry)result.getObject("geometry");
+                        org.postgis.Geometry geom = (org.postgis.Geometry)result.getObject("geometry");
                         if(geom != null){
-                            String coordString = geom.getGeometry().getValue();
+                            String coordString = geom.getValue();
                             Geometry polygon = sp.createGeometry(coordString);
                             gourndSurface.put(Integer.valueOf(result.getInt("id")) ,(Polygon)polygon);
                         }                        
@@ -230,4 +235,7 @@ public class GeoObject3D {
             throw new JPSRuntimeException("Error connecting to source database: " + e);
         }    
     }
+
+    
+    
 }

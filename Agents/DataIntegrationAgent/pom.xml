@@ -100,7 +100,7 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-main</artifactId>
-            <version>20.1</version>
+            <version>27.0</version>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
@@ -117,7 +117,7 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-referencing</artifactId>
-            <version>20.1</version>
+            <version>27.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -130,7 +130,7 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-epsg-hsql</artifactId>
-            <version>20.1</version>
+            <version>27.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -142,7 +142,7 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-epsg-extension</artifactId>
-            <version>20.1</version>
+            <version>27.0</version>
         </dependency>
         <!-- JPS Base Library -->
         <dependency>
