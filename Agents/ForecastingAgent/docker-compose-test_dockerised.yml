@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  forecasting_agent:
+    image:  ghcr.io/cambridge-cares/forecasting_agent_test:2.0.0
+    build:
+      context: .
+      target: test
+    environment:
+      # The following environment variables are required for the derivation agent Docker container to start
+      # Some parameters are not relevant for this agent, but required to avoid Exceptions from the AgentConfig class
+      # For details see: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_derivation_agent/pyderivationagent/conf/agent_conf.py
+      #
+      # Testing agent in 'standalone' mode (i.e., independent of stackclients)
+      - STACK_NAME=
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_URL=jdbc:postgresql://localhost:7432/postgres
+      - SPARQL_QUERY_ENDPOINT=http://localhost:27149/blazegraph/namespace/kb/sparql
+      - SPARQL_UPDATE_ENDPOINT=http://localhost:27149/blazegraph/namespace/kb/sparql
+      #
+      #--- Derivation Agent parameters ---#
+      - ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent/Service
+      - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5001/ForecastingAgent
+      - DERIVATION_INSTANCE_BASE_URL=https://www.example.com/kg/derivation/
+      - DERIVATION_PERIODIC_TIMESCALE=5
+      - REGISTER_AGENT=false
+      - OVERWRITE_FORECAST=true
+      # Required inputs, although not used when initialising DerivationAgent
+      - KG_USERNAME=''
+      - KG_PASSWORD=''
+      - FILE_SERVER_ENDPOINT=''
+      - FILE_SERVER_USERNAME=''
+      - FILE_SERVER_PASSWORD=''
+    ports:
+      - 5001:5000
+    extra_hosts:
+      # To allow connecting to 'host.docker.internal' on Linux
+      # details: https://github.com/moby/libnetwork/pull/2348#issuecomment-1177610499
+      - "host.docker.internal:host-gateway"
+    volumes:
+      # To run docker inside docker, mount default Unix socket docker.sock as a volume
+      # (https://devopscube.com/run-docker-in-docker/)
+      - /var/run/docker.sock:/var/run/docker.sock
