@@ -1,0 +1,90 @@
+{
+    "name": "All Data",
+    "groups": [
+        {
+            "name": "UK Power Plants",
+            "stack": "http://localhost:3838",
+            "sources": [
+                {
+                    "id": "dukes-2019-source",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:dukes_2019&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "dukes-2022-source",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:dukes_2022&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "dukes-merged-source",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:dukes_merged&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+                
+            ], 
+            "layers": [
+                {
+                    "id": "dukes-2019-layer",
+                    "name": "DUKES 2019",
+                    "source": "dukes-2019-source",
+                    "type": "circle",
+                    "source-layer": "dukes_2019",
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "circle-stroke-color": "#000000",
+                        "circle-stroke-width": 1,
+                        "circle-radius": 5,
+                        "circle-color": "#FF0000"
+                    }
+                },
+                {
+                    "id": "dukes-2022-layer",
+                    "name": "DUKES 2022",
+                    "source": "dukes-2022-source",
+                    "type": "circle",
+                    "source-layer": "dukes_2022",
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "circle-stroke-color": "#000000",
+                        "circle-stroke-width": 1,
+                        "circle-radius": 5,
+                        "circle-color": "#00FF00"
+                    }
+                },
+                {
+                    "id": "dukes-merged-layer",
+                    "name": "DUKES Merged",
+                    "source": "dukes-merged-source",
+                    "type": "circle",
+                    "source-layer": "dukes_merged",
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "circle-stroke-color": "#000000",
+                        "circle-stroke-width": 1,
+                        "circle-radius": 5,
+                        "circle-color": [
+                            "case",
+                            ["==", ["get", "country"], "England"], "#FF0000",
+                            ["==", ["get", "country"], "Scotland"], "#0000FF",
+                            ["==", ["get", "country"], "Wales"], "#00FF00",
+                            ["==", ["get", "country"], "Northern Ireland"], "#FFFFFF",
+                            "#0000FF"
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,100 @@
+{
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "uk_power",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "rdf",
+            "subdirectory": "ontologies",
+            "skip": false
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "dukes_2019",
+            "subdirectory": "dukes_2019",
+			"sql": "ALTER TABLE dukes_2019 ADD COLUMN IF NOT EXISTS iri varchar DEFAULT 'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerPlant/' || substr(md5(random()::text),0,11);",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326",
+                "inputDatasetOpenOptions": {
+                    "X_POSSIBLE_NAMES": "Longitude",
+                    "Y_POSSIBLE_NAMES": "Latitude",
+                    "EMPTY_STRING_AS_NULL": "YES"
+                }
+            },
+			"geoServerSettings": {
+                "virtualTable": {
+                    "name": "dukes_2019_geo",
+                    "sql": "SELECT wkb_geometry, \"Site Name\" as name, \"Technology\" as technology, \"Type\" as type, \"Primary Fuel\" as primary_fuel, \"InstalledCapacity (MW)\" as capacity, iri FROM dukes_2019",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "Point",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "dukes_2022",
+            "subdirectory": "dukes_2022",
+			"sql": "ALTER TABLE dukes_2022 ADD COLUMN IF NOT EXISTS iri varchar DEFAULT 'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerPlant/' || substr(md5(random()::text),0,11);",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:27700",
+                "sridOut": "EPSG:4326",
+                "inputDatasetOpenOptions": {
+                    "X_POSSIBLE_NAMES": "X-Coordinate",
+                    "Y_POSSIBLE_NAMES": "Y-Coordinate",
+                    "EMPTY_STRING_AS_NULL": "YES"
+                }
+            },
+			"geoServerSettings": {
+                "virtualTable": {
+                    "name": "dukes_2022_geo",
+                    "sql": "SELECT wkb_geometry, \"Site Name\" as name, \"Technology\" as technology, \"Type\" as type, \"Primary Fuel\" as primary_fuel, \"InstalledCapacity (MW)\" as capacity, iri FROM dukes_2022",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "Point",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "dukes_merged",
+            "subdirectory": "dukes_merged",
+			"sql": "ALTER TABLE dukes_merged ADD COLUMN IF NOT EXISTS iri varchar DEFAULT 'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerPlant/' || substr(md5(random()::text),0,11);",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:4326",
+                "sridOut": "EPSG:4326",
+                "inputDatasetOpenOptions": {
+                    "X_POSSIBLE_NAMES": "Longitude",
+                    "Y_POSSIBLE_NAMES": "Latitude",
+                    "EMPTY_STRING_AS_NULL": "YES"
+                }
+            },
+			"geoServerSettings": {
+                "virtualTable": {
+                    "name": "dukes_merged_geo",
+                    "sql": "SELECT wkb_geometry, \"Site Name\" as name, \"Technology\" as technology, \"Country\" as country, \"Type\" as type, \"Primary Fuel\" as primary_fuel, \"InstalledCapacity (MW)\" as capacity, iri FROM dukes_merged",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "Point",
+                        "srid": 4326
+                    }
+                }
+            }
+        }
+    ]
+}

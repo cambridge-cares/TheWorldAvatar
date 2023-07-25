@@ -1,0 +1,56 @@
+{
+    "name": "All Data",
+    "groups": [
+        {
+            "name": "Power Plants",
+            "stack": "http://localhost:3838",
+            "sources": [
+                {
+                    "id": "dukes-2019-source",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:ukpowerdukes&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+                        ], 
+            "layers": [
+                {
+                    "id": "dukes-2019-layer",
+                    "name": "DUKES 2019",
+                    "source": "dukes-2019-source",
+                    "type": "circle",
+                    "source-layer": "ukpowerdukes",
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "circle-stroke-color": "#000000",
+                        "circle-stroke-width": 1,
+                        "circle-radius": [
+                            "interpolate",
+                            ["linear"],
+                            ["get", "capacity"],
+                            0, 4,
+                            150, 8,
+                            1500, 12
+                        ],
+                        "circle-color": [
+                            "case",
+                            ["==", ["get", "primary_fuel"], "Biomass"], "#80ff83",
+                            ["==", ["get", "primary_fuel"], "Coal"], "#3f3f3f",
+                            ["==", ["get", "primary_fuel"], "Diesel/Gas Oil"], "#ff8080",
+                            ["==", ["get", "primary_fuel"], "Hydro"], "#006b8c",
+                            ["==", ["get", "primary_fuel"], "MSW"], "#008c00",
+                            ["==", ["get", "primary_fuel"], "Natural Gas"], "#ffd473",
+                            ["==", ["get", "primary_fuel"], "Sour Gas"], "#bf7f00",
+                            ["==", ["get", "primary_fuel"], "Nuclear"], "#b20000",
+                            ["==", ["get", "primary_fuel"], "Solar"], "#edff00",
+                            ["==", ["get", "primary_fuel"], "Wind"], "#33c5ff",
+                            "#FFFFFF"
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}
