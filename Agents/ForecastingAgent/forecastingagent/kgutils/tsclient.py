@@ -29,6 +29,7 @@ class TSClient:
                  rdb_user=DB_USER, rdb_password=DB_PASSWORD):
         """
         Initialise TimeSeriesClient (default properties taken from environment variables)
+        
         Arguments:
             kg_client (KGClient): KGClient object (as per `kgclient.py`)
             timeclass: Java time class objects supported by PostgreSQL
@@ -87,51 +88,39 @@ class TSClient:
         return timeseries
 
 
-    def init_ts(self, datairi, times, values, ts_type, time_format):
+    def init_timeseries(self, dataIRI, times, values, ts_type, time_format):
         """
         This method instantiates a new time series and immediately adds data to it.
         
         Arguments:
-            datairi (str): IRI of instance with hasTimeSeries relationship
+            dataIRI (str): IRI of instance with hasTimeSeries relationship
             times (list): List of times/dates
-            values (list): List of list of values per dataIRI   
+            values (list): List of actual values
             tsClient (TSClient): TSClient object
             ts_type (Java class): Java class of time series values
-            time_format (str): Time format (e.g. "yyyy-MM-dd'T'HH:mm:ss.SSS'Z')
+            time_format (str): Time format (e.g. "%Y-%m-%dT%H:%M:%SZ")
         """
 
         with self.connect() as conn:
-            self.tsclient.initTimeSeries([datairi], [ts_type], time_format, conn)
-            ts = TSClient.create_timeseries(
-                        times.to_list(), [datairi], [values.to_list()])
+            self.tsclient.initTimeSeries([dataIRI], [ts_type], time_format, conn)
+            ts = TSClient.create_timeseries(times, [dataIRI], [values])
             self.tsclient.addTimeSeriesData(ts, conn)
-        logger.info(f"Time series initialised in KG: {datairi}")
+        logger.info(f"Time series initialised in KG: {dataIRI}")
 
 
-"""
-HOW TO USE:
+    def retrieve_timeseries(self, dataIRI):
+        """
+        This method retrieves the time series data for a given dataIRI
+        
+        Arguments:
+            dataIRI (str): IRI of instance with hasTimeSeries relationship
+        """
+        with self.connect() as conn:
+            ts = self.tsclient.getTimeSeries([dataIRI], conn)
+        times = ts.getTimes()
+        values = ts.getValues(dataIRI)
 
-Instantiate time series client:
-    1) Create KGClient object (as per `kgclient.py`)
-       kgclient_1 = KGClient(query_endpoint, update_endpoint)
-
-    2) Create TSClient object with default settings
-       ts_client = TSClient(kg_client=kgclient_1)
-
-
-Instantiate a time series (i.e. add triples in KG and create RDB tables):
-    with ts_client.connect() as conn:
-        ts_client.tsclient.initTimeSeries([data_IRI], [DATACLASS], TIME_FORMAT, conn)
-
-    DATACLASSES: DOUBLE, INTEGER, (further to be added as needed)
-
-
-Add time series data (i.e. upload actual data to RDB table):
-    1) Create timeseries Java object
-       ts = TSClient.create_timeseries(time_list, [data_IRI], [value_list])
-
-    2) Add timeseries data via TimeSeries client
-       with ts_client.connect() as conn:
-            ts_client.tsclient.addTimeSeriesData(ts, conn)
-
-"""
+        # Unwrap Java time objects
+        times = [t.toString() for t in times]
+        
+        return times, values

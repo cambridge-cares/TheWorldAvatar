@@ -6,7 +6,7 @@
 @prefix ts:     <https://www.theworldavatar.com/kg/ontotimeseries/> .
 @prefix deriv:	<https://www.theworldavatar.com/kg/derivation/> .
 @prefix disp:	<https://www.theworldavatar.com/kg/ontodispersion/> .
-@prefix :       <https://www.theworldavatar.com/test> . 
+@prefix :       <https://www.theworldavatar.com/test/> . 
 
 ################################################
 ##      Forecasting Agent TEST instances      ##

@@ -24,6 +24,7 @@ from forecastingagent.datamodel.data_mapping import *
 from forecastingagent.utils.tools import *
 from forecastingagent.utils.env_configs import *
 from forecastingagent.agent.forecasting import *
+from forecastingagent.datamodel.data_mapping import DOUBLE, TIME_FORMAT
 
 from . import conftest as cf
 
@@ -48,13 +49,46 @@ def test_example_triples():
             raise e
 
 
-def test_start(initialise_clients):
-
+def test_example_data_instantiation(initialise_clients):
+    """
+    This test checks that all example data gets correctly instantiated,
+    including associated time series data in PostgreSQL.
+    """
     # Get SPARQL client from fixture
-    kg_client, ts_client, rdb_url = initialise_clients
-    
-    print('started')
-    assert True
+    sparql_client, ts_client, _, rdb_url = initialise_clients
+
+    ### TRIPPLE STORE ###
+    # Verify that KG is empty
+    assert sparql_client.getAmountOfTriples() == 0
+
+    # Upload example test triples
+    cf.initialise_triples(sparql_client)
+
+    # Verify instantiation of expected number of triples
+    assert sparql_client.getAmountOfTriples() == cf.INITIAL_TRIPLES
+
+    ### POSTGRESQL ###
+    # Verify that Postgres database is empty
+    assert cf.get_number_of_rdb_tables(rdb_url) == 0
+
+    # Initialise and Upload time series
+    ts_client.init_timeseries(dataIRI=cf.IRI_TO_FORECAST_1,
+                              times=cf.TIMES, values=cf.VALUES,
+                              ts_type=DOUBLE, time_format=TIME_FORMAT)
+
+    # Verify that expected tables and triples are created (i.e. dbTable + 1 ts table)
+    assert cf.get_number_of_rdb_tables(rdb_url) == 2
+    assert sparql_client.getAmountOfTriples() == (cf.INITIAL_TRIPLES + cf.TS_TRIPLES)
+
+    # Verify correct retrieval of time series data
+    times, values = ts_client.retrieve_timeseries(cf.IRI_TO_FORECAST_1)
+    assert times == cf.TIMES
+    # Account for rounding errors
+    assert pytest.approx(values, rel=1e-5) == cf.VALUES
+
+    # Verify that dropping all tables works as expected
+    cf.clear_database(rdb_url)
+    assert cf.get_number_of_rdb_tables(rdb_url) == 0
 
 
 # def test_load_pretrained_model():

@@ -1,6 +1,6 @@
 ################################################
 # Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 08 Apr 2022                            #
+# Date: 25 Jul 2023                            #
 ################################################
 
 # The purpose of this module is to provide functionality to execute
@@ -10,6 +10,8 @@ import json
 
 from py4jps import agentlogging
 
+from pyderivationagent.kg_operations import PySparqlClient
+
 from forecastingagent.errorhandling.exceptions import KGException
 from forecastingagent.utils.baselib_gateway import jpsBaseLibGW
 
@@ -17,48 +19,14 @@ from forecastingagent.utils.baselib_gateway import jpsBaseLibGW
 logger = agentlogging.get_logger('prod')
 
 
-class KGClient:
+class KGClient(PySparqlClient):
     
-    def __init__(self, query_endpoint, update_endpoint, kg_user=None, 
-                 kg_password=None):
+    #
+    # SPARQL QUERIES
+    #
 
-        # Create a JVM module view and use it to import the required java classes
-        self.jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-        jpsBaseLibGW.importPackages(self.jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+    #
+    # SPARQL UPDATES
+    # 
 
-        #NOTE Potentially replace RemoteStoreClient with AccessAgent/StoreClient in the future
-        try:
-            if kg_user is not None:
-                self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint, kg_user, kg_password)
-            else:
-                self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint)
-        except Exception as ex:
-            logger.error("Unable to initialise KG client.")
-            raise KGException("Unable to initialise KG client.") from ex
-
-    
-    def performQuery(self, query):
-        """
-            This function performs query to knowledge graph.
-            Arguments:
-                query - SPARQL Query string
-        """
-        try:
-            response = self.kg_client.execute(query)
-        except Exception as ex:
-            logger.error("SPARQL query not successful.")
-            raise KGException("SPARQL query not successful.") from ex
-        return json.loads(response)
-
-
-    def performUpdate(self, update):
-        """
-            This function performs SPARQL Update to knowledge graph.
-            Arguments:
-                update - SPARQL Update string
-        """
-        try:
-            self.kg_client.executeUpdate(update)
-        except Exception as ex:
-            logger.error("SPARQL update not successful.")
-            raise KGException("SPARQL update not successful.") from ex
+    pass    
