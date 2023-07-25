@@ -1,15 +1,14 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json;
 
-import com.google.gson.Gson;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
 import uk.ac.cam.cares.jps.agent.dashboard.stack.StackClient;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.agent.dashboard.utils.ResponseHelper;
 
 import java.net.http.HttpResponse;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A client that interacts with the dashboard container to set it up.
@@ -39,10 +38,7 @@ public class DashboardClient {
         // Verify if the dashboard container has been set up, and throws an error if not
         // A GET request to the endpoint should return a valid status code with an HTML file
         HttpResponse response = this.SERVICE_CLIENT.sendGetRequest(this.SERVICE_CLIENT.getDashboardUrl());
-        if (response.statusCode() != 200) {
-            LOGGER.fatal(DASHBOARD_UNAVAILABLE_ERROR);
-            throw new JPSRuntimeException(DASHBOARD_UNAVAILABLE_ERROR);
-        }
+        ResponseHelper.verifySuccessfulRequest(response, DASHBOARD_UNAVAILABLE_ERROR);
     }
 
     /**
@@ -65,7 +61,7 @@ public class DashboardClient {
         HttpResponse response = this.SERVICE_CLIENT.sendPostRequest(route, params, this.DASHBOARD_ACCOUNT_USER, this.DASHBOARD_ACCOUNT_PASSWORD);
         LOGGER.info("Generating a new token...");
         // Retrieve the account ID to facilitate token creation process
-        HashMap<String, Object> responseMap = transformToMap(response.body().toString());
+        Map<String, Object> responseMap = ResponseHelper.retrieveResponseBodyAsMap(response);
         // ID is in Double format due to how GSON parses it's number
         // For our use case, we require it to be transformed into a non-decimal number
         Double idDoubleFormat = (Double) responseMap.get("id");
@@ -74,7 +70,7 @@ public class DashboardClient {
         route = route + "/" + accountId + "/tokens";
         // Generate a new token
         response = this.SERVICE_CLIENT.sendPostRequest(route, params, this.DASHBOARD_ACCOUNT_USER, this.DASHBOARD_ACCOUNT_PASSWORD);
-        responseMap = transformToMap(response.body().toString());
+        responseMap = ResponseHelper.retrieveResponseBodyAsMap(response);
         this.SERVICE_ACCOUNT_TOKEN = responseMap.get("key").toString();
         LOGGER.debug("Token for service account has been successfully generated!");
     }
@@ -96,12 +92,8 @@ public class DashboardClient {
             PostgresDataSource source = new PostgresDataSource(sourceName, credentials[0], credentials[1], credentials[2], database);
             // Execute request to create new connection
             HttpResponse response = this.SERVICE_CLIENT.sendPostRequest(route, source.construct(), this.SERVICE_ACCOUNT_TOKEN);
-            if (response.statusCode() != 200) {
-                LOGGER.fatal(FAILED_REQUEST_ERROR + response.body());
-                throw new JPSRuntimeException(FAILED_REQUEST_ERROR + response.body());
-            }
-            HashMap<String, Object> responseMap = transformToMap(response.body().toString());
-            LOGGER.info(response.body());
+            ResponseHelper.verifySuccessfulRequest(response, FAILED_REQUEST_ERROR + response.body());
+            Map<String, Object> responseMap = ResponseHelper.retrieveResponseBodyAsMap(response);
         }
         LOGGER.debug("All connections have been successfully established!");
     }
@@ -118,18 +110,8 @@ public class DashboardClient {
         HttpResponse response = this.SERVICE_CLIENT.sendPostRequest(route, jsonSyntax, this.SERVICE_ACCOUNT_TOKEN);
         // WIP: Retrieve the required information to form the URL
         // URL key is available as /EXPOSED_URL_NAME/d/DASHBOARD_ID/DASHBOARD_TITLE
-        HashMap<String, Object> responseMap = transformToMap(response.body().toString());
+        Map<String, Object> responseMap = ResponseHelper.retrieveResponseBodyAsMap(response);
         String dashboardId = responseMap.get("uid").toString();
         String dashboardTitle = responseMap.get("slug").toString();
-    }
-
-    /**
-     * Transform a JSON object in string format into a Hashmap.
-     *
-     * @param jsonString A JSON object in String object.
-     */
-    private HashMap<String, Object> transformToMap(String jsonString) {
-        Gson gson = new Gson();
-        return gson.fromJson(jsonString, HashMap.class);
     }
 }
