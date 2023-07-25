@@ -1,17 +1,16 @@
 # Forecasting Agent
 
-This `Forecasting Agent` can be used to read time series data from The World Avatar (TWA), create a time series forecast, and instantiate the forecast back into the knowledge graph (KG) using the [OntoTimeSeries] ontology. Reading and writing time series from/into the KG relies on the [TimeSeriesClient] and forecasts are created using either pre-trained models or Facebook's [Prophet] (default). 
+This `Forecasting Agent` can be used to predict instantiated time series from The World Avatar (TWA), and instantiate the forecasts back into the knowledge graph (KG) using the [OntoTimeSeries] ontology. Reading and writing time series from/into the KG relies on the [TimeSeriesClient].
 
-The Python library [Darts] is used to define, train, and store forecasting models as well as to create the forecasts. It contains a variety of models, from classics such as ARIMA to deep neural networks. 
+As of version `2.0.0` the agent is implemented using the [Derived Information Framework]'s (DIF) `DerivationWithTimeSeries` concept to ensure proper data provenance. The required input instances to derive a forecast are described in the [required derivation markup](#13-required-derivation-markup) section below. The agent is designed to be deployed as a Docker container and can be deployed either as standalone version or as part of a larger Docker stack.
 
-The agent relies on [py4jps] to access the [JPS_BASE_LIB] (incl. the [TimeSeriesClient]) and is implemented as Flask App to respond to HTTP requests.
+The Python library [Darts] is used to create the forecasts (and similarly to define, train, and store forecasting models). It contains a variety of models, from classics such as ARIMA over Facebook's Prophet to deep neural networks and transformers. 
 
 &nbsp;
 # 1. Setup
 
 This section specifies the minimum requirements to build and deploy the Docker image. 
 
-&nbsp;
 ## 1.1 Prerequisites
 
 The dockerised agent can be deployed as standalone version (i.e. outside a larger Docker stack) or deployed to an (existing) stack. Several key environment variables need to be set in the [Docker compose file]:
@@ -32,30 +31,82 @@ The dockerised agent can be deployed as standalone version (i.e. outside a large
 - SPARQL_UPDATE_ENDPOINT=
 ```
 
-The `STACK_NAME` variable is used to identify the deployment mode of the agent. In case the `STACK_NAME` is left blank, default Postgres and Blazegraph endpoint setting will be taken from the docker-compose file. Otherwise they will be retrieved using the StackClients based on the provided `NAMESPACE` and `DATABASE` variables.
+The `STACK_NAME` variable is used to identify the deployment mode of the agent (and a missing one will result in an error). In case the `STACK_NAME` is left blank, Postgres and Blazegraph endpoint settings will be taken from the docker-compose file. Otherwise they will be retrieved using the StackClients based on the provided `NAMESPACE` and `DATABASE` variables.
 
-**Please note**: 
-1) All variables defined here (except for `STACK_NAME`) serve as default values. To omit any of those default values, either remove the key completely or just leave it blank. If corresponding keys are provided in the HTTP request to the agent, those will be used instead. Otherwise, these default values will be used. In case neither is provided, the agent will cause an exception.
-
-2) A missing `STACK_NAME` variable will result in an error; however, when deploying using the stack-manager start up script, the `STACK_NAME` variable will be set automatically for all services. Hence, this could be left blank here; however, if provided, it needs to match the `STACK_NAME` used by the stack-manager!
-
-&nbsp;
 ## 1.2 Miscellaneous
 
 **Ensure access to CMCL Docker registry**:
-The required `stack-clients-*.jar` resource to be added to py4jps during building the Docker image is retrieved from the Stack-Clients docker image published on `docker.cmclinnovations.com`. Hence, access to the CMCL Docker registry is required from the machine building the agent image. For more information regarding the registry, see the [CMCL Docker registry wiki page].
+The required `stack-clients-*.jar` resource to be added to [py4jps] during building the Docker image is retrieved from the Stack-Clients docker image published on `docker.cmclinnovations.com`. Hence, access to the CMCL Docker registry is required from the machine building the agent image. For more information regarding the registry, see the [CMCL Docker registry wiki page].
 
 **Ensure access to Github container registry**:
 A `publish_docker_image.sh` convenience script is provided to build and publish the agent image to the [Github container registry]. To publish a new image, your github user name and [personal access token] (which must have a `scope` that [allows you to publish and install packages]) needs to be provided. 
 
-In order to avoid potential launching/debugging issues using the provided `tasks.json` shell commands, please ensure the `augustocdias.tasks-shell-input` plugin is installed.
-
 If you intend to use a forecasting model pre-trained with [Darts]: Please be aware of potential issues when loading the model, in case of version clashes between the current environment and the one used for training.
 
-&nbsp;
-# 2. Using the Agent
-## 2.1 General workflow
+## 1.3 Required derivation markup
 
+Before any forecast can be created (and instantiated), all corresponding inputs need to be properly instantiated. This includes:
+- `owl:Thing`: Instance to be forecasted (most likely `om:Measure` instance, but kept general)
+- `ts:ForecastingModel`: Forecasting model to be used (i.e., Prophet, pre-trained transformer, ...)
+- `ts:Frequency`: Frequency of the forecast (i.e., spacing of time steps)
+- `time:Interval`: Interval to forecast (i.e., defining start and end time)
+- `time:Duration`: Historical data length to use (i.e., duration prior to start time to use for model fitting and/or scaling of data for pre-trained models)
+
+Used namespaces:
+```xml
+om    : http://www.ontology-of-units-of-measure.org/resource/om-2/
+owl   : http://www.w3.org/2002/07/owl#
+rdf   : http://www.w3.org/1999/02/22-rdf-syntax-ns#
+rdfs  : http://www.w3.org/2000/01/rdf-schema#
+xsd   : http://www.w3.org/2001/XMLSchema#
+time  : http://www.w3.org/2006/time#
+ts    : https://www.theworldavatar.com/kg/ontotimeseries/
+deriv : https://www.theworldavatar.com/kg/ontoderivation/
+```
+
+Required forecast derivation inputs:
+```xml
+###   Required inputs   ###
+<IRI_to_forecast> rdf:type owl:Thing ; 
+                  ts:hasTimeSeries <IRI_of_time_series> . 
+<IRI_of_time_series> rdf:type ts:TimeSeries ; 
+                     ts:hasRDB <Postgres_URL> . 
+<IRI_of_forecasting_model> rdf:type ts:ForecastingModel ; 
+                           rdfs:label <Model_name> . 
+<IRI_of_interval_to_forecast> rdf:type time:Interval ; 
+                              time:hasBeginning <IRI_of_start_time_instant> ; 
+                              time:hasEnd <IRI_of_end_time_instant> .
+<IRI_of_forecast_frequency> rdf:type ts:Frequency .
+<IRI_of_historical_data_length> rdf:type time:Duration .
+
+# All time Instants needs to be represented as follows
+<IRI_of_time_instant> rdf:type time:Instant ; 
+                      time:inTimePosition <IRI_of_time_position> .
+<IRI_of_time_position> rdf:type time:TimePosition ; 
+                       time:numericPosition <xsd:decimal> ;
+                       time:hasTRS <http://dbpedia.org/resource/Unix_time> .
+
+# Both Frequency and Duration need to be represented as follows
+<IRI_of_Duration> time:numericDuration <xsd:decimal> ;
+                  ts:unitType <time:unitHour> .
+# Alternative unit concepts: time:unitDay, time:unitMinute, time:unitSecond, ...
+
+
+###   Optional inputs   ###
+<IRI_to_forecast> om:hasUnit <IRI_of_OM_unit> . 
+<IRI_of_forecasting_model> ts:scaleData <xsd:boolean> ;
+                           ts:hasModelURL <model_path_link> ;
+                           ts:hasCheckpointURL <model_chkpt_link> ;
+                           ts:hasCovariate <IRI_of_covariate> . 
+<IRI_of_covariate> rdf:type owl:Thing ; 
+                   ts:hasTimeSeries <IRI_of_time_series> . 
+<IRI_of_forecast_frequency> ts:resampleData <xsd:boolean> .
+```
+
+<!-- &nbsp;
+# 2.Using the Agent
+
+## 2.1 General workflow
 
 This section describes the workflow and most important steps to access and extent the agent.
 The Agent UML diagram provides an overview of how the agent works:
@@ -70,9 +121,9 @@ Next the agent loads the time series (+ `covariates` if `load_covariates_func` i
 
 Then, it loads the model. This is either a pre-trained model specified in the model configuration with the model link `model_path_pth_link` and the checkpoint link `model_path_ckpt_link` or else a new Prophet model is fitted to predict the data. The forecast starts from the optional parameter `forecast start date` in the request or if not specifed the last available date is taken. The forecast lasts over the number of specified time steps (`horizon`).
 
-Finally the forecasted time series is instantiated. For that purpose a new `forecast iri` is created and attached to the `iri` specified in the request. Further metadata, e.g. which data and models are used, are included as well using the [OntoTimeSeries] ontology.
+Finally the forecasted time series is instantiated. For that purpose a new `forecast iri` is created and attached to the `iri` specified in the request. Further metadata, e.g. which data and models are used, are included as well using the [OntoTimeSeries] ontology. -->
 
-&nbsp;
+<!-- &nbsp;
 ## 2.2 Build and Deploy the Agent
 
 To build and publish the agent Docker image please use the following commands. Please note that all of those commands are bundled in the  `publish_docker_image.sh` convenience script (only target image (i.e. production/debug) needs to be adjusted at top of that script).
@@ -108,25 +159,7 @@ If you want to spin up this agent as part of a stack, do the following:
 3) Start the stack manager as usual (i.e. `bash ./stack.sh start <STACK_NAME>` from the stack-manager repo). This should start the container. Please use a bash terminal to avoid potential issues with inconsistent path separators.
 4) The agent shall become available at `http://<HOST>:<PORT>/forecastingAgent/`
 
-### **Stack Troubleshooting**
 
-In case NGINX faces issues to locate the agent after startup, try the following commands from within the NGINX container:
-
-```bash
-# Test NGINX configuration to determine potentially erroneous (upstream) configuration
-nginx -t
-# Delete potentially erroneous/outdated configuration files
-rm /etc/nginx/conf.d/...
-rm /etc/nginx/conf.d/locations/...
-# Verify that NGINX configuration is corrected
-nginx -t
-# expected output: the configuration file /etc/nginx/nginx.conf syntax is ok
-# expected output: configuration file /etc/nginx/nginx.conf test is successful
-
-# Reload NGINX configuration
-nginx -s reload  
-# expected output: signal process started
-```
 
 ## 2.3 Notes on Debugging
 
@@ -135,10 +168,10 @@ The stack deployment of the agent is focused on the production image of the agen
 docker-compose -f docker-compose.debug.yml  build
 docker-compose -f docker-compose.debug.yml  up
 ```
-This spins up the agent on `http://127.0.0.1:5001`, waiting for the debugger to attach. To attach to the container and start debugging, please use the provided  `Python: Debug Flask within Docker` debug configuration. Although outside the stack, this procedure allows to debug all essential functionality of the agent (without the need to have a full stack running).
+This spins up the agent on `http://127.0.0.1:5001`, waiting for the debugger to attach. To attach to the container and start debugging, please use the provided  `Python: Debug Flask within Docker` debug configuration. Although outside the stack, this procedure allows to debug all essential functionality of the agent (without the need to have a full stack running). -->
 
 
-&nbsp;
+<!-- &nbsp;
 ## 2.4 Forecasting time series via HTTP requests
 
 Forecasting a time series is triggered by receiving an HTTP `POST` request with a JSON body. An example request to forecast an `iri` is provided in [HTTP_Request_forecast]: 
@@ -164,56 +197,36 @@ Further optional parameters can be provided to specify the connection configurat
 ## 2.5 Custom model configurations and new models
 Specify your custom configurations following the example of the `TFT_HEAT_SUPPLY` model configuration in the [mapping file]. 
 
-If you need covariates, define a function which load them (similarly to `get_covs_heat_supply`) for the `load_covariates_func` parameter in your configuration. To use your own pre-trained model with [Darts], expand the [agent module] where `load_pretrained_model` is called just like the model for `TFT_HEAT_SUPPLY` is loaded. You can use the function `load_pretrained_model` as well if thats suits your model, just specify your model class and set the `input_length` as for `TFT_HEAT_SUPPLY`. 
+If you need covariates, define a function which load them (similarly to `get_covs_heat_supply`) for the `load_covariates_func` parameter in your configuration. To use your own pre-trained model with [Darts], expand the [agent module] where `load_pretrained_model` is called just like the model for `TFT_HEAT_SUPPLY` is loaded. You can use the function `load_pretrained_model` as well if thats suits your model, just specify your model class and set the `input_length` as for `TFT_HEAT_SUPPLY`.  -->
 
 &nbsp;
-# 3. How to run tests
+# 3. Dockerised agent tests
 
-Both unit tests and dockerised integration tests are provided. Testcontainers based on the [docker-compose.test.yml] file are used to spin up a stack with a Blazegraph and a PostgreSQL container for the integration tests. No volumes are used as data is only used for testing.
+Both dockerised unit and integration tests are provided. The dockerised tests use one Docker container to initialise the Derivation agent and run pytest, and use Docker in Docker to spin up the required Blazegraph and Postgis testcontainer instances:
 
-**Setting up the testing environment**
-
-It is highly recommended to use a virtual environment for testing, which can be created via
-`(Windows)`
-```cmd
-$ python -m venv forecasting_venv
-$ forecasting_venv\Scripts\activate.bat
-(forecasting_venv) $
-```
-
-Install the `forecasting` project including all packages required for testing as listed in `setup.py` via
-`(Windows)`
-```
-(forecasting_venv) $ python -m pip install --upgrade pip  
-(forecasting_venv) $ python -m pip install -e .[dev]
-```
-
-**Running tests**
-
-You can start all tests by running the following command in your console:
 ```bash
-# Run all tests
-pytest --docker-compose=docker-compose.test.yml
-# Run all tests with verbose output (i.e. logging output)
-pytest -s --docker-compose=docker-compose.test.yml
+# Build and run dockerised agent tests
+docker compose -f "docker-compose-test_dockerised.yml" up -d --build
 ```
 
+To run the dockerised tests in Debug mode, please run the below command followed by the `Python: Debug within Docker` debug configuration (provided in `.vscode` subfolder):
 
-# Final Remarks
-Currently the agent holds several (helper) scripts tailored towards the House 45 use case in Pirmasens (inside the resources folder). They are mainly here for reference to provide working examples and might be removed in a later revision of the agent.
-
+```bash
+# Build and run dockerised agent tests in debug mode
+docker compose -f "docker-compose-test_dockerised_debug.yml" up -d --build
+```
 
 &nbsp;
 # Authors #
-Magnus Mueller (mm2692@cam.ac.uk), November 2022
+Markus Hofmeister (mh807@cam.ac.uk), July 2023
 
-Markus Hofmeister (mh807@cam.ac.uk), December 2022
+Magnus Mueller (mm2692@cam.ac.uk), November 2022
 
 
 <!-- Links -->
 <!-- websites -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
-[CMCL Docker registry wiki page]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
+[CMCL Docker registry wiki page]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Using-Docker-images
 [py4jps]: https://pypi.org/project/py4jps/#description
 [JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
 [OntoTimeSeries]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontotimeseries
@@ -222,6 +235,7 @@ Markus Hofmeister (mh807@cam.ac.uk), December 2022
 [Prophet]: https://github.com/facebook/prophet
 [Github container registry]: https://ghcr.io
 [personal access token]: https://docs.github.com/en/github/
+[Derived Information Framework]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/derivation
 
 <!-- files -->
 [properties file]: ./resources/timeseries.properties
