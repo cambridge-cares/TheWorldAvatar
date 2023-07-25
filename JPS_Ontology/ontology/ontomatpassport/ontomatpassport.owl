@@ -1784,7 +1784,7 @@
         <rdfs:label xml:lang="en">Length</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Manufacturer">
-        <rdfs:comment xml:lang="en">An industry that manufactures goods for consumer market.</rdfs:comment>
+        <rdfs:comment xml:lang="en">A business, company or entity manufacturing goods for the consumer market.</rdfs:comment>
         <rdfs:label xml:lang="en">Manufacturer</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#RecycledContent">
@@ -1794,12 +1794,12 @@
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Resistance">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</hasGUIPosition>
-        <rdfs:comment xml:lang="en">A physical property that describes the resistance of an object.</rdfs:comment>
+        <rdfs:comment xml:lang="en">Any mechanical force that tends to retard or oppose motion [WordNet 3.1]</rdfs:comment>
         <rdfs:label xml:lang="en">Resistance</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Rigidity">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">5</hasGUIPosition>
-        <rdfs:comment xml:lang="en">A physical property to describe the rigidity of an object.</rdfs:comment>
+        <rdfs:comment xml:lang="en">The physical property of being stiff and resisting bending [WordNet 3.1]</rdfs:comment>
         <rdfs:label xml:lang="en">Rigidity</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ServiceLife">
