@@ -4,6 +4,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
+import org.postgis.PGgeometry;
+
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.sql.Connection;
@@ -161,10 +163,11 @@ public class GeoObject3D {
                     ResultSet result = stmt.executeQuery(sql);
                     while (result.next()) {
                         SpatialLink sp = new SpatialLink();
-                        org.postgis.Geometry geom = (org.postgis.Geometry)result.getObject("geometry");
+                        PGgeometry geom = (PGgeometry)result.getObject("geometry");
                         if(geom != null){
-                            String coordString = geom.getValue();
+                            String coordString = geom.getGeometry().getValue();
                             Geometry polygon = sp.createGeometry(coordString);
+                            polygon.setSRID(geom.getGeometry().getSrid());
                             gourndSurface.put(Integer.valueOf(result.getInt("id")) ,(Polygon)polygon);
                         }                        
                     }                  
@@ -208,7 +211,7 @@ public class GeoObject3D {
 
     //1. insert data in surface_geometry 2. update data in building
     public void updateFootprint(int buildingid, Polygon polygon){
-        String insertSql = "INSERT INTO surface_geometry (geometry, cityobject_id) VALUE (" + polygon + "," + buildingid + ");";
+        String insertSql = "INSERT INTO surface_geometry (geometry, cityobject_id) VALUE ( public.ST_GeomFromEWKT(" + polygon + ")," + buildingid + ");";
         int surfaceid = 0;
         if(this.pool == null){
             this.pool = new SqlConnectionPool(this.config);

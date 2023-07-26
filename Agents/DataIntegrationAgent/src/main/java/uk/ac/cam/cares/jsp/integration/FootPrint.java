@@ -43,6 +43,7 @@ public class FootPrint {
         for(int i = 0; i < allObject3D.size(); i++){
             GeoObject3D object3D = allObject3D.get(i);
             int objectid = object3D.getId();
+            int srid = object3D.getSrid(object3D.getGeometry3D());
             Map<Integer, Polygon> allSurfaces  = object3D.queryBuildingSurfaces(objectid, this.thematic);
             List<Polygon> groundList = new ArrayList<>();
             if(this.thematic && allSurfaces.size() > 0){
@@ -61,6 +62,7 @@ public class FootPrint {
             GeometryFactory fact = new GeometryFactory();
             LinearRing footRing = extractFootprint(groundList);
             Polygon poly = new Polygon(footRing, null, fact);
+            poly.setSRID(srid);
             object3D.updateFootprint(objectid, poly);
         }
     }
