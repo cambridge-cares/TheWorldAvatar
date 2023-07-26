@@ -36,9 +36,8 @@ class ForecastingAgent(DerivationAgent):
     def agent_input_concepts(self) -> list:
         # Please note: Declared inputs/outputs need proper instantiation incl. 
         #              RDF TYPE declarations in the KG for the derivation to work
-        return [TS_FORECASTINGMODEL, TIME_INTERVAL, TIME_DURATION, TS_FREQUENCY]
-    # ,
-    #             OWL_THING]
+        return [TS_FORECASTINGMODEL, TIME_INTERVAL, TIME_DURATION, TS_FREQUENCY,
+                OWL_THING]
 
 
     def agent_output_concepts(self) -> list:
@@ -90,8 +89,7 @@ class ForecastingAgent(DerivationAgent):
         # (returns dict of inputs with input concepts as keys and values as list)
         inputs = derivation_inputs.getInputs()
         derivIRI = derivation_inputs.getDerivationIRI()
-        postcode_iri, ppi_iri, tx_records = self.validate_input_values(inputs=inputs,
-                                                                       derivationIRI=derivIRI)
+        self.validate_input_values(inputs=inputs, derivationIRI=derivIRI)
 
 
 def default():

@@ -125,7 +125,7 @@ def test_create_forecast(
     # Verify expected number of triples after derivation registration
     triples += cf.AGENT_SERVICE_TRIPLES
     triples += cf.DERIV_INPUT_TRIPLES + cf.DERIV_OUTPUT_TRIPLES
-    #assert sparql_client.getAmountOfTriples() == triples
+    assert sparql_client.getAmountOfTriples() == triples
 
     # Assert that there's currently no instance having rdf:type of the output signature in the KG
     assert not sparql_client.check_if_triple_exist(None, RDF.type.toPython(), dm.TS_FORECAST)
