@@ -25,7 +25,6 @@ import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RunCEATaskTest {
-
     @Test
     public void testRunCEATask() {
         RunCEATask task;
