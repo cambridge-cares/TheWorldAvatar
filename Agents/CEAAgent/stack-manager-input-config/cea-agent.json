@@ -3,7 +3,7 @@
         "Name": "cea-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "cea-agent:1.0.0",
+                "Image": "cea-agent:2.0.0",
                 "Configs": [
                     {
                         "ConfigName": "blazegraph"
