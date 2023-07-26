@@ -33,15 +33,14 @@ To build and start the agent, open up the command prompt in the same directory a
 
 docker-compose up -d
 
-The agent is reachable at "heatemissionagent/performheatquery" on localhost port 1080.
+The agent is reachable at "heat-agent/performheatquery" on localhost port 8084.
 
 # Run the agent
-To run the agent, a POST request must be sent to http://localhost:1080/heatemissionagent/performheatquery with a correct JSON Object.
-Follow the request shown below.
+To run the agent, a POST request must be sent to http://localhost:8084/heat-agent/performheatquery with a correct JSON Object.
+From a Windows Subsystem for Linux (WSL) terminal, execute the request shown below.
 
-POST http://localhost:1080/heatemissionagent/performheatquery
-Content-Type: json
-{"job":{"lower_bounds":"8464#23588#0","upper_bounds":"17619#30520#105"}}
+curl -X POST -H "Content-Type: application/json" -d '{"job":{"lower_bounds":"8464#23588#0","upper_bounds":"17619#30520#105"}}' http://localhost:8084/heat-agent/performheatquery
+
 
 If the agent runs successfully, you should see a returned JSON Object that is similar to the one shown below.
 
