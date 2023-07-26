@@ -37,50 +37,6 @@ public class SurroundingsHelper {
     }
 
     /**
-     * Builds a SPARQL geospatial query for city object id of buildings whose envelope are within lowerBounds and upperBounds
-     * @param uriString city object id of the target building
-     * @param lowerBounds coordinates of customFieldsLowerBounds as a string
-     * @param upperBounds coordinates of customFieldsUpperBounds as a string
-     * @return returns a query string
-     */
-    private Query getBuildingsWithinBoundsQuery(String uriString, String lowerBounds, String upperBounds) throws ParseException {
-        // where clause for geospatial search
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
-                .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo))
-                .addWhere("?cityObject", "geo:predicate", "ocgml:EnvelopeType")
-                .addWhere("?cityObject", "geo:searchDatatype", customDataType)
-                .addWhere("?cityObject", "geo:customFields", customField)
-                // PLACEHOLDER because lowerBounds and upperBounds would be otherwise added as doubles, not strings
-                .addWhere("?cityObject", "geo:customFieldsLowerBounds", "PLACEHOLDER" + lowerBounds)
-                .addWhere("?cityObject", "geo:customFieldsUpperBounds", "PLACEHOLDER" + upperBounds);
-
-        // where clause to check that the city object is a building
-        WhereBuilder wb2 = new WhereBuilder()
-                .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
-                .addWhere("?cityObject", "ocgml:objectClassId", "?id")
-                .addFilter("?id=26");
-
-        SelectBuilder sb = new SelectBuilder()
-                .addVar("?cityObject");
-
-        Query query = sb.build();
-        // add geospatial service
-        ElementGroup body = new ElementGroup();
-        body.addElement(new ElementService(ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo) + "search", wb.build().getQueryPattern()));
-        body.addElement(wb2.build().getQueryPattern());
-        query.setQueryPattern(body);
-
-        WhereHandler wh = new WhereHandler(query.cloneQuery());
-
-        // add city object graph
-        WhereHandler wh2 = new WhereHandler(sb.build());
-        wh2.addGraph(NodeFactory.createURI(BuildingURIHelper.getGraph(uriString, CITY_OBJECT)), wh);
-
-        return wh2.getQuery();
-    }
-
-    /**
      * Retrieves the surrounding buildings
      * @param uriString city object id
      * @param route route to pass to access agent
@@ -153,5 +109,49 @@ public class SurroundingsHelper {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * Builds a SPARQL geospatial query for city object id of buildings whose envelope are within lowerBounds and upperBounds
+     * @param uriString city object id of the target building
+     * @param lowerBounds coordinates of customFieldsLowerBounds as a string
+     * @param upperBounds coordinates of customFieldsUpperBounds as a string
+     * @return returns a query string
+     */
+    private Query getBuildingsWithinBoundsQuery(String uriString, String lowerBounds, String upperBounds) throws ParseException {
+        // where clause for geospatial search
+        WhereBuilder wb = new WhereBuilder()
+                .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
+                .addPrefix("geo", ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo))
+                .addWhere("?cityObject", "geo:predicate", "ocgml:EnvelopeType")
+                .addWhere("?cityObject", "geo:searchDatatype", customDataType)
+                .addWhere("?cityObject", "geo:customFields", customField)
+                // PLACEHOLDER because lowerBounds and upperBounds would be otherwise added as doubles, not strings
+                .addWhere("?cityObject", "geo:customFieldsLowerBounds", "PLACEHOLDER" + lowerBounds)
+                .addWhere("?cityObject", "geo:customFieldsUpperBounds", "PLACEHOLDER" + upperBounds);
+
+        // where clause to check that the city object is a building
+        WhereBuilder wb2 = new WhereBuilder()
+                .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
+                .addWhere("?cityObject", "ocgml:objectClassId", "?id")
+                .addFilter("?id=26");
+
+        SelectBuilder sb = new SelectBuilder()
+                .addVar("?cityObject");
+
+        Query query = sb.build();
+        // add geospatial service
+        ElementGroup body = new ElementGroup();
+        body.addElement(new ElementService(ontologyUriHelper.getOntologyUri(OntologyURIHelper.geo) + "search", wb.build().getQueryPattern()));
+        body.addElement(wb2.build().getQueryPattern());
+        query.setQueryPattern(body);
+
+        WhereHandler wh = new WhereHandler(query.cloneQuery());
+
+        // add city object graph
+        WhereHandler wh2 = new WhereHandler(sb.build());
+        wh2.addGraph(NodeFactory.createURI(BuildingURIHelper.getGraph(uriString, CITY_OBJECT)), wh);
+
+        return wh2.getQuery();
     }
 }

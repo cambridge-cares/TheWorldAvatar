@@ -332,17 +332,19 @@ public class WeatherHelper extends JPSAgent {
             query = query + API_START + "=" + start + "&";
             query = query + API_END + "=" + end + "&" + API_TIMEZONE + "=auto";
 
-
             URLConnection connection = new URL(API_URL + "?" + query).openConnection();
 
             InputStream is = connection.getInputStream();
             BufferedReader rd = new BufferedReader(new InputStreamReader(is));
             StringBuffer response = new StringBuffer();
             String line;
+
             while ((line = rd.readLine()) != null && !line.isEmpty()){
                 response.append(line);
             }
+
             rd.close();
+
             JSONObject result = new JSONObject(response.toString());
 
             // return offset in seconds

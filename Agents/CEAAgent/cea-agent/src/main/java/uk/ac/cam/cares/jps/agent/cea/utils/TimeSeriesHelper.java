@@ -48,13 +48,13 @@ public class TimeSeriesHelper {
         if(!timeSeriesExist(iris)) {
             // All values are doubles
             List<Class<?>> classes =  new ArrayList<>();
-            for(int i=0; i<iris.size(); i++){
+            for (int i = 0; i < iris.size(); i++) {
                 classes.add(Double.class);
             }
+
             try (Connection conn = rdbStoreClient.getConnection()) {
                 // Initialize the time series
                 tsClient.initTimeSeries(iris, classes, timeUnit, conn, TimeSeriesClient.Type.STEPWISECUMULATIVE, null, null);
-                //LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
             }
             catch (SQLException e) {
                 throw new JPSRuntimeException(e);
@@ -70,11 +70,13 @@ public class TimeSeriesHelper {
      */
     public void addDataToTimeSeries(List<List<?>> values, List<OffsetDateTime> times, LinkedHashMap<String,String> iriMap) {
         List<String> iris = new ArrayList<>();
-        for (String iri : iriMap.values()){
+
+        for (String iri : iriMap.values()) {
             iris.add(iri);
         }
+
         // If CreateTimeSeries has not been run, get time series client
-        if(tsClient==null){
+        if (tsClient == null) {
             tsClient = new TimeSeriesClient<>(storeClient, OffsetDateTime.class);
         }
         TimeSeries<OffsetDateTime> currentTimeSeries = new TimeSeries<>(times, iris, values);

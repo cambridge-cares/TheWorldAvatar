@@ -95,6 +95,7 @@ public class GeometryQueryHelper {
                 result = queryResultArray.getJSONObject(0).get(value).toString();
             }
         }
+
         return result;
     }
 
@@ -126,88 +127,6 @@ public class GeometryQueryHelper {
                 return getEnvelopeQuery(uriString);
         }
         return null;
-    }
-
-
-    /**
-     * Builds a SPARQL query for a specific URI to retrieve ground surface geometry from lod0FootprintId
-     * @param uriString city object id
-     * @return returns a query string
-     */
-    private Query getLod0FootprintIdQuery(String uriString) {
-        try {
-            WhereBuilder wb = new WhereBuilder()
-                    .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
-                    .addWhere("?building", "ocgml:lod0FootprintId", "?footprintSurface")
-                    .addWhere("?surface", "ocgml:parentId", "?footprintSurface")
-                    .addWhere("?surface", "ocgml:GeometryType", "?geometry");
-            SelectBuilder sb = new SelectBuilder()
-                    .addVar("?geometry")
-                    .addVar("datatype(?geometry)", "?datatype")
-                    .addWhere(wb);
-            sb.setVar(Var.alloc("building"), NodeFactory.createURI(BuildingURIHelper.getBuildingUri(uriString)));
-            return sb.build();
-        }catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-    
-    /**
-     * Builds a SPARQL query for a specific URI to retrieve all surface geometries to a building
-     * @param uriString city object id
-     * @return returns a query string
-     */
-    private Query getGeometryQuerySurfaceGeom(String uriString) {
-        try {
-            WhereBuilder wb = new WhereBuilder()
-                    .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
-                    .addWhere("?surf", "ocgml:cityObjectId", "?s")
-                    .addWhere("?surf", "ocgml:GeometryType", "?geometry")
-                    .addFilter("!isBlank(?geometry)");
-            SelectBuilder sb = new SelectBuilder()
-                    .addVar("?geometry")
-                    .addVar("datatype(?geometry)", "?datatype")
-                    .addGraph(NodeFactory.createURI(BuildingURIHelper.getGraph(uriString, SURFACE_GEOMETRY)), wb);
-            sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(BuildingURIHelper.getBuildingUri(uriString)));
-            return sb.build();
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-    
-    /**
-     * Builds a SPARQL query for a specific URI to retrieve ground surface geometries for building linked to thematic surfaces with ocgml:objectClassId 35
-     * @param uriString city object id
-     * @return returns a query string
-     */
-    private Query getGeometryQueryThematicSurface(String uriString) {
-        try {
-            WhereBuilder wb1 = new WhereBuilder()
-                    .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
-                    .addWhere("?surf", "ocgml:cityObjectId", "?s")
-                    .addWhere("?surf", "ocgml:GeometryType", "?geometry")
-                    .addFilter("!isBlank(?geometry)");
-            WhereBuilder wb2 = new WhereBuilder()
-                    .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
-                    .addWhere("?s", "ocgml:buildingId", "?building")
-                    .addWhere("?s", "ocgml:objectClassId", "?groundSurfId")
-                    .addFilter("?groundSurfId = 35"); //Thematic Surface Ids are 33:roof, 34:wall and 35:ground
-            SelectBuilder sb = new SelectBuilder()
-                    .addVar("?geometry")
-                    .addVar("datatype(?geometry)", "?datatype")
-                    .addGraph(NodeFactory.createURI(BuildingURIHelper.getGraph(uriString, SURFACE_GEOMETRY)), wb1)
-                    .addGraph(NodeFactory.createURI(BuildingURIHelper.getGraph(uriString, THEMATIC_SURFACE)), wb2);
-            sb.setVar( Var.alloc( "building" ), NodeFactory.createURI(BuildingURIHelper.getBuildingUri(uriString)));
-            return sb.build();
-
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
-
     }
 
     /**
@@ -275,19 +194,84 @@ public class GeometryQueryHelper {
     }
 
     /**
-     * Builds a SPARQL query for a CRS in the DatabaseSRS graph using namespace from uri
+     * Builds a SPARQL query for a specific URI to retrieve ground surface geometry from lod0FootprintId
      * @param uriString city object id
      * @return returns a query string
      */
-    private Query getDatabasesrsCrsQuery(String uriString) {
-        WhereBuilder wb = new WhereBuilder()
-                .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
-                .addWhere("?s", "ocgml:srid", "?CRS");
-        SelectBuilder sb = new SelectBuilder()
-                .addVar("?CRS")
-                .addGraph(NodeFactory.createURI(BuildingURIHelper.getGraph(uriString, DATABASE_SRS)), wb);
-        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(BuildingURIHelper.getNamespace(uriString)));
-        return sb.build();
+    private Query getLod0FootprintIdQuery(String uriString) {
+        try {
+            WhereBuilder wb = new WhereBuilder()
+                    .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
+                    .addWhere("?building", "ocgml:lod0FootprintId", "?footprintSurface")
+                    .addWhere("?surface", "ocgml:parentId", "?footprintSurface")
+                    .addWhere("?surface", "ocgml:GeometryType", "?geometry");
+            SelectBuilder sb = new SelectBuilder()
+                    .addVar("?geometry")
+                    .addVar("datatype(?geometry)", "?datatype")
+                    .addWhere(wb);
+            sb.setVar(Var.alloc("building"), NodeFactory.createURI(BuildingURIHelper.getBuildingUri(uriString)));
+            return sb.build();
+        }catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    /**
+     * Builds a SPARQL query for a specific URI to retrieve ground surface geometries for building linked to thematic surfaces with ocgml:objectClassId 35
+     * @param uriString city object id
+     * @return returns a query string
+     */
+    private Query getGeometryQueryThematicSurface(String uriString) {
+        try {
+            WhereBuilder wb1 = new WhereBuilder()
+                    .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
+                    .addWhere("?surf", "ocgml:cityObjectId", "?s")
+                    .addWhere("?surf", "ocgml:GeometryType", "?geometry")
+                    .addFilter("!isBlank(?geometry)");
+            WhereBuilder wb2 = new WhereBuilder()
+                    .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
+                    .addWhere("?s", "ocgml:buildingId", "?building")
+                    .addWhere("?s", "ocgml:objectClassId", "?groundSurfId")
+                    .addFilter("?groundSurfId = 35"); //Thematic Surface Ids are 33:roof, 34:wall and 35:ground
+            SelectBuilder sb = new SelectBuilder()
+                    .addVar("?geometry")
+                    .addVar("datatype(?geometry)", "?datatype")
+                    .addGraph(NodeFactory.createURI(BuildingURIHelper.getGraph(uriString, SURFACE_GEOMETRY)), wb1)
+                    .addGraph(NodeFactory.createURI(BuildingURIHelper.getGraph(uriString, THEMATIC_SURFACE)), wb2);
+            sb.setVar( Var.alloc( "building" ), NodeFactory.createURI(BuildingURIHelper.getBuildingUri(uriString)));
+            return sb.build();
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    /**
+     * Builds a SPARQL query for a specific URI to retrieve all surface geometries to a building
+     * @param uriString city object id
+     * @return returns a query string
+     */
+    private Query getGeometryQuerySurfaceGeom(String uriString) {
+        try {
+            WhereBuilder wb = new WhereBuilder()
+                    .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
+                    .addWhere("?surf", "ocgml:cityObjectId", "?s")
+                    .addWhere("?surf", "ocgml:GeometryType", "?geometry")
+                    .addFilter("!isBlank(?geometry)");
+            SelectBuilder sb = new SelectBuilder()
+                    .addVar("?geometry")
+                    .addVar("datatype(?geometry)", "?datatype")
+                    .addGraph(NodeFactory.createURI(BuildingURIHelper.getGraph(uriString, SURFACE_GEOMETRY)), wb);
+            sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(BuildingURIHelper.getBuildingUri(uriString)));
+            return sb.build();
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
@@ -302,6 +286,22 @@ public class GeometryQueryHelper {
         SelectBuilder sb = new SelectBuilder()
                 .addVar("?CRS")
                 .addWhere(wb);
+        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(BuildingURIHelper.getNamespace(uriString)));
+        return sb.build();
+    }
+
+    /**
+     * Builds a SPARQL query for a CRS in the DatabaseSRS graph using namespace from uri
+     * @param uriString city object id
+     * @return returns a query string
+     */
+    private Query getDatabasesrsCrsQuery(String uriString) {
+        WhereBuilder wb = new WhereBuilder()
+                .addPrefix("ocgml", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ocgml))
+                .addWhere("?s", "ocgml:srid", "?CRS");
+        SelectBuilder sb = new SelectBuilder()
+                .addVar("?CRS")
+                .addGraph(NodeFactory.createURI(BuildingURIHelper.getGraph(uriString, DATABASE_SRS)), wb);
         sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(BuildingURIHelper.getNamespace(uriString)));
         return sb.build();
     }

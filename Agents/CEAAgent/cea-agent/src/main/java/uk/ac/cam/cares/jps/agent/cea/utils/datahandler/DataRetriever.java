@@ -202,7 +202,7 @@ public class DataRetriever {
      * @param graph graph name
      * @return list of iris
      */
-    public String getNumericalValue(String measureUri, String route, String graph){
+    public String getNumericalValue(String measureUri, String route, String graph) {
         String result = "";
 
         WhereBuilder wb = new WhereBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
@@ -210,10 +210,10 @@ public class DataRetriever {
 
         SelectBuilder sb = new SelectBuilder().addVar("?value");
 
-        if (!graph.isEmpty()){
+        if (!graph.isEmpty()) {
             sb.addGraph(NodeFactory.createURI(graph), wb);
         }
-        else{
+        else {
             sb.addWhere(wb);
         }
 
@@ -224,6 +224,7 @@ public class DataRetriever {
         if(!queryResultArray.isEmpty()){
             result = queryResultArray.getJSONObject(0).get("value").toString();
         }
+
         return result;
     }
 

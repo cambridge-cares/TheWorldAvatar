@@ -86,7 +86,7 @@ public class BuildingUsageHelper
                 sum += val;
             }
 
-            for (Map.Entry<String, Double> entry : result.entrySet()){
+            for (Map.Entry<String, Double> entry : result.entrySet()) {
                 result.put(entry.getKey(), entry.getValue() / sum);
             }
         }

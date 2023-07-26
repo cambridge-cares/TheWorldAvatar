@@ -44,10 +44,13 @@ public class DataManager {
         sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(BuildingURIHelper.getBuildingUri(uriString)));
 
         JSONArray queryResultArray = new JSONArray(AccessAgentCaller.queryStore(route, sb.build().toString()));
+
         String building = "";
-        if(!queryResultArray.isEmpty()){
+
+        if (!queryResultArray.isEmpty()) {
             building = queryResultArray.getJSONObject(0).get("building").toString();
         }
+
         return building;
     }
 

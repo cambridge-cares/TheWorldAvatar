@@ -35,7 +35,7 @@ public class GeometryHandler {
         String geom;
         String[] split;
 
-        for (int i = 0; i < surfaceArray.length(); i++){
+        for (int i = 0; i < surfaceArray.length(); i++) {
             geom = surfaceArray.getJSONObject(i).get("geometry").toString();
             split = geom.split("#");
 
@@ -69,7 +69,7 @@ public class GeometryHandler {
         }
 
         // gets rid of geometry without constant z (up to eps tolerance)
-        for (int i = ind.size() - 1; i >= 0; i--){
+        for (int i = ind.size() - 1; i >= 0; i--) {
             surfaceArray.remove(ind.get(i));
         }
 
@@ -80,10 +80,10 @@ public class GeometryHandler {
             geom = surfaceArray.getJSONObject(i).get("geometry").toString();
             split = geom.split("#");
 
-            if (Double.parseDouble(split[2]) > minZ + eps){
+            if (Double.parseDouble(split[2]) > minZ + eps) {
                 surfaceArray.remove(i);
             }
-            else{
+            else {
                 i++;
             }
         }
@@ -206,7 +206,7 @@ public class GeometryHandler {
 
         int sum = Integer.parseInt(split[2]);
         // holes
-        for (int i = 3; i < split.length; i++){
+        for (int i = 3; i < split.length; i++) {
             Coordinate[] hole = new Coordinate[Integer.parseInt(split[i])/num];
             k = 0;
             sum += Integer.parseInt(split[i]);
