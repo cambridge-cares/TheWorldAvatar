@@ -100,8 +100,9 @@ COPY ./docker-compose-testcontainers.yml ./docker-compose.yml
 
 # Launch pytest in container (-s flag to enable more output/logging)
 WORKDIR /app
-# Start dockerised agent app as well as pytest
-# (combining commands using & ensures they are started in parallel in background)
-CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m pytest -s
+
+# CMD will be updated in the docker-compose-test_dockerised_debug.yml file in order to create
+# a debugpy session for the agent app and run pytest in parallel
+CMD ["/bin/bash"]
 
 #==================================================================================================

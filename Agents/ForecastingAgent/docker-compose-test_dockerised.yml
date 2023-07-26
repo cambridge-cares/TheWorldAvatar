@@ -23,7 +23,7 @@ services:
       - ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent/Service
       - ONTOAGENT_OPERATION_HTTP_URL=http://host.docker.internal:5001/ForecastingAgent
       - DERIVATION_INSTANCE_BASE_URL=https://www.example.com/kg/derivation/
-      - DERIVATION_PERIODIC_TIMESCALE=5
+      - DERIVATION_PERIODIC_TIMESCALE=600
       - REGISTER_AGENT=false
       - OVERWRITE_FORECAST=true
       # Required inputs, although not used when initialising DerivationAgent

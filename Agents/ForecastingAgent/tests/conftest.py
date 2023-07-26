@@ -18,9 +18,12 @@ import uuid
 import numpy as np
 import pandas as pd
 import psycopg2 as pg
+from flask import Flask
 from pathlib import Path
 from rdflib import Graph
 from urllib.parse import urlparse
+
+from pyderivationagent.data_model.iris import ONTODERIVATION_DERIVATIONWITHTIMESERIES
 
 from forecastingagent.agent import ForecastingAgent
 from forecastingagent.datamodel.iris import *
@@ -30,7 +33,9 @@ from forecastingagent.kgutils.kgclient import KGClient
 from forecastingagent.kgutils.tsclient import TSClient
 
 from forecastingagent.utils.env_configs import DB_URL, DB_USER, DB_PASSWORD, \
-                                               SPARQL_QUERY_ENDPOINT
+                                               SPARQL_QUERY_ENDPOINT, \
+                                               SPARQL_UPDATE_ENDPOINT, \
+                                               OVERWRITE_FORECAST
 
 
 # ----------------------------------------------------------------------------------
@@ -78,12 +83,9 @@ TIMES = times.strftime("%Y-%m-%dT%H:%M:%SZ").tolist()
 INITIAL_TRIPLES = 26
 TS_TRIPLES = 4
 TIME_TRIPLES_PER_PURE_INPUT = 6
-DERIV_STATUS_TRIPLES = 2        # derivation status triples
-AGENT_SERVICE_TRIPLES = 5       # agent service triples
-DERIV_INPUT_TRIPLES = 2 + 3*3   # triples for derivation input message
-DERIV_OUTPUT_TRIPLES = 5        # triples for derivation output message
-DERIV_OUTPUT_COMPUATBLE = 6     # triples instantiated for successful avg price calculation
-                                # i.e. kgclient.instantiate_average_price
+AGENT_SERVICE_TRIPLES = 4       # agent service triples
+DERIV_INPUT_TRIPLES = 2 + 5*3   # triples for derivation input message
+DERIV_OUTPUT_TRIPLES = 2 + 1*3  # triples for derivation output message
 
 
 # ----------------------------------------------------------------------------------
@@ -177,23 +179,23 @@ def initialise_clients(get_blazegraph_service_url, get_postgres_service_url):
 # (i.e. the fixture is destroyed during teardown of the last test in the module)
 # ----------------------------------------------------------------------------------
 
-# @pytest.fixture(scope="module")
-# def create_example_agent():
-#     def _create_example_agent(random_agent_iri:bool=False):
-#         agent = ForecastingAgent(
-#             register_agent=os.getenv('REGISTER_AGENT'),
-#             agent_iri=os.getenv('ONTOAGENT_SERVICE_IRI') if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
-#             time_interval=os.getenv('DERIVATION_PERIODIC_TIMESCALE'),
-#             derivation_instance_base_url=os.getenv('DERIVATION_INSTANCE_BASE_URL'),
-#             kg_url=SPARQL_QUERY_ENDPOINT,
-#             kg_update_url=SPARQL_UPDATE_ENDPOINT,
-#             agent_endpoint=os.getenv('ONTOAGENT_OPERATION_HTTP_URL'),
-#             threshold=THRESHOLD,
-#             app=Flask(__name__),
-#             logger_name='dev'
-#         )
-#         return agent
-#     return _create_example_agent
+@pytest.fixture(scope="module")
+def create_example_agent():
+    def _create_example_agent(random_agent_iri:bool=False):
+        agent = ForecastingAgent(
+            register_agent=os.getenv('REGISTER_AGENT'),
+            agent_iri=os.getenv('ONTOAGENT_SERVICE_IRI') if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
+            time_interval=int(os.getenv('DERIVATION_PERIODIC_TIMESCALE')),
+            derivation_instance_base_url=os.getenv('DERIVATION_INSTANCE_BASE_URL'),
+            kg_url=SPARQL_QUERY_ENDPOINT,
+            kg_update_url=SPARQL_UPDATE_ENDPOINT,
+            agent_endpoint=os.getenv('ONTOAGENT_OPERATION_HTTP_URL'),
+            overwrite_fc=OVERWRITE_FORECAST,
+            app=Flask(__name__),
+            logger_name='dev'
+        )
+        return agent
+    return _create_example_agent
 
 
 # ----------------------------------------------------------------------------------

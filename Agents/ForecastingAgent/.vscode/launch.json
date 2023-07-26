@@ -24,12 +24,27 @@
             "jinja": true
         },
         {
-            "name": "Python: Debug within Docker",
+            "name": "Python: Debug dockerised agent",
             "type": "python",
             "request": "attach",
             "connect": {
                 "host": "localhost",
                 "port": 5678
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/",
+                    "remoteRoot": "/app/"
+                }
+            ]
+        },
+        {
+            "name": "Python: Debug dockerised tests",
+            "type": "python",
+            "request": "attach",
+            "connect": {
+                "host": "localhost",
+                "port": 5679
             },
             "pathMappings": [
                 {

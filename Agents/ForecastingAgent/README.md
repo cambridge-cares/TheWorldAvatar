@@ -202,19 +202,20 @@ If you need covariates, define a function which load them (similarly to `get_cov
 &nbsp;
 # 3. Dockerised agent tests
 
-Both dockerised unit and integration tests are provided. The dockerised tests use one Docker container to initialise the Derivation agent and run pytest, and use Docker in Docker to spin up the required Blazegraph and Postgis testcontainer instances:
+Both dockerised unit and integration tests are provided. The dockerised tests use one Docker container to initialise the derivation agent and run pytest, and use Docker in Docker to spin up the required Blazegraph and Postgis testcontainer instances:
 
 ```bash
 # Build and run dockerised agent tests
 docker compose -f "docker-compose-test_dockerised.yml" up -d --build
 ```
 
-To run the dockerised tests in Debug mode, please run the below command followed by the `Python: Debug within Docker` debug configuration (provided in `.vscode` subfolder):
+To run the dockerised tests in Debug mode, please run the below script to start up the agent and pytest in two separate containers. Subsequently, attach the Debuggers using the provided `Python: Debug dockerised agent` and `Python: Debug dockerised tests` configurations (provided in `.vscode` subfolder) to start debugging:
 
 ```bash
 # Build and run dockerised agent tests in debug mode
-docker compose -f "docker-compose-test_dockerised_debug.yml" up -d --build
+bash run_debug_tests.sh
 ```
+
 
 &nbsp;
 # Authors #

@@ -38,7 +38,11 @@ def create_app():
         logger_name='prod'
     )
 
+    # Add a root web page to the agent
     agent.add_url_pattern('/', 'root', default, methods=['GET'])
+
+    # Start all periodical jobs
+    agent.start_all_periodical_job()
 
     # Expose flask app of agent
     return agent.app
