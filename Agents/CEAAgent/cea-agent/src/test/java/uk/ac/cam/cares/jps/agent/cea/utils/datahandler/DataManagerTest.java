@@ -86,18 +86,19 @@ public class DataManagerTest {
         testList.add(testIri);
         testList.add(testUnit);
 
+        LinkedHashMap<String, String> tsIris = new LinkedHashMap();
+        LinkedHashMap<String, String> scalarIris = new LinkedHashMap();
+
         try(MockedConstruction<DataRetriever> dataRetrieverMock = mockConstruction(DataRetriever.class,
                 (mock, context) -> {doReturn(testList).when(mock).getDataIRI(anyString(), anyString(), anyString());}
                 )) {
-
-            LinkedHashMap<String, String> tsIris = new LinkedHashMap();
-            LinkedHashMap<String, String> scalarIris = new LinkedHashMap();
-
             Boolean result = dataManager.checkDataInitialised(testBuilding, tsIris, scalarIris, "");
             assertTrue(result);
+
             for (String scalar : CEAConstants.SCALARS) {
                 assertTrue(scalarIris.get(scalar).contains(testIri));
             }
+
             for (String ts : CEAConstants.TIME_SERIES) {
                 assertTrue(tsIris.get(ts).contains(testIri));
             }
@@ -110,23 +111,23 @@ public class DataManagerTest {
 
         DataManager dataManager = new DataManager(ontologyURIHelper);
 
+        LinkedHashMap<String,String> testTsIris = mock(LinkedHashMap.class);
+        doReturn("test").when(testTsIris).get(anyString());
+
+        LinkedHashMap<String,String> testScalarIris = mock(LinkedHashMap.class);
+        doReturn("test").when(testScalarIris).get(anyString());
+
+        LinkedHashMap<String,List<String>> testScalars = mock(LinkedHashMap.class);
+        List<String> test_scalars = new ArrayList<>();
+        test_scalars.add("test");
+        doReturn(test_scalars).when(testScalars).get(anyString());
+
+        String route = "test_route";
+
+        Integer testCounter = 0;
+        String building = "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn-open-data/sparql/energyprofile/Building_UUID_test/";
+
         try (MockedStatic<AccessAgentCaller> accessAgentCallerMock = mockStatic(AccessAgentCaller.class)) {
-            LinkedHashMap<String,String> testTsIris = mock(LinkedHashMap.class);
-            doReturn("test").when(testTsIris).get(anyString());
-
-            LinkedHashMap<String,String> testScalarIris = mock(LinkedHashMap.class);
-            doReturn("test").when(testScalarIris).get(anyString());
-
-            LinkedHashMap<String,List<String>> testScalars = mock(LinkedHashMap.class);
-            List<String> test_scalars = new ArrayList<>();
-            test_scalars.add("test");
-            doReturn(test_scalars).when(testScalars).get(anyString());
-
-            String route = "test_route";
-
-            Integer testCounter = 0;
-            String building = "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn-open-data/sparql/energyprofile/Building_UUID_test/";
-
             dataManager.initialiseData(testCounter, testScalars, building, testTsIris, testScalarIris, route, "");
 
             //test update store is called once
@@ -157,7 +158,7 @@ public class DataManagerTest {
             dataManager.updateScalars(route,scalarIrisMock, scalarsMock, testCounter, "");
 
             Integer expected = CEAConstants.SCALARS.size() * 2;
-            //test update store is called once
+
             accessAgentCallerMock.verify(
                     times(expected), () -> AccessAgentCaller.updateStore(anyString(), anyString())
             );
