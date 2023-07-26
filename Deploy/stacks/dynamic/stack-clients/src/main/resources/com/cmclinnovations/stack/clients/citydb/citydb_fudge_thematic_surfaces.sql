@@ -21,7 +21,7 @@ FROM citydb.building b
 WHERE NOT EXISTS(
         SELECT 1
         FROM citydb.thematic_surface ts
-        WHERE b.id = ts.id
+        WHERE b.id = ts.building_id
     )
     AND COALESCE(
         b.lod2_multi_surface_id,
