@@ -51,25 +51,6 @@ SELECT rw.gid AS id,
    FROM routing_ways rw;
 ```
 
-Simplfied
-
-```
-CREATE OR REPLACE VIEW flood_cost AS
-SELECT rw.gid AS id, rw.tag_id as tag_id,
-    rw.source,
-    rw.target,
-        CASE
-            WHEN st_intersects(rw.the_geom, fps.geom) THEN (- abs(rw.cost))
-            ELSE rw.cost
-        END AS cost,
-        CASE
-            WHEN st_intersects(rw.the_geom, fps.geom) THEN (- abs(rw.reverse_cost))
-            ELSE rw.reverse_cost
-        END AS reverse_cost
-   FROM (routing_ways rw
-     LEFT JOIN flood_polygon_single fps ON (st_intersects(rw.the_geom, fps.geom)));
-```
-
 ### Creating elevation (Optional)
 This step intersects the nodes with raster DEM data and assigns elevation value to each node. 
 ``` 
@@ -96,6 +77,58 @@ ALTER TABLE routing_ways ADD COLUMN slope FLOAT;
 
 UPDATE routing_ways SET slope = ((target_elevation - source_elevation) / source_elevation) * 100;
 ```
+
+## Creating Isochrone as SQL View
+
+### Unflooded
+```
+SELECT
+    minute_limit * 2 AS minute,
+    ST_ConvexHull(ST_Collect(subquery.the_geom)) AS isochrone_polygon
+FROM
+    generate_series(1, 5) AS minute_limit
+CROSS JOIN LATERAL (
+    SELECT
+        id,
+        the_geom
+    FROM
+        pgr_drivingDistance(
+            'SELECT id, source, target, cost_s as cost FROM ways WHERE ways.tag_id IN (100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 115, 116, 121, 123, 124, 125, 401)',
+            7536,
+            minute_limit * 120,
+            false
+        ) AS dd
+    JOIN
+        ways_vertices_pgr AS v ON dd.node = v.id
+) AS subquery
+GROUP BY minute_limit
+```
+
+
+### Flooded
+```
+SELECT
+    minute_limit * 2 AS minute,
+    ST_ConvexHull(ST_Collect(subquery.the_geom)) AS isochrone_polygon
+FROM
+    generate_series(1, 5) AS minute_limit
+CROSS JOIN LATERAL (
+    SELECT
+        id,
+        the_geom
+    FROM
+        pgr_drivingDistance(
+            'SELECT id, source, target, cost_s_flood as cost FROM ways WHERE ways.tag_id IN (100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 115, 116, 121, 123, 124, 125, 401)',
+            7536,
+            minute_limit * 120,
+            false
+        ) AS dd
+    JOIN
+        ways_vertices_pgr AS v ON dd.node = v.id
+) AS subquery
+GROUP BY minute_limit
+```
+
 ## SQL VIEW
 #### Nearest_vertex
 ```
