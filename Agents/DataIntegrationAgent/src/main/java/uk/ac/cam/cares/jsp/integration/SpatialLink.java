@@ -12,18 +12,16 @@ package uk.ac.cam.cares.jsp.integration;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.geotools.geometry.jts.JTS;
-import org.geotools.geometry.jts.JTSFactoryFinder;
-import org.geotools.referencing.CRS;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
-import org.postgis.PGgeometry;
-
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.sql.Connection;
@@ -36,8 +34,6 @@ import java.util.*;
 public class SpatialLink{
 
     private static final Logger LOGGER = LogManager.getLogger(SpatialLink.class);
-    // private PostgresClient postgresClient2d;
-    // private PostgresClient postgresClient3d;
     private static final String INVALID_CONNECTION_MESSAGE = "Connection is invalid...";
     private SqlConnectionPool pool;
     private String[] config;
@@ -78,9 +74,6 @@ public class SpatialLink{
         for (int i = 0; i < this.allObject3D.size(); i++) {
             GeoObject3D object3D = this.allObject3D.get(i);    
             String geom3D = object3D.getGeometry3D();
-            // int srid3D = object3D.getSrid(object3D.getGeometry3D());       
-            // String coord3D = object3D.getEnvelope().getGeometry().getValue();
-            // Geometry envelope = createGeometry(coord3D);
             double refAreaRation = 0;           
 
             for (int j = 0; j < this.allObject2D.size(); j++) {
@@ -94,45 +87,32 @@ public class SpatialLink{
                         try (Statement stmt = srcConn.createStatement()) {
                             String transformSql = "SELECT public.ST_AREA(public.ST_INTERSECTION(public.ST_GeomFromEWKT('" + geom3D + "'), public.ST_GeomFromEWKT('" + geom2D + "'))) AS intersect";
                             ResultSet result = stmt.executeQuery(transformSql);
-                        if (result.next()) {
-                            float area = result.getFloat("intersect");
-                            geom2D = geom2D.split(";")[1];
-                            MultiPolygon polys2D = (MultiPolygon) reader.read(geom2D);
-                            double areaRatio = 100.0*(area / polys2D.getArea());
-//                        System.out.println("ratio: "+areaRatio + "%");
-                            if(areaRatio>60){
-                                if((refAreaRation !=0 && refAreaRation<areaRatio) || refAreaRation==0){
-
-                                    object3D.setName(object2D.getName());
-                                    address.setStreet(object2D.getStreet());
-                                    address.setHouse(object2D.getHouse());
-                                    address.setZipCode(object2D.getPostcode());
-                                    address.setCity(object2D.getCity());
-                                    address.setCountry(object2D.getCountry());
-                                    address.setGmlid(object3D.getGmlId());
-                                    object3D.setAddress(address);
-                                    refAreaRation = areaRatio;
+                            if (result.next()) {
+                                float area = result.getFloat("intersect");
+                                geom2D = geom2D.split(";")[1];
+                                MultiPolygon polys2D = (MultiPolygon) reader.read(geom2D);
+                                double areaRatio = 100.0*(area / polys2D.getArea());
+    //                        System.out.println("ratio: "+areaRatio + "%");
+                                if(areaRatio>60 && ((refAreaRation !=0 && refAreaRation<areaRatio) || refAreaRation==0)){
+                                        object3D.setName(object2D.getName());
+                                        address.setStreet(object2D.getStreet());
+                                        address.setHouse(object2D.getHouse());
+                                        address.setZipCode(object2D.getPostcode());
+                                        address.setCity(object2D.getCity());
+                                        address.setCountry(object2D.getCountry());
+                                        address.setGmlid(object3D.getGmlId());
+                                        object3D.setAddress(address);
+                                        refAreaRation = areaRatio;
+                                    
                                 }
                             }
-                        }
                                                        
                         }
                     } 
                 }catch (SQLException e) {
                     LOGGER.fatal("Error connecting to source database: " + e);
                     throw new JPSRuntimeException("Error connecting to source database: " + e);
-            }
-
-//                 if ((!polys2D.within(envelope)) || (!envelope.within(polys2D))){
-//                     if(envelope.intersects(polys2D)){
-//                         Geometry intersect = envelope.intersection(polys2D);
-//                         
-//                     }
-//                 }else{
-//                     object3D.setName(object2D.getName());
-//                     address = new ObjectAddress(object3D.getGmlId(), object2D.getStreet(), object2D.getHouse(), object2D.getPostcode(),object2D.getCountry(),object2D.getCity());
-//                     object3D.setAddress(address);
-//                 }
+                }
             }
             if (object3D.getName() != null){
                 object3D.updateName(object3D,config);
@@ -143,6 +123,7 @@ public class SpatialLink{
         }
 
     }
+            
 
     public List<Coordinate> str2coords(String st_geometry) {
         String[] pointXYZList = null;
@@ -222,29 +203,28 @@ public class SpatialLink{
         GeometryFactory fac = new GeometryFactory();
         Coordinate[] coord = str2coords(coordlist).toArray(new Coordinate[0]);
         LinearRing lr = fac.createLinearRing(coord);
-        Polygon poly = new Polygon(lr, null, fac);
-        return lr;
+        return new Polygon(lr, null, fac);
         // return fac.createPolygon(lr);       
     }
 
-    public Geometry reproject(Geometry geom, int srcSRID, int dstSRID) {
+    // public Geometry reproject(Geometry geom, int srcSRID, int dstSRID) {
 
-        GeometryFactory fac = new GeometryFactory();
-        // Geometry sourceGeometry = fac.createGeometry(geom);
+    //     GeometryFactory fac = new GeometryFactory();
+    //     // Geometry sourceGeometry = fac.createGeometry(geom);
 
-        Geometry targetGeometry = null;
-        try {
-            CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:" + srcSRID);
-            CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:" + dstSRID);
-            MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
-            targetGeometry = JTS.transform(geom, transform);
-            targetGeometry.setSRID(dstSRID);
+    //     Geometry targetGeometry = null;
+    //     try {
+    //         CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:" + srcSRID);
+    //         CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:" + dstSRID);
+    //         MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
+    //         targetGeometry = JTS.transform(geom, transform);
+    //         targetGeometry.setSRID(dstSRID);
 
-        } catch (FactoryException | TransformException e) {
-            e.printStackTrace();
-        }
-        return targetGeometry;
-    }
+    //     } catch (FactoryException | TransformException e) {
+    //         e.printStackTrace();
+    //     }
+    //     return targetGeometry;
+    // }
 
     public List<GeoObject3D> reprojectPost(List<GeoObject3D> allObject3D, int dstSRID){
          if(this.pool == null){

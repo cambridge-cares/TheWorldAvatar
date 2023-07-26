@@ -21,7 +21,7 @@ public class GeoObject2D {
     private String city;
     private String house;
 
-    private static final Logger LOGGER = LogManager.getLogger(SpatialLink.class);
+    private static final Logger LOGGER = LogManager.getLogger(GeoObject2D.class);
     private PostgresClient postgresClient;
     private static final String INVALID_CONNECTION_MESSAGE = "Connection is invalid...";
     private SqlConnectionPool pool;

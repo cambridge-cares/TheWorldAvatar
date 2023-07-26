@@ -4,8 +4,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
-import org.postgis.PGgeometry;
-
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.sql.Connection;
@@ -90,7 +88,7 @@ public class GeoObject3D {
                 throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
             }
 
-            String sql = "SELECT id, gmlid, objectclass_id, name, public.ST_AsEWKT(envelope) AS geom FROM cityobject";
+            String sql = "SELECT id, gmlid, objectclass_id, name, public.ST_AsEWKT(envelope) AS geom FROM cityobject WHERE objectclass_id = 26";
             try (Statement stmt = srcConn.createStatement()) {
                 ResultSet result = stmt.executeQuery(sql);
                 while (result.next()) {
@@ -145,14 +143,20 @@ public class GeoObject3D {
         this.address.updateAddress(address,config);
     }
 
-    public Map<Integer, Polygon> queryBuildingSurfaces(int cityobjectid){
+    public Map<Integer, Polygon> queryBuildingSurfaces(int cityobjectid, boolean thematic){
         Map<Integer, Polygon> gourndSurface = new java.util.HashMap<>();
         try (Connection srcConn = this.pool.get3DConnection()) {
             if (!srcConn.isValid(60)) {
                 LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
                 throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
             }else{
-                String sql = "SELECT geometry, id FROM surface_geometry WHERE cityobject_id = " + cityobjectid;
+                String sql = null;
+                if(thematic){
+                    sql = "SELECT geometry, id FROM surface_geometry WHERE root_id  IN (SELECT lod2_multi_surface_id FROM thematic_surface WHERE building_id = " + cityobjectid+ " AND objectclass_id = 35) AND geometry is not null";
+                }else{
+                    sql = "SELECT geometry, id FROM surface_geometry WHERE root_id = " + cityobjectid + "AND geometry is not null";
+                }
+
                 try (Statement stmt = srcConn.createStatement()) {
                     ResultSet result = stmt.executeQuery(sql);
                     while (result.next()) {

@@ -1,14 +1,11 @@
 package uk.ac.cam.cares.jsp.integration;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.CoordinateSequenceFilter;
@@ -20,7 +17,6 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class FootPrint {
 
@@ -29,41 +25,38 @@ public class FootPrint {
     // private SqlConnectionPool pool;
 
     List<GeoObject3D> allObject3D = new ArrayList<>();
+    boolean thematic = false;
 
-    protected void proFootPrint(String[] config) throws SQLException {
-//        
-        // this.pool = new SqlConnectionPool(config);
-        // LOGGER.info("Pinging source database for availability...");
-        // try (Connection srcConn = this.pool.get3DConnection()) {
-        //     if (!srcConn.isValid(60)) {
-        //         LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
-        //         throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
-        //     }
+    protected void proFootPrint(String[] config, String thematicParams) throws SQLException {
 
-        // } catch (SQLException e) {
-        //     LOGGER.fatal("Error connecting to source database: " + e);
-        //     throw new JPSRuntimeException("Error connecting to source database: " + e);
-        // }
         GeoObject3D object3D = new GeoObject3D();
-        this.allObject3D = object3D.getObject3D(config);
+        this.allObject3D = object3D.getObject3D(config);        
+        if(thematicParams.equals("true")){
+            this.thematic = true;
+        }else{
+            this.thematic = false;
+        }
         classifySurfaces(this.allObject3D);
-    
     }
 
     private void classifySurfaces(List<GeoObject3D> allObject3D){
         for(int i = 0; i < allObject3D.size(); i++){
             GeoObject3D object3D = allObject3D.get(i);
             int objectid = object3D.getId();
-            Map<Integer, Polygon> allSurfaces  = object3D.queryBuildingSurfaces(objectid);
+            Map<Integer, Polygon> allSurfaces  = object3D.queryBuildingSurfaces(objectid, this.thematic);
             List<Polygon> groundList = new ArrayList<>();
-            for (Map.Entry<Integer, Polygon> entry : allSurfaces.entrySet()) {
-                double z = entry.getValue().norm().getCoordinate().getZ();
-                double zratio = Math.abs(z);
-                double threshold = Math.sin(Math.toRadians(15));// parameter can be changed
-                if(z > 0 && zratio > threshold){
-                    groundList.add(entry.getValue());
-                    object3D.updateGroundSurface(entry.getKey(), objectid);
-                }               
+            if(this.thematic && allSurfaces.size() > 0){
+                groundList = new ArrayList<Polygon>(allSurfaces.values());
+            }else{
+                for (Map.Entry<Integer, Polygon> entry : allSurfaces.entrySet()) {
+                    double z = entry.getValue().norm().getCoordinate().getZ();
+                    double zratio = Math.abs(z);
+                    double threshold = Math.sin(Math.toRadians(15));// parameter can be changed
+                    if(z > 0 && zratio > threshold){
+                        groundList.add(entry.getValue());
+                        object3D.updateGroundSurface(entry.getKey(), objectid);
+                    }               
+                }
             }
             GeometryFactory fact = new GeometryFactory();
             LinearRing footRing = extractFootprint(groundList);

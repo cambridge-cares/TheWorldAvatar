@@ -61,8 +61,9 @@ public class DataIntegrationAgent extends JPSAgent {
 			// JSONObject input = new JSONObject(request.getParameter("function"));	
             String input = request.getContextPath();
             String para = request.getParameter("function");
+            String themPara =  request.getParameter("thematic");
 			System.out.println("Input : " + input);
-			getParameters(para);
+			getParameters(para,themPara);
 			response.getWriter().write(input);
 		} catch (JSONException | SQLException e) {
 			// TODO Auto-generated catch block
@@ -70,7 +71,7 @@ public class DataIntegrationAgent extends JPSAgent {
 		} 
 	}
 
-    public JSONObject getParameters(String requestParams) throws SQLException {
+    public JSONObject getParameters(String requestParams, String thematicParams) throws SQLException {
         JSONObject jsonMessage = new JSONObject();
         Config c = new Config();
         String[] config = c.retrieveSQLConfig();
@@ -80,7 +81,7 @@ public class DataIntegrationAgent extends JPSAgent {
             spatialLink.SpatialLink(config);
         }else if(requestParams.equals("footprint")){
             FootPrint footprint = new FootPrint();
-            footprint.proFootPrint(config);
+            footprint.proFootPrint(config, thematicParams);
         }else if(requestParams.equals("height")){
 
         }
