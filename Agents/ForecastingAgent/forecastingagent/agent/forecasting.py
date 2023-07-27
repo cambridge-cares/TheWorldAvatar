@@ -37,7 +37,7 @@ class ForecastingAgent(DerivationAgent):
         # Please note: Declared inputs/outputs need proper instantiation incl. 
         #              RDF TYPE declarations in the KG for the derivation to work
         return [TS_FORECASTINGMODEL, TIME_INTERVAL, TIME_DURATION, TS_FREQUENCY,
-                OWL_THING]
+                OM_QUANTITY, OWL_THING]
 
 
     def agent_output_concepts(self) -> list:

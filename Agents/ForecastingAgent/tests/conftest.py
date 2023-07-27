@@ -61,32 +61,38 @@ TEST_TRIPLES_BASE_IRI = 'https://www.theworldavatar.com/test/'
 # Forecast 1
 # Start: Wed Jan 01 2020 00:00:00 GMT+0000
 # End:   Thu Jan 02 2020 00:00:00 GMT+0000
-IRI_TO_FORECAST_1 = TEST_TRIPLES_BASE_IRI + 'TestHeatDemand_1'
+IRI_TO_FORECAST_1 = TEST_TRIPLES_BASE_IRI + 'HeatDemand_1'
+IRI_TO_FORECAST_2 = TEST_TRIPLES_BASE_IRI + 'HeatDemand_1'
 FORECASTING_MODEL_1 = TEST_TRIPLES_BASE_IRI + 'ForecastingModel_1'
 FC_INTERVAL_1 = TEST_TRIPLES_BASE_IRI + 'OptimisationInterval_1'
 FC_FREQUENCY_1 = TEST_TRIPLES_BASE_IRI + 'Frequency_1'
 HIST_DURATION_1 = TEST_TRIPLES_BASE_IRI + 'Duration_1'
 DERIVATION_INPUTS_1 = [IRI_TO_FORECAST_1, FORECASTING_MODEL_1, 
                        FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_1]
-# DERIVATION_INPUTS_1 = [FORECASTING_MODEL_1, 
-#                        FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_1]
+DERIVATION_INPUTS_2 = [IRI_TO_FORECAST_2, FORECASTING_MODEL_1,
+                       FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_1]
 
 
 # ----------------------------------------------------------------------------------
 #  Inputs which should not be changed
 #
-# Create synthetic linearly increasing time series data
+# Create synthetic time series data
 times = pd.date_range(start='2019-10-01T00:00:00Z', freq='H', 
                       end='2020-02-01T00:00:00Z')
-VALUES = [i*(100/len(times)) for i in range(1, len(times)+1)]
 TIMES = times.strftime("%Y-%m-%dT%H:%M:%SZ").tolist()
+# Linearly increasing
+VALUES_1 = [i*(100/len(times)) for i in range(1, len(times)+1)]
+# Constant value
+VALUES_2 = [1 for i in range(1, len(times)+1)]
+
 
 # Expected number of triples
-INITIAL_TRIPLES = 26
+TBOX_TRIPLES = 6
+ABOX_TRIPLES = 28
 TS_TRIPLES = 4
 TIME_TRIPLES_PER_PURE_INPUT = 6
 AGENT_SERVICE_TRIPLES = 4       # agent service triples
-DERIV_INPUT_TRIPLES = 2 + 5*3   # triples for derivation input message
+DERIV_INPUT_TRIPLES = 2 + 6*3   # triples for derivation input message
 DERIV_OUTPUT_TRIPLES = 2 + 1*3  # triples for derivation output message
 
 

@@ -1,0 +1,27 @@
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix om:     <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix time:   <http://www.w3.org/2006/time#> .
+@prefix ts:     <https://www.theworldavatar.com/kg/ontotimeseries/> .
+@prefix deriv:	<https://www.theworldavatar.com/kg/derivation/> .
+@prefix disp:	<https://www.theworldavatar.com/kg/ontodispersion/> .
+@prefix dh:	    <https://www.theworldavatar.com/kg/ontoheatnetwork/> .
+@prefix :       <https://www.theworldavatar.com/test/> . 
+
+################################################
+##     Required ontological relationships     ##
+################################################
+
+# Heat demand parent relations (as defined by OntoHeatNet and OM)
+dh:HeatDemand rdfs:subClassOf dh:EnergyInTimeInterval . 
+dh:EnergyInTimeInterval rdfs:subClassOf om:Energy . 
+om:Energy rdfs:subClassOf om:Quantity . 
+om:Quantity rdfs:subClassOf owl:Thing . 
+
+# To forecast any instance not defined as subclass-of om:Quantity,
+# it needs to be defined as owl:Thing
+dh:Availability rdfs:subClassOf owl:Thing . 
+
+om:megawattHour om:symbol "MWh"^^xsd:string .

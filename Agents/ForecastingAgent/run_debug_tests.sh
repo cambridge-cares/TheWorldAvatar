@@ -18,4 +18,4 @@ else
 fi
 
 # Remove the containers
-docker-compose down
+docker-compose down -v

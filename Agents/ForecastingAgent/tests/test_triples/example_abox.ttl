@@ -1,3 +1,4 @@
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
 @prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
@@ -6,6 +7,7 @@
 @prefix ts:     <https://www.theworldavatar.com/kg/ontotimeseries/> .
 @prefix deriv:	<https://www.theworldavatar.com/kg/derivation/> .
 @prefix disp:	<https://www.theworldavatar.com/kg/ontodispersion/> .
+@prefix dh:	    <https://www.theworldavatar.com/kg/ontoheatnetwork/> .
 @prefix :       <https://www.theworldavatar.com/test/> . 
 
 ################################################
@@ -17,16 +19,22 @@
 #   ts:Frequency
 #   time:Interval
 #   time:Duration
-#   owl:Thing
+#   om:Quantity OR owl:Thing
+#   --> om:Quantity is the default; however, if no om:Quantity is marked up,
+#       the agent will try to forecast any other marked up instance
+#       (however, this instance needs to be sub-class of owl:Thing)
 #
 # They need timestamp to be properly retrieved by the derivation agent.
 # However, the timestamp is not provided in the example triples. Instead, 
 # they will be added by the script when the derivation instances are created
 # for new info
 
-:TestHeatDemand_1 rdf:type om:Measure ; 
-                  om:hasUnit om:megawattHour .
-om:megawattHour om:symbol "MWh"^^xsd:string .
+:HeatDemand_1 rdf:type dh:HeatDemand ;
+              om:hasValue :Measure_1 .
+:Measure_1 rdf:type om:Measure ;
+           om:hasUnit om:megawattHour .
+
+:Availability_1 rdf:type dh:Availability .
 
 :OptimisationInterval_1 rdf:type time:Interval ;
     time:hasBeginning :OptimisationStartInstant_1 ;
