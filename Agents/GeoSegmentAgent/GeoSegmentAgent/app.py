@@ -88,9 +88,8 @@ def upload_geojson(filename, tablename):
         data = json.load(f)
 
     # modify each feature's properties
-    for index, feature in enumerate(data['features']):
-        feature['properties']['iri'] =  'https://www.theworldavatar.com/kg' + '/segment/' + str(uuid.uuid4())
-        feature['properties']['index'] = index
+    #for feature in data['features']:
+    #    feature['properties']['iri'] =  'https://www.theworldavatar.com/kg' + '/segment/' + str(uuid.uuid4())
 
     # Convert the Python dictionary to a JSON-formatted string
     geojson_string = str(json.dumps(data))
@@ -101,7 +100,7 @@ def upload_geojson(filename, tablename):
     geoserver_client.create_workspace(workspace="geosegment")
     geoserver_client.create_postgis_layer(geoserver_workspace="geosegment", geoserver_layer=tablename, postgis_database="postgres")
 
-    #OntopClient.upload_ontop_mapping('./obda_mapping/building_segmentation.obda')
+    OntopClient.upload_ontop_mapping('./GeoSegmentAgent/obda_mapping/building_segmentation.obda')
 
 
 @app.route('/')

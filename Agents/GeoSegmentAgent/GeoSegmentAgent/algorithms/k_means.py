@@ -3,7 +3,7 @@ from sklearn.cluster import KMeans
 import rasterio
 from rasterio.features import shapes
 import geopandas as gpd
-import logging, os
+import logging, os, uuid
 
 def raster_to_clusters(input_file, n_clusters):
     with rasterio.open("./GeoSegmentAgent/raster_input/" + input_file) as src:
@@ -39,7 +39,13 @@ def raster_to_geojson(input_file_labels, averages, output_file):
 
         # create shapes (polygons) from the raster
         results = (
-            {'properties': {'cluster_index': int(v), 'raster_val': averages[int(v)]}, 'geometry': s}
+            {'properties': {'cluster_index': int(v),
+                            'meanOfCluster': averages[int(v)],
+                            'Polygon': 'http://www.opengis.net/ont/gml#Polygon/' + str(int(v)) + str(uuid.uuid4()),
+                            'Feature': 'http://www.opengis.net/ont/geosparql#Feature/' + str(int(v)) + str(uuid.uuid4()),
+                            'Segmentation':'https://www.theworldavatar.com/kg/Segmentation/' + str(int(v)) + str(uuid.uuid4()),
+                            'SegmentationModel':'KMeansClusteringModel',
+                            }, 'geometry': s}
             for (s, v), _
             in zip(shapes(data_labels, mask=None, transform=src_labels.transform), np.ndindex(data_labels.shape)))
 
