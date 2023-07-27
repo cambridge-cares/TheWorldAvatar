@@ -31,21 +31,24 @@ which must have a 'scope' that [allows you to publish and install packages](http
 
 To build and start the agent, open up the command prompt in the same directory as this README, run
 
-docker-compose up -d
+`docker-compose up -d`
 
-The agent is reachable at "heat-agent/performheatquery" on localhost port 8084.
+
+The agent is reachable at "heatemissionagent/performheatquery" on localhost port 8084.
 
 # Run the agent
-To run the agent, a POST request must be sent to http://localhost:8084/heat-agent/performheatquery with a correct JSON Object.
+To run the agent, a POST request must be sent to http://localhost:8084/heatemissionagent/performheatquery with a correct JSON Object.
 From a Windows Subsystem for Linux (WSL) terminal, execute the request shown below.
 
-curl -X POST -H "Content-Type: application/json" -d '{"job":{"lower_bounds":"8464#23588#0","upper_bounds":"17619#30520#105"}}' http://localhost:8084/heat-agent/performheatquery
+`curl -X POST -H "Content-Type: application/json" -d '{"job":{"lower_bounds":"8464#23588#0","upper_bounds":"17619#30520#105"}}' http://localhost:8084/heatemissionagent/performheatquery`
+
 
 
 If the agent runs successfully, you should see a returned JSON Object that is similar to the one shown below.
 
-{"result":[{"Coordinate":"13469.086796413478#26462.33106185692#41.0","Heat Emission":80.22970472647032},{"Coordinate":"13252.157092925416#28023.664545558153#25.0","Heat Emission":80.22970472647032},{"Coordinate":"13341.125256486484#26898.004451070658#21.0","Heat Emission":80.22970472647032}]}
+`{"result":[{"Coordinate":"13469.086796413478#26462.33106185692#41.0","Heat Emission":80.22970472647032},{"Coordinate":"13252.157092925416#28023.664545558153#25.0","Heat Emission":80.22970472647032},{"Coordinate":"13341.125256486484#26898.004451070658#21.0","Heat Emission":80.22970472647032}]}
+`
 
 If there is a returned message as shown below, it means that the input JSON object is written wrongly. Check whether the values and formats are written correctly.
 
-"Error in input parameters, please check the input file"
+`"Error in input parameters, please check the input file"`

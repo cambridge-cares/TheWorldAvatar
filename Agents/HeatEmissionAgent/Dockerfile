@@ -25,7 +25,7 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
-COPY --from=builder /root/HeatEmissionAgent/output/heat-agent##2.0.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/HeatEmissionAgent/output/heatemissionagent##2.0.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]
