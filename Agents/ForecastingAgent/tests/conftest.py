@@ -62,15 +62,29 @@ TEST_TRIPLES_BASE_IRI = 'https://www.theworldavatar.com/test/'
 # Start: Wed Jan 01 2020 00:00:00 GMT+0000
 # End:   Thu Jan 02 2020 00:00:00 GMT+0000
 IRI_TO_FORECAST_1 = TEST_TRIPLES_BASE_IRI + 'HeatDemand_1'
-IRI_TO_FORECAST_2 = TEST_TRIPLES_BASE_IRI + 'HeatDemand_1'
+IRI_TO_FORECAST_2 = TEST_TRIPLES_BASE_IRI + 'Availability_1'
+IRI_TO_FORECAST_3 = TEST_TRIPLES_BASE_IRI + 'Availability_2'
 FORECASTING_MODEL_1 = TEST_TRIPLES_BASE_IRI + 'ForecastingModel_1'
 FC_INTERVAL_1 = TEST_TRIPLES_BASE_IRI + 'OptimisationInterval_1'
 FC_FREQUENCY_1 = TEST_TRIPLES_BASE_IRI + 'Frequency_1'
 HIST_DURATION_1 = TEST_TRIPLES_BASE_IRI + 'Duration_1'
+
+# Define derivation input sets to test
 DERIVATION_INPUTS_1 = [IRI_TO_FORECAST_1, FORECASTING_MODEL_1, 
                        FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_1]
 DERIVATION_INPUTS_2 = [IRI_TO_FORECAST_2, FORECASTING_MODEL_1,
                        FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_1]
+
+# Erroneous derivation inputs to cause exceptions
+ERROR_INPUTS_1 = [IRI_TO_FORECAST_1, FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_1]
+ERROR_INPUTS_2 = [IRI_TO_FORECAST_1, FC_INTERVAL_1, FC_INTERVAL_1, FC_FREQUENCY_1, 
+                  HIST_DURATION_1]
+ERROR_INPUTS_3 = [FORECASTING_MODEL_1, FC_INTERVAL_1, FC_FREQUENCY_1, 
+                  HIST_DURATION_1]
+ERROR_INPUTS_4 = [IRI_TO_FORECAST_1, IRI_TO_FORECAST_1, FORECASTING_MODEL_1, 
+                  FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_1]
+ERROR_INPUTS_5 = [IRI_TO_FORECAST_2, IRI_TO_FORECAST_3, FORECASTING_MODEL_1, 
+                  FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_1]
 
 
 # ----------------------------------------------------------------------------------
@@ -87,13 +101,20 @@ VALUES_2 = [1 for i in range(1, len(times)+1)]
 
 
 # Expected number of triples
-TBOX_TRIPLES = 6
-ABOX_TRIPLES = 28
+TBOX_TRIPLES = 7
+ABOX_TRIPLES = 29
 TS_TRIPLES = 4
 TIME_TRIPLES_PER_PURE_INPUT = 6
 AGENT_SERVICE_TRIPLES = 4       # agent service triples
 DERIV_INPUT_TRIPLES = 2 + 6*3   # triples for derivation input message
 DERIV_OUTPUT_TRIPLES = 2 + 1*3  # triples for derivation output message
+
+# Expected error messages
+ERROR_MSG_1 = "No 'ForecastingModel' IRI provided"
+ERROR_MSG_2 = "More than one 'ForecastingModel' IRI provided"
+ERROR_MSG_3 = "Neither 'om:Quantity' nor 'owl:Thing' IRI provided to forecast"
+ERROR_MSG_4 = "More than one 'om:Quantity' IRI provided to forecast"
+ERROR_MSG_5 = "No unique 'owl:Thing' IRI to forecast provided"
 
 
 # ----------------------------------------------------------------------------------

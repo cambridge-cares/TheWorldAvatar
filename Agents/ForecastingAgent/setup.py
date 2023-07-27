@@ -19,7 +19,7 @@ setup(
         'requests~=2.28.1',
         'configobj~=5.0.6',
         'fire~=0.4.0',
-        'py4jps~=1.0.36', 
+        'py4jps~=1.0.37', 
         'pyderivationagent~=1.5.0',
         # To ensure loading of GPU-trained model on CPU-only machines, specific 
         # versions of darts, torchmetrics and pytorch-lightning are required.

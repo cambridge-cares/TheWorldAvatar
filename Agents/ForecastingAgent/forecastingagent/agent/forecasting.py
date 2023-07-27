@@ -53,7 +53,7 @@ class ForecastingAgent(DerivationAgent):
 
     def validate_input_values(self, inputs, derivationIRI=None):
         """
-        Check whether received input instances/values are suitable to derive forecast.
+        Check whether received input instances are suitable to derive forecast.
         Throw exception if data is not suitable.
 
         Arguments:
@@ -61,9 +61,74 @@ class ForecastingAgent(DerivationAgent):
             derivationIRI {str} -- IRI of the derivation instance (optional)
 
         Returns:
-            postcode_iri {str}, ppi_iri {str}, tx_records {list}
+            dictionary of input IRIs with following keys: 'iri_to_forecast' as well as 
+            full concept IRIs for ts:ForecastingModel, ts:Frequency, time:Interval, and
+            time:Duration            
         """
-        return True
+
+        def _find_unique_owl_thing_iris(dictionary):
+            d = dictionary.copy()
+            # Extract all owl:Thing IRIs
+            owl_thing_iris = set(d[OWL_THING])
+            d.pop(OWL_THING)
+            # Flatten all IRIs for other rdf types and convert to set
+            all_other_iris = set(sum(d.values(), []))
+            unique_owl_thing = owl_thing_iris - all_other_iris
+            # Return list of unique owl:Thing IRIs (empty list if none found)
+            return list(unique_owl_thing)
+        
+        # Create dict between input concepts and return values
+        input_iris = {
+            TS_FORECASTINGMODEL: None,
+            TIME_INTERVAL: None,
+            TS_FREQUENCY: None,
+            TIME_DURATION: None}
+
+        # Verify that exactly one instance per concept is provided
+        for i in input_iris:
+            # Check whether input is available
+            if not inputs.get(i):
+                inp_name = i[i.rfind('/')+1:]
+                self.logger.error(f"Derivation {derivationIRI}: No '{inp_name}' IRI provided.")
+                raise TypeError(f"Derivation {derivationIRI}: No '{inp_name}' IRI provided.")
+            else:
+                inp = inputs.get(i)
+                # Check whether only one input has been provided
+                if len(inp) == 1:
+                    input_iris[i] = inp[0]
+                else:
+                    inp_name = i[i.rfind('/')+1:]
+                    self.logger.error(f"Derivation {derivationIRI}: More than one '{inp_name}' IRI provided.")
+                    raise TypeError(f"Derivation {derivationIRI}: More than one '{inp_name}' IRI provided.")
+
+        # Retrieve IRI to forecast
+        # Prio 1) If an om:Quantity is provided, use this one
+        # Prio 2) If not, try to extract the appropriate owl:Thing
+        if inputs.get(OM_QUANTITY):
+            inp = inputs.get(OM_QUANTITY)
+            # Check whether only one input has been provided
+            if len(inp) == 1:
+                input_iris['iri_to_forecast'] = inp[0]
+            else:
+                self.logger.error(f"Derivation {derivationIRI}: More than one 'om:Quantity' IRI provided.")
+                raise TypeError(f"Derivation {derivationIRI}: More than one 'om:Quantity' IRI provided.")
+        elif inputs.get(OWL_THING):
+            msg = f"Derivation {derivationIRI}: No 'om:Quantity' IRI provided to be forecasted. "
+            msg += "Trying to retrieve 'owl:Thing' IRI to forecast."
+            self.logger.warning(msg)
+            # Extract unique owl:Thing IRI
+            inp = _find_unique_owl_thing_iris(inputs)
+            # Check whether only one input has been provided
+            if len(inp) == 1:
+                input_iris['iri_to_forecast'] = inp[0]
+            else:
+                self.logger.error(f"Derivation {derivationIRI}: No unique 'owl:Thing' IRI to forecast provided.")
+                raise TypeError(f"Derivation {derivationIRI}: No unique 'owl:Thing' IRI to forecast provided.")
+        else:
+            self.logger.error(f"Derivation {derivationIRI}: Neither 'om:Quantity' nor 'owl:Thing' IRI provided to forecast.")
+            raise TypeError(f"Derivation {derivationIRI}: Neither 'om:Quantity' nor 'owl:Thing' IRI provided to forecast.")
+
+        return input_iris
 
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, 
@@ -89,7 +154,7 @@ class ForecastingAgent(DerivationAgent):
         # (returns dict of inputs with input concepts as keys and values as list)
         inputs = derivation_inputs.getInputs()
         derivIRI = derivation_inputs.getDerivationIRI()
-        self.validate_input_values(inputs=inputs, derivationIRI=derivIRI)
+        input_iris = self.validate_input_values(inputs=inputs, derivationIRI=derivIRI)
 
 
 def default():

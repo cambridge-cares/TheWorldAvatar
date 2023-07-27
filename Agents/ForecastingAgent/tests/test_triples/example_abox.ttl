@@ -35,6 +35,7 @@
            om:hasUnit om:megawattHour .
 
 :Availability_1 rdf:type dh:Availability .
+:Availability_2 rdf:type dh:Availability .
 
 :OptimisationInterval_1 rdf:type time:Interval ;
     time:hasBeginning :OptimisationStartInstant_1 ;

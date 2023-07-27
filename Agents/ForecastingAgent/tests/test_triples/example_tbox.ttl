@@ -24,4 +24,8 @@ om:Quantity rdfs:subClassOf owl:Thing .
 # it needs to be defined as owl:Thing
 dh:Availability rdfs:subClassOf owl:Thing . 
 
+# Irrelevant definition, but here to check whether agent properly
+# detects which IRI to forecast
+ts:ForecastingModel rdfs:subClassOf owl:Thing . 
+
 om:megawattHour om:symbol "MWh"^^xsd:string .
