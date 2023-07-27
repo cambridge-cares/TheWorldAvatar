@@ -15,6 +15,8 @@ LABEL description = "Forecasting Agent"
 ENV PYTHONDONTWRITEBYTECODE=1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
+# Disable pip cache to keep image size as small as possible
+ENV PIP_NO_CACHE_DIR=false
 
 # Install Java
 RUN apt update && apt install -y openjdk-11-jdk-headless git
