@@ -28,7 +28,7 @@ public class PostGisClient {
      * @param user    The username to access the stack's PostGIS container.
      * @param pass    The password to access the stack's PostGIS container.
      */
-    public PostGisClient(String jdbcUrl, String user, String pass) {
+    protected PostGisClient(String jdbcUrl, String user, String pass) {
         // Set up the required information for further interactions
         this.STACK_JDBC_URL = jdbcUrl;
         this.STACK_POSTGIS_USER = user;
@@ -46,21 +46,21 @@ public class PostGisClient {
     /**
      * Get the list of database names that is available in this stack. This method is accessible for the stack client's usage.
      */
-    public List<String> getDatabaseNames() {
+    protected List<String> getDatabaseNames() {
         return this.DATABASE_LIST;
     }
 
     /**
      * Get the PostGIS username.
      */
-    public String getUsername() {
+    protected String getUsername() {
         return this.STACK_POSTGIS_USER;
     }
 
     /**
      * Get the PostGIS password.
      */
-    public String getPassword() {
+    protected String getPassword() {
         return this.STACK_POSTGIS_PASSWORD;
     }
 
@@ -70,7 +70,7 @@ public class PostGisClient {
      * @param database The database of interest in the stack's RDB.
      * @return The JDBC URL of the database specified.
      */
-    private String getJdbc(String database) {
+    protected String getJdbc(String database) {
         return this.STACK_JDBC_URL + database;
     }
 
