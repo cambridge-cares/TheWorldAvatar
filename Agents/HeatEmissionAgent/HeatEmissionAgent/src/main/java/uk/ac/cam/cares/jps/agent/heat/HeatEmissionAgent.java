@@ -327,7 +327,7 @@ public class HeatEmissionAgent extends JPSAgent {
 
 		UpdateRequest ur = ub.buildRequest();
 		System.out.println(ur);
-		AccessAgentCaller.updateStore("http://localhost:48888/ontochemplant", ur.toString());
+		AccessAgentCaller.updateStore("http://host.docker.internal:48888/ontochemplant", ur.toString());
 		// This line below is for update the data in Claudius
 		// AccessAgentCaller.updateStore("jibusinessunits", ur.toString());
 	}
