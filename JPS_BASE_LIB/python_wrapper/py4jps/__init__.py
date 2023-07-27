@@ -1,3 +1,3 @@
 from py4jps.JPSGateway import JPSGateway
 
-__version__ = "1.0.37a0"
+__version__ = "1.0.37"
