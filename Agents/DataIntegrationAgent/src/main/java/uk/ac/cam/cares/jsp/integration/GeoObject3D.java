@@ -15,6 +15,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 //cityobject table in postgresql
 public class GeoObject3D {
     private String geometry;
@@ -211,7 +212,13 @@ public class GeoObject3D {
 
     //1. insert data in surface_geometry 2. update data in building
     public void updateFootprint(int buildingid, Polygon polygon){
-        String insertSql = "INSERT INTO surface_geometry (geometry, cityobject_id) VALUE ( public.ST_GeomFromEWKT(" + polygon + ")," + buildingid + ");";
+        int srid = polygon.getSRID();
+        String geom = polygon.toString();
+        UUID uuid1 = UUID.randomUUID();
+        UUID uuid2 = UUID.randomUUID();
+        String insertSql1 = "INSERT INTO surface_geometry (gmlid) VALUE ('" + uuid1 + "');";
+        
+        int parent_surfaceid = 0;
         int surfaceid = 0;
         if(this.pool == null){
             this.pool = new SqlConnectionPool(this.config);
@@ -222,13 +229,16 @@ public class GeoObject3D {
                 throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
             }else{
                 try (Statement stmt = srcConn.createStatement()) {
-                    stmt.executeUpdate(insertSql);
+                    stmt.executeUpdate(insertSql1);
                     
                     ResultSet rs =  stmt.getGeneratedKeys();
                     if(rs.next()){
-                        surfaceid = rs.getInt(1);
+                        parent_surfaceid = rs.getInt(1);
                     }
                     if(surfaceid != 0){
+                        String insertSql2 = "INSERT INTO surface_geometry (gmlid, parent_id, root_id, geometry) VALUE (public.ST_GeomFromText('" + geom + "', " + srid + "))," + buildingid + ");";
+
+
                         String upSql = "UPDATE building SET lod0_footprint_id = " + surfaceid + " WHERE id = " + buildingid + ";";
                         try (Statement upStmt = srcConn.createStatement()) {
                             upStmt.executeUpdate(upSql);
