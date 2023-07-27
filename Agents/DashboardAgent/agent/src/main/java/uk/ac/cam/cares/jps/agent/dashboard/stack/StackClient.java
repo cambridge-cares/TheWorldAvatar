@@ -18,18 +18,17 @@ import java.util.Base64;
 import java.util.List;
 
 /**
- * A client that checks if the agent is running on a stack and retrieve the required endpoints.
+ * The public client for other classes to interface and interact with the knowledge graph and the stack to retrieve the necessary information.
  *
  * @author qhouyee
  */
 public class StackClient {
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
-    private final String STACK_SPARQL_ENDPOINT;
     private final String STACK_RDB_DOMAIN;
-    private final String STACK_JDBC_URL;
     private final String DASHBOARD_URL;
     private final HttpClient HTTP_CLIENT = HttpClient.newHttpClient();
     private final PostGisClient POSTGIS_CLIENT;
+    private final SparqlClient SPARQL_CLIENT;
 
     /**
      * Standard Constructor.
@@ -39,10 +38,14 @@ public class StackClient {
         ContainerClient client = new ContainerClient();
         BlazegraphEndpointConfig blazeConfig = client.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class);
         PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
-        this.STACK_SPARQL_ENDPOINT = "http://" + blazeConfig.getHostName() + ":" + blazeConfig.getPort() + "/blazegraph/namespace/";
+        LOGGER.debug("Retrieving PostGIS services...");
         this.STACK_RDB_DOMAIN = postConfig.getHostName() + ":" + postConfig.getPort();
-        this.STACK_JDBC_URL = "jdbc:postgresql://" + this.STACK_RDB_DOMAIN + "/";
-        this.POSTGIS_CLIENT = new PostGisClient(this.STACK_JDBC_URL, postConfig.getUsername(), postConfig.getPassword());
+        String stackJdbcUrl = "jdbc:postgresql://" + this.STACK_RDB_DOMAIN + "/";
+        this.POSTGIS_CLIENT = new PostGisClient(stackJdbcUrl, postConfig.getUsername(), postConfig.getPassword());
+        LOGGER.debug("Retrieving SPARQL services...");
+        // WIP: Refactor the SPARQL endpoint as a POST parameter
+        String stackSparqlEndpoint = "http://" + blazeConfig.getUsername() + ":" + blazeConfig.getPassword() + "@" + blazeConfig.getHostName() + ":" + blazeConfig.getPort() + "/blazegraph/namespace/";
+        this.SPARQL_CLIENT = new SparqlClient(stackSparqlEndpoint + "lab/sparql");
         // Note that the container name and port number is dependent on the custom setup - This may change when we have a built-in container for grafana
         this.DASHBOARD_URL = "http://" + getStackNameFromHost(blazeConfig.getHostName()) + "-grafana:3000";
         LOGGER.debug("Services have been successfully retrieved from the stack...");
@@ -66,13 +69,22 @@ public class StackClient {
     }
 
     /**
-     * Get the SPARQL endpoint within this stack.
+     * Get all infrastructure within the knowledge graph.
      *
-     * @param stackNamespace The stack namespace of interest.
-     * @return The SPARQL endpoint and namespace to query from.
+     * @return An array of all available infrastructure to monitor.
      */
-    public String getEndpoint(String stackNamespace) {
-        return this.STACK_SPARQL_ENDPOINT + stackNamespace + "/sparql";
+    public String[] getAllInfrastructure() {
+        return this.SPARQL_CLIENT.getAllInfrastructure();
+    }
+
+    /**
+     * Get all assets from a specific infrastructure in the knowledge graph.
+     *
+     * @param infrastructure The infrastructure of interest.
+     * @return An array of all available assets within a specific infrastructure in the knowledge graph.
+     */
+    public String[] getAllAsset(String infrastructure) {
+        return this.SPARQL_CLIENT.getAllAssets(infrastructure);
     }
 
     /**
