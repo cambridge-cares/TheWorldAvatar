@@ -247,12 +247,6 @@ public class HeatEmissionAgent extends JPSAgent {
 
 	// Geometric coordination query
 	public static JSONArray CoordinateQuery(String CityFurnitureIRI) {
-		// StringBuffer coordinateQuery = new StringBuffer("PREFIX ocgml:
-		// <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>
-		// SELECT ?s ?o WHERE {GRAPH
-		// <http://www.theworldavatar.com:83/citieskg/namespace/jriEPSG24500/sparql/surfacegeometry/>{?s
-		// ocgml:GeometryType ?o.?s ocgml:cityObjectId
-		// <http://www.theworldavatar.com:83/citieskg/namespace/jriEPSG24500/sparql/cityfurniture/UUID_31385923-9cf7-4e4e-b134-165117b4e3e2/>.}}");
 		StringBuffer coordinateQuery = new StringBuffer(
 				"PREFIX ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>\n");
 		coordinateQuery.append("SELECT ?geometricIRI ?polygonData WHERE {\n");
