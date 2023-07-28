@@ -9,6 +9,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * A class that provides common methods to handle responses.
@@ -42,5 +43,16 @@ public class ResponseHelper {
         Gson gson = new Gson();
         // Although the method returns the result as a HashMap, it can be abstracted to its parent Map object
         return gson.fromJson(response.body().toString(), HashMap.class);
+    }
+
+    /**
+     * Removes the UUID of the input string if there is a UUID.
+     *
+     * @param input The string of interest.
+     * @return A string without its UUID.
+     */
+    public static String removeUUID(String input) {
+        Pattern pattern = Pattern.compile("_.+");
+        return pattern.matcher(input).replaceAll("");
     }
 }

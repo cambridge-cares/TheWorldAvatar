@@ -5,13 +5,11 @@ import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
+import uk.ac.cam.cares.jps.agent.dashboard.utils.ResponseHelper;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.datamodel.Facility;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A client that provides methods to interact and store information from the SPARQL endpoint within a stack.
@@ -63,6 +61,15 @@ public class SparqlClient {
         return this.INFRASTRUCTURES.get(infrastructure).getAllAssets();
     }
 
+    /**
+     * Get all measures from a specific infrastructure in the knowledge graph.
+     *
+     * @param infrastructure The infrastructure to retrieve all assets.
+     * @return A map linking all assets to their measures.
+     */
+    protected Map<String, Queue<String[]>> getAllMeasures(String infrastructure) {
+        return this.INFRASTRUCTURES.get(infrastructure).getAllMeasures();
+    }
 
     /**
      * Retrieves metadata required for generating the dashboard syntax.
@@ -73,10 +80,15 @@ public class SparqlClient {
         StringBuilder query = new StringBuilder();
         query.append("PREFIX bot: <https://w3id.org/bot#>")
                 .append("PREFIX ontobim: <https://www.theworldavatar.com/kg/ontobim/>")
+                .append("PREFIX ontodevice: <https://www.theworldavatar.com/kg/ontodevice/>")
+                .append("PREFIX ontotimeseries: <https://www.theworldavatar.com/kg/ontotimeseries/>")
+                .append("PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>")
                 .append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>")
                 .append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>")
-                .append("SELECT ?facilityname ?elementname ?elementtype ")
+                .append("PREFIX saref:<https://saref.etsi.org/core/>")
+                .append("SELECT DISTINCT ?facilityname ?elementname ?elementtype ?measure ?measurename ?timeseries ")
                 .append("WHERE {")
+                // Query to get assets within a facility
                 .append("?building rdf:type bot:Building;")
                 .append("   ontobim:hasFacility ?facility.")
                 .append("?facility rdfs:label ?facilityname;")
@@ -84,7 +96,19 @@ public class SparqlClient {
                 .append("?room rdf:type ontobim:Room;")
                 .append("   bot:containsElement ?element.")
                 .append("?element rdfs:label ?elementname;")
-                .append("   rdf:type ?elementtype.")
+                .append("   rdf:type ?elementtype;")
+                // Query to retrieve the time series associated with devices
+                // The below line performs a recursive query to retrieve all sub devices in the possible permutations of:
+                // Device sendsSignalTo subDevice; sendsSignalTo/consistsOf subDevice; consistsOf subDevice;
+                // consistsOf/sendsSignalTo subDevice; consistsOf/sendsSignalTo/consistsOf subDevice
+                .append("   ontodevice:sendsSignalTo*/saref:consistsOf*/ontodevice:sendsSignalTo*/saref:consistsOf* ?subdevices.")
+                // Retrieve the measure and its name associated with either the element or their subdevices
+                .append("{?element ontodevice:measures ?measurename.            ?measurename om:hasValue ?measure.}")
+                .append("UNION {?element ontodevice:observes ?measure.          ?measure rdf:type ?measurename.}")
+                .append("UNION {?subdevices ontodevice:measures ?measurename.   ?measurename om:hasValue ?measure.}")
+                .append("UNION {?subdevices ontodevice:observes ?measure.       ?measure rdf:type ?measurename.}")
+                // Once retrieved, all measures has a time series
+                .append("?measure ontotimeseries:hasTimeSeries ?timeseries.")
                 .append("}");
         // Execute SELECT query and upon execution, run the following lines for each result row
         conn.querySelect(query.toString(), (qs) -> {
@@ -92,14 +116,19 @@ public class SparqlClient {
             String facilityName = qs.getLiteral("facilityname").toString();
             String assetName = qs.getLiteral("elementname").toString();
             String assetType = qs.getResource("elementtype").getLocalName();
+            String measureIri = qs.getResource("measure").toString();
+            // Measure name might contain UUID
+            String measureName = qs.getResource("measurename").getLocalName();
+            measureName = ResponseHelper.removeUUID(measureName);
+            String timeSeriesIri = qs.getResource("timeseries").toString();
             // Check if the facility already exists in the map
             if (this.INFRASTRUCTURES.containsKey(facilityName)) {
                 // If it does exist, add the asset to the existing facility object
                 Facility facility = this.INFRASTRUCTURES.get(facilityName);
-                facility.addAsset(assetName, assetType);
+                facility.addAsset(assetName, assetType, measureName, measureIri, timeSeriesIri);
             } else {
                 // If it does not exist, initialise a new facility object and add it in
-                Facility facility = new Facility(assetName, assetType);
+                Facility facility = new Facility(assetName, assetType, measureName, measureIri, timeSeriesIri);
                 this.INFRASTRUCTURES.put(facilityName, facility);
             }
         });
