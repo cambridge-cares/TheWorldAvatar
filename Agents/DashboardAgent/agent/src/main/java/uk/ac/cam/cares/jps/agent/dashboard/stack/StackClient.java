@@ -16,6 +16,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The public client for other classes to interface and interact with the knowledge graph and the stack to retrieve the necessary information.
@@ -83,9 +84,7 @@ public class StackClient {
      * @param infrastructure The infrastructure of interest.
      * @return An array of all available assets within a specific infrastructure in the knowledge graph.
      */
-    public String[] getAllAsset(String infrastructure) {
-        return this.SPARQL_CLIENT.getAllAssets(infrastructure);
-    }
+    public Map<String, List<String>> getAllAssets(String infrastructure) {return this.SPARQL_CLIENT.getAllAssets(infrastructure);}
 
     /**
      * Get the list of database names that is available in this stack.

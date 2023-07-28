@@ -7,6 +7,7 @@ package uk.ac.cam.cares.jps.agent.dashboard.utils.datamodel;
  * @author qhouyee
  */
 public class Asset {
+    private final String ASSET_NAME;
     private final String ASSET_TYPE;
 
     /**
@@ -14,8 +15,16 @@ public class Asset {
      *
      * @param assetType The asset type.
      */
-    protected Asset(String assetType) {
+    protected Asset(String assetName, String assetType) {
+        this.ASSET_NAME = assetName;
         this.ASSET_TYPE = assetType;
+    }
+
+    /**
+     * A getter method for asset name.
+     */
+    protected String getAssetName() {
+        return this.ASSET_NAME;
     }
 
     /**

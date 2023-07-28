@@ -9,6 +9,7 @@ import uk.ac.cam.cares.jps.agent.dashboard.utils.datamodel.Facility;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -58,7 +59,7 @@ public class SparqlClient {
      * @param infrastructure The infrastructure to retrieve all assets.
      * @return An array of all available assets within a specific infrastructure in the knowledge graph.
      */
-    protected String[] getAllAssets(String infrastructure) {
+    protected Map<String, List<String>> getAllAssets(String infrastructure) {
         return this.INFRASTRUCTURES.get(infrastructure).getAllAssets();
     }
 
