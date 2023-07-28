@@ -36,7 +36,13 @@ which must have a 'scope' that [allows you to publish and install packages](http
 
 Modify `client.properties` in the `config` folder accordingly. Do note that the properties file is mounted onto the agent's docker container thus any changes in the properties files does not require the docker container to be rebuilt.
 
-Modify `data.csv` in the `config` folder based on the device to be instantiated. Refer to the template csv files in the `config` folder for the keys and values to include for a specific type of device. The agent will need to be extended if the device to be instantiated cannot be found in the template files.
+Modify `data.csv` in the `config` folder based on the device to be instantiated. Refer to the template csv files in the `config` folder for the keys and values to include for a specific type of device. 
+
+For templates with [REQUIRED] and [OPTIONAL] sections, all keys and values directly below [REQUIRED] should be kept in `data.csv`. Keys and values below [OPTIONAL] are optional fields that should be deleted if they are not applicable. 
+
+All fields in an optional section have to be provided for the optional data to be instantiated. Each optional section is separated by an empty line. Refer to `Pipe template.csv` for an example device with optional keys and values.
+
+The agent will need to be extended if the device to be instantiated cannot be found in the template files.
 
 #### Deployment
 To build and start the agent, open up the command prompt in the same directory as this `README`, run
@@ -52,7 +58,7 @@ and it should return:
 ```
 {"Result":["Input agent object initialized.","The device has been instantiated."]}
 ```
-Change the Device type accordingly. The values currently available are "FumeHood", "WalkInFumeHood", "CanopyHood_VAV", "CanopyHood_CAV". The different requests can be found below:
+Change the Device type accordingly. The values currently available are "FumeHood", "WalkInFumeHood", "CanopyHood_VAV", "CanopyHood_CAV", "Pipe", "Duct", "Valve", "PreCoolCoil", "MidCoil", "OffCoil", "Filter", "Fan", "T-Joint", "Cooling", "MakeupAirUnit", "VAV-S", "VAV-E", "Damper", "ExhaustFan", "FCU-HE", "FanCoilUnit". The different requests can be found below:
 
 ```
 curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"FumeHood\"}" http://localhost:1027/bms-instantiation-agent/instantiate
@@ -65,6 +71,57 @@ curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\"
 ```
 ```
 curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"CanopyHood_CAV\"}" http://localhost:1027/bms-instantiation-agent/instantiate
+```
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"Pipe\"}" http://localhost:1027/bms-instantiation-agent/instantiate
+```
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"Duct\"}" http://localhost:1027/bms-instantiation-agent/instantiate
+```
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"Valve\"}" http://localhost:1027/bms-instantiation-agent/instantiate
+```
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"PreCoolCoil\"}" http://localhost:1027/bms-instantiation-agent/instantiate
+```
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"MidCoil\"}" http://localhost:1027/bms-instantiation-agent/instantiate
+```
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"OffCoil\"}" http://localhost:1027/bms-instantiation-agent/instantiate
+```
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"Filter\"}" http://localhost:1027/bms-instantiation-agent/instantiate
+```
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"Fan\"}" http://localhost:1027/bms-instantiation-agent/instantiate
+```
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"T-Joint\"}" http://localhost:1027/bms-instantiation-agent/instantiate
+```
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"Cooling\"}" http://localhost:1027/bms-instantiation-agent/instantiate
+```
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"MakeupAirUnit\"}" http://localhost:1027/bms-instantiation-agent/instantiate
+```
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"VAV-S\"}" http://localhost:1027/bms-instantiation-agent/instantiate
+```
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"VAV-E\"}" http://localhost:1027/bms-instantiation-agent/instantiate
+```
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"Damper\"}" http://localhost:1027/bms-instantiation-agent/instantiate
+```
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"ExhaustFan\"}" http://localhost:1027/bms-instantiation-agent/instantiate
+```
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"FCU-HE\"}" http://localhost:1027/bms-instantiation-agent/instantiate
+```
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"clientProperties\":\"CLIENTPROPERTIES\",\"Device\":\"FanCoilUnit\"}" http://localhost:1027/bms-instantiation-agent/instantiate
 ```
 
 The agent is designed to instantiate one device per request. To instantiate one device after another, edit `data.csv` accordingly before sending another request to the agent.

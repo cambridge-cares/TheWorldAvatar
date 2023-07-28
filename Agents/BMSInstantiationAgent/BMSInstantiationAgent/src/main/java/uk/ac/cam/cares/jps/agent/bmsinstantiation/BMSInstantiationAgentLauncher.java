@@ -102,33 +102,152 @@ public class BMSInstantiationAgentLauncher extends JPSAgent {
 
         switch (args[2]) {
             case "FumeHood":
-            try {
-                agent.instatiateFH();
-            } catch (FileNotFoundException e) {
-                throw new JPSRuntimeException("Could not instantiate FumeHood instance!", e);
-            }
-            break;
+                try {
+                    agent.instantiateFH();
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("Could not instantiate FumeHood instance!", e);
+                }
+                break;
             case "WalkInFumeHood":
-            try {
-                agent.instatiateWFH();
-            } catch (FileNotFoundException e) {
-                throw new JPSRuntimeException("Could not instantiate WalkIn-FumeHood instance!", e);
-            }
-            break;
+                try {
+                    agent.instantiateWFH();
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("Could not instantiate WalkIn-FumeHood instance!", e);
+                }
+                break;
             case "CanopyHood_VAV":
-            try {
-                agent.instatiateCH_VAV();
-            } catch (FileNotFoundException e) {
-                throw new JPSRuntimeException("Could not instantiate CanopyHood-VAV instance!", e);
-            }
-            break;
+                try {
+                    agent.instantiateCH_VAV();
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("Could not instantiate CanopyHood-VAV instance!", e);
+                }
+                break;
             case "CanopyHood_CAV":
-            try {
-                agent.instatiateCH_CAV();
-            } catch (FileNotFoundException e) {
-                throw new JPSRuntimeException("Could not instantiate CanopyHood-CAV instance!", e);
-            }
-            break;
+                try {
+                    agent.instantiateCH_CAV();
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("Could not instantiate CanopyHood-CAV instance!", e);
+                }
+                break;
+            case "Pipe":
+                try {
+                    agent.instantiatePipe();
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("Could not instantiate Pipe instance!", e);
+                }
+                break;
+            case "Duct":
+                try {
+                    agent.instantiateDuct();
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("Could not instantiate Duct instance!", e);
+                }
+                break;
+            case "Valve":
+                try {
+                    agent.instantiateValve();
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("Could not instantiate Valve instance!", e);
+                }
+                break;
+            case "PreCoolCoil":
+                try {
+                    agent.instantiatePreCoolCoil();
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("Could not instantiate PreCoolCoil instance!", e);
+                }
+                break;
+            case "MidCoil":
+                try {
+                    agent.instantiateMidCoil();
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("Could not instantiate MidCoil instance!", e);
+                }
+                break;
+            case "OffCoil":
+                try {
+                    agent.instantiateOffCoil();
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("Could not instantiate OffCoil instance!", e);
+                }
+                break;
+            case "Filter":
+                try {
+                    agent.instantiateFilter();
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("Could not instantiate Filter instance!", e);
+                }
+                break;
+            case "Fan":
+                try {
+                    agent.instantiateFan();
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("Could not instantiate Fan instance!", e);
+                }
+                break;
+            case "T-Joint":
+                try {
+                    agent.instantiateTJoint();
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("Could not instantiate T-Joint instance!", e);
+                }
+                break;
+            case "Cooling":
+                try {
+                    agent.instantiateCooling();
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("Could not instantiate Cooling instance!", e);
+                }
+                break;
+            case "MakeupAirUnit":
+                try {
+                    agent.instantiateMAU();
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("Could not instantiate MakeupAirUnit instance!", e);
+                }
+                break;
+            case "VAV-S":
+                try {
+                    agent.instantiateVAV_S();
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("Could not instantiate VAV-S instance!", e);
+                }
+                break;
+            case "VAV-E":
+                try {
+                    agent.instantiateVAV_E();
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("Could not instantiate VAV_E instance!", e);
+                }
+                break;
+            case "Damper":
+                try {
+                    agent.instantiateDamper();
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("Could not instantiate Damper instance!", e);
+                }
+                break;
+            case "ExhaustFan":
+                try {
+                    agent.instantiateEAF();
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("Could not instantiate ExhaustFan instance!", e);
+                }
+                break;
+            case "FCU-HE":
+                try {
+                    agent.instantiateFCU_HE();
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("Could not instantiate FCU-HE instance!", e);
+                }
+                break;
+            case "FanCoilUnit":
+                try {
+                    agent.instantiateFCU();
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("Could not instantiate FanCoilUnit instance!", e);
+                }
+                break;
         }
         LOGGER.info("The device has been instantiated.");
         jsonMessage.accumulate("Result", "The device has been instantiated.");
@@ -136,4 +255,4 @@ public class BMSInstantiationAgentLauncher extends JPSAgent {
     	
         
     }
-    }
+}

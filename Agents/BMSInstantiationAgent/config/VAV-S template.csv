@@ -1,0 +1,23 @@
+[REQUIRED]
+VAVS_label,VAV-S7-14
+AirFlow_IRI,https://www.theworldavatar.com/kg/ontobms/V_AirFlow_
+DamperState_IRI,https://www.theworldavatar.com/kg/ontobms/DamperState_
+SetpointQuantity_IRI,https://www.theworldavatar.com/kg/ontobms/V_SetpointQuantity_
+
+[OPTIONAL]
+Room_IRI,
+Temperature_IRI,https://www.theworldavatar.com/kg/ontobms/V_Temperature_
+
+Room_IRI,
+RelativeHumidity_IRI,https://www.theworldavatar.com/kg/ontobms/V_RelativeHumidity_
+
+HotWaterCmd_IRI,https://www.theworldavatar.com/kg/ontobms/V_Hot_Wtr_valve_Cmd
+HotWaterStatus_IRI,https://www.theworldavatar.com/kg/ontobms/V_Hot_Wtr_valve_Status
+
+HeaterControl_IRI,https://www.theworldavatar.com/kg/ontobms/V_Heater_Contol
+HeaterPower_IRI,https://www.theworldavatar.com/kg/ontobms/V_Heater_Power
+HeaterStatus_IRI,https://www.theworldavatar.com/kg/ontobms/V_Heater_Status
+
+[ADD ALL INSTANTIATED DEVICES REQUIRING SENDS SIGNAL TO PROPERTY]
+IRI,
+IRI,

@@ -1,0 +1,8 @@
+[REQUIRED]
+VAVE_label,VAV-E7-19
+AirFlow_IRI,https://www.theworldavatar.com/kg/ontobms/V_AirFlow_
+DamperState_IRI,https://www.theworldavatar.com/kg/ontobms/DamperState_
+SetpointQuantity_IRI,https://www.theworldavatar.com/kg/ontobms/V_SetpointQuantity_
+
+[OPTIONAL]
+Percentage_IRI,https://www.theworldavatar.com/kg/ontobms/V_Percentage_

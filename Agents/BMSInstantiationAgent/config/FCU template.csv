@@ -1,0 +1,19 @@
+FCU_label,FCU-C7-6
+FCUState_IRI,https://www.theworldavatar.com/kg/ontobms/V_FCU_C7_6_SS
+Temperature_IRI,https://www.theworldavatar.com/kg/ontobms/V_FCU_C7_6_RoomTemp
+TemperatureSetpoint_IRI,https://www.theworldavatar.com/kg/ontobms/V_FCU_C7_6_TempSP
+Room_IRI,
+
+[ADD ALL INSTANTIATED DEVICES REQUIRING CONSISTS OF PROPERTY]
+IRI,https://www.theworldavatar.com/kg/ontobms/Duct
+IRI,https://www.theworldavatar.com/kg/ontobms/Duct
+IRI,https://www.theworldavatar.com/kg/ontobms/Duct
+IRI,https://www.theworldavatar.com/kg/ontobms/Duct
+IRI,https://www.theworldavatar.com/kg/ontobms/Pipe
+IRI,https://www.theworldavatar.com/kg/ontobms/Pipe
+IRI,https://www.theworldavatar.com/kg/ontobms/Pipe
+IRI,https://www.theworldavatar.com/kg/ontobms/Valve
+IRI,https://www.theworldavatar.com/kg/ontobms/Filter_
+IRI,https://www.theworldavatar.com/kg/ontobms/FCU_Fan
+IRI,https://www.theworldavatar.com/kg/ontobms/FCU-HE
+IRI,https://www.theworldavatar.com/kg/ontobms/Cooling_
