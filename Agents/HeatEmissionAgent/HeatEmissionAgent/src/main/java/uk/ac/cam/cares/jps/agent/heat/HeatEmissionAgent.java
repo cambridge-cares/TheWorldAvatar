@@ -152,7 +152,7 @@ public class HeatEmissionAgent extends JPSAgent {
 
 			// Output heat emission data in GeoJSON format for DUCT
 
-			String outputFP = Paths.get(System.getProperty("user.dir"), "output", "out.txt").toString();
+			String outputFP = Paths.get(System.getProperty("user.dir"), "output", "base.geojson").toString();
 			String output = Combined.substring(0, Combined.length() - 2) + "\n]\n}";
 			File file1 = new File(outputFP);
 			FileWriter fw;
