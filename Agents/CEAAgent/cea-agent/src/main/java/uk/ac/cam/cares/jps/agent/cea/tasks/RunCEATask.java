@@ -1,11 +1,14 @@
-package uk.ac.cam.cares.jps.agent.ceatasks;
+package uk.ac.cam.cares.jps.agent.cea.tasks;
+
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAInputData;
+import uk.ac.cam.cares.jps.agent.cea.data.CEAOutputData;
 
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import kong.unirest.UnirestException;
 import org.apache.http.HttpException;
 import org.apache.http.protocol.HTTP;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import com.google.gson.Gson;
 
 import java.io.*;
@@ -255,7 +258,7 @@ public class RunCEATask implements Runnable {
                 }
 
                 for (Map.Entry<String, ArrayList<String>> entry: solarSupply.entrySet()){
-                    result = extractSolarSupply(result, entry.getKey(), entry.getValue(), splitBy, solar + "_" + entry.getKey().toString() + ".csv", tmpDir, getTimes);
+                    result = extractSolarSupply(result, entry.getKey(), entry.getValue(), splitBy, solar + "_" + entry.getKey() + ".csv", tmpDir, getTimes);
                     getTimes = false;
                 }
 

@@ -19,7 +19,7 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 
 # Build
 WORKDIR /root/cea-agent
-RUN mvn package
+RUN --mount=type=cache,target=/root/.m2/repository mvn package
 
 #==================================================================================================
 # Third stage: copy the downloaded dependency into a new image and build into an app
@@ -48,5 +48,5 @@ ENV PATH "/venv/bin:/venv/cea/bin:/venv/Daysim:$PATH"
 SHELL ["/bin/bash", "-c"]
 
 # Start the Tomcat server
-ENTRYPOINT ["java", "-cp", "target/cea-agent-1.1.0-jar-with-dependencies.jar" , "uk.ac.cam.cares.jps.agent.cea.Main"]
+ENTRYPOINT ["java", "-cp", "target/cea-agent-2.0.0-jar-with-dependencies.jar" , "uk.ac.cam.cares.jps.agent.cea.Main"]
 #==================================================================================================
