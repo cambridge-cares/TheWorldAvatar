@@ -203,6 +203,7 @@ Each data subset must have the following values specified:
 | [`"type"`](#type)                 | Yes       | N/A                                       | The type of the data                                                                     |
 | [`"subdirectory"`](#subdirectory) | No        | [`"datasetDirectory"`](#datasetDirectory) | The subdirectory within the dataset directory that contains the data in this data subset |
 | `"skip"`                          | No        | `false`                                   | If set to `true` this data subset will be ignored by the data uploader                   |
+| `"sql"`                           | No        | N/A                                       | If the data is being loaded into the PostgreSQL database then the query provided here is run straight after the data is loaded [:open_file_folder:](#value-by-file-name) |
 
 ##### `"type"`
 This controls which functions are used to load the data.
