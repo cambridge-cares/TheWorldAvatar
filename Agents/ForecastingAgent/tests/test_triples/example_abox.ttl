@@ -34,6 +34,11 @@
 :Measure_1 rdf:type om:Measure ;
            om:hasUnit om:megawattHour .
 
+:HeatDemand_2 rdf:type dh:HeatDemand ;
+              om:hasValue :Measure_2 .
+:Measure_2 rdf:type om:Measure ;
+           om:hasUnit om:megawattHour .
+
 :Availability_1 rdf:type dh:Availability .
 :Availability_2 rdf:type dh:Availability .
 
@@ -58,6 +63,10 @@
 
 :Duration_1 rdf:type time:Duration ;
     time:numericDuration 336.0 ;
+    time:unitType time:unitHour .
+
+:Duration_2 rdf:type time:Duration ;
+    time:numericDuration 8760.0 ;
     time:unitType time:unitHour .
 
 :ForecastingModel_1 rdf:type ts:ForecastingModel ;

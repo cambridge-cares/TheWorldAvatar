@@ -61,9 +61,9 @@ class ForecastingAgent(DerivationAgent):
             derivationIRI {str} -- IRI of the derivation instance (optional)
 
         Returns:
-            dictionary of input IRIs with following keys: 'iri_to_forecast' as well as 
-            full concept IRIs for ts:ForecastingModel, ts:Frequency, time:Interval, and
-            time:Duration            
+            dictionary of input IRIs as key-value pairs (no lists) with following keys: 
+            'iri_to_forecast' as well as full concept IRIs for ts:ForecastingModel, 
+            ts:Frequency, time:Interval, and time:Duration
         """
 
         def _find_unique_owl_thing_iris(dictionary):
@@ -89,6 +89,7 @@ class ForecastingAgent(DerivationAgent):
             # Check whether input is available
             if not inputs.get(i):
                 inp_name = i[i.rfind('/')+1:]
+                inp_name = inp_name[inp_name.rfind('#')+1:]
                 self.logger.error(f"Derivation {derivationIRI}: No '{inp_name}' IRI provided.")
                 raise TypeError(f"Derivation {derivationIRI}: No '{inp_name}' IRI provided.")
             else:
@@ -98,6 +99,7 @@ class ForecastingAgent(DerivationAgent):
                     input_iris[i] = inp[0]
                 else:
                     inp_name = i[i.rfind('/')+1:]
+                    inp_name = inp_name[inp_name.rfind('#')+1:]
                     self.logger.error(f"Derivation {derivationIRI}: More than one '{inp_name}' IRI provided.")
                     raise TypeError(f"Derivation {derivationIRI}: More than one '{inp_name}' IRI provided.")
 
@@ -110,10 +112,10 @@ class ForecastingAgent(DerivationAgent):
             if len(inp) == 1:
                 input_iris['iri_to_forecast'] = inp[0]
             else:
-                self.logger.error(f"Derivation {derivationIRI}: More than one 'om:Quantity' IRI provided.")
-                raise TypeError(f"Derivation {derivationIRI}: More than one 'om:Quantity' IRI provided.")
+                self.logger.error(f"Derivation {derivationIRI}: More than one 'om:Quantity' IRI provided to forecast.")
+                raise TypeError(f"Derivation {derivationIRI}: More than one 'om:Quantity' IRI provided to forecast.")
         elif inputs.get(OWL_THING):
-            msg = f"Derivation {derivationIRI}: No 'om:Quantity' IRI provided to be forecasted. "
+            msg = f"Derivation {derivationIRI}: No 'om:Quantity' IRI provided to forecast. "
             msg += "Trying to retrieve 'owl:Thing' IRI to forecast."
             self.logger.warning(msg)
             # Extract unique owl:Thing IRI
@@ -121,12 +123,12 @@ class ForecastingAgent(DerivationAgent):
             # Check whether only one input has been provided
             if len(inp) == 1:
                 input_iris['iri_to_forecast'] = inp[0]
+            elif len(inp) == 0:
+                self.logger.error(f"Derivation {derivationIRI}: Neither 'om:Quantity' nor 'owl:Thing' IRI provided to forecast.")
+                raise TypeError(f"Derivation {derivationIRI}: Neither 'om:Quantity' nor 'owl:Thing' IRI provided to forecast.")
             else:
-                self.logger.error(f"Derivation {derivationIRI}: No unique 'owl:Thing' IRI to forecast provided.")
-                raise TypeError(f"Derivation {derivationIRI}: No unique 'owl:Thing' IRI to forecast provided.")
-        else:
-            self.logger.error(f"Derivation {derivationIRI}: Neither 'om:Quantity' nor 'owl:Thing' IRI provided to forecast.")
-            raise TypeError(f"Derivation {derivationIRI}: Neither 'om:Quantity' nor 'owl:Thing' IRI provided to forecast.")
+                self.logger.error(f"Derivation {derivationIRI}: No unique 'owl:Thing' IRI provided to forecast.")
+                raise TypeError(f"Derivation {derivationIRI}: No unique 'owl:Thing' IRI provided to forecast.")
 
         return input_iris
 

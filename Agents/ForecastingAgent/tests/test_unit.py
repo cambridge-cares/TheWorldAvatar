@@ -9,12 +9,16 @@
 import pytest
 import pandas as pd
 
+import datetime as dt
 from darts import TimeSeries
+from dateutil.parser import isoparse
 
-from forecastingagent.utils.tools import *
-from forecastingagent.datamodel.iris import *
-from forecastingagent.datamodel.data_mapping import *
-from forecastingagent.agent.forecasting_tasks import *
+# Import modules under test
+from forecastingagent.agent.forecasting_tasks import convert_date_to_timestamp, \
+                                                     get_ts_lower_upper_bound, \
+                                                     check_if_enough_covs_exist
+
+from . import conftest as cf
 
 
 def test_convert_date_to_timestamp():
@@ -82,3 +86,32 @@ def test_check_if_enough_covs_exist():
      cfg['horizon'] = n + 1
      with pytest.raises(ValueError):
          check_if_enough_covs_exist(cfg, covs)
+
+
+@pytest.mark.parametrize(
+    "derivation_input_set, expected_error_msg",
+    [
+        (cf.ERROR_INPUTS_1, cf.ERROR_MSG_1),
+        (cf.ERROR_INPUTS_2, cf.ERROR_MSG_2),
+        (cf.ERROR_INPUTS_3, cf.ERROR_MSG_3),
+        (cf.ERROR_INPUTS_4, cf.ERROR_MSG_4),
+        (cf.ERROR_INPUTS_5, cf.ERROR_MSG_5)
+    ],
+)
+def test_validate_input_values(
+    create_example_agent, derivation_input_set, expected_error_msg
+):
+    """
+    Test whether forecasting agent detects invalid input markups as expected
+    """
+    
+    # Create agent instance without registration in KG
+    agent = create_example_agent(register_agent=False)
+
+    with pytest.raises(TypeError) as exc_info:
+        # Directly call input validation function and assert exception type
+        agent.validate_input_values(inputs=derivation_input_set, derivationIRI='TestDerivation')
+
+    # Check if expected error message is raised
+    assert expected_error_msg in str(exc_info.value)
+    

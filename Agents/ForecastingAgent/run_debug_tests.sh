@@ -17,5 +17,8 @@ else
   echo "Container exited with an error (Exit Code: $EXIT_CODE)."
 fi
 
+echo "Inspect test container logs now if needed. Otherwise, press any key to continue."
+read -r
+
 # Remove the containers
-docker-compose down -v
+docker compose -f "docker-compose-test_dockerised_debug.yml" down -v
