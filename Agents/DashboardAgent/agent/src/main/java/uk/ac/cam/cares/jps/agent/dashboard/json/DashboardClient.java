@@ -47,7 +47,11 @@ public class DashboardClient {
     public void initDashboard() {
         this.createServiceAccount();
         this.createDataSources();
-        this.createDashboard();
+        // For each infrastructure, a separate dashboard should be generated
+        String[] infrastructureArray = this.SERVICE_CLIENT.getAllInfrastructure();
+        for (String infrastructure: infrastructureArray){
+            this.createDashboard(infrastructure);
+        }
     }
 
     /**
@@ -99,13 +103,17 @@ public class DashboardClient {
     }
 
     /**
-     * Create the dashboard required.
+     * Create the dashboard required for the specified infrastructure.
+     *
+     * @param infrastructure The name of the infrastructure.
      */
-    private void createDashboard() {
+    private void createDashboard(String infrastructure) {
         LOGGER.info("Initialising a new dashboard...");
         String route = this.SERVICE_CLIENT.getDashboardUrl() + DASHBOARD_CREATION_ROUTE;
+        // Retrieve all assets for the model
+        Map<String, List<String>> assets = this.SERVICE_CLIENT.getAllAssets(infrastructure);
         // Generate JSON model syntax
-        String jsonSyntax = new GrafanaModel().construct();
+        String jsonSyntax = new GrafanaModel(assets).construct();
         // Create a new dashboard based on the JSON model using a POST request with security token
         HttpResponse response = this.SERVICE_CLIENT.sendPostRequest(route, jsonSyntax, this.SERVICE_ACCOUNT_TOKEN);
         // WIP: Retrieve the required information to form the URL

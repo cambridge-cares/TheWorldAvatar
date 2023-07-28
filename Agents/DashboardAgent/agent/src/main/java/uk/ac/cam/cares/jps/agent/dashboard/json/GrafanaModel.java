@@ -1,5 +1,10 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json;
 
+import uk.ac.cam.cares.jps.agent.dashboard.json.templating.TemplatingModel;
+
+import java.util.List;
+import java.util.Map;
+
 /**
  * A Java representation of a JSON-like model that encapsulates and enforces information about syntax specific to Grafana dashboard.
  *
@@ -11,14 +16,17 @@ public class GrafanaModel {
     private final String DASHBOARD_UID;
     private final String DASHBOARD_REFRESH_RATE;
     private final String COMMENT;
+    private final String TEMPLATING_SYNTAX;
 
     /**
      * Constructor that provides default settings to set up a new dashboard. The default title is Overview, with a refresh rate of 20seconds.
      * New dashboard ID and UID will be generated in this process.
+     *
+     * @param assets A map of all assets mapped to their asset types.
      */
-    public GrafanaModel() {
+    public GrafanaModel(Map<String, List<String>> assets) {
         // Grafana has enforced a default comment for the first version, which cannot be changed
-        this("Overview", null, "null", "20s", "Initialised dashboard");
+        this("Overview", null, "null", "20s", "Initialised dashboard", assets);
     }
 
     /**
@@ -29,8 +37,9 @@ public class GrafanaModel {
      * @param dashboardUid Optional unique identifier when creating a dashboard. Pass null as a String to generate a new uid.
      * @param refreshRate  The refresh rate of the real-time dashboard. Sample values: 5s, 1m, 1h, 1d.
      * @param comment      A comment for version control purposes.
+     * @param assets       A map of all assets mapped to their asset types.
      */
-    public GrafanaModel(String title, Integer dashboardId, String dashboardUid, String refreshRate, String comment) {
+    public GrafanaModel(String title, Integer dashboardId, String dashboardUid, String refreshRate, String comment, Map<String, List<String>> assets) {
         this.DASHBOARD_TITLE = title;
         // If setting up a new dashboard, please pass null as a parameter to generate the ID. If updating an existing dashboard, please pass the original id
         this.DASHBOARD_ID = dashboardId == null ? "null" : dashboardId.toString();
@@ -38,6 +47,8 @@ public class GrafanaModel {
         this.DASHBOARD_UID = dashboardUid.equals("null") ? dashboardUid : "\"" + dashboardUid + "\"";
         this.DASHBOARD_REFRESH_RATE = refreshRate;
         this.COMMENT = comment;
+        // Construct the templating syntax from the model
+        this.TEMPLATING_SYNTAX = new TemplatingModel(assets).construct();
     }
 
     /**
@@ -53,6 +64,8 @@ public class GrafanaModel {
                 .append("\"uid\":").append(this.DASHBOARD_UID).append(",")
                 // WIP: Refactor code to edit the dashboard title based on building or facility name
                 .append("\"title\": \"").append(this.DASHBOARD_TITLE).append("\",")
+                // Templating
+                .append("\"templating\": ").append(this.TEMPLATING_SYNTAX).append(",")
                 // Disable any editing by non-admin users
                 .append("\"editable\": false,")
                 .append("\"timezone\": \"browser\",")
