@@ -19,14 +19,15 @@ public class GrafanaModel {
     private final String TEMPLATING_SYNTAX;
 
     /**
-     * Constructor that provides default settings to set up a new dashboard. The default title is Overview, with a refresh rate of 20seconds.
+     * Constructor that provides default settings to set up a new dashboard. The default refresh rate is 20seconds.
      * New dashboard ID and UID will be generated in this process.
      *
+     * @param title  The title of the dashboard.
      * @param assets A map of all assets mapped to their asset types.
      */
-    public GrafanaModel(Map<String, List<String>> assets) {
+    public GrafanaModel(String title, Map<String, List<String>> assets) {
         // Grafana has enforced a default comment for the first version, which cannot be changed
-        this("Overview", null, "null", "20s", "Initialised dashboard", assets);
+        this(title, null, "null", "20s", "Initialised dashboard", assets);
     }
 
     /**
@@ -62,7 +63,7 @@ public class GrafanaModel {
                 // generate new id and uid using null
                 .append("\"id\": ").append(this.DASHBOARD_ID).append(",")
                 .append("\"uid\":").append(this.DASHBOARD_UID).append(",")
-                // WIP: Refactor code to edit the dashboard title based on building or facility name
+                // The dashboard title
                 .append("\"title\": \"").append(this.DASHBOARD_TITLE).append("\",")
                 // Templating
                 .append("\"templating\": ").append(this.TEMPLATING_SYNTAX).append(",")

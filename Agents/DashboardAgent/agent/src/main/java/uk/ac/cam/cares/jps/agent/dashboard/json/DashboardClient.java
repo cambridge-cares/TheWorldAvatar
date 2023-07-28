@@ -110,10 +110,12 @@ public class DashboardClient {
     private void createDashboard(String infrastructure) {
         LOGGER.info("Initialising a new dashboard...");
         String route = this.SERVICE_CLIENT.getDashboardUrl() + DASHBOARD_CREATION_ROUTE;
+        // Generate title
+        String title = "Overview for " + infrastructure;
         // Retrieve all assets for the model
         Map<String, List<String>> assets = this.SERVICE_CLIENT.getAllAssets(infrastructure);
         // Generate JSON model syntax
-        String jsonSyntax = new GrafanaModel(assets).construct();
+        String jsonSyntax = new GrafanaModel(title, assets).construct();
         // Create a new dashboard based on the JSON model using a POST request with security token
         HttpResponse response = this.SERVICE_CLIENT.sendPostRequest(route, jsonSyntax, this.SERVICE_ACCOUNT_TOKEN);
         // WIP: Retrieve the required information to form the URL
