@@ -2,7 +2,7 @@
 
 This example visualisation has been put together to demonstrate the intended use of the centralised Digital Twin Visualisation Framework (DTVF). This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.
 
-It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.4.0 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
+It is recommended that you read the [Digital Twin Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page of the GitHub wiki before continuing with this document. It's also worth noting that this example uses version 3.7.0 of the DTVF, hosted on a remote CMCL server and not the raw TypeScript files within the library directory.
 
 <img src="readme-example.JPG" alt="Example of 2D data on a Mapbox visualisation" width="100%"/>
 
@@ -28,6 +28,14 @@ Configuration for the visualisation is provided via a number of local JSON files
   - This optional file is used to provide links to additional resources; if present these are shown in the side panel of the visualisation.
 
 In addition to these JSON files, areas of the `index.html` file can also be adjusted to change the default side panel content of the visualisation. Please note however that not all areas of this file are configurable, some HTML elements are required by the framework and had to be setup here rather than dynamically injected by the framework itself. Areas that are considered configurable are clearly commented within the HTML file.
+
+### Credentials 
+
+In addition to the aforementioned configuration files, two additional files are required to house a Mapbox username and associated API key. Note these are required, even in Cesium visualisations, as the base map imagery is still provided by Mapbox.
+
+To set these two files, either create and populate `mapbox_username`, and `mapbox_api_key` files within the hosted webspace, or use the stack infrastructure to provide these as Docker secrets. You can learn more about the latter by reading [the stack's documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#example---including-a-visualisation).
+
+Once present, these files are queried by the DTVF, loading in the required credentials. Note that previous versions of the DTVF required these parameters to be set within each visualisation's `index.html` file, this is no longer required (see the example visualisations to learn about the new format).
 
 ### Data Specification File
 

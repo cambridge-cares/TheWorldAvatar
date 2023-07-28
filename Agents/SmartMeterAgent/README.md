@@ -4,7 +4,7 @@
 The purpose of Smart Meter Agent is to handle HTTP requests to retrieve latest reading for the current time from a database storing smart meter readings every minute, or retrieve all valid historical readings from a database or a CSV file, and upload the data to instantiated time series in the KG.
 
 ## Requirements
-- In order to run SmartMeterAgent, a local version (or if you are running in a stack, a stack version) of (TripleStore)AccessAgent needs to be deployed. Refer to [AccessAgent README](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_ACCESS_AGENT/README.md) for Access Agent setup. Routing information of the target blazegraph should be uploaded accordingly before calling SmartMeterAgent.
+- In order to run SmartMeterAgent, a local version (or if you are running in a stack, a stack version) of (TripleStore)AccessAgent needs to be deployed. Refer to [AccessAgent README](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_ACCESS_AGENT/README.md) for Access Agent setup. If running in a stack, create a new namespace in your stack blazegraph called 'storerouter' to store the routing information. Please note that routing information of the target blazegraph should be uploaded accordingly before calling SmartMeterAgent.
 
 - The target blazegraph should contain a power network instantiated according to [OntoPowSys](http://www.theworldavatar.com/ontology/ontopowsys/), and the related time series should be instantiated before calling SmartMeterAgent.
 
@@ -54,9 +54,9 @@ The agent is reachable on localhost port 39998 by default (you can change this i
 ```
 docker build -t "smart-meter-agent:1.0.0" .
 ```
-- In the `access-agent.json` file within the `stack-manager-input-config` folder, adjust the image version if applicable, and replace the placeholder for the stack name in the endpoint environment variables with the name of your stack. 
-- Copy the `access-agent.json` file and `smart-meter-agent.json` file into the `inputs/config/services` folder of the stack manager.
-- Start the stack manager as usual. This should start an access agent container and an SmartMeterAgent container as part of your stack.
+- Adjust the `access-agent.json` file in `JPS_ACCESS_AGENT/access-agent-dev-stack` according to [AccessAgent README](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_ACCESS_AGENT/README.md), and copy it into `inputs/config/services` folder of the stack manager.
+- Copy the `smart-meter-agent.json` file in `stack-manager-input-config` folder into the `inputs/config/services` folder of the stack manager.
+- Start the stack manager as usual. This should start an access agent container and a SmartMeterAgent container as part of your stack.
 
 ## Run the agent
 The SmartMeterAgent is accessible at `localhost:39998`, or `host.docker.internal:39998` from inside a Docker container (on Windows/Mac), or, if running the agent within a stack, `localhost:3838` (by default) from outside the stack, `<STACK NAME>-smart-meter-agent:8080` from within. To run the agent, a POST request must be sent to http://localhost:39998/smart-meter-agent/upload (replace the host and port number if applicable) with a correct JSON Object. Follow the example request shown below (note that dataBefore and dataAfter are optional in the request).

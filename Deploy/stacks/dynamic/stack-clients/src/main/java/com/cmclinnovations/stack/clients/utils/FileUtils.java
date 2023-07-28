@@ -94,7 +94,7 @@ public final class FileUtils {
         // strip out only the JAR file
         String[] urlComponents = dirURL.getPath().split("!");
         String jarPath = urlComponents[0].replaceFirst("file:", "");
-        String path = urlComponents[1].substring(1) + "/";
+        String path = urlComponents[1].replaceFirst("^/?(.*?)/?$", "$1/");
         try (JarFile jar = new JarFile(jarPath)) {
             Enumeration<JarEntry> entries = jar.entries(); // gives ALL entries in jar
             while (entries.hasMoreElements()) {
@@ -104,7 +104,7 @@ public final class FileUtils {
                     if (!entry.isEmpty()) {
                         int checkSubdir = entry.indexOf("/");
                         if (checkSubdir == -1) {
-                            uris.add(URI.create(dirURL.toString() + "/" + entry));
+                            uris.add(URI.create(dirURL.toString().replaceFirst("^(.*?)/?$", "$1/") + entry));
                         }
                     }
                 }

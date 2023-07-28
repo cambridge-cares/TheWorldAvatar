@@ -8,7 +8,7 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 
-import com.cmclinnovations.stack.clients.core.AbstractEndpointConfig;
+import com.cmclinnovations.stack.clients.core.EndpointConfig;
 import com.cmclinnovations.stack.clients.docker.DockerClient.ComplexCommand;
 import com.cmclinnovations.stack.clients.utils.LocalTempDir;
 import com.cmclinnovations.stack.clients.utils.TempDir;
@@ -27,12 +27,12 @@ public class ContainerClient extends BaseClient {
     }
 
     @Override
-    public final <E extends AbstractEndpointConfig> void writeEndpointConfig(E endpointConfig) {
+    public final <E extends EndpointConfig> void writeEndpointConfig(E endpointConfig) {
         writeEndpointConfig(endpointConfig, dockerClient);
     }
 
     @Override
-    public final <E extends AbstractEndpointConfig> E readEndpointConfig(String endpointName,
+    public final <E extends EndpointConfig> E readEndpointConfig(String endpointName,
             Class<E> endpointConfigClass) {
         return readEndpointConfig(endpointName, endpointConfigClass, dockerClient);
     }

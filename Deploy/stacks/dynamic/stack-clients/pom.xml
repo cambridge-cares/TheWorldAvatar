@@ -150,7 +150,7 @@
     <dependency>
       <groupId>uk.ac.cam.cares.jps</groupId>
       <artifactId>jps-base-lib</artifactId>
-      <version>1.33.0</version>
+      <version>1.39.0</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations -->

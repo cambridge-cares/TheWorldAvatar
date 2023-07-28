@@ -108,6 +108,8 @@ class PanelHandler {
         // Simulate click on general tab
         // @ts-ignore
         $("#sidePanelInner").tabs("option", "active", 0);
+
+        if(Manager.PROVIDER === MapProvider.CESIUM) CesiumUtils.clearSilhouette();
 	}
 
     /**

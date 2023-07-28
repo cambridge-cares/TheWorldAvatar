@@ -101,18 +101,18 @@ public class PointSource {
     }
 
     public void setFlowRatePM25InKgPerS(double flowratepm25InKgPerS) {
-        this.pm25 = flowratepm25InKgPerS;
+        this.pm25 = flowratepm25InKgPerS * 1000;
     }
 
-    public double getPm25() {
+    public double getFlowRatePm25InGramsPerS() {
         return this.pm25;
     }
 
     public void setFlowRatePM10InKgPerS(double flowratepm10InKgPerS) {
-        this.pm10 = flowratepm10InKgPerS;
+        this.pm10 = flowratepm10InKgPerS * 1000;
     }
 
-    public double getPm10() {
+    public double getFlowRatePm10InGramsPerS() {
         return this.pm10;
     }
 

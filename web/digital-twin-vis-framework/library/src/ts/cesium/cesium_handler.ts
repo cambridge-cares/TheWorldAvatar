@@ -488,6 +488,16 @@ class MapHandler_Cesium extends MapHandler {
         tileset["layerID"] = layer.id;
        
         // Add the tileset to the map
+
+
+        // If a style has been expressed in JSON, load it
+        if("style" in layer.definition) {
+            let style = layer.definition["style"];
+            tileset.style = new Cesium.Cesium3DTileStyle(style);
+            console.log("Cesium style has been added.");
+        }
+
+        // Add the tileset to the map
         MapHandler.MAP.scene.primitives.add(tileset);
         console.info("Added 3D tileset source to map with layer ID: "+ layer.id);
 

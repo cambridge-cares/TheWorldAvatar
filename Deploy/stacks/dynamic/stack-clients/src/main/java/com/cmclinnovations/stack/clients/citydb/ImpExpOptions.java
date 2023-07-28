@@ -70,8 +70,21 @@ public class ImpExpOptions {
         });
 
         allArgs.addAll(List.of(otherArgs));
-        allArgs.add("--");
-        allArgs.add(filepath);
+
+        switch (subcommand) {
+            case IMPORT:
+            case VALIDATE:
+                allArgs.add("--");
+                allArgs.add(filepath);
+                break;
+            case EXPORT:
+            case VIS_EXPORT:
+                allArgs.add("--output");
+                allArgs.add(filepath);
+                break;
+            default:
+        }
+
         return allArgs.toArray(new String[0]);
     }
 }
