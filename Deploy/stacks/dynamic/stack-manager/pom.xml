@@ -7,7 +7,7 @@
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-manager</artifactId>
-  <version>1.14.0</version>
+  <version>1.14.1-hotfix-gdalclient-database-names-SNAPSHOT</version>
 
   <name>Stack Manager</name>
   <url>https://www.cmclinnovations.com</url>
@@ -29,7 +29,7 @@
     <dependency>
       <groupId>com.cmclinnovations</groupId>
       <artifactId>stack-clients</artifactId>
-      <version>1.14.0</version>
+      <version>1.14.1-hotfix-gdalclient-database-names-SNAPSHOT</version>
     </dependency>
 
     <dependency>
