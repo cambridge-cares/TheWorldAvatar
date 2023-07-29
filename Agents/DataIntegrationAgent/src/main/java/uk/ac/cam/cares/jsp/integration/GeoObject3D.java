@@ -9,6 +9,7 @@ import org.postgis.PGgeometry;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -146,8 +147,8 @@ public class GeoObject3D {
         this.address.updateAddress(address,config);
     }
 
-    public Map<Integer, Polygon> queryBuildingSurfaces(int cityobjectid, boolean thematic){
-        Map<Integer, Polygon> gourndSurface = new java.util.HashMap<>();
+    public Map<Integer, PGgeometry> queryBuildingSurfaces(int cityobjectid, boolean thematic){
+        Map<Integer, PGgeometry> gourndSurface = new java.util.HashMap<>();
         try (Connection srcConn = this.pool.get3DConnection()) {
             if (!srcConn.isValid(60)) {
                 LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
@@ -155,7 +156,7 @@ public class GeoObject3D {
             }else{
                 String sql = null;
                 if(thematic){
-                    sql = "SELECT geometry, id FROM surface_geometry WHERE root_id  IN (SELECT lod2_multi_surface_id FROM thematic_surface WHERE building_id = " + cityobjectid+ " AND objectclass_id = 35) AND geometry is not null";
+                    sql = "SELECT public.ST_ExteriorRing(public.ST_Dump(public.ST_3DUnion(geometry))) as footprint, id FROM surface_geometry WHERE root_id  IN (SELECT lod2_multi_surface_id FROM thematic_surface WHERE building_id = " + cityobjectid+ " AND objectclass_id = 35) AND geometry is not null";
                 }else{
                     sql = "SELECT geometry, id FROM surface_geometry WHERE root_id = " + cityobjectid + "AND geometry is not null";
                 }
@@ -164,12 +165,12 @@ public class GeoObject3D {
                     ResultSet result = stmt.executeQuery(sql);
                     while (result.next()) {
                         SpatialLink sp = new SpatialLink();
-                        PGgeometry geom = (PGgeometry)result.getObject("geometry");
+                        PGgeometry geom = (PGgeometry)result.getObject("footprint");
                         if(geom != null){
-                            String coordString = geom.getGeometry().getValue();
-                            Geometry polygon = sp.createGeometry(coordString);
-                            polygon.setSRID(geom.getGeometry().getSrid());
-                            gourndSurface.put(Integer.valueOf(result.getInt("id")) ,(Polygon)polygon);
+                            // String coordString = geom.getGeometry().getValue();
+                            // Geometry polygon = sp.createGeometry(coordString);
+                            // polygon.setSRID(geom.getGeometry().getSrid());
+                            gourndSurface.put(Integer.valueOf(result.getInt("id")) ,geom);
                         }                        
                     }                  
                 }
@@ -180,6 +181,30 @@ public class GeoObject3D {
             throw new JPSRuntimeException("Error connecting to source database: " + e);
         }
 
+    }
+
+    public PGgeometry extractFootprint (int cityobjectid){
+        PGgeometry footprint = new PGgeometry();
+        try (Connection srcConn = this.pool.get3DConnection()) {
+            if (!srcConn.isValid(60)) {
+                LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
+                throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
+            }else{
+               String sql = "SELECT public.ST_MakePolygon(public.ST_ExteriorRing(public.ST_Union(geometry))) as footprint " +
+               "FROM surface_geometry WHERE root_id  IN (SELECT lod2_multi_surface_id FROM thematic_surface WHERE building_id = " 
+               + cityobjectid + " AND objectclass_id = 35) AND geometry is not null"; 
+               try (Statement stmt = srcConn.createStatement()) {
+                    ResultSet result = stmt.executeQuery(sql);
+                    while (result.next()) {
+                        footprint = (PGgeometry)result.getObject("footprint");                      
+                    }                  
+                }
+                return footprint;
+            }
+        }catch (SQLException e) {
+            LOGGER.fatal("Error connecting to source database: " + e);
+            throw new JPSRuntimeException("Error connecting to source database: " + e);
+        }
     }
 
     public void updateGroundSurface(int surfaceid, int buildingid){
@@ -211,46 +236,61 @@ public class GeoObject3D {
     }
 
     //1. insert data in surface_geometry 2. update data in building
-    public void updateFootprint(int buildingid, Polygon polygon){
-        int srid = polygon.getSRID();
-        String geom = polygon.toString();
+    public void updateFootprint(int buildingid, PGgeometry polygon){
+  
+        String geom = "public.ST_Polygon (" + polygon.toString() + ")";
         UUID uuid1 = UUID.randomUUID();
         UUID uuid2 = UUID.randomUUID();
-        String insertSql1 = "INSERT INTO surface_geometry (gmlid) VALUE ('" + uuid1 + "');";
+        String insertSql1 = "INSERT INTO surface_geometry (gmlid) VALUES ('" + uuid1 + "');";
         
-        int parent_surfaceid = 0;
+        int pSurfaceid = 0;
         int surfaceid = 0;
         if(this.pool == null){
             this.pool = new SqlConnectionPool(this.config);
         }
-        try (Connection srcConn = this.pool.get3DConnection()) {
+        try {
+
+            Connection srcConn = this.pool.get3DConnection();
             if (!srcConn.isValid(60)) {
                 LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
                 throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
             }else{
-                try (Statement stmt = srcConn.createStatement()) {
-                    stmt.executeUpdate(insertSql1);
+
+                PreparedStatement stmt = srcConn.prepareStatement(insertSql1, new String[] {"id"});
+                stmt.executeUpdate();
+                
+                ResultSet rsParent =  stmt.getGeneratedKeys();
+                if(rsParent.next()){
+                    pSurfaceid = rsParent.getInt(1);
+                }
+                if(pSurfaceid != 0){
+                    String insertSql2 = "INSERT INTO surface_geometry (gmlid, parent_id, root_id, geometry) VALUES (?, ?, ?, ?)"; 
+                    stmt = srcConn.prepareStatement(insertSql2, new String[] {"id"});
+                    stmt.setString(1, uuid2.toString());
+                    stmt.setInt(2, pSurfaceid);
+                    stmt.setInt(3, pSurfaceid);
+                    stmt.setObject(4, polygon);
+       
+                    stmt.executeUpdate();
                     
                     ResultSet rs =  stmt.getGeneratedKeys();
                     if(rs.next()){
-                        parent_surfaceid = rs.getInt(1);
+                        surfaceid = rs.getInt(1);
                     }
-                    if(surfaceid != 0){
-                        String insertSql2 = "INSERT INTO surface_geometry (gmlid, parent_id, root_id, geometry) VALUE (public.ST_GeomFromText('" + geom + "', " + srid + "))," + buildingid + ");";
 
-
-                        String upSql = "UPDATE building SET lod0_footprint_id = " + surfaceid + " WHERE id = " + buildingid + ";";
-                        try (Statement upStmt = srcConn.createStatement()) {
-                            upStmt.executeUpdate(upSql);
-                        }
-                    }
-                    
+                    String upSql = "UPDATE building SET lod0_footprint_id = " + surfaceid + " WHERE id = " + buildingid + ";";
+                    Statement upStmt = srcConn.createStatement();
+                    upStmt.executeUpdate(upSql);
+                       
                 }
-            }
+                stmt.close();
+                srcConn.close();
+            }           
         } catch (SQLException e) {
             LOGGER.fatal("Error connecting to source database: " + e);
             throw new JPSRuntimeException("Error connecting to source database: " + e);
         }    
+        
     }
 
     

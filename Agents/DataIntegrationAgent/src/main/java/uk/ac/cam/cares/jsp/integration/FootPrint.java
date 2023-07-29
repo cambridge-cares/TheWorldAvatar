@@ -17,6 +17,7 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
+import org.postgis.PGgeometry;
 
 public class FootPrint {
 
@@ -44,26 +45,34 @@ public class FootPrint {
             GeoObject3D object3D = allObject3D.get(i);
             int objectid = object3D.getId();
             int srid = object3D.getSrid(object3D.getGeometry3D());
-            Map<Integer, Polygon> allSurfaces  = object3D.queryBuildingSurfaces(objectid, this.thematic);
-            List<Polygon> groundList = new ArrayList<>();
-            if(this.thematic && allSurfaces.size() > 0){
-                groundList = new ArrayList<Polygon>(allSurfaces.values());
+            PGgeometry footprint = new PGgeometry();
+            // Map<Integer, PGgeometry> allSurfaces  = object3D.queryBuildingSurfaces(objectid, this.thematic);
+            List<PGgeometry> groundList = new ArrayList<>();
+            // groundList = new ArrayList<PGgeometry>(allSurfaces.values());
+            if(this.thematic){
+                footprint = object3D.extractFootprint(objectid);
             }else{
-                for (Map.Entry<Integer, Polygon> entry : allSurfaces.entrySet()) {
-                    double z = entry.getValue().norm().getCoordinate().getZ();
-                    double zratio = Math.abs(z);
-                    double threshold = Math.sin(Math.toRadians(15));// parameter can be changed
-                    if(z > 0 && zratio > threshold){
-                        groundList.add(entry.getValue());
-                        object3D.updateGroundSurface(entry.getKey(), objectid);
-                    }               
-                }
+
             }
-            GeometryFactory fact = new GeometryFactory();
-            LinearRing footRing = extractFootprint(groundList);
-            Polygon poly = new Polygon(footRing, null, fact);
-            poly.setSRID(srid);
-            object3D.updateFootprint(objectid, poly);
+            
+            // if(this.thematic && allSurfaces.size() > 0){
+            //     groundList = new ArrayList<Polygon>(allSurfaces.values());
+            // }else{
+            //     for (Map.Entry<Integer, Polygon> entry : allSurfaces.entrySet()) {
+            //         double z = entry.getValue().norm().getCoordinate().getZ();
+            //         double zratio = Math.abs(z);
+            //         double threshold = Math.sin(Math.toRadians(15));// parameter can be changed
+            //         if(z > 0 && zratio > threshold){
+            //             groundList.add(entry.getValue());
+            //             object3D.updateGroundSurface(entry.getKey(), objectid);
+            //         }               
+            //     }
+            // }
+            // GeometryFactory fact = new GeometryFactory();
+            // LinearRing footRing = extractFootprint(groundList);
+            // Polygon poly = new Polygon(footRing, null, fact);
+            // poly.setSRID(srid);
+            object3D.updateFootprint(objectid, footprint);
         }
     }
       /**
@@ -127,6 +136,7 @@ public class FootPrint {
         return footprintRing;
 
     }
+
 
         /**
      * Inflates a polygon

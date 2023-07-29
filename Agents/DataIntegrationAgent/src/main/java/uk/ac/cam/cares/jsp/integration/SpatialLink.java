@@ -202,9 +202,7 @@ public class SpatialLink{
     public Geometry createGeometry(String coordlist) {
         GeometryFactory fac = new GeometryFactory();
         Coordinate[] coord = str2coords(coordlist).toArray(new Coordinate[0]);
-        LinearRing lr = fac.createLinearRing(coord);
-        return new Polygon(lr, null, fac);
-        // return fac.createPolygon(lr);       
+        return fac.createPolygon(coord);     
     }
 
     // public Geometry reproject(Geometry geom, int srcSRID, int dstSRID) {
