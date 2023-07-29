@@ -27,11 +27,13 @@ public class FootPrint {
 
     List<GeoObject3D> allObject3D = new ArrayList<>();
     boolean thematic = false;
+    String surfaceType = null;
 
-    protected void proFootPrint(String[] config, String thematicParams) throws SQLException {
+    protected void proFootPrint(String[] config, String thematicParams, String surfaceType) throws SQLException {
 
         GeoObject3D object3D = new GeoObject3D();
-        this.allObject3D = object3D.getObject3D(config);        
+        this.allObject3D = object3D.getObject3D(config);   
+        this.surfaceType = surfaceType;     
         if(thematicParams.equals("true")){
             this.thematic = true;
         }else{
@@ -45,12 +47,12 @@ public class FootPrint {
             GeoObject3D object3D = allObject3D.get(i);
             int objectid = object3D.getId();
             int srid = object3D.getSrid(object3D.getGeometry3D());
-            PGgeometry footprint = new PGgeometry();
+            PGgeometry print = new PGgeometry();
             // Map<Integer, PGgeometry> allSurfaces  = object3D.queryBuildingSurfaces(objectid, this.thematic);
             List<PGgeometry> groundList = new ArrayList<>();
             // groundList = new ArrayList<PGgeometry>(allSurfaces.values());
             if(this.thematic){
-                footprint = object3D.extractFootprint(objectid);
+                print = object3D.extractPrint(objectid, this.surfaceType);
             }else{
 
             }
@@ -72,7 +74,7 @@ public class FootPrint {
             // LinearRing footRing = extractFootprint(groundList);
             // Polygon poly = new Polygon(footRing, null, fact);
             // poly.setSRID(srid);
-            object3D.updateFootprint(objectid, footprint);
+            object3D.updatePrint(objectid, print, this.surfaceType);
         }
     }
       /**

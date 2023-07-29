@@ -156,7 +156,9 @@ public class GeoObject3D {
             }else{
                 String sql = null;
                 if(thematic){
-                    sql = "SELECT public.ST_ExteriorRing(public.ST_Dump(public.ST_3DUnion(geometry))) as footprint, id FROM surface_geometry WHERE root_id  IN (SELECT lod2_multi_surface_id FROM thematic_surface WHERE building_id = " + cityobjectid+ " AND objectclass_id = 35) AND geometry is not null";
+                    sql = "SELECT public.ST_ExteriorRing(public.ST_Dump(public.ST_3DUnion(geometry))) as footprint, id "
+                    + "FROM surface_geometry WHERE root_id  IN (SELECT lod2_multi_surface_id FROM thematic_surface WHERE building_id = "
+                    + cityobjectid+ " AND objectclass_id = 35) AND geometry is not null";
                 }else{
                     sql = "SELECT geometry, id FROM surface_geometry WHERE root_id = " + cityobjectid + "AND geometry is not null";
                 }
@@ -183,8 +185,15 @@ public class GeoObject3D {
 
     }
 
-    public PGgeometry extractFootprint (int cityobjectid){
+    public PGgeometry extractPrint (int cityobjectid, String surfaceType){
         PGgeometry footprint = new PGgeometry();
+        if(surfaceType.equals("footprint")){
+            this.objectClassid = 35;
+        }else if (surfaceType.equals("roofprint")){
+            this.objectClassid = 33;
+        }else{
+            this.objectClassid = 0;
+        }
         try (Connection srcConn = this.pool.get3DConnection()) {
             if (!srcConn.isValid(60)) {
                 LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
@@ -192,7 +201,7 @@ public class GeoObject3D {
             }else{
                String sql = "SELECT public.ST_MakePolygon(public.ST_ExteriorRing(public.ST_Union(geometry))) as footprint " +
                "FROM surface_geometry WHERE root_id  IN (SELECT lod2_multi_surface_id FROM thematic_surface WHERE building_id = " 
-               + cityobjectid + " AND objectclass_id = 35) AND geometry is not null"; 
+               + cityobjectid + " AND objectclass_id = " + this.objectClassid + ") AND geometry is not null"; 
                try (Statement stmt = srcConn.createStatement()) {
                     ResultSet result = stmt.executeQuery(sql);
                     while (result.next()) {
@@ -236,9 +245,17 @@ public class GeoObject3D {
     }
 
     //1. insert data in surface_geometry 2. update data in building
-    public void updateFootprint(int buildingid, PGgeometry polygon){
+    public void updatePrint(int buildingid, PGgeometry polygon, String surfaceType){
   
-        String geom = "public.ST_Polygon (" + polygon.toString() + ")";
+        String surface = null;
+        if(surfaceType.equals("footprint")){
+            surface = "lod0_footprint_id";
+        }else if(surfaceType.equals("roofprint")){
+            surface = "lod0_roofprint_id";
+        }else{
+            LOGGER.fatal("Insert data information miss");
+            throw new JPSRuntimeException("Insert data information miss");
+        }
         UUID uuid1 = UUID.randomUUID();
         UUID uuid2 = UUID.randomUUID();
         String insertSql1 = "INSERT INTO surface_geometry (gmlid) VALUES ('" + uuid1 + "');";
@@ -278,7 +295,7 @@ public class GeoObject3D {
                         surfaceid = rs.getInt(1);
                     }
 
-                    String upSql = "UPDATE building SET lod0_footprint_id = " + surfaceid + " WHERE id = " + buildingid + ";";
+                    String upSql = "UPDATE building SET " + surface + " = " + surfaceid + " WHERE id = " + buildingid + ";";
                     Statement upStmt = srcConn.createStatement();
                     upStmt.executeUpdate(upSql);
                        
