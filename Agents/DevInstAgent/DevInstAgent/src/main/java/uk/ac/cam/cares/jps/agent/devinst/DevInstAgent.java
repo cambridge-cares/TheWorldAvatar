@@ -26,7 +26,7 @@ import org.apache.logging.log4j.Logger;
  * @author 
  */
 @WebServlet(urlPatterns = {"/instantiate"})
-public class DevInstAgentLauncher extends JPSAgent {
+public class DevInstAgent extends JPSAgent {
     
     public static final String KEY_DESCRIPTOR = "Descriptor";
 	public static final String KEY_MICROCONTROLLER = "MicroController";
@@ -35,9 +35,13 @@ public class DevInstAgentLauncher extends JPSAgent {
     public static final String KEY_CLIENTPROPERTY = "CLIENTPROPERTIES";
 
     private static RemoteStoreClient storeClient;
-    
+    private static RemoteStoreClient ontodevStoreClient;
+    private static RemoteStoreClient sarefStoreClient;
+
     private static String queryEnd;
     private static String updateEnd;
+    private static String ontodevQueryEnd;
+    private static String sarefQueryEnd;
 	
 	static String clientProperties;
     
@@ -48,7 +52,7 @@ public class DevInstAgentLauncher extends JPSAgent {
     /**
      * Logger for reporting info/errors.
      */
-    private static final Logger LOGGER = LogManager.getLogger(DevInstAgentLauncher.class);
+    private static final Logger LOGGER = LogManager.getLogger(DevInstAgent.class);
     /**
      * Logging / error messages
      */
@@ -158,6 +162,9 @@ public class DevInstAgentLauncher extends JPSAgent {
                 // Read the mappings folder from the properties file
                 queryEnd = prop.getProperty("sparql.query.endpoint");
                 updateEnd = prop.getProperty("sparql.update.endpoint");
+
+                ontodevQueryEnd = prop.getProperty("ontodev.query.endpoint");
+                sarefQueryEnd = prop.getProperty("saref.query.endpoint");
                 
                 }
                 catch (NullPointerException e) {
@@ -187,6 +194,9 @@ public class DevInstAgentLauncher extends JPSAgent {
 
         try{
             storeClient = new RemoteStoreClient(queryEnd, updateEnd);
+            ontodevStoreClient = new RemoteStoreClient(ontodevQueryEnd);
+            sarefStoreClient = new RemoteStoreClient(sarefQueryEnd);
+
         }
 
         catch (Exception e) {
@@ -194,7 +204,7 @@ public class DevInstAgentLauncher extends JPSAgent {
             throw new JPSRuntimeException(AGENT_ERROR_MSG, e);
         }
 
-        queryBuilder = new DevInstQueryBuilder(storeClient);
+        queryBuilder = new DevInstQueryBuilder(storeClient, ontodevStoreClient, sarefStoreClient);
         queryBuilder.InsertDevice(args);
 
         LOGGER.info("Input agent object initialized.");

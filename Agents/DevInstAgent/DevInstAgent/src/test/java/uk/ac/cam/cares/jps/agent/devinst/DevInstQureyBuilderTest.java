@@ -85,6 +85,8 @@ public class DevInstQureyBuilderTest {
 
     private DevInstQueryBuilder queryBuilder;
     RemoteStoreClient storeClient;
+    RemoteStoreClient ontodevClient;
+    RemoteStoreClient sarefClient;
     
     JSONObject exampleRequest;
     JSONObject exampleFind;
@@ -93,6 +95,8 @@ public class DevInstQureyBuilderTest {
 
     //Blazegraph endpoint
     private String sparql_endpoint;
+    private String ontodev_endpoint = "http://theworldavatar.com/ontology/ontodevice/OntoDevice.owl";
+    private String saref_endpoint = "https://saref.etsi.org/core/v3.1.1/saref.rdf";
 
     private String reqBody = "com.bigdata.rdf.store.AbstractTripleStore.textIndex=false\r\n"+
     "com.bigdata.rdf.store.AbstractTripleStore.axiomsClass=com.bigdata.rdf.axioms.NoAxioms\r\n"+
@@ -155,17 +159,19 @@ public class DevInstQureyBuilderTest {
         
         String clientPropFile = Paths.get(folder.getRoot().toString(), "client.properties").toString();
         
-        String[] clientPropParam = {"sparql.query.endpoint="+sparql_endpoint, "sparql.update.endpoint="+sparql_endpoint};
+        String[] clientPropParam = {"sparql.query.endpoint="+sparql_endpoint, "sparql.update.endpoint="+sparql_endpoint, "ontodev.query.endpoint="+ontodev_endpoint, "saref.query.endpoint="+saref_endpoint};
         writePropertyFile(clientPropFile, Arrays.asList(clientPropParam));
 
         //Set the RemoteStoreClient
         storeClient =  new RemoteStoreClient(sparql_endpoint, sparql_endpoint);
+        ontodevClient = new RemoteStoreClient(ontodev_endpoint);
+        sarefClient = new RemoteStoreClient(saref_endpoint);
         //storeClient = queryBuilder.storeClient;
         // To create testAgent without an exception being thrown, SystemLambda is used to mock an environment variable
         // To mock the environment variable, a try catch need to be used
         try {
         	SystemLambda.withEnvironmentVariable("TEST_MAPPINGS", mappingFolder.getCanonicalPath()).execute(() -> {
-                 queryBuilder = new DevInstQueryBuilder(storeClient);
+                 queryBuilder = new DevInstQueryBuilder(storeClient, ontodevClient, sarefClient);
         	 });
         }
         // There should not be any exception thrown as the agent is initiated correctly
@@ -323,6 +329,18 @@ public class DevInstQureyBuilderTest {
         //System.out.println(result);
         Assert.assertTrue(obtainedIRI.contains("http://example.com/prefix/testingGen"));
 
+    }
+
+    @Test
+    public void testCheckConceptExistence() {
+        Iri doesNotExist = iri("http://www.ontology-of-units-of-measure.org/resource/om-2/Length");
+        Iri doesExistOntodev = iri("https://www.theworldavatar.com/kg/ontodevice/Camera");
+        Iri doesExistSaref = iri("https://saref.etsi.org/core/TemperatureSensor");
+
+        
+        Assert.assertTrue(queryBuilder.checkConceptExistence(doesExistOntodev));
+        Assert.assertTrue(queryBuilder.checkConceptExistence(doesExistSaref));
+        Assert.assertFalse(queryBuilder.checkConceptExistence(doesNotExist));
     }
 
     @After

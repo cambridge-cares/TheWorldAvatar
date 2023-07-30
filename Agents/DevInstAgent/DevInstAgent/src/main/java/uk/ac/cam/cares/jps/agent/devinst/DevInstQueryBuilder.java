@@ -2,28 +2,27 @@ package uk.ac.cam.cares.jps.agent.devinst;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
+import org.jooq.False;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
-import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
-import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
-import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import java.io.InputStream;
+
+import jena.rset;
+
 import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
@@ -31,6 +30,8 @@ import org.apache.logging.log4j.Logger;
 
 public class DevInstQueryBuilder {
     private RemoteStoreClient storeClient;
+    private RemoteStoreClient ontodevStoreClient;
+    private RemoteStoreClient sarefStoreClient;
     private JSONObject IRIMap;
     
     // prefix
@@ -77,12 +78,14 @@ public class DevInstQueryBuilder {
     private static final Iri symbol = P_OM.iri("symbol");
     
     //LOGGER
-    private static final Logger LOGGER = LogManager.getLogger(DevInstAgentLauncher.class);
+    private static final Logger LOGGER = LogManager.getLogger(DevInstAgent.class);
     
     
     //Methods
-    public DevInstQueryBuilder (RemoteStoreClient sparqlClient) {
+    public DevInstQueryBuilder (RemoteStoreClient sparqlClient, RemoteStoreClient ontodevValidator, RemoteStoreClient sarefValidator) {
         this.storeClient = sparqlClient;
+        this.ontodevStoreClient = ontodevValidator;
+        this.sarefStoreClient = sarefValidator;
     }
 
     void InsertDevice(JSONObject desc) {
@@ -110,13 +113,13 @@ public class DevInstQueryBuilder {
             //smartSensor data
             sensLabel = MicroController.getString("label");
             
-            SmartSensor_UUID = getIri(MicroController.getString("name"));
+            SmartSensor_UUID = getIri(MicroController.getString("name"), true);
             
-            MicroController_UUID =  getIri(MicroController.getString("type"));
+            MicroController_UUID =  getIri(MicroController.getString("type"), true);
 
             JSONObject MainSensorMap = MicroController.getJSONObject("MainSensorMap");
             for (String MainSensorName : MainSensorMap.keySet()) {
-                Iri MainSensor_UUID = getIri(MainSensorName);
+                Iri MainSensor_UUID = getIri(MainSensorName, false);
                 Sensor_UUID_Map.put(MainSensorName, MainSensor_UUID);
 
                 JSONObject MainSensor = MainSensorMap.getJSONObject(MainSensorName);
@@ -124,25 +127,25 @@ public class DevInstQueryBuilder {
                     JSONObject Sensor = MainSensor.getJSONObject(SensorName);
                     SensorCompToSensorMap.put(SensorName, MainSensorName);
 
-                    Iri Sensor_UUID = getIri(SensorName);
+                    Iri Sensor_UUID = getIri(SensorName, false);
                     SensorComp_UUID_Map.put(SensorName, Sensor_UUID);
                     
                     String Measurement_ID_String = Sensor.getJSONObject("output").getString("fieldname");
-                    Iri Measurement_UUID = getIri(Measurement_ID_String);
+                    Iri Measurement_UUID = getIri(Measurement_ID_String, false);
                     Measurement_UUID_Map.put(SensorName, Measurement_UUID);
 
                     String MeasurementType_ID_String = Sensor.getJSONObject("output").getString("type");
-                    Iri MeasurementType_UUID = getIri(MeasurementType_ID_String);
+                    Iri MeasurementType_UUID = getIri(MeasurementType_ID_String, false);
                     MeasurementTypeMap.put(SensorName, MeasurementType_UUID);
 
                     String SensorCompType_String = Sensor.getString("type");
                     SensorTypeMap.put(SensorName, SensorCompType_String);
-                    Iri SensorType_IRI = getIri(SensorCompType_String);
+                    Iri SensorType_IRI = getIri(SensorCompType_String, true);
                     SensorTypeIRIMap.put(SensorCompType_String, SensorType_IRI);
 
                     String unit = Sensor.getJSONObject("output").getString("unit");
                     MeasurementToUnitMap.put(Measurement_ID_String, unit);
-                    Iri unit_IRI = getIri(unit);
+                    Iri unit_IRI = getIri(unit, false);
                     UnitIRIMap.put(unit, unit_IRI);
 
                 }
@@ -259,7 +262,9 @@ public class DevInstQueryBuilder {
                             
                         }
                         else{
-                            component = getIri(componentString);
+                            //Check is not done here as the addtiional query concepts is not neccessarily
+                            //from ontodevice or saref.
+                            component = getIri(componentString, false);
                         }
                     }
                     else{
@@ -290,7 +295,7 @@ public class DevInstQueryBuilder {
      * @param ID: The ID specified in the device descriptor
      * 
      */
-    private Iri getIri(String ID) {
+    private Iri getIri(String ID, Boolean doCheck) {
         if (IRIMap.has(ID)){
             String iriString = IRIMap.getString(ID);
             
@@ -302,7 +307,14 @@ public class DevInstQueryBuilder {
                 return findIriMatch(ID);
             }
             else {
-                return iri(iriString);
+                Boolean valid = true;
+                if (doCheck){
+                    valid = checkConceptExistence(iri(iriString));
+                }
+               if(valid) return iri(iriString);
+               else{
+                throw new JPSRuntimeException("Concept does not exist in SAREF or ontoDevice:" + iriString +". Please check the IRI in the IRIMapper.", null);
+               }
             }
         }
         else{
@@ -366,6 +378,29 @@ public class DevInstQueryBuilder {
 
     private Iri genIRI (String ID, String prefix) {
         return iri(prefix + ID + "_" + UUID.randomUUID());
+    }
+
+    /*
+     * Check if the specified IRI exists in the ontodevice or SAREF concepts.
+     * The owl files are stored in a local server.
+     */
+
+    Boolean checkConceptExistence(Iri target) {
+        SelectQuery query = Queries.SELECT();
+        
+        //Query for all class acting as subject or object
+        query.where(query.var().has(query.var(),target));
+        query.where(target.has(query.var(), query.var()));
+
+        //Look for class in ontodevice
+        JSONArray ontodevResult = ontodevStoreClient.executeQuery(query.getQueryString());
+        if (ontodevResult.length() >= 1) {return true;}
+
+        //Look for class in SAREF
+        JSONArray sarefResult = sarefStoreClient.executeQuery(query.getQueryString());
+        if (sarefResult.length() >= 1) {return true;}
+
+        return false; 
     }
 
 }
