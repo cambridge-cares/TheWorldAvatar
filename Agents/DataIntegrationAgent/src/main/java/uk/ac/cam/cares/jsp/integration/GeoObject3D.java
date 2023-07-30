@@ -2,8 +2,6 @@ package uk.ac.cam.cares.jsp.integration;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Polygon;
 import org.postgis.PGgeometry;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -157,7 +155,7 @@ public class GeoObject3D {
                 String sql = null;
                 if(thematic){
                     sql = "SELECT public.ST_ExteriorRing(public.ST_Dump(public.ST_3DUnion(geometry))) as footprint, id "
-                    + "FROM surface_geometry WHERE root_id  IN (SELECT lod2_multi_surface_id FROM thematic_surface WHERE building_id = "
+                    + "FROM surface_geometry WHERE root_id IN (SELECT lod2_multi_surface_id FROM thematic_surface WHERE building_id = "
                     + cityobjectid+ " AND objectclass_id = 35) AND geometry is not null";
                 }else{
                     sql = "SELECT geometry, id FROM surface_geometry WHERE root_id = " + cityobjectid + "AND geometry is not null";

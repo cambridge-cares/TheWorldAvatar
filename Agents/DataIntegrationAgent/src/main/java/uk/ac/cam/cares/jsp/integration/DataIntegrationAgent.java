@@ -83,7 +83,8 @@ public class DataIntegrationAgent extends JPSAgent {
             FootPrint footprint = new FootPrint();
             footprint.proFootPrint(config, thematicParams, requestParams);
         }else if(requestParams.equals("height")){
-
+            GetHeight height = new GetHeight();
+            height.preCalculation(config);
         }
         return jsonMessage;
     }
