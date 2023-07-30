@@ -61,6 +61,7 @@ public class InitialiseSimulation extends HttpServlet {
         int nx = Integer.parseInt(req.getParameter("nx"));
         int ny = Integer.parseInt(req.getParameter("ny"));
         String citiesNamespace = req.getParameter("citiesnamespace");
+        String scopeLabel = req.getParameter("label");
 
         Polygon polygonProvided = null;
         try {
@@ -111,7 +112,7 @@ public class InitialiseSimulation extends HttpServlet {
             if (scopeIri != null && polygon4326 != null) {
                 String weatherStation = createVirtualWeatherStation(polygon4326);
 
-                String derivation = queryClient.initialiseScopeDerivation(scopeIri, weatherStation, nx, ny,
+                String derivation = queryClient.initialiseScopeDerivation(scopeIri, scopeLabel, weatherStation, nx, ny,
                         citiesNamespace);
                 try {
                     resp.getWriter().print(new JSONObject().put("derivation", derivation));

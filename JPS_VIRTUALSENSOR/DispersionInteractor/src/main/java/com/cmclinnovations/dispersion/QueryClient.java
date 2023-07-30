@@ -1,5 +1,7 @@
 package com.cmclinnovations.dispersion;
 
+import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Operand;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
@@ -33,6 +35,7 @@ import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import it.unibz.inf.ontop.model.vocabulary.GEO;
@@ -44,8 +47,11 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * sends sparql queries
@@ -160,9 +166,10 @@ public class QueryClient {
         storeClient.executeUpdate(modify.getQueryString());
     }
 
-    String initialiseScopeDerivation(String scopeIri, String weatherStation, int nx, int ny, String citiesNamespace) {
+    String initialiseScopeDerivation(String scopeIri, String scopeLabel, String weatherStation, int nx, int ny,
+            String citiesNamespace) {
         ModifyQuery modify = Queries.MODIFY();
-        modify.insert(iri(scopeIri).isA(SCOPE));
+        modify.insert(iri(scopeIri).isA(SCOPE).andHas(iri(RDFS.LABEL), scopeLabel));
 
         // sim time (input)
         String simTime = PREFIX + UUID.randomUUID();
@@ -541,4 +548,78 @@ public class QueryClient {
 
     }
 
+    public List<DispersionSimulation> getDispersionSimulations() {
+        Iri isDerivedFrom = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
+        Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
+
+        SelectQuery query = Queries.SELECT();
+
+        Variable derivation = query.var();
+        Variable scope = query.var();
+        Variable dispersionOutput = query.var();
+        Variable scopelabelVar = query.var();
+        Variable pollutantType = query.var();
+        Variable pollutantLabel = query.var();
+        Variable dispLayerVar = query.var();
+
+        query.where(derivation.has(isDerivedFrom, scope), scope.isA(SCOPE).andHas(iri(RDFS.LABEL), scopelabelVar),
+                dispersionOutput.isA(DISPERSION_OUTPUT).andHas(belongsTo, derivation)
+                        .andHas(HAS_DISPERSION_LAYER, dispLayerVar)
+                        .andHas(PropertyPaths.path(HAS_POLLUTANT_ID, iri(RDF.TYPE)), pollutantType),
+                pollutantType.has(RDFS.LABEL, pollutantLabel))
+                .prefix(P_DISP);
+
+        Map<String, DispersionSimulation> iriToDispSimMap = new HashMap<>();
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        for (int i = 0; i < queryResult.length(); i++) {
+            String derivationIri = queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1));
+
+            iriToDispSimMap.computeIfAbsent(derivationIri, DispersionSimulation::new);
+
+            String scopeLabel = queryResult.getJSONObject(i).getString(scopelabelVar.getQueryString().substring(1));
+            String pol = queryResult.getJSONObject(i).getString(pollutantType.getQueryString().substring(1));
+            String polLabel = queryResult.getJSONObject(i).getString(pollutantLabel.getQueryString().substring(1));
+            String dispLayer = queryResult.getJSONObject(i).getString(dispLayerVar.getQueryString().substring(1));
+
+            DispersionSimulation dispersionSimulation = iriToDispSimMap.get(derivationIri);
+            dispersionSimulation.setScopeLabel(scopeLabel);
+            dispersionSimulation.setPollutantLabelAndDispLayer(pol, polLabel, dispLayer);
+        }
+
+        return new ArrayList<>(iriToDispSimMap.values());
+    }
+
+    /**
+     * by checking for null in the time series columns
+     * 
+     * @param dispersionSimulations
+     */
+    public void removeNonExistentPollutants(List<DispersionSimulation> dispersionSimulations, Connection conn) {
+        dispersionSimulations.forEach(dispersionSimulation -> {
+            List<String> pollutants = dispersionSimulation.getPollutants();
+            List<String> dispersionLayers = pollutants.stream().map(dispersionSimulation::getDispersionLayer)
+                    .collect(Collectors.toList());
+
+            long latestTime = tsClient.getMaxTime(dispersionLayers.get(0), conn);
+            TimeSeries<Long> latestTimeSeries = tsClient.getTimeSeriesWithinBounds(dispersionLayers, latestTime,
+                    latestTime, conn);
+
+            pollutants.forEach(pollutant -> {
+                String dispersionLayer = dispersionSimulation.getDispersionLayer(pollutant);
+                if (latestTimeSeries.getValues(dispersionLayer).get(0) == null) {
+                    dispersionSimulation.removePollutant(pollutant);
+                }
+            });
+        });
+    }
+
+    public void setSimulationTimes(List<DispersionSimulation> dispersionSimulations, Connection conn) {
+        dispersionSimulations.forEach(dispersionSimulation -> {
+            String dispersionLayer = dispersionSimulation
+                    .getDispersionLayer(dispersionSimulation.getPollutants().get(0));
+            List<Long> simulationTimes = tsClient.getTimeSeries(List.of(dispersionLayer), conn).getTimes();
+            dispersionSimulation.setTimesteps(simulationTimes);
+        });
+    }
 }
