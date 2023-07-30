@@ -6,7 +6,4 @@
  * @returns HTML string for legend content.
  */
 function buildLegend() {
-    $.get("./legend.html", function(contents) {
-        manager.getPanelHandler().setLegend(contents);
-    }); 
 }
