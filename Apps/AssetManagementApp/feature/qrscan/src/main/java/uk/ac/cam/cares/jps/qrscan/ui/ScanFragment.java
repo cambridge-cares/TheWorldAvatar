@@ -62,21 +62,25 @@ public class ScanFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        viewModel.resetUrlState();
-        boxOverlayView.setRect(null);
-    }
-
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        LOGGER.info("on view created");
         boxOverlayView = binding.boxOverlayView;
         viewModel = new ViewModelProvider(this).get(ScanViewModel.class);
 
+        // clear state
+        viewModel.resetUrlState();
+        boxOverlayView.setRect(null);
+
         viewModel.getBBox().observe(getViewLifecycleOwner(), bBox -> boxOverlayView.setRect(bBox));
         viewModel.getConfirmedUrl().observe(getViewLifecycleOwner(), url -> {
+            LOGGER.info("url changed observed");
+            if (url == null || url.isEmpty()) {
+                return;
+            }
+
+            LOGGER.info("url not empty: " + url);
             NavDeepLinkRequest request = NavDeepLinkRequest.Builder
                     .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/info_page?uri=" + url))
                     .build();
@@ -89,7 +93,6 @@ public class ScanFragment extends Fragment {
         cameraExecutor = ContextCompat.getMainExecutor(getContext());
 
         if (ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-//            ActivityCompat.requestPermissions(getActivity(), new String[]{android.Manifest.permission.CAMERA}, CAMERA_PERMISSION_REQUEST_CODE);
             MaterialAlertDialogBuilder permissionDeniedDialog = new MaterialAlertDialogBuilder(getContext())
                     .setTitle(R.string.request_camera_permission)
                     .setMessage(R.string.faile_to_get_camera_permission)

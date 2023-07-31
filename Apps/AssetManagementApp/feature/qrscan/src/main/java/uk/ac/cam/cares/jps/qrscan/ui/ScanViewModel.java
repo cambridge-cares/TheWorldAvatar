@@ -108,6 +108,7 @@ public class ScanViewModel extends ViewModel {
         state = UrlConfirmState.DETECTING;
         tentativeUrl = "";
         prevTentativeUrl = "";
+        confirmedUrl.setValue("");
     }
 
 }
