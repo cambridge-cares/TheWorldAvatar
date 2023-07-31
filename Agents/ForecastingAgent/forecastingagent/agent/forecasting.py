@@ -15,10 +15,10 @@ from pyderivationagent import DerivationInputs
 from pyderivationagent import DerivationOutputs
 
 from forecastingagent.datamodel.iris import *
-#from forecastingagent.datamodel.data_mapping import TIME_FORMAT_LONG, TIME_FORMAT_SHORT
 from forecastingagent.errorhandling.exceptions import TSException
 from forecastingagent.kgutils.kgclient import KGClient
 #from forecastingagent.kg_operations.tsclient import TSClient
+#from forecastingagent.datamodel.data_mapping import TIME_FORMAT_LONG, TIME_FORMAT_SHORT
 
 
 class ForecastingAgent(DerivationAgent):
@@ -136,27 +136,47 @@ class ForecastingAgent(DerivationAgent):
     def process_request_parameters(self, derivation_inputs: DerivationInputs, 
                                    derivation_outputs: DerivationOutputs):
         """
-            This method takes 
-                1 IRI of OntoTimeSeries:ForecastingModel (model to be used for forecasting)
-                1 IRI of OntoTimeSeries:Frequency (frequency of ts to be forecasted)
-                1 IRI of Time:TimeInterval (time interval to be forecasted)
-                1 IRI of Time:TimeDuration (data length prior to forecast interval
-                                            to be used for training/data scaling)
-                1 IRI of Owl:Thing (the concept holding the ts to be forecasted)
-            and generates
-                1 IRI of OntoTimeSeries:Forecast (incl. further relationships 
-                                                  detailing forecast instance)
-            
-            Please Note: Output triples will only be generated when creating new info, i.e.,
-                         instantiating new derivations. Otherwise, no outputs are generated
-                         for derivations with time series
+        This method takes 
+            1 IRI of OntoTimeSeries:ForecastingModel (model to be used for forecasting)
+            1 IRI of OntoTimeSeries:Frequency (frequency of forecasted time series)
+            1 IRI of Time:TimeInterval (time interval to be forecasted)
+            1 IRI of Time:TimeDuration (data length prior to forecast interval
+                                        to be used for training/data scaling)
+            1 IRI of OM:Quantity or owl:Thing (the concept associated with the 
+                                                time series to be forecasted)
+        and generates
+            1 IRI of OntoTimeSeries:Forecast (incl. further relationships 
+                                                detailing forecast instance)
+        
+        Please Note: Output triples will only be generated when creating new info, i.e.,
+                        instantiating new derivations. Otherwise, no outputs are generated
+                        for derivations with time series
         """
 
         # Get input IRIs from the agent inputs (derivation_inputs)
         # (returns dict of inputs with input concepts as keys and values as list)
         inputs = derivation_inputs.getInputs()
         derivIRI = derivation_inputs.getDerivationIRI()
+        # Get inputs as unique key-value pairs and extract IRI to forecast
         input_iris = self.validate_input_values(inputs=inputs, derivationIRI=derivIRI)
+
+        # Query relevant forecasting inputs from KG
+        # 1) Time series data to forecast (incl. ts RDB link and format)
+        ts = self.sparql_client.get_time_series_details(input_iris['iri_to_forecast'])
+        # 2) Forecasting model
+        input_iris[TS_FORECASTINGMODEL]
+        # 3) Forecast interval and frequency
+        input_iris[TIME_INTERVAL]
+        input_iris[TS_FREQUENCY]
+        # 4) Data length for training and data scaling
+        input_iris[TIME_DURATION]
+
+        # Create forecasting configuration dict
+
+        # Create forecast
+
+        # Instantiate forecast in KG
+        
 
 
 def default():
@@ -165,7 +185,7 @@ def default():
     """
     msg = '<B>Forecasting agent</B>:<BR><BR>'
     msg += 'The Forecasting Agent can predict instantiated time series and instantiate the forecasted series in the KG.<BR>'
-    msg += "It is implemented as derivation agent using derivations with time series"
+    msg += "The agent is implemented as derivation agent using ontoderivation:DerivationWithTimeSeries"
     msg += "<BR><BR>"
     msg += 'For further details please see the <a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ForecastingAgent/">Forecasting Agent README</a>.'
     return msg
