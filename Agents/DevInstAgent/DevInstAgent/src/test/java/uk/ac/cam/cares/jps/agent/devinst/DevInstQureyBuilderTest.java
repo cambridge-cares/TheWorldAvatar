@@ -95,8 +95,8 @@ public class DevInstQureyBuilderTest {
 
     //Blazegraph endpoint
     private String sparql_endpoint;
-    private String ontodev_endpoint = "http://theworldavatar.com/ontology/ontodevice/OntoDevice.owl";
-    private String saref_endpoint = "https://saref.etsi.org/core/v3.1.1/saref.rdf";
+    private String ontodev_endpoint = "http://10.25.188.58:3838/blazegraph/namespace/ontodevice/sparql";
+    private String saref_endpoint = "http://10.25.188.58:3838/blazegraph/namespace/ontodevice/sparql";
 
     private String reqBody = "com.bigdata.rdf.store.AbstractTripleStore.textIndex=false\r\n"+
     "com.bigdata.rdf.store.AbstractTripleStore.axiomsClass=com.bigdata.rdf.axioms.NoAxioms\r\n"+
@@ -333,13 +333,13 @@ public class DevInstQureyBuilderTest {
 
     @Test
     public void testCheckConceptExistence() {
-        Iri doesNotExist = iri("http://www.ontology-of-units-of-measure.org/resource/om-2/Length");
+        Iri doesNotExist = iri("http://www.example.com/prefix/api_AvgDist_FH02");
         Iri doesExistOntodev = iri("https://www.theworldavatar.com/kg/ontodevice/Camera");
         Iri doesExistSaref = iri("https://saref.etsi.org/core/TemperatureSensor");
 
-        
-        Assert.assertTrue(queryBuilder.checkConceptExistence(doesExistOntodev));
         Assert.assertTrue(queryBuilder.checkConceptExistence(doesExistSaref));
+        Assert.assertTrue(queryBuilder.checkConceptExistence(doesExistOntodev));
+        
         Assert.assertFalse(queryBuilder.checkConceptExistence(doesNotExist));
     }
 

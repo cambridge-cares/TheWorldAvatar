@@ -61,10 +61,10 @@ import java.time.ZoneOffset;
 import java.util.*;
 
 
-public class DevInstAgentLauncherTest {
+public class DevInstAgentTest {
     RemoteStoreClient storeClient;
     String sparql_endpoint = "http://host.docker.internal:9999/blazegraph/namespace/dev_inst/sparql";
-    DevInstAgentLauncher testLauncher;
+    DevInstAgent testLauncher;
     JSONObject exampleRequest = new JSONObject();
     public static final String KEY_DESCRIPTOR = "Descriptor";
 	public static final String KEY_MICROCONTROLLER = "MicroController";
@@ -108,7 +108,7 @@ public class DevInstAgentLauncherTest {
         // To mock the environment variable, a try catch need to be used
         try {
         	SystemLambda.withEnvironmentVariable("TEST_MAPPINGS", mappingFolder.getCanonicalPath()).execute(() -> {
-                testLauncher = new DevInstAgentLauncher();
+                testLauncher = new DevInstAgent();
         	 });
         }
         // There should not be any exception thrown as the agent is initiated correctly
