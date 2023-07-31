@@ -10,7 +10,9 @@ Instantiation is based on ontodevice ontology.
 The device instantiation framework is a framework to allow fast and consistent sensor instantiation on the knowledge graph to allow faster deployment and development. It can be summarised in the following figure:
 ![Device instantiation framework](./readme_img/framework.png)
 
-Sensors will be connected to a microcontroller and it will send data to an IoT database. For this agent, Thingsboard is used for the development of the agent. The Post-Processing agent will pull the data from the database and instantiate a timeseries of the data on the knowledge graph. This agent work with and without the use of the stack. If the stack is used, the agent will send the data to the [data bridge agent]() for instantiation. The post processing agent will also be responsible for instantiating agent and derivation instances when needed. 
+Sensors will be connected to a microcontroller and it will send data to an IoT database. For this agent, Thingsboard is used for the development of the agent. The Post-Processing agent will pull the data from the database and instantiate a timeseries of the data on the knowledge graph. This agent work with and without the use of the stack. If the stack is used, the agent will send the data to the [data bridge agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DataBridgeAgent) for instantiation. 
+
+The post processing agent will also be responsible for instantiating agent and derivation instances when needed. THe post processing agent is also responsible for creating the timeseries instances. Hence, for different projects, different post processing agnets may be needed. An example of this post-processing agent is the [FHAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FHAgent) which is responsible for handling fumehood occupancy timeseries data and derivation instances. 
 
  The device instantiaion agent will be responsible for instantiating the sensors and devices in the knowledge graph using a device descrpitor file written by the user.  
 
@@ -28,6 +30,8 @@ The file can be sparated into 3 different main keys, namely:
     - MainSensorMap: The map of the sensor modules connected to the microcontroller.  Composed of a JSONObject that maps the sensor names and their respective information. Each sensor map is composed of (relevant to the device instantiation agent): sensor type, output, output datatype and unit, Thingsboard field name.
 
 - IRIMapper: Map of all IRIs. An IRI can be readily provided by the user. However, in case a new IRI is to be generated, the user can provide a keyword `gen`. This will create a new IRI for the given ID in the device descrpitor, with default prefix of ontodevice. The IRI will also have a UUID v4 attached in the pattern of `prefix:ID_UUID`. If the IRI already exist containing a unique string pattern, the keyword `find` can be used. THe agent will search the graph for instance containing the ID. If more than one is found, an error will be thrown and the IRI need to be provided manually or to be generated instead. 
+
+At the moment, the sensor type IRIs are checked against ontodevice and SAREF to ensure that the concept exist. If the concept does not exist, an error will be thrown and the device will not be instantiated. 
 
 - AdditionalQuery: For update queries that are not automatically ran by the agent. Instances created automatically by the agent can be found in the following section. *Please do not use prefixes in the additional queries.* The use of the `gen` and `find` pattern could also be used with the following format in the triples: 
 
