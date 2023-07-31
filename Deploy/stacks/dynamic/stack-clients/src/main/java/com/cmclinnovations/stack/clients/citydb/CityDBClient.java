@@ -147,7 +147,7 @@ public class CityDBClient extends ContainerClient {
 
     }
 
-    private void addIRIs(String database, String baseIRI) {
+    public void addIRIs(String database, String baseIRI) {
         String sqlFilename = "citydb_add_uuids_and_iris.sql";
         try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
             String sqlQuery = new String(is.readAllBytes()).replace("{baseIRI}", baseIRI);

@@ -33,15 +33,15 @@ public class XtoCityDB extends PostgresDataSubset {
     @Override
     void loadInternal(Dataset parent) {
         super.loadInternal(parent);
-        CityDBClient.getInstance().addIRIs(parent.getDatabase());
+        CityDBClient.getInstance().addIRIs(parent.getDatabase(),parent.baseIRI());
         createLayer(parent.getDatabase());
         createLayer(parent.getWorkspaceName(), parent.getDatabase());
     }
 
     @Override
-    public void loadData(Path dirPath, String database) {
+    public void loadData(Path dataSubsetDir, String database, String baseIRI) {
         GDALClient.getInstance()
-                .uploadVectorFilesToPostGIS(database, getTable(), dirPath.toString(), ogr2ogrOptions, false);
+                .uploadVectorFilesToPostGIS(database, getTable(), dataSubsetDir.toString(), ogr2ogrOptions, false);
         CityDBClient.getInstance()
                 .updateDatabase(database,importOptions.getSridIn());
     }
