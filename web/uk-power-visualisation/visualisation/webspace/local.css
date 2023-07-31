@@ -1,38 +1,44 @@
-#legend-entry {
-    width: 100%;
-    height: 32px;
-    margin-bottom: 4px;
-    display: block;
-    margin-right: 5px;
-}
-#legend-entry img {
-    width: 32px;
-    height: 32px;
-    float: left;
-}
-#legend-entry svg {
-    width: 32px;
-    height: 32px;
-    float: left;
-}
-#legend-entry p {
-    line-height: 22pt;
+/* Override settings for mouse popup content */
+.mapboxgl-popup-content {
+    text-align: center !important;
+    min-width: 200px !important;
 }
 
-.legendtable {
-    width: 100%;
-    margin-top: 10px;
-}
-.legendtable td {
-    width: 50% !important;
-    margin-bottom: 2px;
+/** Change position of Mapbox logo **/
+.mapboxgl-ctrl-bottom-left {
+    right: 5px !important;
+    bottom: 15px !important;
+    left: revert !important;
+    top: revert !important;
 }
 
-.hummingbird-treeview span {
-    font-size: 8pt !important;
+/** Remove the improve map link **/
+.mapbox-improve-map {
+    display: none;
 }
-.hummingbird-treeview label {
-    font-size: 8pt !important;
+
+
+/** Advanced filter controls **/
+#filterButton {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 20px;
+    right: 520px;
+
+    text-align: center;
+    cursor: pointer;
+}
+#filterContainer {
+    width: 20px;
+    height: 400px;
+    position: absolute;
+    top: 70px;
+    right: 520px;
+    display: none;
+}
+#filterContainer:hover {
+    background-color: rgba(0,0,0,.4) !important;
 }
 
 #search-select {

@@ -55,7 +55,7 @@ class MapboxUtils {
         if(name === null || name === undefined) return;
 
         let desc = properties["description"];
-        if(desc === null && properties["desc"]) {
+        if(desc == null && properties["desc"]) {
             desc = properties["desc"];
         }
 

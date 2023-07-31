@@ -1,2 +1,6 @@
 mapbox_api_key
 mapbox_username
+
+*.csv
+*.log
+*.xlsx

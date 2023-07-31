@@ -1,8 +1,7 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
     <head>
-        <!-- ===== CUSTOMISABLE ===== -->
-        <title>UK Power System</title>
-        <!-- ===== CUSTOMISABLE ===== -->
+        <title>UK Base World</title>
 
         <!-- JS -->
         <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
@@ -13,24 +12,16 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" ></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
-        <script src="https://kg.cmclinnovations.com/cdn/dtvf/3.7.0/dtvf.min.js"></script>
-
-        <!-- ===== CUSTOMISABLE ===== -->
-        <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
+        <script src="https://kg.cmclinnovations.com/cdn/dtvf/test/dtvf.min.js"></script>
         <script src="./local.js"></script>
-        <!-- ===== CUSTOMISABLE ===== -->
 
         <!-- CSS -->
         <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.9.1/mapbox-gl.css" rel="stylesheet" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css" rel="stylesheet">
         <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
-        <link href="https://kg.cmclinnovations.com/cdn/dtvf/3.7.0/dtvf.min.css" rel="stylesheet" />
-
-        <!-- ===== CUSTOMISABLE ===== -->
-        <!-- CSS files to provide styling specifically for this visualisation instance can go here. -->
+        <link href="https://kg.cmclinnovations.com/cdn/dtvf/test/dtvf.min.css" rel="stylesheet" />
         <link href="./local.css" rel="stylesheet" />
-        <!-- ===== CUSTOMISABLE ===== -->
 
     </head>
     <body>
@@ -94,15 +85,6 @@
                         <span class="tooltiptext right">Help</span>
                     </div>
                 </div>
-
-                <!-- Container for developer info -->
-                <div id="developerContainer" class="controlBlock" style="display: none;">
-                    <div class="tooltip" id="coordEditor" style="float: right;">
-                        <i class="fas fa-pencil-alt" onclick="event.stopPropagation(); manager.getControlHandler().editInfoPanel()"></i>
-                        <span class="tooltiptext">Change map position</span>
-                    </div>
-                    <div id="coordsContainer" style="width: 100%; height: 100%;"></div>
-                </div>
             </div>
         </div>
 
@@ -155,7 +137,6 @@
                 var dataPromise = manager.loadDefinitions();
                 dataPromise.then(() => start());
 
-
                 /**
                  * Starts the visualisation setup process.
                  */
@@ -163,7 +144,6 @@
                     // Initialise the map object
                     manager.initialiseMap();
                 
-                    // ===== CUSTOMISABLE =====
                     // Set the default content in the "General" tab of the side panel
                     manager.getPanelHandler().setTitle("<h1>Example Visualisation</h1>");
                     manager.getPanelHandler().setContent(`
@@ -178,14 +158,13 @@
                         the framework itself. It's also worth noting that this example uses the currently hosted version of the framework library (i.e. from the CMCL KG website), 
                         not the files within the repository.</p>
                     `);
-                    
-                manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
+                    manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
 
-                // Set the manager's callback to trigger once data definitions are loaded
-                manager.dataLoadCallback = function() {
-                    buildLegend();
-                };
-                    // ===== CUSTOMISABLE =====
+                    // Set the manager's callback to trigger once data definitions are loaded
+                    manager.dataLoadCallback = function() {
+                        buildLegend();
+                        addAdvancedFilters();
+                    };
 
                     // Save general tab state as default
                     manager.getPanelHandler().storeDefault();
@@ -193,18 +172,18 @@
                     // Once the underlying style has loaded...
                     MapHandler.MAP.on("style.load", function() {
 
-                        // Load registered images and linked files
-                        manager.loadImagesAndLinks().then(() => {
+                            // Load registered images and linked files
+                            manager.loadImagesAndLinks().then(() => {
 
-                        // Load the data definitions
-                        let configURL = "./data.json"
-                        manager.loadDefinitionsFromURL(configURL).then(function() {
+                            // Load the data definitions
+                            let configURL = "./data.json"
+                            manager.loadDefinitionsFromURL(configURL).then(function() {
 
-                            // Plot the data
-                            manager.plotData();
+                                // Plot the data
+                                manager.plotData();
+                            });
                         });
                     });
-                });
                 }
             });
           

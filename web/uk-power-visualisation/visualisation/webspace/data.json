@@ -1,86 +1,102 @@
 {
-    "name": "All Data",
+    "name": "UK Base World",
     "groups": [
         {
-            "name": "UK Power Plants",
-            "stack": "http://localhost:3838",
+            "name": "Power Generation Sites",
+            "stack": "http://localhost:3838/",
             "sources": [
                 {
-                    "id": "dukes-2019-source",  
+                    "id": "uk-power-source",  
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:dukes_2019&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-                    ]
-                },
-                {
-                    "id": "dukes-2022-source",  
-                    "type": "vector",
-                    "tiles": [
-                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:dukes_2022&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-                    ]
-                },
-                {
-                    "id": "dukes-merged-source",  
-                    "type": "vector",
-                    "tiles": [
-                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:dukes_merged&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:uk_power&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
                 
             ], 
             "layers": [
                 {
-                    "id": "dukes-2019-layer",
-                    "name": "DUKES 2019",
-                    "source": "dukes-2019-source",
+                    "id": "power_fossil_layer",
+                    "name": "Fossil Fuel",
+                    "source": "uk-power-source",
                     "type": "circle",
-                    "source-layer": "dukes_2019",
+                    "source-layer": "uk_power",
+                    "filter": [
+                        "in",
+                        ["get", "type"],
+                        ["literal", ["Fossil Fuel", "Nuclear"]]
+                    ],
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "visible",
+                        "circle-sort-key": [
+                            "*", -1.0, ["get", "capacity"]
+                        ]
                     },
                     "paint": {
                         "circle-stroke-color": "#000000",
                         "circle-stroke-width": 1,
-                        "circle-radius": 5,
-                        "circle-color": "#FF0000"
-                    }
-                },
-                {
-                    "id": "dukes-2022-layer",
-                    "name": "DUKES 2022",
-                    "source": "dukes-2022-source",
-                    "type": "circle",
-                    "source-layer": "dukes_2022",
-                    "layout": {
-                        "visibility": "visible"
-                    },
-                    "paint": {
-                        "circle-stroke-color": "#000000",
-                        "circle-stroke-width": 1,
-                        "circle-radius": 5,
-                        "circle-color": "#00FF00"
-                    }
-                },
-                {
-                    "id": "dukes-merged-layer",
-                    "name": "DUKES Merged",
-                    "source": "dukes-merged-source",
-                    "type": "circle",
-                    "source-layer": "dukes_merged",
-                    "layout": {
-                        "visibility": "visible"
-                    },
-                    "paint": {
-                        "circle-stroke-color": "#000000",
-                        "circle-stroke-width": 1,
-                        "circle-radius": 5,
+                        "circle-opacity": 0.85,
+                        "circle-radius": [
+                            "interpolate",
+                            ["linear"],
+                            ["get", "capacity"],
+                            0, 4,
+                            100, 8,
+                            1000, 14,
+                            2250, 28
+                        ],
                         "circle-color": [
                             "case",
-                            ["==", ["get", "country"], "England"], "#FF0000",
-                            ["==", ["get", "country"], "Scotland"], "#0000FF",
-                            ["==", ["get", "country"], "Wales"], "#00FF00",
-                            ["==", ["get", "country"], "Northern Ireland"], "#FFFFFF",
-                            "#0000FF"
+                            ["==", ["get", "primary_fuel"], "Diesel/Gas Oil"], "#cccccc",
+                            ["==", ["get", "primary_fuel"], "Coal"], "#333333",
+                            ["==", ["get", "primary_fuel"], "Sour Gas"], "#ff9999",
+                            ["==", ["get", "primary_fuel"], "Natural Gas"], "#660000",
+                            ["==", ["get", "primary_fuel"], "Nuclear"], "#999900",
+                            "#FFFFFF"
+                        ]
+                    }
+                },
+                {
+                    "id": "power_renewable_layer",
+                    "name": "Renewable",
+                    "source": "uk-power-source",
+                    "type": "circle",
+                    "source-layer": "uk_power",
+                    "filter": [
+                        "!",
+                        [
+                            "in",
+                            ["get", "type"],
+                            ["literal", ["Fossil Fuel", "Nuclear"]]
+                        ]
+                    ],
+                    "layout": {
+                        "visibility": "visible",
+                        "circle-sort-key": [
+                            "*", -1.0, ["get", "capacity"]
+                        ]
+                    },
+                    "paint": {
+                        "circle-stroke-color": "#000000",
+                        "circle-stroke-width": 1,
+                        "circle-opacity": 0.85,
+                        "circle-radius": [
+                            "interpolate",
+                            ["linear"],
+                            ["get", "capacity"],
+                            0, 4,
+                            100, 8,
+                            1000, 14,
+                            2250, 28
+                        ],
+                        "circle-color": [
+                            "case",
+                            ["==", ["get", "primary_fuel"], "Biomass"], "#66ff66",
+                            ["==", ["get", "primary_fuel"], "MSW"], "#006600",
+                            ["==", ["get", "primary_fuel"], "Wind"], "#99ccff",
+                            ["==", ["get", "primary_fuel"], "Hydro"], "#006699",
+                            ["==", ["get", "primary_fuel"], "Solar"], "#ffff99",
+                            "#FFFFFF"
                         ]
                     }
                 }
