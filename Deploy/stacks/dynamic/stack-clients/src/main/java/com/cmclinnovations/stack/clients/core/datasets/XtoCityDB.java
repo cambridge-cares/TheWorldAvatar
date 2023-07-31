@@ -1,11 +1,14 @@
 package com.cmclinnovations.stack.clients.core.datasets;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.cmclinnovations.stack.clients.citydb.CityDBClient;
 import com.cmclinnovations.stack.clients.citydb.CityTilerClient;
 import com.cmclinnovations.stack.clients.citydb.CityTilerOptions;
@@ -44,6 +47,7 @@ public class XtoCityDB extends PostgresDataSubset {
                 .uploadVectorFilesToPostGIS(database, getTable(), dataSubsetDir.toString(), ogr2ogrOptions, false);
         CityDBClient.getInstance()
                 .updateDatabase(database,importOptions.getSridIn());
+        CityDBClient.getInstance().populateCityDBbySQL(database);
     }
 
     public void createLayer(String database) {
