@@ -10,4 +10,8 @@ public class AssetInfo {
     public AssetInfo(AssetInfoModel assetInfoModel) {
         this.properties = assetInfoModel.getProperties();
     }
+
+    public HashMap<String, String> getProperties() {
+        return properties;
+    }
 }

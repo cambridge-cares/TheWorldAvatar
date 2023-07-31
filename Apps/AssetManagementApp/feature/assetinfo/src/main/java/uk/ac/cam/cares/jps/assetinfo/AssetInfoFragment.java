@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.LogManager;
@@ -24,6 +25,7 @@ public class AssetInfoFragment extends Fragment {
     private static final Logger LOGGER = LogManager.getLogger(AssetInfoFragment.class);
 
     AssetInfoViewModel viewModel;
+    AssetInfoAdapter assetInfoAdapter;
 
     @Nullable
     @Override
@@ -41,13 +43,13 @@ public class AssetInfoFragment extends Fragment {
         LOGGER.info(getArguments().getString("uri"));
 
         viewModel.getAssetInfo().observe(this.getViewLifecycleOwner(), assetInfo -> {
-            binding.url.setText(assetInfo.toString());
+            assetInfoAdapter.updateProperties(assetInfo);
         });
-
         viewModel.getAssetInfoByIri(getArguments().getString("uri"));
 
-//        assetUri = getArguments().getString("uri");
-//        binding.url.setText(assetUri);
-//        LOGGER.info(assetUri);
+        assetInfoAdapter = new AssetInfoAdapter();
+        binding.assetInfoRv.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        binding.assetInfoRv.setAdapter(assetInfoAdapter);
+
     }
 }

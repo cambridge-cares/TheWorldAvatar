@@ -7,6 +7,7 @@
     <dimen name="appbar_padding_top">8dp</dimen>
     <dimen name="component_margin">20dp</dimen>
     <dimen name="font_size">17sp</dimen>
+    <dimen name="content_font_size">20sp</dimen>
     <dimen name="title_font_size">18sp</dimen>
     <dimen name="hint_font_size">16sp</dimen>
     <dimen name="component_margin_small">10dp</dimen>
