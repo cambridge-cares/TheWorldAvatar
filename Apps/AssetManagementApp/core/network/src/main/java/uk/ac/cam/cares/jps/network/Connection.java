@@ -12,7 +12,7 @@ public class Connection {
     private final Context context;
 
     private Connection(Context context) {
-        this.context = context.getApplicationContext();
+        this.context = context;
         requestQueue = getRequestQueue();
     }
 
@@ -27,7 +27,7 @@ public class Connection {
         if (requestQueue == null) {
             // getApplicationContext() is key, it keeps you from leaking the
             // Activity or BroadcastReceiver if someone passes one in.
-            requestQueue = Volley.newRequestQueue(context.getApplicationContext());
+            requestQueue = Volley.newRequestQueue(context);
         }
         return requestQueue;
     }

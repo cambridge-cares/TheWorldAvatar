@@ -10,8 +10,13 @@ import uk.ac.cam.cares.jps.network.AssetInfoModel;
 import uk.ac.cam.cares.jps.network.AssetNetworkSource;
 
 public class AssetInfoRepository {
-    @Inject
+
     AssetNetworkSource networkSource;
+
+    @Inject
+    public AssetInfoRepository(AssetNetworkSource networkSource) {
+        this.networkSource = networkSource;
+    }
 
     public Map<String, String> getAssetInfoByIri(String iri, Response.Listener<AssetInfo> onSuccessUpper, Response.ErrorListener onErrorUpper) {
         Response.Listener<AssetInfoModel> onSuccess = asset -> {

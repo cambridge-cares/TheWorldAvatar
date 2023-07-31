@@ -14,7 +14,7 @@
             app:argType="string"
             />
         <deepLink
-            app:uri="android-app://uk.ac.cam.cares.jps.app/info_page?{uri}" />
+            app:uri="android-app://uk.ac.cam.cares.jps.app/info_page?uri={uri}" />
 
     </fragment>
 

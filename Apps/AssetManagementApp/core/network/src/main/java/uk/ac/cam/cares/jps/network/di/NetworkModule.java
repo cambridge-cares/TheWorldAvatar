@@ -1,6 +1,6 @@
 package uk.ac.cam.cares.jps.network.di;
 
-import android.app.Application;
+import android.content.Context;
 
 import dagger.Module;
 import dagger.Provides;
@@ -14,12 +14,12 @@ import uk.ac.cam.cares.jps.network.Connection;
 @InstallIn(SingletonComponent.class)
 public class NetworkModule {
     @Provides
-    public Connection provideConnection(@ApplicationContext Application application) {
-        return Connection.getInstance(application.getApplicationContext());
+    public Connection provideConnection(@ApplicationContext Context applicationContext) {
+        return Connection.getInstance(applicationContext);
     }
 
     @Provides
-    public AssetNetworkSource provideAssetNetworkSource() {
-        return new AssetNetworkSource();
+    public AssetNetworkSource provideAssetNetworkSource(Connection connection) {
+        return new AssetNetworkSource(connection);
     }
 }
