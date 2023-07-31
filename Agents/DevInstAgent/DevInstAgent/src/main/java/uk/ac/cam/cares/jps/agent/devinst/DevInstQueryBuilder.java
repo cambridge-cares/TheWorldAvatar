@@ -389,15 +389,17 @@ public class DevInstQueryBuilder {
         SelectQuery query = Queries.SELECT();
         
         //Query for all class acting as subject or object
-        query.where(query.var().has(query.var(),target));
+        //query.where(query.var().has(query.var(),target));
         query.where(target.has(query.var(), query.var()));
 
         //Look for class in ontodevice
         JSONArray ontodevResult = ontodevStoreClient.executeQuery(query.getQueryString());
+        System.out.println(ontodevResult);
         if (ontodevResult.length() >= 1) {return true;}
 
         //Look for class in SAREF
         JSONArray sarefResult = sarefStoreClient.executeQuery(query.getQueryString());
+        System.out.println(ontodevResult);
         if (sarefResult.length() >= 1) {return true;}
 
         return false; 
