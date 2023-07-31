@@ -6,5 +6,7 @@ services:
     build: .
     container_name: dev-inst-agent
     pull_policy: if_not_present
+    volumes:
+      - ./config:/usr/local/tomcat/config
     ports:
       - "1017:8080"
