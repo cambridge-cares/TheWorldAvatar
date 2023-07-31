@@ -113,9 +113,9 @@ public class DevInstQueryBuilder {
             //smartSensor data
             sensLabel = MicroController.getString("label");
             
-            SmartSensor_UUID = getIri(MicroController.getString("name"), true);
+            SmartSensor_UUID = getIri(MicroController.getString("name"), false);
             
-            MicroController_UUID =  getIri(MicroController.getString("type"), true);
+            MicroController_UUID =  getIri(MicroController.getString("type"), false);
 
             JSONObject MainSensorMap = MicroController.getJSONObject("MainSensorMap");
             for (String MainSensorName : MainSensorMap.keySet()) {
