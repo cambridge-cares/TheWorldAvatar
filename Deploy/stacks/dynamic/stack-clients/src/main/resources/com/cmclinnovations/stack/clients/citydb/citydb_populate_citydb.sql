@@ -1,7 +1,7 @@
 SET search_path TO public,citydb;
 create table "public"."raw_building" AS
-(SELECT "os_topo_toid", 'building_' || gen_random_uuid() AS "gmlid", box2envelope(Box3D(ST_Translate(ST_Extrude("polygon",0,0,"relh2"),0,0,"abshmin"))) AS "envelope", ST_Translate(ST_Extrude("polygon",0,0,"relh2"),0,0,"abshmin") AS "geom", "relh2" AS "mh"
-FROM "public"."raw_data" WHERE ST_Area("polygon")>{minArea} AND "relh2" IS NOT NULL);
+(SELECT "{TOID}", 'building_' || gen_random_uuid() AS "gmlid", box2envelope(Box3D(ST_Translate(ST_Extrude("{footprint}",0,0,"{height}"),0,0,"{elevation}"))) AS "envelope", ST_Translate(ST_Extrude("{footprint}",0,0,"{height}"),0,0,"{elevation}") AS "geom", "{height}" AS "mh"
+FROM "public"."raw_data" WHERE ST_Area("{footprint}")>{minArea} AND "{height}" IS NOT NULL);
 create table "public"."raw_surface" AS
 (SELECT "building_gmlid", 'surface_' || gen_random_uuid() AS "gmlid", "class", "geom", box2envelope(Box3D("geom")) AS "envelope" FROM
 (SELECT "building_gmlid", "geom",
@@ -17,7 +17,7 @@ INSERT INTO "citydb"."building" ("id","objectclass_id","building_root_id","measu
 SELECT "citydb"."cityobject"."id",26,"citydb"."cityobject"."id","public"."raw_building"."mh", '#m'
 FROM "citydb"."cityobject","public"."raw_building" WHERE "citydb"."cityobject"."gmlid" = "public"."raw_building"."gmlid";
 INSERT INTO "citydb"."cityobject_genericattrib" ("attrname","datatype","strval","cityobject_id")
-SELECT 'os_topo_toid',1,"public"."raw_building"."os_topo_toid","citydb"."cityobject"."id"
+SELECT 'os_topo_toid',1,"public"."raw_building"."{TOID}","citydb"."cityobject"."id"
 FROM "citydb"."cityobject","public"."raw_building" WHERE "citydb"."cityobject"."gmlid" = "public"."raw_building"."gmlid";
 UPDATE "citydb"."cityobject_genericattrib"
 SET "root_genattrib_id" = "id"

@@ -1,6 +1,8 @@
 package com.cmclinnovations.stack.clients.core.datasets;
 
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
@@ -32,6 +34,12 @@ public class XtoCityDB extends PostgresDataSubset {
 
     @JsonProperty
     private double minArea = 0.;
+    @JsonProperty
+    Map<String, String> columnMap = new HashMap<>(Map.of(
+        "TOID", "os_topo_toid",
+        "polygon", "polygon",
+        "elevation", "abshmin",
+        "height", "relh2"));
     @Override
     public boolean usesGeoServer() {
         return !isSkip();
@@ -52,7 +60,7 @@ public class XtoCityDB extends PostgresDataSubset {
                 .uploadVectorFilesToPostGIS(database, getTable(), dataSubsetDir.toString(), ogr2ogrOptions, false);
         CityDBClient.getInstance()
                 .updateDatabase(database,importOptions.getSridIn());
-        CityDBClient.getInstance().populateCityDBbySQL(database,lineage,minArea);
+        CityDBClient.getInstance().populateCityDBbySQL(database,lineage,minArea,columnMap);
     }
 
     public void createLayer(String database) {

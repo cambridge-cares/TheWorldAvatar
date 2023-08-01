@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -234,12 +235,15 @@ public class CityDBClient extends ContainerClient {
         handleErrors(errorStream, execId, logger);
     }
 
-    public void populateCityDBbySQL(String database, String lineage, double minArea) {
+    public void populateCityDBbySQL(String database, String lineage, double minArea, Map<String, String> columnMap) {
         String sqlFilename = "citydb_populate_citydb.sql";
         try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
             String sqlQuery = new String(is.readAllBytes())
                 .replace("{minArea}", String.valueOf(minArea));
             sqlQuery = sqlQuery.replace("{lineage}", lineage);
+            for (Map.Entry<String, String> entry : columnMap.entrySet()) {
+                sqlQuery = sqlQuery.replace("{"+entry.getKey()+"}",entry.getValue());
+            }
             PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
         } catch (IOException ex) {
             throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
