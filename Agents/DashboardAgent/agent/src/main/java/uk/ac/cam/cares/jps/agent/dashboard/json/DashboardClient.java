@@ -47,10 +47,10 @@ public class DashboardClient {
     public void initDashboard() {
         this.createServiceAccount();
         this.createDataSources();
-        // For each infrastructure, a separate dashboard should be generated
-        String[] infrastructureArray = this.SERVICE_CLIENT.getAllInfrastructure();
-        for (String infrastructure: infrastructureArray){
-            this.createDashboard(infrastructure);
+        // For each spatial zone, a separate dashboard should be generated
+        String[] spatialZoneArray = this.SERVICE_CLIENT.getAllSpatialZones();
+        for (String spatialZone: spatialZoneArray){
+            this.createDashboard(spatialZone);
         }
     }
 
@@ -103,17 +103,17 @@ public class DashboardClient {
     }
 
     /**
-     * Create the dashboard required for the specified infrastructure.
+     * Create the dashboard required for the specified spatial zone.
      *
-     * @param infrastructure The name of the infrastructure.
+     * @param spatialZone The name of the spatial zone.
      */
-    private void createDashboard(String infrastructure) {
+    private void createDashboard(String spatialZone) {
         LOGGER.info("Initialising a new dashboard...");
         String route = this.SERVICE_CLIENT.getDashboardUrl() + DASHBOARD_CREATION_ROUTE;
         // Generate title
-        String title = "Overview for " + infrastructure;
+        String title = "Overview for " + spatialZone;
         // Retrieve all assets for the model
-        Map<String, List<String>> assets = this.SERVICE_CLIENT.getAllAssets(infrastructure);
+        Map<String, List<String>> assets = this.SERVICE_CLIENT.getAllAssets(spatialZone);
         // Generate JSON model syntax
         String jsonSyntax = new GrafanaModel(title, assets).construct();
         // Create a new dashboard based on the JSON model using a POST request with security token

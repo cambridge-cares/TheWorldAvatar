@@ -18,7 +18,7 @@ import java.util.*;
  */
 public class SparqlClient {
     private final String STACK_SPARQL_ENDPOINT;
-    private final Map<String, Facility> INFRASTRUCTURES = new HashMap<>();
+    private final Map<String, Facility> SPATIAL_ZONES = new HashMap<>();
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
 
     /**
@@ -42,33 +42,33 @@ public class SparqlClient {
     }
 
     /**
-     * Get all infrastructure within the knowledge graph. This method is accessible for the stack client's usage.
+     * Get all spatial zones within the knowledge graph. This method is accessible for the stack client's usage.
      *
-     * @return An array of all available infrastructure to monitor.
+     * @return An array of all available spatial zones to monitor.
      */
-    protected String[] getAllInfrastructure() {
-        Set<String> infrastructures = this.INFRASTRUCTURES.keySet();
-        return infrastructures.toArray(new String[infrastructures.size()]);
+    protected String[] getAllSpatialZones() {
+        Set<String> spatialZones = this.SPATIAL_ZONES.keySet();
+        return spatialZones.toArray(new String[spatialZones.size()]);
     }
 
     /**
-     * Get all assets from a specific infrastructure in the knowledge graph.
+     * Get all assets from a specific spatial zone in the knowledge graph.
      *
-     * @param infrastructure The infrastructure to retrieve all assets.
-     * @return An array of all available assets within a specific infrastructure in the knowledge graph.
+     * @param spatialZone The spatial zone to retrieve all assets.
+     * @return An array of all available assets within a specific spatial zone in the knowledge graph.
      */
-    protected Map<String, List<String>> getAllAssets(String infrastructure) {
-        return this.INFRASTRUCTURES.get(infrastructure).getAllAssets();
+    protected Map<String, List<String>> getAllAssets(String spatialZone) {
+        return this.SPATIAL_ZONES.get(spatialZone).getAllAssets();
     }
 
     /**
-     * Get all measures from a specific infrastructure in the knowledge graph.
+     * Get all measures from a specific spatial zone in the knowledge graph.
      *
-     * @param infrastructure The infrastructure to retrieve all assets.
+     * @param spatialZone The spatial zone to retrieve all assets.
      * @return A map linking all assets to their measures.
      */
-    protected Map<String, Queue<String[]>> getAllMeasures(String infrastructure) {
-        return this.INFRASTRUCTURES.get(infrastructure).getAllMeasures();
+    protected Map<String, Queue<String[]>> getAllMeasures(String spatialZone) {
+        return this.SPATIAL_ZONES.get(spatialZone).getAllMeasures();
     }
 
     /**
@@ -122,14 +122,14 @@ public class SparqlClient {
             measureName = ResponseHelper.removeUUID(measureName);
             String timeSeriesIri = qs.getResource("timeseries").toString();
             // Check if the facility already exists in the map
-            if (this.INFRASTRUCTURES.containsKey(facilityName)) {
+            if (this.SPATIAL_ZONES.containsKey(facilityName)) {
                 // If it does exist, add the asset to the existing facility object
-                Facility facility = this.INFRASTRUCTURES.get(facilityName);
+                Facility facility = this.SPATIAL_ZONES.get(facilityName);
                 facility.addAsset(assetName, assetType, measureName, measureIri, timeSeriesIri);
             } else {
                 // If it does not exist, initialise a new facility object and add it in
                 Facility facility = new Facility(assetName, assetType, measureName, measureIri, timeSeriesIri);
-                this.INFRASTRUCTURES.put(facilityName, facility);
+                this.SPATIAL_ZONES.put(facilityName, facility);
             }
         });
     }

@@ -71,21 +71,21 @@ public class StackClient {
     }
 
     /**
-     * Get all infrastructure within the knowledge graph.
+     * Get all spatial zones within the knowledge graph.
      *
-     * @return An array of all available infrastructure to monitor.
+     * @return An array of all available spatial zones to monitor.
      */
-    public String[] getAllInfrastructure() {
-        return this.SPARQL_CLIENT.getAllInfrastructure();
+    public String[] getAllSpatialZones() {
+        return this.SPARQL_CLIENT.getAllSpatialZones();
     }
 
     /**
-     * Get all assets from a specific infrastructure in the knowledge graph.
+     * Get all assets from a specific spatial zone in the knowledge graph.
      *
-     * @param infrastructure The infrastructure of interest.
-     * @return An array of all available assets within a specific infrastructure in the knowledge graph.
+     * @param spatialZone The spatial zone of interest.
+     * @return An array of all available assets within a specific spatial zone in the knowledge graph.
      */
-    public Map<String, List<String>> getAllAssets(String infrastructure) {return this.SPARQL_CLIENT.getAllAssets(infrastructure);}
+    public Map<String, List<String>> getAllAssets(String spatialZone) {return this.SPARQL_CLIENT.getAllAssets(spatialZone);}
 
     /**
      * Get the list of database names that is available in this stack.
