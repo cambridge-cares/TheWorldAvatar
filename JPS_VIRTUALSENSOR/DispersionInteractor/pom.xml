@@ -135,5 +135,12 @@
             <artifactId>postgresql</artifactId>
             <version>42.5.4</version>
         </dependency>
+
+        <!-- parse wkt literals from ontop -->
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-geosparql</artifactId>
+            <version>4.6.1</version>
+        </dependency>
 	</dependencies>	
 </project>

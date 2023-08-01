@@ -1,5 +1,7 @@
 package com.cmclinnovations.dispersion;
 
+import org.eclipse.rdf4j.model.vocabulary.GEO;
+import org.eclipse.rdf4j.model.vocabulary.GEOF;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
@@ -18,7 +20,10 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.locationtech.jts.geom.Polygon;
+import org.postgis.Geometry;
 import org.postgis.Point;
+import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
 
 import com.cmclinnovations.dispersion.sparqlbuilder.GeoSPARQL;
 import com.cmclinnovations.dispersion.sparqlbuilder.ServiceEndpoint;
@@ -38,8 +43,6 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
-import it.unibz.inf.ontop.model.vocabulary.GEO;
-import it.unibz.inf.ontop.model.vocabulary.GEOF;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -62,6 +65,7 @@ public class QueryClient {
     private TimeSeriesClient<Long> tsClient;
     private TimeSeriesClient<Instant> tsClientInstant;
     private RemoteRDBStoreClient remoteRDBStoreClient;
+    private String ontopUrl;
     private static final Logger LOGGER = LogManager.getLogger(QueryClient.class);
 
     static final String PREFIX = "https://www.theworldavatar.com/kg/ontodispersion/";
@@ -70,8 +74,8 @@ public class QueryClient {
             iri("http://www.ontology-of-units-of-measure.org/resource/om-2/"));
     public static final String ONTO_EMS = "https://www.theworldavatar.com/kg/ontoems/";
     public static final Prefix P_EMS = SparqlBuilder.prefix("ontoems", iri(ONTO_EMS));
-    private static final Prefix P_GEO = SparqlBuilder.prefix("geo", iri(GEO.PREFIX));
-    private static final Prefix P_GEOF = SparqlBuilder.prefix("geof", iri(GEOF.PREFIX));
+    private static final Prefix P_GEO = SparqlBuilder.prefix("geo", iri(GEO.NAMESPACE));
+    private static final Prefix P_GEOF = SparqlBuilder.prefix("geof", iri(GEOF.NAMESPACE));
 
     // classes
     private static final Iri MEASURE = P_OM.iri("Measure");
@@ -87,7 +91,6 @@ public class QueryClient {
     private static final Iri SHIPS_LAYER = P_DISP.iri("ShipsLayer");
     private static final Iri CITIES_NAMESPACE = P_DISP.iri("OntoCityGMLNamespace");
     private static final Iri AERMAP_OUTPUT = P_DISP.iri("AermapOutput");
-    private static final Iri GEOM = iri("http://www.opengis.net/ont/geosparql#Geometry");
 
     private static final Iri NO_X = P_DISP.iri("NOx");
     private static final Iri UHC = P_DISP.iri("uHC");
@@ -116,7 +119,6 @@ public class QueryClient {
     private static final Iri HAS_DISPERSION_RASTER = P_DISP.iri("hasDispersionRaster");
     private static final Iri HAS_POLLUTANT_ID = P_DISP.iri("hasPollutantID");
     private static final Iri AS_WKT = iri("http://www.opengis.net/ont/geosparql#asWKT");
-    private static final Iri OBSERVATION_LOCATION = P_EMS.iri("hasObservationLocation");
     private static final Iri REPORTS = P_EMS.iri("reports");
     private static final Iri HAS_UNIT = P_OM.iri("hasUnit");
 
@@ -136,6 +138,10 @@ public class QueryClient {
         this.derivationClient = new DerivationClient(storeClient, PREFIX);
         this.remoteRDBStoreClient = remoteRDBStoreClient;
         this.tsClient = tsClient;
+    }
+
+    public void setOntopUrl(String ontopUrl) {
+        this.ontopUrl = ontopUrl;
     }
 
     void initialiseAgent() {
@@ -561,13 +567,17 @@ public class QueryClient {
         Variable pollutantType = query.var();
         Variable pollutantLabel = query.var();
         Variable dispLayerVar = query.var();
+        Variable wktVar = query.var();
+
+        ServiceEndpoint ontopEndpoint = new ServiceEndpoint(ontopUrl);
 
         query.where(derivation.has(isDerivedFrom, scope), scope.isA(SCOPE).andHas(iri(RDFS.LABEL), scopelabelVar),
                 dispersionOutput.isA(DISPERSION_OUTPUT).andHas(belongsTo, derivation)
                         .andHas(HAS_DISPERSION_LAYER, dispLayerVar)
                         .andHas(PropertyPaths.path(HAS_POLLUTANT_ID, iri(RDF.TYPE)), pollutantType),
-                pollutantType.has(RDFS.LABEL, pollutantLabel))
-                .prefix(P_DISP);
+                pollutantType.has(RDFS.LABEL, pollutantLabel).optional(),
+                ontopEndpoint.service(scope.has(PropertyPaths.path(HAS_GEOMETRY, iri(GEO.AS_WKT)), wktVar)))
+                .prefix(P_DISP, P_GEO);
 
         Map<String, DispersionSimulation> iriToDispSimMap = new HashMap<>();
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
@@ -579,12 +589,27 @@ public class QueryClient {
 
             String scopeLabel = queryResult.getJSONObject(i).getString(scopelabelVar.getQueryString().substring(1));
             String pol = queryResult.getJSONObject(i).getString(pollutantType.getQueryString().substring(1));
-            String polLabel = queryResult.getJSONObject(i).getString(pollutantLabel.getQueryString().substring(1));
             String dispLayer = queryResult.getJSONObject(i).getString(dispLayerVar.getQueryString().substring(1));
 
             DispersionSimulation dispersionSimulation = iriToDispSimMap.get(derivationIri);
             dispersionSimulation.setScopeLabel(scopeLabel);
+
+            // if pollutant type does not have the label attached (requires uploading of
+            // tbox, use IRI as the user facing label)
+            String polLabel;
+            if (queryResult.getJSONObject(i).has(pollutantLabel.getQueryString().substring(1))) {
+                polLabel = queryResult.getJSONObject(i).getString(pollutantLabel.getQueryString().substring(1));
+            } else {
+                polLabel = pol;
+            }
+
             dispersionSimulation.setPollutantLabelAndDispLayer(pol, polLabel, dispLayer);
+
+            String wktLiteral = queryResult.getJSONObject(0).getString(wktVar.getQueryString().substring(1));
+            org.locationtech.jts.geom.Geometry scopePolygon = WKTReader.extract(wktLiteral).getGeometry();
+            scopePolygon.setSRID(4326);
+
+            dispersionSimulation.setScopePolygon((Polygon) scopePolygon);
         }
 
         return new ArrayList<>(iriToDispSimMap.values());
@@ -595,31 +620,70 @@ public class QueryClient {
      * 
      * @param dispersionSimulations
      */
-    public void removeNonExistentPollutants(List<DispersionSimulation> dispersionSimulations, Connection conn) {
+    public void removeNonExistentPollutantsAndSetSimTimes(List<DispersionSimulation> dispersionSimulations,
+            Connection conn) {
         dispersionSimulations.forEach(dispersionSimulation -> {
             List<String> pollutants = dispersionSimulation.getPollutants();
             List<String> dispersionLayers = pollutants.stream().map(dispersionSimulation::getDispersionLayer)
                     .collect(Collectors.toList());
 
-            long latestTime = tsClient.getMaxTime(dispersionLayers.get(0), conn);
-            TimeSeries<Long> latestTimeSeries = tsClient.getTimeSeriesWithinBounds(dispersionLayers, latestTime,
-                    latestTime, conn);
+            Long latestTime = tsClient.getMaxTime(dispersionLayers.get(0), conn);
 
             pollutants.forEach(pollutant -> {
                 String dispersionLayer = dispersionSimulation.getDispersionLayer(pollutant);
-                if (latestTimeSeries.getValues(dispersionLayer).get(0) == null) {
+                if (latestTime == null) {
                     dispersionSimulation.removePollutant(pollutant);
+                } else {
+                    TimeSeries<Long> latestTimeSeries = tsClient.getTimeSeriesWithinBounds(dispersionLayers, latestTime,
+                            latestTime, conn);
+                    if (latestTimeSeries.getValues(dispersionLayer).get(0) == null) {
+                        dispersionSimulation.removePollutant(pollutant);
+                    }
                 }
             });
+
+            // set timesteps
+            List<Long> simulationTimes;
+            if (latestTime != null) {
+                String dispersionLayer = dispersionSimulation
+                        .getDispersionLayer(dispersionSimulation.getPollutants().get(0));
+                simulationTimes = tsClient.getTimeSeries(List.of(dispersionLayer), conn).getTimes();
+            } else {
+                simulationTimes = new ArrayList<>();
+            }
+
+            dispersionSimulation.setTimesteps(simulationTimes);
         });
     }
 
-    public void setSimulationTimes(List<DispersionSimulation> dispersionSimulations, Connection conn) {
-        dispersionSimulations.forEach(dispersionSimulation -> {
-            String dispersionLayer = dispersionSimulation
-                    .getDispersionLayer(dispersionSimulation.getPollutants().get(0));
-            List<Long> simulationTimes = tsClient.getTimeSeries(List.of(dispersionLayer), conn).getTimes();
-            dispersionSimulation.setTimesteps(simulationTimes);
-        });
+    public String getDispersionLayer(String pollutant, long timeStep, String derivation) {
+        Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
+
+        SelectQuery query = Queries.SELECT();
+
+        Variable pollutantIri = query.var();
+        Variable dispOutput = query.var();
+        Variable dispLayer = query.var();
+
+        query.where(dispOutput.has(belongsTo, iri(derivation)),
+                dispOutput.isA(DISPERSION_OUTPUT).andHas(HAS_POLLUTANT_ID, pollutantIri).andHas(HAS_DISPERSION_LAYER,
+                        dispLayer),
+                pollutantIri.isA(iri(pollutant))).select(dispLayer).prefix(P_DISP);
+
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        String dispLayerIri = queryResult.getJSONObject(0).getString(dispLayer.getQueryString().substring(1));
+
+        String dispLayerName = null;
+
+        try (Connection conn = remoteRDBStoreClient.getConnection()) {
+            dispLayerName = tsClient.getTimeSeriesWithinBounds(List.of(dispLayerIri), timeStep, timeStep,
+                    conn).getValuesAsString(dispLayerIri).get(0);
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Closing connection failed when retrieving the dispersion layer name");
+        }
+
+        return dispLayerName;
     }
 }

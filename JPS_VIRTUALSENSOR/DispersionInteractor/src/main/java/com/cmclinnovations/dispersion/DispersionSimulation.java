@@ -7,13 +7,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
 
 public class DispersionSimulation {
     private String label;
     private String derivationIri;
     private Map<String, String> pollutantIriToLabelMap;
     private Map<String, String> pollutantIriToDispLayerMap;
+    private Polygon scopePolygon;
 
     private List<Instant> timesteps;
 
@@ -28,7 +32,9 @@ public class DispersionSimulation {
     }
 
     public void setTimesteps(List<Long> timesteps) {
-        this.timesteps = timesteps.stream().map(Instant::ofEpochSecond).collect(Collectors.toList());
+        if (!timesteps.isEmpty()) {
+            this.timesteps = timesteps.stream().map(Instant::ofEpochSecond).collect(Collectors.toList());
+        }
     }
 
     public List<Instant> getTimesteps() {
@@ -67,6 +73,17 @@ public class DispersionSimulation {
         json.put("pollutants", pollutantIriToLabelMap);
         json.put("derivationIri", derivationIri);
 
+        Point centroid = scopePolygon.getCentroid();
+        JSONArray centroidJson = new JSONArray();
+        centroidJson.put(centroid.getX());
+        centroidJson.put(centroid.getY());
+
+        json.put("centroid", centroidJson);
+
         return json;
+    }
+
+    public void setScopePolygon(Polygon scopePolygon) {
+        this.scopePolygon = scopePolygon;
     }
 }

@@ -36,8 +36,7 @@ public class GetDispersionSimulations extends HttpServlet {
 
         List<DispersionSimulation> dispersionSimulations = queryClient.getDispersionSimulations();
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            queryClient.removeNonExistentPollutants(dispersionSimulations, conn);
-            queryClient.setSimulationTimes(dispersionSimulations, conn);
+            queryClient.removeNonExistentPollutantsAndSetSimTimes(dispersionSimulations, conn);
         } catch (SQLException e) {
             String errmsg = "Probably error in closing connection while getting dispersion outputs";
             LOGGER.error(e.getMessage());
@@ -58,7 +57,6 @@ public class GetDispersionSimulations extends HttpServlet {
             LOGGER.error(e.getMessage());
             LOGGER.error("Failed to create JSON object for HTTP response");
         }
-
     }
 
     @Override
@@ -71,5 +69,6 @@ public class GetDispersionSimulations extends HttpServlet {
         TimeSeriesClient<Instant> tsClientInstant = new TimeSeriesClient<>(storeClient,
                 Instant.class);
         queryClient = new QueryClient(storeClient, remoteRDBStoreClient, tsClient, tsClientInstant);
+        queryClient.setOntopUrl(endpointConfig.getOntopUrl());
     }
 }
