@@ -107,6 +107,9 @@
                 </div>
             </div>
 
+            <!-- dropdown selections -->
+            <div id="selectionsContainer"></div>
+
             <!-- Container for developer info -->
             <div id="developerContainer" class="controlBlock" style="display: none;">
                 <div class="tooltip" id="coordEditor" style="float: right;">
@@ -201,7 +204,10 @@
         var dataPromise = manager.loadDefinitions();
         dataPromise.then(() => start());
 
-        var dispersionHandler = new DispersionHandler("http://localhost:3838");
+        var dispersionHandler = new DispersionHandler("http://localhost:3838", manager);
+        if (dispersionHandler.selectedScenario == null) {
+            dispersionHandler.showSelector();
+        }
 
         /**
          * Starts the visualisation setup process.
@@ -250,6 +256,7 @@
 
                     // Plot the default visible data
                     manager.plotData();
+                    dispersionHandler.changeOther(false);
                 });
             });
         }
