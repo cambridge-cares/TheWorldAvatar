@@ -79,11 +79,12 @@ public class DataIntegrationAgent extends JPSAgent {
             // jsonMessage = sqlRoute(config);
             SpatialLink spatialLink = new SpatialLink();
             spatialLink.SpatialLink(config);
-        }else if(requestParams.equals("footprint")){
+        }else if(requestParams.equals("footprint")||requestParams.equals("roofprint")){
             FootPrint footprint = new FootPrint();
-            footprint.proFootPrint(config, thematicParams);
+            footprint.proFootPrint(config, thematicParams, requestParams);
         }else if(requestParams.equals("height")){
-
+            GetHeight height = new GetHeight();
+            height.preCalculation(config);
         }
         return jsonMessage;
     }
