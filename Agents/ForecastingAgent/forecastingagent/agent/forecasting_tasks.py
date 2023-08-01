@@ -25,7 +25,7 @@ from forecastingagent.utils.tools import *
 from forecastingagent.utils.env_configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, \
                                               DB_URL, DB_USER, DB_PASSWORD
 from forecastingagent.datamodel.iris import *
-from forecastingagent.datamodel.data_mapping import *
+from forecastingagent.agent.forcasting_config import *
 from forecastingagent.kgutils.kgclient import KGClient
 from forecastingagent.kgutils.tsclient import TSClient
 from forecastingagent.errorhandling.exceptions import KGException

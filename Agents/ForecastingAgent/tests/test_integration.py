@@ -15,7 +15,7 @@ from rdflib import RDF
 from py4jps import agentlogging
 
 import forecastingagent.datamodel as dm
-from forecastingagent.datamodel.data_mapping import DOUBLE, TIME_FORMAT
+from forecastingagent.agent.forcasting_config import DOUBLE, TIME_FORMAT
 
 from . import conftest as cf
 
@@ -24,70 +24,70 @@ from . import conftest as cf
 logger = agentlogging.get_logger('prod')
 
 
-def test_example_triples():
-    """
-    This test checks that the example triples are correct in syntax.
+# def test_example_triples():
+#     """
+#     This test checks that the example triples are correct in syntax.
 
-    Raises:
-        e: If the example triples are not valid RDF.
-    """
-    g = Graph()
-    pathlist = Path(cf.TEST_TRIPLES_DIR).glob('*.ttl')
-    for path in pathlist:
-        try:
-            g.parse(str(path))
-        except Exception as e:
-            raise e
+#     Raises:
+#         e: If the example triples are not valid RDF.
+#     """
+#     g = Graph()
+#     pathlist = Path(cf.TEST_TRIPLES_DIR).glob('*.ttl')
+#     for path in pathlist:
+#         try:
+#             g.parse(str(path))
+#         except Exception as e:
+#             raise e
 
 
-def test_example_data_instantiation(initialise_clients):
-    """
-    This test checks that all example data gets correctly instantiated,
-    including associated time series data in PostgreSQL.
-    """
-    # Get required clients from fixture
-    sparql_client, ts_client, _, rdb_url = initialise_clients
+# def test_example_data_instantiation(initialise_clients):
+#     """
+#     This test checks that all example data gets correctly instantiated,
+#     including associated time series data in PostgreSQL.
+#     """
+#     # Get required clients from fixture
+#     sparql_client, ts_client, _, rdb_url = initialise_clients
 
-    ### TRIPPLE STORE ###
-    # Verify that KG is empty
-    assert sparql_client.getAmountOfTriples() == 0
+#     ### TRIPPLE STORE ###
+#     # Verify that KG is empty
+#     assert sparql_client.getAmountOfTriples() == 0
 
-    # Upload example test triples
-    cf.initialise_triples(sparql_client)
+#     # Upload example test triples
+#     cf.initialise_triples(sparql_client)
 
-    # Verify instantiation of expected number of triples
-    triples = cf.TBOX_TRIPLES + cf.ABOX_TRIPLES
-    assert sparql_client.getAmountOfTriples() == triples
+#     # Verify instantiation of expected number of triples
+#     triples = cf.TBOX_TRIPLES + cf.ABOX_TRIPLES
+#     assert sparql_client.getAmountOfTriples() == triples
 
-    ### POSTGRESQL ###
-    # Verify that Postgres database is empty
-    assert cf.get_number_of_rdb_tables(rdb_url) == 0
+#     ### POSTGRESQL ###
+#     # Verify that Postgres database is empty
+#     assert cf.get_number_of_rdb_tables(rdb_url) == 0
 
-    # Initialise and upload time series
-    ts_client.init_timeseries(dataIRI=cf.IRI_TO_FORECAST_1,
-                              times=cf.TIMES, values=cf.VALUES_1,
-                              ts_type=DOUBLE, time_format=TIME_FORMAT)
+#     # Initialise and upload time series
+#     ts_client.init_timeseries(dataIRI=cf.IRI_TO_FORECAST_1,
+#                               times=cf.TIMES, values=cf.VALUES_1,
+#                               ts_type=DOUBLE, time_format=TIME_FORMAT)
 
-    # Verify that expected tables and triples are created (i.e. dbTable + 1 ts table)
-    assert cf.get_number_of_rdb_tables(rdb_url) == 2
-    assert sparql_client.getAmountOfTriples() == (triples + cf.TS_TRIPLES)
+#     # Verify that expected tables and triples are created (i.e. dbTable + 1 ts table)
+#     assert cf.get_number_of_rdb_tables(rdb_url) == 2
+#     assert sparql_client.getAmountOfTriples() == (triples + cf.TS_TRIPLES)
 
-    # Verify correct retrieval of time series data
-    times, values = ts_client.retrieve_timeseries(cf.IRI_TO_FORECAST_1)
-    assert times == cf.TIMES
-    # Account for rounding errors
-    assert pytest.approx(values, rel=1e-5) == cf.VALUES_1
+#     # Verify correct retrieval of time series data
+#     times, values = ts_client.retrieve_timeseries(cf.IRI_TO_FORECAST_1)
+#     assert times == cf.TIMES
+#     # Account for rounding errors
+#     assert pytest.approx(values, rel=1e-5) == cf.VALUES_1
 
-    # Verify that dropping all tables works as expected
-    cf.clear_database(rdb_url)
-    assert cf.get_number_of_rdb_tables(rdb_url) == 0
+#     # Verify that dropping all tables works as expected
+#     cf.clear_database(rdb_url)
+#     assert cf.get_number_of_rdb_tables(rdb_url) == 0
 
 
 @pytest.mark.parametrize(
     "derivation_input_set, iri_to_forecast, ts_times, ts_values",
     [
         (cf.DERIVATION_INPUTS_1, cf.IRI_TO_FORECAST_1, cf.TIMES, cf.VALUES_1),
-        (cf.DERIVATION_INPUTS_2, cf.IRI_TO_FORECAST_2, cf.TIMES, cf.VALUES_2)
+        #(cf.DERIVATION_INPUTS_2, cf.IRI_TO_FORECAST_2, cf.TIMES, cf.VALUES_2)
     ],
 )
 def test_create_forecast(

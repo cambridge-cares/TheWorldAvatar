@@ -12,11 +12,11 @@ from py4jps import agentlogging
 
 from forecastingagent.errorhandling.exceptions import TSException
 from forecastingagent.utils.baselib_gateway import jpsBaseLibGW
-from forecastingagent.datamodel.data_mapping import INSTANT
 from forecastingagent.utils.env_configs import DB_URL, DB_USER, DB_PASSWORD
 
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
+
 
 class TSClient:
 
@@ -24,6 +24,11 @@ class TSClient:
     jpsBaseLibView = jpsBaseLibGW.createModuleView()
     jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.query.*")
     jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
+
+    # Date/Time data type: Instant
+    # PostgreSQL supported data types: https://www.jooq.org/javadoc/dev/org.jooq/org/jooq/impl/SQLDataType.html
+    Instant = jpsBaseLibView.java.time.Instant
+    INSTANT = Instant.now().getClass()
 
     def __init__(self, kg_client, timeclass=INSTANT, rdb_url=DB_URL, 
                  rdb_user=DB_USER, rdb_password=DB_PASSWORD):

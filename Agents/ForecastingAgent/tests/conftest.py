@@ -27,7 +27,7 @@ from pyderivationagent.data_model.iris import ONTODERIVATION_DERIVATIONWITHTIMES
 
 from forecastingagent.agent import ForecastingAgent
 from forecastingagent.datamodel.iris import *
-from forecastingagent.datamodel.data_mapping import *
+from forecastingagent.agent.forcasting_config import *
 from forecastingagent.utils.tools import *
 from forecastingagent.kgutils.kgclient import KGClient
 from forecastingagent.kgutils.tsclient import TSClient

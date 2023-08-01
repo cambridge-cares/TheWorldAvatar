@@ -14,11 +14,11 @@ from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
 from pyderivationagent import DerivationOutputs
 
+from forecastingagent.agent.forcasting_config import *
 from forecastingagent.datamodel.iris import *
 from forecastingagent.errorhandling.exceptions import TSException
 from forecastingagent.kgutils.kgclient import KGClient
 #from forecastingagent.kg_operations.tsclient import TSClient
-#from forecastingagent.datamodel.data_mapping import TIME_FORMAT_LONG, TIME_FORMAT_SHORT
 
 
 class ForecastingAgent(DerivationAgent):
@@ -172,8 +172,11 @@ class ForecastingAgent(DerivationAgent):
         data_hist = self.sparql_client.get_duration_details(input_iris[TIME_DURATION])
 
         # Create forecasting configuration dict
+        cfg = create_forecast_configuration(model=fcmodel, frequency=frequency, 
+                                            duration=data_hist)
 
         # Create forecast
+        
 
         # Instantiate forecast in KG
         

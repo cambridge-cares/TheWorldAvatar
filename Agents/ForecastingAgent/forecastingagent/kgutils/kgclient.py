@@ -225,8 +225,8 @@ class KGClient(PySparqlClient):
             return res_list[0]
         else:
             if len(res_list) == 0:
-                msg = f"No unique value found for key: {key}."
+                msg = f"No value found for key: {key}."
             else:
-                msg = f"Multiple unique values found for key: {key}."
+                msg = f"Multiple values found for key: {key}."
             logger.warning(msg)
             return None
