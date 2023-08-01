@@ -234,10 +234,12 @@ public class CityDBClient extends ContainerClient {
         handleErrors(errorStream, execId, logger);
     }
 
-    public void populateCityDBbySQL(String database) {
+    public void populateCityDBbySQL(String database, String lineage, double minArea) {
         String sqlFilename = "citydb_populate_citydb.sql";
         try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
-            String sqlQuery = new String(is.readAllBytes());
+            String sqlQuery = new String(is.readAllBytes())
+                .replace("{minArea}", String.valueOf(minArea));
+            sqlQuery = sqlQuery.replace("{lineage}", lineage);
             PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
         } catch (IOException ex) {
             throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);

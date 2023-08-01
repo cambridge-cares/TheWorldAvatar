@@ -1,18 +1,17 @@
 package com.cmclinnovations.stack.clients.core.datasets;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
-import com.cmclinnovations.stack.clients.postgis.PostGISClient;
+
 import com.cmclinnovations.stack.clients.citydb.CityDBClient;
 import com.cmclinnovations.stack.clients.citydb.CityTilerClient;
 import com.cmclinnovations.stack.clients.citydb.CityTilerOptions;
 import com.cmclinnovations.stack.clients.citydb.ImpExpOptions;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.GSVirtualTableEncoder;
@@ -28,6 +27,11 @@ public class XtoCityDB extends PostgresDataSubset {
     @JsonProperty
     private GeoServerVectorSettings geoServerSettings = new GeoServerVectorSettings();
 
+    @JsonIgnore
+    private String lineage;
+
+    @JsonProperty
+    private double minArea = 0.;
     @Override
     public boolean usesGeoServer() {
         return !isSkip();
@@ -43,11 +47,12 @@ public class XtoCityDB extends PostgresDataSubset {
 
     @Override
     public void loadData(Path dataSubsetDir, String database, String baseIRI) {
+        lineage = dataSubsetDir.toString();
         GDALClient.getInstance()
                 .uploadVectorFilesToPostGIS(database, getTable(), dataSubsetDir.toString(), ogr2ogrOptions, false);
         CityDBClient.getInstance()
                 .updateDatabase(database,importOptions.getSridIn());
-        CityDBClient.getInstance().populateCityDBbySQL(database);
+        CityDBClient.getInstance().populateCityDBbySQL(database,lineage,minArea);
     }
 
     public void createLayer(String database) {

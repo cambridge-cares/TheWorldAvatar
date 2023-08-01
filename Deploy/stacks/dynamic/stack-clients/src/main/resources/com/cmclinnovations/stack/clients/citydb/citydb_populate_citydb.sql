@@ -1,17 +1,17 @@
 SET search_path TO public,citydb;
 create table "public"."raw_building" AS
 (SELECT "os_topo_toid", 'building_' || gen_random_uuid() AS "gmlid", box2envelope(Box3D(ST_Translate(ST_Extrude("polygon",0,0,"relh2"),0,0,"abshmin"))) AS "envelope", ST_Translate(ST_Extrude("polygon",0,0,"relh2"),0,0,"abshmin") AS "geom", "relh2" AS "mh"
-FROM "public"."raw_data" WHERE ST_Area("polygon")>1000);
+FROM "public"."raw_data" WHERE ST_Area("polygon")>{minArea} AND "relh2" IS NOT NULL);
 create table "public"."raw_surface" AS
 (SELECT "building_gmlid", 'surface_' || gen_random_uuid() AS "gmlid", "class", "geom", box2envelope(Box3D("geom")) AS "envelope" FROM
 (SELECT "building_gmlid", "geom",
     CASE WHEN ST_Zmin("geom")=ST_Zmax("geom") THEN
         CASE WHEN ST_Zmin("geom")="bzl" THEN 35 ELSE 33 END
     ELSE 34 END AS "class" FROM
-(SELECT "gmlid" AS "building_gmlid", ST_Zmin("geom") AS "bzl", (ST_Dump(public.ST_CollectionExtract("geom"))).geom AS "geom"
+(SELECT "gmlid" AS "building_gmlid", ST_Zmin("geom") AS "bzl", (ST_Dump(ST_CollectionExtract("geom"))).geom AS "geom"
 FROM "public"."raw_building") AS "table1") AS "table2");
-INSERT INTO "citydb"."cityobject" ("objectclass_id","gmlid","envelope","creation_date","last_modification_date","updating_person")
-SELECT 26,"gmlid", "envelope", CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,user
+INSERT INTO "citydb"."cityobject" ("objectclass_id","gmlid","envelope","creation_date","last_modification_date","updating_person","lineage")
+SELECT 26,"gmlid", "envelope", CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,user, '{lineage}'
 FROM "public"."raw_building";
 INSERT INTO "citydb"."building" ("id","objectclass_id","building_root_id","measured_height","measured_height_unit")
 SELECT "citydb"."cityobject"."id",26,"citydb"."cityobject"."id","public"."raw_building"."mh", '#m'
