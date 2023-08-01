@@ -17,6 +17,7 @@ import java.time.Duration;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 
 /**
  * The public client for other classes to interface and interact with the knowledge graph and the stack to retrieve the necessary information.
@@ -106,6 +107,17 @@ public class StackClient {
         return credentials;
     }
 
+    /**
+     * Get the metadata of time series so that they can be populated within the dashboard.
+     *
+     * @param spatialZone The specific spatial zone to retrieve time series data.
+     * @return A map with each measure name as key and their corresponding metadata and asset name. Position 0 - measure name; Position 1 - asset name; Position 2 - column name; Position 3 - table name.
+     */
+    public Map<String, List<String[]>> getTimeSeriesMetadata(String spatialZone) {
+        LOGGER.debug("Retrieving the time series metadata from PostGIS...");
+        Map<String, Queue<String[]>> measures = this.SPARQL_CLIENT.getAllMeasures(spatialZone);
+        return this.POSTGIS_CLIENT.getMeasureColAndTableName(measures);
+    }
 
     /**
      * Get the dashboard service within this stack.
