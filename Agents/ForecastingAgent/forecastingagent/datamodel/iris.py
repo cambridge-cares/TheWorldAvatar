@@ -38,6 +38,7 @@ TS_HASCOVARIATE = TS + "hasCovariate"
 TS_HASFORECASTINGMODEL = TS + "hasForecastingModel"
 TS_HASTRAININGTIMESERIES = TS + "hasTrainingTimeSeries"
 TS_FREQUENCY = TS + 'Frequency'
+TS_RESAMPLE_DATA = TS + 'resampleData'
 
 ### Time ###
 TIME_INTERVAL = TIME + 'Interval'

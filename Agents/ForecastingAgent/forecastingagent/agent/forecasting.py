@@ -164,12 +164,12 @@ class ForecastingAgent(DerivationAgent):
         # 1) Time series data to forecast (incl. ts RDB link and format)
         ts = self.sparql_client.get_time_series_details(input_iris['iri_to_forecast'])
         # 2) Forecasting model
-        input_iris[TS_FORECASTINGMODEL]
+        fcmodel = self.sparql_client.get_fcmodel_details(input_iris[TS_FORECASTINGMODEL])
         # 3) Forecast interval and frequency
-        input_iris[TIME_INTERVAL]
-        input_iris[TS_FREQUENCY]
+        interval = self.sparql_client.get_interval_details(input_iris[TIME_INTERVAL])
+        frequency = self.sparql_client.get_duration_details(input_iris[TS_FREQUENCY])
         # 4) Data length for training and data scaling
-        input_iris[TIME_DURATION]
+        data_hist = self.sparql_client.get_duration_details(input_iris[TIME_DURATION])
 
         # Create forecasting configuration dict
 

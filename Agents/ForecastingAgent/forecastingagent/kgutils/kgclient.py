@@ -6,6 +6,8 @@
 # The purpose of this module is to provide functionality to execute
 # KG queries and updates using the StoreRouter from the JPS_BASE_LIB
 
+from distutils.util import strtobool
+
 from py4jps import agentlogging
 
 from pyderivationagent.kg_operations import PySparqlClient
@@ -65,16 +67,17 @@ class KGClient(PySparqlClient):
         Returns relevant forecasting model details for given forecasting model IRI.
 
         Returns:
-            fcmodel (dict) -- dictionary with keys 'ts_iri', 'rdb_url' and 'time_format'
+            fcmodel (dict) -- dictionary with keys 'fcmodel_iri', 'label', 'scale_data',
+                              'model_url', 'chkpt_url' and 'covariate_iris'
         """
         query = f"""
-            SELECT ?fcmodel_iri ?label ?scale_data ?model_url ?chkpt_url ?covariate_iri
+            SELECT DISTINCT ?fcmodel_iri ?label ?scale_data ?model_url ?chkpt_url ?covariate_iri
             WHERE {{   
-            VALUES ?fcmodel_iri {{ {fcmodelIRI} }} 
+            VALUES ?fcmodel_iri {{ <{fcmodelIRI}> }} 
             ?fcmodel_iri <{RDFS_LABEL}> ?label .
             OPTIONAL {{ ?fcmodel_iri <{TS_SCALE_DATA}> ?scale_data . }}
-            OPTIONAL {{ ?fcmodel_iri <{TS_HAS_MODEL_URL}> ?model_url . }}
-            OPTIONAL {{ ?fcmodel_iri <{TS_HAS_CHKPT_URL}> ?chkpt_url . }}
+            OPTIONAL {{ ?fcmodel_iri <{TS_HAS_MODEL_URL}> ?model_url ;
+                                     <{TS_HAS_CHKPT_URL}> ?chkpt_url . }}
             OPTIONAL {{ ?fcmodel_iri <{TS_HASCOVARIATE}> ?covariate_iri . }}
             }}
         """
@@ -85,20 +88,106 @@ class KGClient(PySparqlClient):
         if len(res) >= 1:
             fcmodel = {'fcmodel_iri': self.get_unique_value(res, 'fcmodel_iri'),
                        'label': self.get_unique_value(res, 'label'),
-                       'scale_data': self.get_unique_value(res, 'scale_data'),
+                       'scale_data': self.get_unique_value(res, 'scale_data', bool),
                        'model_url': self.get_unique_value(res, 'model_url'),
                        'chkpt_url': self.get_unique_value(res, 'chkpt_url'),
-                       'covariate_iri': self.get_list_of_unique_values(res, 'covariate_iri')
+                       'covariate_iris': self.get_list_of_unique_values(res, 'covariate_iri')
             }
             return fcmodel
         
         else:
-            msg = "No forecasting model could be retrieved."
+            msg = "No forecasting model details could be retrieved from KG."
+            logger.error(msg)
+            raise ValueError(msg)
+    
+
+    def get_duration_details(self, durationIRI:str):
+        """
+        Returns relevant duration details (i.e., time value and unit) for given 
+        duration or frequency (i.e., a subclass of time:duration) IRI.
+
+        Returns:
+            duration (dict) -- dictionary with keys 'iri', 'unit', 'value', 
+                               and 'resample_data' (only relevant for frequency)
+        """
+        query = f"""
+            SELECT DISTINCT ?iri ?resample_data ?unit ?value
+            WHERE {{   
+            VALUES ?iri {{ <{durationIRI}> }} 
+            ?iri <{TIME_UNIT_TYPE}> ?unit ;
+                 <{TIME_NUMERICDURATION}> ?value .
+            OPTIONAL {{ ?iri <{TS_RESAMPLE_DATA}> ?resample_data . }}
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Extract relevant information from unique query result
+        if len(res) == 1:
+            duration = {'iri': self.get_unique_value(res, 'iri'),
+                        'unit': self.get_unique_value(res, 'unit'),
+                        'value': self.get_unique_value(res, 'value', float),
+                        'resample_data': self.get_unique_value(res, 'resample_data', bool)
+            }
+            return duration
+        
+        else:
+            msg = "No unique duration/frequency details could be retrieved from KG."
             logger.error(msg)
             raise ValueError(msg)
         
 
+    def get_interval_details(self, intervalIRI:str):
+        """
+        Returns relevant time interval (i.e. forecast horizon) details for 
+        given time interval IRI.
+
+        Returns:
+            interval (dict) -- dictionary with keys 'interval_iri', 'start_iri',
+                               'end_iri', 'start_unix' and 'end_unix'
+        """
+
+        def _get_instant_details(var_instant, var_timepos):
+            query = f"""
+                VALUES ?trs {{ <{UNIX_TIME}> }} 
+                ?{var_instant} <{TIME_INTIMEPOSITION}>/<{TIME_HASTRS}> ?trs ;
+                            <{TIME_INTIMEPOSITION}>/<{TIME_NUMERICPOSITION}> ?{var_timepos} . 
+            """
+            return query
+
+        query = f"""
+            SELECT DISTINCT ?interval_iri ?start_iri ?end_iri ?start_unix ?end_unix
+            WHERE {{
+            VALUES ?interval_iri {{ <{intervalIRI}> }} 
+            ?interval_iri <{TIME_HASBEGINNING}> ?start_iri ;
+                          <{TIME_HASEND}> ?end_iri .
+            {_get_instant_details('start_iri', 'start_unix')} 
+            {_get_instant_details('end_iri', 'end_unix')}        
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Extract relevant information from unique query result
+        if len(res) == 1:
+            interval = {'interval_iri': self.get_unique_value(res, 'interval_iri'),
+                        'start_iri': self.get_unique_value(res, 'start_iri'),
+                        'end_iri': self.get_unique_value(res, 'end_iri'),
+                        'start_unix': self.get_unique_value(res, 'start_unix', int),
+                        'end_unix': self.get_unique_value(res, 'end_unix', int),
+            }
+            # Check validity of retrieved interval
+            if interval['start_unix'] >= interval['end_unix']:
+                msg = "Interval start time is not before end time."
+                logger.error(msg)
+                raise ValueError(msg)
+
+            return interval
         
+        else:
+            msg = "No unique interval details could be retrieved from KG."
+            logger.error(msg)
+            raise ValueError(msg)
 
 
     #
@@ -122,12 +211,17 @@ class KGClient(PySparqlClient):
         res_list = [v for v in res_list if v is not None]
         return res_list
     
-    def get_unique_value(self, res: list, key: str) -> str:
+    def get_unique_value(self, res: list, key: str, cast_to=None) -> str:
         # Unpacks a query result list (i.e., list of dicts) into unique 
         # value for the given key (returns None if no unique value is found)
         
         res_list =  self.get_list_of_unique_values(res, key)
         if len(res_list) == 1:
+            # Try to cast retrieved value to target type (throws error if not possible)
+            if cast_to and issubclass(cast_to, bool):
+                res_list[0] = bool(strtobool(res_list[0]))
+            elif cast_to and issubclass(cast_to, (int, float)):
+                res_list[0] = cast_to(res_list[0])
             return res_list[0]
         else:
             if len(res_list) == 0:
