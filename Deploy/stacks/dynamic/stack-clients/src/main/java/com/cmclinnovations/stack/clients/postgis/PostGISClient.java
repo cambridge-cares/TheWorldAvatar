@@ -120,8 +120,10 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
         }
         List<Path> osmFilesList = allFilesList.stream().filter(file -> FileUtils.hasFileExtension(file, "osm"))
                 .collect(Collectors.toList());
-        if (osmFilesList.isEmpty()) {
-            throw new RuntimeException("No osm file in routing data directory '" + sourceDirectory + "'.");
+        List<Path> pbfFilesList = allFilesList.stream().filter(file -> FileUtils.hasFileExtension(file, "pbf"))
+                .collect(Collectors.toList());
+        if (osmFilesList.isEmpty() && pbfFilesList.isEmpty()) {
+            throw new RuntimeException("No osm or pbf file in routing data directory '" + sourceDirectory + "'.");
         }
         List<Path> configsList = allFilesList.stream().filter(file -> FileUtils.hasFileExtension(file, "xml"))
                 .collect(Collectors.toList());
@@ -133,26 +135,55 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
             throw new RuntimeException(
                     "No xml config files found in routing data directory '" + sourceDirectory + "'.");
         }
-        uploadRoutingFilesToPostGIS(database, configsList.get(0), osmFilesList, tablePrefix, options, append);
+        uploadRoutingFilesToPostGIS(database, configsList.get(0), osmFilesList, pbfFilesList, tablePrefix, options,
+                append);
+    }
+
+    private void convertPBF2OSM(String pbfFileName, String osmFileName, String containerId) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        String execId = createComplexCommand(containerId, "bash", "-c", "-x",
+                "which osmconvert || (apt-get update && apt-get install -y osmctools && rm -rf /var/lib/apt/lists/*) && osmconvert "
+                        + pbfFileName + " --drop-author --drop-version --out-osm -o=" + osmFileName)
+                .withOutputStream(outputStream)
+                .withErrorStream(outputStream)
+                .withEvaluationTimeout(300)
+                .exec();
+
+        handleErrors(outputStream, execId, logger);
     }
 
     public void uploadRoutingFilesToPostGIS(String database, Path configFilePath, List<Path> osmFilesList,
-            String tablePrefix, Options options, boolean append) {
+            List<Path> pbfFilesList, String tablePrefix, Options options, boolean append) {
         try (TempDir tmpDir = makeLocalTempDir()) {
             tmpDir.copyFrom(configFilePath);
             osmFilesList.stream().forEach(tmpDir::copyFrom);
-            osmFilesList.stream().findFirst().ifPresent(
-                    osmFile -> uploadRoutingToPostGIS(database, tmpDir.getPath().resolve(osmFile.getFileName()),
-                            tmpDir.getPath().resolve(configFilePath.getFileName()), tablePrefix, options, append));
-            osmFilesList.stream().skip(1).forEach(
-                    osmFile -> uploadRoutingToPostGIS(database, tmpDir.getPath().resolve(osmFile.getFileName()),
-                            tmpDir.getPath().resolve(configFilePath.getFileName()), tablePrefix, options, true));
+            pbfFilesList.stream().forEach(tmpDir::copyFrom);
+
+            Path tempConfigFilePath = tmpDir.getPath().resolve(configFilePath.getFileName());
+            List<Path> tempOSMFilesList = osmFilesList.stream().map(f -> tmpDir.getPath().resolve(f.getFileName()))
+                    .collect(Collectors.toList());
+            List<Path> tempPBFFilesList = pbfFilesList.stream().map(f -> tmpDir.getPath().resolve(f.getFileName()))
+                    .collect(Collectors.toList());
+
+            tempPBFFilesList.stream().forEach(f -> {
+                String osmFileName = f.toString().substring(0, f.toString().lastIndexOf('.'));
+                if (!osmFileName.endsWith(".osm")) {
+                    osmFileName = osmFileName + ".osm";
+                }
+                convertPBF2OSM(f.toString(), osmFileName, getContainerId("postgis"));
+                tempOSMFilesList.add(Path.of(osmFileName));
+            });
+
+            tempOSMFilesList.stream().findFirst().ifPresent(osmFile -> uploadRoutingToPostGIS(database, osmFile,
+                    tempConfigFilePath, tablePrefix, options, append));
+            tempOSMFilesList.stream().skip(1).forEach(osmFile -> uploadRoutingToPostGIS(database, osmFile,
+                    tempConfigFilePath, tablePrefix, options, true));
         }
     }
 
     public void uploadRoutingToPostGIS(String database, Path osmFilePath, Path configFilePath, String tablePrefix,
-            Options options,
-            boolean append) {
+            Options options, boolean append) {
         String containerId = getContainerId("postgis");
         ensurePostGISRoutingSupportEnabled(database, containerId);
 
