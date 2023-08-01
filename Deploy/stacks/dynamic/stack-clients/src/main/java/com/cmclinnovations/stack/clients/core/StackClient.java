@@ -33,12 +33,16 @@ public final class StackClient {
         return stackName;
     }
 
+    public static String getStackNameForRegex() {
+        return stackName.replace("_", "(?:-|_)");
+    }
+
     public static String prependStackName(String name) {
         return stackName + "_" + name;
     }
 
     public static String removeStackName(String name) {
-        return name.replaceFirst("^/?" + StackClient.getStackName() + "(?:-|_)", "");
+        return name.replaceFirst("^/?" + StackClient.getStackNameForRegex() + "(?:-|_)", "");
     }
 
     public static Map<String, String> getStackNameLabelMap() {
@@ -63,6 +67,61 @@ public final class StackClient {
 
     public static Path getAbsDataPath() {
         return getStackBaseDir().resolve("inputs").resolve("data");
+<<<<<<< HEAD
+=======
+    }
+
+    /**
+     * Get a RemoteRDBStoreClient for the named Postgres RDB running in this stack.
+     *
+     * @param database the name of the Postgres database, if the database doesn't
+     *                 already exist it will be created
+     * @return a RemoteRDBStoreClient attached to the named Postgres RDB running in
+     *         this stack
+     */
+    public static RemoteRDBStoreClient getRemoteRDBStoreClient(String database) {
+        PostGISClient postgisClient = PostGISClient.getInstance();
+        postgisClient.createDatabase(database);
+        return postgisClient.getRemoteStoreClient(database);
+    }
+
+    /**
+     * Get a RemoteRDBStoreClient for the default Postgres RDB running in this
+     * stack.
+     *
+     * @return a RemoteRDBStoreClient attached to the default Postgres RDB running
+     *         in this stack
+     */
+    public static RemoteRDBStoreClient getRemoteRDBStoreClient() {
+        return PostGISClient.getInstance().getRemoteStoreClient();
+    }
+
+    /**
+     * Get a RemoteStoreClient for the Blazegraph triplestore running in this stack.
+     * 
+     * @param namespace the name of the Blazegraph namespace, if the namespace
+     *                  doesn't already exist it will be created with the default
+     *                  properties
+     * @param database  the name of the Postgres database, if the database doesn't
+     *                  already exist it will be created
+     * @param timeClass see description from this
+     *                  {@link TimeSeriesClient#TimeSeriesClient(TripleStoreClientInterface, Class, String, String, String)
+     *                  TimeSeriesClient} constructor
+     * @return a RemoteStoreClient attached to the Blazegraph triplestore running in
+     *         this stack
+     */
+    public static <T> TimeSeriesClient<T> getTimeSeriesClient(String namespace, String database, Class<T> timeClass) {
+        BlazegraphClient blazegraphClient = BlazegraphClient.getInstance();
+        blazegraphClient.createNamespace(namespace);
+        RemoteStoreClient remoteStoreClient = blazegraphClient.getRemoteStoreClient(namespace);
+
+        PostGISClient postgisClient = PostGISClient.getInstance();
+        postgisClient.createDatabase(database);
+        PostGISEndpointConfig postgisConfig = postgisClient.getEndpoint();
+
+        return new TimeSeriesClient<>(remoteStoreClient, timeClass,
+                postgisConfig.getJdbcURL(database), postgisConfig.getUsername(), postgisConfig.getPassword());
+>>>>>>> main
     }
 
 }

@@ -3,9 +3,12 @@ package com.cmclinnovations.stack.clients.utils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+<<<<<<< HEAD
 import java.nio.file.attribute.PosixFileAttributes;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Set;
+=======
+>>>>>>> main
 
 public abstract class TempPath implements AutoCloseable {
 

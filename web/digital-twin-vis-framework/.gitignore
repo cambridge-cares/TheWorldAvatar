@@ -1,2 +1,5 @@
 *.log
 library/output
+
+mapbox_username
+mapbox_api_key

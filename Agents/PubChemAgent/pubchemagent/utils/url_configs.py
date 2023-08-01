@@ -1,0 +1,6 @@
+SPARQL_ENDPOINTS_ONTOSPECIES="http://www.theworldavatar.com/blazegraph/namespace/copy_ontospecies"
+ONTOSPECIES_URL = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#"
+ONTOSPECIES_KB_URL = "http://www.theworldavatar.com/kb/ontospecies"
+PT_URL = "http://www.daml.org/2003/01/periodictable/PeriodicTable#"
+ONTOKIN_URL = "http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#"
+UNIT_URL = "http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"
