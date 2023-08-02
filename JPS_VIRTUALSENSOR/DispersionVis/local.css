@@ -45,120 +45,6 @@
     height: 40px;
 }
 
-#scenario-container {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-}
-
-#scenario-blocker {
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, .75);
-    z-index: 1000;
-    position: absolute;
-    pointer-events: none;
-}
-
-#scenario-popup {
-    position: absolute;
-    background-color: white;
-    top: 15%;
-    left: 15%;
-    right: 15%;
-    bottom: 15%;
-    border-radius: 20px;
-    z-index: 1001;
-}
-
-#scenario-close {
-    position: absolute;
-    width: 25px;
-    height: 25px;
-    top: 15px;
-    right: 15px;
-    text-align: center;
-    display: table;
-}
-
-#scenario-close i {
-    vertical-align: middle;
-    display: table-cell;
-    color: grey;
-}
-
-#scenario-header {
-    position: absolute;
-    top: 25px;
-    left: 15px;
-    height: 75px;
-    right: 15px;
-    font-family: Inter, sans-serif !important;
-    font-size: 1.1em;
-}
-
-#scenario-inner {
-    position: absolute;
-    left: 15px;
-    right: 15px;
-    bottom: 30px;
-    top: 120px;
-    border: 1px solid gray;
-}
-
-#scenario-loading {
-    display: flex !important;
-    flex-direction: column;
-    height: 100%;
-    justify-content: center;
-    flex-wrap: wrap;
-    align-items: center;
-}
-
-.scenario-element {
-    height: 100px;
-    padding: 10px;
-    border-style: solid;
-    border-width: 0 0 1 0;
-    border-color: lightgray;
-    background-color: white;
-    font-size: 80%;
-    line-height: 110%;
-    position: relative;
-}
-
-.scenario-element:hover {
-    background-color: lightblue;
-}
-
-.scenario-element .scenario-button {
-    visibility: hidden;
-    position: absolute;
-    right: 25px;
-    bottom: 10px;
-    width: 100px;
-    height: 25px;
-}
-
-.scenario-element:hover .scenario-button {
-    visibility: visible;
-}
-
-#scenarioChangeContainer {
-    cursor: pointer;
-    text-decoration: inherit;
-    display: none;
-}
-
-#scenarioChangeContainer:hover {
-    text-decoration: underline;
-}
-
-#scenarioChangeContainer p {
-    font-size: 10pt;
-    font-weight: normal;
-}
-
 #selectionsContainer {
     background-color: rgba(0, 0, 0, 0.4);
     border-radius: 8px;
@@ -178,7 +64,7 @@
 
 #selectContainer label {
     display: inline-block;
-    width: 29%;
+    width: 31%;
     height: 25px;
 }
 

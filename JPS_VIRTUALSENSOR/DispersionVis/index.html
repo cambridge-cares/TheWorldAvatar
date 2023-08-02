@@ -99,14 +99,6 @@
                 </div>
             </div>
 
-            <!-- Scenario change control -->
-            <div id="scenarioChangeContainer" class="controlBlock expanded" onclick="dispersionHandler.showSelector()">
-                <div class="tooltip">
-                    <p>Change scenario</p>
-                    <span class="tooltiptext right" style="width: 200px !important;">Change the current scenario</span>
-                </div>
-            </div>
-
             <!-- dropdown selections -->
             <div id="selectionsContainer"></div>
 
@@ -205,9 +197,6 @@
         dataPromise.then(() => start());
 
         var dispersionHandler = new DispersionHandler("http://localhost:3838", manager);
-        if (dispersionHandler.selectedScenario == null) {
-            dispersionHandler.showSelector();
-        }
 
         /**
          * Starts the visualisation setup process.
@@ -256,7 +245,6 @@
 
                     // Plot the default visible data
                     manager.plotData();
-                    dispersionHandler.changeOther(false);
                 });
             });
         }
