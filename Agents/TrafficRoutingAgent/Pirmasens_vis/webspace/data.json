@@ -26,10 +26,15 @@
                         "visibility": "visible"
                     },
                     "paint": {
-                        "fill-extrusion-color": "#ff0000",
-                        "fill-extrusion-opacity": 0.8,
+                        "fill-extrusion-color": "#2F5F8A",
+                        "fill-extrusion-opacity": 0.9,
                         "fill-extrusion-base": 0,
-                        "fill-extrusion-height":50
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "measured_height"],
+                            ["get", "measured_height"],
+                            8
+                        ]
                     }
                 }
             ]

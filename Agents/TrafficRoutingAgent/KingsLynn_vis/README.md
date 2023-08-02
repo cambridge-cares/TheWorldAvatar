@@ -6,8 +6,6 @@ The instantiated data is visualised using the Digital Twin Visualisation Framewo
 
 <img src="floodrouter.JPG" alt="Mapbox visualisation" width="100%"/>
 
-
-
 ## Creating the Visualisation
 ### Prerequisite
 A valid Mapbox API token must be provided in your `index.html` file.

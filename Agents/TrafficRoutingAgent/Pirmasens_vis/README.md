@@ -4,7 +4,7 @@ This visualization serves as a proof of concept for visualization of buildings, 
 
 The instantiated data is visualised using the Digital Twin Visualisation Framework ([DTVF]) version `3.3.4`. The configuration file structure (i.e. `data.json`) is based on the [example Mapbox visualisation].
 
-<img src="floodrouter.JPG" alt="Mapbox visualisation" width="100%"/>
+<img src="pirmasens.png" alt="Mapbox visualisation" width="100%"/>
 
 
 
