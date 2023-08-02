@@ -399,18 +399,23 @@ public class BMSInstantiationAgent {
     public void instantiateWFH() throws FileNotFoundException {
         String WFH_label = null;
         String SashOpening_IRI = null;
+        String SashOpening_IRI_label = null;
         String State_IRI = null;
+        String State_IRI_label = null;
         String VAV_label = null;
         String DamperState_IRI = null;
+        String DamperState_IRI_label = null;
         String AirFlow_IRI = null;
+        String AirFlow_IRI_label = null;
         String Setpoint_IRI = null;
+        String Setpoint_IRI_label = null;
         
 		File file = new File(csvFilePath);
         sc = new Scanner(file);
 
         //Retrieve each of the necessary labels and IRIs
         while (sc.hasNext()) {
-            String string =  sc.next();
+            String string =  sc.nextLine();
 
             String key = string.split(",")[0];
             LOGGER.info("The key is " + key + " and the string is " + string);
@@ -421,8 +426,14 @@ public class BMSInstantiationAgent {
                 case "SashOpening_IRI":
                 SashOpening_IRI = string.split(",")[1];
                 break;
+                case "SashOpening_IRI_label":
+                SashOpening_IRI_label = string.split(",")[1];
+                break;
                 case "State_IRI":
                 State_IRI = string.split(",")[1];
+                break;
+                case "State_IRI_label":
+                State_IRI_label = string.split(",")[1];
                 break;
                 case "VAV_label":
                 VAV_label = string.split(",")[1];
@@ -430,11 +441,20 @@ public class BMSInstantiationAgent {
                 case "DamperState_IRI":
                 DamperState_IRI = string.split(",")[1];
                 break;
+                case "DamperState_IRI_label":
+                DamperState_IRI_label = string.split(",")[1];
+                break;
                 case "AirFlow_IRI":
                 AirFlow_IRI = string.split(",")[1];
                 break;
+                case "AirFlow_IRI_label":
+                AirFlow_IRI_label = string.split(",")[1];
+                break;
                 case "Setpoint_IRI":
                 Setpoint_IRI = string.split(",")[1];
+                break;
+                case "Setpoint_IRI_label":
+                Setpoint_IRI_label = string.split(",")[1];
                 break;
             }
         }
@@ -469,7 +489,8 @@ public class BMSInstantiationAgent {
         TriplePattern P12_3 = percent.isA(SingularUnit);
         TriplePattern P12_4 = percent.has(symbol, "%");
         TriplePattern P12_5 = percent.has(label, "percent");
-        InsertDataQuery insert1 = Queries.INSERT_DATA(P7, P7_1, P8, P9, P10, P11, P12, P12_1, P12_2, P12_3, P12_4, P12_5);
+        TriplePattern P12_6 = iri(SashOpening_IRI).has(label, SashOpening_IRI_label);
+        InsertDataQuery insert1 = Queries.INSERT_DATA(P7, P7_1, P8, P9, P10, P11, P12, P12_1, P12_2, P12_3, P12_4, P12_5, P12_6);
         insert1.prefix(PREFIX_ONTOBMS, PREFIX_RDFS, PREFIX_ONTODEVICE, PREFIX_SAREF, PREFIX_OM);
         kbClient.executeUpdate(insert1.getQueryString());
 
@@ -478,8 +499,9 @@ public class BMSInstantiationAgent {
         TriplePattern P13_1 = iri(StatusSensor_Instance).has(label, WFH_label + " Status Sensor");
         TriplePattern P14 = iri(StatusSensor_Instance).has(observes, iri(State_IRI));
         TriplePattern P15 = iri(State_IRI).isA(State);
+        TriplePattern P15_1 = iri(State_IRI).has(label, State_IRI_label);
         TriplePattern P16 = iri(StatusSensor_Instance).has(sendsSignalTo, iri(VAV_Instance));
-        InsertDataQuery insert2 = Queries.INSERT_DATA(P13, P13_1, P14, P15, P16);
+        InsertDataQuery insert2 = Queries.INSERT_DATA(P13, P13_1, P14, P15, P15_1, P16);
         insert2.prefix(PREFIX_ONTOBMS, PREFIX_RDFS, PREFIX_ONTODEVICE, PREFIX_SAREF, PREFIX_OM);
         kbClient.executeUpdate(insert2.getQueryString());
 
@@ -511,7 +533,8 @@ public class BMSInstantiationAgent {
         TriplePattern P28_2 = cubicMetrePerHour.isA(UnitDivision);
         TriplePattern P28_3 = cubicMetrePerHour.has(symbol, "m3/h");
         TriplePattern P28_4 = cubicMetrePerHour.has(label, "cubic metre per hour");
-        InsertDataQuery insert4 = Queries.INSERT_DATA(P24, P25, P26, P27, P28, P28_1, P28_2, P28_3, P28_4);
+        TriplePattern P28_5 = iri(Setpoint_IRI).has(label, Setpoint_IRI_label);
+        InsertDataQuery insert4 = Queries.INSERT_DATA(P24, P25, P26, P27, P28, P28_1, P28_2, P28_3, P28_4, P28_5);
         insert4.prefix(PREFIX_ONTOBMS, PREFIX_RDFS, PREFIX_ONTODEVICE, PREFIX_SAREF, PREFIX_OM);
         kbClient.executeUpdate(insert4.getQueryString());
 
@@ -528,7 +551,8 @@ public class BMSInstantiationAgent {
         TriplePattern P33_4 = cubicMetrePerHour.isA(UnitDivision);
         TriplePattern P33_5 = cubicMetrePerHour.has(symbol, "m3/h");
         TriplePattern P33_6 = cubicMetrePerHour.has(label, "cubic metre per hour");
-        InsertDataQuery insert5 = Queries.INSERT_DATA(P29, P29_1, P30, P31, P32, P33, P33_1, P33_2, P33_3, P33_4, P33_5, P33_6);
+        TriplePattern P33_7 = iri(AirFlow_IRI).has(label, AirFlow_IRI_label);
+        InsertDataQuery insert5 = Queries.INSERT_DATA(P29, P29_1, P30, P31, P32, P33, P33_1, P33_2, P33_3, P33_4, P33_5, P33_6, P33_7);
         insert5.prefix(PREFIX_ONTOBMS, PREFIX_RDFS, PREFIX_ONTODEVICE, PREFIX_SAREF, PREFIX_OM, PREFIX_ONTOCAPE_MATERIAL_SUBSTANCE);
         kbClient.executeUpdate(insert5.getQueryString());
 
@@ -538,7 +562,8 @@ public class BMSInstantiationAgent {
         TriplePattern P35 = iri(DamperStateSensor_Instance).has(sendsSignalTo, iri(VAV_Instance));
         TriplePattern P36 = iri(DamperStateSensor_Instance).has(observes, iri(DamperState_IRI));
         TriplePattern P37 = iri(DamperState_IRI).isA(DamperState);
-        InsertDataQuery insert6 = Queries.INSERT_DATA(P34, P34_1, P35, P36, P37);
+        TriplePattern P37_1 = iri(DamperState_IRI).has(label, DamperState_IRI_label);
+        InsertDataQuery insert6 = Queries.INSERT_DATA(P34, P34_1, P35, P36, P37, P37_1);
         insert6.prefix(PREFIX_ONTOBMS, PREFIX_RDFS, PREFIX_ONTODEVICE, PREFIX_SAREF, PREFIX_OM);
         kbClient.executeUpdate(insert6.getQueryString());
     }
@@ -546,19 +571,25 @@ public class BMSInstantiationAgent {
     public void instantiateCH_VAV() throws FileNotFoundException {
         String CH_label = null;
         String LowLevelState_IRI = null;
+        String LowLevelState_IRI_label = null;
         String MediumLevelState_IRI = null;
+        String MediumLevelState_IRI_label = null;
         String HighLevelState_IRI = null;
+        String HighLevelState_IRI_label = null;
         String VAV_label = null;
         String DamperState_IRI = null;
+        String DamperState_IRI_label = null;
         String AirFlow_IRI = null;
+        String AirFlow_IRI_label = null;
         String Setpoint_IRI = null;
+        String Setpoint_IRI_label = null;
 
         File file = new File(csvFilePath);
         sc = new Scanner(file);
 
         //Retrieve each of the necessary labels and IRIs
         while (sc.hasNext()) {
-            String string =  sc.next();
+            String string =  sc.nextLine();
 
             String key = string.split(",")[0];
             LOGGER.info("The key is " + key + " and the string is " + string);
@@ -569,11 +600,20 @@ public class BMSInstantiationAgent {
                 case "LowLevelState_IRI":
                 LowLevelState_IRI = string.split(",")[1];
                 break;
+                case "LowLevelState_IRI_label":
+                LowLevelState_IRI_label = string.split(",")[1];
+                break;
                 case "MediumLevelState_IRI":
                 MediumLevelState_IRI = string.split(",")[1];
                 break;
+                case "MediumLevelState_IRI_label":
+                MediumLevelState_IRI_label = string.split(",")[1];
+                break;
                 case "HighLevelState_IRI":
                 HighLevelState_IRI = string.split(",")[1];
+                break;
+                case "HighLevelState_IRI_label":
+                HighLevelState_IRI_label = string.split(",")[1];
                 break;
                 case "VAV_label":
                 VAV_label = string.split(",")[1];
@@ -581,11 +621,20 @@ public class BMSInstantiationAgent {
                 case "DamperState_IRI":
                 DamperState_IRI = string.split(",")[1];
                 break;
+                case "DamperState_IRI_label":
+                DamperState_IRI_label = string.split(",")[1];
+                break;
                 case "AirFlow_IRI":
                 AirFlow_IRI = string.split(",")[1];
                 break;
+                case "AirFlow_IRI_label":
+                AirFlow_IRI_label = string.split(",")[1];
+                break;
                 case "Setpoint_IRI":
                 Setpoint_IRI = string.split(",")[1];
+                break;
+                case "Setpoint_IRI_label":
+                Setpoint_IRI_label = string.split(",")[1];
                 break;
             }
         }
@@ -596,7 +645,7 @@ public class BMSInstantiationAgent {
         String State_Instance = "https://www.theworldavatar.com/kg/ontobms/State_" + UUID.randomUUID();
         String StatusSensor_Instance = "https://www.theworldavatar.com/kg/ontobms/StatusSensor_" + UUID.randomUUID();
         TriplePattern P1 = iri(CH_Instance).isA(CanopyHood);
-        TriplePattern P2 = iri(CH_Instance).has(label, CH_label + "-VAV");
+        TriplePattern P2 = iri(CH_Instance).has(label, CH_label);
         TriplePattern P3 = iri(CH_Instance).has(hasState, iri(State_Instance));
         TriplePattern P4 = iri(CH_Instance).has(consistsOf, iri(StatusSensor_Instance));
         InsertDataQuery insert = Queries.INSERT_DATA(P1,P2, P3, P4);
@@ -606,7 +655,7 @@ public class BMSInstantiationAgent {
         //instantiate Status Sensor
         String VAV_Instance = "https://www.theworldavatar.com/kg/ontobms/" + VAV_label + "_" + UUID.randomUUID();
         TriplePattern P13 = iri(StatusSensor_Instance).isA(StatusSensor);
-        TriplePattern P13_1 = iri(StatusSensor_Instance).has(label, CH_label + "-VAV Status Sensor");
+        TriplePattern P13_1 = iri(StatusSensor_Instance).has(label, CH_label + " Status Sensor");
         TriplePattern P14 = iri(StatusSensor_Instance).has(observes, iri(State_Instance));
         TriplePattern P15 = iri(State_Instance).isA(SwitchState);
         TriplePattern P16 = iri(StatusSensor_Instance).has(sendsSignalTo, iri(VAV_Instance));
@@ -616,7 +665,10 @@ public class BMSInstantiationAgent {
         TriplePattern P16_4 = iri(MediumLevelState_IRI).isA(MediumLevelState);
         TriplePattern P16_5 = iri(State_Instance).has(hasHighLevelState, iri(HighLevelState_IRI));
         TriplePattern P16_6 = iri(HighLevelState_IRI).isA(HighLevelState);
-        InsertDataQuery insert2 = Queries.INSERT_DATA(P13, P13_1, P14, P15, P16, P16_1, P16_2, P16_3, P16_4, P16_5, P16_6);
+        TriplePattern P16_7 = iri(LowLevelState_IRI).has(label, LowLevelState_IRI_label);
+        TriplePattern P16_8 = iri(MediumLevelState_IRI).has(label, MediumLevelState_IRI_label);
+        TriplePattern P16_9 = iri(HighLevelState_IRI).has(label, HighLevelState_IRI_label);
+        InsertDataQuery insert2 = Queries.INSERT_DATA(P13, P13_1, P14, P15, P16, P16_1, P16_2, P16_3, P16_4, P16_5, P16_6, P16_7, P16_8, P16_9);
         insert2.prefix(PREFIX_ONTOBMS, PREFIX_RDFS, PREFIX_ONTODEVICE, PREFIX_SAREF, PREFIX_OM);
         kbClient.executeUpdate(insert2.getQueryString());
 
@@ -649,7 +701,8 @@ public class BMSInstantiationAgent {
         TriplePattern P28_2 = cubicMetrePerHour.isA(UnitDivision);
         TriplePattern P28_3 = cubicMetrePerHour.has(symbol, "m3/h");
         TriplePattern P28_4 = cubicMetrePerHour.has(label, "cubic metre per hour");
-        InsertDataQuery insert4 = Queries.INSERT_DATA(P24, P25, P26, P27, P28, P28_1, P28_2, P28_3, P28_4);
+        TriplePattern P28_5 = iri(Setpoint_IRI).has(label, Setpoint_IRI_label);
+        InsertDataQuery insert4 = Queries.INSERT_DATA(P24, P25, P26, P27, P28, P28_1, P28_2, P28_3, P28_4, P28_5);
         insert4.prefix(PREFIX_ONTOBMS, PREFIX_RDFS, PREFIX_ONTODEVICE, PREFIX_SAREF, PREFIX_OM);
         kbClient.executeUpdate(insert4.getQueryString());
 
@@ -666,7 +719,8 @@ public class BMSInstantiationAgent {
         TriplePattern P33_4 = cubicMetrePerHour.isA(UnitDivision);
         TriplePattern P33_5 = cubicMetrePerHour.has(symbol, "m3/h");
         TriplePattern P33_6 = cubicMetrePerHour.has(label, "cubic metre per hour");
-        InsertDataQuery insert5 = Queries.INSERT_DATA(P29, P29_1, P30, P31, P32, P33, P33_1, P33_2, P33_3, P33_4, P33_5, P33_6);
+        TriplePattern P33_7 = iri(AirFlow_IRI).has(label, AirFlow_IRI_label);
+        InsertDataQuery insert5 = Queries.INSERT_DATA(P29, P29_1, P30, P31, P32, P33, P33_1, P33_2, P33_3, P33_4, P33_5, P33_6, P33_7);
         insert5.prefix(PREFIX_ONTOBMS, PREFIX_RDFS, PREFIX_ONTODEVICE, PREFIX_SAREF, PREFIX_OM, PREFIX_ONTOCAPE_MATERIAL_SUBSTANCE);
         kbClient.executeUpdate(insert5.getQueryString());
 
@@ -676,7 +730,8 @@ public class BMSInstantiationAgent {
         TriplePattern P35 = iri(DamperStateSensor_Instance).has(sendsSignalTo, iri(VAV_Instance));
         TriplePattern P36 = iri(DamperStateSensor_Instance).has(observes, iri(DamperState_IRI));
         TriplePattern P37 = iri(DamperState_IRI).isA(DamperState);
-        InsertDataQuery insert6 = Queries.INSERT_DATA(P34, P34_1, P35, P36, P37);
+        TriplePattern P37_1 = iri(DamperState_IRI).has(label, DamperState_IRI_label);
+        InsertDataQuery insert6 = Queries.INSERT_DATA(P34, P34_1, P35, P36, P37, P37_1);
         insert6.prefix(PREFIX_ONTOBMS, PREFIX_RDFS, PREFIX_ONTODEVICE, PREFIX_SAREF, PREFIX_OM);
         kbClient.executeUpdate(insert6.getQueryString());
     }
@@ -685,15 +740,18 @@ public class BMSInstantiationAgent {
         String CH_label = null;
         String CAV_label = null;
         String DamperState_IRI = null;
+        String DamperState_IRI_label = null;
         String AirFlow_IRI = null;
+        String AirFlow_IRI_label = null;
         String Setpoint_IRI = null;
+        String Setpoint_IRI_label = null;
 
         File file = new File(csvFilePath);
         sc = new Scanner(file);
 
         //Retrieve each of the necessary labels and IRIs
         while (sc.hasNext()) {
-            String string =  sc.next();
+            String string =  sc.nextLine();
 
             String key = string.split(",")[0];
             LOGGER.info("The key is " + key + " and the string is " + string);
@@ -707,20 +765,29 @@ public class BMSInstantiationAgent {
                 case "DamperState_IRI":
                 DamperState_IRI = string.split(",")[1];
                 break;
+                case "DamperState_IRI_label":
+                DamperState_IRI_label = string.split(",")[1];
+                break;
                 case "AirFlow_IRI":
                 AirFlow_IRI = string.split(",")[1];
                 break;
+                case "AirFlow_IRI_label":
+                AirFlow_IRI_label = string.split(",")[1];
+                break;
                 case "Setpoint_IRI":
                 Setpoint_IRI = string.split(",")[1];
+                break;
+                case "Setpoint_IRI_label":
+                Setpoint_IRI_label = string.split(",")[1];
                 break;
             }
         }
 
         //instantiate the CH instance
         //include label
-        String CH_Instance = "https://www.theworldavatar.com/kg/ontobms/" + CH_label + "_CAV_" + UUID.randomUUID();
+        String CH_Instance = "https://www.theworldavatar.com/kg/ontobms/" + CH_label + UUID.randomUUID();
         TriplePattern P1 = iri(CH_Instance).isA(CanopyHood);
-        TriplePattern P2 = iri(CH_Instance).has(label, CH_label + "-" + CAV_label);
+        TriplePattern P2 = iri(CH_Instance).has(label, CH_label);
         InsertDataQuery insert = Queries.INSERT_DATA(P1,P2);
         insert.prefix(PREFIX_ONTOBMS, PREFIX_RDFS, PREFIX_ONTODEVICE, PREFIX_SAREF, PREFIX_OM);
         kbClient.executeUpdate(insert.getQueryString());
@@ -755,7 +822,8 @@ public class BMSInstantiationAgent {
         TriplePattern P28_2 = cubicMetrePerHour.isA(UnitDivision);
         TriplePattern P28_3 = cubicMetrePerHour.has(symbol, "m3/h");
         TriplePattern P28_4 = cubicMetrePerHour.has(label, "cubic metre per hour");
-        InsertDataQuery insert4 = Queries.INSERT_DATA(P24, P25, P26, P27, P28, P28_1, P28_2, P28_3, P28_4);
+        TriplePattern P28_5 = iri(Setpoint_IRI).has(label, Setpoint_IRI_label);
+        InsertDataQuery insert4 = Queries.INSERT_DATA(P24, P25, P26, P27, P28, P28_1, P28_2, P28_3, P28_4, P28_5);
         insert4.prefix(PREFIX_ONTOBMS, PREFIX_RDFS, PREFIX_ONTODEVICE, PREFIX_SAREF, PREFIX_OM);
         kbClient.executeUpdate(insert4.getQueryString());
 
@@ -772,7 +840,8 @@ public class BMSInstantiationAgent {
         TriplePattern P33_4 = cubicMetrePerHour.isA(UnitDivision);
         TriplePattern P33_5 = cubicMetrePerHour.has(symbol, "m3/h");
         TriplePattern P33_6 = cubicMetrePerHour.has(label, "cubic metre per hour");
-        InsertDataQuery insert5 = Queries.INSERT_DATA(P29, P29_1, P30, P31, P32, P33, P33_1, P33_2, P33_3, P33_4, P33_5, P33_6);
+        TriplePattern P33_7 = iri(AirFlow_IRI).has(label, AirFlow_IRI_label);
+        InsertDataQuery insert5 = Queries.INSERT_DATA(P29, P29_1, P30, P31, P32, P33, P33_1, P33_2, P33_3, P33_4, P33_5, P33_6, P33_7);
         insert5.prefix(PREFIX_ONTOBMS, PREFIX_RDFS, PREFIX_ONTODEVICE, PREFIX_SAREF, PREFIX_OM, PREFIX_ONTOCAPE_MATERIAL_SUBSTANCE);
         kbClient.executeUpdate(insert5.getQueryString());
 
@@ -782,7 +851,8 @@ public class BMSInstantiationAgent {
         TriplePattern P35 = iri(DamperStateSensor_Instance).has(sendsSignalTo, iri(CAV_Instance));
         TriplePattern P36 = iri(DamperStateSensor_Instance).has(observes, iri(DamperState_IRI));
         TriplePattern P37 = iri(DamperState_IRI).isA(DamperState);
-        InsertDataQuery insert6 = Queries.INSERT_DATA(P34, P34_1, P35, P36, P37);
+        TriplePattern P37_1 = iri(DamperState_IRI).has(label, DamperState_IRI_label);
+        InsertDataQuery insert6 = Queries.INSERT_DATA(P34, P34_1, P35, P36, P37, P37_1);
         insert6.prefix(PREFIX_ONTOBMS, PREFIX_RDFS, PREFIX_ONTODEVICE, PREFIX_SAREF, PREFIX_OM);
         kbClient.executeUpdate(insert6.getQueryString());
     }
