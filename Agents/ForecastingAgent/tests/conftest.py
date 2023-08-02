@@ -57,6 +57,8 @@ RDB_SERVICE = "postgres_test"
 DERIVATION_INSTANCE_BASE_URL = os.getenv('DERIVATION_INSTANCE_BASE_URL')
 # IRIs of derivation's (pure) inputs
 TEST_TRIPLES_BASE_IRI = 'https://www.theworldavatar.com/test/'
+AGENT_BASE_URL = os.getenv('ONTOAGENT_OPERATION_HTTP_URL')
+AGENT_BASE_URL = AGENT_BASE_URL[:AGENT_BASE_URL.rfind('/')+1]
 
 # Forecast 1
 # Start: Wed Jan 01 2020 00:00:00 GMT+0000
@@ -81,14 +83,14 @@ DERIVATION_INPUTS_2 = [IRI_TO_FORECAST_2, FORECASTING_MODEL_1,
 # --> correct exceptions tested as unit tests
 # NOTE: As om:Quantity and ts:ForecastingModel are also owl:Things, multiple
 #       owl:Things will be detected by the derivation agent
-ERROR_INPUTS_1 = {
+ERRONEOUS_FORECAST_INPUTS_1 = {
     OM_QUANTITY: [IRI_TO_FORECAST_1],
     OWL_THING: [IRI_TO_FORECAST_1],
     TS_FREQUENCY: [FC_FREQUENCY_1],
     TIME_INTERVAL: [FC_INTERVAL_1],
     TIME_DURATION: [HIST_DURATION_1]
 }
-ERROR_INPUTS_2 = {
+ERRONEOUS_FORECAST_INPUTS_2 = {
     OM_QUANTITY: [IRI_TO_FORECAST_1],
     OWL_THING: [IRI_TO_FORECAST_1, FORECASTING_MODEL_1],
     TS_FORECASTINGMODEL: [FORECASTING_MODEL_1],
@@ -96,14 +98,14 @@ ERROR_INPUTS_2 = {
     TIME_INTERVAL: [FC_INTERVAL_1],
     TIME_DURATION: [HIST_DURATION_1, HIST_DURATION_2]
 }
-ERROR_INPUTS_3 = {
+ERRONEOUS_FORECAST_INPUTS_3 = {
     OWL_THING: [FORECASTING_MODEL_1],
     TS_FORECASTINGMODEL: [FORECASTING_MODEL_1],
     TS_FREQUENCY: [FC_FREQUENCY_1],
     TIME_INTERVAL: [FC_INTERVAL_1],
     TIME_DURATION: [HIST_DURATION_1]
 }
-ERROR_INPUTS_4 = {
+ERRONEOUS_FORECAST_INPUTS_4 = {
     OM_QUANTITY: [IRI_TO_FORECAST_1, IRI_TO_FORECAST_2],
     OWL_THING: [FORECASTING_MODEL_1],
     TS_FORECASTINGMODEL: [FORECASTING_MODEL_1],
@@ -111,13 +113,25 @@ ERROR_INPUTS_4 = {
     TIME_INTERVAL: [FC_INTERVAL_1],
     TIME_DURATION: [HIST_DURATION_1]
 }
-ERROR_INPUTS_5 = {
+ERRONEOUS_FORECAST_INPUTS_5 = {
     OWL_THING: [IRI_TO_FORECAST_3, IRI_TO_FORECAST_4, FORECASTING_MODEL_1],
     TS_FORECASTINGMODEL: [FORECASTING_MODEL_1],
     TS_FREQUENCY: [FC_FREQUENCY_1],
     TIME_INTERVAL: [FC_INTERVAL_1],
     TIME_DURATION: [HIST_DURATION_1]
 }
+
+# Define skeleton for correct forecast error evaluation request
+ERROR_REQUEST = {'query': {
+        'tsIRI_target': None,
+        'tsIRI_fc' : None } }
+# Define erroneous HTTP requests for forecast error evaluation
+ERRONEOUS_ERROR_REQUEST_1 = {'quer': {}}
+ERRONEOUS_ERROR_REQUEST_2 = {'query': {
+        'tsIRI_target': 'https://www.theworldavatar.com/kg/...' } }
+ERRONEOUS_ERROR_REQUEST_3 = {'query': {
+        'tsIRI_target': 'https://www.theworldavatar.com/kg/ontotimeseries/Timeseries_1',
+        'tsIRI_fc' : 'https://www.theworldavatar.com/kg/ontotimeseries/Timeseries_2' } }
 
 
 # ----------------------------------------------------------------------------------
@@ -127,10 +141,12 @@ ERROR_INPUTS_5 = {
 times = pd.date_range(start='2019-10-01T00:00:00Z', freq='H', 
                       end='2020-02-01T00:00:00Z')
 TIMES = times.strftime("%Y-%m-%dT%H:%M:%SZ").tolist()
-# Linearly increasing
-VALUES_1 = [i*(100/len(times)) for i in range(1, len(times)+1)]
-# Constant value
-VALUES_2 = [1 for i in range(1, len(times)+1)]
+# Linearly increasing time series
+VALUES_1 = [i*(100/len(times)) for i in range(1, len(times)+1)]     # original
+VALUES_2 = VALUES_1.copy()
+VALUES_2[100] = VALUES_2[100]*2     # slightly distorted copy
+# Constant value time series
+VALUES_3 = [1 for i in range(1, len(times)+1)]
 
 
 # Expected number of triples
@@ -143,11 +159,14 @@ DERIV_INPUT_TRIPLES = 2 + 6*3   # triples for derivation input message
 DERIV_OUTPUT_TRIPLES = 2 + 1*3  # triples for derivation output message
 
 # Expected error messages
-ERROR_MSG_1 = "No 'ForecastingModel' IRI provided"
-ERROR_MSG_2 = "More than one 'Duration' IRI provided"
-ERROR_MSG_3 = "Neither 'om:Quantity' nor 'owl:Thing' IRI provided to forecast"
-ERROR_MSG_4 = "More than one 'om:Quantity' IRI provided to forecast"
-ERROR_MSG_5 = "No unique 'owl:Thing' IRI provided to forecast"
+ERRONEOUS_FORECAST_MSG_1 = "No 'ForecastingModel' IRI provided"
+ERRONEOUS_FORECAST_MSG_2 = "More than one 'Duration' IRI provided"
+ERRONEOUS_FORECAST_MSG_3 = "Neither 'om:Quantity' nor 'owl:Thing' IRI provided to forecast"
+ERRONEOUS_FORECAST_MSG_4 = "More than one 'om:Quantity' IRI provided to forecast"
+ERRONEOUS_FORECAST_MSG_5 = "No unique 'owl:Thing' IRI provided to forecast"
+ERRONEOUS_ERROR_MSG_1 = "No 'query' node provided in HTTP request"
+ERRONEOUS_ERROR_MSG_2 = "Unable to extract time series IRIs to evaluate"
+ERRONEOUS_ERROR_MSG_3 = "No dataIRI found for tsIRI"
 
 
 # ----------------------------------------------------------------------------------

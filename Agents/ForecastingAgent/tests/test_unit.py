@@ -91,11 +91,11 @@ def test_check_if_enough_covs_exist():
 @pytest.mark.parametrize(
     "derivation_input_set, expected_error_msg",
     [
-        (cf.ERROR_INPUTS_1, cf.ERROR_MSG_1),
-        (cf.ERROR_INPUTS_2, cf.ERROR_MSG_2),
-        (cf.ERROR_INPUTS_3, cf.ERROR_MSG_3),
-        (cf.ERROR_INPUTS_4, cf.ERROR_MSG_4),
-        (cf.ERROR_INPUTS_5, cf.ERROR_MSG_5)
+        (cf.ERRONEOUS_FORECAST_INPUTS_1, cf.ERRONEOUS_FORECAST_MSG_1),
+        (cf.ERRONEOUS_FORECAST_INPUTS_2, cf.ERRONEOUS_FORECAST_MSG_2),
+        (cf.ERRONEOUS_FORECAST_INPUTS_3, cf.ERRONEOUS_FORECAST_MSG_3),
+        (cf.ERRONEOUS_FORECAST_INPUTS_4, cf.ERRONEOUS_FORECAST_MSG_4),
+        (cf.ERRONEOUS_FORECAST_INPUTS_5, cf.ERRONEOUS_FORECAST_MSG_5)
     ],
 )
 def test_validate_input_values(

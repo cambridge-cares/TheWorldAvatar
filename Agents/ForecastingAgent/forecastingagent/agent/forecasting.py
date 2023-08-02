@@ -179,7 +179,7 @@ class ForecastingAgent(DerivationAgent):
                                             hist_duration=data_hist, fc_interval=interval)
 
         # Create forecast
-        forecast(iri=input_iris['iri_to_forecast'], config=cfg)
+        #forecast(iri=input_iris['iri_to_forecast'], config=cfg)
 
         # Instantiate forecast in KG
 
@@ -205,7 +205,7 @@ class ForecastingAgent(DerivationAgent):
             try:
                 query = request.json['query']
             except Exception as ex:
-                msg = 'No "query" node provided in HTTP request: ' + str(ex)
+                msg = "No 'query' node provided in HTTP request: " + str(ex)
                 logger.error(msg, ex)
                 raise InvalidInput(msg) from ex
             

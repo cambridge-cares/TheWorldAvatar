@@ -250,6 +250,23 @@ class KGClient(PySparqlClient):
         return self.get_unique_value(res, 'dataIRI')
 
 
+    def get_all_tsIRIs(self):
+        """
+        Returns list of all instantiated time series IRIs.
+        """
+        query = f"""
+            SELECT DISTINCT ?tsIRI
+            WHERE {{   
+            ?tsIRI <{RDF_TYPE}> <{TS_TIMESERIES}> .
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Return unique query result (otherwise exception is thrown)
+        return self.get_list_of_unique_values(res, 'tsIRI')
+
+
     #
     # SPARQL UPDATES
     # 

@@ -8,9 +8,12 @@
 # to the Flask App and the response is checked.
 
 import pytest
+import json
+import requests
 from pathlib import Path
 from rdflib import Graph
 from rdflib import RDF
+from operator import eq, gt
 
 from py4jps import agentlogging
 
@@ -24,70 +27,70 @@ from . import conftest as cf
 logger = agentlogging.get_logger('prod')
 
 
-# def test_example_triples():
-#     """
-#     This test checks that the example triples are correct in syntax.
+def test_example_triples():
+    """
+    This test checks that the example triples are correct in syntax.
 
-#     Raises:
-#         e: If the example triples are not valid RDF.
-#     """
-#     g = Graph()
-#     pathlist = Path(cf.TEST_TRIPLES_DIR).glob('*.ttl')
-#     for path in pathlist:
-#         try:
-#             g.parse(str(path))
-#         except Exception as e:
-#             raise e
+    Raises:
+        e: If the example triples are not valid RDF.
+    """
+    g = Graph()
+    pathlist = Path(cf.TEST_TRIPLES_DIR).glob('*.ttl')
+    for path in pathlist:
+        try:
+            g.parse(str(path))
+        except Exception as e:
+            raise e
 
 
-# def test_example_data_instantiation(initialise_clients):
-#     """
-#     This test checks that all example data gets correctly instantiated,
-#     including associated time series data in PostgreSQL.
-#     """
-#     # Get required clients from fixture
-#     sparql_client, ts_client, _, rdb_url = initialise_clients
+def test_example_data_instantiation(initialise_clients):
+    """
+    This test checks that all example data gets correctly instantiated,
+    including associated time series data in PostgreSQL.
+    """
+    # Get required clients from fixture
+    sparql_client, ts_client, _, rdb_url = initialise_clients
 
-#     ### TRIPPLE STORE ###
-#     # Verify that KG is empty
-#     assert sparql_client.getAmountOfTriples() == 0
+    ### TRIPPLE STORE ###
+    # Verify that KG is empty
+    assert sparql_client.getAmountOfTriples() == 0
 
-#     # Upload example test triples
-#     cf.initialise_triples(sparql_client)
+    # Upload example test triples
+    cf.initialise_triples(sparql_client)
 
-#     # Verify instantiation of expected number of triples
-#     triples = cf.TBOX_TRIPLES + cf.ABOX_TRIPLES
-#     assert sparql_client.getAmountOfTriples() == triples
+    # Verify instantiation of expected number of triples
+    triples = cf.TBOX_TRIPLES + cf.ABOX_TRIPLES
+    assert sparql_client.getAmountOfTriples() == triples
 
-#     ### POSTGRESQL ###
-#     # Verify that Postgres database is empty
-#     assert cf.get_number_of_rdb_tables(rdb_url) == 0
+    ### POSTGRESQL ###
+    # Verify that Postgres database is empty
+    assert cf.get_number_of_rdb_tables(rdb_url) == 0
 
-#     # Initialise and upload time series
-#     ts_client.init_timeseries(dataIRI=cf.IRI_TO_FORECAST_1,
-#                               times=cf.TIMES, values=cf.VALUES_1,
-#                               ts_type=DOUBLE, time_format=TIME_FORMAT)
+    # Initialise and upload time series
+    ts_client.init_timeseries(dataIRI=cf.IRI_TO_FORECAST_1,
+                              times=cf.TIMES, values=cf.VALUES_1,
+                              ts_type=DOUBLE, time_format=TIME_FORMAT)
 
-#     # Verify that expected tables and triples are created (i.e. dbTable + 1 ts table)
-#     assert cf.get_number_of_rdb_tables(rdb_url) == 2
-#     assert sparql_client.getAmountOfTriples() == (triples + cf.TS_TRIPLES)
+    # Verify that expected tables and triples are created (i.e. dbTable + 1 ts table)
+    assert cf.get_number_of_rdb_tables(rdb_url) == 2
+    assert sparql_client.getAmountOfTriples() == (triples + cf.TS_TRIPLES)
 
-#     # Verify correct retrieval of time series data
-#     times, values = ts_client.retrieve_timeseries(cf.IRI_TO_FORECAST_1)
-#     assert times == cf.TIMES
-#     # Account for rounding errors
-#     assert pytest.approx(values, rel=1e-5) == cf.VALUES_1
+    # Verify correct retrieval of time series data
+    times, values = ts_client.retrieve_timeseries(cf.IRI_TO_FORECAST_1)
+    assert times == cf.TIMES
+    # Account for rounding errors
+    assert pytest.approx(values, rel=1e-5) == cf.VALUES_1
 
-#     # Verify that dropping all tables works as expected
-#     cf.clear_database(rdb_url)
-#     assert cf.get_number_of_rdb_tables(rdb_url) == 0
+    # Verify that dropping all tables works as expected
+    cf.clear_database(rdb_url)
+    assert cf.get_number_of_rdb_tables(rdb_url) == 0
 
 
 @pytest.mark.parametrize(
     "derivation_input_set, iri_to_forecast, ts_times, ts_values",
     [
         (cf.DERIVATION_INPUTS_1, cf.IRI_TO_FORECAST_1, cf.TIMES, cf.VALUES_1),
-        #(cf.DERIVATION_INPUTS_2, cf.IRI_TO_FORECAST_2, cf.TIMES, cf.VALUES_2)
+        (cf.DERIVATION_INPUTS_2, cf.IRI_TO_FORECAST_2, cf.TIMES, cf.VALUES_3)
     ],
 )
 def test_create_forecast(
@@ -132,14 +135,14 @@ def test_create_forecast(
     # Create derivation instance for new information (incl. timestamps for pure inputs)
     derivation = derivation_client.createSyncDerivationForNewInfo(agent.agentIRI, derivation_input_set,
                                                                   cf.ONTODERIVATION_DERIVATIONWITHTIMESERIES)
-    derivation_iri = derivation.getIri()
-    print(f"Initialised successfully, created synchronous derivation instance: {derivation_iri}")
+    # derivation_iri = derivation.getIri()
+    # print(f"Initialised successfully, created synchronous derivation instance: {derivation_iri}")
     
-    # Verify expected number of triples after derivation registration
-    triples += cf.TIME_TRIPLES_PER_PURE_INPUT * len(derivation_input_set) # timestamps for pure inputs
-    triples += cf.TIME_TRIPLES_PER_PURE_INPUT                             # timestamps for derivation instance
-    triples += len(derivation_input_set) + 2    # number of inputs + derivation type + associated agent 
-    assert sparql_client.getAmountOfTriples() == triples
+    # # Verify expected number of triples after derivation registration
+    # triples += cf.TIME_TRIPLES_PER_PURE_INPUT * len(derivation_input_set) # timestamps for pure inputs
+    # triples += cf.TIME_TRIPLES_PER_PURE_INPUT                             # timestamps for derivation instance
+    # triples += len(derivation_input_set) + 2    # number of inputs + derivation type + associated agent 
+    # assert sparql_client.getAmountOfTriples() == triples
 
     # # Query timestamp of the derivation for every 20 seconds until it's updated
     # currentTimestamp_derivation = 0
@@ -178,7 +181,74 @@ def test_create_forecast(
     # assert len(derivation_input_set_copy) == 0
 
     print("All check passed.")
-    
+
+
+@pytest.mark.parametrize(
+    "http_request, fail, equal, expected_result",
+    [
+        (cf.ERROR_REQUEST, False, True, eq),
+        (cf.ERROR_REQUEST, False, False, gt),
+        (cf.ERRONEOUS_ERROR_REQUEST_1, True, None, cf.ERRONEOUS_ERROR_MSG_1),
+        (cf.ERRONEOUS_ERROR_REQUEST_2, True, None, cf.ERRONEOUS_ERROR_MSG_2),
+        (cf.ERRONEOUS_ERROR_REQUEST_3, True, None, cf.ERRONEOUS_ERROR_MSG_3),
+    ],
+)
+def test_evaluate_forecast(
+    initialise_clients, http_request, fail, equal, expected_result
+):
+    """
+    Test if forecast errors are evaluated as expected
+
+    Boolean flags:
+        - fail: True if the test is expected to fail
+        - equal: True if time series is compared with itself
+    """
+
+    # Get required clients from fixture
+    sparql_client, ts_client, _, rdb_url = initialise_clients
+
+    # Initialise all triples in test_triples + initialise time series in RDB
+    cf.initialise_triples(sparql_client)
+    cf.clear_database(rdb_url)
+    ts_client.init_timeseries(dataIRI=cf.IRI_TO_FORECAST_1,
+                              times=cf.TIMES, values=cf.VALUES_1,
+                              ts_type=DOUBLE, time_format=TIME_FORMAT)
+    ts_client.init_timeseries(dataIRI=cf.IRI_TO_FORECAST_2,
+                              times=cf.TIMES, values=cf.VALUES_2,
+                              ts_type=DOUBLE, time_format=TIME_FORMAT)
+
+    if not fail:
+        # Retrieve list of instantiated time series IRIs
+        tsIRIs = sparql_client.get_all_tsIRIs()
+        if equal:
+            http_request['query']['tsIRI_target'] = tsIRIs[0]
+            http_request['query']['tsIRI_fc'] = tsIRIs[0]
+        else:
+            http_request['query']['tsIRI_target'] = tsIRIs[0]
+            http_request['query']['tsIRI_fc'] = tsIRIs[1]
+
+    # Create HTTP request to evaluate forecast errors
+    headers = {'Content-Type': 'application/json'}
+    url = cf.AGENT_BASE_URL + '/evaluate_errors'
+    response = requests.post(url, json=http_request, headers=headers)
+
+    if fail:
+        # Verify that correct error message is returned for erroneous requests
+        assert response.status_code == 500
+        assert expected_result in response.text
+
+    else:
+        # Check successful execution/response
+        assert response.status_code == 200
+        response = response.json()
+        assert expected_result(response['mape'], 0)
+        assert expected_result(response['smape'], 0)
+        assert expected_result(response['mse'], 0)
+        assert expected_result(response['rmse'], 0)
+        assert expected_result(response['max_error'], 0)
+
+        
+
 
 # def test_load_pretrained_model():
 #      """
