@@ -72,15 +72,15 @@ def get_predecessor_type_and_predicate(iri, kgClient):
     return {r["predicate"]: r["predecessorType"] for r in cfg}
 
 
-def get_dataIRI_for_ts_with_hasValue_iri(iri, kgClient):
-    # get dataIRI for time series which has value iri
-    query = f"""
-    SELECT ?dataIRI
-    WHERE {{
-        <{iri}> <{OM_HASVALUE}> ?dataIRI . 
-        }}"""
-    dataIRI = kgClient.performQuery(query)[0]["dataIRI"]
-    return dataIRI
+# def get_dataIRI_for_ts_with_hasValue_iri(iri, kgClient):
+#     # get dataIRI for time series which has value iri
+#     query = f"""
+#     SELECT ?dataIRI
+#     WHERE {{
+#         <{iri}> <{OM_HASVALUE}> ?dataIRI . 
+#         }}"""
+#     dataIRI = kgClient.performQuery(query)[0]["dataIRI"]
+#     return dataIRI
 
 def get_tsIRI_from_dataIRI(dataIRI, kgClient):
     query = f"""

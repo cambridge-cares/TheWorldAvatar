@@ -24,6 +24,7 @@
     
 """
 
+import pandas as pd
 import datetime as dt
 
 from py4jps import agentlogging
@@ -49,15 +50,18 @@ BOOLEAN = jpsBaseLibView.java.lang.Boolean.TYPE
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
-def create_forecast_configuration(model:dict, frequency:dict, 
-                                  duration:dict, ts_data_type=DOUBLE):
+def create_forecast_configuration(model:dict, ts_details:dict, ts_frequency:dict, 
+                                  hist_duration:dict, fc_interval:dict,
+                                  ts_data_type=DOUBLE):
     """
     Returns a dictionary of parameters describing the forecast to create.
 
     Arguments:
         fcmodel {dict} -- forecast model details as retrieved from the KG
-        frequency {dict} -- time series frequency details as retrieved
-        duration {dict} -- historical data duration details as retrieved
+        ts_details {dict} -- time series details as retrieved from the KG
+        ts_frequency {dict} -- time series frequency details as retrieved
+        hist_duration {dict} -- historical data duration details as retrieved
+        fc_interval {dict} -- target forecast interval details as retrieved
 
     Returns a dictionary with a forecast configuration as follows:
     Required (always present):
@@ -97,17 +101,27 @@ def create_forecast_configuration(model:dict, frequency:dict,
         'ts_data_type': ts_data_type,
         'fc_model': create_model_dict(model)
     }
+
+    # Add time series and data IRI details
+    cfg['dataIRI'] = ts_details['data_iri']
+    cfg['tsIRI'] = ts_details['ts_iri']
     
     # Add time series frequency details
-    f = create_duration_entries(frequency)
+    f = create_duration_entries(ts_frequency)
     cfg['frequency'] = f.pop('duration')
     cfg.update(f)
     
-    # Add historical data length
-    dur = create_duration_entries(duration)
+    # Add historical data length details
+    dur = create_duration_entries(hist_duration)
     # Get number of historical time steps to consider by dividing duration
     # of historical data to use by frequency of time series
     cfg['data_length'] = int(dur['duration'] / cfg['frequency'])
+
+    # Add forecast interval details
+    # NOTE: pd.Timestamp expects the input to be in nanoseconds -> specify unit
+    cfg['forecast_start_date'] = pd.Timestamp(fc_interval['start_unix'], unit='s')
+    horizon = dt.timedelta(seconds=(fc_interval['end_unix']-fc_interval['start_unix']))
+    cfg['horizon'] = int(horizon / cfg['frequency'])
 
     return cfg
 

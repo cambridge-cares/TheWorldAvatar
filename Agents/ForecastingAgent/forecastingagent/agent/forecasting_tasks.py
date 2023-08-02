@@ -34,7 +34,7 @@ from forecastingagent.errorhandling.exceptions import KGException
 logger = agentlogging.get_logger('prod')
 
 
-def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=None, data_length=None,
+def forecast(iri, config,
              query_endpoint=SPARQL_QUERY_ENDPOINT, update_endpoint=SPARQL_UPDATE_ENDPOINT, 
              db_url=DB_URL, db_user=DB_USER, db_password=DB_PASSWORD):
     """
@@ -45,7 +45,6 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     :param horizon: The number of time steps to forecast
     :param forecast_start_date: The date from which you want to start forecasting
     :param use_model_configuration: If you want to force a specific model configuration, you can do so here
-    :param data_length: The number of time steps which should be loaded from the DB
     :param query_endpoint: The endpoint to query the KG
     :param update_endpoint: The endpoint to update the KG
     :param db_url: The url to the RDB
@@ -61,24 +60,11 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     covariates, backtest_series = None, None
 
     # get the model configuration dictionary from the a specific use_model_configuration or use default
-    if use_model_configuration is not None:
-        model_configuration_name = use_model_configuration
-    else:
-        model_configuration_name = "DEFAULT"
-        
-    if model_configuration_name not in MODEL_MAPPING:
-        raise KeyError(f'No model configuration found for the given key: {model_configuration_name}')
-    
-    cfg = MODEL_MAPPING[model_configuration_name].copy()
-    cfg['model_configuration_name'] = model_configuration_name
+    cfg = config.copy()
+
+    cfg['model_configuration_name'] = 'DEFAULT'
     cfg['iri'] = iri
-    cfg['horizon'] = horizon
-    if data_length is not None:
-        cfg['data_length'] = data_length
         
-    cfg['dataIRI'] = get_data_iri(cfg, kgClient)
-    cfg['forecast_start_date'] = get_forecast_start_date(
-        forecast_start_date, tsClient, cfg)
     logger.info(f'Using the forecast start date: {cfg["forecast_start_date"]}')
     
     # calculate lower and upper bound for timeseries to speed up query
@@ -90,6 +76,13 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     # use model configuration function to get the correct iri timeseries and its covariates
     series, covariates = load_ts_data(
         cfg, kgClient, tsClient)
+    
+    #NOTE: test plotting
+    # import matplotlib.pyplot as plt
+    # series.plot(label ="Heat Supply (MWh)" )
+    # plt.xlabel('DateTime')
+    # plt.ylabel("Heat Supply (MWh)")
+    # plt.savefig('/app/tests/test.png')
 
     # split series at forecast_start_date
     # check if forecast_start_date is in series
@@ -139,10 +132,6 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
         logger.info('Using Prophet model.')
         model = Prophet()
         cfg['fc_model']['input_length'] = len(series)
-    else:
-        logger.error('No model configuration found for the given name.')
-        raise ValueError(
-            f'No model configuration found for the given name{cfg["model_configuration_name"]}, use one of {MODEL_MAPPING.keys()}')
 
     forecast = get_forecast(series, covariates, model, cfg)
 
@@ -203,20 +192,20 @@ def instantiate_forecast_timeseries(tsClient, cfg, forecast):
         raise KGException(f'Could not instantiate forecast timeseries {cfg["forecast_iri"]}')
 
 
-def get_forecast_start_date(forecast_start_date, tsClient, cfg):
-    if forecast_start_date is not None:
-        return pd.Timestamp(
-            isoparse(forecast_start_date)).tz_convert('UTC').tz_localize(None)
-    else:
-        # get the last value of ts and set next date as forecast start date
-        try:
-            with tsClient.connect() as conn:
-                latest = tsClient.tsclient.getLatestData(cfg['dataIRI'], conn)
-        except:
-            raise KGException(
-                f"No time series data could be retrieved for the given IRI: {cfg['dataIRI']}")
-        return pd.Timestamp(isoparse(latest.getTimes(
-        )[0].toString())).tz_convert('UTC').tz_localize(None) + cfg['frequency']
+# def get_forecast_start_date(forecast_start_date, tsClient, cfg):
+#     if forecast_start_date is not None:
+#         return pd.Timestamp(
+#             isoparse(forecast_start_date)).tz_convert('UTC').tz_localize(None)
+#     else:
+#         # get the last value of ts and set next date as forecast start date
+#         try:
+#             with tsClient.connect() as conn:
+#                 latest = tsClient.tsclient.getLatestData(cfg['dataIRI'], conn)
+#         except:
+#             raise KGException(
+#                 f"No time series data could be retrieved for the given IRI: {cfg['dataIRI']}")
+#         return pd.Timestamp(isoparse(latest.getTimes(
+#         )[0].toString())).tz_convert('UTC').tz_localize(None) + cfg['frequency']
 
 
 def get_forecast(series, covariates, model, cfg):
@@ -363,26 +352,26 @@ def load_ts_data(cfg, kgClient, tsClient):
     return series, covariates
 
 
-def get_data_iri(cfg, kgClient):
-    """
-    Retrieves the time series IRI from the KG.
-    Either the iri has directly object with 'hasTimeSeries' with 'Measure' in between, 
-    or the iri has a 'hasTimeSeries' with no 'Measure' in between, 
-    in both cases the iri of the object after 'hasTimeSeries' is returned.
+# def get_data_iri(cfg, kgClient):
+#     """
+#     Retrieves the time series IRI from the KG.
+#     Either the iri has directly object with 'hasTimeSeries' with 'Measure' in between, 
+#     or the iri has a 'hasTimeSeries' with no 'Measure' in between, 
+#     in both cases the iri of the object after 'hasTimeSeries' is returned.
 
-    1. iri -> hasValue -> Measure -> hasTimeSeries -> ts_iri
-    2. iri -> hasTimeSeries -> ts_iri
+#     1. iri -> hasValue -> Measure -> hasTimeSeries -> ts_iri
+#     2. iri -> hasTimeSeries -> ts_iri
 
-    :param cfg: a dictionary containing the model configuration
-    :param kgClient: the client object for the knowledge graph
-    """
-    try:
-        # try if ts hasValue where the actual ts is stored
-        dataIRI = get_dataIRI_for_ts_with_hasValue_iri(cfg['iri'], kgClient)
-    except IndexError as e:
-        dataIRI = cfg['iri']
+#     :param cfg: a dictionary containing the model configuration
+#     :param kgClient: the client object for the knowledge graph
+#     """
+#     try:
+#         # try if ts hasValue where the actual ts is stored
+#         dataIRI = get_dataIRI_for_ts_with_hasValue_iri(cfg['iri'], kgClient)
+#     except IndexError as e:
+#         dataIRI = cfg['iri']
 
-    return dataIRI
+#     return dataIRI
 
 
 def check_if_enough_covs_exist(cfg, covariates):
