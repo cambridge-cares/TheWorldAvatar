@@ -79,6 +79,11 @@ UPDATE routing_ways SET slope = ((target_elevation - source_elevation) / source_
 ```
 
 ## Creating Isochrone as SQL View
+Creating isochrone view in geoserver as SQL view.
+First you need to find out which node it is for the hospital. Subsequently, replace the node number-7536 in the code as a geoserver layer. 
+
+Subsequently, you can use this geoserver layer to display it in data.json
+
 
 ### Unflooded
 ```

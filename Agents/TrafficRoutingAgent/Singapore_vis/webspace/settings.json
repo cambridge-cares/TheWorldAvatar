@@ -1,0 +1,13 @@
+{
+    "start": {
+        "center": [103.77154687110597,1.3247782707803233],
+        "zoom": 13,
+        "bearing": 340,
+        "pitch": 0
+    },
+    "search": {
+        "Name": "name",
+        "ID": "id"
+    },
+    "attribution": "Map data copyrighted OpenStreetMap contributors <BR> Contains information from Traffic Incident from LTA Datamall which is made available under the terms of the Singapore Open Data Licence version 1.0 <BR>This showcase uses Traffic Incident data from the real-time data API (Beta)"
+}

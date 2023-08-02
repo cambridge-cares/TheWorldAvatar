@@ -1,0 +1,38 @@
+{
+    "name": "Pirmasens",
+    "groups": [
+        {
+            "name": "Buildings",
+            "stack": "http://10.25.188.85:3838",
+            "sources": [
+                {
+                    "id": "building",  
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://10.25.188.85:3838/geoserver/3DcityDB/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=3DcityDB%3Apirmasens_buildings&outputFormat=application%2Fjson"
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "building",
+                    "name": "Building geometry",
+                    "source": "building",
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#ff0000",
+                        "fill-extrusion-opacity": 0.8,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height":50
+                    }
+                }
+            ]
+        }
+    ]
+}

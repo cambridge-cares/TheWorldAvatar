@@ -1,0 +1,13 @@
+{
+    "marker": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Home-icon.svg/1200px-Home-icon.svg.png",
+    "traffic-accident": "icons/traffic-accident.png",
+    "traffic-road-work": "icons/road-work.png",
+    "traffic-vehicle-breakdown": "icons/vehicle-breakdown.png",
+    "traffic-weather": "icons/terrible-weather.png",
+    "traffic-obstacle": "icons/road-obstacle.png",
+    "traffic-road-block": "icons/road-block.png",
+    "traffic-heavy-traffic": "icons/heavy-traffic.png",
+    "traffic-misc": "icons/traffic-misc.png",
+    "traffic-diversion": "icons/traffic-diversion.png",
+    "traffic-unattended-vehicle": "icons/unattended-vehicle.png"
+}

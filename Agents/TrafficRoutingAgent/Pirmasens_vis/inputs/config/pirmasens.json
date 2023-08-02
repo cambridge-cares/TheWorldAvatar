@@ -1,0 +1,37 @@
+{
+    "name": "routing",
+    "database": "postgres",
+    "workspace": "pirmasens",
+    "datasetDirectory": "pirmasens",
+    "dataSubsets": [
+        {
+            "type": "OSMRouting",
+            "skip": true,
+            "schema": "public",
+            "subdirectory": "routing",
+            "name": "routing"
+        },
+        {
+            "type": "raster",
+            "name": "flood",
+            "skip": true,
+            "subdirectory": "flood",
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "elevation"
+                }
+            }
+        },
+        {
+            "type": "raster",
+            "name": "population",
+            "skip": true,
+            "subdirectory": "population",
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "elevation"
+                }
+            }
+        }
+    ]
+}

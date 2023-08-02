@@ -1,0 +1,13 @@
+version: "3.8"
+
+# All Services
+services:
+
+  # Example DTVF implementation
+  example-mapbox-vis:
+    image: ghcr.io/cambridge-cares/dtvf-base-image:latest
+    container_name: "Pirmasens_Visualization"
+    ports:
+      - "9091:80"
+    volumes:
+      - ../webspace:/var/www/html
