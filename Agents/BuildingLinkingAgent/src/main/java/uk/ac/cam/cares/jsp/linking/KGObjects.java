@@ -84,15 +84,15 @@ public class KGObjects {
         }
 
     }
-    public List<KGObjects> getAllObjects(Map<String, String> parameters) throws SQLException {
+    public List<KGObjects> getAllObjects(String[] config) throws SQLException {
         PreparedStatement psQuery = null;
         ResultSet rs = null;
         List<KGObjects> allObjects = new ArrayList<>();
 
-        String prefix1 = parameters.get("prefix1");
-        String prefix2 = parameters.get("prefix2");
-        String isA = parameters.get("isA");
-        String has = parameters.get("has");
+        String prefix1 = config[5];
+        String prefix2 = config[6];
+        String isA = config[7];
+        String has = config[8];
 
         p_j1 = SparqlBuilder.prefix("j1",iri(prefix1));
         p_powsys = SparqlBuilder.prefix("powsys",iri(prefix2));

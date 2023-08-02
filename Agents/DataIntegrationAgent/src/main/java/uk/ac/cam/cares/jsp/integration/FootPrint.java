@@ -41,7 +41,7 @@ public class FootPrint {
         }
         classifySurfaces(this.allObject3D);
     }
-
+    
     private void classifySurfaces(List<GeoObject3D> allObject3D){
         for(int i = 0; i < allObject3D.size(); i++){
             GeoObject3D object3D = allObject3D.get(i);

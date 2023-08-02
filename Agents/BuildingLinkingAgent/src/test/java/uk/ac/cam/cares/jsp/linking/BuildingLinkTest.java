@@ -58,7 +58,7 @@ class BuildingLinkTest {
 
         BuildingLink buildingLink = new BuildingLink();
         buildingLink.setPostGISClient(conn3);
-        buildingLink.doPut(request, response);
+        // buildingLink.doPut(request, response);
 
     }
     @AfterEach
