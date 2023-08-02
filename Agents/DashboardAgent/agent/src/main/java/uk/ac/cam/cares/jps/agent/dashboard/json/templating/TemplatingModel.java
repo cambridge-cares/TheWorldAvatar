@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.templating;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * A Java representation of a JSON-like model that encapsulates and enforces information
@@ -12,15 +13,15 @@ public class TemplatingModel {
     private final StringBuilder VARIABLES_SYNTAX = new StringBuilder();
 
     /**
-     *  Constructor that process customisable options for the templating variable in Grafana's JSON model.
+     * Constructor that process customisable options for the templating variable in Grafana's JSON model.
      *
-     * @param assets       A map of all assets mapped to their asset types.
+     * @param assets A map of all assets mapped to their asset types.
      */
-    public TemplatingModel(Map<String, List<String>> assets) {
-        // Initialise a queue to store these custom variables
-        Queue<CustomVariable> variableQueue = new ArrayDeque<>();
+    public TemplatingModel(Map<String, Map<String, List<String[]>>> assets) {
+        // Initialise a queue to store these template variables
+        Queue<TemplateVariable> variableQueue = new ArrayDeque<>();
         // Create the first custom variable for filtering asset types ONLY IF >1 asset type
-        if (assets.keySet().size()>1){
+        if (assets.keySet().size() > 1) {
             // Initialise an array for all the available types
             String[] assetTypes = assets.keySet().toArray(new String[0]);
             // Initialise a custom variable
@@ -28,19 +29,30 @@ public class TemplatingModel {
             variableQueue.offer(variable);
         }
         // For each asset type available
-        for (String assetType: assets.keySet()) {
-            // Create custom variables for all of their individual assets
-            String[] individualAssets = assets.get(assetType).toArray(new String[0]);
+        for (String assetType : assets.keySet()) {
+            // Retrieve the map of measures to their asset and time series metadata
+            Map<String, List<String[]>> measures = assets.get(assetType);
+            // Within the map, there is a list containing only the asset names
+            // Retrieve this list and convert it into one array to be processed for
+            // creating the custom variable for filtering individual assets in one asset type group, and add into the queue
+            String[] individualAssets = measures.get("assets").stream().flatMap(Stream::of).distinct().toArray(String[]::new);
             CustomVariable variable = new CustomVariable(assetType, individualAssets, 0);
-            // Append it to the queue
             variableQueue.offer(variable);
+            // For each of the measures, create a postgres variable that is tied to their asset type custom variable
+            for (String measure : measures.keySet()) {
+                // Take note to exclude the assets key as that is not required
+                if (!measure.equals("assets")) {
+                    PostgresVariable postgresVariable = new PostgresVariable(measure, assetType, measures.get(measure));
+                    variableQueue.offer(postgresVariable);
+                }
+            }
         }
         // While there are still items in the queue,
-        while(!variableQueue.isEmpty()) {
+        while (!variableQueue.isEmpty()) {
             // Append a comma before that variable if it is not the first variable
-            if(this.VARIABLES_SYNTAX.length()!=0) this.VARIABLES_SYNTAX.append(",");
+            if (this.VARIABLES_SYNTAX.length() != 0) this.VARIABLES_SYNTAX.append(",");
             // Retrieve the variable and remove it from the queue
-            CustomVariable currentVar = variableQueue.poll();
+            TemplateVariable currentVar = variableQueue.poll();
             // Construct its syntax and append it
             this.VARIABLES_SYNTAX.append(currentVar.construct());
         }

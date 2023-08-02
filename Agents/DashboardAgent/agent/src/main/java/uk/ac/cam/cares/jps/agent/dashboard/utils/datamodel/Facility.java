@@ -26,43 +26,18 @@ public class Facility {
     }
 
     /**
-     * A getter method to retrieve all the assets available in the facility.
-     *
-     * @return A map of {assetType: [asset1, asset2, ...]} categorising each asset to their type.
-     */
-    public Map<String, List<String>> getAllAssets() {
-        Map<String, List<String>> assets = new HashMap<>();
-        // For all assets, store them in a map with their asset type as a key and individual asset names as values
-        for (Asset asset : this.ASSETS.values()) {
-            String assetType = asset.getAssetType();
-            // If the asset type has preceding values
-            if (assets.containsKey(assetType)) {
-                // Simply add the value to the current list
-                List<String> tempList = assets.get(assetType);
-                tempList.add(asset.getAssetName());
-            } else {
-                // If the asset type does not have preceding values, create a new list with the current asset name
-                List<String> tempList = new ArrayList<>();
-                tempList.add(asset.getAssetName());
-                // Map asset types to their specific assets
-                assets.put(assetType, tempList);
-            }
-        }
-        return assets;
-    }
-
-    /**
-     * A getter method to retrieve all available measures and their corresponding assets in the facility.
-     * Format: {asset1: [measure1, dataIRI, timeseriesIRI], [measure2, dataIRI, timeseriesIRI]], asset2: [[measureName, dataIRI, timeseriesIRI]], ...]}
+     * A getter method to retrieve all available assets and their corresponding time series and information in the facility.
+     * Format: {asset1: [measure1, dataIRI, timeseriesIRI, assetType], [measure2, dataIRI, timeseriesIRI, assetType]],
+     * asset2: [[measureName, dataIRI, timeseriesIRI, assetType]], ...]}
      *
      * @return A map linking all assets to their measures.
      */
-    public Map<String, Queue<String[]>> getAllMeasures() {
+    public Map<String, Queue<String[]>> getAllAssets() {
         // For all assets, store them in a map with their asset type as a key and individual asset names as values
         Map<String, Queue<String[]>> assetMeasures = new HashMap<>();
         for (Asset asset : this.ASSETS.values()) {
             String assetName = asset.getAssetName();
-            assetMeasures.put(assetName, asset.getMeasureInfo());
+            assetMeasures.put(assetName, asset.getAssetData());
         }
         return assetMeasures;
     }

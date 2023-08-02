@@ -80,14 +80,6 @@ public class StackClient {
     }
 
     /**
-     * Get all assets from a specific spatial zone in the knowledge graph.
-     *
-     * @param spatialZone The spatial zone of interest.
-     * @return An array of all available assets within a specific spatial zone in the knowledge graph.
-     */
-    public Map<String, List<String>> getAllAssets(String spatialZone) {return this.SPARQL_CLIENT.getAllAssets(spatialZone);}
-
-    /**
      * Get the list of database names that is available in this stack.
      */
     public List<String> getDatabaseNames() {
@@ -108,22 +100,22 @@ public class StackClient {
     }
 
     /**
-     * Get the metadata of time series so that they can be populated within the dashboard.
-     *
-     * @param spatialZone The specific spatial zone to retrieve time series data.
-     * @return A map with each measure name as key and their corresponding metadata and asset name. Position 0 - measure name; Position 1 - asset name; Position 2 - column name; Position 3 - table name.
-     */
-    public Map<String, List<String[]>> getTimeSeriesMetadata(String spatialZone) {
-        LOGGER.debug("Retrieving the time series metadata from PostGIS...");
-        Map<String, Queue<String[]>> measures = this.SPARQL_CLIENT.getAllMeasures(spatialZone);
-        return this.POSTGIS_CLIENT.getMeasureColAndTableName(measures);
-    }
-
-    /**
      * Get the dashboard service within this stack.
      */
     public String getDashboardUrl() {
         return this.DASHBOARD_URL;
+    }
+
+    /**
+     * Get all assets from a specific spatial zone in the knowledge graph with groups of measures tied to group of asset types.
+     *
+     * @param spatialZone The spatial zone of interest.
+     * @return A map: {assetType: {assets:[asset name list], measure[[measureDetails],[measureDetails]]}}.
+     */
+    public Map<String, Map<String, List<String[]>>> getAllAssets(String spatialZone) {
+        LOGGER.debug("Retrieving the time series metadata from PostGIS...");
+        Map<String, Queue<String[]>> measures = this.SPARQL_CLIENT.getAllAssetMetaData(spatialZone);
+        return this.POSTGIS_CLIENT.getMeasureColAndTableName(measures);
     }
 
     /**

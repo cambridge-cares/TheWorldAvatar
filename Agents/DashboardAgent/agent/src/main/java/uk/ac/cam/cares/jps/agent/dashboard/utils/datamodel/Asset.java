@@ -27,7 +27,7 @@ public class Asset {
     protected Asset(String assetName, String assetType, String measureName, String measureIri, String timeSeriesIri) {
         this.ASSET_NAME = assetName;
         this.ASSET_TYPE = assetType;
-        this.addMeasure(measureName, measureIri, timeSeriesIri);
+        this.addMeasure(assetType, measureName, measureIri, timeSeriesIri);
     }
 
     /**
@@ -37,11 +37,23 @@ public class Asset {
      * @param measureIri    Corresponding dataIRI of the measure associated with the asset.
      * @param timeSeriesIri Corresponding time series IRI of the measure.
      */
-    protected void addMeasure(String measureName, String measureIri, String timeSeriesIri) {
-        String[] iris = new String[3];
+    protected void addMeasure(String measureName, String measureIri, String timeSeriesIri) {this.addMeasure(this.ASSET_TYPE, measureName, measureIri, timeSeriesIri);}
+
+    /**
+     * A private overloaded method that adds the measure alongside its asset type to be stored within this instance.
+     * This method will only be called when constructing the object
+     *
+     * @param assetType     The asset type.
+     * @param measureName   Name of the measure associated with the asset.
+     * @param measureIri    Corresponding dataIRI of the measure associated with the asset.
+     * @param timeSeriesIri Corresponding time series IRI of the measure.
+     */
+    private void addMeasure(String assetType, String measureName, String measureIri, String timeSeriesIri) {
+        String[] iris = new String[4];
         iris[0] = measureName;
         iris[1] = measureIri;
         iris[2] = timeSeriesIri;
+        iris[3] = assetType;
         this.MEASURES.put(measureName, iris);
     }
 
@@ -51,16 +63,11 @@ public class Asset {
     protected String getAssetName() {return this.ASSET_NAME;}
 
     /**
-     * A getter method for asset type.
-     */
-    protected String getAssetType() {return this.ASSET_TYPE;}
-
-    /**
-     * A getter method to retrieve all measures and their information.
+     * A getter method to retrieve all assets and their associated metadata
      *
-     * @returns A queue containing all measure information. Within the array, first position is measure name; Second position is the dataIRI; Third position is time series IRI.
+     * @returns A queue containing all asset information. Within the array, first position is measure name; Second position is the dataIRI; Third position is time series IRI; Fourth position is the asset type.
      */
-    protected Queue<String[]> getMeasureInfo() {
+    protected Queue<String[]> getAssetData() {
         Queue<String[]> measureInfo = new ArrayDeque<>();
         for (String measure : this.MEASURES.keySet()) {
             measureInfo.offer(this.MEASURES.get(measure));

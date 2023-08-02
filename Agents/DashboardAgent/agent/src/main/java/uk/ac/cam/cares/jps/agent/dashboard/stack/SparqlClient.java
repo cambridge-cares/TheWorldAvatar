@@ -52,23 +52,13 @@ public class SparqlClient {
     }
 
     /**
-     * Get all assets from a specific spatial zone in the knowledge graph.
-     *
-     * @param spatialZone The spatial zone to retrieve all assets.
-     * @return An array of all available assets within a specific spatial zone in the knowledge graph.
-     */
-    protected Map<String, List<String>> getAllAssets(String spatialZone) {
-        return this.SPATIAL_ZONES.get(spatialZone).getAllAssets();
-    }
-
-    /**
-     * Get all measures from a specific spatial zone in the knowledge graph.
+     * Get all assets and their time series information from a specific spatial zone in the knowledge graph.
      *
      * @param spatialZone The spatial zone to retrieve all assets.
      * @return A map linking all assets to their measures.
      */
-    protected Map<String, Queue<String[]>> getAllMeasures(String spatialZone) {
-        return this.SPATIAL_ZONES.get(spatialZone).getAllMeasures();
+    protected Map<String, Queue<String[]>> getAllAssetMetaData(String spatialZone) {
+        return this.SPATIAL_ZONES.get(spatialZone).getAllAssets();
     }
 
     /**

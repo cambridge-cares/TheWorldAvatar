@@ -25,7 +25,7 @@ public class GrafanaModel {
      * @param title  The title of the dashboard.
      * @param assets A map of all assets mapped to their asset types.
      */
-    public GrafanaModel(String title, Map<String, List<String>> assets) {
+    public GrafanaModel(String title, Map<String, Map<String, List<String[]>>> assets) {
         // Grafana has enforced a default comment for the first version, which cannot be changed
         this(title, null, "null", "20s", "Initialised dashboard", assets);
     }
@@ -40,7 +40,7 @@ public class GrafanaModel {
      * @param comment      A comment for version control purposes.
      * @param assets       A map of all assets mapped to their asset types.
      */
-    public GrafanaModel(String title, Integer dashboardId, String dashboardUid, String refreshRate, String comment, Map<String, List<String>> assets) {
+    public GrafanaModel(String title, Integer dashboardId, String dashboardUid, String refreshRate, String comment, Map<String, Map<String, List<String[]>>> assets) {
         this.DASHBOARD_TITLE = title;
         // If setting up a new dashboard, please pass null as a parameter to generate the ID. If updating an existing dashboard, please pass the original id
         this.DASHBOARD_ID = dashboardId == null ? "null" : dashboardId.toString();
