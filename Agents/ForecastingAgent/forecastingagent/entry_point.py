@@ -40,6 +40,8 @@ def create_app():
 
     # Add a root web page to the agent
     agent.add_url_pattern('/', 'root', default, methods=['GET'])
+    # Add a URL route to assess (forecasting) error between 2 time series
+    agent.add_url_pattern('/evaluate_errors', 'errors', agent.evaluate_forecast_error, methods=['POST'])
 
     # Start all periodical jobs
     agent.start_all_periodical_job()

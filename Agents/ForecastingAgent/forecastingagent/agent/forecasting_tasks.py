@@ -163,9 +163,9 @@ def forecast(iri, config,
     # call client
     instantiate_forecast_timeseries(tsClient, cfg, forecast)
     
-    if backtest_series is not None:
-        cfg['error'] = calculate_error(backtest_series, forecast)
-        logger.info(f'Calculated error: {cfg["error"]}')
+    # if backtest_series is not None:
+    #     cfg['error'] = calculate_error(backtest_series, forecast)
+    #     logger.info(f'Calculated error: {cfg["error"]}')
     
     # delete keys which you dont want in response, e.g. not json serializable objects
     keys_to_delete = ['load_covariates_func',
@@ -258,36 +258,6 @@ def get_forecast(series, covariates, model, cfg):
         forecast = scaler.inverse_transform(forecast)
 
     return forecast
-
-
-def calculate_error(target, forecast):
-    """
-    It takes two time series as input and returns a dictionary with error metrics.
-
-    :param target: the actual values
-    :param forecast: The forecasted values
-    :return: A dictionary with error metrics
-    """
-    """Calculate error metrics between target and forecast
-
-    Args:
-        target (TimeSeries): target timeseries
-        forecast (TimeSeries): forecast timeseries
-
-    Returns:
-        dict: dictionary with error metrics
-    """
-    error = {}
-    try:
-        error['mape'] = mape(target, forecast)
-    except ValueError as e:
-        # mape failed because of zero values
-        pass
-    error['smape'] = smape(target, forecast)
-    error['mse'] = mse(target, forecast)
-    error['rmse'] = rmse(target, forecast)
-    error['max_error'] = max_error(target, forecast)
-    return error
 
 
 def load_ts_data(cfg, kgClient, tsClient):
@@ -599,3 +569,28 @@ def get_time_instant(date):
         TIME_INTIMEPOSITION: timePosition_iri})
 
     return instant_iri, update
+
+
+def calculate_error(target, forecast):
+    """
+    Calculate error metrics between two darts TimeSeries objects and 
+    returns a dictionary with error metrics.
+
+    Arguments:
+        target {TimeSeries} -- actual (historical) time series
+        forecast {TimeSeries} -- forecasted time series
+    Returns:
+        dict: dictionary with error metrics
+    """
+
+    error = {}
+    try:
+        error['mape'] = mape(target, forecast)
+    except ValueError:
+        # MAPE calcualtion failed due to zero values
+        pass
+    error['smape'] = smape(target, forecast)
+    error['mse'] = mse(target, forecast)
+    error['rmse'] = rmse(target, forecast)
+    error['max_error'] = max_error(target, forecast)
+    return error

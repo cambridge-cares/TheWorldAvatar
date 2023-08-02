@@ -9,17 +9,19 @@
 
 import uuid
 import pandas as pd
+from darts import TimeSeries
+from flask import request, jsonify
 
 from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
 from pyderivationagent import DerivationOutputs
 
 from forecastingagent.agent.forcasting_config import *
-from forecastingagent.agent.forecasting_tasks import forecast
+from forecastingagent.agent.forecasting_tasks import forecast, calculate_error
 from forecastingagent.datamodel.iris import *
-from forecastingagent.errorhandling.exceptions import TSException
+from forecastingagent.errorhandling.exceptions import InvalidInput, TSException
 from forecastingagent.kgutils.kgclient import KGClient
-#from forecastingagent.kg_operations.tsclient import TSClient
+from forecastingagent.kgutils.tsclient import TSClient
 
 
 class ForecastingAgent(DerivationAgent):
@@ -180,7 +182,72 @@ class ForecastingAgent(DerivationAgent):
         forecast(iri=input_iris['iri_to_forecast'], config=cfg)
 
         # Instantiate forecast in KG
+
+
+    def evaluate_forecast_error(self):
+        """
+        This method evaluates multiple error metrics between two time series,
+        mainly to assess forecasting errors. 
         
+        The method expects a HTTP POST JSON body with the following parameters:
+        { "query": {
+            "tsIRI_target": "https://...",
+            "tsIRI_fc" : "https://..."
+            }
+        }
+        """
+        
+        #
+        # 1) Check HTTP request parameters
+        #
+        # Get received 'query' JSON object which holds all request parameters
+        try:
+            try:
+                query = request.json['query']
+            except Exception as ex:
+                msg = 'No "query" node provided in HTTP request: ' + str(ex)
+                logger.error(msg, ex)
+                raise InvalidInput(msg) from ex
+            
+            inputs = {'target': 'tsIRI_target', 'forecast': 'tsIRI_fc'}
+            # Extract time series IRIs to evaluate
+            try:
+                for k, v in inputs.items():
+                    inputs[k] = str(query[v])
+            except Exception as ex:
+                msg = 'Unable to extract time series IRIs to evaluate: ' + str(ex)
+                logger.error(msg)
+                raise InvalidInput(msg) from ex
+
+            # 2) Retrieve time series data
+            ts_client = TSClient(kg_client=self.sparql_client)
+            for k, v in inputs.items():
+                try:
+                    # Retrieve associated dataIRI
+                    dataIRI = self.sparql_client.get_dataIRI(v)
+                    if not dataIRI:
+                        raise ValueError(f'No dataIRI found for tsIRI: {v}')
+                    # Retrieve time series data using TimeSeriesClient
+                    times, values = ts_client.retrieve_timeseries(dataIRI)
+                    # Create darts TimeSeries objects
+                    t = pd.DatetimeIndex(times)
+                    inputs[k] = TimeSeries.from_times_and_values(times=t, values=values)
+                except Exception as ex:
+                    msg = 'Unable to retrieve time series data: ' + str(ex)
+                    logger.error(msg)
+                    raise InvalidInput(msg) from ex
+
+            # 3) Estimate forecast error (based on longest overlapping time series)
+            # NOTE: Different time series lengths are not an issue as long as they
+            #       have at least one overlapping time point -> error metrics are
+            #       calculated based on overlapping time series
+            response = calculate_error(**inputs)
+            return jsonify(response), 200
+
+        except Exception as ex:
+            msg = 'Error evaluation failed: ' + str(ex)
+            logger.error(msg, ex)
+            return jsonify({'msg': msg}), 500
 
 
 def default():

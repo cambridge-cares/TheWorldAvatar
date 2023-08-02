@@ -192,42 +192,62 @@ class KGClient(PySparqlClient):
             raise ValueError(msg)
         
 
-    def get_associated_forecast_details(self, dataIRI:str):
+    # def get_associated_forecast_details(self, dataIRI:str):
+    #     """
+    #     Returns the IRI, RDB URL ans time format of the time series instance 
+    #     associated with the given data IRI.
+
+    #     Returns:
+    #         ts (dict) -- dictionary with keys 'ts_iri', 'rdb_url' and 'time_format'
+    #     """
+    #     query = f"""
+    #         SELECT DISTINCT ?ts_iri ?rdb_url ?time_format
+    #         WHERE {{   
+    #         VALUES ?data_iri {{ <{dataIRI}> }} 
+    #         ?data_iri <{OM_HASVALUE}>*/<{TS_HASTIMESERIES}> ?ts_iri .
+    #         ?ts_iri <{TS_HASRDB}> ?rdb_url .
+    #         OPTIONAL {{ ?ts_iri <{TS_HASTIMEUNIT}> ?time_format . }}
+    #         }}
+    #     """
+    #     query = self.remove_unnecessary_whitespace(query)
+    #     res = self.performQuery(query)
+
+    #     # Extract relevant information from unique query result
+    #     if len(res) == 1:
+    #         ts = {'ts_iri': self.get_unique_value(res, 'ts_iri'),
+    #               'rdb_url': self.get_unique_value(res, 'rdb_url'),
+    #               'time_format': self.get_unique_value(res, 'time_format')
+    #         }
+    #         return ts
+        
+    #     else:
+    #         # Throw exception if no or multiple time series are found
+    #         if len(res) == 0:
+    #             msg = f"No time series associated with data IRI: {dataIRI}."
+    #         else:
+    #             msg = f"Multiple time series associated with data IRI: {dataIRI}."
+    #         logger.error(msg)
+    #         raise ValueError(msg)
+
+
+    def get_dataIRI(self, tsIRI:str):
         """
-        Returns the IRI, RDB URL ans time format of the time series instance 
-        associated with the given data IRI.
+        Returns dataIRI associated with given tsIRI.
 
         Returns:
-            ts (dict) -- dictionary with keys 'ts_iri', 'rdb_url' and 'time_format'
+            dataIRI {str} -- dataIRI associated with given tsIRI
         """
         query = f"""
-            SELECT DISTINCT ?ts_iri ?rdb_url ?time_format
+            SELECT DISTINCT ?dataIRI
             WHERE {{   
-            VALUES ?data_iri {{ <{dataIRI}> }} 
-            ?data_iri <{OM_HASVALUE}>*/<{TS_HASTIMESERIES}> ?ts_iri .
-            ?ts_iri <{TS_HASRDB}> ?rdb_url .
-            OPTIONAL {{ ?ts_iri <{TS_HASTIMEUNIT}> ?time_format . }}
+            ?dataIRI <{TS_HASTIMESERIES}> <{tsIRI}> .
             }}
         """
         query = self.remove_unnecessary_whitespace(query)
         res = self.performQuery(query)
 
-        # Extract relevant information from unique query result
-        if len(res) == 1:
-            ts = {'ts_iri': self.get_unique_value(res, 'ts_iri'),
-                  'rdb_url': self.get_unique_value(res, 'rdb_url'),
-                  'time_format': self.get_unique_value(res, 'time_format')
-            }
-            return ts
-        
-        else:
-            # Throw exception if no or multiple time series are found
-            if len(res) == 0:
-                msg = f"No time series associated with data IRI: {dataIRI}."
-            else:
-                msg = f"Multiple time series associated with data IRI: {dataIRI}."
-            logger.error(msg)
-            raise ValueError(msg)
+        # Return unique query result (otherwise exception is thrown)
+        return self.get_unique_value(res, 'dataIRI')
 
 
     #
