@@ -268,11 +268,12 @@ The format of the stack configuration file is as follows:
 
 ## Example - including a visualisation
 
-This example explains how to spin up a DTVF based visualisation container within a stack. The visualisation container requires a volume called `vis-files` to be populated.
+This example explains how to spin up a DTVF based visualisation container within a stack. The visualisation container requires a volume called `vis-files` to be populated and secrets `mapbox_username`, and `mapbox_api_key` to be created.
 The steps to configure the stack are as follows:
 * Enable the visualisation container by adding it to the `services` `includes` list in the stack config file.
 * Specify the sub-directory of the `stack-manager/inputs/data/` folder from which the custom files that configure the visualisation should be copied, in this example the sub-directory is called `webspace`.
 * Copy the custom files that configure the visualisation in to that directory, in this example `stack-manager/inputs/data/webspace`.
+* Create `mapbox_username` and `mapbox_api_key` files in the `stack-manager/inputs/secrets` and populate with the relevant credentials.
 
 The final stack config file should contain the following content:
 ```json

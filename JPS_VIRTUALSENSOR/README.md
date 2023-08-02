@@ -7,6 +7,13 @@ it is still necessary to define one ship in a .json file in this folder. In this
 
 4) If running AERMOD for static point sources, it is necessary to instantiate the input data required for AERMOD Agent according to OntoDispersion (https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodispersion). See the JurongIslandInputAgent folder for an example of an agent that does this.
 
+5) If running AERMOD for static point sources, it is required to upload the elevation data to a single table in the stack postgresql database. The elevation data for the user-specified region will be queried from this table and used to run the AERMOD terrain pre-processor, AERMAP, which calculates the critical hill height scale for each receptor. 
+
+Elevation data can be downloaded from https://www.eorc.jaxa.jp/ALOS/en/dataset/aw3d30/aw3d30_e.htm as a series of .tif files each of which covers a region that spans 1 degree in latitude and longitude. It is required to register for a free account before downloading the files.
+
+Uploading of elevation data can be done using the stack data uploader. The downloaded .tif files should be placed in a subfolder within the TheWorldAvatar/JPS_VIRTUALSENSOR/stack-data-uploader/inputs/data/elevation/ directory. The elevation.json configuration file in the TheWorldAvatar/JPS_VIRTUALSENSOR/stack-data-uploader/inputs/config/ can be modified if necessary. It is also possible to include an elevation.sld file in this directory location to customize the GeoServer style used to upload the data. See https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader for more details. The name of the POSTGIS table where the elevation data is stored needs to be specified as the value of the environment variable "ELEVATION_TABLE" in the stack-manager/inputs/config/aermod-agent.json and aermod-agent-debug.json files. 
+
+
 
 Stack needs to be up and running:
 1) execute
@@ -21,6 +28,15 @@ Make sure you have access to the CMCL Docker registry. You can test your access 
     docker login docker.cmclinnovations.com
     ```
 If you are not already logged in then, when prompted, enter the username and password you were given.
+
+2) If running AERMOD for static point sources, save the json configuration file and .tif elevation data files in the TheWorldAvatar/JPS_VIRTUALSENSOR/stack-data-uploader/inputs/ folder as described above. Execute 
+
+```
+./stack.sh start ship-stack
+```
+from within this folder to upload the elevation data to POSTGIS.
+
+3) Start the docker containers for the input agents responsible for instantiating emissions data. Send the requests to these agents to instantiate the relevant triples.
 
 ## Work example
 

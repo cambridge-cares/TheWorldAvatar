@@ -11,11 +11,8 @@ WORKDIR /root/.m2
 RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|" settings-security.xml
 RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
-WORKDIR /root/openmeteo_agent/src/main/resources
-RUN sed -i "s|DBUSERNAME|$(cat ../../../../credentials/postgres_username.txt)|;s|DBPASSWORD|$(cat ../../../../credentials/postgres_password.txt)|" config.properties
-
 # Build
-WORKDIR /root/openmeteo_agent
+WORKDIR /root/openmeteo-agent
 RUN --mount=type=cache,target=/root/.m2/repository mvn package
 #==================================================================================================
 
@@ -25,7 +22,7 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
-COPY --from=builder /root/openmeteo_agent/output/openmeteo_agent##1.2.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/openmeteo-agent/output/openmeteo-agent##2.0.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

@@ -5,7 +5,6 @@
             "ContainerSpec": {
                 "Image": "ghcr.io/cambridge-cares/ship-input-agent:1.2",
 				"Env": [
-					"STACK_NAME=${STACK_NAME}",
 					"DATABASE=postgres",
 					"DATA_DIR=/data",
 					"LAST_READ_FILE=/misc/last_read_file",

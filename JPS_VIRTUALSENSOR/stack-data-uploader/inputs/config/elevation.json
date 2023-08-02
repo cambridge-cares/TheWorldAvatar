@@ -1,0 +1,21 @@
+{
+    "name": "elevation",
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "elevation",
+    "dataSubsets": [
+        {
+            "type": "raster",
+            "name": "elevation",
+            "skip": false,
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "raster"
+                }
+            },
+            "gdalTranslateOptions": {
+                "sridOut": "EPSG:4326"
+            }
+        }
+    ]
+}

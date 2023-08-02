@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   python-service:
-    image: ghcr.io/cambridge-cares/python-service:1.2
+    image: ghcr.io/cambridge-cares/python-service:1.2.3-dev-aermod-agent-sensor-SNAPSHOT
     deploy:
       mode: replicated
       replicas: 1
@@ -16,7 +16,7 @@ services:
       - vis_data:/var/www/html
     networks:
       - stack
-  
+
 volumes:
   vis_data:
     name: "vis_data"

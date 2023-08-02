@@ -4,7 +4,7 @@ A central framework for Digital Twin Visualisations (the Digital Twin Visualisat
 
 Please note that the DTVF can only plot data that is provided in the accepted formats (more on this below), restricts some features if the data isn't organised (again, more on this below), and only produces a basic visualisation. Developers that want to display non-standard data, or create more complex map interactions are free to use the DTVF as a base, but will likely need to handle these additions themselves.
 
-The current, working version of the DTVF is **3.4.0**.
+The current, working version of the DTVF is listed in the `VERSION` file.
 
 # Technical Overview
 
@@ -18,7 +18,7 @@ At the time of writing the available mapping providers are [Mapbox](https://www.
 
 To use the DTVF, developers just need to provide some JSON configuration files and a `index.html` file that imports the remote DTVF library (along with other dependencies), adds some required HTML elements, then calls the startup routine. Template HTML files can be found within the visualisation examples (listed below).
 
-On startup, the DTVF reads a number of those JSON configuration files (all expected to be local to the visualisation, i.e. next to the `index.html` file), constructs internal, hierarchal representations of data sources and layers, then calls provider specific classes to handle adding those sources and layers to the map for visualisation.
+On start up, the DTVF reads a number of those JSON configuration files (all expected to be local to the visualisation, i.e. next to the `index.html` file), constructs internal, hierarchal representations of data sources and layers, then calls provider specific classes to handle adding those sources and layers to the map for visualisation.
 
 Display of meta and timeseries data is also a feature offered by the DTVF (regardless of the chosen mapping provider), however this functionality is still under development and requires data to be hosted within a [stack instance](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager), with a specific agent running, and the geospatial data to meet certain standards. If these conditions are not met, any metadata baked directly into the geospatial data is shown instead; it's recommended to use this approach for now.
 
