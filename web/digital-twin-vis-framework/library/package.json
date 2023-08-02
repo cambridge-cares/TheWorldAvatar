@@ -5,7 +5,7 @@
         "tsc": "tsc"
     },
     "devDependencies": {
-        "@types/jquery": "^3.5.14",
+        "@types/jquery": "^3.5.16",
         "@types/jqueryui": "^1.12.16",
         "@types/mapbox-gl": "^2.7.0",
         "@types/turf": "^3.5.32",

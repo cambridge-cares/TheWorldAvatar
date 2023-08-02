@@ -84,7 +84,7 @@ public class Config extends ContainerClient {
                 prop.setProperty(SRC_DB_PASSWORD, "postgis");
                 prop.setProperty(SRC_DB_3D, "pirmasens");
                 prop.setProperty(SRC_DB_2D, "pirmasens_2d");
-                prop.setProperty(SRC_TABLE_2D, "pirmasens");
+                prop.setProperty(SRC_TABLE_2D, "pirmasens_2d");
             }
 
             ContainerClient client = new ContainerClient();

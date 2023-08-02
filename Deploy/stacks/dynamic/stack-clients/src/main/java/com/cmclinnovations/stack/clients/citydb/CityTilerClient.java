@@ -26,6 +26,11 @@ public class CityTilerClient extends ContainerClient {
     public static final String COLOUR_CONFIG_FILE = COLOUR_CONFIG_DIR + COLOUR_CONFIG_FILENAME;
     public static final String DEFAULT_COLOUR_CONFIG_FILE = COLOUR_CONFIG_DIR + "citytiler_config_default.json";
 
+    private static final Map<String, String[]> specs = Map.of(
+            "lod2-features", new String[] { "--split_surfaces", "--add_color" },
+            "lod2-buildings", new String[] {},
+            "lod1_lod2-buildings", new String[] { "--lod1" });
+
     private static CityTilerClient instance = null;
 
     public static CityTilerClient getInstance() {
@@ -73,21 +78,37 @@ public class CityTilerClient extends ContainerClient {
 
             String crsIn = getCRSFromDatabase(database, schema);
 
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+            Path configFilePath = configDir.getPath().resolve(configFilename);
+            Path outputDir = Path.of("/3dtiles", database, schema);
 
-            String execId = createComplexCommand(containerId, options.appendOtherArgs("citygml-tiler",
-                    "--db_config_path", configDir.getPath().resolve(configFilename).toString(),
-                    "--crs_in", crsIn,
-                    "--crs_out", "EPSG:4978",
-                    "--output_dir", Path.of("/3dtiles", database, schema).toString()))
-                    .withOutputStream(outputStream)
-                    .withErrorStream(errorStream)
-                    .exec();
-
-            handleErrors(errorStream, execId, logger);
+            specs.entrySet().parallelStream()
+                    .forEach(entry -> generateTileSet(options, containerId, crsIn, configFilePath,
+                            outputDir, entry.getKey(), entry.getValue()));
         }
 
+    }
+
+    private void generateTileSet(CityTilerOptions options, String containerId, String crsIn, Path configFilePath,
+            Path outputDir, String specName, String... specOptions) {
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
+
+        String execId = createComplexCommand(containerId, options.appendOtherArgs(specOptions, "citygml-tiler",
+                "--db_config_path", configFilePath.toString(),
+                "--crs_in", crsIn,
+                "--crs_out", "EPSG:4978",
+                "--output_dir", outputDir.resolve(specName).toString()))
+                .withEvaluationTimeout(3600)
+                .withOutputStream(outputStream)
+                .withErrorStream(errorStream)
+                .exec();
+        try {
+            handleErrors(errorStream, execId, logger);
+        } catch (RuntimeException ex) {
+            logger.warn("citygml-tiler with spec '{}' failed and wrote the following to stderr:\n{}", specName,
+                    errorStream);
+        }
     }
 
     /**

@@ -7,7 +7,11 @@
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-clients</artifactId>
+<<<<<<< HEAD
   <version>1.12.2</version>
+=======
+  <version>1.14.0</version>
+>>>>>>> main
 
   <name>Stack Clients</name>
   <url>https://www.cmclinnovations.com</url>
@@ -150,7 +154,11 @@
     <dependency>
       <groupId>uk.ac.cam.cares.jps</groupId>
       <artifactId>jps-base-lib</artifactId>
+<<<<<<< HEAD
       <version>1.32.0</version>
+=======
+      <version>1.39.0</version>
+>>>>>>> main
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations -->
