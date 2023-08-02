@@ -40,7 +40,7 @@ public class GetHeight {
                         GeoObject3D object3D = allObject3D.get(i);
                         int objectid = object3D.getId();
 
-                        String sql = "SELECT public.ST_3DMaxDistance(( " 
+                        String sql = "SELECT public.ST_3DDistance(( " 
                             + "SELECT geometry FROM surface_geometry WHERE id IN ( "
                             + "SELECT lod0_roofprint_id FROM building WHERE id = " + objectid + " AND lod0_roofprint_id is not null)), "
                             + "(SELECT geometry FROM surface_geometry WHERE id IN "

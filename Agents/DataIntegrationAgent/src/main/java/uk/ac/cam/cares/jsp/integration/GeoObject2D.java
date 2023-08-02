@@ -93,7 +93,7 @@ public class GeoObject2D {
                 while (result.next()) {
                     GeoObject2D object2D = new GeoObject2D();
                     object2D.setName(result.getString("name"));
-                    object2D.setGeometry2D((PGgeometry)result.getObject("wkb_geometry"));
+                    object2D.setGeometry2D((PGgeometry)result.getObject("geometryProperty"));
                     object2D.setAddress(result.getString("add_street"));
                     object2D.setHouse(result.getString("add_housenumber"));
                     object2D.setPostcode(result.getString("add_postcode"));
