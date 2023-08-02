@@ -1,5 +1,5 @@
 plugins {
-    id 'com.android.application'
+    id "com.android.library"
     id 'androidx.navigation.safeargs'
     id 'kotlin-android'
     id 'kotlin-kapt'
@@ -8,17 +8,15 @@ plugins {
 }
 
 android {
-    namespace 'uk.ac.cam.cares.jps.assetmanagementapp'
+    namespace 'uk.ac.cam.cares.jps.notification'
     compileSdk 33
 
     defaultConfig {
-        applicationId "uk.ac.cam.cares.jps.assetmanagementapp"
         minSdk 26
         targetSdk 33
-        versionCode 1
-        versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
     }
 
     buildTypes {
@@ -31,23 +29,14 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    buildFeatures {
-        viewBinding true
-    }
 }
 
 dependencies {
 
+    implementation project(path: ':core:ui')
+
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.9.0'
-
-    implementation project(path: ':feature:qrscan')
-    implementation project(path: ':feature:setting')
-    implementation project(path: ':feature:home')
-    implementation project(path: ':feature:assetinfo')
-    implementation project(path: ':core:network')
-    implementation project(path: ':core:notification')
-
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
@@ -65,16 +54,6 @@ dependencies {
         }
     }
 
-    def nav_version = "2.6.0"
-    implementation "androidx.navigation:navigation-fragment:$nav_version"
-    implementation "androidx.navigation:navigation-ui:$nav_version"
-
     implementation "com.google.dagger:hilt-android:2.44"
     kapt "com.google.dagger:hilt-compiler:2.44"
-
-}
-
-// Allow references to generated code
-kapt {
-    correctErrorTypes true
 }
