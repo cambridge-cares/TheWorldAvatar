@@ -88,54 +88,7 @@ public class DataIntegrationAgent extends JPSAgent {
         }
         return jsonMessage;
     }
-    /**
-     * A method that process all the different HTTP (GET/POST/PULL..) requests.
-     * This will validate the incoming request type and parameters against their route options.
-     *
-     * @return A response to the request called as a JSON Object.
-     */
-    // @Override
-    // public JSONObject processRequestParameters(JSONObject requestParams) {
-    //     JSONObject jsonMessage = new JSONObject();
-    //     // Validate input and if it is false, do not continue with the task
-    //     if (!validateInput(requestParams)) {
-    //         jsonMessage.put("Result", INVALID_PARAMETER_ERROR_MSG);
-    //         return jsonMessage;
-    //     }
-    //     // Retrieve the request type and route
-    //     String requestType = requestParams.get("method").toString();
-    //     String route = requestParams.get("requestUrl").toString();
-    //     // Retrieve the route name
-    //     route = route.substring(route.lastIndexOf("/") + 1);
-    //     LOGGER.info("Passing request to the Data Integration Agent...");
-    //     // Run logic based on request path
-    //     switch (route) {
-    //         case "sql":
-    //             if (requestType.equals("GET")) {
-    //                 String[] config = requestParams.has(KEY_SOURCE_DATABASE) ? Config.retrieveSQLConfig(requestParams.get(KEY_SOURCE_DATABASE).toString(), true) :
-    //                                 requestParams.has(DATABASE_2D) ? Config.retrieveSQLConfig(requestParams.get(DATABASE_2D).toString(), false) :
-    //                                 requestParams.has(DATABASE_3D) ? Config.retrieveSQLConfig(requestParams.get(DATABASE_3D).toString(), false) :
-    //                                 requestParams.has(TABLE_2D) ? Config.retrieveSQLConfig(requestParams.get(TABLE_2D).toString(), false) :
-    //                                 Config.retrieveSQLConfig();
-                    
-    //                 AGENT_IN_STACK = requestParams.has(KEY_SOURCE_DATABASE) ;
-    //                 jsonMessage = sqlRoute(config);
-    //             } else {
-    //                 LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
-    //                 jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
-    //             }
-    //             break;
-    //         case "status":
-    //             // if (requestType.equals("GET")) {
-    //             //     jsonMessage = statusRoute();
-    //             // } else {
-    //             //     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
-    //             //     jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
-    //             // }
-    //             break;
-    //     }
-    //     return jsonMessage;
-    // }
+    
 
     /**
      * Validates the request parameters.
@@ -180,25 +133,5 @@ public class DataIntegrationAgent extends JPSAgent {
         }
         return response;
     }
-
-    /**
-     * Run logic for the "/sql" route to do spatial link.
-     *
-     * @return A response to the request called as a JSON Object.
-     */
-//     protected JSONObject sqlRoute(String[] config) {
-//         LOGGER.debug("Creating the SQL connector..");
-//         JSONObject response = new JSONObject();
-//         SpatialLink spatialLink = new SpatialLink();
-//         spatialLink.SpatialLink(config);
-// //        SqlBridge connector = new SqlBridge(config);
-// //        LOGGER.debug("Transfer data from source to target database...");
-// //        JSONObject response = connector.transfer(AGENT_IN_STACK);
-// //        LOGGER.info("Data have been successfully transferred from " + config[0] + " to " + config[3]);
-//         if (response.isEmpty()) {
-//             response.put("Result", "Data have been successfully integrated");
-//         }
-//         return response;
-//     }
     
 }

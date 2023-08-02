@@ -79,30 +79,6 @@ public class Config extends ContainerClient {
         }
     }
 
-    /**
-     * Retrieves the Database url, username and password, which will be stored in the config input.
-     *
-     * @param config                        An array to hold the database details.
-     * @param prop                          A Properties object containing the required properties.
-     * @param missingPropertiesErrorMessage An error message that will be written if there is no property.
-     */
-    // private static void retrieveDatabase(String[] config, Properties prop, StringBuilder missingPropertiesErrorMessage) {
-
-    //     ContainerClient client = new ContainerClient();
-    //     PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
-    //     config[1] = postConfig.getUsername();
-    //     config[2] = postConfig.getPassword();
-    //     config[3] = postConfig.getJdbcURL(config[3]);
-
-    //     config[0] = validateProperties(prop, SRC_DB_URL, missingPropertiesErrorMessage);
-    //     config[1] = validateProperties(prop, SRC_DB_USER, missingPropertiesErrorMessage);
-    //     config[2] = validateProperties(prop, SRC_DB_PASSWORD, missingPropertiesErrorMessage);
-    //     config[3] = validateProperties(prop, SRC_DB_3D, missingPropertiesErrorMessage);
-    //     config[4] = validateProperties(prop, PREFIX1, missingPropertiesErrorMessage);
-    //     config[5] = validateProperties(prop, PREFIX2, missingPropertiesErrorMessage);
-    //     config[4] = validateProperties(prop, ISA, missingPropertiesErrorMessage);
-    //     config[5] = validateProperties(prop, HAS, missingPropertiesErrorMessage);
-    // }
 
     /**
      * Validates the client properties, and return their value if it exists.

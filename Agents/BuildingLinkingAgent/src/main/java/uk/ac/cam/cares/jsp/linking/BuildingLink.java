@@ -55,15 +55,15 @@ public class BuildingLink{
 
                 RemoteStoreClient kgClient = new RemoteStoreClient(config[0],config[0],null,null);
                 KGObjects kgObjects = new KGObjects(kgClient, null, null, null, null);
-                // try {
-                //     this.kgObjects =  kgObjects.getAllObjects(config);
-                //     object3D.setPostGISClient(postgisClient);
-                //     this.geoObject3Ds = object3D.getObject3D();
-                //     } catch (Exception e) {
-                //         LOGGER.error("Fail to connect database.");
-                //         LOGGER.error(e.getMessage());
-                //         throw new RuntimeException(e);
-                //     }
+                try {
+                    this.kgObjects =  kgObjects.getAllObjects(config);
+                    // object3D.setPostGISClient(postgisClient);
+                    this.geoObject3Ds = object3D.getObject3D(config);
+                    } catch (Exception e) {
+                        LOGGER.error("Fail to connect database.");
+                        LOGGER.error(e.getMessage());
+                        throw new RuntimeException(e);
+                    }
                 fuzzyMatch(this.geoObject3Ds,this.kgObjects);
             }
 
@@ -72,18 +72,18 @@ public class BuildingLink{
             throw new JPSRuntimeException("Error connecting to source database: " + e);
         }
     }
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
-        // new Config().initProperties();
-        LOGGER.info("Received POST request to link building");
-        LOGGER.info("Received request: " + req);
+    // protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
+    //     // new Config().initProperties();
+    //     LOGGER.info("Received POST request to link building");
+    //     LOGGER.info("Received request: " + req);
 
-        // Map<String, String> parameters = aggregateByKeys();
-        // String db3d = parameters.get("db3d");
-        // String kgurl = parameters.get("blazegraph");
+    //     // Map<String, String> parameters = aggregateByKeys();
+    //     // String db3d = parameters.get("db3d");
+    //     // String kgurl = parameters.get("blazegraph");
 
         
 
-    }
+    // }
     public void fuzzyMatch(List<GeoObject3D> geoObject3Ds, List<KGObjects> kgObjects){
         MatchService matchService = new MatchService();
         List<Document> docmentList = new ArrayList<>();
@@ -136,21 +136,4 @@ public class BuildingLink{
     void setPostGISClient(PostgresClient postgisClient) {
         // this.postgisClient = postgisClient;
     }
-
-    // public static Map<String, String> aggregateByKeys() {
-    //     Map<String, String> map = new HashMap<>();
-    //     try (Stream<String> lines = Files.lines(Paths.get(file))) {
-    //         lines.filter(line -> line.contains(":"))
-    //                 .forEach(line -> {
-    //                     String[] keyValuePair = line.split(":", 2);
-    //                     String key = keyValuePair[0];
-    //                     String value = keyValuePair[1];
-    //                     map.put(key, value);
-
-    //                 });
-    //     } catch (IOException e) {
-    //         e.printStackTrace();
-    //     }
-    //     return map;
-    // }
 }

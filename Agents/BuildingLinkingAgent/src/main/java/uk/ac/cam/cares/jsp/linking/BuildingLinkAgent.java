@@ -61,23 +61,14 @@ public class BuildingLinkAgent extends JPSAgent {
 
     public JSONObject getParameters(String requestParams){
         JSONObject jsonMessage = new JSONObject();
-        if(requestParams.equals("attribute")){
+        if(requestParams.equals("linking")){
            Config c = new Config();
            String[] config = c.retrieveSQLConfig();
            jsonMessage = sqlRoute(config);
-        }else if(requestParams.equals("footprint")){
-
         }
         return jsonMessage;
    }
 
-    // public JSONObject processRequestParameters() {
-    //     JSONObject jsonMessage = new JSONObject();
-    //     String[] config = Config.retrieveSQLConfig();
-    //     jsonMessage = sqlRoute(config);
-
-    //     return jsonMessage;
-    // }
     /**
      * Run logic for the "/sql" route to do spatial link.
      *
