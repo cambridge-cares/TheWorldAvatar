@@ -1,2 +1,4 @@
 *
 !.gitignore
+!cleardata.sh
+!getdata.sh

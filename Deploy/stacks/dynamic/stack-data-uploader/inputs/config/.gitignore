@@ -1,2 +1,4 @@
 *
 !.gitignore
+!clearconfig.sh
+!getconfig.sh
