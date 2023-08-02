@@ -40,15 +40,18 @@ public class GetHeight {
                         GeoObject3D object3D = allObject3D.get(i);
                         int objectid = object3D.getId();
 
-                        String sql = "SELECT public.ST_3DDistance(( " 
-                            + "SELECT geometry FROM surface_geometry WHERE id IN ( "
-                            + "SELECT lod0_roofprint_id FROM building WHERE id = " + objectid + " AND lod0_roofprint_id is not null)), "
-                            + "(SELECT geometry FROM surface_geometry WHERE id IN "
-                            + "(SELECT lod0_footprint_id FROM building WHERE id = " + objectid + " AND lod0_footprint_id is not null))) As height";
-                        ResultSet result = stmt.executeQuery(sql);
-                        if (result.next()) {
-                            double height = result.getDouble("height");
-                            if(height > 0){
+                        // String sql = "SELECT public.ST_MaxDistance(( " 
+                        //     + "SELECT geometry FROM surface_geometry WHERE id IN ( "
+                        //     + "SELECT lod0_roofprint_id FROM building WHERE id = " + objectid + " AND lod0_roofprint_id is not null)), "
+                        //     + "(SELECT geometry FROM surface_geometry WHERE id IN "
+                        //     + "(SELECT lod0_footprint_id FROM building WHERE id = " + objectid + " AND lod0_footprint_id is not null))) As height";
+                        String minZsql = "SELECT public.ST_Zmin(geometry) FROM surface_geometry WHERE id IN (SELECT lod0_footprint_id FROM building WHERE id = " + objectid + " AND lod0_footprint_id is not null)";
+                        String maxZsql = "SELECT public.ST_Zmin(geometry) FROM surface_geometry WHERE id IN (SELECT lod0_roofprint_id FROM building WHERE id = " + objectid + " AND lod0_roofprint_id is not null)";
+                        ResultSet resultMin = stmt.executeQuery(minZsql);
+                        ResultSet resultMax = stmt.executeQuery(maxZsql);
+                        if (resultMin.next() && resultMax.next()) {
+                            double height = resultMax.getDouble("st_zmax") - resultMin.getDouble("st_zmin");
+                            if(height >= 0){
                                 String upSql = "UPDATE building SET measured_height = " + height +  " WHERE id = " + objectid + ";";
                                 stmt.executeUpdate(upSql);
                             }                        
