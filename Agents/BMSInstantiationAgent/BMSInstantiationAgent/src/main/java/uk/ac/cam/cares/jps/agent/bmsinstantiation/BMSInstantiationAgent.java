@@ -2361,9 +2361,13 @@ public class BMSInstantiationAgent {
     public void instantiateVAV_E() throws FileNotFoundException {
         String VAVE_label = null;
         String AirFlow_IRI = null;
+        String AirFlow_IRI_label = null;
         String DamperState_IRI = null;
+        String DamperState_IRI_label = null;
         String SetpointQuantity_IRI = null;
+        String SetpointQuantity_IRI_label = null;
         String Percentage_IRI = null;
+        String Percentage_IRI_label = null;
 
         File file = new File(csvFilePath);
         sc = new Scanner(file);
@@ -2381,14 +2385,26 @@ public class BMSInstantiationAgent {
                 case "AirFlow_IRI":
                     AirFlow_IRI = string.split(",")[1];
                     break;
+                case "AirFlow_IRI_label":
+                    AirFlow_IRI_label = string.split(",")[1];
+                    break;
                 case "DamperState_IRI":
                     DamperState_IRI = string.split(",")[1];
+                    break;
+                case "DamperState_IRI_label":
+                    DamperState_IRI_label = string.split(",")[1];
                     break;
                 case "SetpointQuantity_IRI":
                     SetpointQuantity_IRI = string.split(",")[1];
                     break;
+                case "SetpointQuantity_IRI_label":
+                    SetpointQuantity_IRI_label = string.split(",")[1];
+                    break;
                 case "Percentage_IRI":
                     Percentage_IRI = string.split(",")[1];
+                    break;
+                case "Percentage_IRI_label":
+                    Percentage_IRI_label = string.split(",")[1];
                     break;
             }
         }
@@ -2418,10 +2434,11 @@ public class BMSInstantiationAgent {
         TriplePattern P10_2 = cubicMetrePerHour.isA(UnitDivision);
         TriplePattern P10_3 = cubicMetrePerHour.has(symbol, "m3/h");
         TriplePattern P10_4 = cubicMetrePerHour.has(label, "cubic metre per hour");
+        TriplePattern P10_5 = iri(AirFlow_IRI).has(label, AirFlow_IRI_label);
         TriplePattern P11 = iri(AirFlowSensor_Instance).isA(FlowSensor);
         TriplePattern P12 = iri(AirFlowSensor_Instance).has(measures, iri(AirFlow_Instance));
         TriplePattern P13 = iri(AirFlowSensor_Instance).has(sendsSignalTo, iri(VAVE_Instance));
-        InsertDataQuery insert1 = Queries.INSERT_DATA(P8, P9, P10, P10_1, P10_2, P10_3, P10_4, P11, P12, P13);
+        InsertDataQuery insert1 = Queries.INSERT_DATA(P8, P9, P10, P10_1, P10_2, P10_3, P10_4, P10_5, P11, P12, P13);
         insert1.prefix(PREFIX_ONTOBMS, PREFIX_RDFS, PREFIX_ONTODEVICE, PREFIX_SAREF, PREFIX_OM);
         kbClient.executeUpdate(insert1.getQueryString());
 
@@ -2430,7 +2447,8 @@ public class BMSInstantiationAgent {
         TriplePattern P15 = iri(DamperStateSensor_Instance).isA(StatusSensor);
         TriplePattern P16 = iri(DamperStateSensor_Instance).has(observes, iri(DamperState_IRI));
         TriplePattern P17 = iri(DamperStateSensor_Instance).has(sendsSignalTo, iri(VAVE_Instance));
-        InsertDataQuery insert2 = Queries.INSERT_DATA(P14, P15, P16, P17);
+        TriplePattern P17_1 = iri(DamperState_IRI).has(label, DamperState_IRI_label);
+        InsertDataQuery insert2 = Queries.INSERT_DATA(P14, P15, P16, P17, P17_1);
         insert2.prefix(PREFIX_ONTOBMS, PREFIX_RDFS, PREFIX_ONTODEVICE, PREFIX_SAREF, PREFIX_OM);
         kbClient.executeUpdate(insert2.getQueryString());
 
@@ -2445,7 +2463,8 @@ public class BMSInstantiationAgent {
         TriplePattern P22_2 = cubicMetrePerHour.isA(UnitDivision);
         TriplePattern P22_3 = cubicMetrePerHour.has(symbol, "m3/h");
         TriplePattern P22_4 = cubicMetrePerHour.has(label, "cubic metre per hour");
-        InsertDataQuery insert3 = Queries.INSERT_DATA(P18, P19, P20, P21, P22, P22_1, P22_2, P22_3, P22_4);
+        TriplePattern P22_5 = iri(SetpointQuantity_IRI).has(label, SetpointQuantity_IRI_label);
+        InsertDataQuery insert3 = Queries.INSERT_DATA(P18, P19, P20, P21, P22, P22_1, P22_2, P22_3, P22_4, P22_5);
         insert3.prefix(PREFIX_ONTOBMS, PREFIX_RDFS, PREFIX_ONTODEVICE, PREFIX_SAREF, PREFIX_OM);
         kbClient.executeUpdate(insert3.getQueryString());
 
@@ -2464,7 +2483,8 @@ public class BMSInstantiationAgent {
             TriplePattern P28_3 = percent.isA(SingularUnit);
             TriplePattern P28_4 = percent.has(symbol, "%");
             TriplePattern P28_5 = percent.has(label, "percent");
-            InsertDataQuery insert4 = Queries.INSERT_DATA(P23, P24, P25, P26, P27, P28, P28_1, P28_2, P28_3, P28_4, P28_5);
+            TriplePattern P28_6 = iri(Percentage_IRI).has(label, Percentage_IRI_label);
+            InsertDataQuery insert4 = Queries.INSERT_DATA(P23, P24, P25, P26, P27, P28, P28_1, P28_2, P28_3, P28_4, P28_5, P28_6);
             insert4.prefix(PREFIX_ONTOBMS, PREFIX_RDFS, PREFIX_ONTODEVICE, PREFIX_SAREF, PREFIX_OM);
             kbClient.executeUpdate(insert4.getQueryString());
         }
@@ -2508,6 +2528,7 @@ public class BMSInstantiationAgent {
     public void instantiateEAF() throws FileNotFoundException {
         String EAF_label = null;
         String EAFState_IRI = null;
+        String EAFState_IRI_label = null;
         ArrayList<String> IRIs = new ArrayList<String>();
 
         File file = new File(csvFilePath);
@@ -2526,6 +2547,9 @@ public class BMSInstantiationAgent {
                 case "EAFState_IRI":
                     EAFState_IRI = string.split(",")[1];
                     break;
+                case "EAFState_IRI_label":
+                    EAFState_IRI_label = string.split(",")[1];
+                    break;
                 case "IRI":
                     IRIs.add(string.split(",")[1]);
                     break;
@@ -2542,8 +2566,9 @@ public class BMSInstantiationAgent {
         TriplePattern P4 = iri(EAF_Instance).has(consistsOf, iri(StatusSensor_Instance));
         TriplePattern P5 = iri(EAF_Instance).has(hasState, iri(EAFState_IRI));
         TriplePattern P6 = iri(EAFState_IRI).isA(StartStopState);
+        TriplePattern P6_1 = iri(EAFState_IRI).has(label, EAFState_IRI_label);
         TriplePattern P7 = iri(StatusSensor_Instance).has(observes, iri(EAFState_IRI));
-        InsertDataQuery insert = Queries.INSERT_DATA(P1, P2, P3, P4, P5, P6, P7);
+        InsertDataQuery insert = Queries.INSERT_DATA(P1, P2, P3, P4, P5, P6, P6_1, P7);
         insert.prefix(PREFIX_ONTOBMS, PREFIX_RDFS, PREFIX_ONTODEVICE, PREFIX_SAREF, PREFIX_OM);
         kbClient.executeUpdate(insert.getQueryString());
 
@@ -2614,8 +2639,11 @@ public class BMSInstantiationAgent {
     public void instantiateFCU() throws FileNotFoundException {
         String FCU_label = null;
         String FCUState_IRI = null;
+        String FCUState_IRI_label = null;
         String Temperature_IRI = null;
+        String Temperature_IRI_label = null;
         String TemperatureSetpoint_IRI = null;
+        String TemperatureSetpoint_IRI_label = null;
         String Room_IRI = null;
         ArrayList<String> IRIs = new ArrayList<String>();
 
@@ -2635,11 +2663,20 @@ public class BMSInstantiationAgent {
                 case "FCUState_IRI":
                     FCUState_IRI = string.split(",")[1];
                     break;
+                case "FCUState_IRI_label":
+                    FCUState_IRI_label = string.split(",")[1];
+                    break;
                 case "Temperature_IRI":
                     Temperature_IRI = string.split(",")[1];
                     break;
+                case "Temperature_IRI_label":
+                    Temperature_IRI_label = string.split(",")[1];
+                    break;
                 case "TemperatureSetpoint_IRI":
                     TemperatureSetpoint_IRI = string.split(",")[1];
+                    break;
+                case "TemperatureSetpoint_IRI_label":
+                    TemperatureSetpoint_IRI_label = string.split(",")[1];
                     break;
                 case "Room_IRI":
                     Room_IRI = string.split(",")[1];
@@ -2660,8 +2697,9 @@ public class BMSInstantiationAgent {
         TriplePattern P4 = iri(FCU_Instance).has(consistsOf, iri(StatusSensor_Instance));
         TriplePattern P5 = iri(FCU_Instance).has(hasState, iri(FCUState_IRI));
         TriplePattern P6 = iri(FCUState_IRI).isA(StartStopState);
+        TriplePattern P6_1 = iri(FCUState_IRI).has(label, FCUState_IRI_label);
         TriplePattern P7 = iri(StatusSensor_Instance).has(observes, iri(FCUState_IRI));
-        InsertDataQuery insert = Queries.INSERT_DATA(P1, P2, P3, P4, P5, P6, P7);
+        InsertDataQuery insert = Queries.INSERT_DATA(P1, P2, P3, P4, P5, P6, P6_1, P7);
         insert.prefix(PREFIX_ONTOBMS, PREFIX_RDFS, PREFIX_ONTODEVICE, PREFIX_SAREF, PREFIX_OM);
         kbClient.executeUpdate(insert.getQueryString());
 
@@ -2678,8 +2716,9 @@ public class BMSInstantiationAgent {
         TriplePattern P13_2 = degreeCelsius.isA(Unit);
         TriplePattern P13_3 = degreeCelsius.isA(SingularUnit);
         TriplePattern P13_4 = degreeCelsius.has(label, "degree celsius");
+        TriplePattern P13_5 = iri(Temperature_IRI).has(label,Temperature_IRI_label);
         TriplePattern P14 = iri(Room_IRI).has(hasTemperature, iri(Temperature_Instance));
-        InsertDataQuery insert1 = Queries.INSERT_DATA(P8, P9, P10, P11, P12, P13, P13_1, P13_2, P13_3, P13_4, P14);
+        InsertDataQuery insert1 = Queries.INSERT_DATA(P8, P9, P10, P11, P12, P13, P13_1, P13_2, P13_3, P13_4, P13_5, P14);
         insert1.prefix(PREFIX_ONTOBMS, PREFIX_RDFS, PREFIX_ONTODEVICE, PREFIX_SAREF, PREFIX_OM);
         kbClient.executeUpdate(insert1.getQueryString());
 
@@ -2691,7 +2730,10 @@ public class BMSInstantiationAgent {
         TriplePattern P17 = iri(QTemperatureSetpoint_Instance).isA(Temperature);
         TriplePattern P18 = iri(TemperatureSetpoint_Instance).has(hasQuantity, iri(QTemperatureSetpoint_Instance));
         TriplePattern P19 = iri(QTemperatureSetpoint_Instance).has(hasValue, iri(TemperatureSetpoint_IRI));
-        InsertDataQuery insert2 = Queries.INSERT_DATA(P15, P16, P17, P18, P19);
+        TriplePattern P19_1 = iri(TemperatureSetpoint_IRI).isA(Measure);
+        TriplePattern P19_2 = iri(TemperatureSetpoint_IRI).has(hasUnit, degreeCelsius);
+        TriplePattern P19_3 = iri(TemperatureSetpoint_IRI).has(label, TemperatureSetpoint_IRI_label);
+        InsertDataQuery insert2 = Queries.INSERT_DATA(P15, P16, P17, P18, P19, P19_1, P19_2, P19_3);
         insert2.prefix(PREFIX_ONTOBMS, PREFIX_RDFS, PREFIX_ONTODEVICE, PREFIX_SAREF, PREFIX_OM);
         kbClient.executeUpdate(insert2.getQueryString());
 
