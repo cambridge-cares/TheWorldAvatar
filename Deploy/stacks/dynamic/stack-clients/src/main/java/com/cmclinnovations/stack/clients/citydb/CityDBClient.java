@@ -235,12 +235,10 @@ public class CityDBClient extends ContainerClient {
         handleErrors(errorStream, execId, logger);
     }
 
-    public void populateCityDBbySQL(String database, String lineage, double minArea, Map<String, String> columnMap) {
+    public void populateCityDBbySQL(String database, String lineage, Map<String, String> columnMap) {
         String sqlFilename = "citydb_populate_citydb.sql";
         try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
-            String sqlQuery = new String(is.readAllBytes())
-                .replace("{minArea}", String.valueOf(minArea));
-            sqlQuery = sqlQuery.replace("{lineage}", lineage);
+            String sqlQuery = new String(is.readAllBytes()).replace("{lineage}", lineage);
             for (Map.Entry<String, String> entry : columnMap.entrySet()) {
                 sqlQuery = sqlQuery.replace("{"+entry.getKey()+"}",entry.getValue());
             }
@@ -248,5 +246,20 @@ public class CityDBClient extends ContainerClient {
         } catch (IOException ex) {
             throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
         }
+    }
+
+    public void preparePGforCityDB(String database, String preProcesssql, double minArea, Map<String, String> columnMap) {
+        if (null == preProcesssql) {
+            String sqlFilename = "citydb_preprocess_building.sql";
+            try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
+                preProcesssql = new String(is.readAllBytes()).replace("{minArea}", String.valueOf(minArea));
+                for (Map.Entry<String, String> entry : columnMap.entrySet()) {
+                    preProcesssql = preProcesssql.replace("{"+entry.getKey()+"}",entry.getValue());
+                }
+            } catch (IOException ex) {
+                throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
+            }
+        }
+        PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(preProcesssql);
     }
 }

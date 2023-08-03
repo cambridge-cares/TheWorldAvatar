@@ -36,10 +36,13 @@ public class XtoCityDB extends PostgresDataSubset {
     private double minArea = 0.;
     @JsonProperty
     Map<String, String> columnMap = new HashMap<>(Map.of(
-        "TOID", "os_topo_toid",
+        "IDval", "os_topo_toid",
+        "IDname", "os_topo_toid",
         "polygon", "polygon",
         "elevation", "abshmin",
         "height", "relh2"));
+    @JsonProperty
+    private String preProcesssql;
     @Override
     public boolean usesGeoServer() {
         return !isSkip();
@@ -60,7 +63,8 @@ public class XtoCityDB extends PostgresDataSubset {
                 .uploadVectorFilesToPostGIS(database, getTable(), dataSubsetDir.toString(), ogr2ogrOptions, false);
         CityDBClient.getInstance()
                 .updateDatabase(database,importOptions.getSridIn());
-        CityDBClient.getInstance().populateCityDBbySQL(database,lineage,minArea,columnMap);
+        CityDBClient.getInstance().preparePGforCityDB(database,handleFileValues(preProcesssql),minArea,columnMap);
+        CityDBClient.getInstance().populateCityDBbySQL(database,lineage,columnMap);
     }
 
     public void createLayer(String database) {
