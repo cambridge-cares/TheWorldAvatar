@@ -186,21 +186,25 @@ class ForecastingAgent(DerivationAgent):
         fc_ts = forecast(iri=input_iris['iri_to_forecast'], config=cfg, 
                          kgClient=self.sparql_client, tsClient=ts_client, 
                          db_url=rdb_url, time_format=time_format)
-
-        # Instantiate forecast triples in KG (only if applicable)
-        if not self.fc_overwrite or bool(cfg.get('fc_iri')):
-            pass
-        
-        cfg['fc_iri'] = 'http://test_fc_iri'
-
-        # Update forecast time series data in RDB
+        # Extract times and values from darts TimeSeries
         times = [str(x) for x in fc_ts.time_index.tz_localize('UTC').strftime(time_format)]
         values = fc_ts.values().squeeze().tolist()
         if ROUNDING:
             # Round data values if set in environment variables
             values = [round(x, ROUNDING) for x in values]
-        ts_client.init_timeseries(dataIRI=cfg['fc_iri'], times=times, values=values, 
-                                  ts_type=cfg['ts_data_type'], time_format=time_format)
+
+        # Instantiate new forecast in KG and RDB (only if applicable)
+        if not self.fc_overwrite or bool(cfg.get('fc_iri')):
+            # Initialise forecast in KG
+
+            # Create new forecast instance and add ts data in RDB
+            ts_client.init_timeseries(dataIRI=cfg['fc_iri'], times=times, values=values, 
+                                      ts_type=cfg['ts_data_type'], time_format=time_format)
+        else:
+            # Update forecast time series data in RDB
+            ts_client.add_ts_data(dataIRI=cfg['fc_iri'], times=times, values=values)
+
+        # Add output graph for derivation markup
 
 
     def evaluate_forecast_error(self):

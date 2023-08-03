@@ -72,26 +72,6 @@ def get_predecessor_type_and_predicate(iri, kgClient):
     return {r["predicate"]: r["predecessorType"] for r in cfg}
 
 
-# def get_dataIRI_for_ts_with_hasValue_iri(iri, kgClient):
-#     # get dataIRI for time series which has value iri
-#     query = f"""
-#     SELECT ?dataIRI
-#     WHERE {{
-#         <{iri}> <{OM_HASVALUE}> ?dataIRI . 
-#         }}"""
-#     dataIRI = kgClient.performQuery(query)[0]["dataIRI"]
-#     return dataIRI
-
-def get_tsIRI_from_dataIRI(dataIRI, kgClient):
-    query = f"""
-    SELECT ?tsIRI
-    WHERE {{
-        <{dataIRI}> <{TS_HASTIMESERIES}> ?tsIRI .
-        }}
-    """
-    tsIRI = kgClient.performQuery(query)[0]["tsIRI"]
-    return tsIRI
-   
 
 # def check_cov_matches_rdf_type(row, rdf_type):
 #     if 'type_with_measure' in row and row['type_with_measure'] == rdf_type or 'type_without_measure' in row and row['type_without_measure'] == rdf_type:

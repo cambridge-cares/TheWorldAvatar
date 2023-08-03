@@ -101,7 +101,6 @@ class TSClient:
             dataIRI (str): IRI of instance with hasTimeSeries relationship
             times (list): List of times/dates
             values (list): List of actual values
-            tsClient (TSClient): TSClient object
             ts_type (Java class): Java class of time series values
             time_format (str): Time format (e.g. "%Y-%m-%dT%H:%M:%SZ")
         """
@@ -110,7 +109,24 @@ class TSClient:
             self.tsclient.initTimeSeries([dataIRI], [ts_type], time_format, conn)
             ts = TSClient.create_timeseries(times, [dataIRI], [values])
             self.tsclient.addTimeSeriesData(ts, conn)
-        logger.info(f"Time series initialised in KG: {dataIRI}")
+        logger.info(f"Time series successfully initialised in KG and RDB for dataIRI: {dataIRI}")
+
+
+    def add_ts_data(self, dataIRI, times, values):
+        """
+        This method adds time series data to an already instantiated time series
+        (potentially already existing values for same time stamp get overwritten)
+        
+        Arguments:
+            dataIRI (str): IRI of instance with hasTimeSeries relationship
+            times (list): List of times/dates
+            values (list): List of actual values
+        """
+
+        with self.connect() as conn:
+            ts = TSClient.create_timeseries(times, [dataIRI], [values])
+            self.tsclient.addTimeSeriesData(ts, conn)
+        logger.info(f"Time series data successfully added to dataIRI: {dataIRI}")
 
 
     def retrieve_timeseries(self, dataIRI, lowerbound=None, upperbound=None):
@@ -119,6 +135,8 @@ class TSClient:
         
         Arguments:
             dataIRI (str): IRI of instance with hasTimeSeries relationship
+            lowerbound (str): Lower bound of time series data
+            upperbound (str): Upper bound of time series data
         """
         with self.connect() as conn:
             ts = self.tsclient.getTimeSeriesWithinBounds([dataIRI], lowerbound, 
