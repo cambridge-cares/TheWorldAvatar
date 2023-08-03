@@ -2,22 +2,28 @@ class DispersionHandler {
     constructor(agentBaseUrl, manager) {
         this.agentBaseUrl = agentBaseUrl;
         this.manager = manager;
-        this.buildComponents();
     }
 
-    buildComponents() {
-        let setDispersionFunction = (function (dispersionsJson) {
-            this.dispersions = dispersionsJson;
-            this.buildDropdown(this.dispersions);
-        }).bind(this);
+    initialise() {
+        this.setDispersions(this)
+            .then(() => this.buildDropdown(this))
+            .then(() => this.plotData());
+    }
 
-        this.queryForDispersions(this, setDispersionFunction);
+    setDispersions(dispersionHandler) {
+        return new Promise(function (resolve) {
+            let setDispersionFunction = (function (dispersionsJson) {
+                dispersionHandler.dispersions = dispersionsJson;
+            });
+
+            dispersionHandler.queryForDispersions(dispersionHandler, setDispersionFunction).then(() => resolve());
+        });
     }
 
     queryForDispersions(dispersionHandler, callback) {
         let url = dispersionHandler.agentBaseUrl;
         url += "/dispersion-interactor/GetDispersionSimulations";
-        $.getJSON(url, function (rawJSON) {
+        return $.getJSON(url, function (rawJSON) {
             callback(rawJSON);
         });
     }
@@ -33,12 +39,18 @@ class DispersionHandler {
         expandButton.style.visibility = (show) ? "visible" : "hidden";
     }
 
-    buildDropdown(dispersions) {
-        this.buildSimulationDropdown(dispersions);
-        if (this.selectedSimulation != null) {
-            this.buildPollutantDropdown(dispersions[this.selectedSimulation]);
-            this.buildTimestepDropdown(dispersions[this.selectedSimulation]);
-        }
+    buildDropdown(dispersionHandler) {
+        return new Promise(function (resolve) {
+            dispersionHandler.buildSimulationDropdown(dispersionHandler.dispersions);
+            if (dispersionHandler.selectedSimulation != null) {
+                dispersionHandler.buildPollutantDropdown(dispersionHandler.dispersions[dispersionHandler.selectedSimulation]);
+                dispersionHandler.buildTimestepDropdown(dispersionHandler.dispersions[dispersionHandler.selectedSimulation]);
+            }
+
+            if (document.getElementById("Simulation") != null) {
+                resolve();
+            }
+        });
     }
 
     buildSimulationDropdown(dispersions) {
@@ -140,13 +152,39 @@ class DispersionHandler {
 
     onPollutantChange(pollutant) {
         this.selectedPollutant = pollutant;
+        this.plotData();
     }
 
     onTimestepChange(timestep) {
         this.selectedTimestep = timestep;
+        this.plotData();
     }
 
     onSimulationChange(dispersion) {
         this.selectedSimulation = dispersion;
+        this.plotData();
+    }
+
+    plotData() {
+        let dataJsonUrl = this.agentBaseUrl;
+        dataJsonUrl += '/dispersion-interactor/GetDataJson?';
+
+        let params = {
+            pollutant: this.selectedPollutant,
+            timestep: this.selectedTimestep,
+            scopeLabel: this.selectedSimulation,
+            derivationIri: this.dispersions[this.selectedSimulation].derivationIri,
+            pollutantLabel: this.dispersions[this.selectedSimulation].pollutants[this.selectedPollutant]
+        };
+
+        let searchParams = new URLSearchParams(params);
+        dataJsonUrl += searchParams;
+
+        let plotFunction = (function () {
+            this.manager.plotData();
+            MapHandler.MAP.jumpTo({ center: this.dispersions[this.selectedSimulation].centroid });
+        }).bind(this);
+
+        this.manager.loadDefinitionsFromURL(dataJsonUrl).then(plotFunction());
     }
 }

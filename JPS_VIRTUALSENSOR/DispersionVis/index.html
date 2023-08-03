@@ -193,8 +193,8 @@
         window.manager = manager;
 
         // Only start the map after data definitions have been read.
-        var dataPromise = manager.loadDefinitions();
-        dataPromise.then(() => start());
+        var settingsPromise = manager.loadSettings();
+        settingsPromise.then(() => start());
 
         var dispersionHandler = new DispersionHandler("http://localhost:3838", manager);
 
@@ -244,7 +244,7 @@
                     // seem to be causing any issues, I'm leaving it as is for the time being. - Michael
 
                     // Plot the default visible data
-                    manager.plotData();
+                    dispersionHandler.initialise();
                 });
             });
         }
