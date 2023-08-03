@@ -2,6 +2,7 @@ package com.cmclinnovations.dispersion;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -31,11 +32,12 @@ public class GetDataJson extends HttpServlet {
         String timestep = req.getParameter("timestep");
         String scopeLabel = req.getParameter("scopeLabel");
         String derivationIri = req.getParameter("derivationIri");
+        String pollutantLabel = req.getParameter("pollutantLabel");
 
-        String dispersionLayer = queryClient.getDispersionLayer(pollutant, Instant.parse(timestep).getEpochSecond(),
-                derivationIri);
+        List<String> dispersionAndShipLayer = queryClient.getDispersionAndShipLayer(pollutant,
+                Instant.parse(timestep).getEpochSecond(), derivationIri);
 
-        JSONObject dataJson = createDataJson(pollutant, dispersionLayer, scopeLabel);
+        JSONObject dataJson = createDataJson(pollutantLabel, dispersionAndShipLayer, scopeLabel);
 
         try {
             resp.getWriter().print(dataJson);
@@ -62,12 +64,18 @@ public class GetDataJson extends HttpServlet {
         queryClient = new QueryClient(storeClient, remoteRDBStoreClient, tsClient, tsClientInstant);
     }
 
-    private JSONObject createDataJson(String pollutant, String dispersionLayerName, String scopeLabel) {
+    private JSONObject createDataJson(String pollutantLabel, List<String> dispersionAndShipLayerName,
+            String scopeLabel) {
         String dispWms = Config.GEOSERVER_URL + "/" + Config.GEOSERVER_WORKSPACE +
                 "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true"
                 +
                 "&bbox={bbox-epsg-3857}"
-                + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, dispersionLayerName);
+                + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, dispersionAndShipLayerName.get(0));
+
+        String shipWms = Config.GEOSERVER_URL + "/" + Config.GEOSERVER_WORKSPACE +
+                "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                + "&bbox={bbox-epsg-3857}"
+                + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, dispersionAndShipLayerName.get(1));
 
         JSONObject group = new JSONObject();
         group.put("name", scopeLabel);
@@ -75,32 +83,48 @@ public class GetDataJson extends HttpServlet {
 
         JSONArray sources = new JSONArray();
         JSONObject dispersionSource = new JSONObject();
-        dispersionSource.put("id", "dispersion-source_" + dispersionLayerName);
+        dispersionSource.put("id", "dispersion-source");
         dispersionSource.put("type", "vector");
         dispersionSource.put("tiles", new JSONArray().put(dispWms));
         sources.put(dispersionSource);
 
+        JSONObject shipSource = new JSONObject();
+        shipSource.put("id", "ship-source");
+        shipSource.put("type", "vector");
+        shipSource.put("tiles", new JSONArray().put(shipWms));
+        sources.put(shipSource);
+
         group.put("sources", sources);
         JSONArray layers = new JSONArray();
         JSONObject dispersionLayer = new JSONObject();
-        dispersionLayer.put("id", dispersionLayerName);
+        dispersionLayer.put("id", "dispersion-layer");
         dispersionLayer.put("type", "fill");
-        dispersionLayer.put("name", pollutant);
-        dispersionLayer.put("source", "dispersion-source_" + dispersionLayerName);
-        dispersionLayer.put("source-layer", dispersionLayerName);
+        dispersionLayer.put("name", pollutantLabel);
+        dispersionLayer.put("source", "dispersion-source");
+        dispersionLayer.put("source-layer", dispersionAndShipLayerName.get(0));
         dispersionLayer.put("minzoom", 4);
         dispersionLayer.put("layout", new JSONObject().put("visibility", "visible"));
 
-        JSONObject paint = new JSONObject();
+        JSONObject dispersionPaint = new JSONObject();
         JSONArray properties = new JSONArray();
         properties.put("get");
         properties.put("fill");
-        paint.put("fill-color", properties);
-        paint.put("fill-opacity", 0.5);
+        dispersionPaint.put("fill-color", properties);
+        dispersionPaint.put("fill-opacity", 0.5);
         properties.put(1, "stroke");
-        paint.put("fill-outline-color", properties);
-        dispersionLayer.put("paint", paint);
-        layers.put(dispersionLayer);
+        dispersionPaint.put("fill-outline-color", properties);
+        dispersionLayer.put("paint", dispersionPaint);
+
+        JSONObject shipLayer = new JSONObject();
+        shipLayer.put("id", "ships-layer");
+        shipLayer.put("type", "circle");
+        shipLayer.put("name", "Ships");
+        shipLayer.put("source", "ship-source");
+        shipLayer.put("source-layer", dispersionAndShipLayerName.get(1));
+        shipLayer.put("minzoom", 4);
+        shipLayer.put("layout", new JSONObject().put("visibility", "visible"));
+
+        layers.put(dispersionLayer).put(shipLayer);
 
         group.put("layers", layers);
 

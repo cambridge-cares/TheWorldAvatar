@@ -656,7 +656,7 @@ public class QueryClient {
         });
     }
 
-    public String getDispersionLayer(String pollutant, long timeStep, String derivation) {
+    public List<String> getDispersionAndShipLayer(String pollutant, long timeStep, String derivation) {
         Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
 
         SelectQuery query = Queries.SELECT();
@@ -664,26 +664,32 @@ public class QueryClient {
         Variable pollutantIri = query.var();
         Variable dispOutput = query.var();
         Variable dispLayer = query.var();
+        Variable shipLayer = query.var();
 
         query.where(dispOutput.has(belongsTo, iri(derivation)),
+                shipLayer.has(belongsTo, iri(derivation)).andIsA(SHIPS_LAYER),
                 dispOutput.isA(DISPERSION_OUTPUT).andHas(HAS_POLLUTANT_ID, pollutantIri).andHas(HAS_DISPERSION_LAYER,
                         dispLayer),
-                pollutantIri.isA(iri(pollutant))).select(dispLayer).prefix(P_DISP);
+                pollutantIri.isA(iri(pollutant))).select(dispLayer, shipLayer).prefix(P_DISP);
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         String dispLayerIri = queryResult.getJSONObject(0).getString(dispLayer.getQueryString().substring(1));
+        String shipLayerIri = queryResult.getJSONObject(0).getString(shipLayer.getQueryString().substring(1));
 
         String dispLayerName = null;
+        String shipLayerName = null;
 
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            dispLayerName = tsClient.getTimeSeriesWithinBounds(List.of(dispLayerIri), timeStep, timeStep,
-                    conn).getValuesAsString(dispLayerIri).get(0);
+            TimeSeries<Long> queriedTimeSeries = tsClient.getTimeSeriesWithinBounds(List.of(dispLayerIri, shipLayerIri),
+                    timeStep, timeStep, conn);
+            dispLayerName = queriedTimeSeries.getValuesAsString(dispLayerIri).get(0);
+            shipLayerName = queriedTimeSeries.getValuesAsString(shipLayerIri).get(0);
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
             LOGGER.error("Closing connection failed when retrieving the dispersion layer name");
         }
 
-        return dispLayerName;
+        return List.of(dispLayerName, shipLayerName);
     }
 }
