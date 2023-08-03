@@ -25,9 +25,9 @@ You'll need to provide  your credentials in single-word text files located like 
         repo_password.txt
 ```
 
-3) Set up [JPS_Access Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT) on the stack. 
-   1) [Replace the placeholder for the stack name](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT#Spinning-up-the-Access-Agent-as-part-of-a-stack)  in the access-agent.json file within the access-agent-dev-stack folder.
-   2) [Modify `routing.json`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT#Uploading-routing-information). Edit `"label":examplestack`, `<STACK NAME>` and `examplestack` with relevant namespace. 
+3) Set up [JPS_Access Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AccessAgent) on the stack. 
+   1) [Replace the placeholder for the stack name](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AccessAgent#spinning-up-the-access-agent-as-part-of-a-stack)  in the access-agent.json file within the access-agent-dev-stack folder.
+   2) [Modify `routing.json`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AccessAgent#Uploading-routing-information). Edit `"label":examplestack`, `<STACK NAME>` and `examplestack` with relevant namespace. 
    3) Change the port number of the access agent URL in uploadRouting.sh to `3838`.
    4) Change the endpoint URL in Instantiation Client under ModelContext.
 
