@@ -12,7 +12,6 @@ Microphone,Class,https://saref.etsi.org/core/Device,IS-A,,,,A transducer that co
 Camera,Class,https://saref.etsi.org/core/Device,IS-A,,,,An optical instrument that can capture an image.,https://www.theworldavatar.com/kg/ontodevice/,Camera
 GPSDevice,Class,https://saref.etsi.org/core/Device,IS-A,,,,A device used within Earth's planetary atmosphere to determine its precise geographical location.,https://www.theworldavatar.com/kg/ontodevice/,GPS device
 https://www.theworldavatar.com/kg/ontoems/ReportingStation,Class,https://saref.etsi.org/core/Device,IS-A,,,,,https://www.theworldavatar.com/kg/ontodevice/,Reporting station
-BatteryTester,Class,https://saref.etsi.org/core/Device,IS-A,,,,A device used to measure the existing power of a battery,https://www.theworldavatar.com/kg/ontodevice/,Battery tester
 Computer,Class,https://saref.etsi.org/core/Device,IS-A,,,,A device that can be programmed to carry out a sequence of arithmetic or logical operations automatically.,https://www.theworldavatar.com/kg/ontodevice/,Computer
 Desktop,Class,Computer,IS-A,,,,"A stationary computer placed on top of a platform, usually desks.",https://www.theworldavatar.com/kg/ontodevice/,Desktop
 Laptop,Class,Computer,IS-A,,,,A small and mobile computer.,https://www.theworldavatar.com/kg/ontodevice/,Laptop
@@ -53,6 +52,8 @@ IceMaker,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that is us
 Dehumidifier,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that reduces the humidity of the surrounding atmosphere.,https://www.theworldavatar.com/kg/ontodevice/,Dehumidifier
 WaterChiller,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that is used to reduce water temperature.,https://www.theworldavatar.com/kg/ontodevice/,Water chiller
 PaperShredder,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device used to destroy paper document via cutting the document to small pieces.,https://www.theworldavatar.com/kg/ontodevice/,Paper Shredder
+WaterDispenser,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that stores and dispenses water for consumption.,https://www.theworldavatar.com/kg/ontodevice/,Water Dispenser
+VaccuumCleaner,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that cleans a surface by creating a vaccuum to suck up dirt.,https://www.theworldavatar.com/kg/ontodevice/,Vaccuum cleaner
 Accessory,Class,https://saref.etsi.org/core/Device,IS-A,,,,A device that is an added component to another device.,https://www.theworldavatar.com/kg/ontodevice/,Accessory
 Antenna,Class,Accessory,IS-A,,,,A device that is used to transmit or receive signal via electromagnetic radiation.,https://www.theworldavatar.com/kg/ontodevice/,Antenna
 ComputerPart,Class,Accessory,IS-A,,,,A device that is part of or can be added to a computer.,https://www.theworldavatar.com/kg/ontodevice/,Computer Part
@@ -66,6 +67,12 @@ Printer,Class,ComputerPart,IS-A,,,,A device that prints data or documents to a p
 SSD,Class,ComputerPart,IS-A,,,,A device that provies permanent memory on a computer.,https://www.theworldavatar.com/kg/ontodevice/,SSD
 PCCooler,Class,ComputerPart,IS-A,,,,A device that lowers the operating temperature of a computer during operation.,https://www.theworldavatar.com/kg/ontodevice/,PC Cooler
 Screen,Class,ComputerPart,IS-A,,,,A device on which a computer interface is projected onto.,https://www.theworldavatar.com/kg/ontodevice/,Screen
+Projector,Class,ComputerPart,IS-A,,,,A device tht projects an image to a screen,https://www.theworldavatar.com/kg/ontodevice/,Projector
+Speaker,Class,ComputerPart,IS-A,,,,A device that converts electrical signal from  acomputer to soundwaves.,https://www.theworldavatar.com/kg/ontodevice/,Speaker
+Scanner,Class,ComputerPart,IS-A,,,,A device that  scans paper-based documents to a digital format,https://www.theworldavatar.com/kg/ontodevice/,Scanner
+Dongle,Class,ComputerPart,IS-A,,,,"A small piece of computer hardware that connects to a port on another device to provide it with additional functionality, or enable a pass-through to such a device that adds functionality.",https://www.theworldavatar.com/kg/ontodevice/,Dongle
+ServerChassis,Class,ComputerPart,IS-A,,,,A device where servers are mounted on.,https://www.theworldavatar.com/kg/ontodevice/,Server chassis
+NetworkVideoRecorder,Class,ComputerPart,IS-A,,,,A device that converts video recording in a camera network to a computer-storable format,https://www.theworldavatar.com/kg/ontodevice/,Network video recorder
 NetworkDevice,Class,https://saref.etsi.org/core/Device,IS-A,,,,A device that allows communication within a computer network,https://www.theworldavatar.com/kg/ontodevice/,Network devices
 Router,Class,NetworkDevice,IS-A,,,,A device that forwards data packets in a coputer network.,https://www.theworldavatar.com/kg/ontodevice/,Router
 NetworkSwitch,Class,NetworkDevice,IS-A,,,,A device that forwards and receive data from a computer network to a single specific device.,https://www.theworldavatar.com/kg/ontodevice/,Network switch
