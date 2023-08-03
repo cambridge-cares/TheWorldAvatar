@@ -24,34 +24,36 @@ class KGClient(PySparqlClient):
     #
     # SPARQL QUERIES
     #
-    def get_time_series_details(self, fcIRI:str):
+    def get_time_series_details(self, iri_to_forecast:str):
         """
         Returns the dataIRI, tsIRI, RDB URL and time format of the time series 
         instance associated with the given instance IRI.
-        NOTE: fcIRI and dataIRI do not need to be equivalent, especially when 
-              OM representation for data is used, where a om:Measure concept is
-              used "in between":
-              <fcIRI> ts:hasForecast <...> ;
-                      om:hasValue <dataIRI> .
+        NOTE: iri_to_forecast and dataIRI do not need to be equivalent, especially
+              when OM representation for data is used, where a om:Measure concept 
+              is used "in between":
+              <iri_to_forecast> ts:hasForecast <...> ;
+                                om:hasValue <dataIRI> .
               <dataIRI> a om:Measure ;
                         ts:hasTimeseries <tsIRI> .
               <tsIRI> ts:hasRDB <...> ;
                       ts:hasTimeUnit <...> .
 
         Arguments:
-            fcIRI (str) -- IRI of instance for which to create forecast
+            iri_to_forecast (str) -- IRI of instance for which to create forecast
         Returns:
-            ts (dict) -- dictionary with keys 'data_iri', 'ts_iri', 'rdb_url' 
-                         and 'time_format'
+            ts (dict) -- dictionary with keys 'data_iri', 'ts_iri', 'fc_iri',
+                         'rdb_url' and 'time_format'
         """
         query = f"""
-            SELECT DISTINCT ?data_iri ?ts_iri ?rdb_url ?time_format
+            SELECT DISTINCT ?data_iri ?ts_iri ?fc_iri ?unit ?rdb_url ?time_format
             WHERE {{   
-            VALUES ?fc_iri {{ <{fcIRI}> }} 
-            ?fc_iri <{OM_HASVALUE}>*/<{TS_HASTIMESERIES}> ?ts_iri .
+            VALUES ?iri {{ <{iri_to_forecast}> }} 
+            ?iri <{OM_HASVALUE}>*/<{TS_HASTIMESERIES}> ?ts_iri .
             ?ts_iri ^<{TS_HASTIMESERIES}> ?data_iri ;
                      <{TS_HASRDB}> ?rdb_url .
+            OPTIONAL {{ ?data_iri <{OM_HASUNIT}> ?unit . }}
             OPTIONAL {{ ?ts_iri <{TS_HASTIMEUNIT}> ?time_format . }}
+            OPTIONAL {{ ?iri <{TS_HASFORECAST}> ?fc_iri . }}
             }}
         """
         query = self.remove_unnecessary_whitespace(query)
@@ -61,6 +63,8 @@ class KGClient(PySparqlClient):
         if len(res) == 1:
             ts = {'data_iri': self.get_unique_value(res, 'data_iri'),
                   'ts_iri': self.get_unique_value(res, 'ts_iri'),
+                  'fc_iri': self.get_unique_value(res, 'fc_iri'),
+                  'unit': self.get_unique_value(res, 'unit'),
                   'rdb_url': self.get_unique_value(res, 'rdb_url'),
                   'time_format': self.get_unique_value(res, 'time_format')
             }
@@ -69,9 +73,9 @@ class KGClient(PySparqlClient):
         else:
             # Throw exception if no or multiple time series are found
             if len(res) == 0:
-                msg = f"No time series associated with data IRI: {fcIRI}."
+                msg = f"No time series associated with data IRI: {iri_to_forecast}."
             else:
-                msg = f"Multiple time series associated with data IRI: {fcIRI}."
+                msg = f"Multiple time series associated with data IRI: {iri_to_forecast}."
             logger.error(msg)
             raise ValueError(msg)
         
@@ -105,6 +109,7 @@ class KGClient(PySparqlClient):
                        'scale_data': self.get_unique_value(res, 'scale_data', bool),
                        'model_url': self.get_unique_value(res, 'model_url'),
                        'chkpt_url': self.get_unique_value(res, 'chkpt_url'),
+                       #TODO: covariates should become dictionary with type and IRI
                        'covariate_iris': self.get_list_of_unique_values(res, 'covariate_iri')
             }
             return fcmodel

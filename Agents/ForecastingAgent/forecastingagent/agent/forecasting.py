@@ -180,7 +180,8 @@ class ForecastingAgent(DerivationAgent):
 
         # Create forecast
         rdb_url, time_format = get_rdb_endpoint(ts)
-        forecast(iri=input_iris['iri_to_forecast'], db_url=rdb_url, config=cfg)
+        forecast(iri=input_iris['iri_to_forecast'], kgClient=self.sparql_client,
+                 db_url=rdb_url, time_format=time_format, config=cfg)
 
         # Instantiate forecast in KG
 

@@ -103,9 +103,13 @@ def create_forecast_configuration(model:dict, ts_details:dict, ts_frequency:dict
         'fc_model': create_model_dict(model)
     }
 
-    # Add time series and data IRI details
+    # Add details about time series to forecast
+    # required (i.e., always present):
     cfg['dataIRI'] = ts_details['data_iri']
     cfg['tsIRI'] = ts_details['ts_iri']
+    # optional (i.e., can be None):
+    if ts_details.get('unit'): cfg['unit'] = ts_details['unit']
+    if ts_details.get('fc_iri'): cfg['fc_iri'] = ts_details['fc_iri']
     
     # Add time series frequency details
     f = create_duration_entries(ts_frequency)
@@ -120,7 +124,7 @@ def create_forecast_configuration(model:dict, ts_details:dict, ts_frequency:dict
 
     # Add forecast interval details
     # NOTE: pd.Timestamp expects the input to be in nanoseconds -> specify unit
-    cfg['forecast_start_date'] = pd.Timestamp(fc_interval['start_unix'], unit='s')
+    cfg['fc_start_timestamp'] = pd.Timestamp(fc_interval['start_unix'], unit='s')
     horizon = dt.timedelta(seconds=(fc_interval['end_unix']-fc_interval['start_unix']))
     cfg['horizon'] = int(horizon / cfg['frequency'])
 

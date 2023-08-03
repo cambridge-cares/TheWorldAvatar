@@ -23,7 +23,7 @@ from py4jps import agentlogging
 
 from forecastingagent.utils.tools import *
 from forecastingagent.utils.env_configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, \
-                                               DB_URL, DB_USER, DB_PASSWORD
+                                               DB_USER, DB_PASSWORD
 from forecastingagent.datamodel.iris import *
 from forecastingagent.agent.forcasting_config import *
 from forecastingagent.kgutils.kgclient import KGClient
@@ -34,80 +34,78 @@ from forecastingagent.errorhandling.exceptions import KGException
 logger = agentlogging.get_logger('prod')
 
 
-def forecast(iri, config, db_url,
+def forecast(iri, config, db_url, time_format, kgClient=None,
              query_endpoint=SPARQL_QUERY_ENDPOINT, update_endpoint=SPARQL_UPDATE_ENDPOINT,
              db_user=DB_USER, db_password=DB_PASSWORD):
     """
     Forecast a time series using a pre trained model or Prophet.
     returns a dictionary with the forecast and some metadata.
 
-    :param iri: The IRI of the time series you want to forecast
-    :param horizon: The number of time steps to forecast
-    :param forecast_start_date: The date from which you want to start forecasting
-    :param use_model_configuration: If you want to force a specific model configuration, you can do so here
-    :param query_endpoint: The endpoint to query the KG
-    :param update_endpoint: The endpoint to update the KG
-    :param db_url: The url to the RDB
-    :param db_user: The user to the RDB
-    :param db_password: The password to the RDB
+    Arguments:
+        iri {str} - instance IRI to forecast (i.e., IRI which will get ts:hasForecast relationship)
+        kgClient {KGClient} - KG client to use
+        time_format {str} - time format to use to initialise the forecast TimeSeries
+        query_endpoint {str} - endpoint to query the KG
+        update_endpoint {str} - endpoint to update the KG
+        db_url {str} - URL to the RDB
+        db_user {str} - username for the RDB
+        db_password {str} - password for the RDB
     
-    :return: The forecast is being returned.
+    Returns:
+        dict - A dictionary with the forecast and some metadata
     """
+
     # Initialise the KG and TS clients
-    kgClient = KGClient(query_endpoint=query_endpoint, update_endpoint=update_endpoint)
-    tsClient = TSClient(kg_client=kgClient, rdb_url=db_url, rdb_user=db_user, rdb_password=db_password)
+    if not kgClient:
+        kgClient = KGClient(query_endpoint=query_endpoint, update_endpoint=update_endpoint)
+    tsClient = TSClient(kg_client=kgClient, rdb_url=db_url, rdb_user=db_user, 
+                        rdb_password=db_password)
 
-    covariates, backtest_series = None, None
-
-    # get the model configuration dictionary from the a specific use_model_configuration or use default
+    # Update/condition forecasting configuration
     cfg = config.copy()
-
-    cfg['model_configuration_name'] = 'DEFAULT'
-    cfg['iri'] = iri
-        
-    logger.info(f'Using the forecast start date: {cfg["forecast_start_date"]}')
+    cfg['iri'] = iri 
     
-    # calculate lower and upper bound for timeseries to speed up query
-    lowerbound, upperbound = get_ts_lower_upper_bound(cfg)
+    # Calculate lower and upper bound for time series to speed up TSClient queries
+    # (i.e., only query the time series data that is needed)
+    lowerbound, upperbound = get_ts_lower_upper_bound(cfg, time_format=time_format)
     cfg['loaded_data_bounds'] = {
-        'lowerbound': lowerbound, 'upperbound': upperbound}
-    logger.info(f'Using the following time bounds for the query: {cfg["loaded_data_bounds"]}')
+        'lowerbound': lowerbound, 
+        'upperbound': upperbound
+        }
     
-    # use model configuration function to get the correct iri timeseries and its covariates
-    series, covariates = load_ts_data(
-        cfg, kgClient, tsClient)
+    # Log some information before calculating forecast
+    logger.info(f'Creating forecast for: {cfg["iri"]}')
+    logger.info(f'Forecast start timestamp: {cfg["fc_start_timestamp"]}')
+    logger.info(f'Loaded time bounds for forecast: {cfg["loaded_data_bounds"]}')
     
-    #NOTE: test plotting
-    # import matplotlib.pyplot as plt
-    # series.plot(label ="Heat Supply (MWh)" )
-    # plt.xlabel('DateTime')
-    # plt.ylabel("Heat Supply (MWh)")
-    # plt.savefig('/app/tests/test.png')
+    # Load time series (and covariate) data
+    series, covariates = load_ts_data(cfg, kgClient, tsClient)    
 
-    # split series at forecast_start_date
-    # check if forecast_start_date is in series
-    if cfg['forecast_start_date'] in series.time_index:
-        series, backtest_series = series.split_before(
-            cfg['forecast_start_date'])
-        logger.info('Forecast start date is in series. Splitting series at forecast start date.')
-
-    # or the next date
-    elif cfg['forecast_start_date'] == series.time_index[-1] + series.freq:
-        # keep whole series
-        logger.info('Forecast start date is the next date after the last date in the series. Keeping whole series.')
-        pass
-
-    # Timestamp out of series range
+    # Verify that forecast start time is in series ...
+    if cfg['fc_start_timestamp'] in series.time_index:
+        series, _ = series.split_before(cfg['fc_start_timestamp'])
+        logger.info('Forecast start time is in series. Splitting series at forecast start time.')
+    # ... or the next date (then keep whole series) ...
+    elif cfg['fc_start_timestamp'] == series.time_index[-1] + series.freq:
+        logger.info('Forecast start time immediately follows the last entry of the series. Keeping whole series.')
+    # ... timestamp out of series range
     else:
-        logger.error('Forecast start date is out of series range.')
-        raise ValueError(
-            f'forecast_start_date: {cfg["forecast_start_date"]} - out of range of series start {series.start_time()} and end {series.end_time()}')
+        msg = 'Forecast start date is out of series range. '
+        msg += f'fc_start_timestamp: {cfg["fc_start_timestamp"]} - out of range of series with start {series.start_time()} and end {series.end_time()}.'
+        logger.error(msg)
+        raise ValueError(msg)
 
-    # load the model
+    # Load the model
+    if cfg['fc_model'].get('label') == 'prophet':
+        logger.info('Using default Prophet model to forecast.')
+        model = Prophet()
+        cfg['fc_model']['input_length'] = len(series) 
+
+    # TODO to be reworked for TFT & others
+    elif 'TFT_HEAT_SUPPLY' == cfg['model_configuration_name']:
     # NOTE: If you have multiple different models, you need to edit here the loading function,
     # you can use the model_configuration_name to load the correct model or
     # add a function to the model config like for loading the covariates
-    if 'TFT_HEAT_SUPPLY' == cfg['model_configuration_name']:
         model = load_pretrained_model(
             cfg, TFTModel)
         # other models than TFT can have different key then 'input_chunk_length'
@@ -122,18 +120,11 @@ def forecast(iri, config, db_url,
             logger.error('Horizon is less than the the model output length. Set horizon to at least the length of the model output length or use an other model.')
             raise ValueError(
                 f'horizon: {cfg["horizon"]} is smaller than output_chunk_length: {model.model_params["output_chunk_length"]}. Specify a horizon bigger than the output_chunk_length of your model.')
-            
-    elif 'DEFAULT' == cfg['model_configuration_name']:
-        logger.info('Using Prophet model.')
-        model = Prophet()
-        cfg['fc_model']['input_length'] = len(series)
-    #TODO: Potentially to be revisited / aligned with other configurations
-    elif 'PIRMASENS' == cfg['model_configuration_name']:
-        logger.info('Using Prophet model.')
-        model = Prophet()
-        cfg['fc_model']['input_length'] = len(series)
 
+    # Create forecast time series
     forecast = get_forecast(series, covariates, model, cfg)
+
+
 
     # create metadata
     # input series range
@@ -148,12 +139,6 @@ def forecast(iri, config, db_url,
     cfg['tsIRI'] = get_tsIRI_from_dataIRI(cfg['dataIRI'], kgClient)
     
     # Get unit from IRI and add to forecast
-    unit = get_unit(cfg['iri'], kgClient)
-    if unit:
-        cfg['unit'] = unit
-
-    # Get time format from tsIRI
-    cfg['time_format'] = get_time_format(cfg['iri'], kgClient)
 
     update = get_forecast_update(cfg=cfg)
     
@@ -162,10 +147,6 @@ def forecast(iri, config, db_url,
     
     # call client
     instantiate_forecast_timeseries(tsClient, cfg, forecast)
-    
-    # if backtest_series is not None:
-    #     cfg['error'] = calculate_error(backtest_series, forecast)
-    #     logger.info(f'Calculated error: {cfg["error"]}')
     
     # delete keys which you dont want in response, e.g. not json serializable objects
     keys_to_delete = ['load_covariates_func',
@@ -192,25 +173,10 @@ def instantiate_forecast_timeseries(tsClient, cfg, forecast):
         raise KGException(f'Could not instantiate forecast timeseries {cfg["forecast_iri"]}')
 
 
-# def get_forecast_start_date(forecast_start_date, tsClient, cfg):
-#     if forecast_start_date is not None:
-#         return pd.Timestamp(
-#             isoparse(forecast_start_date)).tz_convert('UTC').tz_localize(None)
-#     else:
-#         # get the last value of ts and set next date as forecast start date
-#         try:
-#             with tsClient.connect() as conn:
-#                 latest = tsClient.tsclient.getLatestData(cfg['dataIRI'], conn)
-#         except:
-#             raise KGException(
-#                 f"No time series data could be retrieved for the given IRI: {cfg['dataIRI']}")
-#         return pd.Timestamp(isoparse(latest.getTimes(
-#         )[0].toString())).tz_convert('UTC').tz_localize(None) + cfg['frequency']
-
-
 def get_forecast(series, covariates, model, cfg):
     """
-    It takes a series, covariates, model, and a model configuration as inputs, and returns a forecast.
+    It takes a series, covariates, model, and a model configuration as inputs, 
+    and returns a forecast.
 
     :param series: the time series data
     :param covariates: darts series  of covariates
@@ -221,40 +187,43 @@ def get_forecast(series, covariates, model, cfg):
     :return: The forecasted values
     """
 
-    if cfg['fc_model']['scale_data']:
-        # neural methods perform better with scaled inputs
-        logger.info(f'Scaling data with data of length:{len(series)}. Make sure that series is long enough (controlled with "data_length") to represent the whole data distribution. ')
+    if cfg['fc_model'].get('scale_data'):
+        # Neural methods perform better with scaled inputs
+        msg = f'Scaling input data with data length of {len(series)} timesteps.'
+        msg += 'Make sure that series is long enough (controlled with "data_length") to '
+        msg += 'represent the whole data distribution, i.e., at least one full cycle.'
+        logger.info(msg)
         scaler = Scaler()
         series = scaler.fit_transform(series)
 
-    # make forecast with covariates
+    # Make forecast with covariates
     if covariates is not None:
-        if cfg['fc_model']['train_again']:
-            logger.info(f'Training model again with covariates.')
-            # train again with covariates
+        if cfg['fc_model'].get('train_again'):
+            logger.info('Training model again with covariates.')
+            # Train again with covariates
             model.fit(series, future_covariates=covariates)
-        logger.info(f'Making forecast with covariates.')
+        logger.info('Making forecast with covariates.')
         try:
             forecast = model.predict(
                 n=cfg['horizon'], future_covariates=covariates, series=series)
         except RuntimeError as e:
-            # prediction failed often, because of wrong dtype -> convert to same dtype
+            # Prediction sometimes fails due to wrong dtype -> convert to same dtype
             series = series.astype('float32')
             covariates = covariates.astype('float32')
             forecast = model.predict(
                 n=cfg['horizon'], future_covariates=covariates, series=series)
 
-    # make prediction without covariates
+    # Make prediction without covariates (e.g. default for Prophet)
     else:
-        if cfg['fc_model']['train_again']:
-            logger.info(f'Training model again without covariates.')
+        if cfg['fc_model'].get('train_again'):
+            logger.info('Training model again without covariates.')
             model.fit(series)
-        logger.info(f'Making forecast without covariates.')
+        logger.info('Making forecast without covariates.')
         forecast = model.predict(n=cfg['horizon'])
 
-    if cfg['fc_model']['scale_data']:
-        # scale back
-        logger.info(f'Scaling back data.')
+    if cfg['fc_model'].get('scale_data'):
+        # Scale predicted data back
+        logger.info('Scaling back predicted data, i.e., back-transform into actual values.')
         forecast = scaler.inverse_transform(forecast)
 
     return forecast
@@ -262,117 +231,97 @@ def get_forecast(series, covariates, model, cfg):
 
 def load_ts_data(cfg, kgClient, tsClient):
     """
-    Loads the time series data and covariates from the KG and TSDB. 
-    Calculates the upper and lower bounds of the time series, based on the given data_length, forecast_start_date and horizon. 
+    Load time series and covariates data (if applicable) from RDB. 
 
-
-    :param cfg: a dictionary with the model configuration with the following keys:
-        'ts_data_type': the type of the time series data
-        'frequency': the frequency of the time series data
-        'data_length': the length of the time series data to retrieve before the forecast_start_date
-        'forecast_start_date': the start date of the forecast, if None, the last date of the time series data is used
-        'horizon': the length of the forecast
-        'load_covariates_func': function to load covariates, if None, no covariates are loaded
-    :param kgClient: a client for the knowledge graph
-    :param tsClient: a client for the timeseries database
-    :return: the timeseries and covariates.
+    :param cfg: dicti.onary with forecast configuration as returned by 'create_forecast_configuration'
+        Relevant keys:
+            'fc_model': configuration of forecasting model to use, i.e. relevant covariates
+            'dataIRI': dataIRI of the time series to forecast (i.e., for which to retrieve data)
+            'loaded_data_bounds': lowerbound and upperbound between which to load data
+            'resample_data': string describing potential resampling frequency (for pandas resample function)
+    :param kgClient: initialised KG client
+    :param tsClient: initialised TS client
+    
+    :return: darts.TimeSeries objects of timeseries (and covariates)
     """
 
-    if 'load_covariates_func' in cfg:
-        # load covariates
+    if cfg['fc_model'].get('covariate_iris'):
+        # Load covariates data
+        # TODO to be reworked for TFT & others
         logger.info('Loading covariates with function: ' + cfg['load_covariates_func'].__name__)
         covariates_iris, covariates = cfg['load_covariates_func'](
             kgClient, tsClient, cfg['loaded_data_bounds']['lowerbound'], cfg['loaded_data_bounds']['upperbound'])
         cfg['fc_model']['covariates_iris'] = covariates_iris
 
-        # check if covariates are given for complete future horizon from forecast_start_date
+        # check if covariates are given for complete future horizon from fc_start_timestamp
         check_if_enough_covs_exist(cfg, covariates)
     else:
-        logger.info('No covariates loading function given, no covariates are loaded')
+        logger.info('No covariates specified by forecasting model, no covariates are loaded.')
         covariates = None
 
-    # load timeseries which should be forecasted
+    # Load timeseries to be forecasted as DataFrame
     df = get_df_of_ts(cfg['dataIRI'], tsClient, cfg['loaded_data_bounds']['lowerbound'],
-                      cfg['loaded_data_bounds']['upperbound'], column_name="Series", date_name="Date")
+                      cfg['loaded_data_bounds']['upperbound'], column_name="Series", 
+                      index="Time")
 
-    # df to darts timeseries
-    #NOTE Inlcuded resampling for irregularly spaced time series data to avoid issues
-    #     with Darts being unable to retrieve frequency of time series
-    #     (likely to be refined in the future)
-
+    # Convert DataFrame to darts.TimeSeries
+    # Potentially resample time series (especially relevant for irregularly spaced 
+    # data to avoid issues with Darts being unable to retrieve frequency of ts)
     if cfg.get('resample_data'):
-        df_resampled = df.set_index('Date').copy()
+        df_resampled = df.set_index('Time').copy()
         df_resampled = df_resampled.resample(cfg.get('resample_data')).mean()
         df = df_resampled.reset_index()
 
     try:
         # Build a deterministic TimeSeries instance from DataFrame as is
-        series = TimeSeries.from_dataframe(df, time_col='Date', value_cols="Series")
+        series = TimeSeries.from_dataframe(df, time_col='Time', value_cols="Series")
     except ValueError:
         # Fill missing times with NaN values if processing DataFrame as is fails;
         # requires possibility to infer the frequency from the provided timestamps
-        series = TimeSeries.from_dataframe(df, time_col='Date', value_cols="Series",
+        series = TimeSeries.from_dataframe(df, time_col='Time', value_cols="Series",
                                            fill_missing_dates=True, 
                                            freq=None)
 
-    # remove nan values at beginning and end
+    # Remove nan values at beginning and end
     series = series.strip()
 
-    logger.info('Done with loading timeseries from KG and TSDB')
+    logger.info('Time series (and covariate) data successfully loaded.')
     return series, covariates
 
 
-# def get_data_iri(cfg, kgClient):
-#     """
-#     Retrieves the time series IRI from the KG.
-#     Either the iri has directly object with 'hasTimeSeries' with 'Measure' in between, 
-#     or the iri has a 'hasTimeSeries' with no 'Measure' in between, 
-#     in both cases the iri of the object after 'hasTimeSeries' is returned.
-
-#     1. iri -> hasValue -> Measure -> hasTimeSeries -> ts_iri
-#     2. iri -> hasTimeSeries -> ts_iri
-
-#     :param cfg: a dictionary containing the model configuration
-#     :param kgClient: the client object for the knowledge graph
-#     """
-#     try:
-#         # try if ts hasValue where the actual ts is stored
-#         dataIRI = get_dataIRI_for_ts_with_hasValue_iri(cfg['iri'], kgClient)
-#     except IndexError as e:
-#         dataIRI = cfg['iri']
-
-#     return dataIRI
-
-
 def check_if_enough_covs_exist(cfg, covariates):
-    if covariates is not None and (cfg['forecast_start_date'] + cfg['frequency'] * (cfg['horizon'] - 1) > covariates.end_time()):
+    if covariates is not None and (cfg['fc_start_timestamp'] + cfg['frequency'] * (cfg['horizon'] - 1) > covariates.end_time()):
         logger.error(
-            f'Not enough covariates exist for the given forecast_start_date and horizon. The last covariate timestamp is {covariates.end_time()}')
+            f'Not enough covariates exist for the given fc_start_timestamp and horizon. The last covariate timestamp is {covariates.end_time()}')
         raise ValueError(
-            f'Not enough covariates for complete future horizon. Covariates end at {covariates.end_time()} but forecast horizon ends at {cfg["forecast_start_date"] + cfg["frequency"] * (cfg["horizon"] - 1)}')
+            f'Not enough covariates for complete future horizon. Covariates end at {covariates.end_time()} but forecast horizon ends at {cfg["fc_start_timestamp"] + cfg["frequency"] * (cfg["horizon"] - 1)}')
     return True
 
 
-def get_ts_lower_upper_bound(cfg):
+def get_ts_lower_upper_bound(cfg, time_format=TIME_FORMAT):
     """
-    It takes the forecast start date, the frequency, the horizon, and the data length, and returns the
-    lower and upper bounds of the time series
+    It takes the forecast start date, the frequency, the horizon, and the data length, 
+    and returns the lower and upper bounds of the time series
 
     :param cfg: a dictionary with the following keys:
-        'forecast_start_date': the start date of the forecast
-        'frequency': the frequency of the time series data
-        'horizon': the length of the forecast
-        'data_length': the length of the time series data to retrieve before the forecast_start_date
-    :return: the lower and upper bounds of the time series
-    """
-    # upper bound is forecast_start_date + horizon
-    upperbound = cfg['forecast_start_date'] + \
-        cfg['frequency'] * (cfg['horizon'] - 1)
+        'fc_start_timestamp': the start of the forecast (pd.Timestamp)
+        'frequency': the frequency of the time series data (dt.timedelta)
+        'horizon': the length of the forecast, i.e. number of time steps (int)
+        'data_length': the length of the time series data to retrieve before the
+                       fc_start_timestamp, i.e. number of time steps (int)
 
-    # lower bound is forecast_start_date - input_length
-    lowerbound = cfg['forecast_start_date'] - \
+    :return: the lower and upper bounds of the time series as strings
+    """
+
+    # upper bound is fc_start_timestamp + forecast horizon
+    upperbound = cfg['fc_start_timestamp'] + \
+                 cfg['frequency'] * (cfg['horizon'] - 1)
+
+    # lower bound is fc_start_timestamp - (historical) data_length
+    lowerbound = cfg['fc_start_timestamp'] - \
         cfg['frequency'] * (cfg['data_length'])
-    return lowerbound.strftime(TIME_FORMAT), upperbound.strftime(TIME_FORMAT)
+    
+    return lowerbound.strftime(time_format), upperbound.strftime(time_format)
 
 
 def load_pretrained_model(cfg, ModelClass, force_download=False):
@@ -443,10 +392,10 @@ def get_forecast_update(cfg):
     Takes a model configuration and returns the forecast SPARQL update query to instantiate the forecast in the KG
 
     :param cfg: a dictionary with meta information:
-        'forecast_start_date': the start date of the forecast
+        'fc_start_timestamp': the start date of the forecast
         'frequency': the frequency of the time series data
         'horizon': the length of the forecast
-        'data_length': the length of the time series data to retrieve before the forecast_start_date
+        'data_length': the length of the time series data to retrieve before the fc_start_timestamp
         'dataIRI': the iri of the timeseries which is forecasted
         'iri': the iri which has the predicate hasTimeSeries
         'fc_model': the configuration of the model

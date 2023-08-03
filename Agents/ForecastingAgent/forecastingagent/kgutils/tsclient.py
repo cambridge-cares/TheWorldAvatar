@@ -113,7 +113,7 @@ class TSClient:
         logger.info(f"Time series initialised in KG: {dataIRI}")
 
 
-    def retrieve_timeseries(self, dataIRI):
+    def retrieve_timeseries(self, dataIRI, lowerbound=None, upperbound=None):
         """
         This method retrieves the time series data for a given dataIRI
         
@@ -121,7 +121,8 @@ class TSClient:
             dataIRI (str): IRI of instance with hasTimeSeries relationship
         """
         with self.connect() as conn:
-            ts = self.tsclient.getTimeSeries([dataIRI], conn)
+            ts = self.tsclient.getTimeSeriesWithinBounds([dataIRI], lowerbound, 
+                                                         upperbound, conn)
         times = ts.getTimes()
         values = ts.getValues(dataIRI)
 

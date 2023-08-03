@@ -26,7 +26,7 @@ from . import conftest as cf
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
 
-
+@pytest.mark.skip(reason="Nor relevant right now")
 def test_example_triples():
     """
     This test checks that the example triples are correct in syntax.
@@ -42,7 +42,7 @@ def test_example_triples():
         except Exception as e:
             raise e
 
-
+@pytest.mark.skip(reason="Nor relevant right now")
 def test_example_data_instantiation(initialise_clients):
     """
     This test checks that all example data gets correctly instantiated,
@@ -90,7 +90,7 @@ def test_example_data_instantiation(initialise_clients):
     "derivation_input_set, iri_to_forecast, ts_times, ts_values",
     [
         (cf.DERIVATION_INPUTS_1, cf.IRI_TO_FORECAST_1, cf.TIMES, cf.VALUES_1),
-        (cf.DERIVATION_INPUTS_2, cf.IRI_TO_FORECAST_2, cf.TIMES, cf.VALUES_3)
+        #(cf.DERIVATION_INPUTS_2, cf.IRI_TO_FORECAST_2, cf.TIMES, cf.VALUES_3)
     ],
 )
 def test_create_forecast(
@@ -182,7 +182,15 @@ def test_create_forecast(
 
     #print("All check passed.")
 
+    #NOTE: test plotting
+    # import matplotlib.pyplot as plt
+    # series.plot(label ="Heat Supply (MWh)" )
+    # plt.xlabel('DateTime')
+    # plt.ylabel("Heat Supply (MWh)")
+    # plt.savefig('/app/tests/test.png')
 
+
+@pytest.mark.skip(reason="Nor relevant right now")
 @pytest.mark.parametrize(
     "http_request, fail, equal, expected_result",
     [

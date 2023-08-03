@@ -93,14 +93,19 @@ def get_tsIRI_from_dataIRI(dataIRI, kgClient):
     return tsIRI
    
 
-def check_cov_matches_rdf_type(row, rdf_type):
-    if 'type_with_measure' in row and row['type_with_measure'] == rdf_type or 'type_without_measure' in row and row['type_without_measure'] == rdf_type:
-        return True
-    else:
-        return False
+# def check_cov_matches_rdf_type(row, rdf_type):
+#     if 'type_with_measure' in row and row['type_with_measure'] == rdf_type or 'type_without_measure' in row and row['type_without_measure'] == rdf_type:
+#         return True
+#     else:
+#         return False
 
 
-def get_covs_heat_supply(kgClient, tsClient,  lowerbound, upperbound, df=None):
+def get_covs_heat_supply(kgClient, tsClient, covariates, lowerbound, upperbound, df=None):
+    """
+    NOTE: provide general load covariate function here with mapping in forecasting_config
+    add note about complexity and need for revisiting, as order of covariates is important +
+    day of week, etc. are not marked up but were used during training
+    """
     cov_iris = []
 
     # The following approach just works for the data iris that have an unique rdf type.
@@ -146,102 +151,42 @@ def get_covs_heat_supply(kgClient, tsClient,  lowerbound, upperbound, df=None):
     return cov_iris, covariates
 
 
-def get_df_of_ts(dataIRI, tsClient, lowerbound, upperbound, column_name="cov", date_name="Date"):
-    dates, values = get_ts_data(
-        dataIRI, tsClient,  lowerbound=lowerbound, upperbound=upperbound)
+def get_df_of_ts(dataIRI, tsClient, lowerbound, upperbound, column_name="cov", index="time"):
+    # Retrieve time series data and return as pandas dataframe with default column names
+    times, values = tsClient.retrieve_timeseries(dataIRI, lowerbound, upperbound)
     if len(values) == 0:
-        logger.error(f'No data for dataIRI {dataIRI}')
-        raise ValueError(
-            f"no values for dataIRI {dataIRI}, with lowerbound {lowerbound} and upperbound {upperbound}")
-    logger.info(
-        f'Loaded {len(values)} values for dataIRI {dataIRI} from {lowerbound} to {upperbound}')
-    df = pd.DataFrame(zip(values, dates), columns=[column_name, date_name])
-    # remove time zone
-    df.Date = pd.to_datetime(df.Date).dt.tz_convert('UTC').dt.tz_localize(None)
+        msg = f'No time series data available for dataIRI "{dataIRI}" between {lowerbound} and {upperbound}.'
+        logger.error(msg)
+        raise ValueError(msg)
+    logger.info(f'Loaded {len(values)} values for dataIRI "{dataIRI}" from "{lowerbound}" to "{upperbound}"')
+
+    df = pd.DataFrame(zip(values, times), columns=[column_name, index])
+    # Remove time zone and convert to datetime
+    df[index] = pd.to_datetime(df[index]).dt.tz_convert('UTC').dt.tz_localize(None)
+    
     return df
 
 
-def get_unit(iri, kgClient):
-    # Get unit (potentially) associated with dataIRI
-    query = f"""
-    SELECT ?unit
-    WHERE {{
-        <{iri}> <{OM_HASVALUE}> ?measure . 
-        ?measure <{OM_HASUNIT}> ?unit . 
-        }}"""
-    unit = kgClient.performQuery(query)
-    if len(unit) == 1:
-        unit = unit[0]["unit"]
-    else:
-        unit = None
-    return unit
 
+# def get_ts_by_type():
+#     """
+#     It returns a SPARQL query that will return all the iris and dataIRIs in the graph, along with the
+#     type of the iri.
 
-def get_time_format(iri, kgClient):
-    # Get time format of tsIRI
-    query = f"""
-    SELECT ?format
-    WHERE {{
-        <{iri}> <{OM_HASVALUE}>*/<{TS_HASTIMESERIES}> ?ts . 
-        ?ts <{TS_HASTIMEUNIT}> ?format . 
-        }}"""
-    #TODO: Revisit to check if time format is always required
-    time_format = kgClient.performQuery(query)[0]["format"]
-    return time_format
+#     It distinguishes between measures and non-measures. 
+#     The type of Timeseries with measures is returned under the key 'type_with_measure' and those without measures are returned under the key 'type_without_measure'.
+#     """
 
-
-def get_ts_data(iri, ts_client, lowerbound=None, upperbound=None):
-    """
-    It takes a data IRI and a client object, and returns the dates and values of the time series
-
-    :param iri: The IRI of the data you want to get
-    :param ts_client: a TimeSeriesClient object
-    :return: A tuple of two lists. The first list is a list of dates, the second list is a list of
-    values.
-    """
-
-    if lowerbound is not None and upperbound is not None:
-        try:
-            with ts_client.connect() as conn:
-                ts = ts_client.tsclient.getTimeSeriesWithinBounds(
-                    [iri], lowerbound, upperbound, conn)
-        except:
-            raise KGException(
-                f"Could not get time series for iri {iri} with lowerbound {lowerbound} and upperbound {upperbound}")
-    else:
-        try:
-            with ts_client.connect() as conn:
-                ts = ts_client.tsclient.getTimeSeries([iri], conn)
-        except:
-            raise KGException(
-                f"Could not get time series for iri {iri}.")
-
-    dates = ts.getTimes()
-    # Unwrap Java time objects
-    dates = [d.toString() for d in dates]
-    values = ts.getValues(iri)
-    return dates, values
-
-
-def get_ts_by_type():
-    """
-    It returns a SPARQL query that will return all the iris and dataIRIs in the graph, along with the
-    type of the iri.
-
-    It distinguishes between measures and non-measures. 
-    The type of Timeseries with measures is returned under the key 'type_with_measure' and those without measures are returned under the key 'type_without_measure'.
-    """
-
-    return f"""
-     SELECT  distinct ?iri ?dataIRI ?type_with_measure ?type_without_measure
-     WHERE {{
+#     return f"""
+#      SELECT  distinct ?iri ?dataIRI ?type_with_measure ?type_without_measure
+#      WHERE {{
       
-       ?dataIRI <{TS_HASTIMESERIES}> ?ts . 
-       ?dataIRI <{RDF_TYPE}> ?type_without_measure .
-       OPTIONAL {{ ?iri <{OM_HASVALUE}> ?dataIRI . ?iri <{RDF_TYPE}> ?type_with_measure }} . 
+#        ?dataIRI <{TS_HASTIMESERIES}> ?ts . 
+#        ?dataIRI <{RDF_TYPE}> ?type_without_measure .
+#        OPTIONAL {{ ?iri <{OM_HASVALUE}> ?dataIRI . ?iri <{RDF_TYPE}> ?type_with_measure }} . 
        
-     }}
-     """
+#      }}
+#      """
 
 
 def get_data_cov(df, col):
