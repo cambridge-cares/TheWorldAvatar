@@ -30,8 +30,8 @@ import datetime as dt
 from py4jps import agentlogging
 
 from forecastingagent.datamodel.iris import *
+from forecastingagent.utils.env_configs import DB_URL
 from forecastingagent.utils.baselib_gateway import jpsBaseLibGW
-#from forecastingagent.utils.tools import get_covs_heat_supply
 
 
 # Initialise logger instance (ensure consistent logger level`)
@@ -54,10 +54,11 @@ def create_forecast_configuration(model:dict, ts_details:dict, ts_frequency:dict
                                   hist_duration:dict, fc_interval:dict,
                                   ts_data_type=DOUBLE):
     """
-    Returns a dictionary of parameters describing the forecast to create.
+    Returns a consolidated forecasting configuration dictionary with parameters 
+    describing the forecast to create.
 
     Arguments:
-        fcmodel {dict} -- forecast model details as retrieved from the KG
+        model {dict} -- forecast model details as retrieved from the KG
         ts_details {dict} -- time series details as retrieved from the KG
         ts_frequency {dict} -- time series frequency details as retrieved
         hist_duration {dict} -- historical data duration details as retrieved
@@ -194,3 +195,42 @@ def create_duration_entries(freq:dict):
         freq_dict['duration'] = dt.timedelta(seconds=sec)
 
     return freq_dict
+
+
+def get_rdb_endpoint(ts_details:dict):
+    """
+    Determine RDB URL and time format to use when creating forecast (i.e.,
+    retrieving historical data and storing forecast)
+
+    Arguments:
+        ts_details {dict} -- time series details as retrieved from the KG
+    
+    Returns:
+        str -- RDB URL to use when creating forecast
+        str -- TIME FORMAT to use when creating forecast
+    """
+
+    # Retrieve RDB URL to use with following priority:
+    # 1) Use URL instantiated in KG for time series to forecast
+    # 2) Use default URL from environment variables
+    rdb_url = ts_details.get('rdb_url')
+    if not rdb_url:
+        logger.warning('No RDB URL associated with time series to forecast in KG. Using default from environment variables.')
+        rdb_url = DB_URL
+
+    # Throw exception if RDB URL is not set
+    if not rdb_url:
+        msg = 'RDB URL to use could not be determined: neither instantiated nor provided in docker-compose.yml.'
+        logger.error(msg)
+        raise ValueError(msg)
+    else:
+        # Replace potentially occurring 'localhost' (i.e., depending on TimeSeriesClient setting
+        # when time series was instantiated) with 'host.docker.internal' for Docker deployment
+        rdb_url = rdb_url.replace('localhost', 'host.docker.internal')
+
+    time_format = ts_details.get('time_format')
+    if not time_format:
+        logger.warning(f'No time format associated with time series to forecast in KG. Using default format: {TIME_FORMAT}.')
+        time_format = TIME_FORMAT
+    
+    return rdb_url, time_format

@@ -179,7 +179,8 @@ class ForecastingAgent(DerivationAgent):
                                             hist_duration=data_hist, fc_interval=interval)
 
         # Create forecast
-        #forecast(iri=input_iris['iri_to_forecast'], config=cfg)
+        rdb_url, time_format = get_rdb_endpoint(ts)
+        forecast(iri=input_iris['iri_to_forecast'], db_url=rdb_url, config=cfg)
 
         # Instantiate forecast in KG
 

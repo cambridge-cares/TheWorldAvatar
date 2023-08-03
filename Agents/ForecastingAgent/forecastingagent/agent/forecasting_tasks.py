@@ -23,7 +23,7 @@ from py4jps import agentlogging
 
 from forecastingagent.utils.tools import *
 from forecastingagent.utils.env_configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, \
-                                              DB_URL, DB_USER, DB_PASSWORD
+                                               DB_URL, DB_USER, DB_PASSWORD
 from forecastingagent.datamodel.iris import *
 from forecastingagent.agent.forcasting_config import *
 from forecastingagent.kgutils.kgclient import KGClient
@@ -34,9 +34,9 @@ from forecastingagent.errorhandling.exceptions import KGException
 logger = agentlogging.get_logger('prod')
 
 
-def forecast(iri, config,
-             query_endpoint=SPARQL_QUERY_ENDPOINT, update_endpoint=SPARQL_UPDATE_ENDPOINT, 
-             db_url=DB_URL, db_user=DB_USER, db_password=DB_PASSWORD):
+def forecast(iri, config, db_url,
+             query_endpoint=SPARQL_QUERY_ENDPOINT, update_endpoint=SPARQL_UPDATE_ENDPOINT,
+             db_user=DB_USER, db_password=DB_PASSWORD):
     """
     Forecast a time series using a pre trained model or Prophet.
     returns a dictionary with the forecast and some metadata.

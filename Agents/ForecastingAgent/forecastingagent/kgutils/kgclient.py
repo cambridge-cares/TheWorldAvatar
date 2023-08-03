@@ -26,11 +26,23 @@ class KGClient(PySparqlClient):
     #
     def get_time_series_details(self, fcIRI:str):
         """
-        Returns the IRI, RDB URL ans time format of the time series instance 
-        associated with the given data IRI.
+        Returns the dataIRI, tsIRI, RDB URL and time format of the time series 
+        instance associated with the given instance IRI.
+        NOTE: fcIRI and dataIRI do not need to be equivalent, especially when 
+              OM representation for data is used, where a om:Measure concept is
+              used "in between":
+              <fcIRI> ts:hasForecast <...> ;
+                      om:hasValue <dataIRI> .
+              <dataIRI> a om:Measure ;
+                        ts:hasTimeseries <tsIRI> .
+              <tsIRI> ts:hasRDB <...> ;
+                      ts:hasTimeUnit <...> .
 
+        Arguments:
+            fcIRI (str) -- IRI of instance for which to create forecast
         Returns:
-            ts (dict) -- dictionary with keys 'ts_iri', 'rdb_url' and 'time_format'
+            ts (dict) -- dictionary with keys 'data_iri', 'ts_iri', 'rdb_url' 
+                         and 'time_format'
         """
         query = f"""
             SELECT DISTINCT ?data_iri ?ts_iri ?rdb_url ?time_format
