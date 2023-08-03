@@ -18,12 +18,13 @@ import json
 def component_handler(assemblyModel, componentTypeNumber, precursors, linkages):
     components = {}
     result = component_am_mol_matcher(assemblyModel, componentTypeNumber, precursors=precursors, linkages=linkages)
+    #print(linkages)
     precursor_dict, linkage_dict = ordering_components(result)
     linkage_copies = dummify_linkages(linkage_dict)
     precursor_copies = dummify_precursors(precursor_dict)
     components.update(linkage_copies)
     components.update(precursor_copies)
-    print(components)
+    #print(components)
     return components
 
 def component_am_mol_matcher(assemblyModel, componentTypeNumber, *, precursors=None, linkages=None):
@@ -42,6 +43,7 @@ def component_am_mol_matcher(assemblyModel, componentTypeNumber, *, precursors=N
     # check if components in assemblyModel match the precursors and linkages
     
     components = {k:v for k,v in assemblyModel.items() if "Component" in k}
+    #print(components)
     for precursor in precursors:     
         if precursor is not None and precursor.get("GBU", "") in components.values():
             gbu = precursor.get("GBU", "")
@@ -75,9 +77,12 @@ def ordering_components(input_dict):
     
     # Get all the Component_names
     component_names = set(key.replace(" Copies", "").replace(" BS", "") for key in input_dict.keys() if 'Component' in key)
-    
+    #print("--------------------------------------------")
+    #print(input_dict)
+    #print("--------------------------------------------")
     # Create a dictionary for each Component_with its corresponding data
     for component_name in component_names:
+        
         component_data = {}
         for key in input_dict.keys():
             if component_name in key:
@@ -218,7 +223,7 @@ def initial_product_instantiation(assembly_model, SingleComponent):
 
 def product_instantiation(assembly_model, SingleComponent, product_name):
     product1 = assembly_model["ConstructionSteps"][product_name]
-    print(product_name)
+    #print(product_name)
     component1 = product1[0]
     component2 = product1[1]
     
@@ -273,13 +278,17 @@ def merging_dummies(*dicts):
 
 def looping_to_cofmer(assembly_model, initiation_single_component, second_initiation_step):
     result_dict = {}
+    print(assembly_model)
     construction_steps = assembly_model["ConstructionSteps"]
     current_component = initiation_single_component
     for product_name, components in construction_steps.items():
         if product_name == "Product_1":
             continue  # Skip Product_1 since it's already initialized
         if product_name == "COFmer":
+            if components == "Product_1":
+                return initiation_single_component  # Return initiation_single_component if COFmer value is Product_1
             continue  # Skip COFmer since it's already initialized
+        
         temp_dict = second_initiation_step(assembly_model, current_component, product_name)
         #print(temp_dict)
         result_dict = {**result_dict, **temp_dict}
@@ -287,7 +296,7 @@ def looping_to_cofmer(assembly_model, initiation_single_component, second_initia
 
 #----------------------PRODUCT COMPONENT MOLECULIZER-------------------------
 
-def product_mol_handler(input_dict):
+def product_mol_handler(input_dict, output_dir):
     output_list = []
     
     # Loop through all keys in the dictionary
@@ -296,12 +305,17 @@ def product_mol_handler(input_dict):
         if "Product_" in key:
             # Extract the relevant information from the dictionary
             input_files = input_dict[key]["inputFile"]
+            #output_file = output_dir + input_dict[key]["outputFile"]
+            output_file = os.path.join(output_dir, input_dict[key]["outputFile"])
             
-            output_file = r"C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\output_dir\\" + input_dict[key]["outputFile"]
+           #output_file = r"C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\output_dir\\" + input_dict[key]["outputFile"]
             binding_dummies = input_dict[key]["BindingDummies"]
             # Generate the variables needed for combine_molecules
-            input_component_1 = r"C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\output_dir\\" + input_files[0]
-            input_component_2 = r"C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\output_dir\\" + input_files[1]
+            input_component_1 = os.path.join(output_dir, input_files[0])
+            input_component_2 = os.path.join(output_dir, input_files[1])
+            
+            #input_component_1 = r"C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\output_dir\\" + input_files[0]
+            #input_component_2 = r"C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\output_dir\\" + input_files[1]
             binding_dummy_1 = binding_dummies[0]
             binding_dummy_2 = binding_dummies[1]
             product_mol_combiner(input_component_1, binding_dummy_1, input_component_2, binding_dummy_2, output_file)
@@ -350,9 +364,9 @@ def product_mol_combiner(mol1_path, dummy1, mol2_path, dummy2, output_file):
 def cofmer_cleaner(directory):
     # Get a list of all files in the directory
     file_list = os.listdir(directory)
-    
+    #print(directory)
     # Find the highest integer in the Product_ filenames
-    highest_int = -1
+    highest_int = 1
     for file in file_list:
         if file.startswith("Product_") and file.endswith(".mol"):
             file_num = int(file.split("_")[1].split(".")[0])
@@ -361,6 +375,7 @@ def cofmer_cleaner(directory):
     
     # Open the highest numbered Product_ file and replace high atomic numbers with dummy atoms
     file_name = f"Product_{highest_int}.mol"
+    
     file_path = os.path.join(directory, file_name)
     mol = Chem.MolFromMolFile(file_path)
     for atom in mol.GetAtoms():
@@ -397,10 +412,12 @@ def run_cofmer_pipeline(assemblyModel, componentTypeNumber, precursor1, linkage1
     SingleComponents = component_handler(assemblyModel, componentTypeNumber, [precursor1], [linkage1])
     component_mol_handler(SingleComponents, input_dir, output_dir)
     initiation_single_component = initial_product_instantiation(assemblyModel, SingleComponents)
+    print(initiation_single_component)
     looping_single_components = looping_to_cofmer(assemblyModel, initiation_single_component, product_instantiation)
     #with open('data.json', 'w') as f:
     #    json.dump(looping_single_components, f, indent=4)
-    product_mol_handler(looping_single_components)
-    new_dir = r"C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\output_dir\\"
-    cofmer_cleaner(new_dir)
+    product_mol_handler(looping_single_components,output_dir)
+    #print(output_dir)
+    #new_dir = r"C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\output_dir\\"
+    cofmer_cleaner(output_dir)
     
