@@ -61,10 +61,12 @@ public class BuildingLinkAgent extends JPSAgent {
 
     public JSONObject getParameters(String requestParams){
         JSONObject jsonMessage = new JSONObject();
-        if(requestParams.equals("linking")){
+        if(requestParams.equals("buildingiri")){
            Config c = new Config();
            String[] config = c.retrieveSQLConfig();
            jsonMessage = sqlRoute(config);
+        }else{
+
         }
         return jsonMessage;
    }

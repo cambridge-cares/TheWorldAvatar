@@ -7,11 +7,7 @@
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-clients</artifactId>
-<<<<<<< HEAD
-  <version>1.12.2</version>
-=======
   <version>1.14.0</version>
->>>>>>> main
 
   <name>Stack Clients</name>
   <url>https://www.cmclinnovations.com</url>

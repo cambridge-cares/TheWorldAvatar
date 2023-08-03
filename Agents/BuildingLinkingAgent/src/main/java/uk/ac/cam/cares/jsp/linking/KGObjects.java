@@ -11,6 +11,8 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
+
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import java.nio.file.Path;
@@ -26,30 +28,40 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 public class KGObjects {
     private static final Logger LOGGER = LogManager.getLogger(KGObjects.class);
     private static final Path configPath = Path.of("/inputs/config");
-    static String ontoj = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#";
-    static Prefix p_j1 = SparqlBuilder.prefix("j1",iri(ontoj));
-    static String ontoPowsys = "http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#";
-    static Prefix p_powsys = SparqlBuilder.prefix("powsys",iri(ontoPowsys));
+    RemoteStoreClient kgClient;
+
     static String bot = "https://w3id.org/bot#";
     static Prefix p_bot = SparqlBuilder.prefix("bot",iri(bot));
-    static String ontobim = "https://www.theworldavatar.com/kg/ontobim/";
-    static Prefix p_ontobim = SparqlBuilder.prefix("ontobim",iri(ontobim));
-    RemoteStoreClient kgClient;
+    static Iri botBuilding = p_bot.iri("Building");
+
+    public static final String RDFS_URL = "http://www.w3.org/2000/01/rdf-schema#";
+    static Prefix rdfs = SparqlBuilder.prefix("rdfs",iri(RDFS_URL));
+    static Iri labels = rdfs.iri("label");
+
+    public static final String RDF_URL = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    static Prefix rdf = SparqlBuilder.prefix("rdf",iri(RDF_URL));
+    static Iri type = rdf.iri("type");
+
+    static String envOnto = "https://www.theworldavatar.com/kg/ontobuiltenv/";
+    static Prefix p_env = SparqlBuilder.prefix("env",iri(envOnto));
+    static Iri hasOntoCityGML = p_env.iri("hasOntoCityGMLRepresentation");
+
     private String objectIri;
     private String objectName;
     private String geoObjectId;
     private KGAddress address;
-    static String envOnto = "https://www.theworldavatar.com/kg/ontobuiltenv/";
-    static Prefix p_env = SparqlBuilder.prefix("env",iri(envOnto));
-    static Iri hasOntoCityGML = p_env.iri("hasOntoCityGMLRepresentation");
+
+    static String ontoj = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#";
+    static Prefix p_j1 = SparqlBuilder.prefix("j1",iri(ontoj));
+    static String ontoPowsys = "http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#";
+    static Prefix p_powsys = SparqlBuilder.prefix("powsys",iri(ontoPowsys));   
+    static String ontobim = "https://www.theworldavatar.com/kg/ontobim/";
+    static Prefix p_ontobim = SparqlBuilder.prefix("ontobim",iri(ontobim));
     static Iri busNode = p_j1.iri("BusNode");
-    static Iri hasBusNode = p_powsys.iri("hasBusNode");
-    static Iri botBuilding = p_bot.iri("Building");
+    static Iri hasBusNode = p_powsys.iri("hasBusNode");   
     static Iri hasIfcRepresentation = p_ontobim.iri("hasIfcRepresentation");
     static Iri IfcBuildingRepresentation = p_ontobim.iri("IfcBuildingRepresentation");
-    public static final String RDFS_URL = "http://www.w3.org/2000/01/rdf-schema#";
-    static Prefix rdfs = SparqlBuilder.prefix("rdfs",iri(RDFS_URL));
-    static Iri labels = rdfs.iri("label");
+    
 
     KGObjects(){}
     KGObjects(RemoteStoreClient kgClient, String objectIri, String objectName, String geoObjectId, KGAddress address){
@@ -142,5 +154,32 @@ public class KGObjects {
             allObjects.add(obj);
         }
         return allObjects;
+    }
+
+    public String queryObjectIri(String buildingIri) {
+        Iri buildingIRI = iri(buildingIri);
+        String objectIRI = null;
+        SelectQuery query = Queries.SELECT();
+        Variable building = query.var();
+        TriplePattern[] queryPattern;
+        queryPattern = new TriplePattern[]{building.has(hasOntoCityGML, buildingIRI),
+                        building.has(type, botBuilding)};
+                query.prefix(p_bot,p_env,rdf).where(queryPattern).select(building);
+
+        JSONArray queryResult = this.kgClient.executeQuery(query.getQueryString());
+        if(queryResult.length() > 1){
+            LOGGER.fatal("Building should has only one IRI");
+            throw new JPSRuntimeException("Building should has only one IRI");
+        }else if(queryResult.length()==0){
+            //generate a IRI for bot:building
+            objectIRI = null;
+        }else{          
+            objectIRI =  queryResult.getJSONObject(0).toMap().get(building.getQueryString().substring(1)).toString();
+        }
+        return objectIRI;
+    }
+
+    public void generateObj(){
+        
     }
 }

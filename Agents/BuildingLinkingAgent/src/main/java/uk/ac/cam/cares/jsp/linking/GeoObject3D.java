@@ -83,7 +83,7 @@ public class GeoObject3D {
                 LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
                 throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
             }else{
-                String sql = "SELECT id, objectclass_id, name, envelope FROM cityobject";
+                String sql = "SELECT id, objectclass_id, name, envelope FROM cityobject WHERE objectclass_id = 26";
                 try (Statement stmt = srcConn.createStatement()) {
                     ResultSet result = stmt.executeQuery(sql);
                     while (result.next()) {
@@ -94,7 +94,7 @@ public class GeoObject3D {
                         object3D.setGeometry((PGgeometry)result.getObject("envelope"));
                         object3D.setPostGISClient(postgresClient);
                         object3D.setAddress(this.address.queryAddress(result.getInt("id"), srcConn));
-                        object3D.setIri(this.queryIRI(result.getString("id"), srcConn));
+                        object3D.setIri(this.queryIRI(result.getInt("id"), srcConn));
                         allObject3D.add(object3D);
                     }
                     return allObject3D;
@@ -128,14 +128,14 @@ public class GeoObject3D {
         // return null;
     }
 
-    public String queryIRI(String cityobjectid, Connection srcConn){
+    public String queryIRI(int cityobjectid, Connection srcConn){
         this.objectIri = null;
         try {
             if (!srcConn.isValid(60)) {
                     LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
                     throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
                 }else{
-                    String sql = "SELECT urival FROM cityobject_genericattrib WHERE cityobject_id = " + cityobjectid + "AND urival IS NOT NULL";
+                    String sql = "SELECT urival FROM cityobject_genericattrib WHERE cityobject_id = " + cityobjectid + "AND attrname = 'iri'";
                     try (Statement stmt = srcConn.createStatement()) {
                         ResultSet result = stmt.executeQuery(sql);
                         while (result.next()) {

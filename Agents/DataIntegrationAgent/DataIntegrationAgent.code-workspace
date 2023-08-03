@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../BuildingLinkingAgent"
+		},
+		{
+			"path": "../../Deploy"
 		}
 	],
 	"settings": {

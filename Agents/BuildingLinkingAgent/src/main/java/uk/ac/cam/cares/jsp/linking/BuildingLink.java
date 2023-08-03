@@ -18,8 +18,6 @@ import org.apache.log4j.Logger;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -53,18 +51,19 @@ public class BuildingLink{
             }else{
                 GeoObject3D object3D = new GeoObject3D();
 
-                RemoteStoreClient kgClient = new RemoteStoreClient(config[0],config[0],null,null);
+                RemoteStoreClient kgClient = new RemoteStoreClient(config[4],config[4],null,null);
                 KGObjects kgObjects = new KGObjects(kgClient, null, null, null, null);
                 try {
-                    this.kgObjects =  kgObjects.getAllObjects(config);
+                    // this.kgObjects =  kgObjects.getAllObjects(config);
                     // object3D.setPostGISClient(postgisClient);
                     this.geoObject3Ds = object3D.getObject3D(config);
+                    generatIir();
                     } catch (Exception e) {
                         LOGGER.error("Fail to connect database.");
                         LOGGER.error(e.getMessage());
                         throw new RuntimeException(e);
-                    }
-                fuzzyMatch(this.geoObject3Ds,this.kgObjects);
+                    }    
+                // fuzzyMatch(this.geoObject3Ds,this.kgObjects);
             }
 
         } catch (SQLException e) {
@@ -133,7 +132,19 @@ public class BuildingLink{
 
     }
 
-    void setPostGISClient(PostgresClient postgisClient) {
-        // this.postgisClient = postgisClient;
+    public void generatIir(){
+        KGObjects obj = new KGObjects();
+        for(int i = 0; i < this.geoObject3Ds.size(); i++){
+            String buildingIri = this.geoObject3Ds.get(i).getIRI();
+            String objIRI = obj.queryObjectIri(buildingIri);
+            if(objIRI == null){
+            //generate a IRI for bot:building
+            }else{
+            //building link
+            }
+        }
     }
+    // void setPostGISClient(PostgresClient postgisClient) {
+    //     // this.postgisClient = postgisClient;
+    // }
 }

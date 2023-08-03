@@ -57,7 +57,7 @@ class BuildingLinkTest {
 //        when(request.getParameter("type")).thenReturn("bim"); //link building type: bim and power (currently only support these 2 types)
 
         BuildingLink buildingLink = new BuildingLink();
-        buildingLink.setPostGISClient(conn3);
+        // buildingLink.setPostGISClient(conn3);
         // buildingLink.doPut(request, response);
 
     }

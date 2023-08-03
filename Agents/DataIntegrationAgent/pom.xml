@@ -158,7 +158,7 @@
         <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
-            <version>1.12.2</version>
+            <version>1.14.0</version>
             <scope>compile</scope>
         </dependency>
         <!-- testcontainers for junit tests -->

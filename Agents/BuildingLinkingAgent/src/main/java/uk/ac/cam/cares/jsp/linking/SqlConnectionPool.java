@@ -22,7 +22,7 @@ public class SqlConnectionPool {
         sourceDs = new HikariDataSource();
         sourceDs.setDriverClassName(JDBC_DRIVER);
         sourceDs.setMaximumPoolSize(MAX_POOL_SIZE);
-        sourceDs.setJdbcUrl(config[0]);
+        sourceDs.setJdbcUrl(config[3]);
         sourceDs.setUsername(config[1]);
         sourceDs.setPassword(config[2]);
         configs = config;
