@@ -116,7 +116,7 @@ public class SupersetService extends ContainerService {
     }
 
     @Override
-    public void doPreStartUpConfiguration() {
+    protected void doPreStartUpConfigurationImpl() {
         writeSupersetFlaskConfig();
     }
 
