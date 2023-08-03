@@ -26,6 +26,7 @@ services:
       - DERIVATION_PERIODIC_TIMESCALE=600
       - REGISTER_AGENT=false
       - OVERWRITE_FORECAST=true
+      - ROUNDING=6
       # Required inputs, although not used when initialising DerivationAgent
       - KG_USERNAME=''
       - KG_PASSWORD=''

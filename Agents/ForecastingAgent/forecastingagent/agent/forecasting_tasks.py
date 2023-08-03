@@ -34,7 +34,7 @@ from forecastingagent.errorhandling.exceptions import KGException
 logger = agentlogging.get_logger('prod')
 
 
-def forecast(iri, config, db_url, time_format, kgClient=None,
+def forecast(iri, config, db_url, time_format, kgClient=None, tsClient=None,
              query_endpoint=SPARQL_QUERY_ENDPOINT, update_endpoint=SPARQL_UPDATE_ENDPOINT,
              db_user=DB_USER, db_password=DB_PASSWORD):
     """
@@ -52,14 +52,15 @@ def forecast(iri, config, db_url, time_format, kgClient=None,
         db_password {str} - password for the RDB
     
     Returns:
-        dict - A dictionary with the forecast and some metadata
+        darts.TimeSeries object with forecasted time series
     """
 
     # Initialise the KG and TS clients
     if not kgClient:
         kgClient = KGClient(query_endpoint=query_endpoint, update_endpoint=update_endpoint)
-    tsClient = TSClient(kg_client=kgClient, rdb_url=db_url, rdb_user=db_user, 
-                        rdb_password=db_password)
+    if not tsClient:
+        tsClient = TSClient(kg_client=kgClient, rdb_url=db_url, rdb_user=db_user, 
+                            rdb_password=db_password)
 
     # Update/condition forecasting configuration
     cfg = config.copy()
@@ -96,7 +97,7 @@ def forecast(iri, config, db_url, time_format, kgClient=None,
         raise ValueError(msg)
 
     # Load the model
-    if cfg['fc_model'].get('label') == 'prophet':
+    if cfg['fc_model'].get('name') == 'prophet':
         logger.info('Using default Prophet model to forecast.')
         model = Prophet()
         cfg['fc_model']['input_length'] = len(series) 
@@ -124,37 +125,31 @@ def forecast(iri, config, db_url, time_format, kgClient=None,
     # Create forecast time series
     forecast = get_forecast(series, covariates, model, cfg)
 
+    return forecast
 
+    # # create metadata
+    # # input series range
+    # start_date = series.end_time() - series.freq * \
+    #     (cfg['fc_model']['input_length'] - 1)
+    # cfg['model_input_interval'] = [start_date, series.end_time()]
+    # cfg['model_output_interval'] = [forecast.start_time(), forecast.end_time()]
+    # cfg['created_at'] = pd.to_datetime('now', utc=True)
+    # logger.info(f'Created forecast at: {cfg["created_at"]}')
+    # logger.info(f'Output interval: {cfg["model_output_interval"]}')
+    # logger.info(f'Input interval: {cfg["model_input_interval"]}')
+    # cfg['tsIRI'] = get_tsIRI_from_dataIRI(cfg['dataIRI'], kgClient)
+    
+    # # Get unit from IRI and add to forecast
 
-    # create metadata
-    # input series range
-    start_date = series.end_time() - series.freq * \
-        (cfg['fc_model']['input_length'] - 1)
-    cfg['model_input_interval'] = [start_date, series.end_time()]
-    cfg['model_output_interval'] = [forecast.start_time(), forecast.end_time()]
-    cfg['created_at'] = pd.to_datetime('now', utc=True)
-    logger.info(f'Created forecast at: {cfg["created_at"]}')
-    logger.info(f'Output interval: {cfg["model_output_interval"]}')
-    logger.info(f'Input interval: {cfg["model_input_interval"]}')
-    cfg['tsIRI'] = get_tsIRI_from_dataIRI(cfg['dataIRI'], kgClient)
+    # update = get_forecast_update(cfg=cfg)
     
-    # Get unit from IRI and add to forecast
+    # kgClient.performUpdate(add_insert_data(update))
+    # logger.info(f'Added forecast ontology to KG')
+    
+    # # call client
+    # instantiate_forecast_timeseries(tsClient, cfg, forecast)
+ 
 
-    update = get_forecast_update(cfg=cfg)
-    
-    kgClient.performUpdate(add_insert_data(update))
-    logger.info(f'Added forecast ontology to KG')
-    
-    # call client
-    instantiate_forecast_timeseries(tsClient, cfg, forecast)
-    
-    # delete keys which you dont want in response, e.g. not json serializable objects
-    keys_to_delete = ['load_covariates_func',
-                      'time_delta', 'ts_data_type', 'frequency']
-    for key in keys_to_delete:
-        if key in cfg:
-            del cfg[key]
-    return cfg
 
 
 def instantiate_forecast_timeseries(tsClient, cfg, forecast):

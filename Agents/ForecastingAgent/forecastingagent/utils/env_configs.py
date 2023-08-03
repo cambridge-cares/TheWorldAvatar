@@ -26,7 +26,7 @@ def retrieve_default_settings():
     # Define global scope for global variables
     global STACK_NAME, NAMESPACE, DATABASE, \
            DB_URL, DB_USER, DB_PASSWORD, SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, \
-           OVERWRITE_FORECAST
+           OVERWRITE_FORECAST, ROUNDING
     
     # Initialise variables (to ensure working imports even if not defined in env vars)
     STACK_NAME = None
@@ -57,6 +57,19 @@ def retrieve_default_settings():
         except ValueError:
             OVERWRITE_FORECAST = True
             logger.warning(f'Invalid "OVERWRITE_FORECAST" value has been provided in environment variables. Using default value: {OVERWRITE_FORECAST}.')
+
+    # Retrieve default rounding behavior for forecast values
+    # (i.e. number of target decimal places; no rounding if not defined)
+    ROUNDING = os.getenv('ROUNDING')
+    if ROUNDING is None:
+        logger.warning('No "ROUNDING" value has been provided in environment variables. Forecasts will not be rounded.')
+    else:
+        try:
+           # Cast string from docker-compose to int
+           ROUNDING = int(ROUNDING)
+        except ValueError:
+            ROUNDING = None
+            logger.error('Invalid "ROUNDING" value has been provided in environment variables. Forecasts will not be rounded.')
 
     # Retrieve Blazegraph and PostgreSQL settings depending on deployment mode
     if not STACK_NAME:

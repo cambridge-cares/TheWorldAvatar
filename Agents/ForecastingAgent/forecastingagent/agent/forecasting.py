@@ -19,9 +19,10 @@ from pyderivationagent import DerivationOutputs
 from forecastingagent.agent.forcasting_config import *
 from forecastingagent.agent.forecasting_tasks import forecast, calculate_error
 from forecastingagent.datamodel.iris import *
-from forecastingagent.errorhandling.exceptions import InvalidInput, TSException
+from forecastingagent.errorhandling.exceptions import InvalidInput
 from forecastingagent.kgutils.kgclient import KGClient
 from forecastingagent.kgutils.tsclient import TSClient
+from forecastingagent.utils.env_configs import DB_USER, DB_PASSWORD, ROUNDING
 
 
 class ForecastingAgent(DerivationAgent):
@@ -180,10 +181,26 @@ class ForecastingAgent(DerivationAgent):
 
         # Create forecast
         rdb_url, time_format = get_rdb_endpoint(ts)
-        forecast(iri=input_iris['iri_to_forecast'], kgClient=self.sparql_client,
-                 db_url=rdb_url, time_format=time_format, config=cfg)
+        ts_client = TSClient(kg_client=self.sparql_client, rdb_url=rdb_url, 
+                             rdb_user=DB_USER, rdb_password=DB_PASSWORD)
+        fc_ts = forecast(iri=input_iris['iri_to_forecast'], config=cfg, 
+                         kgClient=self.sparql_client, tsClient=ts_client, 
+                         db_url=rdb_url, time_format=time_format)
 
-        # Instantiate forecast in KG
+        # Instantiate forecast triples in KG (only if applicable)
+        if not self.fc_overwrite or bool(cfg.get('fc_iri')):
+            pass
+        
+        cfg['fc_iri'] = 'http://test_fc_iri'
+
+        # Update forecast time series data in RDB
+        times = [str(x) for x in fc_ts.time_index.tz_localize('UTC').strftime(time_format)]
+        values = fc_ts.values().squeeze().tolist()
+        if ROUNDING:
+            # Round data values if set in environment variables
+            values = [round(x, ROUNDING) for x in values]
+        ts_client.init_timeseries(dataIRI=cfg['fc_iri'], times=times, values=values, 
+                                  ts_type=cfg['ts_data_type'], time_format=time_format)
 
 
     def evaluate_forecast_error(self):

@@ -80,7 +80,7 @@ times = pd.date_range(start='2019-10-01T00:00:00Z', freq='H',
                       end='2020-02-01T00:00:00Z')
 TIMES = times.strftime("%Y-%m-%dT%H:%M:%SZ").tolist()
 # Linearly increasing time series
-VALUES_1 = [i*(100/len(times)) for i in range(1, len(times)+1)]     # original
+VALUES_1 = [round(i*(100/len(times)),5) for i in range(1, len(times)+1)]    # original
 VALUES_2 = VALUES_1.copy()
 VALUES_2[100] = VALUES_2[100]*2     # slightly distorted copy
 # Constant value time series
