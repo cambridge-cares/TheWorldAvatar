@@ -66,6 +66,11 @@ DIFFREVERSEAGENT_ENV = os.path.join(ENV_FILES_DIR,'agent.diff.reverse.env.test')
 UPDATEENDPOINT_ENV = os.path.join(ENV_FILES_DIR,'endpoint.update.env.test')
 EXCEPTIONTHROW_ENV = os.path.join(ENV_FILES_DIR,'agent.exception.throw.env.test')
 
+RNGAGENT_SERVICE = config_derivation_agent(RNGAGENT_ENV).ONTOAGENT_SERVICE_IRI
+MAXAGENT_SERVICE = config_derivation_agent(MAXAGENT_ENV).ONTOAGENT_SERVICE_IRI
+MINAGENT_SERVICE = config_derivation_agent(MINAGENT_ENV).ONTOAGENT_SERVICE_IRI
+DIFFAGENT_SERVICE = config_derivation_agent(DIFFAGENT_ENV).ONTOAGENT_SERVICE_IRI
+DIFFREVERSEAGENT_SERVICE = config_derivation_agent(DIFFREVERSEAGENT_ENV).ONTOAGENT_SERVICE_IRI
 
 # ----------------------------------------------------------------------------------
 # Helper classes
@@ -78,15 +83,15 @@ class FlaskConfigTest(FlaskConfig):
 
 
 class AllInstances():
-    RNGAGENT_SERVICE: str = config_derivation_agent(RNGAGENT_ENV).ONTOAGENT_SERVICE_IRI
-    MAXAGENT_SERVICE: str = config_derivation_agent(MAXAGENT_ENV).ONTOAGENT_SERVICE_IRI
-    MINAGENT_SERVICE: str = config_derivation_agent(MINAGENT_ENV).ONTOAGENT_SERVICE_IRI
-    DIFFAGENT_SERVICE: str = config_derivation_agent(DIFFAGENT_ENV).ONTOAGENT_SERVICE_IRI
+    RNGAGENT_SERVICE: str = RNGAGENT_SERVICE
+    MAXAGENT_SERVICE: str = MAXAGENT_SERVICE
+    MINAGENT_SERVICE: str = MINAGENT_SERVICE
+    DIFFAGENT_SERVICE: str = DIFFAGENT_SERVICE
 
     IRI_UPPER_LIMIT: str = None
     IRI_LOWER_LIMIT: str = None
     IRI_NUM_OF_PTS: str = None
-    IRI_LST_PTS: str = None
+    IRI_LST_PTS: list = None
     IRI_MAX: str = None
     IRI_MIN: str = None
     IRI_DIFF: str = None
@@ -102,6 +107,7 @@ class AllInstances():
     DERIV_MAX: str = None
     DERIV_MIN: str = None
     DERIV_DIFF: str = None
+    DERIV_DIFF_REVERSE: list = None
 
 
 class Config4Test1(Config):
@@ -201,6 +207,35 @@ def get_service_auth():
 # ----------------------------------------------------------------------------------
 # Module-scoped test fixtures
 # ----------------------------------------------------------------------------------
+
+# NOTE the scope is set as "module", i.e., all triples (pure inputs, TBox, OntoAgent instances) will only be initialised once
+@pytest.fixture(scope="module")
+def initialise_clients(get_service_url, get_service_auth):
+    # Retrieve endpoint and auth for triple store
+    sparql_endpoint = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
+    sparql_user, sparql_pwd = get_service_auth(KG_SERVICE)
+
+    # Create SparqlClient for testing
+    sparql_client = PySparqlClientForTest(
+        sparql_endpoint, sparql_endpoint,
+        kg_user=sparql_user, kg_password=sparql_pwd
+    )
+
+    # Create DerivationClient for creating derivation instances
+    derivation_client = PyDerivationClient(
+        DERIVATION_INSTANCE_BASE_URL,
+        sparql_endpoint, sparql_endpoint,
+        sparql_user, sparql_pwd,
+    )
+
+    # Delete all triples before anything
+    sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
+
+    yield sparql_client, derivation_client
+
+    # Clear logger at the end of the test
+    clear_loggers()
+
 
 # NOTE the scope is set as "module", i.e., all triples (pure inputs, TBox, OntoAgent instances) will only be initialised once
 @pytest.fixture(scope="module")

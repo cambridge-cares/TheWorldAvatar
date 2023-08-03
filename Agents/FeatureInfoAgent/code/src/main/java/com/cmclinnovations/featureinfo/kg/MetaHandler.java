@@ -141,12 +141,21 @@ public class MetaHandler {
         }
 
         // Run matching query
-        LOGGER.info("Running federated meta query...");
-        JSONArray rawResult = this.rsClient.executeFederatedQuery(getEndpointURLs(), query);
-        LOGGER.info("...receieved response from RemoteStoreClient.");
+        JSONArray rawResult = null;
 
-        // Format and return
-        if(rawResult != null) LOGGER.debug(rawResult.toString(2));
+        if(this.getEndpointURLs().size() == 1) {
+            LOGGER.info("Running non-federated meta query.");
+            rsClient.setQueryEndpoint(this.getEndpointURLs().get(0));
+            rawResult = rsClient.executeQuery(query);
+
+        } else {
+            LOGGER.info("Running federated meta query.");
+            rawResult = rsClient.executeFederatedQuery(this.getEndpointURLs(), query);
+        }
+
+        LOGGER.debug("Result of query was:");
+        LOGGER.debug((rawResult != null) ? rawResult.toString(2) : "null");
+
         return formatJSON(rawResult);
     }
 

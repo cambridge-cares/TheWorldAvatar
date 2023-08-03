@@ -226,8 +226,8 @@ Markus Hofmeister (mh807@cam.ac.uk), December 2022
 <!-- files -->
 [properties file]: ./resources/timeseries.properties
 [HTTP_Request_forecast]: ./resources/HTTP_request_forecast.http
-[agent module]: /forecasting/forecasting_agent/agent.py
-[mapping file]: /forecasting/datamodel/data_mapping.py
+[agent module]: ./forecasting/forecasting_agent/agent.py
+[mapping file]: ./forecasting/datamodel/data_mapping.py
 [docker-compose.debug.yml]: ./docker-compose.debug.yml
 [docker-compose.test.yml]: ./docker-compose.test.yml
 [Docker compose file]: ./docker-compose.yml

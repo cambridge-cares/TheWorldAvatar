@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
@@ -159,12 +158,28 @@ public class FeatureInfoAgent extends JPSAgent {
             switch (url) {
                 case "/get":
                 case "get": {
+
+                    // Enforce a single blazegraph endpoint
+                    if(requestParams.has("endpoint")) {
+                        LOGGER.info("Enforcing a single Blazegraph endpoint: {}", requestParams.getString("endpoint"));
+                        
+                        this.enforcedEndpoint = new ConfigEndpoint(
+                            "ENFORCED", 
+                            requestParams.getString("endpoint"), 
+                            null, 
+                            null,
+                            EndpointType.BLAZEGRAPH
+                        );
+                    }
+
+                    // Run main GET logic
                     getRoute(requestParams, response);
                 }
                 break;
 
                 case "/status":
                 case "status": {
+                    // Return status
                     statusRoute(response);
                 }
                 break;
@@ -377,9 +392,9 @@ public class FeatureInfoAgent extends JPSAgent {
         JSONArray result = handler.getData(response);
 
         if(result == null) {
-            LOGGER.warn("...result from metadata query was null!");
+            LOGGER.warn("Result from metadata query was null!");
         } else {
-            LOGGER.info("...have result, contains {} entries.", result.length());
+            LOGGER.info("Have result, contains {} entries.", result.length());
         }
         return result;
     }

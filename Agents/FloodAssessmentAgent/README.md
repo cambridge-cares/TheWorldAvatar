@@ -1,9 +1,9 @@
 # Flood Assessment Agent (as Derivation Agent)
 
 
-The `Flood Assessment` agent uses the Derived Information Framework to assess potential impacts of (anticipated) floods with regards to 1) number of people at risk, 2) number of buildings at risk as well as 3) estimated value of buildings at risk. Anticipated floods refer to flood alerts and warning published by the Environment Agency via their [EA Flood Monitoring] API and which get instantiated/updated at least daily using the `Flood Instantiation Agent` (to be developed) in [The World Avatar] KG according to the [OntoFlood] ontology. 
+The `Flood Assessment` agent uses the Derived Information Framework to assess potential impacts of (anticipated) floods with regards to 1) number of people at risk, 2) number of buildings at risk as well as 3) estimated value of buildings at risk. Anticipated floods refer to flood alerts and warning published by the Environment Agency via their [EA Flood Monitoring] API and which get instantiated/updated at least daily using the [Flood Warning Instantiation Agent] in [The World Avatar] KG according to the [OntoFlood] ontology. 
 
-The required derivation input comprises a `FloodAlertOrWarning` (from the `Flood Instantiation Agent`), a list of affected `Building` instances (instantiated using the [EPC Agent]) and a list of `PropertyValueEstimation` instances (instantiated using the [Property Value Estimation Agent]) which need to be instantiated beforehand. **Please note** that the *list* of buildings and property value estimations can also be empty, i.e. no `Building` or `PropertyValueEstimation` marked up as belonging to a certain derivation. 
+The required derivation input comprises a `FloodAlertOrWarning` (from the `Flood Instantiation Agent`), a list of affected `Building` instances (instantiated using the [EPC Instantiation Agent]) and a list of `PropertyValueEstimation` instances (instantiated using the [Property Value Estimation Agent]) which need to be instantiated beforehand. **Please note** that the *list* of buildings and property value estimations can also be empty, i.e. no `Building` or `PropertyValueEstimation` marked up as belonging to a certain derivation. 
 
 The agent is implemented as Docker container to be deployed to a Docker stack spun up by the [Stack Manager]. It is recommended to use `VS Code` to develop/deploy the agent. Hence, a few of the details below are VS Code specific.
 
@@ -11,6 +11,12 @@ The agent is implemented as Docker container to be deployed to a Docker stack sp
 # 1. Setup
 
 This section specifies the minimum requirements to build and deploy the Docker image of the agent. 
+
+> **NOTE** The design of separating `setup.py` and `requirements.txt` in this agent is an effort to avoid version collision. The pinned versions of dependencies in the `requirements.txt` are the same versions that passed the integration tests. This file is called in the `Dockerfile` for publishing the production docker image.
+
+> **NOTE** By design, requirements files and setup script are for different purposes. The former tends to be as specific as possible for reproducibility and production, whereas the latter normally gives a wide range to not limit the choice of packages in development. If you let the pip decide the version of packages, there's a chance it pulls a version of a package that potentially breaks the other packages. For more information, see https://packaging.python.org/en/latest/discussions/install-requires-vs-requirements/
+
+> **NOTE** With that said, if the agent is not intended to be installed with other agents in the same virtual environment it is also valid to pin all the version numbers in the `setup.py` directly and delete the `requirements.txt`.
 
 &nbsp;
 ## 1.1 Prerequisites
@@ -22,6 +28,8 @@ Before building and deploying the Docker image, several key properties need to b
 # Stack & Stack Clients configuration
 STACK_NAME                    # Name of stack to which agent shall be deployed
 DATABASE                      # PostGIS/PostgreSQL database name (default: `postgres`)
+POPULATION_TABLE              # PostGIS table name containing population density raster data
+FLOODWARNINGS_TABLE           # PostGIS table name containing flood warning polygons
 NAMESPACE                     # Blazegraph namespace (within Stack) to monitor
 # Derivation Agent configuration
 ONTOAGENT_SERVICE_IRI         # IRI of OntoAgent service
@@ -37,8 +45,8 @@ The PostGIS `DATABASE` name is required to use PostGIS' geospatial capability to
 
 While building the Docker image of the agent, it also gets pushed to the [Container registry on Github]. **Please note** that this only applies to the stack-deployable images of the agent (i.e. images mentioned in section 1.3) and not the test images. Access needs to be ensured beforehand via your github [personal access token], which must have a `scope` that [allows you to publish and install packages]. To log in to the [Container registry on Github] simply run the following command to establish the connection and provide the access token when prompted:
 ```
-  docker login ghcr.io -u <github_username>
-  <github_personal_access_token>
+docker login ghcr.io -u <github_username>
+<github_personal_access_token>
 ```
 
 ### **3) VS Code specifics**
@@ -68,13 +76,7 @@ After spinning up the stack, the GUI endpoints to the running containers can be 
 &nbsp;
 ## 1.3 Deploying the agent to the stack
 
-This agent requires the [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. Therefore, after installation of all required packages (incl. `py4jps>=1.0.29`), the `StackClients` resource needs to be added to allow for access through `py4jps`. All required steps are detailed in the [py4jps] documentation. However, the command below below shall suffice to compile the latest `StackClients` resource locally to be available for installation into the Docker container using the provided [Dockerfile]. Please note, that compiling requires a [Java Development Kit version >=11].
-```bash
-# Compiling latest Stack_Clients resource for py4jps
-bash ./build_py4jps_stackclients_resource.sh
-```
-
-Simply execute the following command in the same folder as this `README` to build and spin up the *production version* of the agent (from a `bash` terminal). The stack `<STACK NAME>` is the name of an already running stack. **Please note** that when you first publish a package, the default visibility is private and only you can see the package. To ensure others can see and pull the image, please set the [visibility of the pushed docker image to public]. This needs to be done once per package, and then applies to all instances of that package.
+This agent requires the [JPS_BASE_LIB] and the [Stack-Clients] to be wrapped by [py4jps]. Compared to the previous version (where this needed to be done manually), this is now done automatically when building the Docker image. Simply execute the following command in the same folder as this `README` to build and spin up the *production version* of the agent (from a `bash` terminal). The stack `<STACK NAME>` is the name of an already running stack. **Please note** that when you first publish a package, the default visibility is private and only you can see the package. To ensure others can see and pull the image, please set the [visibility of the pushed docker image to public]. This needs to be done once per package, and then applies to all instances of that package.
 
 ```bash
 # Building the agent Docker image and pushing it
@@ -83,15 +85,13 @@ bash ./stack.sh build
 bash ./stack.sh start <STACK NAME>
 ```
 
-The *debug version* will run when built and launched through the provided VS Code `launch.json` configurations. **Please note** that minor adjustments might need to be made to the `launch.json` file depending on the operating system, i.e. comment in/out non applicable lines indicated by `TODO` keyword.
+The *debug version* will run when built and launched through the provided VS Code `launch.json` configurations:
 > **Build and Debug**: Build Debug Docker image (incl. pushing to ghcr.io) and deploy as new container (incl. creation of new `.vscode/port.txt` file)
 
 > **Debug**: Pull Debug Docker image from ghcr.io and deploy as new container (requires deletion of existing `.vscode/port.txt` to ensure mapping to same port)
 
 > **Reattach and Debug**: Simply reattach debugger to running Debug Docker image. In case Debug image needs to be manually started as container, the following command can be used: 
 `bash ./stack.sh start <STACK NAME> --debug-port <PORT from .vscode/port.txt>`
-
-> **Update JPSRM and Build and Debug**: Update py4jps resource and build the Debug Docker image (incl. pushing to ghcr.io) and deploy it as new container (incl. creation of new `.vscode/port.txt` file) 
 
 
 &nbsp;
@@ -109,23 +109,7 @@ git pull
 ```
 Once the repository clone is obtained, please follow these instructions to [spin up the stack] on the remote machine. In order to access the exposed endpoints, e.g. `http://165.232.172.16:3838/blazegraph/ui`, please note that the respective ports might potentially be opened on the remote machine first.
 
-Before starting development of the dockerized agent remotely, all required VSCode extensions shall be installed on the remote machine (e.g. *augustocdias.tasks-shell-input* or the *Python extension*). As the Docker image requires the [Stack-Clients] `.jar` file to be wrapped by [py4jps], they need to be copied over manually to the respective folders as specified in the [Dockerfile] or can be created remotely by running the *Update JPSRM and Build and Debug* Debug Configuration. In order to build these resources, Java and Maven need to be available on the remote machine. In order to pull TWA specific Maven packages from the [Github package repository], both `settings.xml` and `settings-security.xml` files need to be copied into Maven's `.m2` folder on the remote machine (typically located at user's root directory). Before starting development, ensure that the correct Java and Maven versions are installed on the remote machine:
-
-```bash
-# Java >= 11
-# Test installation
-java -version
-javac -verison
-# Install in case it is missing
-sudo apt install openjdk-11-jdk-headless
-
-# MAVEN 
-# Test installation
-mvn -version
-# Install in case it is missing
-sudo apt install maven
-```
-To prevent and identify potential permission issues on Linux machines (i.e. for executable permission), the following commands can be used to verify and manage permissions:
+Before starting development of the dockerized agent remotely, all required VSCode extensions shall be installed on the remote machine (e.g. *augustocdias.tasks-shell-input* or the *Python extension*). To prevent and identify potential permission issues on Linux machines (i.e. for executable permission), the following commands can be used to verify and manage permissions:
 
 ```bash
 # Check permissions
@@ -139,9 +123,9 @@ git config core.fileMode false
 &nbsp;
 # 2. Using the Agent
 
-The Flood Assessment Agent is intended to use the `asychronous mode` of the Derivation Framework to detect changes in instantiated [OntoFlood] and [OntoBuiltEnv] properties (i.e. `FloodAlertOrWarning`, `Building`, and `PropertyValueEstimation`) and automatically updates the associated potential `Impacts` of a flood (i.e. `om:AmountOfMoney`, `flood:Buildings`, and `flood:Population`) instances in the KG. As the agent adopts the `pyderivationagent`, it also serves HTTP requests to handle synchronous derivations. However, it is (strongly) discouraged to invoke such HTTP request by ONESELF. 
+The Flood Assessment Agent is intended to use the `asychronous mode` of the Derivation Framework to detect changes in instantiated [OntoFlood] and [OntoBuiltEnv] properties (i.e. `FloodAlertOrWarning`, `Building`, and `PropertyValueEstimation`) and automatically updates the associated potential `Impacts` of a flood (i.e. `om:AmountOfMoney`, `flood:Building`, and `flood:Population`) instances in the KG. As the agent adopts the `pyderivationagent`, it also serves HTTP requests to handle synchronous derivations. However, it is (strongly) discouraged to invoke such HTTP request by ONESELF. 
 
-After successful agent start-up, an instructional page shall become available at the root (i.e. `/`) of the port specified in the [docker compose file]. The exact address depends on where the agent container is deployed (i.e. localhost, remote VM, ...), but takes a form like `http://165.232.172.16:5012/`.
+After successful agent start-up, an instructional page shall become available at the root (i.e. `/`) of the port specified in the [docker compose file]. The exact address depends on where the agent container is deployed (i.e. localhost, remote VM, ...), but takes a form like `http://165.232.172.16:5013/`.
 
 ## Asynchronous derivation operation
 Once the Agent is deployed, it periodically (every 12h, defined by `DERIVATION_PERIODIC_TIMESCALE`) checks the derivation that `isDerivedUsing` itself (parameter `ONTOAGENT_SERVICE_IRI`) and acts based on the status associated with that derivation. Although the [Derivation Agent] suggests the use of `.env` files to specify environment variables for agent configurations, this approach does not work properly with Docker stacks, i.e. `docker stack deploy`. Hence, the agent configuration is moved into the [docker compose file] instead.
@@ -173,7 +157,7 @@ deriv_iri = deriv_client.createAsyncDerivationForNewInfo(agent.agentIRI, deriv_i
 &nbsp;
 # 3. Agent Integration Test
 
-As this derivation agent modifies the knowledge graph automatically, it is  recommended to run integration tests before deploying it for production. A few integration tests are provided in the `tests` repository. Although the agent is designed to be deployed to a larger Docker stack, the integration tests can both be run as local and as dockerised agent. In both cases Blazegraph and PostgreSQL are spun up as Docker containers using the `testcontainers` library.
+As this derivation agent modifies the knowledge graph automatically, it is  recommended to run integration tests before deploying it for production. A few integration tests are provided in the `tests` repository. Although the agent is designed to be deployed to a larger Docker stack, the integration tests can be run as standalone (dockerised) agent. Blazegraph is spun up as Docker containers using the `testcontainers` library.
 
 All tests are located in the `test_example_agent.py` file while all fixtures and utility functions are provided in the `conftest.py` file:
 
@@ -191,79 +175,28 @@ To run the integration tests, access to the `docker.cmclinnovations.com` registr
 
 1. `test_triples` folder: test triples for derivation inputs
 2. `agent_test.env` file: agent configuration parameters used for the **example agent** created during testing
-3. `docker-compose-test_dockerised...` files (only relevant for dockerised tests): docker compose file with agent configuration parameters used for agent initialisation when spinning up agent container for tests. **Please note** that provided `environment` variables should match the ones provided in the `agent_test.env` file (**except** for `REGISTER_AGENT` which should be `false`). Otherwise, the example agent registered for testing later will be disconnected from dockerised agent running inside the container.
+3. `docker-compose-test_dockerised...` files: docker compose file with agent configuration parameters used for agent initialisation when spinning up agent container for tests. **Please note** that provided `environment` variables should match the ones provided in the `agent_test.env` file (**except** for `REGISTER_AGENT` which should be `false`). Otherwise, the example agent registered for testing later will be disconnected from dockerised agent running inside the container.
 4. `mockutils` folder: Python modules to mock Docker stack settings (i.e. settings normally retrieved from Stack Clients). When creating the dockerised test agent, those files will be used to overwrite the corresponding modules in `floodassessment\utils\` repository to ensure successful agent startup. Furthermore, they contain several settings required to run the tests.
 
 &nbsp;
-## To perform the agent integration tests locally, please follow these steps:
+## Dockerised agent integration tests
 
-1. It is highly recommended to use a virtual environment for testing. The virtual environment can be created and activated as follows:
-
-    `(Windows)`
-    ```bash
-    $ python -m venv flood_venv
-    $ flood_venv\Scripts\activate.bat
-    (flood_venv) $
-    ```
-
-    `(Linux)`
-    ```bash
-    $ sudo apt-get install python3-pip
-    $ pip3 install virtualenv
-    $ python3 -m venv flood_venv
-    $ source flood_venv/bin/activate
-    (flood_venv) $
-    ```
-2. Install all required packages in virtual environment (the `-e` flag installs the project for-in place development and could be neglected):
-    > **NOTE** The design of separating `setup.py` and `requirements.txt` in this agent is an effort to avoid version collision. The pinned versions of dependencies in the `requirements.txt` are the same versions that passed the integration tests. This file is called in the `Dockerfile` for publishing the production docker image.
-
-    > **NOTE** By design, requirements files and setup script are for different purposes. The former tends to be as specific as possible for reproducibility and production, whereas the latter normally gives a wide range to not limit the choice of packages in development. If you let the pip decide the version of packages, there's a chance it pulls a version of a package that potentially breaks the other packages. For more information, see https://packaging.python.org/en/latest/discussions/install-requires-vs-requirements/
-
-    > **NOTE** With that said, if the agent is not intended to be installed with other agents in the same virtual environment it is also valid to pin all the version numbers in the `setup.py` directly and delete the `requirements.txt`.
-
-    `(Windows)`
-    ```bash
-    (flood_venv) $ python -m pip install --upgrade pip
-    # Install pinned version of required packages, these are tested working version
-    (flood_venv) $ python -m pip install -r requirements.txt
-    # Install the rest of required packages for development from setup.py, incl. pytest etc.
-    (flood_venv) $ python -m pip install -e .[dev]
-    ```
-
-    `(Linux)`
-    ```bash
-    (flood_venv) $ python3 -m pip install --upgrade pip
-    # Install pinned version of required packages, these are tested working version
-    (flood_venv) $ python3 -m pip install -r requirements.txt
-    # Install the rest of required packages for development from setup.py, incl. pytest etc.
-    (flood_venv) $ python3 -m pip install -e .[dev]
-    ```
-
-3. Build latest *StackClient* JAVA resource, copy `.jar` file and entire `lib` folder into `<tmp_stack>` repository, and install resource for py4jps (Please note that this requires [Java Development Kit version >=11]):
-    ```bash
-    # Build latest Stack_Clients resource for py4jps
-    bash ./build_py4jps_stackclients_resource.sh
-    # Install Stack_Clients resource for py4jps
-    jpsrm install StackClients <tmp_stack> --jar <stack-clients-....jar>
-    ```
-4. Run integration tests with agent deployed locally (i.e. in memory) and Blazegraph and PostgreSQL spun up as Docker containers (Please note, that respective containers need to be down at the beginning of the tests):
-    ```bash
-    # Add `-s` flag to see live logs
-    pytest -s --docker-compose=docker-compose-testcontainers.yml
-   ```
-   It has been observed that running the above command might fail due to Docker communication issues. Rerunning it should solve those issues. Tests likely create left over Docker volumes, which might need to be removed manually thereafter.
-
-&nbsp;
-## To perform the dockerised agent integration tests, please follow these steps:
-
-The dockerised tests use one Docker container to initialise the Derivation agent and run pytest, and use Docker in Docker to spin up the required Blazegraph and Postgres testcontainer instances:
+The dockerised tests use one Docker container to initialise the Derivation agent and run pytest, and use Docker in Docker to spin up the required Blazegraph testcontainer instance (depending on the system setup `docker compose` might need to be replaced with `docker-compose`):
 
 ```bash
 # Build and run Dockerised agent test
 docker compose -f "docker-compose-test_dockerised.yml" up -d --build
 ```
 
-To run the dockerised tests in Debug mode, both a `docker-compose-test_dockerised_debug.yml` and a suitable `launch.json` configuration have been provided. However, some issues with attaching the Debugger have been observed (i.e. `connect ECONNREFUSED 127.0.0.1:5678 `) using VS Code. Running the debug tests, furthermore, requires all occurrences of `localhost` to be replaced with `host.docker.internal` in the `env_configs_mock.py` and `stack_configs_mock.py` files as well as placing the updated content into the respective files in the `floodassessment\utils\` repository. This is necessary as the agent codes and tests are mounted as volumes instead of being copied (and adjusted) into the container.
+To run the dockerised tests in Debug mode, both a `docker-compose-test_dockerised_debug.yml` and a suitable `launch.json` configuration have been provided. Before starting to debug, please:
+
+- Copy the content of the `env_configs_mock.py` and `stack_configs_mock.py` files into the respective counterparts in the `floodassessment\utils\` repository (This is necessary as the agent codes and tests are mounted as volumes instead of being copied (and adjusted) into the container)
+- Adjust the import of `env_configs_mock` to `env_configs`
+- Uncomment the `affected_population = self.estimate_number_of_affected_people(warning_iri)` line (around line 172) within `impact_assessment.py` and replace with `affected_population = None`
+- Please also note that some issues with attaching the Debugger have been observed (i.e. `connect ECONNREFUSED 127.0.0.1:5678 `) using VS Code. In case the Debugger does not attach right away, try attaching using the `Python: Reattach and Debug` configuration after the test container has been started. 
+
+The tests have been successfully executed on Windows, WSL, and native Linux. Please note the following:
+- Mocking of the PostGIS requiring method `estimate_number_of_affected_people` is currently hardcoded in the Dockerfile when creating the testing image. This is necessary, as `mocker.patch` seems to only affect Python scripts that are accessed by pytest; however, the agent actually handling the derivations is running asynchronously behind gunicorn and remains unaffected. This workaround might be revisited in the future.
 
 
 &nbsp;
@@ -276,8 +209,6 @@ Markus Hofmeister (mh807@cam.ac.uk), November 2022
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
 [Container registry on Github]: https://ghcr.io
 [Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
-[Github package repository]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Packages
-[Java Development Kit version >=11]: https://adoptium.net/en-GB/temurin/releases/?version=11
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 [py4jps]: https://pypi.org/project/py4jps/#description
 [Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
@@ -289,11 +220,11 @@ Markus Hofmeister (mh807@cam.ac.uk), November 2022
 [Common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
 [Derivation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent
 [Derivation Agent configuration]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_derivation_agent/pyderivationagent/conf/agent_conf.py
-[EPC Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-EPCInstantiationAgent/Agents/EnergyPerformanceCertificateAgent
+[EPC Instantiation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/EnergyPerformanceCertificateAgent
+[Flood Warning Instantiation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodWarningAgent
 [JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
 [OntoBuiltEnv]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobuiltenv
 [OntoFlood]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoflood
-[HM Land Registry Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-PropertySalesInstantiationAgent/Agents/HMLandRegistryAgent
 [Property Value Estimation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent
 [spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md#spinning-up-a-stack
 [Stack Manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
@@ -301,8 +232,6 @@ Markus Hofmeister (mh807@cam.ac.uk), November 2022
 [The World Avatar]: https://github.com/cambridge-cares/TheWorldAvatar
 
 <!-- data sources -->
-[Energy Performance Certificate data]: https://epc.opendatacommunities.org/docs/api
-[HM Land Registry Open Data]: https://landregistry.data.gov.uk/app/root/doc/ppd
 [EA Flood Monitoring]: https://environment.data.gov.uk/flood-monitoring/doc/reference#introduction
 
 <!-- files -->

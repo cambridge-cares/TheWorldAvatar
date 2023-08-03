@@ -7,11 +7,14 @@ import java.util.Properties;
 
 import com.cmclinnovations.stack.clients.blazegraph.Namespace;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerStyle;
+import com.cmclinnovations.stack.clients.geoserver.StaticGeoServerData;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Dataset {
+
+    static final String DEFAULT_NAMESPACE = "https://www.theworldavatar.com/kg/";
 
     public static final String NAME_KEY = "name";
 
@@ -27,8 +30,11 @@ public class Dataset {
     private final List<DataSubset> dataSubsets;
     private final List<GeoServerStyle> geoserverStyles;
     private final List<String> ontopMappings;
+    private final StaticGeoServerData staticGeoServerData;
 
     private final boolean skip;
+
+    private String baseIRI = DEFAULT_NAMESPACE;
 
     @JsonCreator
     public Dataset(@JsonProperty(value = NAME_KEY) @JacksonInject(NAME_KEY) String name,
@@ -40,6 +46,7 @@ public class Dataset {
             @JsonProperty(value = "dataSubsets") List<DataSubset> dataSubsets,
             @JsonProperty(value = "styles") List<GeoServerStyle> geoserverStyles,
             @JsonProperty(value = "mappings") List<String> ontopMappings,
+            @JsonProperty(value = "staticGeoServerData") StaticGeoServerData staticGeoServerData,
             @JsonProperty(value = "skip") boolean skip) {
         this.name = name;
         this.datasetDirectory = datasetDirectory;
@@ -50,6 +57,7 @@ public class Dataset {
         this.dataSubsets = dataSubsets;
         this.geoserverStyles = geoserverStyles;
         this.ontopMappings = ontopMappings;
+        this.staticGeoServerData = staticGeoServerData;
         this.skip = skip;
     }
 
@@ -105,8 +113,16 @@ public class Dataset {
         return (null != ontopMappings) ? ontopMappings : Collections.emptyList();
     }
 
+    public StaticGeoServerData getStaticGeoServerData() {
+        return staticGeoServerData;
+    }
+
     public boolean isSkip() {
         return skip;
+    }
+
+    public String baseIRI() {
+        return baseIRI;
     }
 
 }

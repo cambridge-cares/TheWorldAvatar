@@ -43,7 +43,7 @@ def test_two_setup_rog_LOCAL(
     create_rogi_agent, create_doe_agent, create_vapourtec_schedule_agent, create_hplc_postpro_agent, create_vapourtec_agent, create_hplc_agent,
     lab1_vapourtec_env_file, lab1_hplc_env_file, lab1_dir, lab2_vapourtec_env_file, lab2_hplc_env_file, lab2_dir, goal_request,
 ):
-    sparql_client, derivation_client = initialise_blazegraph_fileserver_with_test_triples
+    sparql_client, derivation_client = initialise_blazegraph_fileserver_with_test_triples()
 
     # Create agent instances, this also register the agents to the KG
     # NOTE that this should be done by agent themselves at real deployment

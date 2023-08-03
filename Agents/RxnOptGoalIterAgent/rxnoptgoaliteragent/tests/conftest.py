@@ -199,7 +199,7 @@ def create_rogi_agent():
 def initialise_triple_store():
     # NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
     # For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
-    blazegraph = DockerContainer('docker.cmclinnovations.com/blazegraph_for_tests:1.0.0')
+    blazegraph = DockerContainer('ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0')
     # the port is set as 9999 to match with the value set in the docker image
     blazegraph.with_exposed_ports(9999)
     yield blazegraph
@@ -268,7 +268,7 @@ def clear_loggers():
 # ----------------------------------------------------------------------------------
 
 class IRIs(Enum):
-    GOAL_ITER_BASE_IRI = 'http://www.example.com/triplestore/ontogoal/rxnopt/'
+    GOAL_ITER_BASE_IRI = 'https://www.example.com/triplestore/ontogoal/rxnopt/'
     GOALSET_1 = GOAL_ITER_BASE_IRI + 'GoalSet_1'
 
     GOAL_1 = GOAL_ITER_BASE_IRI + 'Goal_1'
@@ -287,20 +287,20 @@ class IRIs(Enum):
     DESIRED_QUANTITY_2 = GOAL_ITER_BASE_IRI + 'Desired_Quantity_2'
     DESIRED_QUANTITY_2_TYPE = ONTOREACTION_RUNMATERIALCOST
     DESIRED_QUANTITY_MEASURE_2 = GOAL_ITER_BASE_IRI + 'Desired_Quantity_Measure_2'
-    DESIRED_QUANTITY_MEASURE_2_UNIT = OM_POUNDSTERLINGPERKILOGRAM
+    DESIRED_QUANTITY_MEASURE_2_UNIT = OM_POUNDSTERLINGPERLITRE
     DESIRED_QUANTITY_MEASURE_2_NUMVAL = 0.01
     RESTRICTION_1 = GOAL_ITER_BASE_IRI + 'Restriction_1'
     RESTRICTION_1_CYCLEALLOWANCE = 5
     RESTRICTION_1_DEADLINE = 4102444800.0
 
-    PLAN_STEP_AGENT_BASE_IRI = 'http://www.theworldavatar.com/resource/plans/RxnOpt/'
+    PLAN_STEP_AGENT_BASE_IRI = 'https://www.theworldavatar.com/kg/plans/RxnOpt/'
     RXN_OPT_PLAN = PLAN_STEP_AGENT_BASE_IRI + 'rxnoptplan'
     STEP_DOE = PLAN_STEP_AGENT_BASE_IRI + 'doe'
-    STEP_DOE_AGENT = 'http://www.theworldavatar.com/resource/agents/Service__DoE/Service'
+    STEP_DOE_AGENT = 'https://www.theworldavatar.com/kg/agents/Service__DoE/Service'
     STEP_SCHEDULEEXE = PLAN_STEP_AGENT_BASE_IRI + 'schedule_exe'
-    STEP_SCHEDULE_AGENT = 'http://www.theworldavatar.com/resource/agents/Service__VapourtecSchedule/Service'
+    STEP_SCHEDULE_AGENT = 'https://www.theworldavatar.com/kg/agents/Service__VapourtecSchedule/Service'
     STEP_POSTPRO = PLAN_STEP_AGENT_BASE_IRI + 'postpro'
-    STEP_POSTPRO_AGENT = 'http://www.theworldavatar.com/resource/agents/Service__HPLC_PostPro/Service'
+    STEP_POSTPRO_AGENT = 'https://www.theworldavatar.com/kg/agents/Service__HPLC_PostPro/Service'
 
     EXP_1_BASE_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/'
     EXP_2_BASE_IRI = 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_2/'
@@ -323,6 +323,10 @@ class IRIs(Enum):
 def initialise_triples(sparql_client, derivation_client, derivation_inputs):
     # Delete all triples before initialising prepared triples
     sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
+
+    # Upload ontology TBox
+    sparql_client.upload_ontology_tbox(ONTODOE)
+    sparql_client.upload_ontology_tbox(ONTOREACTION)
 
 	# Upload all relevant example triples provided in the resources folder of 'chemistry_and_robots' package to triple store
     for f in [

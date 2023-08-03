@@ -2,7 +2,6 @@ from testcontainers.core.container import DockerContainer
 from pathlib import Path
 from flask import Flask
 import requests
-import logging
 import pytest
 import shutil
 import time
@@ -42,6 +41,7 @@ DOE_IRI = 'https://www.example.com/triplestore/ontodoe/DoE_1/DoE_1'
 DERIVATION_INPUTS = [DOE_IRI]
 
 DOE_NO_PRIOR_EXPERIMENT_IRI = 'https://www.example.com/triplestore/ontodoe/DoE_no_prior_data/DoE_1'
+DOE_ANOTHER_TEST_NO_PRIOR_EXPERIMENT_IRI = 'https://www.example.com/triplestore/ontodoe/DoE_Template/DoE_1'
 
 # ----------------------------------------------------------------------------------
 # Pytest session related functions

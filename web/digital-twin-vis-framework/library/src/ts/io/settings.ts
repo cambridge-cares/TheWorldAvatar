@@ -19,9 +19,9 @@ class Settings {
         console.log("Reading settings file at: "+ settingsFile);
 
         let self = this;
+
         return $.getJSON(settingsFile, function(json) {
             self.settings = json;
-
             if(self.settings["imagery"] == null) {
                 switch(Manager.PROVIDER) {
                     case MapProvider.MAPBOX:
@@ -34,7 +34,8 @@ class Settings {
                 }
             }
         }).fail((error) => {
-             throw error;
+            self.settings = {};
+            throw error;
         });    
     }
 

@@ -33,6 +33,7 @@ class ControlHandler {
         let titles = container.querySelectorAll(".controlTitle p");
 
         titles.forEach(title => {
+
             title.addEventListener("click", function() {
                 let block = title.parentElement.parentElement;
                 if(block.classList.contains("collapsed")) {

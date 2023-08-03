@@ -37,7 +37,6 @@ def initialise_triples_assert_pure_inputs(sparql_client, delete_all_triples=True
     # timestamps of pure inputs will be added automatically when creating derivation markup
     # they are NOT added here so that we can test the framework is still working as expected
 
-    assert not sparql_client.getListOfPoints()
     assert not sparql_client.getPointsInKG()
     assert not sparql_client.getMaxValueIRI()
     assert not sparql_client.getMinValueIRI()

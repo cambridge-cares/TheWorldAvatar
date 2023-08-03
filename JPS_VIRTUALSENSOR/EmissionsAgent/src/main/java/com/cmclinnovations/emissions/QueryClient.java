@@ -32,13 +32,14 @@ public class QueryClient {
     private TimeSeriesClient<Long> tsClient;
     private RemoteRDBStoreClient remoteRDBStoreClient;
 
-    static final String PREFIX = "http://www.theworldavatar.com/kg/dispersion/";
-    private static final Prefix P_DISP = SparqlBuilder.prefix("disp",iri(PREFIX));
+    static final String PREFIX = "https://www.theworldavatar.com/kg/ontodispersion/";
+    private static final Prefix P_DISP = SparqlBuilder.prefix("disp", iri(PREFIX));
     static final String OM_STRING = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
-    private static final Prefix P_OM = SparqlBuilder.prefix("om",iri(OM_STRING));
+    private static final Prefix P_OM = SparqlBuilder.prefix("om", iri(OM_STRING));
 
     // classes
     // strings to send to derivation outputs
+    static final String EMISSION = PREFIX + "Emission";
     static final String NO_X = PREFIX + "NOx";
     static final String UHC = PREFIX + "uHC";
     static final String CO = PREFIX + "CO";
@@ -59,6 +60,8 @@ public class QueryClient {
     private static final Iri HAS_PROPERTY = P_DISP.iri("hasProperty");
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
     private static final Iri HAS_NUMERICALVALUE = P_OM.iri("hasNumericalValue");
+    static final String EMITS = PREFIX + "emits";
+    static final String HAS_POLLUTANT_ID = PREFIX + "hasPollutantID";
 
     public QueryClient(RemoteStoreClient storeClient, RemoteRDBStoreClient remoteRDBStoreClient) {
         this.storeClient = storeClient;
@@ -68,6 +71,7 @@ public class QueryClient {
 
     /**
      * used by Emissions agent to query a ship given an IRI
+     * 
      * @param shipIri
      * @return
      */
@@ -78,10 +82,10 @@ public class QueryClient {
         Variable shipType = query.var();
         Variable property = query.var();
 
-        GraphPattern gp = GraphPatterns.and(iri(shipIri).has(HAS_PROPERTY,property), 
-        property.isA(SHIP_TYPE).andHas(PropertyPaths.path(HAS_VALUE,HAS_NUMERICALVALUE), shipType));
+        GraphPattern gp = GraphPatterns.and(iri(shipIri).has(HAS_PROPERTY, property),
+                property.isA(SHIP_TYPE).andHas(PropertyPaths.path(HAS_VALUE, HAS_NUMERICALVALUE), shipType));
 
-        query.prefix(P_DISP,P_OM).where(gp);
+        query.prefix(P_DISP, P_OM).where(gp);
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
@@ -91,14 +95,14 @@ public class QueryClient {
         } else {
             throw new RuntimeException("Incorrect number of ships queried");
         }
-        
+
         // step2: query ship speed measure iri
         SelectQuery query2 = Queries.SELECT();
 
         Variable speed = query2.var();
 
         GraphPattern gp2 = GraphPatterns.and(iri(shipIri).has(HAS_PROPERTY, property),
-        property.isA(SPEED).andHas(HAS_VALUE, speed));
+                property.isA(SPEED).andHas(HAS_VALUE, speed));
 
         query2.prefix(P_OM, P_DISP).where(gp2);
 
@@ -113,7 +117,7 @@ public class QueryClient {
 
         int shipSpeed;
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            shipSpeed = tsClient.getLatestData(speedMeasure,conn).getValuesAsInteger(speedMeasure).get(0);
+            shipSpeed = tsClient.getLatestData(speedMeasure, conn).getValuesAsInteger(speedMeasure).get(0);
             Ship ship = new Ship();
             ship.setSpeed(shipSpeed);
             ship.setShipType(shipTypeInt);

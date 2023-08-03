@@ -17,6 +17,7 @@ from pyderivationagent import DerivationOutputs
 
 from floodassessment.datamodel.iris import *
 from floodassessment.kg_operations.kgclient import KGClient
+from floodassessment.utils.stackclients import PostGISClient
 
 
 class FloodAssessmentAgent(DerivationAgent):
@@ -37,7 +38,7 @@ class FloodAssessmentAgent(DerivationAgent):
 
     def agent_output_concepts(self) -> list:
         # Output concept (i.e. result) of the Derivation
-        return [FLOOD_POPULATION, FLOOD_BUILDINGS, FLOOD_IMPACT]
+        return [FLOOD_POPULATION, FLOOD_BUILDING, FLOOD_IMPACT]
 
 
     def validate_inputs(self, http_request) -> bool:
@@ -93,7 +94,7 @@ class FloodAssessmentAgent(DerivationAgent):
         to assess the estimated impact of a potential flood and generate
             1 IRI of Flood:Impact
             1 IRI of Flood:Population
-            1 IRI of Flood:Buildings
+            1 IRI of Flood:Building
             (including the respective instantiation of OM:AmountOfMoney + full
              set of triples due to ontology of units of measure representation)
         """
@@ -121,10 +122,19 @@ class FloodAssessmentAgent(DerivationAgent):
         PostGIS' geospatial count over population density raster data within the
         boundary of the ArealExtendPolygon associated with the flood alert/warning
         """
-        #TODO: Implement this method using Ontop in the Stack, i.e. query 
-        #      Blazegraph using SERVICE keyword
+
+        # Initialise relevant PostGIS client
+        postgis_client = PostGISClient()
+
+        # Get flood area IRI associated with flood alert/warning
+        area_iri = self.sparql_client.get_associated_flood_area(flood_alert_warning_iri)
+
+        # Get number of affected population
+        # Returns int (number of affected people) or None (in case if no population data
+        # could be determined, i.e. nobody is affected or specified area is not present)
+        affected = postgis_client.get_number_of_affected_population(flood_area_iri=area_iri)
         
-        return None
+        return affected
 
 
     def estimate_potential_flood_impact(self, warning_iri:str = None,
@@ -154,20 +164,26 @@ class FloodAssessmentAgent(DerivationAgent):
             affected_buildings_value = 0
             self.logger.info(f"Flood alert/warning '{warning_iri}' marked as inactive.")
         else:
-            # If flood alert/warning is active --> assess impact
-            affected_population = self.estimate_number_of_affected_people(warning_iri)
+            # If flood alert/warning is active --> assess impact            
             affected_buildings_count = len(building_iris)
             affected_buildings_value = self.sparql_client.summarise_affected_property_values(estimation_iris)
 
-        #TODO: Retrieve potentially already instantiated flood instance
-        #      (otherwise new Flood instance will be created by derivation)
-        flood_iri = None
+            # Assess number of affected population
+            affected_population = self.estimate_number_of_affected_people(warning_iri)
+            # NOTE: For debug tests, the line above needs to be replaced with the
+            #       following line; this manual mocking is required as mocker.patch 
+            #       (or similar approaches) seem only to affect the code loaded by
+            #       pytest, while keeping the asynchronously running agent unaffected
+            #affected_population = None
+
+        # Retrieve potentially already instantiated flood instance
+        # (if None if retrieved, new Flood instance will be created by derivation)
+        flood_iri = self.sparql_client.get_associated_flood_event(warning_iri)
 
         # Generate textual description of potential impact
-        #TODO: Potentially to be refined based on actual information from API
         impact_description = self.create_impact_description(severity)
 
-        # Create triples to instantiate for flood impact assessment
+        # Create triples to instantiate flood impact assessment
         g = self.sparql_client.instantiate_flood_impact(graph=g,
                                     flood_alert_warning_iri=warning_iri,
                                     affected_buildings_count=affected_buildings_count,
@@ -185,7 +201,7 @@ class FloodAssessmentAgent(DerivationAgent):
         Create textual description of flood impact, currently based on:
         https://environment.data.gov.uk/flood-monitoring/doc/reference#introduction
         """
-        # Initialise return value
+        # Initialise return value (for inactive flood alert/warning)
         impact_description = None
 
         if severity_iri == FLOOD_SEVERITY_SEVERE:

@@ -54,10 +54,10 @@ Wall,Class,ConstructionComponent,IS-A,,,,Key construction characteristics of the
 Roof,Class,ConstructionComponent,IS-A,,,,Key construction characteristics of the property's roof.,https://www.theworldavatar.com/kg/ontobuiltenv/,Roof
 Window,Class,ConstructionComponent,IS-A,,,,Key construction characteristics of the property's windows.,https://www.theworldavatar.com/kg/ontobuiltenv/,Window
 Floor,Class,ConstructionComponent,IS-A,,,,Key construction characteristics of the property's floor.,https://www.theworldavatar.com/kg/ontobuiltenv/,Floor
-hasConstructionDate,Object Property,,,Property,https://www.w3.org/2006/time#Interval,,A relationship between a property and its construction dates.,https://www.theworldavatar.com/kg/ontobuiltenv/,has construction date
-https://www.w3.org/2006/time#hasBeginning,Object Property,,,https://www.w3.org/2006/time#Interval,https://www.w3.org/2006/time#Instant,,,https://www.w3.org/2006/time,has beginning
-https://www.w3.org/2006/time#hasEnd,Object Property,,,https://www.w3.org/2006/time#Interval,https://www.w3.org/2006/time#Instant,,,https://www.w3.org/2006/time,has end
-https://www.w3.org/2006/time#inXSDDateTimeStamp,Data Property,,,https://www.w3.org/2006/time#Instant,dateTimeStamp,,,https://www.w3.org/2006/time,in XSD dateTimeStamp
+hasConstructionDate,Object Property,,,Property,http://www.w3.org/2006/time#Interval,,A relationship between a property and its construction dates.,https://www.theworldavatar.com/kg/ontobuiltenv/,has construction date
+http://www.w3.org/2006/time#hasBeginning,Object Property,,,http://www.w3.org/2006/time#Interval,http://www.w3.org/2006/time#Instant,,,http://www.w3.org/2006/time,has beginning
+http://www.w3.org/2006/time#hasEnd,Object Property,,,http://www.w3.org/2006/time#Interval,http://www.w3.org/2006/time#Instant,,,http://www.w3.org/2006/time,has end
+http://www.w3.org/2006/time#inXSDDateTimeStamp,Data Property,,,http://www.w3.org/2006/time#Instant,dateTimeStamp,,,http://www.w3.org/2006/time,in XSD dateTimeStamp
 hasEnergyRating,Data Property,,,Property,string,,A relationship between a property and its overall energy efficiency rating (e.g. linear 'A to G' rating (where A is the most energy efficient and G is the least energy efficient)),https://www.theworldavatar.com/kg/ontobuiltenv/,has energy rating
 hasNumberOfHabitableRooms,Data Property,,,Property,integer,,A relationship between a property and its total number of habitable rooms.,https://www.theworldavatar.com/kg/ontobuiltenv/,has number of habitable rooms
 BuiltForm,Class,,,,,,The built form of the property.,https://www.theworldavatar.com/kg/ontobuiltenv/,Built form
@@ -112,7 +112,7 @@ https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries,Object Property,,
 https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries,Object Property,,,PropertyPriceIndex,https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,exactly 1,,https://www.theworldavatar.com/kg/ontobuiltenv/,has time series
 https://www.theworldavatar.com/kg/ontotimeseries/hasTimeUnit,Data Property,,,https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,string,,,https://www.theworldavatar.com/kg/ontotimeseries/,has time unit
 https://www.theworldavatar.com/kg/ontotimeseries/hasRDB,Data Property,,,https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,string,,,https://www.theworldavatar.com/kg/ontotimeseries/,has RDB link
-AveragePricePerSqm,Class,http://theworldavatar.com/resource/ontouom/AmountOfMoneyPerArea,IS-A,,,,The average property price per square metre in a particular area.,https://www.theworldavatar.com/kg/ontobuiltenv/,Average price per square metre
-http://theworldavatar.com/resource/ontouom/pound_sterling_per_sqm,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,IS-A,,,,Pound sterling per square metre.,http://www.ontology-of-units-of-measure.org/resource/om-2/,Pound sterling per sqm
+AveragePricePerSqm,Class,https://www.theworldavatar.com/kg/ontouom/AmountOfMoneyPerArea,IS-A,,,,The average property price per square metre in a particular area.,https://www.theworldavatar.com/kg/ontobuiltenv/,Average price per square metre
+https://www.theworldavatar.com/kg/ontouom/pound_sterling_per_sqm,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,IS-A,,,,Pound sterling per square metre.,http://www.ontology-of-units-of-measure.org/resource/om-2/,Pound sterling per sqm
 representativeFor,Object Property,,,AveragePricePerSqm,PostalCode,,A relationship between the average price per square metre and the area it refers to.,https://www.theworldavatar.com/kg/ontobuiltenv/,representative for
 representativeFor,Object Property,,,AveragePricePerSqm,PostalCode,exactly 1,,https://www.theworldavatar.com/kg/ontobuiltenv/,representative for

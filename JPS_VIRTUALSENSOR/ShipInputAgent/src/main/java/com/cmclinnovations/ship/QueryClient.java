@@ -29,7 +29,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -48,10 +47,10 @@ public class QueryClient {
     private DerivationClient derivationClient;
     private RemoteRDBStoreClient remoteRDBStoreClient;
 
-    static final String PREFIX = "http://www.theworldavatar.com/kg/dispersion/";
-    private static final Prefix P_DISP = SparqlBuilder.prefix("disp",iri(PREFIX));
+    static final String PREFIX = "https://www.theworldavatar.com/kg/ontodispersion/";
+    private static final Prefix P_DISP = SparqlBuilder.prefix("disp", iri(PREFIX));
     static final String OM_STRING = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
-    private static final Prefix P_OM = SparqlBuilder.prefix("om",iri(OM_STRING));
+    private static final Prefix P_OM = SparqlBuilder.prefix("om", iri(OM_STRING));
 
     // classes
     // as Iri classes for sparql updates sent directly from here
@@ -72,7 +71,8 @@ public class QueryClient {
     private static final Iri HAS_VALUE = P_OM.iri("hasValue");
     private static final Iri HAS_NUMERICALVALUE = P_OM.iri("hasNumericalValue");
 
-    public QueryClient(StoreClientInterface storeClient, TimeSeriesClient<Long> tsClient, DerivationClient derivationClient, RemoteRDBStoreClient remoteRDBStoreClient) {
+    public QueryClient(StoreClientInterface storeClient, TimeSeriesClient<Long> tsClient,
+            DerivationClient derivationClient, RemoteRDBStoreClient remoteRDBStoreClient) {
         this.storeClient = storeClient;
         this.tsClient = tsClient;
         this.derivationClient = derivationClient;
@@ -81,6 +81,7 @@ public class QueryClient {
 
     /**
      * returns false if there's nothing in the KG
+     * 
      * @return
      */
     boolean initialised() {
@@ -97,7 +98,9 @@ public class QueryClient {
     }
 
     /**
-     * first query existing instances with MMSI values, then initialise if do not exist
+     * first query existing instances with MMSI values, then initialise if do not
+     * exist
+     * 
      * @param ships
      */
     List<Ship> initialiseShipsIfNotExist(List<Ship> ships) {
@@ -105,14 +108,15 @@ public class QueryClient {
 
         Variable mmsi = query.var();
         Variable mmsiValue = query.var();
-        ValuesPattern<Integer> vp = new ValuesPattern<>(mmsiValue, ships.stream().map(Ship::getMmsi).collect(Collectors.toList()), Integer.class);
+        ValuesPattern<Integer> vp = new ValuesPattern<>(mmsiValue,
+                ships.stream().map(Ship::getMmsi).collect(Collectors.toList()), Integer.class);
 
-        GraphPattern gp = mmsi.isA(MMSI).andHas(PropertyPaths.path(HAS_VALUE,HAS_NUMERICALVALUE),mmsiValue);
+        GraphPattern gp = mmsi.isA(MMSI).andHas(PropertyPaths.path(HAS_VALUE, HAS_NUMERICALVALUE), mmsiValue);
 
-        query.where(gp,vp).prefix(P_OM,P_DISP).select(mmsiValue);
+        query.where(gp, vp).prefix(P_OM, P_DISP).select(mmsiValue);
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
         List<Integer> initialisedShipMMSI = new ArrayList<>();
-        for (int i = 0; i < queryResult.length(); i ++) {
+        for (int i = 0; i < queryResult.length(); i++) {
             initialisedShipMMSI.add(queryResult.getJSONObject(i).getInt(mmsiValue.getQueryString().substring(1)));
         }
 
@@ -127,7 +131,9 @@ public class QueryClient {
     }
 
     /**
-     * called by initialiseShipsIfNotExist, adds triples and initialises the time series tables
+     * called by initialiseShipsIfNotExist, adds triples and initialises the time
+     * series tables
+     * 
      * @param ships
      */
     private void createShip(List<Ship> ships) {
@@ -153,16 +159,16 @@ public class QueryClient {
                 modify.insert(shipIri.isA(SHIP));
 
                 // mmsi
-                Iri mmsiProperty = P_DISP.iri(shipName +  "MMSI");
+                Iri mmsiProperty = P_DISP.iri(shipName + "MMSI");
                 Iri mmsiMeasure = P_DISP.iri(shipName + "MMSIMeasure");
-                
-                modify.insert(shipIri.has(HAS_PROPERTY,mmsiProperty));
+
+                modify.insert(shipIri.has(HAS_PROPERTY, mmsiProperty));
                 modify.insert(mmsiProperty.isA(MMSI).andHas(HAS_VALUE, mmsiMeasure));
                 modify.insert(mmsiMeasure.isA(MEASURE).andHas(HAS_NUMERICALVALUE, ship.getMmsi()));
 
                 // ship type (integer)
-                Iri shipTypeProperty = P_DISP.iri(shipName +  "ShipType");
-                Iri shipTypeMeasure = P_DISP.iri(shipName +  "ShipTypeMeasure");
+                Iri shipTypeProperty = P_DISP.iri(shipName + "ShipType");
+                Iri shipTypeMeasure = P_DISP.iri(shipName + "ShipTypeMeasure");
 
                 modify.insert(shipIri.has(HAS_PROPERTY, shipTypeProperty));
                 modify.insert(shipTypeProperty.isA(SHIP_TYPE).andHas(HAS_VALUE, shipTypeMeasure));
@@ -202,7 +208,7 @@ public class QueryClient {
                 dataClasses.add(classes);
                 timeUnit.add("Unix timestamp");
             }
-            modify.prefix(P_OM,P_DISP);
+            modify.prefix(P_OM, P_DISP);
             storeClient.executeUpdate(modify.getQueryString());
 
             // add timestamps for derivation framework
@@ -219,6 +225,7 @@ public class QueryClient {
 
     /**
      * get ship IRI from kg based on MMSI
+     * 
      * @param ships
      */
     void setShipIRIs(List<Ship> ships) {
@@ -229,18 +236,19 @@ public class QueryClient {
         Variable property = query.var();
         Variable measure = query.var();
 
-        ValuesPattern<Integer> vpMmsi = new ValuesPattern<>(mmsiValue, ships.stream().map(Ship::getMmsi).collect(Collectors.toList()), Integer.class);
-        
-        GraphPattern gp = GraphPatterns.and(ship.has(HAS_PROPERTY, property), 
-        property.isA(MMSI).andHas(HAS_VALUE, measure), measure.has(HAS_NUMERICALVALUE, mmsiValue));
+        ValuesPattern<Integer> vpMmsi = new ValuesPattern<>(mmsiValue,
+                ships.stream().map(Ship::getMmsi).collect(Collectors.toList()), Integer.class);
 
-        query.prefix(P_OM,P_DISP).where(gp, vpMmsi).select(ship, mmsiValue).distinct();
+        GraphPattern gp = GraphPatterns.and(ship.has(HAS_PROPERTY, property),
+                property.isA(MMSI).andHas(HAS_VALUE, measure), measure.has(HAS_NUMERICALVALUE, mmsiValue));
+
+        query.prefix(P_OM, P_DISP).where(gp, vpMmsi).select(ship, mmsiValue).distinct();
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         // look up map used later to assign ship Iris
         Map<Integer, Ship> mmsiToShipMap = new HashMap<>();
-        ships.stream().forEach(s -> mmsiToShipMap.put(s.getMmsi(),s));
+        ships.stream().forEach(s -> mmsiToShipMap.put(s.getMmsi(), s));
 
         for (int i = 0; i < queryResult.length(); i++) {
             String shipIri = queryResult.getJSONObject(i).getString(ship.getQueryString().substring(1));
@@ -259,9 +267,11 @@ public class QueryClient {
         Variable propertyType = query.var();
         Variable measure = query.var();
 
-        ValuesPattern<Iri> shipValues = new ValuesPattern<>(ship, ships.stream().map(s -> iri(s.getIri())).collect(Collectors.toList()), Iri.class);
+        ValuesPattern<Iri> shipValues = new ValuesPattern<>(ship,
+                ships.stream().map(s -> iri(s.getIri())).collect(Collectors.toList()), Iri.class);
 
-        GraphPattern gp = GraphPatterns.and(ship.has(HAS_PROPERTY, property), property.isA(propertyType).andHas(HAS_VALUE, measure));
+        GraphPattern gp = GraphPatterns.and(ship.has(HAS_PROPERTY, property),
+                property.isA(propertyType).andHas(HAS_VALUE, measure));
 
         query.prefix(P_OM, P_DISP).where(gp, shipValues).select(ship, property, propertyType, measure).distinct();
 
@@ -269,7 +279,7 @@ public class QueryClient {
 
         // look up map to obtain ship object
         Map<String, Ship> shipIriToShipMap = new HashMap<>();
-        ships.stream().forEach(s -> shipIriToShipMap.put(s.getIri(),s));
+        ships.stream().forEach(s -> shipIriToShipMap.put(s.getIri(), s));
 
         for (int i = 0; i < queryResult.length(); i++) {
             String shipIri = queryResult.getJSONObject(i).getString(ship.getQueryString().substring(1));
@@ -279,13 +289,16 @@ public class QueryClient {
 
             switch (propertyTypeIri) {
                 case LOCATION_STRING:
-                    shipObject.setLocationMeasureIri(queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1)));
+                    shipObject.setLocationMeasureIri(
+                            queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1)));
                     break;
                 case SPEED_STRING:
-                    shipObject.setSpeedMeasureIri(queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1)));
+                    shipObject.setSpeedMeasureIri(
+                            queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1)));
                     break;
                 case COURSE_STRING:
-                    shipObject.setCourseMeasureIri(queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1)));
+                    shipObject.setCourseMeasureIri(
+                            queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1)));
                     break;
                 default:
                     break;
@@ -296,17 +309,18 @@ public class QueryClient {
     void updateTimeSeriesData(List<Ship> ships) {
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
             ships.stream().forEach(ship -> {
-                List<String> dataIRIs = Arrays.asList(ship.getCourseMeasureIri(), ship.getSpeedMeasureIri(), ship.getLocationMeasureIri());
-    
+                List<String> dataIRIs = Arrays.asList(ship.getCourseMeasureIri(), ship.getSpeedMeasureIri(),
+                        ship.getLocationMeasureIri());
+
                 // order of dataIRIs is course, speed, location, as defined in the previous loop
                 List<List<?>> values = new ArrayList<>();
                 values.add(Arrays.asList(ship.getCourse()));
                 values.add(Arrays.asList(ship.getSpeed()));
                 values.add(Arrays.asList(ship.getLocation()));
-    
+
                 List<Long> time = Arrays.asList(ship.getTimestamp().getEpochSecond());
-    
-                TimeSeries<Long> ts = new TimeSeries<>(time,dataIRIs,values);
+
+                TimeSeries<Long> ts = new TimeSeries<>(time, dataIRIs, values);
                 tsClient.addTimeSeriesData(ts, conn);
             });
         } catch (SQLException e) {
@@ -327,7 +341,7 @@ public class QueryClient {
         Iri hasInput = iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasInput");
         Iri hasMandatoryPart = iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasMandatoryPart");
         Iri hasType = iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasType");
-        
+
         Iri operationIri = iri(PREFIX + UUID.randomUUID());
         Iri inputIri = iri(PREFIX + UUID.randomUUID());
         Iri partIri = iri(PREFIX + UUID.randomUUID());
@@ -335,7 +349,8 @@ public class QueryClient {
         ModifyQuery modify = Queries.MODIFY();
 
         modify.insert(iri(EnvConfig.EMISSIONS_AGENT_IRI).isA(service).andHas(hasOperation, operationIri));
-		modify.insert(operationIri.isA(operation).andHas(hasHttpUrl, iri(EnvConfig.EMISSIONS_AGENT_URL)).andHas(hasInput, inputIri));
+        modify.insert(operationIri.isA(operation).andHas(hasHttpUrl, iri(EnvConfig.EMISSIONS_AGENT_URL))
+                .andHas(hasInput, inputIri));
         modify.insert(inputIri.has(hasMandatoryPart, partIri));
         modify.insert(partIri.has(hasType, SHIP)).prefix(P_DISP);
 
@@ -354,7 +369,8 @@ public class QueryClient {
                 getAsync = CompletableFuture.supplyAsync(() -> {
                     Derivation derivation = null;
                     try {
-                        derivation = derivationClient.createSyncDerivationForNewInfo(EnvConfig.EMISSIONS_AGENT_IRI, Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION);
+                        derivation = derivationClient.createSyncDerivationForNewInfo(EnvConfig.EMISSIONS_AGENT_IRI,
+                                Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION);
                     } catch (Exception e) {
                         LOGGER.error(e.getMessage());
                         LOGGER.error("Failed to create new derivation for {}", ship.getIri());
@@ -369,7 +385,8 @@ public class QueryClient {
         } else {
             for (Ship ship : ships) {
                 try {
-                    derivationClient.createSyncDerivationForNewInfo(EnvConfig.EMISSIONS_AGENT_IRI, Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION);
+                    derivationClient.createSyncDerivationForNewInfo(EnvConfig.EMISSIONS_AGENT_IRI,
+                            Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION);
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage());
                     LOGGER.error("Failed to create new derivation for {}", ship.getIri());

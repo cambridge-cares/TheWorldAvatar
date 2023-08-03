@@ -3,7 +3,7 @@
 // Local authority district codes: https://epc.opendatacommunities.org/docs/api/domestic#domestic-local-authority
 // King's Lynn and West Norfolk: E07000146
 
-POST http://165.232.172.16:5001/api/epcagent/instantiate/postcodes
+POST http://165.232.172.16:5007/epcagent/instantiate/postcodes
 Content-Type: application/json
 
 { "query": {

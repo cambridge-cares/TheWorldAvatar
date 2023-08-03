@@ -1,6 +1,9 @@
 # Install the Flood Assessment Agent in Docker container
 #==================================================================================================
 
+# Reference published Docker image for Stack-Client resources to use
+FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
+
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
@@ -17,8 +20,10 @@ ENV PYTHONUNBUFFERED=1
 # Install required software: git and openjdk-11
 RUN apt update && apt install -y openjdk-11-jdk-headless git
 
-# Copy stack-clients resource to be wrapped by py4jps
-COPY ./tmp_stack ./tmp_stack
+# Copy Stack-Client resource from published Docker image (potentially ensure
+# directory structure matches requirements for jpsrm to update py4jps resources)
+RUN mkdir -p ./tmp_stack
+COPY --from=stackclients /app ./tmp_stack
 
 # Set the default working directory & copy files to install Python
 WORKDIR /app
@@ -35,8 +40,11 @@ ENV AGENTDIR=${agentdir}
 RUN python -m pip install --upgrade pip
 RUN python -m pip install -r requirements.txt
 RUN python -m pip install -e .
+# Add JDBC driver to allow for retrieval of JDBC connection properties from PostGIS client
+# (required to execute (general) queries & updated, not already supported by PostGIS client)
+ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
 
-# Add StackClients py4jps resources
+# Install StackClients py4jps resource
 RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
     jpsrm install StackClients ../tmp_stack --jar $stack_clients_jar
 
@@ -64,7 +72,7 @@ ENTRYPOINT python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask ru
 #------------------------------------------------------
 FROM base as prod
 # Install additional dependencies
-RUN pip install gunicorn
+RUN pip install gunicorn==20.0.4
 
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
@@ -106,7 +114,7 @@ FROM base as test
 RUN apt-get update
 RUN apt install libpq-dev python3-dev gcc -y
 RUN python -m pip install -e .[dev]
-RUN pip install gunicorn
+RUN pip install gunicorn==20.0.4
 
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
@@ -118,48 +126,18 @@ COPY ./docker-compose-testcontainers.yml ./docker-compose.yml
 # Adjust the logger_name to enable more logging information for tests
 RUN sed -i "s|logger_name='prod',|logger_name='dev',|g" ./$AGENTDIR/entry_point.py
 
-# Ensure SPARQL endpoints contain 'host.docker.internal' instead of 'localhost' for dockerised agent tests
-RUN sed -i "s|localhost|host.docker.internal|g" ./tests/mockutils/env_configs_mock.py
-RUN sed -i "s|localhost|host.docker.internal|g" ./tests/mockutils/stack_configs_mock.py
-# Ensure flag for Dockerised tests is set to True
-RUN sed -i "s|False|True|g" ./tests/mockutils/env_configs_mock.py
-
-# Overwrite/Mock all stack interactions with pre-defined settings from testing Docker stack
+# Overwrite/Mock all stack interactions with pre-defined settings
 RUN cp ./tests/mockutils/env_configs_mock.py ./$AGENTDIR/utils/env_configs.py
 RUN cp ./tests/mockutils/stack_configs_mock.py ./$AGENTDIR/utils/stack_configs.py
 # Adjust relative import statement
 RUN sed -i "s|env_configs_mock|env_configs |g" ./$AGENTDIR/utils/stack_configs.py
 
+# Mock method call to assess number of people potentially affected by flood
+# Previous mock attempts (i.e. using mocker.patch() within 'test_example_agent.py') did not work,
+# likely due to the fact that agent handling the derivation is running 'independently' of python
+# scripts accessed by pytest --> hence, overwrite method call in 'impact_assessment.py' with None
+RUN sed -i "s|self.estimate_number_of_affected_people(warning_iri)|None|g" ./$AGENTDIR/agent/impact_assessment.py
+
 # Start dockerised agent app as well as pytest
 # (combining commands using & ensures they are started in parallel in background)
 CMD gunicorn --bind 0.0.0.0:5000 "${AGENTDIR}:create_app()" & pytest
-
-
-#==================================================================================================
-
-# TODO - delete this image when doing KL properly
-#------------------------------------------------------
-# Derivation mvp image reusing the base
-#------------------------------------------------------
-FROM base as derivation_mvp
-# Install additional dependencies
-RUN pip install gunicorn
-
-# Copy required source code (as code is not attached as volume)
-WORKDIR /app
-COPY ./$AGENTDIR ./$AGENTDIR
-
-# Adjust the logger_name to enable more logging information for tests
-RUN sed -i "s|logger_name='prod',|logger_name='dev',|g" ./$AGENTDIR/entry_point.py
-
-# Overwrite/Mock all stack interactions with pre-defined settings from testing Docker stack
-COPY ./_derivation_mvp_mock/env_configs_mock.py ./$AGENTDIR/utils/env_configs.py
-COPY ./_derivation_mvp_mock/stack_configs_mock.py ./$AGENTDIR/utils/stack_configs.py
-# Adjust relative import statement
-RUN sed -i "s|env_configs_mock|env_configs |g" ./$AGENTDIR/utils/stack_configs.py
-
-# Set the entrypoint
-# --preload flag is added to provide more information in the container to help with debugging
-ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "${AGENTDIR}:create_app()" --preload
-
-#==================================================================================================

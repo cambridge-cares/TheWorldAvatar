@@ -1,0 +1,31 @@
+
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix ontobim: <https://www.theworldavatar.com/kg/ontobim/>
+prefix bot: <https://w3id.org/bot#>
+
+SELECT ?Property ?Value ?Unit
+WHERE {
+  { BIND ("Reference Label" AS ?Property )
+    [IRI] rdfs:label ?Value .
+  } UNION {
+    BIND ("IRI" AS ?Property )
+    [IRI] rdfs:label/^rdfs:label ?Value .
+  } UNION {
+    BIND ("Type" AS ?Property )
+    [IRI] a ?type .
+  BIND(REPLACE(STRAFTER(STRAFTER(STR(?type), "kg/"), "/")
+               , "(?<=[a-z])(?=[A-Z])", " ")AS ?Value)
+  }  UNION {
+    SERVICE<http://10.25.188.58:3838/blazegraph/namespace/lab/sparql>{
+      BIND ("Located in" AS ?Property )
+      ?building bot:hasStorey ?storey;
+        ontobim:hasIfcRepresentation/rdfs:label ?buildingname.
+      ?storey ontobim:hasRoom ?room;
+        ontobim:hasIfcRepresentation/rdfs:label ?storeyname.
+      ?room bot:containsElement [IRI];
+        ontobim:hasIfcRepresentation/rdfs:label ?roomname.
+      BIND(CONCAT(STR(?roomname), " at ", STR(?storeyname), " of the ", STR(?buildingname)) AS ?Value)
+    }
+  }
+}

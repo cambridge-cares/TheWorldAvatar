@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>uk.ac.cam.cares.jps</groupId>
+    <artifactId>ifcowlconverter</artifactId>
+    <version>1.0.0</version>
+    <packaging>war</packaging>
+
+    <!--  Project properties  -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>11</maven.compiler.release>
+        <jps.base.version>1.35.1</jps.base.version>
+        <jena.version>4.1.0</jena.version>
+        <!-- Artifact ID used to download Log4J2 config (for runtime) -->
+        <log.artifact>java-logging-dev</log.artifact>
+    </properties>
+
+    <!-- Parent POM -->
+    <parent>
+        <groupId>uk.ac.cam.cares.jps</groupId>
+        <artifactId>jps-parent-pom</artifactId>
+        <version>2.1.0</version>
+    </parent>
+
+    <!-- Profiles are used to switch between building for development and production
+ environments. Use "-P profile-id" within a mvn command to build with a profile -->
+    <profiles>
+        <!-- This profile should be used for development builds. -->
+        <profile>
+            <id>dev-profile</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <!-- Set property to download development logging config -->
+                <log.artifact>java-logging-dev</log.artifact>
+            </properties>
+        </profile>
+
+        <!-- This profile should be used for production builds. -->
+        <profile>
+            <id>prod-profile</id>
+            <properties>
+                <!-- Set property to download production logging config -->
+                <log.artifact>java-logging-prod</log.artifact>
+            </properties>
+        </profile>
+    </profiles>
+
+    <!--  Build settings  -->
+    <build>
+        <resources>
+            <resource>
+                <directory>${basedir}/logging</directory>
+            </resource>
+            <!-- Copies the downloaded default logger config into the compiled classes folder -->
+            <resource>
+                <directory>${project.build.directory}/${project.build.finalName}.conf</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.0</version>
+                <configuration>
+                    <release>11</release>
+                </configuration>
+            </plugin>
+            <!--  Maven plugin for unit tests  -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.0</version>
+                <configuration>
+                    <argLine>
+                        --illegal-access=permit
+                    </argLine>
+                </configuration>
+            </plugin>
+            <!--  Maven plugin for packaging  -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.3.2</version>
+            </plugin>
+            <!--  Downloads and extracts ZIP archives from Maven repository  -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.3.0</version>
+                <!--  Version, configuration, and executions should be pulled from the
+                                parent POM unless overridden here.  -->
+            </plugin>
+        </plugins>
+    </build>
+
+    <!--  Dependencies  -->
+    <dependencies>
+        <dependency>
+            <groupId>uk.ac.cam.cares.jps</groupId>
+            <artifactId>jps-base-lib</artifactId>
+            <version>${jps.base.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.pipauwel</groupId>
+            <artifactId>IFCtoRDF</artifactId>
+            <version>0.4</version>
+        </dependency>
+        <!-- Necessary to ensure the relevant outdated version for IFCtoRDF dependency-->
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-core</artifactId>
+            <version>${jena.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-arq</artifactId>
+            <version>${jena.version}</version>
+        </dependency>
+        <!--  Logging  -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.19.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.19.0</version>
+        </dependency>
+        <!--  Testing  -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.9.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.9.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <version>5.9.0</version>
+            <scope>test</scope>
+        </dependency>
+        <!--  For mocking objects -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>4.7.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>4.7.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+            <version>4.7.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

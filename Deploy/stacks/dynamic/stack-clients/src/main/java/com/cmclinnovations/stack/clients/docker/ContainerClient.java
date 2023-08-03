@@ -1,11 +1,14 @@
 package com.cmclinnovations.stack.clients.docker;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.cmclinnovations.stack.clients.core.AbstractEndpointConfig;
+import org.slf4j.Logger;
+
+import com.cmclinnovations.stack.clients.core.EndpointConfig;
 import com.cmclinnovations.stack.clients.docker.DockerClient.ComplexCommand;
 import com.cmclinnovations.stack.clients.utils.LocalTempDir;
 import com.cmclinnovations.stack.clients.utils.TempDir;
@@ -24,12 +27,12 @@ public class ContainerClient extends BaseClient {
     }
 
     @Override
-    public final <E extends AbstractEndpointConfig> void writeEndpointConfig(E endpointConfig) {
+    public final <E extends EndpointConfig> void writeEndpointConfig(E endpointConfig) {
         writeEndpointConfig(endpointConfig, dockerClient);
     }
 
     @Override
-    public final <E extends AbstractEndpointConfig> E readEndpointConfig(String endpointName,
+    public final <E extends EndpointConfig> E readEndpointConfig(String endpointName,
             Class<E> endpointConfigClass) {
         return readEndpointConfig(endpointName, endpointConfigClass, dockerClient);
     }
@@ -44,6 +47,16 @@ public class ContainerClient extends BaseClient {
 
     protected final long getCommandErrorCode(String execId) {
         return dockerClient.getCommandErrorCode(execId);
+    }
+
+    protected void handleErrors(ByteArrayOutputStream errorStream, String execId, Logger logger) {
+        long commandErrorCode = getCommandErrorCode(execId);
+        if (0 != commandErrorCode) {
+            throw new RuntimeException("Docker exec command returned '" + commandErrorCode
+                    + "' and wrote the following to stderr:\n" + errorStream.toString());
+        } else {
+            logger.warn("Docker exec command returned '0' but wrote the following to stderr:\n{}", errorStream);
+        }
     }
 
     protected final Optional<String> getEnvironmentVariable(String containerId, String key) {

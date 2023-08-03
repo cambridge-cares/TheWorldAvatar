@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   floodwarnings_agent:
-    image: ghcr.io/cambridge-cares/floodwarnings_agent_debug:1.0.0
+    image: ghcr.io/cambridge-cares/floodwarnings_agent_debug:1.1.0
     build:
       context: .
       target: debug
@@ -9,3 +9,4 @@ services:
       - "${DEBUG_PORT}:5678"
     volumes:
       - ./agent:/app/agent
+      - ./resources/mock_api_responses:/app/mock_api_responses

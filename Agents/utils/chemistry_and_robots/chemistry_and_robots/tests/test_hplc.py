@@ -35,7 +35,7 @@ def test_process_raw_hplc_report_file(
         hplc_digital_twin=hplc_digital_twin
     )
     g = Graph()
-    g = sparql_client.collect_triples_for_hplc_job("http://placeholder/rxn_exp", "http://placeholder/chem_sol", hplc_digital_twin, hplc_report_iri, "http://placeholder/hplc_method", g)
+    g = sparql_client.collect_triples_for_hplc_job("http://placeholder/rxn_exp", "http://placeholder/chem_amount", hplc_digital_twin, hplc_report_iri, "http://placeholder/hplc_method", g)
     sparql_client.uploadGraph(g)
 
     # Second download uploaded HPLC report file, make sure the content is the same

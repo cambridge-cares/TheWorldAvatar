@@ -1,0 +1,35 @@
+{ 
+  "@context" : "http://environment.data.gov.uk/flood-monitoring/meta/context.jsonld" ,
+  "meta" : { 
+    "publisher" : "Environment Agency" ,
+    "licence" : "http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" ,
+    "documentation" : "http://environment.data.gov.uk/flood-monitoring/doc/reference" ,
+    "version" : "0.9" ,
+    "comment" : "Status: Beta service" ,
+    "hasFormat" : [ "http://environment.data.gov.uk/flood-monitoring/id/floods.csv", "http://environment.data.gov.uk/flood-monitoring/id/floods.rdf", "http://environment.data.gov.uk/flood-monitoring/id/floods.ttl", "http://environment.data.gov.uk/flood-monitoring/id/floods.html" ]
+  }
+   ,
+  "items" : [ 
+    { 
+    "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floods/052FWTKLNKL2" ,
+    "description" : "Highgate, North End, North Lynn, South Wootton, Gaywood, Fairstead and Hardwick in Kings Lynn" ,
+    "eaAreaName" : "Urban area of King's Lynn" ,
+    "floodArea" : 
+      { 
+      "@id" : "https://environment.data.gov.uk/flood-monitoring/id/floodAreas/052FWTKLNKL2" ,
+      "county" : "Norfolk" ,
+      "notation" : "052FWTKLNKL2" ,
+      "polygon" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/052FWTKLNKL2/polygon" ,
+      "riverOrSea" : "River Great Ouse"
+      },
+    "floodAreaID" : "052FWTKLNKL2" ,
+    "isTidal" : true ,
+    "message" : "Warning no longer in force. Although there is no longer a threat of flooding, standing water and debris may still remain.",
+    "severity" : "Warning no longer in force" ,
+    "severityLevel" : 4,
+    "timeMessageChanged" : "2023-02-26T12:00:00",
+    "timeRaised" : "2023-02-25T09:00:00",
+    "timeSeverityChanged" : "2023-02-26T12:00:00"
+    }
+  ]
+}

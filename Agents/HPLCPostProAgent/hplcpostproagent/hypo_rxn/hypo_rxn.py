@@ -8,7 +8,7 @@ class HypoStreamSpecies(pydantic.BaseModel):
     def_molar_mass: unit_conv.DimensionalQuantity
     def_density: unit_conv.DimensionalQuantity
     def_cost: unit_conv.DimensionalQuantity
-    def_eco_score: unit_conv.DimensionalQuantity
+    # def_eco_score: unit_conv.DimensionalQuantity # commented out as it's not used in the current version
     run_conc: unit_conv.DimensionalQuantity
     run_mol: unit_conv.DimensionalQuantity
     _run_volume: unit_conv.DimensionalQuantity
@@ -19,6 +19,7 @@ class HypoStreamSpecies(pydantic.BaseModel):
     _is_solvent: bool = False
     _is_target_product: bool = False
     _is_impurity: bool = False
+    _is_base: bool = False
 
     class Config:
         underscore_attrs_are_private = True
@@ -29,7 +30,7 @@ class HypoStreamSpecies(pydantic.BaseModel):
         __pydantic_self__.def_molar_mass = unit_conv.unit_conversion_dq(__pydantic_self__.def_molar_mass, unit_conv.UNIFIED_MOLAR_MASS_UNIT)
         __pydantic_self__.def_density = unit_conv.unit_conversion_dq(__pydantic_self__.def_density, unit_conv.UNIFIED_DENSITY_UNIT)
         __pydantic_self__.def_cost = unit_conv.unit_conversion_dq(__pydantic_self__.def_cost, unit_conv.UNIFIED_COST_UNIT)
-        __pydantic_self__.def_eco_score = unit_conv.unit_conversion_dq(__pydantic_self__.def_eco_score, unit_conv.UNIFIED_ECOSCORE_UNIT)
+        # __pydantic_self__.def_eco_score = unit_conv.unit_conversion_dq(__pydantic_self__.def_eco_score, unit_conv.UNIFIED_ECOSCORE_UNIT) # commented out as it's not used in the current version
         __pydantic_self__.run_conc = unit_conv.unit_conversion_dq(__pydantic_self__.run_conc, unit_conv.UNIFIED_CONCENTRATION_UNIT)
         __pydantic_self__.run_mol = unit_conv.unit_conversion_dq(__pydantic_self__.run_mol, unit_conv.UNIFIED_MOLE_UNIT)
 
@@ -51,6 +52,8 @@ class HypoStreamSpecies(pydantic.BaseModel):
             __pydantic_self__._is_target_product = True
         elif __pydantic_self__.def_role == ONTOREACTION_IMPURITY:
             __pydantic_self__._is_impurity = True
+        elif __pydantic_self__.def_role == ONTOREACTION_BASE:
+            __pydantic_self__._is_base = True
         else:
             raise Exception("Role type <%s> NOT supported for Species <%s>." % (__pydantic_self__.def_role, __pydantic_self__.species_iri))
 

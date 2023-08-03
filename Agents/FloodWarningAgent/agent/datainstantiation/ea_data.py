@@ -7,6 +7,7 @@
 # Environment Agency Real Time flood-monitoring API:
 # https://environment.data.gov.uk/flood-monitoring/doc/reference#flood-warnings
 
+import json
 import re
 import requests
 import time
@@ -16,9 +17,8 @@ from datetime import datetime as dt
 from agent.datamodel.data_mapping import *
 from agent.errorhandling.exceptions import APIException
 
-from py4jps import agentlogging
-
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 
@@ -31,26 +31,31 @@ WARNINGS = 'https://environment.data.gov.uk/flood-monitoring/id/floods'
 #   flood area polygon: stable long term reference identifiers (resolvable URI)
 
 
-def retrieve_current_warnings(county: str = None) -> list:
+def retrieve_current_warnings(county: str = None, mock_api: str = None) -> list:
     """
     Retrieve current flood warnings and alerts from the Environment Agency API
 
     Arguments:
         county (str): County name for which to retrieve flood warnings (e.g. 'Hampshire')
                       Retrieves ALL current warnings if no county given
+        mock_api (str): Path to local .json file to mock API response
 
     Returns:
         to_instantiate (list): List of dicts with relevant flood warnings/alerts data
     """
 
-    # Construct URL
-    if county:
-        url = WARNINGS + '?county={}'.format(county)
+    if mock_api:
+        # Load mocked API response from local .json file
+        with open(mock_api, 'r') as f:
+            data = json.load(f)
     else:
-        url = WARNINGS
-
-    # Retrieve dictionary of all current flood warnings
-    data = retrieve_json_from_api(url)
+        # Construct URL
+        if county:
+            url = WARNINGS + '?county={}'.format(county)
+        else:
+            url = WARNINGS
+        # Retrieve dictionary of all current flood warnings
+        data = retrieve_json_from_api(url)
 
     # Extract relevant information
     # API: The 'items' element contains an array even if the list only has one entry
@@ -79,7 +84,7 @@ def retrieve_current_warnings(county: str = None) -> list:
 
             # Add time of last change
             last_altered = [d['timeRaised'], d['timeMsgChanged'], d['timeSevChanged']]
-            last_altered = [dt.strptime(last, TIME_FORMAT) for last in last_altered]
+            last_altered = [dt.strptime(last, TIME_FORMAT) for last in last_altered if last]
             d['last_altered'] = max(last_altered)
             
             # Add to list of warnings to instantiate
@@ -132,7 +137,7 @@ def retrieve_flood_area_data(area_uri: str) -> dict:
         #   1) a rt:FloodArea and either
         #   2) a rt:FloodAlertArea or a rt:FloodWarningArea
         area['area_types'] = None if not data.get('type') else data['type']
-        area['area_types'] = [t.strip() for t in area['area_types']]
+        area['area_types'] = [t.strip() for t in area['area_types'] if t]
 
     return area
 
@@ -164,7 +169,10 @@ def retrieve_flood_area_polygon(polygon_uri: str) -> dict:
     if props:
         # Extract relevant information
         props_new = {}
-        props_new['name'] = None if not props.get('AREA') else props['AREA'].replace('\n', ' ').replace('\u202F', ' ')
+        # Try to retrieve most detailed name first
+        props_new['name'] = None if not props.get('TA_NAME') else props['TA_NAME'].replace('\n', ' ').replace('\u202F', ' ')
+        if not props_new.get('name'):
+            props_new['name'] = None if not props.get('AREA') else props['AREA'].replace('\n', ' ').replace('\u202F', ' ')
         props_new['description'] = None if not props.get('DESCRIP') else props['DESCRIP'].replace('\n', ' ').replace('\u202F', ' ')
         # Assign updated properties to polygon
         poly['features'][0]['properties'] = props_new
@@ -227,19 +235,21 @@ def assess_waterbody_type(waterbody: str) -> str:
                 return True
         return False
 
-    # Initialise list of all matching water bodies
-    matches = []    
-    for wb in list(WATERBODIES_API.keys()):
-        if _contains_word(wb, waterbody):
-            matches.append(WATERBODIES_API[wb])
-    # Get unique matches
-    matches = set(matches)
+    if waterbody:
+        # Initialise list of all matching water bodies
+        matches = []    
+        for wb in list(WATERBODIES_API.keys()):
+            if _contains_word(wb, waterbody):
+                matches.append(WATERBODIES_API[wb])
+        # Get unique matches
+        matches = set(matches)
 
-    # If description allows specific water body type to be identified, return it
-    if len(matches) == 1:
-        waterbody_type = matches.pop()
-    else:
-        # ... otherwise, return general 'waterbody'
-        waterbody_type = 'waterbody'
+        # If description allows specific water body type to be identified, return it ...
+        if len(matches) == 1:
+            waterbody_type = matches.pop()
 
-    return waterbody_type
+            return waterbody_type
+
+    # ... otherwise, return general 'waterbody'
+    # (also applies if no water body is provided)
+    return 'waterbody'

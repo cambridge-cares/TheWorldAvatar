@@ -13,9 +13,8 @@ from agent.errorhandling.exceptions import TSException
 from agent.utils.javagateway import jpsBaseLibGW
 from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
 
-from py4jps import agentlogging
-
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 

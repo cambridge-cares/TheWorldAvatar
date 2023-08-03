@@ -67,6 +67,7 @@ RUN pip install gunicorn
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
 COPY ./agent ./agent
+COPY ./resources/mock_api_responses ./mock_api_responses
 
 # Set the entrypoint
 # timeout set to 30 min to avoid exceptions for longer API/KG calls

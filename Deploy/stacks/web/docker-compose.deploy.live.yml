@@ -12,6 +12,11 @@ version: "3.8"
 
 services:
 
+  # DOME vis
+  dome-vis:
+    ports:
+      - 40088:80
+      
   # Flood Map
   flood-map:
     ports:

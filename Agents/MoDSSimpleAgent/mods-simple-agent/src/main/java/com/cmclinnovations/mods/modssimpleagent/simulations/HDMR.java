@@ -15,7 +15,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 class HDMR extends Simulation {
 
-    public HDMR(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData) throws IOException {
+    public HDMR(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData)
+            throws IOException {
         super(request, inputFile, modsBackend, inputMetaData);
     }
 

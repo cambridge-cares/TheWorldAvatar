@@ -11,12 +11,12 @@ import requests
 
 from agent.datamodel.iris import *
 from agent.errorhandling.exceptions import KGException
-from agent.kgutils.kgclient import KGClient
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 
-from py4jps import agentlogging
+from pyderivationagent import PySparqlClient
 
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 
@@ -76,6 +76,9 @@ def instantiate_all_units():
     #       claiming to use utf-8 encoding while actually using iso-8859-1
     #       --> units displayed wrongly in GUI but corrected when retrieved in code
     # Details: https://github.com/blazegraph/database/issues/224
+    # NOTE Update: Encoding issue likely to happen somewhere along the py4jps/py4j 
+    #              communication chain as entire ontology of units of measure rdf file
+    #              can be uploaded with stack-data-uploader without similar issues
 
     #TODO: Query potentially to be extended
     query = f"""
@@ -100,8 +103,9 @@ def upload_ontology(tbox_url=TBOX_URL, abox_url=ABOX_URL,
         abox_url - URL to ABox
     """
 
-    # Create KGclient to upload .owl files
-    kg_client = KGClient(query_endpoint, update_endpoint)
+    # Initialise KG Client with PySparqlClient instance to upload .owl files
+    kg_client = PySparqlClient(query_endpoint=query_endpoint,
+                               update_endpoint=update_endpoint)
 
     # Verify that TBox has not been initialized
     try:
@@ -128,11 +132,9 @@ def upload_ontology(tbox_url=TBOX_URL, abox_url=ABOX_URL,
                 logger.info(f'Writing temporary {i} .owl file ...')
                 with open(temp_fp, 'w') as f:
                     f.write(content.text)
-                # Create Java file
-                temp_f = kg_client.jpsBaseLib_view.java.io.File(temp_fp)
                 # Upload .owl file to KG
                 logger.info(f'Uploading {i} .owl file to KG ...')
-                kg_client.kg_client.uploadFile(temp_f)
+                kg_client.uploadOntology(temp_fp)
                 os.remove(temp_fp)
             except Exception as ex:
                 logger.error("Unable to initialise knowledge graph with TBox and ABox.")

@@ -162,7 +162,7 @@ def test_monitor_derivations(
         assert sparql_client.check_if_triple_exist(None, dm.RDF_TYPE, dm.OM_AMOUNT_MONEY)
 
         # Verify correct number of triples (incl. timestamp & agent triples)
-        triples += cf.MARKET_VALUE_TRIPLES
+        triples += cf.MARKET_VALUE_COMPUTABLE
         assert sparql_client.getAmountOfTriples() == triples    
 
         # Query the output of the derivation instance
@@ -194,6 +194,145 @@ def test_monitor_derivations(
                 assert j in derivation_input_set_copy
                 derivation_input_set_copy.remove(j)
         assert len(derivation_input_set_copy) == 0
+
+    print("All check passed.")
+
+    # Shutdown the scheduler to clean up if it's local agent test
+    if not DOCKERISED_TEST:
+        agent.scheduler.shutdown()
+
+
+@pytest.mark.parametrize(
+    "derivation_input_set, expected_estimate",
+    [
+        (cf.DERIVATION_INPUTS_3, cf.MARKET_VALUE_2),
+    ],
+)
+def test_sequence_of_derivations(
+    initialise_clients, create_example_agent, derivation_input_set, expected_estimate    
+):
+    """
+        Test if derivation agent performs derivation update as expected in case
+        of a sequence of (un-)successful derivations, i.e. successful property 
+        estimation followed by unsuccessful followed by successful assessment
+    """
+
+    # Get required clients from fixtures
+    sparql_client, derivation_client, rdb_url = initialise_clients
+
+    # Initialise all triples in test_triples + initialise time series in RDB
+    cf.initialise_triples(sparql_client)
+    cf.initialise_database(rdb_url)
+    # Initialises PropertyPriceIndex time series and uploads test data to RDB
+    cf.initialise_timeseries(kgclient=sparql_client, rdb_url=rdb_url, 
+                             rdb_user=cf.DB_USER, rdb_password=cf.DB_PASSWORD,
+                             dataIRI=cf.PRICE_INDEX_INSTANCE_IRI,
+                             dates=cf.DATES, values=cf.VALUES)
+
+    # -------------------------------------------------------------------------
+    # Retrieve average square metre price measure instance and value
+    measure, value = cf.get_avgprice_and_measure(sparql_client, cf.DERIVATION_INPUTS_3)
+    triple = f'<{measure}> <{dm.OM_NUM_VALUE}> \"{value}\"^^<{dm.XSD_FLOAT}>'
+
+    # Define SPARQL updates to amend KG between subsequent derivation runs 
+    # and expected behaviour, i.e.
+    # [ SPARQL update, affected triples (+/-),
+    #   success of average calculation (boolean), 
+    #   expected change in instantiated triples (compared to previous run)]
+    runs = {'run1': [f'DELETE DATA {{ {triple} }}', -1,
+                     True, cf.MARKET_VALUE_COMPUTABLE],
+            'run2': [f'INSERT DATA {{ {triple} }}', +1,
+                     False, cf.MARKET_VALUE_NONCOMPUTABLE - cf.MARKET_VALUE_COMPUTABLE],
+            'run3': ['', 0, True, cf.MARKET_VALUE_COMPUTABLE - cf.MARKET_VALUE_NONCOMPUTABLE] 
+           }
+    # -------------------------------------------------------------------------
+
+
+    # Verify correct number of triples (not marked up with timestamp yet)
+    triples = (cf.TBOX_TRIPLES + cf.ABOX_TRIPLES + cf.TS_TRIPLES)
+    assert sparql_client.getAmountOfTriples() == triples
+
+    # Create agent instance and register agent in KG
+    agent = create_example_agent()
+
+    # Assert that there's currently no instance having rdf:type of the output signature in the KG
+    assert not sparql_client.check_if_triple_exist(None, dm.RDF_TYPE, dm.OM_AMOUNT_MONEY)
+
+    # Create derivation instance for new information
+    derivation_iri = derivation_client.createAsyncDerivationForNewInfo(agent.agentIRI, derivation_input_set)
+    print(f"Initialised successfully, created asynchronous derivation instance: {derivation_iri}")
+    
+    # Expected number of triples after derivation registration
+    triples += cf.TIME_TRIPLES_PER_PURE_INPUT * len(derivation_input_set) # timestamps for pure inputs
+    triples += cf.TIME_TRIPLES_PER_PURE_INPUT                             # timestamps for derivation instance
+    triples += len(derivation_input_set) + 1    # number of inputs + derivation instance type
+    triples += cf.AGENT_SERVICE_TRIPLES
+    triples += cf.DERIV_STATUS_TRIPLES
+    triples += cf.DERIV_INPUT_TRIPLES
+    triples += cf.DERIV_OUTPUT_TRIPLES
+
+    # Verify correct number of triples (incl. timestamp & agent triples)
+    assert sparql_client.getAmountOfTriples() == triples    
+
+    if not DOCKERISED_TEST:
+        # Start the scheduler to monitor derivations if it's local agent test
+        agent._start_monitoring_derivations()
+
+
+    # Initialise timestamp of the derivation instance
+    currentTimestamp_derivation = 0
+    lastUpdateTimestamp_derivation = 0
+
+    for r in runs:
+        # Query timestamp of the derivation for every 10 seconds until it's updated
+        while currentTimestamp_derivation <= lastUpdateTimestamp_derivation:
+            time.sleep(10)
+            currentTimestamp_derivation = cf.get_timestamp(derivation_iri, sparql_client)
+        lastUpdateTimestamp_derivation = currentTimestamp_derivation
+
+        # Assert expected number of triples
+        triples += runs[r][3]
+        assert sparql_client.getAmountOfTriples() == triples   
+
+        # Query the output of the derivation instance
+        derivation_outputs = cf.get_derivation_outputs(derivation_iri, sparql_client)
+        print(f"Generated derivation outputs that belongsTo the derivation instance: {', '.join(derivation_outputs)}")
+        
+        # Verify that there are 2 derivation outputs (i.e. AmountOfMoney and Measure IRIs)
+        assert len(derivation_outputs) == 2
+        assert dm.OM_AMOUNT_MONEY in derivation_outputs
+        assert len(derivation_outputs[dm.OM_AMOUNT_MONEY]) == 1
+        assert dm.OM_MEASURE in derivation_outputs
+        assert len(derivation_outputs[dm.OM_MEASURE]) == 1
+        
+        # Verify the values of the derivation output
+        market_value_iri = derivation_outputs[dm.OM_AMOUNT_MONEY][0]
+        inputs, market_value, _ = cf.get_marketvalue_details(sparql_client, market_value_iri)
+        # Verify market value
+        if runs[r][2]:
+        # Verify market value
+            assert len(market_value) == 1
+            assert pytest.approx(market_value[0], rel=1e-5) == expected_estimate
+        else:
+            assert market_value == []
+
+        # Verify inputs (i.e. derived from)
+        # Create deeepcopy to avoid modifying original cf.DERIVATION_INPUTS_... between tests
+        derivation_input_set_copy = copy.deepcopy(derivation_input_set)
+        for i in inputs:
+            for j in inputs[i]:
+                assert j in derivation_input_set_copy
+                derivation_input_set_copy.remove(j)
+        assert len(derivation_input_set_copy) == 0
+
+        # Update KG with SPARQL update
+        sparql_client.performUpdate(runs[r][0])
+        triples += runs[r][1]
+        # Request for derivation update 
+        # (after updating timestamp of pure input to trigger new derivation)
+        any_pure_input = [i for inp in inputs.values() for i in inp][0]
+        derivation_client.updateTimestamp(any_pure_input)
+        derivation_client.unifiedUpdateDerivation(derivation_iri)
 
     print("All check passed.")
 

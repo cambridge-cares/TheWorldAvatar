@@ -74,10 +74,10 @@ public class ESPHomeAPITest {
     @Test
     public void ESPHomeUpdateAPIConnectorConstructorTest() throws NoSuchFieldException, IllegalAccessException, IOException {
         // One connector constructed using path URL, domain, domain ID and threshold value directly
-        ESPHomeAPI connector = new ESPHomeAPI("path_url", "domain", "ID", 25);
+        ESPHomeAPI connector = new ESPHomeAPI("path_url", "domain", "ID");
         // One connector constructed using a properties file
         String propertiesFile = Paths.get(folder.getRoot().toString(), "api.properties").toString();
-        writePropertyFile(propertiesFile, Arrays.asList("path.url=path_url", "esphome.domain=domain", "domain.ID=ID", "esphome.threshold=25"));
+        writePropertyFile(propertiesFile, Arrays.asList("path.url=path_url", "esphome.domain=domain", "domain.ID=ID"));
         ESPHomeAPI connectorFile = new ESPHomeAPI(propertiesFile);
 
         Field pathUrlField = ESPHomeAPI.class.getDeclaredField("path_url");
@@ -94,11 +94,6 @@ public class ESPHomeAPITest {
         IDField.setAccessible(true);
         Assert.assertEquals("ID", IDField.get(connector));
         Assert.assertEquals("ID", IDField.get(connectorFile));
-        
-        Field esphomeThresholdField = ESPHomeAPI.class.getDeclaredField("esphomeThreshold");
-        esphomeThresholdField.setAccessible(true);
-        Assert.assertEquals(25.0, esphomeThresholdField.get(connector));
-        Assert.assertEquals(25.0, esphomeThresholdField.get(connectorFile));
     }
 
     @Test
@@ -110,7 +105,6 @@ public class ESPHomeAPITest {
         String noPathURL = "Properties file is missing \"path.url=<path_url>\"";
         String noDomain = "Properties file is missing \"esphome.domain=<domain>\"";
         String noID = "Properties file is missing \"domain.ID=<ID>\"";
-        String noThreshold = "Properties file is missing \"esphome.threshold=<esphome_threshold>\"";
 
         // Set private method to be accessible
         Method loadESPHomeConfigs = ESPHomeAPI.class.getDeclaredMethod("loadESPHomeConfigs", String.class);
@@ -126,7 +120,7 @@ public class ESPHomeAPITest {
         }
 
         // Test for missing URL 
-        writePropertyFile(filepath, Arrays.asList("esphome.domain=domain", "domain.ID=ID", "esphome.threshold=25"));
+        writePropertyFile(filepath, Arrays.asList("esphome.domain=domain", "domain.ID=ID"));
         // Try loading RDB configs
         try {
         	loadESPHomeConfigs.invoke(testAPI, filepath);
@@ -136,7 +130,7 @@ public class ESPHomeAPITest {
             Assert.assertEquals(noPathURL, e.getCause().getMessage());
         }
         //Test for missing domain
-        writePropertyFile(filepath, Arrays.asList("path.url=path_url", "domain.ID=ID", "esphome.threshold=25"));
+        writePropertyFile(filepath, Arrays.asList("path.url=path_url", "domain.ID=ID"));
         
         try {
         	loadESPHomeConfigs.invoke(testAPI, filepath);
@@ -146,7 +140,7 @@ public class ESPHomeAPITest {
             Assert.assertEquals(noDomain, e.getCause().getMessage());
         }
         //Test for missing ID
-        writePropertyFile(filepath, Arrays.asList("path.url=path_url", "esphome.domain=domain", "esphome.threshold=25"));
+        writePropertyFile(filepath, Arrays.asList("path.url=path_url", "esphome.domain=domain"));
       
         try {
         	loadESPHomeConfigs.invoke(testAPI, filepath);
@@ -155,20 +149,9 @@ public class ESPHomeAPITest {
             Assert.assertEquals(IOException.class, e.getCause().getClass());
             Assert.assertEquals(noID, e.getCause().getMessage());
         }
-        
-        //Test for missing threshold
-        writePropertyFile(filepath, Arrays.asList("path.url=path_url", "esphome.domain=domain", "domain.ID=ID"));
-      
-        try {
-        	loadESPHomeConfigs.invoke(testAPI, filepath);
-            Assert.fail();
-        } catch (InvocationTargetException e) {
-            Assert.assertEquals(IOException.class, e.getCause().getClass());
-            Assert.assertEquals(noThreshold, e.getCause().getMessage());
-        }
 
-        // Test for proper path URL, domain, domain ID and threshold
-        writePropertyFile(filepath, Arrays.asList("path.url=path_url", "esphome.domain=domain", "domain.ID=ID", "esphome.threshold=25"));
+        // Test for proper path URL, domain, domain ID
+        writePropertyFile(filepath, Arrays.asList("path.url=path_url", "esphome.domain=domain", "domain.ID=ID"));
        
         try {
         	loadESPHomeConfigs.invoke(testAPI, filepath);
@@ -189,12 +172,6 @@ public class ESPHomeAPITest {
         IDField.setAccessible(true);
         // Correct value depends on what is set in the @Before initialization method
         Assert.assertEquals("ID", IDField.get(testAPI));
-        
-        Field thresholdField = ESPHomeAPI.class.getDeclaredField("esphomeThreshold");
-        thresholdField.setAccessible(true);
-        // Correct value depends on what is set in the @Before initialization method
-        Assert.assertEquals(25.0, thresholdField.get(testAPI));
-
     }
     
     @Test
@@ -258,23 +235,23 @@ public class ESPHomeAPITest {
     	double belowThreshold = 24.4;
         
         //Status == ON && exceedThreshold > threshold 
-        JSONObject message = testAPI.esphomeSwitchControl(exceedThreshold, "ON");
+        JSONObject message = testAPI.esphomeSwitchControl(exceedThreshold, "ON", 25);
         	Assert.assertEquals(message.get("message"),"The component is already in the ON state.");	
  
        //Status == OFF && exceedThreshold > threshold
         esphomeAPIMock.stubFor(post(urlPathEqualTo("/" + "test_domain/test_ID/turn_on"))
                 .willReturn(ok()));
-        JSONObject message1 = testAPI.esphomeSwitchControl(exceedThreshold, "OFF");
+        JSONObject message1 = testAPI.esphomeSwitchControl(exceedThreshold, "OFF", 25);
         Assert.assertEquals(message1.get("message"),"A POST request has been sent to turn on the device or component.");
        
        //Status == OFF && belowThreshold < threshold
-        JSONObject message2 = testAPI.esphomeSwitchControl(belowThreshold, "OFF");
+        JSONObject message2 = testAPI.esphomeSwitchControl(belowThreshold, "OFF", 25);
         Assert.assertEquals(message2.get("message"),"The component is already in the OFF state.");
       
       //Status == ON && belowThreshold < threshold
         esphomeAPIMock.stubFor(post(urlPathEqualTo("/" + "test_domain/test_ID/turn_off"))
                 .willReturn(ok()));
-        JSONObject message3 = testAPI.esphomeSwitchControl(belowThreshold, "ON");
+        JSONObject message3 = testAPI.esphomeSwitchControl(belowThreshold, "ON", 25);
         Assert.assertEquals(message3.get("message"),"A POST request has been sent to turn off the device or component.");    
 
     }

@@ -41,6 +41,7 @@ main() {
     check_dev_version_number
     install_packages_for_building
     bump_chemistry_and_robots_version_number
+    build_jps_base_lib
     install_chemistry_and_robots_and_test
     build_chemistry_and_robots_for_release
     release_to_pypi test-pypi
@@ -91,6 +92,19 @@ bump_chemistry_and_robots_version_number() {
     STEP_NR=$((STEP_NR+1))
 }
 
+build_jps_base_lib() {
+    echo "-------------------------------------------------------------------------"
+    echo "$STEP_NR. Building jps-base-lib"
+    echo "-------------------------------------------------------------------------"
+    echo ; echo
+
+    cd $SPATH/../../../JPS_BASE_LIB
+    mvn clean install -DskipTests
+    cd $SPATH/
+
+    STEP_NR=$((STEP_NR+1))
+}
+
 clean_chemistry_and_robots_repository() {
     rm -rf $SPATH/build $SPATH/dist $SPATH/.eggs $SPATH/*egg-info $SPATH/*venv
 }
@@ -100,6 +114,7 @@ install_chemistry_and_robots() {
     echo "Installing $PROJECT_NAME"
     echo "-------------------------------"
     clean_chemistry_and_robots_repository
+    package_ontology_tbox
     sleep .5
     venv_name_local=$1
     venv_dir_local=$2
@@ -169,6 +184,38 @@ build_chemistry_and_robots_for_release() {
         exit -1
     fi
     STEP_NR=$((STEP_NR+1))
+}
+
+generate_ontology_tbox_owl() {
+    echo "-------------------------------------------------------------------------"
+    echo "Generating the ontology TBox OWL file for $2"
+    echo "-------------------------------------------------------------------------"
+    echo
+    echo
+    echo "Copying the ontology TBox CSV $2"
+    cp $SPATH/../../../JPS_Ontology/ontology/$1 $SPATH/chemistry_and_robots/resources/ontology/$2
+    echo "Generating the ontology TBox OWL from $2"
+    java -cp $SPATH/../../../JPS_BASE_LIB/target/jps-base-lib.jar uk.ac.cam.cares.jps.base.converter.TBoxGeneration $SPATH/chemistry_and_robots/resources/ontology/$2
+}
+
+package_ontology_tbox() {
+    echo "-------------------------------------------------------------------------"
+    echo "Packaging the ontology TBox into $PROJECT_NAME"
+    echo "-------------------------------------------------------------------------"
+    echo
+    echo
+    echo "Removing the old ontology TBox OWL files"
+    rm -rf $SPATH/chemistry_and_robots/resources/ontology/*.csv
+    rm -rf $SPATH/chemistry_and_robots/resources/ontology/*.owl
+    generate_ontology_tbox_owl ontodoe/OntoDoE.csv OntoDoE.csv
+    generate_ontology_tbox_owl ontoreaction/OntoReaction.csv OntoReaction.csv
+    generate_ontology_tbox_owl ontolab/OntoLab.csv OntoLab.csv
+    generate_ontology_tbox_owl ontohplc/OntoHPLC.csv OntoHPLC.csv
+    generate_ontology_tbox_owl ontovapourtec/OntoVapourtec.csv OntoVapourtec.csv
+    generate_ontology_tbox_owl ontogoal/OntoGoal.csv OntoGoal.csv
+    echo "Removing the copied ontology TBox CSV files"
+    rm -rf $SPATH/chemistry_and_robots/resources/ontology/*.csv
+    cd $SPATH/
 }
 
 release_to_pypi() {
@@ -254,6 +301,7 @@ dev_release() {
     dev_release_check_dev_version_number
     install_packages_for_building
     dev_release_bump_chemistry_and_robots_version_number
+    build_jps_base_lib
     dev_release_install_chemistry_and_robots_and_test
     build_chemistry_and_robots_for_release
     release_to_pypi test-pypi

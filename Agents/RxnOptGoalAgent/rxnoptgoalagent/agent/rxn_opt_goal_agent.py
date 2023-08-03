@@ -226,11 +226,10 @@ class RxnOptGoalAgent(ABC):
 
         # Varify the parameters
         self.logger.info(f"Received a goal request with parameters: {parameters}")
+        # TODO [next iteration] provide a more scalable way to deal with the multiple goals
         all_parameters = ["chem_rxn", "cycleAllowance", "deadline",
                           "first_goal_clz", "first_goal_desires", "first_goal_num_val", "first_goal_unit",
-                          "rxn_opt_goal_plan",
-                          "second_goal_clz", "second_goal_desires", "second_goal_num_val", "second_goal_unit",
-                          "labs"]
+                          "rxn_opt_goal_plan", "labs"]
         if not all([p in parameters and bool(parameters[p]) for p in all_parameters]):
             return f"""The request parameters are incomplete, required parameters: {all_parameters}.
                     Received parameters: {parameters}.
@@ -260,26 +259,29 @@ class RxnOptGoalAgent(ABC):
             desiresGreaterThan=first_goal_desires_quantity if first_goal_desires == ONTOGOAL_DESIRESGREATERTHAN else None,
             desiresLessThan=first_goal_desires_quantity if first_goal_desires == ONTOGOAL_DESIRESLESSTHAN else None,
         )
+        goal_list = [first_goal]
 
-        second_goal_desires = parameters['second_goal_desires']
-        second_goal_desires_quantity = OM_Quantity(
-            instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-            namespace_for_init=self.derivation_instance_base_url,
-            clz=parameters['second_goal_clz'],
-            hasValue=OM_Measure(
+        if parameters.get('second_goal_desires') and parameters.get('second_goal_clz') and parameters.get('second_goal_unit') and parameters.get('second_goal_num_val'):
+            second_goal_desires = parameters['second_goal_desires']
+            second_goal_desires_quantity = OM_Quantity(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 namespace_for_init=self.derivation_instance_base_url,
-                hasUnit=parameters['second_goal_unit'],
-                hasNumericalValue=parameters['second_goal_num_val']
+                clz=parameters['second_goal_clz'],
+                hasValue=OM_Measure(
+                    instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                    namespace_for_init=self.derivation_instance_base_url,
+                    hasUnit=parameters['second_goal_unit'],
+                    hasNumericalValue=parameters['second_goal_num_val']
+                )
             )
-        )
-        second_goal = Goal(
-            instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-            namespace_for_init=self.derivation_instance_base_url,
-            hasPlan=rxn_opt_goal_plan,
-            desiresGreaterThan=second_goal_desires_quantity if second_goal_desires == ONTOGOAL_DESIRESGREATERTHAN else None,
-            desiresLessThan=second_goal_desires_quantity if second_goal_desires == ONTOGOAL_DESIRESLESSTHAN else None,
-        )
+            second_goal = Goal(
+                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                namespace_for_init=self.derivation_instance_base_url,
+                hasPlan=rxn_opt_goal_plan,
+                desiresGreaterThan=second_goal_desires_quantity if second_goal_desires == ONTOGOAL_DESIRESGREATERTHAN else None,
+                desiresLessThan=second_goal_desires_quantity if second_goal_desires == ONTOGOAL_DESIRESLESSTHAN else None,
+            )
+            goal_list.append(second_goal)
 
         # Get the list of available labs
         # NOTE The remaining cycleAllowance will be deducted by the number of labs
@@ -294,7 +296,6 @@ class RxnOptGoalAgent(ABC):
         )
 
         # Now we need to construct a GoalSet object with above information
-        goal_list = [first_goal, second_goal]
         goal_set_instance = GoalSet(
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
             namespace_for_init=self.derivation_instance_base_url,
@@ -346,7 +347,7 @@ class RxnOptGoalAgent(ABC):
                     format_current_time(),
                     f"Iterations to pursue GoalSet {goal_set_instance.instance_iri} is scheduled.",
                     f"Goal Iteration will be monitored every {self.goal_monitor_time_interval} seconds.",
-                    f"The reaction to be optimised is {chem_rxn_iri}."
+                    f"The reaction to be optimised is {chem_rxn_iri}.",
                     f"The laboratories taking part of this optimisation campaign are {available_labs}."
                 ]
             )
@@ -408,22 +409,22 @@ class RxnOptGoalAgent(ABC):
                     # the cycleAllowance will be updated depending on how many ROGI derivation is to be updated
                     # example SPARQL update with sub query:
                     # DELETE {
-                    # <http://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#cycleAllowance> ?cycle_allowance.
+                    # <https://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://www.theworldavatar.com/kg/ontogoal/cycleAllowance> ?cycle_allowance.
                     # }
                     # INSERT {
-                    # <http://a_rogi_derivation_up_to_date> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#isDerivedFrom> ?rxn_exp.
-                    # <http://another_rogi_derivation_up_to_date> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#isDerivedFrom> ?rxn_exp.
-                    # <http://another_rogi_derivation_STILL_IN_PROGRESS> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#isDerivedFrom> ?rxn_exp.
-                    # <http://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#cycleAllowance> ?cycle_allowance_update.
+                    # <http://a_rogi_derivation_up_to_date> <https://www.theworldavatar.com/kg/ontoderivation/isDerivedFrom> ?rxn_exp.
+                    # <http://another_rogi_derivation_up_to_date> <https://www.theworldavatar.com/kg/ontoderivation/isDerivedFrom> ?rxn_exp.
+                    # <http://another_rogi_derivation_STILL_IN_PROGRESS> <https://www.theworldavatar.com/kg/ontoderivation/isDerivedFrom> ?rxn_exp.
+                    # <https://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://www.theworldavatar.com/kg/ontogoal/cycleAllowance> ?cycle_allowance_update.
                     # }
                     # WHERE {
                     # SELECT DISTINCT ?rxn_exp ?cycle_allowance ?cycle_allowance_update
                     # WHERE {
                     #     VALUES ?rogi_derivation { <http://a_rogi_derivation_up_to_date> <http://another_rogi_derivation_up_to_date> }
-                    #     ?result <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#belongsTo> ?rogi_derivation;
-                    #             <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#refersTo> ?pi.
-                    #     ?pi ^<https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasPerformanceIndicator> ?rxn_exp.
-                    #     <http://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#cycleAllowance> ?cycle_allowance.
+                    #     ?result <https://www.theworldavatar.com/kg/ontoderivation/belongsTo> ?rogi_derivation;
+                    #             <https://www.theworldavatar.com/kg/ontogoal/refersTo> ?pi.
+                    #     ?pi ^<https://www.theworldavatar.com/kg/ontoreaction/hasPerformanceIndicator> ?rxn_exp.
+                    #     <https://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://www.theworldavatar.com/kg/ontogoal/cycleAllowance> ?cycle_allowance.
                     #     BIND (?cycle_allowance -2 AS ?cycle_allowance_update)
                     # }
                     # }
@@ -466,6 +467,8 @@ class RxnOptGoalAgent(ABC):
                                 f"Restriction (cycleAllowance) is updated to {goal_set_instance.hasRestriction.cycleAllowance - len(rogi_derivation_lst_up_to_date)}.",
                                 f"Restriction (deadline) is {datetime.fromtimestamp(goal_set_instance.hasRestriction.deadline)}.",
                                 f"Current best results are:",
+                                f"(NOTE: If the yield is slightly above 100%, it is most likely due to rounding errors, so don't worry.",
+                                f"       However, please report to the developers if it is significantly above 100%, which is not expected.)",
                             ] + [
                                 f"{_goal_str} [{_goal.clz}] = {_goal.hasValue.hasNumericalValue} {_goal.hasValue.hasUnit}" for _goal_str, _goal in goal_set_instance.get_best_results().items() if bool(goal_set_instance.get_best_results())
                             ]
@@ -498,7 +501,7 @@ class RxnOptGoalAgent(ABC):
             _goal_set_iri = self.current_active_goal_set
         else:
             return f"""No GoalSet IRI is provided. Nor is any GoalSet currently running.
-                       Please provide a GoalSet IRI in the URL, e.g. <br><br> {request.base_url}?goal_set=http://www.theworldavatar.com/GoalSet/GoalSet_1"""
+                       Please provide a GoalSet IRI in the URL, e.g. <br><br> {request.base_url}?goal_set=https://www.theworldavatar.com/GoalSet/GoalSet_1"""
 
         # get the goal set instance
         goal_set_instance = self.sparql_client.get_goal_set_instance(_goal_set_iri)
@@ -540,8 +543,8 @@ class RxnOptGoalAgent(ABC):
         fig, ax = plt.subplots(figsize=(10, 10))
         _legend_lst = []
         for key, value in _obj_dct.items():
-            ax.plot(_df['Goal Iteration (-)'], _df[key].apply(lambda x: unit_conv.unit_conversion_return_value(_result_val_dct[x]['value'], _result_val_dct[x]['unit'], UNIFIED_UNIT_FOR_PERFORMANCE_INDICATOR_DICT[value])), 'o')
-            _legend_lst.append(key+f' ({getShortName(UNIFIED_UNIT_FOR_PERFORMANCE_INDICATOR_DICT[value])})')
+            ax.plot(_df['Goal Iteration (-)'], _df[key].apply(lambda x: unit_conv.unit_conversion_return_value(_result_val_dct[x]['value'], _result_val_dct[x]['unit'], DISPLAY_UNIT_FOR_PERFORMANCE_INDICATOR_DICT[value])), 'o')
+            _legend_lst.append(key+f' ({getShortName(DISPLAY_UNIT_FOR_PERFORMANCE_INDICATOR_DICT[value])})')
         ax.set_xlabel('Goal Iteration (-)')
         ax.legend(_legend_lst)
         canvas = FigureCanvas(fig)

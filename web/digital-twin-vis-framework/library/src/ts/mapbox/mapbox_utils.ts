@@ -21,7 +21,7 @@ class MapboxUtils {
             if(!layer["metadata"]) {
                 return false;
             } else {
-                if(!layer["metadata"]["attribution"] || layer["metadata"]["attribution"] !== "CMCL Innovations") {
+                if(!layer["metadata"]["attribution"] || layer["metadata"]["attribution"] !== "CMCL") {
                     return false;
                 }
 

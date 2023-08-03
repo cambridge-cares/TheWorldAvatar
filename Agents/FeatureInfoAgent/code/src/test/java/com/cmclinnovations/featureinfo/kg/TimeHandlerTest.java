@@ -130,8 +130,7 @@ public class TimeHandlerTest {
         try {
             // Create mock KG client
             RemoteStoreClient rsClient = mock(RemoteStoreClient.class);
-            when(rsClient.executeFederatedQuery(
-                ArgumentMatchers.anyList(),
+            when(rsClient.executeQuery(
                 ArgumentMatchers.anyString()))
                 .thenReturn(
                     new org.json.JSONArray("[{\"Measurement\":\"http://fake-measurement-iri.com\",\"Name\":\"MeasurementOne\",\"Unit\":\"m/s\",\"PropertyOne\":\"ValueOne\",\"PropertyTwo\":\"ValueTwo\"}]")
@@ -222,8 +221,7 @@ public class TimeHandlerTest {
         try {
             // Create mock KG client
             RemoteStoreClient rsClient = mock(RemoteStoreClient.class);
-            when(rsClient.executeFederatedQuery(
-                ArgumentMatchers.anyList(),
+            when(rsClient.executeQuery(
                 ArgumentMatchers.anyString()))
                 .thenReturn(
                     new org.json.JSONArray("""

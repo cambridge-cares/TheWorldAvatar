@@ -174,13 +174,20 @@ public class ClassHandler {
             query = query.replaceAll(Pattern.quote("[ONTOP]"), "<" + ontopEndpoint + ">");
         }
 
-        LOGGER.debug("Running class determination query...");
-        LOGGER.debug(query);
+        // Run the class determination query
+        JSONArray jsonResult = null;
 
-        // Run the federated query
-        JSONArray jsonResult = rsClient.executeFederatedQuery(this.getEndpointURLs(), query);
+        if(this.getEndpointURLs().size() == 1) {
+            LOGGER.debug("Running non-federated class determination query.");
+            rsClient.setQueryEndpoint(this.getEndpointURLs().get(0));
+            jsonResult = rsClient.executeQuery(query);
 
-        LOGGER.debug("...result of query was:");
+        } else {
+            LOGGER.debug("Running federated class determination query.");
+            jsonResult = rsClient.executeFederatedQuery(this.getEndpointURLs(), query);
+        }
+
+        LOGGER.debug("Result of query was:");
         LOGGER.debug((jsonResult != null) ? jsonResult.toString(2) : "null");
 
         if(jsonResult != null) {

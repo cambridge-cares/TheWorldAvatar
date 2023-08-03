@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   emissions-agent:
-    image: docker.cmclinnovations.com/emissions-agent:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/emissions-agent:1.2.2
     deploy:
       mode: replicated
       replicas: 1
@@ -10,7 +10,7 @@ services:
         condition: none
     environment:
       - STACK_NAME=${STACK_NAME}
-      - PYTHON_SERVICE_URL=http://${STACK_NAME}_python-service:5000
+      - PYTHON_SERVICE_URL=http://${STACK_NAME}-python-service:5000
       - DATABASE=postgres
     configs:
       - postgis
@@ -26,6 +26,6 @@ services:
 
 volumes:
   logs:
-    name: "logs"
+    name: "${STACK_NAME}_logs"
   misc:
     name: "misc"

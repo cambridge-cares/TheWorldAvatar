@@ -2,11 +2,11 @@ version: "3.8"
 
 services:
   floodwarnings_agent:
-    image: ghcr.io/cambridge-cares/floodwarnings_agent:1.0.0
+    image: ghcr.io/cambridge-cares/floodwarnings_agent:1.1.0
     environment:
       - STACK_NAME=${STACK_NAME}
       # Target Blazegraph namespace
-      - NAMESPACE=floodwarnings
+      - NAMESPACE=kingslynn
       # Target PostGIS database name
       # (default name "postgres" required for Ontop to work)
       - DATABASE=postgres
@@ -14,8 +14,13 @@ services:
       - LAYERNAME=floodwarnings
       - GEOSERVER_WORKSPACE=floodwarnings
       - ONTOP_FILE=/app/resources/ontop.obda
+      # PostGIS table with building footprints
+      - BUILDINGS_TABLE=buildings
+      # Derivation Agent configuration
+      # (value needs to match counterpart specified in the docker-compose.yml file of FloodAssessmentAgent)
+      - FLOOD_ASSESSMENT_AGENT_IRI=https://www.theworldavatar.com/resource/agents/Service__KL_FloodAssessment/Service
     ports:
-      - "5007:5000"
+      - "5009:5000"
     volumes:
       - logs:/root/.jps
     configs:

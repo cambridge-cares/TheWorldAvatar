@@ -1,9 +1,11 @@
 [Peak Table(PDA-Ch1)]
 # of Peaks	4
 Peak#	R.Time	Area
-1	4.51	3000
+1	4.30	3000
 2	5.11	15000
-3	6.21	120
+3	6.61	120
 4	6.41	20
+5	13.17	120
+6	13.36	200
 
 [Compound Results(AD2)]

@@ -19,7 +19,6 @@ COPY ./requirements.txt /app/.
 # Install the required Python libraries
 RUN python -m pip install -r requirements.txt
 
-COPY ./episode /app/episode/
 COPY ./speedLoadMap /app/speedLoadMap
 COPY ./aermod /app/aermod
 COPY ./app_entry_point.sh /app/.

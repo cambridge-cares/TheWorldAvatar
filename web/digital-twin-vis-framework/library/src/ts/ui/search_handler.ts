@@ -45,6 +45,9 @@ abstract class SearchHandler {
 
             // Temporarily turn of location clustering
             this.turnOffClustering();
+
+            // Cache any existing filters
+            this.cacheExisting();
         }
 
         let sidePanel = document.getElementById("sidePanel");
@@ -229,23 +232,25 @@ abstract class SearchHandler {
      * before calling implementation specific methods.
      */
     private startSearch() {
-        switch(this.property["type"]) {
+        let type = this.property["type"];
+        
+        switch(type) {
             case "string":
             case "number":  {
                 let finderField = document.getElementById("finderField") as HTMLInputElement;
                 if(finderField == null) return;
         
                 let searchTerm = finderField.value;
-                this.runSearch(searchTerm);
+                this.runSearch(searchTerm, type);
             }
             break;
        
             case "boolean": {
                 let rangeSelect = document.getElementById("finderRangeSelect") as HTMLInputElement;
                 if(rangeSelect.value === "true") {
-                    this.runSearch(true);
+                    this.runSearch(true, type);
                 } else {
-                    this.runSearch(false);
+                    this.runSearch(false, type);
                 }
             }
             break;
@@ -253,11 +258,17 @@ abstract class SearchHandler {
     }
 
     /**
+     * Cache any existing filters when a search starts.
+     */
+    public abstract cacheExisting() ;
+
+    /**
      * Execute the search functionality with the mapping library.
      * 
      * @param searchTerm string, number, or boolean
+     * @param type serach term type
      */
-    public abstract runSearch(searchTerm: string | number | boolean);
+    public abstract runSearch(searchTerm, type);
 
     /**
      * Cancel the current search.

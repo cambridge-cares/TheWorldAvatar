@@ -35,7 +35,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 /**
  * a separate mapping is required for each SRID, currently only supports 4326
  */
-@WebServlet(urlPatterns = {"/InitialiseSimulation"})
+@WebServlet(urlPatterns = { "/InitialiseSimulation" })
 public class InitialiseSimulation extends HttpServlet {
     private static final Random RAND = new Random();
     private static final Logger LOGGER = LogManager.getLogger(InitialiseSimulation.class);
@@ -45,18 +45,22 @@ public class InitialiseSimulation extends HttpServlet {
     @Override
     public void init() throws ServletException {
         EndpointConfig endpointConfig = Config.ENDPOINT_CONFIG;
-        dispersionPostGISClient = new DispersionPostGISClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
+        dispersionPostGISClient = new DispersionPostGISClient(endpointConfig.getDburl(), endpointConfig.getDbuser(),
+                endpointConfig.getDbpassword());
         RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
-        RemoteRDBStoreClient remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
+        RemoteRDBStoreClient remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(),
+                endpointConfig.getDbuser(), endpointConfig.getDbpassword());
         TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient, Long.class);
         queryClient = new QueryClient(storeClient, remoteRDBStoreClient, tsClient);
     }
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         // EWKT literal for the scope to create
         String ewkt = req.getParameter("ewkt");
         int nx = Integer.parseInt(req.getParameter("nx"));
         int ny = Integer.parseInt(req.getParameter("ny"));
+        String citiesNamespace = req.getParameter("citiesnamespace");
 
         Polygon polygonProvided = null;
         try {
@@ -72,10 +76,11 @@ public class InitialiseSimulation extends HttpServlet {
                 if (!dispersionPostGISClient.tableExists(Config.SCOPE_TABLE_NAME, conn)) {
                     // first time initialisation
                     dispersionPostGISClient.createTable(Config.SCOPE_TABLE_NAME, conn);
-    
+
                     // add ontop mapping
                     Path obdaFile = new ClassPathResource("ontop.obda").getFile().toPath();
-                    new OntopClient().updateOBDA(obdaFile);
+                    OntopClient ontopClient = OntopClient.getInstance();
+                    ontopClient.updateOBDA(obdaFile);
 
                     // adds OntoAgent instance
                     queryClient.initialiseAgent();
@@ -86,7 +91,7 @@ public class InitialiseSimulation extends HttpServlet {
                 } else {
                     polygon4326 = polygonProvided;
                 }
-    
+
                 if (!dispersionPostGISClient.scopeExists(polygon4326, conn)) {
                     scopeIri = dispersionPostGISClient.addScope(polygon4326, conn);
                 } else {
@@ -106,9 +111,10 @@ public class InitialiseSimulation extends HttpServlet {
             if (scopeIri != null && polygon4326 != null) {
                 String weatherStation = createVirtualWeatherStation(polygon4326);
 
-                String derivation = queryClient.initialiseScopeDerivation(scopeIri, weatherStation, nx, ny);
+                String derivation = queryClient.initialiseScopeDerivation(scopeIri, weatherStation, nx, ny,
+                        citiesNamespace);
                 try {
-                    resp.getWriter().print(new JSONObject().put("derivation",derivation));
+                    resp.getWriter().print(new JSONObject().put("derivation", derivation));
                     resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
                     resp.setCharacterEncoding("UTF-8");
                 } catch (IOException e) {
@@ -118,19 +124,22 @@ public class InitialiseSimulation extends HttpServlet {
                     LOGGER.error(e.getMessage());
                     LOGGER.error("Failed to create JSON object for HTTP response");
                 }
+
             }
         }
+
     }
 
     /**
      * creates a weather station at a random location within the polyon
+     * 
      * @param polygon
      * @return
      */
     String createVirtualWeatherStation(Polygon polygon) {
         // generating the random point
-        double lowerX; 
-        double upperX; 
+        double lowerX;
+        double upperX;
         double lowerY;
         double upperY;
         if (polygon.getPoint(0).getX() > polygon.getPoint(2).getX()) {
@@ -157,8 +166,8 @@ public class InitialiseSimulation extends HttpServlet {
         String station = null;
         try {
             URIBuilder builder = new URIBuilder(Config.WEATHER_AGENT_URL);
-            builder.addParameter("lon",String.valueOf(lon));
-            builder.addParameter("lat",String.valueOf(lat));
+            builder.addParameter("lon", String.valueOf(lon));
+            builder.addParameter("lat", String.valueOf(lat));
             httpPut = new HttpPut(builder.build());
 
             try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
@@ -176,4 +185,5 @@ public class InitialiseSimulation extends HttpServlet {
 
         return station;
     }
+
 }
