@@ -7,7 +7,10 @@ class DispersionHandler {
     initialise() {
         this.setDispersions(this)
             .then(() => this.buildDropdown(this))
-            .then(() => this.plotData());
+            .then(() => {
+                this.plotData();
+                this.addColourBar()
+            });
     }
 
     setDispersions(dispersionHandler) {
@@ -47,7 +50,7 @@ class DispersionHandler {
                 dispersionHandler.buildTimestepDropdown(dispersionHandler.dispersions[dispersionHandler.selectedSimulation]);
             }
 
-            if (document.getElementById("Simulation") != null) {
+            if ((document.getElementById("Simulation") != null) && (document.getElementById("Pollutant") != null) && (document.getElementById("Timestep") != null)) {
                 resolve();
             }
         });
@@ -186,5 +189,14 @@ class DispersionHandler {
         }).bind(this);
 
         this.manager.loadDefinitionsFromURL(dataJsonUrl).then(plotFunction());
+    }
+
+    addColourBar() {
+        let mapContainer = document.getElementById("map");
+        let colourBarElement = document.createElement("div");
+        colourBarElement.id = "colorbar-legend-container";
+        colourBarElement.setAttribute("style", "background-image: url(./colourbar_SO2.png)");
+
+        mapContainer.appendChild(colourBarElement);
     }
 }

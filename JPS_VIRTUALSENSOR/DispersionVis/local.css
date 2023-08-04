@@ -73,3 +73,19 @@
     height: 25px;
     font-size: 9pt;
 }
+
+#colorbar-legend-container {
+    position: absolute;
+    top: 4em;
+    right: 5px;
+    height: 40%;
+    width: 12%;
+    max-width: 6em;
+    margin: auto;
+    background-size: contain;
+    background-repeat: no-repeat;
+    padding: 0.5em 0.5em 0.5em 0.5em;
+    font-weight: bold;
+    z-index: 1;
+    display: block;
+}
