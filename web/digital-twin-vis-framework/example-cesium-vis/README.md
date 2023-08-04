@@ -16,7 +16,7 @@ A small amount of sample data has been committed to demonstrate the power of the
   - Sample tile sets to demonstrate clipping planes.
   - No metadata or timeseries present in this data set.
 
-It's also worth noting that with this example visualisation, no stack or FeatureInfoAgent is running, hence these is no support for dynamic metadata or timeseries is available. This is something that we plan to work on in future.
+It's also worth noting that with this example visualisation, no stack or FeatureInfoAgent is running, hence there is no support for dynamic metadata and timeseries data is unavailable. This is something that we plan to work on in future.
 
 <br/>
 

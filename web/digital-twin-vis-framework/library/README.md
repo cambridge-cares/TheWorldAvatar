@@ -71,4 +71,4 @@ The intended workflow of creating DTVF visualisations is to use a standard base 
 
 ## Support
 
-For support on developing the DTVF, please contact the support team at [CMCL](mailto:support@cmclinnovations.com).
+For support on developing the DTVF, please contact the support team at [CMCL](mailto:support@cmcl.io).

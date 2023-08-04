@@ -27,7 +27,7 @@ In most deployed visualisations, an online stack of microservices will provide d
 
 In production, it is advised that all data is loaded into a geospatial data provider (like GeoServer) and a WMS endpoint used; local files can be utilised but then do not offer the optimisation and caching of services like GeoServer. For more information on how to do this, see the README for the [Stack Data Uploader](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader).
 
-It's also worth noting that with this example visualisation, no stack or FeatureInfoAgent is running, hence these is no support for dynamic metadata or timeseries is available. This is something that we plan to work on in future.
+It's also worth noting that with this example visualisation, no stack or FeatureInfoAgent is running, hence there is no support for dynamic metadata and timeseries data is unavailable. This is something that we plan to work on in future.
 
 <br/>
 

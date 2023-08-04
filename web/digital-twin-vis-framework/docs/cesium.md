@@ -4,7 +4,7 @@ The DTVF supports a number of different data formats and representations; in the
 
 Unlike the Mapbox library, the CesiumJS library does not support specification of data in JSON format. Data and styling options must be loaded by direct method calls. As such, not every piece of functionality in CesiumJS has been integrated so that it can be used via the DTVF's configuration files. Basic visualisation of a number of data formats has been enabled, and requests can always be made to add support for other features.
 
-CesiumJS is the primary visualisation provider for 3D building data within The World Avatar. It has a number of useful features, but can be difficult to get to groups with. If possible, it's recommended that users create DTVF visualisations using Mapbox, rather than CesiumJS, unless display of 3D building data is required.
+CesiumJS is the primary visualisation provider for 3D building data within The World Avatar. It has a number of useful features, but can be difficult to get to grips with. If possible, it's recommended that users create DTVF visualisations using Mapbox, rather than CesiumJS, unless display of 3D building data is required.
 
 <br/>
 
@@ -23,7 +23,7 @@ It's worth noting that the Cesium company provide a number of different product 
 * Not used by the DTVF or the wider TWA.
 * Extension to the CesiumJS library.
 * Premium offering, requires payment for commercial or funded-education use.
-* Required an API key.
+* Requires an API key.
 * Provides map imagery and terrain elevation data.
 * Provides a set of example data files.
 * Cloud based services allow remote data hosting, format conversion, automatic tiling etc.

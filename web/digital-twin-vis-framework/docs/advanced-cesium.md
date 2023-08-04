@@ -4,7 +4,7 @@
 
 Unfortunately, the terrain elevation provided by Cesium ion, is not permitted for commercial or funded-education use. As such, we need to identify third-party terrain data.
 
-Terrain elevation data can also be provided via use of a `terrain` variable in the `settings.json` file. The value this variable is passed directly to a new [CesiumTerrainProvider](https://cesium.com/learn/cesiumjs/ref-doc/CesiumTerrainProvider.html) instance, as such users need to ensure that their settings conform with the CesiumJS API.
+Terrain elevation data can also be provided via use of a `terrain` variable in the `settings.json` file. The value of this variable is passed directly to a new [CesiumTerrainProvider](https://cesium.com/learn/cesiumjs/ref-doc/CesiumTerrainProvider.html) instance, and as such users need to ensure that their settings conform with the CesiumJS API.
 
 
 An example specification of terrain elevation is shown below. Note that in this case, the data is pulled from quantized mesh tiles provided by [MapTiler](https://cloud.maptiler.com/), a service that is **not permitted for commercial use** without a paid-for licence.
@@ -54,3 +54,10 @@ There are a few caveats to mention however:
 <br/>
 
 ## Data driven styling
+
+Layer nodes for 3D tileset sources can also specify a `style` JSON object defining a data-driven expression to change the visual look of features, or to filter out specific ones. Note that this only supports a basic styling system that can be expressed within literal JSON keys & values, more complex styling should be carried out within the actual model files. For details on how to write a Cesium style expression, see their [web page](https://cesium.com/learn/cesiumjs-learn/cesiumjs-3d-tiles-styling/) detailing the process. In addition, the example TWA Cesium visualisation shows a style used to color buildings based on their distance from a point, and how to filter out a specific building based on one of its properties.
+
+<br/>
+<p align="center">
+<img src="./img/sample-nyc-1.JPG" alt="Example of 3D data with simple styling" width="50%"/>
+</p>

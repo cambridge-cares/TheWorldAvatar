@@ -23,8 +23,6 @@ In this case, we'll be grabbing the following data sets from the [NHS Website Da
   
 Download these and save/extract them on your local machine. The `GP Practices` data set should include a headered CSV file, and the `GP Practitioners` ZIP of an unheadered CSV and a PDF.
 
-If this data is no longer available on the NHS websites, please contact CMCL for an archived version.
-
 <br/>
 
 ## Processing the raw data
@@ -318,7 +316,7 @@ At this point, your `data.json` should look something like the below.
 
 **3. Updating the settings file:**<br/>
 
-At the point, you may also want to update the visualisation's `setting.json` file to start the visualisation in a better location and at an appropriate zoom level to see all of England. Copy and paste the below into the `settings.json` file before refreshing the visualisation.
+At this point, you may also want to update the visualisation's `setting.json` file to start the visualisation in a better location and at an appropriate zoom level to see all of England. Copy and paste the below into the `settings.json` file before refreshing the visualisation.
 
 ```json
 {
@@ -410,7 +408,7 @@ Feel free to update the side panel content, saving the `index.html` file, then r
 
 **8. Reviewing the visualisation:**<br/>
 
-At the point, we've shown how to acquire, clean, map, upload, then visualise a new data set using The Stack and the DTVF. This constitutes the envisioned, basic use of the TWA tools to display data. By reading more of the available TWA documentation, users can learn how to add more data sets, produce more complex styling, and build more interactive visualisations.
+At this point, we've shown how to acquire, clean, map, upload, then visualise a new data set using The Stack and the DTVF. This constitutes the envisioned, basic use of the TWA tools to display data. By reading more of the available TWA documentation, users can learn how to add more data sets, produce more complex styling, and build more interactive visualisations.
 
 <br/>
 <p align="center">

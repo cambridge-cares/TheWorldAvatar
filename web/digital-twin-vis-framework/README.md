@@ -2,7 +2,7 @@
 
 <img align="right" width="250" height="250" src="./docs/img/dtvf-logo-padded.svg">
 
-A central framework for Digital Twin Visualisations (the Digital Twin Visualisation Framework, or DTVF) has been created so that in most cases, the process of creating a new visualisation to display pre-generated data is as simple as possible. The goal is that a developer that is inexperienced with Typescript (or the JavaScript libraries we're using) can get a reasonable visualisation of the data by simply ensuring the data meets a set format and providing some basic configuration files.
+A central framework for Digital Twin Visualisations (the Digital Twin Visualisation Framework, or DTVF) has been created so that in most cases, the process of creating a new visualisation to display pre-generated data is as simple as possible. The goal is that a developer who is inexperienced with Typescript (or the JavaScript libraries we're using) can get a reasonable visualisation of the data by simply ensuring the data meets a set format and providing some basic configuration files.
 
 The current, working version of the DTVF is defined in the `library/VERSION` file.
 
@@ -31,11 +31,11 @@ Documentation for the DTVF is spread across a number of files, and is broken dow
  <img src="./example-mapbox-vis/readme-example.JPG" alt="Example of 2D data on a Mapbox visualisation" width="75%"/>
 </p>
 <p align="center">
- <em>Example of a 2D data on a Mapbox visualisation.</em><br/><br/><br/>
+ <em>Example of 2D data on a Mapbox visualisation.</em><br/><br/><br/>
 </p>
 <p align="center">
  <img src="./example-cesium-vis/readme-example.JPG" alt="Example of 3D data on a CesiumJS visualisation" width="75%"/>
 </p>
 <p align="center">
- <em>Example of a 3D data on a CesiumJS visualisation.</em>
+ <em>Example of 3D data on a CesiumJS visualisation.</em>
 </p>
