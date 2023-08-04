@@ -9,6 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 import uk.ac.cam.cares.jps.network.AssetNetworkSource;
 import uk.ac.cam.cares.jps.network.Connection;
+import uk.ac.cam.cares.jps.network.MailNetworkSource;
 
 @Module
 @InstallIn(SingletonComponent.class)
@@ -21,5 +22,10 @@ public class NetworkModule {
     @Provides
     public AssetNetworkSource provideAssetNetworkSource(Connection connection) {
         return new AssetNetworkSource(connection);
+    }
+
+    @Provides
+    public MailNetworkSource provideMailNetworkSource(Connection connection) {
+        return new MailNetworkSource(connection);
     }
 }

@@ -8,6 +8,17 @@
     <ImageButton
         android:layout_width="35dp"
         android:layout_height="35dp"
+        android:id="@+id/mail_bt"
+        android:background="@drawable/ripple_mail"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/setting_bt"
+        android:layout_marginEnd="@dimen/appbar_padding"
+        android:contentDescription="@string/mailbox"
+        android:layout_marginTop="@dimen/appbar_padding"/>
+
+    <ImageButton
+        android:layout_width="35dp"
+        android:layout_height="35dp"
         android:id="@+id/setting_bt"
         android:background="@drawable/ripple_setting"
         app:layout_constraintTop_toTopOf="parent"

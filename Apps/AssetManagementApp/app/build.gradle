@@ -45,6 +45,7 @@ dependencies {
     implementation project(path: ':feature:setting')
     implementation project(path: ':feature:home')
     implementation project(path: ':feature:assetinfo')
+    implementation project(path: ':feature:mailbox')
     implementation project(path: ':core:network')
     implementation project(path: ':core:notification')
 

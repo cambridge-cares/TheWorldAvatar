@@ -37,8 +37,6 @@ public class HomeFragment extends Fragment {
                     .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/setting_page"))
                     .build();
             NavHostFragment.findNavController(this).navigate(request);
-//            Intent intent = new Intent(getBaseContext(), SettingActivity.class);
-//            startActivity(intent);
         });
 
         binding.scanCard.setOnClickListener(v -> {
@@ -46,9 +44,13 @@ public class HomeFragment extends Fragment {
                     .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/scan_page"))
                     .build();
             NavHostFragment.findNavController(this).navigate(request);
+        });
 
-//            Intent intent = new Intent(getBaseContext(), ScanActivity.class);
-//            startActivity(intent);
+        binding.mailBt.setOnClickListener(v -> {
+            NavDeepLinkRequest request = NavDeepLinkRequest.Builder
+                    .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/mail_box"))
+                    .build();
+            NavHostFragment.findNavController(this).navigate(request);
         });
     }
 }
