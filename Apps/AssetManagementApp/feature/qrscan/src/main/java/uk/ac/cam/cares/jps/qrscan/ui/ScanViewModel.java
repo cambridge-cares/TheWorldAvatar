@@ -24,7 +24,7 @@ public class ScanViewModel extends ViewModel {
         @Override
         public void run() {
             try {
-                Thread.sleep(800);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
