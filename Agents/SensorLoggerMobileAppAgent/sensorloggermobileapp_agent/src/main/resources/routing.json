@@ -1,0 +1,7 @@
+[
+	{
+		"label": "test",
+		"queryEndpoint": "http://host.docker.internal:9999/blazegraph/namespace/test/sparql",
+		"updateEndpoint": "http://host.docker.internal:9999/blazegraph/namespace/test/sparql"
+	}
+]

@@ -21,7 +21,7 @@ public class StaticInstantiation {
         * For stack
         */
        // Create context to work in, and also clear any old existing data
-       ModelContext context = new ModelContext("http://test-access-agent:8080/test");
+       ModelContext context = new ModelContext("http://sensorlogger-access-agent:8080/sensorlogger");
 
 //         /**
 //          * For local
