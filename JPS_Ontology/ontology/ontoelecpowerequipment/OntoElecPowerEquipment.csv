@@ -1,0 +1,18 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoElecPowerEquipment,TBox,https://www.theworldavatar.com/kg/ontoelecpowerequipment/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoElecPowerEquipment,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoElecPowerEquipment,TBox,OntoElecPowerEquipment is an ontology for power electronic devices.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoElecPowerEquipment,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+PowerSource,Class,https://saref.etsi.org/core/Device,IS-A,,,,An object designed and manufactured to perform one or more functions.,https://www.theworldavatar.com/kg/ontoelecpowerequipment/,Power source
+PowerModifier,Class,https://saref.etsi.org/core/Device,IS-A,,,,An object that manipulates certain variable of the power transmitted,https://www.theworldavatar.com/kg/ontoelecpowerequipment/,Power modifier
+PowerQualityAnalyzer,Class,https://saref.etsi.org/core/Device,IS-A,,,,An object that analyses the properties of the power transmitted,https://www.theworldavatar.com/kg/ontoelecpowerequipment/,Power analyser
+PowerSupplyUnit,Class,PowerSource,IS-A,,,,A power source that supplies electricity from power socket in a regulated manner,https://www.theworldavatar.com/kg/ontoelecpowerequipment/,Power supply
+PowerBackUp,Class,PowerSource,IS-A,,,,A power source that supplies electricity when the main power source is down,https://www.theworldavatar.com/kg/ontoelecpowerequipment/,Power back up
+SolarCellSystem,Class,PowerSource,IS-A,,,,A power source that generates electricity through photoelectric effect.,https://www.theworldavatar.com/kg/ontoelecpowerequipment/,Solar cell system
+Transformer,Class,PowerModifier,IS-A,,,,A device that increase/decrease current or voltage using the principles of electromagnetism.,https://www.theworldavatar.com/kg/ontoelecpowerequipment/,Transformer
+CurrentTransformer,Class,Transformer,IS-A,,,,A transformer that manipulates the current in a circuit,https://www.theworldavatar.com/kg/ontoelecpowerequipment/,Current transformer
+PowerAmplifier,Class,PowerModifier,IS-A,,,,A device that increases the magnitude of power delivered through a transmission line,https://www.theworldavatar.com/kg/ontoelecpowerequipment/,PowerAmplifier
+CurrentBooster,Class,PowerAmplifier,IS-A,,,,A device that increase the current on a power transmission line,https://www.theworldavatar.com/kg/ontoelecpowerequipment/,Current booster
+Microsynchrophasor,Class,PowerQualityAnalyzer,IS-A,,,,A device that provides a real-time measurement of electrical quantities from across the power system. ,https://www.theworldavatar.com/kg/ontoelecpowerequipment/,Microsynchrophasor
+DCPowerQualityAnalyzer,Class,PowerQualityAnalyzer,IS-A,,,,A device that monitors the parameters of a DC power transmission line,https://www.theworldavatar.com/kg/ontoelecpowerequipment/,DC power quality analyzer
+ACPowerQualityAnalyzer,Class,PowerQualityAnalyzer,IS-A,,,,A device that monitors the parameters of a AC power transmission line,https://www.theworldavatar.com/kg/ontoelecpowerequipment/,AC power quality analyzer
