@@ -7,8 +7,15 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import org.apache.log4j.BasicConfigurator;
@@ -41,6 +48,8 @@ public class AssetInfoFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         LOGGER.info("Navigated to asset info page");
         LOGGER.info(getArguments().getString("uri"));
+
+        binding.backBt.setOnClickListener(v -> NavHostFragment.findNavController(this).navigateUp());
 
         viewModel.getAssetInfo().observe(this.getViewLifecycleOwner(), assetInfo -> {
             assetInfoAdapter.updateProperties(assetInfo);

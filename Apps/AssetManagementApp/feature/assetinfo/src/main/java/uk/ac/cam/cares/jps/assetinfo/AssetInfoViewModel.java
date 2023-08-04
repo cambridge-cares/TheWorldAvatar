@@ -35,7 +35,7 @@ public class AssetInfoViewModel extends ViewModel {
 
         Response.ErrorListener onError = error -> {
             LOGGER.error(error.getMessage());
-            this.error.postValue(String.valueOf(R.string.netowrk_error));
+            this.error.postValue(String.valueOf(R.string.network_error));
         };
         repository.getAssetInfoByIri(assetUri, onSuccess, onError);
     }

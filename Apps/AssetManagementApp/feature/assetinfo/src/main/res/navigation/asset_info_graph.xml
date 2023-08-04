@@ -7,7 +7,7 @@
     <fragment
         android:id="@+id/asset_info"
         android:name="uk.ac.cam.cares.jps.assetinfo.AssetInfoFragment"
-        android:label="Asset Info"
+        android:label="@string/asset_info"
         tools:layout="@layout/fragment_asset_info">
         <argument
             android:name="uri"
