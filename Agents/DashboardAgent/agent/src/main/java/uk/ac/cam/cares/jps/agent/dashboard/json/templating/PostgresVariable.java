@@ -1,4 +1,5 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.templating;
+
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ class PostgresVariable extends TemplateVariable {
         // Change the variable name to
         String assetTypeVariable = super.formatVariableName(assetType);
         // Description should follow the measure name and asset type
-        this.DESCRIPTION = "A hidden template variable that displays the corresponding time series of " + super.getName() + " for " + assetTypeVariable;
+        this.DESCRIPTION = "A hidden template variable that displays the corresponding time series of " + measure.toLowerCase() + " for " + assetType.toLowerCase();
         // Append each value in the list in the required format
         this.QUERY_SYNTAX.append("SELECT k AS \\\"__text\\\", v AS \\\"__value\\\" FROM (values ");
         StringBuilder temp = new StringBuilder();
