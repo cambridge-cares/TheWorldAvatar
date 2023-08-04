@@ -14,8 +14,8 @@ from darts import TimeSeries
 from dateutil.parser import isoparse
 
 # Import modules under test
-from forecastingagent.agent.forecasting_tasks import convert_date_to_timestamp, \
-                                                     get_ts_lower_upper_bound, \
+from forecastingagent.kgutils.utils import convert_time_to_timestamp
+from forecastingagent.agent.forecasting_tasks import get_ts_lower_upper_bound, \
                                                      check_if_enough_covs_exist
 
 from . import conftest as cf
@@ -27,13 +27,13 @@ def test_convert_date_to_timestamp():
     """
 
     # Time stamp in UTC and Singapore time
-    assert convert_date_to_timestamp('2019-09-05T09:00:00Z') == 1567674000
-    assert convert_date_to_timestamp('2019-09-05T17:00:00+08:00') == 1567674000
-    assert convert_date_to_timestamp(1546300800) == 1546300800
-    assert convert_date_to_timestamp(pd.Timestamp(isoparse('2019-09-05T09:00:00Z'))) == 1567674000
-    assert convert_date_to_timestamp(pd.Timestamp(isoparse('2019-09-05T17:00:00+08:00'))) == 1567674000
+    assert convert_time_to_timestamp('2019-09-05T09:00:00Z') == 1567674000
+    assert convert_time_to_timestamp('2019-09-05T17:00:00+08:00') == 1567674000
+    assert convert_time_to_timestamp(1546300800) == 1546300800
+    assert convert_time_to_timestamp(pd.Timestamp(isoparse('2019-09-05T09:00:00Z'))) == 1567674000
+    assert convert_time_to_timestamp(pd.Timestamp(isoparse('2019-09-05T17:00:00+08:00'))) == 1567674000
     with pytest.raises(Exception):
-       convert_date_to_timestamp(1.5)
+       convert_time_to_timestamp(1.5)
 
 
 def test_get_ts_lower_upper_bound():
@@ -48,7 +48,7 @@ def test_get_ts_lower_upper_bound():
      cfg = {
           'data_length': 2,
           'horizon': 2,
-          'forecast_start_date': start,
+          'fc_start_timestamp': start,
           'frequency': dt.timedelta(hours=1),    
      }
      lowerbound_expected = '2019-09-05T07:00:00Z'
@@ -67,7 +67,7 @@ def test_check_if_enough_covs_exist():
      start_date = '2019-09-05T09:00:00Z'
      cfg =  {
           'horizon': n,
-          'forecast_start_date': pd.Timestamp(
+          'fc_start_timestamp': pd.Timestamp(
                isoparse(start_date)).tz_convert('UTC'),
           'frequency': dt.timedelta(hours=1),    
      }
@@ -82,7 +82,7 @@ def test_check_if_enough_covs_exist():
      cfg['horizon'] = n 
      assert check_if_enough_covs_exist(cfg, covs) == True
      
-     # forecast_start_date is not in covs  
+     # fc_start_timestamp is not in covs  
      cfg['horizon'] = n + 1
      with pytest.raises(ValueError):
          check_if_enough_covs_exist(cfg, covs)

@@ -300,7 +300,7 @@ class KGClient(PySparqlClient):
         body = ''
         body += create_properties_for_subj(subj=cfg['iri_to_forecast'], pred_obj={
                     TS_HASFORECAST: cfg['fc_iri']})
-        body += create_properties_for_subj(subj=cfg['iri_to_forecast'], pred_obj={
+        body += create_properties_for_subj(subj=cfg['fc_iri'], pred_obj={
                     TS_HASFORECASTINGMODEL: cfg['fc_model']['model_iri']})
         # Add unit to forecast if one could be retrieved from original ts
         unit = {OM_HASUNIT: cfg['unit']} if 'unit' in cfg else {}

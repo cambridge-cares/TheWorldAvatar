@@ -62,6 +62,8 @@ TIME_TRIPLES_PER_PURE_INPUT = 6
 AGENT_SERVICE_TRIPLES = 4       # agent service triples
 DERIV_INPUT_TRIPLES = 2 + 6*3   # triples for derivation input message
 DERIV_OUTPUT_TRIPLES = 2 + 1*3  # triples for derivation output message
+FORECAST_TRIPLES = 35           # triples for newly instantiated forecast (w/o unit)
+UNIT_TRIPLES = 1                # triples to assign unit to forecast
 
 
 # 
@@ -90,6 +92,7 @@ VALUES_3 = [1 for i in range(1, len(times)+1)]
 # ----------------------------------------------------------------------------------
 
 IRI_TO_FORECAST_1 = TEST_TRIPLES_BASE_IRI + 'HeatDemand_1'      #om:Quantity
+ASSOCIATED_DATAIRI_1 = TEST_TRIPLES_BASE_IRI + 'Measure_1'      #associated om:Measure
 IRI_TO_FORECAST_2 = TEST_TRIPLES_BASE_IRI + 'HeatDemand_2'      #om:Quantity
 IRI_TO_FORECAST_3 = TEST_TRIPLES_BASE_IRI + 'Availability_1'    #owl:Thing
 IRI_TO_FORECAST_4 = TEST_TRIPLES_BASE_IRI + 'Availability_2'    #owl:Thing
@@ -286,6 +289,28 @@ def create_example_agent():
 # ----------------------------------------------------------------------------------
 # Helper functions
 # ----------------------------------------------------------------------------------
+
+def get_derivation_inputs_outputs(derivation_iri: str, sparql_client):
+    query_output = f"""SELECT ?output ?output_type ?input ?input_type
+        WHERE {{
+            <{derivation_iri}> <{ONTODERIVATION_ISDERIVEDFROM}> ?input .
+            ?input a ?input_type .
+            ?output <{ONTODERIVATION_BELONGSTO}> <{derivation_iri}> .
+            ?output a ?output_type .
+        }}"""
+    response = sparql_client.performQuery(query_output)
+    if len(response) == 0:
+        return None
+    else:
+        # Derivation inputs (i.e. isDerivedFrom)
+        key = set([x['input_type'] for x in response])
+        inputs = {k: set([x['input'] for x in response if x['input_type'] == k]) for k in key}
+        # Derivation outputs (i.e. belongsTo)
+        key = set([x['output_type'] for x in response])
+        outputs = {k: set([x['output'] for x in response if x['output_type'] == k]) for k in key}
+    
+    return inputs, outputs
+
 
 def initialise_triples(sparql_client):
     # Delete all triples before initialising prepared triples

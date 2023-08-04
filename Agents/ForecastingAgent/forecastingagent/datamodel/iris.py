@@ -1,6 +1,7 @@
 # Provide Constants/IRIs, which can be used to query and update the KG
 
-from pyderivationagent.data_model.iris import ONTODERIVATION_BELONGSTO, \
+from pyderivationagent.data_model.iris import ONTODERIVATION_ISDERIVEDFROM, \
+                                              ONTODERIVATION_BELONGSTO, \
                                               ONTODERIVATION_DERIVATIONWITHTIMESERIES
 
 # Namespaces
