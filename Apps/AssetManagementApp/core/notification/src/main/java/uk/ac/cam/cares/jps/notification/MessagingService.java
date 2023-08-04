@@ -29,20 +29,18 @@ public class MessagingService extends FirebaseMessagingService {
         super.onMessageReceived(message);
         LOGGER.info("From: " + message.getFrom());
 
-        // todo: use the message id to retrieve detailed mail information. Message id added in message body in agent
         if (message.getNotification() != null) {
             LOGGER.info("Message ID: " + message.getNotification().getBody());
             if (message.getNotification().getBody() != null) {
                 sendNotification(message.getNotification().getBody(), message.getNotification().getTitle());
-                // todo: get mail content from mail repository
             }
         }
 
     }
 
     private void sendNotification(String notificationBody, String notificationTitle) {
-        // todo: should be receiving mail
-
+        // todo: get mail content from mail repository in the intent activity with the mail id if user clicked on the notification
+        // todo: should direct the user to mail box fragment
 //        Intent intent = new Intent(this, MainActivity.class);
 //        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 //        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
