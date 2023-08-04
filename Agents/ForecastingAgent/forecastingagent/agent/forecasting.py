@@ -11,6 +11,7 @@ import uuid
 import pandas as pd
 from darts import TimeSeries
 from flask import request, jsonify
+from rdflib import Graph, URIRef
 
 from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
@@ -194,7 +195,7 @@ class ForecastingAgent(DerivationAgent):
             # Round data values if set in environment variables
             values = [round(x, ROUNDING) for x in values]
 
-        # Instantiate new forecast in KG and RDB (only if applicable)
+        # Instantiate new forecast in KG and RDB (if requested or not yet existing)
         if not self.fc_overwrite or not bool(cfg.get('fc_iri')):
             # Initialise forecast in KG
             fc_iri = self.sparql_client.instantiate_forecast(forecast=fc_ts, config=cfg)
@@ -203,16 +204,22 @@ class ForecastingAgent(DerivationAgent):
                                       ts_type=cfg['ts_data_type'], time_format=time_format)
         else:
             # Only update forecast metadata in KG
-            #TODO:Implement
+            self.sparql_client.instantiate_forecast(forecast=fc_ts, config=cfg)
             # Update forecast time series data in RDB
             ts_client.add_ts_data(dataIRI=cfg['fc_iri'], times=times, values=values)
         
         created_at = pd.to_datetime('now', utc=True)
         logger.info(f'Created forecast at: {created_at}')
         
-        # Add output graph for derivation markup
-        
-
+        # Add output graph to ensure complete derivation markup
+        # NOTE: DerivationWithTimeSeries does not return any output triples, as all
+        #       updates to the time series are expected to be conducted within the 
+        #       agent logic --> this part of the code is only reached when called
+        #       via 'createSyncDerivationForNewInfo' and its only purpose is to ensure
+        #       that the forecast instance is marked up as "belongsTo" the derivation
+        g = Graph()
+        g.add((URIRef(fc_iri), URIRef(RDF_TYPE), URIRef(TS_FORECAST)))   
+        derivation_outputs.addGraph(g)
 
 
     def evaluate_forecast_error(self):

@@ -209,44 +209,6 @@ class KGClient(PySparqlClient):
             msg = "No unique interval details could be retrieved from KG."
             logger.error(msg)
             raise ValueError(msg)
-        
-
-    # def get_associated_forecast_details(self, dataIRI:str):
-    #     """
-    #     Returns the IRI, RDB URL ans time format of the time series instance 
-    #     associated with the given data IRI.
-
-    #     Returns:
-    #         ts (dict) -- dictionary with keys 'ts_iri', 'rdb_url' and 'time_format'
-    #     """
-    #     query = f"""
-    #         SELECT DISTINCT ?ts_iri ?rdb_url ?time_format
-    #         WHERE {{   
-    #         VALUES ?data_iri {{ <{dataIRI}> }} 
-    #         ?data_iri <{OM_HASVALUE}>*/<{TS_HASTIMESERIES}> ?ts_iri .
-    #         ?ts_iri <{TS_HASRDB}> ?rdb_url .
-    #         OPTIONAL {{ ?ts_iri <{TS_HASTIMEUNIT}> ?time_format . }}
-    #         }}
-    #     """
-    #     query = self.remove_unnecessary_whitespace(query)
-    #     res = self.performQuery(query)
-
-    #     # Extract relevant information from unique query result
-    #     if len(res) == 1:
-    #         ts = {'ts_iri': self.get_unique_value(res, 'ts_iri'),
-    #               'rdb_url': self.get_unique_value(res, 'rdb_url'),
-    #               'time_format': self.get_unique_value(res, 'time_format')
-    #         }
-    #         return ts
-        
-    #     else:
-    #         # Throw exception if no or multiple time series are found
-    #         if len(res) == 0:
-    #             msg = f"No time series associated with data IRI: {dataIRI}."
-    #         else:
-    #             msg = f"Multiple time series associated with data IRI: {dataIRI}."
-    #         logger.error(msg)
-    #         raise ValueError(msg)
 
 
     def get_dataIRI(self, tsIRI:str):
@@ -297,30 +259,24 @@ class KGClient(PySparqlClient):
             forecast {darts.TimeSeries} - forecast time series for which to instantiate triples
             config: a dictionary with meta information about the forecast
                 'fc_model': the configuration of the forecasting model
-            'fc_start_timestamp': the start date of the forecast
-            'frequency': the frequency of the time series data
-            'horizon': the length of the forecast
-            'data_length': the length of the time series data to retrieve before the fc_start_timestamp
-            'dataIRI': the iri of the timeseries which is forecasted
-            'iri': the iri which has the predicate hasTimeSeries
-            
-            'model_configuration_name': the name of the model configuration
-            'loaded_data_bounds': the lower and upper bounds of the time series
-            'forecast_name': the name of the forecast
+                'iri_to_forecast': the iri of the instance to be forecasted
+                'fc_iri': the iri of the forecast instance
+                'unit': the unit of the (original) time series data
         """
         
-        # Create 
-        start_date = forecast.end_time() - forecast.freq * \
-                     (config['fc_model']['input_length'] - 1)
-        config['model_input_interval'] = [start_date, forecast.end_time()]
+        # Create forecast input and output intervals
+        inp_start = forecast.start_time() - forecast.freq * \
+                                          (config['fc_model']['input_length'])
+        inp_end = forecast.start_time() - forecast.freq
+        config['model_input_interval'] = [inp_start, inp_end]
         config['model_output_interval'] = [forecast.start_time(), forecast.end_time()]
 
         # Create new forecast iri if not exists
         if not config.get('fc_iri'):
             config['fc_iri'] = KB + 'Forecast_' + str(uuid.uuid4())
-            update = instantiate_new_forecast(config)
+            update = self.instantiate_new_forecast(config)
         else:
-            update = update_existing_forecast(config)
+            update = self.update_existing_forecast(config)
 
         update = remove_unnecessary_whitespace(update)
         self.performUpdate(update)
@@ -328,53 +284,100 @@ class KGClient(PySparqlClient):
         return config.get('fc_iri')
 
 
-def instantiate_new_forecast(cfg:dict):
-    """
-    Returns SPARQL INSERT DATA query to instantiate a new forecast
-    """
-    
-    # Create IRIs for new instances
-    outputTimeInterval_iri = KB + 'Interval_' + str(uuid.uuid4())
-    inputTimeInterval_iri = KB + 'Interval_' + str(uuid.uuid4())
+    def instantiate_new_forecast(self, cfg:dict):
+        """
+        Returns SPARQL INSERT DATA query to instantiate a new forecast
+        """
+        
+        # Create IRIs for new instances
+        outputTimeInterval_iri = KB + 'Interval_' + str(uuid.uuid4())
+        inputTimeInterval_iri = KB + 'Interval_' + str(uuid.uuid4())
 
-    # Initialise SPARQL update body witth forecast related triples
-    body = ''
-    body += create_properties_for_subj(subj=cfg['iri_to_forecast'], pred_obj={
-                TS_HASFORECAST: cfg['fc_iri']})
-    # Add unit to forecast if one could be retrieved from original ts
-    unit = {OM_HASUNIT: cfg['unit']} if 'unit' in cfg else {}
-    body += create_properties_for_subj(subj=cfg['fc_iri'], pred_obj={
-                RDF_TYPE: TS_FORECAST,
-                **unit,
-                TS_HASOUTPUTTIMEINTERVAL: outputTimeInterval_iri,
-                TS_HASINPUTTIMEINTERVAL: inputTimeInterval_iri})
+        # Initialise SPARQL update body witth forecast related triples
+        body = ''
+        body += create_properties_for_subj(subj=cfg['iri_to_forecast'], pred_obj={
+                    TS_HASFORECAST: cfg['fc_iri']})
+        body += create_properties_for_subj(subj=cfg['iri_to_forecast'], pred_obj={
+                    TS_HASFORECASTINGMODEL: cfg['fc_model']['model_iri']})
+        # Add unit to forecast if one could be retrieved from original ts
+        unit = {OM_HASUNIT: cfg['unit']} if 'unit' in cfg else {}
+        body += create_properties_for_subj(subj=cfg['fc_iri'], pred_obj={
+                    RDF_TYPE: TS_FORECAST,
+                    **unit,
+                    TS_HASOUTPUTTIMEINTERVAL: outputTimeInterval_iri,
+                    TS_HASINPUTTIMEINTERVAL: inputTimeInterval_iri})
 
-    # Add triples for time intervals/instants
-    inputBeginning_iri, q = create_time_instant(cfg['model_input_interval'][0])
-    body += q
-    inputEnd_iri, q = create_time_instant(cfg['model_input_interval'][1])
-    body += q
-    outputBeginning_iri, q = create_time_instant(cfg['model_output_interval'][0])
-    body += q
-    outputEnd_iri, q = create_time_instant(cfg['model_output_interval'][1])
-    body += q
-    body += create_properties_for_subj(subj=inputTimeInterval_iri, pred_obj={
-                RDF_TYPE: TIME_INTERVAL,
-                TIME_HASBEGINNING: inputBeginning_iri,
-                TIME_HASEND: inputEnd_iri})
-    body += create_properties_for_subj(subj=outputTimeInterval_iri, pred_obj={
-                RDF_TYPE: TIME_INTERVAL,
-                TIME_HASBEGINNING: outputBeginning_iri,
-                TIME_HASEND: outputEnd_iri})
+        # Add triples for time intervals/instants
+        inputBeginning_iri, q = create_time_instant(cfg['model_input_interval'][0])
+        body += q
+        inputEnd_iri, q = create_time_instant(cfg['model_input_interval'][1])
+        body += q
+        outputBeginning_iri, q = create_time_instant(cfg['model_output_interval'][0])
+        body += q
+        outputEnd_iri, q = create_time_instant(cfg['model_output_interval'][1])
+        body += q
+        body += create_properties_for_subj(subj=inputTimeInterval_iri, pred_obj={
+                    RDF_TYPE: TIME_INTERVAL,
+                    TIME_HASBEGINNING: inputBeginning_iri,
+                    TIME_HASEND: inputEnd_iri})
+        body += create_properties_for_subj(subj=outputTimeInterval_iri, pred_obj={
+                    RDF_TYPE: TIME_INTERVAL,
+                    TIME_HASBEGINNING: outputBeginning_iri,
+                    TIME_HASEND: outputEnd_iri})
 
-    update = f'INSERT DATA {{ {body} }} '
-    return update
+        update = f'INSERT DATA {{ {body} }} '
+        return update
 
 
-def update_existing_forecast(cfg:dict):
-    """
-    Returns SPARQL UPDATE query to update an existing forecast
-    """
-    update = ''
+    def update_existing_forecast(self, cfg:dict):
+        """
+        Returns SPARQL UPDATE query to update an existing forecast
+        """
+        
+        # Get UNIX timestamp (in s) of interval start/end times
+        inp_start = convert_time_to_timestamp(cfg['model_input_interval'][0])
+        inp_end = convert_time_to_timestamp(cfg['model_input_interval'][1])
+        out_start = convert_time_to_timestamp(cfg['model_output_interval'][0])
+        out_end = convert_time_to_timestamp(cfg['model_output_interval'][1])
 
-    return update
+        # Only delete/update old unit if new one is available
+        if cfg.get('unit'):
+            unit_insert = "?fc_iri <{OM_HASUNIT}> <{cfg['unit']}> . "
+            unit_delete = "?fc_iri <{OM_HASUNIT}> ?unit . "
+        else:
+            unit_insert = ""
+            unit_delete = ""
+
+        # Create Delete-Insert query
+        update = f"""
+            DELETE {{
+                {unit_delete}
+                ?start1 <{TIME_NUMERICPOSITION}> ?t1 .
+                ?end1 <{TIME_NUMERICPOSITION}> ?t2 .
+                ?start2 <{TIME_NUMERICPOSITION}> ?t3 .
+                ?end2 <{TIME_NUMERICPOSITION}> ?t4 .
+            }}
+            INSERT {{
+                {unit_insert}
+                ?start1 <{TIME_NUMERICPOSITION}> "{inp_start}"^^<{XSD_DECIMAL}> .
+                ?end1 <{TIME_NUMERICPOSITION}> "{inp_end}"^^<{XSD_DECIMAL}> .
+                ?start2 <{TIME_NUMERICPOSITION}> "{out_start}"^^<{XSD_DECIMAL}> .
+                ?end2 <{TIME_NUMERICPOSITION}> "{out_end}"^^<{XSD_DECIMAL}> .
+            }} 
+            WHERE {{
+                VALUES ?fc_iri {{ <{cfg['fc_iri']}> }}
+                OPTIONAL {{ ?fc_iri <{OM_HASUNIT}> ?unit }}
+                ?fc_iri <{TS_HASINPUTTIMEINTERVAL}> ?int1 ;
+                        <{TS_HASOUTPUTTIMEINTERVAL}> ?int2 .
+                ?int1 <{TIME_HASBEGINNING}>/<{TIME_INTIMEPOSITION}> ?start1 ;
+                      <{TIME_HASEND}>/<{TIME_INTIMEPOSITION}> ?end1 .
+                ?int2 <{TIME_HASBEGINNING}>/<{TIME_INTIMEPOSITION}> ?start2 ;
+                      <{TIME_HASEND}>/<{TIME_INTIMEPOSITION}> ?end2 .
+                ?start1 <{TIME_NUMERICPOSITION}> ?t1 .
+                ?end1 <{TIME_NUMERICPOSITION}> ?t2 .
+                ?start2 <{TIME_NUMERICPOSITION}> ?t3 .
+                ?end2 <{TIME_NUMERICPOSITION}> ?t4 .
+            }}
+        """
+
+        return update

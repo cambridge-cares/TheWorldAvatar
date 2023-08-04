@@ -141,7 +141,8 @@ def create_model_dict(model:dict):
 
     # Initialise config with forecast model name
     model_dict = {
-        'name': model['label'].lower()
+        'name': model['label'].lower(),
+        'model_iri': model['fcmodel_iri']
     }
 
     # Prophet is the default model
