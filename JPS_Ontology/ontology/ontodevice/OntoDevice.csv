@@ -87,6 +87,10 @@ MotorController,Class,Controller,IS-A,,,,A device that manages the operation of 
 PressureContoller,Class,Controller,IS-A,,,,A device that manages the gas or liquid pressure of other apparatus.,https://www.theworldavatar.com/kg/ontodevice/,Pressure controller
 TemperatureController,Class,Controller,IS-A,,,,A device that manages the temperature of the surrounding environment.,https://www.theworldavatar.com/kg/ontodevice/,Temperature controller
 Thermostat,Class,https://saref.etsi.org/core/Device,IS-A,,,,A device that measures and manages the temperature of the surrounding environment.,https://www.theworldavatar.com/kg/ontodevice/,Thermostat
+Actuator,Class,https://saref.etsi.org/core/Device,IS-A,,,,A device that applies changes on the surrounding environment,https://www.theworldavatar.com/kg/ontodevice/,Actuator
+Reader,Class,https://saref.etsi.org/core/Device,IS-A,,,,"A device that reads information from an external info storage, such as ID card, NFC tag, etc.",https://www.theworldavatar.com/kg/ontodevice/,Reader
+UAV,Class,https://saref.etsi.org/core/Device,IS-A,,,,A robot that does aerial movement without human on board.,https://www.theworldavatar.com/kg/ontodevice/,UAV
+Drone,Class,UAV,IS-A,,,,A small UAV controled from a range usually using  a remote controller.,https://www.theworldavatar.com/kg/ontodevice/,Drone
 Setpoint,Class,,,,,,"The desired or target value for an essential variable, or process value (PV) of a control system.",https://www.theworldavatar.com/kg/ontodevice/,Setpoint
 InOutState,Class,https://saref.etsi.org/core/State,IS-A,,,,The current state of something on whether it is inside or outside of a space or object.,https://www.theworldavatar.com/kg/ontodevice/,In out state
 OccupiedState,Class,https://saref.etsi.org/core/State,IS-A,,,,The current state of something on whether it is occupied or not.,https://www.theworldavatar.com/kg/ontodevice/,Occupied state
