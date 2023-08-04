@@ -1,0 +1,34 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoSystem,TBox,https://www.theworldavatar.com/kg/ontosystem/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoSystem,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoSystem,TBox,An ontology for systems of devices,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoSystem,TBox,http://www.w3.org/ns/ssn/,http://www.w3.org/2002/07/owl#imports,,,,,,
+System,Class,http://www.w3.org/ns/ssn/System,EQUIVALENT-TO,,,,A combination of several devices working together to achieve a specific task.,https://www.theworldavatar.com/kg/ontosystem/,System
+System,Class,https://w3id.org/bot#Element,IS-A,,,,,,
+LabEquipmentSystem,Class,System,IS-A,,,,A system of laboratory equipments,https://www.theworldavatar.com/kg/ontosystem/,Lab equipment system
+FiltrationSystem,Class,LabEquipmentSystem,IS-A,,,,A system for filtering liquid or gas in a lab environment,https://www.theworldavatar.com/kg/ontosystem/,Filtration system
+SimulationSystem,Class,LabEquipmentSystem,IS-A,,,,A system for simulating phenomenon in a lab environement,https://www.theworldavatar.com/kg/ontosystem/,Simulation System
+DilutionSystem,Class,LabEquipmentSystem,IS-A,,,,A system for diluting solutions in a lab environment,https://www.theworldavatar.com/kg/ontosystem/,Diltuion system
+ServomechanismSystem,Class,LabEquipmentSystem,IS-A,,,,A system for managing connected bodies actuated by servos.,https://www.theworldavatar.com/kg/ontosystem/,Servomechanism system
+CalorimetryCoolingSystem,Class,LabEquipmentSystem,IS-A,,,,A system for managing temperature during calorimetery measurements,https://www.theworldavatar.com/kg/ontosystem/,Calorimetry cooling system
+CellStackIntegratedSystem,Class,LabEquipmentSystem,IS-A,,,,A system for doing flow cell -based experiments,https://www.theworldavatar.com/kg/ontosystem/,Cell stack Integrated system
+FlameSynthesisDiagnosticSystem,Class,LabEquipmentSystem,IS-A,,,,A system for observing flame synthesis processes,https://www.theworldavatar.com/kg/ontosystem/,Flame synthesis diagnostic system
+CalorimetrySystem,Class,LabEquipmentSystem,IS-A,,,,A system for doing calorimetry experiments,https://www.theworldavatar.com/kg/ontosystem/,Calorimetry system
+BurnerSystem,Class,LabEquipmentSystem,IS-A,,,,A system for experiments that require burning via exposure to fire,https://www.theworldavatar.com/kg/ontosystem/,Burner system
+MixingSystem,Class,LabEquipmentSystem,IS-A,,,,A system for mixing several different solutions or solids into 1 homogeneous mix,https://www.theworldavatar.com/kg/ontosystem/,Mixing system
+FreezeDryerSystem,Class,LabEquipmentSystem,IS-A,,,,A system for freezing samples while removing moisture from the sample,https://www.theworldavatar.com/kg/ontosystem/,Freeze-dryer system
+FlameImagingSystem,Class,LabEquipmentSystem,IS-A,,,,A system for capturing the composition and images of a flame,https://www.theworldavatar.com/kg/ontosystem/,Flame imaging system
+CombustionAnalysisSystem,Class,LabEquipmentSystem,IS-A,,,,A system for analysing the properties of a combustion done by an engine,https://www.theworldavatar.com/kg/ontosystem/,Combustion analysis system
+ChromatographySystem,Class,LabEquipmentSystem,IS-A,,,,A system for doing chromatography on a solution.,https://www.theworldavatar.com/kg/ontosystem/,Chromatography system
+EmissionDiagnosticSystem,Class,LabEquipmentSystem,IS-A,,,,A system for diagnosing the emission of an engine.,https://www.theworldavatar.com/kg/ontosystem/,Emission diagnostic system
+MedicalMonitoringSystem,Class,LabEquipmentSystem,IS-A,,,,A system for monitoring medical conditions of a human,https://www.theworldavatar.com/kg/ontosystem/,Medical monitoring system
+EyeTrackingSystem,Class,MedicalMonitoringSystem,IS-A,,,,A system for stracking eye movement and focus.,https://www.theworldavatar.com/kg/ontosystem/,Eye tracking system
+EEGSystem,Class,MedicalMonitoringSystem,IS-A,,,,A system for doing and collecting data on an electroencephalogram experiments,https://www.theworldavatar.com/kg/ontosystem/,EEG system
+ECGRespirationMonitoringSystem,Class,MedicalMonitoringSystem,IS-A,,,,A system that monitors heart and respiration conditions by detecting electrical signals in the body,https://www.theworldavatar.com/kg/ontosystem/,ECG and respiration monitoring system
+ComputerSystem,Class,System,IS-A,,,,A system of computer parts working together as a computer or a computer part,https://www.theworldavatar.com/kg/ontosystem/,Computer system
+SoundSystem,Class,ComputerSystem,IS-A,,,,A system that manages the sound output of a computer,https://www.theworldavatar.com/kg/ontosystem/,Sound system 
+DisplaySystem,Class,ComputerSystem,IS-A,,,,A system that manages the visual output of a computer,https://www.theworldavatar.com/kg/ontosystem/,Display system
+GPSSystem,Class,ComputerSystem,IS-A,,,,A system that manages the global positioning of a device,https://www.theworldavatar.com/kg/ontosystem/,GPS system
+CCTVSystem,Class,System,IS-A,,,,A system that provides video recordings in a closed circuit environment,https://www.theworldavatar.com/kg/ontosystem/,CCTV system
+composedOf,Object Property,,,System,https://saref.etsi.org/core/Device,minimum 1,A relation that tells the system is composed of which devices.,https://www.theworldavatar.com/kg/ontosystem/,composed of
+hasID,Data Property,,,System,String,,A relationship that describes the ID assigned to a device.,https://www.theworldavatar.com/kg/ontodevice/,has ID

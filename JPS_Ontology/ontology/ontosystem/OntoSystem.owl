@@ -1,0 +1,428 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontosystem/"
+     xml:base="https://www.theworldavatar.com/kg/ontosystem/"
+     xmlns:ontosystem="https://www.theworldavatar.com/kg/ontosystem/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontosystem/">
+        <owl:imports rdf:resource="http://www.w3.org/ns/ssn/"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">04 August 2023</dc:date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology for systems of devices</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/composedOf -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontosystem/composedOf">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosystem/System"/>
+        <rdfs:range rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation that tells the system is composed of which devices.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">composed of</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/hasID -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontosystem/hasID">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontosystem/System"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the ID assigned to a device.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has ID</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.w3.org/ns/ssn/System -->
+
+
+    <owl:Class rdf:about="http://www.w3.org/ns/ssn/System">
+        <owl:equivalentClass rdf:resource="https://www.theworldavatar.com/kg/ontosystem/System"/>
+    </owl:Class>
+    
+
+
+    <!-- https://saref.etsi.org/core/Device -->
+
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/Device"/>
+    
+
+
+    <!-- https://w3id.org/bot#Element -->
+
+
+    <owl:Class rdf:about="https://w3id.org/bot#Element"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/BurnerSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/BurnerSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/LabEquipmentSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system for experiments that require burning via exposure to fire</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Burner system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/CCTVSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/CCTVSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/System"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system that provides video recordings in a closed circuit environment</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CCTV system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/CalorimetryCoolingSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/CalorimetryCoolingSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/LabEquipmentSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system for managing temperature during calorimetery measurements</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Calorimetry cooling system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/CalorimetrySystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/CalorimetrySystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/LabEquipmentSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system for doing calorimetry experiments</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Calorimetry system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/CellStackIntegratedSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/CellStackIntegratedSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/LabEquipmentSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system for doing flow cell -based experiments</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cell stack Integrated system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/ChromatographySystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/ChromatographySystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/LabEquipmentSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system for doing chromatography on a solution.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Chromatography system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/CombustionAnalysisSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/CombustionAnalysisSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/LabEquipmentSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system for analysing the properties of a combustion done by an engine</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Combustion analysis system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/ComputerSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/ComputerSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/System"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system of computer parts working together as a computer or a computer part</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Computer system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/DilutionSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/DilutionSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/LabEquipmentSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system for diluting solutions in a lab environment</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Diltuion system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/DisplaySystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/DisplaySystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/ComputerSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system that manages the visual output of a computer</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Display system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/ECGRespirationMonitoringSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/ECGRespirationMonitoringSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/MedicalMonitoringSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system that monitors heart and respiration conditions by detecting electrical signals in the body</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ECG and respiration monitoring system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/EEGSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/EEGSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/MedicalMonitoringSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system for doing and collecting data on an electroencephalogram experiments</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">EEG system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/EmissionDiagnosticSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/EmissionDiagnosticSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/LabEquipmentSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system for diagnosing the emission of an engine.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Emission diagnostic system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/EyeTrackingSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/EyeTrackingSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/MedicalMonitoringSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system for stracking eye movement and focus.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Eye tracking system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/FiltrationSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/FiltrationSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/LabEquipmentSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system for filtering liquid or gas in a lab environment</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Filtration system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/FlameImagingSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/FlameImagingSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/LabEquipmentSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system for capturing the composition and images of a flame</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Flame imaging system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/FlameSynthesisDiagnosticSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/FlameSynthesisDiagnosticSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/LabEquipmentSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system for observing flame synthesis processes</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Flame synthesis diagnostic system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/FreezeDryerSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/FreezeDryerSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/LabEquipmentSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system for freezing samples while removing moisture from the sample</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Freeze-dryer system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/GPSSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/GPSSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/ComputerSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system that manages the global positioning of a device</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">GPS system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/LabEquipmentSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/LabEquipmentSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/System"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system of laboratory equipments</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lab equipment system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/MedicalMonitoringSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/MedicalMonitoringSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/LabEquipmentSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system for monitoring medical conditions of a human</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Medical monitoring system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/MixingSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/MixingSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/LabEquipmentSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system for mixing several different solutions or solids into 1 homogeneous mix</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixing system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/ServomechanismSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/ServomechanismSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/LabEquipmentSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system for managing connected bodies actuated by servos.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Servomechanism system</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/SimulationSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/SimulationSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/LabEquipmentSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system for simulating phenomenon in a lab environement</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Simulation System</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/SoundSystem -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/SoundSystem">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontosystem/ComputerSystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system that manages the sound output of a computer</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sound system </rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontosystem/System -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontosystem/System">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Element"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontosystem/composedOf"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="https://saref.etsi.org/core/Device"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A combination of several devices working together to achieve a specific task.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosystem/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">System</rdfs:label>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
+
+
