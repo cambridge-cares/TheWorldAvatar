@@ -25,8 +25,8 @@ from urllib.parse import urlparse
 
 from pyderivationagent.data_model.iris import ONTODERIVATION_DERIVATIONWITHTIMESERIES
 
-from forecastingagent.agent import ForecastingAgent
 from forecastingagent.datamodel.iris import *
+from forecastingagent.agent import ForecastingAgent
 from forecastingagent.agent.forcasting_config import *
 from forecastingagent.utils.tools import *
 from forecastingagent.kgutils.kgclient import KGClient

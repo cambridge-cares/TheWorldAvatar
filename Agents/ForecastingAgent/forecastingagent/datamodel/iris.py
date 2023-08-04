@@ -17,7 +17,7 @@ ONTOEMS = "https://www.theworldavatar.com/kg/ontoems/"
 TS      = "https://www.theworldavatar.com/kg/ontotimeseries/"
 OHN     = "https://www.theworldavatar.com/kg/ontoheatnetwork/"
 # Knowledge base
-KB = "https://www.theworldavatar.com/kg/pms_dh/"
+KB = "https://www.theworldavatar.com/kg/forecasting/"
 
 
 ### TimeSeries ###
@@ -72,12 +72,8 @@ RDFS_LABEL = RDFS + 'label'
 
 # Data types
 XSD_STRING = XSD + 'string'
-XSD_INTEGER = XSD + 'decimal'
+XSD_DECIMAL = XSD + 'decimal'
 XSD_INTEGER = XSD + 'integer'
-#TODO: Verify which date types are still needed ultimately
-XSD_DATE = XSD + "date"
-XSD_DATETIME = XSD + 'dateTime'
-XSD_DATETIMESTAMP = XSD + "dateTimeStamp"
 
 ### ONTOEMS ###
 #TODO: verify if still needed after removing method to get covariates

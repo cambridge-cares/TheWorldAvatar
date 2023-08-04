@@ -6,13 +6,15 @@
 # The purpose of this module is to provide functionality to execute
 # KG queries and updates using the StoreRouter from the JPS_BASE_LIB
 
-from distutils.util import strtobool
+import uuid
+import pandas as pd
 
 from py4jps import agentlogging
 
 from pyderivationagent.kg_operations import PySparqlClient
 
 from forecastingagent.datamodel.iris import *
+from forecastingagent.kgutils.utils import *
 
 
 # Initialise logger instance (ensure consistent logger level`)
@@ -56,17 +58,17 @@ class KGClient(PySparqlClient):
             OPTIONAL {{ ?iri <{TS_HASFORECAST}> ?fc_iri . }}
             }}
         """
-        query = self.remove_unnecessary_whitespace(query)
+        query = remove_unnecessary_whitespace(query)
         res = self.performQuery(query)
 
         # Extract relevant information from unique query result
         if len(res) == 1:
-            ts = {'data_iri': self.get_unique_value(res, 'data_iri'),
-                  'ts_iri': self.get_unique_value(res, 'ts_iri'),
-                  'fc_iri': self.get_unique_value(res, 'fc_iri'),
-                  'unit': self.get_unique_value(res, 'unit'),
-                  'rdb_url': self.get_unique_value(res, 'rdb_url'),
-                  'time_format': self.get_unique_value(res, 'time_format')
+            ts = {'data_iri': get_unique_value(res, 'data_iri'),
+                  'ts_iri': get_unique_value(res, 'ts_iri'),
+                  'fc_iri': get_unique_value(res, 'fc_iri'),
+                  'unit': get_unique_value(res, 'unit'),
+                  'rdb_url': get_unique_value(res, 'rdb_url'),
+                  'time_format': get_unique_value(res, 'time_format')
             }
             return ts
         
@@ -99,18 +101,18 @@ class KGClient(PySparqlClient):
             OPTIONAL {{ ?fcmodel_iri <{TS_HASCOVARIATE}> ?covariate_iri . }}
             }}
         """
-        query = self.remove_unnecessary_whitespace(query)
+        query = remove_unnecessary_whitespace(query)
         res = self.performQuery(query)
 
         # Extract relevant information from unique query result
         if len(res) >= 1:
-            fcmodel = {'fcmodel_iri': self.get_unique_value(res, 'fcmodel_iri'),
-                       'label': self.get_unique_value(res, 'label'),
-                       'scale_data': self.get_unique_value(res, 'scale_data', bool),
-                       'model_url': self.get_unique_value(res, 'model_url'),
-                       'chkpt_url': self.get_unique_value(res, 'chkpt_url'),
+            fcmodel = {'fcmodel_iri': get_unique_value(res, 'fcmodel_iri'),
+                       'label': get_unique_value(res, 'label'),
+                       'scale_data': get_unique_value(res, 'scale_data', bool),
+                       'model_url': get_unique_value(res, 'model_url'),
+                       'chkpt_url': get_unique_value(res, 'chkpt_url'),
                        #TODO: covariates should become dictionary with type and IRI
-                       'covariate_iris': self.get_list_of_unique_values(res, 'covariate_iri')
+                       'covariate_iris': get_list_of_unique_values(res, 'covariate_iri')
             }
             return fcmodel
         
@@ -138,15 +140,15 @@ class KGClient(PySparqlClient):
             OPTIONAL {{ ?iri <{TS_RESAMPLE_DATA}> ?resample_data . }}
             }}
         """
-        query = self.remove_unnecessary_whitespace(query)
+        query = remove_unnecessary_whitespace(query)
         res = self.performQuery(query)
 
         # Extract relevant information from unique query result
         if len(res) == 1:
-            duration = {'iri': self.get_unique_value(res, 'iri'),
-                        'unit': self.get_unique_value(res, 'unit'),
-                        'value': self.get_unique_value(res, 'value', float),
-                        'resample_data': self.get_unique_value(res, 'resample_data', bool)
+            duration = {'iri': get_unique_value(res, 'iri'),
+                        'unit': get_unique_value(res, 'unit'),
+                        'value': get_unique_value(res, 'value', float),
+                        'resample_data': get_unique_value(res, 'resample_data', bool)
             }
             return duration
         
@@ -184,16 +186,16 @@ class KGClient(PySparqlClient):
             {_get_instant_details('end_iri', 'end_unix')}        
             }}
         """
-        query = self.remove_unnecessary_whitespace(query)
+        query = remove_unnecessary_whitespace(query)
         res = self.performQuery(query)
 
         # Extract relevant information from unique query result
         if len(res) == 1:
-            interval = {'interval_iri': self.get_unique_value(res, 'interval_iri'),
-                        'start_iri': self.get_unique_value(res, 'start_iri'),
-                        'end_iri': self.get_unique_value(res, 'end_iri'),
-                        'start_unix': self.get_unique_value(res, 'start_unix', int),
-                        'end_unix': self.get_unique_value(res, 'end_unix', int),
+            interval = {'interval_iri': get_unique_value(res, 'interval_iri'),
+                        'start_iri': get_unique_value(res, 'start_iri'),
+                        'end_iri': get_unique_value(res, 'end_iri'),
+                        'start_unix': get_unique_value(res, 'start_unix', int),
+                        'end_unix': get_unique_value(res, 'end_unix', int),
             }
             # Check validity of retrieved interval
             if interval['start_unix'] >= interval['end_unix']:
@@ -260,11 +262,11 @@ class KGClient(PySparqlClient):
             ?dataIRI <{TS_HASTIMESERIES}> <{tsIRI}> .
             }}
         """
-        query = self.remove_unnecessary_whitespace(query)
+        query = remove_unnecessary_whitespace(query)
         res = self.performQuery(query)
 
         # Return unique query result (otherwise exception is thrown)
-        return self.get_unique_value(res, 'dataIRI')
+        return get_unique_value(res, 'dataIRI')
 
 
     def get_all_tsIRIs(self):
@@ -277,50 +279,102 @@ class KGClient(PySparqlClient):
             ?tsIRI <{RDF_TYPE}> <{TS_TIMESERIES}> .
             }}
         """
-        query = self.remove_unnecessary_whitespace(query)
+        query = remove_unnecessary_whitespace(query)
         res = self.performQuery(query)
 
         # Return unique query result (otherwise exception is thrown)
-        return self.get_list_of_unique_values(res, 'tsIRI')
+        return get_list_of_unique_values(res, 'tsIRI')
 
 
     #
     # SPARQL UPDATES
     # 
+    def instantiate_forecast(self, forecast, config:dict):
+        """
+        Takes a model configuration and returns the forecast SPARQL update query to instantiate the forecast in the KG
 
+        Arguments:
+            forecast {darts.TimeSeries} - forecast time series for which to instantiate triples
+            config: a dictionary with meta information about the forecast
+                'fc_model': the configuration of the forecasting model
+            'fc_start_timestamp': the start date of the forecast
+            'frequency': the frequency of the time series data
+            'horizon': the length of the forecast
+            'data_length': the length of the time series data to retrieve before the fc_start_timestamp
+            'dataIRI': the iri of the timeseries which is forecasted
+            'iri': the iri which has the predicate hasTimeSeries
+            
+            'model_configuration_name': the name of the model configuration
+            'loaded_data_bounds': the lower and upper bounds of the time series
+            'forecast_name': the name of the forecast
+        """
+        
+        # Create 
+        start_date = forecast.end_time() - forecast.freq * \
+                     (config['fc_model']['input_length'] - 1)
+        config['model_input_interval'] = [start_date, forecast.end_time()]
+        config['model_output_interval'] = [forecast.start_time(), forecast.end_time()]
 
-    #
-    # Helper functions
-    #
-    def remove_unnecessary_whitespace(self, query: str) -> str:
-        # Remove unnecessary whitespaces
-        query = ' '.join(query.split())
-        return query
-    
-    def get_list_of_unique_values(self, res: list, key: str) -> list:
-        # Unpacks a query result list (i.e., list of dicts) into a list of 
-        # unique values for the given key.
-        
-        res_list =  list(set([r.get(key) for r in res]))
-        res_list = [v for v in res_list if v is not None]
-        return res_list
-    
-    def get_unique_value(self, res: list, key: str, cast_to=None) -> str:
-        # Unpacks a query result list (i.e., list of dicts) into unique 
-        # value for the given key (returns None if no unique value is found)
-        
-        res_list =  self.get_list_of_unique_values(res, key)
-        if len(res_list) == 1:
-            # Try to cast retrieved value to target type (throws error if not possible)
-            if cast_to and issubclass(cast_to, bool):
-                res_list[0] = bool(strtobool(res_list[0]))
-            elif cast_to and issubclass(cast_to, (int, float)):
-                res_list[0] = cast_to(res_list[0])
-            return res_list[0]
+        # Create new forecast iri if not exists
+        if not config.get('fc_iri'):
+            config['fc_iri'] = KB + 'Forecast_' + str(uuid.uuid4())
+            update = instantiate_new_forecast(config)
         else:
-            if len(res_list) == 0:
-                msg = f"No value found for key: {key}."
-            else:
-                msg = f"Multiple values found for key: {key}."
-            logger.warning(msg)
-            return None
+            update = update_existing_forecast(config)
+
+        update = remove_unnecessary_whitespace(update)
+        self.performUpdate(update)
+
+        return config.get('fc_iri')
+
+
+def instantiate_new_forecast(cfg:dict):
+    """
+    Returns SPARQL INSERT DATA query to instantiate a new forecast
+    """
+    
+    # Create IRIs for new instances
+    outputTimeInterval_iri = KB + 'Interval_' + str(uuid.uuid4())
+    inputTimeInterval_iri = KB + 'Interval_' + str(uuid.uuid4())
+
+    # Initialise SPARQL update body witth forecast related triples
+    body = ''
+    body += create_properties_for_subj(subj=cfg['iri_to_forecast'], pred_obj={
+                TS_HASFORECAST: cfg['fc_iri']})
+    # Add unit to forecast if one could be retrieved from original ts
+    unit = {OM_HASUNIT: cfg['unit']} if 'unit' in cfg else {}
+    body += create_properties_for_subj(subj=cfg['fc_iri'], pred_obj={
+                RDF_TYPE: TS_FORECAST,
+                **unit,
+                TS_HASOUTPUTTIMEINTERVAL: outputTimeInterval_iri,
+                TS_HASINPUTTIMEINTERVAL: inputTimeInterval_iri})
+
+    # Add triples for time intervals/instants
+    inputBeginning_iri, q = create_time_instant(cfg['model_input_interval'][0])
+    body += q
+    inputEnd_iri, q = create_time_instant(cfg['model_input_interval'][1])
+    body += q
+    outputBeginning_iri, q = create_time_instant(cfg['model_output_interval'][0])
+    body += q
+    outputEnd_iri, q = create_time_instant(cfg['model_output_interval'][1])
+    body += q
+    body += create_properties_for_subj(subj=inputTimeInterval_iri, pred_obj={
+                RDF_TYPE: TIME_INTERVAL,
+                TIME_HASBEGINNING: inputBeginning_iri,
+                TIME_HASEND: inputEnd_iri})
+    body += create_properties_for_subj(subj=outputTimeInterval_iri, pred_obj={
+                RDF_TYPE: TIME_INTERVAL,
+                TIME_HASBEGINNING: outputBeginning_iri,
+                TIME_HASEND: outputEnd_iri})
+
+    update = f'INSERT DATA {{ {body} }} '
+    return update
+
+
+def update_existing_forecast(cfg:dict):
+    """
+    Returns SPARQL UPDATE query to update an existing forecast
+    """
+    update = ''
+
+    return update

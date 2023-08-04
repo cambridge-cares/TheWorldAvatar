@@ -16,9 +16,9 @@ from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
 from pyderivationagent import DerivationOutputs
 
+from forecastingagent.datamodel.iris import *
 from forecastingagent.agent.forcasting_config import *
 from forecastingagent.agent.forecasting_tasks import forecast, calculate_error
-from forecastingagent.datamodel.iris import *
 from forecastingagent.errorhandling.exceptions import InvalidInput
 from forecastingagent.kgutils.kgclient import KGClient
 from forecastingagent.kgutils.tsclient import TSClient
@@ -147,7 +147,7 @@ class ForecastingAgent(DerivationAgent):
             1 IRI of Time:TimeDuration (data length prior to forecast interval
                                         to be used for training/data scaling)
             1 IRI of OM:Quantity or owl:Thing (the concept associated with the 
-                                                time series to be forecasted)
+                                               time series to be forecasted)
         and generates
             1 IRI of OntoTimeSeries:Forecast (incl. further relationships 
                                                 detailing forecast instance)
@@ -178,13 +178,14 @@ class ForecastingAgent(DerivationAgent):
         # Create forecasting configuration dict
         cfg = create_forecast_configuration(model=fcmodel, ts_details=ts, ts_frequency=frequency, 
                                             hist_duration=data_hist, fc_interval=interval)
+        # Add IRI to forecast to config (i.e., IRI which will get ts:hasForecast relationship)
+        cfg['iri_to_forecast'] = input_iris['iri_to_forecast']
 
         # Create forecast
         rdb_url, time_format = get_rdb_endpoint(ts)
         ts_client = TSClient(kg_client=self.sparql_client, rdb_url=rdb_url, 
                              rdb_user=DB_USER, rdb_password=DB_PASSWORD)
-        fc_ts = forecast(iri=input_iris['iri_to_forecast'], config=cfg, 
-                         kgClient=self.sparql_client, tsClient=ts_client, 
+        fc_ts = forecast(config=cfg, kgClient=self.sparql_client, tsClient=ts_client, 
                          db_url=rdb_url, time_format=time_format)
         # Extract times and values from darts TimeSeries
         times = [str(x) for x in fc_ts.time_index.tz_localize('UTC').strftime(time_format)]
@@ -194,17 +195,24 @@ class ForecastingAgent(DerivationAgent):
             values = [round(x, ROUNDING) for x in values]
 
         # Instantiate new forecast in KG and RDB (only if applicable)
-        if not self.fc_overwrite or bool(cfg.get('fc_iri')):
+        if not self.fc_overwrite or not bool(cfg.get('fc_iri')):
             # Initialise forecast in KG
-
+            fc_iri = self.sparql_client.instantiate_forecast(forecast=fc_ts, config=cfg)
             # Create new forecast instance and add ts data in RDB
-            ts_client.init_timeseries(dataIRI=cfg['fc_iri'], times=times, values=values, 
+            ts_client.init_timeseries(dataIRI=fc_iri, times=times, values=values, 
                                       ts_type=cfg['ts_data_type'], time_format=time_format)
         else:
+            # Only update forecast metadata in KG
+            #TODO:Implement
             # Update forecast time series data in RDB
             ts_client.add_ts_data(dataIRI=cfg['fc_iri'], times=times, values=values)
-
+        
+        created_at = pd.to_datetime('now', utc=True)
+        logger.info(f'Created forecast at: {created_at}')
+        
         # Add output graph for derivation markup
+        
+
 
 
     def evaluate_forecast_error(self):

@@ -13,7 +13,6 @@ import urllib
 from pathlib import Path
 import pandas as pd
 
-from dateutil.parser import isoparse
 from darts import TimeSeries
 from darts.models import Prophet, TFTModel
 from darts.dataprocessing.transformers import Scaler
@@ -21,10 +20,10 @@ from darts.metrics import mape, mse, rmse, smape
 
 from py4jps import agentlogging
 
+from forecastingagent.datamodel.iris import *
 from forecastingagent.utils.tools import *
 from forecastingagent.utils.env_configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, \
                                                DB_USER, DB_PASSWORD
-from forecastingagent.datamodel.iris import *
 from forecastingagent.agent.forcasting_config import *
 from forecastingagent.kgutils.kgclient import KGClient
 from forecastingagent.kgutils.tsclient import TSClient
@@ -34,7 +33,7 @@ from forecastingagent.errorhandling.exceptions import KGException
 logger = agentlogging.get_logger('prod')
 
 
-def forecast(iri, config, db_url, time_format, kgClient=None, tsClient=None,
+def forecast(config, db_url, time_format, kgClient=None, tsClient=None,
              query_endpoint=SPARQL_QUERY_ENDPOINT, update_endpoint=SPARQL_UPDATE_ENDPOINT,
              db_user=DB_USER, db_password=DB_PASSWORD):
     """
@@ -42,7 +41,6 @@ def forecast(iri, config, db_url, time_format, kgClient=None, tsClient=None,
     returns a dictionary with the forecast and some metadata.
 
     Arguments:
-        iri {str} - instance IRI to forecast (i.e., IRI which will get ts:hasForecast relationship)
         kgClient {KGClient} - KG client to use
         time_format {str} - time format to use to initialise the forecast TimeSeries
         query_endpoint {str} - endpoint to query the KG
@@ -64,7 +62,6 @@ def forecast(iri, config, db_url, time_format, kgClient=None, tsClient=None,
 
     # Update/condition forecasting configuration
     cfg = config.copy()
-    cfg['iri'] = iri 
     
     # Calculate lower and upper bound for time series to speed up TSClient queries
     # (i.e., only query the time series data that is needed)
@@ -75,7 +72,7 @@ def forecast(iri, config, db_url, time_format, kgClient=None, tsClient=None,
         }
     
     # Log some information before calculating forecast
-    logger.info(f'Creating forecast for: {cfg["iri"]}')
+    logger.info(f'Creating forecast for: {cfg["iri_to_forecast"]}')
     logger.info(f'Forecast start timestamp: {cfg["fc_start_timestamp"]}')
     logger.info(f'Loaded time bounds for forecast: {cfg["loaded_data_bounds"]}')
     
@@ -126,46 +123,6 @@ def forecast(iri, config, db_url, time_format, kgClient=None, tsClient=None,
     forecast = get_forecast(series, covariates, model, cfg)
 
     return forecast
-
-    # # create metadata
-    # # input series range
-    # start_date = series.end_time() - series.freq * \
-    #     (cfg['fc_model']['input_length'] - 1)
-    # cfg['model_input_interval'] = [start_date, series.end_time()]
-    # cfg['model_output_interval'] = [forecast.start_time(), forecast.end_time()]
-    # cfg['created_at'] = pd.to_datetime('now', utc=True)
-    # logger.info(f'Created forecast at: {cfg["created_at"]}')
-    # logger.info(f'Output interval: {cfg["model_output_interval"]}')
-    # logger.info(f'Input interval: {cfg["model_input_interval"]}')
-    # cfg['tsIRI'] = get_tsIRI_from_dataIRI(cfg['dataIRI'], kgClient)
-    
-    # # Get unit from IRI and add to forecast
-
-    # update = get_forecast_update(cfg=cfg)
-    
-    # kgClient.performUpdate(add_insert_data(update))
-    # logger.info(f'Added forecast ontology to KG')
-    
-    # # call client
-    # instantiate_forecast_timeseries(tsClient, cfg, forecast)
- 
-
-
-
-def instantiate_forecast_timeseries(tsClient, cfg, forecast):
-    try:
-        with tsClient.connect() as conn:
-            tsClient.tsclient.initTimeSeries([cfg['forecast_iri']], [cfg['ts_data_type']], cfg['time_format'],
-                                            conn)
-            ts = TSClient.create_timeseries([str(x) for x in forecast.time_index.tz_localize('UTC').strftime(TIME_FORMAT)], [
-                                            cfg['forecast_iri']], [forecast.values().squeeze().tolist()])
-            tsClient.tsclient.addTimeSeriesData(ts, conn)
-            logger.info(f'Added forecast timeseries to TSDB.')
-
-            
-    except:
-        logger.error('Could not instantiate forecast timeseries.')
-        raise KGException(f'Could not instantiate forecast timeseries {cfg["forecast_iri"]}')
 
 
 def get_forecast(series, covariates, model, cfg):
@@ -380,139 +337,6 @@ def load_pretrained_model(cfg, ModelClass, force_download=False):
     model.trainer_params.update(trainer_params)
 
     return model
-
-
-def get_forecast_update(cfg):
-    """
-    Takes a model configuration and returns the forecast SPARQL update query to instantiate the forecast in the KG
-
-    :param cfg: a dictionary with meta information:
-        'fc_start_timestamp': the start date of the forecast
-        'frequency': the frequency of the time series data
-        'horizon': the length of the forecast
-        'data_length': the length of the time series data to retrieve before the fc_start_timestamp
-        'dataIRI': the iri of the timeseries which is forecasted
-        'iri': the iri which has the predicate hasTimeSeries
-        'fc_model': the configuration of the model
-        'model_configuration_name': the name of the model configuration
-        'loaded_data_bounds': the lower and upper bounds of the time series
-        'forecast_name': the name of the forecast
-    """
-    #  instantiate forecast in KG
-    cfg['forecast_iri'] = KB + 'Forecast_' + str(uuid.uuid4())
-    update = ""
-
-    unit = {OM_HASUNIT: cfg['unit']} if 'unit' in cfg else {}
-    covariate_update = {
-        TS_HASCOVARIATE: cfg['covariates_iris']} if 'covariates_iris' in cfg else {}
-
-    # if Train again is given, set the hasTrainingTimeSeries to the new training series
-    training_series = {TS_HASTRAININGTIMESERIES: cfg['tsIRI']} if 'train_again' in cfg['fc_model'] and cfg['fc_model']['train_again'] else {}
-    
-    # model
-    forecastingModel_iri = KB + 'ForecastingModel_' + str(uuid.uuid4())
-    update += get_properties_for_subj(subj=forecastingModel_iri, verb_obj={
-        RDF_TYPE: TS_FORECASTINGMODEL,
-        **covariate_update,
-        **training_series,
-        
-    }, verb_literal={
-        RDFS_LABEL: cfg['fc_model']['name'],
-    })
-
-    if 'model_path_ckpt_link' in cfg['fc_model']:
-        # url chkpt
-        update += get_properties_for_subj(subj=forecastingModel_iri, verb_literal={
-            TS_HASURL: [cfg['fc_model']['model_path_ckpt_link'], XSD_STRING],
-        })
-    if 'model_path_pth_link' in cfg['fc_model']:
-        # url pth
-        update += get_properties_for_subj(subj=forecastingModel_iri, verb_literal={
-            TS_HASURL: [cfg['fc_model']['model_path_pth_link'], XSD_STRING],
-        })
-
-    # intervals
-    outputTimeInterval_iri = KB + 'Interval_' + str(uuid.uuid4())
-    inputTimeInterval_iri = KB + 'Interval_' + str(uuid.uuid4())
-
-    outputEnd_iri, q = get_time_instant(cfg['model_output_interval'][1])
-    update += q
-    outputBeginning_iri, q = get_time_instant(cfg['model_output_interval'][0])
-    update += q
-    inputEnd_iri, q = get_time_instant(cfg['model_input_interval'][1])
-    update += q
-    inputBeginning_iri, q = get_time_instant(cfg['model_input_interval'][0])
-    update += q
-
-    update += get_properties_for_subj(subj=outputTimeInterval_iri, verb_obj={
-        RDF_TYPE: TIME_INTERVAL,
-        TIME_HASBEGINNING: outputBeginning_iri,
-        TIME_HASEND: outputEnd_iri
-    })
-    update += get_properties_for_subj(subj=inputTimeInterval_iri, verb_obj={
-        RDF_TYPE: TIME_INTERVAL,
-        TIME_HASBEGINNING: inputBeginning_iri,
-        TIME_HASEND: inputEnd_iri
-    })
-
-    update += get_properties_for_subj(subj=cfg['forecast_iri'], verb_obj={
-        RDF_TYPE: TS_FORECAST,
-        **unit,
-        TS_HASFORECASTINGMODEL: forecastingModel_iri,
-        TS_HASOUTPUTTIMEINTERVAL: outputTimeInterval_iri,
-        TS_HASINPUTTIMEINTERVAL: inputTimeInterval_iri,
-    }, verb_literal={
-        TS_CREATEDAT: [cfg['created_at'], XSD_DATETIMESTAMP], }
-    )
-
-    update += get_properties_for_subj(subj=cfg['iri'], verb_obj={
-        TS_HASFORECAST: cfg['forecast_iri']})
-
-    return update
-
-
-def convert_date_to_timestamp(date):
-    """
-    Converts a date to a unix timestamp
-
-    :param date: a date
-    :return: the timestamp
-    """
-    # convert date to timestamp
-    if isinstance(date, int):
-        time_stamp = date
-    elif isinstance(date, str):
-        time_stamp = pd.Timestamp(
-            isoparse(date)).tz_convert('UTC').tz_localize(None).timestamp()
-    elif isinstance(date, pd.Timestamp):
-        time_stamp = date.timestamp()
-    else:
-        raise ValueError(
-            f'Unknown date format: {date}. Please use int, str or pd.Timestamp')
-    return int(time_stamp)
-
-
-def get_time_instant(date):
-
-    time_stamp = convert_date_to_timestamp(date)
-
-    instant_iri = KB + 'Instant_' + str(uuid.uuid4())
-    update = ''
-
-    timePosition_iri = KB + 'TimePosition_' + str(uuid.uuid4())
-
-    update += get_properties_for_subj(subj=timePosition_iri, verb_obj={
-        RDF_TYPE: TIME_TIMEPOSITION,
-        TIME_HASTRS: UNIX_TIME
-    }, verb_literal={
-        TIME_NUMERICPOSITION: [time_stamp, XSD_INTEGER]
-    })
-
-    update += get_properties_for_subj(subj=instant_iri, verb_obj={
-        RDF_TYPE: TIME_INSTANT,
-        TIME_INTIMEPOSITION: timePosition_iri})
-
-    return instant_iri, update
 
 
 def calculate_error(target, forecast):
