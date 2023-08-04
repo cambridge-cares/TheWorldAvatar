@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -53,9 +54,8 @@ public class AssetInfoFragment extends Fragment {
         view.findViewById(uk.ac.cam.cares.jps.ui.R.id.back_bt).setOnClickListener(v -> NavHostFragment.findNavController(this).navigateUp());
         ((TextView) view.findViewById(uk.ac.cam.cares.jps.ui.R.id.instance_title)).setText(R.string.asset_info);
 
-        viewModel.getAssetInfo().observe(this.getViewLifecycleOwner(), assetInfo -> {
-            assetInfoAdapter.updateProperties(assetInfo);
-        });
+        viewModel.getAssetInfo().observe(this.getViewLifecycleOwner(), assetInfo -> assetInfoAdapter.updateProperties(assetInfo));
+        viewModel.getError().observe(getViewLifecycleOwner(), error -> Toast.makeText(getContext(), getString(error), Toast.LENGTH_SHORT).show());
         viewModel.getAssetInfoByIri(getArguments().getString("uri"));
 
         assetInfoAdapter = new AssetInfoAdapter();

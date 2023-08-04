@@ -22,7 +22,7 @@ public class AssetInfoViewModel extends ViewModel {
     AssetInfoRepository repository;
 
     MutableLiveData<AssetInfo> assetInfo = new MutableLiveData<>();
-    MutableLiveData<String> error = new MutableLiveData<>();
+    MutableLiveData<Integer> error = new MutableLiveData<>();
 
     @Inject
     AssetInfoViewModel(AssetInfoRepository repository) {
@@ -35,12 +35,16 @@ public class AssetInfoViewModel extends ViewModel {
 
         Response.ErrorListener onError = error -> {
             LOGGER.error(error.getMessage());
-            this.error.postValue(String.valueOf(R.string.network_error));
+            this.error.postValue(R.string.network_error);
         };
         repository.getAssetInfoByIri(assetUri, onSuccess, onError);
     }
 
     MutableLiveData<AssetInfo> getAssetInfo() {
         return assetInfo;
+    }
+
+    public MutableLiveData<Integer> getError() {
+        return error;
     }
 }
