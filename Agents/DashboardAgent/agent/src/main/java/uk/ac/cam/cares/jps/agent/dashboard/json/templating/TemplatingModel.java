@@ -15,9 +15,10 @@ public class TemplatingModel {
     /**
      * Constructor that process customisable options for the templating variable in Grafana's JSON model.
      *
-     * @param assets A map of all assets mapped to their asset types.
+     * @param databaseConnectionMap A map linking each database to its connection ID.
+     * @param assets                A map of all assets mapped to their asset types.
      */
-    public TemplatingModel(Map<String, Map<String, List<String[]>>> assets) {
+    public TemplatingModel(Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> assets) {
         // Initialise a queue to store these template variables
         Queue<TemplateVariable> variableQueue = new ArrayDeque<>();
         // Create the first custom variable for filtering asset types ONLY IF >1 asset type
@@ -42,7 +43,10 @@ public class TemplatingModel {
             for (String measure : measures.keySet()) {
                 // Take note to exclude the assets key as that is not required
                 if (!measure.equals("assets")) {
-                    PostgresVariable postgresVariable = new PostgresVariable(measure, assetType, measures.get(measure));
+                    // Retrieve the relevant database and database ID from the first item
+                    // Assumes that each measure of a specific asset type belongs to only one database
+                    String database = measures.get(measure).get(0)[3];
+                    PostgresVariable postgresVariable = new PostgresVariable(measure, assetType, databaseConnectionMap.get(database), measures.get(measure));
                     variableQueue.offer(postgresVariable);
                 }
             }

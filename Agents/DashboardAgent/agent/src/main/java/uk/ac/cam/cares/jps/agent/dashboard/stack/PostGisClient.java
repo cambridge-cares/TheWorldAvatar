@@ -79,13 +79,13 @@ public class PostGisClient {
      * The returned map will have the following structure:
      * { assetType1: {
      * assets: [AssetName1, AssetName2, AssetName3],
-     * measure1: [[AssetName1, ColName1, TableName1],[AssetName2, ColName2, TableName1],[AssetName3, ColName3, TableName1]],
-     * measure2: [[AssetName1, ColName5, TableName1],[AssetName2, ColName6, TableName1],[AssetName3, ColName7, TableName1]],
+     * measure1: [[AssetName1, ColName1, TableName1, Database],[AssetName2, ColName2, TableName1, Database],[AssetName3, ColName3, TableName1, Database]],
+     * measure2: [[AssetName1, ColName5, TableName1, Database],[AssetName2, ColName6, TableName1, Database],[AssetName3, ColName7, TableName1, Database]],
      * },
      * assetType2: {
      * assets: [AssetName5, AssetName6, AssetName7],
-     * measure1: [[AssetName5, ColName1, TableName1],[AssetName6, ColName2, TableName1],[AssetName7, ColName3, TableName1]],
-     * measure2: [[AssetName5, ColName5, TableName1],[AssetName6, ColName6, TableName1],[AssetName7, ColName7, TableName1]],
+     * measure1: [[AssetName5, ColName1, TableName1, Database],[AssetName6, ColName2, TableName1, Database],[AssetName7, ColName3, TableName1, Database]],
+     * measure2: [[AssetName5, ColName5, TableName1, Database],[AssetName6, ColName6, TableName1, Database],[AssetName7, ColName7, TableName1, Database]],
      * }
      * }
      *
@@ -100,7 +100,7 @@ public class PostGisClient {
         // Connect to all existing database and attempt to retrieve the required metadata
         for (String database : this.DATABASE_LIST) {
             try (Connection conn = connect(this.getJdbc(database), this.STACK_POSTGIS_USER, this.STACK_POSTGIS_PASSWORD)) {
-                Queue<String[]> postGisData = this.retrieveAllColAndTableNames(conn, measureIris);
+                Queue<String[]> postGisData = this.retrieveAllColAndTableNames(conn, database, measureIris);
                 // If there are results, store them into the overall queue for further processing
                 // This step is required as data might be stored on different databases for different assets
                 // If we ignore this step, only results from one database is stored
@@ -206,10 +206,11 @@ public class PostGisClient {
      * Retrieves all the column and table names from the dbTable in the selected database.
      *
      * @param conn               A connection object to the required database.
+     * @param database           The database name.
      * @param measureQuerySyntax An array containing three query syntax to be appended to the query.
-     * @return A list of the required column and table names mapped to their asset and measures. Position 0 - measure name; Position 1 - asset name; Position 2 - asset type; Position 3 - column name; Position 4 - table name.
+     * @return A list of the required column and table names mapped to their asset and measures. Position 0 - measure name; Position 1 - asset name; Position 2 - asset type; Position 3 - column name; Position 4 - table name; Position 5 - database name.
      */
-    private Queue<String[]> retrieveAllColAndTableNames(Connection conn, String[] measureQuerySyntax) {
+    private Queue<String[]> retrieveAllColAndTableNames(Connection conn, String database, String[] measureQuerySyntax) {
         Queue<String[]> results = new ArrayDeque<>();
         try (Statement stmt = conn.createStatement()) {
             // Retrieve only from dbTable of each database and try to find certain info if available
@@ -230,12 +231,14 @@ public class PostGisClient {
             // When there is a next row available in the result,
             while (rowResultSet.next()) {
                 // Retrieve the necessary values and append it into the queue
-                String[] rowValues = new String[5];
+                String[] rowValues = new String[6];
                 rowValues[0] = rowResultSet.getString("measure");
                 rowValues[1] = rowResultSet.getString("asset");
                 rowValues[2] = rowResultSet.getString("assettype");
                 rowValues[3] = rowResultSet.getString("columnName");
                 rowValues[4] = rowResultSet.getString("tableName");
+                // If there are results returned from this database, attach this metadata on it
+                rowValues[5] = database;
                 results.offer(rowValues);
             }
         } catch (SQLException e) {
@@ -254,13 +257,13 @@ public class PostGisClient {
      * Processes the query results into the required nested map structure so that it is easier for the Dashboard client to parse:
      * { assetType1: {
      * assets: [AssetName1, AssetName2, AssetName3],
-     * measure1: [[AssetName1, ColName1, TableName1],[AssetName2, ColName2, TableName1],[AssetName3, ColName3, TableName1]],
-     * measure2: [[AssetName1, ColName5, TableName1],[AssetName2, ColName6, TableName1],[AssetName3, ColName7, TableName1]],
+     * measure1: [[AssetName1, ColName1, TableName1, Database],[AssetName2, ColName2, TableName1, Database],[AssetName3, ColName3, TableName1, Database]],
+     * measure2: [[AssetName1, ColName5, TableName1, Database],[AssetName2, ColName6, TableName1, Database],[AssetName3, ColName7, TableName1, Database]],
      * },
      * assetType2: {
      * assets: [AssetName5, AssetName6, AssetName7],
-     * measure1: [[AssetName5, ColName1, TableName1],[AssetName6, ColName2, TableName1],[AssetName7, ColName3, TableName1]],
-     * measure2: [[AssetName5, ColName5, TableName1],[AssetName6, ColName6, TableName1],[AssetName7, ColName7, TableName1]],
+     * measure1: [[AssetName5, ColName1, TableName1, Database],[AssetName6, ColName2, TableName1, Database],[AssetName7, ColName3, TableName1, Database]],
+     * measure2: [[AssetName5, ColName5, TableName1, Database],[AssetName6, ColName6, TableName1, Database],[AssetName7, ColName7, TableName1, Database]],
      * }
      * }
      *
@@ -277,6 +280,7 @@ public class PostGisClient {
             String assetTypeKey = assetMetadata[2];
             String columnName = assetMetadata[3];
             String tableName = assetMetadata[4];
+            String database = assetMetadata[5];
             // If the asset type does not exist in the map,
             if (!results.containsKey(assetTypeKey)) {
                 // Initialise a new hashmap containing only one key-value pair to link the asset names to their type
@@ -292,7 +296,7 @@ public class PostGisClient {
             // If the measure specified does not exist in the map, initialise a new empty list
             if (!measureMap.containsKey(measureKey)) measureMap.put(measureKey, new ArrayList<>());
             // Add the required measure metadata into the list
-            measureMap.get(measureKey).add(new String[]{assetName, columnName, tableName});
+            measureMap.get(measureKey).add(new String[]{assetName, columnName, tableName, database});
         }
         return results;
     }

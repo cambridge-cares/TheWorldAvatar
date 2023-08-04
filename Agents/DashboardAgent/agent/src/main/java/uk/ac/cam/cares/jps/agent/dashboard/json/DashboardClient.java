@@ -7,6 +7,7 @@ import uk.ac.cam.cares.jps.agent.dashboard.stack.StackClient;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.ResponseHelper;
 
 import java.net.http.HttpResponse;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +21,7 @@ public class DashboardClient {
     private final String DASHBOARD_ACCOUNT_USER;
     private final String DASHBOARD_ACCOUNT_PASSWORD;
     private final StackClient SERVICE_CLIENT;
+    private final Map<String, String> DATABASE_CONNECTION_MAP = new HashMap<>();
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
     private static final String CONNECTION_NAME_PREFIX = "Postgis";
     private static final String SERVICE_ACCOUNT_ROUTE = "/api/serviceaccounts";
@@ -97,7 +99,11 @@ public class DashboardClient {
             // Execute request to create new connection
             HttpResponse response = this.SERVICE_CLIENT.sendPostRequest(route, source.construct(), this.SERVICE_ACCOUNT_TOKEN);
             ResponseHelper.verifySuccessfulRequest(response, FAILED_REQUEST_ERROR + response.body());
-            Map<String, Object> responseMap = ResponseHelper.retrieveResponseBodyAsMap(response);
+            // Retrieve the connection ID generated for the database connection and link it to the database
+            Map<String, Object> responseMap = (Map<String, Object>) ResponseHelper.retrieveResponseBodyAsMap(response).get("datasource");
+            String databaseConnectionID = String.valueOf(responseMap.get("uid"));
+            String databaseName = String.valueOf(responseMap.get("database"));
+            this.DATABASE_CONNECTION_MAP.put(databaseName, databaseConnectionID);
         }
         LOGGER.debug("All connections have been successfully established!");
     }
@@ -115,7 +121,7 @@ public class DashboardClient {
         // Retrieve all assets for the model
         Map<String, Map<String, List<String[]>>> assets = this.SERVICE_CLIENT.getAllAssets(spatialZone);
         // Generate JSON model syntax
-        String jsonSyntax = new GrafanaModel(title, assets).construct();
+        String jsonSyntax = new GrafanaModel(title, this.DATABASE_CONNECTION_MAP, assets).construct();
         // Create a new dashboard based on the JSON model using a POST request with security token
         HttpResponse response = this.SERVICE_CLIENT.sendPostRequest(route, jsonSyntax, this.SERVICE_ACCOUNT_TOKEN);
         // WIP: Retrieve the required information to form the URL
