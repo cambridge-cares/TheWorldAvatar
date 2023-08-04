@@ -10,7 +10,10 @@
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+
         <!-- Customize your theme here. -->
+        <item name="textAppearanceSubtitle1">@style/Subtitle1</item>
+        <item name="textAppearanceBody2">@style/Body2</item>
     </style>
 
     <style name="Theme.AssetManagementApp.NoActionBar">
@@ -23,7 +26,7 @@
 
     <style name="Theme.AssetManagementApp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="LoginTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="LoginTheme" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/banner_color</item>
         <item name="android:statusBarColor">@color/white</item>
     </style>
@@ -35,5 +38,13 @@
         <item name="cornerSizeBottomRight">25dp</item>
         <item name="cornerSizeBottomLeft">25dp</item>
         <item name="contentPadding">0dp</item>
+    </style>
+
+    <style name="Subtitle1" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="Body2" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textColor">#99000000</item>
     </style>
 </resources>

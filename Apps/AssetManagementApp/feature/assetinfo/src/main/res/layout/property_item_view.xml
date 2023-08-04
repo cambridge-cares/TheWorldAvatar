@@ -7,24 +7,23 @@
     >
 
     <TextView
-        android:layout_width="130dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginBottom="@dimen/component_margin_small"
-        android:textSize="@dimen/font_size"
         android:textAlignment="textStart"
+        android:textAppearance="?attr/textAppearanceSubtitle1"
+        android:text="title"
         android:id="@+id/label"/>
     <TextView
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/content_font_size"
-        android:gravity="center"
         app:layout_constraintTop_toBottomOf="@id/label"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:padding="@dimen/component_margin_small"
         android:text="123"
+        android:textAppearance="?attr/textAppearanceBody2"
         />
 
 
