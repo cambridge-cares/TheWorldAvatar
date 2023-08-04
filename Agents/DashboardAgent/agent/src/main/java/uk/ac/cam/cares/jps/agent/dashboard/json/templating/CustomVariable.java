@@ -41,7 +41,7 @@ class CustomVariable extends TemplateVariable {
         // Description should follow label
         this.DESCRIPTION = "Default filters for the " + this.LABEL;
         // Create a default option for all values
-        TextValueOption option = new TextValueOption(true, "All", "$_all");
+        TextValueOption option = new TextValueOption(true, "All", "$__all");
         this.VARIABLE_SELECTION_OPTIONS.append(option.construct());
         // Append each value in the array in the required format
         for (String value : values) {
