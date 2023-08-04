@@ -251,9 +251,10 @@ class KGClient(PySparqlClient):
     #
     # SPARQL UPDATES
     # 
-    def instantiate_forecast(self, forecast, config:dict):
+    def instantiate_forecast(self, forecast, config:dict, create_new=False):
         """
-        Takes a model configuration and returns the forecast SPARQL update query to instantiate the forecast in the KG
+        Takes a forecast time series and forecast configuration and executes a
+        SPARQL update to instantiate/update the forecast instance in the KG.
 
         Arguments:
             forecast {darts.TimeSeries} - forecast time series for which to instantiate triples
@@ -262,6 +263,7 @@ class KGClient(PySparqlClient):
                 'iri_to_forecast': the iri of the instance to be forecasted
                 'fc_iri': the iri of the forecast instance
                 'unit': the unit of the (original) time series data
+            create_new {bool} - whether to create a new forecast instance or update an existing one
         """
         
         # Create forecast input and output intervals
@@ -271,11 +273,12 @@ class KGClient(PySparqlClient):
         config['model_input_interval'] = [inp_start, inp_end]
         config['model_output_interval'] = [forecast.start_time(), forecast.end_time()]
 
-        # Create new forecast iri if not exists
-        if not config.get('fc_iri'):
+        if create_new:
+            # Create new forecast iri if not exists
             config['fc_iri'] = KB + 'Forecast_' + str(uuid.uuid4())
             update = self.instantiate_new_forecast(config)
         else:
+            # Update existing forecast instance
             update = self.update_existing_forecast(config)
 
         update = remove_unnecessary_whitespace(update)
@@ -381,3 +384,26 @@ class KGClient(PySparqlClient):
         """
 
         return update
+    
+
+    def reconnect_forecast_with_derivation(self, old_fc_iri, new_fc_iri):
+        """
+        Returns SPARQL UPDATE to reconnect a newly created forecast with 
+        corresponding derivation (and delete old connection)
+        """
+        # Create Delete-Insert query
+        update = f"""
+            DELETE {{
+                ?old_fc <{ONTODERIVATION_BELONGSTO}> ?deriv .
+            }}
+            INSERT {{
+                <{new_fc_iri}> <{ONTODERIVATION_BELONGSTO}> ?deriv .
+            }} 
+            WHERE {{
+                VALUES ?old_fc {{ <{old_fc_iri}> }}
+                ?old_fc <{ONTODERIVATION_BELONGSTO}> ?deriv .
+            }}
+        """
+        update = remove_unnecessary_whitespace(update)
+        
+        self.performUpdate(update)

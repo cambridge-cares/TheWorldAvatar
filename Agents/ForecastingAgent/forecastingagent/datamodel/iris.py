@@ -1,5 +1,8 @@
 # Provide Constants/IRIs, which can be used to query and update the KG
 
+from pyderivationagent.data_model.iris import ONTODERIVATION_BELONGSTO, \
+                                              ONTODERIVATION_DERIVATIONWITHTIMESERIES
+
 # Namespaces
 # External ontologies
 OM = "http://www.ontology-of-units-of-measure.org/resource/om-2/"

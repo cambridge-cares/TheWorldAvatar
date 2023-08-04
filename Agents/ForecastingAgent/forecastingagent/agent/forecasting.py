@@ -197,11 +197,20 @@ class ForecastingAgent(DerivationAgent):
 
         # Instantiate new forecast in KG and RDB (if requested or not yet existing)
         if not self.fc_overwrite or not bool(cfg.get('fc_iri')):
+            # Retrieve potential existing forecast IRI (None if not existing)
+            old_fc_iri = cfg.get('fc_iri')
             # Initialise forecast in KG
-            fc_iri = self.sparql_client.instantiate_forecast(forecast=fc_ts, config=cfg)
+            fc_iri = self.sparql_client.instantiate_forecast(forecast=fc_ts, config=cfg,
+                                                             create_new=True)
             # Create new forecast instance and add ts data in RDB
             ts_client.init_timeseries(dataIRI=fc_iri, times=times, values=values, 
                                       ts_type=cfg['ts_data_type'], time_format=time_format)
+            if old_fc_iri:
+                # In case new forecast has been created for existing derivation,
+                # disconnect old forecast instance from derivation
+                # NOTE: Derivation Framework only supports one output per rdf type
+                self.sparql_client.reconnect_forecast_with_derivation(old_fc_iri, fc_iri)
+
         else:
             # Only update forecast metadata in KG
             self.sparql_client.instantiate_forecast(forecast=fc_ts, config=cfg)

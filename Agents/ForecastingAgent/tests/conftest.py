@@ -23,8 +23,6 @@ from pathlib import Path
 from rdflib import Graph
 from urllib.parse import urlparse
 
-from pyderivationagent.data_model.iris import ONTODERIVATION_DERIVATIONWITHTIMESERIES
-
 from forecastingagent.datamodel.iris import *
 from forecastingagent.agent import ForecastingAgent
 from forecastingagent.agent.forcasting_config import *
