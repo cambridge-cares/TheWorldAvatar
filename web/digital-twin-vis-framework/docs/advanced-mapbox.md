@@ -50,7 +50,7 @@ In the DTVF's `data.json` file, the `filter` parameter can be added to any Mapbo
 
 <br/>
 <p align="center">
- <img src="./img/filtering-example.png" alt="Example of location filtering." width="80%"/>
+ <img src="./img/filtering-example.jpg" alt="Example of location filtering." width="80%"/>
 </p>
 <p align="center">
  <em>Example of location filtering.</em><br/><br/><br/>
