@@ -57,14 +57,16 @@ jobs:
           USERNAME: ${{github.actor}}
           PASSWORD: ${{github.token}}
           
-      # Build and push the agent's Docker image
+      # Build and push the Docker image
       - name: Build and push image
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: "ghcr.io/cambridge-cares/dtvf-base-image:${{ env.version }}"
           context: ./web/digital-twin-vis-framework/library/docker
-        
+          tags: |
+            "ghcr.io/cambridge-cares/dtvf-base-image:${{ env.version }}"
+            "ghcr.io/cambridge-cares/dtvf-base-image:latest"
+          
       # Generate the release body text
       - name: Generate release text
         id: generate-text
