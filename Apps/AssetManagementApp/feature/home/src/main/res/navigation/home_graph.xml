@@ -8,6 +8,6 @@
         android:id="@+id/home"
         android:name="uk.ac.cam.cares.jps.home.HomeFragment"
         tools:layout="@layout/fragment_home"
-        android:label="Home Fragment"/>
+        android:label="Home"/>
 
 </navigation>

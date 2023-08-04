@@ -22,7 +22,9 @@
         <item name="colorOnPrimary">@color/white</item>
     </style>
 
-    <style name="Theme.AssetManagementApp.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="Theme.AssetManagementApp.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="background">@color/banner_color</item>
+    </style>
 
     <style name="Theme.AssetManagementApp.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 

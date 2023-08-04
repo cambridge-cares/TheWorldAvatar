@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/setting"
         android:name="uk.ac.cam.cares.jps.setting.SettingFragment"
-        android:label="Setting Fragment"
+        android:label="@string/setting"
         tools:layout="@layout/fragment_setting">
         <deepLink
             app:uri="android-app://uk.ac.cam.cares.jps.app/setting_page" />
