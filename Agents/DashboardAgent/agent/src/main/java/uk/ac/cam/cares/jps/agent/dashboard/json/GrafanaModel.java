@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json;
 
+import uk.ac.cam.cares.jps.agent.dashboard.json.panel.PanelModel;
 import uk.ac.cam.cares.jps.agent.dashboard.json.templating.TemplatingModel;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public class GrafanaModel {
     private final String DASHBOARD_REFRESH_RATE;
     private final String COMMENT;
     private final String TEMPLATING_SYNTAX;
+    private final String PANEL_SYNTAX;
 
     /**
      * Constructor that provides default settings to set up a new dashboard. The default refresh rate is 20seconds.
@@ -52,6 +54,7 @@ public class GrafanaModel {
         this.COMMENT = comment;
         // Construct the templating syntax from the model
         this.TEMPLATING_SYNTAX = new TemplatingModel(databaseConnectionMap, assets).construct();
+        this.PANEL_SYNTAX = new PanelModel(databaseConnectionMap, assets).construct();
     }
 
     /**
@@ -69,6 +72,8 @@ public class GrafanaModel {
                 .append("\"title\": \"").append(this.DASHBOARD_TITLE).append("\",")
                 // Templating
                 .append("\"templating\": ").append(this.TEMPLATING_SYNTAX).append(",")
+                // Panel
+                .append("\"panels\": [").append(this.PANEL_SYNTAX).append("],")
                 // Disable any editing by non-admin users
                 .append("\"editable\": false,")
                 .append("\"timezone\": \"browser\",")
