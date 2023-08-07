@@ -17,20 +17,20 @@ Note:
 2) Under tile caching tab, enable application/json;type=geojson,  application/vnd.mapbox-vector-tile under Tile Image Formats
 
 ### Publishing Geoserver layers
-Publish the following layers: 
+Under layers tab, add a new layer, select kingslynn:routing_ways, publish the following layers: 
 1) isochrone_hospital_unflooded
 2) isochrone_hospital_flooded
 3) unreachable_population
 4) flood_polygon_single
 
 ### Configure new SQL view
-Create new SQL view layers in geoserver as below: 
+Under layers tab, add a new layer, select kingslynn:routing_ways, configure new SQL views geoserver as below: 
 1) tsp_visualization
 2) tsp_nodes
 
 Use SQL commands found under `inputs\data\kingslynn\sql\virtualTables`.
 
-Subsequently, your settings is properly set up and you may run the DTVF visualization to visualize the floodrouter.
+Your settings is now properly set up. Subsequently, you may run the DTVF container.
 
 ### DTVF Prerequisite
 A valid Mapbox API token must be provided in your `index.html` file.
