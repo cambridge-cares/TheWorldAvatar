@@ -65,7 +65,9 @@ When launched from a correctly integrated HTML file, the DTVF follows a set patt
 
 ## Deployment of Base Image
 
-The intended workflow of creating DTVF visualisations is to use a standard base image that contains the compiled DTVF library and an Apache web server to host content. The base image can be built from this directory by running the `build.sh` script. Note that it will be tagged with the version currently listed within the `VERSION` file.
+The intended workflow of creating DTVF visualisations is to use a standard base image that contains the compiled DTVF library and an Apache web server to host content.
+
+The base image can be built from this directory by running the `build.sh` script. Note that this will result in an image tagged with `:latest`, when pushing to the GitHub image registry this tag **and** a copy of the same image tagged with the version number (i.e. `:1.2.3`) should be pushed. To that end, we recommend leaving the pushing of new images to the automated GitHub actions, as they'll handle this.
 
 <br/>
 

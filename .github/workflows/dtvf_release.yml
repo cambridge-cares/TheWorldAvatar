@@ -64,6 +64,7 @@ jobs:
           context: ./web/digital-twin-vis-framework/library
           tags: |
             ghcr.io/cambridge-cares/dtvf-base-image:${{ env.version }}
+            ghcr.io/cambridge-cares/dtvf-base-image:latest
          
       # Generate the release body text
       - name: Generate release text
