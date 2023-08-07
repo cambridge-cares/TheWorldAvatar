@@ -28,14 +28,14 @@ RUN apk update && apk add procps nano wget bash busybox-initscripts dos2unix apa
 RUN mkdir -p /var/www/dtvf
 COPY --from=build /app/output/ /var/www/dtvf/
 
+# Custom in the HTTPD configuration
+COPY ./resources/httpd.conf /etc/apache2/httpd.conf
+
 # Copy in the start-up script
-COPY ./docker/start-up.sh /usr/local/start-up.sh
+COPY ./resources/start-up.sh /usr/local/start-up.sh
 RUN chmod 777 /usr/local/start-up.sh
 RUN chmod +x /usr/local/start-up.sh
 RUN dos2unix /usr/local/start-up.sh
-
-# Custom in the HTTPD configuration
-COPY ./docker/httpd.conf /etc/apache2/httpd.conf
 
 # Permissions
 RUN mkdir -p /var/www/html
