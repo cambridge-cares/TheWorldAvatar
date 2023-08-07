@@ -15,18 +15,20 @@ CREATE TABLE flood_polygon_single AS
 
 CREATE OR REPLACE VIEW flood_cost AS
 SELECT rw.gid AS id,
+rw.tag_id as tag_id,
     rw.source,
     rw.target,
         CASE
             WHEN (EXISTS ( SELECT 1
                FROM flood_polygon_single
-              WHERE st_intersects(rw.the_geom, flood_polygon_single.geom))) THEN (- abs(rw.cost))
-            ELSE rw.cost
-        END AS cost,
+              WHERE st_intersects(rw.the_geom, flood_polygon_single.geom))) THEN (- abs(rw.cost_s))
+            ELSE rw.cost_s
+        END AS cost_s,
         CASE
             WHEN (EXISTS ( SELECT 1
                FROM flood_polygon_single
-              WHERE st_intersects(rw.the_geom, flood_polygon_single.geom))) THEN (- abs(rw.reverse_cost))
-            ELSE rw.reverse_cost
-        END AS reverse_cost
+              WHERE st_intersects(rw.the_geom, flood_polygon_single.geom))) THEN (- abs(rw.reverse_cost_s))
+            ELSE rw.reverse_cost_s
+        END AS reverse_cost_s
    FROM routing_ways rw;
+

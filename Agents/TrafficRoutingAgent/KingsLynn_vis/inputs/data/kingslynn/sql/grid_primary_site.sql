@@ -69,11 +69,28 @@ END;
 
 
 --Create SQL view for Traveeling Salesman--
-CREATE OR REPLACE VIEW tsp AS SELECT *
+CREATE OR REPLACE VIEW tsp AS 
+SELECT *
 FROM pgr_TSP(
-  $$SELECT * FROM pgr_dijkstraCostMatrix(
-    'SELECT gid as id, source, target, cost_s as cost FROM routing_ways WHERE routing_ways.tag_id IN (100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 115, 116, 121, 123, 124, 125, 401)',
-    (SELECT array_agg(id)
-    FROM routing_ways_vertices_pgr
-    WHERE id IN (SELECT closest_node FROM grid_primary_site)),
-    false)$$, (SELECT MIN(closest_node) FROM grid_primary_site), (SELECT MAX(closest_node) FROM grid_primary_site));
+    $$SELECT * FROM pgr_dijkstraCostMatrix(
+        'SELECT gid as id, source, target, cost_s as cost FROM routing_ways',
+        (
+            SELECT array_agg(id)
+            FROM routing_ways_vertices_pgr
+            WHERE id IN (SELECT closest_node FROM grid_primary_site)
+        ),
+        false
+    )$$, 
+    (
+        SELECT MIN(closest_node)
+        FROM grid_primary_site
+        WHERE ST_Within(grid_primary_site.geom, 
+                       (SELECT ST_Collect(geom) FROM flood_polygon_single))
+    ), 
+    (
+        SELECT MAX(closest_node)
+        FROM grid_primary_site
+        WHERE ST_Within(grid_primary_site.geom, 
+                       (SELECT ST_Collect(geom) FROM flood_polygon_single))
+    )
+);

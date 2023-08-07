@@ -3,18 +3,78 @@
     "database": "postgres",
     "workspace": "kingslynn",
     "datasetDirectory": "kingslynn",
-    "dataSubsets": [
+    "dataSubsets": [        
         {
             "type": "OSMRouting",
             "skip": true,
             "schema": "public",
             "subdirectory": "routing",
-            "name": "routing"
-        },
+            "name": "routing",
+            "verticesGeoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/nearest_vertex.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "the_geom",
+                        "type": "Point",
+                        "srid": 4326
+                    },
+                    "parameters": [
+                        {
+                            "name": "lon",
+                            "defaultValue": "1",
+                            "regexpValidator": "^[\\d\\.\\+-eE]+$"
+                        },
+                        {
+                            "name": "lat",
+                            "defaultValue": "10",
+                            "regexpValidator": "^[\\d\\.\\+-eE]+$"
+                        }
+                    ]
+                }
+            },            
+            "waysGeoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/roaddisplay.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "the_geom",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    }
+                }
+            },
+            "poiGeoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/shortest_paths.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "the_geom",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    },
+                    "parameters": [
+                        {
+                            "name": "source",
+                            "defaultValue": "1",
+                            "regexpValidator": "^[\\d]+$"
+                        },
+                        {
+                            "name": "target",
+                            "defaultValue": "10",
+                            "regexpValidator": "^[\\d]+$"
+                        }
+                    ]
+                }
+            }
+        },        
         {
             "type": "raster",
             "name": "flood",
-            "skip": true,
+            "skip": false,
             "subdirectory": "flood",
             "sql":"@/inputs/data/kingslynn/sql/flood.sql",
             "geoServerSettings": {
@@ -23,10 +83,11 @@
                 }
             }
         },
+
         {
             "type": "raster",
             "name": "elevation",
-            "skip": true,
+            "skip": false,
             "subdirectory": "elevation",
             "sql":"@/inputs/data/kingslynn/sql/elevation.sql",
             "geoServerSettings": {
@@ -49,7 +110,7 @@
         },
         {
             "type": "tabular",
-            "skip": true,
+            "skip": false,
             "sql":"@/inputs/data/kingslynn/sql/grid_primary_site.sql",
             "table": "grid_primary_site",
             "subdirectory": "grid_primary_site"

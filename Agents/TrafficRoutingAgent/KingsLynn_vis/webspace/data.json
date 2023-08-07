@@ -41,7 +41,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='2'"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_hospital_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='2'"
                 },
                 {
                     "id": "isochrone_2",  
@@ -49,7 +49,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='4'"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_hospital_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='4'"
                 },
                 {
                     "id": "isochrone_3",  
@@ -57,7 +57,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='6'"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_hospital_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='6'"
                 },
                 {
                     "id": "isochrone_4",  
@@ -65,7 +65,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='8'"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_hospital_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='8'"
                 },
                 {
                     "id": "isochrone_5",  
@@ -73,7 +73,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='10'"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_hospital_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='10'"
                 }
                 
             ], 
@@ -165,7 +165,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aunreachable&outputFormat=application%2Fjson"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aunreachable_population&outputFormat=application%2Fjson"
                 }
                 
             ], 
@@ -175,9 +175,9 @@
                     "name": "Unreachable",
                     "source": "Unreachable",
                     "type": "fill",
-                    "order": 5,
+                    "order": 5,                    
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
                         "fill-color": "#FF2626",             
@@ -197,7 +197,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='2'"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_hospital_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='2'"
                 },
                 {
                     "id": "isochrone_unflooded_2",  
@@ -205,7 +205,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='4'"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_hospital_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='4'"
                 },
                 {
                     "id": "isochrone_unflooded_3",  
@@ -213,7 +213,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='6'"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_hospital_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='6'"
                 },
                 {
                     "id": "isochrone_unflooded_4",  
@@ -221,7 +221,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='8'"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_hospital_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='8'"
                 },
                 {
                     "id": "isochrone_unflooded_5",  
@@ -229,7 +229,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='10'"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_hospital_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='10'"
                 }
                 
             ], 
@@ -241,7 +241,7 @@
                     "type": "fill",
                     "order": 5,
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
                         "fill-color": "#c90a0a",             
@@ -256,7 +256,7 @@
                     "type": "fill",
                     "order": 4,
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
                         "fill-color": "#ff8800",             
@@ -271,7 +271,7 @@
                     "type": "fill",
                     "order": 3,
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
                         "fill-color": "#ebc244",             
@@ -286,7 +286,7 @@
                     "type": "fill",
                     "order": 2,
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
                         "fill-color": "#add8e6",             
@@ -301,7 +301,7 @@
                     "type": "fill",
                     "order": 1,
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
                         "fill-color": "#808080",             
@@ -321,7 +321,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Atsp&outputFormat=application%2Fjson"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Atsp_visualization&outputFormat=application%2Fjson"
                 },
                 {
                     "id": "tspNodes",  
@@ -329,7 +329,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Atsp_nodes_kingslynn&maxFeatures=50&outputFormat=application%2Fjson"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Atsp_nodes&outputFormat=application%2Fjson"
                 }
             ], 
             "layers": [
@@ -340,7 +340,7 @@
                     "type": "line",
                     "order": 50,
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
                         "line-color": "#FF0000",
@@ -549,7 +549,7 @@
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aroaddisplay&outputFormat=application%2Fjson"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Arouting_ways&outputFormat=application%2Fjson"
                 }
             ], 
             "layers": [
@@ -560,7 +560,7 @@
                     "type": "line",
                     "order": 50,
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
                         "line-color": "#D8E3FF",

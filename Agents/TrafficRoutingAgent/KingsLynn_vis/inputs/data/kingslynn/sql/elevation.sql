@@ -17,3 +17,5 @@ AND w.target = v2.id;
 ALTER TABLE routing_ways ADD COLUMN slope FLOAT;
 
 UPDATE routing_ways SET slope = ((target_elevation - source_elevation) / source_elevation) * 100;
+
+
