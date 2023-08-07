@@ -702,14 +702,12 @@ public class Aermod {
     /**
      * executes get request from python-service to postprocess
      */
-    public JSONObject getGeoJSON(String endPoint, String outputFileURL, int srid, double height, String pollutId) {
+    public JSONObject getGeoJSON(String endPoint, String outputFileURL, int srid) {
         URI httpGet;
         try {
             URIBuilder builder = new URIBuilder(endPoint);
             builder.setParameter("dispersionMatrix", outputFileURL);
             builder.setParameter("srid", String.valueOf(srid));
-            builder.setParameter("height", String.valueOf(height));
-            builder.setParameter("pollutant", pollutId);
             httpGet = builder.build();
         } catch (URISyntaxException e) {
             LOGGER.error("Failed at building URL");
@@ -769,162 +767,6 @@ public class Aermod {
         featureCollection.put("features", features);
 
         return featureCollection;
-    }
-
-    void createDataJson(String shipLayerName, DispersionOutput dispersionOutput, String plantsLayerName,
-            String elevationLayerName, JSONObject buildingsGeoJSON) {
-        // wms endpoints template without the layer name
-        String shipWms = EnvConfig.GEOSERVER_URL
-                + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-                +
-                "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, shipLayerName);
-
-        String dispWms = EnvConfig.GEOSERVER_URL
-                + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true"
-                +
-                "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, "PLACEHOLDER");
-
-        String plantWms = EnvConfig.GEOSERVER_URL
-                + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-                +
-                "&bbox={bbox-epsg-3857}"
-                + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, plantsLayerName);
-
-        String elevWms = EnvConfig.GEOSERVER_URL
-                + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
-                +
-                "&bbox={bbox-epsg-3857}"
-                + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, elevationLayerName);
-
-        JSONObject group = new JSONObject();
-        group.put("name", "Aermod Simulation"); // hardcoded
-        group.put("stack", "http://localhost:3838");
-
-        // sources
-        JSONArray sources = new JSONArray();
-        JSONObject shipSource = new JSONObject();
-        shipSource.put("id", "ship-source");
-        shipSource.put("type", "vector");
-        shipSource.put("tiles", new JSONArray().put(shipWms));
-
-        JSONObject plantSource = new JSONObject();
-        plantSource.put("id", "plant-source");
-        plantSource.put("type", "vector");
-        plantSource.put("tiles", new JSONArray().put(plantWms));
-
-        dispersionOutput.getAllDispLayer().forEach(dispLayerName -> {
-            JSONObject dispersionSource = new JSONObject();
-            dispersionSource.put("id", "dispersion-source_" + dispLayerName);
-            dispersionSource.put("type", "vector");
-            dispersionSource.put("tiles",
-                    new JSONArray().put(dispWms.replace("PLACEHOLDER", dispLayerName)));
-            sources.put(dispersionSource);
-        });
-
-        JSONObject elevationSource = new JSONObject();
-        elevationSource.put("id", "elevation-source");
-        elevationSource.put("type", "raster");
-        elevationSource.put("tiles", new JSONArray().put(elevWms));
-
-        sources.put(shipSource).put(plantSource).put(elevationSource);
-        group.put("sources", sources);
-
-        // layers
-        JSONArray layers = new JSONArray();
-        JSONObject shipLayer = new JSONObject();
-        shipLayer.put("id", "ships-layer");
-        shipLayer.put("type", "circle");
-        shipLayer.put("name", "Ships");
-        shipLayer.put("source", "ship-source");
-        shipLayer.put("source-layer", shipLayerName);
-        shipLayer.put("minzoom", 4);
-        shipLayer.put("layout", new JSONObject().put("visibility", "visible"));
-
-        JSONObject plantsLayer = new JSONObject();
-        plantsLayer.put("id", "plants-layer");
-        plantsLayer.put("type", "circle");
-        plantsLayer.put("name", "Chemical Plant Items");
-        plantsLayer.put("source", "plant-source");
-        plantsLayer.put("source-layer", plantsLayerName);
-        plantsLayer.put("minzoom", 4);
-        plantsLayer.put("layout", new JSONObject().put("visibility", "visible"));
-
-        dispersionOutput.getAllDispLayer().forEach(dispLayerName -> {
-            JSONObject dispersionLayer = new JSONObject();
-            dispersionLayer.put("id", dispLayerName);
-            dispersionLayer.put("type", "fill");
-            dispersionLayer.put("name", dispLayerName);
-            dispersionLayer.put("source", "dispersion-source_" + dispLayerName);
-            dispersionLayer.put("source-layer", dispLayerName);
-            dispersionLayer.put("minzoom", 4);
-            dispersionLayer.put("layout", new JSONObject().put("visibility", "visible"));
-
-            JSONObject paint = new JSONObject();
-            JSONArray properties = new JSONArray();
-            properties.put("get");
-            properties.put("fill");
-            paint.put("fill-color", properties);
-            paint.put("fill-opacity", 0.5);
-            properties.put(1, "stroke");
-            paint.put("fill-outline-color", properties);
-            dispersionLayer.put("paint", paint);
-            layers.put(dispersionLayer);
-        });
-
-        JSONObject elevationLayer = new JSONObject();
-        elevationLayer.put("id", "elevation-layer");
-        elevationLayer.put("type", "raster");
-        elevationLayer.put("name", "Elevation");
-        elevationLayer.put("source", "elevation-source");
-        elevationLayer.put("source-layer", elevationLayerName);
-        elevationLayer.put("minzoom", 4);
-        elevationLayer.put("layout", new JSONObject().put("visibility", "visible"));
-
-        layers.put(shipLayer).put(plantsLayer).put(elevationLayer);
-        group.put("layers", layers);
-
-        JSONObject data = new JSONObject();
-        data.put("name", "All Data");
-        data.put("groups", new JSONArray().put(group));
-
-        File dataJson = Paths.get(EnvConfig.VIS_FOLDER, "data.json").toFile();
-
-        try {
-            Files.deleteIfExists(dataJson.toPath());
-        } catch (IOException e) {
-            String errmsg = "Failed to delete file";
-            LOGGER.error("Failed to delete file");
-            throw new RuntimeException(errmsg, e);
-        }
-
-        if (!buildingsGeoJSON.isEmpty()) {
-            String geoJsonFilename = "buildings.geojson";
-            Path buildingsGeoJSONPath = Paths.get(EnvConfig.VIS_FOLDER, geoJsonFilename);
-            writeToFile(buildingsGeoJSONPath, buildingsGeoJSON.toString(4));
-            modifyFilePermissions(buildingsGeoJSONPath.toString());
-
-            JSONObject buildingsSource = new JSONObject();
-            buildingsSource.put("id", "buildings-source");
-            buildingsSource.put("type", "geojson");
-            buildingsSource.put("data", Paths.get(geoJsonFilename).toString());
-
-            JSONObject buildingsLayer = new JSONObject();
-            buildingsLayer.put("name", "Buildings");
-            buildingsLayer.put("type", "fill-extrusion");
-            buildingsLayer.put("source", "buildings-source");
-            buildingsLayer.put("layout", new JSONObject().put("visibility", "visible"));
-            JSONObject paint = new JSONObject();
-            paint.put("fill-extrusion-color", new JSONArray().put("get").put("color"));
-            paint.put("fill-extrusion-height", new JSONArray().put("get").put("height"));
-            paint.put("fill-extrusion-opacity", 0.66);
-            paint.put("fill-extrusion-base", new JSONArray().put("get").put("base"));
-            buildingsLayer.put("paint", paint);
-
-            sources.put(buildingsSource);
-            layers.put(buildingsLayer);
-        }
-
-        writeToFile(dataJson.toPath(), data.toString(4));
     }
 
     /**

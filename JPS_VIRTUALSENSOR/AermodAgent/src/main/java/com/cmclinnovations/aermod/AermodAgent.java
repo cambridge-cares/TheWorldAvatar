@@ -186,8 +186,7 @@ public class AermodAgent extends DerivationAgent {
         DispersionOutput dispersionOutput = new DispersionOutput();
 
         String shipLayerName = "ships_" + simulationTime; // hardcoded in ShipInputAgent
-        String sourceLayerName = "source_layer";
-        String elevationLayerName = "elevation_layer";
+
         // create geoserver layer based for that
         GeoServerClient geoServerClient = GeoServerClient.getInstance();
         // make sure style is uploaded first
@@ -205,19 +204,11 @@ public class AermodAgent extends DerivationAgent {
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, EnvConfig.SOURCE_LAYER,
                 new GeoServerVectorSettings());
 
-        // Upload elevation contour plot to POSTGIS and GeoServer
         // The receptor.dat file may have been previously created by running AERMAP. If
         // so, it should not be overwritten.
         Path receptorPath = simulationDirectory.resolve("aermod").resolve("receptor.dat");
         if (Files.notExists(receptorPath))
             aermod.createAERMODReceptorInput(scope, nx, ny, srid);
-        String receptorFileURL = aermod.uploadToFileServer(receptorPath);
-        JSONObject geoJSON2 = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_ELEVATION_URL, receptorFileURL, srid, 0.0,
-                null);
-        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, elevationLayerName, geoJSON2.toString(),
-                new Ogr2OgrOptions(), true);
-        geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, elevationLayerName,
-                geoServerVectorSettings);
 
         for (PollutantType pollutantType : Pollutant.getPollutantList()) {
             if (!allSources.stream().allMatch(p -> p.hasPollutant(pollutantType))) {
@@ -246,65 +237,47 @@ public class AermodAgent extends DerivationAgent {
 
             // Get contour plots as geoJSON objects from PythonService and upload them to
             // PostGIS using GDAL
-            for (int i = 0; i < receptorHeights.size(); i++) {
-                double height = receptorHeights.get(i);
-                JSONObject geoJSON = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_URL, outputFileURL, srid, height,
-                        pollutId);
-                // The derivation IRI, pollutant ID, simulation time and height properties are
-                // added here to
-                // enable the
-                // post-processing agent to retrieve the relevant contours for the
-                // visualization.
-                JSONArray features = geoJSON.getJSONArray("features");
-                for (int j = 0; j < features.length(); j++) {
-                    JSONObject feature = features.getJSONObject(j);
-                    JSONObject featureProperties = feature.getJSONObject("properties");
-                    featureProperties.put("derivationIRI", derivationInputs.getDerivationIRI());
-                    featureProperties.put("pollutantID", pollutId);
-                    featureProperties.put("simulation_time", simulationTime);
-                    featureProperties.put("height", height);
-                    feature.put("properties", featureProperties);
-                    features.put(j, feature);
-                }
 
-                geoJSON.put("features", features);
-
-                // The true option is used to append the contours obtained from the latest
-                // simulation to previously obtained data.
-                gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.DISPERSION_CONTOURS_TABLE,
-                        geoJSON.toString(), new Ogr2OgrOptions(), true);
-
-                String receptorHeightString = String.valueOf(height).replace(".", "_dp_");
-                String derivationIRI = derivationInputs.getDerivationIRI();
-                int derivationIdIndex = derivationIRI.indexOf("TimeSeries") + 11;
-                String derivationId = derivationIRI.substring(derivationIdIndex);
-                derivationId = derivationId.replace("-", "_");
-                String layerName = "Pollutant_" + pollutId + "_height_" + receptorHeightString
-                        + "_time_" + simulationTime + "_" + derivationId;
-                // For the PM2.5 layer. Cannot have decimal points in a GeoServer layer name
-                layerName = layerName.replace(".", "_dp_");
-
-                String sqlQuery = String.format(
-                        "SELECT ogc_fid, \"stroke-opacity\", \"stroke-width\", fill, title, \"fill-opacity\", stroke, wkb_geometry from %s"
-                                + " WHERE \"derivationIRI\"='%s' and \"pollutantID\"='%s' and simulation_time = %d and height = %f ",
-                        EnvConfig.DISPERSION_CONTOURS_TABLE, derivationInputs.getDerivationIRI(), pollutId,
-                        simulationTime, height);
-
-                GeoServerVectorSettings geoServerDispersionSettings = new GeoServerVectorSettings();
-
-                UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
-                virtualTable.setSql(sqlQuery);
-                virtualTable.setEscapeSql(true);
-                virtualTable.setName("dispersionVirtualTable");
-                virtualTable.addVirtualTableGeometry("wkb_geometry", "MultiPolygon", "4326");
-                LOGGER.info(virtualTable.getName());
-                geoServerDispersionSettings.setVirtualTable(virtualTable);
-
-                geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, layerName,
-                        geoServerDispersionSettings);
-
-                dispersionOutput.addDispLayer(pollutantType, height, layerName);
+            JSONObject geoJSON = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_URL, outputFileURL, srid);
+            JSONArray features = geoJSON.getJSONArray("features");
+            for (int j = 0; j < features.length(); j++) {
+                JSONObject feature = features.getJSONObject(j);
+                JSONObject featureProperties = feature.getJSONObject("properties");
+                featureProperties.put("derivationIRI", derivationInputs.getDerivationIRI());
+                featureProperties.put("pollutantID", pollutId);
+                featureProperties.put("simulation_time", simulationTime);
+                feature.put("properties", featureProperties);
+                features.put(j, feature);
             }
+
+            geoJSON.put("features", features);
+
+            // The true option is used to append the contours obtained from the latest
+            // simulation to previously obtained data.
+            gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.DISPERSION_CONTOURS_TABLE,
+                    geoJSON.toString(), new Ogr2OgrOptions(), true);
+            String layerName = UUID.randomUUID().toString();
+
+            String sqlQuery = String.format(
+                    "SELECT ogc_fid, \"stroke-opacity\", \"stroke-width\", fill, title, \"fill-opacity\", stroke, wkb_geometry from %s"
+                            + " WHERE \"derivationIRI\"='%s' and \"pollutantID\"='%s' and simulation_time = %d",
+                    EnvConfig.DISPERSION_CONTOURS_TABLE, derivationInputs.getDerivationIRI(), pollutId,
+                    simulationTime);
+
+            GeoServerVectorSettings geoServerDispersionSettings = new GeoServerVectorSettings();
+
+            UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
+            virtualTable.setSql(sqlQuery);
+            virtualTable.setEscapeSql(true);
+            virtualTable.setName("dispersionVirtualTable");
+            virtualTable.addVirtualTableGeometry("wkb_geometry", "MultiPolygon", "4326");
+            LOGGER.info(virtualTable.getName());
+            geoServerDispersionSettings.setVirtualTable(virtualTable);
+
+            geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, layerName,
+                    geoServerDispersionSettings);
+
+            dispersionOutput.addDispLayer(pollutantType, layerName);
         }
 
         boolean append = false;
@@ -317,17 +290,7 @@ public class AermodAgent extends DerivationAgent {
         aermod.uploadRasterToPostGIS(srid, append);
 
         // ships_ is hardcoded here and in ShipInputAgent
-        queryClient.updateOutputs(derivationInputs.getDerivationIRI(), dispersionOutput, shipLayerName, simulationTime,
-                receptorFileURL);
-
-        aermod.createDataJson(shipLayerName, dispersionOutput, sourceLayerName, elevationLayerName,
-                aermod.getBuildingsGeoJSON(buildings));
-
-        aermod.createVisSettingsFile(scope.getCentroid());
-
-        aermod.modifyFilePermissions("data.json");
-
-        aermod.modifyFilePermissions("settings.json");
+        queryClient.updateOutputs(derivationInputs.getDerivationIRI(), dispersionOutput, shipLayerName, simulationTime);
     }
 
     void updateDerivations(List<String> derivationsToUpdate) {

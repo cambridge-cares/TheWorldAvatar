@@ -138,7 +138,6 @@ public class QueryClient {
     private static final String DISPERSION_MATRIX = PREFIX_DISP + "DispersionMatrix";
     private static final String DISPERSION_LAYER = PREFIX_DISP + "DispersionLayer";
     private static final String SHIPS_LAYER = PREFIX_DISP + "ShipsLayer";
-    private static final String AERMAP_OUTPUT = PREFIX_DISP + "AermapOutput";
 
     // properties
     private static final Iri HAS_PROPERTY = P_DISP.iri("hasProperty");
@@ -1039,7 +1038,6 @@ public class QueryClient {
     }
 
     List<byte[]> getScopeElevation(Polygon scope) {
-
         List<byte[]> elevData = new ArrayList<>();
 
         try (Connection conn = rdbStoreClient.getConnection();
@@ -1062,9 +1060,7 @@ public class QueryClient {
 
     }
 
-    void updateOutputs(String derivation, DispersionOutput dispersionOutput, String shipLayer, long timeStamp,
-            String aermapOutput) {
-
+    void updateOutputs(String derivation, DispersionOutput dispersionOutput, String shipLayer, long timeStamp) {
         SelectQuery query = Queries.SELECT();
 
         Variable entity = query.var();
@@ -1099,8 +1095,7 @@ public class QueryClient {
                 tsDataList.add(dispersionLayerIRI);
                 tsDataList.add(dispersionRasterIRI);
                 String dispersionMatrix = dispersionOutput.getDispMatrix(pollutantType);
-                // get(0) because there is only one height (ground level) for now.
-                String dispersionLayer = dispersionOutput.getDispLayer(pollutantType, 0.0);
+                String dispersionLayer = dispersionOutput.getDispLayer(pollutantType);
                 String dispersionRaster = dispersionOutput.getDispRaster(pollutantType);
                 tsValuesList.add(List.of(dispersionMatrix));
                 tsValuesList.add(List.of(dispersionLayer));
@@ -1110,45 +1105,23 @@ public class QueryClient {
         }
 
         SelectQuery query2 = Queries.SELECT();
-        Variable entityType = query.var();
 
-        query2.where(entity.isA(entityType).andHas(belongsTo, iri(derivation))
-                .filterNotExists(entity.has(HAS_POLLUTANT_ID, pollutant))).prefix(P_DISP).select(entity, entityType);
+        query2.where(entity.isA(iri(SHIPS_LAYER)).andHas(belongsTo, iri(derivation))
+                .filterNotExists(entity.has(HAS_POLLUTANT_ID, pollutant))).prefix(P_DISP).select(entity);
 
         queryResult = storeClient.executeQuery(query2.getQueryString());
 
         String shipLayerIri = null;
-        String aermapOutputIri = null;
-
-        for (int i = 0; i < queryResult.length(); i++) {
-            String entityTypeIri = queryResult.getJSONObject(i).getString(entityType.getQueryString().substring(1));
-
-            switch (entityTypeIri) {
-                case SHIPS_LAYER:
-                    shipLayerIri = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
-                    break;
-                case AERMAP_OUTPUT:
-                    aermapOutputIri = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
-                    break;
-                default:
-                    LOGGER.error("Unknown entity type: <{}>", entityType);
-                    return;
-            }
+        if (!queryResult.isEmpty()) {
+            shipLayerIri = queryResult.getJSONObject(0).getString(entity.getQueryString().substring(1));
         }
 
-        if (shipLayerIri == null || aermapOutputIri == null) {
-            LOGGER.error("Either the shipLayerIri or aermapOutputIRI is null");
-            return;
+        if (shipLayerIri != null) {
+            tsDataList.add(shipLayerIri);
+            tsValuesList.add(List.of(shipLayer));
         }
 
-        tsDataList.add(shipLayerIri);
-        tsDataList.add(aermapOutputIri);
-
-        tsValuesList.add(List.of(shipLayer));
-        tsValuesList.add(List.of(aermapOutput));
-
-        TimeSeries<Long> timeSeries = new TimeSeries<>(List.of(timeStamp),
-                tsDataList, tsValuesList);
+        TimeSeries<Long> timeSeries = new TimeSeries<>(List.of(timeStamp), tsDataList, tsValuesList);
 
         try (Connection conn = rdbStoreClient.getConnection()) {
             tsClientLong.addTimeSeriesData(timeSeries, conn);
