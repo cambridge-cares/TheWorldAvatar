@@ -150,7 +150,7 @@ public class SurroundingsHelper {
 
         // add city object graph
         WhereHandler wh2 = new WhereHandler(sb.build());
-        wh2.addGraph(NodeFactory.createURI(BuildingURIHelper.getGraph(uriString, CITY_OBJECT)), wh);
+        wh2.addAll(wh);
 
         return wh2.getQuery();
     }

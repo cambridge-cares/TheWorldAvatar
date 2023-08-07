@@ -12,8 +12,11 @@ import org.cts.registry.RegistryManager;
 
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.util.GeometryFixer;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +48,8 @@ public class GeometryHandler {
             flag = true;
 
             for (int j = 5; j < split.length; j += 3) {
-                for (int ji = 0;  ji < z.size(); ji++) {
-                    if (Math.abs(Double.parseDouble(split[j]) - z.get(ji)) > eps){
+                for (int k = 0;  k < z.size(); k++) {
+                    if (Math.abs(Double.parseDouble(split[j]) - z.get(k)) > eps) {
                         flag = false;
                         break;
                     }
@@ -90,6 +93,7 @@ public class GeometryHandler {
 
         return surfaceArray;
     }
+
     /**
      * Extracts the footprint of the building from its ground surface geometries
      * @param surfaceArray JSONArray of the query results for ground surface geometries
@@ -105,14 +109,33 @@ public class GeometryHandler {
         LinearRing exteriorRing;
         GeometryFactory geometryFactory = new GeometryFactory();
         String geoType;
+        WKTReader wktReader = new WKTReader();
+        String datatype = surfaceArray.getJSONObject(0).get("datatype").toString();
 
         if (surfaceArray.length() == 1) {
+            if (datatype.contains("wktLiteral")) {
+                return surfaceArray.getJSONObject(0).get("geometry").toString();
+            }
             stringToGeometries(surfaceArray.getJSONObject(0).get("geometry").toString(), surfaceArray.getJSONObject(0).get("datatype").toString(), exteriors, holes);
             exteriorPolygon = exteriors.get(0);
             exteriorRing = exteriorPolygon.getExteriorRing();
         }
         else {
             for (int i = 0; i < surfaceArray.length(); i++) {
+                if (datatype.contains("wktLiteral")) {
+                    try {
+                        Polygon polygon = (Polygon) wktReader.read(surfaceArray.getJSONObject(i).get("geometry").toString());
+                        exteriors.add(geometryFactory.createPolygon(polygon.getExteriorRing()));
+                        for (int j = 0; j < polygon.getNumInteriorRing(); j++) {
+                            holes.add(polygon.getInteriorRingN(j));
+                        }
+
+                    }
+                    catch (ParseException e) {
+                        e.printStackTrace();
+                        throw new JPSRuntimeException(e);
+                    }
+                }
                 stringToGeometries(surfaceArray.getJSONObject(i).get("geometry").toString(), surfaceArray.getJSONObject(i).get("datatype").toString(), exteriors, holes);
             }
 

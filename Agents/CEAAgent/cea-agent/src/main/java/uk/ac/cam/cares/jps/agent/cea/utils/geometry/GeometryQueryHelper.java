@@ -142,8 +142,8 @@ public class GeometryQueryHelper {
                     .addFilter("!isBlank(?HeightMeasuredHeigh)");
             SelectBuilder sb = new SelectBuilder()
                     .addVar("?HeightMeasuredHeigh")
-                    .addGraph(NodeFactory.createURI(BuildingURIHelper.getBuildingGraph(uriString)), wb);
-            sb.setVar(Var.alloc("s"), NodeFactory.createURI(BuildingURIHelper.getBuildingUri(uriString)));
+                    .addWhere(wb);
+            sb.setVar(Var.alloc("s"), NodeFactory.createURI(uriString));
             return sb.build();
         }catch (ParseException e) {
             e.printStackTrace();
@@ -164,8 +164,8 @@ public class GeometryQueryHelper {
                     .addFilter("!isBlank(?HeightMeasuredHeight)");
             SelectBuilder sb = new SelectBuilder()
                     .addVar("?HeightMeasuredHeight")
-                    .addGraph(NodeFactory.createURI(BuildingURIHelper.getBuildingGraph(uriString)), wb);
-            sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(BuildingURIHelper.getBuildingUri(uriString)));
+                    .addWhere(wb);
+            sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(uriString));
             return sb.build();
         } catch (ParseException e) {
             e.printStackTrace();
@@ -187,7 +187,7 @@ public class GeometryQueryHelper {
                 .addWhere("?o", "ocgml:realVal", "?HeightGenAttr")
                 .addWhere("?o", "ocgml:cityObjectId", "?s");
         sb.addVar("?HeightGenAttr")
-                .addGraph(NodeFactory.createURI(BuildingURIHelper.getGraph(uriString, CITY_OBJECT_GEN_ATT)), wb);
+                .addWhere(wb);
         sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(uriString));
 
         return sb.build();
@@ -209,7 +209,7 @@ public class GeometryQueryHelper {
                     .addVar("?geometry")
                     .addVar("datatype(?geometry)", "?datatype")
                     .addWhere(wb);
-            sb.setVar(Var.alloc("building"), NodeFactory.createURI(BuildingURIHelper.getBuildingUri(uriString)));
+            sb.setVar(Var.alloc("building"), NodeFactory.createURI(uriString));
             return sb.build();
         }catch (ParseException e) {
             e.printStackTrace();
@@ -237,9 +237,9 @@ public class GeometryQueryHelper {
             SelectBuilder sb = new SelectBuilder()
                     .addVar("?geometry")
                     .addVar("datatype(?geometry)", "?datatype")
-                    .addGraph(NodeFactory.createURI(BuildingURIHelper.getGraph(uriString, SURFACE_GEOMETRY)), wb1)
-                    .addGraph(NodeFactory.createURI(BuildingURIHelper.getGraph(uriString, THEMATIC_SURFACE)), wb2);
-            sb.setVar( Var.alloc( "building" ), NodeFactory.createURI(BuildingURIHelper.getBuildingUri(uriString)));
+                    .addWhere(wb1)
+                    .addWhere(wb2);
+            sb.setVar( Var.alloc( "building" ), NodeFactory.createURI(uriString));
             return sb.build();
 
         } catch (ParseException e) {
@@ -264,8 +264,8 @@ public class GeometryQueryHelper {
             SelectBuilder sb = new SelectBuilder()
                     .addVar("?geometry")
                     .addVar("datatype(?geometry)", "?datatype")
-                    .addGraph(NodeFactory.createURI(BuildingURIHelper.getGraph(uriString, SURFACE_GEOMETRY)), wb);
-            sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(BuildingURIHelper.getBuildingUri(uriString)));
+                    .addWhere(wb);
+            sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(uriString));
             return sb.build();
 
         } catch (ParseException e) {
@@ -301,7 +301,7 @@ public class GeometryQueryHelper {
                 .addWhere("?s", "ocgml:srid", "?CRS");
         SelectBuilder sb = new SelectBuilder()
                 .addVar("?CRS")
-                .addGraph(NodeFactory.createURI(BuildingURIHelper.getGraph(uriString, DATABASE_SRS)), wb);
+                .addWhere(wb);
         sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(BuildingURIHelper.getNamespace(uriString)));
         return sb.build();
     }

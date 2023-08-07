@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.datahandler;
 
-import uk.ac.cam.cares.jps.agent.cea.utils.uri.BuildingURIHelper;
 import uk.ac.cam.cares.jps.agent.cea.data.CEAConstants;
 import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
@@ -41,7 +40,7 @@ public class DataManager {
 
         sb.addVar("?building").addWhere(wb);
 
-        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(BuildingURIHelper.getBuildingUri(uriString)));
+        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(uriString));
 
         JSONArray queryResultArray = new JSONArray(AccessAgentCaller.queryStore(route, sb.build().toString()));
 
@@ -59,20 +58,13 @@ public class DataManager {
      * @param uriString city object id
      * @param buildingUri building IRI from other endpoints if exist
      * @param route route to pass to access agent
-     * @param graph graph name
      * @return building
      */
-    public String initialiseBuilding(String uriString, String buildingUri, String route, String graph) {
-
+    public String initialiseBuilding(String uriString, String buildingUri, String route) {
         UpdateBuilder ub = new UpdateBuilder();
 
         if (buildingUri.isEmpty()) {
-            if (!graph.isEmpty()) {
-                buildingUri = graph + "Building_" + UUID.randomUUID() + "/";
-            }
-            else{
-                buildingUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv) + "Building_" + UUID.randomUUID() + "/";
-            }
+            buildingUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv) + "Building_" + UUID.randomUUID() + "/";
         }
 
         WhereBuilder wb =
@@ -83,14 +75,9 @@ public class DataManager {
                         .addPrefix("ontoBuiltEnv", ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontobuiltenv))
                         .addWhere(NodeFactory.createURI(buildingUri), "rdf:type", "bot:Building")
                         .addWhere(NodeFactory.createURI(buildingUri), "rdf:type", "owl:NamedIndividual")
-                        .addWhere(NodeFactory.createURI(buildingUri), "ontoBuiltEnv:hasOntoCityGMLRepresentation", NodeFactory.createURI(BuildingURIHelper.getBuildingUri(uriString)));
+                        .addWhere(NodeFactory.createURI(buildingUri), "ontoBuiltEnv:hasOntoCityGMLRepresentation", NodeFactory.createURI(uriString));
 
-        if (!graph.isEmpty()){
-            ub.addInsert(NodeFactory.createURI(graph), wb);
-        }
-        else{
-            ub.addInsert(wb);
-        }
+        ub.addInsert(wb);
 
         UpdateRequest ur = ub.buildRequest();
 
@@ -138,9 +125,8 @@ public class DataManager {
      * @param tsIris map of time series iris to data types
      * @param scalarIris map of iris in kg to data types
      * @param route route to pass to access agent
-     * @param graph graph name
      */
-    public void initialiseData(Integer uriCounter, LinkedHashMap<String, List<String>> scalars, String buildingUri, LinkedHashMap<String,String> tsIris, LinkedHashMap<String,String> scalarIris, String route, String graph){
+    public void initialiseData(Integer uriCounter, LinkedHashMap<String, List<String>> scalars, String buildingUri, LinkedHashMap<String,String> tsIris, LinkedHashMap<String,String> scalarIris, String route){
 
         WhereBuilder wb =
                 new WhereBuilder()
@@ -180,61 +166,31 @@ public class DataManager {
         String thermalTubeWallEastCollectorUri = "ThermalTubeWallEastCollector_" + UUID.randomUUID() + "/";
         String thermalTubeWallWestCollectorUri = "ThermalTubeWallWestCollector_" + UUID.randomUUID() + "/";
 
-
-        if (!graph.isEmpty()){
-            pvRoofPanelUri = graph + pvRoofPanelUri;
-            pvWallSouthPanelUri = graph + pvWallSouthPanelUri;
-            pvWallNorthPanelUri = graph + pvWallNorthPanelUri;
-            pvWallEastPanelUri = graph + pvWallEastPanelUri;
-            pvWallWestPanelUri = graph + pvWallWestPanelUri;
-            pvtPlateRoofCollectorUri = graph + pvtPlateRoofCollectorUri;
-            pvtPlateWallSouthCollectorUri = graph + pvtPlateWallSouthCollectorUri;
-            pvtPlateWallNorthCollectorUri = graph + pvtPlateWallNorthCollectorUri;
-            pvtPlateWallEastCollectorUri = graph + pvtPlateWallEastCollectorUri;
-            pvtPlateWallWestCollectorUri = graph + pvtPlateWallWestCollectorUri;
-            pvtTubeRoofCollectorUri = graph + pvtTubeRoofCollectorUri;
-            pvtTubeWallSouthCollectorUri = graph + pvtTubeWallSouthCollectorUri;
-            pvtTubeWallNorthCollectorUri = graph + pvtTubeWallNorthCollectorUri;
-            pvtTubeWallEastCollectorUri = graph + pvtTubeWallEastCollectorUri;
-            pvtTubeWallWestCollectorUri = graph + pvtTubeWallWestCollectorUri;
-            thermalPlateRoofCollectorUri = graph + thermalPlateRoofCollectorUri;
-            thermalPlateWallSouthCollectorUri = graph + thermalPlateWallSouthCollectorUri;
-            thermalPlateWallNorthCollectorUri = graph + thermalPlateWallNorthCollectorUri;
-            thermalPlateWallEastCollectorUri = graph + thermalPlateWallEastCollectorUri;
-            thermalPlateWallWestCollectorUri = graph + thermalPlateWallWestCollectorUri;
-            thermalTubeRoofCollectorUri = graph + thermalTubeRoofCollectorUri;
-            thermalTubeWallSouthCollectorUri = graph + thermalTubeWallSouthCollectorUri;
-            thermalTubeWallNorthCollectorUri = graph + thermalTubeWallNorthCollectorUri;
-            thermalTubeWallEastCollectorUri = graph + thermalTubeWallEastCollectorUri;
-            thermalTubeWallWestCollectorUri = graph + thermalTubeWallWestCollectorUri;
-        }
-        else{
-            pvRoofPanelUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvRoofPanelUri;
-            pvWallSouthPanelUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvWallSouthPanelUri;
-            pvWallNorthPanelUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvWallNorthPanelUri;
-            pvWallEastPanelUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvWallEastPanelUri;
-            pvWallWestPanelUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvWallWestPanelUri;
-            pvtPlateRoofCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateRoofCollectorUri;
-            pvtPlateWallSouthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateWallSouthCollectorUri;
-            pvtPlateWallNorthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateWallNorthCollectorUri;
-            pvtPlateWallEastCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateWallEastCollectorUri;
-            pvtPlateWallWestCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateWallWestCollectorUri;
-            pvtTubeRoofCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeRoofCollectorUri;
-            pvtTubeWallSouthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeWallSouthCollectorUri;
-            pvtTubeWallNorthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeWallNorthCollectorUri;
-            pvtTubeWallEastCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeWallEastCollectorUri;
-            pvtTubeWallWestCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeWallWestCollectorUri;
-            thermalPlateRoofCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateRoofCollectorUri;
-            thermalPlateWallSouthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateWallSouthCollectorUri;
-            thermalPlateWallNorthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateWallNorthCollectorUri;
-            thermalPlateWallEastCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateWallEastCollectorUri;
-            thermalPlateWallWestCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateWallWestCollectorUri;
-            thermalTubeRoofCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeRoofCollectorUri;
-            thermalTubeWallSouthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeWallSouthCollectorUri;
-            thermalTubeWallNorthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeWallNorthCollectorUri;
-            thermalTubeWallEastCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeWallEastCollectorUri;
-            thermalTubeWallWestCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeWallWestCollectorUri;
-        }
+        pvRoofPanelUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvRoofPanelUri;
+        pvWallSouthPanelUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvWallSouthPanelUri;
+        pvWallNorthPanelUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvWallNorthPanelUri;
+        pvWallEastPanelUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvWallEastPanelUri;
+        pvWallWestPanelUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvWallWestPanelUri;
+        pvtPlateRoofCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateRoofCollectorUri;
+        pvtPlateWallSouthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateWallSouthCollectorUri;
+        pvtPlateWallNorthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateWallNorthCollectorUri;
+        pvtPlateWallEastCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateWallEastCollectorUri;
+        pvtPlateWallWestCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtPlateWallWestCollectorUri;
+        pvtTubeRoofCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeRoofCollectorUri;
+        pvtTubeWallSouthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeWallSouthCollectorUri;
+        pvtTubeWallNorthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeWallNorthCollectorUri;
+        pvtTubeWallEastCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeWallEastCollectorUri;
+        pvtTubeWallWestCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + pvtTubeWallWestCollectorUri;
+        thermalPlateRoofCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateRoofCollectorUri;
+        thermalPlateWallSouthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateWallSouthCollectorUri;
+        thermalPlateWallNorthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateWallNorthCollectorUri;
+        thermalPlateWallEastCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateWallEastCollectorUri;
+        thermalPlateWallWestCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalPlateWallWestCollectorUri;
+        thermalTubeRoofCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeRoofCollectorUri;
+        thermalTubeWallSouthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeWallSouthCollectorUri;
+        thermalTubeWallNorthCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeWallNorthCollectorUri;
+        thermalTubeWallEastCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeWallEastCollectorUri;
+        thermalTubeWallWestCollectorUri = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + thermalTubeWallWestCollectorUri;
 
         Map<String, String> facades = new HashMap<>();
 
@@ -244,16 +200,11 @@ public class DataManager {
             String measure = measurement + UUID.randomUUID() + "/";
             String quantity = measurement + "Quantity_" + UUID.randomUUID() + "/";
             String facade = measurement.split("SolarSuitableArea")[0] + UUID.randomUUID() + "/";
-            if (!graph.isEmpty()){
-                measure = graph + measure;
-                quantity = graph + quantity;
-                facade = graph + facade;
-            }
-            else{
-                measure = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + measure;
-                quantity = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + quantity;
-                facade = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + facade;
-            }
+
+            measure = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + measure;
+            quantity = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + quantity;
+            facade = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + facade;
+
             scalarIris.put(measurement, measure);
 
             switch(measurement){
@@ -287,7 +238,7 @@ public class DataManager {
 
         for (String measurement: CEAConstants.TIME_SERIES) {
             String quantity = measurement+"Quantity_" + UUID.randomUUID() + "/";
-            quantity = !graph.isEmpty() ? graph + quantity : ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + quantity;
+            quantity = ontologyUriHelper.getOntologyUri(OntologyURIHelper.ontoUBEMMP) + quantity;
             if (measurement.equals(CEAConstants.KEY_GRID_CONSUMPTION) || measurement.equals(CEAConstants.KEY_ELECTRICITY_CONSUMPTION) || measurement.equals(CEAConstants.KEY_COOLING_CONSUMPTION) || measurement.equals(CEAConstants.KEY_HEATING_CONSUMPTION)) {
                 createConsumptionUpdate(wb, buildingUri, "ontoubemmp:" + measurement, quantity, tsIris.get(measurement));
             }
@@ -398,12 +349,7 @@ public class DataManager {
             }
         }
 
-        if (graph.isEmpty()){
-            ub.addInsert(wb);
-        }
-        else{
-            ub.addInsert(NodeFactory.createURI(graph), wb);
-        }
+        ub.addInsert(wb);
 
         UpdateRequest ur = ub.buildRequest();
 
@@ -417,9 +363,8 @@ public class DataManager {
      * @param scalarIris map of iris in kg to data types
      * @param route route to pass to access agent
      * @param uriCounter keep track of uris
-     * @param graph graph name
      */
-    public void updateScalars(String route, LinkedHashMap<String,String> scalarIris, LinkedHashMap<String, List<String>> scalars, Integer uriCounter, String graph) {
+    public void updateScalars(String route, LinkedHashMap<String,String> scalarIris, LinkedHashMap<String, List<String>> scalars, Integer uriCounter) {
         for (String measurement: CEAConstants.SCALARS) {
             WhereBuilder wb1 = new WhereBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology))
                     .addWhere(NodeFactory.createURI(scalarIris.get(measurement)), "om:hasNumericalValue", "?s");
@@ -430,14 +375,8 @@ public class DataManager {
                     .addWhere(NodeFactory.createURI(scalarIris.get(measurement)), "om:hasNumericalValue", scalars.get(measurement).get(uriCounter));
             UpdateBuilder ub2 = new UpdateBuilder().addPrefix("om", ontologyUriHelper.getOntologyUri(OntologyURIHelper.unitOntology));
 
-            if (!graph.isEmpty()){
-                ub1.addDelete(NodeFactory.createURI(graph), wb1);
-                ub2.addInsert(NodeFactory.createURI(graph), wb2);
-            }
-            else{
-                ub1.addDelete(wb1);
-                ub2.addInsert(wb2);
-            }
+            ub1.addDelete(wb1);
+            ub2.addInsert(wb2);
 
             UpdateRequest ur1 = ub1.buildRequest();
             UpdateRequest ur2 = ub2.buildRequest();

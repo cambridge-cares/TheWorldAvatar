@@ -51,7 +51,6 @@ public class CEAAgent extends JPSAgent {
     public static final String KEY_TERRAIN_DB = "terrainDatabase";
     public static final String KEY_TERRAIN_TABLE = "terrainTable";
     public static final String KEY_CEA = "ceaEndpoint";
-    public static final String KEY_GRAPH = "graphName";
 
     private String targetUrl = "http://localhost:8084/cea-agent" + URI_UPDATE;
 
@@ -83,7 +82,6 @@ public class CEAAgent extends JPSAgent {
     private String weatherRoute;
     private String defaultWeatherLabel;
     private String ceaRoute;
-    private String namedGraph;
     private String openmeteoagentUrl;
 
     private Map<String, String> accessAgentRoutes = new HashMap<>();
@@ -132,34 +130,14 @@ public class CEAAgent extends JPSAgent {
                         // if KEY_USAGE is not specified in requestParams, geometryRoute defaults to TheWorldAvatar Blazegraph
                         usageRoute = requestParams.has(KEY_USAGE) ? requestParams.getString(KEY_USAGE) : stackAccessAgentBase + defaultUsageLabel;
                         weatherRoute = requestParams.has(KEY_WEATHER) ? requestParams.getString(KEY_WEATHER) : stackAccessAgentBase + defaultWeatherLabel;
+                        ceaRoute = requestParams.has(KEY_CEA) ? requestParams.getString(KEY_CEA) : stackAccessAgentBase + defaultCeaLabel;
                         terrainDb = requestParams.has(KEY_TERRAIN_DB) ? requestParams.getString(KEY_TERRAIN_TABLE) : terrainDb;
                         terrainTable = requestParams.has(KEY_TERRAIN_TABLE) ? requestParams.getString(KEY_TERRAIN_TABLE) : terrainTable;
 
-                        if (!requestParams.has(KEY_CEA)) {
-                            // if KEY_CEA is not specified in requestParams, set ceaRoute to stack Blazegraph
-                            ceaRoute = stackAccessAgentBase + defaultCeaLabel;
-                            namedGraph = requestParams.has(KEY_GRAPH) ? requestParams.getString(KEY_GRAPH) : "";
-
-                        } else {
-                            ceaRoute = requestParams.getString(KEY_CEA);
-                            // if KEY_CEA is specified, assume no graph if KEY_GRAPH is not specified in requestParams
-                            if (requestParams.has(KEY_GRAPH)) {
-                                namedGraph = requestParams.getString(KEY_GRAPH);
-                                // ensures that graph ends with /
-                                if (!namedGraph.endsWith("/")) {
-                                    namedGraph = namedGraph + "/";
-                                }
-                            } else {
-                                namedGraph = "";
-                            }
+                        if (!RouteHelper.checkEndpoint(ceaRoute)){
+                            throw new JPSRuntimeException("ceaEndpoint not accessible");
                         }
 
-                        // check if ceaRoute has quads enabled for querying and updating with graphs
-                        if (!namedGraph.isEmpty()) {
-                            if (!RouteHelper.checkQuadsEnabled(ceaRoute)) {
-                                throw new JPSRuntimeException("ceaEndpoint does not support graph");
-                            }
-                        }
                         List<String> routeEndpoints = RouteHelper.getRouteEndpoints(ceaRoute);
                         storeClient = new RemoteStoreClient(routeEndpoints.get(0), routeEndpoints.get(1));
                         weatherHelper = new WeatherHelper(openmeteoagentUrl, dbUser, dbPassword, weatherRoute, ontologyUriHelper);
@@ -236,14 +214,14 @@ public class CEAAgent extends JPSAgent {
                     if(building != null && building.equals("")){
                         // Check if bot:Building IRI has already been created in another endpoint
                         building = dataManager.checkBuildingInitialised(uri, geometryRoute);
-                        building = dataManager.initialiseBuilding(uri, building, ceaRoute, namedGraph);
+                        building = dataManager.initialiseBuilding(uri, building, ceaRoute);
                     }
                     if(!dataManager.checkDataInitialised(building, tsIris, scalarIris, ceaRoute)) {
-                        tsHelper.createTimeSeries(tsIris, namedGraph, ontologyUriHelper);
-                        dataManager.initialiseData(i, scalars, building, tsIris, scalarIris, ceaRoute, namedGraph);
+                        tsHelper.createTimeSeries(tsIris, ontologyUriHelper);
+                        dataManager.initialiseData(i, scalars, building, tsIris, scalarIris, ceaRoute);
                     }
                     else{
-                        dataManager.updateScalars(ceaRoute, scalarIris, scalars, i, namedGraph);
+                        dataManager.updateScalars(ceaRoute, scalarIris, scalars, i);
                     }
                     tsHelper.addDataToTimeSeries(timeSeries.get(i), times, tsIris);
                 }
@@ -257,29 +235,12 @@ public class CEAAgent extends JPSAgent {
 
                     // Only set route once - assuming all iris passed in same namespace
                     if(i==0) {
-                        if (!requestParams.has(KEY_CEA)){
-                            // if KEY_CEA is not specified in requestParams, set ceaRoute to stack Blazegraph
-                            ceaRoute = stackAccessAgentBase + defaultCeaLabel;
-                            namedGraph = requestParams.has(KEY_GRAPH) ? requestParams.getString(KEY_GRAPH) : "";
+                        ceaRoute = requestParams.has(KEY_CEA) ? requestParams.getString(KEY_CEA) : stackAccessAgentBase + defaultCeaLabel;
+
+                        if (!RouteHelper.checkEndpoint(ceaRoute)){
+                            throw new JPSRuntimeException("ceaEndpoint not accessible");
                         }
-                        else{
-                            ceaRoute = requestParams.getString(KEY_CEA);
-                            // if KEY_CEA is specified, assume no graph if KEY_GRAPH is not specified in requestParams
-                            if (requestParams.has(KEY_GRAPH)){
-                                namedGraph =  requestParams.getString(KEY_GRAPH);
-                                // ensures that graph ends with /
-                                if (!namedGraph.endsWith("/")) {namedGraph = namedGraph + "/";}
-                            }
-                            else{
-                                namedGraph = "";
-                            }
-                            // check if ceaRoute has quads enabled for querying and updating with graphs
-                            if (!namedGraph.isEmpty() && RouteHelper.checkEndpoint(ceaRoute)){
-                                if (!RouteHelper.checkQuadsEnabled(ceaRoute)) {
-                                    throw new JPSRuntimeException("ceaEndpoint does not support graph");
-                                }
-                            }
-                        }
+
                         List<String> routeEndpoints = RouteHelper.getRouteEndpoints(ceaRoute);
                         storeClient = new RemoteStoreClient(routeEndpoints.get(0), routeEndpoints.get(1));
                     }
@@ -322,7 +283,7 @@ public class CEAAgent extends JPSAgent {
                                     }
                                 }
                             } else {
-                                value = dataRetriever.getNumericalValue(result.get(0), ceaRoute, namedGraph);
+                                value = dataRetriever.getNumericalValue(result.get(0), ceaRoute);
                             }
                             // Return non-zero values
                             if(!(value.equals("0") || value.equals("0.0"))){
@@ -433,7 +394,6 @@ public class CEAAgent extends JPSAgent {
         if (requestParams.has(KEY_GEOMETRY)) {error = error || requestParams.get(KEY_GEOMETRY).toString().isEmpty();}
         if (requestParams.has(KEY_USAGE)) {error = error || requestParams.get(KEY_USAGE).toString().isEmpty();}
         if (requestParams.has(KEY_CEA)) {error = error || requestParams.get(KEY_CEA).toString().isEmpty();}
-        if (requestParams.has(KEY_GRAPH)) {error = error || requestParams.get(KEY_GRAPH).toString().isEmpty();}
 
         return error;
     }
@@ -447,7 +407,6 @@ public class CEAAgent extends JPSAgent {
         boolean error = requestParams.get(KEY_IRI).toString().isEmpty();
 
         if (requestParams.has(KEY_CEA)) {error = error || requestParams.get(KEY_CEA).toString().isEmpty();}
-        if (requestParams.has(KEY_GRAPH)) {error = error || requestParams.get(KEY_GRAPH).toString().isEmpty();}
         return error;
     }
 

@@ -114,7 +114,7 @@ public class BuildingUsageHelper
                 .addWhere(wb)
                 .addOrderBy("UsageShare", Order.DESCENDING);
 
-        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(BuildingURIHelper.getBuildingUri(uriString)));
+        sb.setVar( Var.alloc( "s" ), NodeFactory.createURI(uriString));
 
         return sb.build();
     }
