@@ -10,7 +10,7 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontolab/">
         <owl:imports rdf:resource="https://saref.etsi.org/core/"/>
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">04 August 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">07 August 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoLab is an ontology developed for expressing facilities in a research lab.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.2</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -34,9 +34,11 @@
 
 
     <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/consistsOf">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/Accessory"/>
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/HotplateStirrer"/>
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/PotentiostatGalvanostat"/>
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/TGA_DSC"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontolab/Accessory"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontolab/DSC"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontolab/Galvanostat"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontolab/HotPlate"/>

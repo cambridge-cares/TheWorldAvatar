@@ -225,5 +225,6 @@ https://saref.etsi.org/core/consistsOf,Object Property,,,HotplateStirrer,HotPlat
 https://saref.etsi.org/core/consistsOf,Object Property,,,HotplateStirrer,MagneticStirrer,minimum 1,A relationship indicating a composite entity that consists of other entities,https://saref.etsi.org/core/,
 https://saref.etsi.org/core/consistsOf,Object Property,,,TGA_DSC,TGA,minimum 1,A relationship indicating a composite entity that consists of other entities,https://saref.etsi.org/core/,
 https://saref.etsi.org/core/consistsOf,Object Property,,,TGA_DSC,DSC,minimum 1,A relationship indicating a composite entity that consists of other entities,https://saref.etsi.org/core/,
+https://saref.etsi.org/core/consistsOf,Object Property,,,Accessory,Accessory,,A relationship indicating a composite entity that consists of other entities,https://saref.etsi.org/core/,
 stateLastUpdatedAt,Data Property,,,https://saref.etsi.org/core/State,decimal,exactly 1,The timestamp when the state of lab equipment was last updated at.,https://www.theworldavatar.com/kg/ontolab/,
 containsUnidentifiedComponent,Data Property,,,ChemicalAmount,boolean,,The boolean flag to indicate if there are unidentified components in the collected chemical amount.,https://www.theworldavatar.com/kg/ontolab/,
