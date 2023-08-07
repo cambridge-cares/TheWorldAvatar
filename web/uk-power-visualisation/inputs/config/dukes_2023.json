@@ -28,7 +28,7 @@
 			"geoServerSettings": {
                 "virtualTable": {
                     "name": "dukes_2023_geo",
-                    "sql": "SELECT wkb_geometry, \"Site Name\" as name, 'Generation type: ' || \"Site Type\" || '<br/>Installed Capacity: ' || \"Installed Capacity (MW)\" || ' [MW]' as desc, \"Site Technology\" as technology, \"Country\" as country, \"Site Type\" as type, \"Primary Fuel\" as primary_fuel, \"Installed Capacity (MW)\" as capacity, iri FROM dukes_2023",
+                    "sql": "SELECT wkb_geometry, 'http://UKBASEWORLD-blazegraph:8080/blazegraph/namespace/dukes_2023/sparql' as endpoint, \"Site Name\" as name, 'Generation type: ' || \"Site Type\" || '<br/>Installed Capacity: ' || \"Installed Capacity (MW)\" || ' [MW]' as desc, \"Site Technology\" as technology, \"Country\" as country, \"Site Type\" as type, \"Primary Fuel\" as primary_fuel, \"Installed Capacity (MW)\" as capacity, iri FROM dukes_2023",
                     "escapeSql": false,
                     "geometry": {
                         "name": "wkb_geometry",

@@ -37,11 +37,40 @@ The below files relate to the aforementioned DUKES 2023 data set.
 
 ## Creating a visualisation
 
-### Loading sources
+A DTVF based visualisation has also been created for the UK Base World, the `visualisation/webspace` directory contains the files required and are copied into a `dtvf-base-image` container for hosting during the start-up process. As with all DTVF visualisations, the `data.json` file defines the data to be loaded on the visualisation, and in what grouping. Users running the visualisation in a new location may need to adjust the URLs listed in this file.
 
-### Loading layers
+For more information on how visualisations are created and configured using the DTVF, please read it's [documentation page](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework).
 
+### Feature info agent
+
+To support metadata for the visualisation, the stack for this visualisation has been configured to also launch an instance of the [Feature Info Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent). The appropriate configuration file and query files have been created and will be copied into the relevant directories when using the `./scripts/start.sh` script to launch the stack (see below).
+
+## Running the stack
+
+The UK Base World visualisation has been put together as a single stack with no requirements on any external services (outside of standard JavaScript libraries). Both the data required for the visualisation, and the visualisation itself are hosted within the stack instance. For more information on the stack, read the [documentation here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+
+For ease of use, a script has been provided to spin up the stack and upload the relevant data, this removes the need for users to manually populate files and directories within the `stack-manager` directory. Note that this script uses standard bash but does **require the installation of the `jq` package** on the host machine to parse JSON responses from the Grafana HTTP API.
+
+Note that this script has been developed assuming a first-time spin up condition, it has not been tested in the case that some containers or volumes already exist; it would likely need temporary, local only changes in that situation.
+
+To run the script and bring up a local instance of the UK Base World visualisation, follow the below steps. To get copies of the required data files, please see the data sections above or contact CMCL for archived copies.
+
+1. Navigate to the `uk-base-world` directory.
+2. Add your Mapbox credentials:
+  * Add your username to a file at `./visualisation/mapbox_username`
+  * Add your API key to a file at `./visualisation/mapbox_api_key`
+3. Add the data files:
+  * Add the processed DUKES 2023 CSV to the `./inputs/data/dukes_2023` directory.
+  * Add the OntoEIP files to the `./inputs/data/ontoeip` directory.
+4. Run the script from the `uk-base-world` directory, passing a password for PostGIS and Geoserver:
+   * Example command: `./scripts/start.sh PASSWORD=pickapassword`
+5. Confirm that the required data files are present by pressing the `Y` key.
+6. Once prompted, wait for the stack to spin up, then press `ENTER`.
+   * That stack is considered "spun up" once the stack-manager container has stopped (although there is some wiggle-room here if you're also spinning up containers that have lengthy service start-ups).
+7. Confirm the visualisation is working by visiting `localhost:3838/visualisation`
+
+Stopping the stack (including the option to remove existing volumes), can be done by using the `stack.sh` script within the `stack-manager` directory.
 
 ## Support
 
-For any support in reproducing this visualisation, please contact 
+For any support in reproducing this visualisation, please contact the CMCL support team.

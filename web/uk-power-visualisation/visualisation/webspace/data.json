@@ -1,5 +1,5 @@
 {
-    "name": "UK Base World",
+    "name": "UK Base World2",
     "groups": [
         {
             "name": "Power Generation Sites",
@@ -9,7 +9,7 @@
                     "id": "uk-power-source",  
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:uk_power&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:dukes_2023&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
                 
@@ -17,10 +17,10 @@
             "layers": [
                 {
                     "id": "power_fossil_layer",
-                    "name": "Fossil Fuel",
+                    "name": "Non-renewable",
                     "source": "uk-power-source",
                     "type": "circle",
-                    "source-layer": "uk_power",
+                    "source-layer": "dukes_2023",
                     "filter": [
                         "in",
                         ["get", "type"],
@@ -61,7 +61,7 @@
                     "name": "Renewable",
                     "source": "uk-power-source",
                     "type": "circle",
-                    "source-layer": "uk_power",
+                    "source-layer": "dukes_2023",
                     "filter": [
                         "!",
                         [

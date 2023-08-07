@@ -245,68 +245,68 @@ target          twa:Type/{id} a eip1:AdvancedGasReactor ;
                     rdfs:label "Advanced Gas-cooled Reactor"^^xsd:string .
 source          SELECT "uuid" as id
                 FROM "dukes_2023"
-                WHERE "Type" = 'AGR'
+                WHERE "Site Type" = 'AGR'
 
 mappingId       type-bio
 target          twa:Type/{id} a eip1:Bioenergy ;
                     rdfs:label "Bioenergy"^^xsd:string .
 source          SELECT "uuid" as id
                 FROM "dukes_2023"
-                WHERE "Type" = 'Bioenergy'
+                WHERE "Site Type" = 'Bioenergy'
 
 mappingId       type-combined
 target          twa:Type/{id} a eip1:CombinedCycleGasTurbine ;
                     rdfs:label "Combined Cycle"^^xsd:string .
 source          SELECT "uuid" as id
                 FROM "dukes_2023"
-                WHERE "Type" = 'CCGT'
+                WHERE "Site Type" = 'CCGT'
 
 mappingId       type-steam
 target          twa:Type/{id} a eip1:Steam ;
                     rdfs:label "Conventional Steam"^^xsd:string .
 source          SELECT "uuid" as id
                 FROM "dukes_2023"
-                WHERE "Type" = 'Conventional Steam'
+                WHERE "Site Type" = 'Conventional Steam'
 
 mappingId       type-flow
 target          twa:Type/{id} a eip1:NaturalFlow ;
                     rdfs:label "Natural Flow"^^xsd:string .
 source          SELECT "uuid" as id
                 FROM "dukes_2023"
-                WHERE "Type" = 'Natural Flow'
+                WHERE "Site Type" = 'Natural Flow'
 
 mappingId       type-offshore
 target          twa:Type/{id} a eip1:Offshore ;
                     rdfs:label "Offshore"^^xsd:string .
 source          SELECT "uuid" as id
                 FROM "dukes_2023"
-                WHERE "Type" = 'Offshore'
+                WHERE "Site Type" = 'Offshore'
 
 mappingId       type-onshore
 target          twa:Type/{id} a eip1:Onshore ;
                     rdfs:label "Onshore"^^xsd:string .
 source          SELECT "uuid" as id
                 FROM "dukes_2023"
-                WHERE "Type" = 'Onshore'
+                WHERE "Site Type" = 'Onshore'
 
 mappingId       type-pv
 target          twa:Type/{id} a eip1:PV ;
                     rdfs:label "Photovoltaic"^^xsd:string .
 source          SELECT "uuid" as id
                 FROM "dukes_2023"
-                WHERE "Type" = 'PV'
+                WHERE "Site Type" = 'PV'
 
 mappingId       type-pwr
 target          twa:Type/{id} a eip1:PWR ;
                     rdfs:label "Pressurized Water Reactor"^^xsd:string .
 source          SELECT "uuid" as id
                 FROM "dukes_2023"
-                WHERE "Type" = 'PWR'
+                WHERE "Site Type" = 'PWR'
 
 mappingId       type-single
 target          twa:Type/{id} a eip1:SingleCycle ;
                     rdfs:label "Single Cycle"^^xsd:string .
 source          SELECT "uuid" as id
                 FROM "dukes_2023"
-                WHERE "Type" = 'Single Cycle'
+                WHERE "Site Type" = 'Single Cycle'
 ]]

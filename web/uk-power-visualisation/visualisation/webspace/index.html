@@ -100,8 +100,9 @@
             </div>
             <div id="sidePanelInner">
                 <ul>
-                    <li><a href="#sidePanelGeneral">General</a></li>
+                    <li><a href="#sidePanelGeneral">Info</a></li>
                     <li><a href="#sidePanelLegend">Legend</a></li>
+                    <li><a href="#sidePanelAcks">Acknowledgements</a></li>
                     <li><a href="#sidePanelLinks">Links</a></li>
                 </ul>
                 <div id="sidePanelGeneral">
@@ -114,6 +115,18 @@
                 </div>
                 <div id="sidePanelLegend"></div>
                 <div id="sidePanelLinks"></div>
+                <div id="sidePanelAcks">
+                    <p>
+                        The following data sources have been used to populate the digital twin powering this UK Base World visualisation:
+                    </p>
+                    <br/>
+                    <div style="font-size: 10pt !important;">
+                        <p>
+                            <b>Power Generation Sites:</b><br/>
+                            &#9;<a href="https://www.gov.uk/government/collections/digest-of-uk-energy-statistics-dukes">Digest of UK Energy Statistics (DUKES), 2023</a></li>
+                        </p>
+                    </div>
+                </div>
             </div>
             <div id="returnContainer" style="display: none;">
                 <div id="innerReturnContainer">
@@ -145,18 +158,25 @@
                     manager.initialiseMap();
                 
                     // Set the default content in the "General" tab of the side panel
-                    manager.getPanelHandler().setTitle("<h1>Example Visualisation</h1>");
+                    manager.getPanelHandler().setTitle("<h1>UK Base World</h1>");
                     manager.getPanelHandler().setContent(`
-                    <p>This example visualisation has been put together to demonstrate the intended use of the centralised Digital Twin Visualisation Framework (DTVF).
-                        This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put 
-                        together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF 
-                        before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.</p>
-                        <p>This centralised framework expects users to have structured their data in a particular format, and provide a number of associated metadata files. 
-                        Before starting, ensure your data meets this format by reading the <a href="https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations" target="_blank">GitHub wiki</a>. 
-                        This page also details how the framework functions, and how to configure your visualisation to use it.</p>
-                        <p>Note that this example has no version number as it is not intended for release; instead it should be updated to reflect the most recent version of 
-                        the framework itself. It's also worth noting that this example uses the currently hosted version of the framework library (i.e. from the CMCL KG website), 
-                        not the files within the repository.</p>
+                        <img src="./twa-logo.png" width="200px" style="margin-left: auto; margin-right: auto;"></img>
+                        <p>
+                            This visualisation demonstrates the power of <a href="https://theworldavatar.io">The World Avatar</a> to ingest data from multiple 
+                            sources, using different formats and protocols, connecting it all within a semantically enchanced environment. This bringing together 
+                            of disparate data silos in a knowledge graph context helps to enable greater interoperability between data sets, provide contextualised 
+                            meaning, discover new insights across a wider scope.
+                        </p>
+                        <p>
+                            Whilst The World Avatar supports data at all scopes, this visualisation provides a nation-wide view of a digital twin constructed to 
+                            represent the real-world state of the United Kingdom (circa 2023). A number of real-world data sources have been used to populate the 
+                            digital twin (see the "Acknowledgements" tab for details), providing both static and live data.
+                        </p>
+                        <p>
+                            Using this digital twin as a template, or base world, The World Avatar can then generate a number of hypothetical situations, or parallel 
+                            worlds. These parallel worlds can then be used to explore the effects of possible scenarios (like worst-case climate change), or tweak
+                            existing parameters to optimise existing asset networks.
+                        </p>
                     `);
                     manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
 

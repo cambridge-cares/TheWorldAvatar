@@ -1,0 +1,15 @@
+{
+    "services": {
+        "includes": [
+            "visualisation",
+            "feature-info-agent",
+            "grafana"
+        ]
+    },
+    "volumes": {
+        "vis-files": "vis-files",
+        "fia-queries": "fia-queries",
+        "grafana-data": "grafana-data",
+        "grafana-conf": "grafana-conf"
+    }
+}
