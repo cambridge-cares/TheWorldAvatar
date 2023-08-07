@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.templating;
 
+import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
+
 import java.util.List;
 
 /**
@@ -26,7 +28,7 @@ class PostgresVariable extends TemplateVariable {
         // Variable name will be a combination of measure name and asset type to make it unique
         super(measure + assetType, 2);
         // Change the variable name to
-        String assetTypeVariable = super.formatVariableName(assetType);
+        String assetTypeVariable = StringHelper.formatVariableName(assetType);
         // Description should follow the measure name and asset type
         this.DESCRIPTION = "A hidden template variable that displays the corresponding time series of " + measure.toLowerCase() + " for " + assetType.toLowerCase();
         // Append each value in the list in the required format

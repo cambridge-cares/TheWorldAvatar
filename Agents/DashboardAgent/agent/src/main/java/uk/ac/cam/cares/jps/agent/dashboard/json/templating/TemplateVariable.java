@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.templating;
 
+import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
+
 /**
  * A Java representation of a JSON-like model that encapsulates and enforces information about template variable syntax
  * specific to Grafana dashboard. This is a super class that is intended to be implemented by the subclass, and only provide common syntax.
@@ -18,19 +20,10 @@ class TemplateVariable {
      */
     protected TemplateVariable(String name, Integer dashboardDisplayOption) {
         // Transform name into lower cases and remove all white spaces
-        this.NAME = formatVariableName(name);
+        this.NAME = StringHelper.formatVariableName(name);
         this.DASHBOARD_DISPLAY_OPTION = dashboardDisplayOption.toString();
     }
 
-    /**
-     * Get the name of the variable.
-     */
-    protected String getName() {return this.NAME;}
-
-    /**
-     * Formats the variable names.
-     */
-    protected String formatVariableName(String variable) {return variable.toLowerCase().replaceAll("\\s", "");}
 
     /**
      * Construct the common JSON parts for variable as a StringBuilder which will continue to append specific syntax for different query types.
