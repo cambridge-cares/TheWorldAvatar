@@ -18,7 +18,6 @@ on:
       - main
     paths:
       - Agents/FeatureInfoAgent/**
-      - !**.md
 
 
 # Job definitions
