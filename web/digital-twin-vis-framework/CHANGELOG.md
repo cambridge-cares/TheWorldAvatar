@@ -1,5 +1,17 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
+# 3.8.2
+### Features
+* _No features present._
+### Bug Fixes:
+* Removed markdown ignores in GitHub action, not compatible with existing config.
+
+# 3.8.1
+### Features
+* _No features present._
+### Bug Fixes:
+* Updated GitHub workflow syntax for automated release job.
+
 # 3.8.0
 ### Features
 * Docker image (dtvf-base-image) now contains DTVF files rather than relying on remote CDN.
