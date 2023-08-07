@@ -70,5 +70,6 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-contrib-copy");
 
     // Register Tasks
+	// To build an unminified version of the code, temporarily remove the "uglify" task here.
     grunt.registerTask("package", ["concat", "uglify", "cssmin", "clean", "copy"]);
 }
