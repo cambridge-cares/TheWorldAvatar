@@ -6,7 +6,7 @@
     "dataSubsets": [        
         {
             "type": "OSMRouting",
-            "skip": true,
+            "skip": false,
             "schema": "public",
             "subdirectory": "routing",
             "name": "routing",
