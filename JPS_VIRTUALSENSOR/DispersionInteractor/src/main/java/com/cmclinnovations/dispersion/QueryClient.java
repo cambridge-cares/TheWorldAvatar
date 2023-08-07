@@ -21,7 +21,6 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.locationtech.jts.geom.Polygon;
-import org.postgis.Geometry;
 import org.postgis.Point;
 import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
 
@@ -90,7 +89,6 @@ public class QueryClient {
     private static final Iri DISPERSION_RASTER = P_DISP.iri("DispersionRaster");
     private static final Iri SHIPS_LAYER = P_DISP.iri("ShipsLayer");
     private static final Iri CITIES_NAMESPACE = P_DISP.iri("OntoCityGMLNamespace");
-    private static final Iri AERMAP_OUTPUT = P_DISP.iri("AermapOutput");
 
     private static final Iri NO_X = P_DISP.iri("NOx");
     private static final Iri UHC = P_DISP.iri("uHC");
@@ -233,16 +231,12 @@ public class QueryClient {
         String shipsLayerIri = PREFIX + UUID.randomUUID();
         modify.insert(iri(shipsLayerIri).isA(SHIPS_LAYER));
 
-        String aermapOutputIri = PREFIX + UUID.randomUUID();
-        modify.insert(iri(aermapOutputIri).isA(AERMAP_OUTPUT));
-
         modify.prefix(P_DISP, P_OM);
         storeClient.executeUpdate(modify.getQueryString());
 
         // initialise time series for dispersion matrix
 
         tsList.add(shipsLayerIri);
-        tsList.add(aermapOutputIri);
         List<Class<?>> dataClass = Collections.nCopies(tsList.size(), String.class);
 
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
@@ -261,7 +255,6 @@ public class QueryClient {
         if (citiesNamespace != null)
             inputs.add(citiesNamespaceIri);
         derivationList.add(shipsLayerIri);
-        derivationList.add(aermapOutputIri);
 
         String derivation = derivationClient.createDerivationWithTimeSeries(
                 derivationList, Config.AERMOD_AGENT_IRI, inputs);
