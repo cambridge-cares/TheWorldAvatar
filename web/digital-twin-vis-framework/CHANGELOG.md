@@ -1,5 +1,11 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
+# 3.8.3
+### Features
+* _No features present._
+### Bug Fixes:
+* Separated and moved docker config files to better support GitHub actions.
+
 # 3.8.2
 ### Features
 * _No features present._
