@@ -23,8 +23,6 @@ on:
       - main
     paths:
       - 'Agents/FeatureInfoAgent/**'
-    paths-ignore:
-      - '!**.md'
 
 
 # Job definitions
