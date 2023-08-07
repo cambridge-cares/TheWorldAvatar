@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.templating;
 
+import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
+
 /**
  * A Java representation of a JSON-like model that encapsulates and enforces information
  * about custom template variable syntax specific to Grafana dashboard. At the moment,
@@ -37,7 +39,7 @@ class CustomVariable extends TemplateVariable {
         // If it is for filtering asset types, just keep a similar label
         this.LABEL = name.equals(IS_ASSET_TYPE) ? IS_ASSET_TYPE :
                 // Otherwise add white space before each capital letter for the label, and add " Assets" at the end
-                name.replaceAll("(.)([A-Z])", "$1 $2") + " Assets";
+                StringHelper.addSpaceBetweenCapitalWords(name) + " Assets";
         // Description should follow label
         this.DESCRIPTION = "Default filters for the " + this.LABEL;
         // Create a default option for all values
