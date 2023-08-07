@@ -1,8 +1,8 @@
 # Visualisation of the UK Base World
 
-This directory contains the documentation, configuration files, and associated scripts for a visualisation of The World Avatar's base world (focussing on assets within the United Kingdom) Whilst other data and capabilities related to the base world may exist elsewhere in The World Avatar, this documentation only covers the steps needed to acquire, upload, and visualise data used in the live UK Base World visualisation currently hosted on The World Avatar's website (theworldavatar.io).
+This directory contains the documentation, configuration files, and associated scripts for a visualisation of The World Avatar's base world (focussing on assets within the United Kingdom). Whilst other data and capabilities related to the base world may exist elsewhere in The World Avatar, this documentation only covers the steps needed to acquire, upload, and visualise data used in the live UK Base World visualisation currently available from [The World Avatar's website](https://theworldavatar.io).
 
-This documentation was written in August of 2023. The data available from the listed sources may have changed since this time, hopefully the documented processes are still applicable to the new
+This documentation was written in August of 2023. The data available from the listed sources may have changed since this time, hopefully the processes are still applicable to any new data sets.
 
 ## Gathering data
 
@@ -37,13 +37,17 @@ The below files relate to the aforementioned DUKES 2023 data set.
 
 ## Creating a visualisation
 
-A DTVF based visualisation has also been created for the UK Base World, the `visualisation/webspace` directory contains the files required and are copied into a `dtvf-base-image` container for hosting during the start-up process. As with all DTVF visualisations, the `data.json` file defines the data to be loaded on the visualisation, and in what grouping. Users running the visualisation in a new location may need to adjust the URLs listed in this file.
+A visualisation has also been created for the UK Base World, the `visualisation/webspace` directory contains the files required and are copied into a `dtvf-base-image` container for hosting during the start-up process. As with all DTVF visualisations, the `data.json` file defines the data to be loaded on the visualisation, and in what grouping. Users running the visualisation in a new location may need to adjust the URLs listed in this file.
 
-For more information on how visualisations are created and configured using the DTVF, please read it's [documentation page](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework).
+For more information on how visualisations are created and configured using the DTVF, please read its [documentation page](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework).
 
 ### Feature info agent
 
 To support metadata for the visualisation, the stack for this visualisation has been configured to also launch an instance of the [Feature Info Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent). The appropriate configuration file and query files have been created and will be copied into the relevant directories when using the `./scripts/start.sh` script to launch the stack (see below).
+
+### Grafana dashboard
+
+In addition, this stack will also launch a Grafana container to host associated dashboards. Whilst empty at first, the `./scripts/start.sh` script will upload pre-configured data source and dashboard definitions to provide a number of default analytic dashboards.
 
 ## Running the stack
 
@@ -57,16 +61,16 @@ To run the script and bring up a local instance of the UK Base World visualisati
 
 1. Navigate to the `uk-base-world` directory.
 2. Add your Mapbox credentials:
-  * Add your username to a file at `./visualisation/mapbox_username`
-  * Add your API key to a file at `./visualisation/mapbox_api_key`
+  - Add your username to a file at `./visualisation/mapbox_username`
+  - Add your API key to a file at `./visualisation/mapbox_api_key`
 3. Add the data files:
-  * Add the processed DUKES 2023 CSV to the `./inputs/data/dukes_2023` directory.
-  * Add the OntoEIP files to the `./inputs/data/ontoeip` directory.
+  - Add the processed DUKES 2023 CSV to the `./inputs/data/dukes_2023` directory.
+  - Add the OntoEIP files to the `./inputs/data/ontoeip` directory.
 4. Run the script from the `uk-base-world` directory, passing a password for PostGIS and Geoserver:
-   * Example command: `./scripts/start.sh PASSWORD=pickapassword`
+   - Example command: `./scripts/start.sh PASSWORD=pickapassword`
 5. Confirm that the required data files are present by pressing the `Y` key.
 6. Once prompted, wait for the stack to spin up, then press `ENTER`.
-   * That stack is considered "spun up" once the stack-manager container has stopped (although there is some wiggle-room here if you're also spinning up containers that have lengthy service start-ups).
+   - That stack is considered "spun up" once the stack-manager container has stopped (although there is some wiggle-room here if you're also spinning up containers that have lengthy service start-ups).
 7. Confirm the visualisation is working by visiting `localhost:3838/visualisation`
 
 Stopping the stack (including the option to remove existing volumes), can be done by using the `stack.sh` script within the `stack-manager` directory.

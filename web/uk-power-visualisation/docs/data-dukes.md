@@ -65,3 +65,7 @@ The command line arguments for the `scripts/dukes_generate_csv.py` should be sel
 ```
 python ./scripts/dukes_generate_csv.py --input dukes-2023.xlsx --output dukes-2023.csv --postcodes ./scripts/postcodes
 ```
+
+## Support
+
+For any support regarding the DUKES data, or its processing, please contact the CMCL technical team.
