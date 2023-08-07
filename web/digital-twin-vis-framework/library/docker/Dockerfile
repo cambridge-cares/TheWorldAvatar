@@ -35,7 +35,7 @@ RUN chmod +x /usr/local/start-up.sh
 RUN dos2unix /usr/local/start-up.sh
 
 # Custom in the HTTPD configuration
-COPY ./docker/httpd.conf /etc/apache2/httpd.conf
+COPY ./httpd.conf /etc/apache2/httpd.conf
 
 # Permissions
 RUN mkdir -p /var/www/html
