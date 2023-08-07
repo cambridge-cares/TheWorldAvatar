@@ -10,7 +10,7 @@ name: Release the DTVF
 # Trigger this workflow during pushes to the 'main' branch, and
 # ONLY when files within the DTVF source code are changed.
 on:
-  pull_request:
+  push:
     branches:
       - main
     paths:
@@ -86,30 +86,30 @@ jobs:
           artifacts: "${{ env.zip }}"
        
       # Setup Python installation
-      #- name: Setup Python
-      #  uses: actions/setup-python@v4
-      #  with:
-      #    python-version: '3.10' 
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10' 
           
       # Generate the release email content
-      #- name: Generate release email
-      #  id: generate-email
-      #  working-directory: ./
-      #  run: |
-      #    pip install markdown
-      #    python ./.github/scripts/dtvf/make-release-email.py
-      #    echo email=$HOME/email.html >> $GITHUB_ENV
+      - name: Generate release email
+        id: generate-email
+        working-directory: ./
+        run: |
+          pip install markdown
+          python ./.github/scripts/dtvf/make-release-email.py
+          echo email=$HOME/email.html >> $GITHUB_ENV
       
       # Send a notification email
-      #- name: Send email
-      #  uses: dawidd6/action-send-mail@v3
-      #  with:
-      #    server_address: mail.cmclinnovations.com
-      #    server_port: 465
-      #    secure: true
-      #    username: ${{secrets.CMCL_MAIL_USERNAME}}
-      #    password: ${{secrets.CMCL_MAIL_PASSWORD}}
-      #    subject: "New TWA release: DTVF ${{ env.version }}"
-      #    to: cares-twa@lists.cam.ac.uk,all@cmcl.io
-      #    from: Automated TWA action
-      #    html_body: "file://${{ env.email }}"
+      - name: Send email
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: mail.cmclinnovations.com
+          server_port: 465
+          secure: true
+          username: ${{secrets.CMCL_MAIL_USERNAME}}
+          password: ${{secrets.CMCL_MAIL_PASSWORD}}
+          subject: "New TWA release: DTVF ${{ env.version }}"
+          to: cares-twa@lists.cam.ac.uk,all@cmcl.io
+          from: Automated TWA action
+          html_body: "file://${{ env.email }}"
