@@ -62,10 +62,9 @@ jobs:
         with:
           push: true
           context: ./web/digital-twin-vis-framework/library
-          no-cache: true
           tags: |
-            "ghcr.io/cambridge-cares/dtvf-base-image:${{ env.version }}"
-            "ghcr.io/cambridge-cares/dtvf-base-image:latest"
+            ghcr.io/cambridge-cares/dtvf-base-image:${{ env.version }}
+            ghcr.io/cambridge-cares/dtvf-base-image:latest
          
       # Generate the release body text
       - name: Generate release text
