@@ -1,0 +1,1 @@
+Add Bavaria CityGML here from https://geodaten.bayern.de/opengeodata/OpenDataDetail.html?pn=lod2

@@ -1,6 +1,6 @@
 {
 	"database": "postgres",
-	"datasetDirectory": "bavaria",
+	"datasetDirectory": "building-bavaria",
 	"dataSubsets": [
 		{
 			"type": "CityDB",
