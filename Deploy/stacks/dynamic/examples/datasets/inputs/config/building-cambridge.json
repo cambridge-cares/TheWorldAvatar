@@ -1,0 +1,59 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "building-cambridge",
+    "dataSubsets": [
+        {
+            "type": "XtoCityDB",
+            "skip": false,
+			"subdirectory": "vector",
+            "table": "raw_data",
+            "ogr2ogrOptions": {
+                "otherOptions": {
+                    "-select": [
+                        "os_topo_toid,polygon,relh2,abshmin"
+                    ]
+                }
+            },
+			"columnMap": {
+				"IDval": "os_topo_toid",
+				"IDname": "os_topo_toid",
+				"footprint": "polygon",
+				"elevation": "abshmin",
+				"height": "relh2"
+			},
+			"importOptions": {
+				"sridIn": "27700"
+			},
+			"name": "cambridge_gsl",
+			"geoServerSettings": {
+                "virtualTable": {
+                    "name": "mapbox_layer",
+                    "sql": "@/inputs/config/building-cambridge.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geometry",
+                        "type": "Polygon",
+                        "srid": 27700
+                    }
+                },
+                "defaultStyle": "polygon"
+            }
+        },
+		{
+			"type": "tabular",
+			"skip": false,
+			"schema": "public",
+            "subdirectory": "tabular",
+			"table": "TOID_UPRN_MatchingTable",
+			"ogr2ogrOptions": {
+                "layerCreationOptions": {
+                    "schema": "public"
+                }
+            }
+		}
+    ],
+    "mappings": [
+        "ontop_v2.obda"
+    ]
+}
