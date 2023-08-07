@@ -10,12 +10,12 @@ services:
   # with a volume of files, can be used as a visualisation. It is not intended that this
   # config is used to run the dtvf-base-image.
   visualise:
-    image: ghcr.io/cambridge-cares/dtvf-base-image:${TAG}
+    image: ghcr.io/cambridge-cares/dtvf-base-image:latest
     container_name: "empty-dtvf-container"
     restart: "no"
     build:
-      context: "../"
-      dockerfile: "./docker/Dockerfile"
+      context: "./"
+      dockerfile: "Dockerfile"
       labels:
         authors: "support@cmcl.io"
         description: "Empty visualisation image, ready to house web files."

@@ -1,5 +1,5 @@
 #
-# Compose file for the DTVF (Development).
+# Compose file for the DTVF (development).
 #
 version: "3.8"
 
@@ -10,8 +10,8 @@ services:
   # This container will compile the source code, package it for deployment, write it to the ./output folder, then shutdown.
   compile:
     build:
-      context: "../"
-      dockerfile: "./build.Dockerfile"
+      context: "./"
+      dockerfile: "Dockerfile.dev"
     image: ghcr.io/cambridge-cares/dtvf-build-environment:latest
     container_name: "dtvf-build-compile"
     restart: "no"
@@ -19,5 +19,5 @@ services:
     entrypoint: "/bin/bash -c 'npm install && tsc && grunt package'"
     volumes:
       - type: bind
-        source: ../
+        source: ./
         target: /app

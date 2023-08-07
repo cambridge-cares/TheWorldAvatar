@@ -10,7 +10,7 @@ name: Release the DTVF
 # Trigger this workflow during pushes to the 'main' branch, and
 # ONLY when files within the DTVF source code are changed.
 on:
-  push:
+  pull_request:
     branches:
       - main
     paths:
@@ -32,7 +32,7 @@ jobs:
       # Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v3
-        
+          
       # Get the version of the DTVF
       - name: Get DTVF version
         id: versioner
@@ -44,7 +44,7 @@ jobs:
         id: compiler
         working-directory: ./web/digital-twin-vis-framework/library
         run: |
-          docker-compose -f docker/docker-compose.yml up compile
+          docker-compose -f docker-compose.dev.yml up compile
           zip -r $HOME/dtvf.zip output/
           echo zip=$HOME/dtvf.zip >> $GITHUB_ENV
           
@@ -61,11 +61,12 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          context: ./web/digital-twin-vis-framework/library/docker
+          context: ./web/digital-twin-vis-framework/library
+          no-cache: true
           tags: |
             "ghcr.io/cambridge-cares/dtvf-base-image:${{ env.version }}"
             "ghcr.io/cambridge-cares/dtvf-base-image:latest"
-          
+         
       # Generate the release body text
       - name: Generate release text
         id: generate-text
