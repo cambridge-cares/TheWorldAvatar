@@ -33,13 +33,12 @@ public class PanelModel {
             for (String measure : measures.keySet()) {
                 // Take note to exclude the assets key as that is not required
                 if (!measure.equals("assets")) {
-                    // Retrieve the relevant table name, database name and ID from the first item
-                    // Assumes that each measure of a specific asset type belongs to only one database and table
-                    String tableName = measures.get(measure).get(0)[2];
+                    // Retrieve the relevant database name and ID from the first item
+                    // Assumes that each measure of a specific asset type belongs to only one database
                     String database = measures.get(measure).get(0)[3];
                     String databaseID = databaseConnectionMap.get(database);
                     // Creates a chart object and add it to the queue
-                    TimeSeriesChart chart = new TimeSeriesChart(measure, assetType, tableName, databaseID);
+                    TimeSeriesChart chart = new TimeSeriesChart(measure, assetType, databaseID, measures.get(measure));
                     panelQueue.offer(chart);
                 }
             }
