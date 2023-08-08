@@ -1,9 +1,9 @@
 SET search_path TO public,citydb;
 create table "public"."raw_building" AS
-(SELECT "{IDval}", 'building_' || gen_random_uuid() AS "gmlid", box2envelope(Box3D(ST_Translate(ST_Extrude("{footprint}",0,0,"{height}"),0,0,"{elevation}"))) AS "envelope", ST_Translate(ST_Extrude("{footprint}",0,0,"{height}"),0,0,"{elevation}") AS "geom", "{height}" AS "mh"
+(SELECT "{IDval}", 'building_' || gen_random_uuid() AS "gmlid", ST_Translate(ST_Extrude("{footprint}",0,0,"{height}"),0,0,"{elevation}") AS "geom", "{height}" AS "mh"
 FROM "public"."{table}" WHERE ST_Area("{footprint}")>{minArea} AND "{height}" IS NOT NULL);
 create table "public"."raw_surface" AS
-(SELECT "building_gmlid", 'surface_' || gen_random_uuid() AS "gmlid", "class", "geom", box2envelope(Box3D("geom")) AS "envelope" FROM
+(SELECT "building_gmlid", 'surface_' || gen_random_uuid() AS "gmlid", "class", "geom" FROM
 (SELECT "building_gmlid", "geom",
     CASE WHEN ST_Zmin("geom")=ST_Zmax("geom") THEN
         CASE WHEN ST_Zmin("geom")="bzl" THEN 35 ELSE 33 END

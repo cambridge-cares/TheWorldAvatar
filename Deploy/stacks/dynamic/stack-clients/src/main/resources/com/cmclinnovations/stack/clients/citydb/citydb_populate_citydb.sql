@@ -1,6 +1,6 @@
 SET search_path TO public,citydb;
 INSERT INTO "citydb"."cityobject" ("objectclass_id","gmlid","envelope","creation_date","last_modification_date","updating_person","lineage")
-SELECT 26,"gmlid", "envelope", CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,user, '{lineage}'
+SELECT 26,"gmlid", box2envelope(Box3D("geom")), CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,user, '{lineage}'
 FROM "public"."raw_building";
 INSERT INTO "citydb"."building" ("id","objectclass_id","building_root_id","measured_height","measured_height_unit")
 SELECT "citydb"."cityobject"."id",26,"citydb"."cityobject"."id","public"."raw_building"."mh", '#m'
@@ -13,7 +13,7 @@ SET "root_genattrib_id" = "id"
 WHERE "root_genattrib_id" IS NULL;
 WITH "co" AS (
 INSERT INTO "citydb"."cityobject" ("objectclass_id","gmlid","envelope","creation_date","last_modification_date","updating_person")
-(SELECT "class","gmlid", "envelope", CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,user
+(SELECT "class","gmlid", box2envelope(Box3D("geom")), CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,user
 FROM "public"."raw_surface")
 RETURNING "objectclass_id","gmlid","id" AS "coid"),
 "sgp" AS (
