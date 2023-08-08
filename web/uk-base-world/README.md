@@ -72,7 +72,7 @@ To run the script and bring up a local instance of the UK Base World visualisati
 6. Once prompted, wait for the stack to spin up, then press `ENTER`.
    - That stack is considered "spun up" once the stack-manager container has stopped (although there is some wiggle-room here if you're also spinning up containers that have lengthy service start-ups).
    - If running for the first time, this may take a while as Docker images will need to be downloaded.
-7. Confirm the visualisation is working by visiting `localhost:3838/visualisation`
+7. Confirm the visualisation is working by visiting `localhost:38383/visualisation`
 
 Stopping the stack (including the option to remove existing volumes), can be done by using the `stack.sh` script within the `scripts` directory; the name of the created stack will be `UKBASEWORLD`.
 
