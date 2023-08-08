@@ -6,9 +6,9 @@ This documentation was written in August of 2023. The data available from the li
 
 ## Gathering data
 
-Data for this visualisation has been gathered from the below sources; the original raw files and the processed files have been archived at CMCL on their Pavilion file server.
+Data for this visualisation has been gathered from the below sources; the original raw files and the processed files have been archived at CMCL on their Pavilion file server. Hopefully this process is repeatable with future versions of these data sets, if not then the archived data can be used as a fall-back. If the visualisation is updated with future versions of these data, the raw and processed versions of said files should also be archived.
 
-Hopefully this process is repeatable with future versions of these data sets, if not then the archived data can be used as a fall-back. If the visualisation is updated with future versions of these data, the raw and processed versions of said files should also be archived.
+As a base world visualisation, more data sources will be added in future; as and when they are, they should be documented within this page, or in supplementary files linked to from this one.
 
 ### Digest of UK Energy Statistics (DUKES)
 
@@ -61,20 +61,30 @@ To run the script and bring up a local instance of the UK Base World visualisati
 
 1. Navigate to the `uk-base-world` directory.
 2. Add your Mapbox credentials:
-  - Add your username to a file at `./visualisation/mapbox_username`
-  - Add your API key to a file at `./visualisation/mapbox_api_key`
+   - Add your username to a file at `./visualisation/mapbox_username`
+   - Add your API key to a file at `./visualisation/mapbox_api_key`
 3. Add the data files:
-  - Add the processed DUKES 2023 CSV to the `./inputs/data/dukes_2023` directory.
-  - Add the OntoEIP files to the `./inputs/data/ontoeip` directory.
+   - Add the processed DUKES 2023 CSV to the `./inputs/data/uk_base_world/dukes_2023` directory.
+   - Add the OntoEIP files to the `./inputs/data/ontoeip` directory.
 4. Run the script from the `uk-base-world` directory, passing a password for PostGIS and Geoserver:
    - Example command: `./scripts/start.sh PASSWORD=pickapassword`
 5. Confirm that the required data files are present by pressing the `Y` key.
 6. Once prompted, wait for the stack to spin up, then press `ENTER`.
    - That stack is considered "spun up" once the stack-manager container has stopped (although there is some wiggle-room here if you're also spinning up containers that have lengthy service start-ups).
+   - If running for the first time, this may take a while as Docker images will need to be downloaded.
 7. Confirm the visualisation is working by visiting `localhost:3838/visualisation`
 
-Stopping the stack (including the option to remove existing volumes), can be done by using the `stack.sh` script within the `stack-manager` directory.
+Stopping the stack (including the option to remove existing volumes), can be done by using the `stack.sh` script within the `scripts` directory; the name of the created stack will be `UKBASEWORLD`.
 
 ## Support
 
 For any support in reproducing this visualisation, please contact the CMCL support team.
+
+## Screenshot
+
+<p align="center">
+    <img src="./inputs/uk-base-world.jpg" alt="UK Base World visualisation, circa August 2023." width="66%"/>
+</p>
+<p align="center">
+    <em>UK Base World visualisation, circa August 2023.</em>
+</p>

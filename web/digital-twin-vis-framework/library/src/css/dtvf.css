@@ -1183,8 +1183,8 @@ label[for="select-feature"] {
 #finderContainer {
     display: table;
     position: absolute;
-    bottom: 30;
-    left: 20;
+    bottom: 30px;
+    left: 20px;
     height: 40px;
     width: calc(100% - 540px);
 
@@ -1194,12 +1194,10 @@ label[for="select-feature"] {
 #finderContainer label {
     color: #fff;
     padding-left: 10px;
-    font-weight: 700;
-    font-size: 12pt;
+    font-size: 11pt;
     display: table-cell;
     height: 40px;
-    width: 15%;
-    min-width: 175px;
+    width: 160px;
     vertical-align: middle;
 }
 .finderSelectClass {
@@ -1210,7 +1208,6 @@ label[for="select-feature"] {
     text-align: center;
     display: table-cell;
     width: 20%;
-    margin-top: 5px;
 }
 .finderSelectClass option {
     background-color: rgba(0, 0, 0, 0.5) !important;
@@ -1221,10 +1218,10 @@ label[for="select-feature"] {
 }
 #finderField {
     display: table-cell;
-    height: 30px;
-    margin-top: 5px;
+    height: 25px;
+    margin-top: 4px;
     margin-left: 10px;
-    width: 54%;
+    width: 50%;
     padding-left: 10px;
 }
 
@@ -1440,4 +1437,16 @@ label[for="select-feature"] {
     border-radius: 50%!important;
     background: #B8B8B8;
     background-color: #B8B8B8;
+}
+
+#helpandsearch {
+    display: flex;
+}
+
+#searchIconContainer {
+    display: block;
+    width: 20px;
+    text-align: center;
+    cursor: pointer;
+    margin-right: 10px;
 }

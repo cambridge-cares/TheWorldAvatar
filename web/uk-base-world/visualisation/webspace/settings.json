@@ -8,5 +8,18 @@
     "fields": {
         "name": "name",
         "description": "desc"
-    }
+    },
+    "search": [
+        {
+            "description": "Site Name",
+            "property": "name",
+            "type": "string"
+        },
+        {
+            "description": "Installed Capacity (MW)",
+            "property": "capacity",
+            "type": "number"
+        }
+    ],
+    "dashboard": "../dashboard/"
 }

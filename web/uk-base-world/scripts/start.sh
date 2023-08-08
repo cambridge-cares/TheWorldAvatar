@@ -58,6 +58,7 @@ then
 
     # Copy in the stack manager configs
     cp "./inputs/config/UKBASEWORLD.json" "$MANAGER_CONFIG/"
+    cp "./inputs/config/visualisation.json" "$MANAGER_CONFIG/services/"
     cp "./inputs/config/grafana.json" "$MANAGER_CONFIG/services/"
 
     # Copy the FIA files into the special volume populator folder
@@ -153,7 +154,8 @@ then
     # Update the default grafana dashboard to be the "Overview" one
     curl -X PUT --insecure -H "Content-Type: application/json" -H "Authorization: Bearer $API_KEY" --data-binary @inputs/dashboard/grafana-org-config.json http://admin:$PASSWORD@localhost:3838/dashboard/api/org/preferences
 
-    echo "Script completed."
+    echo 
+    echo "Script completed, may need to wait a few minutes for the stack-data-uploader to finish."
 else
     echo "Please copy in the data sets as described in the README before re-running this script."
     exit -1

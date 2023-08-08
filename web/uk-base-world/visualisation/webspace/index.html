@@ -12,7 +12,7 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" ></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
-        <script src="https://kg.cmclinnovations.com/cdn/dtvf/test/dtvf.min.js"></script>
+        <script src="./dtvf/dtvf.min.js" charset="utf-8"></script>
         <script src="./local.js"></script>
 
         <!-- CSS -->
@@ -20,7 +20,7 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css" rel="stylesheet">
         <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
-        <link href="https://kg.cmclinnovations.com/cdn/dtvf/test/dtvf.min.css" rel="stylesheet" />
+        <link href="./dtvf/dtvf.min.css" rel="stylesheet" />
         <link href="./local.css" rel="stylesheet" />
 
     </head>
@@ -78,13 +78,24 @@
                     </div>
                 </div>
 
-                <!-- Help icon -->
-                <div id="helpContainer" class="controlBlock expanded" onclick="openHelpURL()">
-                    <div class="tooltip" id="coordEditor">
-                        <i class="fas fa-question fa-lg"></i>
-                        <span class="tooltiptext right">Help</span>
+                <div id="helpandsearch">
+                    <!-- Search icon -->
+                    <div id="searchIconContainer" class="controlBlock expanded" onclick="manager.openSearch()">
+                        <div class="tooltip" id="coordEditor">
+                            <i class="fas fa-search fa-lg"></i>
+                            <span class="tooltiptext right" style="width: 100px !important;">Feature search</span>
+                        </div>
                     </div>
-                </div>
+
+                    <!-- Help icon -->
+                    <div id="helpContainer" class="controlBlock expanded" onclick="openHelpURL()">
+                        <div class="tooltip" id="coordEditor">
+                            <i class="fas fa-question fa-lg"></i>
+                            <span class="tooltiptext right">Help</span>
+                        </div>
+                    </div>
+                 </div>
+                 
             </div>
         </div>
 
@@ -117,7 +128,7 @@
                 <div id="sidePanelLinks"></div>
                 <div id="sidePanelAcks">
                     <p>
-                        The following data sources have been used to populate the digital twin powering this UK Base World visualisation:
+                        The following data sources have been used to populate the digital twin behind this UK Base World visualisation:
                     </p>
                     <br/>
                     <div style="font-size: 10pt !important;">
@@ -137,6 +148,9 @@
 
         <!-- Code entry point -->
         <script type="module">
+            // Log the version of the DTVF being used.
+            getDTVFVersion().then(result => console.log("Using DTVF " + result));
+
             $("#sidePanelInner").tabs();
 
             // Create a new manager instance
@@ -183,7 +197,6 @@
                     // Set the manager's callback to trigger once data definitions are loaded
                     manager.dataLoadCallback = function() {
                         buildLegend();
-                        addAdvancedFilters();
                     };
 
                     // Save general tab state as default

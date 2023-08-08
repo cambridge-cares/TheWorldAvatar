@@ -195,11 +195,7 @@ class MapboxUtils {
         
         if(url.endsWith("_token=")) url += MapHandler.MAP_API;
 
-        console.log("USING URL...")
-        console.log(url);
-
         MapHandler.MAP.setStyle(url);
-
         MapHandler.MAP.setProjection({
             name: 'mercator'
         });

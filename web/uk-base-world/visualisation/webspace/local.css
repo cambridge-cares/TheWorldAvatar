@@ -17,31 +17,13 @@
     display: none;
 }
 
-
-/** Advanced filter controls **/
-#filterButton {
-    width: 20px;
-    height: 20px;
-    position: absolute;
-    top: 20px;
-    right: 520px;
-
-    text-align: center;
-    cursor: pointer;
-}
-#filterContainer {
-    width: 20px;
-    height: 400px;
-    position: absolute;
-    top: 70px;
-    right: 520px;
-    display: none;
-}
-#filterContainer:hover {
-    background-color: rgba(0,0,0,.4) !important;
+/** Fix return container location **/
+#returnContainer {
+    right: 10px !important;
 }
 
-#search-select {
-    width: 200px;
-    height: 40px;
+/** Fix legend container height **/
+#sidePanelLegend {
+    height: calc(100% - 40px) !important;
+    margin: 0 20px 20px 20px !important;
 }

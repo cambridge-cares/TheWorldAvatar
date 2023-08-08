@@ -4,6 +4,10 @@
             "visualisation",
             "feature-info-agent",
             "grafana"
+        ],
+        "excludes": [
+            "citytiler",
+            "citydbimpexp"
         ]
     },
     "volumes": {
