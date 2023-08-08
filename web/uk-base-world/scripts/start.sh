@@ -104,7 +104,7 @@ then
     # Run the uploader to upload data
     cd "$ROOT/Deploy/stacks/dynamic/stack-data-uploader"
     echo "Running the stack uploader script..."
-    ./stack.sh start UKBASEWORLD
+    ./stack.sh start UKBASEWORLD 38383
 
     # Get the name of the grafana container
     GRAFANA=$(docker container ls | grep -o UKBASEWORLD-grafana.*)
