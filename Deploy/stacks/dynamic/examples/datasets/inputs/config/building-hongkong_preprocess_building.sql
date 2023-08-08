@@ -9,10 +9,10 @@ WHERE rel IS NOT NULL or height IS NOT NULL or id IN (SELECT CAST(raw_gdal."@rel
 GROUP BY parent) AS tmp3
 WHERE average_height IS NOT NULL);
 create table "public"."raw_building" AS
-(SELECT "parent", 'building_' || gen_random_uuid() AS "gmlid", box2envelope(Box3D(ST_Translate(ST_Extrude("geometry",0,0,"average_height"),0,0,"elevation"))) AS "envelope", ST_Translate(ST_Extrude("geometry",0,0,"average_height"),0,0,"elevation") AS "geom", "average_height" AS "mh"
+(SELECT "parent", 'building_' || gen_random_uuid() AS "gmlid", ST_Translate(ST_Extrude("geometry",0,0,"average_height"),0,0,"elevation") AS "geom", "average_height" AS "mh"
 FROM "public"."raw_data" WHERE "average_height" IS NOT NULL);
 create table "public"."raw_surface" AS
-(SELECT "building_gmlid", 'surface_' || gen_random_uuid() AS "gmlid", "class", ST_Reverse("geom") AS geom, box2envelope(Box3D("geom")) AS "envelope" FROM
+(SELECT "building_gmlid", 'surface_' || gen_random_uuid() AS "gmlid", "class", ST_Reverse("geom") AS geom FROM
 (SELECT "building_gmlid", "geom",
     CASE WHEN ST_Zmin("geom")=ST_Zmax("geom") THEN
         CASE WHEN ST_Zmin("geom")="bzl" THEN 35 ELSE 33 END
