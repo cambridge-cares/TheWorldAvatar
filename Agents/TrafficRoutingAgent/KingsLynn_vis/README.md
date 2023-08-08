@@ -9,7 +9,12 @@ The instantiated data is visualised using the Digital Twin Visualisation Framewo
 ## Creating the Visualisation
 This document marks down the steps taken to create flood router, isochrone under flooding and transport network criticality analysis. 
 
-To run this agent, use `kingslynn` as the STACK-NAME, before spinning up the stack insert geoserver.json into services folder of stack-manager, retrieve the geoserver.json from `inputs\geoserver`. This steps allows further modifcation and publishing of geoserver layer. 
+## Pre-requisite for setting up.
+Before spinning up the stack insert geoserver.json into services folder of stack-manager, retrieve the geoserver.json from `inputs\geoserver`. This steps allows further modifcation and publishing of geoserver layer.
+
+Spin up the stack-manager. 
+
+To run this agent, use `kingslynn` as the STACK-NAME, 
 
 ## Geoserver layers
 Note:
@@ -30,10 +35,12 @@ Under layers tab, add a new layer, select kingslynn:routing_ways, configure new 
 
 Use SQL commands found under `inputs\data\kingslynn\sql\virtualTables`.
 
-Your settings is now properly set up. Subsequently, you may run the DTVF container.
+Under Settings - Globals, change the number of decimals to 6. 
+
+Subsequently, you may run the DTVF container.
 
 ### DTVF Prerequisite
-A valid Mapbox API token must be provided in your `index.html` file.
+A valid Mapbox API token must be provided in your [index.html] file.
 
 ```
 # To build the Image:
@@ -42,6 +49,9 @@ docker-compose -f ./docker/docker-compose.yml build --force-rm
 # To generate a Container (i.e. run the Image):
 docker-compose -f ./docker/docker-compose.yml up -d --force-recreate
 ```
+
+Visualization can be started at [http://localhost:80](http://localhost:80) 
+
 
 <!-- Links -->
 [DTVF]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations
@@ -53,5 +63,5 @@ docker-compose -f ./docker/docker-compose.yml up -d --force-recreate
 [FeatureInfoAgent queries]: FeatureInfoAgent/queries
 [DTVF subdirectory]: /DTVF
 [icons]: /DTVF/data/icons
-[index.html]: index.html
+[index.html]: webspace/index.html
 [data.json]: /DTVF/data.json

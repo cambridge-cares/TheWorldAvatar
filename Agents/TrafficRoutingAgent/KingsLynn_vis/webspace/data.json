@@ -335,7 +335,7 @@
             "layers": [
                 {
                     "id": "tsp_layer",
-                    "name": "TSP Route",
+                    "name": "Quickest route to fix",
                     "source": "tsp",
                     "type": "line",
                     "order": 50,
@@ -349,20 +349,20 @@
                 },
                 {
                     "id": "tspNodeLayer",
-                    "name": "Richest House in King's Lynn",
+                    "name": "Flooded power stations in King's Lynn",
                     "source": "tspNodes",
                     "type": "symbol",
                     "order": 50,
                     "layout": {
-                        "icon-image": "marker",
-                        "icon-size": 0.035,
+                        "icon-image": "power-primary",
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5],
+                        "icon-anchor": "bottom",
                         "text-field": ["get", "seq"], 
                         "text-size": 20,
-                        "text-anchor": "center"
-
+                        "text-anchor": "top"
                     },
                     "paint":{
-                        "text-color":"#808080"
+                        "text-color":"#000000"
                     }
                 }
             ]

@@ -2,7 +2,7 @@ SELECT
     bp."ogc_fid",
     bp."SiteFunctionalLocation",
     bp."LicenceArea",
-    bp."SiteName",
+    bp."SiteName" as name,
     bp."SiteType",
     bp."SiteVoltage",
     bp."ESQCROverallRisk",

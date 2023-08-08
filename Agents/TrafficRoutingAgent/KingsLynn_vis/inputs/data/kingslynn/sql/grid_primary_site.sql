@@ -77,20 +77,16 @@ FROM pgr_TSP(
         (
             SELECT array_agg(id)
             FROM routing_ways_vertices_pgr
-            WHERE id IN (SELECT closest_node FROM grid_primary_site)
+            WHERE id IN (SELECT closest_node FROM grid_primary_site, flood_polygon_single WHERE ST_Intersects(grid_primary_site.geom, flood_polygon_single.geom) OR ST_DISTANCE (grid_primary_site.geom, flood_polygon_single.geom) <0.005)
         ),
         false
     )$$, 
     (
-        SELECT MIN(closest_node)
-        FROM grid_primary_site
-        WHERE ST_Within(grid_primary_site.geom, 
-                       (SELECT ST_Collect(geom) FROM flood_polygon_single))
+		SELECT MAX(closest_node)
+FROM grid_primary_site, flood_polygon_single WHERE ST_Intersects(grid_primary_site.geom, flood_polygon_single.geom) OR ST_DISTANCE (grid_primary_site.geom, flood_polygon_single.geom) <0.005
     ), 
     (
-        SELECT MAX(closest_node)
-        FROM grid_primary_site
-        WHERE ST_Within(grid_primary_site.geom, 
-                       (SELECT ST_Collect(geom) FROM flood_polygon_single))
+		SELECT MAX(closest_node)
+FROM grid_primary_site, flood_polygon_single WHERE ST_Intersects(grid_primary_site.geom, flood_polygon_single.geom) OR ST_DISTANCE (grid_primary_site.geom, flood_polygon_single.geom) <0.005
     )
 );

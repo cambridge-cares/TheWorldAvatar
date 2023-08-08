@@ -9,7 +9,7 @@ CREATE TABLE flood_polygon_single AS
     (
         SELECT ST_Transform(geom, 4326) AS geom_selected
         FROM flood_polygon
-        WHERE val >= 0.3
+        WHERE val >= 0.1
     ) AS subquery
 );
 
