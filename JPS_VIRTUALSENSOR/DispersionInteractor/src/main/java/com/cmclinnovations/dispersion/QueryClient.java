@@ -87,6 +87,7 @@ public class QueryClient {
     private static final Iri DISPERSION_MATRIX = P_DISP.iri("DispersionMatrix");
     private static final Iri DISPERSION_LAYER = P_DISP.iri("DispersionLayer");
     private static final Iri DISPERSION_RASTER = P_DISP.iri("DispersionRaster");
+    private static final Iri DISPERSION_COLOUR_BAR = P_DISP.iri("DispersionColourBar");
     private static final Iri SHIPS_LAYER = P_DISP.iri("ShipsLayer");
     private static final Iri CITIES_NAMESPACE = P_DISP.iri("OntoCityGMLNamespace");
 
@@ -115,6 +116,7 @@ public class QueryClient {
     private static final Iri HAS_DISPERSION_MATRIX = P_DISP.iri("hasDispersionMatrix");
     private static final Iri HAS_DISPERSION_LAYER = P_DISP.iri("hasDispersionLayer");
     private static final Iri HAS_DISPERSION_RASTER = P_DISP.iri("hasDispersionRaster");
+    private static final Iri HAS_DISPERSION_COLOUR_BAR = P_DISP.iri("hasDispersionColourBar");
     private static final Iri HAS_POLLUTANT_ID = P_DISP.iri("hasPollutantID");
     private static final Iri AS_WKT = iri("http://www.opengis.net/ont/geosparql#asWKT");
     private static final Iri REPORTS = P_EMS.iri("reports");
@@ -215,17 +217,21 @@ public class QueryClient {
             String dispLayerIri = PREFIX + UUID.randomUUID();
             String dispMatrixIri = PREFIX + UUID.randomUUID();
             String dispRasterIri = PREFIX + UUID.randomUUID();
+            String dispColourBar = PREFIX + UUID.randomUUID();
+
             modify.insert(iri(dispLayerIri).isA(DISPERSION_LAYER));
             modify.insert(iri(dispOutputIri).has(HAS_DISPERSION_LAYER, iri(dispLayerIri)));
             modify.insert(iri(dispMatrixIri).isA(DISPERSION_MATRIX));
             modify.insert(iri(dispOutputIri).has(HAS_DISPERSION_MATRIX, iri(dispMatrixIri)));
             modify.insert(iri(dispRasterIri).isA(DISPERSION_RASTER));
             modify.insert(iri(dispOutputIri).has(HAS_DISPERSION_RASTER, iri(dispRasterIri)));
+            modify.insert(iri(dispColourBar).isA(DISPERSION_COLOUR_BAR));
+            modify.insert(iri(dispOutputIri).has(HAS_DISPERSION_COLOUR_BAR, iri(dispColourBar)));
 
             tsList.add(dispLayerIri);
             tsList.add(dispMatrixIri);
             tsList.add(dispRasterIri);
-
+            tsList.add(dispColourBar);
         });
 
         String shipsLayerIri = PREFIX + UUID.randomUUID();
@@ -684,5 +690,36 @@ public class QueryClient {
         }
 
         return List.of(dispLayerName, shipLayerName);
+    }
+
+    public String getColourBarURL(String pollutant, long timeStep, String derivation) {
+        Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
+
+        SelectQuery query = Queries.SELECT();
+
+        Variable dispOutput = query.var();
+        Variable dispColourBar = query.var();
+
+        query.where(dispOutput.has(belongsTo, iri(derivation)),
+                dispOutput.has(PropertyPaths.path(HAS_POLLUTANT_ID, iri(RDF.TYPE)), iri(pollutant))
+                        .andHas(HAS_DISPERSION_COLOUR_BAR, dispColourBar))
+                .select(dispColourBar).prefix(P_DISP);
+
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        String dispColourBarIri = queryResult.getJSONObject(0).getString(dispColourBar.getQueryString().substring(1));
+
+        String dispColourBarUrl = null;
+
+        try (Connection conn = remoteRDBStoreClient.getConnection()) {
+            TimeSeries<Long> queriedTimeSeries = tsClient.getTimeSeriesWithinBounds(List.of(dispColourBarIri),
+                    timeStep, timeStep, conn);
+            dispColourBarUrl = queriedTimeSeries.getValuesAsString(dispColourBarIri).get(0);
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Closing connection failed when retrieving the dispersion layer name");
+        }
+
+        return dispColourBarUrl;
     }
 }
