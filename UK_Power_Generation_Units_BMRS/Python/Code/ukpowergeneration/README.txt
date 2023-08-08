@@ -16,7 +16,7 @@ The commands to initialise the virtual environment are as follows (to be run fro
 ...\theworldavatar\UK_Power_Generation_Units_BMRS\Python\Code\ukpowergeneration> py4jps\Scripts\Activate
 If it worked, new lines in the console should begin with (py4jps). If this is still present then this step is not required to be done again. 
 
-3. Install all required Python libraries using the following command:
+3. Install all required Python libraries using the command below:
 pip install -r requirements.txt
 
 4. Run the importer script 'generation_data_importer.py': 
@@ -54,4 +54,5 @@ Also:
 The 'mapping' folder is not run as part of the main program(s), and its functionally seperate. The readme within details its use. 
 
 DATA STORAGE NOTE: 
-Finally, a record of previous days will be saved to "\ScriptMapQuery\DataStorage" under the date of the queried day. 
+Finally, a record of previous days will be saved to "\ScriptMapQuery\DataStorage" under the date 
+of the queried day.
