@@ -9,7 +9,6 @@ class DispersionHandler {
             .then(() => this.buildDropdown(this))
             .then(() => {
                 this.plotData();
-                this.addColourBar()
             });
     }
 
@@ -189,14 +188,32 @@ class DispersionHandler {
         }).bind(this);
 
         this.manager.loadDefinitionsFromURL(dataJsonUrl).then(plotFunction());
+        this.addColourBar();
     }
 
     addColourBar() {
-        let mapContainer = document.getElementById("map");
-        let colourBarElement = document.createElement("div");
-        colourBarElement.id = "colorbar-legend-container";
-        colourBarElement.setAttribute("style", "background-image: url(./colourbar_SO2.png)");
+        let colourBarElement;
+        if (document.getElementById("colorbar-legend-container") != null) {
+            colourBarElement = document.getElementById("colorbar-legend-container");
+        } else {
+            let mapContainer = document.getElementById("map");
+            colourBarElement = document.createElement("div");
+            colourBarElement.id = "colorbar-legend-container";
+            mapContainer.appendChild(colourBarElement);
+        }
 
-        mapContainer.appendChild(colourBarElement);
+        let params = {
+            pollutant: this.selectedPollutant,
+            timestep: this.selectedTimestep,
+            derivationIri: this.dispersions[this.selectedSimulation].derivationIri
+        };
+
+        let colourBarUrl = this.agentBaseUrl;
+        colourBarUrl += '/dispersion-interactor/GetColourBar?';
+
+        let searchParams = new URLSearchParams(params);
+        colourBarUrl += searchParams;
+
+        colourBarElement.setAttribute("style", "background-image: url(" + colourBarUrl + ")");
     }
 }
