@@ -7,7 +7,7 @@ import pathlib
 import datetime as dt
 from flask import Blueprint, request, jsonify
 
-import agentlogging
+from py4jps import agentlogging
 from agent.dataretrieval.stations import create_json_output_files
 from agent.utils.readings_mapping import TIME_FORMAT
 from agent.errorhandling.exceptions import InvalidInput

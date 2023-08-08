@@ -9,7 +9,7 @@
 import uuid
 import metoffer
 
-import agentlogging
+from py4jps import agentlogging
 from agent.dataretrieval.stations import get_all_metoffice_station_ids
 from agent.errorhandling.exceptions import APIException
 from agent.kgutils.kgclient import KGClient
@@ -194,9 +194,9 @@ def _condition_metoffer_data(station_data: dict) -> dict:
     if 'id' in station_data.keys(): conditioned['id'] = station_data['id']
     if 'name' in station_data.keys(): conditioned['label'] = station_data['name']
     if 'elevation' in station_data.keys(): conditioned['elevation'] = station_data['elevation']
+    if 'type' in station_data.keys(): conditioned['subtype'] = station_data['type']
     if ('latitude' in station_data.keys()) and ('longitude' in station_data.keys()):
         conditioned['location'] = station_data['latitude'] + '#' + station_data['longitude']
-    if 'type' in station_data.keys(): conditioned['subtype'] = station_data['type']
     else:
         logger.warning(f"Station {station_data['id']} does not have location data.")
         #print(f"Station {station_data['id']} does not have location data.")

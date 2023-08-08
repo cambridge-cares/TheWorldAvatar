@@ -131,6 +131,8 @@ run_pyderivationagent_tests() {
         read -n 1 -s -r -p "Press any key to continue"
         exit -1
     fi
+    # compose down to ensure the containers are stopped
+    docker compose -f "./docker-compose.test.yml" down
 }
 
 install_pyderivationagent_and_test() {

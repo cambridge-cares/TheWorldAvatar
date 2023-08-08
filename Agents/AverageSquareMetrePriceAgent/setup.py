@@ -2,7 +2,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='avgsqmprice',
-    version='0.0.1',
+    version='1.1.0',
     author='Markus Hofmeister',
     author_email='mh807@cam.ac.uk',
     license='MIT',
@@ -17,9 +17,9 @@ setup(
         'flask~=2.1.0',
         'JayDeBeApi~=1.2.3',
         'pandas~=1.5.1',
-        'py4jps~=1.0.30',
+        'py4jps~=1.0.34',
         'requests~=2.28.1',
-        'pyderivationagent~=1.4.1'
+        'pyderivationagent~=1.4.4'
     ],
     extras_require={
         "dev": [

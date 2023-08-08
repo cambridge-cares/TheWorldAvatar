@@ -5,25 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Debug Flask App",
-            "type": "python",
-            "request": "launch",
-            "module": "flask",
-            "env": {
-                "FLASK_APP": "${input:agentname}:create_app()",
-                "FLASK_ENV": "development",
-                "FLASK_DEBUG": "0"
-            },
-            "args": [
-                "run",
-                //To ensure proper working of VSCodes debugger:
-                //https://flask.palletsprojects.com/en/2.2.x/debugging/#external-debuggers
-                "--no-debugger",
-                "--no-reload"
-            ],
-            "jinja": true
-        },
-        {
             "name": "Python: Debug Flask within Docker",
             "type": "python",
             "request": "attach",
@@ -33,20 +14,31 @@
             },
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/${input:agentname}/",
-                    "remoteRoot": "/app/${input:agentname}/"
+                    "localRoot": "${workspaceFolder}/floodassessment/",
+                    "remoteRoot": "/app/floodassessment/"
                 }
             ]
         },
         {
-            "name": "Python: Debug dockerised Tests",
             "type": "python",
+            "name": "Python: Debug dockerised Tests",
             "request": "attach",
+            "host": "localhost",
+            "port": 5678,
             "preLaunchTask": "compose-dockerised-test",
-            "connect": {
-                "host": "127.0.0.1",
-                "port": 5678
-            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/",
+                    "remoteRoot": "/app/"
+                }
+            ]
+        },
+        {
+            "type": "python",
+            "name": "Python: Reattach and Debug",
+            "request": "attach",
+            "host": "localhost",
+            "port": 5678,
             "pathMappings": [
                 {
                     "localRoot": "${workspaceFolder}/",
@@ -63,8 +55,8 @@
             "preLaunchTask": "compose-deploy",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/${input:agentname}",
-                    "remoteRoot": "/app/${input:agentname}"
+                    "localRoot": "${workspaceFolder}/floodassessment",
+                    "remoteRoot": "/app/floodassessment"
                 }
             ]
         },
@@ -77,22 +69,8 @@
             "preLaunchTask": "compose-build-deploy",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/${input:agentname}",
-                    "remoteRoot": "/app/${input:agentname}"
-                }
-            ]
-        },
-        {
-            "type": "python",
-            "name": "Stack: Update JPSRM and Build and Debug",
-            "request": "attach",
-            "host": "localhost",
-            "port": "${input:debug.port}",
-            "preLaunchTask": "update-compose-build-deploy",
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}/${input:agentname}",
-                    "remoteRoot": "/app/${input:agentname}"
+                    "localRoot": "${workspaceFolder}/floodassessment",
+                    "remoteRoot": "/app/floodassessment"
                 }
             ]
         },
@@ -104,8 +82,8 @@
             "port": "${input:debug.port.read}",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/${input:agentname}",
-                    "remoteRoot": "/app/${input:agentname}"
+                    "localRoot": "${workspaceFolder}/floodassessment",
+                    "remoteRoot": "/app/floodassessment"
                 }
             ]
         }
@@ -128,20 +106,6 @@
             "command": "shellCommand.execute",
             "args": {
                 "command": "bash ./stack.sh ports read",
-                "useFirstResult": true
-            }
-        },
-        {
-            "id": "agentname",
-            "type": "command",
-            // Get agentname (equivalent to agent repository name) from setup.py
-            "command": "shellCommand.execute",
-            "args": {
-            // TODO: Platform specific commands to be revisited at some point
-            // Linux (n/a option to be commented out):
-            //    "command": "python3 setup.py --name",
-            // Windows (n/a option to be commented out): 
-                "command": "python setup.py --name",
                 "useFirstResult": true
             }
         }

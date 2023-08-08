@@ -133,11 +133,20 @@ to their location thus you do not need to shift the properties files and mapping
 
 Modify 'allFields.properties' in the `mapping` folder within the `config` folder accordingly based on what variables or parameters you are retrieving from the Thingspeak server.
 
+#### Docker deployment
+
 To build and start the agent, open up the command prompt in the same directory as this README, run
 ```
 docker-compose up -d
 ```
-The agent is reachable at "thingspeak-agent/retrieve" on localhost port 1015.
+
+#### Stack deployment
+
+If you want to spin up this agent as part of a stack, instead of `docker-compose up -d`, do the following:
+- Copy the contents of `config/client.properties_stack` into `config/client.properties`, inserting the name of your stack.
+- Build the image via `docker-compose build`. Do not start the container.
+- Copy the `json` file from the `stack-manager-input-config` folder into the `inputs/config` folder of the stack manager.
+- Start the stack manager as usual. This should start the container.
 
 #### Run the agent
 To run the agent, a POST request must be sent to http://localhost:1015/thingspeak-agent/retrieve with a correct JSON Object.
@@ -153,6 +162,9 @@ In curl syntax
 ```
 curl -X POST --header "Content-Type: application/json" -d "{\"agentProperties\":\"THINGSPEAK_AGENTPROPERTIES\",\"apiProperties\":\"THINGSPEAK_APIPROPERTIES\",\"clientProperties\":\"THINGSPEAK_CLIENTPROPERTIES\"}" http://localhost:1015/thingspeak-agent/retrieve
 ```
+
+If the agent is part of a stack, you will most likely need to use a different port number in the above requests, e.g. 3838.
+
 If the agent runs successfully, you should see a returned JSON Object that is similar to the one shown below.
 ```
 {"Result":["Input agent object initialized.","Time series client object initialized.","API connector object initialized.","Retrieved 2 readings.","Data updated with new readings from API.","Timeseries Data has been updated."]}

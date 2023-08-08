@@ -44,10 +44,20 @@ module.exports = function (grunt) {
         },
         copy: {
             main: {
-                expand: true,
-                cwd: './src/html',
-                src: '**',
-                dest: "./output/"
+                files : [
+                    {
+                        expand: true,
+                        cwd: "./src/html",
+                        src: "**",
+                        dest: "./output/"
+                    },
+                    {
+                        expand: true,
+                        cwd: '.',
+                        src: ["VERSION"],
+                        dest: "./output/"
+                    }
+                ]
             }
         }
     });
@@ -60,5 +70,6 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks("grunt-contrib-copy");
 
     // Register Tasks
+	// To build an unminified version of the code, temporarily remove the "uglify" task here.
     grunt.registerTask("package", ["concat", "uglify", "cssmin", "clean", "copy"]);
 }

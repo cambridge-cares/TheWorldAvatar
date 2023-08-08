@@ -24,7 +24,7 @@ from airquality.datainstantiation.readings import *
 @pytest.fixture()
 def initialise_triple_store():
     # Define temporary Docker container based on empty Blazegraph image from CMCL registry
-    blazegraph = DockerContainer('docker.cmclinnovations.com/blazegraph_for_tests:1.0.0')
+    blazegraph = DockerContainer('ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0')
     blazegraph.with_exposed_ports(9999)
     yield blazegraph
 

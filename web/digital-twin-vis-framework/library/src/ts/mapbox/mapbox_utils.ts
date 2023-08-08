@@ -21,7 +21,7 @@ class MapboxUtils {
             if(!layer["metadata"]) {
                 return false;
             } else {
-                if(!layer["metadata"]["attribution"] || layer["metadata"]["attribution"] !== "CMCL Innovations") {
+                if(!layer["metadata"]["attribution"] || layer["metadata"]["attribution"] !== "CMCL") {
                     return false;
                 }
 
@@ -60,8 +60,17 @@ class MapboxUtils {
         }
 
         // Make HTML string
-        let html = "<h3>" + name + "</h3>";
-        if(desc !== undefined) html += desc; 
+        let html = "";
+        if(desc == null) {
+            html += "<h3 style='text-align: center !important;'>" + name + "</h3>";
+        } else {
+            html += "<h3>" + name + "</h3>";
+            if(desc.length > 100) {
+                html += "<div class='desc-popup long-popup'></br>" + desc + "</div>";
+            } else {
+                html += "<div class='desc-popup'></br>" + desc + "</div>";
+            }
+        }
 
         // Add thumbnail if present
         if(properties["thumbnail"]) {
@@ -185,7 +194,15 @@ class MapboxUtils {
         if(url == null) return;
         
         if(url.endsWith("_token=")) url += MapHandler.MAP_API;
+
+        console.log("USING URL...")
+        console.log(url);
+
         MapHandler.MAP.setStyle(url);
+
+        MapHandler.MAP.setProjection({
+            name: 'mercator'
+        });
 
         // Store the current terrain as a global variable
         window.terrain = mode;
@@ -194,7 +211,7 @@ class MapboxUtils {
         MapboxUtils.hideBuildings();
     }
 
-     /**
+    /**
      * Generates a JSON object defining the default imagery options if none is provided
      * by the developer in the settings.json file.
      */
@@ -202,8 +219,8 @@ class MapboxUtils {
         let imagerySettings = {};
 
         // Add possible imagery options
-        imagerySettings["Light"] = "mapbox://styles/mapbox/light-v10?optimize=true";
-        imagerySettings["Dark"] = "mapbox://styles/mapbox/dark-v10?optimize=true";
+        imagerySettings["Light"] = "mapbox://styles/mapbox/light-v11?optimize=true";
+        imagerySettings["Dark"] = "mapbox://styles/mapbox/dark-v11?optimize=true";
         imagerySettings["Outdoors"] = "mapbox://styles/mapbox/outdoors-v11?optimize=true";
         imagerySettings["Satellite"] = "mapbox://styles/mapbox/satellite-streets-v11?optimize=true";
 

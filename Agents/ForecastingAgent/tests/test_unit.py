@@ -1,12 +1,20 @@
-from darts.models import TFTModel
-from darts import TimeSeries
+################################################
+# Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
+# Date: 30 Nov 2022                            #
+################################################
+
+# This module contains several unit tests for the forecasting agent
 
 import pytest
+import pandas as pd
+
+from darts import TimeSeries
+
+from forecasting.utils.tools import *
 from forecasting.datamodel.data_mapping import *
 from forecasting.datamodel.iris import *
-from forecasting.utils.tools import *
-import pandas as pd
 from forecasting.forecasting_agent.agent import *
+
 
 def test_convert_date_to_timestamp():
      """
@@ -18,12 +26,12 @@ def test_convert_date_to_timestamp():
      assert convert_date_to_timestamp(pd.Timestamp(isoparse('2019-09-05T09:00:00Z'))) == 1567674000
      with pytest.raises(Exception):
          convert_date_to_timestamp(1.5)
-         
-         
+
+
 def test_get_ts_lower_upper_bound():
      """
-     > Test the function to return the lower and upper bound of the time series data to be retrieved from the
-     database
+     Test the function to extract the lower and upper bound of the time series data 
+     to be retrieved from the database
      """
      # Test if lower and upper bound are calculated correctly
      start = pd.Timestamp(
@@ -38,34 +46,11 @@ def test_get_ts_lower_upper_bound():
      upperbound_expected = '2019-09-05T10:00:00Z'
      assert get_ts_lower_upper_bound(cfg) == (lowerbound_expected, upperbound_expected)
 
-def test_load_pretrained_model():
-     """
-     > Test the function `load_pretrained_model` to load a pretrained model from a checkpoint file or a PyTorch
-     model file
-     """
-     # Test if pretrained model is loaded correctly
-     cfg = {
-          'model_configuration_name': 'test_model',
-          'fc_model': {
-               'name': 'TFTModel_test',
-               'model_path_ckpt_link': "https://www.dropbox.com/s/fxt3iztbimvm47s/best.ckpt?dl=1",
-               'model_path_pth_link': "https://www.dropbox.com/s/ntg8lgvh01x09wr/_model.pth.tar?dl=1",
-          },
-     }
-     model = load_pretrained_model(cfg, TFTModel, forece_download=True)    
-     assert model.__class__.__name__ == 'TFTModel'
-     assert model.model.input_chunk_length == 168
-     assert model.model.output_chunk_length == 24
-     
-     # use previously downloaded model
-     model = load_pretrained_model(cfg, TFTModel, forece_download=False)    
-     assert model.__class__.__name__ == 'TFTModel'
-     assert model.model.input_chunk_length == 168
-     assert model.model.output_chunk_length == 24
 
 def test_check_if_enough_covs_exist():
      """
-     > This function test if the covariates exist function for the forecast start date and the forecast horizon works correctly
+     This function tests if required covariates exist and forecast start date and 
+     the forecast horizon are checked properly
      """
      # Test if enough covariates exist
      # create darts Timeseries test covariates
@@ -88,8 +73,7 @@ def test_check_if_enough_covs_exist():
      cfg['horizon'] = n 
      assert check_if_enough_covs_exist(cfg, covs) == True
      
+     # forecast_start_date is not in covs  
      cfg['horizon'] = n + 1
      with pytest.raises(ValueError):
          check_if_enough_covs_exist(cfg, covs)
-     # forecast_start_date is not in covs
-     

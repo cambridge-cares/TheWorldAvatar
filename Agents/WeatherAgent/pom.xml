@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.ac.cam.cares.jps</groupId>
     <artifactId>WeatherAgent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.1.1-hotfix-aermod-agent-SNAPSHOT</version>
     <packaging>war</packaging>
     
     <!-- Project properties -->
@@ -16,7 +16,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         
         <!-- Version of the JPS Base Library to use -->
-        <jps.base.version>1.14.0</jps.base.version>
+        <jps.base.version>1.28.0</jps.base.version>
     </properties>
     
     <!-- Parent POM -->
@@ -187,7 +187,7 @@
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-geosparql</artifactId>
-            <version>4.5.0</version>
+            <version>4.7.0</version>
         </dependency>
     </dependencies>
 </project>

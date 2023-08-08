@@ -2,10 +2,11 @@ version: "3.8"
 
 services:
   hplc_postpro_agent:
-    image: ghcr.io/cambridge-cares/hplc_postpro_agent:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/hplc_postpro_agent:1.2.0-SNAPSHOT
     container_name: hplc_postpro_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -19,13 +20,16 @@ services:
     # network_mode: host
     # Use extra_hosts instead
     extra_hosts:
-      - localhost:host-gateway
+      - host.docker.internal:host-gateway
     env_file:
       - ./hplcpostproagent/tests/agent.hplc.postpro.env.test
+    secrets:
+      - email_auth
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "hplcpostproagent:create_app()", "--preload"]
 
   # Blazegraph
   blazegraph:
-    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
     container_name: "blazegraph_hplc_postpro_test"
     ports:
       - 48082:8080
@@ -37,7 +41,7 @@ services:
 
   # File server
   fileserver:
-    image: docker.cmclinnovations.com/fileserver:1.1.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/fileserver:1.1.0
     container_name: "fileserver_hplc_postpro_test"
     ports:
       - 48086:8080
@@ -51,3 +55,5 @@ secrets:
     file: hplcpostproagent/tests/dummy_services_secrets/blazegraph_passwd.txt
   file_server_password:
     file: hplcpostproagent/tests/dummy_services_secrets/fileserver_passwd.txt
+  email_auth:
+    file: hplcpostproagent/tests/dummy_services_secrets/email_auth.json

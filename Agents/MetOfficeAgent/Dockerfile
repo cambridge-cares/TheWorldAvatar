@@ -1,6 +1,9 @@
 # Install the metoffice agent in Docker container
 #==================================================================================================
 
+# Reference published Docker image for Stack-Client resources to use
+FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
+
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
@@ -17,22 +20,21 @@ ENV PYTHONUNBUFFERED=1
 # Install Java
 RUN apt update && apt install -y openjdk-11-jdk-headless git
 
-# Copy StackClients resource required to update py4jps later
-COPY ./tmp_stack ./tmp_stack
+# Copy Stack-Client resource from published Docker image (potentially ensure
+# directory structure matches requirements for jpsrm to update py4jps resources)
+RUN mkdir -p ./tmp_stack
+COPY --from=stackclients /app ./tmp_stack
 
 # Set the default working directory & copy files to install Python
 WORKDIR /app
 COPY ./README.md .
 COPY ./setup.py .
-COPY ./requirements.txt .
 COPY ./resources/ontop.obda ./resources/ontop.obda
 ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
 
 # Install Python package and the required libraries
 RUN python -m pip install --upgrade pip
 RUN pip install -e .
-# Installation of agentlogging currently suspended due to performance issues
-RUN pip install -r requirements.txt
 
 # Install StackClients py4jps resource
 RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \

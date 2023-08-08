@@ -108,11 +108,12 @@ services:
 
   # Blazegraph
   blazegraph:
-    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
     container_name: "blazegraph_derivation_agent"
     ports:
       - 27149:8080
     environment:
+      BLAZEGRAPH_USER: bg_user
       BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
     # Add a secret to set the password for BASIC authentication
     secrets:

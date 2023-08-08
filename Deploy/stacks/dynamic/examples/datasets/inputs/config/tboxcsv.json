@@ -1,0 +1,16 @@
+{
+    "datasetDirectory": "tboxcsv",
+    "namespace": {
+        "name": "tboxcsv",
+        "properties": {
+            "com.bigdata.rdf.store.AbstractTripleStore.triplesMode": true,
+            "com.bigdata.rdf.store.AbstractTripleStore.axiomsClass": "com.bigdata.rdf.axioms.NoAxioms"
+        }
+    },
+    "dataSubsets": [
+        {
+            "type": "tboxcsv",
+            "skip": false
+        }
+    ]
+}

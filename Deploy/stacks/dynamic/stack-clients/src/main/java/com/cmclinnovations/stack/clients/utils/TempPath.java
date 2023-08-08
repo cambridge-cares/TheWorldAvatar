@@ -2,24 +2,11 @@ package com.cmclinnovations.stack.clients.utils;
 
 import java.nio.file.Path;
 
-public abstract class TempPath implements AutoCloseable {
-
-    private final Path path;
-
-    protected TempPath(Path path) {
-        this.path = path;
-    }
-
-    public Path getPath() {
-        return path;
-    }
+public interface TempPath extends AutoCloseable {
 
     @Override
-    public String toString() {
-        return path.toString();
-    }
+    void close() throws RuntimeException;
 
-    @Override
-    public abstract void close() throws RuntimeException;
+    Path getPath();
 
 }

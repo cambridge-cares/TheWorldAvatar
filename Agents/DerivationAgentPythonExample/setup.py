@@ -21,7 +21,7 @@ setup(
     packages=find_namespace_packages(exclude=['tests','tests.*']),
     # NOTE install_requires is used to specify the dependencies of the package, their versions should be kept as loose as possible
     # NOTE The dependencies should be specified in the requirements.txt file, see README.md for more information
-    install_requires=['pyderivationagent>=1.4.1', 'pydantic==1.9.0'],
+    install_requires=['pyderivationagent>=1.4.3', 'pydantic==1.9.0'],
     extras_require={
         "dev": [
             "testcontainers>=3.4.2",

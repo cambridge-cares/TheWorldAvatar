@@ -1,0 +1,25 @@
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+prefix ts: <https://www.theworldavatar.com/kg/ontotimeseries/>
+prefix util: <https://www.theworldavatar.com/kg/ontotimeseries/45utility/>
+prefix skos: <http://www.w3.org/2004/02/skos/core#>
+
+SELECT ?Measurement ?Name ?Unit ?lastUpdated
+WHERE {
+  {
+  # Observations/Measurements
+  BIND ([IRI] as ?Measurement) . 
+  ?Measurement om:hasUnit/skos:notation ?Unit .                
+  BIND (replace(str(?Measurement), str(util:), '') as ?name) .
+  BIND (replace(str(?name), '(\\w)_\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}', '$1') as ?Name)
+  # Forecasts
+  } UNION {
+  [IRI] ts:hasForecast ?Measurement . 
+  [IRI] om:hasUnit/skos:notation ?Unit .    
+  ?Measurement ts:createdAt ?lastUpdated .          
+  BIND (replace(str(<https://www.theworldavatar.com/kg/ontotimeseries/45utility/Attic_MonthlyElectricityConsumption_4b8d456e-2883-4714-a9b3-ab53e98987f0>), str(util:), '') as ?name1) .
+  BIND (replace(str(?name1), '(\\w)_\\w{8}-\\w{4}-\\w{4}-\\w{4}-\\w{12}', '$1') as ?name2) .
+  BIND (concat(str(?name2), ' Forecast') as ?Name) .
+  }
+}

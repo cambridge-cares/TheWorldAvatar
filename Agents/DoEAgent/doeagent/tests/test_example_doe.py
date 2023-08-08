@@ -9,16 +9,20 @@ import doeagent.tests.utils as utils
     [
         (utils.cf.DOE_IRI, utils.cf.DERIVATION_INPUTS, True), # local agent instance test
         (utils.cf.DOE_IRI, utils.cf.DERIVATION_INPUTS, False), # deployed docker agent test
+        (utils.cf.DOE_NO_PRIOR_EXPERIMENT_IRI, [utils.cf.DOE_NO_PRIOR_EXPERIMENT_IRI], True), # local agent instance test
+        (utils.cf.DOE_NO_PRIOR_EXPERIMENT_IRI, [utils.cf.DOE_NO_PRIOR_EXPERIMENT_IRI], False), # deployed docker agent test
+        (utils.cf.DOE_ANOTHER_TEST_NO_PRIOR_EXPERIMENT_IRI, [utils.cf.DOE_ANOTHER_TEST_NO_PRIOR_EXPERIMENT_IRI], True), # local agent instance test
+        (utils.cf.DOE_ANOTHER_TEST_NO_PRIOR_EXPERIMENT_IRI, [utils.cf.DOE_ANOTHER_TEST_NO_PRIOR_EXPERIMENT_IRI], False), # deployed docker agent test
     ],
 )
 def test_example_doe(
-    generate_random_download_path, initialise_clients, create_doe_agent,
+    initialise_clients, create_doe_agent,
     doe_iri, derivation_inputs, local_agent_test
 ):
     sparql_client, derivation_client = initialise_clients
 
     # Initialise all triples in the knowledge graph
-    utils.initialise_triples(generate_random_download_path, sparql_client, derivation_client)
+    utils.initialise_triples(sparql_client)
 
     # Create agent instance, register agent in KG
     doe_agent = create_doe_agent(register_agent=True, random_agent_iri=local_agent_test)
@@ -51,12 +55,17 @@ def test_example_doe(
     # Check if all the suggested conditions are within the DoE range
     for design_variable in new_doe_instance.hasDomain.hasDesignVariable:
         if isinstance(design_variable, utils.cf.ContinuousVariable):
-            rxn_cond = new_exp_instance.get_reaction_condition(design_variable.refersTo, design_variable.positionalID)
+            rxn_cond = new_exp_instance.get_reaction_condition(design_variable.refersToQuantity.clz, design_variable.positionalID)
             assert rxn_cond.hasValue.hasNumericalValue <= design_variable.upperLimit
             assert design_variable.lowerLimit <= rxn_cond.hasValue.hasNumericalValue
         else:
             # TODO add checks for CategoricalVariable
             pass
+    # Check if all the fixed parameters are the same as the DoE instance
+    if new_doe_instance.hasDomain.hasFixedParameter is not None:
+        for fixed_parameter in new_doe_instance.hasDomain.hasFixedParameter:
+            rxn_cond = new_exp_instance.get_reaction_condition(fixed_parameter.refersToQuantity.clz, fixed_parameter.positionalID)
+            assert rxn_cond.hasValue.hasNumericalValue == fixed_parameter.refersToQuantity.hasValue.hasNumericalValue
     print("All check passed.")
 
     # Shutdown the scheduler to clean up if it's local agent test (as the doe_agent scheduler must have started)

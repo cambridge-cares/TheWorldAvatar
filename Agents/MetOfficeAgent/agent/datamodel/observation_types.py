@@ -17,3 +17,13 @@ AIR_POLLUTANT_CONCENTRATION = 'AirPollutantConcentration'
 DIRECT_HORIZONTAL_IRRADIANCE = 'DirectHorizontalIrradiance'
 DIFFUSE_HORIZONTAL_IRRADIANCE = 'DiffuseHorizontalIrradiance'
 GLOBAL_HORIZONTAL_IRRADIANCE = 'GlobalHorizontalIrradiance'
+
+# OM SYMBOLS for observation types
+# original OM symbol for °C: '&#x00B0;C'
+# original OM symbol for °: '&#x00B0;'
+DEG_C = '°C'
+HEC_PA = 'hPa'
+PERCENT = '%'
+METRE = 'm'
+MI_PH = 'mi/h'
+DEG = '°'

@@ -9,7 +9,7 @@
 # To avoid unnecessary logging information from py4j package, set logger level before 
 # first creation of JPS_BASE_LIB module view (i.e. jpsBaseLibView = jpsBaseLibGW.createModuleView())
 import logging
-logging.getLogger("py4j").setLevel(logging.INFO)
+logging.getLogger("py4j").setLevel(logging.ERROR)
 
 from pytz import utc
 from apscheduler.schedulers.background import BackgroundScheduler

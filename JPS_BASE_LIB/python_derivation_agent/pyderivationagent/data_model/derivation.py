@@ -52,7 +52,8 @@ class DerivationInputs():
         return ast.literal_eval(str(self.derivation_inputs.getInputs()))
 
     def getIris(self, rdfType):
-        return list(self.derivation_inputs.getIris(rdfType))
+        iris = self.derivation_inputs.getIris(rdfType)
+        return list(iris) if iris is not None else None
 
 
 class DerivationOutputs():

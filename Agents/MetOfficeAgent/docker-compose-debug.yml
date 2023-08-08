@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   metoffice_agent:
-    image: ghcr.io/cambridge-cares/metoffice_agent_debug:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/metoffice_agent_debug:1.0.0
     build:
       context: .
       target: debug

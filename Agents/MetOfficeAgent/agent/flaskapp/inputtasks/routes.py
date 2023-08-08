@@ -5,7 +5,7 @@
 
 from flask import Blueprint, request, jsonify
 
-import agentlogging
+from py4jps import agentlogging
 from agent.datainstantiation.stations import instantiate_all_stations
 from agent.datainstantiation.readings import instantiate_all_station_readings
 from agent.datainstantiation.readings import add_all_readings_timeseries

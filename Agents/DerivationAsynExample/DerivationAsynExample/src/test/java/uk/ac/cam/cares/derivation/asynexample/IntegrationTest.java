@@ -34,9 +34,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
- * These tests start a Docker container of blazegraph based on "docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"
+ * These tests start a Docker container of blazegraph based on "ghcr.io/cambridge-cares/blazegraph:1.1.0"
  * Please refer to TheWorldAvatar/Agents/DerivationAsynExample/README.md for more details.
- * For information regarding the Docker registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
  * 
  * If one is developing in WSL2 and want to keep the container alive after the test (this will be useful when debugging if any test ran into exceptions),
  * then please follow the instruction from [1/5] to [5/5]
@@ -97,14 +96,12 @@ public class IntegrationTest extends TestCase {
         super.tearDown();
     }
 
-    // NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
-    // For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
     @Container
     private static GenericContainer<?> blazegraph;
     static {
-        blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
+        blazegraph = new GenericContainer<>(DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph:1.1.0"))
             // .withReuse(true)
-            .withExposedPorts(9999); // the port is set as 9999 to match with the value set in the docker image
+            .withExposedPorts(8080); // the port is set as 8080 to match with the value set in the docker image
     }
 
     @BeforeAll
@@ -129,6 +126,13 @@ public class IntegrationTest extends TestCase {
         getTimestamp.setAccessible(true);
         getStatusType = devSparql.getClass().getDeclaredMethod("getStatusType", String.class);
         getStatusType.setAccessible(true);
+
+        try {
+            // wait for the blazegraph to be ready
+            TimeUnit.SECONDS.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         // the response is a JSON object containing the IRIs of the initialised instances, refer to InitialiseInstances for the keys
         InitialiseInstances initialisation = new InitialiseInstances();
@@ -186,7 +190,7 @@ public class IntegrationTest extends TestCase {
         // test if the pure inputs are initiliased with predefined value
         Assert.assertEquals(20, sparqlClient.getValue(upperlimit_instance));
         Assert.assertEquals(3, sparqlClient.getValue(lowerlimit_instance));
-        Assert.assertEquals(6, sparqlClient.getValue(numofpoints_instance));
+        Assert.assertEquals(0, sparqlClient.getValue(numofpoints_instance));
 
         // get IRIs of initialise instances, the keys are located in the servlet InitialiseInstances
         // derivations
@@ -208,7 +212,7 @@ public class IntegrationTest extends TestCase {
         Assert.assertEquals(currentTimestamp_rng_derivation, 0);
 
         // test that NO instance should be created for each type of derived quantities
-        Assert.assertTrue(sparqlClient.getListOfRandomPointsIRI().isEmpty());
+        Assert.assertTrue(sparqlClient.getPointsInKG().isEmpty());
         Assert.assertTrue(sparqlClient.getMaxValueIRI().isEmpty());
         Assert.assertTrue(sparqlClient.getMinValueIRI().isEmpty());
         Assert.assertTrue(sparqlClient.getDifferenceIRI().isEmpty());
@@ -246,7 +250,6 @@ public class IntegrationTest extends TestCase {
         // wait arbitrary amount of time so that the cleaning up is finished
         TimeUnit.SECONDS.sleep(5);
         // test if it contains correct number of points
-        Assert.assertEquals(sparqlClient.getValue(sparqlClient.getNumberOfPointsIRI()), sparqlClient.getAmountOfPointsInList());
         Assert.assertEquals(sparqlClient.getValue(sparqlClient.getNumberOfPointsIRI()),
                 sparqlClient.getAmountOfPointsInKG());
     }
@@ -266,8 +269,8 @@ public class IntegrationTest extends TestCase {
         // wait arbitrary amount of time so that the cleaning up is finished
         TimeUnit.SECONDS.sleep(5);
         String maxvalue_instance = sparqlClient.getMaxValueIRI();
-        // test if the value is the same as the max value
-        Assert.assertEquals(sparqlClient.getExtremeValueInList(sparqlClient.getListOfRandomPointsIRI(), true), sparqlClient.getValue(maxvalue_instance));
+        // test no maxvalue instance was created
+        Assert.assertEquals(maxvalue_instance, new String());
     }
 
     @Test
@@ -284,8 +287,8 @@ public class IntegrationTest extends TestCase {
         // wait arbitrary amount of time so that the cleaning up is finished
         TimeUnit.SECONDS.sleep(5);
         String minvalue_instance = sparqlClient.getMinValueIRI();
-        // test if the value is the same as the min value
-        Assert.assertEquals(sparqlClient.getExtremeValueInList(sparqlClient.getListOfRandomPointsIRI(), false), sparqlClient.getValue(minvalue_instance));
+        // test no maxvalue instance was created
+        Assert.assertEquals(minvalue_instance, new String());
     }
 
     @Test
@@ -301,59 +304,36 @@ public class IntegrationTest extends TestCase {
         }
         // wait arbitrary amount of time so that the cleaning up is finished
         TimeUnit.SECONDS.sleep(5);
-        // test if the value is the same as the difference value
-        int difference = sparqlClient.getValue(sparqlClient.getMaxValueIRI()) - sparqlClient.getValue(sparqlClient.getMinValueIRI());
-        Assert.assertEquals(difference, sparqlClient.getValue(sparqlClient.getDifferenceIRI()));
+        // test no difference instance was created
+        Assert.assertEquals(sparqlClient.getDifferenceIRI(), new String());
     }
 
     @Test
+    @Timeout(value = 300, unit = TimeUnit.SECONDS)
     @Order(7)
-    public void testInputAgent() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        // get information about old NumberOfPoints instance
-        String numOfPoint_old = sparqlClient.getNumberOfPointsIRI();
-        int numOfPoints_val_old = sparqlClient.getValue(numOfPoint_old);
-        long numOfPoints_timestamp_old = (long) getTimestamp.invoke(devSparql, numOfPoint_old);
-        // invoke InputAgent
-        InputAgent inputAgent = new InputAgent();
-        inputAgent.updateNumberOfPoints(sparqlClient, devClient);
+    public void testNoOutputsToNewOutputs() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InterruptedException {
+        /////////////////////////////////////////////////
+		// CASE 1 - No outputs to new outputs computed //
+		/////////////////////////////////////////////////
 
-        // get information about new NumberOfPoints instance
-        String numOfPoint_new = sparqlClient.getNumberOfPointsIRI();
-        int numOfPoints_val_new = sparqlClient.getValue(numOfPoint_new);
-        long numOfPoints_timestamp_new = (long) getTimestamp.invoke(devSparql, numOfPoint_new);
-        // test if InputAgent increased the value
-        Assert.assertEquals(numOfPoints_val_old + 1, numOfPoints_val_new);
-        // test if InputAgent modified the timestamp
-        Assert.assertTrue(numOfPoints_timestamp_new > numOfPoints_timestamp_old);
+        // invoke input agent again with 1 point
+        invokeInputAgent(1);
+        // invoke update derivation again
+        invokeUpdate(true);
     }
 
     @Test
     @Timeout(value = 300, unit = TimeUnit.SECONDS)
     @Order(8)
-    public void testUpdateDerivations() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InterruptedException {
-        // get old timestamp of difference derivation
-        String difference_derivation = response.getString("Difference Derivation");
-        long difference_derivation_timestamp = (long) getTimestamp.invoke(devSparql, difference_derivation);
-        // get information about old instance of difference
-        String difference_instance_old = sparqlClient.getDifferenceIRI();
+    public void testMultiplePointsAsOutputs() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InterruptedException {
+        ////////////////////////////////////////////////////////
+		// CASE 2 - Existing outputs to more points generated //
+		////////////////////////////////////////////////////////
 
+        // invoke input agent again with 5 points
+        invokeInputAgent(5);
         // invoke update derivation again
-        UpdateDerivations updateDerivations = new UpdateDerivations();
-        updateDerivations.updateDerivations(sparqlClient, devClient);
-
-        // once timestamp of difference derivation updated, the iri of difference should be different from the previous one, it should have the value same as the max - min value
-        currentTimestamp_difference_derivation = (long) getTimestamp.invoke(devSparql, difference_derivation);
-        while (currentTimestamp_difference_derivation <= difference_derivation_timestamp) {
-            TimeUnit.SECONDS.sleep(20);
-            currentTimestamp_difference_derivation = (long) getTimestamp.invoke(devSparql, difference_derivation);
-        }
-        // wait arbitrary amount of time so that the cleaning up is finished
-        TimeUnit.SECONDS.sleep(5);
-        String difference_instance_new = sparqlClient.getDifferenceIRI();
-        Assert.assertNotEquals(difference_instance_old, difference_instance_new);
-        // test if the value is the same as the difference value
-        int difference = sparqlClient.getValue(sparqlClient.getMaxValueIRI()) - sparqlClient.getValue(sparqlClient.getMinValueIRI());
-        Assert.assertEquals(difference, sparqlClient.getValue(sparqlClient.getDifferenceIRI()));
+        invokeUpdate(true);
     }
 
     @Test
@@ -410,8 +390,22 @@ public class IntegrationTest extends TestCase {
     }
 
     @Test
-    @Timeout(value = 180, unit = TimeUnit.SECONDS)
+    @Timeout(value = 300, unit = TimeUnit.SECONDS)
     @Order(10)
+    public void testExistOutputsToNoOutputs() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InterruptedException {
+        //////////////////////////////////////////////////////
+		// CASE 3 - Existing outputs to no outputs computed //
+		//////////////////////////////////////////////////////
+
+        // invoke input agent again
+        invokeInputAgent(0);
+        // invoke update derivation again
+        invokeUpdate(false);
+    }
+
+    @Test
+    @Timeout(value = 180, unit = TimeUnit.SECONDS)
+    @Order(11)
     public void testErrorStatus() throws ServletException, InterruptedException {
         // first initialise exceptionThrowAgent
         exceptionThrowAgent.init();
@@ -436,6 +430,68 @@ public class IntegrationTest extends TestCase {
         errDerivations.stream().forEach(d -> {
             Assert.assertTrue(d.getErrMsg().contains(ExceptionThrowAgent.EXCEPTION_MESSAGE));
         });
+    }
+
+    ////////////////////////////////////////////////////////////
+	// Below are utility functions to reduce code-duplication //
+	////////////////////////////////////////////////////////////
+
+    public void invokeInputAgent(int numOfPointNewvalue) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        // get information about old NumberOfPoints instance
+        String numOfPoint_old = sparqlClient.getNumberOfPointsIRI();
+        long numOfPoints_timestamp_old = (long) getTimestamp.invoke(devSparql, numOfPoint_old);
+        // invoke InputAgent
+        InputAgent inputAgent = new InputAgent();
+        inputAgent.updateNumberOfPoints(sparqlClient, devClient, numOfPointNewvalue);
+
+        // get information about new NumberOfPoints instance
+        String numOfPoint_new = sparqlClient.getNumberOfPointsIRI();
+        int numOfPoints_val_new = sparqlClient.getValue(numOfPoint_new);
+        long numOfPoints_timestamp_new = (long) getTimestamp.invoke(devSparql, numOfPoint_new);
+        // test if InputAgent updated the value
+        Assert.assertEquals(numOfPointNewvalue, numOfPoints_val_new);
+        // test if InputAgent modified the timestamp
+        Assert.assertTrue(numOfPoints_timestamp_new > numOfPoints_timestamp_old);
+    }
+
+    public void invokeUpdate(boolean rngOutputsExist) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InterruptedException {
+        // get old timestamp of difference derivation
+        String difference_derivation = response.getString("Difference Derivation");
+        long difference_derivation_timestamp = (long) getTimestamp.invoke(devSparql, difference_derivation);
+        // get information about old instance of difference
+        String difference_instance_old = sparqlClient.getDifferenceIRI();
+
+        // invoke update derivation again
+        UpdateDerivations updateDerivations = new UpdateDerivations();
+        updateDerivations.updateDerivations(difference_derivation, devClient);
+
+        // once timestamp of difference derivation updated, the iri of difference should be different from the previous one, it should have the value same as the max - min value
+        currentTimestamp_difference_derivation = (long) getTimestamp.invoke(devSparql, difference_derivation);
+        while (currentTimestamp_difference_derivation <= difference_derivation_timestamp) {
+            TimeUnit.SECONDS.sleep(20);
+            currentTimestamp_difference_derivation = (long) getTimestamp.invoke(devSparql, difference_derivation);
+        }
+        // wait arbitrary amount of time so that the cleaning up is finished
+        TimeUnit.SECONDS.sleep(5);
+        // test if the NumberOfPoints is the same as the number of points in the KG
+        Assert.assertEquals(sparqlClient.getValue(sparqlClient.getNumberOfPointsIRI()), sparqlClient.getAmountOfPointsInKG());
+
+        if (rngOutputsExist) {
+            // if the rng outputs exist, then the difference instance should be different from the previous one
+            Assert.assertNotEquals(difference_instance_old, sparqlClient.getDifferenceIRI());
+            // test if the value is the same as the max value
+            Assert.assertEquals(sparqlClient.getExtremeValueInList(sparqlClient.getPointsInKG(), true), sparqlClient.getValue(sparqlClient.getMaxValueIRI()));
+            // test if the value is the same as the min value
+            Assert.assertEquals(sparqlClient.getExtremeValueInList(sparqlClient.getPointsInKG(), false), sparqlClient.getValue(sparqlClient.getMinValueIRI()));
+            // test if the value is the same as the difference value
+            int difference = sparqlClient.getValue(sparqlClient.getMaxValueIRI()) - sparqlClient.getValue(sparqlClient.getMinValueIRI());
+            Assert.assertEquals(difference, sparqlClient.getValue(sparqlClient.getDifferenceIRI()));
+        } else {
+            // if the rng outputs do not exist, then max, min and difference should not exist
+            Assert.assertEquals(sparqlClient.getMaxValueIRI(), new String());
+            Assert.assertEquals(sparqlClient.getMinValueIRI(), new String());
+            Assert.assertEquals(sparqlClient.getDifferenceIRI(), new String());
+        }
     }
 
     public int countNumberOfDerivationsGivenStatusType(Map<String, StatusType> derivationsAndStatusType, StatusType statusType) {

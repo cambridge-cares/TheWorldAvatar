@@ -141,7 +141,7 @@ public class TripleStoreProvider {
 	 * Creates a container for a given image. If the image is not found in the local repository, 
 	 * it is downloaded once. 
 	 * <p>
-	 * The image name "docker.cmclinnovations.com/blazegraph_for_tests:1.0.0" 
+	 * The image name "ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0" 
 	 * requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
 	 * For this reason, method {@link #createBlazegraphContainerByBuilder(String)} is used instead in case of Blazegraph.
 	 * For more information regarding the registry, 
@@ -209,7 +209,7 @@ public class TripleStoreProvider {
 	 * @return
 	 */
 	private GenericContainer<?> createRDF4JServer(int port) {
-		String imageName = "eclipse/rdf4j-workbench:3.7.4";
+		String imageName = "eclipse/rdf4j-workbench:3.7.7";
 		GenericContainer<?> tripleStore = createContainerByImage(imageName).withExposedPorts(port);
 		tripleStore.start();
 		LOGGER.debug("Docker image was started, name=" + imageName + ", port=" + port);

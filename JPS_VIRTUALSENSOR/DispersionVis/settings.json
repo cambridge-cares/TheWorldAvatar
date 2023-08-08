@@ -1,0 +1,12 @@
+{
+    "start": {
+        "center": [-4.142, 50.35],
+        "zoom": 10.5,
+        "bearing": 0,
+        "pitch": 0
+    },
+    "search": {
+        "Name": "name",
+        "ID": "id"
+    }
+}

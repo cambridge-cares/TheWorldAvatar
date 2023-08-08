@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   metoffice_agent:
-    image: ghcr.io/cambridge-cares/metoffice_agent:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/metoffice_agent:1.0.0
     environment:
       - STACK_NAME=${STACK_NAME}
       # MetOffice Data Point API key

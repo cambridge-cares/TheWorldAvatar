@@ -18,6 +18,9 @@ Initialising any new time series using the `TimeSeriesClient` creates all requir
 ## Note on PostGIS support
 The TimeSeriesClient supports storing and querying geometries in PostGIS by providing objects of org.postgis.Geometry. You must ensure that the PostGIS extension is enabled in PostgreSQL to use this.
 
+## Schema specification
+It is possible to store time series data in a separate schema through the method TimeSeriesClient.setRDBSchema(String schema). If this is not set, the TimeSeriesClient defaults to the "public" schema.
+
 ## Time series instantiation
 The namespaces used in this document:  
 (`ts` denotes the time series ontology and `kb` refers to the namespace to which the time series shall be added)

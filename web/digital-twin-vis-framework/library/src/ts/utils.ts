@@ -1,24 +1,17 @@
 /**
- * 
- * @returns 
+ * Opens the user help document associated with this version of the DTVF.
  */
 function openHelpURL() {
-    let scriptURL = null;
+    window.open("./dtvf/help", "_blank");
+}
 
-    var scripts = document.getElementsByTagName('script');
-    for(let i = 0; i < scripts.length; i++) {
-        if(scripts[i].src.endsWith("dtvf.min.js")) scriptURL = scripts[i].src;
-    };
-
-    if(scriptURL !== null)  {
-        // Split the URL by slash
-        let parts = scriptURL.toString().split("/");
-        parts[parts.length - 1] = "help";
-        
-        // Open in a new tab
-        let finalURL = parts.join("/") + "/";
-        window.open(finalURL, "_blank");
-    }
+/**
+ * Returns the current version of the DTVF.
+ */
+async function getDTVFVersion() {
+    return await fetch("./dtvf/VERSION").then(response => {
+        return response.text();
+    });
 }
 
 /**
@@ -56,8 +49,17 @@ async function loadHTML(htmlFile: string) {
  */
 function getDefaultImagery() {
     let imagerySettings = Manager.SETTINGS.getSetting("imagery");
+    if(imagerySettings == null && Manager.PROVIDER === MapProvider.MAPBOX) {
+        MapboxUtils.generateDefaultImagery();
+        imagerySettings = Manager.SETTINGS.getSetting("imagery");
+    }
+
     let defaultSetting = imagerySettings["default"];
-    return imagerySettings[defaultSetting];
+
+    let url = imagerySettings[defaultSetting];
+    if(url.endsWith("_token=")) url += MapHandler.MAP_API;
+
+    return url;
 }
 
 /**
@@ -68,31 +70,7 @@ function getDefaultImagery() {
  * @returns 
  */
 function updateURL(originalURL: string): string {
-    if(!originalURL.includes("localhost") && !originalURL.includes("127.0.0.1")) {
-        return originalURL;
-    }
-
-    // Get the URL that the visualisation is currently accessed from
-    let winURL = window.location;
-	let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
-
-    originalURL = originalURL.replace("http://", "");
-    originalURL = originalURL.replace("https://", "");
-    originalURL = originalURL.replace("localhost", "");
-    originalURL = originalURL.replace("127.0.0.1", "");
-
-    if(originalURL.startsWith(":")) {
-        if(baseURL.endsWith("/")) {
-            return baseURL.substring(0, baseURL.length - 1) + originalURL;
-        }
-        return originalURL + baseURL;
-    } else {
-        if(originalURL.startsWith("/") || baseURL.endsWith("/")) {
-            return baseURL + originalURL;
-        } else {
-            return baseURL + "/" + originalURL;
-        }
-    }
+    return originalURL;
 }
 
 /**

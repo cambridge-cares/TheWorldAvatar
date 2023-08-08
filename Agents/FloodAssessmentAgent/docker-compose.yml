@@ -2,19 +2,22 @@ version: "3.8"
 
 services:
   floodassessment_agent:
-    image: ghcr.io/cambridge-cares/floodassessment_agent:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/floodassessment_agent:1.1.0
     environment:
       #--- Stack & Stack Client parameters ---#
       - STACK_NAME=${STACK_NAME}
       # Specify PostGIS/PostgreSQL database name
       - DATABASE=postgres
       # Specify Blazegraph namespace
-      - NAMESPACE=buildings
+      - NAMESPACE=kingslynn
+      # Specify PostGIS table names containing population raster data and instantiated flood warnings
+      - POPULATION_TABLE=population
+      - FLOODWARNINGS_TABLE=floodwarnings
       #--- Derivation Agent parameters ---#
       # For details, see: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_derivation_agent/pyderivationagent/conf/agent_conf.py
-      - ONTOAGENT_SERVICE_IRI=http://www.theworldavatar.com/resource/agents/Service__KL_FloodAssessment/Service
+      - ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__KL_FloodAssessment/Service
       # Host and port of ONTOAGENT_OPERATION_HTTP_URL should match port specified in `port` node below
-      - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5012/FloodAssessment
+      - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5013/FloodAssessment
       - DERIVATION_INSTANCE_BASE_URL=https://www.theworldavatar.com/kg/derivation/
       # Check derivations every 12h
       - DERIVATION_PERIODIC_TIMESCALE=43200
@@ -29,10 +32,9 @@ services:
       - FILE_SERVER_USERNAME=''
       - FILE_SERVER_PASSWORD=''
       #--- Miscellaneous ---#
-      #TODO: Check whether that's still needed
       - LOG4J_FORMAT_MSG_NO_LOOKUPS=true
     ports:
-      - "5012:5000"
+      - "5013:5000"
     volumes:
       - logs:/root/.jps
     configs:

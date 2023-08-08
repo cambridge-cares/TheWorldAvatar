@@ -7,12 +7,21 @@
 //                 (the agent only instantiates EPC data for buildings instantiated in OntoCityGml)
 //                 --> OPTIONAL: if not provided, default namespace from environment variables will be used
 
-POST http://165.232.172.16:5001/api/epcagent/instantiate/certificates/single
+POST http://165.232.172.16:5007/epcagent/instantiate/certificates/single
 Content-Type: application/json
 
+# # Domestic EPC
+# { "query": {
+#       "lmk_key": "260808730062009040611251270078171",
+#       "epc_endpoint": "domestic",
+#       "ocgml_endpoint": "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql"
+#     }
+# }
+
+# Non-domestic query
 { "query": {
-      "lmk_key": "260808730062009040611251270078171",
-      "epc_endpoint": "domestic",
-      "ocgml_endpoint": "http://128.199.197.40:4999/blazegraph/namespace/ocgml/sparql"
-    }
+     "lmk_key": "54715380002011092111465010400280",
+     "epc_endpoint": "non-domestic",
+     "ocgml_endpoint": "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql"
+  }
 }

@@ -1,33 +1,23 @@
+#
+# Compose file for the DTVF.
+#
 version: "3.8"
 
 # All Services
 services:
 
-  # Live development environment.
-  # This container will install typescript then remain open so that developers can use it as a live development environment.
-  dtvf-devel:
-    image: huli/grunt
-    container_name: "dtvf-devel"
+  # Empty DTVF visualisation image for deployment. Builds a base image that, when combined
+  # with a volume of files, can be used as a visualisation. It is not intended that this
+  # config is used to run the dtvf-base-image.
+  visualise:
+    image: ghcr.io/cambridge-cares/dtvf-base-image:latest
+    container_name: "empty-dtvf-container"
     restart: "no"
-    working_dir: "/app"
-    entrypoint: "/bin/sh -c 'npm install && npm install typescript -g && tail -f /dev/null'"
-    volumes:
-      - type: bind
-        source: ./
-        target: /app
-
-
-
-  # Build container.
-  # This container will compile the source code, package it for deployment, write it to the ./output folder, then shutdown.
-  dtvf-build:
-    image: huli/grunt
-    container_name: "dtvf-build"
-    restart: "no"
-    working_dir: "/app"
-    entrypoint: "/bin/sh -c 'npm install && npm install typescript -g && tsc && grunt package'"
-    volumes:
-      - type: bind
-        source: ./
-        target: /app
-      
+    build:
+      context: "./"
+      dockerfile: "Dockerfile"
+      labels:
+        authors: "support@cmcl.io"
+        description: "Empty visualisation image, ready to house web files."
+    ports:
+      - "80:80" 

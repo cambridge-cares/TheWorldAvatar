@@ -11,6 +11,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.regex.*;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,6 +27,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.DeleteDataQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.InsertDataQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.*;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfObject;
 import org.json.JSONArray;
 
@@ -516,14 +518,6 @@ public class TimeSeriesSparql {
 				}
 			}
 
-			// Check that the data IRIs are not attached to a different time series IRI already
-			for (String iri: dataIRIs.get(i)) {
-				String ts = getTimeSeries(iri);
-				if(ts!=null) {
-					throw new JPSRuntimeException(exceptionPrefix + "The data IRI " + iri + " is already attached to time series " + ts);
-				}
-			}
-
 			// relational database URL
 			modify.insert(tsIRI.has(hasRDB, literalOf(rdbURL)));
 
@@ -540,6 +534,24 @@ public class TimeSeriesSparql {
 
 		}
 		kbClient.executeUpdate(modify.getQueryString());
+	}
+
+	/**
+	 * returns true if any of the given data IRIs has a time series attached
+	 * @param dataIRI
+	 * @return
+	 */
+	boolean checkAnyTimeSeriesExists(List<String> dataIRI) {
+		SelectQuery query = Queries.SELECT();
+		Variable data = query.var();
+		Variable ts = query.var();
+		ValuesPattern valuesPattern = new ValuesPattern(data, dataIRI.stream().map(Rdf::iri).collect(Collectors.toList()));
+
+		query.where(data.has(hasTimeSeries, ts), valuesPattern).prefix(PREFIX_ONTOLOGY);
+
+		JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
+
+		return queryResult.length() > 0;
 	}
 
 	/**

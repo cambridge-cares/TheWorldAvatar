@@ -92,11 +92,11 @@ DERIVATION_INPUTS_4 = [FLOOD_WARNING_2,
 DERIVATION_INPUTS_5 = [FLOOD_WARNING_2]
 
 # Define expected output sets
-DERIVATION_OUTPUTS_1 = [FLOOD_FLOOD, FLOOD_IMPACT, FLOOD_POPULATION, FLOOD_BUILDINGS,
+DERIVATION_OUTPUTS_1 = [FLOOD_FLOOD, FLOOD_IMPACT, FLOOD_POPULATION, FLOOD_BUILDING,
                         OM_AMOUNT_MONEY, OM_AMOUNT_MONEY, OM_MEASURE, OM_MEASURE]
-DERIVATION_OUTPUTS_2 = [FLOOD_FLOOD, FLOOD_IMPACT, FLOOD_BUILDINGS,
+DERIVATION_OUTPUTS_2 = [FLOOD_FLOOD, FLOOD_IMPACT, FLOOD_BUILDING,
                         OM_AMOUNT_MONEY, OM_AMOUNT_MONEY, OM_MEASURE, OM_MEASURE]
-DERIVATION_OUTPUTS_5 = [FLOOD_FLOOD, FLOOD_IMPACT, FLOOD_BUILDINGS]
+DERIVATION_OUTPUTS_5 = [FLOOD_FLOOD, FLOOD_IMPACT, FLOOD_BUILDING]
 
 # Test against pre-calculated value estimates from Excel (rounded)
 # (Number of buildings at risk, value of building at risk, people at risk)
@@ -252,7 +252,7 @@ def get_flood_assessment_details(sparql_client, derivation_iri):
         WHERE {{
             <{derivation_iri}> <{ONTODERIVATION_ISDERIVEDFROM}> ?input_iri . 
             ?input_iri <{RDF_TYPE}> ?input_type . 
-            ?buildings_iri <{RDF_TYPE}> <{FLOOD_BUILDINGS}> ; 
+            ?buildings_iri <{RDF_TYPE}> <{FLOOD_BUILDING}> ; 
                            <{ONTODERIVATION_BELONGSTO}> <{derivation_iri}> ; 
                            <{FLOOD_HAS_TOTAL_COUNT}> ?bldgs . 
             OPTIONAL {{

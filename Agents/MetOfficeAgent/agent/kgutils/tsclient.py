@@ -8,7 +8,7 @@
 
 from contextlib import contextmanager
 
-import agentlogging
+from py4jps import agentlogging
 from agent.errorhandling.exceptions import TSException
 from agent.kgutils.javagateway import jpsBaseLibGW
 from agent.utils.readings_mapping import TIMECLASS

@@ -50,6 +50,19 @@ def test_keep_wanted_keys_from_list_of_dict(list_of_dict, wanted_keys, expected_
     assert dal.keep_wanted_keys_from_list_of_dict(list_of_dict, wanted_keys) == expected_list_of_dict
 
 @pytest.mark.parametrize(
+    "list_of_dict,unwanted_keys,expected_list_of_dict",
+    [
+        ([], [], []),
+        ([{"key": "value", "key2": "value"}], ["key"], [{"key2": "value"}]),
+        ([{"key": "value", "key2": "value"}], ["key2"], [{"key": "value"}]),
+        ([{"key": "value", "key2": "value"}], ["key", "key2"], []),
+        ([{"key": "value", "key2": "value"}, {"key": "value_", "key2": "value_"}], ["key"], [{"key2": "value"}, {"key2": "value_"}]),
+    ],
+)
+def test_remove_unwanted_keys_from_list_of_dict(list_of_dict, unwanted_keys, expected_list_of_dict):
+    assert dal.remove_unwanted_keys_from_list_of_dict(list_of_dict, unwanted_keys) == expected_list_of_dict
+
+@pytest.mark.parametrize(
     "list_of_dict,expected_list_of_dict",
     [
         ([], []),

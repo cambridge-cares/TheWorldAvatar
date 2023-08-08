@@ -1,0 +1,216 @@
+{
+    "name": "All Data",
+    "groups": [
+        {
+            "name": "Vegetation",
+            "stack": "http://localhost:1234/veg-stack",
+            "sources": [
+                {
+                    "id": "vegetation-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:cropmap&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "vegetation-layer",
+                    "type": "raster",
+                    "name": "Vegetation",
+                    "treeable": false,
+                    "source": "vegetation-source",
+                    "minzoom": 3,
+                    "layout": {
+                        "visibility": "none"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Woodland",
+            "stack": "http://localhost:1234/woodland-stack",
+            "sources": [
+                {
+                    "id": "woodland-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:forestry&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "woodland-layer",
+                    "type": "raster",
+                    "name": "Woodland",
+                    "treeable": false,
+                    "source": "woodland-source",
+                    "minzoom": 3,
+                    "layout": {
+                        "visibility": "none"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "National Grid",
+            "stack": "http://localhost:1234/ng-stack",
+            "sources": [
+                {
+                    "id": "national-grid-overhead-lines-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ng_overhead_lines&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "national-grid-cables-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ng_underground_cables&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "national-grid-poles-towers-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ng_poles_towers&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "national-grid-overhead-lines-layer",
+                    "type": "raster",
+                    "name": "National Grid Overhead Lines",
+                    "source": "national-grid-overhead-lines-source",
+                    "treeable": false,
+                    "minzoom": 3,
+                    "layout": {
+                        "visibility": "visible"
+                    }
+                },
+                {
+                    "id": "national-grid-cables-layer",
+                    "type": "raster",
+                    "name": "National Grid Cables",
+                    "source": "national-grid-cables-source",
+                    "treeable": false,
+                    "minzoom": 3,
+                    "layout": {
+                        "visibility": "visible"
+                    }
+                },
+                {
+                    "id": "national-grid-poles-towers-layer",
+                    "type": "raster",
+                    "name": "National Grid Pole Towers",
+                    "source": "national-grid-poles-towers-source",
+                    "treeable": false,
+                    "minzoom": 11,
+                    "layout": {
+                        "visibility": "visible"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "UK Power Networks",
+            "stack": "http://localhost:1234/ukpn-stack",
+            "sources": [
+                {
+                    "id": "high-overhead-lines-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_overhead_lines_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "medium-overhead-lines-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_overhead_lines_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "low-overhead-lines-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_overhead_lines_low&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "high-poles-towers-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_poles_towers_high&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                },
+                {
+                    "id": "medium-poles-towers-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=the_world_avatar:ukpn_poles_towers_medium&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "high-overhead-lines-layer",
+                    "type": "raster",
+                    "name": "High Voltage Overhead Lines",
+                    "source": "high-overhead-lines-source",
+                    "treeable": false,
+                    "minzoom": 6,
+                    "layout": {
+                        "visibility": "visible"
+                    }
+                },
+                {
+                    "id": "medium-overhead-lines-layer",
+                    "type": "raster",
+                    "name": "Medium Voltage Overhead Lines",
+                    "source": "medium-overhead-lines-source",
+                    "treeable": false,
+                    "minzoom": 7,
+                    "layout": {
+                        "visibility": "visible"
+                    }
+                },
+                {
+                    "id": "low-overhead-lines-layer",
+                    "type": "raster",
+                    "name": "Low Voltage Overhead Lines",
+                    "source": "low-overhead-lines-source",
+                    "treeable": false,
+                    "minzoom": 8,
+                    "layout": {
+                        "visibility": "visible"
+                    }
+                },
+                {
+                    "id": "high-poles-towers-layer",
+                    "type": "raster",
+                    "name": "High Voltage Pole Towers",
+                    "source": "high-poles-towers-source",
+                    "treeable": false,
+                    "minzoom": 12,
+                    "layout": {
+                        "visibility": "visible"
+                    }
+                },
+                {
+                    "id": "medium-poles-towers-layer",
+                    "type": "raster",
+                    "name": "Medium Pole Towers",
+                    "source": "medium-poles-towers-source",
+                    "minzoom": 13,
+                    "layout": {
+                        "visibility": "visible"
+                    }
+                }
+            ]
+        }
+    ]
+}

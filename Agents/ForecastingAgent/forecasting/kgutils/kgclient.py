@@ -8,28 +8,25 @@
 
 import json
 
-from forecasting.errorhandling.exceptions import KGException
-from forecasting.kgutils.javagateway import jpsBaseLibGW
-
-
 from py4jps import agentlogging
+
+from forecasting.errorhandling.exceptions import KGException
+from forecasting.utils.baselib_gateway import jpsBaseLibGW
+
+# Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
+
 
 class KGClient:
     
     def __init__(self, query_endpoint, update_endpoint, kg_user=None, 
                  kg_password=None):
 
-        # create a JVM module view and use it to import the required java classes
+        # Create a JVM module view and use it to import the required java classes
         self.jpsBaseLib_view = jpsBaseLibGW.createModuleView()
         jpsBaseLibGW.importPackages(self.jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
 
-        # TODO replace RemoteStoreClient with AccessAgent/StoreClient once its tested
-        # StoreRouter = jpsBaseLib_view.StoreRouter
-        # # Get StoreClientInterface Java object to sparqlEndPoint with
-        # # query operations enabled (True) and update operations disabled (False)
-        # StoreClient = StoreRouter.getStoreClient(sparqlEndPoint, True, False)
-
+        #NOTE Potentially replace RemoteStoreClient with AccessAgent/StoreClient in the future
         try:
             if kg_user is not None:
                 self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint, kg_user, kg_password)

@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.json.JSONObject;
 
@@ -50,7 +52,7 @@ public class Derivation {
 		}
 
 		public void addNewDerivedIRI(Entity newEntity) {
-			if (!this.newDerivedIRI.stream().anyMatch(e -> e.getIri().equals(newEntity.getIri()))) {
+			if (this.newDerivedIRI.stream().noneMatch(e -> e.getIri().equals(newEntity.getIri()))) {
 				this.newDerivedIRI.add(newEntity);
 			}
 		}
@@ -94,7 +96,7 @@ public class Derivation {
 	}
 
 	public void addEntity(Entity entity) {
-		if (!entities.stream().anyMatch(e -> e.getIri().equals(entity.getIri()))) {
+		if (entities.stream().noneMatch(e -> e.getIri().equals(entity.getIri()))) {
 			this.entities.add(entity);
 			entity.setBelongsTo(this);
 		}
@@ -113,7 +115,7 @@ public class Derivation {
 	}
 
 	public List<String> getEntitiesIri() {
-		return this.entities.stream().map(e -> e.getIri()).collect(Collectors.toList());
+		return this.entities.stream().map(Entity::getIri).collect(Collectors.toList());
 	}
 
 	public Status getStatus() {
@@ -125,7 +127,7 @@ public class Derivation {
 	}
 
 	public void addInput(Entity input) {
-		if (!inputs.stream().anyMatch(i -> i.getIri().equals(input.getIri()))) {
+		if (inputs.stream().noneMatch(i -> i.getIri().equals(input.getIri()))) {
 			this.inputs.add(input);
 			input.setAsInput(this);
 		}
@@ -144,10 +146,9 @@ public class Derivation {
 	}
 
 	public List<Derivation> getInputsWithBelongsTo() {
-		List<Entity> inputs = this.getInputs();
 
 		List<Derivation> inputsWithBelongsTo = new ArrayList<>();
-		for (Entity input : inputs) {
+		for (Entity input : this.getInputs()) {
 			if (input.hasBelongsTo()) {
 				inputsWithBelongsTo.add(input.getBelongsTo());
 			}
@@ -157,13 +158,45 @@ public class Derivation {
 	}
 
 	/**
+	 * Retrieve all immediate upstream derivations, including directed upstream and inputs with belongsTo.
+	 * @return
+	 */
+	public List<Derivation> getImmediateUpstreamDerivations() {
+		// return only distinct derivations, this is to prevent the situation where multiple instances
+		// exists in between this current derivation and its upstream derivation
+		return Stream.concat(this.getDirectedUpstreams().stream(), this.getInputsWithBelongsTo().stream())
+				.distinct().collect(Collectors.toList());
+	}
+
+	/**
+	 * Retrieve all immediate downstream derivations, including directed downstream and entities with isDerivedFrom.
+	 * @return
+	 */
+	public Map<String, Derivation> getImmediateDownstreamDerivations() {
+		Map<String, Derivation> immediateDownstreamDerivationMap = new HashMap<>();
+		for (Derivation downstream : this.getDirectedDownstreams()) {
+			immediateDownstreamDerivationMap.put(downstream.getIri(), downstream);
+		}
+		for (Entity entity : this.getEntities()) {
+			if (entity.isInputToDerivation()) {
+				entity.getInputOf().forEach(d -> {
+					if (!immediateDownstreamDerivationMap.containsKey(d.getIri())) {
+						immediateDownstreamDerivationMap.put(d.getIri(), d);
+					}
+				});
+			}
+		}
+		return immediateDownstreamDerivationMap;
+	}
+
+	/**
 	 * inputs for agent call
 	 * 
 	 * @param derivationIRI
 	 * @return
 	 */
 	public List<String> getAgentInputs() {
-		return this.getInputs().stream().map(i -> i.getIri()).collect(Collectors.toList());
+		return this.getInputs().stream().map(Entity::getIri).collect(Collectors.toList());
 	}
 
 	public JSONObject getAgentInputsMap() {
@@ -180,14 +213,13 @@ public class Derivation {
 
 	public JSONObject getBelongsToMap() {
 		Map<String, String> belongsToMap = new HashMap<>();
-		this.getEntities().stream().forEach(e -> {
-			belongsToMap.put(e.getIri(), e.getRdfType());
-		});
+		this.getEntities().stream().forEach(e ->
+			belongsToMap.put(e.getIri(), e.getRdfType()));
 		return new JSONObject(belongsToMap);
 	}
 
 	public List<String> getBelongsToIris(String rdfType) {
-		return this.getEntities().stream().filter(e -> e.getRdfType().equals(rdfType)).map(e -> e.getIri())
+		return this.getEntities().stream().filter(e -> e.getRdfType().equals(rdfType)).map(Entity::getIri)
 				.collect(Collectors.toList());
 	}
 
@@ -200,11 +232,25 @@ public class Derivation {
 		return new JSONObject(downstreamDerivationMap);
 	}
 
+	public JSONObject getDownstreamDerivationConnectionMap() {
+		Map<String, List<String>> downstreamDerivationConnectionMap = new HashMap<>();
+		// collect those outputs that are inputs to downstream derivations
+		this.getEntities().stream().filter(e -> e.isInputToDerivation()).forEach(e -> {
+			downstreamDerivationConnectionMap.put(e.getIri(),
+					e.getInputOf().stream().map(dd -> dd.getIri()).collect(Collectors.toList()));
+		});
+		// collect those downstream derivations that are to be directly connected to this current derivation
+		downstreamDerivationConnectionMap.put(this.iri,
+				this.getDirectedDownstreams().stream().map(dd -> dd.getIri()).collect(Collectors.toList()));
+		return new JSONObject(downstreamDerivationConnectionMap);
+	}
+
 	public boolean isOutOfDate() {
 		boolean outOfDate = false;
-		List<Entity> inputs = this.getInputs();
 
-		for (Entity input : inputs) {
+		// if any of the inputs is newer than this derivation, then this derivation is
+		// out of date
+		for (Entity input : this.getInputs()) {
 			long inputTimestamp;
 			if (input.hasBelongsTo()) {
 				inputTimestamp = input.getBelongsTo().getTimestamp();
@@ -213,6 +259,15 @@ public class Derivation {
 			}
 
 			if (inputTimestamp > this.timestamp) {
+				outOfDate = true;
+				return outOfDate;
+			}
+		}
+
+		// if any of the directed upstream is newer than this derivation, then this
+		// derivation is out of date
+		for (Derivation upstream : this.getDirectedUpstreams()) {
+			if (upstream.getTimestamp() > this.timestamp) {
 				outOfDate = true;
 				return outOfDate;
 			}
@@ -264,7 +319,7 @@ public class Derivation {
 
 	public void setDirectedUpstreams(Derivation directedUpstream) {
 		if (this.hasDirectedUpstreams) {
-			if (this.directedUpstreams.stream().allMatch(d -> d.getIri() != directedUpstream.getIri())) {
+			if (this.directedUpstreams.stream().allMatch(d -> !Objects.equals(d.getIri(), directedUpstream.getIri()))) {
 				this.directedUpstreams.add(directedUpstream);
 			}
 		} else {
@@ -279,9 +334,7 @@ public class Derivation {
 	 * @param directedUpstreams the directedUpstreams to set
 	 */
 	public void setDirectedUpstreams(List<Derivation> directedUpstreams) {
-		directedUpstreams.forEach(d -> {
-			this.setDirectedUpstreams(d);
-		});
+		directedUpstreams.forEach(this::setDirectedUpstreams);
 	}
 
 	/**
@@ -298,7 +351,7 @@ public class Derivation {
 	 */
 	public void setDirectedDownstreams(Derivation directedDownstream) {
 		if (this.hasDirectedDownstreams) {
-			if (this.directedDownstreams.stream().allMatch(d -> d.getIri() != directedDownstream.getIri())) {
+			if (this.directedDownstreams.stream().allMatch(d -> !Objects.equals(d.getIri(), directedDownstream.getIri()))) {
 				this.directedDownstreams.add(directedDownstream);
 			}
 		} else {
@@ -313,8 +366,31 @@ public class Derivation {
 	 * @param directedDownstreams the directedDownstreams to set
 	 */
 	public void setDirectedDownstreams(List<Derivation> directedDownstreams) {
-		directedDownstreams.forEach(d -> {
-			this.setDirectedDownstreams(d);
-		});
+		directedDownstreams.forEach(this::setDirectedDownstreams);
+	}
+
+	private void removeDirectedUpstream(Derivation directedUpstream) {
+		this.directedUpstreams.remove(directedUpstream);
+		if (this.directedUpstreams.isEmpty()) {
+			this.hasDirectedUpstreams = false;
+		}
+		// also remove the reverse connection
+		directedUpstream.removeDirectedDownstream(this);
+	}
+
+	private void removeDirectedDownstream(Derivation directedDownstream) {
+		this.directedDownstreams.remove(directedDownstream);
+		if (this.directedDownstreams.isEmpty()) {
+			this.hasDirectedDownstreams = false;
+		}
+	}
+
+	public void replaceDirectedDownstreams(List<Derivation> newDirectedDownstreams) {
+		// first remove all the existing directed downstreams
+		this.directedDownstreams.stream().forEach(this::removeDirectedUpstream);
+		// set this derivation as directed upstream for all the new directed downstreams
+		newDirectedDownstreams.stream().forEach(d -> d.setDirectedUpstreams(this));
+		// update the boolean flag
+		this.hasDirectedDownstreams = !this.directedDownstreams.isEmpty();
 	}
 }

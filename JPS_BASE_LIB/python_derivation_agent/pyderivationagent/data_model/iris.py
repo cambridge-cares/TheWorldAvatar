@@ -9,7 +9,7 @@ DBPEDIA = 'https://dbpedia.org/ontology/'
 SAREF = 'https://saref.etsi.org/core/'
 ONTOUOM = 'http://theworldavatar.com/resource/ontouom/'
 ONTOAGENT = 'http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#'
-ONTODERIVATION = 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#'
+ONTODERIVATION = 'https://www.theworldavatar.com/kg/ontoderivation/'
 
 ###--- IRI for Geo-Spatial Data ---###
 GEOSPATIAL_LAT_LON_TIME = 'http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon-time'
@@ -61,3 +61,4 @@ ONTODERIVATION_FINISHED = ONTODERIVATION + 'Finished'
 ONTODERIVATION_ERROR = ONTODERIVATION + 'Error'
 ONTODERIVATION_HASNEWDERIVEDIRI = ONTODERIVATION + 'hasNewDerivedIRI'
 ONTODERIVATION_RETRIEVEDINPUTSAT = ONTODERIVATION + 'retrievedInputsAt'
+ONTODERIVATION_UUIDLOCK = ONTODERIVATION + 'uuidLock'

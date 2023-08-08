@@ -61,6 +61,12 @@ public class DiffReverseAgent extends DerivationAgent {
 		}
 		LOGGER.debug("DiffReverseAgent is running now.");
 
+		if (!derivationInputs.containsRdfType(SparqlClient.getRdfTypeString(SparqlClient.MaxValue)) ||
+				!derivationInputs.containsRdfType(SparqlClient.getRdfTypeString(SparqlClient.MinValue))) {
+			LOGGER.info("DifferenceAgent did not receive enough information.");
+			return;
+		}
+
 		// get the input from the KG
 		String maxvalue_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.MaxValue)).get(0);
 		String minvalue_iri = derivationInputs.getIris(SparqlClient.getRdfTypeString(SparqlClient.MinValue)).get(0);

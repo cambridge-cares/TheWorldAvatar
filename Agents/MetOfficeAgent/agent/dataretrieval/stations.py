@@ -13,7 +13,7 @@ import re
 import time
 import pandas as pd
 
-import agentlogging
+from py4jps import agentlogging
 from agent.dataretrieval.readings import get_time_series_data
 from agent.errorhandling.exceptions import InvalidInput
 from agent.kgutils.kgclient import KGClient

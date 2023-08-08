@@ -877,58 +877,11 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
             throw new JPSRuntimeException("Provided file does not exist " + file.getAbsolutePath());
         }
 
-        HttpEntity entity;
-        switch (extension) {
-            case "rdf":
-            case "rdfs":
-            case "owl":
-            case "xml":
-                entity = new FileEntity(file, ContentType.create("application/rdf+xml"));
-                break;
-
-            case "nt":
-                entity = new FileEntity(file, ContentType.TEXT_PLAIN);
-                break;
-
-            case "ntx":
-                entity = new FileEntity(file, ContentType.create("application/x-n-triples-RDR"));
-                break;
-
-            case "ttl":
-                entity = new FileEntity(file, ContentType.create("application/x-turtle"));
-                break;
-
-            case "ttlx":
-                entity = new FileEntity(file, ContentType.create("application/x-turtle-RDR"));
-                break;
-
-            case "n3":
-                entity = new FileEntity(file, ContentType.create("text/rdf+n3"));
-                break;
-
-            case "trix":
-                entity = new FileEntity(file, ContentType.create("application/trix"));
-                break;
-
-            case "trig":
-                entity = new FileEntity(file, ContentType.create("application/x-trig"));
-                break;
-
-            case "nq":
-                entity = new FileEntity(file, ContentType.create("text/x-nquads"));
-                break;
-
-            case "srj":
-                entity = new FileEntity(file, ContentType.create("application/sparql-results+json"));
-                break;
-
-            case "json":
-                entity = new FileEntity(file, ContentType.APPLICATION_JSON);
-                break;
-
-            default:
-                throw new JPSRuntimeException("Unsupported file extension: " + extension);
+        ContentType contentType = getRDFContentType(extension);
+        if (null == contentType) {
+            throw new JPSRuntimeException("Unsupported file extension: " + extension);
         }
+        FileEntity entity = new FileEntity(file, contentType);
 
         // tried a few methods to add credentials, this seems to be the only way that
         // works
@@ -945,14 +898,59 @@ public class RemoteStoreClient implements TripleStoreClientInterface {
 
         LOGGER.info("Uploading {} to {}", file, this.updateEndpoint);
         // then send the post request
-        try (CloseableHttpClient httpClient = HttpClients.createDefault();
-                CloseableHttpResponse response = httpClient.execute(postRequest)) {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault();
+                CloseableHttpResponse response = httpclient.execute(postRequest)) {
             int statusCode = response.getStatusLine().getStatusCode();
             if (statusCode < 200 || statusCode > 300) {
-                throw new JPSRuntimeException("Upload RDF file failed. Response status code =" + statusCode);
+                throw new JPSRuntimeException("Upload RDF file failed. Response status code = " + statusCode);
             }
-        } catch (IOException e) {
-            throw new JPSRuntimeException("Failed to upload file " + file + " to " + this.updateEndpoint, e);
+        } catch (IOException ex) {
+            throw new JPSRuntimeException("Upload RDF file failed.", ex);
         }
+    }
+
+    public ContentType getRDFContentType(String extension) {
+        final ContentType contentType;
+        switch (extension) {
+            case "rdf":
+            case "rdfs":
+            case "owl":
+            case "xml":
+                contentType = ContentType.create("application/rdf+xml");
+                break;
+            case "nt":
+                contentType = ContentType.TEXT_PLAIN;
+                break;
+            case "ntx":
+                contentType = ContentType.create("application/x-n-triples-RDR");
+                break;
+            case "ttl":
+                contentType = ContentType.create("application/x-turtle");
+                break;
+            case "ttlx":
+                contentType = ContentType.create("application/x-turtle-RDR");
+                break;
+            case "n3":
+                contentType = ContentType.create("text/rdf+n3");
+                break;
+            case "trix":
+                contentType = ContentType.create("application/trix");
+                break;
+            case "trig":
+                contentType = ContentType.create("application/x-trig");
+                break;
+            case "nq":
+                contentType = ContentType.create("text/x-nquads");
+                break;
+            case "srj":
+                contentType = ContentType.create("application/sparql-results+json");
+                break;
+            case "json":
+                contentType = ContentType.APPLICATION_JSON;
+                break;
+            default:
+                contentType = null;
+        }
+        return contentType;
     }
 }

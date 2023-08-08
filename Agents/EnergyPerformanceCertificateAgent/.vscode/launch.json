@@ -6,56 +6,55 @@
     "configurations": [
         {
             "type": "python",
-            "name": "Debug",
+            "name": "Debug (Flask)",
             "request": "attach",
             "host": "localhost",
             "port": "${input:debug.port}",
             "preLaunchTask": "compose-deploy",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/epcdata",
-                    "remoteRoot": "/app/epcdata"
+                    "localRoot": "${workspaceFolder}/agent",
+                    "remoteRoot": "/app/agent"
                 }
             ]
         },
         {
             "type": "python",
-            "name": "Build and Debug",
+            "name": "Build and Debug (Flask)",
             "request": "attach",
             "host": "localhost",
             "port": "${input:debug.port}",
             "preLaunchTask": "compose-build-deploy",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/epcdata",
-                    "remoteRoot": "/app/epcdata"
+                    "localRoot": "${workspaceFolder}/agent",
+                    "remoteRoot": "/app/agent"
                 }
             ]
         },
         {
             "type": "python",
-            "name": "Update JPSRM and Build and Debug",
-            "request": "attach",
-            "host": "localhost",
-            "port": "${input:debug.port}",
-            "preLaunchTask": "update-compose-build-deploy",
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}/epcdata",
-                    "remoteRoot": "/app/epcdata"
-                }
-            ]
-        },
-        {
-            "type": "python",
-            "name": "Reattach and Debug",
+            "name": "Reattach and Debug (Flask)",
             "request": "attach",
             "host": "localhost",
             "port": "${input:debug.port.read}",
             "pathMappings": [
                 {
-                    "localRoot": "${workspaceFolder}/epcdata",
-                    "remoteRoot": "/app/epcdata"
+                    "localRoot": "${workspaceFolder}/agent",
+                    "remoteRoot": "/app/agent"
+                }
+            ]
+        },
+        {
+            "type": "python",
+            "name": "Attach and Debug Celery",
+            "request": "attach",
+            "host": "localhost",
+            "port": "5679",
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/agent",
+                    "remoteRoot": "/app/agent"
                 }
             ]
         }

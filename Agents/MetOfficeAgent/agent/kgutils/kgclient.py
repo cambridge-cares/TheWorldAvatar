@@ -8,7 +8,7 @@
 
 import json
 
-import agentlogging
+from py4jps import agentlogging
 from agent.errorhandling.exceptions import KGException
 from agent.kgutils.javagateway import jpsBaseLibGW
 

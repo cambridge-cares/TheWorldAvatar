@@ -1,0 +1,29 @@
+{
+    
+    "queries": [
+        {
+            "class": "com.cmclinnovations.kg.ClassOne",
+            "metaFile": "classOneMeta.sparql",
+            "timeFile": "classOneTime.sparql",
+            "timeLimit": 48,
+            "databaseName": "database-one"
+        },
+        {
+            "class": "com.cmclinnovations.kg.ClassTwo",
+            "metaFile": "classTwoMeta.sparql",
+            "timeFile": "classTwoTime.sparql",
+            "timeLimit": -1,
+            "databaseName": "database-two"
+        },
+        {
+            "class": "com.cmclinnovations.kg.ClassThree",
+            "metaFile": "classThreeMeta.sparql",
+            "timeFile": ""
+        },
+        {
+            "class": "com.cmclinnovations.kg.ClassFour",
+            "timeFile": "classFourTime.sparql",
+            "databaseName": "database-four"
+        }
+    ]
+}

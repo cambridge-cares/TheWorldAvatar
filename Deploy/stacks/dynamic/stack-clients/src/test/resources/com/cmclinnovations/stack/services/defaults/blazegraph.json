@@ -1,0 +1,17 @@
+{
+    "ServiceSpec": {
+        "Name": "blazegraph",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "docker.cmclinnovations.com/blazegraph:1.1.0",
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "blazegraph_data",
+                        "Target": "/data"
+                    }
+                ]
+            }
+        }
+    }
+}
