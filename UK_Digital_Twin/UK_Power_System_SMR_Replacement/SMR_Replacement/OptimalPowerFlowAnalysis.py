@@ -96,11 +96,10 @@ derivationInstanceBaseURL = dt.baseURL + SLASH + dt.topNode + SLASH
 ## read cost factors file## from ESO https://carbonintensity.org.uk/
 modelFactorArrays = readFile(ukmf.CO2EmissionFactorAndCostFactor)
 
-## TODO: hard coded file paths
-## Path for map files
-base_image_path = "/mnt/d/wx243/FromTWA/RegionalBreakdown_images/UKMapWithRegionalBoundaries.png"
-arrow_image_path = "/mnt/d/wx243/FromTWA/RegionalBreakdown_images/arrow.png"
-legend_path = "/mnt/d/wx243/FromTWA/RegionalBreakdown_images/breakdownLegend.png"
+## Path to the files containing maps.
+base_image_path = "../../Required_Files/RegionalBreakdown_images/UKMapWithRegionalBoundaries.png"
+arrow_image_path = "../../Required_Files/RegionalBreakdown_images/arrow.png"
+legend_path = "../../Required_Files/RegionalBreakdown_images/breakdownLegend.png"
 
 ## Looking for the area boundaries for the obsolete LA Code
 def boundarySearchForObsoleteLACode(LACode):

@@ -1,20 +1,30 @@
 # README for OptimalPowerFlowAnalysis.py
 ## Discription
-'/TheWorldAvatar/UK_Digital_Twin/UK_Power_System_SMR_Replacement/SMR_Replacement/OptimalPowerFlowAnalysis.py' is the main script for conducting the SMR replacement with Optimal Power Flow (OPF) analysis. This script also can product OPF without SMR replacement. 
-The main scrip also include the results post processing methods.
+'/TheWorldAvatar/UK_Digital_Twin/UK_Power_System_SMR_Replacement/SMR_Replacement/OptimalPowerFlowAnalysis.py' is the main script for conducting the SMR replacement with the Optimal Power Flow (OPF) analysis. This script can also conduct the OPF analysis without SMR replacement. The main script produces results that can be provided as inputs to post processing methods.
 
-The follow are the steps for setting up the environment of IDE and run the main script.
+The following are the steps for setting up the environment for the VSCode IDE and running the main script.
 
 Step 1: preparation of the environment 
 - Install WSL and Ubuntu.
-- Create a working branch in WSL (recommanded VS code integrated IDE).
-- Install JAVA JDK by running the command `sudo apt-get install -y openjdk-11-jdk-headless`.
-- Install conda within WSL and create a conda environment.
-- Install the required packages by running the command `conda install --file requirements.txt`.
+- Clone the required git repository.
+- Install and use the VSCode IDE.
+- Install Open JDK by running the command `sudo apt-get install -y openjdk-11-jdk-headless`.
+- Install conda on Ubuntu using the instructions below:
+   `wget https://repo.anaconda.com/archive/Anaconda3-2023.07-1-Linux-x86_64.sh`
+   `chmod +x ./Anaconda3-2023.07-1-Linux-x86_64.sh`
+   `./Anaconda3-2023.07-1-Linux-x86_64.sh`
+   `source ~/.bashrc`
+- Check the version installed:
+   `conda --version`
+   If it shows the version number, you have succssfully installed conda.
+- Create a conda environment by following the instruction below:
+   `conda create --name env_ukdtpowsys python=3.8`
+   You can check whether the envionment is created by running `conda info --envs`
+- Activate the conda environment:
+   `conda activate env_ukdtpowsys`
+- Following the activation of the conda environment, install the required packages by running the command `pip install -r requirements.txt`. Note: we assume that you are running the command at the same path of this README file.
 
-Step 2: copy the required files (post processing)
-This step can be skipped if the post processing is not needed.
-Copy the folder from the path: 'Dropbox (Cambridge University)\CoMo shared\wx243\SMR_Replacement\Codes\requiredFiles' to any local folder, e.g. "d:/xxx/requiredFiles/". 
+Step 2: If you want to post-process the result produced by running this code, copy all the files from the path of 'Dropbox (Cambridge University)\CoMo shared\wx243\SMR_Replacement\Codes\requiredFiles' to the Required_Files folder, which is at the same level of this README file.
 
 Step 3: create object of Class 
 Set up the attributes of the object
