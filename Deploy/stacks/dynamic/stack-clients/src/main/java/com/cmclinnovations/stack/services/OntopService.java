@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
+import com.cmclinnovations.stack.clients.core.EndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
@@ -37,7 +38,6 @@ public final class OntopService extends ContainerService {
     private static final String DEFAULT_PORT = "8080";
 
     private final String containerName;
-    private final OntopEndpointConfig endpointConfig;
     private final String configDir;
 
     public OntopService(String stackName, ServiceConfig config) {
@@ -46,13 +46,10 @@ public final class OntopService extends ContainerService {
         containerName = StackClient.removeStackName(getConfig().getName());
 
         configDir = Path.of(getEnvironmentVariable(ONTOP_MAPPING_FILE)).getParent().toString();
-
-        endpointConfig = new OntopEndpointConfig(containerName,
-                getHostName(), DEFAULT_PORT, "", null);
     }
 
     @Override
-    public void doPreStartUpConfiguration() {
+    protected void doPreStartUpConfigurationImpl() {
 
         ContainerSpec containerSpec = getContainerSpec();
 
@@ -95,6 +92,14 @@ public final class OntopService extends ContainerService {
     }
 
     @Override
+    protected void createEndpoints() {
+        EndpointConfig endpointConfig = new OntopEndpointConfig(
+                containerName, getHostName(), DEFAULT_PORT,
+                "", null);
+        writeEndpointConfig(endpointConfig);
+    }
+
+    @Override
     public void doPostStartUpConfiguration() {
         DockerClient dockerClient = DockerClient.getInstance();
         dockerClient.createComplexCommand(dockerClient.getContainerId(containerName),
@@ -102,9 +107,6 @@ public final class OntopService extends ContainerService {
                 .withUser("root");
 
         OntopClient.getInstance(containerName).updateOBDA(null);
-
-        writeEndpointConfig(endpointConfig);
-
     }
 
     @Override

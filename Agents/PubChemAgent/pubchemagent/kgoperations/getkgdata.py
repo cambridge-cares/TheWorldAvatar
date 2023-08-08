@@ -4,6 +4,9 @@ import os
 from pubchemagent.utils.default_configs import QUERY_ENDPOINT
 from pubchemagent.utils.url_configs import SPARQL_ENDPOINTS_ONTOSPECIES
 
+if QUERY_ENDPOINT is None:
+    from pubchemagent.utils.url_configs import QUERY_ENDPOINT 
+
 from py4jps import agentlogging
 logger = agentlogging.get_logger('prod')
 

@@ -13,7 +13,7 @@ import os
 import markdown
 
 # Read version from file
-with open('./web/digital-twin-vis-framework/VERSION', 'r') as f:
+with open('./web/digital-twin-vis-framework/library/VERSION', 'r') as f:
     version = f.read()
 print("Have read version file.")
 

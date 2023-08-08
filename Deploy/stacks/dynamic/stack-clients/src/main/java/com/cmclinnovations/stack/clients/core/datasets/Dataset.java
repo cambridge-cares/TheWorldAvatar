@@ -15,6 +15,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Dataset {
 
+    static final String DEFAULT_NAMESPACE = "https://www.theworldavatar.com/kg/";
+
     public static final String NAME_KEY = "name";
 
     private String name;
@@ -32,6 +34,8 @@ public class Dataset {
     private final StaticGeoServerData staticGeoServerData;
 
     private final boolean skip;
+
+    private String baseIRI = DEFAULT_NAMESPACE;
 
     @JsonCreator
     public Dataset(@JsonProperty(value = NAME_KEY) @JacksonInject(NAME_KEY) String name,
@@ -116,6 +120,10 @@ public class Dataset {
 
     public boolean isSkip() {
         return skip;
+    }
+
+    public String baseIRI() {
+        return baseIRI;
     }
 
 }
