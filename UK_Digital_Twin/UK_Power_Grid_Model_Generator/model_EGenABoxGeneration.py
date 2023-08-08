@@ -357,7 +357,7 @@ def initialiseEGenModelVar(EGen_Model, egen, OrderedBusNodeIRIList, demand_capa_
         EGen_Model.PMIN = 0 # capa * float(windOutputRatio) * 0.8
         EGen_Model.PG_INPUT = capa * float(windOutputRatio)
     elif primaryFuel in ukmf.Solar: 
-        EGen_Model.PMAX = capa * float(solarOutputRatio)  
+        EGen_Model.PMAX = capa * float(solarOutputRatio)
         EGen_Model.PMIN = 0 # capa * float(solarOutputRatio) * 0.8
         EGen_Model.PG_INPUT = capa * float(solarOutputRatio)
     elif primaryFuel in ukmf.Nuclear: 
@@ -377,15 +377,17 @@ def initialiseEGenModelVar(EGen_Model, egen, OrderedBusNodeIRIList, demand_capa_
         EGen_Model.PMIN = capa * 0.50 * 0.7
         EGen_Model.PG_INPUT = capa * 0.50
     elif primaryFuel in ukmf.SMR:
-        EGen_Model.PMAX = capa * 0.94
+        EGen_Model.PMAX = capa * 0.9
         EGen_Model.PMIN = 0
-        EGen_Model.PG_INPUT = capa * 0.94
+        EGen_Model.PG_INPUT = capa * 0.9
     elif primaryFuel in ukmf.Coal:
         EGen_Model.PMAX = capa * 0.9
         EGen_Model.PMIN = 0
+        EGen_Model.PG_INPUT = capa * 0.9
     else:
         EGen_Model.PMAX = capa * 0.9
         EGen_Model.PMIN = 0
+        EGen_Model.PG_INPUT = capa * 0.9
 
     EGen_Model.QMAX = EGen_Model.PMAX
     EGen_Model.QMIN = -EGen_Model.PMAX

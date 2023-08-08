@@ -1,13 +1,13 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 15 July 2023         #
+# Last Update Date: 08 August 2023       #
 ##########################################
 
 """
-Optimal Power Flow Analysis
+SMR replacement function
+The python class is developed to perform the SMR replacement. The Optimal Power Flow (OPF) analysis is intergarted as a part of this class. 
+OPF can be used solely without SMR retrofitting by set the class attribute `withRetrofit:bool` to be False.
 """
-from ast import Str
-from cgi import test
 import math
 from logging import raiseExceptions
 from pickle import TRUE
@@ -25,40 +25,26 @@ from UK_Digital_Twin_Package import demandLoadAllocator as DLA
 from UK_Digital_Twin_Package import BranchPropertyInitialisation as BPI
 from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endpointList
 import UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel as query_model
-from UK_Digital_Twin_Package import generatorCluster as genCluster
 from UK_Power_Grid_Model_Generator.costFunctionParameterInitialiser import costFuncPara
 from UK_Power_Grid_Model_Generator.model_EBusABoxGeneration import addUpConsumptionForAggregatedBus
 from UK_Power_Grid_Model_Generator.model_EGenABoxGeneration import demandAndCapacityRatioCalculator, initialiseEGenModelVar
-## TODO: uncomment the model_EBusABoxGeneration, model_EGenABoxGeneration
 import UK_Power_Grid_Model_Generator.initialiseEBusModelVariable as InitialiseEbus
 from UK_Digital_Twin_Package.DistanceCalculator import DistanceBasedOnGPSLocation as GPS_distance
 from UK_Digital_Twin_Package import UKDigitalTwinTBox as T_BOX
 from UK_Digital_Twin_Package import UKPowerPlant as UKpp
-from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
+from UK_Digital_Twin_Package.OWLfileStorer import readFile
 from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
-from SMRSitePreSelection import SitePreSelection as sp
 from SMRSitePreSelection import SitePreSelection_pymoo as sp_pymoo
-from SMRSitePreSelection import rankingTheSite as ranker
 from pypower.api import ppoption, runopf, isload, runuopf ## numpy <1.23 otherwise will raise error message, if the pypower and numpy has conflicts again, try to uninstall both and `pip uninstall numpy pypower`, donwgrade the numpy to 1.22.0 and install h5py as well
 import UK_Digital_Twin_Package.PYPOWER.pypower.runpf as pf
 from numpy import False_, r_, c_, ix_, zeros, pi, ones, exp, union1d, array, linalg, where, logical_or, arange, \
                     ones, sort, exp, pi, diff, min, \
                     argmin, argmax, real, imag, any, delete
 from numpy import flatnonzero as find
-from scipy.sparse import hstack, vstack
-from pypower.loadcase import loadcase
-from pypower.ext2int import ext2int
-from pypower.bustypes import bustypes
-from pypower.makeYbus import makeYbus
-from pypower.makeSbus import makeSbus
-from pypower.dSbus_dV import dSbus_dV
 from pypower.idx_bus import BUS_I, PD, QD, VM, VA, GS, BUS_TYPE, PV, PQ, REF
 from pypower.idx_brch import PF, PT, QF, QT, F_BUS, TAP, SHIFT, T_BUS, BR_R, BR_X, BR_STATUS
 from pypower.idx_gen import PG, QG, VG, QMAX, QMIN, GEN_BUS, GEN_STATUS
 import matplotlib.pyplot as plt
-from UK_Digital_Twin_Package import generatorCluster
-from shapely.geometry import MultiPoint
-
 from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.optimize import minimize
 from pymoo.operators.crossover.sbx import SBX
@@ -66,18 +52,11 @@ from pymoo.operators.mutation.pm import PM
 from pymoo.operators.repair.rounding import RoundingRepair
 from pymoo.operators.sampling.rnd import IntegerRandomSampling, BinaryRandomSampling, FloatRandomSampling
 from SMRSitePreSelection.populationDensityCalculator import populationDensityCalculator
-
 from visualisationColourCreator import gen_fuel_col
-## import SMRSitePreSelection.demandingAndCentroidList as dclist
 from UK_Digital_Twin_Package.DistanceCalculator import DistanceBasedOnGPSLocation
 from SMRSitePreSelection.demandingAndCentroidList import demandingAndCentroid
 from UK_Power_Grid_Topology_Generator.SPARQLQueriesUsedInTopologyABox import queryWithinRegion
 import shapely.geometry
-import csv
-from pymoo.util import plotting
-from pymoo.visualization.scatter import Scatter
-from sklearn.cluster import DBSCAN ## pip install scikit-learn
-from pyscipopt import Model ## conda install
 from SMRSitePreSelection.DecommissioningCost import DecommissioningCost as DCost
 import matplotlib.pyplot as plt
 from pymoo.decomposition.asf import ASF ##Augmented Scalarization Function (ASF)
@@ -85,15 +64,12 @@ import pandas as pd
 import seaborn
 from adjustText import adjust_text
 import matplotlib as mpl
-import matplotlib.ticker as ticker 
 import geojson
 import ast
 from shapely.geometry import mapping, shape
 from colourPicker import sequentialHEXColourCodePicker, createColourBarLegend 
-from matplotlib.ticker import MultipleLocator, AutoLocator, FixedLocator
+from matplotlib.ticker import MultipleLocator
 from regionalBreakdownOverlayFactory import energyBreakdownOverlayerFactory
-from sklearn.linear_model import RANSACRegressor
-from sklearn.preprocessing import PolynomialFeatures
 
 ## create configuration objects
 SLASH = '/'
@@ -108,9 +84,11 @@ legendFontSize = 12
 dotLabel = 12
 annotateSize = 12
 
+highLevelRegions = ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
+                                    "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]
+
 dt = UKDT.UKDigitalTwin()
 ukmf = ModelFactor.ModelFactor()
-
 t_box = T_BOX.UKDigitalTwinTBox()
 ukpp = UKpp.UKPowerPlant()
 ## set up the derivationInstanceBaseURL
@@ -118,6 +96,7 @@ derivationInstanceBaseURL = dt.baseURL + SLASH + dt.topNode + SLASH
 ## read cost factors file## from ESO https://carbonintensity.org.uk/
 modelFactorArrays = readFile(ukmf.CO2EmissionFactorAndCostFactor)
 
+## TODO: hard coded file paths
 ## Path for map files
 base_image_path = "/mnt/d/wx243/FromTWA/RegionalBreakdown_images/UKMapWithRegionalBoundaries.png"
 arrow_image_path = "/mnt/d/wx243/FromTWA/RegionalBreakdown_images/arrow.png"
@@ -157,6 +136,7 @@ class OptimalPowerFlowAnalysis:
         piecewiseOrPolynomial:int, pointsOfPiecewiseOrcostFuncOrder:int, baseMVA: float,  
         withRetrofit:bool, retrofitGenerator: list, retrofitGenerationTechTypeOrGenerationTechnology: list, 
         DecommissionedNuclearSitesLocation:list,
+        pickDecommissionedNuclearSites:bool,
         generatorClusterFunctionName:str,
         newGeneratorType:str, 
         weighterList:list,
@@ -179,7 +159,6 @@ class OptimalPowerFlowAnalysis:
         n_offsprings:int,
         numberOfGAGenerations:int,
         ifReadLocalResults:bool,
-        queryResultLocalPath,
         OWLUpdateEndPointURL:str, endPointUser:str = None, endPointPassWord:str = None,
         OWLFileStoragePath = None, updateLocalPowerPlantOWLFileFlag:bool = True
         ):
@@ -299,9 +278,6 @@ class OptimalPowerFlowAnalysis:
 
         ##--9. Demanding area query --##
         self.regionalDemandingList = list(query_model.queryElectricityConsumption_Region(self.startTime_of_EnergyConsumption, self.queryUKDigitalTwinEndpointIRI, self.ons_endpointIRI))
-        numpy.save(queryResultLocalPath + "np_regionalDemandingList.npy", numpy.array(self.regionalDemandingList))
-            
-        
         demandingAreaList_original = demandingAndCentroid[self.startTime_of_EnergyConsumption]
         self.demandingAreaList = []
         LACodeList = []
@@ -315,6 +291,7 @@ class OptimalPowerFlowAnalysis:
 
         self.SMRIntegratedCostForDifferentInterationNumberList = []
         self.DecommissionedNuclearSitesLocation = DecommissionedNuclearSitesLocation
+        self.pickDecommissionedNuclearSites = pickDecommissionedNuclearSites
         self.generatorClusterFunctionName = generatorClusterFunctionName
         ## Pre calcuation of the SMR investment 
         sumUpSMRIntegratedCost = 0
@@ -364,8 +341,7 @@ class OptimalPowerFlowAnalysis:
                     official_region = "E12000006"
                 elif Area_LACode in ["E41000092", "E14000839", "E41000088", "E14001031", "E41000090", "E41000212", "E14000881", "E14000988"]:
                     official_region = "E12000009" 
-                elif Area_LACode in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
-                                    "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
+                elif Area_LACode in highLevelRegions:
                     continue
                 else:
                     official_region_List = queryWithinRegion(Area_LACode, self.ons_endpointLabel) ## return a list of the region LA code
@@ -416,8 +392,7 @@ class OptimalPowerFlowAnalysis:
                             official_region = "E12000006"
                         elif Area_LACode in ["E41000092", "E14000839", "E41000088", "E14001031", "E41000090", "E41000212", "E14000881", "E14000988"]:
                             official_region = "E12000009" 
-                        elif Area_LACode in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
-                                            "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
+                        elif Area_LACode in highLevelRegions:
                             continue
                         else:
                             official_region_List = queryWithinRegion(Area_LACode, self.ons_endpointLabel) ## return a list of the region LA code
@@ -462,47 +437,41 @@ class OptimalPowerFlowAnalysis:
         if self.withRetrofit is True: 
             if len(self.retrofitGenerator) == 0 and len(self.retrofitGenerationFuelOrGenType) == 0:  
                 print("***As there is not specific generator assigned to be retrofitted by SMR, all generators located in GB will be treated as the potential sites.***")
-                ## retrofitList：[0]PowerGenerator, [1]Bus, [2]Capacity, [3]LatLon, [4]fuelOrGenType, [5]annualOperatingHours, [6] CO2EmissionFactor ([7]numberOfSMR added after SMR site selection)
-                ##FIXME: fix the query string
                 self.retrofitListBeforeSelection = queryOPFInput.queryGeneratorToBeRetrofitted_AllPowerPlant(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel)
-            elif not len(self.retrofitGenerator) == 0:
+            elif len(self.retrofitGenerator) != 0:
                 for iri in self.retrofitGenerator:
                     parse(iri, rule='IRI')
-                ##FIXME: fix the query string
+                print("***The potential sites for hosting SMRs are specified in retrofitGenerator.***")
                 self.retrofitListBeforeSelection = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedGenerator(self.retrofitGenerator, self.queryUKDigitalTwinEndpointLabel) 
             elif not len(self.retrofitGenerationFuelOrGenType) == 0:
                 for iri in self.retrofitGenerationFuelOrGenType:
                     parse(iri, rule='IRI')
-                self.retrofitListBeforeSelection, self.genTypeSummary = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(self.retrofitGenerationFuelOrGenType, self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel)
+                print("***The potential sites are the generators of the type specified in retrofitGenerationFuelOrGenType.***")
+                self.retrofitListBeforeSelection, _ = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(self.retrofitGenerationFuelOrGenType, self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel)
 
-            ## Add decommissioned pp   
-            BusAndDecommissioned = []
-            for oldNuclear_key in self.DecommissionedNuclearSitesLocation.keys():
-                latlon = self.DecommissionedNuclearSitesLocation[oldNuclear_key]
-                distances = [65534] * int(self.numOfBus) ## 65534 is the earth's circumference
-                for j, busNode in enumerate(self.busNodeList):
-                    GPSLocationPair = [latlon[0], latlon[1], busNode['BusLatLon'][0], busNode['BusLatLon'][1]]    
-                    distances[j] = GPS_distance(GPSLocationPair)
-                bus_index = distances.index(min(distances)) 
-                oldNuclearBusPair = {        
-                    "PowerGenerator" : None,
-                    "Name": oldNuclear_key,
-                    "Bus": self.busNodeList[bus_index]["BusNodeIRI"],
-                    "Capacity": 0,
-                    "LatLon": [latlon[0], latlon[1]],
-                    "fuelOrGenType": "Nuclear",
-                    "annualOperatingHours": 0,
-                    "CO2EmissionFactor": 0,
-                    "place": None }
-                BusAndDecommissioned.append(oldNuclearBusPair)
+            ## Add decommissioned nuclear sites into the potential sites for hosting SMR 
+            if self.pickDecommissionedNuclearSites is True:   
+                BusAndDecommissioned = []
+                for oldNuclear_key in self.DecommissionedNuclearSitesLocation.keys():
+                    latlon = self.DecommissionedNuclearSitesLocation[oldNuclear_key]
+                    distances = [65534] * int(self.numOfBus) ## 65534 is the earth's circumference
+                    for j, busNode in enumerate(self.busNodeList):
+                        GPSLocationPair = [latlon[0], latlon[1], busNode['BusLatLon'][0], busNode['BusLatLon'][1]]    
+                        distances[j] = GPS_distance(GPSLocationPair)
+                    bus_index = distances.index(min(distances)) 
+                    oldNuclearBusPair = {        
+                        "PowerGenerator" : None,
+                        "Name": oldNuclear_key,
+                        "Bus": self.busNodeList[bus_index]["BusNodeIRI"],
+                        "Capacity": 0,
+                        "LatLon": [latlon[0], latlon[1]],
+                        "fuelOrGenType": "Nuclear",
+                        "CO2EmissionFactor": 0,
+                        "place": None }
+                    BusAndDecommissioned.append(oldNuclearBusPair)
 
             self.retrofitListBeforeSelection += BusAndDecommissioned
-            print("===The number of the generator that goes to the site selection method is (before cluster):===", len(self.retrofitListBeforeSelection))           
-            
-            ## cluster the close generators, self.retrofitListBeforeSelection will be changed
-            ## self.siteCluster() ## site cluster is no longer used and this problem is dealed in the sp_pymoo.siteSelector
-            
-            print("===The number of the generator that goes to the site selection method is (after cluster):===", len(self.retrofitListBeforeSelection))
+            print("===The number of the generator that goes to the site selection method is:===", len(self.retrofitListBeforeSelection))                       
             print("The total number of generator is", len(self.generatorNodeList))
 
             ## Pre-calculate the the population and the weightedDemandingDistance
@@ -537,73 +506,6 @@ class OptimalPowerFlowAnalysis:
                     sumUpOfWeightedDemanding += weightedDemanding
                 self.weightedDemandingDistance_list.append(sumUpOfWeightedDemanding)   
             return
-
-    """The generator cluster function: cluster the generator who gets too close to each other (the safty distance is 30 km)"""
-    def siteCluster(self):
-        location = []
-        ## Form the loaction point list for clustering
-        for gen in self.retrofitListBeforeSelection:
-            if "#" in gen["LatLon"]:
-                gen['LatLon'] = [float(gen['LatLon'].split('#')[0]), float(gen['LatLon'].split('#')[1])]    
-                location.append(gen['LatLon'])  
-            else:
-                location.append(gen['LatLon'])
-        print('The number of the point to be clustered is:', len(location))
-        
-        ## perform the clustering algorithm: Density-Based Spatial Clustering of Applications with Noise (DBSCAN)
-        clustering = DBSCAN(eps = 0.27, min_samples = 2).fit(location)
-        label = clustering.labels_
-        print('The number of clusters is:',  max(label) + 1)
-        print('The number of outliers is:', numpy.count_nonzero(label==-1))
-        print('The number of points (sites) after the clustering is:', max(label) + 1 + numpy.count_nonzero(label==-1))
-
-        outliers = []
-        beClastered = [ [] for i in range(max(label) + 1) ]
-        beClasteredGenerator = [ [] for i in range(max(label) + 1) ]
-        ##  capacityForEachCluster = [ 0 for i in range(max(label) + 1) ]
-        centriodList = []
-
-        ## classify the outliers and the clustered 
-        for l in location:
-            i = location.index(l)
-            clusteringlabel = label[i]
-            if clusteringlabel == -1:
-                outliers.append(self.retrofitListBeforeSelection[i])
-            else: 
-                beClastered[int(clusteringlabel)].append([l[1], l[0]]) ## append the lat lon list
-                originalGenerator = self.retrofitListBeforeSelection[i]
-                beClasteredGenerator[int(clusteringlabel)].append(originalGenerator)
-
-        ## Find the centroid of each cluster
-        for mp in beClastered:
-            centriod = MultiPoint(mp).centroid
-            centriodList.append([round(float(centriod.y), 5), round(float(centriod.x), 5)]) 
-        
-        ## initialize the new sites with the location of the centroids
-        clusteredSite = []
-        for centroid in centriodList:
-            n = centriodList.index(centroid)
-            beclusteredgens = beClasteredGenerator[n]
-            gen = {'PowerGenerator': None, 
-                    'Bus': None, 
-                    'Capacity': 0, 
-                    'LatLon': centroid, 
-                    'fuelOrGenType': 'SMR', 
-                    'annualOperatingHours': 0, 
-                    'CO2EmissionFactor': 0.0, 
-                    'place': None,
-                    'beClusteredGenerators': beclusteredgens}
-            clusteredSite.append(gen)
-
-        ## assign the bus to the clustered generators
-        gc = generatorCluster.generatorCluster()
-        clusteredGeneratorBusPairList = gc.closestBus(self.busNodeList, clusteredSite, [], "BusLatLon", "BusNodeIRI", "LatLon")
-
-        for i in range(len(clusteredSite)):
-            busIRI = clusteredGeneratorBusPairList[i]["BusNodeIRI"]
-            clusteredSite[i]['Bus'] = busIRI
-        self.retrofitListBeforeSelection = outliers + clusteredSite
-        return
         
     """The SMR site selection algorithm"""   
     def siteSelector(self, numberOfSMRToBeIntroduced):
@@ -666,7 +568,7 @@ class OptimalPowerFlowAnalysis:
                     raise ValueError("Invalid weight: %s" % self.weighterList[i])
                 if float(self.weighterList[i]) < 0.000001:
                     self.weighterList[i] = float(self.weighterList[i]) + 0.000001
-                elif float(self.weighterList[i]) > 0.999999 or abs(float(self.weighterList[i]) -1) < 0.000001:
+                elif abs(float(self.weighterList[i]) -1) < 0.000001:
                     self.weighterList[i] = float(self.weighterList[i]) - 0.000001
 
                 weightNumpyMatrix[i, 0] = self.weighterList[i]
@@ -712,8 +614,6 @@ class OptimalPowerFlowAnalysis:
                 self.paretoFrontList.append(nF_feasibleNormalised[:, 0])
                 self.paretoFrontList.append(nF_feasibleNormalised[:, 1])
 
-
-                # optima_label_list = ['weight:' + str(round(weightNumpyMatrix[i_, 0], 2)) + ',' + str(round(weightNumpyMatrix[i_, 1], 2)) for i_ in range(len(indexOfOptima)) ]
                 optima_label_list = ['Weight = ' + str(round(weightNumpyMatrix[i_, 0], 2))  for i_ in range(len(indexOfOptima)) ]
                 
                 x_data = []
@@ -727,15 +627,8 @@ class OptimalPowerFlowAnalysis:
                 self.selectedSolution.append(x_data)
                 self.selectedSolution.append(y_data)
 
-                # for i in indexOfOptima:
-                #     i_ = indexOfOptima.index(i)
-                #     plt.scatter(self.nF_feasibleNormalised[i, 0], self.nF_feasibleNormalised[i, 1], marker="x", alpha=0.8, s=40, color = '#00A36C')# facecolors='#00A36C', edgecolors='none')
-                #     weightLabel = 'weight:' + str(round(weightNumpyMatrix[i_, 0], 2)) + ',' + str(round(weightNumpyMatrix[i_, 1], 2))
-                #     plt.annotate(weightLabel, (self.nF_feasibleNormalised[i, 0], self.nF_feasibleNormalised[i, 1]), fontsize = 8, xycoords='data')    
-                ## plt.title("Normalised Objective Space")
                 plt.xlabel("Normalised SMR investment and risk cost (-)", fontsize = labelFontSize)
                 plt.ylabel("Normalised site-demand distance (-)", fontsize = labelFontSize) 
-                #plt.legend(fontsize = legendFontSize, loc='upper left', frameon=False)
                 plt.legend(
                         loc="upper center", 
                         fontsize = legendFontSize, 
@@ -743,14 +636,11 @@ class OptimalPowerFlowAnalysis:
                         bbox_to_anchor=(0.5, -0.16), 
                         frameon=False)
                 plt.tight_layout()
-                self.mkdirParetoFrontFig()
+                self.mkdirFilePath(self.diagramPathParetoFront, "")         
                 plt.savefig(self.diagramPathParetoFront  + 'ParetoFront_SMR_%s.pdf' % str(self.numberOfSMRToBeIntroduced), dpi = 1200, bbox_inches='tight')
-                ## plt.show() ## show must come after the savefig
-                ##plt.close()
                 plt.clf()
                 plt.cla()
-                ##OLD METHOD FOR PLOTTING: plotting.plot(feasibleSolustions_F, self.F, optima, show=True, labels=["Feasible", "Pareto front", "Optima"])
-
+                
             ## delete the GA attributes to release more memory
             del self.res, self.X, self.F
             
@@ -769,8 +659,7 @@ class OptimalPowerFlowAnalysis:
                     ## Look for the small area code and regional area code for each SMR site
                     for demanding in self.demandingAreaList:
                         Area_LACode = str(demanding['Area_LACode'])
-                        if Area_LACode in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
-                                            "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
+                        if Area_LACode in highLevelRegions:
                             continue
                         if 'Boundary' in demanding.keys():
                             boundary = demanding['Boundary']
@@ -810,7 +699,6 @@ class OptimalPowerFlowAnalysis:
                             'Capacity': numOfSMRUnit * self.SMRCapability, 
                             'LatLon': latlon,
                             'fuelOrGenType': 'SMR', 
-                            'annualOperatingHours': 0, 
                             'CO2EmissionFactor': 0.0, 
                             'place': None,
                             'NumberOfSMRUnits': numOfSMRUnit,
@@ -834,8 +722,7 @@ class OptimalPowerFlowAnalysis:
                                     official_region = "E12000006"
                                 elif Area_LACode in ["E41000092", "E14000839", "E41000088", "E14001031", "E41000090", "E41000212", "E14000881", "E14000988"]:
                                     official_region = "E12000009" 
-                                elif Area_LACode in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
-                                                    "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
+                                elif Area_LACode in highLevelRegions:
                                     continue
                                 else:
                                     official_region_List = queryWithinRegion(Area_LACode, self.ons_endpointLabel) ## return a list of the region LA code
@@ -874,7 +761,6 @@ class OptimalPowerFlowAnalysis:
                         'Capacity': numOfSMRUnit * self.SMRCapability, 
                         'LatLon': latlon,
                         'fuelOrGenType': 'SMR', 
-                        'annualOperatingHours': 0, 
                         'CO2EmissionFactor': 0.0, 
                         'place': None,
                         'NumberOfSMRUnits': numOfSMRUnit,
@@ -885,10 +771,6 @@ class OptimalPowerFlowAnalysis:
                 if len(SMRArrangement) != len(indexListOfResults_EachWeight):
                     raiseExceptions('The SmallAreaLACode and RegionLACode are not found for some of the sleceted SMR sites, please check the SMR site list and its lat-lon location.')
                 self.SMRList.append(SMRArrangement) ## The length of thre SMR list is equal to the number of the SMR sites, not the number of the SMR to be introduced to the system 
-                ## i_ = self.indexListOfSiteSelectionResults.index(indexListOfResults_EachWeight)
-                ## weightLabel = 'weight:' + str(round(weightNumpyMatrix[i_, 0], 2)) + ',' + str(round(weightNumpyMatrix[i_, 1], 2))
-                ## print("At %s" % weightLabel)
-                ## print("The total number of SMR sites is", len(indexListOfResults_EachWeight))
         else:
             self.SMRList = []
             for i in range(len(self.weighterList)):
@@ -946,14 +828,7 @@ class OptimalPowerFlowAnalysis:
         return
 
     """This method is called to initialize the model entities objects: Generator"""
-    def ModelPythonObjectInputInitialiser_Generator(self, CarbonTaxForOPF, windOutputRatio, solarOutputRatio, weatherConditionName, decommissionFlag):  
-        ## FIXME: think over the way of introducing the decommission post-process
-        # if not decommissionFlag:
-        #     self.generatorNodeList = query_model.queryEGenInfo(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## 0?PowerGeneratorIRI 1?FixedMO 2?VarMO 3?FuelCost 4?CO2EmissionFactor 5?Bus 6?Capacity 7?PrimaryFuel 8?Latlon 9?PowerPlant_LACode 10: samllerLAcode   
-    
-    ## if self.CarbonTaxForOPF != CarbonTaxForOPF or self.weatherConditionName != weatherConditionName: ## The carbon tax changed or the weather condition changed, the generator should be reinitialised
-        ## for each OPF with different carbon tax, clean up the list 
-            
+    def ModelPythonObjectInputInitialiser_Generator(self, CarbonTaxForOPF, windOutputRatio, solarOutputRatio, weatherConditionName, decommissionFlag):             
         self.CarbonTaxForOPF = CarbonTaxForOPF
         self.weatherConditionName = weatherConditionName
         self.GeneratorObjectList = []
@@ -999,7 +874,7 @@ class OptimalPowerFlowAnalysis:
                 egen[4] = float(factorArray[4]) 
 
                 objectName = UK_PG.UKEGenModel.EGenKey + self.genTag + str(self.generatorNodeList.index(egen)) ## egen model python object name
-                if len(egen) == 13: ##0?PowerGeneratorIRI 1?FixedMO 2?VarMO 3?FuelCost 4?CO2EmissionFactor 5?Bus 6?Capacity 7?PrimaryFuel 8?Latlon 9?PowerPlant_LACode 10:Extant[if withRetrofit is set as 'True'] 11: samllerLAcode   
+                if len(egen) == 13: ##0?PowerGeneratorIRI 1?FixedMO 2?VarMO 3?FuelCost 4?CO2EmissionFactor 5?Bus 6?Capacity 7?PrimaryFuel 8?Latlon 9?PowerPlant_LACode 10:Extant[if withRetrofit is set as 'True'] 11: samllerLAcode 12: reginalLAcode   
                     uk_egen_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), str(egen[0]), float(factorArray[4]), str(egen[7]), egen[10], egen[8], float(egen[6]), None, str(egen[11]), CarbonTaxForOPF, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder, str(egen[12]), str(egen[9]))
                 else:
                     uk_egen_OPF_model = UK_PG.UKEGenModel_CostFunc(int(self.numOfBus), str(egen[0]), float(factorArray[4]), str(egen[7]),  egen[10], egen[8], float(egen[6]), None, str(egen[11]), CarbonTaxForOPF, self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder)
@@ -1011,7 +886,7 @@ class OptimalPowerFlowAnalysis:
             self.GeneratorObjectList.append(GeneratorObjectList_EachWeight)
 
             ### Initialisation of the SMR Generator Model Entities ###
-            ## extract the emssion factor
+            ## extract the emission factor
             if self.withRetrofit is True and self.numberOfSMRToBeIntroduced > 0: 
                 for mf in range(len(modelFactorArrays)):
                     if str(self.newGeneratorType) in modelFactorArrays[mf]:
@@ -1032,7 +907,7 @@ class OptimalPowerFlowAnalysis:
             self.SMRSiteObjectList.append(SMRSiteObjectList_EachWeight) ## if the number of the SMR is 0, the SMRSiteObjectList_EachWeight is [] and appended to the SMRSiteObjectList    
         return    
 
-    ## generate a list of the ppc at different weighters and the same weather condition and same carbon tax   
+    """generate a list of the ppc at different weighters and the same weather condition and same carbon tax"""  
     def OPFModelInputFormatter(self):
         """
         The OPFModelInputFormatter is used to created the pypower OPF model input from the model objects which are created from the F{ModelObjectInputInitialiser}.
@@ -1087,8 +962,7 @@ class OptimalPowerFlowAnalysis:
             ## generator data
             # bus, Pg, Qg, Qmax, Qmin, Vg, mBase, status, Pmax, Pmin, Pc1, Pc2,
             # Qc1min, Qc1max, Qc2min, Qc2max, ramp_agc, ramp_10, ramp_30, ramp_q, apf
-            numOfExistAndRetrofittedGenerators = len(GeneratorObjectList_EachWeight) + len(SMRSiteObjectList_EachWeight) # len(self.GeneratorToBeRetrofittedObjectList) + len(self.GeneratorToBeBackUpObjectList) + len(self.GeneratorToBeAllRetrofittedOrAllBackUpObjectList)
-            
+            numOfExistAndRetrofittedGenerators = len(GeneratorObjectList_EachWeight) + len(SMRSiteObjectList_EachWeight) 
             ppc["gen"] = numpy.zeros((numOfExistAndRetrofittedGenerators, len(UK_PG.UKEGenModel.INPUT_VARIABLE_KEYS)), dtype = float)
             index_gen  = 0 
             while index_gen < len(GeneratorObjectList_EachWeight):
@@ -1146,7 +1020,7 @@ class OptimalPowerFlowAnalysis:
             self.ppc_List.append(ppc_copy)
         return 
   
-    ## Generate the list of the results, total cost and OPEX for each weighter at the same weather and same carbon tax
+    """Generate the list of the results, total cost and OPEX for each weighter at the same weather and same carbon tax"""
     def OptimalPowerFlowAnalysisSimulation(self, ppc: list = None):
         """
         Perform the optimal power flow analysis.
@@ -1182,23 +1056,10 @@ class OptimalPowerFlowAnalysis:
         1 - print a little progress info,
         2 - print a lot of progress info,
         3 - print all progress info'''
-
-        '''OPF_ALG, algorithm to use for OPF:
-        0 - choose best default solver available in the
-        following order, 500, 540, 520 then 100/200
-        Otherwise the first digit specifies the problem
-        formulation and the second specifies the solver,
-        as follows, (see the User's Manual for more details)
-        500 - generalized formulation, MINOS,
-        540 - generalized formulation, MIPS
-        primal/dual interior point method,
-        545 - generalized formulation (except CCV), SC-MIPS
-        step-controlled primal/dual interior point method'''
-        ppopt = ppoption(OUT_ALL = 0, VERBOSE = 0, SCPDIPM_RED_IT = 10, PDIPM_GRADTOL= 5e-5, OPF_ALG = 0)  # 'scpdipm_red_it', 20,  SCPDIPM_RED_IT = 10, OPF_IGNORE_ANG_LIM = True,PDIPM_GRADTOL= 5e-5,
-        ## iteration number, objective function value, step size, feasibility condition, gradient condition, complementarity condition, and cost condition. 
+        ppopt = ppoption(OUT_ALL = 0, VERBOSE = 0, SCPDIPM_RED_IT = 10, PDIPM_GRADTOL= 5e-5, OPF_ALG = 0)
+        ## SCPDIPM_RED_IT: step size, PDIPM_GRADTOL: gradient condition
         
         for i, ppc in enumerate(self.ppc_List): ## the length of the ppc_List should equal to the number of the weights
-            # i = self.ppc_List.index(ppc)
             ##-- starts opf analysis --##
             results = runopf(ppc, ppopt)
             self.resultsList.append(results)
@@ -1443,103 +1304,27 @@ class OptimalPowerFlowAnalysis:
     
             self.genOutputRecoder.append(genRawResult_eachWeight)
             self.SMRCostList.append(SMRCost)
-            #FIXME: modify the ModelPythonObjectOntologiser method 
+
+            #TODO: modify the ModelPythonObjectOntologiser method 
             ## self.ModelPythonObjectOntologiser() 
             
             if generateVisualisationJSON:
                 ExtantGeneratorLabel = str(self.numOfBus) + 'BusModel_' + str(self.numberOfSMRToBeIntroduced) + '_SMRs_Introduced_CarbonTax' + str(self.CarbonTaxForOPF) + "_WeatherCondition_" + str(self.weatherConditionName) + "_weighter_" + str(weightForObjective1) + '_ExtantGenerator'
                 SMRIntroducedLabel = str(self.numOfBus) + 'BusModel_' + str(self.numberOfSMRToBeIntroduced) + '_SMRs_Introduced_CarbonTax' + str(self.CarbonTaxForOPF) + "_WeatherCondition_" + str(self.weatherConditionName) + "_weighter_" + str(weightForObjective1) + '_SMR'
                 ClosedGeneratorLabel = str(self.numOfBus) + 'BusModel_' + str(self.numberOfSMRToBeIntroduced) + '_SMRs_Introduced_CarbonTax' + str(self.CarbonTaxForOPF) + "_WeatherCondition_" + str(self.weatherConditionName) + "_weighter_" + str(weightForObjective1) + '_ClosedGenerator'
-                DecommissionedLabel = str(self.numOfBus) + 'BusModel_' + str(self.numberOfSMRToBeIntroduced) + '_SMRs_Introduced_CarbonTax' + str(self.CarbonTaxForOPF) + "_WeatherCondition_" + str(self.weatherConditionName) + "_weighter_" + str(weightForObjective1) + '_DecommissionedGenerator'
+                CoalFiredGeneratorLabel = str(self.numOfBus) + 'BusModel_' + str(self.numberOfSMRToBeIntroduced) + '_SMRs_Introduced_CarbonTax' + str(self.CarbonTaxForOPF) + "_WeatherCondition_" + str(self.weatherConditionName) + "_weighter_" + str(weightForObjective1) + '_CoalFiredGenerator'
+                NaturalGasGeneratorLabel = str(self.numOfBus) + 'BusModel_' + str(self.numberOfSMRToBeIntroduced) + '_SMRs_Introduced_CarbonTax' + str(self.CarbonTaxForOPF) + "_WeatherCondition_" + str(self.weatherConditionName) + "_weighter_" + str(weightForObjective1) + '_NaturalGasGenerator'
 
                 self.filePathForJSON = self.localRootFilePath + '/GeneratorJSONFiles/' +  str(self.numberOfSMRToBeIntroduced) + '_SMRs_' + str(self.CarbonTaxForOPF) +'_CarbonTax' 
 
                 self.visualisationFileCreator_ExtantGenerator(GeneratorObjectList_EachWeight, ExtantGeneratorLabel) 
                 self.visualisationFileCreator_AddedSMRGenerator(SMRSiteObjectList_EachWeight, SMRIntroducedLabel)
-                self.visualisationFileCreator_ClosedGenerator(GeneratorObjectList_EachWeight, ClosedGeneratorLabel)
-                ## FIXME: add the decommssion visualisationFileCreator
-                ## self.visualisationFileCreator_decommissionedGenerator(DecommissionLabel)          
-        return 
+                self.visualisationFileCreator_ClosedGenerator(GeneratorObjectList_EachWeight, ClosedGeneratorLabel)  
+                self.visualisationFileCreator_CoalFiredOpenPlant(GeneratorObjectList_EachWeight, CoalFiredGeneratorLabel)  
+                self.visualisationFileCreator_NaturalGasOpenPlant(GeneratorObjectList_EachWeight, NaturalGasGeneratorLabel) 
 
-#TODO: still need to check why there is no generator not been used for each weather condition
-    def decommissionPowerPlantDecider(self, numberOfSMRToBeIntroduced, slackFactor:float, generatorNameList:list):
-        index_NonOutputList = []    
-        apperanceTime_NonOutputList = []
-        alwaysNonOutputList = []
-        alwaysNonOutputIndexList = []
-        ## Find the shut down power plant in each weather condition scenario and count the number of times
-        
-        # if type(generatorNameList[0]) is list: 
-        #     raiseExceptions("The generator name list should be a 2D list.")
-        for genListOfEachWeatherCondition in generatorNameList:
-            for genName in genListOfEachWeatherCondition: ## has the same order with the generatorNodeList
-                i = genListOfEachWeatherCondition.index(genName)
-                if round(float(self.ObjectSet[genName].PG_OUTPUT), 2) < 0.01:
-                    if not i in index_NonOutputList:
-                        apperanceTime_NonOutputList.append(1)
-                        index_NonOutputList.append(i)
-                    else:
-                        index_ = index_NonOutputList.index(i)
-                        apperanceTime_NonOutputList[index_] += 1
+                ## TODO: create visualisationFileCreator_CoalFiredOpenPlant and visualisationFileCreator_NaturalGasOpenPlant
 
-        ## Find the always shut down generators and ready to be selected to be decommissioned
-        for c in range(len(apperanceTime_NonOutputList)):
-            apperanceTime = apperanceTime_NonOutputList[c]
-            if apperanceTime == len(generatorNameList):
-                alwaysShutDownGenIndex = index_NonOutputList[c]
-                alwaysNonOutputIndexList.append(alwaysShutDownGenIndex)
-                alwaysNonOutputList.append(self.generatorNodeList[alwaysShutDownGenIndex])
-
-        ##-- Setup a pure economical optimisation MILP model for selecting the power plant to be decommissioned --##
-        model = Model("DecommisssionDecider")
-        ##-- Binary variable --## 
-        binaryVarNameList = []
-        sumOfDecommissionCapacity = 0
-        totalDecommissioningCost = 0
-        for s in range(len(alwaysNonOutputList)):
-            binaryVarName = "y_" + str(s)
-            self.ObjectSet[binaryVarName] = model.addVar(binaryVarName, vtype = "B")
-            binaryVarNameList.append(binaryVarName)
-
-        dcKeys = DCost.keys()
-        for bv in binaryVarNameList:
-            i = binaryVarNameList.index(bv)
-            print(self.ObjectSet[bv])
-            sumOfDecommissionCapacity += self.ObjectSet[bv] * float(alwaysNonOutputList[i][6])
-            fuelType = alwaysNonOutputList[i][7]
-            for key in dcKeys:
-                if fuelType in key:
-                    totalDecommissioningCost += self.ObjectSet[bv] * DCost[key][2] * float(alwaysNonOutputList[i][6]) * self.discountRate / (1 - ((1 + self.discountRate)**(-1 * self.projectLifeSpan)))
-                    break
-
-        ##-- Add Constrains --##  
-        model.addCons(sumOfDecommissionCapacity <= numberOfSMRToBeIntroduced * self.SMRCapability * float(slackFactor)) ## slack factor is 1.1
-
-        ##-- Set up the objective function --##
-        model.setObjective(totalDecommissioningCost, "minimize")
-
-        ##-- Set up optimisation method --##
-        model.optimize()
-
-        ##-- Results post processing --##
-        print("The decommission cost is:", model.getObjVal())
-
-        decommissionedPowerPlant_Index = []
-        self.decommissionedPowerPlant_generator = []
-        for bvname in binaryVarNameList:
-            print( bvname, " = ", (model.getVal(self.ObjectSet[bvname])))
-            if int(model.getVal(self.ObjectSet[bvname])) > 0:
-                decommissionedPowerPlant_Index.append(binaryVarNameList.index(bvname))
-        
-        TotalDecommissionedCapacity = 0
-        for i in decommissionedPowerPlant_Index: 
-            TotalDecommissionedCapacity += float(alwaysNonOutputList[i][6])
-            self.decommissionedPowerPlant_generator.append(alwaysNonOutputList[i])
-            self.generatorNodeList.remove(alwaysNonOutputList[i])
-        
-        capacityDifference = numberOfSMRToBeIntroduced * self.SMRCapability - TotalDecommissionedCapacity
-        
-        print("capacityDifference is:", capacityDifference)
         return 
 
     """This method is to calculate the net demanding of the specified LACode area"""
@@ -1561,8 +1346,7 @@ class OptimalPowerFlowAnalysis:
                             netDemanding_regionalArea = []
                             for demanding in self.demandingAreaList:
                                 Area_LACode = demanding['Area_LACode']
-                                if Area_LACode in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
-                                                    "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
+                                if Area_LACode in highLevelRegions:
                                     continue
                                 netDemandingOfThisArea = float(demanding['v_TotalELecConsumption'])
                                 if 'Boundary' in demanding.keys():
@@ -1625,8 +1409,7 @@ class OptimalPowerFlowAnalysis:
                 counter_smr = 0
                 for demanding in self.demandingAreaList:
                     Area_LACode = demanding['Area_LACode']
-                    if Area_LACode in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
-                                        "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
+                    if Area_LACode in highLevelRegions:
                         continue
                     demandingValue_smallArea = float(demanding['v_TotalELecConsumption'])
                     if 'Boundary' in demanding.keys():
@@ -1694,7 +1477,7 @@ class OptimalPowerFlowAnalysis:
                 self.netDemandingList_regionalAreaForEachWeight.append(netDemanding_regionalArea)         
             return 
 
-##FIXME: this function should be updated according to the updated version of the code   
+##TODO: this function should be updated according to the updated version of the code   
     def ModelPythonObjectOntologiser(self):
         """
         create KG representation for all model objects
@@ -1712,12 +1495,12 @@ class OptimalPowerFlowAnalysis:
             self.timeStamp, self.agentIRI, self.derivationClient, self.OWLUpdateEndPointURL, self.OWLFileStoragePath)
         BranchModelKGInstanceCreator(self.ObjectSet, self.BranchObjectList, self.numOfBus, self.topologyNodeIRI, self.powerSystemModelIRI, \
             self.timeStamp, self.agentIRI, self.derivationClient, self.OWLUpdateEndPointURL, self.OWLFileStoragePath)
-        ##FIXME: self.GeneratorToBeRetrofittedObjectList, self.GeneratorToBeBackUpObjectList, self.GeneratorToBeAllRetrofittedOrAllBackUpObjectList 
-        ##FIXME: modify the clustered generator instances
-        GeneratorModelKGInstanceCreator(self.ObjectSet, self.GeneratorObjectList, self.GeneratorToBeRetrofittedObjectList, self.OPFOrPF, self.newGeneratorType, self.numOfBus, self.topologyNodeIRI, self.powerSystemModelIRI, \
-        self.timeStamp, self.agentIRI, self.derivationClient, self.OWLUpdateEndPointURL, self.OWLFileStoragePath)  
+        ##FIXME: include the SMR and the existing plants
+        # GeneratorModelKGInstanceCreator(self.ObjectSet, self.GeneratorObjectList, self.GeneratorToBeRetrofittedObjectList, self.OPFOrPF, self.newGeneratorType, self.numOfBus, self.topologyNodeIRI, self.powerSystemModelIRI, \
+        # self.timeStamp, self.agentIRI, self.derivationClient, self.OWLUpdateEndPointURL, self.OWLFileStoragePath)  
         return 
     
+    """"This function is to calculate the CO2 emission of each design"""
     def CarbonEmissionCalculator(self):
         self.totalCO2EmissionList_Mt_yr = []
         self.CO2EmissionIntensity_gperkwh = []
@@ -1745,10 +1528,10 @@ class OptimalPowerFlowAnalysis:
                     outPutData[i] += float(self.ObjectSet[gen].PG_OUTPUT)/1E3 
 
             ## yearly emission
-            self.totalCO2EmissionList_Mt_yr.append(totalCO2Emission_t_hr* 8760/1E6) ## Mt/yr
+            self.totalCO2EmissionList_Mt_yr.append(totalCO2Emission_t_hr* self.yearlyOperationHours/1E6) ## Mt/yr
 
             ## yearly emission cost
-            annualEmissionCost_MGBP_yr = emissionCost_gbp_hr * 8760/1E6 ## M£/yr
+            annualEmissionCost_MGBP_yr = emissionCost_gbp_hr * self.yearlyOperationHours/1E6 ## M£/yr
 
             ## emission intensity
             emissionIntensity_gperkWh = totalCO2Emission_t_hr/totalOutput_MW * 1000 ## g/kwh
@@ -1767,7 +1550,8 @@ class OptimalPowerFlowAnalysis:
             self.emissionCostContributionList_TotalCost.append(emissionCostContribution_TotalCost)          
         return 
 
-    def EnergySupplyBreakDownPieChartCreator(self):
+    """"This function is to calculate energy generation mix of each design"""
+    def EnergySupplyBreakDown(self):
         energyBreakdownList = []
         energyBreakdownList_detailed = []
         genTech_detailed = []
@@ -1852,18 +1636,6 @@ class OptimalPowerFlowAnalysis:
                     outPutData_reOrdered[index_genTypeLabel] += round(outPutData[index_genTypeLabel_temporary], 3)
                 else:
                     raise Exception('The current generation type %s should be one of the genTypeLabel.'% genType)
-
-            # plt.pie(outPutData, labels=genTypeLabel, autopct='%1.1f%%', startangle=90)
-            # plt.title('Energy Supply BreakDown')
-            # plt.axis('equal')
-            # plt.tight_layout()
-            # path = 'EnergyBreakdown_PieChart_' + str(numberOfSMRToBeIntroduced) + 'SMR_weight_' + str(round(self.weighterList[w],2)) + '_weather_' + str(weatherCondition[2]) + '_carbonTax_' + str(CarbonTaxForOPF) + '.pdf' 
-            # self.mkdirFig()
-            # plt.savefig(self.diagramPath + path, dpi = 1200, bbox_inches='tight')
-            # # plt.show()
-            # # plt.close()
-            # plt.clf()
-            # plt.cla()
             energyBreakdownList.append(outPutData_reOrdered)    
 
             energyBreakdownList_detailed.append(outPutData_eachTech)
@@ -1871,6 +1643,7 @@ class OptimalPowerFlowAnalysis:
 
         return energyBreakdownList, energyBreakdownList_detailed, genTech_detailed
 
+    """"This function is to calculate energy generation mix of each areas: official regions or smaller demand areas"""
     def EnergyBreakdown_RegionAndSmallArea(self):
         self.output_smallAreaForEachWeight = [] 
         self.genTypeLabel_smallAreaForEachWeight = [] 
@@ -1883,16 +1656,13 @@ class OptimalPowerFlowAnalysis:
             ## list of the object names
             genNameList = self.GeneratorObjectList[g_index]
             SMRNameList = self.SMRSiteObjectList[g_index]
-
             output_smallArea = []
-            genTypeLabel_smallArea = []
-            
+           
             for demanding in self.demandingAreaList:
                 genTypeLabel_temporary = []
                 outPutData = []
                 Area_LACode = demanding['Area_LACode']
-                if Area_LACode in ["K03000001", "K02000001", "W92000004","S92000003", "E12000001", "E12000002", "E12000003", "E12000004", "E12000005", 
-                                    "E12000006", "E12000007", "E12000008", "E12000009", "E13000001", "E13000002"]:
+                if Area_LACode in highLevelRegions:
                     continue
                 if 'Boundary' in demanding.keys():
                     boundary = demanding['Boundary']
@@ -1967,12 +1737,9 @@ class OptimalPowerFlowAnalysis:
                 lat = boundary.centroid.y
 
                 if sum_up > 0:
-                    output_smallArea.append({'outputBreakdown': outPutData, 'percentageBreakdown': percentage, 'genTypeLabel': genTypeLabel_temporary, 'smallAreaBoundary': boundary, 'centroid': [lat, lon], 'smallAreaLACode': Area_LACode})
-                # genTypeLabel_smallArea.append(genTypeLabel)
-
+                    output_smallArea.append({'outputBreakdown': outPutData, 'percentageBreakdown': percentage, 'genTypeLabel': genTypeLabel_temporary, 'smallAreaBoundary': boundary, 'centroid': [lat, lon], 'smallAreaLACode': Area_LACode})              
             self.output_smallAreaForEachWeight.append(output_smallArea)
-            # self.genTypeLabel_smallAreaForEachWeight.append(genTypeLabel_smallArea)         
-        
+            
         ##-- Regional area --##
         for g_index in range(len(self.weighterList)):
             ## list of the object names
@@ -1981,7 +1748,6 @@ class OptimalPowerFlowAnalysis:
 
             output_regionalArea = []
             emission_regionalArea = []
-            genTypeLabel_regionalArea = []
 
             for regionalDemanding in self.regionalDemandingList:
                 genTypeLabel_temporary = []
@@ -2083,14 +1849,11 @@ class OptimalPowerFlowAnalysis:
 
                 if sum_up > 0:
                     output_regionalArea.append({'outputBreakdown': outPutData, 'totalOutput': sum_up, 'percentageBreakdown': percentage_output, 'genTypeLabel': genTypeLabel_temporary, 'regionalAreaBoundary': boundary, 'centroid': [lat, lon], 'RegionalLACode': Region_LACode})
-                    # genTypeLabel_regionalArea.append(genTypeLabel)
 
                 emission_regionalArea.append({'emissionBreakdown': emissionData, 'totalEmission': sumUpEmission, 'percentageBreakdown': percentage_emission, 'genTypeLabel': genTypeLabel_temporary, 'regionalAreaBoundary': boundary, 'centroid': [lat, lon], 'RegionalLACode': Region_LACode})
-                    # genTypeLabel_regionalArea.append(genTypeLabel)
 
             self.output_regionalAreaForEachWeight.append(output_regionalArea)
             self.emission_regionalAreaForEachWeight.append(emission_regionalArea)
-            # self.genTypeLabel_regionalAreaForEachWeight.append(genTypeLabel_regionalArea)  
         return 
 
     def visualisationFileCreator_ExtantGenerator(self, GeneratorObjectList, file_label):
@@ -2136,14 +1899,13 @@ class OptimalPowerFlowAnalysis:
         """
         geojson_file += end_geojson
         # saving as geoJSON
-        self.mkdirJSON()
+        self.mkdirFilePath(self.filePathForJSON, "")
         geojson_written = open(self.filePathForJSON + '/' + file_label +'.geojson','w')
         geojson_written.write(geojson_file)
         geojson_written.close() 
         print('---GeoJSON written successfully: visualisationFileCreator_ExtantGenerator---', file_label)
         return
 
-##FIXME: if add the decommission method, it might be a concreate list of the closed generators, for now it will used the same list of the GeneratorObjectList
     def visualisationFileCreator_ClosedGenerator(self, GeneratorObjectList, file_label):
         geojson_file = """
         {
@@ -2187,7 +1949,7 @@ class OptimalPowerFlowAnalysis:
         """
         geojson_file += end_geojson
         # saving as geoJSON
-        self.mkdirJSON()
+        self.mkdirFilePath(self.filePathForJSON, "")
         geojson_written = open( self.filePathForJSON + '/' + file_label +'.geojson','w')
         geojson_written.write(geojson_file)
         geojson_written.close() 
@@ -2236,62 +1998,17 @@ class OptimalPowerFlowAnalysis:
         """
         geojson_file += end_geojson
         # saving as geoJSON
-        self.mkdirJSON()
+        self.mkdirFilePath(self.filePathForJSON, "")
         geojson_written = open(self.filePathForJSON + '/' + file_label +'.geojson','w')
         geojson_written.write(geojson_file)
         geojson_written.close() 
         print('---GeoJSON written successfully: visualisationFileCreator_AddedSMRGenerator---', file_label)
         return
 
-## FIXME: modify this function according to the new decommission method 
-    def visualisationFileCreator_decommissionedGenerator(self, file_label):
-        geojson_file = """
-        {
-            "type": "FeatureCollection",
-            "features": ["""
-        for dcgen in self.decommissionedPowerPlant_generator:
-            feature = """{
-                "type": "Feature",
-                "properties": {
-                "Fuel Type": "%s",
-                "Capacity": %s,
-                "Status": "Decommissioned",
-                "marker-color": "#000000",
-                "marker-size": "medium",
-                "marker-symbol": ""
-                },
-                "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    %s,
-                    %s
-                ]
-                }
-                },"""%(dcgen[7], float(dcgen[6]), dcgen[8][1], dcgen[8][0])
-            # adding new line 
-            geojson_file += '\n'+feature
-            
-        # removing last comma as is last line
-        geojson_file = geojson_file[:-1]
-        # finishing file end 
-        end_geojson = """
-            ]
-        }
-        """
-        geojson_file += end_geojson
-        # saving as geoJSON
-        self.mkdirJSON()
-        geojson_written = open(self.filePathForJSON + '/' + file_label +'.geojson','w')
-        geojson_written.write(geojson_file)
-        geojson_written.close() 
-        print('---GeoJSON written successfully: visualisationFileCreator_decommissionedGenerator---', file_label)
-        return 
-
     """This method is to generate the JSON file for creating the visualisation of the net demanding of the small areas"""
-    ## This method can be run after the calculation of the simulation, like the other fig creator functions  
     def GeoJSONCreator_netDemandingForSmallArea(self, demandingDataList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):  
         ##check the storage path
-        self.mkdirNetDemandingJSON('SmallAreaNetDemanding/')
+        self.mkdirFilePath(self.netDemandingJSONPath, 'SmallAreaNetDemanding/') 
         ## Determine the upper and lower bounds
         netDemanding = []
         for demanding_eachSMRDesign in demandingDataList:
@@ -2493,10 +2210,9 @@ class OptimalPowerFlowAnalysis:
         return 
 
     """This method is to generate the JSON file for creating the visualisation of the net demanding of the regional areas"""
-    ## This method can be run after the calculation of the simulation, like the other fig creator functions   
     def GeoJSONCreator_netDemandingForRegionalArea(self, demandingDataList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):   
         ## check the storage path
-        self.mkdirNetDemandingJSON('RegionalAreaNetDemanding/')
+        self.mkdirFilePath(self.netDemandingJSONPath, 'RegionalAreaNetDemanding/')    
         ## Determine the upper and lower bounds
         netDemanding = []
         for demanding_eachSMRDesign in demandingDataList:
@@ -2701,7 +2417,7 @@ class OptimalPowerFlowAnalysis:
     """This method is to generate the visulisation GeoJSON file of the branch transmission loss"""
     def GeoJSONCreator_branchGrid(self, branchData, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):
         ## check the storage path
-        self.mkdirbranchLossJSON(str(self.numOfBus) + '/')
+        self.mkdirFilePath(self.branchLossJSONPath, str(self.numOfBus) + '/')
         ## Determine the upper and lower bounds
         loss = []
         for loss_eachSMRDesign in branchData:
@@ -2911,8 +2627,7 @@ class OptimalPowerFlowAnalysis:
         return 
      
     """This method is to generate the pie chart for regional energy breakdown"""
-    def EnergySupplyBreakDownPieChartCreator_RegionalAreas(self, energyBreakdownList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):
-                
+    def EnergySupplyBreakDownPieChartCreator_RegionalAreas(self, energyBreakdownList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):            
         weatherNameList = []
         for weather in weatherConditionList:
             weatherNameList.append(weather[2])
@@ -2944,7 +2659,7 @@ class OptimalPowerFlowAnalysis:
                     for i_weight, energyBreakdown_eachWeight in enumerate(specifiedEnergyBreakdownList):
                         ## check the storage path
                         subPath = 'SMR_'+ str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(self.weighterList[i_weight])
-                        self.mkdirPieChart('RegionalAreaEnergyBreakdown/' + subPath + '/')
+                        self.mkdirFilePath(self.pieChartPath, 'RegionalAreaEnergyBreakdown/' + subPath + '/')
 
                         for energyBreakdown_eachRegion in energyBreakdown_eachWeight:
                             ## eliminate the zero items for the long list
@@ -2972,7 +2687,7 @@ class OptimalPowerFlowAnalysis:
                                 genLabel_longList_withoutZero[i_NaturalGas] = 'Natural Gas'
 
                             ## populate the short list of the energy breakdown
-                            energyBreakdown_shortList = [0, 0, 0, 0] ## 'Renewable', 'Fossil fuels', 'Nuclear', 'Others'
+                            energyBreakdown_shortList = [0, 0, 0, 0]
                             for gl_i, gl in enumerate(genLabel_longList_withoutZero):
                                 if gl in ['Solar', 'Wind', 'Hydro']: 
                                     energyBreakdown_shortList[0] += energyBreakdown_longList_withoutZero[gl_i]
@@ -3049,20 +2764,10 @@ class OptimalPowerFlowAnalysis:
 
                             ## Create pie chart
                             plt.pie(energyBreakdown_longList_withoutZero_rearrange, colors = colour_longList, startangle=90, frame=True) ##labels=genLabel_longList_withoutZero_rearrange, autopct='%1.1f%%',
-                            # plt.pie(energyBreakdown_shortList_withoutZero, colors = colour_shortList, radius = 0.75, startangle = 90)  ## labels=genLabel_shortList_withoutZero,
-                            # ## Convert the pie chart into a ring
-                            # centre_circle = plt.Circle((0,0), 0.5, color='black', fc='white', linewidth=0)
-                            # fig = plt.gcf()
-                            # fig.gca().add_artist(centre_circle)
-
                             plt.axis('off')
                             plt.tight_layout()
-                            ## plt.legend(loc='upper right')
-                            ## file_label = 'RegionalEnergyBreakdown_PieChart_' + energyBreakdown_eachRegion['RegionalLACode'] + '_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ').png' 
                             file_label = 'RegionalEnergyBreakdown_PieChart_' + energyBreakdown_eachRegion['RegionalLACode'] + '.png' 
                             plt.savefig(self.pieChartPath + 'RegionalAreaEnergyBreakdown/' + subPath + '/' + file_label, dpi = 1200, bbox_inches='tight', transparent=True)
-                            ## plt.show()
-                            # plt.close()
                             plt.clf()
                             plt.cla()
                         
@@ -3093,7 +2798,7 @@ class OptimalPowerFlowAnalysis:
                     
                     ## check the storage path
                     subPath = 'SMR_'+ str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(cf[3], 2)) 
-                    self.mkdirPieChart('RegionalAreaEnergyBreakdown/' + subPath + '/')
+                    self.mkdirFilePath(self.pieChartPath, 'RegionalAreaEnergyBreakdown/' + subPath + '/')
 
                     for energyBreakdown_eachRegion in specifiedEnergyBreakdownList:
                         ## eliminate the zero items for the long list
@@ -3195,31 +2900,12 @@ class OptimalPowerFlowAnalysis:
                             colour_shortList.append("#6e996f")
                         if 'Others' in genLabel_shortList_withoutZero:
                             colour_shortList.append("#2d37bc")
-
-                        # ## Create pie chart
-                        # plt.pie(energyBreakdown_longList_withoutZero_rearrange, colors = colour_longList, startangle=90, frame=True) ##labels=genLabel_longList_withoutZero_rearrange, autopct='%1.1f%%',
-                        # plt.pie(energyBreakdown_shortList_withoutZero, colors = colour_shortList, radius = 0.75, startangle = 90)  ## labels=genLabel_shortList_withoutZero,
-                        # ## Convert the pie chart into a ring
-                        # centre_circle = plt.Circle((0,0),0.5,color='black', fc='white',linewidth=0)
-                        # fig = plt.gcf()
-                        # fig.gca().add_artist(centre_circle)
-                        # plt.axis('equal')
-                        # plt.tight_layout()
-
                         ## Create pie chart
-                        plt.pie(energyBreakdown_longList_withoutZero_rearrange, colors = colour_longList, startangle=90, frame=True) ##labels=genLabel_longList_withoutZero_rearrange, autopct='%1.1f%%',
-                        # plt.pie(energyBreakdown_shortList_withoutZero, colors = colour_shortList, radius = 0.75, startangle = 90)  ## labels=genLabel_shortList_withoutZero,
-                        # ## Convert the pie chart into a ring
-                        # centre_circle = plt.Circle((0,0), 0.5, color='black', fc='white', linewidth=0)
-                        # fig = plt.gcf()
-                        # fig.gca().add_artist(centre_circle)
-
+                        plt.pie(energyBreakdown_longList_withoutZero_rearrange, colors = colour_longList, startangle=90, frame=True)
                         plt.axis('off')
                         plt.tight_layout()
                         file_label = 'RegionalEnergyBreakdown_PieChart_' + energyBreakdown_eachRegion['RegionalLACode'] + '.png'                        
                         plt.savefig(self.pieChartPath + 'RegionalAreaEnergyBreakdown/' + subPath + '/' + file_label, dpi = 1200, bbox_inches='tight')
-                        # plt.show()
-                        # plt.close()
                         plt.clf()
                         plt.cla()                                
 
@@ -3235,7 +2921,7 @@ class OptimalPowerFlowAnalysis:
                         for i_weight, energyBreakdown_eachWeight in enumerate(energyBreakdown_eachWeather):
                             ## check the storage path
                             subPath = 'SMR_'+ str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2))                        
-                            self.mkdirPieChart('RegionalAreaEnergyBreakdown/' + subPath + '/')
+                            self.mkdirFilePath(self.pieChartPath, 'RegionalAreaEnergyBreakdown/' + subPath + '/') 
                             for energyBreakdown_eachRegion in energyBreakdown_eachWeight:
                                 ## eliminate the zero items for the long list
                                 energyBreakdown_longList_withoutZero = []
@@ -3344,20 +3030,16 @@ class OptimalPowerFlowAnalysis:
                                 plt.tight_layout()
                                 file_label = 'RegionalEnergyBreakdown_PieChart_' + energyBreakdown_eachRegion['RegionalLACode']+ '.png' 
                                 plt.savefig(self.pieChartPath + 'RegionalAreaEnergyBreakdown/' + subPath + '/' + file_label, dpi = 1200, bbox_inches='tight')
-                                # plt.show()
-                                # plt.close()
                                 plt.clf()
                                 plt.cla()   
                             overlay_image_folderPath = self.pieChartPath + 'RegionalAreaEnergyBreakdown/' + subPath + '/' 
-                            energyBreakdownOverlayerFactory(base_image_path, overlay_image_folderPath, arrow_image_path, legend_path)
-                       
+                            energyBreakdownOverlayerFactory(base_image_path, overlay_image_folderPath, arrow_image_path, legend_path)                       
         return 
 
     """This method is to generate the GeoJSON files demonstrate total energy output of each region"""
     def GeoJSONCreator_totalOutputOfRegionalAreas(self, energyBreakdownList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):
         ## check the storage path
-        self.mkdirRegionalOutputJSON(str(self.numOfBus) + '/')
-
+        self.mkdirFilePath(self.regionalOutputJSONPath, str(self.numOfBus) + '/')
         ## Determine the upper and lower bounds
         regionalTotalOutputList = []
         for energyBreakdown_eachSMRDesign in energyBreakdownList:
@@ -3573,1690 +3255,14 @@ class OptimalPowerFlowAnalysis:
                             print('---GeoJSON written successfully: total output of regional area---', file_label)                                  
             return 
 
-    """This method is to generate the visulisation GeoJSON file for the 3D bar of major energy source for each small area and the full bar of generation mix"""
-    ## 3D bars
-    def GeoJSONCreator_majorEnergySourceForSmallArea(self, energyBreakdownList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):
-        ## check the storage path
-        self.mkdirmajorEnergySourceJSON('smallAreaMajorEnergySource_fill-extrusion/')
-        self.mkdirmajorEnergySourceJSON('smallAreaFullBar_fill-extrusion/')
-        
-        weatherNameList = []
-        for weather in weatherConditionList:
-            weatherNameList.append(weather[2])
-        
-        if ifSpecifiedResults is True:
-            if specifiedConfigList == [] or specifiedConfigList == [[]]:
-                raise ValueError('specifiedConfigList should contain at list 1 non-empty list.')
-            for cf in specifiedConfigList:
-                if len(cf) < 3:
-                    raise ValueError('The sub list of the specifiedConfigList should contain at least 3 elements specifying the SMR number, carbon tax and weather condition.')
-                elif len(cf) == 3: ## SMR number, Carbon tax, weather condition 
-                    if not cf[0] in NumberOfSMRUnitList:
-                        raise ValueError('The first element of the sub list of the specifiedConfigList should be SMR number.')
-                    else:
-                        smrIndex = NumberOfSMRUnitList.index(cf[0])
-                    if not cf[1] in CarbonTaxForOPFList:
-                        raise ValueError('The second element of the sub list of the specifiedConfigList should be carbon tax.')
-                    else:
-                        carbonTaxList = CarbonTaxForOPFList.index(cf[1])
-                    if not cf[2] in weatherNameList:
-                        raise ValueError('The second element of the sub list of the specifiedConfigList should be werather condition.')
-                    else:
-                        weatherIndex = weatherNameList.index(cf[2])
-                    
-                    specifiedEnergyBreakdownList = energyBreakdownList[smrIndex][carbonTaxList][weatherIndex]
-
-                    genLabel_shortList = ['Renewable', 'Fossil fuels', 'Conventional Nuclear', 'SMR', 'Others']
-                    ## colour for short list 
-                    colour_shortList = ["#6fb6eb", "#5F676E", "#cc3300", "#1e8700", "#2d37bc"] 
-
-                    for i_weight, energyBreakdown_eachWeight in enumerate(specifiedEnergyBreakdownList):                     
-                        ##--major energy sources --##
-                        geojson_file_longList = """
-                        {
-                            "type": "FeatureCollection",
-                            "features": ["""
-                        geojson_file_shortList = """
-                        {
-                            "type": "FeatureCollection",
-                            "features": ["""
-
-                        ## Full bar
-                        geojson_file_fullbar= """
-                        {
-                            "type": "FeatureCollection",
-                            "features": ["""
-                        # iterating over features (rows in results array)
-                        for energyBreakdown_eachRegion in energyBreakdown_eachWeight:
-                            ## convert the nuclear type into the Conventional Nuclear
-                            if 'Nuclear' in energyBreakdown_eachRegion['genTypeLabel']:
-                                i_Nuclear = energyBreakdown_eachRegion['genTypeLabel'].index('Nuclear')
-                                energyBreakdown_eachRegion['genTypeLabel'][i_Nuclear] = 'Conventional Nuclear'
-                            
-                            ## convert the NaturalGas type into the Natural Gas
-                            if 'NaturalGas' in energyBreakdown_eachRegion['genTypeLabel']:
-                                i_NaturalGas = energyBreakdown_eachRegion['genTypeLabel'].index('NaturalGas')
-                                energyBreakdown_eachRegion['genTypeLabel'][i_NaturalGas] = 'Natural Gas'
-
-                            ## populate the short list of the energy breakdown
-                            energyBreakdown_shortList = [0, 0, 0, 0, 0]
-                            for gl_i, gl in enumerate(energyBreakdown_eachRegion['genTypeLabel']):
-                                if gl in ['Solar', 'Wind']: 
-                                    energyBreakdown_shortList[0] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-                                elif gl in ['Oil', 'Natural Gas', 'Coal']:
-                                    energyBreakdown_shortList[1] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-                                elif gl in ['Conventional Nuclear']:
-                                    energyBreakdown_shortList[2] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-                                elif gl in ['SMR']:
-                                    energyBreakdown_shortList[3] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-                                else:
-                                    energyBreakdown_shortList[4] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-
-                            maxEnergySource_shortList= max(energyBreakdown_shortList)
-                            maxEnergySource_shortList_index = energyBreakdown_shortList.index(maxEnergySource_shortList)
-                            maxEnergySource_shortList_label = genLabel_shortList[maxEnergySource_shortList_index]
-                            maxEnergySource_shortList_colour = colour_shortList[maxEnergySource_shortList_index]
-
-                            ## rearrange the energyBreakdown_longList
-                            energyBreakdown_longList_rearrange = []
-                            genLabel_longList_rearrange = []
-                            colour_longList = [] ## colour list for long list 
-                            if 'Wind' in energyBreakdown_eachRegion['genTypeLabel']:
-                                genLabel_longList_rearrange.append('Wind')
-                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Wind')
-                                energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                colour_longList.append("#13bef2")
-                            if 'Solar' in energyBreakdown_eachRegion['genTypeLabel']:
-                                genLabel_longList_rearrange.append('Solar')
-                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Solar')
-                                energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                colour_longList.append("#ffcc33")
-                            if 'Natural Gas' in energyBreakdown_eachRegion['genTypeLabel']:
-                                genLabel_longList_rearrange.append('Natural Gas')
-                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Natural Gas')
-                                energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                colour_longList.append("#1B2631")
-                            if 'Coal' in energyBreakdown_eachRegion['genTypeLabel']:
-                                genLabel_longList_rearrange.append('Coal')
-                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Coal')
-                                energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                colour_longList.append("#873600")
-                            if 'Oil' in energyBreakdown_eachRegion['genTypeLabel']:
-                                genLabel_longList_rearrange.append('Oil')
-                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Oil')
-                                energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                colour_longList.append("#99A3A4")
-                            if 'Conventional Nuclear' in energyBreakdown_eachRegion['genTypeLabel']:
-                                genLabel_longList_rearrange.append('Conventional Nuclear')
-                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Conventional Nuclear')
-                                energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                colour_longList.append("#cc3300")
-                            if 'SMR' in energyBreakdown_eachRegion['genTypeLabel']:
-                                genLabel_longList_rearrange.append('SMR')
-                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('SMR')
-                                energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                colour_longList.append("#1e8700")
-                            if 'Others' in energyBreakdown_eachRegion['genTypeLabel']:
-                                genLabel_longList_rearrange.append('Others')
-                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Others')
-                                energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                colour_longList.append("#2d37bc")
-
-                            ## pick the major energy source 
-                            boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion['smallAreaBoundary'])))
-                            maxOutputEnergySource = max(energyBreakdown_eachRegion ['outputBreakdown'])
-                            maxOutputEnergySource_index = energyBreakdown_eachRegion ['outputBreakdown'].index(maxOutputEnergySource)
-                            maxOutputEnergySource_label = energyBreakdown_eachRegion['genTypeLabel'][maxOutputEnergySource_index]
-                            ## assign colour
-                            if maxOutputEnergySource_label == 'Wind':
-                                colourOfPolygon = "#13bef2"
-                            elif maxOutputEnergySource_label == 'Solar':
-                                colourOfPolygon = "#ffcc33"
-                            elif maxOutputEnergySource_label == 'Natural Gas':
-                                colourOfPolygon = "#1B2631"
-                            elif maxOutputEnergySource_label == 'Coal':
-                                colourOfPolygon = "#873600"
-                            elif maxOutputEnergySource_label == 'Oil':
-                                colourOfPolygon = "#99A3A4"
-                            elif maxOutputEnergySource_label == 'Conventional Nuclear':
-                                colourOfPolygon = "#cc3300"
-                            elif maxOutputEnergySource_label == 'SMR':
-                                colourOfPolygon = "#1e8700"
-                            elif maxOutputEnergySource_label == 'Others':
-                                colourOfPolygon = "#2d37bc"
-
-                            ## creating feature for subclassify (long list)
-                            if int(maxOutputEnergySource) > 0:
-                                feature_longList = """{
-                                    "type": "Feature",
-                                    "properties": {
-                                    "smallArea_LACode": "%s",
-                                    "majorOutput": "%s",
-                                    "majorEnergySource": "%s",
-                                    "color": "%s",
-                                    "fill": "%s",
-                                    "fill-opacity": 1,
-                                    "stroke-width" : 0.2,
-                                    "stroke-opacity" : 0.7,
-                                    "height": %s,
-                                    "base_height": 0
-                                    },
-                                    "geometry":  %s             
-                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], round(float(maxOutputEnergySource*100), 2), maxOutputEnergySource_label, colourOfPolygon, colourOfPolygon, round(float(maxOutputEnergySource * 100), 2), str(boundary).replace("\'", "\""))         
-                                # adding new line 
-                                geojson_file_longList += '\n' + feature_longList
-
-                            ##  creating feature for broad classification (short list)
-                            if int(maxEnergySource_shortList) > 0:
-                                feature_shortList = """{
-                                    "type": "Feature",
-                                    "properties": {
-                                    "smallArea_LACode": "%s",
-                                    "majorOutput": "%s",
-                                    "majorEnergySource": "%s",
-                                    "color": "%s",
-                                    "fill": "%s",
-                                    "fill-opacity": 1,
-                                    "stroke-width" : 0.2,
-                                    "stroke-opacity" : 0.7,
-                                    "height": %s,
-                                    "base_height": 0
-                                    },
-                                    "geometry":  %s             
-                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], round(float(maxEnergySource_shortList), 2), maxEnergySource_shortList_label, maxEnergySource_shortList_colour, maxEnergySource_shortList_colour, round(float(maxEnergySource_shortList), 2), str(boundary).replace("\'", "\""))                                      
-                                # adding new line 
-                                geojson_file_shortList += '\n' + feature_shortList
-
-                            ##  creating feature for each energy type in the same region
-                            baseHight = 0
-                            for colour_index, eb_eachEnergyTypeInSameRegion in enumerate(energyBreakdown_longList_rearrange):
-                                if int(eb_eachEnergyTypeInSameRegion) > 0:                                   
-                                    feature_fullbar = """{
-                                    "type": "Feature",
-                                    "properties": {
-                                    "smallArea_LACode": "%s",
-                                    "output": "%s",
-                                    "energySource": "%s",
-                                    "color": "%s",
-                                    "fill": "%s",
-                                    "fill-opacity": 1,
-                                    "stroke-width" : 0.2,
-                                    "stroke-opacity" : 0.7,
-                                    "height": %s,
-                                    "base_height": %s
-                                    },
-                                    "geometry":  %s             
-                                    },"""%(energyBreakdown_eachRegion['smallAreaLACode'], round(float(eb_eachEnergyTypeInSameRegion), 2), genLabel_longList_rearrange[colour_index], colour_longList[colour_index], colour_longList[colour_index], round(float(eb_eachEnergyTypeInSameRegion), 2), str(baseHight), str(boundary).replace("\'", "\""))         
-                                    baseHight += round(float(eb_eachEnergyTypeInSameRegion), 2)
-                                    # adding new line 
-                                    geojson_file_fullbar += '\n' + feature_fullbar
-
-                        # removing last comma as is last line
-                        geojson_file_longList = geojson_file_longList[:-1]
-                        geojson_file_shortList = geojson_file_shortList[:-1]
-                        geojson_file_fullbar = geojson_file_fullbar[:-1]
-                        # finishing file end 
-                        end_geojson = """
-                            ]
-                        }
-                        """
-                        geojson_file_longList += end_geojson
-                        geojson_file_shortList += end_geojson
-                        geojson_file_fullbar += end_geojson
-                        # saving as geoJSON
-                        file_label_longList = 'SmallAreaMajorEnergySource_longList_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) +'_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                        geojson_written_longList = open(self.majorEnergySourceJSONPath + 'smallAreaMajorEnergySource_fill-extrusion/' + file_label_longList + '.geojson','w')
-                        geojson_written_longList.write(geojson_file_longList)
-                        geojson_written_longList.close() 
-                        print('---GeoJSON written successfully: major enenrgy source for small areas---', file_label_longList)
-
-                        file_label_shortList = 'SmallAreaMajorEnergySource_shortList_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) +'_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                        geojson_written_shortList = open(self.majorEnergySourceJSONPath + 'smallAreaMajorEnergySource_fill-extrusion/' + file_label_shortList + '.geojson','w')
-                        geojson_written_shortList.write(geojson_file_shortList)
-                        geojson_written_shortList.close() 
-                        print('---GeoJSON written successfully: major enenrgy source for small areas---', file_label_shortList)                            
-
-                        file_label_fullbar = 'SmallAreaFullBar_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) +'_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                        geojson_written_fullbar = open(self.majorEnergySourceJSONPath + 'smallAreaFullBar_fill-extrusion/' + file_label_fullbar + '.geojson','w')
-                        geojson_written_fullbar.write(geojson_file_fullbar)
-                        geojson_written_shortList.close() 
-                        print('---GeoJSON written successfully: full bar for small areas---', file_label_fullbar)                                         
-                elif len(cf) == 4: ## SMR number, Carbon tax, weather condition, weight 
-                    if not cf[0] in NumberOfSMRUnitList:
-                        raise ValueError('The first element of the sub list of the specifiedConfigList should be SMR number.')
-                    else:
-                        smrIndex = NumberOfSMRUnitList.index(cf[0])
-                    if not cf[1] in CarbonTaxForOPFList:
-                        raise ValueError('The second element of the sub list of the specifiedConfigList should be carbon tax.')
-                    else:
-                        carbonTaxList = CarbonTaxForOPFList.index(cf[1])
-                    if not cf[2] in weatherNameList:
-                        raise ValueError('The second element of the sub list of the specifiedConfigList should be werather condition.')
-                    else:
-                        weatherIndex = weatherNameList.index(cf[2]) 
-                    if not cf[3] in self.weighterList:
-                        raise ValueError('The second element of the sub list of the specifiedConfigList should be weight.')
-                    else:
-                        weightIndex = self.weighterList.index(cf[3]) 
-                    
-                    specifiedEnergyBreakdownList = energyBreakdownList[smrIndex][carbonTaxList][weatherIndex][weightIndex]
-                    
-                    genLabel_shortList = ['Renewable', 'Fossil fuels', 'Conventional Nuclear', 'SMR', 'Others']
-                    ## colour for short list 
-                    colour_shortList = ["#6fb6eb", "#5F676E", "#cc3300", "#1e8700", "#2d37bc"] 
-
-                    ##--major energy sources --##
-                    geojson_file_longList = """
-                    {
-                        "type": "FeatureCollection",
-                        "features": ["""
-                    geojson_file_shortList = """
-                    {
-                        "type": "FeatureCollection",
-                        "features": ["""
-
-                    ## Full bar
-                    geojson_file_fullbar= """
-                    {
-                        "type": "FeatureCollection",
-                        "features": ["""
-
-                    # iterating over features (rows in results array)
-                    for energyBreakdown_eachRegion in specifiedEnergyBreakdownList:
-                        ## convert the nuclear type into the Conventional Nuclear
-                        if 'Nuclear' in energyBreakdown_eachRegion['genTypeLabel']:
-                            i_Nuclear = energyBreakdown_eachRegion['genTypeLabel'].index('Nuclear')
-                            energyBreakdown_eachRegion['genTypeLabel'][i_Nuclear] = 'Conventional Nuclear'
-                        
-                        ## convert the NaturalGas type into the Natural Gas
-                        if 'NaturalGas' in energyBreakdown_eachRegion['genTypeLabel']:
-                            i_NaturalGas = energyBreakdown_eachRegion['genTypeLabel'].index('NaturalGas')
-                            energyBreakdown_eachRegion['genTypeLabel'][i_NaturalGas] = 'Natural Gas'
-
-                        ## populate the short list of the energy breakdown
-                        energyBreakdown_shortList = [0, 0, 0, 0, 0]
-                        for gl_i, gl in enumerate(energyBreakdown_eachRegion['genTypeLabel']):
-                            if gl in ['Solar', 'Wind']: 
-                                energyBreakdown_shortList[0] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-                            elif gl in ['Oil', 'Natural Gas', 'Coal']:
-                                energyBreakdown_shortList[1] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-                            elif gl in ['Conventional Nuclear']:
-                                energyBreakdown_shortList[2] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-                            elif gl in ['SMR']:
-                                energyBreakdown_shortList[3] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-                            else:
-                                energyBreakdown_shortList[4] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-
-                        maxEnergySource_shortList= max(energyBreakdown_shortList)
-                        maxEnergySource_shortList_index = energyBreakdown_shortList.index(maxEnergySource_shortList)
-                        maxEnergySource_shortList_label = genLabel_shortList[maxEnergySource_shortList_index]
-                        maxEnergySource_shortList_colour = colour_shortList[maxEnergySource_shortList_index]
-
-                        ## rearrange the energyBreakdown_longList
-                        energyBreakdown_longList_rearrange = []
-                        genLabel_longList_rearrange = []
-                        colour_longList = [] ## colour list for long list 
-                        if 'Wind' in energyBreakdown_eachRegion['genTypeLabel']:
-                            genLabel_longList_rearrange.append('Wind')
-                            i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Wind')
-                            energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                            colour_longList.append("#13bef2")
-                        if 'Solar' in energyBreakdown_eachRegion['genTypeLabel']:
-                            genLabel_longList_rearrange.append('Solar')
-                            i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Solar')
-                            energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                            colour_longList.append("#ffcc33")
-                        if 'Natural Gas' in energyBreakdown_eachRegion['genTypeLabel']:
-                            genLabel_longList_rearrange.append('Natural Gas')
-                            i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Natural Gas')
-                            energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                            colour_longList.append("#1B2631")
-                        if 'Coal' in energyBreakdown_eachRegion['genTypeLabel']:
-                            genLabel_longList_rearrange.append('Coal')
-                            i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Coal')
-                            energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                            colour_longList.append("#873600")
-                        if 'Oil' in energyBreakdown_eachRegion['genTypeLabel']:
-                            genLabel_longList_rearrange.append('Oil')
-                            i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Oil')
-                            energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                            colour_longList.append("#99A3A4")
-                        if 'Conventional Nuclear' in energyBreakdown_eachRegion['genTypeLabel']:
-                            genLabel_longList_rearrange.append('Conventional Nuclear')
-                            i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Conventional Nuclear')
-                            energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                            colour_longList.append("#cc3300")
-                        if 'SMR' in energyBreakdown_eachRegion['genTypeLabel']:
-                            genLabel_longList_rearrange.append('SMR')
-                            i_label = energyBreakdown_eachRegion['genTypeLabel'].index('SMR')
-                            energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                            colour_longList.append("#1e8700")
-                        if 'Others' in energyBreakdown_eachRegion['genTypeLabel']:
-                            genLabel_longList_rearrange.append('Others')
-                            i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Others')
-                            energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                            colour_longList.append("#2d37bc")
-
-                        ## pick the major energy source 
-                        boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion['smallAreaBoundary'])))
-                        maxOutputEnergySource = max(energyBreakdown_eachRegion ['outputBreakdown'])
-                        maxOutputEnergySource_index = energyBreakdown_eachRegion ['outputBreakdown'].index(maxOutputEnergySource)
-                        maxOutputEnergySource_label = energyBreakdown_eachRegion['genTypeLabel'][maxOutputEnergySource_index]
-                        ## assign colour
-                        if maxOutputEnergySource_label == 'Wind':
-                            colourOfPolygon = "#13bef2"
-                        elif maxOutputEnergySource_label == 'Solar':
-                            colourOfPolygon = "#ffcc33"
-                        elif maxOutputEnergySource_label == 'Natural Gas':
-                            colourOfPolygon = "#1B2631"
-                        elif maxOutputEnergySource_label == 'Coal':
-                            colourOfPolygon = "#873600"
-                        elif maxOutputEnergySource_label == 'Oil':
-                            colourOfPolygon = "#99A3A4"
-                        elif maxOutputEnergySource_label == 'Conventional Nuclear':
-                            colourOfPolygon = "#cc3300"
-                        elif maxOutputEnergySource_label == 'SMR':
-                            colourOfPolygon = "#1e8700"
-                        elif maxOutputEnergySource_label == 'Others':
-                            colourOfPolygon = "#2d37bc"
-
-                        ## creating feature for subclassify (long list)
-                        if int(maxOutputEnergySource) > 0:
-                            feature_longList = """{
-                                "type": "Feature",
-                                "properties": {
-                                "smallArea_LACode": "%s",
-                                "majorOutput": "%s",
-                                "majorEnergySource": "%s",
-                                "color": "%s",
-                                "fill": "%s",
-                                "fill-opacity": 1,
-                                "stroke-width" : 0.2,
-                                "stroke-opacity" : 0.7,
-                                "height": %s,
-                                "base_height": 0
-                                },
-                                "geometry":  %s             
-                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], round(float(maxOutputEnergySource), 2), maxOutputEnergySource_label, colourOfPolygon, colourOfPolygon, round(float(maxOutputEnergySource), 2), str(boundary).replace("\'", "\""))         
-                            # adding new line 
-                            geojson_file_longList += '\n' + feature_longList
-
-                        ##  creating feature for broad classification (short list)
-                        if int(maxEnergySource_shortList) > 0:
-                            feature_shortList = """{
-                                "type": "Feature",
-                                "properties": {
-                                "smallArea_LACode": "%s",
-                                "majorOutput": "%s",
-                                "majorEnergySource": "%s",
-                                "color": "%s",
-                                "fill": "%s",
-                                "fill-opacity": 1,
-                                "stroke-width" : 0.2,
-                                "stroke-opacity" : 0.7,
-                                "height": %s,
-                                "base_height": 0
-                                },
-                                "geometry":  %s             
-                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], round(float(maxEnergySource_shortList), 2), maxEnergySource_shortList_label, maxEnergySource_shortList_colour, maxEnergySource_shortList_colour, round(float(maxEnergySource_shortList), 2), str(boundary).replace("\'", "\""))         
-                            # adding new line 
-                            geojson_file_shortList += '\n' + feature_shortList
-
-                        ##  creating feature for each energy type in the same region
-                        baseHight = 0
-                        for colour_index, eb_eachEnergyTypeInSameRegion in enumerate(energyBreakdown_longList_rearrange):
-                            if int(eb_eachEnergyTypeInSameRegion) > 0:                                   
-                                feature_fullbar = """{
-                                "type": "Feature",
-                                "properties": {
-                                "smallArea_LACode": "%s",
-                                "output": "%s",
-                                "energySource": "%s",
-                                "color": "%s",
-                                "fill": "%s",
-                                "fill-opacity": 1,
-                                "stroke-width" : 0.2,
-                                "stroke-opacity" : 0.7,
-                                "height": %s,
-                                "base_height": %s
-                                },
-                                "geometry":  %s             
-                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], round(float(eb_eachEnergyTypeInSameRegion), 2), genLabel_longList_rearrange[colour_index], colour_longList[colour_index], colour_longList[colour_index], round(float(eb_eachEnergyTypeInSameRegion), 2), str(baseHight), str(boundary).replace("\'", "\""))         
-                                baseHight += round(float(eb_eachEnergyTypeInSameRegion), 2)
-                                # adding new line 
-                                geojson_file_fullbar += '\n' + feature_fullbar
-
-                    # removing last comma as is last line
-                    geojson_file_longList = geojson_file_longList[:-1]
-                    geojson_file_shortList = geojson_file_shortList[:-1]
-                    geojson_file_fullbar = geojson_file_fullbar[:-1]
-                    # finishing file end 
-                    end_geojson = """
-                        ]
-                    }
-                    """
-                    geojson_file_longList += end_geojson
-                    geojson_file_shortList += end_geojson
-                    geojson_file_fullbar += end_geojson
-                    # saving as geoJSON
-                    file_label_longList = 'SmallAreaMajorEnergySource_longList_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(cf[3], 2)) + ')'
-                    geojson_written_longList = open(self.majorEnergySourceJSONPath + 'smallAreaMajorEnergySource_fill-extrusion/' + file_label_longList + '.geojson','w')
-                    geojson_written_longList.write(geojson_file_longList)
-                    geojson_written_longList.close() 
-                    print('---GeoJSON written successfully: major enenrgy source for small areas---', file_label_longList)
-
-                    file_label_shortList = 'SmallAreaMajorEnergySource_shortList_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(cf[3], 2)) + ')'
-                    geojson_written_shortList = open(self.majorEnergySourceJSONPath + 'smallAreaMajorEnergySource_fill-extrusion/' + file_label_shortList + '.geojson','w')
-                    geojson_written_shortList.write(geojson_file_shortList)
-                    geojson_written_shortList.close() 
-                    print('---GeoJSON written successfully: major enenrgy source for small areas---', file_label_shortList)                            
-
-                    file_label_fullbar = 'SmallAreaFullBar_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(cf[3], 2)) + ')'
-                    geojson_written_fullbar = open(self.majorEnergySourceJSONPath + 'smallAreaFullBar_fill-extrusion/' + file_label_fullbar + '.geojson','w')
-                    geojson_written_fullbar.write(geojson_file_fullbar)
-                    geojson_written_shortList.close() 
-                    print('---GeoJSON written successfully: full bar for small areas---', file_label_fullbar)                                 
-                else:
-                    raise ValueError('Invailed sub list of the specifiedConfigList.')
-        else:
-            for i_smr, energyBreakdown_eachSMRDesign in enumerate(energyBreakdownList):
-                for i_carbontax, energyBreakdown_eachCarbonTax in enumerate(energyBreakdown_eachSMRDesign):
-                    for i_weather, energyBreakdown_eachWeather in enumerate(energyBreakdown_eachCarbonTax):
-                        for i_weight, energyBreakdown_eachWeight in enumerate(energyBreakdown_eachWeather):
-                            genLabel_shortList = ['Renewable', 'Fossil fuels', 'Conventional Nuclear', 'SMR', 'Others']
-                            ## colour for short list 
-                            colour_shortList = ["#6fb6eb", "#5F676E", "#cc3300", "#1e8700", "#2d37bc"] 
-                            ##--major energy sources --##
-                            geojson_file_longList = """
-                            {
-                                "type": "FeatureCollection",
-                                "features": ["""
-                            geojson_file_shortList = """
-                            {
-                                "type": "FeatureCollection",
-                                "features": ["""
-
-                            ## Full bar
-                            geojson_file_fullbar= """
-                            {
-                                "type": "FeatureCollection",
-                                "features": ["""
-
-                            # iterating over features (rows in results array)
-                            for energyBreakdown_eachRegion in energyBreakdown_eachWeight:
-                                ## convert the nuclear type into the Conventional Nuclear
-                                if 'Nuclear' in energyBreakdown_eachRegion['genTypeLabel']:
-                                    i_Nuclear = energyBreakdown_eachRegion['genTypeLabel'].index('Nuclear')
-                                    energyBreakdown_eachRegion['genTypeLabel'][i_Nuclear] = 'Conventional Nuclear'
-                                
-                                ## convert the NaturalGas type into the Natural Gas
-                                if 'NaturalGas' in energyBreakdown_eachRegion['genTypeLabel']:
-                                    i_NaturalGas = energyBreakdown_eachRegion['genTypeLabel'].index('NaturalGas')
-                                    energyBreakdown_eachRegion['genTypeLabel'][i_NaturalGas] = 'Natural Gas'
-
-                                ## populate the short list of the energy breakdown
-                                energyBreakdown_shortList = [0, 0, 0, 0, 0]
-                                for gl_i, gl in enumerate(energyBreakdown_eachRegion['genTypeLabel']):
-                                    if gl in ['Solar', 'Wind']: 
-                                        energyBreakdown_shortList[0] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-                                    elif gl in ['Oil', 'Natural Gas', 'Coal']:
-                                        energyBreakdown_shortList[1] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-                                    elif gl in ['Conventional Nuclear']:
-                                        energyBreakdown_shortList[2] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-                                    elif gl in ['SMR']:
-                                        energyBreakdown_shortList[3] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-                                    else:
-                                        energyBreakdown_shortList[4] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-
-                                maxEnergySource_shortList= max(energyBreakdown_shortList)
-                                maxEnergySource_shortList_index = energyBreakdown_shortList.index(maxEnergySource_shortList)
-                                maxEnergySource_shortList_label = genLabel_shortList[maxEnergySource_shortList_index]
-                                maxEnergySource_shortList_colour = colour_shortList[maxEnergySource_shortList_index]
-
-                                ## rearrange the energyBreakdown_longList
-                                energyBreakdown_longList_rearrange = []
-                                genLabel_longList_rearrange = []
-                                colour_longList = [] ## colour list for long list 
-                                if 'Wind' in energyBreakdown_eachRegion['genTypeLabel']:
-                                    genLabel_longList_rearrange.append('Wind')
-                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Wind')
-                                    energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                    colour_longList.append("#13bef2")
-                                if 'Solar' in energyBreakdown_eachRegion['genTypeLabel']:
-                                    genLabel_longList_rearrange.append('Solar')
-                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Solar')
-                                    energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                    colour_longList.append("#ffcc33")
-                                if 'Natural Gas' in energyBreakdown_eachRegion['genTypeLabel']:
-                                    genLabel_longList_rearrange.append('Natural Gas')
-                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Natural Gas')
-                                    energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                    colour_longList.append("#1B2631")
-                                if 'Coal' in energyBreakdown_eachRegion['genTypeLabel']:
-                                    genLabel_longList_rearrange.append('Coal')
-                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Coal')
-                                    energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                    colour_longList.append("#873600")
-                                if 'Oil' in energyBreakdown_eachRegion['genTypeLabel']:
-                                    genLabel_longList_rearrange.append('Oil')
-                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Oil')
-                                    energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                    colour_longList.append("#99A3A4")
-                                if 'Conventional Nuclear' in energyBreakdown_eachRegion['genTypeLabel']:
-                                    genLabel_longList_rearrange.append('Conventional Nuclear')
-                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Conventional Nuclear')
-                                    energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                    colour_longList.append("#cc3300")
-                                if 'SMR' in energyBreakdown_eachRegion['genTypeLabel']:
-                                    genLabel_longList_rearrange.append('SMR')
-                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('SMR')
-                                    energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                    colour_longList.append("#1e8700")
-                                if 'Others' in energyBreakdown_eachRegion['genTypeLabel']:
-                                    genLabel_longList_rearrange.append('Others')
-                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Others')
-                                    energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                    colour_longList.append("#2d37bc")
-
-                                ## pick the major energy source 
-                                boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion['smallAreaBoundary'])))
-                                maxOutputEnergySource = max(energyBreakdown_eachRegion ['outputBreakdown'])
-                                maxOutputEnergySource_index = energyBreakdown_eachRegion ['outputBreakdown'].index(maxOutputEnergySource)
-                                maxOutputEnergySource_label = energyBreakdown_eachRegion['genTypeLabel'][maxOutputEnergySource_index]
-                                ## assign colour
-                                if maxOutputEnergySource_label == 'Wind':
-                                    colourOfPolygon = "#13bef2"
-                                elif maxOutputEnergySource_label == 'Solar':
-                                    colourOfPolygon = "#ffcc33"
-                                elif maxOutputEnergySource_label == 'Natural Gas':
-                                    colourOfPolygon = "#1B2631"
-                                elif maxOutputEnergySource_label == 'Coal':
-                                    colourOfPolygon = "#873600"
-                                elif maxOutputEnergySource_label == 'Oil':
-                                    colourOfPolygon = "#99A3A4"
-                                elif maxOutputEnergySource_label == 'Conventional Nuclear':
-                                    colourOfPolygon = "#cc3300"
-                                elif maxOutputEnergySource_label == 'SMR':
-                                    colourOfPolygon = "#1e8700"
-                                elif maxOutputEnergySource_label == 'Others':
-                                    colourOfPolygon = "#2d37bc"
-
-                                ## creating feature for subclassify (long list)
-                                if int(maxOutputEnergySource) > 0:
-                                    feature_longList = """{
-                                        "type": "Feature",
-                                        "properties": {
-                                        "smallArea_LACode": "%s",
-                                        "majorOutput": "%s",
-                                        "majorEnergySource": "%s",
-                                        "color": "%s",
-                                        "fill": "%s",
-                                        "fill-opacity": 1,
-                                        "stroke-width" : 0.2,
-                                        "stroke-opacity" : 0.7,
-                                        "height": %s,
-                                        "base_height": 0
-                                        },
-                                        "geometry":  %s             
-                                    },"""%(energyBreakdown_eachRegion['smallAreaLACode'], round(float(maxOutputEnergySource), 2), maxOutputEnergySource_label, colourOfPolygon, colourOfPolygon, round(float(maxOutputEnergySource), 2), str(boundary).replace("\'", "\""))         
-                                    # adding new line 
-                                    geojson_file_longList += '\n' + feature_longList
-
-                                ##  creating feature for broad classification (short list)
-                                if int(maxEnergySource_shortList) > 0:
-                                    feature_shortList = """{
-                                        "type": "Feature",
-                                        "properties": {
-                                        "smallArea_LACode": "%s",
-                                        "majorOutput": "%s",
-                                        "majorEnergySource": "%s",
-                                        "color": "%s",
-                                        "fill": "%s",
-                                        "fill-opacity": 1,
-                                        "stroke-width" : 0.2,
-                                        "stroke-opacity" : 0.7,
-                                        "height": %s,
-                                        "base_height": 0
-                                        },
-                                        "geometry":  %s             
-                                    },"""%(energyBreakdown_eachRegion['smallAreaLACode'], round(float(maxEnergySource_shortList), 2), maxEnergySource_shortList_label, maxEnergySource_shortList_colour, maxEnergySource_shortList_colour, round(float(maxEnergySource_shortList), 2), str(boundary).replace("\'", "\""))         
-                                    # adding new line 
-                                    geojson_file_shortList += '\n' + feature_shortList
-
-                                ##  creating feature for each energy type in the same region
-                                baseHight = 0
-                                for colour_index, eb_eachEnergyTypeInSameRegion in enumerate(energyBreakdown_longList_rearrange):
-                                    if int(eb_eachEnergyTypeInSameRegion) > 0:                                   
-                                        feature_fullbar = """{
-                                        "type": "Feature",
-                                        "properties": {
-                                        "smallArea_LACode": "%s",
-                                        "output": "%s",
-                                        "energySource": "%s",
-                                        "color": "%s",
-                                        "fill": "%s",
-                                        "fill-opacity": 1,
-                                        "stroke-width" : 0.2,
-                                        "stroke-opacity" : 0.7,
-                                        "height": %s,
-                                        "base_height": %s
-                                        },
-                                        "geometry":  %s             
-                                        },"""%(energyBreakdown_eachRegion['smallAreaLACode'], round(float(eb_eachEnergyTypeInSameRegion), 2), genLabel_longList_rearrange[colour_index], colour_longList[colour_index], colour_longList[colour_index], round(float(eb_eachEnergyTypeInSameRegion), 2), str(baseHight), str(boundary).replace("\'", "\""))         
-                                        baseHight += round(float(eb_eachEnergyTypeInSameRegion), 2)
-                                        # adding new line 
-                                        geojson_file_fullbar += '\n' + feature_fullbar
-
-                            # removing last comma as is last line
-                            geojson_file_longList = geojson_file_longList[:-1]
-                            geojson_file_shortList = geojson_file_shortList[:-1]
-                            geojson_file_fullbar = geojson_file_fullbar[:-1]
-                            # finishing file end 
-                            end_geojson = """
-                                ]
-                            }
-                            """
-                            geojson_file_longList += end_geojson
-                            geojson_file_shortList += end_geojson
-                            geojson_file_fullbar += end_geojson
-
-                            # saving as geoJSON
-                            file_label_longList = 'SmallAreaMajorEnergySource_longList_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                            geojson_written_longList = open(self.majorEnergySourceJSONPath + 'smallAreaMajorEnergySource_fill-extrusion/' + file_label_longList + '.geojson','w')
-                            geojson_written_longList.write(geojson_file_longList)
-                            geojson_written_longList.close() 
-                            print('---GeoJSON written successfully: major enenrgy source for small areas---', file_label_longList)
-
-                            file_label_shortList = 'SmallAreaMajorEnergySource_shortList_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                            geojson_written_shortList = open(self.majorEnergySourceJSONPath + 'smallAreaMajorEnergySource_fill-extrusion/' + file_label_shortList + '.geojson','w')
-                            geojson_written_shortList.write(geojson_file_shortList)
-                            geojson_written_shortList.close() 
-                            print('---GeoJSON written successfully: major enenrgy source for small areas---', file_label_shortList)                            
-
-                            file_label_fullbar = 'SmallAreaFullBar_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                            geojson_written_fullbar = open(self.majorEnergySourceJSONPath + 'smallAreaFullBar_fill-extrusion/' + file_label_fullbar + '.geojson','w')
-                            geojson_written_fullbar.write(geojson_file_fullbar)
-                            geojson_written_shortList.close() 
-                            print('---GeoJSON written successfully: full bar for small areas---', file_label_fullbar)                                   
-        return 
-
-    """This method is to generate the visulisation GeoJSON file for the 3D bar of different energy sources output for each small area"""
-    ## 3D bars
-    def GeoJSONCreator_outputOfDifferentEnergySourceForSmallArea(self, energyBreakdownList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):
-        ## check the storage path
-        for genType in ['Wind', 'Solar', 'NaturalGas', 'Coal', 'Oil', 'ConventionalNuclear', 'SMR', 'Hydro', 'Others']:
-            path = 'outputOfDifferentEnergySourceForSmallArea_fill-extrusion/' + str(genType) + '/'
-            self.mkdiroutputOfDifferentEnergySourceForSmallAreaJSON(path)
-
-        weatherNameList = []
-        for weather in weatherConditionList:
-            weatherNameList.append(weather[2])
-
-        if ifSpecifiedResults is True:
-            if specifiedConfigList == [] or specifiedConfigList == [[]]:
-                raise ValueError('specifiedConfigList should contain at list 1 non-empty list.')
-            for cf in specifiedConfigList:
-                if len(cf) < 3:
-                    raise ValueError('The sub list of the specifiedConfigList should contain at least 3 elements specifying the SMR number, carbon tax and weather condition.')
-                elif len(cf) == 3: ## SMR number, Carbon tax, weather condition 
-                    if not cf[0] in NumberOfSMRUnitList:
-                        raise ValueError('The first element of the sub list of the specifiedConfigList should be SMR number.')
-                    else:
-                        smrIndex = NumberOfSMRUnitList.index(cf[0])
-                    if not cf[1] in CarbonTaxForOPFList:
-                        raise ValueError('The second element of the sub list of the specifiedConfigList should be carbon tax.')
-                    else:
-                        carbonTaxList = CarbonTaxForOPFList.index(cf[1])
-                    if not cf[2] in weatherNameList:
-                        raise ValueError('The second element of the sub list of the specifiedConfigList should be werather condition.')
-                    else:
-                        weatherIndex = weatherNameList.index(cf[2])
-                    
-                    specifiedEnergyBreakdownList = energyBreakdownList[smrIndex][carbonTaxList][weatherIndex]
-
-                    for i_weight, energyBreakdown_eachWeight in enumerate(specifiedEnergyBreakdownList):                     
-                        ##--different sources (long list)--##
-                        geojson_file_Wind = """
-                        {
-                            "type": "FeatureCollection",
-                            "features": ["""
-                        geojson_file_Solar = """
-                        {
-                            "type": "FeatureCollection",
-                            "features": ["""
-                        geojson_file_NaturalGas= """
-                        {
-                            "type": "FeatureCollection",
-                            "features": ["""
-                        geojson_file_Coal= """
-                        {
-                            "type": "FeatureCollection",
-                            "features": ["""                        
-                        geojson_file_Oil= """
-                        {
-                            "type": "FeatureCollection",
-                            "features": ["""                       
-                        geojson_file_ConventionalNuclear= """
-                        {
-                            "type": "FeatureCollection",
-                            "features": ["""
-                        geojson_file_SMR = """
-                        {
-                            "type": "FeatureCollection",
-                            "features": ["""
-                        geojson_file_Hydro = """
-                        {
-                            "type": "FeatureCollection",
-                            "features": ["""                       
-                        geojson_file_Others= """
-                        {
-                            "type": "FeatureCollection",
-                            "features": ["""
-
-                        # iterating over features (rows in results array)
-                        for energyBreakdown_eachRegion in energyBreakdown_eachWeight:
-                            boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion['smallAreaBoundary'])))
-                            ## convert the nuclear type into the Conventional Nuclear
-                            if 'Nuclear' in energyBreakdown_eachRegion['genTypeLabel']:
-                                i_Nuclear = energyBreakdown_eachRegion['genTypeLabel'].index('Nuclear')
-                                energyBreakdown_eachRegion['genTypeLabel'][i_Nuclear] = 'Conventional Nuclear'
-                            
-                            ## convert the NaturalGas type into the Natural Gas
-                            if 'NaturalGas' in energyBreakdown_eachRegion['genTypeLabel']:
-                                i_NaturalGas = energyBreakdown_eachRegion['genTypeLabel'].index('NaturalGas')
-                                energyBreakdown_eachRegion['genTypeLabel'][i_NaturalGas] = 'Natural Gas'
-
-                            for genType in energyBreakdown_eachRegion['genTypeLabel']:
-                                if genType == 'Wind':
-                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Wind')
-                                    outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                    if int(outPut) > 0:
-                                        feature_Wind = """{
-                                            "type": "Feature",
-                                            "properties": {
-                                            "smallArea_LACode": "%s",
-                                            "output": "%s",
-                                            "energySource": "Wind",
-                                            "color": "#13bef2",
-                                            "fill-opacity": 1,
-                                            "stroke-width" : 0.2,
-                                            "stroke-opacity" : 0.7,
-                                            "height": %s,
-                                            "base_height": 0
-                                            },
-                                            "geometry":  %s             
-                                        },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                        # adding new line 
-                                        geojson_file_Wind += '\n' + feature_Wind
-                                elif genType == 'Solar':
-                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Solar')
-                                    outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                    if int(outPut) > 0:
-                                        feature_Solar = """{
-                                            "type": "Feature",
-                                            "properties": {
-                                            "smallArea_LACode": "%s",
-                                            "output": "%s",
-                                            "energySource": "Solar",
-                                            "color": "#ffcc33",
-                                            "fill-opacity": 1,
-                                            "stroke-width" : 0.2,
-                                            "stroke-opacity" : 0.7,
-                                            "height": %s,
-                                            "base_height": 0
-                                            },
-                                            "geometry":  %s             
-                                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                        # adding new line 
-                                        geojson_file_Solar += '\n' + feature_Solar
-                                elif genType == 'Natural Gas':
-                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Natural Gas')
-                                    outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                    if int(outPut) > 0:
-                                        feature_NaturalGas = """{
-                                            "type": "Feature",
-                                            "properties": {
-                                            "smallArea_LACode": "%s",
-                                            "output": "%s",
-                                            "energySource": "Natural Gas",
-                                            "color": "#1B2631",
-                                            "fill-opacity": 1,
-                                            "stroke-width" : 0.2,
-                                            "stroke-opacity" : 0.7,
-                                            "height": %s,
-                                            "base_height": 0
-                                            },
-                                            "geometry":  %s             
-                                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                        # adding new line 
-                                        geojson_file_NaturalGas += '\n' + feature_NaturalGas
-                                elif genType == 'Coal':
-                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Coal')
-                                    outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                    if int(outPut) > 0:
-                                        feature_Coal = """{
-                                            "type": "Feature",
-                                            "properties": {
-                                            "smallArea_LACode": "%s",
-                                            "output": "%s",
-                                            "energySource": "Coal",
-                                            "color": "#873600",
-                                            "fill-opacity": 1,
-                                            "stroke-width" : 0.2,
-                                            "stroke-opacity" : 0.7,
-                                            "height": %s,
-                                            "base_height": 0
-                                            },
-                                            "geometry":  %s             
-                                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                        # adding new line 
-                                        geojson_file_Coal += '\n' + feature_Coal
-                                elif genType == 'Oil':
-                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Oil')
-                                    outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                    if int(outPut) > 0:
-                                        feature_Oil = """{
-                                            "type": "Feature",
-                                            "properties": {
-                                            "smallArea_LACode": "%s",
-                                            "output": "%s",
-                                            "energySource": "Oil",
-                                            "color": "#99A3A4",
-                                            "fill-opacity": 1,
-                                            "stroke-width" : 0.2,
-                                            "stroke-opacity" : 0.7,
-                                            "height": %s,
-                                            "base_height": 0
-                                            },
-                                            "geometry":  %s             
-                                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                        # adding new line 
-                                        geojson_file_Oil += '\n' + feature_Oil                                    
-                                elif genType == 'Conventional Nuclear':
-                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Conventional Nuclear')
-                                    outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                    if int(outPut) > 0:
-                                        feature_ConventionalNuclear = """{
-                                            "type": "Feature",
-                                            "properties": {
-                                            "smallArea_LACode": "%s",
-                                            "output": "%s",
-                                            "energySource": "Conventional Nuclear",
-                                            "color": "#cc3300",
-                                            "fill-opacity": 1,
-                                            "stroke-width" : 0.2,
-                                            "stroke-opacity" : 0.7,
-                                            "height": %s,
-                                            "base_height": 0
-                                            },
-                                            "geometry":  %s             
-                                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                        # adding new line 
-                                        geojson_file_ConventionalNuclear += '\n' + feature_ConventionalNuclear
-                                elif genType == 'SMR':
-                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('SMR')
-                                    outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                    if int(outPut) > 0:
-                                        feature_SMR = """{
-                                            "type": "Feature",
-                                            "properties": {
-                                            "smallArea_LACode": "%s",
-                                            "output": "%s",
-                                            "energySource": "SMR",
-                                            "color": "#1e8700",
-                                            "fill-opacity": 1,
-                                            "stroke-width" : 0.2,
-                                            "stroke-opacity" : 0.7,
-                                            "height": %s,
-                                            "base_height": 0
-                                            },
-                                            "geometry":  %s             
-                                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                        # adding new line 
-                                        geojson_file_SMR += '\n' + feature_SMR
-                                elif genType == 'Hydro':
-                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Hydro')
-                                    outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                    if int(outPut) > 0:
-                                        feature_Hydro = """{
-                                            "type": "Feature",
-                                            "properties": {
-                                            "smallArea_LACode": "%s",
-                                            "output": "%s",
-                                            "energySource": "Hydro",
-                                            "color": "#3b3bff",
-                                            "fill-opacity": 1,
-                                            "stroke-width" : 0.2,
-                                            "stroke-opacity" : 0.7,
-                                            "height": %s,
-                                            "base_height": 0
-                                            },
-                                            "geometry":  %s             
-                                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                        # adding new line 
-                                        geojson_file_Hydro += '\n' + feature_Hydro
-                                elif genType == 'Others':
-                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Others')
-                                    outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                    if int(outPut) > 0:
-                                        feature_Others = """{
-                                            "type": "Feature",
-                                            "properties": {
-                                            "smallArea_LACode": "%s",
-                                            "output": "%s",
-                                            "energySource": "Others",
-                                            "color": "#2d37bc",
-                                            "fill-opacity": 1,
-                                            "stroke-width" : 0.2,
-                                            "stroke-opacity" : 0.7,
-                                            "height": %s,
-                                            "base_height": 0
-                                            },
-                                            "geometry":  %s             
-                                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                        # adding new line 
-                                        geojson_file_Others += '\n' + feature_Others
-
-                        # removing last comma as is last line
-                        geojson_file_Wind = geojson_file_Wind[:-1]
-                        geojson_file_Solar = geojson_file_Solar[:-1]
-                        geojson_file_NaturalGas = geojson_file_NaturalGas[:-1]
-                        geojson_file_Coal = geojson_file_Coal[:-1]
-                        geojson_file_Oil = geojson_file_Oil[:-1]
-                        geojson_file_ConventionalNuclear = geojson_file_ConventionalNuclear[:-1]
-                        geojson_file_SMR = geojson_file_SMR[:-1]
-                        geojson_file_Hydro = geojson_file_Hydro[:-1]
-                        geojson_file_Others = geojson_file_Others[:-1]
-                        # finishing file end 
-                        end_geojson = """
-                            ]
-                        }
-                        """
-                        geojson_file_Wind += end_geojson
-                        geojson_file_Solar += end_geojson
-                        geojson_file_NaturalGas += end_geojson
-                        geojson_file_Coal += end_geojson
-                        geojson_file_Oil += end_geojson
-                        geojson_file_ConventionalNuclear += end_geojson
-                        geojson_file_SMR += end_geojson
-                        geojson_file_Hydro += end_geojson
-                        geojson_file_Others += end_geojson
-
-                        geojson_file_list = [geojson_file_Wind, geojson_file_Solar, geojson_file_NaturalGas, geojson_file_Coal, geojson_file_Oil, geojson_file_ConventionalNuclear, geojson_file_SMR, geojson_file_Hydro, geojson_file_Others]
-
-                        # saving as geoJSON
-                        for i_geojson_file, genType in enumerate(['Wind', 'Solar', 'NaturalGas', 'Coal', 'Oil', 'ConventionalNuclear', 'SMR', 'Hydro', 'Others']):
-                            geojson_file = geojson_file_list[i_geojson_file]
-                            path = 'outputOfDifferentEnergySourceForSmallArea_fill-extrusion/' + str(genType) + '/'
-                            file_label = genType + '_OutputOfDifferentEnergySourceForSmallArea_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) +'_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                            geojson_written = open(self.outputOfDifferentEnergySourceJSONPath + path + file_label + '.geojson','w')
-                            geojson_written.write(geojson_file)
-                            geojson_written.close() 
-                            print('---GeoJSON written successfully: output of different energy source for small area---', genType)                                        
-                elif len(cf) == 4: ## SMR number, Carbon tax, weather condition, weight 
-                    if not cf[0] in NumberOfSMRUnitList:
-                        raise ValueError('The first element of the sub list of the specifiedConfigList should be SMR number.')
-                    else:
-                        smrIndex = NumberOfSMRUnitList.index(cf[0])
-                    if not cf[1] in CarbonTaxForOPFList:
-                        raise ValueError('The second element of the sub list of the specifiedConfigList should be carbon tax.')
-                    else:
-                        carbonTaxList = CarbonTaxForOPFList.index(cf[1])
-                    if not cf[2] in weatherNameList:
-                        raise ValueError('The second element of the sub list of the specifiedConfigList should be werather condition.')
-                    else:
-                        weatherIndex = weatherNameList.index(cf[2]) 
-                    if not cf[3] in self.weighterList:
-                        raise ValueError('The second element of the sub list of the specifiedConfigList should be weight.')
-                    else:
-                        weightIndex = self.weighterList.index(cf[3]) 
-                    
-                    specifiedEnergyBreakdownList = energyBreakdownList[smrIndex][carbonTaxList][weatherIndex][weightIndex]
-
-                    ##--different sources (long list)--##
-                    geojson_file_Wind = """
-                    {
-                        "type": "FeatureCollection",
-                        "features": ["""
-                    geojson_file_Solar = """
-                    {
-                        "type": "FeatureCollection",
-                        "features": ["""
-                    geojson_file_NaturalGas= """
-                    {
-                        "type": "FeatureCollection",
-                        "features": ["""
-                    geojson_file_Coal= """
-                    {
-                        "type": "FeatureCollection",
-                        "features": ["""                        
-                    geojson_file_Oil= """
-                    {
-                        "type": "FeatureCollection",
-                        "features": ["""                       
-                    geojson_file_ConventionalNuclear= """
-                    {
-                        "type": "FeatureCollection",
-                        "features": ["""
-                    geojson_file_SMR = """
-                    {
-                        "type": "FeatureCollection",
-                        "features": ["""
-                    geojson_file_Hydro = """
-                    {
-                        "type": "FeatureCollection",
-                        "features": ["""                       
-                    geojson_file_Others= """
-                    {
-                        "type": "FeatureCollection",
-                        "features": ["""
-
-                    # iterating over features (rows in results array)
-                    for energyBreakdown_eachRegion in specifiedEnergyBreakdownList:
-                        boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion['smallAreaBoundary'])))
-                        ## convert the nuclear type into the Conventional Nuclear
-                        if 'Nuclear' in energyBreakdown_eachRegion['genTypeLabel']:
-                            i_Nuclear = energyBreakdown_eachRegion['genTypeLabel'].index('Nuclear')
-                            energyBreakdown_eachRegion['genTypeLabel'][i_Nuclear] = 'Conventional Nuclear'
-                        
-                        ## convert the NaturalGas type into the Natural Gas
-                        if 'NaturalGas' in energyBreakdown_eachRegion['genTypeLabel']:
-                            i_NaturalGas = energyBreakdown_eachRegion['genTypeLabel'].index('NaturalGas')
-                            energyBreakdown_eachRegion['genTypeLabel'][i_NaturalGas] = 'Natural Gas'
-
-                        for genType in energyBreakdown_eachRegion['genTypeLabel']:
-                            if genType == 'Wind':
-                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Wind')
-                                outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                if int(outPut) > 0:
-                                    feature_Wind = """{
-                                        "type": "Feature",
-                                        "properties": {
-                                        "smallArea_LACode": "%s",
-                                        "output": "%s",
-                                        "energySource": "Wind",
-                                        "color": "#13bef2",
-                                        "fill-opacity": 1,
-                                        "stroke-width" : 0.2,
-                                        "stroke-opacity" : 0.7,
-                                        "height": %s,
-                                        "base_height": 0
-                                        },
-                                        "geometry":  %s             
-                                    },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                    # adding new line 
-                                    geojson_file_Wind += '\n' + feature_Wind
-                            elif genType == 'Solar':
-                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Solar')
-                                outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                if int(outPut) > 0:
-                                    feature_Solar = """{
-                                        "type": "Feature",
-                                        "properties": {
-                                        "smallArea_LACode": "%s",
-                                        "output": "%s",
-                                        "energySource": "Solar",
-                                        "color": "#ffcc33",
-                                        "fill-opacity": 1,
-                                        "stroke-width" : 0.2,
-                                        "stroke-opacity" : 0.7,
-                                        "height": %s,
-                                        "base_height": 0
-                                        },
-                                        "geometry":  %s             
-                                        },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                    # adding new line 
-                                    geojson_file_Solar += '\n' + feature_Solar
-                            elif genType == 'Natural Gas':
-                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Natural Gas')
-                                outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                if int(outPut) > 0:
-                                    feature_NaturalGas = """{
-                                        "type": "Feature",
-                                        "properties": {
-                                        "smallArea_LACode": "%s",
-                                        "output": "%s",
-                                        "energySource": "Natural Gas",
-                                        "color": "#1B2631",
-                                        "fill-opacity": 1,
-                                        "stroke-width" : 0.2,
-                                        "stroke-opacity" : 0.7,
-                                        "height": %s,
-                                        "base_height": 0
-                                        },
-                                        "geometry":  %s             
-                                        },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                    # adding new line 
-                                    geojson_file_NaturalGas += '\n' + feature_NaturalGas
-                            elif genType == 'Coal':
-                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Coal')
-                                outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                if int(outPut) > 0:
-                                    feature_Coal = """{
-                                        "type": "Feature",
-                                        "properties": {
-                                        "smallArea_LACode": "%s",
-                                        "output": "%s",
-                                        "energySource": "Coal",
-                                        "color": "#873600",
-                                        "fill-opacity": 1,
-                                        "stroke-width" : 0.2,
-                                        "stroke-opacity" : 0.7,
-                                        "height": %s,
-                                        "base_height": 0
-                                        },
-                                        "geometry":  %s             
-                                        },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                    # adding new line 
-                                    geojson_file_Coal += '\n' + feature_Coal
-                            elif genType == 'Oil':
-                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Oil')
-                                outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                if int(outPut) > 0:
-                                    feature_Oil = """{
-                                        "type": "Feature",
-                                        "properties": {
-                                        "smallArea_LACode": "%s",
-                                        "output": "%s",
-                                        "energySource": "Oil",
-                                        "color": "#99A3A4",
-                                        "fill-opacity": 1,
-                                        "stroke-width" : 0.2,
-                                        "stroke-opacity" : 0.7,
-                                        "height": %s,
-                                        "base_height": 0
-                                        },
-                                        "geometry":  %s             
-                                        },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                    # adding new line 
-                                    geojson_file_Oil += '\n' + feature_Oil                                    
-                            elif genType == 'Conventional Nuclear':
-                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Conventional Nuclear')
-                                outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                if int(outPut) > 0:
-                                    feature_ConventionalNuclear = """{
-                                        "type": "Feature",
-                                        "properties": {
-                                        "smallArea_LACode": "%s",
-                                        "output": "%s",
-                                        "energySource": "Conventional Nuclear",
-                                        "color": "#cc3300",
-                                        "fill-opacity": 1,
-                                        "stroke-width" : 0.2,
-                                        "stroke-opacity" : 0.7,
-                                        "height": %s,
-                                        "base_height": 0
-                                        },
-                                        "geometry":  %s             
-                                        },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                    # adding new line 
-                                    geojson_file_ConventionalNuclear += '\n' + feature_ConventionalNuclear
-                            elif genType == 'SMR':
-                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('SMR')
-                                outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                if int(outPut) > 0:
-                                    feature_SMR = """{
-                                        "type": "Feature",
-                                        "properties": {
-                                        "smallArea_LACode": "%s",
-                                        "output": "%s",
-                                        "energySource": "SMR",
-                                        "color": "#1e8700",
-                                        "fill-opacity": 1,
-                                        "stroke-width" : 0.2,
-                                        "stroke-opacity" : 0.7,
-                                        "height": %s,
-                                        "base_height": 0
-                                        },
-                                        "geometry":  %s             
-                                        },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                    # adding new line 
-                                    geojson_file_SMR += '\n' + feature_SMR
-                            elif genType == 'Hydro':
-                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Hydro')
-                                outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                if int(outPut) > 0:
-                                    feature_Hydro = """{
-                                        "type": "Feature",
-                                        "properties": {
-                                        "smallArea_LACode": "%s",
-                                        "output": "%s",
-                                        "energySource": "Hydro",
-                                        "color": "#3b3bff",
-                                        "fill-opacity": 1,
-                                        "stroke-width" : 0.2,
-                                        "stroke-opacity" : 0.7,
-                                        "height": %s,
-                                        "base_height": 0
-                                        },
-                                        "geometry":  %s             
-                                        },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                    # adding new line 
-                                    geojson_file_Hydro += '\n' + feature_Hydro
-                            elif genType == 'Others':
-                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Others')
-                                outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                if int(outPut) > 0:
-                                    feature_Others = """{
-                                        "type": "Feature",
-                                        "properties": {
-                                        "smallArea_LACode": "%s",
-                                        "output": "%s",
-                                        "energySource": "Others",
-                                        "color": "#2d37bc",
-                                        "fill-opacity": 1,
-                                        "stroke-width" : 0.2,
-                                        "stroke-opacity" : 0.7,
-                                        "height": %s,
-                                        "base_height": 0
-                                        },
-                                        "geometry":  %s             
-                                        },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                    # adding new line 
-                                    geojson_file_Others += '\n' + feature_Others
-
-                    # removing last comma as is last line
-                    geojson_file_Wind = geojson_file_Wind[:-1]
-                    geojson_file_Solar = geojson_file_Solar[:-1]
-                    geojson_file_NaturalGas = geojson_file_NaturalGas[:-1]
-                    geojson_file_Coal = geojson_file_Coal[:-1]
-                    geojson_file_Oil = geojson_file_Oil[:-1]
-                    geojson_file_ConventionalNuclear = geojson_file_ConventionalNuclear[:-1]
-                    geojson_file_SMR = geojson_file_SMR[:-1]
-                    geojson_file_Hydro = geojson_file_Hydro[:-1]
-                    geojson_file_Others = geojson_file_Others[:-1]
-                    # finishing file end 
-                    end_geojson = """
-                        ]
-                    }
-                    """
-                    geojson_file_Wind += end_geojson
-                    geojson_file_Solar += end_geojson
-                    geojson_file_NaturalGas += end_geojson
-                    geojson_file_Coal += end_geojson
-                    geojson_file_Oil += end_geojson
-                    geojson_file_ConventionalNuclear += end_geojson
-                    geojson_file_SMR += end_geojson
-                    geojson_file_Hydro += end_geojson
-                    geojson_file_Others += end_geojson
-
-                    geojson_file_list = [geojson_file_Wind, geojson_file_Solar, geojson_file_NaturalGas, geojson_file_Coal, geojson_file_Oil, geojson_file_ConventionalNuclear, geojson_file_SMR, geojson_file_Hydro, geojson_file_Others]
-
-                    # saving as geoJSON
-                    for i_geojson_file, genType in enumerate(['Wind', 'Solar', 'NaturalGas', 'Coal', 'Oil', 'ConventionalNuclear', 'SMR', 'Hydro', 'Others']):
-                        geojson_file = geojson_file_list[i_geojson_file]
-                        path = 'outputOfDifferentEnergySourceForSmallArea_fill-extrusion/' + str(genType) + '/'
-                        file_label = genType + '_OutputOfDifferentEnergySourceForSmallArea_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) +'_weight_' + str(round(cf[3], 2)) + ')'
-                        geojson_written = open(self.outputOfDifferentEnergySourceJSONPath + path + file_label + '.geojson','w')
-                        geojson_written.write(geojson_file)
-                        geojson_written.close() 
-                        print('---GeoJSON written successfully: output of different energy source for small area---', genType)                                        
-                else:
-                    raise ValueError('Invailed sub list of the specifiedConfigList.')
-        else:
-            for i_smr, energyBreakdown_eachSMRDesign in enumerate(energyBreakdownList):
-                for i_carbontax, energyBreakdown_eachCarbonTax in enumerate(energyBreakdown_eachSMRDesign):
-                    for i_weather, energyBreakdown_eachWeather in enumerate(energyBreakdown_eachCarbonTax):
-                        for i_weight, energyBreakdown_eachWeight in enumerate(energyBreakdown_eachWeather):                                            
-                            ##--different sources (long list)--##
-                            geojson_file_Wind = """
-                            {
-                                "type": "FeatureCollection",
-                                "features": ["""
-                            geojson_file_Solar = """
-                            {
-                                "type": "FeatureCollection",
-                                "features": ["""
-                            geojson_file_NaturalGas= """
-                            {
-                                "type": "FeatureCollection",
-                                "features": ["""
-                            geojson_file_Coal= """
-                            {
-                                "type": "FeatureCollection",
-                                "features": ["""                        
-                            geojson_file_Oil= """
-                            {
-                                "type": "FeatureCollection",
-                                "features": ["""                       
-                            geojson_file_ConventionalNuclear= """
-                            {
-                                "type": "FeatureCollection",
-                                "features": ["""
-                            geojson_file_SMR = """
-                            {
-                                "type": "FeatureCollection",
-                                "features": ["""
-                            geojson_file_Hydro = """
-                            {
-                                "type": "FeatureCollection",
-                                "features": ["""                       
-                            geojson_file_Others= """
-                            {
-                                "type": "FeatureCollection",
-                                "features": ["""
-
-                            # iterating over features (rows in results array)
-                            for energyBreakdown_eachRegion in energyBreakdown_eachWeight:
-                                boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion['smallAreaBoundary'])))
-                                ## convert the nuclear type into the Conventional Nuclear
-                                if 'Nuclear' in energyBreakdown_eachRegion['genTypeLabel']:
-                                    i_Nuclear = energyBreakdown_eachRegion['genTypeLabel'].index('Nuclear')
-                                    energyBreakdown_eachRegion['genTypeLabel'][i_Nuclear] = 'Conventional Nuclear'
-                                
-                                ## convert the NaturalGas type into the Natural Gas
-                                if 'NaturalGas' in energyBreakdown_eachRegion['genTypeLabel']:
-                                    i_NaturalGas = energyBreakdown_eachRegion['genTypeLabel'].index('NaturalGas')
-                                    energyBreakdown_eachRegion['genTypeLabel'][i_NaturalGas] = 'Natural Gas'
-
-                                for genType in energyBreakdown_eachRegion['genTypeLabel']:
-                                    if genType == 'Wind':
-                                        i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Wind')
-                                        outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                        if int(outPut) > 0:
-                                            feature_Wind = """{
-                                                "type": "Feature",
-                                                "properties": {
-                                                "smallArea_LACode": "%s",
-                                                "output": "%s",
-                                                "energySource": "Wind",
-                                                "color": "#13bef2",
-                                                "fill-opacity": 1,
-                                                "stroke-width" : 0.2,
-                                                "stroke-opacity" : 0.7,
-                                                "height": %s,
-                                                "base_height": 0
-                                                },
-                                                "geometry":  %s             
-                                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                            # adding new line 
-                                            geojson_file_Wind += '\n' + feature_Wind
-                                    elif genType == 'Solar':
-                                        i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Solar')
-                                        outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                        if int(outPut) > 0:
-                                            feature_Solar = """{
-                                                "type": "Feature",
-                                                "properties": {
-                                                "smallArea_LACode": "%s",
-                                                "output": "%s",
-                                                "energySource": "Solar",
-                                                "color": "#ffcc33",
-                                                "fill-opacity": 1,
-                                                "stroke-width" : 0.2,
-                                                "stroke-opacity" : 0.7,
-                                                "height": %s,
-                                                "base_height": 0
-                                                },
-                                                "geometry":  %s             
-                                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                            # adding new line 
-                                            geojson_file_Solar += '\n' + feature_Solar
-                                    elif genType == 'Natural Gas':
-                                        i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Natural Gas')
-                                        outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                        if int(outPut) > 0:
-                                            feature_NaturalGas = """{
-                                                "type": "Feature",
-                                                "properties": {
-                                                "smallArea_LACode": "%s",
-                                                "output": "%s",
-                                                "energySource": "Natural Gas",
-                                                "color": "#1B2631",
-                                                "fill-opacity": 1,
-                                                "stroke-width" : 0.2,
-                                                "stroke-opacity" : 0.7,
-                                                "height": %s,
-                                                "base_height": 0
-                                                },
-                                                "geometry":  %s             
-                                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                            # adding new line 
-                                            geojson_file_NaturalGas += '\n' + feature_NaturalGas
-                                    elif genType == 'Coal':
-                                        i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Coal')
-                                        outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                        if int(outPut) > 0:
-                                            feature_Coal = """{
-                                                "type": "Feature",
-                                                "properties": {
-                                                "smallArea_LACode": "%s",
-                                                "output": "%s",
-                                                "energySource": "Coal",
-                                                "color": "#873600",
-                                                "fill-opacity": 1,
-                                                "stroke-width" : 0.2,
-                                                "stroke-opacity" : 0.7,
-                                                "height": %s,
-                                                "base_height": 0
-                                                },
-                                                "geometry":  %s             
-                                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                            # adding new line 
-                                            geojson_file_Coal += '\n' + feature_Coal
-                                    elif genType == 'Oil':
-                                        i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Oil')
-                                        outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                        if int(outPut) > 0:
-                                            feature_Oil = """{
-                                                "type": "Feature",
-                                                "properties": {
-                                                "smallArea_LACode": "%s",
-                                                "output": "%s",
-                                                "energySource": "Oil",
-                                                "color": "#99A3A4",
-                                                "fill-opacity": 1,
-                                                "stroke-width" : 0.2,
-                                                "stroke-opacity" : 0.7,
-                                                "height": %s,
-                                                "base_height": 0
-                                                },
-                                                "geometry":  %s             
-                                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                            # adding new line 
-                                            geojson_file_Oil += '\n' + feature_Oil                                    
-                                    elif genType == 'Conventional Nuclear':
-                                        i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Conventional Nuclear')
-                                        outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                        if int(outPut) > 0:
-                                            feature_ConventionalNuclear = """{
-                                                "type": "Feature",
-                                                "properties": {
-                                                "smallArea_LACode": "%s",
-                                                "output": "%s",
-                                                "energySource": "Conventional Nuclear",
-                                                "color": "#cc3300",
-                                                "fill-opacity": 1,
-                                                "stroke-width" : 0.2,
-                                                "stroke-opacity" : 0.7,
-                                                "height": %s,
-                                                "base_height": 0
-                                                },
-                                                "geometry":  %s             
-                                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                            # adding new line 
-                                            geojson_file_ConventionalNuclear += '\n' + feature_ConventionalNuclear
-                                    elif genType == 'SMR':
-                                        i_label = energyBreakdown_eachRegion['genTypeLabel'].index('SMR')
-                                        outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                        if int(outPut) > 0:
-                                            feature_SMR = """{
-                                                "type": "Feature",
-                                                "properties": {
-                                                "smallArea_LACode": "%s",
-                                                "output": "%s",
-                                                "energySource": "SMR",
-                                                "color": "#1e8700",
-                                                "fill-opacity": 1,
-                                                "stroke-width" : 0.2,
-                                                "stroke-opacity" : 0.7,
-                                                "height": %s,
-                                                "base_height": 0
-                                                },
-                                                "geometry":  %s             
-                                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                            # adding new line 
-                                            geojson_file_SMR += '\n' + feature_SMR
-                                    elif genType == 'Hydro':
-                                        i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Hydro')
-                                        outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                        if int(outPut) > 0:
-                                            feature_Hydro = """{
-                                                "type": "Feature",
-                                                "properties": {
-                                                "smallArea_LACode": "%s",
-                                                "output": "%s",
-                                                "energySource": "Hydro",
-                                                "color": "#3b3bff",
-                                                "fill-opacity": 1,
-                                                "stroke-width" : 0.2,
-                                                "stroke-opacity" : 0.7,
-                                                "height": %s,
-                                                "base_height": 0
-                                                },
-                                                "geometry":  %s             
-                                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                            # adding new line 
-                                            geojson_file_Hydro += '\n' + feature_Hydro
-                                    elif genType == 'Others':
-                                        i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Others')
-                                        outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
-                                        if int(outPut) > 0:
-                                            feature_Others = """{
-                                                "type": "Feature",
-                                                "properties": {
-                                                "smallArea_LACode": "%s",
-                                                "output": "%s",
-                                                "energySource": "Others",
-                                                "color": "#2d37bc",
-                                                "fill-opacity": 1,
-                                                "stroke-width" : 0.2,
-                                                "stroke-opacity" : 0.7,
-                                                "height": %s,
-                                                "base_height": 0
-                                                },
-                                                "geometry":  %s             
-                                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
-                                            # adding new line 
-                                            geojson_file_Others += '\n' + feature_Others
-
-                            # removing last comma as is last line
-                            geojson_file_Wind = geojson_file_Wind[:-1]
-                            geojson_file_Solar = geojson_file_Solar[:-1]
-                            geojson_file_NaturalGas = geojson_file_NaturalGas[:-1]
-                            geojson_file_Coal = geojson_file_Coal[:-1]
-                            geojson_file_Oil = geojson_file_Oil[:-1]
-                            geojson_file_ConventionalNuclear = geojson_file_ConventionalNuclear[:-1]
-                            geojson_file_SMR = geojson_file_SMR[:-1]
-                            geojson_file_Hydro = geojson_file_Hydro[:-1]
-                            geojson_file_Others = geojson_file_Others[:-1]
-                            # finishing file end 
-                            end_geojson = """
-                                ]
-                            }
-                            """
-                            geojson_file_Wind += end_geojson
-                            geojson_file_Solar += end_geojson
-                            geojson_file_NaturalGas += end_geojson
-                            geojson_file_Coal += end_geojson
-                            geojson_file_Oil += end_geojson
-                            geojson_file_ConventionalNuclear += end_geojson
-                            geojson_file_SMR += end_geojson
-                            geojson_file_Hydro += end_geojson
-                            geojson_file_Others += end_geojson
-
-                            geojson_file_list = [geojson_file_Wind, geojson_file_Solar, geojson_file_NaturalGas, geojson_file_Coal, geojson_file_Oil, geojson_file_ConventionalNuclear, geojson_file_SMR, geojson_file_Hydro, geojson_file_Others]
-
-                            # saving as geoJSON
-                            for i_geojson_file, genType in enumerate(['Wind', 'Solar', 'NaturalGas', 'Coal', 'Oil', 'ConventionalNuclear', 'SMR', 'Hydro', 'Others']):
-                                geojson_file = geojson_file_list[i_geojson_file]
-                                path = 'outputOfDifferentEnergySourceForSmallArea_fill-extrusion/' + str(genType) + '/'
-                                file_label = genType + '_OutputOfDifferentEnergySourceForSmallArea_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                                geojson_written = open(self.outputOfDifferentEnergySourceJSONPath + path + file_label + '.geojson','w')
-                                geojson_written.write(geojson_file)
-                                geojson_written.close() 
-                                print('---GeoJSON written successfully: output of different energy source for small area---', genType)                                        
-            return 
-
-    def mkdirJSON(self):
-        folder = os.path.exists(self.filePathForJSON)
+    """This method is to create the file path for figs"""
+    def mkdirFilePath(self, path, addingPath):
+        folder = os.path.exists(path + addingPath)
         if not folder:                
-            os.makedirs(self.filePathForJSON)           
-            print("---  new folder %s...  ---" % self.filePathForJSON)
+            os.makedirs(path + addingPath)           
+            print("---  new folder %s...  ---" % path + addingPath)
         else:
-            print("---  There has this folder!  ---")
-
-    def mkdirFig(self, addingPath):
-        folder = os.path.exists(self.diagramPath + addingPath)
-        if not folder:                
-            os.makedirs(self.diagramPath + addingPath)           
-            print("---  new folder %s...  ---" % self.diagramPath + addingPath)
-        else:
-            print("---  There has this folder!  ---")
-    
-    def mkdirParetoFrontFig(self):
-        folder = os.path.exists(self.diagramPathParetoFront)
-        if not folder:                
-            os.makedirs(self.diagramPathParetoFront)           
-            print("---  new folder %s...  ---" % self.diagramPathParetoFront)
-        else:
-            print("---  There has this folder!  ---")
-
-    def mkdirNetDemandingJSON(self, addingPath):
-        folder = os.path.exists(self.netDemandingJSONPath + addingPath)
-        if not folder:                
-            os.makedirs(self.netDemandingJSONPath + addingPath)           
-            print("---  new folder %s...  ---" % self.netDemandingJSONPath + addingPath)
-        else:
-            print("---  There has this folder!  ---")
-
-    def mkdirPieChart(self, addingPath):
-        folder = os.path.exists(self.pieChartPath + addingPath)
-        if not folder:                
-            os.makedirs(self.pieChartPath + addingPath)           
-            print("---  new folder %s...  ---" % self.pieChartPath + addingPath)
-        else:
-            print("---  There has this folder!  ---")
-
-    def mkdirbranchLossJSON(self, addingPath):
-        folder = os.path.exists(self.branchLossJSONPath + addingPath)
-        if not folder:                
-            os.makedirs(self.branchLossJSONPath + addingPath)           
-            print("---  new folder %s...  ---" % self.branchLossJSONPath + addingPath)
-        else:
-            print("---  There has this folder!  ---")
-
-    def mkdirmajorEnergySourceJSON(self, addingPath):
-        folder = os.path.exists(self.majorEnergySourceJSONPath + addingPath)
-        if not folder:                
-            os.makedirs(self.majorEnergySourceJSONPath + addingPath)           
-            print("---  new folder %s...  ---" % self.majorEnergySourceJSONPath + addingPath)
-        else:
-            print("---  There has this folder!  ---")
-
-    def mkdiroutputOfDifferentEnergySourceForSmallAreaJSON(self, addingPath):
-        folder = os.path.exists(self.outputOfDifferentEnergySourceJSONPath + addingPath)
-        if not folder:                
-            os.makedirs(self.outputOfDifferentEnergySourceJSONPath + addingPath)           
-            print("---  new folder %s...  ---" % self.outputOfDifferentEnergySourceJSONPath + addingPath)
-        else:
-            print("---  There has this folder!  ---")
-
-    def mkdirRegionalOutputJSON(self, addingPath):
-        folder = os.path.exists(self.regionalOutputJSONPath + addingPath)
-        if not folder:                
-            os.makedirs(self.regionalOutputJSONPath + addingPath)           
-            print("---  new folder %s...  ---" % self.regionalOutputJSONPath + addingPath)
-        else:
-            print("---  There has this folder!  ---")
-    
-    def mkdirStackAreaGraph(self, addingPath):
-        folder = os.path.exists(self.diagramPathStack + addingPath)
-        if not folder:                
-            os.makedirs(self.diagramPathStack + addingPath)           
-            print("---  new folder %s...  ---" % self.diagramPathStack + addingPath)
-        else:
-            print("---  There has this folder!  ---")
+            print("---  The folder exists! %s  ---" % path + addingPath)
 
     """Create the heatmap for total cost and CO2 emission"""
     def dataHeatmapCreator_totalCostAndEmission(self, dataMatrix, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList):
@@ -5305,7 +3311,7 @@ class OptimalPowerFlowAnalysis:
             plt.xlabel("Carbon tax (£/t)", fontsize = labelFontSize)
             plt.ylabel("SMR Number", fontsize = labelFontSize) 
             plt.tight_layout()
-            self.mkdirFig('Heatmap_TotalCostAndEmission/')
+            self.mkdirFilePath(self.diagramPath, "Heatmap_TotalCostAndEmission/")
             plt.savefig(self.diagramPath + 'Heatmap_TotalCostAndEmission/' + 'TotalCost_Heatmap_%s.pdf' % str(weatherConditionList[k][2]), dpi = 1200)
             # plt.show()
             # plt.close()
@@ -5318,11 +3324,8 @@ class OptimalPowerFlowAnalysis:
             plt.xlabel("Carbon tax (£/t)", fontsize = labelFontSize)
             plt.ylabel("SMR Number", fontsize = labelFontSize) 
             plt.tight_layout()
-            self.mkdirFig('Heatmap_TotalCostAndEmission/')
+            self.mkdirFilePath(self.diagramPath, "Heatmap_TotalCostAndEmission/")
             plt.savefig(self.diagramPath + 'Heatmap_TotalCostAndEmission/' + 'CarbonEmission_Heatmap_%s.pdf' % str(weatherConditionList[k][2]), dpi = 1200, bbox_inches='tight')
-            ## plt.savefig('CarbonEmission_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
-            # plt.show()
-            # plt.close()
             plt.clf()
             plt.cla()
 
@@ -5332,11 +3335,8 @@ class OptimalPowerFlowAnalysis:
             plt.xlabel("Carbon tax (£/t)", fontsize = labelFontSize)
             plt.ylabel("SMR Number", fontsize = labelFontSize) 
             plt.tight_layout()
-            self.mkdirFig('Heatmap_TotalCostAndEmission/')
+            self.mkdirFilePath(self.diagramPath, "Heatmap_TotalCostAndEmission/")
             plt.savefig(self.diagramPath + 'Heatmap_TotalCostAndEmission/' + 'weight_Heatmap_%s.pdf' % str(weatherConditionList[k][2]), dpi = 1200, bbox_inches='tight')
-            ## plt.savefig('weight_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
-            # plt.show()
-            # plt.close()
             plt.clf()
             plt.cla()
 
@@ -5364,12 +3364,8 @@ class OptimalPowerFlowAnalysis:
                 plt.ylabel("SMR Number", fontsize = labelFontSize) 
                 plt.tight_layout()
                 label_png = 'TotalCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
-                ## label_svg = 'TotalCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
-                self.mkdirFig('Heatmap_TotalCostAndEmission/')
+                self.mkdirFilePath(self.diagramPath, "Heatmap_TotalCostAndEmission/")
                 plt.savefig(self.diagramPath + 'Heatmap_TotalCostAndEmission/' + label_png, dpi = 1200, bbox_inches='tight')
-                ## plt.savefig(label_svg)
-                # plt.show()
-                # plt.close()
                 plt.clf()
                 plt.cla()
 
@@ -5381,216 +3377,16 @@ class OptimalPowerFlowAnalysis:
                 plt.ylabel("SMR Number", fontsize = labelFontSize) 
                 plt.tight_layout()
                 label_png = 'CarbonEmission_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
-                ## label_svg = 'CarbonEmission_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
-                self.mkdirFig('Heatmap_TotalCostAndEmission/')
+                self.mkdirFilePath(self.diagramPath, "Heatmap_TotalCostAndEmission/")
                 plt.savefig(self.diagramPath + 'Heatmap_TotalCostAndEmission/' +  label_png, dpi = 1200, bbox_inches='tight')
-                # plt.show()
-                # plt.close()
                 plt.clf()
                 plt.cla()        
-        return
-
-    """Create the OPEXRatio"""
-    ## TODO: Not use
-    def dataHeatmapCreator_OPEXRatio(self, dataMatrix, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList):
-        rowNum = len(NumberOfSMRUnitList)
-        colNum = len(CarbonTaxForOPFList)
-
-        ## colour pattern, "crest" was used at the first time
-        ## cmap = seaborn.cubehelix_palette(as_cmap=True, start=1.5, rot=-0.75, dark= 0.3)
-        cmap = "crest"
-        
-        for k in range(len(weatherConditionList)):
-            indexMatrix = self.minTotalCostIndexRecoder[k]
-            matrix_OPEXRatio = numpy.zeros((rowNum, colNum), dtype = float)
-           
-            for i in range(rowNum): ## SMR design index
-                SMRdesign = dataMatrix[i]
-                indexRow = indexMatrix[i]
-                for j in range(colNum): ## carbon tax index
-                    OPEXRatio = round(SMRdesign[j][k][0][int(indexRow[j])], 2)
-                    matrix_OPEXRatio[i, j] = OPEXRatio
-                             
-            ## Draw the heatmap of total cost
-            seaborn.heatmap(matrix_OPEXRatio, linewidth=0.004, cmap=cmap, annot=matrix_OPEXRatio, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7.5}, vmin=0.5, vmax=1)
-            plt.title("OPEX contribution at weather condition %s" % weatherConditionList[k][2])
-            plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
-            plt.ylabel("SMR Number", fontsize = labelFontSize) 
-            plt.tight_layout()
-            self.mkdirFig()
-            plt.savefig(self.diagramPath + 'OPEXRatio_Heatmap_%s.pdf' % str(weatherConditionList[k][2]), dpi = 1200, bbox_inches='tight')
-            # plt.show()
-            # plt.close()
-            plt.clf()
-            plt.cla()
-        return
-    
-    """Create the SMR output and operational retio"""
-    ## TODO: Not use
-    def dataHeatmapCreator_SMROutputAndOperationalRatio(self, dataMatrix, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList, weighterList):
-        rowNum = len(NumberOfSMRUnitList)
-        colNum = len(CarbonTaxForOPFList)
-
-        ## colour pattern, "crest" was used at the first time
-        ## cmap = seaborn.cubehelix_palette(as_cmap=True, start=1.5, rot=-0.75, dark= 0.3)
-        
-        ## heat map for different weather conditions
-        for k in range(len(weatherConditionList)):
-            indexMatrix = self.minTotalCostIndexRecoder[k]
-            matrix_SMROutput = numpy.zeros((rowNum, colNum), dtype = float)
-            matrix_SMROperationalRatio = numpy.zeros((rowNum, colNum), dtype = float)
-           
-            for i in range(rowNum): ## SMR design index
-                SMRdesign = dataMatrix[i]
-                indexRow = indexMatrix[i]
-                for j in range(colNum): ## carbon tax index
-                    SMROutput = round(SMRdesign[j][k][0][int(indexRow[j])], 2)
-                    SMROperationalRatio = round(SMRdesign[j][k][1][int(indexRow[j])], 2)
-                    matrix_SMROutput[i, j] = SMROutput
-                    matrix_SMROperationalRatio[i, j] = SMROperationalRatio
-                             
-            ## Draw the heatmap of SMR output
-            cmap = seaborn.diverging_palette(200,20,sep=20,as_cmap=True)
-            seaborn.heatmap(matrix_SMROutput, linewidth=0.004, cmap=cmap, annot=matrix_SMROutput, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7}, vmin=0, vmax=2.6E4)
-            plt.title("SMR total output at weather condition %s" % weatherConditionList[k][2])
-            plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
-            plt.ylabel("SMR Number", fontsize = labelFontSize) 
-            plt.tight_layout()
-            self.mkdirFig()
-            plt.savefig(self.diagramPath + 'SMROutput_Heatmap_%s.pdf' % str(weatherConditionList[k][2]), dpi = 1200, bbox_inches='tight')
-            # plt.show()
-            # plt.close()
-            plt.clf()
-            plt.cla()
-
-            ## Draw the heatmap of SMR operational ratio
-            seaborn.heatmap(matrix_SMROperationalRatio, linewidth=0.004, cmap="crest", annot=matrix_SMROperationalRatio, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7.5}, vmin=0, vmax=1)
-            plt.title("SMR operational ratio at weather condition %s" % weatherConditionList[k][2])
-            plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
-            plt.ylabel("SMR Number", fontsize = labelFontSize) 
-            plt.tight_layout()
-            self.mkdirFig()
-            plt.savefig(self.diagramPath + 'SMROperationalRatio_Heatmap_%s.pdf' % str(weatherConditionList[k][2]), dpi = 1200, bbox_inches='tight')
-            # plt.show()
-            # plt.close()
-            plt.clf()
-            plt.cla()
-
-        ## Draw the heatmap at each weight
-        for k in range(len(weatherConditionList)):
-            for m in range(len(self.weighterList)):
-                matrix_SMROutputAtEachWeight = numpy.zeros((rowNum, colNum), dtype = float)
-                matrix_SMROperationalRatioAtEachWeight = numpy.zeros((rowNum, colNum), dtype = float)
-                for i in range(rowNum): ## SMR design index
-                    SMRdesign = dataMatrix[i]
-                    for j in range(colNum): ## carbon tax index
-                        results_sameCarbonTaxAndSameWeather = SMRdesign[j][k]
-                        SMROutput = results_sameCarbonTaxAndSameWeather[0]
-                        SMROperationalRatio = results_sameCarbonTaxAndSameWeather[1]
-                        matrix_SMROutputAtEachWeight[i,j] = SMROutput[m]
-                        matrix_SMROperationalRatioAtEachWeight [i,j] = SMROperationalRatio[m]
-                        
-
-            ## Draw the heatmap of SMR output
-            cmap = seaborn.diverging_palette(200,20,sep=20,as_cmap=True)
-            seaborn.heatmap(matrix_SMROutput, linewidth=0.004, cmap=cmap, annot=matrix_SMROutput, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7}, vmin=0, vmax=2.6E4)
-            title = "SMR total output at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(self.weighterList[m], 2)) + ")"
-            plt.title(title)
-            plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
-            plt.ylabel("SMR Number", fontsize = labelFontSize) 
-            plt.tight_layout()
-            label_png = 'SMROutput_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
-            ## label_svg = 'SMROutput_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
-            self.mkdirFig()
-            plt.savefig(self.diagramPath + label_png, dpi = 1200, bbox_inches='tight')
-            # plt.show()
-            # plt.close()
-            plt.clf()
-            plt.cla()
-
-            ## Draw the heatmap of SMR operational ratio
-            seaborn.heatmap(matrix_SMROperationalRatio, linewidth=0.004, cmap="crest", annot=matrix_SMROperationalRatio, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7.5}, vmin=0, vmax=1)
-            title = "SMR operational ratio at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(self.weighterList[m], 2)) + ")"
-            plt.title(title)
-            plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
-            plt.ylabel("SMR Number", fontsize = labelFontSize) 
-            plt.tight_layout()
-            label_png = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
-            ## label_svg = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
-            self.mkdirFig()
-            plt.savefig(self.diagramPath + label_png, dpi = 1200, bbox_inches='tight')
-            # plt.show()
-            # plt.close()
-            plt.clf()
-            plt.cla()
         return
     
     """This method is used to create emission heatmap"""
     def dataHeatmapCreator_CO2Emission(self, dataMatrix, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList):
         rowNum = len(NumberOfSMRUnitList)
         colNum = len(CarbonTaxForOPFList)
-
-        ## colour pattern, "crest" was used at the first time
-        ## cmap = seaborn.cubehelix_palette(as_cmap=True, start=1.5, rot=-0.75, dark= 0.3)
-        
-        ## heat map for different weather conditions: pick the beat solution regardless of the weight
-        # for k in range(len(weatherConditionList)):
-        #     indexMatrix = self.minTotalCostIndexRecoder[k]
-        #     matrix_EmissionCost = numpy.zeros((rowNum, colNum), dtype = float)
-        #     matrix_EmissionOPEXRatio = numpy.zeros((rowNum, colNum), dtype = float)
-        #     matrix_EmissionTotalCostRatio = numpy.zeros((rowNum, colNum), dtype = float)
-        #     matrix_EmissionCost_Annotation = numpy.zeros((rowNum, colNum), dtype = float)
-        #     for i in range(rowNum): ## SMR design index
-        #         SMRdesign = dataMatrix[i]
-        #         indexRow = indexMatrix[i]
-        #         for j in range(colNum): ## carbon tax index
-        #             emissionCost = round(SMRdesign[j][k][0][int(indexRow[j])], 2)
-        #             emissionOPEXRatio = round(SMRdesign[j][k][1][int(indexRow[j])], 2)
-        #             emissionTotalCostRatio = round(SMRdesign[j][k][2][int(indexRow[j])], 2)
-        #             matrix_EmissionCost[i, j] = emissionCost
-        #             matrix_EmissionOPEXRatio[i, j] = emissionOPEXRatio
-        #             matrix_EmissionCost_Annotation[i, j] = emissionOPEXRatio / 1E8
-        #             matrix_EmissionTotalCostRatio[i, j] = emissionTotalCostRatio
-                             
-        #     ## Draw the heatmap of emission cost
-        #     cmap = seaborn.diverging_palette(200,20,sep=20,as_cmap=True)
-        #     seaborn.heatmap(matrix_EmissionCost, linewidth=0.004, cmap=cmap, annot = matrix_EmissionCost_Annotation, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7}, vmin=0, vmax=5E8)
-        #     plt.title("Emission cost at weather condition %s" % weatherConditionList[k][2])
-        #     plt.xlabel("Carbon tax (£)",  fontsize = labelFontSize)
-        #     plt.ylabel("SMR Number", fontsize = labelFontSize) 
-        #     plt.tight_layout()
-        #     self.mkdirFig()
-        #     plt.savefig(self.diagramPath + 'emissionCost_Heatmap_%s.pdf' % str(weatherConditionList[k][2]), dpi = 1200, bbox_inches='tight')
-        #     # plt.show()
-        #     # plt.close()
-        #     plt.clf()
-        #     plt.cla()
-
-        #     ## Draw the heatmap of emission OPEX ratio
-        #     seaborn.heatmap(matrix_EmissionOPEXRatio, linewidth=0.004, cmap="crest", annot=matrix_EmissionOPEXRatio, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7.5}, vmin=0, vmax=1)
-        #     plt.title("Emission cost and OPEX ratio at weather condition %s" % weatherConditionList[k][2], fontsize = 11)
-        #     plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
-        #     plt.ylabel("SMR Number", fontsize = labelFontSize) 
-        #     plt.tight_layout()
-        #     self.mkdirFig()
-        #     plt.savefig(self.diagramPath + 'emissionCostOPEXRatio_Heatmap_%s.pdf' % str(weatherConditionList[k][2]), dpi = 1200, bbox_inches='tight')
-        #     # plt.show()
-        #     # plt.close()
-        #     plt.clf()
-        #     plt.cla()
-
-        #     ## Draw the heatmap of emission/TotalCost ratio
-        #     seaborn.heatmap(matrix_EmissionTotalCostRatio, linewidth=0.004, cmap="crest", annot=matrix_EmissionTotalCostRatio, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7.5}, vmin=0, vmax=1)
-        #     plt.title("Emission cost and Total Cost ratio at weather condition %s" % weatherConditionList[k][2], fontsize = 10)
-        #     plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
-        #     plt.ylabel("SMR Number", fontsize = labelFontSize) 
-        #     plt.tight_layout()
-        #     self.mkdirFig()
-        #     plt.savefig(self.diagramPath + 'emissionCostTotalCostRatio_Heatmap_%s.pdf' % str(weatherConditionList[k][2]), dpi = 1200, bbox_inches='tight')
-        #     # plt.show()
-        #     # plt.close()
-        #     plt.clf()
-        #     plt.cla()
 
         ## Draw the heatmap at each weight
         for k in range(len(weatherConditionList)):
@@ -5620,11 +3416,8 @@ class OptimalPowerFlowAnalysis:
                 plt.ylabel("SMR Number", fontsize = labelFontSize) 
                 plt.tight_layout()
                 label_png = 'EmissionCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
-                ## label_svg = 'SMROutput_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
-                self.mkdirFig('Heatmap_CO2EmissionCost/')
+                self.mkdirFilePath(self.diagramPath, "Heatmap_CO2EmissionCost/")
                 plt.savefig(self.diagramPath + 'Heatmap_CO2EmissionCost/' + label_png, dpi = 1200, bbox_inches='tight')
-                # plt.show()
-                # plt.close()
                 plt.clf()
                 plt.cla()
 
@@ -5636,11 +3429,8 @@ class OptimalPowerFlowAnalysis:
                 plt.ylabel("SMR Number", fontsize = labelFontSize) 
                 plt.tight_layout()
                 label_png = 'emissionCostOPEXRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
-                ## label_svg = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
-                self.mkdirFig('Heatmap_CO2EmissionCost/')
+                self.mkdirFilePath(self.diagramPath, "Heatmap_CO2EmissionCost/")
                 plt.savefig(self.diagramPath + 'Heatmap_CO2EmissionCost/' + label_png, dpi = 1200, bbox_inches='tight')
-                # plt.show()
-                # plt.close()
                 plt.clf()
                 plt.cla()
 
@@ -5652,11 +3442,8 @@ class OptimalPowerFlowAnalysis:
                 plt.ylabel("SMR Number", fontsize = labelFontSize) 
                 plt.tight_layout()
                 label_png = 'emissionCostTotalCostRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
-                ## label_svg = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
-                self.mkdirFig('Heatmap_CO2EmissionCost/')
+                self.mkdirFilePath(self.diagramPath, "Heatmap_CO2EmissionCost/")
                 plt.savefig(self.diagramPath + 'Heatmap_CO2EmissionCost/' + label_png, dpi = 1200, bbox_inches='tight')
-                # plt.show()
-                # plt.close()
                 plt.clf()
                 plt.cla()
         return
@@ -5669,9 +3456,6 @@ class OptimalPowerFlowAnalysis:
 
         if rowNum != len(totalCostList) or colNum != len(totalCostList[0]):
             raise ValueError('Please check the input SMR number list and the Carbon tax list and make sure they are matched with the processing reuslts.')
-
-        ## colour pattern, "crest" was used at the first time
-        ## cmap = seaborn.cubehelix_palette(as_cmap=True, start=1.5, rot=-0.75, dark= 0.3)
 
         for k in range(len(weatherConditionList)):
             for m in range(len(self.weighterList)):
@@ -5707,10 +3491,8 @@ class OptimalPowerFlowAnalysis:
                 plt.ylabel("SMR Number", fontsize = labelFontSize) 
                 plt.tight_layout()
                 label_png = 'PureOPEX_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
-                self.mkdirFig('Heatmap_pureOPEX/')
+                self.mkdirFilePath(self.diagramPath, "Heatmap_pureOPEX/")
                 plt.savefig(self.diagramPath + 'Heatmap_pureOPEX/' + label_png, dpi = 1200, bbox_inches='tight')
-                # plt.show()
-                # plt.close()
                 plt.clf()
                 plt.cla()
 
@@ -5722,10 +3504,8 @@ class OptimalPowerFlowAnalysis:
                 plt.ylabel("SMR Number", fontsize = labelFontSize) 
                 plt.tight_layout()
                 label_png = 'CAPEX_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
-                self.mkdirFig('Heatmap_CAPEX/')
+                self.mkdirFilePath(self.diagramPath, "Heatmap_CAPEX/")
                 plt.savefig(self.diagramPath + 'Heatmap_CAPEX/' + label_png, dpi = 1200, bbox_inches='tight')
-                # plt.show()
-                # plt.close()
                 plt.clf()
                 plt.cla()
 
@@ -5738,10 +3518,8 @@ class OptimalPowerFlowAnalysis:
                 plt.ylabel("SMR Number", fontsize = labelFontSize) 
                 plt.tight_layout()
                 label_png = 'SMRInvestment_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
-                self.mkdirFig('Heatmap_SMRInvestment/')
+                self.mkdirFilePath(self.diagramPath, "Heatmap_SMRInvestment/")
                 plt.savefig(self.diagramPath + 'Heatmap_SMRInvestment/' + label_png, dpi = 1200, bbox_inches='tight')
-                # plt.show()
-                # plt.close()
                 plt.clf()
                 plt.cla()
 
@@ -5753,10 +3531,8 @@ class OptimalPowerFlowAnalysis:
                 plt.ylabel("SMR Number", fontsize = labelFontSize) 
                 plt.tight_layout()
                 label_png = 'RiskCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
-                self.mkdirFig('Heatmap_RiskCost/')
+                self.mkdirFilePath(self.diagramPath, "Heatmap_RiskCost/")
                 plt.savefig(self.diagramPath + 'Heatmap_RiskCost/' + label_png, dpi = 1200, bbox_inches='tight')
-                # plt.show()
-                # plt.close()
                 plt.clf()
                 plt.cla()
         return
@@ -5843,10 +3619,6 @@ class OptimalPowerFlowAnalysis:
                 fileName += str(smr) + '_'
             fileName = fileName[:-1]   
             fileName += '.xlsx'
-
-        # with open(fileName, 'w') as f:
-        #     write = csv.writer(f)
-        #     write.writerow(resultSheet)
 
         resultSheet = pd.DataFrame(resultSheet)
         writer = pd.ExcelWriter(fileName)
@@ -6020,10 +3792,8 @@ class OptimalPowerFlowAnalysis:
             bbox_transform=fig.transFigure 
             ) 
         plt.tight_layout()
-        self.mkdirFig('weatherImpact/')
+        self.mkdirFilePath(self.diagramPath, "weatherImpact/")
         plt.savefig(self.diagramPath + 'weatherImpact/' + 'SMRvsCarbonTax_(weatherImpact)_weight_%s.pdf' % str(pickedWeight), dpi = 1200, bbox_inches='tight')
-        # plt.show() ## show must come after the savefig
-        # plt.close()
         plt.clf()
         plt.cla()
         
@@ -6069,9 +3839,7 @@ class OptimalPowerFlowAnalysis:
             ax1.plot(CarbonTaxForOPFList, baseCostResult[i], label = label_withSubscript + ' (NS)', color = colors[i], linestyle = lineStyleList[2], linewidth = 0.8, alpha=0.75)
             ax2.plot(CarbonTaxForOPFList, baseCostResult[i], color = colors[i], alpha=0) 
             ay1.plot(CarbonTaxForOPFList, baseCostResult[i], color = colors[i], alpha=0)
-
-            # for x, y, label in zip(CarbonTaxForOPFList, bestCostResult[i], bestSMRNumberResult[i]):
-            #     ax1.text(x, y, label, fontsize = dotLabel, alpha = 0.85)   
+ 
             ax1.text(-3.5, bestCostResult[i][0]+0.15, bestSMRNumberResult[i][0], fontsize = 8, alpha = 0.85)
             ax1.text(15, bestCostResult[i][CarbonTaxForOPFList.index(20)]+0.15, bestSMRNumberResult[i][CarbonTaxForOPFList.index(20)], fontsize = 8, alpha = 0.85)  
             ax1.text(40, bestCostResult[i][CarbonTaxForOPFList.index(45)]+0.15, bestSMRNumberResult[i][CarbonTaxForOPFList.index(45)], fontsize = 8, alpha = 0.85)  
@@ -6097,10 +3865,8 @@ class OptimalPowerFlowAnalysis:
             ) 
 
         plt.tight_layout()
-        self.mkdirFig('weatherImpact/')
+        self.mkdirFilePath(self.diagramPath, "weatherImpact/")
         plt.savefig(self.diagramPath + 'weatherImpact/' + 'CostvsCarbonTax_(weatherImpact)_weight_%s.pdf' % str(pickedWeight), dpi = 1200, bbox_inches='tight')
-        # plt.show() ## show must come after the savefig
-        # plt.close()
         plt.clf()
         plt.cla()
 
@@ -6186,7 +3952,7 @@ class OptimalPowerFlowAnalysis:
             ) 
 
         plt.tight_layout()
-        self.mkdirFig('weatherImpact/')
+        self.mkdirFilePath(self.diagramPath, "weatherImpact/")
         plt.savefig(self.diagramPath + 'weatherImpact/' + 'CO2EmissionvsCarbonTax_(weatherImpact)_weight_%s.pdf' % str(pickedWeight), dpi = 1200, bbox_inches='tight')
         plt.clf()
         plt.cla()        
@@ -6194,8 +3960,7 @@ class OptimalPowerFlowAnalysis:
 
     """Create the multiple lines diagram reflecting the weight impact under different weather conditions"""
     def lineGraph_weightImpact(self, summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList):
-        
-        ## 3 (smr, cost, co2) * 4 (weather condotions) figs in total: each fig has 6 lines (1 base line 5 lines for different weight)    
+    
         if len(summary_eachSMRDesign) != len(NumberOfSMRUnitList):
             raiseExceptions("The length of the result list should equal to the number of the SMR list number!")
 
@@ -6287,12 +4052,6 @@ class OptimalPowerFlowAnalysis:
             ax2.yaxis.set_minor_locator(yminor_1)
             ax2.yaxis.set_major_locator(ymajor_1)
 
-            ## plot 0 SMR base line 
-            # zeroList = [0 for i in range(len(CarbonTaxForOPFList))]
-            # ax1.plot(CarbonTaxForOPFList, zeroList, linestyle = lineStyleList[2], label = 'Base case', color = 'black', alpha=0.85)
-            # ax2.plot(CarbonTaxForOPFList, zeroList, color = 'black', alpha=0)
-            # ay1.plot(CarbonTaxForOPFList, zeroList, color = 'black', alpha=0)
-
             ## plot each weight at the same weather condition
             for i in range(len(bestSMRNumber_UnderSameWeatherCondition)):
                 weightLabel = 'weight: ' + str(round(self.weighterList[i], 2))
@@ -6300,15 +4059,10 @@ class OptimalPowerFlowAnalysis:
                 ax2.plot(CarbonTaxForOPFList, bestSMRNumber_UnderSameWeatherCondition[i], color = colors[i], alpha=0)
                 ay1.plot(CarbonTaxForOPFList, bestSMRNumber_UnderSameWeatherCondition[i], color = colors[i], alpha=0)
 
-                # for x, y, label in zip(CarbonTaxForOPFList, bestSMRNumber_UnderSameWeatherCondition[i], bestSMRNumber_UnderSameWeatherCondition[i]):
-                #     ax1.text(x, y, label, fontsize = 10, alpha = 0.85)  
-                
                 ax1.text(-5, bestSMRNumber_UnderSameWeatherCondition[i][0] + 0.25, bestSMRNumber_UnderSameWeatherCondition[i][0], fontsize = 8, alpha = 0.85)  
                 ax1.text(35, bestSMRNumber_UnderSameWeatherCondition[i][CarbonTaxForOPFList.index(40)] + 0.25, bestSMRNumber_UnderSameWeatherCondition[i][CarbonTaxForOPFList.index(40)], fontsize = 8, alpha = 0.85)  
                 ax1.text(95, bestSMRNumber_UnderSameWeatherCondition[i][CarbonTaxForOPFList.index(100)] + 0.25, bestSMRNumber_UnderSameWeatherCondition[i][CarbonTaxForOPFList.index(100)], fontsize = 8, alpha = 0.85)  
                 ax1.text(195, bestSMRNumber_UnderSameWeatherCondition[i][CarbonTaxForOPFList.index(200)] + 0.25, bestSMRNumber_UnderSameWeatherCondition[i][CarbonTaxForOPFList.index(200)], fontsize = 8, alpha = 0.85)  
-                ##ax1.text(295, bestSMRNumber_UnderSameWeatherCondition[i][CarbonTaxForOPFList.index(300)] + 0.5, bestSMRNumber_UnderSameWeatherCondition[i][CarbonTaxForOPFList.index(300)], fontsize = 8, alpha = 0.85)  
-            
 
             ## set legend
             pos = ax1.get_position()
@@ -6322,10 +4076,8 @@ class OptimalPowerFlowAnalysis:
                 bbox_transform=fig.transFigure 
                 ) 
             plt.tight_layout()
-            self.mkdirFig('weightImapct/') 
+            self.mkdirFilePath(self.diagramPath, "weightImapct/") 
             plt.savefig(self.diagramPath + 'weightImapct/' + 'SMRvsCarbonTax_(weightImpact)_weather_%s.pdf' % (weatherConditionList[w][2]), dpi = 1200, bbox_inches='tight')
-            # plt.show() ## show must come after the savefig
-            # plt.close()
             plt.clf()
             plt.cla()
             
@@ -6365,8 +4117,6 @@ class OptimalPowerFlowAnalysis:
                 ax1.plot(CarbonTaxForOPFList, bestCost_UnderSameWeatherCondition[j], marker = markersList[j], label = weightLabel, color = colors[j], linestyle = lineStyleList[j], markersize = 2)
                 ax2.plot(CarbonTaxForOPFList, bestCost_UnderSameWeatherCondition[j], color = colors[j], alpha=0)      
                 ay1.plot(CarbonTaxForOPFList, bestCost_UnderSameWeatherCondition[j], color = colors[j], alpha=0)  
-                # for x, y, label in zip(CarbonTaxForOPFList, bestCost_UnderSameWeatherCondition[i], bestSMRNumber_UnderSameWeatherCondition[i]):
-                #     ax1.text(x, y, label, fontsize = 10, alpha = 0.85)
             
             pos = ax1.get_position()
             ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
@@ -6379,10 +4129,8 @@ class OptimalPowerFlowAnalysis:
                 bbox_transform=fig.transFigure 
                 ) 
             plt.tight_layout()
-            self.mkdirFig('weightImapct/')
+            self.mkdirFilePath(self.diagramPath, "weightImapct/") 
             plt.savefig(self.diagramPath + 'weightImapct/' + 'CostvsCarbonTax_(weightImpact)_weather_%s.pdf' % (weatherConditionList[w][2]), dpi = 1200, bbox_inches='tight')
-            # plt.show() ## show must come after the savefig
-            # plt.close()
             plt.clf()
             plt.cla()
 
@@ -6419,8 +4167,6 @@ class OptimalPowerFlowAnalysis:
                 ax1.plot(CarbonTaxForOPFList, bestCO2Emission_UnderSameWeatherCondition[i], marker = markersList[i], label = weightLabel, color = colors[i], linestyle = lineStyleList[i], markersize = 2)
                 ax2.plot(CarbonTaxForOPFList, bestCO2Emission_UnderSameWeatherCondition[i], color = colors[i], alpha=0)  
                 ay1.plot(CarbonTaxForOPFList, bestCO2Emission_UnderSameWeatherCondition[i], color = colors[i], alpha=0)        
-                # for x, y, label in zip(CarbonTaxForOPFList, bestCO2Emission_UnderSameWeatherCondition[i], bestSMRNumber_UnderSameWeatherCondition[i]):
-                #     ax1.text(x, y, label, fontsize = 10, alpha = 0.85)
     
             pos = ax1.get_position()
             ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
@@ -6433,559 +4179,15 @@ class OptimalPowerFlowAnalysis:
                 bbox_transform=fig.transFigure 
                 ) 
             plt.tight_layout()
-            self.mkdirFig('weightImapct/')
+            self.mkdirFilePath(self.diagramPath, "weightImapct/") 
             plt.savefig(self.diagramPath + 'weightImapct/' + 'CO2EmissionvsCarbonTax_(weightImpact)_weather_%s.pdf' % (weatherConditionList[w][2]), dpi = 1200, bbox_inches='tight')
-            # plt.show() ## show must come after the savefig
-            # plt.close()
             plt.clf()
             plt.cla()
         return
-
-    """Linechart for plotting the SMR vs Carbon emission"""
-    def lineGraph_SMRNumberVsCO2Emission_separatedPlot(self, summary_eachSMRDesign:list, NumberOfSMRUnitList:list, CarbonTaxForOPFList:list, weatherConditionList:list, givenCarbonTaxList:list):    
-        # Index of the carbon tax
-        for ct in givenCarbonTaxList: 
-            if ct not in CarbonTaxForOPFList:
-                raise ValueError("There is no carbon tax for the given carbon")
-            else:
-                indexOfCarbonTax = CarbonTaxForOPFList.index(ct)
-
-            for weather in range(len(weatherConditionList)):
-                for weight_index in range(len(self.weighterList)): 
-                    emission_eachWight = []
-                    for result_sameSMR in summary_eachSMRDesign:
-                        CO2Emission = result_sameSMR[indexOfCarbonTax][weather][1][weight_index]
-                        emission_eachWight.append(CO2Emission)
-
-                    ##-- Plot the multiple line chart of the CO2 emission vs carbon tax of different SMR numbers at differnt Weight and different weather condition --##
-                    fig, ax1 = plt.subplots()
-                    ax1.set_xlabel("Number of SMR (-)", fontsize = labelFontSize)
-                    ax1.set_ylabel("Annual CO${_2}$ emission (Mt/yr)", fontsize = labelFontSize)
-                    ax1.plot(NumberOfSMRUnitList, emission_eachWight)
-                    text = str(weatherConditionList[weather]) + "_" + "carbonTax_" + str(ct) + "_weight_" + str(self.weighterList[weight_index])
-                    plt.tight_layout()
-                    self.mkdirFig('SMRvsEmission/')
-                    plt.savefig(self.diagramPath + 'SMRvsEmission/' + 'EmissionvsSMR_%s.pdf' % text, dpi = 1200, bbox_inches='tight')
-                    # plt.show() ## show must come after the savefig
-                    # plt.close()
-                    plt.clf()
-                    plt.cla()
-        return 
-    
-    """Linechart for plotting the SMR vs Carbon emission"""
-    def lineGraph_SMRNumberVsCO2Emission_mergedPlot(self, summary_eachSMRDesign:list, NumberOfSMRUnitList:list, CarbonTaxForOPFList:list, weatherConditionList:list, givenCarbonTaxList:list):    
-        cmap = mpl.cm.get_cmap("viridis", len(weatherConditionList))
-        colors = cmap(numpy.linspace(0, 1, len(weatherConditionList)))
-        
-        # Index of the carbon tax
-        for ct in givenCarbonTaxList: 
-            if ct not in CarbonTaxForOPFList:
-                raise ValueError("There is no carbon tax for the given carbon")
-            else:
-                indexOfCarbonTax = CarbonTaxForOPFList.index(ct)
-
-            for weight_index in range(len(self.weighterList)): 
-                emission_eachWight = []
-                cost_eachWight = []
-                for weather in range(len(weatherConditionList)):
-                    emission_eachWeather = []
-                    cost_eachWeather = []
-                    for result_sameSMR in summary_eachSMRDesign:
-                        CO2Emission = result_sameSMR[indexOfCarbonTax][weather][1][weight_index]
-                        emission_eachWeather.append(CO2Emission)
-                        cost = result_sameSMR[indexOfCarbonTax][weather][0][weight_index]
-                        cost_eachWeather.append(cost)
-                    emission_eachWight.append(emission_eachWeather)
-                    cost_eachWight.append(cost_eachWeather)
-
-                ##-- Plot the multiple line chart of the CO2 emission vs carbon tax of different SMR numbers at differnt Weight and different weather condition --##
-                fig, ax1 = plt.subplots()
-                ax1.set_xlabel("Number of SMR (-)", fontsize = labelFontSize)
-                ax1.set_ylabel("CO${_2}$ emission (Mt/yr)", fontsize = labelFontSize)
-                for i, e in enumerate(emission_eachWight): 
-                    bestCost = min(cost_eachWight[i])
-                    optimisedSMR = NumberOfSMRUnitList[cost_eachWight[i].index(bestCost)]
-                    emissionAtOptimisedSMR = e[cost_eachWight[i].index(bestCost)]
-                    ax1.plot(NumberOfSMRUnitList, e, color = colors[i], label = weatherConditionList[i][2])
-                    ax1.plot(optimisedSMR, emissionAtOptimisedSMR, marker = "o", color = colors[i])
-                    ax1.text(optimisedSMR, emissionAtOptimisedSMR, optimisedSMR, fontsize = 12, alpha = 0.85) 
-            
-                plt.ylim(0, 5500) 
-                pos = ax1.get_position() ## set up the legend position
-                ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
-                ax1.legend(
-                    loc="upper center",
-                    fontsize = legendFontSize,
-                    ncol=4,
-                    bbox_to_anchor=(0.5, 0.05),
-                    frameon=False,
-                    bbox_transform=fig.transFigure 
-                    ) 
-
-                text = "CarbonTax_" + str(ct) + "_weight_" + str(self.weighterList[weight_index])
-                plt.tight_layout()
-                self.mkdirFig('SMRvsEmission/')
-                plt.savefig(self.diagramPath + 'SMRvsEmission/' + 'EmissionvsSMR_%s.pdf' % text, dpi = 1200, bbox_inches='tight')
-                # plt.show() ## show must come after the savefig
-                # plt.close()
-                plt.clf()
-                plt.cla()
-        return 
-    
-    """Linechart for plotting the SMR vs Carbon emission"""
-    def lineGraph_SMRNumberVsCO2Emission_sameWeatherConditionOnTheSamePlot(self, summary_eachSMRDesign:list, NumberOfSMRUnitList:list, CarbonTaxForOPFList:list, weatherConditionList:list, givenWeightList:list):    
-        weatherSelected = [[0.93, 0.78, "WHSH"], [0.49, 0.38, "WBSB"], [0.157, 0.068, "WLSL"]]
-        mapColorList = ['Purples', 'Greys', 'Greens']
-        carbonTaxSelected = [0, 5, 10, 15, 50, 100, 150]
-
-        for weight in givenWeightList: 
-            weight_index = self.weighterList.index(weight)
-            fig, ax1 = plt.subplots()
-            ax1.set_xlabel("Number of SMRs (-)", fontsize = labelFontSize)
-            ax1.set_ylabel("Annual CO${_2}$ emission (Mt/yr)", fontsize = labelFontSize)
-            for i_ws, ws in enumerate(weatherSelected):
-                weather = weatherConditionList.index(ws)
-                ## setup the colormap for the weather condition list
-                cmap = mpl.cm.get_cmap(mapColorList[i_ws], len(carbonTaxSelected) + 3)
-                colors = cmap(numpy.linspace(0, 1, len(carbonTaxSelected)+3))
-                emission_eachCarbonTax = []
-                cost_eachCarbonTax = []
-                for i_ct, ct in enumerate(CarbonTaxForOPFList): 
-                    emission_eachSMRDesign = []
-                    cost_eachSMRDesign = [] 
-                    for result_sameSMR in summary_eachSMRDesign:
-                        CO2Emission = result_sameSMR[i_ct][weather][1][weight_index]
-                        emission_eachSMRDesign.append(CO2Emission)
-                        cost = result_sameSMR[i_ct][weather][0][weight_index]
-                        cost_eachSMRDesign.append(cost)
-                    emission_eachCarbonTax.append(emission_eachSMRDesign)
-                    cost_eachCarbonTax.append(cost_eachSMRDesign) 
-                ##-- Plot the multiple line chart of the CO2 emission vs SMR numbers at different carbon tax at the same weight and same weather condition --##
-                labelledSMR = []
-                for i, e in enumerate(emission_eachCarbonTax): 
-                    ct = CarbonTaxForOPFList[i]
-                    if ct in carbonTaxSelected:
-                        i_ = carbonTaxSelected.index(ct)
-                        bestCost = min(cost_eachCarbonTax[i])
-                        optimisedSMR = NumberOfSMRUnitList[cost_eachCarbonTax[i].index(bestCost)]
-                        emissionAtOptimisedSMR = e[cost_eachCarbonTax[i].index(bestCost)]
-                        ax1.plot(NumberOfSMRUnitList, e, color = colors[i_], label = CarbonTaxForOPFList[i])
-                        ax1.plot(optimisedSMR, emissionAtOptimisedSMR, marker = "o", color = colors[i_])
-                        if not optimisedSMR in labelledSMR:
-                            if len(labelledSMR) > 0:
-                                if optimisedSMR == 32:
-                                    ax1.text(optimisedSMR, emissionAtOptimisedSMR - 2, str(optimisedSMR) + ' SMRs', fontsize = 8, alpha = 0.85) 
-                                else:
-                                    ax1.text(optimisedSMR, emissionAtOptimisedSMR + 1, str(optimisedSMR) + ' SMRs', fontsize = 8, alpha = 0.85) 
-                            else:
-                                ax1.text(optimisedSMR, emissionAtOptimisedSMR + 1, str(optimisedSMR) + ' SMRs', fontsize = 8, alpha = 0.85) 
-                            labelledSMR.append(optimisedSMR)
-            # plt.ylim(0, 5500) 
-            pos = ax1.get_position() ## set up the legend position
-            ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
-            # ax1.legend(
-            #     loc="upper center",
-            #     fontsize = legendFontSize,
-            #     ncol=4,
-            #     bbox_to_anchor=(0.5, 0.05),
-            #     frameon=False,
-            #     bbox_transform=fig.transFigure 
-            #     ) 
-
-            text = "Weight_" + str(self.weighterList[weight_index])
-            plt.tight_layout()
-            self.mkdirFig('SMRvsEmissionatDifferentCarbontaxInSamePlot/')
-            plt.savefig(self.diagramPath + 'SMRvsEmissionatDifferentCarbontaxInSamePlot/' + 'SMRvsEmissionatDifferentCarbontaxInSamePlot_%s.pdf' % text, dpi = 1200, bbox_inches='tight')
-            # plt.show() ## show must come after the savefig
-            # plt.close()
-            plt.clf()
-            plt.cla()
-        return
-
-    """Linechart for plotting the SMR vs Cost"""
-    def lineGraph_OptimisedSMRNumberVsCost_SMRLabeled(self, summary_eachSMRDesign:list, NumberOfSMRUnitList:list, CarbonTaxForOPFList:list, weatherConditionList:list, listOfWeight:list):    
-        cmap = mpl.cm.get_cmap("viridis", len(weatherConditionList)) ##   
-        colors = cmap(numpy.linspace(0, 1, len(weatherConditionList)))
-
-        # for weight_index in range(len(self.weighterList)):
-        for weight in listOfWeight:
-            weight_index = self.weighterList.index(weight)
-            smr_eachWeather = []
-            cost_eachWeather = []
-            emission_eachWeather = []
-            capex_eachWeather = []
-            for weather_index in range(len(weatherConditionList)): 
-                smr_eachCarbonTax = []
-                cost_eachCarbontax = []
-                emission_eachCarbonTax = []
-                capex_eachCarbonTax = []
-                for carbontax_index in range(len(CarbonTaxForOPFList)):
-                    costList = []
-                    emissionList = []
-                    capexList = []
-                    for result_sameSMR in summary_eachSMRDesign:
-                        costList.append(result_sameSMR[carbontax_index][weather_index][0][weight_index]/1E3)
-                        emissionList.append(result_sameSMR[carbontax_index][weather_index][1][weight_index])
-                        # capexList.append(result_sameSMR[carbontax_index][weather_index][3][weight_index]/1E3)
-                    
-                    cost_eachCarbontax.append(min(costList))
-                    i_optima = costList.index(min(costList))
-                    #capex_eachCarbonTax.append(capexList[i_optima])
-                    emission_eachCarbonTax.append(emissionList[i_optima])
-                    smr_eachCarbonTax.append(NumberOfSMRUnitList[i_optima])
-                smr_eachWeather.append(smr_eachCarbonTax)
-                cost_eachWeather.append(cost_eachCarbontax)
-                emission_eachWeather.append(emission_eachCarbonTax)
-                # capex_eachWeather.append(capex_eachCarbonTax)
-            
-            ##-- 1. Optimised SMR vs Cost labeled with carbon tax at fixed weight --##
-            fig, ax1 = plt.subplots()
-            ax1.set_xlabel("Number of SMRs (-)", fontsize = labelFontSize)
-            ax1.set_ylabel("Annualised total cost (£B/yr)", fontsize = labelFontSize)
-            for i, cost in enumerate(cost_eachWeather): # each weather 
-                ## Plotting the original points and the fitted line
-                plt.plot(smr_eachWeather[i], cost, color = colors[i], marker = "o", markersize = 4, label = weatherConditionList[i][2])
-                # plt.scatter(smr_eachWeather[i], cost, marker = "o", color = colors[i], s = 15)
-
-                # x = numpy.array(smr_eachWeather[i])
-                # y = numpy.array(cost)
-
-                # ## Fitting a line using least squares
-                # A = numpy.vstack([x, numpy.ones(len(x))]).T
-                # m, c = numpy.linalg.lstsq(A, y, rcond=None)[0]
-
-                # ## Plotting the original points and the fitted line
-                # plt.plot(x, m*x + c, color = colors[i], label = weatherConditionList[i][2])
-                # plt.scatter(x, y, marker = "o", color = colors[i], s = 15)
-
-                ## label the SMR number
-                for k, smrNumber in enumerate(smr_eachWeather[i]):
-                    if k >= 1:
-                        if smrNumber == smr_eachWeather[i][k-1]:
-                            if smrNumber == max(smr_eachWeather[i]):
-                                break
-                            else:
-                                continue
-                        else: 
-                            ax1.text(smrNumber+0.1, cost[k]+ 0.02, str(smrNumber), fontsize = 8, alpha = 0.85) 
-                    else:
-                        ax1.text(smrNumber+0.1, cost[k]+ 0.02, str(smrNumber), fontsize = 8, alpha = 0.85) 
-
-                # ## label the carbon tax on ##
-                # for j, tax in enumerate(CarbonTaxForOPFList): # each carbon tax
-                #     if i==4: 
-                #         print('weathe condition is: ' + str(weatherConditionList[i][2]))
-                #         if j==0: # or smr_eachWeather[i][j] - smr_eachWeather[i][j-1] >= 1:
-                #             ax1.text(smr_eachWeather[i][j], cost[j] - 1.5E8, str(tax), fontsize = 10, alpha = 0.85) 
-                #         if int(emission_eachWeather[i][j]) == 0:
-                #             ax1.text(smr_eachWeather[i][j], cost[j] - 1.5E8, str(tax), fontsize = 10, alpha = 0.85) 
-                #             break
-            
-            # ax1.text(50, 1.02E10, "Weight: " + str(self.weighterList[weight_index]), fontsize = 10, alpha = 0.85) 
-
-            # plt.ylim(1E10, 1.6E10) 
-            pos = ax1.get_position() ## set up the legend position
-            ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
-            ax1.legend(
-                loc="upper center",
-                fontsize = legendFontSize,
-                ncol=len(weatherConditionList),
-                bbox_to_anchor=(0.5, 0.07),
-                frameon=False,
-                bbox_transform=fig.transFigure 
-                ) 
-
-            text = "Weight_" + str(self.weighterList[weight_index])
-            plt.tight_layout()
-            self.mkdirFig('OptimisedSMRvsCost_SMRLabeled/')
-            plt.savefig(self.diagramPath + 'OptimisedSMRvsCost_SMRLabeled/' + 'OptimisedSMRvsCost_SMRLabeled_%s.pdf' % text, dpi = 1200, bbox_inches='tight')
-            # plt.show() ## show must come after the savefig
-            # plt.close()
-            plt.clf()
-            plt.cla()
-
-        #############################################################################################################
-            ##-- 2. Optimised SMR vs Emission labeled with SMR at fixed weight --##
-            fig, ax1 = plt.subplots()
-            ax1.set_xlabel("Number of SMRs (-)", fontsize = labelFontSize)
-            ax1.set_ylabel("Annual CO${_2}$ emission (Mt/yr)", fontsize = labelFontSize)
-            for i, e in enumerate(emission_eachWeather): # each weather 
-                plt.plot(smr_eachWeather[i], e, color = colors[i], marker = "o", markersize = 4, label = weatherConditionList[i][2])
-                
-                # x = numpy.array(smr_eachWeather[i])
-                # y = numpy.array(e)
-
-                # # Reshape x to a 2D array for PolynomialFeatures
-                # x_reshape = x.reshape(-1, 1)
-
-                # # Generate polynomial features
-                # degree = 2
-                # poly_features = PolynomialFeatures(degree=degree)
-                # X_poly = poly_features.fit_transform(x_reshape)
-
-                # # Fit RANSAC regressor to polynomial features
-                # ransac = RANSACRegressor()
-                # ransac.fit(X_poly, y)
-
-                # # Generate x values for the fitted curve
-                # x_fit = numpy.linspace(min(x), max(x), 1000)
-                # x_fit_reshape = x_fit.reshape(-1, 1)
-                # X_fit_poly = poly_features.transform(x_fit_reshape)
-
-                # # Predict y values using the fitted RANSAC model
-                # y_fit = ransac.predict(X_fit_poly)
-
-                # ## Plotting the original points and the fitted line
-                # plt.scatter(x, y, marker = "o", color = colors[i], s = 15)
-                # plt.plot(x_fit, y_fit, color = colors[i], label = weatherConditionList[i][2])
-                
-
-                ## label the SMR number
-                for k, smrNumber in enumerate(smr_eachWeather[i]):
-                    if k >= 1:
-                        if smrNumber == smr_eachWeather[i][k-1]:
-                            if smrNumber == max(smr_eachWeather[i]):
-                                break
-                            else:
-                                continue
-                        else: 
-                            ax1.text(smrNumber+0.1, e[k]+ 0.02, str(smrNumber), fontsize = 8, alpha = 0.85) 
-                    else:
-                        ax1.text(smrNumber+0.1, e[k]+ 0.02, str(smrNumber), fontsize = 8, alpha = 0.85) 
-
-
-
-                # for j, tax in enumerate(CarbonTaxForOPFList): # each carbon tax
-                #     if i ==2: ## WhSl
-                #         if j==0 or smr_eachWeather[i][j] - smr_eachWeather[i][j-1] >= 1:
-                #             ax1.text(smr_eachWeather[i][j] - 0.3, e[j] - 10, str(tax), fontsize = 10, alpha = 0.85) 
-                #         if int(e[j]) == 0:
-                #             ax1.text(smr_eachWeather[i][j] - 0.3, e[j] - 10, str(tax), fontsize = 10, alpha = 0.85) 
-                #             break
-                #     elif i ==2: ## WmSm
-                #         if j==0 or smr_eachWeather[i][j] - smr_eachWeather[i][j-1] >= 1:
-                #             ax1.text(smr_eachWeather[i][j] + 0.2, e[j] - 10, str(tax), fontsize = 10, alpha = 0.85) 
-                #         if int(e[j]) == 0:
-                #             ax1.text(smr_eachWeather[i][j] + 0.3, e[j] - 10, str(tax), fontsize = 10, alpha = 0.85) 
-                #             break
-                #     else:
-                #         if j==0 or smr_eachWeather[i][j] - smr_eachWeather[i][j-1] >= 1:
-                #             ax1.text(smr_eachWeather[i][j] + 0.2, e[j] - 10, str(tax), fontsize = 10, alpha = 0.85) 
-                #         if int(e[j]) == 0:
-                #             ax1.text(smr_eachWeather[i][j] + 0.2, e[j] - 10, str(tax), fontsize = 10, alpha = 0.85) 
-                #             break
-            
-            # ax1.text(50, 1300, "Weight: " + str(self.weighterList[weight_index]), fontsize = 10, alpha = 0.85) 
-
-            # plt.ylim(-100, 1400) 
-            pos = ax1.get_position() ## set up the legend position
-            ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
-            ax1.legend(
-                loc="upper center",
-                fontsize = legendFontSize,
-                ncol = len(weatherConditionList),
-                bbox_to_anchor=(0.5, 0.05),
-                frameon=False,
-                bbox_transform=fig.transFigure 
-                ) 
-
-            text = "Weight_" + str(self.weighterList[weight_index])
-            plt.tight_layout()
-            self.mkdirFig('OptimisedSMRvsEmission_SMRLabeled/')
-            plt.savefig(self.diagramPath + 'OptimisedSMRvsEmission_SMRLabeled/' + 'OptimisedSMRvsEmission_SMRLabeled_%s.pdf' % text, dpi = 1200, bbox_inches='tight')
-            # plt.show() ## show must come after the savefig
-            # plt.close()
-            plt.clf()
-            plt.cla()
-        ####################################################################################################################
-            ##-- 3. Optimised SMR vs CAPEX labeled with carbon tax at fixed weight --##
-            # fig, ax1 = plt.subplots()
-            # ax1.set_xlabel("Number of SMRs (-)", fontsize = labelFontSize)
-            # ax1.set_ylabel("SMR investment cost (£/yr)", fontsize = labelFontSize)
-            # for i, cost in enumerate(capex_eachWeather): # each weather 
-            #     x = numpy.array(smr_eachWeather[i])
-            #     y = numpy.array(cost)
-
-            #     ## Fitting a line using least squares
-            #     A = numpy.vstack([x, numpy.ones(len(x))]).T
-            #     m, c = numpy.linalg.lstsq(A, y, rcond=None)[0]
-
-            #     ## Plotting the original points and the fitted line
-            #     plt.plot(x, m*x + c, color = colors[i], label = weatherConditionList[i][2])
-            #     plt.scatter(x, y, marker = "o", color = colors[i], s = 15)
-
-            #     ## label the carbon tax on ##
-            #     # for j, tax in enumerate(CarbonTaxForOPFList): # each carbon tax
-            #     #     if j==0: # or smr_eachWeather[i][j] - smr_eachWeather[i][j-1] >= 1:
-            #     #         ax1.text(smr_eachWeather[i][j], cost[j] - 1.5E8, str(tax), fontsize = 10, alpha = 0.85) 
-            #     #     if j!=0 and int(cost[j] - cost[j-1]) < 1 and smr_eachWeather[i][j] - smr_eachWeather[i][j-1] ==0:
-            #     #         ax1.text(smr_eachWeather[i][j], cost[j] - 1E8, str(tax), fontsize = 10, alpha = 0.85) 
-            #     #         break
-            
-            # ax1.text(50, 1.02E9, "Weight: " + str(self.weighterList[weight_index]), fontsize = 10, alpha = 0.85) 
-
-            # # plt.ylim(1E9, 3.5E9) 
-            # pos = ax1.get_position() ## set up the legend position
-            # ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
-            # ax1.legend(
-            #     loc="upper center",
-            #     fontsize = legendFontSize,
-            #     ncol=5,
-            #     bbox_to_anchor=(0.5, 0.05),
-            #     frameon=False,
-            #     bbox_transform=fig.transFigure 
-            #     ) 
-
-            # text = "Weight_" + str(self.weighterList[weight_index])
-            # plt.tight_layout()
-            # self.mkdirFig('OptimisedSMRvsCAPEX_carbontaxLabeled/')
-            # plt.savefig(self.diagramPath + 'OptimisedSMRvsCAPEX_carbontaxLabeled/' + 'OptimisedSMRvsCAPEX_carbontaxLabeled_%s.pdf' % text, dpi = 1200, bbox_inches='tight')
-            # # plt.show() ## show must come after the savefig
-            # # plt.close()
-            # plt.clf()
-            # plt.cla()
-        return 
-## Modify the carbon tax label, add shad areas
-    """Linechart for plotting the SMR vs Cost--with fitting lines"""
-    def lineGraph_SMRNumberVsCost_FittingPlot(self, summary_eachSMRDesign:list, NumberOfSMRUnitList:list, CarbonTaxForOPFList:list, weatherConditionList:list, givenCarbonTaxList:list):    
-        cmap = mpl.cm.get_cmap("viridis", len(weatherConditionList))
-        colors = cmap(numpy.linspace(0, 1, len(weatherConditionList)))
-        
-        # Index of the carbon tax
-        for ct in givenCarbonTaxList: 
-            if ct not in CarbonTaxForOPFList:
-                raise ValueError("There is no carbon tax for the given carbon")
-            else:
-                indexOfCarbonTax = CarbonTaxForOPFList.index(ct)
-            
-            ## 1. dots cluster for each different weather conditions across all weights
-            SMR_forZeroEmission_eachWeather = []
-            Cost_forZeroEmission_eachWeather = []
-
-            for weather in range(len(weatherConditionList)):
-                cost_allWeightSameWeather = []
-                smr_allWeightSameWeather = []
-                for weight_index in range(len(self.weighterList)): 
-                    cost_eachweatherAndWight = []
-                    co2Emission_eachweatherAndWight = []
-                    for result_sameSMR in summary_eachSMRDesign:
-                        cost = result_sameSMR[indexOfCarbonTax][weather][0][weight_index]
-                        CO2Emission = result_sameSMR[indexOfCarbonTax][weather][1][weight_index]
-                        cost_eachweatherAndWight.append(cost)
-                        co2Emission_eachweatherAndWight.append(CO2Emission)
-                    for i_ce, ce in enumerate(co2Emission_eachweatherAndWight): ## Find the number of the SMR that firstly ensure zero-emission
-                        if int(ce) == 0:
-                            respondingCost = cost_eachweatherAndWight[i_ce]
-                            repondingSMR = NumberOfSMRUnitList[i_ce]
-                            break
-                    cost_allWeightSameWeather.append(respondingCost)
-                    smr_allWeightSameWeather.append(repondingSMR)
-
-
-                SMR_forZeroEmission_eachWeather.append(smr_allWeightSameWeather)  
-                Cost_forZeroEmission_eachWeather.append(cost_allWeightSameWeather)
-
-            ## 2. For fitting the cost vs SMR number of each weight
-            SMR_forFitting = []
-            Cost_forFitting = []
-            for i in range(len(self.weighterList)):
-                SMR_forFitting_eachWeight = []
-                Cost_forFitting_eachWeight = []
-                for j, smr in enumerate(SMR_forZeroEmission_eachWeather): ## length is the number of weather condtions 
-                    SMR_forFitting_eachWeight.append(smr[i])
-                    Cost_forFitting_eachWeight.append(Cost_forZeroEmission_eachWeather[j][i])
-                SMR_forFitting.append(SMR_forFitting_eachWeight)
-                Cost_forFitting.append(Cost_forFitting_eachWeight)
-
-
-            ##-- Plot the multiple line chart --##
-            fig, ax1 = plt.subplots()
-            ax1.set_xlabel("Number of SMR (-)", fontsize = labelFontSize)
-            ax1.set_ylabel("Total cost (£/yr)", fontsize = labelFontSize)
-            ### 1. plot cluster points for each season
-            for i, smrList in enumerate(SMR_forZeroEmission_eachWeather): ## each weather
-                min_cost = min(Cost_forZeroEmission_eachWeather[i])
-                index_min_cost = Cost_forZeroEmission_eachWeather[i].index(min_cost)
-                for j, smr in enumerate(smrList): ## each weight
-                    if j == index_min_cost: 
-                        dot_trans = 1
-                        ax1.text(smr, Cost_forZeroEmission_eachWeather[i][j]-4.5E8, str(round(self.weighterList[j], 2)), fontsize = 12, alpha = 0.85) 
-                    else: 
-                        dot_trans = 0.6
-                    ax1.scatter(smr, Cost_forZeroEmission_eachWeather[i][j], marker = markersList[j], s=8 ,color = colors[i], alpha = dot_trans) # , label = weatherConditionList[i][2]
-            ### 2. plot fitting lines for each weight
-            #  polynomial regression
-            for ii, smr_f_list in enumerate(SMR_forFitting):## each weight
-                if ii == 5:
-                    x = numpy.array(smr_f_list)
-                    y = numpy.array(Cost_forFitting[ii])
-
-                    # Reshape x to a 2D array for PolynomialFeatures
-                    x_reshape = x.reshape(-1, 1)
-
-                    # Generate polynomial features
-                    degree = 2
-                    poly_features = PolynomialFeatures(degree=degree)
-                    X_poly = poly_features.fit_transform(x_reshape)
-
-                    # Fit RANSAC regressor to polynomial features
-                    ransac = RANSACRegressor()
-                    ransac.fit(X_poly, y)
-
-                    # Generate x values for the fitted curve
-                    x_fit = numpy.linspace(min(x), max(x), 1000)
-                    x_fit_reshape = x_fit.reshape(-1, 1)
-                    X_fit_poly = poly_features.transform(x_fit_reshape)
-
-                    # Predict y values using the fitted RANSAC model
-                    y_fit = ransac.predict(X_fit_poly)
-
-                    ## Plotting the original points and the fitted line
-                    ## plt.scatter(x, y, color = colors[i], label=self.weighterList[m])
-                    plt.plot(x_fit, y_fit, linestyle = lineStyleList[ii], label='Weight: ' + str(self.weighterList[ii]))
-
-
-
-            # for ii, smr_f_list in enumerate(SMR_forFitting):## each weight
-            #     if ii in [0, 5, 6]:
-            #         x = numpy.array(smr_f_list)
-            #         y = numpy.array(Cost_forFitting[ii])
-
-            #         ## Fitting a line using least squares
-            #         A = numpy.vstack([x, numpy.ones(len(x))]).T
-            #         m, c = numpy.linalg.lstsq(A, y, rcond=None)[0]
-
-            #         ## Plotting the original points and the fitted line
-            #         ## plt.scatter(x, y, color = colors[i], label=self.weighterList[m])
-            #         plt.plot(x, m*x + c, linestyle = lineStyleList[ii], label='Weight: ' + str(self.weighterList[ii]))
-            
-            plt.ylim(1E10, 1.9E10) 
-            pos = ax1.get_position() ## set up the legend position
-            ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
-            ax1.legend(
-                loc="upper center",
-                fontsize = legendFontSize,
-                ncol=4,
-                bbox_to_anchor=(0.5, 0.05),
-                frameon=False,
-                bbox_transform=fig.transFigure 
-                ) 
-
-            text = "CarbonTax_" + str(ct)
-            plt.tight_layout()
-            self.mkdirFig('SMRvsCost_Fitting/')
-            plt.savefig(self.diagramPath + 'SMRvsCost_Fitting/' + 'SMRvsCost_%s.pdf' % text, dpi = 1200, bbox_inches='tight')
-            # plt.show() ## show must come after the savefig
-            # plt.close()
-            plt.clf()
-            plt.cla()
-        return       
-         
+     
     """Multiple line chart demonstrate the carbon emission reduction due to both the carbon tax and SMR introduction under the same weather"""
     def lineGraph_SMRImpactForCO2Emission(self, summary_eachSMRDesign:list, NumberOfSMRUnitList:list, CarbonTaxForOPFList:list, weatherConditionList:list):    
-        # ##FIXME: remove the last 3 carbon tax
-        # CarbonTaxForOPFList = CarbonTaxForOPFList[:-3]
-        
+        # CarbonTaxForOPFList = CarbonTaxForOPFList[:-3]        
         if len(summary_eachSMRDesign) != len(NumberOfSMRUnitList):
             raiseExceptions("The length of the result list should equal to the number of the SMR list number!")
         
@@ -7058,7 +4260,6 @@ class OptimalPowerFlowAnalysis:
                     ay1.plot(CarbonTaxForOPFList, CO2Emission_sameWeatherSameWeight_reduced[i], color = colors[i], alpha=0) 
 
 
-                ## ax1.legend(fontsize = legendFontSize, loc='upper left')
                 if weatherConditionList[w][2] in ['WHSH']:
                     anchor = (0.5, 0.09)
                     maxEmission = 2700
@@ -7100,19 +4301,15 @@ class OptimalPowerFlowAnalysis:
                     bbox_transform=fig.transFigure 
                 )   
                 plt.tight_layout()
-                self.mkdirFig('SMRImpactInEmission/')
+                self.mkdirFilePath(self.diagramPath, "SMRImpactInEmission/")
                 plt.savefig(self.diagramPath + 'SMRImpactInEmission/' + 'EmissionvsCarbonTaxOfDifferentSMRNumber_(SMRImpact)_%s.pdf' % text, dpi = 1200, bbox_inches='tight')
-                # plt.show() ## show must come after the savefig
-                # plt.close()
                 plt.clf()
                 plt.cla()
         return
 
     """Energy breakdown graph for each SMR design vs carbon tax"""
     def stackAreaGraph_EnergyBreakDownForEachSMRDesign(self, energyBreakdown_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList):
-        # ##FIXME: remove the last 3 carbon tax
-        # CarbonTaxForOPFList = CarbonTaxForOPFList[:-3]
-        
+        # CarbonTaxForOPFList = CarbonTaxForOPFList[:-3]       
         if len(energyBreakdown_eachSMRDesign) != len(NumberOfSMRUnitList):
             raiseExceptions("The length of the result list should equal to the number of the SMR list number!")
         ## set up the clourmap
@@ -7150,9 +4347,6 @@ class OptimalPowerFlowAnalysis:
                     ax1.stackplot(CarbonTaxForOPFList, energyBreakdown_sameSMRNumber, labels = genTypeLabel, colors = colorList, alpha=0.8)
                     ax2.stackplot(CarbonTaxForOPFList, energyBreakdown_sameSMRNumber, alpha=0) 
                     ay1.stackplot(CarbonTaxForOPFList, energyBreakdown_sameSMRNumber, alpha=0) 
-                    # def to_percent(temp, position):
-                    #     return '%1.0f'%(10*temp) + '%'
-                    # plt.gca().yaxis.set_major_formatter(ticker.FuncFormatter(to_percent))
                     
                     pos = ax1.get_position()
                     ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
@@ -7165,25 +4359,20 @@ class OptimalPowerFlowAnalysis:
                         bbox_transform=fig.transFigure 
                         ) 
                     plt.tight_layout()
-
-                    self.mkdirStackAreaGraph('EachSMRDesignEnergyBreakDown/')
+                    self.mkdirFilePath(self.diagramPathStack, "EachSMRDesignEnergyBreakDown/")
                     text = 'SMR_' + str(smrNumber) + '_' + weatherConditionList[w][2] + " (" + str(self.weighterList[weight_index]) + ")"        
                     plt.savefig(self.diagramPathStack + 'EachSMRDesignEnergyBreakDown/' + 'EnergyBreakdown_%s.pdf' % text, dpi = 1200, bbox_inches='tight')
-                    # plt.show() ## show must come after the savefig
-                    # plt.close()
                     plt.clf()
                     plt.cla()
         return
 
     """Energy breakdown graph for optimised SMR design vs carbon tax at each weight level"""
     def stackAreaGraph_EnergyBreakDownForOptimisedDesign(self, summary_eachSMRDesign, energyBreakdown_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, pickedWeightList):
-        # ##FIXME: remove the last 3 carbon tax
         # CarbonTaxForOPFList = CarbonTaxForOPFList[:-3]
         
         if len(energyBreakdown_eachSMRDesign) != len(NumberOfSMRUnitList):
             raiseExceptions("The length of the result list should equal to the number of the SMR list number!")
         ## set up the clourmap
-        #### colorList = ["#ffcc33", "#13bef2", "#008080", "#361b20",  "#99A3A4", "#1B2631", "#cc3300", "#1e8700", "#615a9e"]
         colorList = ["#ffcc33", "#13bef2", "#008080", "#1B2631", "#99A3A4", "#361b20", "#cc3300", "#1e8700", "#AFED8F"]
         ## ['Solar' 'Wind' 'Hydro' 'Oil' 'NaturalGas' 'Coal' 'Nuclear'  'SMR' 'Others']
 
@@ -7242,270 +4431,16 @@ class OptimalPowerFlowAnalysis:
                     bbox_transform=fig.transFigure 
                     ) 
                 plt.tight_layout()
-
-                self.mkdirStackAreaGraph('OptimisedEnergyBreakdownEnergyBreakDown/')  
+                self.mkdirFilePath(self.diagramPathStack, "OptimisedEnergyBreakdownEnergyBreakDown/")
                 text = weatherConditionList[w][2] + "_weight(" + str(pickedWeight) + ")"        
                 plt.savefig(self.diagramPathStack + 'OptimisedEnergyBreakdownEnergyBreakDown/' + 'OptimisedEnergyBreakdown_%s.pdf' % text, dpi = 1200, bbox_inches='tight')
-                # plt.show() ## show must come after the savefig
-                # plt.close()
                 plt.clf()
                 plt.cla()
-
-        # ##-- Create the fig including 4 subfigures for the pickedWeight --##
-        # plt.figure() ## set up a fig frame
-        # for w in range(len(weatherConditionList)):
-        #     weight_index = self.weighterList.index(pickedWeight)           
-        #     bestSMRNumberIndex_UnderSameWeatherAndSameWeight = []
-        #     for c in range(len(CarbonTaxForOPFList)):
-        #         costResult_sameCarbonTaxDifferentSMRNumber = []
-        #         for result_sameSMR in summary_eachSMRDesign:
-        #             cost = result_sameSMR[c][w][0][weight_index] ## the index 0 refers to the the cost and 1 refers to the CO2 emission 
-        #             costResult_sameCarbonTaxDifferentSMRNumber.append(cost)
-        #         ## pick the minimum 
-        #         bestCost_underSameCarbonTax = min(costResult_sameCarbonTaxDifferentSMRNumber)
-        #         index_ = costResult_sameCarbonTaxDifferentSMRNumber.index(bestCost_underSameCarbonTax)
-        #         bestSMRNumberIndex_UnderSameWeatherAndSameWeight.append(index_)
-
-        #     energyBreakdown_sameWeatherAndSameWeight = [ [] for i in range(len(genTypeLabel))]
-        #     for eb in range(len(energyBreakdown_sameWeatherAndSameWeight)):
-        #         for c in range(len(CarbonTaxForOPFList)):
-        #             smrIndex = bestSMRNumberIndex_UnderSameWeatherAndSameWeight[c]
-        #             energyBreakdown_singleSource = energyBreakdown_eachSMRDesign[smrIndex][c][w][weight_index][eb]
-        #             energyBreakdown_sameWeatherAndSameWeight[eb].append(energyBreakdown_singleSource)
-            
-            
-        #     plt.subplot(2, 2, int(w) + 1)
-        #     plt.title(weatherConditionList[w][2], fontsize = legendFontSize)
-        #     plt.xlabel("Carbon tax (£/t)", fontsize = labelFontSize)
-        #     plt.ylabel("Generation output (MW)", fontsize = labelFontSize) 
-        #     plt.tick_params(direction = 'in')
-        #     plt.stackplot(CarbonTaxForOPFList, energyBreakdown_sameWeatherAndSameWeight, labels = genTypeLabel, colors = colorList, alpha=0.8)
-            
-        # plt.legend(
-        #     loc="upper center",
-        #     fontsize = labelFontSize,
-        #     ncol=len(genTypeLabel),
-        #     bbox_to_anchor=(-0.13, -0.15),
-        #     frameon=False
-        #     ) 
-        # plt.tight_layout()
-        # plt.subplots_adjust(wspace = 0.2, hspace = 0.28)
-        # self.mkdirStackAreaGraph('OptimisedEnergyBreakdownEnergyBreakDown/')       
-        # plt.savefig(self.diagramPathStack + 'OptimisedEnergyBreakdownEnergyBreakDown/' + 'OptimisedEnergyBreakdown_FourSeasons_(weight0.5).pdf', dpi = 1200)#, bbox_inches='tight')
-        # plt.show() ## show must come after the savefig
-        # plt.close()
-        # plt.clf()
-        # plt.cla()
-        return
-
-    """Energy breakdown graph for each SMR design vs carbon tax"""
-    def stackAreaGraph_SMRvsCapacity_WMSM(self, energyBreakdown_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, 
-                                          givenCarbonTax, givenWeatherCondition, givenWeight, givenNumberofSMR):
-        
-        if len(energyBreakdown_eachSMRDesign) != len(NumberOfSMRUnitList):
-            raiseExceptions("The length of the result list should equal to the number of the SMR list number!")
-        ## set up the clourmap
-        # colorList = ["#ffcc33", "#13bef2", "#008080", "#1B2631", "#99A3A4", "#361b20", "#cc3300", "#1e8700", "#AFED8F"]
-        colorList = ["#fde725", "#2db27d", "#2e6e8e", "#1B2631", "#99A3A4", "#361b20", "#46327e", "#1e8700", "#AFED8F"]
-        ## ['Solar' 'Wind' 'Hydro' 'Oil' 'NaturalGas' 'Coal' 'Nuclear'  'SMR' 'Others']
-
-        if 'Nuclear' in genTypeLabel:
-            i_Nuclear = genTypeLabel.index('Nuclear')
-            genTypeLabel[i_Nuclear] = 'Conventional Nuclear'
-
-        if 'NaturalGas' in genTypeLabel:
-            i_NaturalGas = genTypeLabel.index('NaturalGas')
-            genTypeLabel[i_NaturalGas] = 'Natural Gas'
-
-        weather_index = weatherConditionList.index(givenWeatherCondition)
-        weight_index = self.weighterList.index(givenWeight)
-        SMRResults_terminateIndex = NumberOfSMRUnitList.index(givenNumberofSMR)
-        carbontax_index = CarbonTaxForOPFList.index(givenCarbonTax)
-
-        SMRList = NumberOfSMRUnitList[:SMRResults_terminateIndex + 1]
-
-        s_i = 0
-        energyBreakdown = [ [] for i in range(len(genTypeLabel))]
-        while s_i <= SMRResults_terminateIndex:
-            for eb_index, eb in enumerate(energyBreakdown_eachSMRDesign[s_i][carbontax_index][weather_index][weight_index]):
-                if eb_index == 0:
-                    eb = eb/givenWeatherCondition[1]/1E3
-                elif eb_index == 1:
-                    eb = eb/givenWeatherCondition[0]/1E3
-                elif eb_index == 2:
-                    eb = eb/0.25/1E3
-                elif eb_index in [3,4,5]:
-                    eb = eb/0.9/1E3
-                elif eb_index == 6:
-                    eb = eb/0.7/1E3
-                elif eb_index == 7:
-                    eb = NumberOfSMRUnitList[s_i] *self.SMRCapability/1E3
-                elif eb_index == 8:
-                    eb = eb/0.5/1E3
-                energyBreakdown[eb_index].append(eb)
-            s_i += 1
-
-        genTypeLabel[5] = "Coal & Oil"
-        energyBreakdown.append(energyBreakdown[7])
-        genTypeLabel.append(genTypeLabel[7])
-        colorList.append(colorList[7])
-    
-        del energyBreakdown[3]
-        del energyBreakdown[6]
-
-        del genTypeLabel[3]
-        del genTypeLabel[6]
-       
-        del colorList[3]
-        del colorList[6]
-
-        fig, ax1 = plt.subplots()
-        ax2 = ax1.twinx()
-        ay1 = ax1.twiny()
-        ax1.set_xlabel("Number of SMR (-)", fontsize = labelFontSize)
-        ax1.set_ylabel("Capacity (GW)", fontsize = labelFontSize)
-        ax1.tick_params(direction='in')
-        ax2.tick_params(direction='in')
-        ax2.axes.yaxis.set_ticklabels([])
-        ay1.tick_params(direction='in') 
-        ay1.axes.xaxis.set_ticklabels([])
-
-        ax1.stackplot(SMRList, energyBreakdown, labels = genTypeLabel, colors = colorList, alpha=0.75)
-        ax2.stackplot(SMRList, energyBreakdown, alpha=0) 
-        ay1.stackplot(SMRList, energyBreakdown, alpha=0) 
-
-        ## vertical line
-        ax1.vlines(31, 0, 50, color = '#000000', alpha=0.9, linestyle = lineStyleList[1]) 
-        ax2.vlines(31, 0, 50, color = '#000000', alpha=0, linestyle = lineStyleList[1])
-               
-        #ax1.fill_between(SMRList, energyBreakdown[6], energyBreakdown[7], color=None, hatch='x', edgecolor='#ff9999')
-        
-        pos = ax1.get_position()
-        ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
-        ax1.legend(
-            loc="upper center",
-            fontsize = legendFontSize,
-            ncol=3,
-            bbox_to_anchor=(0.5, 0.12),
-            frameon=False,
-            bbox_transform=fig.transFigure 
-            ) 
-        plt.tight_layout()
-
-        self.mkdirStackAreaGraph('SMRvsCapacity/')
-        text = givenWeatherCondition[2] + "_weight_" + str(givenWeight) + "_CarbonTax_" + str(givenCarbonTax)
-        plt.savefig(self.diagramPathStack + 'SMRvsCapacity/' + 'SMRvsCapacity_%s.pdf' % text, dpi = 1200, bbox_inches='tight')
-        # plt.show() ## show must come after the savefig
-        # plt.close()
-        plt.clf()
-        plt.cla()
-        return
-
-
-    """Energy breakdown graph for each SMR design vs carbon tax"""
-    def stackAreaGraph_SMRvsCapacity_WMSM(self, energyBreakdown_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, 
-                                          givenCarbonTax, givenWeatherCondition, givenWeight, givenNumberofSMR):
-        
-        if len(energyBreakdown_eachSMRDesign) != len(NumberOfSMRUnitList):
-            raiseExceptions("The length of the result list should equal to the number of the SMR list number!")
-        ## set up the clourmap
-        # colorList = ["#ffcc33", "#13bef2", "#008080", "#1B2631", "#99A3A4", "#361b20", "#cc3300", "#1e8700", "#AFED8F"]
-        colorList = ["#fde725", "#2db27d", "#2e6e8e", "#1B2631", "#99A3A4", "#361b20", "#46327e", "#1e8700", "#AFED8F"]
-        ## ['Solar' 'Wind' 'Hydro' 'Oil' 'NaturalGas' 'Coal' 'Nuclear'  'SMR' 'Others']
-
-        if 'Nuclear' in genTypeLabel:
-            i_Nuclear = genTypeLabel.index('Nuclear')
-            genTypeLabel[i_Nuclear] = 'Conventional Nuclear'
-
-        if 'NaturalGas' in genTypeLabel:
-            i_NaturalGas = genTypeLabel.index('NaturalGas')
-            genTypeLabel[i_NaturalGas] = 'Natural Gas'
-
-        weather_index = weatherConditionList.index(givenWeatherCondition)
-        weight_index = self.weighterList.index(givenWeight)
-        SMRResults_terminateIndex = NumberOfSMRUnitList.index(givenNumberofSMR)
-        carbontax_index = CarbonTaxForOPFList.index(givenCarbonTax)
-
-        SMRList = NumberOfSMRUnitList[:SMRResults_terminateIndex + 1]
-
-        s_i = 0
-        energyBreakdown = [ [] for i in range(len(genTypeLabel))]
-        while s_i <= SMRResults_terminateIndex:
-            for eb_index, eb in enumerate(energyBreakdown_eachSMRDesign[s_i][carbontax_index][weather_index][weight_index]):
-                if eb_index == 0:
-                    eb = eb/givenWeatherCondition[1]/1E3
-                elif eb_index == 1:
-                    eb = eb/givenWeatherCondition[0]/1E3
-                elif eb_index == 2:
-                    eb = eb/0.25/1E3
-                elif eb_index in [3,4,5]:
-                    eb = eb/0.9/1E3
-                elif eb_index == 6:
-                    eb = eb/0.7/1E3
-                elif eb_index == 7:
-                    eb = NumberOfSMRUnitList[s_i] *self.SMRCapability/1E3
-                elif eb_index == 8:
-                    eb = eb/0.5/1E3
-                energyBreakdown[eb_index].append(eb)
-            s_i += 1
-
-        genTypeLabel[5] = "Coal & Oil"
-        energyBreakdown.append(energyBreakdown[7])
-        genTypeLabel.append(genTypeLabel[7])
-        colorList.append(colorList[7])
-    
-        del energyBreakdown[3]
-        del energyBreakdown[6]
-
-        del genTypeLabel[3]
-        del genTypeLabel[6]
-       
-        del colorList[3]
-        del colorList[6]
-
-        fig, ax1 = plt.subplots()
-        ax2 = ax1.twinx()
-        ay1 = ax1.twiny()
-        ax1.set_xlabel("Number of SMR (-)", fontsize = labelFontSize)
-        ax1.set_ylabel("Capacity (GW)", fontsize = labelFontSize)
-        ax1.tick_params(direction='in')
-        ax2.tick_params(direction='in')
-        ax2.axes.yaxis.set_ticklabels([])
-        ay1.tick_params(direction='in') 
-        ay1.axes.xaxis.set_ticklabels([])
-
-        ax1.stackplot(SMRList, energyBreakdown, labels = genTypeLabel, colors = colorList, alpha=0.75)
-        ax2.stackplot(SMRList, energyBreakdown, alpha=0) 
-        ay1.stackplot(SMRList, energyBreakdown, alpha=0) 
-
-        ## vertical line
-        ax1.vlines(31, 0, 50, color = '#000000', alpha=0.9, linestyle = lineStyleList[1]) 
-        ax2.vlines(31, 0, 50, color = '#000000', alpha=0, linestyle = lineStyleList[1])
-               
-        #ax1.fill_between(SMRList, energyBreakdown[6], energyBreakdown[7], color=None, hatch='x', edgecolor='#ff9999')
-        
-        pos = ax1.get_position()
-        ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
-        ax1.legend(
-            loc="upper center",
-            fontsize = legendFontSize,
-            ncol=3,
-            bbox_to_anchor=(0.5, 0.12),
-            frameon=False,
-            bbox_transform=fig.transFigure 
-            ) 
-        plt.tight_layout()
-
-        self.mkdirStackAreaGraph('SMRvsCapacity/')
-        text = givenWeatherCondition[2] + "_weight_" + str(givenWeight) + "_CarbonTax_" + str(givenCarbonTax)
-        plt.savefig(self.diagramPathStack + 'SMRvsCapacity/' + 'SMRvsCapacity_%s.pdf' % text, dpi = 1200, bbox_inches='tight')
-        plt.clf()
-        plt.cla()
         return
 
     """Energy breakdown graph for each SMR design vs carbon tax"""
     def stackAreaGraphOverlayedWithBarChart_SMRvsCapacity(self, givenNumberofSMR, reported_consumption, plannedNuclearCapacity):
-        colorList = ["#08306b", "#08519c", "#2171b5", "#4292c6", "#6baed6", "#9ecae1", "#c6dbef", "#deebf7"] ## revise blue
+        colorList = ["#08306b", "#08519c", "#2171b5", "#4292c6", "#6baed6", "#9ecae1", "#c6dbef", "#deebf7"]
         genTypeLabelForCapacity =  ['Coal', 'Oil', 'Natural Gas', 'Bioenergy & Others', 'Conventional Nuclear','Hydro', 'Solar', 'Wind' ]
         capa2022 = [3.9, 1.084, 30.768, 3.861, 6.848, 1.465, 4.743, 23.656]
         
@@ -7561,10 +4496,8 @@ class OptimalPowerFlowAnalysis:
             bbox_transform=fig.transFigure 
             ) 
         plt.tight_layout()
-
-        self.mkdirStackAreaGraph('SMRvsCapacity/')
+        self.mkdirFilePath(self.diagramPathStack, "SMRvsCapacity/")
         plt.savefig(self.diagramPathStack + 'SMRvsCapacity/' + 'SMRvsCapacity.pdf', dpi = 1200, bbox_inches='tight')
-       
         plt.clf()
         plt.cla()
         return
@@ -7575,12 +4508,14 @@ if __name__ == '__main__':
     topologyNodeIRI_29Bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_6017554a-98bb-4896-bc21-e455cb6b3958" 
     
     AgentIRI = "http://www.example.com/triplestore/agents/Service__XXXAgent#Service"
+
     slackBusNodeIRI_10Bus = "http://www.theworldavatar.com/kb/ontopowsys/BusNode_1f3c4462-3472-4949-bffb-eae7d3135591"  ## the slack bus is recongnised by its latlon
     slackBusNodeIRI_29Bus = "http://www.theworldavatar.com/kb/ontopowsys/BusNode_bc386bcb-33ab-4569-80c5-00dc9d0bffb8"  
 
     queryEndpointLabel = "ukdigitaltwin_test2"
     geospatialQueryEndpointLabel = "ukdigitaltwin_pd"
     updateEndPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
+
     loadAllocatorName_10Bus = "regionalDemandLoad"
     loadAllocatorName_29Bus = "closestDemandLoad"
 
@@ -7596,7 +4531,8 @@ if __name__ == '__main__':
     withRetrofit = True
     newGeneratorType = "SMR"
     retrofitGenerator = []
-    retrofitGenerationFuelOrTechType = ["http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas", 
+    retrofitGenerationFuelOrTechType = [
+     "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas", 
      "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal", 
      "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil",
      "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#SourGas"]
@@ -7612,7 +4548,6 @@ if __name__ == '__main__':
     "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_eeda9b60-bfe7-4801-abb7-a229633afdd3", ## Dungeness_B, Nuclear
     "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_42dddc5b-e0ea-4f69-882f-6dc66d14b7af", ## Hunterston_B, nuclear
     "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_b0509ae1-e4b5-4af9-96c5-bb072744ee14", ## Fiddlers_Ferry, coal
-    # "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_bf986094-907e-47d0-800d-7a4a3163b18d", ## 	Drax_-_coal_units, coal, still open
     "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_be02c84e-5183-4bb1-8c25-47e4e4f37d32", ## Aberthaw_B, coal
     "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_d5653f2d-7384-46a3-aade-0f50ae1ac244", ## Cottam, coal
     "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_2c32b4ea-a564-43c9-ab4e-0af602bd1432", ## Uskmouth_Power, coal
@@ -7624,7 +4559,6 @@ if __name__ == '__main__':
 
     ## SMR site selection settings
     discountRate = 0.035
-    SMR_LCOE = 60
     bankRate = discountRate
     projectLifeSpan = 60
     SMRCapitalCost = 1800000000
@@ -7645,6 +4579,8 @@ if __name__ == '__main__':
     n_offsprings = 1000 ## 1-2 offspring of the parent generation
     numberOfGenerations = 600 
 
+    SMR_LCOE = 60
+
     ## The setting of £40
     # NumberOfSMRUnitList = [0, 10, 12, 13,  15, 17, 18, 19,  25, 28, 29, 32,  33, 42, 43, 45,  47, 48, 49]
     # weighterList = [0, 0.25, 0.5, 0.6, 0.75, 0.9, 1]
@@ -7661,17 +4597,6 @@ if __name__ == '__main__':
                             [0.49, 0.38, "WBSB"],
                               [0.157, 0.78, "WLSH"], [0.157, 0.068, "WLSL"]]
 
-    # NumberOfSMRUnitList = [0]
-    # weighterList = [0, 0.25, 0.5, 0.6, 0.75, 0.85, 0.9, 1]
-    # CarbonTaxForOPFList = [151]
-    # weatherConditionList = [[0.157, 0.78, "WLSH"]] 
-
-
-    # # # # # ##FORTEST###
-    # NumberOfSMRUnitList = [0]
-    # weighterList = [0, 0.25, 0.5, 0.6, 0.75, 0.85, 0.9, 1] 
-    # CarbonTaxForOPFList = [151]# [0, 5, 10, 20, 30, 40, 50, 60, 70, 100, 150, 200] 
-    # weatherConditionList = [[0.157, 0.78, "WLSH"]]# [[0.49, 0.38, "WBSB"]]
 
     ## stop generating the JSON files
     generateVisualisationJSON = True
@@ -7681,7 +4606,7 @@ if __name__ == '__main__':
 
     rootPath = '/mnt/d/wx243/FromTWA/npy/29bus_LCOE_60£_final/'
     ## rootPath = '/mnt/d/wx243/FromAW/npy/29bus_LCOE_£40/'
-    queryResultLocalPath = '/mnt/d/wx243/FromTWA/npy/queryResult/29bus/'
+   
 
     ## folder location cheching
     if not ifReadLocalResults:
@@ -7691,14 +4616,6 @@ if __name__ == '__main__':
             print("---  new folder %s...  ---" % rootPath)
         else:
             print("---  There has npy folder!  ---")
-    
-    folder = os.path.exists(queryResultLocalPath)
-    if not folder:                
-        os.makedirs(queryResultLocalPath)           
-        print("---  new folder %s...  ---" % queryResultLocalPath)
-    else:
-        print("---  There has npy folder!  ---")
-
 
     ## Specified net demanding results for GeoJSON creation 
     ifSpecifiedResultsForNetDemanding = True
@@ -7734,7 +4651,7 @@ if __name__ == '__main__':
     #                    [12, 150, "WHSH", 0.25], [12, 150, "WHSH", 0.5], [12, 150, "WHSH", 0.75]]
     
     ## For stack fig of the energy breakdown
-    EnergyBreakDown_weightList = [0.25, 0.5, 0.75]# [0.25, 0.5, 0.6, 0.75]
+    EnergyBreakDown_weightList = [0.25, 0.5, 0.75]
 
     ## For weather impact line chart
     pickedWeight = 0.5
@@ -7747,14 +4664,14 @@ if __name__ == '__main__':
         EBusModelVariableInitialisationMethodName_29Bus, ELineInitialisationMethodName_29Bus, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, 
         baseMVA, withRetrofit, retrofitGenerator, retrofitGenerationFuelOrTechType, DecommissionedNuclearSitesLocation, generatorClusterFunctionName_29bus,newGeneratorType, weighterList, discountRate, bankRate, projectLifeSpan, 
         yearlyOperationHours, SMRCapitalCost, SMR_LCOE, SMROperationalRatio, MonetaryValuePerHumanLife, NeighbourhoodRadiusForSMRUnitOf1MW, ProbabilityOfReactorFailure, SMRCapability, maxmumSMRUnitAtOneSite, 
-        SMRIntergratedDiscount, DecommissioningCostEstimatedLevel, safeDistance, pop_size, n_offsprings, numberOfGenerations, ifReadLocalResults, queryResultLocalPath, updateEndPointURL)  
+        SMRIntergratedDiscount, DecommissioningCostEstimatedLevel, safeDistance, pop_size, n_offsprings, numberOfGenerations, ifReadLocalResults, updateEndPointURL)  
 
 ############10 Bus model##################################################################################################################################################################
     # testOPF_29BusModel = OptimalPowerFlowAnalysis(topologyNodeIRI_10Bus, eliminateClosedPlantIRIList, AgentIRI, "2017-01-31", slackBusNodeIRI_10Bus, loadAllocatorName_10Bus, 
     #     EBusModelVariableInitialisationMethodName_10Bus, ELineInitialisationMethodName_10Bus, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, 
     #     baseMVA, withRetrofit, retrofitGenerator, retrofitGenerationFuelOrTechType, DecommissionedNuclearSitesLocation, generatorClusterFunctionName_10bus, newGeneratorType, weighterList, discountRate, bankRate, projectLifeSpan, 
     #     yearlyOperationHours, SMRCapitalCost, SMR_LCOE, SMROperationalRatio, MonetaryValuePerHumanLife, NeighbourhoodRadiusForSMRUnitOf1MW, ProbabilityOfReactorFailure, SMRCapability, maxmumSMRUnitAtOneSite, 
-    #     SMRIntergratedDiscount, DecommissioningCostEstimatedLevel, safeDistance, pop_size, n_offsprings, numberOfGenerations, ifReadLocalResults, queryResultLocalPath, updateEndPointURL)  
+    #     SMRIntergratedDiscount, DecommissioningCostEstimatedLevel, safeDistance, pop_size, n_offsprings, numberOfGenerations, ifReadLocalResults, updateEndPointURL)  
 
 
     if not ifReadLocalResults:
@@ -7788,22 +4705,12 @@ if __name__ == '__main__':
             busRawResult_eachSMRDesign = []
             branchRawResult_eachSMRDesign = []
             genRawResult_eachSMRDesign = []
-            # ParetoFrontResult_eachSMRDesign = []
             energyBreakdown_detailed_eachSMRDesign = []
-
 
             for numberOfSMRToBeIntroduced in smrList:
                 print('===The number of SMR is: ', str(numberOfSMRToBeIntroduced))
                 testOPF_29BusModel.siteSelector(numberOfSMRToBeIntroduced)
-                testOPF_29BusModel.optimaPicker(ifGenerateParetoFrontPDF)
-                # if numberOfSMRToBeIntroduced != 0:
-                #     ParetoFrontResult_eachSMRDesign.append(testOPF_29BusModel.paretoFrontDrawing)
-                #     del testOPF_29BusModel.paretoFrontDrawing               
-                # continue
-                # if numberOfSMRToBeIntroduced != 0:
-                #     ParetoFrontResult_eachSMRDesign.append([testOPF_29BusModel.feasibleSolustionsList, testOPF_29BusModel.paretoFrontList, testOPF_29BusModel.selectedSolution])
-                
-                
+                testOPF_29BusModel.optimaPicker(ifGenerateParetoFrontPDF)            
                 summary_eachCarbonTax = []
                 divergenceList_eachCarbonTax = []
                 SMR_eachCarbonTax = []
@@ -7872,8 +4779,8 @@ if __name__ == '__main__':
                         del testOPF_29BusModel.emissionCostContributionList_OPEX
                         del testOPF_29BusModel.emissionCostContributionList_TotalCost
                       
-                        energyBreakdown_eachWeather.append(testOPF_29BusModel.EnergySupplyBreakDownPieChartCreator()[0])
-                        energyBreakdown_detailed_eachWeather.append([testOPF_29BusModel.EnergySupplyBreakDownPieChartCreator()[1], testOPF_29BusModel.EnergySupplyBreakDownPieChartCreator()[2]])
+                        energyBreakdown_eachWeather.append(testOPF_29BusModel.EnergySupplyBreakDown()[0])
+                        energyBreakdown_detailed_eachWeather.append([testOPF_29BusModel.EnergySupplyBreakDown()[1], testOPF_29BusModel.EnergySupplyBreakDown()[2]])
                         netDemanding_smallArea_eachWeather.append(testOPF_29BusModel.netDemandingList_smallAreaForEachWeight)
                         del testOPF_29BusModel.netDemandingList_smallAreaForEachWeight
                         netDemanding_regionalArea_eachWeather.append(testOPF_29BusModel.netDemandingList_regionalAreaForEachWeight)
@@ -8010,14 +4917,6 @@ if __name__ == '__main__':
         # branchRawResult_eachSMRDesign = numpy.load(rootPath +"np_branchRawResult_eachSMRDesign.npy", allow_pickle=True)
         # genRawResult_eachSMRDesign = numpy.load(rootPath +"np_genRawResult_eachSMRDesign.npy", allow_pickle=True)
 
-        # summary_eachSMRDesign = summary_eachSMRDesign.tolist()
-        # divergenceList_eachSMRDesign = divergenceList_eachSMRDesign.tolist()
-        # OPEXratio_eachSMRDesign = OPEXratio_eachSMRDesign.tolist() 
-        # # # SMROutputAndOperationalRatio_eachSMRDesign = SMROutputAndOperationalRatio_eachSMRDesign.tolist()
-        # SMRInvestment_eachSMRDesign = SMRInvestment_eachSMRDesign.tolist()
-        # emission_eachSMRDesign = emission_eachSMRDesign.tolist()
-        # energyBreakdown_eachSMRDesign = energyBreakdown_eachSMRDesign.tolist()
-        #energyBreakdown_detailed_eachSMRDesign = energyBreakdown_detailed_eachSMRDesign.tolist()
 
         # netDemanding_smallArea_eachSMRDesign = netDemanding_smallArea_eachSMRDesign.tolist()
         netDemanding_regionalArea_eachSMRDesign = netDemanding_regionalArea_eachSMRDesign.tolist() 
@@ -8032,53 +4931,24 @@ if __name__ == '__main__':
     """The reusult data heatmap"""
     ######## testOPF_29BusModel.resultsSheetCreator(NumberOfSMRUnitList, weatherConditionList, CarbonTaxForOPFList, summary_eachSMRDesign)
     # testOPF_29BusModel.dataHeatmapCreator_totalCostAndEmission(summary_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)   
-    # ######## testOPF_29BusModel.dataHeatmapCreator_SMROutputAndOperationalRatio(SMROutputAndOperationalRatio_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)   
     # testOPF_29BusModel.dataHeatmapCreator_CO2Emission(emission_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)   
     # testOPF_29BusModel.dataHeatmapCreator_SubCost(summary_eachSMRDesign, OPEXratio_eachSMRDesign, emission_eachSMRDesign, SMRInvestment_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)
         
-
     """The line charts and stack area graph"""
     # for pickedWeight in EnergyBreakDown_weightList:
     #     # testOPF_29BusModel.lineGraph_weatherImpact(pickedWeight, 2022, 53.7, 49.7, 49.5, 30, ["WHSL", 55, 0.5], 0, 20, 20, 40, summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)  ## LCOE 40 
     #     testOPF_29BusModel.lineGraph_weatherImpact(pickedWeight, 2022, 53.7, 49.7, 49.5, 30, [], 45, 60, 20, 40, summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)  ## LCOE 60
     # testOPF_29BusModel.lineGraph_weightImpact(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
     # testOPF_29BusModel.lineGraph_SMRImpactForCO2Emission(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
-    # testOPF_29BusModel.lineGraph_SMRNumberVsCO2Emission_mergedPlot(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, [0, 5, 10, 40, 100])
-    # testOPF_29BusModel.lineGraph_SMRNumberVsCost_mergedPlot(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, [0, 5, 10, 40, 100])
-    # testOPF_29BusModel.lineGraph_SMRNumberVsCost_FittingPlot(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, [100])
-    # testOPF_29BusModel.lineGraph_OptimisedSMRNumberVsCost_CarbonTaxLabeled(summary_eachSMRDesign, OPEXratio_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, [0.9])
-    # testOPF_29BusModel.lineGraph_SMRNumberVsCO2Emission_sameWeatherConditionOnTheSamePlot(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, [0.25, 0.5, 0.75])
     # testOPF_29BusModel.stackAreaGraph_EnergyBreakDownForEachSMRDesign(energyBreakdown_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
     # testOPF_29BusModel.stackAreaGraph_EnergyBreakDownForOptimisedDesign(summary_eachSMRDesign, energyBreakdown_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, EnergyBreakDown_weightList)
-    # testOPF_29BusModel.stackAreaGraph_SMRvsCapacity_WMSM(energyBreakdown_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, 
-    #                                       15, [0.49, 0.38, "WBSB"], 0.5, 34)
     # testOPF_29BusModel.stackAreaGraphOverlayedWithBarChart_SMRvsCapacity(60, 30.6, 24)
-
 
     """WITH SPECIFIED CONFIGRATION""" 
     # testOPF_29BusModel.GeoJSONCreator_netDemandingForSmallArea(netDemanding_smallArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
     testOPF_29BusModel.GeoJSONCreator_netDemandingForRegionalArea(netDemanding_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
     # testOPF_29BusModel.EnergySupplyBreakDownPieChartCreator_RegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
     # testOPF_29BusModel.GeoJSONCreator_branchGrid(branchRawResult_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
-    #'''' testOPF_29BusModel.GeoJSONCreator_majorEnergySourceForSmallArea(energyBreakdown_smallArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
-    #'''' testOPF_29BusModel.GeoJSONCreator_outputOfDifferentEnergySourceForSmallArea(energyBreakdown_smallArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
     testOPF_29BusModel.GeoJSONCreator_totalOutputOfRegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
     print('Terminal')
 
-#     # print("*****This are EBus results*****")
-#     # for attr in testOPF1.ObjectSet.get('EBus-7').__dir__():
-#     #     print(attr, getattr(testOPF1.ObjectSet.get('EBus-7'), attr))
-#     # for attr in testOPF1.ObjectSet.get('EBus-8').__dir__():
-#     #     print(attr, getattr(testOPF1.ObjectSet.get('EBus-8'), attr))
-
-#     # print("*****This are ELine results*****")
-#     # for attr in testOPF1.ObjectSet.get('ELine-0').__dir__():
-#     #     print(attr, getattr(testOPF1.ObjectSet.get('ELine-0'), attr)) 
-        
-#     # print("*****This are EGen results*****")
-#     # for attr in testOPF1.ObjectSet.get('EGen-1134').__dir__():
-#     #     print(attr, getattr(testOPF1.ObjectSet.get('EGen-1134'), attr)) 
-
-    # print("*****This are EGen toberetrofitted results*****")
-    # for attr in testOPF1.ObjectSet.get('EGenRetrofit-11').__dir__():
-    #     print(attr, getattr(testOPF1.ObjectSet.get('EGenRetrofit-11'), attr)) 

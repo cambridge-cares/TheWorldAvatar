@@ -21,7 +21,7 @@ def ParetoFrontCreator(filePath_GAResults, weightList, SMRList, SMRUnitCapacity,
             raise ValueError("Invalid weight: %s" % weightList[i])
         if float(weightList[i]) < 0.000001:
             weightList[i] = float(weightList[i]) + 0.000001
-        elif float(weightList[i]) > 9.999999 or abs(float(weightList[i]) -1) < 0.000001:
+        elif float(weightList[i]) > 0.999999 or abs(float(weightList[i]) -1) < 0.000001:
             weightList[i] = float(weightList[i]) - 0.000001
 
         weightNumpyMatrix[i, 0] = weightList[i]
@@ -29,6 +29,8 @@ def ParetoFrontCreator(filePath_GAResults, weightList, SMRList, SMRUnitCapacity,
 
     ## Read the GA results from local nyp file
     GAResults = (numpy.load(filePath_GAResults, allow_pickle=True)) ## 0: F, 1: approx_ideal_feasibleNormalised, 2: approx_nadir_feasibleNormalised
+    
+    ## Pick the line to be draw
     if ifLeanFig:
         lines = []
         for ld in LineToBeDrew:
@@ -76,7 +78,7 @@ def ParetoFrontCreator(filePath_GAResults, weightList, SMRList, SMRUnitCapacity,
         decomp = ASF()
         indexOfOptima = []
         for weights in weightNumpyMatrix:
-            print(weights)
+            # print(weights)
             i = decomp.do(nF, 1/weights).argmin()
             indexOfOptima.append(i) ## to keep the result picked is the same one picked from the main algorithm
         # indexOfOptimaforEachWeight_forEachSMRDesign.append(indexOfOptima) 
@@ -92,9 +94,12 @@ def ParetoFrontCreator(filePath_GAResults, weightList, SMRList, SMRUnitCapacity,
             if numberOfSMR == 60:
                 plt.text(min(nF_feasibleNormalised[:, 0]) + 0.01, max(nF_feasibleNormalised[:, 1]) - 0.01, str(numberOfSMR) + ' SMRs', fontsize = 7.5, alpha = 0.85) 
                 plt.text(min(nF_feasibleNormalised[:, 0]) + 0.02, max(nF_feasibleNormalised[:, 1]) - 0.03, str(round(numberOfSMR * SMRUnitCapacity/1E3, 1)) + ' GW', fontsize = 6, alpha = 0.75) 
-            elif numberOfSMR == 32:
+            elif numberOfSMR == 33:
                 plt.text(min(nF_feasibleNormalised[:, 0]) -0.07, max(nF_feasibleNormalised[:, 1]) + 0.03, str(numberOfSMR) + ' SMRs', fontsize = 7.5, alpha = 0.85) 
                 plt.text(min(nF_feasibleNormalised[:, 0]) -0.06, max(nF_feasibleNormalised[:, 1]) + 0.01, str(round(numberOfSMR * SMRUnitCapacity/1E3, 1)) + ' GW', fontsize = 6, alpha = 0.75) 
+            elif numberOfSMR == 10:
+                plt.text(min(nF_feasibleNormalised[:, 0]) -0.03, max(nF_feasibleNormalised[:, 1]) + 0.03, str(numberOfSMR) + ' SMRs', fontsize = 7.5, alpha = 0.85) 
+                plt.text(min(nF_feasibleNormalised[:, 0]) -0.02, max(nF_feasibleNormalised[:, 1]) + 0.01, str(round(numberOfSMR * SMRUnitCapacity/1E3, 1)) + ' GW', fontsize = 6, alpha = 0.75) 
             else:
                 plt.text(min(nF_feasibleNormalised[:, 0]) -0.06, max(nF_feasibleNormalised[:, 1]) + 0.03, str(numberOfSMR) + ' SMRs', fontsize = 7.5, alpha = 0.85) 
                 plt.text(min(nF_feasibleNormalised[:, 0]) -0.05, max(nF_feasibleNormalised[:, 1]) + 0.01, str(round(numberOfSMR * SMRUnitCapacity/1E3, 1)) + ' GW', fontsize = 6, alpha = 0.75) 
@@ -171,7 +176,7 @@ def ParetoFrontCreator(filePath_GAResults, weightList, SMRList, SMRUnitCapacity,
 
         ## Plotting the original points and the fitted line
         plt.plot(x_fit, y_fit, linestyle = 'dotted', color = "#c48b4f")
-        plt.text(max(x_fit) + 0.01, max(y_fit), weightLabel, color = "#c48b4f", fontsize = 7, alpha = 0.85) 
+        plt.text(max(x_fit) + 0.02, max(y_fit) + 0.02, weightLabel, color = "#c48b4f", fontsize = 7, alpha = 1) 
  
     ## Fill the area between the lines
     ##plt.fill_between(list_weight05_x, list_weight05_y, list_weight02_y,  where=(list_weight05_y >= list_weight02_y), color='gray', alpha=0.4)
@@ -187,17 +192,18 @@ def ParetoFrontCreator(filePath_GAResults, weightList, SMRList, SMRUnitCapacity,
     #         frameon=False)
     #  plt.tight_layout()
     plt.savefig(figSavePath + 'ParetoFront_allSMRDesign.pdf', dpi = 1200, bbox_inches='tight')
+    print('ParetoFront_allSMRDesign.pdf is done successfully')
     plt.clf()
     plt.cla()
     return
 
 if __name__ == '__main__': 
-    filePath_GAResults = "/mnt/d/wx243/FromAW/npy/np_ParetoFrontResult_eachSMRDesign.npy"
-    weightList = [0, 0.25, 0.5, 0.75, 1] 
-    SMRList = [5, 10, 12, 15, 17,  18, 20, 24, 26,  28, 30, 31, 32, 33, 34, 36, 41, 42, 47,  48, 49, 50, 52,  55, 56, 57, 58,  60]
+    filePath_GAResults = "/mnt/d/wx243/FromAW/npy/29bus_LCOE_£60/np_ParetoFrontResult_eachSMRDesign.npy"
+    weightList = [0, 0.25, 0.5, 0.75, 0.9, 1] 
+    SMRList = [10, 20, 30, 33, 36, 40, 50, 52, 60]
     figSavePath = "/mnt/d/wx243/FromAW/ParetoFront/"
-    selectedSMRNumber = [12, 18, 32, 42, 48]
-    LineToBeDrew = [10, 20, 32, 41, 50, 60]
+    selectedSMRNumber = [10, 20, 30, 40, 50, 60]
+    LineToBeDrew = [10, 20, 30, 40, 50, 60]
     selectedWeight = [0.25, 0.5, 0.75]
     SMRUnitCapacity = 470
 
