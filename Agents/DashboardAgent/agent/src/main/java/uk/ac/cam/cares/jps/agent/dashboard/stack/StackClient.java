@@ -45,8 +45,13 @@ public class StackClient {
         String stackJdbcUrl = "jdbc:postgresql://" + this.STACK_RDB_DOMAIN + "/";
         this.POSTGIS_CLIENT = new PostGisClient(stackJdbcUrl, postConfig.getUsername(), postConfig.getPassword());
         LOGGER.debug("Retrieving SPARQL services...");
+        // Generate the generic stack SPARQL endpoint url based on their authentication enabled
+        String stackSparqlEndpoint = blazeConfig.getPassword().isEmpty() ?
+                // Non-authenticated endpoint
+                "http://" + blazeConfig.getHostName() + ":" + blazeConfig.getPort() + "/blazegraph/namespace/" :
+                // Authenticated endpoint
+                "http://" + blazeConfig.getUsername() + ":" + blazeConfig.getPassword() + "@" + blazeConfig.getHostName() + ":" + blazeConfig.getPort() + "/blazegraph/namespace/";
         // WIP: Refactor the SPARQL endpoint as a POST parameter
-        String stackSparqlEndpoint = "http://" + blazeConfig.getUsername() + ":" + blazeConfig.getPassword() + "@" + blazeConfig.getHostName() + ":" + blazeConfig.getPort() + "/blazegraph/namespace/";
         this.SPARQL_CLIENT = new SparqlClient(stackSparqlEndpoint + "lab/sparql");
         // Note that the container name and port number is dependent on the custom setup - This may change when we have a built-in container for grafana
         this.DASHBOARD_URL = "http://" + getStackNameFromHost(blazeConfig.getHostName()) + "-grafana:3000";
