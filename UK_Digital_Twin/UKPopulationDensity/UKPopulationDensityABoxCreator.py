@@ -1,11 +1,12 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 25 July 2022         #
+# Last Update Date: 23 Feb 2023          #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK population density graph."""
-import os
+import os, json
 import owlready2
+import pandas as pd
 from rdflib.extras.infixowl import OWL_NS
 from rdflib import Graph, URIRef, Literal
 from rdflib.namespace import RDF, RDFS
@@ -20,7 +21,8 @@ from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
 import uuid
 from logging import raiseExceptions
-from pyasyncagent.kg_operations.sparql_client import PySparqlClient
+from pyderivationagent.kg_operations.sparql_client import PySparqlClient
+from UK_Digital_Twin_Package.queryInterface import performQuery
 
 
 """Notation used in URI construction"""
@@ -55,6 +57,15 @@ def createPopulationDensityDataProperty(version):
     header = populationdata.headerPopulationDensityData
     return data, header
 
+def read_single_csv(input_path):
+    df_chunk=pd.read_csv(input_path,chunksize=1000)
+    res_chunk=[]
+    for chunk in df_chunk:
+        res_chunk.append(chunk)
+    res_df=pd.concat(res_chunk)
+    res_df = res_df.values.tolist()
+    return res_df
+
 """Main Function: Add Triples to the named graph"""
 def addUKPopulationDensityTriples(version, updateEndpointIRI, OWLFileStoragePath = None, updateLocalOWLFile = True, storeType = 'default'):  
     print(defaultStoredPath)
@@ -62,13 +73,13 @@ def addUKPopulationDensityTriples(version, updateEndpointIRI, OWLFileStoragePath
     if filepath == None:
         return
     store = LocalGraphStore(storeType)   
-    
-    data, header = createPopulationDensityDataProperty(version)    
-    
-    if data[0] != header:
-        raise Exception("The population density data header does not match!!")
-    else:
-        del data[0]
+    populationdata = PopulationData.PopulationDensityDataProperty(version)
+    data = read_single_csv(populationdata.PopulationDensityDataPath) 
+   
+    # if data[0] != header:
+    #     raise Exception("The population density data header does not match!!")
+    # else:
+    #     del data[0]
 
     ## Create rdf graph with identifier
     ontologyIRI = dt.baseURL + SLASH + dt.topNode + SLASH + str(uuid.uuid4())
@@ -88,7 +99,8 @@ def addUKPopulationDensityTriples(version, updateEndpointIRI, OWLFileStoragePath
         valueOfPopulationIRI = dt.baseURL + SLASH + t_box.ontosdgName + SLASH + ukpd.valueKey + str(uuid.uuid4())
 
         ## latlon = str(pd[0][1:len(pd[0])-1] + '#' + pd[1][1:len(pd[1])-1]).replace('\xa0', '')
-        latlon = str(pd[0].replace('\n', '') + '#' + pd[1].replace('\n', '')).replace('\xa0', '')
+        ## latlon = str(pd[0].replace('\n', '') + '#' + pd[1].replace('\n', '')).replace('\xa0', '')
+        latlon = str(pd[0]) + '#' + str(pd[1])
 
         graph.add((URIRef(LocationPointIRI), RDF.type, URIRef(ontoSDG.Location.iri)))
         graph.add((URIRef(LocationPointIRI), URIRef(ontoenergysystem.hasWGS84LatitudeLongitude.iri), \
@@ -96,15 +108,15 @@ def addUKPopulationDensityTriples(version, updateEndpointIRI, OWLFileStoragePath
         graph.add((URIRef(LocationPointIRI), URIRef(ontoSDG.hasPopulation.iri), URIRef(PopulationIRI)))
         graph.add((URIRef(PopulationIRI), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(valueOfPopulationIRI)))
         graph.add((URIRef(valueOfPopulationIRI), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
-        graph.add((URIRef(valueOfPopulationIRI),  URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(pd[2].replace('\n', '')))))     
+        graph.add((URIRef(valueOfPopulationIRI),  URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(pd[2]))))     
    
         ## print(graph.serialize(format="turtle").decode("utf-8"))
             
     ## generate/update OWL files
     if updateLocalOWLFile == True:
         # Store/update the generated owl files      
-        if filepath[-1:] != '\\': 
-            filepath_ = filepath + '\\' + 'GB_Population_Density_' + str(version) + TTL
+        if filepath[-1:] != '/': 
+            filepath_ = filepath + '/' + 'GB_Population_Density_' + str(version) + TTL
         else:
             filepath_ = filepath + 'GB_Population_Density_' + str(version) + TTL
         
@@ -115,8 +127,20 @@ def addUKPopulationDensityTriples(version, updateEndpointIRI, OWLFileStoragePath
     return
 
 if __name__ == '__main__':
+    # updateEndpointIRI = "http://localhost:8080/blazegraph_geo/namespace/population_uk/sparql"
+    updateEndpointIRI = 'http://localhost:8080/blazegraph/namespace/testgeo/sparql'
+    #updateEndpointIRI = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_pd/sparql"
+    qst = '''
+    SELECT *
+    WHERE {
+    ?s ?p ?o.
+    }LIMIT 10
+    '''
+    res = json.loads(performQuery(updateEndpointIRI, qst))
+    sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
+    #sparql_client.uploadOntology(filepath_)
     updateEndpointIRI = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_pd/sparql"
-    addUKPopulationDensityTriples(2022, updateEndpointIRI,  None, True, 'default')
+    addUKPopulationDensityTriples(2019, updateEndpointIRI,  None, True, 'default')
 
 
         
