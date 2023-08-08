@@ -80,4 +80,6 @@ def get_aermod_geojson(aermod_output, srid):
     geojsonstring = geojsoncontour.contourf_to_geojson(
         contourf=contourf, fill_opacity=0.5)
 
-    return jsonify(json.loads(geojsonstring)), 200
+    response = {'contourgeojson': json.loads(geojsonstring), 'colourbar': url}
+
+    return jsonify(response), 200
