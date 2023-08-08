@@ -12,6 +12,7 @@ import pandas as pd
 import rdflib
 from tqdm import tqdm
 
+import ontomatch.utils.util
 from ontomatch.utils.ontologyWrapper import Ontology
 
 class FullPairIterator(collections.Iterable, collections.Sized):
@@ -56,7 +57,7 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
 
     def __init__(self, dframe_src:pd.DataFrame, dframe_tgt:pd.DataFrame,
                 min_token_length:int =3, max_token_occurrences_src:int =20, max_token_occurrences_tgt:int =20,
-                blocking_properties: List[str] =None, reset_index:bool =False, use_position:bool =False):
+                blocking_properties: List[str] =None, reset_index:bool =False, use_position:bool =False, candidates_file:str =None):
 
         """
         Init a token-based iterator.
@@ -85,9 +86,15 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
             mask = (df_index['len'] >= min_token_length) & (df_index['count_1'] <= max_token_occurrences_src) & (df_index['count_2'] <= max_token_occurrences_tgt)
             TokenBasedPairIterator.df_index_tokens = df_index[mask]
             logging.info('finished creating index')
-            TokenBasedPairIterator.candidate_matching_pairs = self._get_candidate_matching_pairs(TokenBasedPairIterator.df_index_tokens, use_position)
+            if candidates_file:
+                logging.info('candidates file=%s', candidates_file)
+                TokenBasedPairIterator.candidate_matching_pairs = self._get_candidate_matching_pairs_from_file(candidates_file)
+            else:
+                logging.info('no candidates file is configured')
+                TokenBasedPairIterator.candidate_matching_pairs = self._get_candidate_matching_pairs(TokenBasedPairIterator.df_index_tokens, use_position)
             logging.info('number of tokens in inverted index=%s', len(TokenBasedPairIterator.df_index_tokens))
             logging.info('number of candidate matching pairs=%s', len(TokenBasedPairIterator.candidate_matching_pairs))
+
 
     def __iter__(self):
         return iter(TokenBasedPairIterator.candidate_matching_pairs)
@@ -106,7 +113,7 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
                 parsed = tokenize_fct(row[column])
                 # i is the index from the original dataset
                 # pos is the position of the corresponding entity in the list of entities
-                pos = row['pos']
+                pos = row.get('pos')
                 entry = (pos, i)
                 for p in parsed:
                     found = index.get(p)
@@ -151,7 +158,7 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
         for prop in blocking_properties:
             index, df_index = self._create_index_internal(dframe_tgt, prop, dataset_id=2, tokenize_fct=tokenize, index=index)
 
-        logging.info('columns=%s', df_index.columns)
+        logging.debug('columns=%s', df_index.columns)
 
         return df_index, dframe_src, dframe_tgt
 
@@ -187,6 +194,10 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
                 pairs_positions.update(product)
 
         return pd.MultiIndex.from_tuples(pairs_positions, names=['idx_1', 'idx_2'])
+
+    def _get_candidate_matching_pairs_from_file(self, candidates_file:str):
+        df = ontomatch.utils.util.read_csv_table_ditto_format(candidates_file)
+        return df.index
 
 def preprocess_string(s:str) -> str:
     if not isinstance(s, str):
@@ -261,7 +272,7 @@ def create_dataframe_from_ontology(onto):
         # TODO-AE 211026 add rdfs:label or replace name by rdfs:label; this is too specialized (will not work for DBPedia)
         # also idx will not work
         subj = onto.individualNames[pos]
-
+        subj = subj.replace('PowerPlant', '')
         first = subj.find('_')
         if first > 0:
             last = subj.rfind('_')

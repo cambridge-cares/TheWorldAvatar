@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+<rdf:Description rdf:nodeID="service">
+	<rdf:type rdf:resource="http://www.w3.org/ns/sparql-service-description#Service"/>
+	<endpoint xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://localhost:8080/blazegraph/namespace/doe_chemrxn/sparql"/>
+	<supportedLanguage xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/sparql-service-description#SPARQL10Query"/>
+	<supportedLanguage xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/sparql-service-description#SPARQL11Query"/>
+	<supportedLanguage xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/sparql-service-description#SPARQL11Update"/>
+	<feature xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/sparql-service-description#BasicFederatedQuery"/>
+	<feature xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.bigdata.com/rdf#/features/KB/Mode/Triples"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/RDF_XML"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/N-Triples"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/Turtle"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/N3"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://sw.deri.org/2008/07/n-quads/#n-quads"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_XML"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_JSON"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_CSV"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_TSV"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/RDF_XML"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/N-Triples"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/Turtle"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/N3"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_XML"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_JSON"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_CSV"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_TSV"/>
+	<defaultDataset xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:nodeID="defaultDataset"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultDataset">
+	<rdf:type rdf:resource="http://www.w3.org/ns/sparql-service-description#Dataset"/>
+	<rdf:type rdf:resource="http://rdfs.org/ns/void#Dataset"/>
+	<title xmlns="http://purl.org/dc/terms/" rdf:datatype="http://www.w3.org/2001/XMLSchema#string">doe_chemrxn</title>
+	<Namespace xmlns="http://www.bigdata.com/rdf#/features/KB/" rdf:datatype="http://www.w3.org/2001/XMLSchema#string">doe_chemrxn</Namespace>
+	<sparqlEndpoint xmlns="http://rdfs.org/ns/void#" rdf:resource="http://localhost:8080/blazegraph/namespace/doe_chemrxn/sparql/doe_chemrxn/sparql"/>
+	<uriRegexPattern xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#string">^.*</uriRegexPattern>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/material.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/2000/01/rdf-schema"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/2004/02/skos/core"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl"/>
+	<defaultGraph xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:nodeID="defaultGraph"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<rdf:type rdf:resource="http://www.w3.org/ns/sparql-service-description#Graph"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">416</triples>
+	<entities xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">209</entities>
+	<properties xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#int">40</properties>
+	<classes xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#int">20</classes>
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx94"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx94">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">113</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx95"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx95">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#representsOccurenceOf"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">23</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx96"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx96">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#comprisesDirectly"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">23</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx97"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx97">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">23</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx98"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx98">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">23</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx99"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx99">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">23</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx100"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx100">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isComposedOfSubsystem"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">23</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx101"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx101">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">23</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx102"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx102">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#representsThermodynamicBehavior"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">20</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx103"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx103">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#refersTo"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">11</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx104"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx104">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_composition"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">8</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx105"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx105">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#hasStateOfAggregation"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">8</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx106"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx106">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularWeight"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">8</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx107"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx107">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#pubChemCID"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">8</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx108"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx108">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">8</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx109"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx109">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">8</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx110"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx110">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/2000/01/rdf-schema#label"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">8</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx111"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx111">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/2004/02/skos/core#altLabel"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">8</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx112"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx112">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasUniqueSpecies"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">7</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx113"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx113">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#isRealisedAs"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">5</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx114"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx114">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#hasDesignVariable"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">4</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx115"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx115">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#lowerLimit"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">4</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx116"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx116">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#upperLimit"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">4</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx117"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx117">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#hasSystemResponse"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx118"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx118">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#maximise"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx119"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx119">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#positionalID"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx120"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx120">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx121"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx121">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx122"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx122">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasSolvent"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx123"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx123">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#hasDomain"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx124"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx124">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#nGenerations"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx125"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx125">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#nRetries"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx126"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx126">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#nSpectralPoints"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx127"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx127">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#numOfNewExp"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx128"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx128">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#populationSize"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx129"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx129">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#proposesNewExperiment"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx130"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx130">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#usesStrategy"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx131"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx131">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#utilisesHistoricalData"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx132"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx132">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasCatalyst"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx133"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx133">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasEquation"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx134"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx134">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Molarity"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">23</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx135"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx135">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">23</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx136"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx136">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">23</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx137"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx137">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Composition"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">8</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx138"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx138">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">8</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx139"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx139">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularWeight"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">8</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx140"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx140">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#ContinuousVariable"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">4</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx141"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx141">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#SystemResponse"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx142"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx142">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Reactant"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx143"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx143">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#Solvent"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx144"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx144">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#DesignOfExperiment"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx145"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx145">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#Domain"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx146"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx146">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#HistoricalData"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx147"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx147">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#Strategy"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx148"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx148">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#TSEMO"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx149"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx149">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#ReactionExperiment"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx150"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx150">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx151"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx151">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#Catalyst"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx152"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx152">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#Impurity"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g256g2jkx153"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g256g2jkx153">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#TargetProduct"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+</rdf:RDF>

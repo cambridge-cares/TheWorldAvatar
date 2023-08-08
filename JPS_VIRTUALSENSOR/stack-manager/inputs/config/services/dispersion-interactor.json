@@ -1,0 +1,56 @@
+{
+	"ServiceSpec": {
+		"Name": "dispersion-interactor",
+		"TaskTemplate": {
+			"ContainerSpec": {
+				"Image": "ghcr.io/cambridge-cares/dispersion-interactor:1.2.3",
+				"Env": [
+					"DATABASE=postgres",
+					"SCOPE_TABLE_NAME=scopes",
+					"AERMOD_AGENT_IRI=http://theworldavatar.com/kg/dispersion/AermodAgent",
+					"AERMOD_AGENT_URL=http://ship-stack-aermod-agent:8080/AermodAgent/",
+					"WEATHER_AGENT_URL=http://ship-stack-weather-agent:8080/WeatherAgent/CreateStation",
+					"SHIP_INPUT_AGENT=http://ship-stack-ship-input-agent:8080/ShipInputAgent/update",
+					"GEOSERVER_WORKSPACE=dispersion",
+					"SENSORS_TABLE_NAME=sensors",
+					"VIRTUAL_SENSOR_AGENT_IRI=https://theworldavatar.com/kg/ontodispersion/VirtualSensorAgent"
+				],
+				"Configs": [
+					{
+						"ConfigName": "postgis"
+					},
+					{
+						"ConfigName": "blazegraph"
+					},
+					{
+						"ConfigName": "geoserver"
+					},
+					{
+						"ConfigName": "ontop"
+					}
+				],
+				"Secrets": [
+					{
+						"SecretName": "postgis_password"
+					},
+					{
+						"SecretName": "geoserver_password"
+					}
+				],
+				"Mounts": [
+					{
+						"Type": "volume",
+						"Source": "logs",
+						"Target": "/root/.jps"
+					}
+				]
+			}
+		}
+	},
+	"endpoints": {
+		"dispersion-interactor": {
+			"url": "http://localhost:8080/DispersionInteractor/",
+			"externalPath": "/dispersion-interactor/"
+		}
+	}
+}

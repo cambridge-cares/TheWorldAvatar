@@ -2,10 +2,15 @@ import os
 from compchemparser.helpers.ccutils import CCPACKAGES, get_ccpackage
 from compchemparser.helpers.utils import qc_log_to_json, getFilesWithExtensions, dienicely
 from compchemparser.parsers.ccgaussian_parser import CcGaussianParser
+import logging
+
+logger = logging.getLogger(__name__)
 
 def runParser(logFileOrDir, logExt='.log', suppressOutput=False):
     all_parsed_data = []
     files = getFilesWithExtensions(logFileOrDir,logExt.split(','))
+    if not files:
+        logger.warning("Provided logFileOrDir has no log files to parse. Terminating")
     for file_ in files:
         parsed_data= parseLog(file_)
         all_parsed_data+=parsed_data

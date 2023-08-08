@@ -1,0 +1,1653 @@
+@prefix OntoCAPERxn:    <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#> .
+@prefix OntoCAPEMat:	<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#> .
+@prefix OntoCAPEPha:	<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> .
+@prefix OntoCAPEUpp:	<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> .
+@prefix OntoSpecies:    <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> .
+@prefix OntoKin:	    <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> .
+@prefix OntoDoE:		<https://www.theworldavatar.com/kg/ontodoe/> .
+@prefix OntoRxn:	    <https://www.theworldavatar.com/kg/ontoreaction/> .
+@prefix om:             <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix skos:           <http://www.w3.org/2004/02/skos/core#> .
+@prefix exp1:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/> .
+@prefix exp2:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_2/> .
+@prefix exp3:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_3/> .
+@prefix exp4:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_4/> .
+@prefix exp5:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_5/> .
+@prefix SinglePhase:    <https://www.example.com/triplestore/ontorxn/SinglePhase/> .
+@prefix ChemRxn:        <https://www.example.com/triplestore/ontorxn/ChemRxn_1/> .
+@prefix doe_instance:   <https://www.example.com/triplestore/ontodoe/DoE_1/> .
+@prefix rdf:	    	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:            <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:		    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix placeholder:	<https://www.theworldavatar.com/kg/_for_species/> .
+
+
+##############################################################################
+## Placeholder Density data -- TODO to find a proper way of representing it ##
+##############################################################################
+# NOTE all the values are taken as its Specific Gravity at a temperature of 4 C if not otherwise noted
+
+# https://pubchem.ncbi.nlm.nih.gov/compound/240#section=Density&fullscreen=true
+<http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b> placeholder:hasDensity placeholder:Density_Species_240.
+placeholder:Density_Species_240 a om:Density; om:hasValue placeholder:D_S_240_V;.
+placeholder:D_S_240_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "1.04"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
+
+# https://pubchem.ncbi.nlm.nih.gov/compound/180#section=Density&fullscreen=true
+<http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3> placeholder:hasDensity placeholder:Density_Species_180.
+placeholder:Density_Species_180 a om:Density; om:hasValue placeholder:D_S_180_V;.
+placeholder:D_S_180_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "0.784"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
+
+# NO experimental data available at https://pubchem.ncbi.nlm.nih.gov/compound/637759
+# Data (mean value) from "Predicted - ACD/Labs" at http://www.chemspider.com/Chemical-Structure.21106584.html
+<http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2> placeholder:hasDensity placeholder:Density_Species_637759.
+placeholder:Density_Species_637759 a om:Density; om:hasValue placeholder:D_S_637759_V;.
+placeholder:D_S_637759_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "1.0"^^xsd:double;.
+
+# NO experimental data available at https://pubchem.ncbi.nlm.nih.gov/compound/640180
+# Data (mean value) from "Predicted - ACD/Labs" at http://www.chemspider.com/Chemical-Structure.86113.html
+<http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b> placeholder:hasDensity placeholder:Density_Species_640180.
+placeholder:Density_Species_640180 a om:Density; om:hasValue placeholder:D_S_640180_V;.
+placeholder:D_S_640180_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "1.1"^^xsd:double;.
+
+# Value taken as the solid density of NaOH at 68 F (20 C) in https://pubchem.ncbi.nlm.nih.gov/compound/14798#section=Density&fullscreen=true
+<http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202> placeholder:hasDensity placeholder:Density_Species_14798.
+placeholder:Density_Species_14798 a om:Density; om:hasValue placeholder:D_S_14798_V;.
+placeholder:D_S_14798_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "2.13"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
+
+# https://pubchem.ncbi.nlm.nih.gov/compound/6342#section=Density&fullscreen=true
+<http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb> placeholder:hasDensity placeholder:Density_Species_6342.
+placeholder:Density_Species_6342 a om:Density; om:hasValue placeholder:D_S_6342_V;.
+placeholder:D_S_6342_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "0.786"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
+
+# https://pubchem.ncbi.nlm.nih.gov/compound/702#section=Density&fullscreen=true
+<http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983> placeholder:hasDensity placeholder:Density_Species_702.
+placeholder:Density_Species_702 a om:Density; om:hasValue placeholder:D_S_702_V;.
+placeholder:D_S_702_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "0.789"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
+
+# https://pubchem.ncbi.nlm.nih.gov/compound/931#section=Density&fullscreen=true
+<http://www.theworldavatar.com/kg/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340> placeholder:hasDensity placeholder:Density_Species_931.
+placeholder:Density_Species_931 a om:Density; om:hasValue placeholder:D_S_931_V;.
+placeholder:D_S_931_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "1.14"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
+
+####################################################################################
+## Placeholder Material Cost data -- TODO to find a proper way of representing it ##
+####################################################################################
+
+<http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b> placeholder:hasMaterialCost placeholder:MaterialCost_Species_240.
+placeholder:MaterialCost_Species_240 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_240_V;.
+placeholder:M_C_S_240_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "18.0024"^^xsd:double;. # calculated from https://doi.org/10.1002/cmtd.202000044
+
+<http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3> placeholder:hasMaterialCost placeholder:MaterialCost_Species_180.
+placeholder:MaterialCost_Species_180 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_180_V;.
+placeholder:M_C_S_180_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "6.38176"^^xsd:double;. # calculated from https://doi.org/10.1002/cmtd.202000044
+
+# dummy data
+<http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2> placeholder:hasMaterialCost placeholder:MaterialCost_Species_637759.
+placeholder:MaterialCost_Species_637759 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_637759_V;.
+placeholder:M_C_S_637759_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "500"^^xsd:double;.
+
+# dummy data
+<http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b> placeholder:hasMaterialCost placeholder:MaterialCost_Species_640180.
+placeholder:MaterialCost_Species_640180 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_640180_V;.
+placeholder:M_C_S_640180_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "10"^^xsd:double;.
+
+<http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202> placeholder:hasMaterialCost placeholder:MaterialCost_Species_14798.
+placeholder:MaterialCost_Species_14798 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_14798_V;.
+placeholder:M_C_S_14798_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "58.575"^^xsd:double;. # calculated from https://doi.org/10.1002/cmtd.202000044
+
+<http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb> placeholder:hasMaterialCost placeholder:MaterialCost_Species_6342.
+placeholder:MaterialCost_Species_6342 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_6342_V;.
+placeholder:M_C_S_6342_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "8.83"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
+
+<http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983> placeholder:hasMaterialCost placeholder:MaterialCost_Species_702.
+placeholder:MaterialCost_Species_702 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_702_V;.
+placeholder:M_C_S_702_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "8.83"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
+
+# dummy data
+<http://www.theworldavatar.com/kg/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340> placeholder:hasMaterialCost placeholder:MaterialCost_Species_931.
+placeholder:MaterialCost_Species_931 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_931_V;.
+placeholder:M_C_S_931_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "400"^^xsd:double;.
+
+###############################################################################
+## Placeholder EcoScore data -- TODO to find a proper way of representing it ##
+###############################################################################
+# NOTE all below eco-score data are dummy data
+
+<http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b> placeholder:hasEcoScore placeholder:EcoScore_Species_240.
+placeholder:EcoScore_Species_240 a om:QuantityOfDimensionOne; om:hasValue placeholder:E_S_S_240_V;.
+placeholder:E_S_S_240_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "20"^^xsd:double;.
+
+<http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3> placeholder:hasEcoScore placeholder:EcoScore_Species_180.
+placeholder:EcoScore_Species_180 a om:QuantityOfDimensionOne; om:hasValue placeholder:E_S_S_180_V;.
+placeholder:E_S_S_180_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "70"^^xsd:double;.
+
+<http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2> placeholder:hasEcoScore placeholder:EcoScore_Species_637759.
+placeholder:EcoScore_Species_637759 a om:QuantityOfDimensionOne; om:hasValue placeholder:E_S_S_637759_V;.
+placeholder:E_S_S_637759_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "50"^^xsd:double;.
+
+<http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b> placeholder:hasEcoScore placeholder:EcoScore_Species_640180.
+placeholder:EcoScore_Species_640180 a om:QuantityOfDimensionOne; om:hasValue placeholder:E_S_S_640180_V;.
+placeholder:E_S_S_640180_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "10"^^xsd:double;.
+
+<http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202> placeholder:hasEcoScore placeholder:EcoScore_Species_14798.
+placeholder:EcoScore_Species_14798 a om:QuantityOfDimensionOne; om:hasValue placeholder:E_S_S_14798_V;.
+placeholder:E_S_S_14798_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "20"^^xsd:double;.
+
+<http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb> placeholder:hasEcoScore placeholder:EcoScore_Species_6342.
+placeholder:EcoScore_Species_6342 a om:QuantityOfDimensionOne; om:hasValue placeholder:E_S_S_6342_V;.
+placeholder:E_S_S_6342_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "60"^^xsd:double;.
+
+<http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983> placeholder:hasEcoScore placeholder:EcoScore_Species_702.
+placeholder:EcoScore_Species_702 a om:QuantityOfDimensionOne; om:hasValue placeholder:E_S_S_702_V;.
+placeholder:E_S_S_702_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "30"^^xsd:double;.
+
+<http://www.theworldavatar.com/kg/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340> placeholder:hasEcoScore placeholder:EcoScore_Species_931.
+placeholder:EcoScore_Species_931 a om:QuantityOfDimensionOne; om:hasValue placeholder:E_S_S_931_V;.
+placeholder:E_S_S_931_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "40"^^xsd:double;.
+
+################################
+## Reaction experiment data 1 ##
+################################
+exp1:RxnExp_1
+    rdf:type OntoRxn:ReactionExperiment;
+    OntoRxn:isOccurenceOf ChemRxn:ChemRxn_1;
+    OntoRxn:hasResTime exp1:ResidenceTime_1;
+    OntoRxn:hasRxnTemperature exp1:RxnTemperature_1;
+    OntoRxn:hasRxnPressure exp1:RxnPressure_1;
+    OntoRxn:hasStoichiometryRatio exp1:StoiRatio_1;
+    OntoRxn:hasStoichiometryRatio exp1:StoiRatio_2;
+    OntoRxn:hasStoichiometryRatio exp1:StoiRatio_3;
+    OntoRxn:hasRxnScale exp1:RxnScale_1;
+    OntoRxn:hasYield exp1:Yield_1;
+    OntoRxn:hasRunMaterialCost exp1:RunMaterialCost_1;
+    OntoRxn:hasInputChemical exp1:InputChemical_1;
+    OntoRxn:hasInputChemical exp1:InputChemical_2;
+    OntoRxn:hasInputChemical exp1:InputChemical_3;
+    OntoRxn:hasOutputChemical exp1:OutputChemical_4;
+.
+
+exp1:ResidenceTime_1
+    rdf:type OntoRxn:ResidenceTime;
+    om:hasPhenomenon exp1:RxnExp_1;
+    om:hasValue exp1:ResidenceTime_1_Measure_1;
+.
+
+exp1:ResidenceTime_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "8.1"^^xsd:double;
+.
+
+exp1:RxnTemperature_1
+    rdf:type OntoRxn:ReactionTemperature;
+    om:hasPhenomenon exp1:RxnExp_1;
+    om:hasValue exp1:RxnTemperature_1_Measure_1;
+.
+
+exp1:RxnTemperature_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:degreeCelsius;
+    om:hasNumericalValue "56"^^xsd:double;
+.
+
+exp1:RxnPressure_1
+    rdf:type OntoRxn:ReactionPressure;
+    om:hasPhenomenon exp1:RxnExp_1;
+    om:hasValue exp1:RxnPressure_1_Measure_1;
+.
+
+exp1:RxnPressure_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:bar;
+    om:hasNumericalValue "6"^^xsd:double;
+.
+
+exp1:Yield_1
+    rdf:type OntoRxn:Yield;
+    om:hasPhenomenon exp1:RxnExp_1;
+    om:hasValue exp1:Yield_1_Measure_1;
+.
+
+exp1:Yield_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:percent;
+    om:hasNumericalValue "47.7"^^xsd:double;
+.
+
+exp1:RunMaterialCost_1
+    rdf:type OntoRxn:RunMaterialCost;
+    om:hasPhenomenon exp1:RxnExp_1;
+    om:hasValue exp1:RunMaterialCost_1_Measure_1;
+.
+
+exp1:RunMaterialCost_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:poundSterlingPerLitre;
+    om:hasNumericalValue "6.83"^^xsd:double;
+.
+
+exp1:InputChemical_1
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_1;
+.
+
+exp1:InputChemical_2
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_2;
+.
+
+exp1:InputChemical_3
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_3;
+.
+
+exp1:OutputChemical_4
+    rdf:type OntoRxn:OutputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_OutputChemical_exp1;
+.
+
+exp1:StoiRatio_1
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
+    om:hasPhenomenon exp1:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp1:InputChemical_1;
+    om:hasValue exp1:StoiRatio_1_Measure_1;
+.
+
+exp1:StoiRatio_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "1.0"^^xsd:double;
+.
+
+exp1:StoiRatio_2
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3"^^xsd:string;
+    om:hasPhenomenon exp1:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp1:InputChemical_2;
+    om:hasValue exp1:StoiRatio_2_Measure_1;
+.
+
+exp1:StoiRatio_2_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "5.01"^^xsd:double;
+.
+
+exp1:StoiRatio_3
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202"^^xsd:string;
+    om:hasPhenomenon exp1:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp1:InputChemical_3;
+    om:hasValue exp1:StoiRatio_3_Measure_1;
+.
+
+exp1:StoiRatio_3_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "0.17"^^xsd:double;
+.
+
+exp1:RxnScale_1
+    rdf:type OntoRxn:ReactionScale;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
+    om:hasPhenomenon exp1:RxnExp_1;
+    OntoRxn:indicatesUsageOf exp1:InputChemical_1;
+    om:hasValue exp1:RxnScale_1_Measure_1;
+.
+
+exp1:RxnScale_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "5"^^xsd:double;
+.
+
+################################
+## Reaction experiment data 2 ##
+################################
+exp2:RxnExp_1
+    rdf:type OntoRxn:ReactionExperiment;
+    OntoRxn:isOccurenceOf ChemRxn:ChemRxn_1;
+    OntoRxn:hasResTime exp2:ResidenceTime_1;
+    OntoRxn:hasRxnTemperature exp2:RxnTemperature_1;
+    OntoRxn:hasRxnPressure exp2:RxnPressure_1;
+    OntoRxn:hasStoichiometryRatio exp2:StoiRatio_1;
+    OntoRxn:hasStoichiometryRatio exp2:StoiRatio_2;
+    OntoRxn:hasStoichiometryRatio exp2:StoiRatio_3;
+    OntoRxn:hasRxnScale exp2:RxnScale_1;
+    OntoRxn:hasYield exp2:Yield_1;
+    OntoRxn:hasRunMaterialCost exp2:RunMaterialCost_1;
+    OntoRxn:hasInputChemical exp2:InputChemical_1;
+    OntoRxn:hasInputChemical exp2:InputChemical_2;
+    OntoRxn:hasInputChemical exp2:InputChemical_3;
+    OntoRxn:hasOutputChemical exp2:OutputChemical_4;
+.
+
+exp2:ResidenceTime_1
+    rdf:type OntoRxn:ResidenceTime;
+    om:hasPhenomenon exp2:RxnExp_1;
+    om:hasValue exp2:ResidenceTime_1_Measure_1;
+.
+
+exp2:ResidenceTime_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "11.8"^^xsd:double;
+.
+
+exp2:RxnTemperature_1
+    rdf:type OntoRxn:ReactionTemperature;
+    om:hasPhenomenon exp2:RxnExp_1;
+    om:hasValue exp2:RxnTemperature_1_Measure_1;
+.
+
+exp2:RxnTemperature_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:degreeCelsius;
+    om:hasNumericalValue "67"^^xsd:double;
+.
+
+exp2:RxnPressure_1
+    rdf:type OntoRxn:ReactionPressure;
+    om:hasPhenomenon exp2:RxnExp_1;
+    om:hasValue exp2:RxnPressure_1_Measure_1;
+.
+
+exp2:RxnPressure_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:bar;
+    om:hasNumericalValue "6"^^xsd:double;
+.
+
+exp2:Yield_1
+    rdf:type OntoRxn:Yield;
+    om:hasPhenomenon exp2:RxnExp_1;
+    om:hasValue exp2:Yield_1_Measure_1;
+.
+
+exp2:Yield_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:percent;
+    om:hasNumericalValue "40.0"^^xsd:double;
+.
+
+exp2:RunMaterialCost_1
+    rdf:type OntoRxn:RunMaterialCost;
+    om:hasPhenomenon exp2:RxnExp_1;
+    om:hasValue exp2:RunMaterialCost_1_Measure_1;
+.
+
+exp2:RunMaterialCost_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:poundSterlingPerLitre;
+    om:hasNumericalValue "8.10"^^xsd:double;
+.
+
+exp2:InputChemical_1
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_1;
+.
+
+exp2:InputChemical_2
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_2;
+.
+
+exp2:InputChemical_3
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_3;
+.
+
+exp2:OutputChemical_4
+    rdf:type OntoRxn:OutputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_OutputChemical_exp2;
+.
+
+exp2:StoiRatio_1
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
+    om:hasPhenomenon exp2:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp2:InputChemical_1;
+    om:hasValue exp2:StoiRatio_1_Measure_1;
+.
+
+exp2:StoiRatio_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "1.0"^^xsd:double;
+.
+
+exp2:StoiRatio_2
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3"^^xsd:string;
+    om:hasPhenomenon exp2:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp2:InputChemical_2;
+    om:hasValue exp2:StoiRatio_2_Measure_1;
+.
+
+exp2:StoiRatio_2_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "8.83"^^xsd:double;
+.
+
+exp2:StoiRatio_3
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202"^^xsd:string;
+    om:hasPhenomenon exp2:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp2:InputChemical_3;
+    om:hasValue exp2:StoiRatio_3_Measure_1;
+.
+
+exp2:StoiRatio_3_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "0.04"^^xsd:double;
+.
+
+exp2:RxnScale_1
+    rdf:type OntoRxn:ReactionScale;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
+    om:hasPhenomenon exp2:RxnExp_1;
+    OntoRxn:indicatesUsageOf exp2:InputChemical_1;
+    om:hasValue exp2:RxnScale_1_Measure_1;
+.
+
+exp2:RxnScale_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "5"^^xsd:double;
+.
+
+################################
+## Reaction experiment data 3 ##
+################################
+exp3:RxnExp_1
+    rdf:type OntoRxn:ReactionExperiment;
+    OntoRxn:isOccurenceOf ChemRxn:ChemRxn_1;
+    OntoRxn:hasResTime exp3:ResidenceTime_1;
+    OntoRxn:hasRxnTemperature exp3:RxnTemperature_1;
+    OntoRxn:hasRxnPressure exp3:RxnPressure_1;
+    OntoRxn:hasStoichiometryRatio exp3:StoiRatio_1;
+    OntoRxn:hasStoichiometryRatio exp3:StoiRatio_2;
+    OntoRxn:hasStoichiometryRatio exp3:StoiRatio_3;
+    OntoRxn:hasRxnScale exp3:RxnScale_1;
+    OntoRxn:hasYield exp3:Yield_1;
+    OntoRxn:hasRunMaterialCost exp3:RunMaterialCost_1;
+    OntoRxn:hasInputChemical exp3:InputChemical_1;
+    OntoRxn:hasInputChemical exp3:InputChemical_2;
+    OntoRxn:hasInputChemical exp3:InputChemical_3;
+    OntoRxn:hasOutputChemical exp3:OutputChemical_4;
+.
+
+exp3:ResidenceTime_1
+    rdf:type OntoRxn:ResidenceTime;
+    om:hasPhenomenon exp3:RxnExp_1;
+    om:hasValue exp3:ResidenceTime_1_Measure_1;
+.
+
+exp3:ResidenceTime_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "7.9"^^xsd:double;
+.
+
+exp3:RxnTemperature_1
+    rdf:type OntoRxn:ReactionTemperature;
+    om:hasPhenomenon exp3:RxnExp_1;
+    om:hasValue exp3:RxnTemperature_1_Measure_1;
+.
+
+exp3:RxnTemperature_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:degreeCelsius;
+    om:hasNumericalValue "62"^^xsd:double;
+.
+
+exp3:RxnPressure_1
+    rdf:type OntoRxn:ReactionPressure;
+    om:hasPhenomenon exp3:RxnExp_1;
+    om:hasValue exp3:RxnPressure_1_Measure_1;
+.
+
+exp3:RxnPressure_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:bar;
+    om:hasNumericalValue "6"^^xsd:double;
+.
+
+exp3:Yield_1
+    rdf:type OntoRxn:Yield;
+    om:hasPhenomenon exp3:RxnExp_1;
+    om:hasValue exp3:Yield_1_Measure_1;
+.
+
+exp3:Yield_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:percent;
+    om:hasNumericalValue "54.1"^^xsd:double;
+.
+
+exp3:RunMaterialCost_1
+    rdf:type OntoRxn:RunMaterialCost;
+    om:hasPhenomenon exp3:RxnExp_1;
+    om:hasValue exp3:RunMaterialCost_1_Measure_1;
+.
+
+exp3:RunMaterialCost_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:poundSterlingPerLitre;
+    om:hasNumericalValue "6.96"^^xsd:double;
+.
+
+exp3:InputChemical_1
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_1;
+.
+
+exp3:InputChemical_2
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_2;
+.
+
+exp3:InputChemical_3
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_3;
+.
+
+exp3:OutputChemical_4
+    rdf:type OntoRxn:OutputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_OutputChemical_exp3;
+.
+
+exp3:StoiRatio_1
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
+    om:hasPhenomenon exp3:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp3:InputChemical_1;
+    om:hasValue exp3:StoiRatio_1_Measure_1;
+.
+
+exp3:StoiRatio_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "1.0"^^xsd:double;
+.
+
+exp3:StoiRatio_2
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3"^^xsd:string;
+    om:hasPhenomenon exp3:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp3:InputChemical_2;
+    om:hasValue exp3:StoiRatio_2_Measure_1;
+.
+
+exp3:StoiRatio_2_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "8.44"^^xsd:double;
+.
+
+exp3:StoiRatio_3
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202"^^xsd:string;
+    om:hasPhenomenon exp3:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp3:InputChemical_3;
+    om:hasValue exp3:StoiRatio_3_Measure_1;
+.
+
+exp3:StoiRatio_3_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "0.16"^^xsd:double;
+.
+
+exp3:RxnScale_1
+    rdf:type OntoRxn:ReactionScale;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
+    om:hasPhenomenon exp3:RxnExp_1;
+    OntoRxn:indicatesUsageOf exp3:InputChemical_1;
+    om:hasValue exp3:RxnScale_1_Measure_1;
+.
+
+exp3:RxnScale_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "5"^^xsd:double;
+.
+
+################################
+## Reaction experiment data 4 ##
+################################
+exp4:RxnExp_1
+    rdf:type OntoRxn:ReactionExperiment;
+    OntoRxn:isOccurenceOf ChemRxn:ChemRxn_1;
+    OntoRxn:hasResTime exp4:ResidenceTime_1;
+    OntoRxn:hasRxnTemperature exp4:RxnTemperature_1;
+    OntoRxn:hasRxnPressure exp4:RxnPressure_1;
+    OntoRxn:hasStoichiometryRatio exp4:StoiRatio_1;
+    OntoRxn:hasStoichiometryRatio exp4:StoiRatio_2;
+    OntoRxn:hasStoichiometryRatio exp4:StoiRatio_3;
+    OntoRxn:hasRxnScale exp4:RxnScale_1;
+    OntoRxn:hasYield exp4:Yield_1;
+    OntoRxn:hasRunMaterialCost exp4:RunMaterialCost_1;
+    OntoRxn:hasInputChemical exp4:InputChemical_1;
+    OntoRxn:hasInputChemical exp4:InputChemical_2;
+    OntoRxn:hasInputChemical exp4:InputChemical_3;
+    OntoRxn:hasOutputChemical exp4:OutputChemical_4;
+.
+
+exp4:ResidenceTime_1
+    rdf:type OntoRxn:ResidenceTime;
+    om:hasPhenomenon exp4:RxnExp_1;
+    om:hasValue exp4:ResidenceTime_1_Measure_1;
+.
+
+exp4:ResidenceTime_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "13.3"^^xsd:double;
+.
+
+exp4:RxnTemperature_1
+    rdf:type OntoRxn:ReactionTemperature;
+    om:hasPhenomenon exp4:RxnExp_1;
+    om:hasValue exp4:RxnTemperature_1_Measure_1;
+.
+
+exp4:RxnTemperature_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:degreeCelsius;
+    om:hasNumericalValue "35"^^xsd:double;
+.
+
+exp4:RxnPressure_1
+    rdf:type OntoRxn:ReactionPressure;
+    om:hasPhenomenon exp4:RxnExp_1;
+    om:hasValue exp4:RxnPressure_1_Measure_1;
+.
+
+exp4:RxnPressure_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:bar;
+    om:hasNumericalValue "6"^^xsd:double;
+.
+
+exp4:Yield_1
+    rdf:type OntoRxn:Yield;
+    om:hasPhenomenon exp4:RxnExp_1;
+    om:hasValue exp4:Yield_1_Measure_1;
+.
+
+exp4:Yield_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:percent;
+    om:hasNumericalValue "8.7"^^xsd:double;
+.
+
+exp4:RunMaterialCost_1
+    rdf:type OntoRxn:RunMaterialCost;
+    om:hasPhenomenon exp4:RxnExp_1;
+    om:hasValue exp4:RunMaterialCost_1_Measure_1;
+.
+
+exp4:RunMaterialCost_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:poundSterlingPerLitre;
+    om:hasNumericalValue "7.74"^^xsd:double;
+.
+
+exp4:InputChemical_1
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_1;
+.
+
+exp4:InputChemical_2
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_2;
+.
+
+exp4:InputChemical_3
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_3;
+.
+
+exp4:OutputChemical_4
+    rdf:type OntoRxn:OutputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_OutputChemical_exp4;
+.
+
+exp4:StoiRatio_1
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
+    om:hasPhenomenon exp4:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp4:InputChemical_1;
+    om:hasValue exp4:StoiRatio_1_Measure_1;
+.
+
+exp4:StoiRatio_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "1.0"^^xsd:double;
+.
+
+exp4:StoiRatio_2
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3"^^xsd:string;
+    om:hasPhenomenon exp4:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp4:InputChemical_2;
+    om:hasValue exp4:StoiRatio_2_Measure_1;
+.
+
+exp4:StoiRatio_2_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "1.59"^^xsd:double;
+.
+
+exp4:StoiRatio_3
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202"^^xsd:string;
+    om:hasPhenomenon exp4:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp4:InputChemical_3;
+    om:hasValue exp4:StoiRatio_3_Measure_1;
+.
+
+exp4:StoiRatio_3_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "0.07"^^xsd:double;
+.
+
+exp4:RxnScale_1
+    rdf:type OntoRxn:ReactionScale;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
+    om:hasPhenomenon exp4:RxnExp_1;
+    OntoRxn:indicatesUsageOf exp4:InputChemical_1;
+    om:hasValue exp4:RxnScale_1_Measure_1;
+.
+
+exp4:RxnScale_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "5"^^xsd:double;
+.
+
+################################
+## Reaction experiment data 5 ##
+################################
+exp5:RxnExp_1
+    rdf:type OntoRxn:ReactionExperiment;
+    OntoRxn:isOccurenceOf ChemRxn:ChemRxn_1;
+    OntoRxn:hasResTime exp5:ResidenceTime_1;
+    OntoRxn:hasRxnTemperature exp5:RxnTemperature_1;
+    OntoRxn:hasRxnPressure exp5:RxnPressure_1;
+    OntoRxn:hasStoichiometryRatio exp5:StoiRatio_1;
+    OntoRxn:hasStoichiometryRatio exp5:StoiRatio_2;
+    OntoRxn:hasStoichiometryRatio exp5:StoiRatio_3;
+    OntoRxn:hasRxnScale exp5:RxnScale_1;
+    OntoRxn:hasYield exp5:Yield_1;
+    OntoRxn:hasRunMaterialCost exp5:RunMaterialCost_1;
+    OntoRxn:hasInputChemical exp5:InputChemical_1;
+    OntoRxn:hasInputChemical exp5:InputChemical_2;
+    OntoRxn:hasInputChemical exp5:InputChemical_3;
+    OntoRxn:hasOutputChemical exp5:OutputChemical_4;
+.
+
+exp5:ResidenceTime_1
+    rdf:type OntoRxn:ResidenceTime;
+    om:hasPhenomenon exp5:RxnExp_1;
+    om:hasValue exp5:ResidenceTime_1_Measure_1;
+.
+
+exp5:ResidenceTime_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "14.7"^^xsd:double;
+.
+
+exp5:RxnTemperature_1
+    rdf:type OntoRxn:ReactionTemperature;
+    om:hasPhenomenon exp5:RxnExp_1;
+    om:hasValue exp5:RxnTemperature_1_Measure_1;
+.
+
+exp5:RxnTemperature_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:degreeCelsius;
+    om:hasNumericalValue "42"^^xsd:double;
+.
+
+exp5:RxnPressure_1
+    rdf:type OntoRxn:ReactionPressure;
+    om:hasPhenomenon exp5:RxnExp_1;
+    om:hasValue exp5:RxnPressure_1_Measure_1;
+.
+
+exp5:RxnPressure_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:bar;
+    om:hasNumericalValue "6"^^xsd:double;
+.
+
+exp5:Yield_1
+    rdf:type OntoRxn:Yield;
+    om:hasPhenomenon exp5:RxnExp_1;
+    om:hasValue exp5:Yield_1_Measure_1;
+.
+
+exp5:Yield_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:percent;
+    om:hasNumericalValue "47.9"^^xsd:double;
+.
+
+exp5:RunMaterialCost_1
+    rdf:type OntoRxn:RunMaterialCost;
+    om:hasPhenomenon exp5:RxnExp_1;
+    om:hasValue exp5:RunMaterialCost_1_Measure_1;
+.
+
+exp5:RunMaterialCost_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:poundSterlingPerLitre;
+    om:hasNumericalValue "7.44"^^xsd:double;
+.
+
+exp5:InputChemical_1
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_1;
+.
+
+exp5:InputChemical_2
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_2;
+.
+
+exp5:InputChemical_3
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_3;
+.
+
+exp5:OutputChemical_4
+    rdf:type OntoRxn:OutputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_OutputChemical_exp5;
+.
+
+exp5:StoiRatio_1
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
+    om:hasPhenomenon exp5:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp5:InputChemical_1;
+    om:hasValue exp5:StoiRatio_1_Measure_1;
+.
+
+exp5:StoiRatio_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "1.0"^^xsd:double;
+.
+
+exp5:StoiRatio_2
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3"^^xsd:string;
+    om:hasPhenomenon exp5:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp5:InputChemical_2;
+    om:hasValue exp5:StoiRatio_2_Measure_1;
+.
+
+exp5:StoiRatio_2_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "5.19"^^xsd:double;
+.
+
+exp5:StoiRatio_3
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202"^^xsd:string;
+    om:hasPhenomenon exp5:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp5:InputChemical_3;
+    om:hasValue exp5:StoiRatio_3_Measure_1;
+.
+
+exp5:StoiRatio_3_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "0.10"^^xsd:double;
+.
+
+exp5:RxnScale_1
+    rdf:type OntoRxn:ReactionScale;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
+    om:hasPhenomenon exp5:RxnExp_1;
+    OntoRxn:indicatesUsageOf exp5:InputChemical_1;
+    om:hasValue exp5:RxnScale_1_Measure_1;
+.
+
+exp5:RxnScale_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "5"^^xsd:double;
+.
+
+#################################
+## Chemical reaction instances ##
+#################################
+ChemRxn:ChemRxn_1
+    rdf:type OntoRxn:ChemicalReaction;
+    OntoKin:hasEquation "C6H5CHO + CH3COCH3 = C10H10O"^^xsd:string;
+    OntoCAPERxn:hasReactant ChemRxn:Species_1;
+    OntoCAPERxn:hasReactant ChemRxn:Species_2;
+    OntoCAPERxn:hasProduct ChemRxn:Species_3;
+    OntoCAPERxn:hasProduct ChemRxn:Species_4;
+    OntoRxn:hasCatalyst ChemRxn:Species_5;
+    OntoRxn:hasSolvent ChemRxn:Species_6;
+    OntoRxn:hasSolvent ChemRxn:Species_7;
+.
+
+ChemRxn:Species_1
+    rdf:type OntoKin:Reactant;
+    OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
+.
+
+# NOTE we hardcode the OntoSpecies instance IRIs here to simplify the implementation for the purpose of testing
+# NOTE for the production operations, one need to provide access to a real triple store of OntoSpecies
+# NOTE where the instance IRI of a real OntoSpecies:Species will be obtained/identified based on specific identifiers
+# NOTE i.e. OntoSpecies:inChI, OntoSpecies:pubChemCID, etc.
+<http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>
+    # OntoSpecies:pubChemCID "240"^^xsd:string;
+    rdfs:label "C7H6O"^^xsd:string;
+    skos:altLabel "benzaldehyde"^^xsd:string;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
+.
+
+<http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>
+    a OntoSpecies:MolecularWeight;
+    OntoSpecies:units <http://www.theworldavatar.com/kg/ontospecies/Unit_a501ff0e-7cbc-4e3c-ba2e-211da22cac2b>;
+    OntoSpecies:value "106.12"^^xsd:decimal;
+.
+
+ChemRxn:Species_2
+    rdf:type OntoKin:Reactant;
+    OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
+.
+
+<http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>
+    # OntoSpecies:pubChemCID "180"^^xsd:string;
+    rdfs:label "C3H6O"^^xsd:string;
+    skos:altLabel "acetone"^^xsd:string;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
+.
+
+<http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_353d4667-e25d-476a-bd74-5c34723c8ea3>
+    a OntoSpecies:MolecularWeight;
+    OntoSpecies:units <http://www.theworldavatar.com/kg/ontospecies/Unit_a501ff0e-7cbc-4e3c-ba2e-211da22cac2b>;
+    OntoSpecies:value "58.08"^^xsd:decimal;
+.
+
+ChemRxn:Species_3
+    rdf:type OntoRxn:TargetProduct;
+    OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2>;
+.
+
+<http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2>
+    # OntoSpecies:pubChemCID "637759"^^xsd:string;
+    rdfs:label "C10H10O"^^xsd:string;
+    skos:altLabel "benzalacetone"^^xsd:string;
+    OntoSpecies:hasMolecularWeight 	<http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_f999de28-55dc-477e-8afc-e8802064e0d2>
+.
+
+<http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_f999de28-55dc-477e-8afc-e8802064e0d2>
+    a OntoSpecies:MolecularWeight;
+    OntoSpecies:units <http://www.theworldavatar.com/kg/ontospecies/Unit_a501ff0e-7cbc-4e3c-ba2e-211da22cac2b>;
+    OntoSpecies:value "146.19"^^xsd:decimal;
+.
+
+ChemRxn:Species_4
+    rdf:type OntoRxn:Impurity;
+    OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b>;
+.
+
+<http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b>
+    # OntoSpecies:pubChemCID "640180"^^xsd:string;
+    rdfs:label "C17H14O"^^xsd:string;
+    skos:altLabel "dibenzylideneacetone"^^xsd:string;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_8765d201-0da9-4112-b653-3455002f535b>;
+.
+
+<http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_8765d201-0da9-4112-b653-3455002f535b>
+    a OntoSpecies:MolecularWeight;
+    OntoSpecies:units <http://www.theworldavatar.com/kg/ontospecies/Unit_a501ff0e-7cbc-4e3c-ba2e-211da22cac2b>;
+    OntoSpecies:value "234.29"^^xsd:decimal;
+.
+
+ChemRxn:Species_5
+    rdf:type OntoRxn:Catalyst;
+    OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202>;
+.
+
+<http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202>
+    # OntoSpecies:pubChemCID "14798"^^xsd:string;
+    rdfs:label "HNaO"^^xsd:string;
+    skos:altLabel "NaOH"^^xsd:string;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_eab77458-560d-4ce9-9b5e-96650fc3e202>;
+.
+
+<http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_eab77458-560d-4ce9-9b5e-96650fc3e202>
+    a OntoSpecies:MolecularWeight;
+    OntoSpecies:units <http://www.theworldavatar.com/kg/ontospecies/Unit_a501ff0e-7cbc-4e3c-ba2e-211da22cac2b>;
+    OntoSpecies:value "39.997"^^xsd:decimal;
+.
+
+ChemRxn:Species_6
+    rdf:type OntoRxn:Solvent;
+    OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
+.
+
+<http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>
+    # OntoSpecies:pubChemCID "6342"^^xsd:string;
+    rdfs:label "CH3CN"^^xsd:string;
+    skos:altLabel "acetonitrile"^^xsd:string;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
+.
+
+<http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>
+    a OntoSpecies:MolecularWeight;
+    OntoSpecies:units <http://www.theworldavatar.com/kg/ontospecies/Unit_a501ff0e-7cbc-4e3c-ba2e-211da22cac2b>;
+    OntoSpecies:value "41.05"^^xsd:decimal;
+.
+
+ChemRxn:Species_7
+    rdf:type OntoRxn:Solvent;
+    OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
+.
+
+<http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>
+    # OntoSpecies:pubChemCID "702"^^xsd:string;
+    rdfs:label "C2H6O"^^xsd:string;
+    skos:altLabel "ethanol"^^xsd:string;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
+.
+
+<http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_63fefc5a-d49d-4841-a946-2cdb5f356983>
+    a OntoSpecies:MolecularWeight;
+    OntoSpecies:units <http://www.theworldavatar.com/kg/ontospecies/Unit_a501ff0e-7cbc-4e3c-ba2e-211da22cac2b>;
+    OntoSpecies:value "46.07"^^xsd:decimal;
+.
+
+<http://www.theworldavatar.com/kg/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>
+    # OntoSpecies:pubChemCID "931"^^xsd:string;
+    rdfs:label "C10H8"^^xsd:string;
+    skos:altLabel "naphthalene"^^xsd:string;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
+.
+
+<http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>
+    a OntoSpecies:MolecularWeight;
+    OntoSpecies:units <http://www.theworldavatar.com/kg/ontospecies/Unit_a501ff0e-7cbc-4e3c-ba2e-211da22cac2b>;
+    OntoSpecies:value "128.17"^^xsd:decimal;
+.
+
+<http://www.theworldavatar.com/kg/ontospecies/Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>
+    # OntoSpecies:pubChemCID "7095"^^xsd:string;
+    rdfs:label "C12H10"^^xsd:string;
+    skos:altLabel "biphenyl"^^xsd:string;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>;
+.
+
+<http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>
+    a OntoSpecies:MolecularWeight;
+    OntoSpecies:units <http://www.theworldavatar.com/kg/ontospecies/Unit_a501ff0e-7cbc-4e3c-ba2e-211da22cac2b>;
+    OntoSpecies:value "154.212"^^xsd:decimal;
+.
+
+<http://www.theworldavatar.com/kg/ontospecies/Unit_a501ff0e-7cbc-4e3c-ba2e-211da22cac2b>
+    a om:Unit;
+    rdfs:label "g / mol"^^xsd:string;
+.
+
+##############################
+## Chemical phase instances ##
+##############################
+SinglePhase:PhaseComponent_1
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_1_Property_1;
+.
+
+SinglePhase:PhaseComponent_2
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_2_Property_1;
+.
+
+SinglePhase:PhaseComponent_5
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_5_Property_1;
+.
+
+SinglePhase:PhaseComponent_6
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_6_Property_1;
+.
+
+SinglePhase:PhaseComponent_6_2
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_6_Property_2;
+.
+
+SinglePhase:PhaseComponent_7
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_7_Property_1;
+.
+
+SinglePhase:PhaseComponent_IS_Input
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_IS_Input_Property_1;
+.
+
+SinglePhase:PhaseComponent_1_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_1_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_1_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.5"^^xsd:double;
+.
+
+SinglePhase:PhaseComponent_2_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_2_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_2_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "6.73"^^xsd:double;
+.
+
+SinglePhase:PhaseComponent_5_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_5_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_5_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.1"^^xsd:double;
+.
+
+SinglePhase:PhaseComponent_6_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_6_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_6_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "18.1"^^xsd:double;
+.
+
+SinglePhase:PhaseComponent_6_Property_2
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_6_Property_2_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_6_Property_2_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "9.6"^^xsd:double;
+.
+
+SinglePhase:PhaseComponent_7_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_7_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_7_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "17.1"^^xsd:double;
+.
+
+SinglePhase:PhaseComponent_IS_Input_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_IS_Input_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_IS_Input_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.05"^^xsd:double;
+.
+
+SinglePhase:Phase_1
+    rdf:type OntoCAPEPha:SinglePhase;
+    OntoCAPEMat:representsThermodynamicBehavior exp1:InputChemical_1;
+    OntoCAPEMat:representsThermodynamicBehavior exp2:InputChemical_1;
+    OntoCAPEMat:representsThermodynamicBehavior exp3:InputChemical_1;
+    OntoCAPEMat:representsThermodynamicBehavior exp4:InputChemical_1;
+    OntoCAPEMat:representsThermodynamicBehavior exp5:InputChemical_1;
+    OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
+    OntoCAPEPha:has_composition SinglePhase:Composition_1;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_1;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_6;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_IS_Input;
+.
+
+SinglePhase:Composition_1
+    rdf:type OntoCAPEPha:Composition;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_1_Property_1;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_6_Property_1;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_IS_Input_Property_1;
+.
+
+SinglePhase:Phase_2
+    rdf:type OntoCAPEPha:SinglePhase;
+    OntoCAPEMat:representsThermodynamicBehavior exp1:InputChemical_2;
+    OntoCAPEMat:representsThermodynamicBehavior exp2:InputChemical_2;
+    OntoCAPEMat:representsThermodynamicBehavior exp3:InputChemical_2;
+    OntoCAPEMat:representsThermodynamicBehavior exp4:InputChemical_2;
+    OntoCAPEMat:representsThermodynamicBehavior exp5:InputChemical_2;
+    OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
+    OntoCAPEPha:has_composition SinglePhase:Composition_2;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_2;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_6_2;
+.
+
+SinglePhase:Composition_2
+    rdf:type OntoCAPEPha:Composition;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_2_Property_1;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_6_Property_2;
+.
+
+SinglePhase:Phase_3
+    rdf:type OntoCAPEPha:SinglePhase;
+    OntoCAPEMat:representsThermodynamicBehavior exp1:InputChemical_3;
+    OntoCAPEMat:representsThermodynamicBehavior exp2:InputChemical_3;
+    OntoCAPEMat:representsThermodynamicBehavior exp3:InputChemical_3;
+    OntoCAPEMat:representsThermodynamicBehavior exp4:InputChemical_3;
+    OntoCAPEMat:representsThermodynamicBehavior exp5:InputChemical_3;
+    OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
+    OntoCAPEPha:has_composition SinglePhase:Composition_3;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_5;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_7;
+.
+
+SinglePhase:Composition_3
+    rdf:type OntoCAPEPha:Composition;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_5_Property_1;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_7_Property_1;
+.
+
+## Phase for OutputChemical of each reaction experiment
+# OutputChemical for exp 1
+SinglePhase:Phase_OutputChemical_exp1
+    rdf:type OntoCAPEPha:SinglePhase;
+    OntoCAPEMat:representsThermodynamicBehavior exp1:OutputChemical_4;
+    OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
+    OntoCAPEPha:has_composition SinglePhase:Composition_OutputChemical_exp1;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_1_exp1_oc;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_2_exp1_oc;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_3_exp1_oc;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_4_exp1_oc;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_5_exp1_oc;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_6_exp1_oc;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_7_exp1_oc;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_IS_exp1_oc;
+.
+
+SinglePhase:Composition_OutputChemical_exp1
+    rdf:type OntoCAPEPha:Composition;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_1_exp1_oc_Property_1;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_2_exp1_oc_Property_1;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_3_exp1_oc_Property_1;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_4_exp1_oc_Property_1;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_5_exp1_oc_Property_1;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_6_exp1_oc_Property_1;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_7_exp1_oc_Property_1;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_InternalStandard_exp1_Property_1;
+.
+
+SinglePhase:PhaseComponent_1_exp1_oc
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_1_exp1_oc_Property_1;
+.
+
+SinglePhase:PhaseComponent_2_exp1_oc
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_2_exp1_oc_Property_1;
+.
+
+SinglePhase:PhaseComponent_3_exp1_oc
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_3_exp1_oc_Property_1;
+.
+
+SinglePhase:PhaseComponent_4_exp1_oc
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_4_exp1_oc_Property_1;
+.
+
+SinglePhase:PhaseComponent_5_exp1_oc
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_5_exp1_oc_Property_1;
+.
+
+SinglePhase:PhaseComponent_6_exp1_oc
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_6_exp1_oc_Property_1;
+.
+
+SinglePhase:PhaseComponent_7_exp1_oc
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_7_exp1_oc_Property_1;
+.
+
+SinglePhase:PhaseComponent_IS_exp1_oc
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_InternalStandard_exp1_Property_1;
+.
+
+SinglePhase:PhaseComponent_1_exp1_oc_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_1_exp1_oc_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_1_exp1_oc_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.0"^^xsd:double; # TODO this value is only put as placeholder for testing purpose
+.
+
+SinglePhase:PhaseComponent_2_exp1_oc_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_2_exp1_oc_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_2_exp1_oc_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.0"^^xsd:double; # TODO this value is only put as placeholder for testing purpose
+.
+
+SinglePhase:PhaseComponent_3_exp1_oc_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_3_exp1_oc_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_3_exp1_oc_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.0"^^xsd:double; # TODO this value is only put as placeholder for testing purpose
+.
+
+SinglePhase:PhaseComponent_4_exp1_oc_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_4_exp1_oc_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_4_exp1_oc_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.0"^^xsd:double; # TODO this value is only put as placeholder for testing purpose
+.
+
+SinglePhase:PhaseComponent_5_exp1_oc_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_5_exp1_oc_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_5_exp1_oc_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.0"^^xsd:double; # TODO this value is only put as placeholder for testing purpose
+.
+
+SinglePhase:PhaseComponent_6_exp1_oc_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_6_exp1_oc_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_6_exp1_oc_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.0"^^xsd:double; # TODO this value is only put as placeholder for testing purpose
+.
+
+SinglePhase:PhaseComponent_7_exp1_oc_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_7_exp1_oc_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_7_exp1_oc_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.0"^^xsd:double; # TODO this value is only put as placeholder for testing purpose
+.
+
+SinglePhase:PhaseComponent_InternalStandard_exp1_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_InternalStandard_exp1_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_InternalStandard_exp1_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.0"^^xsd:double; # TODO this value is only put as placeholder for testing purpose
+.
+
+# OutputChemical for exp 2
+SinglePhase:Phase_OutputChemical_exp2
+    rdf:type OntoCAPEPha:SinglePhase;
+    OntoCAPEMat:representsThermodynamicBehavior exp2:OutputChemical_4;
+    OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
+    OntoCAPEPha:has_composition SinglePhase:Composition_OutputChemical_exp2;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_3_exp2;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_4_exp2;
+.
+
+SinglePhase:Composition_OutputChemical_exp2
+    rdf:type OntoCAPEPha:Composition;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_3_exp2_Property_1;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_4_exp2_Property_1;
+.
+
+SinglePhase:PhaseComponent_3_exp2
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_3_exp2_Property_1;
+.
+
+SinglePhase:PhaseComponent_4_exp2
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_4_exp2_Property_1;
+.
+
+SinglePhase:PhaseComponent_3_exp2_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_3_exp2_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_3_exp2_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.0"^^xsd:double; # TODO this value is only put as placeholder for testing purpose
+.
+
+SinglePhase:PhaseComponent_4_exp2_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_4_exp2_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_4_exp2_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.0"^^xsd:double; # TODO this value is only put as placeholder for testing purpose
+.
+
+# OutputChemical for exp 3
+SinglePhase:Phase_OutputChemical_exp3
+    rdf:type OntoCAPEPha:SinglePhase;
+    OntoCAPEMat:representsThermodynamicBehavior exp3:OutputChemical_4;
+    OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
+    OntoCAPEPha:has_composition SinglePhase:Composition_OutputChemical_exp3;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_3_exp3;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_4_exp3;
+.
+
+SinglePhase:Composition_OutputChemical_exp3
+    rdf:type OntoCAPEPha:Composition;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_3_exp3_Property_1;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_4_exp3_Property_1;
+.
+
+SinglePhase:PhaseComponent_3_exp3
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_3_exp3_Property_1;
+.
+
+SinglePhase:PhaseComponent_4_exp3
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_4_exp3_Property_1;
+.
+
+SinglePhase:PhaseComponent_3_exp3_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_3_exp3_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_3_exp3_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.0"^^xsd:double; # TODO this value is only put as placeholder for testing purpose
+.
+
+SinglePhase:PhaseComponent_4_exp3_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_4_exp3_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_4_exp3_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.0"^^xsd:double; # TODO this value is only put as placeholder for testing purpose
+.
+
+# OutputChemical for exp 4
+SinglePhase:Phase_OutputChemical_exp4
+    rdf:type OntoCAPEPha:SinglePhase;
+    OntoCAPEMat:representsThermodynamicBehavior exp4:OutputChemical_4;
+    OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
+    OntoCAPEPha:has_composition SinglePhase:Composition_OutputChemical_exp4;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_3_exp4;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_4_exp4;
+.
+
+SinglePhase:Composition_OutputChemical_exp4
+    rdf:type OntoCAPEPha:Composition;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_3_exp4_Property_1;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_4_exp4_Property_1;
+.
+
+SinglePhase:PhaseComponent_3_exp4
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_3_exp4_Property_1;
+.
+
+SinglePhase:PhaseComponent_4_exp4
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_4_exp4_Property_1;
+.
+
+SinglePhase:PhaseComponent_3_exp4_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_3_exp4_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_3_exp4_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.0"^^xsd:double; # TODO this value is only put as placeholder for testing purpose
+.
+
+SinglePhase:PhaseComponent_4_exp4_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_4_exp4_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_4_exp4_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.0"^^xsd:double; # TODO this value is only put as placeholder for testing purpose
+.
+
+# OutputChemical for exp 5
+SinglePhase:Phase_OutputChemical_exp5
+    rdf:type OntoCAPEPha:SinglePhase;
+    OntoCAPEMat:representsThermodynamicBehavior exp5:OutputChemical_4;
+    OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
+    OntoCAPEPha:has_composition SinglePhase:Composition_OutputChemical_exp5;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_3_exp5;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_4_exp5;
+.
+
+SinglePhase:Composition_OutputChemical_exp5
+    rdf:type OntoCAPEPha:Composition;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_3_exp5_Property_1;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_4_exp5_Property_1;
+.
+
+SinglePhase:PhaseComponent_3_exp5
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_3_exp5_Property_1;
+.
+
+SinglePhase:PhaseComponent_4_exp5
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b>;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_4_exp5_Property_1;
+.
+
+SinglePhase:PhaseComponent_3_exp5_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_3_exp5_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_3_exp5_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.0"^^xsd:double; # TODO this value is only put as placeholder for testing purpose
+.
+
+SinglePhase:PhaseComponent_4_exp5_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_4_exp5_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_4_exp5_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.0"^^xsd:double; # TODO this value is only put as placeholder for testing purpose
+.

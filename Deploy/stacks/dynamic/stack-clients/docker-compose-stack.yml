@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  stack-client:
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
+    environment:
+      - "STACK_NAME=${STACK_NAME}"
+      - "EXECUTABLE=${EXECUTABLE}"
+    security_opt:
+      - label=disable
+    volumes:
+      - scratch:/stack_scratch
+      - $API_SOCK:/var/run/docker.sock
+    networks:
+      - stack
+
+volumes:
+  scratch:
+    name: ${STACK_NAME}_scratch
+    labels:
+      - com.docker.stack.namespace:${STACK_NAME}
+
+networks:
+  stack:
+    name: ${STACK_NAME}
+    driver: overlay
+    external: true
+
+secrets:
+  blazegraph_password:
+    name: ${STACK_NAME}_blazegraph_password
+    external: true
+  postgis_password:
+    name: ${STACK_NAME}_postgis_password
+    external: true
+  geoserver_password:
+    name: ${STACK_NAME}_geoserver_password
+    external: true

@@ -1,0 +1,151 @@
+prefixes: 
+    main_inst_pref: "http://www.theworldavatar.com/kb/ontomops/MetalOrganicPolyhedra_"
+    base_import: "http://www.w3.org/2002/07/owl#imports"
+    mops_pref: "http://www.theworldavatar.com/kb/ontomops/"
+    onto_mops: "http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#"
+    onto_mops_no_hash: "http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl"
+    rdfs: "http://www.w3.org/2000/01/rdf-schema#"
+    onto_spec: "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#"
+    uom_pref: "http://www.ontology-of-units-of-measure.org/resource/om-2/"
+    unres_pref: "http://theworldavatar.com/resource/ontouom/"
+schema_to_json_vars:
+    MOPS_MOLWT: {"required": False, "jsonKey": "Mops_Molecular_Weight"}
+    MOPS_POL_SHAPE: {"required": False, "jsonKey": "Mops_Polyhedral_Shape"}
+    MOPS_POL_SHAPE_SYMBOL: {"required": False, "jsonKey": "Mops_Polyhedral_Shape_Symbol"}
+    MOPS_SYM_POINT_GROUP: {"required": False, "jsonKey": "Mops_Symmetry_Point_Group"}
+    MOPS_CHARGE: {"required": False, "jsonKey": "Mops_Charge"}
+    MOPS_FORMULA: {"required": False, "jsonKey": "Mops_Formula"}
+    MOPS_LABEL: {"required": False, "jsonKey": "Mops_Label"}
+    MOPS_CAV_VOL: {"required": False, "jsonKey": "Mops_Cavity_Volume"}
+    MOPS_CCDC: {"required": False, "jsonKey": "Mops_CCDC_Number"}
+    MOPS_REF_DOI: {"required": False, "jsonKey": "Mops_Reference_DOI"}
+    MOPS_ASSEM_MOD_ID: {"required": False, "jsonKey": "Assembly_Model_ID"}
+    SPECIES_IRIS: {"required": False, "jsonKey": "Species_IRIs"}
+    CBU_FORMULAS: {"required": False, "jsonKey": "CBU_Formulas"}
+    CBU_BINDING_SITES: {"required": False, "jsonKey": "CBU_Binding_Sites"}
+    CBU_BINDING_SITE_LABELS: {"required": False, "jsonKey": "CBU_Binding_Site_Labels"}
+    CBU_BINDING_SITE_COORD_NUMBERS: {"required": False, "jsonKey": "CBU_Binding_Site_Coord_Numbers"}
+    CBU_CORE_LABELS: {"required": False, "jsonKey": "CBU_Core_Labels"}
+    CBU_CORE_SUB_LABELS: {"required": False, "jsonKey": "CBU_Core_Substituent_Labels"}
+    CBU_SPACER_LABELS: {"required": False, "jsonKey": "CBU_Spacer_Labels"}
+    CBU_SPACER_SUB_LABELS: {"required": False, "jsonKey": "CBU_Spacer_Substituent_Labels"}
+    CBU_BINDING_DIRS: {"required": False, "jsonKey": "CBU_Binding_Directions"}
+    GBU_PLANARITIES: {"required": False, "jsonKey": "GBU_Planarities"}
+    GBU_MODULARITIES: {"required": False, "jsonKey": "GBU_Modularities"}
+    GBU_UNIT_NUMBERS: {"required": False, "jsonKey": "GBU_Numbers"}
+    MOPS_XYZ_GEOMETRY_FILE_URL: {"required": False, "jsonKey": "Mops_XYZ_Geometry_File_URL"}
+    ENTRY_IRI: {"required": False, "jsonKey": "Entry_IRI"}
+    ENTRY_ID: {"required": False, "jsonKey": "Entry_ID"}
+abox_schema:
+    - # imports
+        [
+            "<IMP> ABoxOntoMOPs base_import: onto_mops_no_hash:",
+            "<IMP> ABoxOntoMOPs base mops_pref:",
+        ]
+    - # main entry
+        [
+            "<INS> ${ENTRY_IRI} onto_mops:MetalOrganicPolyhedra",
+            "<DAT> ${ENTRY_IRI} rdfs:label ${MOPS_LABEL}",
+            "<DAT> ${ENTRY_IRI} onto_mops:hasMOPFormula ${MOPS_FORMULA}",
+            "<DAT> ${ENTRY_IRI} onto_mops:hasCCDCNumber ${MOPS_CCDC}",
+        ]
+    - # xyz file url
+        [
+            "<DAT> ${ENTRY_IRI} onto_mops:hasXYZGeometryFile ${MOPS_XYZ_GEOMETRY_FILE_URL}",
+        ]
+    - # provenance
+        [
+            "<INS> mops_pref:Provenance_${ENTRY_ID} onto_mops:Provenance",
+            "<OBJ> ${ENTRY_IRI} onto_mops:hasProvenance mops_pref:Provenance_${ENTRY_ID}",
+            "<DAT> mops_pref:Provenance_${ENTRY_ID} onto_mops:hasReferenceDOI ${MOPS_REF_DOI}",
+        ]
+    - # Mol mass
+        [
+            "<INS> mops_pref:MolecularWeight_${ENTRY_ID} onto_spec:MolecularWeight",
+            "<OBJ> ${ENTRY_IRI} onto_spec:hasMolecularWeight mops_pref:MolecularWeight_${ENTRY_ID}",
+            "<INS> uom_pref:Measure_MolecularWeight_${ENTRY_ID} uom_pref:Measure",
+            "<OBJ> mops_pref:MolecularWeight_${ENTRY_ID} uom_pref:hasValue uom_pref:Measure_MolecularWeight_${ENTRY_ID}",
+            "<DAT> uom_pref:Measure_MolecularWeight_${ENTRY_ID} uom_pref:hasNumericalValue ${MOPS_MOLWT}",
+            "<INS> uom_pref:MolarMassUnit uom_pref:Unit",
+            "<OBJ> uom_pref:Measure_MolecularWeight_${ENTRY_ID} uom_pref:hasUnit uom_pref:MolarMassUnit",
+        ]
+    - # Charge
+        [
+            "<INS> mops_pref:Charge_${ENTRY_ID} onto_spec:Charge",
+            "<OBJ> ${ENTRY_IRI} onto_spec:hasCharge mops_pref:Charge_${ENTRY_ID}",
+            "<INS> uom_pref:Measure_Charge_${ENTRY_ID} uom_pref:Measure",
+            "<OBJ> mops_pref:Charge_${ENTRY_ID} uom_pref:hasValue uom_pref:Measure_Charge_${ENTRY_ID}",
+            "<DAT> uom_pref:Measure_Charge_${ENTRY_ID} uom_pref:hasNumericalValue ${MOPS_CHARGE}",
+            "<INS> unres_pref:elementary_charge uom_pref:Unit",
+            "<OBJ> uom_pref:Measure_Charge_${ENTRY_ID} uom_pref:hasUnit unres_pref:elementary_charge",
+        ]
+    - # Cavity Volume
+        [
+            "<INS> mops_pref:Cavity_${ENTRY_ID} onto_mops:Cavity",
+            "<OBJ> ${ENTRY_IRI} onto_mops:hasCavity mops_pref:Cavity_${ENTRY_ID}",
+            "<INS> mops_pref:Volume_${ENTRY_ID} onto_mops:Volume",
+            "<OBJ> mops_pref:Cavity_${ENTRY_ID} onto_mops:hasMOPCavityVolume mops_pref:Volume_${ENTRY_ID}",
+            "<INS> uom_pref:Measure_Volume_${ENTRY_ID} uom_pref:Measure",
+            "<OBJ> mops_pref:Volume_${ENTRY_ID} uom_pref:hasValue uom_pref:Measure_Volume_${ENTRY_ID}",
+            "<DAT> uom_pref:Measure_Volume_${ENTRY_ID} uom_pref:hasNumericalValue ${MOPS_CAV_VOL}",
+            "<INS> uom_pref:cubicNanometre uom_pref:Unit",
+            "<OBJ> uom_pref:Measure_Volume_${ENTRY_ID} uom_pref:hasUnit uom_pref:cubicNanometre",
+        ]
+    - # Assembly Model
+        [
+            "<INS> mops_pref:AssemblyModel_${MOPS_ASSEM_MOD_ID} onto_mops:AssemblyModel",
+            "<OBJ> ${ENTRY_IRI} onto_mops:hasAssemblyModel mops_pref:AssemblyModel_${MOPS_ASSEM_MOD_ID}",
+            "<DAT> mops_pref:AssemblyModel_${MOPS_ASSEM_MOD_ID} onto_mops:hasSymmetryPointGroup ${MOPS_SYM_POINT_GROUP}",
+            "<INS> mops_pref:${MOPS_POL_SHAPE}_${ENTRY_ID} onto_mops:${MOPS_POL_SHAPE}",
+            "<OBJ> mops_pref:AssemblyModel_${MOPS_ASSEM_MOD_ID} onto_mops:hasPolyhedralShape mops_pref:${MOPS_POL_SHAPE}_${ENTRY_ID}",
+            "<DAT> mops_pref:${MOPS_POL_SHAPE}_${ENTRY_ID} onto_mops:hasSymbol ${MOPS_POL_SHAPE_SYMBOL}",
+        ]
+    - # Chemical Building Units
+        [
+            "<INS> mops_pref:ChemicalBuildingUnit_${ENTRY_ID}_%{i} onto_mops:ChemicalBuildingUnit",
+            "<OBJ> ${ENTRY_IRI} onto_mops:hasChemicalBuildingUnit mops_pref:ChemicalBuildingUnit_${ENTRY_ID}_%{i}",
+            # CBU Formula
+            "<DAT> mops_pref:ChemicalBuildingUnit_${ENTRY_ID}_%{i} onto_mops:hasCBUFormula ${CBU_FORMULAS}",
+            # CBU Binding direction
+            "<INS> mops_pref:${CBU_BINDING_DIRS}Binding_${ENTRY_ID}_%{i} onto_mops:${CBU_BINDING_DIRS}Binding",
+            "<OBJ> mops_pref:ChemicalBuildingUnit_${ENTRY_ID}_%{i} onto_mops:hasBindingDirection mops_pref:${CBU_BINDING_DIRS}Binding_${ENTRY_ID}_%{i}",
+            # CBU OntoSpecies link
+            "<OBJ> mops_pref:ChemicalBuildingUnit_${ENTRY_ID}_%{i} onto_spec:hasUniqueSpecies ${SPECIES_IRIS}",
+            # CBU Binding site
+            "<INS> mops_pref:${CBU_BINDING_SITES}Site_${ENTRY_ID}_%{i} onto_mops:${CBU_BINDING_SITES}Site",
+            "<OBJ> mops_pref:ChemicalBuildingUnit_${ENTRY_ID}_%{i} onto_mops:hasBindingSite mops_pref:${CBU_BINDING_SITES}Site_${ENTRY_ID}_%{i}",
+            "<DAT> mops_pref:${CBU_BINDING_SITES}Site_${ENTRY_ID}_%{i} rdfs:label ${CBU_BINDING_SITE_LABELS}",
+            "<DAT> mops_pref:${CBU_BINDING_SITES}Site_${ENTRY_ID}_%{i} onto_mops:hasOuterCoordinationNumber ${CBU_BINDING_SITE_COORD_NUMBERS}",
+            # CBU Core
+            "<INS> mops_pref:Core_${ENTRY_ID}_%{i} onto_mops:Core",
+            "<OBJ> mops_pref:ChemicalBuildingUnit_${ENTRY_ID}_%{i} onto_mops:hasCore mops_pref:Core_${ENTRY_ID}_%{i}",
+            "<DAT> mops_pref:Core_${ENTRY_ID}_%{i} rdfs:label ${CBU_CORE_LABELS}",
+            # CBU Subst Core
+            "<INS> mops_pref:Substituent_Core_${ENTRY_ID}_%{i} onto_mops:Substituent",
+            "<OBJ> mops_pref:Core_${ENTRY_ID}_%{i} onto_mops:hasSubstituent mops_pref:Substituent_Core_${ENTRY_ID}_%{i}",
+            "<DAT> mops_pref:Substituent_Core_${ENTRY_ID}_%{i} rdfs:label ${CBU_CORE_SUB_LABELS}",
+            # CBU Spacer
+            "<INS> mops_pref:Spacer_${ENTRY_ID}_%{i} onto_mops:Spacer",
+            "<OBJ> mops_pref:ChemicalBuildingUnit_${ENTRY_ID}_%{i} onto_mops:hasSpacer mops_pref:Spacer_${ENTRY_ID}_%{i}",
+            "<DAT> mops_pref:Spacer_${ENTRY_ID}_%{i} rdfs:label ${CBU_SPACER_LABELS}",
+            # CBU Subst Spacer
+            "<INS> mops_pref:Substituent_Spacer_${ENTRY_ID}_%{i} onto_mops:Substituent",
+            "<OBJ> mops_pref:Spacer_${ENTRY_ID}_%{i} onto_mops:hasSubstituent mops_pref:Substituent_Spacer_${ENTRY_ID}_%{i}",
+            "<DAT> mops_pref:Substituent_Spacer_${ENTRY_ID}_%{i} rdfs:label ${CBU_SPACER_SUB_LABELS}",
+        ]
+    - # Generic Building Units
+        [
+            "<INS> mops_pref:GenericBuildingUnit_${MOPS_ASSEM_MOD_ID}_%{i} onto_mops:GenericBuildingUnit",
+            "<OBJ> mops_pref:AssemblyModel_${MOPS_ASSEM_MOD_ID} onto_mops:hasGenericBuildingUnit mops_pref:GenericBuildingUnit_${MOPS_ASSEM_MOD_ID}_%{i}",
+            # GBU Planarity
+            "<DAT> mops_pref:GenericBuildingUnit_${MOPS_ASSEM_MOD_ID}_%{i} onto_mops:hasPlanarity ${GBU_PLANARITIES}",
+            # GBU Modularity
+            "<DAT> mops_pref:GenericBuildingUnit_${MOPS_ASSEM_MOD_ID}_%{i} onto_mops:hasModularity ${GBU_MODULARITIES}",
+            # GBU Number
+            "<INS> mops_pref:GenericBuildingUnitNumber_${MOPS_ASSEM_MOD_ID}_%{i} onto_mops:GenericBuildingUnitNumber",
+            "<OBJ> mops_pref:AssemblyModel_${MOPS_ASSEM_MOD_ID} onto_mops:hasGenericBuildingUnitNumber mops_pref:GenericBuildingUnitNumber_${MOPS_ASSEM_MOD_ID}_%{i}",
+            "<OBJ> mops_pref:GenericBuildingUnitNumber_${MOPS_ASSEM_MOD_ID}_%{i} onto_mops:isNumberOf mops_pref:GenericBuildingUnit_${MOPS_ASSEM_MOD_ID}_%{i}",
+            "<DAT> mops_pref:GenericBuildingUnitNumber_${MOPS_ASSEM_MOD_ID}_%{i} onto_spec:value ${GBU_UNIT_NUMBERS}",
+            # Functioning as
+            "<OBJ> mops_pref:ChemicalBuildingUnit_${ENTRY_ID}_%{i} onto_mops:isFunctioningAs mops_pref:GenericBuildingUnit_${MOPS_ASSEM_MOD_ID}_%{i}",
+        ]

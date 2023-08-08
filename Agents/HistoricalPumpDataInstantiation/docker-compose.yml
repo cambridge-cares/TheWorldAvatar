@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  historical-house45-utilities-agent:
+    container_name: historical-pump-data-instantiation-agent
+    image: historical-pump-data-instantiation-agent:1.0.0
+    build: .
+    ports:
+      - "4050:8080"
+    volumes:
+      - ./data:/usr/local/tomcat/data
+      - ./config:/usr/local/tomcat/config

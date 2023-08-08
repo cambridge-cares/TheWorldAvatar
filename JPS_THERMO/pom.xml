@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.ac.cam.cares.jps.thermocalculation</groupId>
 	<artifactId>JPS_THERMO</artifactId>
-	<version>0.0.1</version>
+	<version>0.1.1</version>
 	<packaging>war</packaging>
 
 	<build>
@@ -31,6 +31,7 @@
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
+					<release>8</release>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -95,7 +96,7 @@
 		<dependency>
 			<groupId>uk.ac.cam.cares.jps</groupId>
 			<artifactId>jps-base-lib</artifactId>
-			<version>1.3.0</version>
+			<version>1.17.0</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/javax.json/javax.json-api -->

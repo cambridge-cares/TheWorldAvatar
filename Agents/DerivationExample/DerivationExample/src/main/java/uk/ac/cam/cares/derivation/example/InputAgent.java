@@ -28,30 +28,30 @@ public class InputAgent extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		Config.initProperties();
-	    
-	    RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
-	    SparqlClient sparqlClient = new SparqlClient(storeClient);
-    	DerivationClient devClient = new DerivationClient(storeClient);
-		
+
+		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
+		SparqlClient sparqlClient = new SparqlClient(storeClient);
+		DerivationClient devClient = new DerivationClient(storeClient, InitialiseInstances.derivationInstanceBaseURL);
+
 		if (InstancesDatabase.Input == null) { 
 			InstancesDatabase.Input = sparqlClient.getInputIRI();
-	    }
-	    
-	    TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
-    	
-    	// add random value to value column
-    	Random rand = new Random();
-    	List<Instant> time_column = Arrays.asList(Instant.now());
+		}
 
-    	List<List<?>> values = new ArrayList<>();
-    	List<Integer> value_column = Arrays.asList(rand.nextInt());
-    	values.add(value_column);
-    	TimeSeries<Instant> ts = new TimeSeries<Instant>(time_column, Arrays.asList(InstancesDatabase.Input), values);
-    	
-    	tsClient.addTimeSeriesData(ts);
+		TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
 
-    	devClient.updateTimestamps(Arrays.asList(InstancesDatabase.Input));
-    	
+		// add random value to value column
+		Random rand = new Random();
+		List<Instant> time_column = Arrays.asList(Instant.now());
+
+		List<List<?>> values = new ArrayList<>();
+		List<Integer> value_column = Arrays.asList(rand.nextInt());
+		values.add(value_column);
+		TimeSeries<Instant> ts = new TimeSeries<Instant>(time_column, Arrays.asList(InstancesDatabase.Input), values);
+
+		tsClient.addTimeSeriesData(ts);
+
+		devClient.updateTimestamps(Arrays.asList(InstancesDatabase.Input));
+
 		return new JSONObject().put("status", "Updated <" + InstancesDatabase.Input + ">");
 	}
 }

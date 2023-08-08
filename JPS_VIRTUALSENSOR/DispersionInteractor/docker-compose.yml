@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  dispersion-interactor:
+    image: ghcr.io/cambridge-cares/dispersion-interactor:1.2.3
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
+    environment:
+      - STACK_NAME=${STACK_NAME}
+      - DATABASE=postgres # currently ontop reads from the default database
+      - SCOPE_TABLE_NAME=scopes
+      - AERMOD_AGENT_IRI=http://theworldavatar.com/kg/dispersion/AermodAgent
+      - AERMOD_AGENT_URL=http://${STACK_NAME}-aermod-agent:8080/AermodAgent/
+      - WEATHER_AGENT_URL=http://${STACK_NAME}-weatheragent:8080/WeatherAgent/CreateStation
+      - SHIP_INPUT_AGENT=http://${STACK_NAME}-ship-input-agent:8080/ShipInputAgent/update
+      - GEOSERVER_WORKSPACE=dispersion
+    configs:
+      - postgis
+      - blazegraph
+      - geoserver
+    secrets:
+      - postgis_password
+      - geoserver_password
+    ports:
+      - "8084:8080"
+    volumes:
+      - logs:/root/.jps
+    networks:
+      - stack
+
+volumes:
+  logs:
+    name: "logs"
+  misc:
+    name: "misc"

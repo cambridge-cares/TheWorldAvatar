@@ -25,7 +25,11 @@ import uk.ac.cam.cares.jps.base.scenario.JPSContext;
  * respectively.
  * <br>
  * These methods can also be accessed in the {@link uk.ac.cam.cares.jps.base.agent.JPSAgent} class.
- * 
+ * <br>
+ * The access agent host:port should be set using the environment variable ACCESSAGENT_HOST.
+ * Otherwise, the default host from the jps.properties file is used. Note that if a url is 
+ * supplied as the targetResourceID then the host in the url is used.
+ *  
  * @author csl37
  *
  */
@@ -36,6 +40,23 @@ public class AccessAgentCaller{
      */
     private static final Logger LOGGER = LogManager.getLogger(AccessAgentCaller.class);
 
+    public static final String ACCESSAGENT_HOST_NAME = "ACCESSAGENT_HOST";
+    public static String accessAgentHost;
+    
+    //Set the default value for the access agent host
+    //TODO this could be done by an "AgentRouter"
+    static{
+		accessAgentHost = System.getenv(ACCESSAGENT_HOST_NAME);
+		if(accessAgentHost == null) {
+			// Try get the access agent host from the environment variables
+			// if not found, then get from the jps.properties file
+			LOGGER.info("ACCESSAGENT_HOST not found in environment variables..."
+					+ " Using jps.properties.");
+			accessAgentHost = KeyValueMap.getInstance().get(IKeys.URL_ACCESSAGENT_HOST);	
+		}
+		LOGGER.info("Default ACCESSAGENT_HOST set to "+accessAgentHost);		
+	}
+    
     /**
 	 * Default constructor
 	 */
@@ -65,33 +86,45 @@ public class AccessAgentCaller{
         JSONObject joparams = (JSONObject) a[1];
         return Http.execute(Http.put(requestUrl, content, contentType, null, joparams));
 	}
-	
-	/**
-	 * cf. https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-get<br>
-	 * The method also allows to get non-RDF resources. 
-	 * 
-	 * @param datasetUrl triple store
-	 * @param targetUrl the named resource or named graph
-	 * @param accept for RDF resources only, available formats see {@link MediaType}, null allowed
-	 * @return
-	 */
-	public static String get(String datasetUrl, String targetUrl, String accept) {
 		
-        LOGGER.info("get for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
+	/**
+	 * Get the SPARQL endpoints for a target resource. The query and update endpoints 
+	 * can be extracted from the JSONObject using the keys
+	 * {@link uk.ac.cam.cares.jps.base.config.JPSConstants#QUERY_ENDPOINT JPSConstants.QUERY_ENDPOINT} 
+	 * and
+	 * {@link uk.ac.cam.cares.jps.base.config.JPSConstants#UPDATE_ENDPOINT JPSConstants.UPDATE_ENDPOINT}. 
+	 * <p>
+	 * This does not perform a SPARQL query/update.
+	 * 
+	 * @param targetResourceID
+	 * @return JSONObject with query and update endpoint
+	 */
+	public static JSONObject getEndpoints(String targetResourceID) {
+		
+		LOGGER.info("Get endpoint for targetResourceID=" + targetResourceID);
 
-		Object[] a = createRequestUrl(datasetUrl, targetUrl);
+		Object[] a = createRequestUrl(null, targetResourceID);
 		
         String requestUrl = (String) a[0];
         JSONObject joparams = (JSONObject) a[1];
-        return Http.execute(Http.get(requestUrl, accept, joparams));
-    }
-	 
+        if (joparams == null) {
+            joparams = new JSONObject();
+        }
+     	
+     	String result = Http.execute(Http.get(requestUrl, null, joparams));
+     	return new JSONObject(result);
+	}
+	
+	
 	/**
 	 * Execute a {@link <a href="https://www.w3.org/TR/sparql11-query/">SPARQL Query</a>} on the target resource.
 	 * 
-	 * @param targetResourceID 	target namespace or IRI
-     * 							e.g. to access the Ontokin triple store
-     * 							both "ontokin" and "http://www.theworldavatar.com/kb/ontokin" are accepted.
+	 * @param targetResourceID 	target namespace or IRI <br>
+	 * 							Note: 	If the targetResourceID is a URL/IRI (e.g. "http://localhost:8080/ontokin"), 
+	 * 									the request will be sent to the host given in the URL (i.e. localhost:8080).
+	 * 									If no host is provided (e.g. targetResourceID = "ontokin"), the request is sent
+	 * 									to the host given by the environment variable "ACCESSAGENT_HOST" 
+	 * 									or that in jps.properties, if the environment variable is not set.
 	 * @param sparqlQuery		SPARQL query string
      * @return the query result in the {@link <a href="https://www.w3.org/TR/sparql11-results-json/">W3C Query result JSON format</a>} 
 	 */
@@ -99,7 +132,7 @@ public class AccessAgentCaller{
 		//pass the target resource ID directly as the targetUrl
     	//both datasetUrl and targetUrl are not used by the AccessAgent for queries
 		//Unpack results into JSONArray
-		return new JSONArray(new JSONObject(query(null, targetResourceID, sparqlQuery)).getString("result"));
+		return new JSONArray(new JSONObject(query(null, targetResourceID, sparqlQuery)).getString(JPSConstants.RESULT_KEY));
 	}
 	
 	/**
@@ -141,9 +174,12 @@ public class AccessAgentCaller{
 
 	/**
      * Execute a {@link <a href="https://www.w3.org/TR/sparql11-update/">SPARQL Update</a>} on the target resource. 
-     * @param targetResourceID	the target namespace or IRI
-     * 							e.g. to access the Ontokin triple store
-     * 							both "ontokin" and "http://www.theworldavatar.com/kb/ontokin" are accepted.
+     * @param targetResourceID	the target namespace or IRI <br>
+     * 							Note: 	If the targetResourceID is a URL/IRI (e.g. "http://localhost:8080/ontokin"), 
+	 * 									the request will be sent to the host given in the URL (i.e. localhost:8080).
+	 * 									If no host is provided (e.g. targetResourceID = "ontokin"), the request is sent
+	 * 									to the host given by the environment variable "ACCESSAGENT_HOST" 
+	 * 									or that in jps.properties, if the environment variable is not set.
      * @param sparqlUpdate		SPARQL update string
      */
 	//Duplication of update below for sake of naming consistency with queryStore
@@ -324,10 +360,10 @@ public class AccessAgentCaller{
 			if(scheme == null) {
 				scheme = "http";
 			}
-			//If no authority is given then get the host 
-			if(authority == null) {
-				//TODO this should be done by an "Agent Locator"
-				authority = KeyValueMap.getInstance().get(IKeys.URL_ACCESSAGENT_HOST);
+			
+			//If no authority is given then get the default host
+			if(authority == null) {				
+				authority = accessAgentHost;
 			}
 			
 			requestUrl = new URI(scheme,authority,JPSConstants.ACCESS_AGENT_PATH,null,null);

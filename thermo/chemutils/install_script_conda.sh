@@ -55,6 +55,7 @@ function prompt_for_input {
     then
 		read -n 1 -s -r -p "Press any key to continue"
     fi
+    echo
 }
 
 function check_conda {
@@ -67,7 +68,7 @@ function check_conda {
     else
         echo "ERROR: Could not find conda installation. On Windows, you must run this script from Anaconda Prompt for conda to be correctly located. Aborting installation."
         prompt_for_input
-        exit -1
+        exit 1
     fi
     echo
     echo
@@ -90,7 +91,7 @@ function recreate_conda_env {
     else
         echo "ERROR: Could not create conda environment."
         prompt_for_input
-		exit -1
+		exit 1
     fi
     echo
     echo
@@ -113,7 +114,7 @@ function install_project {
     	echo "    ERROR: installation failed."
     	echo "-----------------------------------------"
 		prompt_for_input
-		exit -1
+		exit 1
     fi
 
 }
@@ -169,4 +170,3 @@ echo
 echo "==============================================================================================================="
 echo
 prompt_for_input
-echo

@@ -16,7 +16,6 @@ import org.junit.Test;
 import uk.ac.cam.cares.jps.agent.kinetics.simulation.KineticsAgent;
 
 import org.junit.Assert;
-import uk.ac.cam.cares.jps.agent.utils.ZipUtility;
 
 public class KineticsAgentProcessOutputTest {
 

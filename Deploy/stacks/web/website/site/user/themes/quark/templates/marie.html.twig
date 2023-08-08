@@ -3,7 +3,8 @@
 {% block javascripts %}
 	{{ parent() }}
 	{% do assets.addJs('https://code.jquery.com/ui/1.12.1/jquery-ui.min.js', {group:'bottom'}) %}
-	  
+	{% do assets.addJs('https://www.gstatic.com/charts/loader.js', {group:'bottom'}) %}
+
 	{# Custom JS #}
 	{% do assets.addJs('theme://js/accordian.js', {group:'bottom'}) %}
 	{% do assets.addJs('theme://js/marie-dict.js', {group:'bottom'}) %}

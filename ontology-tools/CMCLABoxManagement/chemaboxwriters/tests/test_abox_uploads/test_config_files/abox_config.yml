@@ -1,0 +1,79 @@
+# these are default settings that will be applied to any file uploads
+# in the upload_file_types and upload_file_types sections
+file_server_upload_settings:
+    url: http://localhost:48086/FileServer/
+    auth_file: tests/test_abox_uploads/docker_settings/dummy_services_secrets/fileserver_secrets.txt
+    no_auth: False
+triple_store_upload_settings:
+    url: http://localhost:48083/blazegraph/namespace/kb/sparql/
+    auth_file: tests/test_abox_uploads/docker_settings/dummy_services_secrets/blazegraph-geo_secrets.txt
+    no_auth: False
+kg_query_endpoints:
+    ospecies: http://localhost:48083/blazegraph/namespace/ospecies/sparql/
+    omops: http://localhost:48083/blazegraph/namespace/omops/sparql/
+    ocompchem: http://localhost:48083/blazegraph/namespace/ocompchem/sparql/
+    opsscan: http://localhost:48083/blazegraph/namespace/opsscan/sparql/
+# this section defines what type of files should be uploaded to the file server
+ocompchem:
+    file_server_upload_settings:
+        subdirs: ocompchem
+    triple_store_upload_settings:
+        url: http://localhost:48083/blazegraph/namespace/ocompchem/sparql/
+    qc_log_to_qc_json:
+        file_server_upload_settings:
+            upload_file_types:
+                - qc_log
+    qc_json_to_oc_json:
+        file_server_upload_settings:
+            upload_file_types:
+                - oc_png
+        handler_kwargs:
+            random_id: testID-111-111-111
+            ontospecies_IRI: test_species_iri
+            generate_png: true
+    oc_csv_to_oc_owl:
+        triple_store_upload_settings:
+            upload_file_types:
+                - oc_owl
+ospecies:
+    file_server_upload_settings:
+        subdirs: ospecies
+    triple_store_upload_settings:
+        url: http://localhost:48083/blazegraph/namespace/ospecies/sparql/
+    qc_json_to_os_json:
+        handler_kwargs:
+            random_id: testID-111-111-111
+    os_csv_to_os_owl:
+        triple_store_upload_settings:
+            upload_file_types:
+                - os_owl
+omops:
+    file_server_upload_settings:
+        subdirs: omops
+    triple_store_upload_settings:
+        url: http://localhost:48083/blazegraph/namespace/omops/sparql/
+    ominp_json_to_om_json:
+        file_server_upload_settings:
+            upload_file_types:
+                - ominp_xyz
+        handler_kwargs:
+            random_id: testID-111-111-111
+    om_csv_to_om_owl:
+        triple_store_upload_settings:
+            upload_file_types:
+                - om_owl
+opsscan:
+    file_server_upload_settings:
+        subdirs: opsscan
+    triple_store_upload_settings:
+        url: http://localhost:48083/blazegraph/namespace/opsscan/sparql/
+    oc_json_to_ops_json:
+        handler_kwargs:
+            os_iris: Species_11-111-111
+            os_atoms_iris: Atom_11-11-111_C1,Atom_11-11-111_C2
+            oc_atoms_pos: 1,2
+            random_id: OPStestID-111-111-11
+    ops_csv_to_ops_owl:
+        triple_store_upload_settings:
+            upload_file_types:
+                - ops_owl

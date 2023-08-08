@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
@@ -14,6 +15,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -22,6 +24,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.ArgumentMatchers.any;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
@@ -107,6 +110,45 @@ public class RemoteStoreClientTest {
 		assertEquals(formInsertQuery(), kbClient.getQuery());
 	}
 	
+	@Test
+	public void testIsUpdateEndpointBlazegraphBackended() {
+		queryEndpoint = "/test/Query/Endpoint";
+		RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint);
+		// should be false as no update endpoint is provided
+		assertTrue(!kbClient.isUpdateEndpointBlazegraphBackended());
+
+		updateEndpoint = UUID.randomUUID().toString() + "/blazegraph/namespace/" + UUID.randomUUID().toString()
+				+ "/sparql";
+		kbClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
+		assertTrue(kbClient.isUpdateEndpointBlazegraphBackended());
+
+		updateEndpoint = UUID.randomUUID().toString() + "//blazegraph//namespace//" + UUID.randomUUID().toString()
+				+ "/sparql";
+		kbClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
+		// Paths should be able to resolve "//" to "/"
+		assertTrue(kbClient.isUpdateEndpointBlazegraphBackended());
+
+		updateEndpoint = UUID.randomUUID().toString();
+		kbClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
+		assertTrue(!kbClient.isUpdateEndpointBlazegraphBackended());
+	}
+	/**
+	 * Checks if the connection URL established for the update endpoint (URL)<p>
+	 * is the expected one.
+	 *
+	 * @throws SQLException
+	 */
+	@Test
+	public void connectionURLForUpdateEndpointTest() throws SQLException{
+		String updateEndpoint = "http://localhost:8080/test";
+		RemoteStoreClient kbClient = new RemoteStoreClient();
+		kbClient.setUpdateEndpoint(updateEndpoint);
+		assertNotNull(kbClient.getConnectionUrl());
+		assertEquals("jdbc:jena:remote:update=".concat(updateEndpoint), kbClient.getConnectionUrl());
+	}
+
+
+
 	/**
 	 * Checks if the connection URL established for the query endpoint (URL)<p>
 	 * is the expected one. 
@@ -293,11 +335,11 @@ public class RemoteStoreClientTest {
 	public void testGet() {
 		
 		String actual = 
-		"<rdf:RDF\r\n"+
-				"    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n"+
-				"    xmlns:j.0=\"http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#\">\r\n"+
-				"  <j.0:FoodCourt rdf:about=\"http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-001.owl#FoodCourt-001\"/>\r\n"+
-				"</rdf:RDF>\r\n";
+		"<rdf:RDF"+System.getProperty("line.separator")+
+				"    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\""+System.getProperty("line.separator")+
+				"    xmlns:j.0=\"http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#\">"+System.getProperty("line.separator")+
+				"  <j.0:FoodCourt rdf:about=\"http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-001.owl#FoodCourt-001\"/>"+System.getProperty("line.separator")+
+				"</rdf:RDF>"+System.getProperty("line.separator");
 				
 		//mock result
 		Model model = ModelFactory.createDefaultModel();
@@ -318,8 +360,24 @@ public class RemoteStoreClientTest {
 		
 		assertEquals(result, actual);
 	}
-	
-	
+
+	/**
+	 * Test exception message when the query and update is not valid
+	 */
+	@Test
+	public void testExecuteQueryAndUpdateException() {
+		RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> kbClient.executeUpdate(formMechanismCountQuery()));
+		Assert.assertTrue(e.getMessage()
+				.contains(formMechanismCountQuery()));
+
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> kbClient.executeQuery(formDeleteQuery()));
+		Assert.assertTrue(e.getMessage()
+				.contains(formDeleteQuery()));
+	}
+
 	/**
 	 * A SPARQL query to count the total number of mechanisms in a repository.
 	 * 
@@ -335,7 +393,7 @@ public class RemoteStoreClientTest {
 			query = query.concat("}\n");
 			return query;
 	}
-	
+
 	/**
 	 * A SPARQL query to retrieve the IRIs of all mechanisms in a repository.
 	 * 
@@ -423,4 +481,49 @@ public class RemoteStoreClientTest {
 		return query;
 	}
 
+	/**
+	 * A federated query developed to execute against the endpoints of<br>
+	 * OntoSpecies and OntoCompChem Knowledge Bases to retrieve partial<br>
+	 *  details of species.
+	 *   
+	 * @return
+	 */
+	public static String formFederatedQuery2() {
+		String query ="PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> "
+				+ "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#> "
+				+ "PREFIX gc: <http://purl.org/gc/> "
+				+ "SELECT * "
+				+ "WHERE { "
+				+ "?species OntoSpecies:casRegistryID ?crid . "
+				+ "?compchemspecies ontocompchem:hasUniqueSpecies ?species . "
+				+ "?compchemspecies gc:isCalculationOn ?scfEnergy . "
+				+ "?scfEnergy a ontocompchem:ScfEnergy . "
+				+ "?scfEnergy gc:hasElectronicEnergy ?scfElectronicEnergy . "
+				+ "?scfElectronicEnergy gc:hasValue ?scfEnergyValue . "
+				+ "?compchemspecies gc:isCalculationOn ?zeroEnergy . "
+				+ "?zeroEnergy a ontocompchem:ZeroPointEnergy . "
+				+ "?zeroEnergy gc:hasElectronicEnergy ?zeroElectronicEnergy . "
+				+ "?zeroElectronicEnergy gc:hasValue ?zeroEnergyValue . "
+				+ "}";
+		
+		return query;
+	}
+
+	public static void main(String[] args){
+		RemoteStoreClient kbClient = new RemoteStoreClient();
+		List<String> endpoints = new ArrayList<>();
+		String queryEndpointOntoSpeciesKB = "http://www.theworldavatar.com/blazegraph/namespace/ontospecies/sparql";
+		String queryEndpointOntoCompChemKB = "http://www.theworldavatar.com/blazegraph/namespace/ontocompchem/sparql";
+		endpoints.add(queryEndpointOntoSpeciesKB);
+		endpoints.add(queryEndpointOntoCompChemKB);
+		try {
+			JSONArray result = kbClient.executeFederatedQuery(endpoints, formFederatedQuery2());
+			System.out.println(result.toString());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
 }

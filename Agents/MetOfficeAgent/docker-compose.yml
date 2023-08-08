@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  metoffice_agent:
+    image: ghcr.io/cambridge-cares/metoffice_agent:1.0.0
+    environment:
+      - STACK_NAME=${STACK_NAME}
+      # MetOffice Data Point API key
+      - API_KEY=
+      # Target Blazegraph namespace
+      - NAMESPACE=stations
+      # Target layer name in geoserver, also table name in PostGIS
+      - LAYERNAME=metoffice
+      # Target PostGIS/PostgreSQL database name
+      # (default name "postgres" required for Ontop to work)
+      - DATABASE=postgres
+      - GEOSERVER_WORKSPACE=metoffice
+      - ONTOP_FILE=/app/resources/ontop.obda
+    ports:
+      - "5000:5000"
+    volumes:
+      # Link container output directory to local directory to access output files
+      # (i.e. only required for creation of output geojson files)
+      - ./output:/app/output
+      - logs:/root/.jps
+    configs:
+      - blazegraph
+      - geoserver
+      - ontop
+      - postgis
+    secrets:
+      - geoserver_password
+      - postgis_password
+
+volumes:
+  logs:
+    name: "logs"

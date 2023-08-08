@@ -26,7 +26,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.FileBasedStoreClient;
 import uk.ac.cam.cares.jps.base.tools.RenamingTool;
 
@@ -55,6 +55,10 @@ public class RenamingToolTest {
 	// temporary folder for testing
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
+	
+	static String removeWhiteSpace(String string) {
+		return string.replaceAll("\\s+","");
+	}
 	
 	/**
 	 * Test constructor RenamingTool(String strMatch, String strTarget, String strReplacement) and setMatch method  
@@ -192,7 +196,7 @@ public class RenamingToolTest {
 		Files.copy(testFilePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		
 		//create kbClient
-		StoreClientInterface kbClient = new FileBasedStoreClient(tempFilePath.toString());
+		TripleStoreClientInterface kbClient = new FileBasedStoreClient(tempFilePath.toString());
 		
 		//perform renaming as single update
 		RenamingTool renamingTool = new RenamingTool(target, replacement);
@@ -242,7 +246,7 @@ public class RenamingToolTest {
 		Files.copy(testFilePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		
 		//create kbClient
-		StoreClientInterface kbClient = new FileBasedStoreClient(tempFilePath.toString());
+		TripleStoreClientInterface kbClient = new FileBasedStoreClient(tempFilePath.toString());
 		
 		//perform renaming as single update
 		RenamingTool renamingTool = new RenamingTool(target, replacement);
@@ -291,7 +295,7 @@ public class RenamingToolTest {
 		Files.copy(testFilePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		
 		//create kbClient
-		StoreClientInterface kbClient = new FileBasedStoreClient(tempFilePath.toString());
+		TripleStoreClientInterface kbClient = new FileBasedStoreClient(tempFilePath.toString());
 		
 		//perform update
 		RenamingTool renamingTool = new RenamingTool(target, replacement);
@@ -340,7 +344,7 @@ public class RenamingToolTest {
 		Files.copy(testFilePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		
 		//create kbClient
-		StoreClientInterface kbClient = new FileBasedStoreClient(tempFilePath.toString());
+		TripleStoreClientInterface kbClient = new FileBasedStoreClient(tempFilePath.toString());
 		
 		//perform update
 		RenamingTool renamingTool = new RenamingTool(target, replacement);
@@ -404,7 +408,7 @@ public class RenamingToolTest {
 		Method method = renamingTool.getClass().getDeclaredMethod("countQuery", String.class, WhereBuilder.class);
 		method.setAccessible(true);
 		String where = (String) method.invoke(renamingTool, graph, whereInput);
-		assertEquals(expected, where);
+		assertEquals(removeWhiteSpace(expected), removeWhiteSpace(where));
 	}
 	
 	/**

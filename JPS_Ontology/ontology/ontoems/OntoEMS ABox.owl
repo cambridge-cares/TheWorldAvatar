@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="http://www.w3.org/2002/07/owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoems/HighRange_34ee3729-c78e-46c1-8a55-49e3c764a8f3">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HighRange_34ee3729-c78e-46c1-8a55-49e3c764a8f3</rdfs:label>
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoems/HighRange"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoems/UnavailableRange_bb272fe4-d841-40b8-98d9-d3df78870e99">
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoems/UnavailableRange"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">UnavailableRange_bb272fe4-d841-40b8-98d9-d3df78870e99</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoems/LowRange_bf14516e-a4b3-45de-ab39-39a21b90487a">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LowRange_bf14516e-a4b3-45de-ab39-39a21b90487a</rdfs:label>
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoems/LowRange"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoems/Rising_4e48e74d-ec54-4a35-844e-900f146ecf60">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rising_4e48e74d-ec54-4a35-844e-900f146ecf60</rdfs:label>
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoems/Rising"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoems/Steady_de13a159-f00f-47a6-970c-233afed8775f">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Steady_de13a159-f00f-47a6-970c-233afed8775f</rdfs:label>
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoems/Steady"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoems/UnavailableRange_941b7f1a-4c44-4ae8-bc9d-22108cd74a8d">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">UnavailableRange_941b7f1a-4c44-4ae8-bc9d-22108cd74a8d</rdfs:label>
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoems/UnavailableRange"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoems/Falling_4484ba6b-d47b-4e76-9ede-35023b1c0f33">
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoems/Falling"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Falling_4484ba6b-d47b-4e76-9ede-35023b1c0f33</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoems/NormalRange_4f10fa30-bfde-4453-9749-8f681be7ecf9">
+    <rdf:type rdf:resource="https://www.theworldavatar.com/kg/ontoems/NormalRange"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NormalRange_4f10fa30-bfde-4453-9749-8f681be7ecf9</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N66bc8892041648d2aecc478870d4df4f">
+    <ns1:imports rdf:resource="https://www.theworldavatar.com/kg/ontoems"/>
+  </rdf:Description>
+</rdf:RDF>

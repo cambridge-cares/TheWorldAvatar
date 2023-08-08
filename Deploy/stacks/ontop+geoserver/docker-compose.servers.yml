@@ -1,0 +1,101 @@
+version: "3.8"
+
+services:
+
+  adminer:
+    image: adminer
+    container_name: "adminer"
+    ports:
+      - ${ADMINER_PORT}:8080
+    restart: unless-stopped
+    security_opt:
+      - label=disable
+
+  ontop-pgsql:
+    image: docker.cmclinnovations.com/ontop_endpoint:${ONTOP_VERSION}
+    container_name: "ontop"
+    build:
+      args:
+        ONTOP_POSTGRES_VERSION: ${ONTOP_POSTGRES_VERSION}
+        ONTOP_VERSION: ${ONTOP_VERSION}
+      context: ontop
+      labels:
+        authors: "gbrownbridge@cmclinnovations, oparry@cmclinnovations, support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "An Ontop image that includes the required postgresql driver and populates the template properties file."
+        hash: "${HASH}"
+    depends_on:
+      - postgis
+    environment:
+      ONTOP_CORS_ALLOWED_ORIGINS: '*'
+      ONTOP_DEV_MODE: '${ONTOP_DEV_MODE}'
+      ONTOP_LAZY_INIT: '${ONTOP_LAZY_INIT}'
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_DB: "${DEFAULT_DATABASE}"
+    env_file:
+      - ontop/ontop.env
+      - postgis/postgres.env
+    ports:
+      - ${ONTOP_PORT}:8080
+    restart: unless-stopped
+    security_opt:
+      - label=disable
+    volumes:
+      - ./ontop/inputs/:/opt/ontop/input/
+
+  postgis:
+    image: postgis/postgis:14-3.1-alpine
+    container_name: "postgis"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    env_file:
+      - postgis/postgres.env
+    ports:
+      - ${POSTGRES_PORT}:5432
+    restart: unless-stopped
+    security_opt:
+      - label=disable
+    volumes:
+      - geotifs:${GEOTIF_DIR}
+      - postgis_data:/var/lib/postgresql/data
+
+  geoserver:
+    image: docker.cmclinnovations.com/geoserver:${GEOSERVER_VERSION}
+    container_name: "geoserver"
+    build:
+      args:
+        GEOSERVER_VERSION: ${GEOSERVER_VERSION}
+      context: geoserver
+    env_file:
+      - geoserver/geoserver.env
+    environment:
+      PLUGIN_DYNAMIC_URLS: "http://sourceforge.net/projects/geoserver/files/GeoServer/${GEOSERVER_VERSION}/extensions/geoserver-${GEOSERVER_VERSION}-vectortiles-plugin.zip"
+    ports:
+      - ${GEOSERVER_PORT}:8080
+    volumes:
+      - geotifs:/${GEOTIF_DIR}
+      - geoserver_datadir:${GEOSERVER_DATA_DIR}
+      - geoserver_grib_cache:${GRIB_CACHE_DIR}
+      - geoserver_gwc:${GEOWEBCACHE_CACHE_DIR}
+      - geoserver_gwc_config:${GEOWEBCACHE_CONFIG_DIR}
+      - geoserver_logs:${GEOSERVER_LOG_DIR}
+      - geoserver_netcfd:${NETCDF_DATA_DIR}
+
+# The default network name is set using a docker-compose environment variable.
+# Please don't modify the contents of the 'networks' node below.
+networks:
+  default:
+    name: ${NETWORK_NAME}
+
+volumes:
+  blazegraph_data: null
+  postgis_data: null
+  geotifs: null
+  geoserver_datadir: null
+  geoserver_grib_cache: null
+  geoserver_gwc: null
+  geoserver_gwc_config: null
+  geoserver_logs: null
+  geoserver_netcfd: null

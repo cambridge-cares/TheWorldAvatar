@@ -8,10 +8,17 @@ rdflib==6.0.2
 requests==2.22.0
 scipy==1.7.1
 -e git+https://github.com/casics/spiral.git@a10fcd3afbd4c28e917cc0056d6f646cc2e9bd44#egg=spiral
-pathos==0.2.3
+#ppft==1.6.6.4
+pathos==0.2.9
 pandas==1.2.4
 tqdm==4.49.0
 pyyaml==5.3.1
 flask==2.0.2
 xgboost==1.5.1
+# CUDA - uncomment next 4 lines for CUDA / use of GPU
+#--find-links https://download.pytorch.org/whl/torch_stable.html
+#torch==1.12.0+cu116
+#torchvision==0.13.0+cu116
+#torchaudio==0.12.0
 sentence-transformers==2.1.0
+py4jps==1.0.21

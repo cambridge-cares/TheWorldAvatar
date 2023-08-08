@@ -10,7 +10,7 @@ Usage:
 
 Options:
 --csvType=<type>  Type of the csv file.
-                  Choose between abox/tbox   [default: abox]
+                  Choose between abox / tbox
 --outDir=<dir>    Output directory path
 """
 

@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -22,18 +24,20 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 public class TimeSeriesSparqlIntegrationTest {
 
 	private static TimeSeriesSparql sparqlClient;
+	private final double epsilon = 0.000001d;
 
 	// Will create a container that is shared between tests.
-	// NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
 	// For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 	@Container
-	private static final GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
+	private static final GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0"))
 			.withExposedPorts(9999);
 
 	@BeforeClass
 	public static void initialiseSparqlClient() {
-		// Start the container manually
+		
+        // Start the container manually
 		blazegraph.start();
+
 		// Set up a kb client that points to the location of the triple store
 		// This can be a RemoteStoreClient or the FileBasedStoreClient
 		RemoteStoreClient kbClient = new RemoteStoreClient();
@@ -56,17 +60,28 @@ public class TimeSeriesSparqlIntegrationTest {
 	@Test
 	public void runIntegrationTest() {
 
-		// IRIs for 2 times series: 1 with 3 associated data series and 1 with only 1 associated data series
+		// IRIs for 3 times series:
+		// 1. First of type Average with 3 associated data series
+		// 2. Second of type Average with only 1 associated data series
+		//3. Third of type Cumulative Total with 2 associated data series
 		String tsIRI1 = "http://tsIRI1";
 		List<String> dataIRI1 = Arrays.asList("http://data1", "http://data2", "http://data3");
+		Duration duration = Duration.ofDays(33*5);
+		ChronoUnit chronoUnit = ChronoUnit.MONTHS;
+		Double numericalDuration = 5.0;
+		String temporalUnit = TimeSeriesSparql.NS_TIME+"unitMonth";
+
 		String tsIRI2 = "http://tsIRI2";
 		List<String> dataIRI2 = Collections.singletonList("http://data4");
+
+		String tsIRI3 = "http://tsIRI3";
+		List<String> dataIRI3 = Arrays.asList("http://data5", "http://data6");
+
 		String dbURL = "jdbc:postgresql:timeseries";
 		String timeUnit = "s";
 
 		// Initialise time series in kb
-		sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit);
-
+		sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, duration, chronoUnit);
 		// Test number of initialised time series in kb
 		Assert.assertEquals(1,  sparqlClient.countTS());
 		// Test whether all data IRI have the time series attached
@@ -82,22 +97,33 @@ public class TimeSeriesSparqlIntegrationTest {
 		// Retrieve time series properties
 		Assert.assertEquals(dbURL,  sparqlClient.getDbUrl(tsIRI1));
 		Assert.assertEquals(timeUnit,  sparqlClient.getTimeUnit(tsIRI1));
+		Assert.assertNotNull(sparqlClient.getAveragingPeriod(tsIRI1));
+		TimeSeriesSparql.CustomDuration customDuration = sparqlClient.getCustomDuration(tsIRI1);
+		Assert.assertEquals(numericalDuration, customDuration.getValue(), epsilon);
+		Assert.assertEquals(temporalUnit, customDuration.getUnit());
+
+		//Initialise another average time series with same duration and temporal unit
+		sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit, TimeSeriesSparql.AVERAGE_TIMESERIES, duration, chronoUnit);
+		Assert.assertEquals(sparqlClient.getAveragingPeriod(tsIRI1),sparqlClient.getAveragingPeriod(tsIRI2));
 
 		// Initialise another time series without time unit
-		sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, null);
-		Assert.assertNull(sparqlClient.getTimeUnit(tsIRI2));
+		sparqlClient.initTS(tsIRI3, dataIRI3, dbURL, null, TimeSeriesSparql.CUMULATIVE_TOTAL_TIMESERIES, null, null);
+		Assert.assertNull(sparqlClient.getTimeUnit(tsIRI3));
 
 		// Remove the attachment of one data IRI to a time series
 		sparqlClient.removeTimeSeriesAssociation(dataIRI1.get(0));
 		// Try to retrieve data IRI association
 		Assert.assertNull(sparqlClient.getTimeSeries(dataIRI1.get(0)));
 
-		// Remove entire time series
+		// Remove one average time series
 		sparqlClient.removeTimeSeries(sparqlClient.getTimeSeries(dataIRI1.get(1)));
+		Assert.assertNotNull(sparqlClient.getAveragingPeriod(tsIRI2));
+
 		// Retrieve all time series remaining
 		List<String> timeSeries = sparqlClient.getAllTimeSeries();
-		Assert.assertEquals(1, timeSeries.size());
+		Assert.assertEquals(2, timeSeries.size());
 		Assert.assertTrue(timeSeries.contains(tsIRI2));
+		Assert.assertTrue(timeSeries.contains(tsIRI3));
 
 	}
 }

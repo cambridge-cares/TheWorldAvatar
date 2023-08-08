@@ -14,6 +14,9 @@ RUN apt update && apt install -y nano
 # Install and setup Apache web server
 RUN apt update && apt install -y apache2  
 COPY 000-default.conf /etc/apache2/sites-enabled/000-default.conf
+
+RUN a2enmod headers
+
 EXPOSE 80
 
 # Command to run at start up

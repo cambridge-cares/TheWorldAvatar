@@ -8,6 +8,8 @@ PROJECT_NAME='chemaboxwriters'
 DEP_FILE='dependencies.yml'
 DEV_INSTALL=''
 DO_NOT_PROMPT='n'
+CHEM_UTILS_SRC_DEFAULT=$SPATH'/../../../thermo/chemutils'
+CHEM_UTILS_SRC=''
 
 function usage {
     echo "==============================================================================================================="
@@ -16,8 +18,8 @@ function usage {
     echo "Please run the script with following options:"
     echo "---------------------------------------------------------------------------------------------------------------"
     echo " Usage:"
-    echo "  -v [-n VENV_NAME -i -e -s]"
-    echo "  -i [-n VENV_NAME -e -s]"
+    echo "  -v [-n VENV_NAME -i -e -s -c CHEM_UTILS_SRC]"
+    echo "  -i [-n VENV_NAME -e -s -c CHEM_UTILS_SRC]"
     echo "  -h"
     echo ""
     echo "Options"
@@ -30,6 +32,8 @@ function usage {
 	echo "  -n VENV_NAME    : Name of the virtual environment to create and/or install the package to."
 	echo "  -e              : Enables developer mode installation."
     echo "  -s              : Silent mode, do not prompt for a user input unless necessary."
+    echo "  -c              : Location of the chemutils source code. If not given, default relative TWA path"
+    echo "                    will is used."
 	echo "  -h              : Print this usage message."
 	echo
 	echo "Example usage:"
@@ -51,10 +55,11 @@ function usage {
 }
 
 function prompt_for_input {
-    if [[ $DO_NOT_PROMPT == 'n' ]]
+    if [[ $DO_NOT_PROMPT == "n" ]]
     then
 		read -n 1 -s -r -p "Press any key to continue"
     fi
+    echo
 }
 
 function check_conda {
@@ -67,7 +72,7 @@ function check_conda {
     else
         echo "ERROR: Could not find conda installation. On Windows, you must run this script from Anaconda Prompt for conda to be correctly located. Aborting installation."
         prompt_for_input
-        exit -1
+        exit 1
     fi
     echo
     echo
@@ -90,7 +95,7 @@ function recreate_conda_env {
     else
         echo "ERROR: Could not create conda environment."
         prompt_for_input
-		exit -1
+		exit 1
     fi
     echo
     echo
@@ -114,7 +119,7 @@ function install_project {
     	echo "    ERROR: installation failed."
     	echo "-----------------------------------------"
 		prompt_for_input
-		exit -1
+		exit 1
     fi
 }
 
@@ -122,10 +127,7 @@ function install_local_dependencies {
 	echo "Installing project local dependencies."
     echo "-----------------------------------------------"
     echo ""
-	$SPATH/../../../thermo/chemutils/install_script_conda.sh -i -s -n $VENV_NAME $DEV_INSTALL
-    echo ""
-    echo ""
-	$SPATH/../../../thermo/CoMoCompChemParser/install_script_conda.sh -i -s -n $VENV_NAME $DEV_INSTALL
+	$CHEM_UTILS_SRC/install_script_conda.sh -i -s -n $VENV_NAME $DEV_INSTALL
 
     if [ $? -eq 0 ]; then
     	echo ""
@@ -139,7 +141,7 @@ function install_local_dependencies {
     	echo "    ERROR: installation failed."
     	echo "-----------------------------------------"
 		prompt_for_input
-		exit -1
+		exit 1
     fi
 }
 
@@ -155,6 +157,7 @@ case $key in
     -h) usage;;
     -v) RECREATE_VENV='y'; shift;;
 	-n) VENV_NAME=$2; shift 2;;
+    -c) CHEM_UTILS_SRC=$2; shift 2;;
     -i) INSTALL_PROJ='y'; shift;;
     -s) DO_NOT_PROMPT='y'; shift;;
 	-e) DEP_FILE='dev-dependencies.yml'; DEV_INSTALL='-e'; shift;;
@@ -170,6 +173,10 @@ then
     check_conda
     recreate_conda_env
 fi
+if [[ -z "${CHEM_UTILS_SRC}" ]]
+then
+    CHEM_UTILS_SRC=$CHEM_UTILS_SRC_DEFAULT
+fi
 if [[ $INSTALL_PROJ == 'y' ]]
 then
     install_project
@@ -179,4 +186,3 @@ echo "==========================================================================
 echo
 echo
 prompt_for_input
-exit

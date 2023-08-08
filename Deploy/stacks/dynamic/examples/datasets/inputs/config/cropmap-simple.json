@@ -1,0 +1,14 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "cropmap",
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "cropmap-simple",
+            "subdirectory": "vector"
+        }
+    ]
+}

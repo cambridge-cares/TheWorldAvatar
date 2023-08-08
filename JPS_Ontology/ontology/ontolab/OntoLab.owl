@@ -1,0 +1,740 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontolab/"
+     xml:base="https://www.theworldavatar.com/kg/ontolab/"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:ontolab="https://www.theworldavatar.com/kg/ontolab/"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontolab/">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">03 May 2023</dc:date>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoLab is an ontology developed for expressing facilities in a research lab.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.10</owl:versionInfo>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/contains -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/contains">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/Laboratory"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the laboratory and the lab equipment located in it.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/hasFillLevel -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasFillLevel">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalContainer"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation indicates the current filling level of a chemical container.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/hasHeight -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasHeight">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation specifies the height of a laboratory equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/hasLength -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasLength">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Length"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation specifies the length of a laboratory equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/hasMaxLevel -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasMaxLevel">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalContainer"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation indicates the maximum filling level of a chemical container.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/hasPowerSupply -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasPowerSupply">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontolab/PowerSupply"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation specifies the power supply type of a laboratory equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/hasPrice -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasPrice">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation specifies the price of a laboratory equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/hasQuantity -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasQuantity">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/ParameterSetting"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the parameter setting and the quantity it refers to following the units of measure practice.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/hasSetting -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasSetting">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/EquipmentSettings"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontolab/ParameterSetting"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the equipment settings and its individual parameter setting.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/hasWarningLevel -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasWarningLevel">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalContainer"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation indicates the fill level of a chemical container below which a warning to researcher should be sent.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/hasWeight -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasWeight">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/BodyMass"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation specifies the weight of a laboratory equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/hasWidth -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasWidth">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Width"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation specifies the width of a laboratory equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/isFilledWith -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/isFilledWith">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalContainer"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalAmount"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the chemical container and the chemical amount it contains.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/isManagedBy -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/isManagedBy">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relationship between lab equipment and the agent service that manages it.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/isPreparedBy -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/isPreparedBy">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalAmount"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontolab/PreparationMethod"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the chemical amount and its preparation method.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/specifies -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/specifies">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/EquipmentSettings"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the equipment settings and the laboratory equipment it governs.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/wasGeneratedFor -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/wasGeneratedFor">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/EquipmentSettings"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the equipment settings and the reaction experiment it was generated for.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/containsUnidentifiedComponent -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/containsUnidentifiedComponent">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalAmount"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The boolean flag to indicate if there are unidentified components in the collected chemical amount.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/stateLastUpdatedAt -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/stateLastUpdatedAt">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/State"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#decimal"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The timestamp when the state of lab equipment was last updated at.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/BodyMass -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/BodyMass"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Height -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Length -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Length"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Volume -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Width -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Width"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+    
+
+
+    <!-- https://saref.etsi.org/core/Device -->
+
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/Device"/>
+    
+
+
+    <!-- https://saref.etsi.org/core/State -->
+
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/State"/>
+    
+
+
+    <!-- https://w3id.org/bot#Element -->
+
+
+    <owl:Class rdf:about="https://w3id.org/bot#Element"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobim/Facility -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobim/Facility"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/ChemicalAmount -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ChemicalAmount">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concrete realisation of chemical amount in the physical world, e.g., a liquid holdup in a vessel.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/ChemicalContainer -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ChemicalContainer">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Element"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/hasFillLevel"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/hasMaxLevel"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/hasWarningLevel"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/isFilledWith"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalAmount"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A container in the lab that is filled with chemical amount.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Dried -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Dried">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/PreparationMethod"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The chemical amount is dried from received.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/DurationSetting -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/DurationSetting">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/ParameterSetting"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Setting that specifies the duration.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/EquipmentSettings -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/EquipmentSettings">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specifications that are used to set the operating conditions of laboratory equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/ExternalBattery -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ExternalBattery">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/PowerSupply"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power supply through an external battery.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/ExternalDC -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ExternalDC">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/PowerSupply"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">External power supply through DC.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/FlowRateSetting -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/FlowRateSetting">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/ParameterSetting"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Setting that specifies the flow rate.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/LabEquipment -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/LabEquipment">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/hasPowerSupply"/>
+                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontolab/PowerSupply"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/hasHeight"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/hasLength"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Length"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/hasPrice"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/hasWeight"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/BodyMass"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/hasWidth"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Width"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/isManagedBy"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Equipment used for laboratory experiments. [https://www.wikidata.org/wiki/Q834028]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Laboratory -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Laboratory">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobim/Facility"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Facility that provides controlled conditions in which scientific or technological research, experiments, and measurement may be performed. [https://www.wikidata.org/wiki/Q483242]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/LithiumBattery -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/LithiumBattery">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/PowerSupply"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power supply through a lithium battery.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/NiMHRechargeableBattery -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/NiMHRechargeableBattery">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/PowerSupply"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power supply through a NiMH rechargeable battery.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/ParameterSetting -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ParameterSetting">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/hasQuantity"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Each parameter setting refers to one specific setting of the laboratory equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/PowerSupply -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/PowerSupply">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power supply of lab equipment.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/PreparationMethod -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/PreparationMethod">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Preparation method of a chemical amount.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/ReagentBottle -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ReagentBottle">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalContainer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The container that hosts chemical stock solutions.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Repurified -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Repurified">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/PreparationMethod"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The chemical amount is repurified from received.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/SolarPowerPack -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/SolarPowerPack">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/PowerSupply"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power supply through a solar power pack.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Sparged -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Sparged">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/PreparationMethod"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The chemical amount is sparged from received.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/SynthesisedInHouse -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/SynthesisedInHouse">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/PreparationMethod"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The chemical amount is synthesised in house.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/TemperatureSetting -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/TemperatureSetting">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/ParameterSetting"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Setting that specifies the temperature.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/UsedAsReceived -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/UsedAsReceived">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/PreparationMethod"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The chemical amount is used as received.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/Vial -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Vial">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalContainer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The container that hosts a small amount of chemical amount.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/VolumeSetting -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/VolumeSetting">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/ParameterSetting"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Setting that specifies the volume.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontolab/WasteBottle -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/WasteBottle">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/ChemicalContainer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The container that hosts waste chemicals.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
+
+

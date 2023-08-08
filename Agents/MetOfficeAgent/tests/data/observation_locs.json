@@ -1,0 +1,7 @@
+{"Locations": 
+    {"Location": 
+        [{"elevation": "15.0", "id": "3002", "latitude": "60.749", "longitude": "-0.854", "name": "Baltasound", "region": "os", "unitaryAuthArea": "Shetland Islands"}, 
+        {"elevation": "82.0", "id": "3005", "latitude": "60.139", "longitude": "-1.183", "obsSource": "LNDSYN", "name": "Lerwick (S. Screen)", "region": "os", "unitaryAuthArea": "Shetland Islands"}, 
+        {"elevation": "57.0", "id": "3008", "latitude": "59.527", "longitude": "-1.628", "name": "Fair Isle", "region": "os", "unitaryAuthArea": "Shetland Islands"}]
+    }
+}

@@ -1,0 +1,19 @@
+// These are example HTTP requests to instantiate / update all UK-AIR Sensor Observation
+// Service stations and readings (incl. assimilating latest time series data)
+
+
+// Instantiate/update all static station information
+# GET http://localhost:5002/airqualityagent/instantiate/stations
+# Content-Type: application/json
+
+// Instantiate/update all static station reading information
+# GET http://localhost:5002/airqualityagent/instantiate/readings
+# Content-Type: application/json
+
+// Update all station reading time series
+# GET http://localhost:5002/airqualityagent/update/timeseries
+# Content-Type: application/json
+
+// Instantiate/update all station information (incl. readings)
+GET http://localhost:5002/airqualityagent/update/all
+Content-Type: application/json

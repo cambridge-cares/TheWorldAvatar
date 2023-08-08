@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+  ifcowlconverter:
+    container_name: ifcowlconverter-agent-debug
+    image: ifcowlconverter-agent:1.0.0
+    build:
+      context: ..
+      target: agent
+    environment:
+      - "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+    ports:
+      - "5005:5005"
+      - "3024:8080"
+    volumes:
+      - ../data:/usr/local/tomcat/data

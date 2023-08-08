@@ -19,3 +19,4 @@ sed -i "s/RDF4J_USER_PASSWORD/$(cat $RDF4J_USER_PASSWORD_FILE)/" /usr/local/tomc
 
 # Start tomcat (deploys modified war files)
 catalina.sh run
+

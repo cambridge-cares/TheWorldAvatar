@@ -233,7 +233,7 @@ test_release() {
     else
         $PYTHON_EXEC -m pip install --no-cache-dir --upgrade $PROJECT_NAME
     fi
-    $PYTHON_EXEC -m pip install pytest
+    $PYTHON_EXEC -m pip install pytest testcontainers
 
     run_py4jps_tests $PYTHON_EXEC
 

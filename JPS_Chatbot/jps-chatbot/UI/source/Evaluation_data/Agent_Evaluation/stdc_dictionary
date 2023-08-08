@@ -1,0 +1,353 @@
+[
+    {
+        "question": "show me all thermal properties of 2-propanol at 178 C",
+        "attribute": "thermal properties",
+        "species": "2-propanol",
+        "temperature": "178 C",
+        "pressure": ""
+    },
+    {
+        "question": "enthalpy of columbian spirits at the temperature of 294.62 degree celsius",
+        "attribute": "enthalpy",
+        "species": "columbian spirits",
+        "temperature": "294.62 degree celsius",
+        "pressure": ""
+    },
+    {
+        "question": "enthalpy of sym-allylene 181 celsius",
+        "attribute": "enthalpy",
+        "species": "sym-allylene",
+        "temperature": "181 celsius",
+        "pressure": ""
+    },
+    {
+        "question": "enthalpy of 3-butanone at -97.67 degrees",
+        "attribute": "enthalpy",
+        "species": "3-butanone",
+        "temperature": "-97.67 degrees",
+        "pressure": ""
+    },
+    {
+        "question": "enthalpy of CH3O&middot with temperature of -88 celsius",
+        "attribute": "enthalpy",
+        "species": "CH3O&middot",
+        "temperature": "-88 celsius",
+        "pressure": ""
+    },
+    {
+        "question": "c3h8's enthalpy at 181.09 fahrenheit",
+        "attribute": "enthalpy",
+        "species": "c3h8",
+        "temperature": "181.09 fahrenheit",
+        "pressure": ""
+    },
+    {
+        "question": "enthalpy of 1,2-epoxypropane under room temperature",
+        "attribute": "enthalpy",
+        "species": "1,2-epoxypropane",
+        "temperature": "room temperature",
+        "pressure": ""
+    },
+    {
+        "question": "enthalpy of hydrogen peroxide solution at 129.38 degree celsius",
+        "attribute": "enthalpy",
+        "species": "hydrogen peroxide solution",
+        "temperature": "129.38 degree celsius",
+        "pressure": ""
+    },
+    {
+        "question": "denatured alcohol cd-5's enthalpy at 90 degree celsius",
+        "attribute": "enthalpy",
+        "species": "denatured alcohol cd-5",
+        "temperature": "90 degree celsius",
+        "pressure": ""
+    },
+    {
+        "question": "enthalpy of InChI=1S/C4H8O/c1-4(2)5-3/h1H2,2-3H3 under 292.32 C",
+        "attribute": "enthalpy",
+        "species": "InChI=1S/C4H8O/c1-4(2)5-3/h1H2,2-3H3",
+        "temperature": "292.32 C",
+        "pressure": ""
+    },
+    {
+        "question": "oxetane's enthalpy at -18 C",
+        "attribute": "enthalpy",
+        "species": "oxetane",
+        "temperature": "-18 C",
+        "pressure": ""
+    },
+    {
+        "question": "entropy of InChI=1/C4H8O/c1-2-4-5-3-1/h1-4H2 at 92.87 degree celsius and under 1 atm",
+        "attribute": "entropy",
+        "species": "InChI=1/C4H8O/c1-2-4-5-3-1/h1-4H2",
+        "temperature": "92.87 degree celsius",
+        "pressure": "1 atm"
+    },
+    {
+        "question": "lpg's entropy at 268 F and 2 atm",
+        "attribute": "entropy",
+        "species": "lpg",
+        "temperature": "268 F",
+        "pressure": "2 atm"
+    },
+    {
+        "question": "molecular oxygen's entropy at 13.61 K and 101325 pascals",
+        "attribute": "entropy",
+        "species": "molecular oxygen",
+        "temperature": "13.61 K",
+        "pressure": "101\u00a0325 pascals"
+    },
+    {
+        "question": "entropy of n-butyraldehyde under -23 degree celsius 101.3 Kpa",
+        "attribute": "entropy",
+        "species": "n-butyraldehyde",
+        "temperature": "-23 degree celsius",
+        "pressure": "101.3 Kpa"
+    },
+    {
+        "question": "InChI=1S/CH4/h1H4's entropy at 230.84 kelvin and 1.01325 bar",
+        "attribute": "entropy",
+        "species": "InChI=1S/CH4/h1H4",
+        "temperature": "230.84 kelvin",
+        "pressure": "1.01325 bar"
+    },
+    {
+        "question": "InChI=1/C4H6O/c1-2-3-4-5/h2-5H,1H2/b4-3+'s entropy at 162 fahrenheit",
+        "attribute": "entropy",
+        "species": "InChI=1/C4H6O/c1-2-3-4-5/h2-5H,1H2/b4-3+",
+        "temperature": "162 fahrenheit",
+        "pressure": ""
+    },
+    {
+        "question": "InChI=1S/C4H8O/c1-4(2)5-3/h1H2,2-3H3's entropy under room temperature",
+        "attribute": "entropy",
+        "species": "InChI=1S/C4H8O/c1-4(2)5-3/h1H2,2-3H3",
+        "temperature": "room temperature",
+        "pressure": ""
+    },
+    {
+        "question": "vodonik peroksid's gibbs energy at 251 kelvin",
+        "attribute": "gibbs energy",
+        "species": "vodonik peroksid",
+        "temperature": "251 kelvin",
+        "pressure": ""
+    },
+    {
+        "question": "columbian spirits's gibbs energy at 192.89 degrees and 300 kpa",
+        "attribute": "gibbs energy",
+        "species": "columbian spirits",
+        "temperature": "192.89 degrees",
+        "pressure": "300 kpa"
+    },
+    {
+        "question": "propan-1,1-diyl's gibbs energy under room temperature  and pressure 20 psi",
+        "attribute": "gibbs energy",
+        "species": "propan-1,1-diyl",
+        "temperature": "room temperature",
+        "pressure": "20 psi"
+    },
+    {
+        "question": "gibbs energy of butenyne at 154.37 degree celsius",
+        "attribute": "gibbs energy",
+        "species": "butenyne",
+        "temperature": "154.37 degree celsius",
+        "pressure": ""
+    },
+    {
+        "question": "[O]'s gibbs energy at 241 celsius",
+        "attribute": "gibbs energy",
+        "species": "[O]",
+        "temperature": "241 celsius",
+        "pressure": ""
+    },
+    {
+        "question": "pyrrolylene's heat capacity at 61.11 degrees in temperature",
+        "attribute": "heat capacity",
+        "species": "pyrrolylene",
+        "temperature": "61.11 degrees",
+        "pressure": ""
+    },
+    {
+        "question": "heat capacity of methylethylene at 198 celsius",
+        "attribute": "heat capacity",
+        "species": "methylethylene",
+        "temperature": "198 celsius",
+        "pressure": ""
+    },
+    {
+        "question": "trans-2-butene's heat capacity under ambient temperature",
+        "attribute": "heat capacity",
+        "species": "trans-2-butene",
+        "temperature": "ambient temperature",
+        "pressure": ""
+    },
+    {
+        "question": "heat capacity of h2o at room temperature",
+        "attribute": "heat capacity",
+        "species": "h2o",
+        "temperature": "room temperature",
+        "pressure": ""
+    },
+    {
+        "question": "heat capacity of acetilen at 40.18 degree celsius",
+        "attribute": "heat capacity",
+        "species": "acetilen",
+        "temperature": "40.18 degree celsius",
+        "pressure": ""
+    },
+    {
+        "question": "propane, epoxy-'s heat capacity at 150 degree celsius",
+        "attribute": "heat capacity",
+        "species": "propane, epoxy-",
+        "temperature": "150 degree celsius",
+        "pressure": ""
+    },
+    {
+        "question": "heat capacity of NONANE at 223.41 C",
+        "attribute": "heat capacity",
+        "species": "NONANE",
+        "temperature": "223.41 C",
+        "pressure": ""
+    },
+    {
+        "question": "heat capacity of InChI=1S/C3H4/c1-2-3-1/h1-2H,3H2 under 30 C",
+        "attribute": "heat capacity",
+        "species": "InChI=1S/C3H4/c1-2-3-1/h1-2H,3H2",
+        "temperature": "30 C",
+        "pressure": ""
+    },
+    {
+        "question": "heat capacity of InChI=1S/C4H8O/c1-3-5-4-2/h3H,1,4H2,2H3 at 159.05 degree celsius",
+        "attribute": "heat capacity",
+        "species": "InChI=1S/C4H8O/c1-3-5-4-2/h3H,1,4H2,2H3",
+        "temperature": "159.05 degree celsius",
+        "pressure": ""
+    },
+    {
+        "question": "heat capacity of Cyclobutanol at 268 F",
+        "attribute": "heat capacity",
+        "species": "Cyclobutanol",
+        "temperature": "268 F",
+        "pressure": ""
+    },
+    {
+        "question": "ozone's heat capacity at constant pressure under room temperature",
+        "attribute": "heat capacity at constant pressure",
+        "species": "ozone",
+        "temperature": "room temperature",
+        "pressure": ""
+    },
+    {
+        "question": "3-butanone's heat capacity at constant pressure under 250 degree celsius",
+        "attribute": "heat capacity at constant pressure",
+        "species": "3-butanone",
+        "temperature": "250 degree celsius",
+        "pressure": ""
+    },
+    {
+        "question": "heat capacity at constant pressure of n-propan-1-ol at 245.54 kelvin",
+        "attribute": "heat capacity at constant pressure",
+        "species": "n-propan-1-ol",
+        "temperature": "245.54 kelvin",
+        "pressure": ""
+    },
+    {
+        "question": "heat capacity at constant pressure of InChI=1/C4H6/c1-3-4-2/h1H,4H2,2H3 at 400 K",
+        "attribute": "heat capacity at constant pressure",
+        "species": "InChI=1/C4H6/c1-3-4-2/h1H,4H2,2H3",
+        "temperature": "400 K",
+        "pressure": ""
+    },
+    {
+        "question": "heat capacity at constant pressure of C2H5COCH3 at  room temperature",
+        "attribute": "heat capacity at constant pressure",
+        "species": "C2H5COCH3",
+        "temperature": "room temperature",
+        "pressure": ""
+    },
+    {
+        "question": "vinylethylene's heat capacity at constant pressure at 150 kelvin",
+        "attribute": "heat capacity at constant pressure",
+        "species": "vinylethylene",
+        "temperature": "150 kelvin",
+        "pressure": ""
+    },
+    {
+        "question": "InChI=1S/CH4/h1H4's heat capcity at constant volume at 172.65 degrees",
+        "attribute": "heat capcity at constant volume",
+        "species": "InChI=1S/CH4/h1H4",
+        "temperature": "172.65 degrees",
+        "pressure": ""
+    },
+    {
+        "question": "heat capacity of CO2",
+        "attribute": "heat capacity",
+        "species": "CO2",
+        "temperature": "",
+        "pressure": ""
+
+    },
+    {
+        "question": "InChI=1/C4H6O/c1-2-3-4-5/h2-5H,1H2/b4-3+'s heat capcity at constant volume at room temperature",
+        "attribute": "heat capcity at constant volume",
+        "species": "InChI=1/C4H6O/c1-2-3-4-5/h2-5H,1H2/b4-3+",
+        "temperature": "room temperature",
+        "pressure": ""
+    },
+    {
+        "question": "1,2,3-butatriene's internal energy at -57 C",
+        "attribute": "internal energy",
+        "species": "1,2,3-butatriene",
+        "temperature": "-57 C",
+        "pressure": ""
+    },
+    {
+        "question": "internal energy of hydrogen peroxide solution at 98.03 degree celsius",
+        "attribute": "internal energy",
+        "species": "hydrogen peroxide solution",
+        "temperature": "98.03 degree celsius",
+        "pressure": ""
+    },
+    {
+        "question": "internal energy of c2h4o at -95 F",
+        "attribute": "internal energy",
+        "species": "c2h4o",
+        "temperature": "-95 F",
+        "pressure": ""
+    },
+    {
+        "question": "ozone's internal energy at 63.24 degrees",
+        "attribute": "internal energy",
+        "species": "ozone",
+        "temperature": "63.24 degrees",
+        "pressure": ""
+    },
+    {
+        "question": "internal energy of 1,2-epoxyethane at -73 degree celsius",
+        "attribute": "internal energy",
+        "species": "1,2-epoxyethane",
+        "temperature": "-73 degree celsius",
+        "pressure": ""
+    },
+    {
+        "question": "[CH2]C#C[CH2]'s internal energy at 141.93 F",
+        "attribute": "internal energy",
+        "species": "[CH2]C#C[CH2]",
+        "temperature": "141.93 F",
+        "pressure": ""
+    },
+    {
+        "question": "InChI=1/C4H6O/c1-2-3-4-5/h2-5H,1H2/b4-3+'s thermal data at  181 kelvin",
+        "attribute": "thermal data",
+        "species": "InChI=1/C4H6O/c1-2-3-4-5/h2-5H,1H2/b4-3+",
+        "temperature": "181 kelvin",
+        "pressure": ""
+    },
+    {
+        "question": "acrolein, 2-methyl-'s thermal property at 213.08 degrees",
+        "attribute": "thermal property",
+        "species": "acrolein, 2-methyl-",
+        "temperature": "213.08 degrees",
+        "pressure": ""
+    }
+]

@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+
+  pgsql-uploader:
+    image: docker.cmclinnovations.com/pgsql-uploader:0.1.0-SNAPSHOT
+    build:
+      args:
+        PYTHON_VERSION: 3.7.12
+      context: pgsql-uploader
+      labels:
+        authors: "oparry@cmclinnovations, gbrownbridge@cmclinnovations, support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "Container with the tools required to upload csv, shp, asc and tif files to postgresql databases."
+        hash: "${HASH}"
+    container_name: "pgsql-uploader"
+    environment:
+      g_CSV_ENABLED: 1
+      g_SHP_ENABLED: 1
+      g_TIF_ENABLED: 1
+      CONFIG_DIR: ${SHARED_DATA_DIR}/config_files
+      DATA_DIR: ${SHARED_DATA_DIR}
+      DB: ${DEFAULT_DATABASE}
+      WORKSPACE: ${GEOSERVER_WORKSPACE}
+    env_file:
+      - .env
+      - postgis/postgres.env
+      - geoserver/geoserver.env
+    security_opt:
+      - label=disable
+    volumes:
+      - geotifs:${GEOTIF_DIR}
+      - ${SHARED_DATA_DIR_HOST}:${SHARED_DATA_DIR}
+      - ./pgsql-uploader/upload_to_pgsql.sh:/upload_to_pgsql.sh:z
+
+# The default network name is set using a docker-compose environment variable.
+# Please don't modify the contents of the 'networks' node below.
+networks:
+  default:
+    name: ${NETWORK_NAME}
+
+volumes:
+  geotifs: null

@@ -1,0 +1,28 @@
+{
+    "ServiceSpec": {
+        "Name": "file-server",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "docker.cmclinnovations.com/file-server:1.0.0",
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "file_server",
+                        "Target": "/app/fs_root"
+                    },
+					{
+                        "Type": "volume",
+                        "Source": "external_maven_repo",
+                        "Target": "/root/.m2"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "file-server": {
+            "url": "http://localhost:8080/FileServer/",
+            "externalPath": "/file-server/"
+        }
+    }
+}

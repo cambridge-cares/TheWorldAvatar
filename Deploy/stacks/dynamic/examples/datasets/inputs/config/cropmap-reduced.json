@@ -1,0 +1,38 @@
+{
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "cropmap",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "table": "cropmap-reduced",
+            "subdirectory": "vector",
+            "ogr2ogrOptions": {
+                "otherOptions": {
+                    "-select": [
+                        "prob,county,cromeid,lucode"
+                    ]
+                },
+                "layerCreationOptions": {
+                    "GEOMETRY_NAME": "geom",
+                    "FID": "fid"
+                }
+            },
+            "geoServerSettings": {
+                "defaultStyle": "the_world_avatar:cropmap-reduced"
+            }
+        }
+    ],
+    "styles": [
+        {
+            "name": "cropmap-reduced",
+            "file": "cropmap-reduced.sld"
+        }
+    ],
+    "mappings": [
+        "ontop_with_comments.obda"
+    ]
+}

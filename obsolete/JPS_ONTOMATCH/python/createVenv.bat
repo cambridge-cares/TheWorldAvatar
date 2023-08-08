@@ -7,3 +7,4 @@ pip install virtualenvwrapper-win
 cd %op%
 python -m venv jps_ontomatch
 .\jps_ontomatch\Scripts\activate & pip install -r requirements.txt
+

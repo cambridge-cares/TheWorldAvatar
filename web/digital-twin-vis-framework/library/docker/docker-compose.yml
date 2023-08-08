@@ -1,0 +1,52 @@
+version: "3.8"
+
+# All Services
+services:
+
+  # Empty DTVF visualisation image for deployment.
+  # Builds a base image that, when combined with a volume of files, can be used as a visualisation
+  deploy:
+    image: ghcr.io/cambridge-cares/dtvf-base-image:latest
+    restart: "no"
+    build:
+      context: "../"
+      dockerfile: "./docker/run.Dockerfile"
+      labels:
+        authors: "support@cmclinnovations"
+        description: "Empty visualisation image, ready to house visualisation files."
+    ports:
+      - "80:80" 
+
+
+  # Live development environment.
+  # This container will install typescript then remain open so that developers can use it as a live development environment.
+  develop:
+    build:
+      context: ./
+      dockerfile: ./build.Dockerfile
+    image: ghcr.io/cambridge-cares/dtvf-build-environment:latest
+    container_name: "dtvf-build-environment"
+    restart: "no"
+    working_dir: "/app"
+    entrypoint: "tail -f /dev/null"
+    volumes:
+      - type: bind
+        source: ../
+        target: /app
+
+
+  # Compilation container.
+  # This container will compile the source code, package it for deployment, write it to the ./output folder, then shutdown.
+  compile:
+    build:
+      context: ./
+      dockerfile: ./build.Dockerfile
+    image: ghcr.io/cambridge-cares/dtvf-build-environment:latest
+    container_name: "dtvf-build-compile"
+    restart: "no"
+    working_dir: "/app"
+    entrypoint: "/bin/bash -c 'npm install && tsc && grunt package'"
+    volumes:
+      - type: bind
+        source: ../
+        target: /app

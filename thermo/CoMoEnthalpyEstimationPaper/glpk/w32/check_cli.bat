@@ -42,3 +42,4 @@ relax4.exe ..\examples\csharp\sample.min
 echo -
 echo Test is passed if ret = 0.
 pause
+

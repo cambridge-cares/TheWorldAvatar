@@ -17,7 +17,7 @@ public class MetaDataAnnotatorTest {
     
 	@Test
 	public void testGetSparqlInsertFull() {
-		String ExpectedResult = "PREFIX dcterms:<http://purl.org/dc/terms/> \r\nPREFIX xsd:<http://www.w3.org/2001/XMLSchema#> "
+		String ExpectedResult = "PREFIX dcterms:<http://purl.org/dc/terms/>\r\nPREFIX xsd:<http://www.w3.org/2001/XMLSchema#>"
 				+ "\r\nprefix1 \r\nprefix2 \r\nINSERT DATA { GRAPH <testScenario> { \r\n<testTarget> dcterms:format \"text/csv\" . \r\n<testTarget> "
 				+ "dcterms:created \"testCreationTime\"^^xsd:dateTime . \r\n<testAgent> a dcterms:Agent . \r\n<testAgent> a "
 				+ "<http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service> . \r\n<testTarget> "

@@ -1,0 +1,156 @@
+version: "3.8"
+
+services:
+  rxn_opt_goal_agent:
+    image: ghcr.io/cambridge-cares/rxn_opt_goal_agent:1.0.0-SNAPSHOT
+    container_name: rxn_opt_goal_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+    ports:
+      - 7070:5000
+    env_file:
+      - ./tests/env_files/agent.goal.env.test
+    secrets:
+      - email_auth
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  rxn_opt_goal_iter_agent:
+    image: ghcr.io/cambridge-cares/rxn_opt_goal_iter_agent:1.0.0-SNAPSHOT
+    container_name: rxn_opt_goal_iter_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+    ports:
+      - 7060:5000
+    env_file:
+      - ./tests/env_files/agent.goal.iter.env.test
+    secrets:
+      - email_auth
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  doe_agent:
+    image: ghcr.io/cambridge-cares/doe_agent:1.0.0-SNAPSHOT
+    container_name: doe_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+    ports:
+      - 7000:5000
+    env_file:
+      - ./tests/env_files/agent.doe.env.test
+    secrets:
+      - email_auth
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  vapourtec_schedule_agent:
+    image: ghcr.io/cambridge-cares/vapourtec_schedule_agent:1.0.0-SNAPSHOT
+    container_name: vapourtec_schedule_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+    ports:
+      - 7001:5000
+    env_file:
+      - ./tests/env_files/agent.vapourtec.schedule.env.test
+    secrets:
+      - email_auth
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  hplc_postpro_agent:
+    image: ghcr.io/cambridge-cares/hplc_postpro_agent:1.0.0-SNAPSHOT
+    container_name: hplc_postpro_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+    ports:
+      - 7002:5000
+    env_file:
+      - ./tests/env_files/agent.hplc.postpro.env.test
+    secrets:
+      - email_auth
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  vapourtec_agent:
+    image: ghcr.io/cambridge-cares/vapourtec_agent:1.0.0-SNAPSHOT
+    container_name: vapourtec_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+    ports:
+      - 7003:5000
+    extra_hosts: # NOTE this ensures FlowCommander to be reachable via "host.docker.internal"
+      - host.docker.internal:host-gateway
+    env_file:
+      # NOTE the default setting here is to test lab2
+      - ./tests/env_files/agent.lab2.vapourtec.env.test
+      # uncomment the following line to test lab1 (also remember to comment out the above line)
+      # - ./tests/env_files/agent.lab1.vapourtec.env.test
+      # NOTE the lab setting in vapourtec_agent and hplc_agent MUST be the same
+    secrets:
+      - email_auth
+    volumes:
+      - ./FCRemote.dll:/app/FCRemote.dll
+      - ./FCRemoteCSV.dll:/app/FCRemoteCSV.dll
+      - type: bind
+        source: ./tests/_for_docker_integration_test
+        target: /app/vapourtec
+
+  hplc_agent:
+    image: ghcr.io/cambridge-cares/hplc_agent:1.0.0-SNAPSHOT
+    container_name: hplc_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+    ports:
+      - 7004:5000
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    env_file:
+      # NOTE the default setting here is to test lab2
+      - ./tests/env_files/agent.lab2.hplc.env.test
+      # uncomment the following line to test lab1 (also remember to comment out the above line)
+      # - ./tests/env_files/agent.lab1.hplc.env.test
+      # NOTE the lab setting in vapourtec_agent and hplc_agent MUST be the same
+    secrets:
+      - email_auth
+    volumes:
+      - type: bind
+        source: ./tests/_for_docker_integration_test
+        target: /app/CHEM32
+
+  # Blazegraph
+  blazegraph:
+    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
+    container_name: "blazegraph_all_agents_test"
+    ports:
+      - 48082:8080
+    environment:
+      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    # Add a secret to set the password for BASIC authentication
+    secrets:
+      - blazegraph_password
+
+  # File server
+  fileserver:
+    image: ghcr.io/cambridge-cares/fileserver:1.1.0
+    container_name: "fileserver_all_agents_test"
+    ports:
+      - 48086:8080
+    # Add secret to set BASIC authentication password
+    secrets:
+      - file_server_password
+
+# Secrets used to set runtime passwords
+secrets:
+  blazegraph_password:
+    file: ./tests/dummy_services_secrets/blazegraph_passwd.txt
+  file_server_password:
+    file: ./tests/dummy_services_secrets/fileserver_passwd.txt
+  email_auth:
+    file: ./tests/dummy_services_secrets/email_auth.json

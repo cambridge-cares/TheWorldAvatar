@@ -138,8 +138,9 @@ public class ESPHomeUpdateAgentLauncher extends JPSAgent {
         jsonMessage.accumulate("Result", "Input agent object initialized.");
 
         // Create and set the time series client
+        TimeSeriesClient<OffsetDateTime> tsClient;
         try {
-            TimeSeriesClient<OffsetDateTime> tsClient = new TimeSeriesClient<>(OffsetDateTime.class, args[1]);
+            tsClient = new TimeSeriesClient<>(OffsetDateTime.class, args[1]);
             agent.setTsClient(tsClient);
         } catch (IOException | JPSRuntimeException e) {
             LOGGER.error(TSCLIENT_ERROR_MSG, e);

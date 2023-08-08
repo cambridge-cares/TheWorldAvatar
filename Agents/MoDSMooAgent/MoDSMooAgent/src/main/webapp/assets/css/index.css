@@ -1,0 +1,91 @@
+body {
+    overflow-x: hidden;
+}
+
+#topBanner
+{
+    background-color: #10616C;
+}
+
+#head1
+{
+    color: white;
+}
+
+#description
+{
+    color: white;
+    width:60%;
+    margin-left: 20%;
+}
+
+#location {
+    padding: 2px 1px 2px 0px;
+    height: 26px;
+}
+
+div#inputFields {
+	margin-left: 15px;
+}
+
+#readme-button {
+    float: right;
+    cursor: pointer;
+    color: white;
+    background: transparent;
+
+    /*position: absolute;*/
+    /*top: 55px;*/
+    /*right: 690px;*/
+    font-size: 20px;
+    width: 30px;
+
+    border: 2px solid white;
+    border-radius: 50%;
+    margin: 0px 100px 0px 0px;
+}
+
+h1#title, p#description {
+    color: white;
+}
+
+#readme-text {
+    display: none;
+    box-sizing: border-box;
+    height: 271px;
+    width: 709px;
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 5px 5px;
+
+    position: absolute;
+    /*top: 61px;*/
+    /*right: 113px;*/
+    top: 325px;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+
+    background: white;
+    z-index: 1;
+
+    text-align: left;
+    overflow-y: scroll;
+}
+
+.Container
+{
+    overflow-y: auto;
+}
+.Content
+{
+    width: 729px;
+}
+
+.Flipped, .Flipped .Content
+{
+    transform:rotateX(180deg);
+    -ms-transform:rotateX(180deg); /* IE 9 */
+    -webkit-transform:rotateX(180deg); /* Safari and Chrome */
+}

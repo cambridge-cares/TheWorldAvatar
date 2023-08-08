@@ -1,0 +1,38 @@
+{
+    "dataSets": [
+        {
+            "name": "terminals",
+            "dataType": "geojson",
+            "dataLocation": "terminals.geojson",
+            "locationType": "symbol",
+            "cluster": true,
+            "clusterRadius": 30,
+            "clusterProperties": {
+                "icon-image": ["string", "terminal-empty"],
+                "text-color": ["string", "#0050bf"]
+            },            
+            "metaFiles": ["terminals-meta.json"],
+			"timeseriesFiles": ["terminals-timeseries.json"]
+        },
+        {
+            "name": "offtakes",
+            "dataType": "geojson",
+            "dataLocation": "offtakes.geojson",
+            "locationType": "symbol",
+            "cluster": true,
+            "clusterRadius": 30,
+            "clusterProperties": {
+                "icon-image": ["string", "offtake-empty"],
+                "text-color": ["string", "#bc0000"],
+                "terminalCount": ["+", ["get", "offtakeCount", ["properties"]]]
+            },
+            "metaFiles": ["offtakes-meta.json"]
+        },
+        {
+            "name": "pipes",
+            "dataType": "geojson",
+            "dataLocation": "pipes.geojson",
+            "locationType": "line"
+        }
+    ]
+}

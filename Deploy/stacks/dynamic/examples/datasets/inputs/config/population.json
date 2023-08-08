@@ -1,0 +1,13 @@
+{
+    "name": "population",
+    "database": "postgres",
+    "workspace": "the_world_avatar",
+    "datasetDirectory": "population",
+    "dataSubsets": [
+        {
+            "type": "raster",
+            "name": "population",
+            "skip": false
+        }
+    ]
+}

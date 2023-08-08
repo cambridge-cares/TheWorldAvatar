@@ -55,8 +55,6 @@ public class KineticsAgentJobRequestTest {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (SlurmJobException e) {
-			e.printStackTrace();
-		}
+		} 
 	}
 }

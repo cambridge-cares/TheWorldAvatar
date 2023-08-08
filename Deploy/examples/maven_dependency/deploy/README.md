@@ -6,7 +6,7 @@ containing a server block and repository block with ID='worldavatar-github'. Tha
 
 ```
 <server>
-    <id>worldavatar-github</id>
+    <id>repo</id>
     <username>USERNAME</username>
     <password>ENCRYPTED_GITHUB_TOKEN</password>
 </server>
@@ -15,8 +15,8 @@ and
 
 ```
 <repository>
-    <id>worldavatar-github</id>
-    <name>World Avatar github</name>
+    <id>repo</id>
+    <name>TheWorldAvatar Maven Repository</name>
     <url>https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/</url>
     <layout>default</layout>
     <releases>

@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  RFIDAgent:
+    image: rfid-agent:1.3.0
+    build: .
+    container_name: rfid-agent
+    pull_policy: if_not_present
+    ports:
+      - "1016:8080"

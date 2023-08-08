@@ -1,0 +1,17 @@
+{
+    "global": {
+        "defaultCenter": [0.10290, 52.21275],
+        "defaultZoom": 650,
+        "defaultBearing": 70,
+        "defaultPitch": 60
+    },
+    "local": {
+        "label": "Extrusion type",
+        "groups": [
+            {
+                "name": "Main",
+                "directory": "main"
+            }
+        ]
+    }
+}

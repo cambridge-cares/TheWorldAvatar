@@ -1,0 +1,17 @@
+{
+    "global": {
+        "defaultCenter": [-3.3, 53.3],
+        "defaultZoom": 6,
+        "defaultBearing": 0,
+        "defaultPitch": 40
+    },
+    "local": {
+        "label": "Data set",
+        "groups": [
+            {
+                "name": "Sensor data",
+                "directory": "sensors"
+            }
+        ]
+    }
+}

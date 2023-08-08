@@ -1,0 +1,163 @@
+prefixes:
+    main_inst_pref: "http://www.theworldavatar.com/kb/ontospecies/Species_"
+    base_import: "http://www.w3.org/2002/07/owl#imports"
+    onto_spec: "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl"
+    spec_pref_no_slash: "http://www.theworldavatar.com/kb/ontospecies"
+    rdfs: "http://www.w3.org/2000/01/rdf-schema"
+    skos: "http://www.w3.org/2004/02/skos/core"
+    dc: "http://purl.org/dc/elements/1.1/"
+    table_pref: "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl"
+    pes_pref: "http://www.theworldavatar.com/kb/ontopesscan/"
+    pes_pref_no_slash: "http://www.theworldavatar.com/kb/ontopesscan"
+    onto_kin: "http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl"
+    spec_pref: "http://www.theworldavatar.com/kb/ontospecies/"
+    gain_pref: "http://purl.org/gc/"
+    unit_pref: "http://data.nasa.gov/qudt/owl/"
+#
+schema_to_json_vars:
+    # atoms types, list, etc
+    EMP_FORMULA: {"required": False, "jsonKey": "Empirical_Formula"}
+    TOTAL_ATOMS_COUNTS: {"required": False, "jsonKey": "Atom_Total_Counts"}
+    ATOM_TYPES: {"required": False, "jsonKey": "Atom_List"}
+    ELEMENTS: {"required": False, "jsonKey": "Elements"}
+    PER_ATOM_TYPE_INDICES: {"required": False, "jsonKey": "Per_Atom_Type_Indices"}
+    MOL_WEIGHT: {"required": False, "jsonKey": "Molecular_Weight"}
+    # spin, charge
+    SPIN_MULT: {"required": False, "jsonKey": "Spin_Multiplicity"}
+    FORM_CHARGE: {"required": False, "jsonKey": "Total_Charge"}
+    # geometry
+    GEOM_STRING: {"required": False, "jsonKey": "Geometry_String"}
+    BOND_STRING: {"required": False, "jsonKey": "Bond_String"}
+    COORD_X: {"required": False, "jsonKey": "X_Atoms_Coordinates"}
+    COORD_Y: {"required": False, "jsonKey": "Y_Atoms_Coordinates"}
+    COORD_Z: {"required": False, "jsonKey": "Z_Atoms_Coordinates"}
+    # identifiers
+    SMILES: {"required": False, "jsonKey": "Smiles"}
+    INCHI: {"required": False, "jsonKey": "Inchi"}
+    PUBCHEM_ALT_LABEL: {"required": False, "jsonKey": "Pubchem_Alternative_Label"}
+    PUBCHEM_CAS: {"required": False, "jsonKey": "CAS_Number"}
+    PUBCHEM_CID: {"required": False, "jsonKey": "Pubchem_CID"}
+    # enthalpy
+    ENTH_FORM: {"required": False, "jsonKey": "Standard_Enthalpy_Formation"}
+    ENTH_FORM_UNIT: {"required": False, "jsonKey": "Standard_Enthalpy_Formation_Unit"}
+    ENTH_FORM_REFTEMP: {"required": False, "jsonKey": "Standard_Enthalpy_Formation_Ref_Temperature"}
+    ENTH_FORM_REFTEMP_UNIT: {"required": False, "jsonKey": "Standard_Enthalpy_Formation_Ref_Temperature_Unit"}
+    ENTH_FORM_PHASE: {"required": False, "jsonKey": "Standard_Enthalpy_Formation_Phase"}
+    ENTH_FORM_PROV: {"required": False, "jsonKey": "Standard_Enthalpy_Formation_Provenance"}
+    # other
+    ENTRY_IRI: {"required": False, "jsonKey": "Entry_IRI"}
+    ENTRY_ID: {"required": False, "jsonKey": "Entry_ID"}
+abox_schema:
+    - # imports
+        [
+            "<IMP> ABoxOntoSpecies base_import: onto_spec:",
+            "<IMP> ABoxOntoSpecies base spec_pref_no_slash:",
+        ]
+    - # main instance
+        [
+            "<INS> ${ENTRY_IRI} Species",
+            "<INS> ${ENTRY_IRI} onto_spec:#Species",
+            "<DAT> ${ENTRY_IRI} dc:identifier ${ENTRY_IRI}",
+            "<DAT> ${ENTRY_IRI} rdfs:#label ${EMP_FORMULA}",
+        ]
+    - # PubChem altlabel
+        [
+            "<DAT> ${ENTRY_IRI} skos:#altLabel ${PUBCHEM_ALT_LABEL}",
+        ]
+    - # PubChemAlt CID
+        [
+            "<DAT> ${ENTRY_IRI} onto_spec:#pubChemCID ${PUBCHEM_CID}",
+        ]
+    - # PubChemAlt CAS
+        [
+            "<DAT> ${ENTRY_IRI} onto_spec:#casRegistryID ${PUBCHEM_CAS}",
+        ]
+    - # SMILES
+        [
+            "<DAT> ${ENTRY_IRI} onto_spec:#SMILES ${SMILES}",
+        ]
+    - # SMILES
+        [
+            "<DAT> ${ENTRY_IRI} onto_spec:#inChI ${INCHI}",
+        ]
+    - # Bond string
+        [
+            "<DAT> ${ENTRY_IRI} onto_spec:#hasAtomicBond ${BOND_STRING}",
+        ]
+    - # Geom string
+        [
+            "<DAT> ${ENTRY_IRI} onto_spec:#hasGeometry ${GEOM_STRING}",
+        ]
+    - # Spin mult
+        [
+            "<DAT> ${ENTRY_IRI} onto_spec:#spinMultiplicity ${SPIN_MULT}",
+        ]
+    - # Basic atoms info
+        [
+            "<INS> Atom_${ENTRY_ID}_${ATOM_TYPES}_${PER_ATOM_TYPE_INDICES} gain_pref:Atom",
+            "<OBJ> ${ENTRY_IRI} gain_pref:hasAtom Atom_${ENTRY_ID}_${ATOM_TYPES}_${PER_ATOM_TYPE_INDICES}",
+            "<OBJ> Atom_${ENTRY_ID}_${ATOM_TYPES}_${PER_ATOM_TYPE_INDICES} gain_pref:isElement table_pref:#${ATOM_TYPES}",
+        ]
+    - # Atoms XYZ info
+        [
+            "<INS> AtomCoordinateX_${ENTRY_ID}_${ATOM_TYPES}_${PER_ATOM_TYPE_INDICES} gain_pref:FloatValue",
+            "<OBJ> Atom_${ENTRY_ID}_${ATOM_TYPES}_${PER_ATOM_TYPE_INDICES} gain_pref:hasAtomCoordinateX AtomCoordinateX_${ENTRY_ID}_${ATOM_TYPES}_${PER_ATOM_TYPE_INDICES}",
+            "<DAT> AtomCoordinateX_${ENTRY_ID}_${ATOM_TYPES}_${PER_ATOM_TYPE_INDICES} gain_pref:hasValue ${COORD_X}",
+            "<OBJ> AtomCoordinateX_${ENTRY_ID}_${ATOM_TYPES}_${PER_ATOM_TYPE_INDICES} gain_pref:hasUnit unit_pref:unit#Angstrom",
+            "<INS> AtomCoordinateY_${ENTRY_ID}_${ATOM_TYPES}_${PER_ATOM_TYPE_INDICES} gain_pref:FloatValue",
+            "<OBJ> Atom_${ENTRY_ID}_${ATOM_TYPES}_${PER_ATOM_TYPE_INDICES} gain_pref:hasAtomCoordinateY AtomCoordinateY_${ENTRY_ID}_${ATOM_TYPES}_${PER_ATOM_TYPE_INDICES}",
+            "<DAT> AtomCoordinateY_${ENTRY_ID}_${ATOM_TYPES}_${PER_ATOM_TYPE_INDICES} gain_pref:hasValue ${COORD_Y}",
+            "<OBJ> AtomCoordinateY_${ENTRY_ID}_${ATOM_TYPES}_${PER_ATOM_TYPE_INDICES} gain_pref:hasUnit unit_pref:unit#Angstrom",
+            "<INS> AtomCoordinateZ_${ENTRY_ID}_${ATOM_TYPES}_${PER_ATOM_TYPE_INDICES} gain_pref:FloatValue",
+            "<OBJ> Atom_${ENTRY_ID}_${ATOM_TYPES}_${PER_ATOM_TYPE_INDICES} gain_pref:hasAtomCoordinateZ AtomCoordinateZ_${ENTRY_ID}_${ATOM_TYPES}_${PER_ATOM_TYPE_INDICES}",
+            "<DAT> AtomCoordinateZ_${ENTRY_ID}_${ATOM_TYPES}_${PER_ATOM_TYPE_INDICES} gain_pref:hasValue ${COORD_Z}",
+            "<OBJ> AtomCoordinateZ_${ENTRY_ID}_${ATOM_TYPES}_${PER_ATOM_TYPE_INDICES} gain_pref:hasUnit unit_pref:unit#Angstrom",
+        ]
+    - # Total Charge Info
+        [
+            "<INS> Charge_${ENTRY_ID} onto_spec:#Charge",
+            "<OBJ> ${ENTRY_IRI} onto_spec:#hasCharge Charge_${ENTRY_ID}",
+            "<DAT> Charge_${ENTRY_ID} onto_spec:#value ${FORM_CHARGE}",
+            "<DAT> Charge_${ENTRY_ID} onto_spec:#units e",
+        ]
+    - # Mol Formula
+        [
+            "<INS> MolecularFormula_${ENTRY_ID} onto_spec:#MolecularFormula",
+            "<OBJ> ${ENTRY_IRI} onto_spec:#hasMolecularFormula MolecularFormula_${ENTRY_ID}",
+
+        ]
+    - # Mol Formula per atoms
+        [
+            "<INS> Element_${ELEMENTS} onto_kin:#Element",
+            "<OBJ> MolecularFormula_${ENTRY_ID} onto_kin:#hasElement Element_${ELEMENTS}",
+            "<INS> ElementNumber_${ENTRY_ID}_%{i} onto_kin:#ElementNumber",
+            "<OBJ> MolecularFormula_${ENTRY_ID} onto_kin:#hasElementNumber ElementNumber_${ENTRY_ID}_%{i}",
+            "<DAT> ElementNumber_${ENTRY_ID}_%{i} onto_kin:#hasNumberOfElement ${TOTAL_ATOMS_COUNTS} Integer",
+            "<OBJ> ElementNumber_${ENTRY_ID}_%{i} onto_kin:#indicatesNumberOf Element_${ELEMENTS} ",
+        ]
+    - # Mol Weights
+        [
+            "<INS> MolecularWeight_${ENTRY_ID} onto_spec:#MolecularWeight",
+            "<OBJ> ${ENTRY_IRI} onto_spec:#hasMolecularWeight MolecularWeight_${ENTRY_ID}",
+            "<DAT> MolecularWeight_${ENTRY_ID} onto_spec:#value ${MOL_WEIGHT}",
+            "<DAT> MolecularWeight_${ENTRY_ID} onto_spec:#units g/mol",
+        ]
+    - # Enthalpy data
+        [
+            "<INS> StandardEnthalpyOfFormation_${ENTRY_ID} onto_spec:#StandardEnthalpyOfFormation",
+            "<OBJ> ${ENTRY_IRI} onto_spec:#hasStandardEnthalpyOfFormation StandardEnthalpyOfFormation_${ENTRY_ID}",
+            "<DAT> StandardEnthalpyOfFormation_${ENTRY_ID} onto_spec:#value ${ENTH_FORM}",
+            "<DAT> StandardEnthalpyOfFormation_${ENTRY_ID} onto_spec:#units ${ENTH_FORM_UNIT}",
+
+            "<INS> Temperature_${ENTRY_ID} onto_spec:#Temperature",
+            "<OBJ> StandardEnthalpyOfFormation_${ENTRY_ID} onto_spec:#hasReferenceTemperature Temperature_${ENTRY_ID}",
+            "<DAT> Temperature_${ENTRY_ID} onto_spec:#value ${ENTH_FORM_REFTEMP}",
+            "<DAT> Temperature_${ENTRY_ID} onto_spec:#units ${ENTH_FORM_REFTEMP_UNIT}",
+
+            "<INS> ${ENTH_FORM_PHASE}Phase_${ENTRY_ID} onto_kin:#${ENTH_FORM_PHASE}Phase",
+            "<OBJ> StandardEnthalpyOfFormation_${ENTRY_ID} onto_spec:#hasPhase ${ENTH_FORM_PHASE}Phase_${ENTRY_ID}",
+
+            "<INS> Reference_${ENTRY_ID} onto_kin:#Reference",
+            "<OBJ> StandardEnthalpyOfFormation_${ENTRY_ID} onto_spec:#hasProvenance Reference_${ENTRY_ID}",
+            "<DAT> Reference_${ENTRY_ID} rdfs:#label ${ENTH_FORM_PROV}",
+        ]

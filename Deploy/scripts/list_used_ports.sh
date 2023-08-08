@@ -30,7 +30,7 @@ REPO_ROOT="$(dirname $0)/../../"
 # Loop over all docker-compose ymls in $REPO_ROOT (with a few exceptions), using sed to extract the mapped ports
 port_list=""
 echo "The following localhost ports are mapped to a service in a docker-compose file:"
-for f in $(find "${REPO_ROOT}" -name "docker-compose*.yml" -type f -not -path "*Flask_deployment_docker_image/*" -not -path "*/JPS_LDF/dependencies*"); do
+for f in $(find "${REPO_ROOT}" -name "docker-compose*.yml" -type f -not -path "*Flask_deployment_docker_image/*" -not -path "*/JPS_LDF/dependencies*"  -not -path "*/Deploy/stacks/dafni*"); do
   ports_in_file=$(sed -n -e 's/.*-\ ["]\?\([0-9]*\):\([0-9]*\).*/\1/p' -e 's/\n/\ /' $f $EXCLUDE_PATTERNS)
   if [ -n "$ports_in_file" ]; then
     port_list="$port_list$ports_in_file "

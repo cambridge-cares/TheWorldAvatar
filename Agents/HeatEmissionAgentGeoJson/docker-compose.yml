@@ -1,0 +1,12 @@
+version: "3.8"
+
+services:
+  HeatEmissionAgentGeoJson:
+    image: heatemissionagentgeojson:1.0.0
+    build: .
+    container_name: HeatEmissionAgentGeoJson
+    pull_policy: if_not_present
+    ports:
+      - "1080:8080"
+    volumes:
+      - ./output:/app/output
