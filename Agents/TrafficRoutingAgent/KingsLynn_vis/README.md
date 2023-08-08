@@ -10,16 +10,17 @@ The instantiated data is visualised using the Digital Twin Visualisation Framewo
 This document marks down the steps taken to create flood router, isochrone under flooding and transport network criticality analysis. 
 
 ## Pre-requisite for setting up.
-Before spinning up the stack insert geoserver.json into services folder of stack-manager, retrieve the geoserver.json from `inputs\geoserver`. This steps allows further modifcation and publishing of geoserver layer.
+Before spinning up the stack insert [geoserver.json](KingsLynn_vis\inputs\geoserver) into services folder of stack-manager. This steps allows further modifcation and publishing of geoserver layer.
 
-Spin up the stack-manager. 
-
-To run this agent, use `kingslynn` as the STACK-NAME, 
+Spin up the stack-manager with `kingslynn` as the `<STACK-NAME>` by running `./stack.sh start kingslynn`
 
 ## Geoserver layers
-Note:
-1) For lat/lon bounding box, compute for data and compute from native bounds
-2) Under tile caching tab, enable application/json;type=geojson,  application/vnd.mapbox-vector-tile under Tile Image Formats
+Geoserver setting configurations: 
+1) Under Settings - Globals, change the number of decimals to 6. 
+
+For each layers published: 
+1) In lat/lon bounding box, select compute for data and compute from native bounds.
+2) Under tile caching tab, enable application/json;type=geojson, application/vnd.mapbox-vector-tile under Tile Image Formats.
 
 ### Publishing Geoserver layers
 Under layers tab, add a new layer, select kingslynn:routing_ways, publish the following layers: 
@@ -31,11 +32,10 @@ Under layers tab, add a new layer, select kingslynn:routing_ways, publish the fo
 ### Configure new SQL view
 Under layers tab, add a new layer, select kingslynn:routing_ways, configure new SQL views geoserver as below: 
 1) tsp_visualization
-2) tsp_nodes
+2) tsp_nodes 
+3) routing_pointofinterest (edit the SQL view). routing_pointofinterest is supposed to be shortest_paths, this is just a quick fudge fix. 
 
-Use SQL commands found under `inputs\data\kingslynn\sql\virtualTables`.
-
-Under Settings - Globals, change the number of decimals to 6. 
+Use SQL commands found under [virtualTables](inputs/data/kingslynn/sql/virtualTables).
 
 Subsequently, you may run the DTVF container.
 
@@ -50,7 +50,7 @@ docker-compose -f ./docker/docker-compose.yml build --force-rm
 docker-compose -f ./docker/docker-compose.yml up -d --force-recreate
 ```
 
-Visualization can be started at [http://localhost:80](http://localhost:80) 
+Visualization can be seen at [http://localhost:80](http://localhost:80)
 
 
 <!-- Links -->
