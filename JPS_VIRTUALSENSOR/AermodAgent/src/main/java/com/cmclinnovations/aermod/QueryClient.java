@@ -160,6 +160,7 @@ public class QueryClient {
     private static final Iri HAS_DISPERSION_MATRIX = P_DISP.iri("hasDispersionMatrix");
     private static final Iri HAS_DISPERSION_LAYER = P_DISP.iri("hasDispersionLayer");
     private static final Iri HAS_DISPERSION_RASTER = P_DISP.iri("hasDispersionRaster");
+    private static final Iri HAS_DISPERSION_COLOUR_BAR = P_DISP.iri("hasDispersionColourBar");
 
     // fixed units for each measured property
     private static final Map<String, Iri> UNIT_MAP = new HashMap<>();
@@ -1069,13 +1070,15 @@ public class QueryClient {
         Variable dispMatrix = query.var();
         Variable dispLayer = query.var();
         Variable dispRaster = query.var();
+        Variable dispColourBar = query.var();
 
         Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
 
         query.where(entity.has(belongsTo, iri(derivation)).andHas(HAS_POLLUTANT_ID, pollutantIri)
                 .andHas(HAS_DISPERSION_MATRIX, dispMatrix).andHas(HAS_DISPERSION_LAYER, dispLayer)
-                .andHas(HAS_DISPERSION_RASTER, dispRaster), pollutantIri.isA(pollutant)).prefix(P_DISP)
-                .select(entity, pollutant, dispMatrix, dispLayer, dispRaster).distinct();
+                .andHas(HAS_DISPERSION_RASTER, dispRaster).andHas(HAS_DISPERSION_COLOUR_BAR, dispColourBar),
+                pollutantIri.isA(pollutant)).prefix(P_DISP)
+                .select(entity, pollutant, dispMatrix, dispLayer, dispRaster, dispColourBar).distinct();
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         List<String> tsDataList = new ArrayList<>();
@@ -1088,26 +1091,30 @@ public class QueryClient {
             String dispersionLayerIRI = queryResult.getJSONObject(i).getString(dispLayer.getQueryString().substring(1));
             String dispersionRasterIRI = queryResult.getJSONObject(i)
                     .getString(dispRaster.getQueryString().substring(1));
+            String dispersionColourBarIRI = queryResult.getJSONObject(i)
+                    .getString(dispColourBar.getQueryString().substring(1));
 
             PollutantType pollutantType = Pollutant.getPollutantType(pollutantIRI);
             if (dispersionOutput.hasPollutant(pollutantType)) {
                 tsDataList.add(dispersionMatrixIRI);
                 tsDataList.add(dispersionLayerIRI);
                 tsDataList.add(dispersionRasterIRI);
+                tsDataList.add(dispersionColourBarIRI);
                 String dispersionMatrix = dispersionOutput.getDispMatrix(pollutantType);
                 String dispersionLayer = dispersionOutput.getDispLayer(pollutantType);
                 String dispersionRaster = dispersionOutput.getDispRaster(pollutantType);
+                String dispersionColourBar = dispersionOutput.getColourBar(pollutantType);
                 tsValuesList.add(List.of(dispersionMatrix));
                 tsValuesList.add(List.of(dispersionLayer));
                 tsValuesList.add(List.of(dispersionRaster));
+                tsValuesList.add(List.of(dispersionColourBar));
             }
 
         }
 
         SelectQuery query2 = Queries.SELECT();
 
-        query2.where(entity.isA(iri(SHIPS_LAYER)).andHas(belongsTo, iri(derivation))
-                .filterNotExists(entity.has(HAS_POLLUTANT_ID, pollutant))).prefix(P_DISP).select(entity);
+        query2.where(entity.isA(iri(SHIPS_LAYER)).andHas(belongsTo, iri(derivation))).prefix(P_DISP).select(entity);
 
         queryResult = storeClient.executeQuery(query2.getQueryString());
 

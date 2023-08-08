@@ -702,7 +702,7 @@ public class Aermod {
     /**
      * executes get request from python-service to postprocess
      */
-    public JSONObject getGeoJSON(String endPoint, String outputFileURL, int srid) {
+    public JSONObject getGeoJsonAndColourbar(String endPoint, String outputFileURL, int srid) {
         URI httpGet;
         try {
             URIBuilder builder = new URIBuilder(endPoint);

@@ -177,14 +177,6 @@ public class AermodAgent extends DerivationAgent {
         // run aermet (weather preprocessor)
         aermod.runAermet(scope);
 
-        // Variable initialization
-        List<Double> receptorHeights = new ArrayList<>();
-        receptorHeights.add(0.0);
-
-        // DispersionOutput object holds dispersion matrix (file), dispersion layer
-        // names, and raster filenames
-        DispersionOutput dispersionOutput = new DispersionOutput();
-
         String shipLayerName = "ships_" + simulationTime; // hardcoded in ShipInputAgent
 
         // create geoserver layer based for that
@@ -209,6 +201,10 @@ public class AermodAgent extends DerivationAgent {
         Path receptorPath = simulationDirectory.resolve("aermod").resolve("receptor.dat");
         if (Files.notExists(receptorPath))
             aermod.createAERMODReceptorInput(scope, nx, ny, srid);
+
+        // DispersionOutput object holds dispersion matrix (file), dispersion layer
+        // names, and raster filenames
+        DispersionOutput dispersionOutput = new DispersionOutput();
 
         for (PollutantType pollutantType : Pollutant.getPollutantList()) {
             if (!allSources.stream().allMatch(p -> p.hasPollutant(pollutantType))) {
@@ -238,7 +234,11 @@ public class AermodAgent extends DerivationAgent {
             // Get contour plots as geoJSON objects from PythonService and upload them to
             // PostGIS using GDAL
 
-            JSONObject geoJSON = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_URL, outputFileURL, srid);
+            JSONObject response = aermod.getGeoJsonAndColourbar(EnvConfig.PYTHON_SERVICE_URL, outputFileURL, srid);
+            JSONObject geoJSON = response.getJSONObject("contourgeojson");
+            String colourBarUrl = response.getString("colourbar");
+            dispersionOutput.addColourBar(pollutantType, colourBarUrl);
+
             JSONArray features = geoJSON.getJSONArray("features");
             for (int j = 0; j < features.length(); j++) {
                 JSONObject feature = features.getJSONObject(j);
