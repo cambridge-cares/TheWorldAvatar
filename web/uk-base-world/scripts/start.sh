@@ -119,16 +119,16 @@ then
 
     # Create a new Grafana organisation via HTTP API
     echo "Using Grafana API to create a new organisation..."
-    RESPONSE="$(curl -X POST -H "Content-Type: application/json" -d '{"name":"CMCL"}' http://admin:$PASSWORD@localhost:3838/dashboard/api/orgs)"
+    RESPONSE="$(curl -X POST -H "Content-Type: application/json" -d '{"name":"CMCL"}' http://admin:$PASSWORD@localhost:38383/dashboard/api/orgs)"
     ORG_ID="$(echo $RESPONSE | grep -o [0-9])"
 
     # Change the Grafana admin account to be part of the new org
     echo "Using Grafana API to switch admin account to the new organisation..."
-    curl -X POST http://admin:$PASSWORD@localhost:3838/dashboard/api/user/using/$ORG_ID
+    curl -X POST http://admin:$PASSWORD@localhost:38383/dashboard/api/user/using/$ORG_ID
 
     # Create an API token
     echo "Using Grafana API to create an API token..."
-    RESPONSE="$(curl -X POST -H "Content-Type: application/json" -d '{"name":"apikeycurl", "role": "Admin"}' http://admin:$PASSWORD@localhost:3838/dashboard/api/auth/keys)"
+    RESPONSE="$(curl -X POST -H "Content-Type: application/json" -d '{"name":"apikeycurl", "role": "Admin"}' http://admin:$PASSWORD@localhost:38383/dashboard/api/auth/keys)"
     API_KEY="$(jq '.key' <<< $RESPONSE)"
     API_KEY="$( echo "$API_KEY" | tr -d '"')"
 
@@ -140,7 +140,7 @@ then
     echo "Using Grafana API to add a connection to the PostGIS database..."
     sed "s|\"PASSHERE\"|\"$PASSWORD\"|g" ./inputs/dashboard/datasource.json > ./inputs/dashboard/datasource.temp
 
-    RESPONSE="$(curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $API_KEY" --data-binary @inputs/dashboard/datasource.temp http://admin:$PASSWORD@localhost:3838/dashboard/api/datasources)"
+    RESPONSE="$(curl -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $API_KEY" --data-binary @inputs/dashboard/datasource.temp http://admin:$PASSWORD@localhost:38383/dashboard/api/datasources)"
     echo "$RESPONSE"
     SOURCE_UID="$(jq '.datasource.uid' <<< $RESPONSE)"
 
@@ -148,14 +148,15 @@ then
     echo "Uploading saved Grafana dashboards..."
     sed "s|\"SOURCEUID\"|$SOURCE_UID|g" ./inputs/dashboard/dashboard-raw-data.json > ./inputs/dashboard/dashboard-raw-data.temp
     sed "s|\"SOURCEUID\"|$SOURCE_UID|g" ./inputs/dashboard/dashboard-overview.json > ./inputs/dashboard/dashboard-overview.temp
-    curl -X POST --insecure -H "Content-Type: application/json" -H "Authorization: Bearer $API_KEY" --data-binary @inputs/dashboard/dashboard-raw-data.temp http://admin:$PASSWORD@localhost:3838/dashboard/api/dashboards/db
-    curl -X POST --insecure -H "Content-Type: application/json" -H "Authorization: Bearer $API_KEY" --data-binary @inputs/dashboard/dashboard-overview.temp http://admin:$PASSWORD@localhost:3838/dashboard/api/dashboards/db
+    curl -X POST --insecure -H "Content-Type: application/json" -H "Authorization: Bearer $API_KEY" --data-binary @inputs/dashboard/dashboard-raw-data.temp http://admin:$PASSWORD@localhost:38383/dashboard/api/dashboards/db
+    curl -X POST --insecure -H "Content-Type: application/json" -H "Authorization: Bearer $API_KEY" --data-binary @inputs/dashboard/dashboard-overview.temp http://admin:$PASSWORD@localhost:38383/dashboard/api/dashboards/db
 
     # Update the default grafana dashboard to be the "Overview" one
-    curl -X PUT --insecure -H "Content-Type: application/json" -H "Authorization: Bearer $API_KEY" --data-binary @inputs/dashboard/grafana-org-config.json http://admin:$PASSWORD@localhost:3838/dashboard/api/org/preferences
+    curl -X PUT --insecure -H "Content-Type: application/json" -H "Authorization: Bearer $API_KEY" --data-binary @inputs/dashboard/grafana-org-config.json http://admin:$PASSWORD@localhost:38383/dashboard/api/org/preferences
 
     echo 
     echo "Script completed, may need to wait a few minutes for the stack-data-uploader to finish."
+    echo "Visualisation should be available now at http://localhost:38383/visualisation/"
 else
     echo "Please copy in the data sets as described in the README before re-running this script."
     exit -1
