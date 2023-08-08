@@ -3,13 +3,13 @@
     "groups": [
         {
             "name": "Power Generation Sites",
-            "stack": "http://localhost:3838/",
+            "stack": "http://localhost:38383/",
             "sources": [
                 {
                     "id": "uk-power-source",  
                     "type": "vector",
                     "tiles": [
-                        "http://localhost:3838/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:dukes_2023&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:dukes_2023&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
                 

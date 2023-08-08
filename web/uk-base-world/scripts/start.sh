@@ -22,9 +22,13 @@ if [[ ! -v PASSWORD ]]; then
     exit -1
 fi
 
+# Check for optional arguments
+if [[ ! -v HOST ]]; then 
+    echo "No HOST argument supplied, assuming http://localhost:38383/"
+fi
+
 # Store starting directory
 START=$(pwd)
-echo "$START"
 
 echo 
 echo "This script will remove any existing stack manager configurations, launch a new"
@@ -71,6 +75,13 @@ then
     mkdir -p "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/"
     rm -rf "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/*"
     cp -r "./visualisation/webspace/." "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/"
+
+    if [ -n "$HOST" ]; then
+        # HOST parameter supplied, inject into visualisation's data.json file
+        echo "Injecting custom HOST paramater into visualisation files..."
+        sed -i "s|http://localhost:38383|$HOST|g" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/data.json"
+        sed -i "s|http://localhost:38383|$HOST|g" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/settings.json"
+    fi
    
     # Copy in the custom grafana conf into the special volume populator folder
     mkdir -p "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/grafana-conf/"
@@ -95,7 +106,7 @@ then
     # Run the stack manager to start a new stack
     cd "$ROOT/Deploy/stacks/dynamic/stack-manager"
     echo "Running the stack start up script..."
-    ./stack.sh start UKBASEWORLD
+    ./stack.sh start UKBASEWORLD 38383
 
     # Wait for the stack to start
     echo 
@@ -104,7 +115,7 @@ then
     # Run the uploader to upload data
     cd "$ROOT/Deploy/stacks/dynamic/stack-data-uploader"
     echo "Running the stack uploader script..."
-    ./stack.sh start UKBASEWORLD 38383
+    ./stack.sh start UKBASEWORLD 
 
     # Get the name of the grafana container
     GRAFANA=$(docker container ls | grep -o UKBASEWORLD-grafana.*)
