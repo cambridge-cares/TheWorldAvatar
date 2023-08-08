@@ -63,7 +63,7 @@ public class XtoCityDB extends PostgresDataSubset {
                 .uploadVectorFilesToPostGIS(database, getTable(), dataSubsetDir.toString(), ogr2ogrOptions, false);
         CityDBClient.getInstance()
                 .updateDatabase(database,importOptions.getSridIn());
-        CityDBClient.getInstance().preparePGforCityDB(database,handleFileValues(preProcesssql),minArea,columnMap);
+        CityDBClient.getInstance().preparePGforCityDB(database,super.getTable(),handleFileValues(preProcesssql),minArea,columnMap);
         CityDBClient.getInstance().populateCityDBbySQL(database,lineage,columnMap);
     }
 

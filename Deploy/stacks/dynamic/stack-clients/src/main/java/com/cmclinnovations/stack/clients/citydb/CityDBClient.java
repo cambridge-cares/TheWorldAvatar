@@ -248,11 +248,12 @@ public class CityDBClient extends ContainerClient {
         }
     }
 
-    public void preparePGforCityDB(String database, String preProcesssql, double minArea, Map<String, String> columnMap) {
+    public void preparePGforCityDB(String database, String table, String preProcesssql, double minArea, Map<String, String> columnMap) {
         if (null == preProcesssql) {
             String sqlFilename = "citydb_preprocess_building.sql";
             try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
-                preProcesssql = new String(is.readAllBytes()).replace("{minArea}", String.valueOf(minArea));
+                preProcesssql = new String(is.readAllBytes()).replace("{table}", String.valueOf(table))
+                    .replace("{minArea}", String.valueOf(minArea));
                 for (Map.Entry<String, String> entry : columnMap.entrySet()) {
                     preProcesssql = preProcesssql.replace("{"+entry.getKey()+"}",entry.getValue());
                 }
