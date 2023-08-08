@@ -1,7 +1,7 @@
 <html>
     <head>
         <!-- ===== CUSTOMISABLE ===== -->
-        <title>DTVF</title>
+        <title>DTVF: Cesium</title>
         <!-- ===== CUSTOMISABLE ===== -->
 
         <meta charset="utf-8">
@@ -15,7 +15,7 @@
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" ></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
-        <script src="https://kg.cmclinnovations.com/cdn/dtvf/3.7.0/dtvf.min.js"></script>
+        <script src="./dtvf/dtvf.min.js" charset="utf-8"></script>
 
         <!-- ===== CUSTOMISABLE ===== -->
         <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
@@ -26,7 +26,7 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
         <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css" rel="stylesheet">
         <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
-        <link href="https://kg.cmclinnovations.com/cdn/dtvf/3.7.0/dtvf.min.css" rel="stylesheet" />
+        <link href="./dtvf/dtvf.min.css" rel="stylesheet" />
 
         <!-- ===== CUSTOMISABLE ===== -->
         <!-- CSS files to provide styling specifically for this visualisation instance can go here. -->
@@ -157,6 +157,9 @@
 
         <!-- Code entry point -->
         <script type="module">
+            // Log the version of the DTVF being used.
+            getDTVFVersion().then(result => console.log("Using DTVF " + result));
+
             $("#sidePanelInner").tabs();
 
             // Create a new manager instance
@@ -166,47 +169,45 @@
             // Read credentials
             manager.readCredentials().then(() => {
 
-                // Only start the map after data definitions have been read.
-                var dataPromise = manager.loadDefinitions();
-                dataPromise.then(() => start());
+            // Only start the map after data definitions have been read.
+            var dataPromise = manager.loadDefinitions();
+            dataPromise.then(() => start());
 
-                /**
-                 * Starts the visualisation setup process.
-                 */
-                function start() {
-                    // Initialise the map object
-                    manager.initialiseMap();
+            /**
+             * Starts the visualisation setup process.
+             */
+             function start() {
+                // Initialise the map object
+                manager.initialiseMap();
 
-                    // ===== CUSTOMISABLE =====
-                    // Set the default content in the "General" tab of the side panel
-                    manager.getPanelHandler().setTitle("<h1>Example Visualisation</h1>");
-                    manager.getPanelHandler().setContent(`
-                        <p>This example visualisation has been put together to demonstrate the intended use of the centralised Digital Twin Visualisation Framework (DTVF).
-                        This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put 
-                        together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF 
-                        before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.</p>
-                        <p>This centralised framework expects users to have structured their data in a particular format, and provide a number of associated metadata files. 
-                        Before starting, ensure your data meets this format by reading the <a href="https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations" target="_blank">GitHub wiki</a>. 
-                        This page also details how the framework functions, and how to configure your visualisation to use it.</p>
-                        <p>Note that this example has no version number as it is not intended for release; instead it should be updated to reflect the most recent version of 
-                        the framework itself. It's also worth noting that this example uses the currently hosted version of the framework library (i.e. from the CMCL KG website), 
-                        not the files within the repository.</p>
-                    `);
-                    
-                    manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
-                    // ===== CUSTOMISABLE =====
+                // ===== CUSTOMISABLE =====
+                // Set the default content in the "General" tab of the side panel
+                manager.getPanelHandler().setTitle("<h1>Example Visualisation</h1>");
+                manager.getPanelHandler().setContent(`
+                    <p>This example visualisation has been put together to demonstrate the intended use of the centralised Digital Twin Visualisation Framework (DTVF).
+                    This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put 
+                    together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF 
+                    before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.</p>
 
-                    // Save general tab state as default
-                    manager.getPanelHandler().storeDefault();
+                    <p>The version of the DTVF packaged with this example visualisation can be seen in the developer's console.</p>
+
+                    <p>For more information, please see the associated README file within the TWA repository or contact the CMCL technical team.</p>
+                `);
+                
+                manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
+                // ===== CUSTOMISABLE =====
+
+                // Save general tab state as default
+                manager.getPanelHandler().storeDefault();
 
                  // Load the data definitions
                 let configURL = "./data.json"
                 manager.loadDefinitionsFromURL(configURL).then(function() {
 
                     // Plot the data
-                    manager.plotData();
+                manager.plotData();
                 });
-                }
+            }
             });
         </script>
     </body>
