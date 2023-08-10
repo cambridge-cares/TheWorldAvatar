@@ -1,14 +1,28 @@
 package uk.ac.cam.cares.jps.agent.dashboard.stack;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.http.HttpResponse;
+
 import org.apache.jena.query.QueryParseException;
 import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
+import uk.ac.cam.cares.jps.agent.dashboard.utils.AgentCommunicationClient;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.datamodel.Facility;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import org.w3c.dom.Document;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.util.*;
 
 /**
@@ -17,28 +31,48 @@ import java.util.*;
  * @author qhouyee
  */
 public class SparqlClient {
-    private final String STACK_SPARQL_ENDPOINT;
+    private final Queue<String> STACK_SPARQL_ENDPOINTS = new ArrayDeque<>();
     private final Map<String, Facility> SPATIAL_ZONES = new HashMap<>();
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
 
     /**
      * Standard Constructor to initialise this client.
      *
-     * @param endpoint The SPARQL endpoint within the stack.
+     * @param url The SPARQL url within the stack without the namespace.
      */
-    public SparqlClient(String endpoint) {
-        // Set up the required information for further interactions
-        this.STACK_SPARQL_ENDPOINT = endpoint;
-        // Retrieve all metadata required
-        try (RDFConnection conn = RDFConnection.connect(this.STACK_SPARQL_ENDPOINT)) {
-            this.retrieveMetaData(conn);
-        } catch (QueryParseException e) {
-            LOGGER.fatal("Invalid query: " + e.getMessage());
-            throw new JPSRuntimeException("Invalid query: " + e.getMessage());
-        } catch (Exception e) {
-            LOGGER.fatal("Error connecting to SPARQL endpoint: " + e);
-            throw new JPSRuntimeException("Error connecting to SPARQL endpoint: " + e);
+    public SparqlClient(String url, String username, String password) {
+        // Retrieve all namespaces and generate their endpoints based on url
+        getAllEndpoints(url, username, password);
+        // Retrieve all metadata required for each endpoint
+        for (String endpoint : this.STACK_SPARQL_ENDPOINTS) {
+            try (RDFConnection conn = RDFConnection.connect(endpoint)) {
+                this.retrieveMetaData(conn);
+            } catch (QueryParseException e) {
+                LOGGER.fatal("Invalid query: " + e.getMessage());
+                throw new JPSRuntimeException("Invalid query: " + e.getMessage());
+            } catch (Exception e) {
+                LOGGER.fatal("Error connecting to SPARQL endpoint: " + e);
+                throw new JPSRuntimeException("Error connecting to SPARQL endpoint: " + e);
+            }
         }
+    }
+
+    /**
+     * Retrieve all available endpoints in the stack's SPARQL knowledge graph.
+     *
+     * @param url      The stack's SPARQL blazegraph endpoint without namespaces.
+     * @param username The username credentials for the stack's SPARQL blazegraph endpoint. Defaults to null if the endpoint is unauthenticated.
+     * @param password The password credentials for the stack's SPARQL blazegraph endpoint. Defaults to "" if the endpoint is unauthenticated.
+     */
+    protected void getAllEndpoints(String url, String username, String password) {
+        LOGGER.debug("Retrieving all SPARQL endpoints...");
+        // Send a GET request to this specific url
+        String requestUrl = url + "namespace?describe-each-named-graph=false";
+        // If there is no password, send the GET request without an authentication header.
+        HttpResponse response = password.isEmpty() ? AgentCommunicationClient.sendGetRequest(requestUrl) :
+                // Else, the authentication header must be included
+                AgentCommunicationClient.sendGetRequest(requestUrl, username, password);
+        parseXmlNamespaces(response.body().toString(), url);
     }
 
     /**
@@ -59,6 +93,41 @@ public class SparqlClient {
      */
     protected Map<String, Queue<String[]>> getAllAssetMetaData(String spatialZone) {
         return this.SPATIAL_ZONES.get(spatialZone).getAllAssets();
+    }
+
+    /**
+     * Parses the response into valid xml and extract only the namespace information required into endpoint format.
+     *
+     * @param responseBody The response's body content.
+     * @param url          The SPARQL url within the stack without the namespace.
+     */
+    protected void parseXmlNamespaces(String responseBody, String url) {
+        // Parse the response into an XML document format
+        Document xmlDoc;
+        try {
+            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            InputSource is = new InputSource(new StringReader(responseBody));
+            xmlDoc = builder.parse(is);
+        } catch (ParserConfigurationException e) {
+            LOGGER.fatal("Unable to create a DocumentBuilder which satisfies the configuration requested! Please see error for more details: " + e.getMessage());
+            throw new JPSRuntimeException("Unable to create a DocumentBuilder which satisfies the configuration requested! Please see error for more details: " + e.getMessage());
+        } catch (SAXException e) {
+            LOGGER.fatal("Unable to parse the response into valid XML! Please see error for more details: " + e.getMessage());
+            throw new JPSRuntimeException("Unable to parse the response into valid XML! Please see error for more details: " + e.getMessage());
+        } catch (IOException e) {
+            LOGGER.fatal("Unable to access the response string! Please see error for more details: " + e.getMessage());
+            throw new JPSRuntimeException("Unable to access the response string! Please see error for more details: " + e.getMessage());
+        }
+        // Iterate through XML format to get each namespace details
+        NodeList descriptions = xmlDoc.getElementsByTagName("rdf:Description");
+        for (int i = 0; i < descriptions.getLength(); i++) {
+            Element description = (Element) descriptions.item(i);
+            // Do not get the URL from the node here, it's unreliable. Build it instead
+            Node nameNode = description.getElementsByTagName("Namespace").item(0);
+            String namespace = nameNode.getTextContent();
+            // Construct a valid SPARQL endpoint, and store it
+            this.STACK_SPARQL_ENDPOINTS.offer(url + "namespace/" + namespace + "/sparql");
+        }
     }
 
     /**

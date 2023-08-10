@@ -47,11 +47,11 @@ public class StackClient {
         // Generate the generic stack SPARQL endpoint url based on their authentication enabled
         String stackSparqlEndpoint = blazeConfig.getPassword().isEmpty() ?
                 // Non-authenticated endpoint
-                "http://" + blazeConfig.getHostName() + ":" + blazeConfig.getPort() + "/blazegraph/namespace/" :
+                "http://" + blazeConfig.getHostName() + ":" + blazeConfig.getPort() + "/blazegraph/" :
                 // Authenticated endpoint
-                "http://" + blazeConfig.getUsername() + ":" + blazeConfig.getPassword() + "@" + blazeConfig.getHostName() + ":" + blazeConfig.getPort() + "/blazegraph/namespace/";
-        // WIP: Refactor the SPARQL endpoint as a POST parameter
-        this.SPARQL_CLIENT = new SparqlClient(stackSparqlEndpoint + "lab/sparql");
+                "http://" + blazeConfig.getUsername() + ":" + blazeConfig.getPassword() + "@" + blazeConfig.getHostName() + ":" + blazeConfig.getPort() + "/blazegraph/";
+        // Initialise a new Sparql client
+        this.SPARQL_CLIENT = new SparqlClient(stackSparqlEndpoint, blazeConfig.getUsername(), blazeConfig.getPassword());
         // Note that the container name and port number is dependent on the custom setup - This may change when we have a built-in container for grafana
         this.DASHBOARD_URL = "http://" + getStackNameFromHost(blazeConfig.getHostName()) + "-grafana:3000";
         LOGGER.debug("Services have been successfully retrieved from the stack...");
