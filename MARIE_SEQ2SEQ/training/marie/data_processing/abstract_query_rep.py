@@ -25,6 +25,9 @@ class AbstractQueryRep:
             and self.solution_modifiers == other.solution_modifiers
         )
 
+    def __repr__(self):
+        return repr(vars(self))
+
     @classmethod
     def _does_startwith_result_clause_kw(cls, query: str, ptr: int):
         return any(query.startswith(kw, ptr) for kw in RESULT_CLAUSE_KWS)
@@ -45,38 +48,43 @@ class AbstractQueryRep:
 
         result_clause = query[result_clause_idx:where_clause_idx].strip()
 
-        ptr = advance_idx_to_kw(query, "{", ptr)
-        if ptr >= len(query):
+        ptr += len("WHERE")
+        ptr = advance_idx_thru_space(query, ptr)
+        if query[ptr] != "{":
             raise ValueError("Missing open bracket after WHERE keyword: ", query)
 
         ptr += 1
         # assume that WHERE clause contains only basic triple patterns and FILTER clauses
         graph_patterns = []
-        while not query[ptr] != "}":
+        while True:
+            ptr = advance_idx_thru_space(query, ptr)
+
+            if query[ptr] == "}":
+                break
+            if ptr >= len(query):
+                raise ValueError("Close curly bracket is missing from the WHERE clause: " + query)
+
             start_idx = ptr
-            if query.startswith("FILTER"):
+            if query.startswith("FILTER", ptr):
+                ptr += len("FILTER")
                 ptr = advance_idx_thru_space(query, ptr)
-                ptr += 1
                 if query[ptr] != "(":
                     raise ValueError(
-                        "Open curly bracket is missing from FITLER clause: ", query
+                        "Open bracket is missing from FITLER clause: " + query[start_idx:]
                     )
 
                 ptr = advance_idx_to_kw(query, ")", ptr)
                 if ptr >= len(query):
                     raise ValueError(
-                        "Close curly bracket is missing from FILTER clause: ", query
+                        "Close bracket is missing from FILTER clause: " + query[start_idx:]
                     )
+                
+                ptr += 1
             else:  # assume it's the triple pattern
-                ptr = advance_idx_thru_space(query, ptr)  # advance to head entity
-                ptr = advance_idx_to_space(query, ptr)
-                ptr = advance_idx_thru_space(query, ptr)  # advance to relation
-                ptr = advance_idx_to_space(query, ptr)
-                ptr = advance_idx_thru_space(query, ptr)  # advance to tail
                 ptr = advance_idx_to_kw(query, ".", ptr)
                 if ptr >= len(query):
                     raise ValueError(
-                        "Full-stop is missing from triple pattern: ", query
+                        "Full-stop is missing from triple pattern: " + query[start_idx:]
                     )
                 ptr += 1
 
