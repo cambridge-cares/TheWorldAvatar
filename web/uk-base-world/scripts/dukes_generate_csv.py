@@ -74,7 +74,10 @@ load_postcodes(args.postcodes)
 logger.info("OS Postcode data has been cached.")
 
 # Initialise the Geocoder
-geolocator = Nominatim(user_agent="geoapiExercises")
+try:
+    geolocator = Nominatim(user_agent="geoapiExercises")
+except:
+    logger.warn("Could not initialise geolocator, skipping this check.")
 
 # Read the input workbook
 logger.info("Reading Excel workbook at: " + args.input)
@@ -110,7 +113,7 @@ for row in range((START_ROW - 1), len(worksheet.values)):
     output_row = [str(s).replace(",", "/") for s in output_row]
 
     # Round capacity to 2 decimal places
-    output_row[7] = round(output_row[7], 2)
+    output_row[7] = round(float(output_row[7]), 2)
 
     # Get plant location details
     postcode = output_row[11]
@@ -132,7 +135,10 @@ for row in range((START_ROW - 1), len(worksheet.values)):
             bng_lng_lat_str = str(bng_lng_lat[1][0]) + ", " + str(bng_lng_lat[0][0])
 
             try:
-                bng_location = geolocator.reverse(bng_lng_lat_str)
+                if geolocator:
+                    bng_location = geolocator.reverse(bng_lng_lat_str)
+                else:
+                    bng_location = None
             except:
                 bng_location = None
 

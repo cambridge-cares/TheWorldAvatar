@@ -61,6 +61,8 @@ Note that this script has been developed assuming a first-time spin up condition
 
 To run the script and bring up a local instance of the UK Base World visualisation, follow the below steps. To get copies of the required data files, please see the data sections above or contact CMCL for archived copies.
 
+**Note:** running the script to deploy this stack will remove any existing stack manager configurations; please backup any existing ones beforehand.
+
 1. If required, run the `build.sh` script from within the `/web/digital-twin-vis-framework/library` directory.
    - This will build a local copy of the visualisation hosting image, in case the current branch contains a new version that hasn't been pushed yet.
 2. Navigate to the `uk-base-world` directory.
