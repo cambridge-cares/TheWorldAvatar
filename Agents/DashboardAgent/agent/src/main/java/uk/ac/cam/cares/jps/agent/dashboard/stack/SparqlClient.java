@@ -5,7 +5,7 @@ import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
-import uk.ac.cam.cares.jps.agent.dashboard.utils.ResponseHelper;
+import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.datamodel.Facility;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -109,7 +109,7 @@ public class SparqlClient {
             String measureIri = qs.getResource("measure").toString();
             // Measure name might contain UUID
             String measureName = qs.getResource("measurename").getLocalName();
-            measureName = ResponseHelper.removeUUID(measureName);
+            measureName = StringHelper.removeUUID(measureName);
             String timeSeriesIri = qs.getResource("timeseries").toString();
             // Check if the facility already exists in the map
             if (this.SPATIAL_ZONES.containsKey(facilityName)) {
