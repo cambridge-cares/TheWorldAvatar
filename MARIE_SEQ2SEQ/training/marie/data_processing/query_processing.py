@@ -2,7 +2,13 @@ from marie.utils import advance_idx_thru_space, advance_idx_to_kw
 from marie.data_processing.abstract_query_rep import AbstractQueryRep
 
 
-QUERY_ENCODINGS = {"{": " op_br ", "}": " cl_br ", "?": "var_"}
+QUERY_ENCODINGS = {
+    "{": " op_br ",
+    "}": " cl_br ",
+    "?": " var_",
+    "<": " lt ",
+    ">": " gt ",
+}
 QUERY_DECODINGS = {v.strip(): k for k, v in QUERY_ENCODINGS.items()}
 
 
