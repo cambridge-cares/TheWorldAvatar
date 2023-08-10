@@ -1,10 +1,10 @@
-##########################################module
-# Author: Feroz Farazi (msff2@cam.ac.uk) #
-# Date:  27 Jan 2022                      #
-##########################################
+#############################################################################
+# Authors: John Atherton (ja685@cam.ac.uk), Feroz Farazi (msff2@cam.ac.uk)  #
+# Date:  27 Jan 2022                                                        #
+#############################################################################
 
-# Get settings and functions from the kg utils module
 from time import time
+# Get settings and functions from the kg utils module
 import kg_utils_generation as kg
 from datetime import datetime as dt
 import json

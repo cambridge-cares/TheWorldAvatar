@@ -1,14 +1,7 @@
-"""
-    Script to (periodically) gather instantaneous gas power data for UK's gas supply generators (from National Grid)
-
-    Local deployment requires:
-        - Blazegraph running in local Tomcat server with port 9999 exposed
-        - Triple store endpoint to use for data assimilation (namespace in Blazegraph) needs to be created beforehand
-          and match namespace provided in timeseries.properties file in resource folder
-        - PostgreSQL database set up locally (with URL and credentials provided in timeseries.properties file)
-
-    Authors: trs53<@>cam.ac.uk, mh807<@>cam.ac.uk
-"""
+#############################################################################
+# Authors: John Atherton (ja685@cam.ac.uk), Feroz Farazi (msff2@cam.ac.uk)  #
+# Date:  27 Jan 2022                                                        #
+#############################################################################
 
 from numpy import power
 from tqdm import tqdm
