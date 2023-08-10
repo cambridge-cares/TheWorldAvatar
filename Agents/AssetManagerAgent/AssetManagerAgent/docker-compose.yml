@@ -1,0 +1,10 @@
+version: "1.0"
+
+services:
+  fh-agent:
+    image: asset-manager-agent:1.0.0
+    build: .
+    container_name: asset-manager-agent
+    pull_policy: if_not_present
+    ports:
+      - "1015:8080"
