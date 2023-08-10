@@ -23,6 +23,55 @@ class TestQueryParser:
         )
         assert AbstractQueryRep.from_string(query_string) == expected
 
+    def test_toQueryString(self):
+        query = AbstractQueryRep(
+            result_clause="SELECT DISTINCT ?label ?IUPACNameValue ?MolecularWeightValue ?MolecularWeightUnitValue ?MolecularWeightReferenceStateValue ?MolecularWeightReferenceStateUnitValue ?ViscosityValue ?ViscosityUnitValue ?ViscosityReferenceStateValue ?ViscosityReferenceStateUnitValue",
+            where_clause=[
+                "?SpeciesIRI rdf:type os:Species ; rdfs:label ?label .",
+                "?SpeciesIRI os:hasIUPACName ?IUPACNameIRI .",
+                "?IUPACNameIRI os:value ?IUPACNameValue .",
+                "?SpeciesIRI os:hasMolecularWeight ?MolecularWeightIRI .",
+                "?MolecularWeightIRI os:value ?MolecularWeightValue ; os:unit ?MolecularWeightUnitIRI ; os:hasProvenance ?MolecularWeightProvenanceIRI .",
+                "?MolecularWeightUnitIRI rdfs:label ?MolecularWeightUnitValue .",
+                (
+                    "OPTIONAL{?MolecularWeightIRI os:hasReferenceState ?MolecularWeightReferenceStateIRI .\n"
+                    "?MolecularWeightReferenceStateIRI os:value ?MolecularWeightReferenceStateValue ; os:unit ?MolecularWeightReferenceStateUnitIRI .\n"
+                    "?MolecularWeightReferenceStateUnitIRI rdfs:label ?MolecularWeightReferenceStateUnitValue .}"
+                ),
+                "FILTER(?MolecularWeightValue < 252)",
+                "?SpeciesIRI os:hasViscosity ?ViscosityIRI .",
+                "?ViscosityIRI os:value ?ViscosityValue ; os:unit ?ViscosityUnitIRI ; os:hasProvenance ?ViscosityProvenanceIRI .",
+                "?ViscosityUnitIRI rdfs:label ?ViscosityUnitValue .",
+                (
+                    "OPTIONAL{?ViscosityIRI os:hasReferenceState ?ViscosityReferenceStateIRI .\n"
+                    "?ViscosityReferenceStateIRI os:value ?ViscosityReferenceStateValue ; os:unit ?ViscosityReferenceStateUnitIRI .\n"
+                    "?ViscosityReferenceStateUnitIRI rdfs:label ?ViscosityReferenceStateUnitValue .}"
+                ),
+                "FILTER(?ViscosityValue < 54 || ?ViscosityValue > 87)",
+            ],
+        )
+        expected = """SELECT DISTINCT ?label ?IUPACNameValue ?MolecularWeightValue ?MolecularWeightUnitValue ?MolecularWeightReferenceStateValue ?MolecularWeightReferenceStateUnitValue ?ViscosityValue ?ViscosityUnitValue ?ViscosityReferenceStateValue ?ViscosityReferenceStateUnitValue
+WHERE {
+?SpeciesIRI rdf:type os:Species ; rdfs:label ?label .
+?SpeciesIRI os:hasIUPACName ?IUPACNameIRI .
+?IUPACNameIRI os:value ?IUPACNameValue .
+?SpeciesIRI os:hasMolecularWeight ?MolecularWeightIRI .
+?MolecularWeightIRI os:value ?MolecularWeightValue ; os:unit ?MolecularWeightUnitIRI ; os:hasProvenance ?MolecularWeightProvenanceIRI .
+?MolecularWeightUnitIRI rdfs:label ?MolecularWeightUnitValue .
+OPTIONAL{?MolecularWeightIRI os:hasReferenceState ?MolecularWeightReferenceStateIRI .
+?MolecularWeightReferenceStateIRI os:value ?MolecularWeightReferenceStateValue ; os:unit ?MolecularWeightReferenceStateUnitIRI .
+?MolecularWeightReferenceStateUnitIRI rdfs:label ?MolecularWeightReferenceStateUnitValue .}
+FILTER(?MolecularWeightValue < 252)
+?SpeciesIRI os:hasViscosity ?ViscosityIRI .
+?ViscosityIRI os:value ?ViscosityValue ; os:unit ?ViscosityUnitIRI ; os:hasProvenance ?ViscosityProvenanceIRI .
+?ViscosityUnitIRI rdfs:label ?ViscosityUnitValue .
+OPTIONAL{?ViscosityIRI os:hasReferenceState ?ViscosityReferenceStateIRI .
+?ViscosityReferenceStateIRI os:value ?ViscosityReferenceStateValue ; os:unit ?ViscosityReferenceStateUnitIRI .
+?ViscosityReferenceStateUnitIRI rdfs:label ?ViscosityReferenceStateUnitValue .}
+FILTER(?ViscosityValue < 54 || ?ViscosityValue > 87)
+}"""
+        assert query.to_query_string() == expected
+
     @pytest.mark.parametrize(
         "compact_query, expected",
         [

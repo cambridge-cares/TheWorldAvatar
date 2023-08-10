@@ -92,6 +92,9 @@ class AbstractQueryRep:
 
     def __repr__(self):
         return repr(vars(self))
+    
+    def to_query_string(self):
+        return "{result_clause}\nWHERE {{\n{where_clause}\n}}".format(result_clause=self.result_clause, where_clause='\n'.join(self.where_clause))
 
     def compact2verbose(self):
         result_clause = self.result_clause
