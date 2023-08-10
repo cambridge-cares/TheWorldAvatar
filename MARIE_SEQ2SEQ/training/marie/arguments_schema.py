@@ -33,10 +33,6 @@ class InferenceArguments:
     out_file: str = field(
         metadata={"help": "File to write predictions to."}
     )
-    postprocess: bool = field(
-        default=True,
-        metadata={"help": "Whether to post-process the output of the machine translation model."}
-    )
     max_new_tokens: int = field(
         default=512,
         metadata={"help": "Maximum number of tokens to be generated."}

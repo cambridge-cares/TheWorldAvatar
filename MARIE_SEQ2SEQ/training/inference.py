@@ -6,6 +6,7 @@ from tqdm.auto import tqdm
 from marie.translation import TranslationModel
 
 from marie.arguments_schema import DatasetArguments, InferenceArguments, ModelArguments
+from marie.data_processing.query_processing import postprocess_query
 
 
 def rename_dict_keys(d: dict, mappings: dict):
@@ -27,13 +28,14 @@ def infer():
 
     preds = []
     for datum in tqdm(data):
-        pred = trans_model(datum["question"], postprocess=infer_args.postprocess)
+        pred = trans_model(datum["question"])
         preds.append(pred)
 
     data_out = [
         {
-            **rename_dict_keys(datum, dict(sparql_query="gt")),
-            "prediction": pred,
+            **rename_dict_keys(datum, dict(sparql_query="gt", sparql_query_compact="gt_compact")),
+            "prediction_raw": pred,
+            "prediction_postprocessed": postprocess_query(pred)
         }
         for datum, pred in zip(data, preds)
     ]
