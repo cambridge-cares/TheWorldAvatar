@@ -1,0 +1,2 @@
+class TestRelSearch:
+    pass
