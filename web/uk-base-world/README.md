@@ -41,6 +41,8 @@ A visualisation has also been created for the UK Base World, the `visualisation/
 
 For more information on how visualisations are created and configured using the DTVF, please read its [documentation page](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework).
 
+Note that this __may__ require building a local copy of the `dtvf-base-image` Docker image. If so, please run the `build.sh` script from within the `/web/digital-twin-vis-framework/library` directory.
+
 ### Feature info agent
 
 To support metadata for the visualisation, the stack for this visualisation has been configured to also launch an instance of the [Feature Info Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent). The appropriate configuration file and query files have been created and will be copied into the relevant directories when using the `./scripts/start.sh` script to launch the stack (see below).
@@ -59,21 +61,23 @@ Note that this script has been developed assuming a first-time spin up condition
 
 To run the script and bring up a local instance of the UK Base World visualisation, follow the below steps. To get copies of the required data files, please see the data sections above or contact CMCL for archived copies.
 
-1. Navigate to the `uk-base-world` directory.
-2. Add your Mapbox credentials:
+1. If required, run the `build.sh` script from within the `/web/digital-twin-vis-framework/library` directory.
+   - This will build a local copy of the visualisation hosting image, in case the current branch contains a new version that hasn't been pushed yet.
+2. Navigate to the `uk-base-world` directory.
+3. Add your Mapbox credentials:
    - Add your username to a file at `./visualisation/mapbox_username`
    - Add your API key to a file at `./visualisation/mapbox_api_key`
-3. Add the data files:
+4. Add the data files:
    - Add the processed DUKES 2023 CSV to the `./inputs/data/uk_base_world/dukes_2023` directory.
-   - Add the OntoEIP files to the `./inputs/data/ontoeip` directory.
-4. Run the script from the `uk-base-world` directory, passing a password for PostGIS and Geoserver:
+   - Add the OntoEIP OWL and TTL files to the `./inputs/data/ontoeip` directory (note that these need to be in a flat structure, no subdirectories).
+5. Run the script from the `uk-base-world` directory, passing a password for PostGIS and Geoserver:
    - Example command: `./scripts/start.sh PASSWORD=pickapassword`
    - If deploying behind an existing URL, the `HOST` parameter can be passed to auto-update the visualisation's client side files (e.g. `./scripts/start.sh PASSWORD=pickapassword HOST=https://theworldavatar.io/demo/uk-base-world`)
-5. Confirm that the required data files are present by pressing the `Y` key.
-6. Once prompted, wait for the stack to spin up, then press `ENTER`.
+6. Confirm that the required data files are present by pressing the `Y` key.
+7. Once prompted, wait for the stack to spin up, then press `ENTER`.
    - That stack is considered "spun up" once the stack-manager container has stopped (although there is some wiggle-room here if you're also spinning up containers that have lengthy service start-ups).
    - If running for the first time, this may take a while as Docker images will need to be downloaded.
-7. Confirm the visualisation is working by visiting `localhost:38383/visualisation`
+8. Confirm the visualisation is working by visiting `localhost:38383/visualisation`
 
 Stopping the stack (including the option to remove existing volumes), can be done by using the `stack.sh` script within the `scripts` directory; the name of the created stack will be `UKBASEWORLD`.
 
