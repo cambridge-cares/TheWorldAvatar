@@ -5,28 +5,145 @@ from marie.utils import advance_idx_thru_space, advance_idx_to_kw, advance_idx_t
 
 RESULT_CLAUSE_KWS = ["SELECT"]
 
+SPECIES_FROM_IDENTIFIER_PATTERN_COMPACT_PREFIX = "?SpeciesIRI ?hasIdentifier ?species"
+PROPERTY_PATTERN_COMPACT_PREFIX = "?SpeciesIRI os:hasProperty"
+IDENTIFIER_PATTERN_COMPACT_PREFIX = "?SpeciesIRI os:hasIdentifier"
+CHEMCLASS_PATTERN_COMPACT_PREFIX = "?SpeciesIRI os:hasChemicalClass ?ChemicalClassValue"
+USE_PATTERN_COMPACT_PREFIX = "?SpeciesIRI os:hasUse ?UseValue"
+ALL_PROPERTIES_PATTERN_COMPACT_PREFIX = (
+    "?SpeciesIRI ?hasPropertyName ?PropertyNameValue"
+)
+ALL_IDENTIFIERS_PATTERN_COMPACT_PREFIX = "?SpeciesIRI ?hasIdentifierName ?IdentifierNameValue"
+
+SPECIES_FROM_QUALIFIERS_PATTERN_COMPACT_PREFIX = "?SpeciesIRI os:hasIUPACName ?IUPACNameValue"
+
+SPECIES_FROM_IDENTIFIER_PATTERNS_VERBOSE = [
+    "?SpeciesIRI rdf:type os:Species ; rdfs:label ?label .",
+    "?SpeciesIRI ?hasIdentifier ?IdentifierIRI .",
+    "?IdentifierIRI rdf:type ?Identifier ; os:value ?species .",
+    "?Identifier rdfs:subClassOf os:Identifier .",
+]
+PROPERTY_PATTERNS_VERBOSE = lambda property_name: [
+    f"?SpeciesIRI os:has{property_name} ?{property_name}IRI .",
+    f"?{property_name}IRI os:value ?{property_name}Value ; os:unit ?{property_name}UnitIRI ; os:hasProvenance ?{property_name}ProvenanceIRI .",
+    f"?{property_name}UnitIRI rdfs:label ?{property_name}UnitValue .",
+    (
+        f"OPTIONAL{{?{property_name}IRI os:hasReferenceState ?{property_name}ReferenceStateIRI .\n"
+        f"?{property_name}ReferenceStateIRI os:value ?{property_name}ReferenceStateValue ; os:unit ?{property_name}ReferenceStateUnitIRI .\n"
+        f"?{property_name}ReferenceStateUnitIRI rdfs:label ?{property_name}ReferenceStateUnitValue .}}"
+    ),
+]
+IDENTIFIER_PATTERNS_VERBOSE = lambda identifier_name: [
+    f"?SpeciesIRI os:has{identifier_name} ?{identifier_name}IRI .",
+    f"?{identifier_name}IRI os:value ?{identifier_name}Value .",
+]
+CHEMCLASS_PATTERNS_VERBOSE = [
+    "?SpeciesIRI os:hasChemicalClass* ?x .",
+    "?x ?y ?z .",
+    "?z rdfs:subClassOf* ?ChemicalClassIRI .",
+    "?ChemicalClassIRI rdf:type os:ChemicalClass  ; rdfs:label ?ChemicalClassValue .",
+]
+USE_PATTERNS_VERBOSE = [
+    "?SpeciesIRI os:hasUse ?UseIRI .",
+    "?UseIRI os:value ?UseValue .",
+]
+ALL_PROPERTIES_PATTERNS_VERBOSE = [
+    "?SpeciesIRI ?hasPropertyName ?PropertyNameIRI .",
+    "?PropertyNameIRI  rdf:type ?PropertyName .",
+    "?PropertyName rdfs:subClassOf os:Property .",
+    "?PropertyNameIRI os:value ?PropertyNameValue ; os:unit ?PropertyNameUnitIRI ; os:hasProvenance ?PropertyNameProvenanceIRI .",
+    "?PropertyNameUnitIRI rdfs:label ?PropertyNameUnitValue .",
+    (
+        "OPTIONAL{?PropertyNameIRI os:hasReferenceState ?PropertyNameReferenceStateIRI .\n"
+        "?PropertyNameReferenceStateIRI os:value ?PropertyNameReferenceStateValue ; os:unit ?PropertyNameReferenceStateUnitIRI .\n"
+        "?PropertyNameReferenceStateUnitIRI rdfs:label ?PropertyNameReferenceStateUnitValue .}\n"
+    ),
+    "BIND(strafter(str(?PropertyName),'#') AS ?PropertyLabel)",
+]
+ALL_IDENTIFIERS_PATTERNS_VERBOSE = [
+ "?SpeciesIRI ?hasIdentifierName ?IdentifierNameIRI .",
+    "?IdentifierNameIRI  rdf:type ?IdentifierName .",
+    "?IdentifierName rdfs:subClassOf os:Identifier .",
+    "?IdentifierNameIRI os:value ?IdentifierNameValue .",
+  	"BIND(strafter(str(?IdentifierName),'#') AS ?IdentifierLabel)"
+]
+
+SPECIES_FROM_QUALIFIERS_PATTERNS_VERBOSE = [
+    "?SpeciesIRI rdf:type os:Species ; rdfs:label ?label .",
+    "?SpeciesIRI os:hasIUPACName ?IUPACNameIRI .",
+    "?IUPACNameIRI os:value ?IUPACNameValue ."
+]
 
 class AbstractQueryRep:
     def __init__(
         self,
         result_clause: str,
-        graph_patterns: List[str],
-        solution_modifiers: List[str],
+        where_clause: List[str],
     ):
         self.result_clause = result_clause
-        self.graph_patterns = graph_patterns
-        self.solution_modifiers = solution_modifiers
+        self.where_clause = where_clause
 
     def __eq__(self, other):
         return (
             isinstance(other, AbstractQueryRep)
             and self.result_clause == other.result_clause
-            and self.graph_patterns == other.graph_patterns
-            and self.solution_modifiers == other.solution_modifiers
+            and self.where_clause == other.where_clause
         )
 
     def __repr__(self):
         return repr(vars(self))
+
+    def compact2verbose(self):
+        result_clause = self.result_clause
+        result_clause = result_clause.replace(
+            "SELECT DISTINCT", "SELECT DISTINCT ?label"
+        )
+
+        where_clause = []
+        for pattern in self.where_clause:
+            if pattern.startswith("FILTER"):
+                where_clause.append(pattern)
+            
+            # assume it's triple pattern, species -> properties/identifiers/chemclass
+            elif pattern.startswith(SPECIES_FROM_IDENTIFIER_PATTERN_COMPACT_PREFIX):
+                where_clause.extend(SPECIES_FROM_IDENTIFIER_PATTERNS_VERBOSE)
+            elif pattern.startswith(PROPERTY_PATTERN_COMPACT_PREFIX):
+                property_name = pattern[
+                    len(PROPERTY_PATTERN_COMPACT_PREFIX) : advance_idx_to_space(
+                        pattern, len(PROPERTY_PATTERN_COMPACT_PREFIX)
+                    )
+                ].strip()
+                result_clause = result_clause.replace(
+                    f"?{property_name}Value",
+                    f"?{property_name}Value ?{property_name}UnitValue ?{property_name}ReferenceStateValue ?{property_name}ReferenceStateUnitValue",
+                )
+                where_clause.extend(PROPERTY_PATTERNS_VERBOSE(property_name))
+            elif pattern.startswith(IDENTIFIER_PATTERN_COMPACT_PREFIX):
+                identifier_name = pattern[
+                    len(IDENTIFIER_PATTERN_COMPACT_PREFIX) : advance_idx_to_space(
+                        pattern, len(PROPERTY_PATTERN_COMPACT_PREFIX)
+                    )
+                ].strip()
+                where_clause.extend(IDENTIFIER_PATTERNS_VERBOSE(identifier_name))
+            elif pattern.startswith(CHEMCLASS_PATTERN_COMPACT_PREFIX):
+                where_clause.extend(CHEMCLASS_PATTERNS_VERBOSE)
+            elif pattern.startswith(USE_PATTERN_COMPACT_PREFIX):
+                where_clause.extend(USE_PATTERNS_VERBOSE)
+            elif pattern.startswith(ALL_PROPERTIES_PATTERN_COMPACT_PREFIX):
+                result_clause = result_clause.replace("?PropertyNameValue", "?PropertyLabel ?PropertyNameValue ?PropertyNameUnitValue ?PropertyNameReferenceStateValue ?PropertyNameReferenceStateUnitValue")
+                where_clause.extend(ALL_PROPERTIES_PATTERNS_VERBOSE)
+            elif pattern.startswith(ALL_IDENTIFIERS_PATTERN_COMPACT_PREFIX):
+                result_clause = result_clause.replace("?IdentifierNameValue", "?IdentifierLabel ?IdentifierNameValue")
+                where_clause.extend(ALL_IDENTIFIERS_PATTERNS_VERBOSE)
+            
+            # qualifiers -> species
+            elif pattern.startswith(SPECIES_FROM_QUALIFIERS_PATTERN_COMPACT_PREFIX):
+                where_clause.extend(SPECIES_FROM_QUALIFIERS_PATTERNS_VERBOSE)
+            else:
+                raise Exception("Unexpected compact clause: " + pattern)
+            
+
+        return AbstractQueryRep(result_clause, where_clause)
 
     @classmethod
     def _does_startwith_result_clause_kw(cls, query: str, ptr: int):
@@ -55,14 +172,16 @@ class AbstractQueryRep:
 
         ptr += 1
         # assume that WHERE clause contains only basic triple patterns and FILTER clauses
-        graph_patterns = []
+        where_clause = []
         while True:
             ptr = advance_idx_thru_space(query, ptr)
 
             if query[ptr] == "}":
                 break
             if ptr >= len(query):
-                raise ValueError("Close curly bracket is missing from the WHERE clause: " + query)
+                raise ValueError(
+                    "Close curly bracket is missing from the WHERE clause: " + query
+                )
 
             start_idx = ptr
             if query.startswith("FILTER", ptr):
@@ -70,15 +189,17 @@ class AbstractQueryRep:
                 ptr = advance_idx_thru_space(query, ptr)
                 if query[ptr] != "(":
                     raise ValueError(
-                        "Open bracket is missing from FITLER clause: " + query[start_idx:]
+                        "Open bracket is missing from FITLER clause: "
+                        + query[start_idx:]
                     )
 
                 ptr = advance_idx_to_kw(query, ")", ptr)
                 if ptr >= len(query):
                     raise ValueError(
-                        "Close bracket is missing from FILTER clause: " + query[start_idx:]
+                        "Close bracket is missing from FILTER clause: "
+                        + query[start_idx:]
                     )
-                
+
                 ptr += 1
             else:  # assume it's the triple pattern
                 ptr = advance_idx_to_kw(query, ".", ptr)
@@ -89,8 +210,6 @@ class AbstractQueryRep:
                 ptr += 1
 
             end_idx = ptr
-            graph_patterns.append(query[start_idx:end_idx].strip())
+            where_clause.append(query[start_idx:end_idx].strip())
 
-        solution_modifiers = []
-
-        return cls(result_clause, graph_patterns, solution_modifiers)
+        return cls(result_clause, where_clause)
