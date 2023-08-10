@@ -19,9 +19,21 @@ If it worked, new lines in the console should begin with (py4jps). If this is st
 3. Install all required Python libraries using the following command:
 pip install -r requirements.txt
 
-4. Run the importer script 'generation_data_importer.py': 
-First, run TOMCAT (for BLAZEGRAPH) and PGADMIN. 
 
+
+4. Follow these steps:
+   
+   (a) Run TOMCAT (for BLAZEGRAPH) and PGADMIN.
+   
+   (b) Upload power plant and generator RDF data from the following location:
+   'Dropbox (Cambridge CARES)\IRP3 CAPRICORN shared folder\_JPS Development\data\ukpowergeneration\GeneratorKBDataWithUploader'
+   to a Blazegraph endpoint.
+   
+   (c) You can label the Blazegraph namespace as 'ukpowergeneration' and update the 
+   endpoints in the 'resources\ukpowergeneration.properties' file.
+   
+   (d) You can keep the same name for the databse. If you decide to do so, update the value of 'db.url' in the .properties file
+   as 'jdbc:postgresql:ukpowergeneration'.
 
 5. With TOMCAT, PGADMIN, and the virtual environment all started, it's time to run the script with the following command: 
 ...\theworldavatar\UK_Power_Generation_Units_BMRS\Python\Code\ukpowergeneration> & ...theworldavatar/UK_Power_Generation_Units_BMRS/Python/Code/ukpowergeneration/py4jps/Scripts/python.exe ...theworldavatar\UK_Power_Generation_Units_BMRS\Python\Code\ukpowergeneration\generation_data_importer.py
