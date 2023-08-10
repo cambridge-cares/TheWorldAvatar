@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.input;
 
+import org.locationtech.jts.io.WKTReader;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -87,19 +88,24 @@ public class WeatherHelper extends JPSAgent {
      */
     public boolean getWeather(String uriString, String route, String weatherRoute, String crs, List<Object> result) {
         GeometryQueryHelper geometryQueryHelper = new GeometryQueryHelper(ontologyUriHelper);
-        String envelopeCoordinates = geometryQueryHelper.getValue(uriString, "envelope", route);
-
-        Polygon envelopePolygon = (Polygon) GeometryHandler.toPolygon(envelopeCoordinates);
-
-        Double elevation = envelopePolygon.getCoordinate().getZ();
-
-        Point center = envelopePolygon.getCentroid();
-
-        Coordinate centerCoordinate = center.getCoordinate();
-
-        crs = StringUtils.isNumeric(crs) ? "EPSG:" + crs : crs;
+        String footprint = geometryQueryHelper.getValue(uriString, "footprint", route);
 
         try {
+            Polygon footprintPolygon = (Polygon) GeometryHandler.toGeometry(footprint);
+
+            Double elevation = footprintPolygon.getCoordinate().getZ();
+
+            if (elevation.isNaN()) {
+                elevation = 100.00;
+            }
+
+            Point center = footprintPolygon.getCentroid();
+
+            Coordinate centerCoordinate = center.getCoordinate();
+
+            crs = StringUtils.isNumeric(crs) ? "EPSG:" + crs : crs;
+
+
             // coordinate in (longitude, latitude) format
             Coordinate transformedCoordinate = GeometryHandler.transformCoordinate(centerCoordinate, crs, CRS_4326);
 

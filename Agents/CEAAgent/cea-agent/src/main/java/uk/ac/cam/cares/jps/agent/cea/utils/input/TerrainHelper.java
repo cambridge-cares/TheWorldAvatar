@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.input;
 
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTReader;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryHandler;
 import uk.ac.cam.cares.jps.agent.cea.utils.geometry.GeometryQueryHelper;
@@ -7,11 +9,6 @@ import uk.ac.cam.cares.jps.agent.cea.utils.uri.OntologyURIHelper;
 
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
-
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -49,63 +46,64 @@ public class TerrainHelper {
 
         Double radius;
 
-        if (!surroundingCoordinates.isEmpty()) {
-            Envelope envelope = new Envelope();
-
-            for (Coordinate coordinate : surroundingCoordinates) {
-                envelope.expandToInclude(coordinate);
-            }
-            centerCoordinate = envelope.centre();
-
-            Double w = envelope.getWidth();
-            Double h = envelope.getHeight();
-
-            radius = w > h ? w/2 : h/2;
-
-            radius += 30;
-        }
-        else {
-            String envelopeCoordinates = new GeometryQueryHelper(uriHelper).getValue(uriString, "envelope", route);
-
-            Polygon envelopePolygon = (Polygon) GeometryHandler.toPolygon(envelopeCoordinates);
-
-            Point center = envelopePolygon.getCentroid();
-
-            centerCoordinate = center.getCoordinate();
-
-            radius = 160.0;
-        }
-
-        crs = StringUtils.isNumeric(crs) ? "EPSG:" + crs : crs;
-
-        List<byte[]> result = new ArrayList<>();
-
         try {
-            JSONArray sridResult = postgisClient.executeQuery(sridQuery);
+            if (!surroundingCoordinates.isEmpty()) {
+                Envelope envelope = new Envelope();
 
-            if (sridResult.isEmpty()) {return null;}
-            Integer postgisCRS = sridResult.getJSONObject(0).getInt("srid");
-
-            Coordinate coordinate = GeometryHandler.transformCoordinate(centerCoordinate, crs, "EPSG:" + postgisCRS);
-
-            // query for terrain data
-            String terrainQuery = getTerrainQuery(coordinate.getX(), coordinate.getY(), radius, postgisCRS, table);
-
-            try (Connection conn = postgisClient.getConnection()) {
-                Statement stmt = conn.createStatement();
-                ResultSet terrainResult = stmt.executeQuery(terrainQuery);
-                while(terrainResult.next()) {
-                    byte[] rasterBytes = terrainResult.getBytes("data");
-                    result.add(rasterBytes);
+                for (Coordinate coordinate : surroundingCoordinates) {
+                    envelope.expandToInclude(coordinate);
                 }
+                centerCoordinate = envelope.centre();
+
+                Double w = envelope.getWidth();
+                Double h = envelope.getHeight();
+
+                radius = w > h ? w/2 : h/2;
+
+                radius += 30;
+            }
+            else {
+                String polygon = new GeometryQueryHelper(uriHelper).getValue(uriString, "footprint", route);
+
+                Geometry envelopePolygon = GeometryHandler.toGeometry(polygon).getEnvelope();
+
+                Point center = envelopePolygon.getCentroid();
+
+                centerCoordinate = center.getCoordinate();
+
+                radius = 160.0;
             }
 
-            if (result.size() == 1) {
-                return result.get(0);
-            }
-            else{
-                return null;
-            }
+            crs = StringUtils.isNumeric(crs) ? "EPSG:" + crs : crs;
+
+            List<byte[]> result = new ArrayList<>();
+
+
+                JSONArray sridResult = postgisClient.executeQuery(sridQuery);
+
+                if (sridResult.isEmpty()) {return null;}
+                Integer postgisCRS = sridResult.getJSONObject(0).getInt("srid");
+
+                Coordinate coordinate = GeometryHandler.transformCoordinate(centerCoordinate, crs, "EPSG:" + postgisCRS);
+
+                // query for terrain data
+                String terrainQuery = getTerrainQuery(coordinate.getX(), coordinate.getY(), radius, postgisCRS, table);
+
+                try (Connection conn = postgisClient.getConnection()) {
+                    Statement stmt = conn.createStatement();
+                    ResultSet terrainResult = stmt.executeQuery(terrainQuery);
+                    while(terrainResult.next()) {
+                        byte[] rasterBytes = terrainResult.getBytes("data");
+                        result.add(rasterBytes);
+                    }
+                }
+
+                if (result.size() == 1) {
+                    return result.get(0);
+                }
+                else{
+                    return null;
+                }
         }
         catch (Exception e) {
             return null;
