@@ -1,0 +1,25 @@
+{
+    "name": "ukbaseworld",
+    "type": "postgres",
+    "typeName": "PostgreSQL",
+    "access": "proxy",
+    "url": "UKBASEWORLD-postgis:5432",
+    "user": "postgres",
+    "database": "",
+    "basicAuth": true,
+    "isDefault": true,
+    "jsonData": {
+        "connMaxLifetime": 14400,
+        "database": "postgres",
+        "maxIdleConns": 100,
+        "maxIdleConnsAuto": true,
+        "maxOpenConns": 100,
+        "postgresVersion": 1400,
+        "sslmode": "disable"
+    },
+    "secureJsonData": {
+        "basicAuthUser": "postgres",
+        "password": "PASSHERE"
+    },
+    "readOnly": false
+}

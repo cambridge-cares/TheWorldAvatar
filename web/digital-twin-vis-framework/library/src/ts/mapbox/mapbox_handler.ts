@@ -244,7 +244,6 @@ class MapHandler_Mapbox extends MapHandler {
             if(layer.metadata?.attribution === "CMCL") {
                 previousSources.add(layer.source);
                 MapHandler.MAP.removeLayer(layer.id);
-                console.log("REMOVED " + layer.id);
             }
         });
         previousSources.forEach(id => MapHandler.MAP.removeSource(id));
