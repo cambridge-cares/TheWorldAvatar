@@ -49,5 +49,8 @@ def preprocess_query(query: str):
 
 def postprocess_query(query: str):
     query = decode_special_chars(query)
-    query = AbstractQueryRep.from_string(query).compact2verbose().to_query_string()
+    try:
+        query = AbstractQueryRep.from_string(query).compact2verbose().to_query_string()
+    except:
+        query = None
     return query
