@@ -1,9 +1,11 @@
 package uk.ac.cam.cares.jps.agent.cea.utils.geometry;
 
+import org.cts.crs.CRSException;
 import org.json.JSONArray;
 
 import org.cts.CRSFactory;
 import org.cts.crs.CoordinateReferenceSystem;
+import org.cts.units.Unit;
 import org.cts.crs.GeodeticCRS;
 import org.cts.op.CoordinateOperation;
 import org.cts.op.CoordinateOperationFactory;
@@ -23,6 +25,14 @@ import java.util.List;
 import java.util.Set;
 
 public class GeometryHandler {
+    private static final Integer METER_EPSG = 3395;
+    private static final String METER_EPSG_STRING = "EPSG:" + METER_EPSG;
+
+    public static Geometry toGeometry(String geometryString) throws ParseException {
+        WKTReader wktReader = new WKTReader();
+
+        return wktReader.read(geometryString);
+    }
     /**
      * Extracts the footprint of the building from its ground surface geometries
      * @param surfaceArray JSONArray of the query results for ground surface geometries
@@ -38,7 +48,6 @@ public class GeometryHandler {
         LinearRing exteriorRing;
         GeometryFactory geometryFactory = new GeometryFactory();
         String geoType;
-        WKTReader wktReader = new WKTReader();
         String datatype = surfaceArray.getJSONObject(0).get("datatype").toString();
 
         if (surfaceArray.length() == 1) {
@@ -53,7 +62,7 @@ public class GeometryHandler {
             for (int i = 0; i < surfaceArray.length(); i++) {
                 if (datatype.contains("wktLiteral")) {
                     try {
-                        Polygon polygon = (Polygon) wktReader.read(surfaceArray.getJSONObject(i).get("geometry").toString());
+                        Polygon polygon = (Polygon) toGeometry(surfaceArray.getJSONObject(i).get("geometry").toString());
                         exteriors.add(geometryFactory.createPolygon(polygon.getExteriorRing()));
                         for (int j = 0; j < polygon.getNumInteriorRing(); j++) {
                             holes.add(polygon.getInteriorRingN(j));
@@ -72,11 +81,11 @@ public class GeometryHandler {
 
             geoType = merged.getGeometryType();
 
-            while (!geoType.equals("Polygon") || !deflatePolygon(merged, distance).getGeometryType().equals("Polygon")) {
+            while (!geoType.equals("Polygon") || !buffer(merged, distance).getGeometryType().equals("Polygon")) {
                 distance += increment;
 
                 for (int i = 0; i < exteriors.size(); i++) {
-                    Polygon temp = (Polygon) inflatePolygon(exteriors.get(i), distance);
+                    Polygon temp = (Polygon) buffer(exteriors.get(i), distance);
                     if (!temp.isValid()) {
                         temp = (Polygon) GeometryFixer.fix(temp);
                     }
@@ -88,7 +97,7 @@ public class GeometryHandler {
                 geoType = merged.getGeometryType();
             }
 
-            exteriorPolygon = (Polygon) deflatePolygon(merged, distance);
+            exteriorPolygon = (Polygon) buffer(merged, distance*-1);
 
             if (!exteriorPolygon.isValid()) {
                 exteriorPolygon = (Polygon) GeometryFixer.fix(exteriorPolygon);
@@ -106,13 +115,38 @@ public class GeometryHandler {
         }
     }
 
+    public static Geometry bufferPolygon(Geometry geom, String sourceCRS, Double distance) throws Exception {
+        Geometry transformed;
+        Integer source = Integer.parseInt(sourceCRS.replaceAll("[^0-9]", ""));
+
+        geom.setSRID(source);
+
+        if (!isCRSUnitMeter(sourceCRS)) {
+            transformed = transformGeometry(geom, sourceCRS, METER_EPSG_STRING);
+            transformed.setSRID(METER_EPSG);
+        }
+        else {
+            transformed = geom;
+        }
+
+        Geometry result = buffer(transformed, distance);
+
+        if (!isCRSUnitMeter(sourceCRS)) {
+            result = transformGeometry(result, METER_EPSG_STRING, sourceCRS);
+        }
+
+        result.setSRID(source);
+
+        return result;
+    }
+
     /**
      * Inflates a polygon
      * @param geom polygon geometry
      * @param distance buffer distance
      * @return inflated polygon
      */
-    public static Geometry inflatePolygon(Geometry geom, Double distance) {
+    public static Geometry buffer(Geometry geom, Double distance) {
         BufferParameters bufferParameters = new BufferParameters();
         bufferParameters.setEndCapStyle(BufferParameters.CAP_ROUND);
         bufferParameters.setJoinStyle(BufferParameters.JOIN_MITRE);
@@ -122,25 +156,30 @@ public class GeometryHandler {
     }
 
     /**
-     * Deflates a polygon
-     * @param geom polygon geometry
-     * @param distance buffer distance
-     * @return deflated polygon
+     * Transforms a geometry from sourceCRS to targetCRS
+     * @param geometry geometry object
+     * @param sourceCRS source CRS of geometry
+     * @param targetCRS target CRS for geometry transformation
+     * @return the transformed geometry in targetCRS
      */
-    public static Geometry deflatePolygon(Geometry geom, Double distance) {
-        BufferParameters bufferParameters = new BufferParameters();
-        bufferParameters.setEndCapStyle(BufferParameters.CAP_ROUND);
-        bufferParameters.setJoinStyle(BufferParameters.JOIN_MITRE);
-        Geometry buffered = BufferOp.bufferOp(geom, distance * -1, bufferParameters);
-        buffered.setUserData(geom.getUserData());
-        return buffered;
+    public static Geometry transformGeometry(Geometry geometry, String sourceCRS, String targetCRS) throws Exception {
+        Coordinate[] coordinates = geometry.getCoordinates();
+        Coordinate[] transformed = new Coordinate[coordinates.length];
+
+        for (int i = 0; i < coordinates.length; i++) {
+            transformed[i] = transformCoordinate(coordinates[i], sourceCRS, targetCRS);
+        }
+
+        GeometryFactory geometryFactory = new GeometryFactory();
+
+        return geometryFactory.createPolygon(transformed);
     }
 
     /**
      * Transform a coordinate from sourceCRS to targetCRS
      * @param coordinate coordinate to be transformed
-     * @param sourceCRS source crs of coordinate
-     * @param targetCRS target crs for coordinate transformation
+     * @param sourceCRS source CRS of coordinate
+     * @param targetCRS target CRS for coordinate transformation
      * @return the transformed coordinate in targetCRS
      */
     public static Coordinate transformCoordinate(Coordinate coordinate, String sourceCRS, String targetCRS) throws Exception {
@@ -164,5 +203,25 @@ public class GeometryHandler {
         }
 
         return new Coordinate(transform[0], transform[1], transform[2]);
+    }
+
+    /**
+     * Checks whether a CRS has meter as the unit of measurement
+     * @param crs CRS string
+     * @return true if crs has meter as the unit of measurement, false otherwise
+     */
+    public static boolean isCRSUnitMeter(String crs) throws CRSException {
+        CRSFactory crsFactory = new CRSFactory();
+        RegistryManager registryManager = crsFactory.getRegistryManager();
+        registryManager.addRegistry(new EPSGRegistry());
+
+        Unit unit = crsFactory.getCRS(crs).getCoordinateSystem().getUnit(0);
+
+        if (unit.getName().equals(Unit.METER)) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }
