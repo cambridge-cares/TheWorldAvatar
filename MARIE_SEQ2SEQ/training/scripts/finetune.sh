@@ -14,5 +14,4 @@ python finetune.py \
     --eval_steps 10 \
     --load_best_model_at_end \
     --save_total_limit 2 \
-    --save_strategy no \
     --report_to wandb 
