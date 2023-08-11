@@ -18,7 +18,8 @@ class ModelArguments:
 
 @dataclass
 class DatasetArguments:
-    data_path: str
+    train_data_path: Optional[str] = field(default=None)
+    eval_data_path: Optional[str] = field(default=None)
     source_max_len: int = field(
         default=512,
         metadata={"help": "Maximum source sequence length. Sequences will be right padded (and possibly truncated)."},

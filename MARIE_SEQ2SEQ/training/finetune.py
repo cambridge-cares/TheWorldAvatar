@@ -29,11 +29,6 @@ def train():
 
     model, tokenizer = get_model_and_tokenizer(model_args)
 
-    dataset = Dataset.from_json(data_args.data_path)
-    dataset = dataset.map(
-        preprocess_examples, batched=True, remove_columns=[x for x in dataset.column_names if x not in ["source", "target"]]
-    )
-
     def _tokenize(examples):
         model_inputs = tokenizer(
             examples["source"], max_length=data_args.source_max_len, truncation=True
@@ -43,17 +38,26 @@ def train():
         )
         model_inputs["labels"] = labels["input_ids"]
         return model_inputs
+    
+    def _get_tokenized_dataset(data_path: str):
+        dataset = Dataset.from_json(data_path)
+        dataset = dataset.map(
+            preprocess_examples, batched=True, remove_columns=[x for x in dataset.column_names if x not in ["source", "target"]]
+        )
+        return dataset.map(
+            _tokenize, batched=True, remove_columns=["source", "target"]
+        )
 
-    tokenized_ds = dataset.map(
-        _tokenize, batched=True, remove_columns=["source", "target"]
-    )
+    train_dataset = _get_tokenized_dataset(data_args.train_data_path)
+    eval_dataset = _get_tokenized_dataset(data_args.eval_data_path)
 
     data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=model)
 
     trainer = Seq2SeqTrainer(
         model=model,
         args=train_args,
-        train_dataset=tokenized_ds,
+        train_dataset=train_dataset,
+        eval_dataset=eval_dataset,
         tokenizer=tokenizer,
         data_collator=data_collator,
     )
