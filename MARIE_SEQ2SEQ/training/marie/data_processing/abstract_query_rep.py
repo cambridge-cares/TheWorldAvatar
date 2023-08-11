@@ -195,13 +195,14 @@ class AbstractQueryRep:
                         "Open bracket is missing from FITLER clause: "
                         + query[start_idx:]
                     )
-
-                ptr = advance_idx_to_kw(query, ")", ptr)
-                if ptr >= len(query):
-                    raise ValueError(
-                        "Close bracket is missing from FILTER clause: "
-                        + query[start_idx:]
-                    )
+                
+                open_brac_num = 1
+                while open_brac_num > 0:
+                    ptr += 1
+                    if query[ptr] == "(":
+                        open_brac_num += 1
+                    elif query[ptr] == ")":
+                        open_brac_num -= 1
 
                 ptr += 1
             else:  # assume it's the triple pattern

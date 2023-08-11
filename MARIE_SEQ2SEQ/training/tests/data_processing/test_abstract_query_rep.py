@@ -4,23 +4,46 @@ from marie.data_processing.abstract_query_rep import AbstractQueryRep
 
 
 class TestQueryParser:
-    def test_fromString(self):
-        query_string = (
-            "SELECT DISTINCT ?MolecularWeightValue\n"
-            "WHERE {\n"
-            "    ?SpeciesIRI ?hasIdentifier ?species .\n"
-            '    FILTER( ?species = "C22H29FO4")\n'
-            "    ?SpeciesIRI os:hasMolecularWeight ?MolecularWeightValue .\n"
-            "}"
-        )
-        expected = AbstractQueryRep(
-            result_clause="SELECT DISTINCT ?MolecularWeightValue",
-            where_clause=[
-                "?SpeciesIRI ?hasIdentifier ?species .",
-                'FILTER( ?species = "C22H29FO4")',
-                "?SpeciesIRI os:hasMolecularWeight ?MolecularWeightValue .",
-            ],
-        )
+    @pytest.mark.parametrize(
+        "query_string, expected",
+        [
+            (
+                (
+                    "SELECT DISTINCT ?MolecularWeightValue\n"
+                    "WHERE {\n"
+                    "    ?SpeciesIRI ?hasIdentifier ?species .\n"
+                    '    FILTER( ?species = "C22H29FO4")\n'
+                    "    ?SpeciesIRI os:hasMolecularWeight ?MolecularWeightValue .\n"
+                    "}"
+                ),
+                AbstractQueryRep(
+                    result_clause="SELECT DISTINCT ?MolecularWeightValue",
+                    where_clause=[
+                        "?SpeciesIRI ?hasIdentifier ?species .",
+                        'FILTER( ?species = "C22H29FO4")',
+                        "?SpeciesIRI os:hasMolecularWeight ?MolecularWeightValue .",
+                    ],
+                ),
+            ),
+            (
+                "SELECT DISTINCT ?IUPACNameValue\n"
+                "WHERE {\n"
+                "    ?SpeciesIRI ?hasIdentifier ?species.\n "
+                '    FILTER( ?species = "InChI=1S/C6H8O3/c1-6(2)3-9-5(8)4(6)7/h3H2,1-2H3")'
+                "    ?SpeciesIRI os:hasIUPACName ?IUPACNameValue."
+                "}",
+                AbstractQueryRep(
+                    result_clause="SELECT DISTINCT ?IUPACNameValue",
+                    where_clause=[
+                        "?SpeciesIRI ?hasIdentifier ?species.",
+                        'FILTER( ?species = "InChI=1S/C6H8O3/c1-6(2)3-9-5(8)4(6)7/h3H2,1-2H3")',
+                        "?SpeciesIRI os:hasIUPACName ?IUPACNameValue.",
+                    ],
+                ),
+            ),
+        ],
+    )
+    def test_fromString(self, query_string, expected):
         assert AbstractQueryRep.from_string(query_string) == expected
 
     def test_toQueryString(self):

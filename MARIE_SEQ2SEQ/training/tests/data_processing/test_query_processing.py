@@ -13,11 +13,11 @@ class TestQueryUtils:
         [
             (
                 "SELECT *\nWHERE { ?s ?p ?o }\n",
-                "SELECT *\nWHERE  op_br  var_s var_p var_o  cl_br \n",
+                "SELECT *\nWHERE  op_br   var_s  var_p  var_o  cl_br \n",
             ),
             (
                 "SELECT *\nWHERE { ?s ?p ?o FILTER()}\n",
-                "SELECT *\nWHERE  op_br  var_s var_p var_o FILTER() cl_br \n",
+                "SELECT *\nWHERE  op_br   var_s  var_p  var_o FILTER() cl_br \n",
             ),
         ],
     )
