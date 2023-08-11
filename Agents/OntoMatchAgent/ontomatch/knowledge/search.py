@@ -2,15 +2,20 @@ import logging
 
 import rdflib
 
+
+# municipalities_germany.ttl file must be copied to the correct path
+#PATH_MUNICIPALITIES_GERMANY = './data/power_plant_DEU/municipalities_germany.ttl'
+PATH_MUNICIPALITIES_GERMANY = './tests/data/municipalities_germany.ttl'
+
 class Agent():
 
     def __init__(self):
         logging.info('initializing search agent')
-        addr = './data/power_plant_DEU/municipalities_germany.ttl'
+        addr = PATH_MUNICIPALITIES_GERMANY
         properties = ['rdfs:label', 'sdo:postalCode']
         self.index = create_index(addr, 'turtle', properties)
 
-    def search(self, string: str) -> list[str]:
+    def search(self, string: str) -> list:
         return self.index[str]
 
 

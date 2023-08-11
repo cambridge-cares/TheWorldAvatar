@@ -1,0 +1,19 @@
+{
+    "ServiceSpec": {
+        "Name": "smart-meter-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "smart-meter-agent:1.0.0",
+                "Env": [
+                    "LOG4J_FORMAT_MSG_NO_LOOKUPS=true"
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "rest": {
+            "url": "http://localhost:8080/smart-meter-agent/",
+            "externalPath": "/smart-meter-agent/"
+        }
+    }
+}

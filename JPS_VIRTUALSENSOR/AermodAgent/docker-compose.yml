@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   aermod-agent:
-    image: docker.cmclinnovations.com/aermod-agent:1.0.1
+    image: ghcr.io/cambridge-cares/aermod-agent:1.2.3
     deploy:
       mode: replicated
       replicas: 1
@@ -11,6 +11,9 @@ services:
     environment:
       - STACK_NAME=${STACK_NAME}
       - PYTHON_SERVICE_URL=http://${STACK_NAME}-python-service:5000/getAermodGeoJSON
+      - PYTHON_SERVICE_ELEVATION_URL=http://${STACK_NAME}-python-service:5000/getElevationGeoJSON
+      - AERMAP_EXE=/root/aermod/aermap
+      - BPIPPRM_EXE=/root/aermod/bpipprm
       - AERMET_EXE=/root/aermod/aermet # need to match Dockerfile
       - AERMOD_EXE=/root/aermod/aermod # need to match Dockerfile
       - WEATHER_AGENT=http://${STACK_NAME}-weather-agent:8080/WeatherAgent/UpdateStation
@@ -20,8 +23,10 @@ services:
       - SIMULATION_DIR=/root/aermod/simulations
       - FILE_SERVER_URL=http://${STACK_NAME}-file-server:8080/FileServer/
       - DISPERSION_STYLE_NAME=dispersion_style
+      - SOURCE_LAYER=source_layer
       - VIS_FOLDER=/vis_data
       - GEOSERVER_URL=http://localhost:3838/geoserver # specifying here because WMS endpoint does not work with container name
+      - ELEVATION_TABLE=elevation
     configs:
       - postgis
       - blazegraph

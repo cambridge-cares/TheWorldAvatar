@@ -37,7 +37,6 @@ public class BMSQueryAgentIntegrationTest {
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
-    private BMSQueryAgentLauncher launcher;
     private BMSQueryAgent agent;
     private static CloseableHttpClient httpClient;
 
@@ -55,11 +54,10 @@ public class BMSQueryAgentIntegrationTest {
         httpClient = HttpClients.createDefault();
         createNewNameSpace();
 
-        launcher = new BMSQueryAgentLauncher();
-
-        RemoteStoreClient rsClient = new RemoteStoreClient(getBlazegraphEndPoint(), getBlazegraphEndPoint());
+        RemoteStoreClient rsClient = new RemoteStoreClient();
+        rsClient.setQueryEndpoint(getNamespaceUrl("lab"));
         agent = new BMSQueryAgent();
-        agent.setRSClient(rsClient, Arrays.asList(getNamespaceUrl("bms"), getNamespaceUrl("lab")));
+        agent.setRSClient(rsClient);
 
 //        postNewData("lab", "");
     }

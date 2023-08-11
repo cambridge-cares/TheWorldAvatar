@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.base.converter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -47,6 +48,7 @@ public class TBoxGeneration implements ITBoxGeneration {
 	static Logger logger = org.slf4j.LoggerFactory.getLogger(TBoxGeneration.class);
 	ITBoxManagement iTBoxManagement;
 	public static String owlFilePath;
+	public static String texFilePath;
 	public static final String HAS_IRI = "https://www.w3.org/2007/05/powder-s#hasIRI";
 	public static final String VERSION_INFO = "http://www.w3.org/2002/07/owl#versionInfo";
 	public static final String RDFS_COMMENT = "http://www.w3.org/2000/01/rdf-schema#comment";
@@ -111,11 +113,13 @@ public class TBoxGeneration implements ITBoxGeneration {
 		}
 		logger.info("Ontokin TBox generator started running...");
 		owlFilePath = csvFileNamePlusPath.replace(".csv", ".owl");
+		texFilePath = csvFileNamePlusPath.replace(".csv", ".tex");
 		iTBoxManagement = new TBoxManagement();
 		try {
 			iTBoxManagement.init();
 			readCSVTemplate(csvFileNamePlusPath);
 			iTBoxManagement.saveOntology(owlFilePath);
+			DescriptionLogicGenerator.generateDL(new File(owlFilePath), texFilePath);
 			logger.info("Ontokin TBox generation FINISHED.");
 		} catch (IOException e) {
 			logger.error("IOException occured.");

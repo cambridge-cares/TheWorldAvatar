@@ -45,6 +45,9 @@ abstract class SearchHandler {
 
             // Temporarily turn of location clustering
             this.turnOffClustering();
+
+            // Cache any existing filters
+            this.cacheExisting();
         }
 
         let sidePanel = document.getElementById("sidePanel");
@@ -75,7 +78,7 @@ abstract class SearchHandler {
         // Build label
         let finderLabel = document.createElement("label");
         finderLabel.id = "finderLabel";
-        finderLabel.innerHTML = "Find locations where";
+        finderLabel.innerHTML = "Find locations where:";
         finderContainer.appendChild(finderLabel);
     
         // Build drop down
@@ -141,10 +144,14 @@ abstract class SearchHandler {
         let self = this;
         let finderContainer = document.getElementById("finderContainer");
 
-        // Cache the selected property
-        this.allSearchProperties.forEach(property => {
-            if(property["property"] === value) this.property = property;
-        })
+        if(value == null) {
+            this.property = this.allSearchProperties[0];
+        } else {
+            // Cache the selected property
+            this.allSearchProperties.forEach(property => {
+                if(property["property"] === value) this.property = property;
+            })
+        }
 
         // Initialise the range select if not done before
         let rangeSelect = document.getElementById("finderRangeSelect");
@@ -229,23 +236,25 @@ abstract class SearchHandler {
      * before calling implementation specific methods.
      */
     private startSearch() {
-        switch(this.property["type"]) {
+        let type = this.property["type"];
+        
+        switch(type) {
             case "string":
             case "number":  {
                 let finderField = document.getElementById("finderField") as HTMLInputElement;
                 if(finderField == null) return;
         
                 let searchTerm = finderField.value;
-                this.runSearch(searchTerm);
+                this.runSearch(searchTerm, type);
             }
             break;
        
             case "boolean": {
                 let rangeSelect = document.getElementById("finderRangeSelect") as HTMLInputElement;
                 if(rangeSelect.value === "true") {
-                    this.runSearch(true);
+                    this.runSearch(true, type);
                 } else {
-                    this.runSearch(false);
+                    this.runSearch(false, type);
                 }
             }
             break;
@@ -253,11 +262,17 @@ abstract class SearchHandler {
     }
 
     /**
+     * Cache any existing filters when a search starts.
+     */
+    public abstract cacheExisting() ;
+
+    /**
      * Execute the search functionality with the mapping library.
      * 
      * @param searchTerm string, number, or boolean
+     * @param type serach term type
      */
-    public abstract runSearch(searchTerm: string | number | boolean);
+    public abstract runSearch(searchTerm, type);
 
     /**
      * Cancel the current search.

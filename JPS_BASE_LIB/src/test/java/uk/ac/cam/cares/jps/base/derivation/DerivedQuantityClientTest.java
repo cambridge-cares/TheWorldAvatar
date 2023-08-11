@@ -17,9 +17,12 @@ import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
@@ -65,34 +68,25 @@ public class DerivedQuantityClientTest {
 	private String derivedAgentURL2 = "http://localhost:8080/derivedagent2";
 	private String derivedAgentIRI3 = "http://derivedagent3";
 	private String derivedAgentURL3 = "http://localhost:8080/derivedagent3";
+	private String derivedAgentIRI4 = "http://derivedagent4";
+	private String derivedAgentURL4 = "http://localhost:8080/derivedagent4";
 
 	private String entity3 = "http://entity3";
 	private String entity4 = "http://entity4";
 	private String entity5 = "http://entity5";
-	private String p_agent = "http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#";
 	private String p_time = "http://www.w3.org/2006/time#";
-	private String OntoAgent_Service = p_agent + "Service";
-	private String OntoAgent_Operation = p_agent + "Operation";
-	private String OntoAgent_MessageContent = p_agent + "MessageContent";
-	private String OntoAgent_MessagePart = p_agent + "MessagePart";
-	private String hasOperation = p_agent + "hasOperation";
-	private String hasHttpUrl = p_agent + "hasHttpUrl";
-	private String hasInput = p_agent + "hasInput";
-	private String hasOutput = p_agent + "hasOutput";
-	private String hasMandatoryPart = p_agent + "hasMandatoryPart";
-	private String hasType = p_agent + "hasType";
-	private String derivedAgentOperation = "http://derivedagent1/Operation";
-	private String derivedAgentInputMsgCont = "http://derivedagent1/MsgContInput";
-	private String derivedAgentMsgPart1 = "http://derivedagent1/InputMsgPart1";
-	private String derivedAgentMsgPart2 = "http://derivedagent1/InputMsgPart2";
-	private String input1RdfType = "http://input1/rdftype";
-	private String input2RdfType = "http://input2/rdftype";
+	private String input1RdfType = createDummyRdfType(input1);
+	private String input2RdfType = createDummyRdfType(input2);
 	private String input1ParentRdfType = "http://input1/parent_rdftype";
 	private String input2ParentRdfType = "http://input2/parent_rdftype";
-	private String entity1RdfType = "http://entity1/rdftype";
-	private String entity2RdfType = "http://entity2/rdftype";
-	private String derivedAgentOperation2 = "http://derivedagent2/Operation";
 	private List<String> allInstances = Arrays.asList(input1, input2, entity1, entity2, entity3, entity4, entity5);
+	private Map<String, List<String>> allowedExistingInputsMap = new HashMap<String, List<String>>() {
+		{
+			put(derivedAgentIRI2, Arrays.asList(entity1, entity2));
+			put(derivedAgentIRI3, Arrays.asList(entity2, entity3));
+			put(derivedAgentIRI4, Arrays.asList(entity4));
+		}
+	};
 
 	@Before
 	public void initialiseSparqlClient() {
@@ -345,18 +339,8 @@ public class DerivedQuantityClientTest {
 		// add triples about agent2 that monitors the derivation2 which is one
 		// derivation downstream compared to the derivation1
 		// agent2 takes some entities from the output of the derivation1 as inputs
-		testKG.add(ResourceFactory.createResource(derivedAgentIRI2), ResourceFactory.createProperty(hasOperation),
-				ResourceFactory.createResource(derivedAgentOperation));
-		testKG.add(ResourceFactory.createResource(derivedAgentOperation), ResourceFactory.createProperty(hasInput),
-				ResourceFactory.createResource(derivedAgentInputMsgCont));
-		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont),
-				ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart1));
-		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont),
-				ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart2));
-		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart1), ResourceFactory.createProperty(hasType),
-				ResourceFactory.createResource(input1ParentRdfType));
-		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart2), ResourceFactory.createProperty(hasType),
-				ResourceFactory.createResource(input2ParentRdfType));
+		devClient.createOntoAgentInstance(derivedAgentIRI2, derivedAgentURL3,
+				Arrays.asList(input1ParentRdfType, input2ParentRdfType), Arrays.asList());
 
 		// add triples about rdf:type and rdfs:subClassOf properties
 		testKG.add(ResourceFactory.createResource(entity1), RDF.type, ResourceFactory.createResource(input1RdfType));
@@ -415,18 +399,8 @@ public class DerivedQuantityClientTest {
 		// add triples about agent2 that monitors the derivation2 which is one
 		// derivation downstream compared to the derivation1
 		// agent2 takes some entities from the output of the derivation1 as inputs
-		testKG.add(ResourceFactory.createResource(derivedAgentIRI2), ResourceFactory.createProperty(hasOperation),
-				ResourceFactory.createResource(derivedAgentOperation));
-		testKG.add(ResourceFactory.createResource(derivedAgentOperation), ResourceFactory.createProperty(hasInput),
-				ResourceFactory.createResource(derivedAgentInputMsgCont));
-		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont),
-				ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart1));
-		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont),
-				ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart2));
-		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart1), ResourceFactory.createProperty(hasType),
-				ResourceFactory.createResource(input1ParentRdfType));
-		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart2), ResourceFactory.createProperty(hasType),
-				ResourceFactory.createResource(input2ParentRdfType));
+		devClient.createOntoAgentInstance(derivedAgentIRI2, derivedAgentURL2,
+				Arrays.asList(input1ParentRdfType, input2ParentRdfType), Arrays.asList());
 
 		// add triples about rdf:type and rdfs:subClassOf properties
 		testKG.add(ResourceFactory.createResource(entity1), RDF.type, ResourceFactory.createResource(input1RdfType));
@@ -493,18 +467,8 @@ public class DerivedQuantityClientTest {
 		// add triples about agent2 that monitors the derivation2 which is one
 		// derivation downstream compared to the derivation1
 		// agent2 takes some entities from the output of the derivation1 as inputs
-		testKG.add(ResourceFactory.createResource(derivedAgentIRI2), ResourceFactory.createProperty(hasOperation),
-				ResourceFactory.createResource(derivedAgentOperation));
-		testKG.add(ResourceFactory.createResource(derivedAgentOperation), ResourceFactory.createProperty(hasInput),
-				ResourceFactory.createResource(derivedAgentInputMsgCont));
-		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont),
-				ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart1));
-		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont),
-				ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart2));
-		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart1), ResourceFactory.createProperty(hasType),
-				ResourceFactory.createResource(input1ParentRdfType));
-		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart2), ResourceFactory.createProperty(hasType),
-				ResourceFactory.createResource(input2ParentRdfType));
+		devClient.createOntoAgentInstance(derivedAgentIRI2, derivedAgentURL2,
+				Arrays.asList(input1ParentRdfType, input2ParentRdfType), Arrays.asList());
 
 		// add triples about rdf:type and rdfs:subClassOf properties
 		testKG.add(ResourceFactory.createResource(entity1), RDF.type, ResourceFactory.createResource(input1RdfType));
@@ -744,7 +708,7 @@ public class DerivedQuantityClientTest {
 	public void testValidateDerived() {
 		// initialise rdf:type of all instances, so that derivations can be cached
 		OntModel testKG = mockClient.getKnowledgeBase();
-		initRdfType(testKG);
+		initRdfType(testKG, allInstances);
 		// also need to initialise ontoagent instance for agents, so that derivations can be cached
 		devClient.createOntoAgentInstance(derivedAgentIRI, derivedAgentURL, Arrays.asList("http://i_1"), Arrays.asList("http://o_1"));
 		devClient.createOntoAgentInstance(derivedAgentIRI2, derivedAgentURL2, Arrays.asList("http://i_2"), Arrays.asList("http://o_2"));
@@ -905,7 +869,7 @@ public class DerivedQuantityClientTest {
 
 		// initialise rdf:type of all instances, so that derivations can be cached
 		OntModel testKG = mockClient.getKnowledgeBase();
-		initRdfType(testKG);
+		initRdfType(testKG, allInstances);
 		// also need to initialise ontoagent instance for agents, so that derivations can be cached
 		devClient.createOntoAgentInstance(derivedAgentIRI, derivedAgentURL, Arrays.asList("http://i_1"), Arrays.asList("http://o_1"));
 		devClient.createOntoAgentInstance(derivedAgentIRI2, derivedAgentURL2, Arrays.asList("http://i_2"), Arrays.asList("http://o_2"));
@@ -947,7 +911,7 @@ public class DerivedQuantityClientTest {
 		devClient.createOntoAgentInstance(
 				derivedAgentIRI, derivedAgentURL,
 				Arrays.asList(input1RdfType, input2RdfType),
-				Arrays.asList(entity1RdfType, entity2RdfType));
+				Arrays.asList());
 		OntModel testKG = mockClient.getKnowledgeBase();
 
 		// case 1: standard derivation
@@ -1039,18 +1003,7 @@ public class DerivedQuantityClientTest {
 	public void testRetrieveAgentInputIRIs() {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		// add triples about agent
-		testKG.add(ResourceFactory.createResource(derivedAgentIRI), ResourceFactory.createProperty(hasOperation),
-				ResourceFactory.createResource(derivedAgentOperation));
-		testKG.add(ResourceFactory.createResource(derivedAgentOperation), ResourceFactory.createProperty(hasInput),
-				ResourceFactory.createResource(derivedAgentInputMsgCont));
-		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont),
-				ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart1));
-		testKG.add(ResourceFactory.createResource(derivedAgentInputMsgCont),
-				ResourceFactory.createProperty(hasMandatoryPart), ResourceFactory.createResource(derivedAgentMsgPart2));
-		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart1), ResourceFactory.createProperty(hasType),
-				ResourceFactory.createResource(input1));
-		testKG.add(ResourceFactory.createResource(derivedAgentMsgPart2), ResourceFactory.createProperty(hasType),
-				ResourceFactory.createResource(input2));
+		devClient.createOntoAgentInstance(derivedAgentIRI, derivedAgentURL, inputs, Arrays.asList());
 		// create async derivation
 		String derivationIRI = devClient.createAsyncDerivation(entities, derivedAgentIRI, inputs, false);
 		String statusIRI = devClient.sparqlClient.markAsRequested(derivationIRI);
@@ -1115,10 +1068,12 @@ public class DerivedQuantityClientTest {
 
 		// initialise triples for test
 		OntModel testKG = mockClient.getKnowledgeBase();
-		List<String> newDerivedIRI = initForCleanUpTests(testKG);
+		List<String> existingOutputs = Arrays.asList(entity1, entity2);
+		List<String> newOutputsType = Arrays.asList(createDummyRdfType(entity1), createDummyRdfType(entity2));
+		List<String> newDerivedIRI = initForCleanUpTests(testKG, existingOutputs, newOutputsType).keySet().stream().collect(Collectors.toList());
 
 		// create derivation and prepare it for clean up
-		String derivation = devClient.createAsyncDerivation(entities, derivedAgentIRI, inputs, true);
+		String derivation = devClient.createAsyncDerivation(existingOutputs, derivedAgentIRI, inputs, true);
 		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
 		inputs.stream().forEach(i -> {
@@ -1151,7 +1106,7 @@ public class DerivedQuantityClientTest {
 					ResourceFactory.createResource(derivation)));
 		}
 		// old outputs should be deleted
-		for (String iri : entities) {
+		for (String iri : existingOutputs) {
 			Assert.assertNull(testKG.getIndividual(iri));
 		}
 		// timestamp should be the same as the one assigned to retrievedInputsAt
@@ -1168,7 +1123,9 @@ public class DerivedQuantityClientTest {
 
 		// initialise triples for test
 		OntModel testKG = mockClient.getKnowledgeBase();
-		List<String> newDerivedIRI = initForCleanUpTests(testKG);
+		List<String> existingOutputs = Arrays.asList();
+		List<String> newOutputsType = Arrays.asList(createDummyRdfType(entity1), createDummyRdfType(entity2));
+		List<String> newDerivedIRI = initForCleanUpTests(testKG, existingOutputs, newOutputsType).keySet().stream().collect(Collectors.toList());
 
 		// create derivation and prepare it for clean up
 		String derivation = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI, inputs);
@@ -1203,10 +1160,7 @@ public class DerivedQuantityClientTest {
 					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
 					ResourceFactory.createResource(derivation)));
 		}
-		// no old outputs were appended to derivation, so they should still exist
-		for (String iri : entities) {
-			Assert.assertNotNull(testKG.getIndividual(iri));
-		}
+		// no old outputs were appended to derivation, so nothing to check here (we are not instantiating them anymore)
 		// timestamp should be the same as the one assigned to retrievedInputsAt
 		long newtime = testKG.getIndividual(derivation)
 				.getProperty(ResourceFactory.createProperty(p_time + "hasTime")).getResource()
@@ -1222,12 +1176,14 @@ public class DerivedQuantityClientTest {
 
 		// initialise triples for test
 		OntModel testKG = mockClient.getKnowledgeBase();
-		List<String> newDerivedIRI = initForCleanUpTests(testKG);
+		List<String> existingOutputs = Arrays.asList(entity1, entity2);
+		List<String> newOutputsType = Arrays.asList(createDummyRdfType(entity1), createDummyRdfType(entity2));
+		List<String> newDerivedIRI = initForCleanUpTests(testKG, existingOutputs, newOutputsType).keySet().stream().collect(Collectors.toList());
 
 		// create derivation and prepare it for clean up
-		String derivation = devClient.createAsyncDerivation(entities, derivedAgentIRI, inputs, true);
-		String derivation2 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, entities);
-		String derivation3 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, entities);
+		String derivation = devClient.createAsyncDerivation(existingOutputs, derivedAgentIRI, inputs, true);
+		String derivation2 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, existingOutputs);
+		String derivation3 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, existingOutputs);
 		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
 		inputs.stream().forEach(i -> {
@@ -1266,7 +1222,7 @@ public class DerivedQuantityClientTest {
 					ResourceFactory.createResource(iri)));
 		}
 		// old outputs should be deleted
-		for (String iri : entities) {
+		for (String iri : existingOutputs) {
 			Assert.assertNull(testKG.getIndividual(iri));
 		}
 		// timestamp should be the same as the one assigned to retrievedInputsAt
@@ -1283,7 +1239,9 @@ public class DerivedQuantityClientTest {
 
 		// initialise triples for test
 		OntModel testKG = mockClient.getKnowledgeBase();
-		List<String> newDerivedIRI = initForCleanUpTests(testKG);
+		List<String> existingOutputs = Arrays.asList();
+		List<String> newOutputsType = Arrays.asList(createDummyRdfType(entity1), createDummyRdfType(entity2));
+		List<String> newDerivedIRI = initForCleanUpTests(testKG, existingOutputs, newOutputsType).keySet().stream().collect(Collectors.toList());
 
 		// create derivation and prepare it for clean up
 		String derivation = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI, inputs);
@@ -1326,10 +1284,7 @@ public class DerivedQuantityClientTest {
 					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
 					ResourceFactory.createResource(iri)));
 		}
-		// no old outputs were appended to derivation, so they should still exist
-		for (String iri : entities) {
-			Assert.assertNotNull(testKG.getIndividual(iri));
-		}
+		// no old outputs were appended to derivation, so nothing to check here (we are not instantiating them anymore)
 		// direct connection between derivation2/derivation3 and derivation should be
 		// deleted
 		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivation2),
@@ -1348,24 +1303,28 @@ public class DerivedQuantityClientTest {
 
 	@Test
 	public void testCleanUpFinishedDerivationUpdate_Case5() {
-		// case 5: normal and directed downstream derivation co-exist (which should not
-		// exist if the derivations were created correctly by developer, but just in
+		// case 5: normal and directed downstream derivation co-exist when all outputs are presented
+		// (which should not exist if the derivations were created correctly by developer, but just in
 		// case)
 
 		// initialise triples for test
 		OntModel testKG = mockClient.getKnowledgeBase();
-		List<String> newDerivedIRI = initForCleanUpTests(testKG);
+		List<String> existingOutputs = Arrays.asList(entity1, entity2);
+		List<String> newOutputsType = Arrays.asList(createDummyRdfType(entity1), createDummyRdfType(entity2));
+		List<String> newDerivedIRI = initForCleanUpTests(testKG, existingOutputs, newOutputsType).keySet().stream().collect(Collectors.toList());
 
 		// create derivation and prepare it for clean up
-		String derivation = devClient.createAsyncDerivation(entities, derivedAgentIRI, inputs, true);
-		String derivation2 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, entities);
+		String derivation = devClient.createAsyncDerivation(existingOutputs, derivedAgentIRI, inputs, true);
+		String derivation2 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, existingOutputs);
 		// NOTE here the developer should create derivation3 with entities (only entity1
 		// and entity2) as its inputs, but NOT derivation - this is in fact duplicated
 		// declaration
 		// here we just create it anyway, and see if the framework is able to handle the
 		// situation (correctly update after Finished)
+		List<String> existingOutputsWithDerivation = new ArrayList<>(existingOutputs);
+		existingOutputsWithDerivation.add(derivation);
 		String derivation3 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2,
-				Arrays.asList(derivation, entity1, entity2));
+				existingOutputsWithDerivation);
 		String statusIRI = testKG.getProperty(ResourceFactory.createResource(derivation),
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "hasStatus")).getObject().toString();
 		inputs.stream().forEach(i -> {
@@ -1408,7 +1367,7 @@ public class DerivedQuantityClientTest {
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
 				ResourceFactory.createResource(derivation)));
 		// old outputs should be deleted
-		for (String iri : entities) {
+		for (String iri : existingOutputs) {
 			Assert.assertNull(testKG.getIndividual(iri));
 		}
 		// timestamp should be the same as the one assigned to retrievedInputsAt
@@ -1419,9 +1378,254 @@ public class DerivedQuantityClientTest {
 		Assert.assertEquals(retrievedInputsAt, newtime);
 	}
 
+	@Test
+	public void testCleanUpSyncNewOutputs() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		// from no outputs to below five cases:
+		// case 1: no outputs
+		prepareAndTestCleanUpSyncNoOutputs(testKG, new ArrayList<>());
+
+		// case 2: entity3
+		prepareAndTestCleanUpSyncNoOutputs(testKG, createDummyRdfType(Arrays.asList(entity3)));
+
+		// case 3: entity2, entity4
+		prepareAndTestCleanUpSyncNoOutputs(testKG, createDummyRdfType(Arrays.asList(entity2, entity4)));
+
+		// case 4: entity1, entity2, entity3, entity5
+		prepareAndTestCleanUpSyncNoOutputs(testKG,
+				createDummyRdfType(Arrays.asList(entity1, entity2, entity3, entity5)));
+
+		// case 5: entity2, entity3
+		prepareAndTestCleanUpSyncNoOutputs(testKG, createDummyRdfType(Arrays.asList(entity2, entity3)));
+	}
+
+	@Test
+	public void testCleanUpFinishedDerivationUpdate_NoOutputs() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		// case 1: no outputs <--> entity3
+		prepareAndTestCleanUpNoOutputs(testKG, new ArrayList<>(), Arrays.asList(createDummyRdfType(entity3)));
+		prepareAndTestCleanUpNoOutputs(testKG, Arrays.asList(entity3), new ArrayList<>());
+
+		// case 2: no outputs <--> entity2, entity4
+		prepareAndTestCleanUpNoOutputs(testKG, new ArrayList<>(), createDummyRdfType(Arrays.asList(entity2, entity4)));
+		prepareAndTestCleanUpNoOutputs(testKG, Arrays.asList(entity2, entity4), new ArrayList<>());
+
+		// case 3: no outputs <--> entity1, entity2, entity3, entity5
+		prepareAndTestCleanUpNoOutputs(testKG, new ArrayList<>(),
+				createDummyRdfType(Arrays.asList(entity1, entity2, entity3, entity5)));
+		prepareAndTestCleanUpNoOutputs(testKG,
+				Arrays.asList(entity1, entity2, entity3, entity5), new ArrayList<>());
+
+		// case 4: no outputs <--> entity2, entity3
+		prepareAndTestCleanUpNoOutputs(testKG, new ArrayList<>(), createDummyRdfType(Arrays.asList(entity2, entity3)));
+		prepareAndTestCleanUpNoOutputs(testKG, Arrays.asList(entity2, entity3), new ArrayList<>());
+
+		// case 5: entity3 <--> entity2, entity4
+		prepareAndTestCleanUpNoOutputs(testKG, Arrays.asList(entity3),
+				createDummyRdfType(Arrays.asList(entity2, entity4)));
+		prepareAndTestCleanUpNoOutputs(testKG, Arrays.asList(entity2, entity4),
+				Arrays.asList(createDummyRdfType(entity3)));
+
+		// case 6: entity3 <--> entity1, entity2, entity3, entity5
+		prepareAndTestCleanUpNoOutputs(testKG, Arrays.asList(entity3),
+				createDummyRdfType(Arrays.asList(entity1, entity2, entity3, entity5)));
+		prepareAndTestCleanUpNoOutputs(testKG, Arrays.asList(entity1, entity2, entity3, entity5),
+				Arrays.asList(createDummyRdfType(entity3)));
+
+		// case 7: entity3 <--> entity2, entity3
+		prepareAndTestCleanUpNoOutputs(testKG, Arrays.asList(entity3),
+				createDummyRdfType(Arrays.asList(entity2, entity3)));
+		prepareAndTestCleanUpNoOutputs(testKG, Arrays.asList(entity2, entity3),
+				Arrays.asList(createDummyRdfType(entity3)));
+
+		// case 8: entity2, entity4 <--> entity1, entity2, entity3, entity5
+		prepareAndTestCleanUpNoOutputs(testKG, Arrays.asList(entity2, entity4),
+				createDummyRdfType(Arrays.asList(entity1, entity2, entity3, entity5)));
+		prepareAndTestCleanUpNoOutputs(testKG, Arrays.asList(entity1, entity2, entity3, entity5),
+				createDummyRdfType(Arrays.asList(entity2, entity4)));
+
+		// case 9: entity2, entity4 <--> entity2, entity3
+		prepareAndTestCleanUpNoOutputs(testKG, Arrays.asList(entity2, entity4),
+				createDummyRdfType(Arrays.asList(entity2, entity3)));
+		prepareAndTestCleanUpNoOutputs(testKG, Arrays.asList(entity2, entity3),
+				createDummyRdfType(Arrays.asList(entity2, entity4)));
+
+		// case 10: entity1, entity2, entity3, entity5 <--> entity2, entity3
+		prepareAndTestCleanUpNoOutputs(testKG, Arrays.asList(entity1, entity2, entity3, entity5),
+				createDummyRdfType(Arrays.asList(entity2, entity3)));
+		prepareAndTestCleanUpNoOutputs(testKG, Arrays.asList(entity2, entity3),
+				createDummyRdfType(Arrays.asList(entity1, entity2, entity3, entity5)));
+	}
+
 	////////////////////////////////////////////////////////////
 	// Below are utility functions to reduce code-duplication //
 	////////////////////////////////////////////////////////////
+
+	public void prepareAndTestCleanUpSyncNoOutputs(OntModel testKG, List<String> newOutputsType) {
+		// initialisation
+		testKG.removeAll();
+		Map<String, String> newOutputsAndRdfType = initForCleanUpTests(testKG, new ArrayList<>(), newOutputsType);
+
+		// construct the list of TriplePattern
+		List<TriplePattern> triplePatterns = new ArrayList<>();
+		newOutputsAndRdfType.forEach((i, r) -> triplePatterns.add(Rdf.iri(i).isA(Rdf.iri(r))));
+
+		// create derivations
+		String i0 = input1;
+		String d1 = devClient.createDerivation(new ArrayList<>(), derivedAgentIRI, Arrays.asList(i0));
+		String d2 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, Arrays.asList(d1));
+		String d3 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI3, Arrays.asList(d1));
+		String d4 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI4, Arrays.asList(d1));
+
+		// retrieve the connection map for new outputs
+		// instance: downstream derivations
+		// derivation: other downstream derivations that are directly connected
+		Map<String, List<String>> connectionMap = devClient.mapSyncNewOutputsToDownstream(d1, newOutputsAndRdfType);
+
+		// test if the connectionMap is linked correctly
+		checkConnectionMap(newOutputsAndRdfType, connectionMap, d1, d2, d3, d4);
+
+		// reconnect the derivation
+		devClient.reconnectSyncDerivation(d1, connectionMap, triplePatterns, Instant.now().getEpochSecond());
+
+		// check for connectivity after reconnectSyncDerivation
+		checkNewOutputsConnectivity(testKG, d2, createDummyRdfType(Arrays.asList(entity1, entity2)), d1, newOutputsType);
+		checkNewOutputsConnectivity(testKG, d3, createDummyRdfType(Arrays.asList(entity2, entity3)), d1, newOutputsType);
+		checkNewOutputsConnectivity(testKG, d4, createDummyRdfType(Arrays.asList(entity4)), d1, newOutputsType);
+		checkNewOutputsConnectivity(testKG, null, createDummyRdfType(Arrays.asList(entity5)), d1, newOutputsType);
+	}
+
+	public void checkConnectionMap(Map<String, String> newOutputsAndRdfType, Map<String, List<String>> connectionMap,
+			String d1, String d2, String d3, String d4) {
+		List<String> directedDownstream = new ArrayList<>();
+		if (connectionMap.containsKey(d1)) {
+			directedDownstream = connectionMap.get(d1);
+		}
+		for (String i : newOutputsAndRdfType.keySet()) {
+			String type = newOutputsAndRdfType.get(i);
+			if (type.equals(createDummyRdfType(entity1))) {
+				Assert.assertEquals(Arrays.asList(d2), connectionMap.get(i));
+				Assert.assertTrue(!directedDownstream.contains(d2));
+			} else if (type.equals(createDummyRdfType(entity2))) {
+				Assert.assertTrue(equalLists(Arrays.asList(d2, d3), connectionMap.get(i)));
+				Assert.assertTrue(!directedDownstream.contains(d2));
+				Assert.assertTrue(!directedDownstream.contains(d3));
+			} else if (type.equals(createDummyRdfType(entity3))) {
+				Assert.assertEquals(Arrays.asList(d3), connectionMap.get(i));
+				Assert.assertTrue(!directedDownstream.contains(d3));
+			} else if (type.equals(createDummyRdfType(entity4))) {
+				Assert.assertEquals(Arrays.asList(d4), connectionMap.get(i));
+				Assert.assertTrue(!directedDownstream.contains(d4));
+			} else if (type.equals(createDummyRdfType(entity5))) {
+				Assert.assertEquals(new ArrayList<>(), connectionMap.get(i));
+			} else {
+				Assert.fail("type" + type + "is not recognised");
+			}
+		}
+		if (newOutputsAndRdfType.keySet().isEmpty()) {
+			Assert.assertTrue(equalLists(Arrays.asList(d2, d3, d4), directedDownstream));
+		}
+	}
+
+	public void prepareAndTestCleanUpNoOutputs(OntModel testKG, List<String> existingOutputs,
+			List<String> newOutputsType) {
+		// initialisation
+		testKG.removeAll();
+		List<String> newDerivedIRI = initForCleanUpTests(testKG, existingOutputs, newOutputsType).keySet().stream().collect(Collectors.toList());
+
+		// create derivations
+		String i0 = input1;
+		String d1 = devClient.createAsyncDerivation(
+				existingOutputs, derivedAgentIRI, Arrays.asList(i0), true);
+		String d2 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI2, pickInputs(d1, existingOutputs, derivedAgentIRI2));
+		String d3 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI3, pickInputs(d1, existingOutputs, derivedAgentIRI3));
+		String d4 = devClient.createAsyncDerivationForNewInfo(derivedAgentIRI4, pickInputs(d1, existingOutputs, derivedAgentIRI4));
+
+		// check for connectivity
+		checkExistingOutputsConnectivity(testKG, d2, Arrays.asList(entity1, entity2), d1, existingOutputs);
+		checkExistingOutputsConnectivity(testKG, d3, Arrays.asList(entity2, entity3), d1, existingOutputs);
+		checkExistingOutputsConnectivity(testKG, d4, Arrays.asList(entity4), d1, existingOutputs);
+		checkExistingOutputsConnectivity(testKG, null, Arrays.asList(entity5), d1, existingOutputs);
+
+		// update timestamp for pure inputs, otherwise
+		// updateFinishedAsyncDerivation called by cleanUpFinishedDerivationUpdate will
+		// not execute
+		devClient.sparqlClient.updateTimeStamp(i0);
+		devClient.sparqlClient.updateStatusBeforeSetupJob(d1);
+		devClient.updateStatusAtJobCompletion(d1, newDerivedIRI, new ArrayList<>());
+
+		// clean up
+		devClient.cleanUpFinishedDerivationUpdate(d1);
+
+		// check for connectivity after cleanUpFinishedDerivationUpdate
+		checkNewOutputsConnectivity(testKG, d2, createDummyRdfType(Arrays.asList(entity1, entity2)), d1, newOutputsType);
+		checkNewOutputsConnectivity(testKG, d3, createDummyRdfType(Arrays.asList(entity2, entity3)), d1, newOutputsType);
+		checkNewOutputsConnectivity(testKG, d4, createDummyRdfType(Arrays.asList(entity4)), d1, newOutputsType);
+		checkNewOutputsConnectivity(testKG, null, createDummyRdfType(Arrays.asList(entity5)), d1, newOutputsType);
+	}
+
+	void checkExistingOutputsConnectivity(OntModel testKG, String dd, List<String> possibleInstances, String ud, List<String> existingOutputs) {
+		boolean existInstance = false;
+		for (String i : possibleInstances) {
+			if (existingOutputs.contains(i)) {
+				checkConnectivity(testKG, dd, i, ud);
+				existInstance = true;
+			}
+		}
+		if (!existInstance) {
+			checkConnectivity(testKG, dd, null, ud);
+		}
+	}
+
+	void checkNewOutputsConnectivity(OntModel testKG,
+			String dd, List<String> possibleTypes, String ud, List<String> newOutputsType) {
+		boolean existInstance = false;
+		for (String t : possibleTypes) {
+			if (newOutputsType.contains(t)) {
+				ResIterator is = testKG.listSubjectsWithProperty(RDF.type, ResourceFactory.createResource(t));
+				while (is.hasNext()) {
+					String i = is.next().getURI();
+					checkConnectivity(testKG, dd, i, ud);
+					existInstance = true;
+				}
+			}
+		}
+		if (!existInstance) {
+			checkConnectivity(testKG, dd, null, ud);
+		}
+	}
+
+	void checkConnectivity(OntModel testKG, String downstreamDerivation, String instance, String upstreamDerivation) {
+		if (instance != null) {
+			if (downstreamDerivation != null) {
+				Assert.assertTrue(testKG.contains(
+						ResourceFactory.createResource(downstreamDerivation),
+						ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+						ResourceFactory.createResource(instance)));
+			}
+			Assert.assertTrue(testKG.contains(
+					ResourceFactory.createResource(instance),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
+					ResourceFactory.createResource(upstreamDerivation)));
+		} else {
+			if (downstreamDerivation != null) {
+				Assert.assertTrue(testKG.contains(
+					ResourceFactory.createResource(downstreamDerivation),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+					ResourceFactory.createResource(upstreamDerivation)));
+			}
+		}
+	}
+
+	public List<String> pickInputs(String upstreamDerivation, List<String> existingOutputs, String downstreamAgentIRI) {
+		List<String> inputsToUse = new ArrayList<>();
+		inputsToUse.addAll(existingOutputs.stream().filter(o ->
+				allowedExistingInputsMap.get(downstreamAgentIRI).contains(o)).collect(Collectors.toList()));
+		if (inputsToUse.isEmpty()) {
+			inputsToUse.add(upstreamDerivation);
+		}
+		return inputsToUse;
+	}
 
 	/**
 	 * This method is requried as now the rdf:type of inputs of derivations are made
@@ -1429,28 +1633,47 @@ public class DerivedQuantityClientTest {
 	 * 
 	 * @param testKG
 	 */
-	public void initRdfType(OntModel testKG) {
-		for (String i : allInstances) {
-			testKG.add(ResourceFactory.createResource(i), RDF.type, ResourceFactory.createResource(i + "/rdftype"));
+	public void initRdfType(OntModel testKG, List<String> instances) {
+		for (String i : instances) {
+			testKG.add(ResourceFactory.createResource(i), RDF.type, ResourceFactory.createResource(createDummyRdfType(i)));
 		}
 	}
 
-	public List<String> initForCleanUpTests(OntModel testKG) {
-		initRdfType(testKG);
-		String entity1_new = entity1 + "new";
-		String entity2_new = entity2 + "new";
-		List<String> newDerivedIRI = Arrays.asList(entity1_new, entity2_new);
-		testKG.add(ResourceFactory.createResource(entity1_new), RDF.type,
-				ResourceFactory.createResource(entity1 + "/rdftype"));
-		testKG.add(ResourceFactory.createResource(entity2_new), RDF.type,
-				ResourceFactory.createResource(entity2 + "/rdftype"));
+	public Map<String, String> initForCleanUpTests(OntModel testKG, List<String> existingOutputs, List<String> newOutputsType) {
+		initRdfType(testKG, existingOutputs);
+		Map<String, String> newOutputsAndRdfType = new HashMap<>();
+		newOutputsType.stream().forEach(o -> newOutputsAndRdfType.put(createDummyNewInstance(testKG, o, o), o));
+		// agent1
 		devClient.createOntoAgentInstance(derivedAgentIRI, derivedAgentURL,
-				Arrays.asList(input1 + "/rdftype", input2 + "/rdftype"),
-				Arrays.asList(entity1 + "/rdftype", entity2 + "/rdftype"));
+				Arrays.asList(createDummyRdfType(input1), createDummyRdfType(input2)),
+				Arrays.asList(createDummyRdfType(entity1), createDummyRdfType(entity2), createDummyRdfType(entity3),
+						createDummyRdfType(entity4), createDummyRdfType(entity5)));
+		// agent2
 		devClient.createOntoAgentInstance(derivedAgentIRI2, derivedAgentURL2,
-				Arrays.asList(entity1 + "/rdftype", entity2 + "/rdftype"),
-				Arrays.asList(entity3 + "/rdftype", entity4 + "/rdftype"));
-		return newDerivedIRI;
+				Arrays.asList(createDummyRdfType(entity1), createDummyRdfType(entity2)),
+				Arrays.asList());
+		// agent3
+		devClient.createOntoAgentInstance(derivedAgentIRI3, derivedAgentURL3,
+				Arrays.asList(createDummyRdfType(entity2), createDummyRdfType(entity3)),
+				Arrays.asList());
+		// agent4
+		devClient.createOntoAgentInstance(derivedAgentIRI4, derivedAgentURL4,
+				Arrays.asList(createDummyRdfType(entity4)), Arrays.asList());
+		return newOutputsAndRdfType;
+	}
+
+	public String createDummyRdfType(String iri) {
+		return iri + "/rdftype";
+	}
+
+	public List<String> createDummyRdfType(List<String> iriList) {
+		return iriList.stream().map(i -> createDummyRdfType(i)).collect(Collectors.toList());
+	}
+
+	public String createDummyNewInstance(OntModel testKG, String iri, String rdfType) {
+		String newIri = iri + "_" + UUID.randomUUID().toString();
+		testKG.add(ResourceFactory.createResource(newIri), RDF.type, ResourceFactory.createResource(rdfType));
+		return newIri;
 	}
 
 	public boolean equalLists(List<String> a, List<String> b) {

@@ -1,11 +1,10 @@
 {
-    "ServiceSpec": {
-        "Name": "weather-agent",
-        "TaskTemplate": {
-            "ContainerSpec": {
-                "Image": "docker.cmclinnovations.com/weatheragent:1.1.1",
+	"ServiceSpec": {
+		"Name": "weather-agent",
+		"TaskTemplate": {
+			"ContainerSpec": {
+				"Image": "docker.cmclinnovations.com/weatheragent:1.1.1",
 				"Env": [
-					"STACK_NAME=${STACK_NAME}",
 					"DATABASE=postgres",
 					"LAYERNAME=weatherstations",
 					"GEOSERVER_WORKSPACE=weatherstations",
@@ -23,7 +22,7 @@
 					},
 					{
 						"ConfigName": "ontop"
-					}					
+					}
 				],
 				"Secrets": [
 					{
@@ -33,20 +32,20 @@
 						"SecretName": "geoserver_password"
 					}
 				],
-                "Mounts": [
-                    {
-                        "Type": "volume",
-                        "Source": "logs",
-                        "Target": "/root/.jps"
-                    }
-                ]
-            }
-        }
-    },
-    "endpoints": {
-        "weather-agent": {
-            "url": "http://localhost:8080/WeatherAgent/",
-            "externalPath": "/weather-agent/"
-        }
-    }
+				"Mounts": [
+					{
+						"Type": "volume",
+						"Source": "logs",
+						"Target": "/root/.jps"
+					}
+				]
+			}
+		}
+	},
+	"endpoints": {
+		"weather-agent": {
+			"url": "http://localhost:8080/WeatherAgent/",
+			"externalPath": "/weather-agent/"
+		}
+	}
 }

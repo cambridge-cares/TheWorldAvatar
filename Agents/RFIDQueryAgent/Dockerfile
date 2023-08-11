@@ -36,9 +36,9 @@ ENV CLIENT_PROPERTIES="/root/client.properties"
 ENV SPECIES_PROPERTIES="/root/species.properties"
 
 # Set the environment variable that points to where the email agent is located at
-ENV EMAIL_AGENT_URL="http://host.docker.internal:8099/email_agent"
+ENV EMAIL_AGENT_URL="http://host.docker.internal:8080/email_agent"
 
-COPY --from=builder /root/RFIDQueryAgentCode/output/rfid-query-agent##1.0.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/RFIDQueryAgentCode/output/rfid-query-agent##1.1.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

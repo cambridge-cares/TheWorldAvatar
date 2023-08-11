@@ -10,6 +10,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
@@ -76,12 +77,12 @@ public class BMSQueryAgentLauncher extends JPSAgent {
             } else if (url.contains("equipment")) {
                 // handle the case "retrieve/equipment", return the list of equipments in a given room
 
-                if (!validateInput(request)) {
+                if (!validateInput(requestParams)) {
                     LOGGER.error(PARAMETERS_VALIDATION_ERROR_MSG);
                     throw new JPSRuntimeException(PARAMETERS_VALIDATION_ERROR_MSG);
                 }
 
-                String roomIRI = request.getParameter(KEY_ROOMIRI);
+                String roomIRI = requestParams.getString(KEY_ROOMIRI);
 
                 JSONObject queryResult = agent.queryEquipmentInstances(roomIRI);
 
@@ -96,29 +97,28 @@ public class BMSQueryAgentLauncher extends JPSAgent {
     /**
      * Validate request params.
      *
-     * @param request Http request
+     * @param requestParams Http request
      * @return Validity of the request params
      */
-    public boolean validateInput(HttpServletRequest request) {
-        LOGGER.info("Getting requestParams: " + request.getQueryString());
+    @Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
 
-        if (request.getParameterMap().isEmpty()) {
-            LOGGER.error(EMPTY_PARAMETER_ERROR_MSG);
+        LOGGER.debug(requestParams);
+
+        if (requestParams.isEmpty()) {
             return false;
         }
 
-        if (request.getParameter(KEY_ROOMIRI).isEmpty()) {
-            LOGGER.error(KEY_ROOMIRI + "is missing.");
+        if (!requestParams.has(KEY_ROOMIRI)) {
+            LOGGER.info("No " + KEY_ROOMIRI + " found.");
             return false;
         }
-        LOGGER.info("Data Received: " + request.getParameter(KEY_ROOMIRI));
 
         return true;
     }
 
     /**
      * Initialize agent and its remotestore client with EndpointConfig which get other agents' config from docker stack
-     * @return
      */
     private BMSQueryAgent initializeAgent() {
         EndpointConfig endpointConfig = new EndpointConfig();
@@ -128,7 +128,8 @@ public class BMSQueryAgentLauncher extends JPSAgent {
         RemoteStoreClient rsClient = new RemoteStoreClient();
         rsClient.setUser(endpointConfig.getKguser());
         rsClient.setPassword(endpointConfig.getKgpassword());
-        agent.setRSClient(rsClient, endpointConfig.getKgurls());
+        rsClient.setQueryEndpoint(endpointConfig.getKgurl());
+        agent.setRSClient(rsClient);
 
         LOGGER.info("Input agent object initialized.");
         return agent;

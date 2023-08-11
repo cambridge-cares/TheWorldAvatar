@@ -1,5 +1,8 @@
 # The Stack Data Uploader
 
+<img align="right" width="250" height="500" src="./img/twa-uploader-logo-padded.svg">
+
+
 > :memo: **Note:** In the commands and file snippets below placeholders are indicated using angled brackets, for example `<STACK NAME>`.
 You will need to substitute in appropriate values before running any commands.
 
@@ -86,7 +89,7 @@ The following table provides a description of each example:
 | [cropmap-reduced](../examples/datasets/inputs/config/cropmap-reduced.json)   | Uploads a [set of Shapefiles](../examples/datasets/inputs/data/cropmap/vector/README.md) into the stack as single vector layer, which is served using the default style by GeoServer. This is a reduced styling ([cropmap-reduced.sld](../examples/datasets/inputs/config/cropmap-reduced.sld)) of the cropmap to make it clearer to view with pylon data.                                                                                                                                                                                                                                                                                                                                                                                              |
 | [cropmap-simple](../examples/datasets/inputs/config/cropmap-simple.json)     | Uploads a [set of Shapefiles](../examples/datasets/inputs/data/cropmap/vector/README.md) into the stack as single vector layer, which is served using the default style by GeoServer.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | [cropmap](../examples/datasets/inputs/config/cropmap.json)                   | Uploads a [set of Shapefiles](../examples/datasets/inputs/data/cropmap/vector/README.md) into the stack as single vector layer along with several [.csv files](../examples/datasets/inputs/data/cropmap/tabular/) that contain auxiliary data. Some of the auxiliary data is then used by a custom style ([cropmap.sld](../examples/datasets/inputs/config/cropmap.sld)) to dynamically colour the polygons when served through GeoServer. There is also a OBDA mapping file ([ontop_with_comments.obda](../examples/datasets/inputs/data/cropmap/ontop_with_comments.obda)), which provides an example of how to make the uploaded data queryable through the Ontop SPARQL endpoint. Uses [reference to file name](#value-by-file-name) for SQL query. |
-| [elevation](../examples/datasets/inputs/config/elevation.json)               | Uploads a set of [GeoTiff files](../examples/datasets/inputs/data/elevation/README.md) into the stack as a single raster layer, which is served using the built in `dem` style via GeoServer. The custom style ([elevation.sld](../examples/datasets/inputs/config/elevation.sld)) is also provided for reference.                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| [elevation](../examples/datasets/inputs/config/elevation.json)               | Uploads a set of [GeoTiff files](../examples/datasets/inputs/data/elevation/README.md) into the stack as a single raster layer, which is served using the custom [`elevation`](../examples/datasets/inputs/config/elevation.sld) style via GeoServer.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 | [forestry](../examples/datasets/inputs/config/forestry.json)                 | Uploads [a ShapeFile](../examples/datasets/inputs/data/forestry/vector/README.md) into the stack as a vector layer, along with a [.csv file](../examples/datasets/inputs/data/forestry/tabular/forestry_colours.csv) that defines a colour for each category. The layer is served using the colour mapping and a custom style ([forestry.sld](../examples/datasets/inputs/config/forestry.sld)) through GeoServer.                                                                                                                                                                                                                                                                                                                                      |
 | [forestry-reduced](../examples/datasets/inputs/config/forestry-reduced.json) | Uploads a [set of Shapefiles](../examples/datasets/inputs/data/forestry/vector/README.md) into the stack as single vector layer, which is served using the default style by GeoServer. This is a reduced styling ([forestry-reduced.sld](../examples/datasets/inputs/config/forestry-reduced.sld)) of the forestry data to make it clearer to view with pylon data.                                                                                                                                                                                                                                                                                                                                                                                     |
 | [ng-pylons](../examples/datasets/inputs/config/ng-pylons.json)               | Uploads a [set of Shapefiles](../examples/datasets/inputs/data/ng_pylons/vector/) into the stack as multiple vector layers along a [.csv file](../examples/datasets/inputs/data/ng_pylons/tabular/ng_styling.csv) that contain auxiliary data. Some of the auxiliary data is then used by custom styles ([overhead-lines.sld](../examples/datasets/inputs/config/overhead-lines.sld) and [underground-cables.sld](../examples/datasets/inputs/config/underground-cables.sld)) to dynamically style the lines, towers, and underground cables when served through GeoServer.                                                                                                                                                                             |
@@ -103,18 +106,19 @@ The following table provides a description of each example:
 Each dataset should have its own JSON configuration file located in the [`inputs/config/`](./inputs/config) directory.
 The following table shows the top level nodes allowed in a configuration file.
 
-| Key                                       | Required?                                             | Default value                            | Description                                                                                                                                        |
-| ----------------------------------------- | ----------------------------------------------------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`"name"`](#name)                         | No                                                    | The filename without the .json extension | The name of the dataset                                                                                                                            |
-| [`"datasetDirectory"`](#datasetDirectory) | No                                                    | The dataset's name                       | The directory within `inputs/data/` that contains the data files associated with this dataset                                                      |
-| [`"skip"`](#skip)                         | No                                                    | `false`                                  | If set to `true` this dataset will be ignored by the data uploader                                                                                 |
-| [`"database"`](#database)                 | No                                                    | `"postgres"`                             | The name of the database within Postgres to which appropriate data will be uploaded                                                                |
-| [`"workspace"`](#workspace)               | No                                                    | The dataset's name                       | The GeoServer workspace into which any 2D geospatial data layers, vector and raster, will be added                                                 |
-| [`"namespace"`](#namespace)               | No                                                    | The dataset's name                       | The Blazegraph namespace into which RDF data will be added. The long syntax can be used to specify properties if the namespace needs to be created |
-| [`"externalDatasets"`](#externaldatasets) | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of other datasets' names. Each listed dataset will also be loaded if this dataset is loaded by name                                         |
-| [`"dataSubsets"`](#dataSubsets)           | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of *data subset* objects                                                                                                                    |
-| [`"styles"`](#styles)                     | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of GeoServer style file definition objects                                                                                                  |
-| [`"mappings"`](#mappings)                 | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of Ontop mapping file definition objects                                                                                                    |
+| Key                                             | Required?                                             | Default value                            | Description                                                                                                                                        |
+| ----------------------------------------------- | ----------------------------------------------------- | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`"name"`](#name)                               | No                                                    | The filename without the .json extension | The name of the dataset                                                                                                                            |
+| [`"datasetDirectory"`](#datasetDirectory)       | No                                                    | The dataset's name                       | The directory within `inputs/data/` that contains the data files associated with this dataset                                                      |
+| [`"skip"`](#skip)                               | No                                                    | `false`                                  | If set to `true` this dataset will be ignored by the data uploader                                                                                 |
+| [`"database"`](#database)                       | No                                                    | `"postgres"`                             | The name of the database within Postgres to which appropriate data will be uploaded                                                                |
+| [`"workspace"`](#workspace)                     | No                                                    | The dataset's name                       | The GeoServer workspace into which any 2D geospatial data layers, vector and raster, will be added                                                 |
+| [`"namespace"`](#namespace)                     | No                                                    | The dataset's name                       | The Blazegraph namespace into which RDF data will be added. The long syntax can be used to specify properties if the namespace needs to be created |
+| [`"externalDatasets"`](#externaldatasets)       | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of other datasets' names. Each listed dataset will also be loaded if this dataset is loaded by name                                         |
+| [`"dataSubsets"`](#dataSubsets)                 | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of *data subset* objects                                                                                                                    |
+| [`"styles"`](#styles)                           | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of GeoServer style file definition objects                                                                                                  |
+| [`"mappings"`](#mappings)                       | No[*](#*-at-least-one-of-these-needs-to-be-populated) | `[]`                                     | A list of Ontop mapping file definition objects                                                                                                    |
+| [`"staticGeoServerData"`](#staticGeoServerData) | No                                                    | `null`                                   | An object describing static data to be served by GeoServer                                                                                         |
 
 ##### * At least one of these needs to be populated.
 
@@ -243,9 +247,31 @@ Ontop also supports the R2RML (`.ttl`) OBDA file standard but the data uploader 
 The OBDA file for the cropmap example ([ontop_with_comments.obda](../examples/datasets/inputs/data/cropmap/ontop_with_comments.obda)) shows the Ontop OBDA format.
 The Ontop OBDA file format is also described in detail in the [OBDA mapping file](#obda-mapping-file) section.
 
+#### `"staticGeoServerData"`
+A description of static data to be loaded into and served by GeoServer. 
+These are served with the base directory `GEOSERVER_URL/www/icons`. 
+The icons can be found at `GEOSERVER_URL/www/icons` and the "other files" (being any regular files or folders) can be found at `GEOSERVER_URL/www/static_data`.
+
+| Key            | Description                                                                                                                                                                                                                   |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `"iconsDir"`   | Directory relative to the [`"datasetDirectory"`](#datasetDirectory) where icons files can be found                                                                                                                            |
+| `"otherFiles"` | A list of "other files" with the `source` relative to the [`"datasetDirectory"`](#datasetDirectory) and the `target` the location relative to `GEOSERVER_URL/www/icons` from which would would like this data is to be served |
+
+```json
+"staticGeoServerData": {
+  "iconsDir": "icons",
+  "otherFiles": [
+    {
+      "source": "my_additional_data/index.html",
+      "target": "additional_data"
+    }
+  ]
+}
+```
+
 ## Data Types
 
-The following data types are supported: [`vector`](#vector-data), [`raster`](#raster-data), [`tabular`](#tabular-data), [`rdf`](#rdf-data) and [`tboxcsv`](#tbox-csv-data).
+The following data types are supported: [`vector`](#vector-data), [`citygml`](#citydb-data), [`raster`](#raster-data), [`tabular`](#tabular-data), [`rdf`](#rdf-data) and [`tboxcsv`](#tbox-csv-data).
 A description of how each is processed and a summary of the available configuration options are provided below.
 
 ### Vector Data
@@ -265,12 +291,12 @@ These can be specified within an `"ogr2ogrOptions"` object under the following k
 
 ##### `"sridIn"`
 If the input dataset does not have an SRID/CRS/SRS specified then it can be specified as the value for the `"sridIn"` key.
-When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
+When specifying an EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
 This sets the value of the [`-a_srs`][ogr2ogr-a_srs] argument passed to `ogr2ogr`.
 
 ##### `"sridOut"`
 If you want to reproject the coordinates the target SRID/CRS/SRS can be set as the value for the `"sridOut"` key.
-When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
+When specifying an EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
 This sets the value of the [`-t_srs`][ogr2ogr-t_srs] argument passed to `ogr2ogr`.
 It also means any value specified for `"sridIn"` is passed as the value of the [`-s_srs`][ogr2ogr-s_srs] argument, rather than `-a_srs`.
 
@@ -332,6 +358,47 @@ Within that the following nodes can be added.
 
 These are the most commonly used options, for more see the examples [here][geoserver-rest] and [here][geoserver-rest-layers].
 
+### CityDB Data
+
+The `"CityDB"` data type should be used to load CityGML and CityJSON data.
+The data loader does two things when uploading vector data: 
+1. It uses the 3DCitDB Importer [`impexp import`][3dcitydb-importer] tool to read in data from CityGML and CityJSON files and output it to the PostgreSQL database in the stack using the 3DCityDB schema.
+The full list of file formats that `impexp import` supports is given [here][3dcitydb-importer-formats].
+1. It uses the [`py3dtiler`][py3dtiler] tool to create 3DTile sets that can be used to visualise the newly uploaded geometries.
+
+These tilesets are written to folders in a Docker volume and served on the `/3dtiles` path of the stack.
+The full URL for a `tileset.json` file, which should be specified in the data.json visualisation file, is `<server base address>/3dtiles/<database name>/<database schema>/<spec>/tileset.json`.
+The components of this are as follows:
+
+| Placeholder             | Description                                                                                                                                                                          |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `<server base address>` | e.g. `http://localhost:3838`                                                                                                                                                         |
+| `<database name>`       | The name of the database, as specified at the top-level of the dataset config file                                                                                                             |
+| `<database schema>`     | The database schema, this is fixed as `citydb` for now.                                                                                                                              |
+| `<spec>`                | There are currently three hardcoded specs: `lod2-features`, `lod2-buildings` and `lod1_lod2-buildings`. Each one is generated using different options passed to the `p3dtiler` tool. |
+
+The options for these two processes are set using the following json objects within the respective data subset object in the dataset configuration file:
+
+#### Import Options
+
+The only option that is required is `"sridIn"`.
+Other than `"sridIn"`, in most situations the default `impexp import` settings will be sufficient to upload the data but sometimes some extra options need to be supplied.
+Options can be specified within an `"importOptions"` object under the following keys:
+
+##### `"sridIn"` (Required)
+
+The SRID/CRS/SRS of the input dataset does not get picked up automatically so needs to be specified as the value for the `"sridIn"` key.
+When specifying an EPSG code for the SRS just the ID is required as a string, for example `"4296"` rather than `4296` or `"EPSG:4296"`.
+Because the SRID is set for each database schema Each dataset should write to its own PostgreSQL database and all of the city data in a dataset must use the same SRID.
+The 3DCityDB importer doesn't support reprojection but this could be added in the future.
+
+##### `"options"`
+
+An `"options"` node can be added with a map of options to be passed to the `impexp import` command-line interface.
+The format is the same as the one used for [ogr2ogr otheroptions](#otheroptions).
+The list of avaliable options can be found [here][3dcitydb-importer-cli].
+The "Database connection options" are set automatically by the `stack-data-uploader` so can be ignored.
+
 ### Raster Data
 
 The `"raster"` data type should be used to load raster/coverage geospatial data.
@@ -350,16 +417,16 @@ These can be specified within an `"gdalTranslateOptions"` object (previously jus
 
 ##### `"sridIn"`
 If the input dataset does not have an SRID/CRS/SRS specified then it can be specified as the value for the `"sridIn"` key.
-When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
-A full explanation of the acceptable SRS formats is given [here][gdal-translate-t_srs].
-This sets the value of the [`-a_srs`][gdal-translate-a_srs] argument passed to `gdal_translate`.
+When specifying an EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
+A full explanation of the acceptable SRS formats is given [here][raster-common-t_srs].
+This sets the value of the [`-a_srs`][raster-common-a_srs] argument passed to `gdal_translate`.
 
 ##### `"sridOut"`
 If you want to reproject the coordinates the target SRID/CRS/SRS can be set as the value for the `"sridOut"` key.
-When specifying a EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
-A full explanation of the acceptable SRS formats is given [here][gdal-translate-t_srs].
-This sets the value of the [`-t_srs`][gdal-translate-t_srs] argument passed to `gdal_translate`.
-It also means any value specified for `"sridIn"` is passed as the value of the [`-s_srs`][gdal-translate-s_srs] argument, rather than `-a_srs`.
+When specifying an EPSG code for the SRS it needs to include the authority as well as the ID, for example `"EPSG:4296"` rather than just `4296` or `"4296"`.
+A full explanation of the acceptable SRS formats is given [here][raster-common-t_srs].
+This sets the value of the [`TARGET_SRS`][gdal-cog-t_srs] creation option passed to `gdal_translate`.
+This is an option specific to the [COG][gdal-cog] raster driver when using `gdal_translate`, although we could use `gdalwarp` to handle this more efficiently in the future.
 
 ##### `"inputDatasetOpenOptions"`
 Some data source formats require additional options to be set for the geometries and their metadata to be loaded correctly.
@@ -632,9 +699,10 @@ This way you can look at look at the user interfaces of the various services (se
 
 [gdal-translate]:       https://gdal.org/programs/gdal_translate.html#gdal-translate
 [raster-common]:        https://gdal.org/programs/raster_common_options.html#common-options-for-raster-programs
-[gdal-translate-a_srs]: https://gdal.org/programs/raster_common_options.html#cmdoption-a_srs
-[gdal-translate-s_srs]: https://gdal.org/programs/raster_common_options.html#cmdoption-s_srs
-[gdal-translate-t_srs]: https://gdal.org/programs/raster_common_options.html#cmdoption-t_srs
+[raster-common-a_srs]:  https://gdal.org/programs/raster_common_options.html#cmdoption-a_srs
+[raster-common-t_srs]:  https://gdal.org/programs/raster_common_options.html#cmdoption-t_srs
+[gdal-cog-t_srs]:       https://gdal.org/drivers/raster/cog.html#reprojection-related-creation-options
+[gdal-cog]:             https://gdal.org/drivers/raster/cog.html#cog-cloud-optimized-geotiff-generator
 [gdal-translate-oo]:    https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-oo
 [gdal-translate-co]:    https://gdal.org/programs/gdal_translate.html#cmdoption-gdal_translate-co
 
@@ -644,5 +712,11 @@ This way you can look at look at the user interfaces of the various services (se
 [raster-geotiff]: https://gdal.org/drivers/raster/gtiff.html#gtiff-geotiff-file-format
 
 [postgis-raster-loader]: https://postgis.net/docs/using_raster_dataman.html#RT_Raster_Loader
+
+[3dcitydb-importer]:         https://3dcitydb-docs.readthedocs.io/en/version-2022.2/impexp/cli/import.html
+[3dcitydb-importer-formats]: https://3dcitydb-docs.readthedocs.io/en/version-2022.2/impexp/import.html#import-supported-file-formats
+[3dcitydb-importer-cli]: https://3dcitydb-docs.readthedocs.io/en/latest/impexp/cli/import.html#import-command
+
+[py3dtiler]: https://github.com/VCityTeam/py3dtilers
 
 [crome-2020]: https://www.data.gov.uk/dataset/be5d88c9-acfb-4052-bf6b-ee9a416cfe60/crop-map-of-england-crome-2020

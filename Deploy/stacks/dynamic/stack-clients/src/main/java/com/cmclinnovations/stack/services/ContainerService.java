@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 
-import com.cmclinnovations.stack.clients.core.AbstractEndpointConfig;
+import com.cmclinnovations.stack.clients.core.EndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient.ComplexCommand;
@@ -28,8 +28,8 @@ public class ContainerService extends AbstractService {
 
     private DockerClient dockerClient;
 
-    public ContainerService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
-        super(serviceManager, config);
+    public ContainerService(String stackName, ServiceConfig config) {
+        super(config);
         Objects.requireNonNull(stackName, "A 'stackName' must be provided for all container-based services.");
         config.getDockerServiceSpec().withName(StackClient.prependStackName(config.getDockerServiceSpec().getName())
                 // See comments in the getHostName method
@@ -73,8 +73,18 @@ public class ContainerService extends AbstractService {
         this.dockerClient = dockerClient;
     }
 
-    public void doPreStartUpConfiguration() {
+    public final void doPreStartUpConfiguration() {
+        doPreStartUpConfigurationImpl();
+        createEndpoints();
+    }
+    
+
+    protected void doPreStartUpConfigurationImpl() {
         // Do nothing by default, override if container needs pre-startup configuration
+    }
+
+    protected void createEndpoints() {
+        // Do nothing by default, override if container produces one or more endpoints
     }
 
     public void doPostStartUpConfiguration() {
@@ -134,11 +144,11 @@ public class ContainerService extends AbstractService {
         }
     }
 
-    public <E extends AbstractEndpointConfig> void writeEndpointConfig(E endpointConfig) {
+    public <E extends EndpointConfig> void writeEndpointConfig(E endpointConfig) {
         dockerClient.writeEndpointConfig(endpointConfig);
     }
 
-    public <E extends AbstractEndpointConfig> E readEndpointConfig(String endpointName, Class<E> endpointConfigClass) {
+    public <E extends EndpointConfig> E readEndpointConfig(String endpointName, Class<E> endpointConfigClass) {
         return dockerClient.readEndpointConfig(endpointName, endpointConfigClass);
     }
 

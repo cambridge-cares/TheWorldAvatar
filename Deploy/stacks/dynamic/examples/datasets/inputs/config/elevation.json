@@ -10,7 +10,7 @@
             "skip": false,
             "geoServerSettings": {
                 "layerSettings": {
-                    "defaultStyle": "dem"
+                    "defaultStyle": "elevation"
                 }
             }
         }

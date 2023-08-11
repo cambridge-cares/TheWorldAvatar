@@ -441,7 +441,6 @@ def load_pretrained_model(cfg, ModelClass, force_download=False):
     if os.path.exists(path_to_store) and not force_download:
         # model already exists
         path_ckpt = path_to_store / "best-model.ckpt"
-        path_pth = ""
     else:
 
         # create folder
@@ -461,15 +460,22 @@ def load_pretrained_model(cfg, ModelClass, force_download=False):
                 model_path_pth_link, path_to_store.parent.absolute() / "_model.pth.tar")
             logger.info(f'Downloaded model from {model_path_pth_link} to {path_pth}')
 
-    model = ModelClass.load_from_checkpoint(
-        path_ckpt.parent.parent.__str__())
+
+    # load pre-trained model from best checkpoints
+    # NOTE: TFT model has been trained and saved on a CUDA device (i.e., using GPUs);
+    #       Attempting to deserialize saved model on a CPU-only machine requires
+    #       torchmetrics==0.9.3 and pytorch-lightning==1.7.7 (and will fail otherwise)
+    model = ModelClass.load_from_checkpoint(path_ckpt.parent.parent.as_posix())
     logger.info(f'Loaded model from  {path_ckpt.parent.parent.__str__()}')
 
     # convert loaded model to device
-    pl_trainer_kwargs = {"accelerator": 'cpu'}
-    model.model_params['pl_trainer_kwargs'] = pl_trainer_kwargs
-    model.trainer_params = pl_trainer_kwargs
-    logger.info(f'Moved model to device  {pl_trainer_kwargs["accelerator"]}')
+    trainer_params = {
+            "accelerator": "auto",
+            "devices": "auto",
+            "logger": False,
+        }
+    model.trainer_params.update(trainer_params)
+
     return model
 
 

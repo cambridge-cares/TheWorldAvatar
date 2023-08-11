@@ -60,15 +60,38 @@ Follow the below configuration steps within the local `queries` directory.
       - `class`: Full IRI of the class.
       - `metaFile`: Name of the file (inc. extension) that contains the query to run when gathering metadata.
       - `timeFile`: Optional, name of the file (inc. extension) that contains the query to run when gathering timeseries measurement details.
-      - `timeLimit`: Optonal, this is an integer parameter that defaults to 24. When set, timeseries data from the last N hours will be pulled (or all data if the value is set to below 0).
+      - `timeLimit`: Optional, this is an integer parameter that defaults to 24. When set, timeseries data from the last N hours will be pulled (or all data if the value is set to below 0).
       - `databaseName`: Optional, but **required** if setting a timeFile. It should match the PostGreSQL database name that contains your timeseries data.
   - Add the aforementioned metadata and timeseries query files.
 
 An example configuration file is provided within the [queries] directory. Furthermore, two example `.sparql` files are provided to retrieve the meta and time series data, respectively. Both of these files refer to the example data as listed <a href="#example">below</a>.
 
+#### Class Discovery
+
+To determine the class that the input instance IRI belongs to, the FIA uses a couple of hard-coded SPARQL queries; if the first returns an empty result, then the second is attempted. If neither return any class IRIs, then the request ends early as a failure. Please be aware that you may need to add to your dataset to ensure that at least one of these queries can return a class IRI when your instance IRI is injected into the `[IRI]` placeholder.
+
+```
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT distinct ?class WHERE {
+    [IRI] rdf:type ?class
+}
+```
+
+```
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+select distinct ?class { 
+    SERVICE [ONTOP] { [IRI] a ?x . }
+    ?x rdfs:subClassOf* ?class .
+    ?class rdf:type owl:Class .
+}
+```
+
 #### Query Restrictions
 
-To properly parse the metadata and timeseries queries, the agent requires the results from queries to fulfill a set format. For each type of query a number of placeholder tokens can be added that will be populated by the agent just before execution. These are:
+To properly parse the metadata and timeseries queries, the agent requires the results from queries to fulfil a set format. For each type of query a number of placeholder tokens can be added that will be populated by the agent just before execution. These are:
 
 - `[IRI]`: The IRI of the **feature** of interest, i.e. the feature selected within the DTVF (the IRI will be injected here into the request)
 - `[ONTOP]`: The URL of the Ontop service within the stack will be injected
@@ -123,7 +146,15 @@ om:kilometrePerHour om:symbol "km/h"^^xsd:string .
 
 All incoming requests should use the `/get` route, containing a `query` parameter that has a JSON body (compatible with the agent framework in the JPS Base Lib), which in turn contains a single `iri` parameter. In this version of the agent, **no** other parameters (e.g. `endpoint`, `namespace`) are required.
 
-## Deployment
+## Enabling the FIA in a stack
+
+The FIA container is an optional built-in service in the stack.
+To enable it you need to create/modify the config file for that stack.
+An example of the changes required are described in the stack-manager readme file [here](../../Deploy/stacks/dynamic/stack-manager/README.md#adding-the-feature-info-agent).
+
+After spinning up the stack the agent should be accessible via the `/feature-info-agent` route.
+
+## Development
 
 The Docker image for this agent should be automatically built and pushed by GitHub whenever a pull request to the main branch is approved and merged. However, it is worth noting that the user that triggers this will require an active GitHub token that has permissions to push packages to the GitHub registry.
 
@@ -131,10 +162,10 @@ Local building can be carried out using the provided docker-compose files as cre
 
 To build the Agent image and deploy it to the spun up stack, please run the following commands from the FeatureInfoAgent directory wherever the stack is running (i.e. potentially on the remote VM):
 
-# Build the agent image
+### Build the agent image
 bash ./stack.sh build
 
-# Deploy the agent
+### Deploy the agent
 bash ./stack.sh start <STACK_NAME>
 
 After deploying the agent, the NGINX routing configuration of your stack may need to be adjusted to ensure the agent is accessible via the `/feature-info-agent` route.
@@ -147,7 +178,7 @@ It is worth noting that the docker compose setup for this agent creates a bind m
 [queries]: queries
 [OntoEMS]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontoems/OntoEMS.owl
 
-# Automated actions
+### Automated actions
 
 The FIA is currently set up with two automated GitHub actions:
 
