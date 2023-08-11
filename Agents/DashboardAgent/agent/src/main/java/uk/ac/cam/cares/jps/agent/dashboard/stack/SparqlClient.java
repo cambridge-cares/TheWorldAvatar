@@ -14,8 +14,9 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
+import uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.utils.SparqlAction;
+import uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.utils.SparqlQuery;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.AgentCommunicationClient;
-import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.datamodel.Facility;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import org.w3c.dom.Document;
@@ -31,7 +32,8 @@ import java.util.*;
  * @author qhouyee
  */
 public class SparqlClient {
-    private final Queue<String> STACK_SPARQL_ENDPOINTS = new ArrayDeque<>();
+    private final List<String> SPATIAL_ZONE_SPARQL_ENDPOINTS = new ArrayList<>();
+    private final List<String> REMAINING_SPARQL_ENDPOINTS = new ArrayList<>();
     private final Map<String, Facility> SPATIAL_ZONES = new HashMap<>();
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
 
@@ -41,38 +43,19 @@ public class SparqlClient {
      * @param url The SPARQL url within the stack without the namespace.
      */
     public SparqlClient(String url, String username, String password) {
-        // Retrieve all namespaces and generate their endpoints based on url
-        getAllEndpoints(url, username, password);
-        // Retrieve all metadata required for each endpoint
-        for (String endpoint : this.STACK_SPARQL_ENDPOINTS) {
-            try (RDFConnection conn = RDFConnection.connect(endpoint)) {
-                this.retrieveMetaData(conn);
-            } catch (QueryParseException e) {
-                LOGGER.fatal("Invalid query: " + e.getMessage());
-                throw new JPSRuntimeException("Invalid query: " + e.getMessage());
-            } catch (Exception e) {
-                LOGGER.fatal("Error connecting to SPARQL endpoint: " + e);
-                throw new JPSRuntimeException("Error connecting to SPARQL endpoint: " + e);
-            }
+        // Retrieve all namespaces as a queue of endpoints
+        Queue<String> sparqlEndpoints = getAllEndpoints(url, username, password);
+        // While the queue is not empty, classify the endpoint as a spatial zone endpoint or not
+        LOGGER.debug("Classifying all SPARQL endpoints...");
+        while (!sparqlEndpoints.isEmpty()) {
+            String endpoint = sparqlEndpoints.poll();
+            executeSparqlAction(endpoint, this::classifyEndpointType);
         }
-    }
-
-    /**
-     * Retrieve all available endpoints in the stack's SPARQL knowledge graph.
-     *
-     * @param url      The stack's SPARQL blazegraph endpoint without namespaces.
-     * @param username The username credentials for the stack's SPARQL blazegraph endpoint. Defaults to null if the endpoint is unauthenticated.
-     * @param password The password credentials for the stack's SPARQL blazegraph endpoint. Defaults to "" if the endpoint is unauthenticated.
-     */
-    protected void getAllEndpoints(String url, String username, String password) {
-        LOGGER.debug("Retrieving all SPARQL endpoints...");
-        // Send a GET request to this specific url
-        String requestUrl = url + "namespace?describe-each-named-graph=false";
-        // If there is no password, send the GET request without an authentication header.
-        HttpResponse response = password.isEmpty() ? AgentCommunicationClient.sendGetRequest(requestUrl) :
-                // Else, the authentication header must be included
-                AgentCommunicationClient.sendGetRequest(requestUrl, username, password);
-        parseXmlNamespaces(response.body().toString(), url);
+        LOGGER.debug("Retrieving all metadata from SPARQL endpoints...");
+        // For each of the spatial zone endpoint, retrieve the metadata associated with them
+        for (String endpoint : this.SPATIAL_ZONE_SPARQL_ENDPOINTS) {
+            executeSparqlAction(endpoint, this::retrieveMetaData);
+        }
     }
 
     /**
@@ -96,12 +79,33 @@ public class SparqlClient {
     }
 
     /**
+     * Retrieve all available endpoints in the stack's SPARQL knowledge graph.
+     *
+     * @param url      The stack's SPARQL blazegraph endpoint without namespaces.
+     * @param username The username credentials for the stack's SPARQL blazegraph endpoint. Defaults to null if the endpoint is unauthenticated.
+     * @param password The password credentials for the stack's SPARQL blazegraph endpoint. Defaults to "" if the endpoint is unauthenticated.
+     * @return A queue containing all SPARQL endpoints.
+     */
+    private Queue<String> getAllEndpoints(String url, String username, String password) {
+        LOGGER.debug("Retrieving all SPARQL endpoints...");
+        // Send a GET request to this specific url
+        String requestUrl = url + "namespace?describe-each-named-graph=false";
+        // If there is no password, send the GET request without an authentication header.
+        HttpResponse response = password.isEmpty() ? AgentCommunicationClient.sendGetRequest(requestUrl) :
+                // Else, the authentication header must be included
+                AgentCommunicationClient.sendGetRequest(requestUrl, username, password);
+        return parseXmlNamespaces(response.body().toString(), url);
+    }
+
+    /**
      * Parses the response into valid xml and extract only the namespace information required into endpoint format.
      *
      * @param responseBody The response's body content.
      * @param url          The SPARQL url within the stack without the namespace.
+     * @return A queue containing all SPARQL endpoints.
      */
-    protected void parseXmlNamespaces(String responseBody, String url) {
+    private Queue<String> parseXmlNamespaces(String responseBody, String url) {
+        Queue<String> sparqlEndpoints = new ArrayDeque<>();
         // Parse the response into an XML document format
         Document xmlDoc;
         try {
@@ -126,70 +130,82 @@ public class SparqlClient {
             Node nameNode = description.getElementsByTagName("Namespace").item(0);
             String namespace = nameNode.getTextContent();
             // Construct a valid SPARQL endpoint, and store it
-            this.STACK_SPARQL_ENDPOINTS.offer(url + "namespace/" + namespace + "/sparql");
+            sparqlEndpoints.offer(url + "namespace/" + namespace + "/sparql");
         }
+        return sparqlEndpoints;
+    }
+
+    /**
+     * Executes a SPARQL action on the provided SPARQL endpoint.
+     *
+     * @param endpoint The URL of the SPARQL endpoint.
+     * @param action   The SparqlAction to be executed.
+     * @throws JPSRuntimeException If an error occurs while executing the SPARQL action or connecting to the endpoint.
+     */
+    private void executeSparqlAction(String endpoint, SparqlAction action) {
+        try (RDFConnection conn = RDFConnection.connect(endpoint)) {
+            action.execute(conn, endpoint);
+        } catch (QueryParseException e) {
+            LOGGER.fatal("Invalid query: " + e.getMessage());
+            throw new JPSRuntimeException("Invalid query: " + e.getMessage());
+        } catch (Exception e) {
+            LOGGER.fatal("Error connecting to SPARQL endpoint: " + e);
+            throw new JPSRuntimeException("Error connecting to SPARQL endpoint: " + e);
+        }
+    }
+
+    /**
+     * Classifies the SPARQL endpoint depending on if they contain spatial zone information or not.
+     * These endpoints will be stored in the corresponding internal list.
+     *
+     * @param conn     Connection object to the SPARQL endpoint.
+     * @param endpoint The current SPARQL endpoint.
+     */
+    private void classifyEndpointType(RDFConnection conn, String endpoint) {
+        // Executes a simple facility query to see if there are any facilities with assets.
+        conn.queryResultSet(SparqlQuery.genSimpleFacilityQuery(), (resultSet) -> {
+            // If there is at least one result, the current endpoint holds spatial zone information
+            if (resultSet.hasNext()) {
+                this.SPATIAL_ZONE_SPARQL_ENDPOINTS.add(endpoint); // Store different endpoint types in different lists
+            } else {
+                // If no results are available, this endpoint holds various information that are not on spatial zones
+                this.REMAINING_SPARQL_ENDPOINTS.add(endpoint);
+            }
+        });
     }
 
     /**
      * Retrieves metadata required for generating the dashboard syntax.
      *
-     * @param conn Connection object to the SPARQL endpoint.
+     * @param conn     Connection object to the SPARQL endpoint.
+     * @param endpoint The current SPARQL endpoint.
      */
-    private void retrieveMetaData(RDFConnection conn) {
-        StringBuilder query = new StringBuilder();
-        query.append("PREFIX bot: <https://w3id.org/bot#>")
-                .append("PREFIX ontobim: <https://www.theworldavatar.com/kg/ontobim/>")
-                .append("PREFIX ontodevice: <https://www.theworldavatar.com/kg/ontodevice/>")
-                .append("PREFIX ontotimeseries: <https://www.theworldavatar.com/kg/ontotimeseries/>")
-                .append("PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>")
-                .append("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>")
-                .append("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>")
-                .append("PREFIX saref:<https://saref.etsi.org/core/>")
-                .append("SELECT DISTINCT ?facilityname ?elementname ?elementtype ?measure ?measurename ?timeseries ")
-                .append("WHERE {")
-                // Query to get assets within a facility
-                .append("?building rdf:type bot:Building;")
-                .append("   ontobim:hasFacility ?facility.")
-                .append("?facility rdfs:label ?facilityname;")
-                .append("   ontobim:hasRoom ?room.")
-                .append("?room rdf:type ontobim:Room;")
-                .append("   bot:containsElement ?element.")
-                .append("?element rdfs:label ?elementname;")
-                .append("   rdf:type ?elementtype;")
-                // Query to retrieve the time series associated with devices
-                // The below line performs a recursive query to retrieve all sub devices in the possible permutations of:
-                // Device sendsSignalTo subDevice; sendsSignalTo/consistsOf subDevice; consistsOf subDevice;
-                // consistsOf/sendsSignalTo subDevice; consistsOf/sendsSignalTo/consistsOf subDevice
-                .append("   ontodevice:sendsSignalTo*/saref:consistsOf*/ontodevice:sendsSignalTo*/saref:consistsOf* ?subdevices.")
-                // Retrieve the measure and its name associated with either the element or their subdevices
-                .append("{?element ontodevice:measures ?measurename.            ?measurename om:hasValue ?measure.}")
-                .append("UNION {?element ontodevice:observes ?measure.          ?measure rdf:type ?measurename.}")
-                .append("UNION {?subdevices ontodevice:measures ?measurename.   ?measurename om:hasValue ?measure.}")
-                .append("UNION {?subdevices ontodevice:observes ?measure.       ?measure rdf:type ?measurename.}")
-                // Once retrieved, all measures has a time series
-                .append("?measure ontotimeseries:hasTimeSeries ?timeseries.")
-                .append("}");
-        // Execute SELECT query and upon execution, run the following lines for each result row
-        conn.querySelect(query.toString(), (qs) -> {
-            // Retrieve relevant information
-            String facilityName = qs.getLiteral("facilityname").toString();
-            String assetName = qs.getLiteral("elementname").toString();
-            String assetType = qs.getResource("elementtype").getLocalName();
-            String measureIri = qs.getResource("measure").toString();
-            // Measure name might contain UUID
-            String measureName = qs.getResource("measurename").getLocalName();
-            measureName = StringHelper.removeUUID(measureName);
-            String timeSeriesIri = qs.getResource("timeseries").toString();
-            // Check if the facility already exists in the map
-            if (this.SPATIAL_ZONES.containsKey(facilityName)) {
-                // If it does exist, add the asset to the existing facility object
-                Facility facility = this.SPATIAL_ZONES.get(facilityName);
-                facility.addAsset(assetName, assetType, measureName, measureIri, timeSeriesIri);
-            } else {
-                // If it does not exist, initialise a new facility object and add it in
-                Facility facility = new Facility(assetName, assetType, measureName, measureIri, timeSeriesIri);
-                this.SPATIAL_ZONES.put(facilityName, facility);
-            }
-        });
+    private void retrieveMetaData(RDFConnection conn, String endpoint) {
+        // Execute a SELECT query on the current spatial zone endpoint
+        // As the time series triples are stored on the remaining endpoints, these have to be executed one by one using the SERVICE keyword
+        // Effectively, we repeatedly perform the following steps for all remaining endpoints
+        for (String serviceEndpoint : this.REMAINING_SPARQL_ENDPOINTS) {
+            // Execute SELECT query and upon execution, run the following lines for each result row
+            conn.querySelect(SparqlQuery.genFacilityMeasureQuery(serviceEndpoint), (qs) -> {
+                // Retrieve relevant information
+                String facilityName = qs.getLiteral("facilityname").toString();
+                String assetName = qs.getLiteral("elementname").toString();
+                String assetType = qs.getResource("elementtype").getLocalName();
+                String measureIri = qs.getResource("measure").toString();
+                // Measure name might contain UUID
+                String measureName = qs.getLiteral("measurename").toString();
+                String timeSeriesIri = qs.getResource("timeseries").toString();
+                // Check if the facility already exists in the map
+                if (this.SPATIAL_ZONES.containsKey(facilityName)) {
+                    // If it does exist, add the asset to the existing facility object
+                    Facility facility = this.SPATIAL_ZONES.get(facilityName);
+                    facility.addAsset(assetName, assetType, measureName, measureIri, timeSeriesIri);
+                } else {
+                    // If it does not exist, initialise a new facility object and add it in
+                    Facility facility = new Facility(assetName, assetType, measureName, measureIri, timeSeriesIri);
+                    this.SPATIAL_ZONES.put(facilityName, facility);
+                }
+            });
+        }
     }
 }
