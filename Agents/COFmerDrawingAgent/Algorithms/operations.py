@@ -1,9 +1,9 @@
 from rdkit import Chem
 from rdkit.Chem import rdchem
 from rdkit.Chem import AllChem
-import csv
+from copy import deepcopy
+from itertools import product
 import os
-import json
 
 # -------------------------------------- INPUTS ----------------------------------------------
 # assemblyModel: A dictionary containing information about the molecular assembly
@@ -11,14 +11,24 @@ import json
 # precursors: A list of precursor components
 # linkages: A list of linkage components
 
-
-
 # -------------------------------------- COMPONENT DIFFERENTIATOR ----------------------------------------------
 
 def component_handler(assemblyModel, componentTypeNumber, precursors, linkages):
     components = {}
     result = component_am_mol_matcher(assemblyModel, componentTypeNumber, precursors=precursors, linkages=linkages)
-    #print(linkages)
+    #print(assemblyModel)
+    precursor_dict, linkage_dict = ordering_components(result)
+    linkage_copies = dummify_linkages(linkage_dict)
+    precursor_copies = dummify_precursors(precursor_dict)
+    components.update(linkage_copies)
+    components.update(precursor_copies)
+    #print(components)
+    return components
+
+def component_handler1(assemblyModel, componentTypeNumber,*, precursors, linkages):
+    components = {}
+    result = component_am_mol_matcher(assemblyModel, componentTypeNumber, precursors=precursors, linkages=linkages)
+    #print(result)
     precursor_dict, linkage_dict = ordering_components(result)
     linkage_copies = dummify_linkages(linkage_dict)
     precursor_copies = dummify_precursors(precursor_dict)
@@ -28,8 +38,13 @@ def component_handler(assemblyModel, componentTypeNumber, precursors, linkages):
     return components
 
 def component_am_mol_matcher(assemblyModel, componentTypeNumber, *, precursors=None, linkages=None):
+    #print(componentTypeNumber)
+    #print(precursors)
+    #print(linkages)
+    
     # check if number of precursors match ComponentTypeNumber for Precursor
     if precursors is None and componentTypeNumber.get("Precursor", 0) > 0:
+        #print(precursors)
         return "Error: Number of Precursors does not match ComponentTypeNumber for Precursor"
     elif precursors is not None and componentTypeNumber.get("Precursor", 0) != len(precursors):
         return "Error: Number of Precursors does not match ComponentTypeNumber for Precursor"
@@ -40,41 +55,43 @@ def component_am_mol_matcher(assemblyModel, componentTypeNumber, *, precursors=N
     elif linkages is not None and componentTypeNumber.get("Linkage", 0) != 1:
         return "Error: Number of Linkages does not match ComponentTypeNumber for Linkage"
 
-    # check if components in assemblyModel match the precursors and linkages
-    
-    components = {k:v for k,v in assemblyModel.items() if "Component" in k}
-    #print(components)
-    for precursor in precursors:     
-        if precursor is not None and precursor.get("GBU", "") in components.values():
-            gbu = precursor.get("GBU", "")
-            precursor_info = {
-                "ConstructingMol": precursor.get("ConstructingMol", ""),
-                "BS": precursor.get("BS", [])
-            }
-            for k, v in components.items():
-                if v == gbu:
-                    components[k + " BS"] = precursor_info["BS"]
-        components.update({k: precursor_info["ConstructingMol"] for k, v in components.items() if v == gbu})
-            #print(components)
-    for linkage in linkages: 
+    components = {k: v for k, v in assemblyModel.items() if "Component" in k}
+    matched_gbus = set()
+    for precursor in precursors:
+        gbu = precursor.get("GBU", "")
+        if gbu in matched_gbus:
+            continue
+        precursor_info = {
+            "ConstructingMol": precursor.get("ConstructingMol", ""),
+            "BS": precursor.get("BS", [])
+        }
+        for k, v in components.items():
+            if v == gbu and k not in matched_gbus:
+                components[k] = precursor_info["ConstructingMol"]
+                components[k + " BS"] = precursor_info["BS"]
+                matched_gbus.add(k)
+                break  # Break out of the loop once a match is found
+
+    for linkage in linkages:
+        #print(linkages)
         #print(linkage)
-        if linkage is not None and linkage.get("GBU", "") in components.values():
-            gbu = linkage.get("GBU", "")
-            linkage_info = {
-                "ConstructingMol": linkage.get("ConstructingMol", ""),
-                "BS": linkage.get("BS", [])
-            }
-            for k, v in components.items():
-                if v == gbu:
-                    components[k + " BS"] = linkage_info["BS"]
-        components.update({k: linkage_info["ConstructingMol"] for k, v in components.items() if v == gbu})
-    
+        gbu = linkage.get("GBU", "")
+        linkage_info = {
+            "ConstructingMol": linkage.get("ConstructingMol", ""),
+            "BS": linkage.get("BS", [])
+        }
+        for k, v in components.items():
+            if v == gbu:
+                components[k] = linkage_info["ConstructingMol"]
+                components[k + " BS"] = linkage_info["BS"]
+                break  # Break out of the loop once a match is found
+    #print(components)
     return components
 
 def ordering_components(input_dict):
     precursor_dict = {}
     linkage_dict = {}
-    
+    #print(input_dict)
     # Get all the Component_names
     component_names = set(key.replace(" Copies", "").replace(" BS", "") for key in input_dict.keys() if 'Component' in key)
     #print("--------------------------------------------")
@@ -97,28 +114,19 @@ def ordering_components(input_dict):
     return precursor_dict, linkage_dict
 
 def dummify_linkages(component_dict):
-    dummies_start = 90
     output_dict = {}
-    total_dummies = sum([component_data['Copies'] * len(component_data['BS']) for component_data in component_dict.values()])
+    
     for component_name, component_data in component_dict.items():
         component_copies = component_data['Copies']
-        bs_data_sorted = sorted(component_data['BS'], key=lambda x: x['bsIndex'])
+        input_file = component_data[component_name]
+
         for i in range(1, component_copies + 1):
             copy_name = f"{component_name}_Copy_{i}"
-            input_file = component_data[component_name]
             output_file = f"{copy_name}.mol"
-            bs_data_list = []
-            for bs_data in bs_data_sorted:
-                bs_index = bs_data['bsIndex']
-                bs_data_copy = {'bindingSite': bs_data['bindingSite'], 'Dummies': []}
-                for j in range(bs_index):
-                    bs_data_copy['Dummies'].append(dummies_start)
-                    dummies_start += 1
-                bs_data_list.append(bs_data_copy)
-            if copy_name in output_dict:
-                output_dict[copy_name]['Linkage_BS'].extend(bs_data_list)
-            else:
-                output_dict[copy_name] = {'inputFile': input_file, 'outputFile': output_file, 'Linkage_BS': bs_data_list}
+            bs_data_list = [{'bindingSite': bs_data['bindingSite'], 'Dummies': bs_data['Dummies']} for bs_data in component_data['BS']]
+            
+            output_dict[copy_name] = {'inputFile': input_file, 'outputFile': output_file, 'Linkage_BS': bs_data_list}
+    #print(output_dict)
     return output_dict
 
 def dummify_precursors(component_dict):
@@ -150,6 +158,36 @@ def dummify_precursors(component_dict):
 
 def component_mol_handler(component_dict, input_dir, output_dir):
     for component_name, component_data in component_dict.items():
+        #print(component_data)
+        input_file = os.path.join(input_dir, component_data['inputFile'])
+        output_file = os.path.join(output_dir, component_data['outputFile'])
+        dummies = None
+        
+        # Handle Linkage_BS by simply copying the input file to the output file
+        if 'Linkage_BS' in component_data:
+            with open(input_file, 'r') as f_in, open(output_file, 'w') as f_out:
+                f_out.write(f_in.read())
+            continue
+        
+        # Handle Precursor_BS by reading the dummies and processing the file
+        elif 'Precursor_BS' in component_data:
+            dummies = [d['Dummies'] for d in component_data['Precursor_BS']][0]
+
+        with open(input_file, 'r') as f:
+            mol_block = f.read()
+        mol = Chem.MolFromMolBlock(mol_block)
+        
+        if dummies is not None:
+            mol = dummy_atom_replacer(mol, dummies)
+            
+        with open(output_file, 'w') as f:
+            f.write(Chem.MolToMolBlock(mol))
+        
+        component_mol_cleaner(output_dir)
+
+def component_mol_handler_complex(component_dict, input_dir, output_dir):
+    for component_name, component_data in component_dict.items():
+        #print(component_data)
         input_file = os.path.join(input_dir, component_data['inputFile'])
         output_file = os.path.join(output_dir, component_data['outputFile'])
         dummies = None
@@ -196,71 +234,127 @@ def component_mol_cleaner(directory):
 
             with open(file_path, 'w') as f:
                 f.write(cleaned_mol_block)
-                
 #----------------------PRODUCT COMPONENT HANDLER -------------------------
 
-def initial_product_instantiation(assembly_model, SingleComponent):
+def initial_product_instantiation(assembly_model, SingleComponent_original):
+    SingleComponent = deepcopy(SingleComponent_original)
+    #print(SingleComponent_original)
     product1 = assembly_model["ConstructionSteps"]["Product_1"]
+    
     component1 = product1[0]
     component2 = product1[1]
-    matching_dummies = []
+
     outputFile = "Product_1.mol"
     inputFile = [SingleComponent[component1]['outputFile'], SingleComponent[component2]['outputFile']]
+
+    Precursor_BS = []
+    Linkage_BS = []
+
+    matching_dummies = []
+
+    if "Precursor_BS" in SingleComponent[component1]:
+        Precursor_BS.extend(SingleComponent[component1]["Precursor_BS"])
+    if "Linkage_BS" in SingleComponent[component2]:
+        #print(SingleComponent[component2])
+        Linkage_BS.extend(SingleComponent[component2]["Linkage_BS"])
+
     if "Linkage_BS" in SingleComponent[component2] and "Precursor_BS" in SingleComponent[component1]:
         for bs1 in SingleComponent[component1]["Precursor_BS"]:
             for bs2 in SingleComponent[component2]["Linkage_BS"]:
-                if bs1["bindingSite"] == bs2["bindingSite"]:
-                    matching_dummies = [bs1["Dummies"][0], bs2["Dummies"][0]]                   
+                #if bs1["bindingSite"] == bs2["bindingSite"] and bs1["Dummies"] and bs2["Dummies"]:
+                #    matching_dummies = [bs1["Dummies"].pop(0), bs2["Dummies"].pop(0)]   
+                if bs1["bindingSite"] == bs2["bindingSite"] and bs1["Dummies"] and bs2["Dummies"]:
+                    matching_dummies = [bs1["Dummies"][0], bs2["Dummies"][0]]
                     bs1["Dummies"].remove(matching_dummies[0])
                     bs2["Dummies"].remove(matching_dummies[1])
-                    Product_1 = {"outputFile": outputFile, "inputFile": inputFile, 
-                                    "BindingDummies": matching_dummies, 
-                                    "Precursor_BS": [bs1],
-                                    "Linkage_BS": [bs2]}
-                    SingleComponent['Product_1'] = Product_1      
-        #break
-    return SingleComponent
+                    break
 
-def product_instantiation(assembly_model, SingleComponent, product_name):
+    # Filter out the elements where 'Dummies' list is empty
+    Precursor_BS = [bs for bs in Precursor_BS if bs['Dummies']]
+    Linkage_BS = [bs for bs in Linkage_BS if bs['Dummies']]
+
+    Product_1 = {
+        "outputFile": outputFile,
+        "inputFile": inputFile,
+        "BindingDummies": matching_dummies,
+        "Precursor_BS": Precursor_BS,
+        "Linkage_BS": Linkage_BS
+    }
+    #print(Linkage_BS)
+    #print(Product_1)
+    
+    SingleComponent_original['Product_1'] = Product_1
+    #print("---------------------------------------")
+    #print(SingleComponent_original)
+    #print("---------------------------------------")
+    
+    return SingleComponent_original
+
+def product_instantiation(assembly_model, CurrentComponent, product_name):
+       
+    working_component = deepcopy(CurrentComponent)
     product1 = assembly_model["ConstructionSteps"][product_name]
-    #print(product_name)
+    Product_1 = None 
     component1 = product1[0]
     component2 = product1[1]
-    
     matching_dummies = []
     outputFile = product_name+".mol"
-    inputFile = [SingleComponent[component1]['outputFile'], SingleComponent[component2]['outputFile']]
-    if "Linkage_BS" in SingleComponent[component2] and "Precursor_BS" in SingleComponent[component1]:
-        for bs1 in SingleComponent[component1]["Precursor_BS"]:
-            for bs3 in SingleComponent[component1]["Linkage_BS"]:
-                for bs2 in SingleComponent[component2]["Linkage_BS"]:
-                    if bs1["bindingSite"] == bs2["bindingSite"]:
-                        matching_dummies = [bs1["Dummies"][0], bs2["Dummies"][0]]
+    inputFile = [CurrentComponent[component1]['outputFile'], CurrentComponent[component2]['outputFile']]
+    if "Linkage_BS" in working_component[component1] and "Precursor_BS" in working_component[component2]:
+        for bs1 in working_component[component1]["Precursor_BS"]:
+            for bs2 in working_component[component1]["Linkage_BS"]:
+                for bs3 in working_component[component2]["Precursor_BS"]:
+                    if bs1["bindingSite"] == bs3["bindingSite"]:
                         if bs2["bindingSite"] == bs3["bindingSite"]:
-                            bs23 = merging_dummies(bs2, bs3)
+                            matching_dummies = [bs2["Dummies"][0], bs3["Dummies"][0]]                       
+                            bs2["Dummies"].remove(matching_dummies[0])
+                            bs3["Dummies"].remove(matching_dummies[1])
+                            bs13 = merging_dummies(bs1, bs3)
+                            Product_1 = {"outputFile": outputFile, "inputFile": inputFile,
+                                        "BindingDummies": matching_dummies,
+                                        "Precursor_BS": [bs13],
+                                        "Linkage_BS": [bs2]}
+                            CurrentComponent[product_name] = Product_1
+                            return CurrentComponent
+                    else:
+                        if bs2["bindingSite"] == bs3["bindingSite"]:
+                            matching_dummies = [bs2["Dummies"][0], bs3["Dummies"][0]]
+                            # If binding sites are not the same, add bs1 and bs3 to "Precursor_BS"
+                            Product_1 = {"outputFile": outputFile, "inputFile": inputFile,
+                                        "BindingDummies": matching_dummies,
+                                        "Precursor_BS": [bs1, bs3],
+                                        "Linkage_BS": [bs2]}
+                            CurrentComponent[product_name] = Product_1
+                            return CurrentComponent   
+    elif "Precursor_BS" in working_component[component1] and "Linkage_BS" in working_component[component2]:
+        for bs1 in working_component[component1]["Precursor_BS"]:
+            for bs2 in working_component[component1]["Linkage_BS"]:
+                for bs3 in working_component[component2]["Linkage_BS"]:
+                    if bs2["bindingSite"] == bs3["bindingSite"]:    
+                        if bs1["bindingSite"] == bs3["bindingSite"]:
+                            matching_dummies = [bs1["Dummies"][0], bs3["Dummies"][0]] 
                             bs1["Dummies"].remove(matching_dummies[0])
-                            bs23["Dummies"].remove(matching_dummies[1])
+                            bs3["Dummies"].remove(matching_dummies[1])
+                            
+                            bs23 = merging_dummies(bs2, bs3)
                             Product_1 = {"outputFile": outputFile, "inputFile": inputFile, 
                                 "BindingDummies": matching_dummies, 
                                 "Precursor_BS": [bs1],
                                 "Linkage_BS": [bs23]}
-                            SingleComponent[product_name] = Product_1          
-    elif "Precursor_BS" in SingleComponent[component2] and "Linkage_BS" in SingleComponent[component1]:
-        for bs1 in SingleComponent[component2]["Precursor_BS"]:
-            for bs2 in SingleComponent[component1]["Linkage_BS"]:
-                for bs3 in SingleComponent[component1]["Precursor_BS"]:
-                    if bs1["bindingSite"] == bs2["bindingSite"]:
-                        matching_dummies = [bs1["Dummies"][0], bs2["Dummies"][0]]
+                            CurrentComponent[product_name] = Product_1
+                            return CurrentComponent
+                    else:
                         if bs1["bindingSite"] == bs3["bindingSite"]:
-                            bs13 = merging_dummies(bs1, bs3)
-                            bs13["Dummies"].remove(matching_dummies[0])
-                            bs2["Dummies"].remove(matching_dummies[1])
+                            matching_dummies = [bs1["Dummies"][0], bs3["Dummies"][0]] 
+                            bs1["Dummies"].remove(matching_dummies[0])
+                            bs3["Dummies"].remove(matching_dummies[1])      
                             Product_1 = {"outputFile": outputFile, "inputFile": inputFile, 
                                 "BindingDummies": matching_dummies, 
-                                "Precursor_BS": [bs13],
-                                "Linkage_BS": [bs2]}
-                            SingleComponent[product_name] = Product_1
-    return SingleComponent
+                                "Precursor_BS": [bs1],
+                                "Linkage_BS": [bs2,bs3]}
+                            CurrentComponent[product_name] = Product_1
+                            return CurrentComponent
+    return None
 
 def merging_dummies(*dicts):
     merged_dict = {}
@@ -273,14 +367,15 @@ def merging_dummies(*dicts):
                     merged_dict[key] = value
             else:
                 merged_dict[key] = value
-    merged_dict['Dummies'] = sorted(list(set(merged_dict['Dummies'])))
+    merged_dict['Dummies'] = sorted(merged_dict['Dummies'])
     return merged_dict
 
-def looping_to_cofmer(assembly_model, initiation_single_component, second_initiation_step):
+def looping_to_cofmer(assembly_model, initiation_single_component, product_instantiation):
     result_dict = {}
-    print(assembly_model)
+
     construction_steps = assembly_model["ConstructionSteps"]
     current_component = initiation_single_component
+
     for product_name, components in construction_steps.items():
         if product_name == "Product_1":
             continue  # Skip Product_1 since it's already initialized
@@ -289,9 +384,10 @@ def looping_to_cofmer(assembly_model, initiation_single_component, second_initia
                 return initiation_single_component  # Return initiation_single_component if COFmer value is Product_1
             continue  # Skip COFmer since it's already initialized
         
-        temp_dict = second_initiation_step(assembly_model, current_component, product_name)
-        #print(temp_dict)
+        temp_dict = product_instantiation(assembly_model, current_component, product_name)
+
         result_dict = {**result_dict, **temp_dict}
+
     return result_dict
 
 #----------------------PRODUCT COMPONENT MOLECULIZER-------------------------
@@ -301,6 +397,7 @@ def product_mol_handler(input_dict, output_dir):
     
     # Loop through all keys in the dictionary
     for key in input_dict.keys():
+   #     print(key)
         # Check if the key contains the word "Product_"
         if "Product_" in key:
             # Extract the relevant information from the dictionary
@@ -310,12 +407,16 @@ def product_mol_handler(input_dict, output_dir):
             
            #output_file = r"C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\output_dir\\" + input_dict[key]["outputFile"]
             binding_dummies = input_dict[key]["BindingDummies"]
+    #        print(binding_dummies)
             # Generate the variables needed for combine_molecules
             input_component_1 = os.path.join(output_dir, input_files[0])
             input_component_2 = os.path.join(output_dir, input_files[1])
-            
+            #print(input_component_1)
+            #print(input_component_2)
             #input_component_1 = r"C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\output_dir\\" + input_files[0]
             #input_component_2 = r"C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\output_dir\\" + input_files[1]
+            #print(binding_dummies[0])
+            #print(binding_dummies[1])
             binding_dummy_1 = binding_dummies[0]
             binding_dummy_2 = binding_dummies[1]
             product_mol_combiner(input_component_1, binding_dummy_1, input_component_2, binding_dummy_2, output_file)
@@ -406,18 +507,17 @@ def cofmer_cleaner(directory):
 
             with open(file_path, 'w') as f:
                 f.write(cleaned_mol_block)
-               
-                     
-def run_cofmer_pipeline(assemblyModel, componentTypeNumber, precursor1, linkage1, input_dir, output_dir):
-    SingleComponents = component_handler(assemblyModel, componentTypeNumber, [precursor1], [linkage1])
+
+def run_cofmer_pipeline(assemblyModel, componentTypeNumber, precursors, linkages, input_dir, output_dir):
+    if not isinstance(precursors, list):
+        precursors = [precursors]
+    if not isinstance(linkages, list):
+        linkages = [linkages]
+
+    SingleComponents = component_handler(assemblyModel, componentTypeNumber, precursors, linkages)
     component_mol_handler(SingleComponents, input_dir, output_dir)
     initiation_single_component = initial_product_instantiation(assemblyModel, SingleComponents)
-    print(initiation_single_component)
     looping_single_components = looping_to_cofmer(assemblyModel, initiation_single_component, product_instantiation)
-    #with open('data.json', 'w') as f:
-    #    json.dump(looping_single_components, f, indent=4)
-    product_mol_handler(looping_single_components,output_dir)
-    #print(output_dir)
-    #new_dir = r"C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\output_dir\\"
+    product_mol_handler(looping_single_components, output_dir)
     cofmer_cleaner(output_dir)
-    
+
