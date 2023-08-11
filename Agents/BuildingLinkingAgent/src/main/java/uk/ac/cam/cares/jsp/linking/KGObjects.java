@@ -21,8 +21,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 public class KGObjects {
@@ -48,7 +46,7 @@ public class KGObjects {
 
     private String objectIri;
     private String objectName;
-    private String geoObjectId;
+    private String buildingIri;
     private KGAddress address;
 
     static String ontoj = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#";
@@ -64,10 +62,10 @@ public class KGObjects {
     
 
     KGObjects(){}
-    KGObjects(RemoteStoreClient kgClient, String objectIri, String objectName, String geoObjectId, KGAddress address){
+    KGObjects(RemoteStoreClient kgClient, String objectIri, String objectName, String buildingIri, KGAddress address){
         this.objectName = objectName;
         this.objectIri = objectIri;
-        this.geoObjectId = geoObjectId;
+        this.buildingIri = buildingIri;
         this.kgClient = kgClient;
         this.address = address;
     }
@@ -77,7 +75,7 @@ public class KGObjects {
     }
 
     public String getObjectName () {return this.objectName;}
-    public String getGeoObjectId () {return this.geoObjectId;}
+    public String getBuildingIri () {return this.buildingIri;}
     public void setObjectIri (String objectIri) {
         this.objectIri = objectIri;
     }
@@ -87,10 +85,10 @@ public class KGObjects {
     }
 
     public void updateOntoCityGML () {
-        if(this.getGeoObjectId() != null){
+        if(this.getBuildingIri() != null){
             InsertDataQuery modify = Queries.INSERT_DATA();
-            Iri buildingIri = iri(this.getObjectIri());
-            modify.insertData(buildingIri.has(hasOntoCityGML, this.getObjectIri()));
+            Iri objectIri = iri(this.getObjectIri());
+            modify.insertData(objectIri.has(hasOntoCityGML, iri(this.getBuildingIri())));
             modify.prefix(p_env);
             this.kgClient.executeUpdate(modify.getQueryString());
         }
@@ -163,9 +161,9 @@ public class KGObjects {
         Variable building = query.var();
         TriplePattern[] queryPattern;
         queryPattern = new TriplePattern[]{building.has(hasOntoCityGML, buildingIRI),
-                        building.has(type, botBuilding)};
-                query.prefix(p_bot,p_env,rdf).where(queryPattern).select(building);
-
+                        building.isA(botBuilding)};
+                query.prefix(p_bot,p_env).where(queryPattern).select(building);
+        
         JSONArray queryResult = this.kgClient.executeQuery(query.getQueryString());
         if(queryResult.length() > 1){
             LOGGER.fatal("Building should has only one IRI");
@@ -179,7 +177,16 @@ public class KGObjects {
         return objectIRI;
     }
 
-    public void generateObj(){
+    public void insertIri(String objectIri, String buildingIri){
+        this.objectIri = objectIri;
+        this.buildingIri = buildingIri;
+        InsertDataQuery insertIri = Queries.INSERT_DATA();
+        Iri objIri = iri(objectIri);
+        insertIri.insertData(objIri.isA(botBuilding));
+        insertIri.prefix(p_bot);
+        this.kgClient.executeUpdate(insertIri.getQueryString());
+        this.updateOntoCityGML();
+
         
     }
 }

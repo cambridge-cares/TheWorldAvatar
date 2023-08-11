@@ -15,14 +15,12 @@ import com.intuit.fuzzymatcher.domain.Match;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class BuildingLink{
     private static final Logger LOGGER = LogManager.getLogger(BuildingLink.class);
@@ -42,47 +40,35 @@ public class BuildingLink{
 
     protected void BuildingLink(String[] config) {
 //        
-        this.pool = new SqlConnectionPool(config);
-        LOGGER.info("Pinging source database for availability...");
-        try (Connection srcConn = this.pool.getSourceConnection()) {
-            if (!srcConn.isValid(60)) {
-                LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
-                throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
-            }else{
-                GeoObject3D object3D = new GeoObject3D();
+        GeoObject3D object3D = new GeoObject3D();
 
-                RemoteStoreClient kgClient = new RemoteStoreClient(config[4],config[4],null,null);
-                KGObjects kgObjects = new KGObjects(kgClient, null, null, null, null);
-                try {
-                    // this.kgObjects =  kgObjects.getAllObjects(config);
-                    // object3D.setPostGISClient(postgisClient);
-                    this.geoObject3Ds = object3D.getObject3D(config);
-                    generatIir();
-                    } catch (Exception e) {
-                        LOGGER.error("Fail to connect database.");
-                        LOGGER.error(e.getMessage());
-                        throw new RuntimeException(e);
-                    }    
-                // fuzzyMatch(this.geoObject3Ds,this.kgObjects);
+        try {
+            String buildingIri = null;
+            String objIRI = null;
+            this.geoObject3Ds = object3D.getObject3D(config);
+            RemoteStoreClient kgClient = new RemoteStoreClient(config[4],config[4],null,null);
+            KGObjects obj = new KGObjects(kgClient, null, null, null, null);
+            for(int i = 0; i < this.geoObject3Ds.size(); i++){
+                buildingIri = this.geoObject3Ds.get(i).getIRI();
+                objIRI = obj.queryObjectIri(buildingIri);
+                if(objIRI == null){
+                //generate a IRI for bot:building
+                    String[] splitIRI = buildingIri.split("kg/",2);
+                    String[] subSplitIRI = splitIRI[1].split("/");
+                    UUID uuid = UUID.randomUUID();
+                    objIRI = splitIRI[0] + "kg/" + subSplitIRI[0] + "/" + subSplitIRI[0] + "_" + uuid.toString();
+                    obj.insertIri(objIRI, buildingIri);
+                }else{
+                //building link
+                }
             }
-
-        } catch (SQLException e) {
-            LOGGER.fatal("Error connecting to source database: " + e);
-            throw new JPSRuntimeException("Error connecting to source database: " + e);
+        } catch (Exception e) {
+            LOGGER.error("Fail to connect database.");
+            LOGGER.error(e.getMessage());
+            throw new RuntimeException(e);
         }
     }
-    // protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
-    //     // new Config().initProperties();
-    //     LOGGER.info("Received POST request to link building");
-    //     LOGGER.info("Received request: " + req);
 
-    //     // Map<String, String> parameters = aggregateByKeys();
-    //     // String db3d = parameters.get("db3d");
-    //     // String kgurl = parameters.get("blazegraph");
-
-        
-
-    // }
     public void fuzzyMatch(List<GeoObject3D> geoObject3Ds, List<KGObjects> kgObjects){
         MatchService matchService = new MatchService();
         List<Document> docmentList = new ArrayList<>();
@@ -132,19 +118,4 @@ public class BuildingLink{
 
     }
 
-    public void generatIir(){
-        KGObjects obj = new KGObjects();
-        for(int i = 0; i < this.geoObject3Ds.size(); i++){
-            String buildingIri = this.geoObject3Ds.get(i).getIRI();
-            String objIRI = obj.queryObjectIri(buildingIri);
-            if(objIRI == null){
-            //generate a IRI for bot:building
-            }else{
-            //building link
-            }
-        }
-    }
-    // void setPostGISClient(PostgresClient postgisClient) {
-    //     // this.postgisClient = postgisClient;
-    // }
 }

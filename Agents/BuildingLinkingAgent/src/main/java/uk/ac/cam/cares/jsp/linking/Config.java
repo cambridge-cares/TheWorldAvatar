@@ -43,7 +43,7 @@ public class Config extends ContainerClient {
                 prop.setProperty(SRC_DB_USER, "postgres");
                 prop.setProperty(SRC_DB_PASSWORD, "postgis");
                 prop.setProperty(SRC_DB_3D, "pirmasens");
-                prop.setProperty(SRC_KG_URL, "http://localhost:3838//blazegraph/namespace/pirmasens/sparql");
+                prop.setProperty(SRC_KG_URL, "http://dataintegrationagent-blazegraph:8080/blazegraph/namespace/pirmasens/sparql");
                 prop.setProperty(PREFIX1, "https://w3id.org/bot#");
                 prop.setProperty(PREFIX2, "https://www.theworldavatar.com/kg/ontobim/");
                 prop.setProperty(ISA, "Building");

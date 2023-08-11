@@ -183,6 +183,37 @@ public class GeoObject3D {
 
     }
 
+    public PGgeometry extractPrint_thematic (int cityobjectid, String surfaceType){
+        PGgeometry footprint = new PGgeometry();
+        if(surfaceType.equals("footprint")){
+            this.objectClassid = 35;
+        }else if (surfaceType.equals("roofprint")){
+            this.objectClassid = 33;
+        }else{
+            this.objectClassid = 0;
+        }
+        try (Connection srcConn = this.pool.get3DConnection()) {
+            if (!srcConn.isValid(60)) {
+                LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
+                throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
+            }else{
+               String sql = "SELECT public.ST_MakePolygon(public.ST_ExteriorRing(public.ST_Union(geometry))) as footprint " +
+               "FROM surface_geometry WHERE root_id  IN (SELECT lod2_multi_surface_id FROM thematic_surface WHERE building_id = " 
+               + cityobjectid + " AND objectclass_id = " + this.objectClassid + ") AND geometry is not null"; 
+               try (Statement stmt = srcConn.createStatement()) {
+                    ResultSet result = stmt.executeQuery(sql);
+                    while (result.next()) {
+                        footprint = (PGgeometry)result.getObject("footprint");                      
+                    }                  
+                }
+                return footprint;
+            }
+        }catch (SQLException e) {
+            LOGGER.fatal("Error connecting to source database: " + e);
+            throw new JPSRuntimeException("Error connecting to source database: " + e);
+        }
+    }
+
     public PGgeometry extractPrint (int cityobjectid, String surfaceType){
         PGgeometry footprint = new PGgeometry();
         if(surfaceType.equals("footprint")){

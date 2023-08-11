@@ -52,9 +52,9 @@ public class FootPrint {
             List<PGgeometry> groundList = new ArrayList<>();
             // groundList = new ArrayList<PGgeometry>(allSurfaces.values());
             if(this.thematic){
-                print = object3D.extractPrint(objectid, this.surfaceType);
+                print = object3D.extractPrint_thematic(objectid, this.surfaceType);
             }else{
-
+                print = object3D.extractPrint(objectid, surfaceType);
             }
             
             // if(this.thematic && allSurfaces.size() > 0){
