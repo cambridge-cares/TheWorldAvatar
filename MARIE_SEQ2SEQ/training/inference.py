@@ -23,7 +23,7 @@ def infer():
         model_args.model_path, device="cuda", max_new_tokens=infer_args.max_new_tokens
     )
 
-    with open(data_args.data_path, "r") as f:
+    with open(data_args.eval_data_path, "r") as f:
         data = json.load(f)
 
     preds = []
