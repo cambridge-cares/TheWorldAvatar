@@ -4,8 +4,7 @@ from generate_data.template_utils import add_space_and_lower
 ### 
 
 def get_species_from_property_L(PropertyName, value):
-    query_text = f"""
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    query_text = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -24,9 +23,15 @@ WHERE {{
     ?{PropertyName}ReferenceStateUnitIRI rdfs:label ?{PropertyName}ReferenceStateUnitValue .}}
 
     FILTER(?{PropertyName}Value < {value})
-}}
-    """
-  
+}}"""
+
+    query_text_compact = f"""SELECT DISTINCT ?IUPACNameValue ?{PropertyName}Value
+WHERE {{
+    ?SpeciesIRI os:hasIUPACName ?IUPACNameValue .
+    ?SpeciesIRI os:hasProperty{PropertyName} ?{PropertyName}Value .
+    FILTER(?{PropertyName}Value < {value})
+}}"""
+
     PropertyName = add_space_and_lower(PropertyName)
 
     question_text = f"""Provide a catalog of compounds exhibiting {PropertyName} below {value}.
@@ -54,13 +59,16 @@ Give me a list of molecules with {PropertyName} lower than {value}   """
     lines = question_text.splitlines()
     prompt = random.choice(lines)
 
-    return query_text, prompt
+    return dict(
+        question=prompt,
+        sparql_query=query_text,
+        sparql_query_compact=query_text_compact
+    )
 
 ###
 
 def get_species_from_property_H(PropertyName, value):
-    query_text = f"""
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    query_text = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -79,9 +87,15 @@ WHERE {{
     ?{PropertyName}ReferenceStateUnitIRI rdfs:label ?{PropertyName}ReferenceStateUnitValue .}}
 
     FILTER(?{PropertyName}Value > {value})
-}}
-    """
-  
+}}"""
+
+    query_text_compact = f"""SELECT DISTINCT ?IUPACNameValue ?{PropertyName}Value
+WHERE {{
+    ?SpeciesIRI os:hasIUPACName ?IUPACNameValue .
+    ?SpeciesIRI os:hasProperty{PropertyName} ?{PropertyName}Value .
+    FILTER(?{PropertyName}Value > {value})
+}}"""
+
     PropertyName = add_space_and_lower(PropertyName)
 
     question_text = f"""Provide a catalog of compounds exhibiting {PropertyName} exceeding {value}.
@@ -108,13 +122,16 @@ Identify the species with {PropertyName} values higher than {value}. """
     lines = question_text.splitlines()
     prompt = random.choice(lines)
 
-    return query_text, prompt
+    return dict(
+        question=prompt,
+        sparql_query=query_text,
+        sparql_query_compact=query_text_compact
+    )
 
 ###
 
 def get_species_from_property_O(PropertyName, minvalue, maxvalue):
-    query_text = f"""
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    query_text = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -133,8 +150,14 @@ WHERE {{
     ?{PropertyName}ReferenceStateUnitIRI rdfs:label ?{PropertyName}ReferenceStateUnitValue .}}
 
     FILTER(?{PropertyName}Value < {minvalue} || ?{PropertyName}Value > {maxvalue})
-}}
-    """
+}}"""
+
+    query_text_compact = f"""SELECT DISTINCT ?IUPACNameValue ?{PropertyName}Value
+WHERE {{
+    ?SpeciesIRI os:hasIUPACName ?IUPACNameValue .
+    ?SpeciesIRI os:hasProperty{PropertyName} ?{PropertyName}Value .
+    FILTER(?{PropertyName}Value < {minvalue} || ?{PropertyName}Value > {maxvalue})
+}}"""
   
     PropertyName = add_space_and_lower(PropertyName)
 
@@ -163,13 +186,16 @@ Species with {PropertyName} lower than {minvalue} and higher than {maxvalue} """
     lines = question_text.splitlines()
     prompt = random.choice(lines)
 
-    return query_text, prompt
+    return dict(
+        question=prompt,
+        sparql_query=query_text,
+        sparql_query_compact=query_text_compact
+    )
 
 ###
 
 def get_species_from_property_I(PropertyName, minvalue, maxvalue):
-    query_text = f"""
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    query_text = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -188,9 +214,15 @@ WHERE {{
     ?{PropertyName}ReferenceStateUnitIRI rdfs:label ?{PropertyName}ReferenceStateUnitValue .}}
 
     FILTER(?{PropertyName}Value > {minvalue} && ?{PropertyName}Value < {maxvalue})
-}}
-    """
-  
+}}"""
+
+    query_text_compact = f"""SELECT DISTINCT ?IUPACNameValue ?{PropertyName}Value
+WHERE {{
+    ?SpeciesIRI os:hasIUPACName ?IUPACNameValue .
+    ?SpeciesIRI os:hasProperty{PropertyName} ?{PropertyName}Value . 
+    FILTER(?{PropertyName}Value > {minvalue} && ?{PropertyName}Value < {maxvalue})
+}}"""
+
     PropertyName = add_space_and_lower(PropertyName)
 
     question_text = f"""Provide a compilation of chemical compounds exhibiting {PropertyName} within the range of {minvalue} to {maxvalue}.
@@ -218,13 +250,16 @@ Species with {PropertyName} between {minvalue} to {maxvalue}"""
     lines = question_text.splitlines()
     prompt = random.choice(lines)
 
-    return query_text, prompt
+    return dict(
+        question=prompt,
+        sparql_query=query_text,
+        sparql_query_compact=query_text_compact
+    )
 
 ###
 
 def get_species_from_property_A(PropertyName, value):
-    query_text = f"""
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    query_text = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -243,9 +278,15 @@ WHERE {{
     ?{PropertyName}ReferenceStateUnitIRI rdfs:label ?{PropertyName}ReferenceStateUnitValue .}}
 
     FILTER(?{PropertyName}Value > {value}*0.9 && ?{PropertyName}Value < {value}*1.1)
-}}
-    """
-  
+}}"""
+
+    query_text_compact = f"""SELECT DISTINCT ?IUPACNameValue ?{PropertyName}Value
+WHERE {{
+    ?SpeciesIRI os:hasIUPACName ?IUPACNameValue .
+    ?SpeciesIRI os:hasProperty{PropertyName} ?{PropertyName}Value . 
+    FILTER(?{PropertyName}Value > {value}*0.9 && ?{PropertyName}Value < {value}*1.1)
+}}"""
+
     PropertyName = add_space_and_lower(PropertyName)
 
     question_text = f"""Give me a list of species with {PropertyName} around {value}.
@@ -273,13 +314,16 @@ Point out molecules demonstrating {PropertyName} around {value}.  """
     lines = question_text.splitlines()
     prompt = random.choice(lines)
 
-    return query_text, prompt
+    return dict(
+        question=prompt,
+        sparql_query=query_text,
+        sparql_query_compact=query_text_compact
+    )
 
 ###
 
 def get_species_from_chemclass(ChemClass):
-    query_text = f"""
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    query_text = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -293,11 +337,17 @@ WHERE {{
     ?SpeciesIRI os:hasChemicalClass* ?x .
 	?x ?y ?z .
 	?z rdfs:subClassOf* ?ChemicalClassIRI .
-	?ChemicalClassIRI rdf:type os:ChemicalClass  ; rdfs:label rdfs:label ?chemicalclass .
+	?ChemicalClassIRI rdf:type os:ChemicalClass  ; rdfs:label rdfs:label ?ChemicalClassValue .
 
-    FILTER( ?chemicalclass = "{ChemClass}")
-}}
-    """
+    FILTER( ?ChemicalClassValue = "{ChemClass}")
+}}"""
+
+    query_text_compact = f"""SELECT DISTINCT ?IUPACNameValue 
+WHERE {{
+    ?SpeciesIRI os:hasIUPACName ?IUPACNameValue .
+    ?SpeciesIRI os:hasChemicalClass ?ChemicalClassValue .
+    FILTER( ?ChemicalClassValue = "{ChemClass}")
+}}"""
 
     question_text = f"""Give me a list of species that are classified as {ChemClass} 
 Give me a list of species that are {ChemClass}
@@ -325,13 +375,16 @@ Outline the roster of chemical species attributed to {ChemClass}."""
     lines = question_text.splitlines()
     prompt = random.choice(lines)
 
-    return query_text, prompt
+    return dict(
+        question=prompt,
+        sparql_query=query_text,
+        sparql_query_compact=query_text_compact
+    )
 
 ###
 
 def get_species_from_use(Use):
-    query_text = f"""
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    query_text = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -343,11 +396,17 @@ WHERE {{
     ?IUPACNameIRI os:value ?IUPACNameValue .
 
     ?SpeciesIRI os:hasUse ?UseIRI .
-    ?UseIRI os:value ?use .
+    ?UseIRI os:value ?UseValue .
 
-    FILTER( ?use = "{Use}")
-}}
-    """
+    FILTER( ?UseValue = "{Use}")
+}}"""
+
+    query_text_compact = f""""SELECT DISTINCT ?IUPACNameValue 
+WHERE {{
+    ?SpeciesIRI os:hasIUPACName ?IUPACNameValue .
+    ?SpeciesIRI os:hasUse ?UseValue .
+    FILTER( ?UseValue = "{Use}")
+}}"""    
 
     question_text = f"""Give me a list of species that are used as {Use}
 Provide a roster of chemical entities employed as {Use}.
@@ -374,7 +433,11 @@ Furnish a compilation of chemical species employed as {Use}."""
     lines = question_text.splitlines()
     prompt = random.choice(lines)
 
-    return query_text, prompt
+    return dict(
+        question=prompt,
+        sparql_query=query_text,
+        sparql_query_compact=query_text_compact
+    )
 
 ###
 

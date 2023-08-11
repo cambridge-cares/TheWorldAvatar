@@ -4,8 +4,7 @@ from generate_data.template_utils import add_space_and_lower
 ### 
 
 def get_property_from_chemclass(PropertyName, ChemClass):
-    query_text = f"""
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    query_text = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -19,9 +18,9 @@ WHERE {{
     ?SpeciesIRI os:hasChemicalClass* ?x .
 	?x ?y ?z .
 	?z rdfs:subClassOf* ?ChemicalClassIRI .
-	?ChemicalClassIRI rdf:type os:ChemicalClass  ; rdfs:label rdfs:label ?chemicalclass .
+	?ChemicalClassIRI rdf:type os:ChemicalClass  ; rdfs:label rdfs:label ?ChemicalClassValue .
 
-    FILTER( ?chemicalclass = "{ChemClass}")
+    FILTER( ?ChemicalClassValue = "{ChemClass}")
 
     ?SpeciesIRI os:has{PropertyName} ?{PropertyName}IRI .
     ?{PropertyName}IRI os:value ?{PropertyName}Value ; os:unit ?{PropertyName}UnitIRI ; os:hasProvenance ?{PropertyName}ProvenanceIRI . 
@@ -29,9 +28,16 @@ WHERE {{
     OPTIONAL{{?{PropertyName}IRI os:hasReferenceState ?{PropertyName}ReferenceStateIRI .
     ?{PropertyName}ReferenceStateIRI os:value ?{PropertyName}ReferenceStateValue ; os:unit ?{PropertyName}ReferenceStateUnitIRI .
     ?{PropertyName}ReferenceStateUnitIRI rdfs:label ?{PropertyName}ReferenceStateUnitValue .}}
-}}
-    """
-  
+}}"""
+
+    query_text_compact = f"""SELECT DISTINCT ?IUPACNameValue ?{PropertyName}Value
+WHERE {{
+    ?SpeciesIRI os:hasIUPACName ?IUPACNameValue .
+    ?SpeciesIRI os:hasChemicalClass ?ChemicalClassValue .
+    FILTER( ?ChemicalClassValue = "{ChemClass}")
+    ?SpeciesIRI os:hasProperty{PropertyName} ?{PropertyName}Value .
+}}"""
+
     PropertyName = add_space_and_lower(PropertyName)
 
     question_text = f"""Can you provide the {PropertyName} of species classified as {ChemClass}? 
@@ -60,13 +66,16 @@ Give me details about the {PropertyName} of molecules classed as {ChemClass}."""
     lines = question_text.splitlines()
     prompt = random.choice(lines)
 
-    return query_text, prompt
+    return dict(
+        question=prompt,
+        sparql_query=query_text,
+        sparql_query_compact=query_text_compact,
+    )
 
 ####
 
 def get_two_property_from_chemclass(PropertyName1, PropertyName2, ChemClass):
-    query_text = f"""
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    query_text = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -80,9 +89,9 @@ WHERE {{
     ?SpeciesIRI os:hasChemicalClass* ?x .
 	?x ?y ?z .
 	?z rdfs:subClassOf* ?ChemicalClassIRI .
-	?ChemicalClassIRI rdf:type os:ChemicalClass  ; rdfs:label rdfs:label ?chemicalclass .
+	?ChemicalClassIRI rdf:type os:ChemicalClass  ; rdfs:label ?ChemicalClassValue .
 
-    FILTER( ?chemicalclass = "{ChemClass}")
+    FILTER( ?ChemicalClassValue = "{ChemClass}")
 
     ?SpeciesIRI os:has{PropertyName1} ?{PropertyName1}IRI .
     ?{PropertyName1}IRI os:value ?{PropertyName1}Value ; os:unit ?{PropertyName1}UnitIRI ; os:hasProvenance ?{PropertyName1}ProvenanceIRI . 
@@ -97,9 +106,17 @@ WHERE {{
     OPTIONAL{{?{PropertyName2}IRI os:hasReferenceState ?{PropertyName2}ReferenceStateIRI .
     ?{PropertyName2}ReferenceStateIRI os:value ?{PropertyName2}ReferenceStateValue ; os:unit ?{PropertyName2}ReferenceStateUnitIRI .
     ?{PropertyName2}ReferenceStateUnitIRI rdfs:label ?{PropertyName2}ReferenceStateUnitValue .}}
-}}
-    """
-  
+}}"""
+
+    query_text_compact = f"""SELECT DISTINCT ?IUPACNameValue ?{PropertyName1}Value ?{PropertyName2}Value
+WHERE {{
+    ?SpeciesIRI os:hasIUPACName ?IUPACNameValue .
+    ?SpeciesIRI os:hasChemicalClass ?ChemicalClassValue .
+    FILTER( ?ChemicalClassValue = "{ChemClass}")
+    ?SpeciesIRI os:hasProperty{PropertyName1} ?{PropertyName1}Value .
+    ?SpeciesIRI os:hasProperty{PropertyName2} ?{PropertyName2}Value .
+}}"""
+
     PropertyName1 = add_space_and_lower(PropertyName1)
     PropertyName2 = add_space_and_lower(PropertyName2)
 
@@ -129,17 +146,20 @@ Point out the {PropertyName1} and {PropertyName2} traits of chemical species ide
     lines = question_text.splitlines()
     prompt = random.choice(lines)
 
-    return query_text, prompt
+    return dict(
+        question=prompt,
+        sparql_query=query_text,
+        sparql_query_compact=query_text_compact,
+    )
 
 ###
 
 def get_three_property_from_chemclass(PropertyName1, PropertyName2, PropertyName3, ChemClass):
-    query_text = f"""
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    query_text = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT DISTINCT ?label ?IUPACNameValue ?{PropertyName1}Value ?{PropertyName1}UnitValue ?{PropertyName1}ReferenceStateValue ?{PropertyName1}ReferenceStateUnitValue ?{PropertyName2}Value ?{PropertyName2}UnitValue ?{PropertyName2}ReferenceStateValue ?{PropertyName2}ReferenceStateUnitValue
+SELECT DISTINCT ?label ?IUPACNameValue ?{PropertyName1}Value ?{PropertyName1}UnitValue ?{PropertyName1}ReferenceStateValue ?{PropertyName1}ReferenceStateUnitValue ?{PropertyName2}Value ?{PropertyName2}UnitValue ?{PropertyName2}ReferenceStateValue ?{PropertyName2}ReferenceStateUnitValue ?{PropertyName3}Value ?{PropertyName3}UnitValue ?{PropertyName3}ReferenceStateValue ?{PropertyName3}ReferenceStateUnitValue
 WHERE {{
     ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label .
 
@@ -149,9 +169,9 @@ WHERE {{
     ?SpeciesIRI os:hasChemicalClass* ?x .
 	?x ?y ?z .
 	?z rdfs:subClassOf* ?ChemicalClassIRI .
-	?ChemicalClassIRI rdf:type os:ChemicalClass  ; rdfs:label rdfs:label ?chemicalclass .
+	?ChemicalClassIRI rdf:type os:ChemicalClass  ; rdfs:label rdfs:label ?ChemicalClassValue .
 
-    FILTER( ?chemicalclass = "{ChemClass}")
+    FILTER( ?ChemicalClassValue = "{ChemClass}")
 
     ?SpeciesIRI os:has{PropertyName1} ?{PropertyName1}IRI .
     ?{PropertyName1}IRI os:value ?{PropertyName1}Value ; os:unit ?{PropertyName1}UnitIRI ; os:hasProvenance ?{PropertyName1}ProvenanceIRI . 
@@ -173,9 +193,18 @@ WHERE {{
     OPTIONAL{{?{PropertyName3}IRI os:hasReferenceState ?{PropertyName3}ReferenceStateIRI .
     ?{PropertyName3}ReferenceStateIRI os:value ?{PropertyName3}ReferenceStateValue ; os:unit ?{PropertyName3}ReferenceStateUnitIRI .
     ?{PropertyName3}ReferenceStateUnitIRI rdfs:label ?{PropertyName3}ReferenceStateUnitValue .}}
-}}
-    """
-  
+}}"""
+
+    query_text_compact = f"""SELECT DISTINCT ?IUPACNameValue ?{PropertyName1}Value ?{PropertyName2}Value  ?{PropertyName3}Value
+WHERE {{
+    ?SpeciesIRI os:hasIUPACName ?IUPACNameValue .
+    ?SpeciesIRI os:hasChemicalClass ?ChemicalClassValue .
+    FILTER( ?ChemicalClassValue = "{ChemClass}")
+    ?SpeciesIRI os:hasProperty{PropertyName1} ?{PropertyName1}Value .
+    ?SpeciesIRI os:hasProperty{PropertyName2} ?{PropertyName2}Value .
+    ?SpeciesIRI os:hasProperty{PropertyName3} ?{PropertyName3}Value .
+}}"""
+
     PropertyName1 = add_space_and_lower(PropertyName1)
     PropertyName2 = add_space_and_lower(PropertyName2)
     PropertyName3 = add_space_and_lower(PropertyName3)
@@ -206,7 +235,11 @@ Discuss the {PropertyName1}, {PropertyName2}, and {PropertyName3} particulars of
     lines = question_text.splitlines()
     prompt = random.choice(lines)
 
-    return query_text, prompt
+    return dict(
+        question=prompt,
+        sparql_query=query_text,
+        sparql_query_compact=query_text_compact
+    )
 
 ###
 

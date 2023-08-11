@@ -4,8 +4,7 @@ from generate_data.template_utils import add_space_and_lower
 ### 
 
 def get_property_from_species(PropertyName, species):
-    query_text = f"""
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    query_text = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -14,7 +13,7 @@ WHERE {{
     ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label .
 
     ?SpeciesIRI ?hasIdentifier ?IdentifierIRI .
-    ?IdentifierIRI  rdf:type ?Identifier ; os:value ?species .
+    ?IdentifierIRI rdf:type ?Identifier ; os:value ?species .
     ?Identifier rdfs:subClassOf os:Identifier .
 
     FILTER( ?species = "{species}")
@@ -25,8 +24,14 @@ WHERE {{
     OPTIONAL{{?{PropertyName}IRI os:hasReferenceState ?{PropertyName}ReferenceStateIRI .
     ?{PropertyName}ReferenceStateIRI os:value ?{PropertyName}ReferenceStateValue ; os:unit ?{PropertyName}ReferenceStateUnitIRI .
     ?{PropertyName}ReferenceStateUnitIRI rdfs:label ?{PropertyName}ReferenceStateUnitValue .}}
-}}
-    """
+}}"""
+
+    query_text_compact = f"""SELECT DISTINCT ?{PropertyName}Value
+WHERE {{
+    ?SpeciesIRI ?hasIdentifier ?species .
+    FILTER( ?species = "{species}")
+    ?SpeciesIRI os:hasProperty{PropertyName} ?{PropertyName}Value .
+}}"""
   
     PropertyName = add_space_and_lower(PropertyName)
 
@@ -54,13 +59,16 @@ Tell me about the {PropertyName} of {species}."""
     lines = question_text.splitlines()
     prompt = random.choice(lines)
 
-    return query_text, prompt
+    return dict(
+        question=prompt,
+        sparql_query=query_text,
+        sparql_query_compact=query_text_compact
+    )
 
 ####
 
 def get_two_property_from_species(PropertyName1, PropertyName2, species):
-    query_text = f"""
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    query_text = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -87,8 +95,15 @@ WHERE {{
     OPTIONAL{{?{PropertyName2}IRI os:hasReferenceState ?{PropertyName2}ReferenceStateIRI .
     ?{PropertyName2}ReferenceStateIRI os:value ?{PropertyName2}ReferenceStateValue ; os:unit ?{PropertyName2}ReferenceStateUnitIRI .
     ?{PropertyName2}ReferenceStateUnitIRI rdfs:label ?{PropertyName2}ReferenceStateUnitValue .}}
-}}
-    """
+}}"""
+
+    query_text_compact = f"""SELECT DISTINCT ?{PropertyName1}Value ?{PropertyName2}Value
+WHERE {{
+    ?SpeciesIRI ?hasIdentifier ?species .
+    FILTER( ?species = "{species}")
+    ?SpeciesIRI os:hasProperty{PropertyName1} ?{PropertyName1}Value .
+    ?SpeciesIRI os:hasProperty{PropertyName2} ?{PropertyName2}Value .
+}}"""
   
     PropertyName1 = add_space_and_lower(PropertyName1)
     PropertyName2 = add_space_and_lower(PropertyName2)
@@ -119,17 +134,20 @@ Share some insights into the {PropertyName1} and {PropertyName2} of {species}.""
     lines = question_text.splitlines()
     prompt = random.choice(lines)
 
-    return query_text, prompt
+    return dict(
+        question=prompt,
+        sparql_query=query_text,
+        sparql_query_compact=query_text_compact
+    )
 
 ###
 
 def get_three_property_from_species(PropertyName1, PropertyName2, PropertyName3, species):
-    query_text = f"""
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    query_text = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT DISTINCT ?label ?{PropertyName1}Value ?{PropertyName1}UnitValue ?{PropertyName1}ReferenceStateValue ?{PropertyName1}ReferenceStateUnitValue ?{PropertyName2}Value ?{PropertyName2}UnitValue ?{PropertyName2}ReferenceStateValue ?{PropertyName2}ReferenceStateUnitValue
+SELECT DISTINCT ?label ?{PropertyName1}Value ?{PropertyName1}UnitValue ?{PropertyName1}ReferenceStateValue ?{PropertyName1}ReferenceStateUnitValue ?{PropertyName2}Value ?{PropertyName2}UnitValue ?{PropertyName2}ReferenceStateValue ?{PropertyName2}ReferenceStateUnitValue ?{PropertyName3}UnitValue ?{PropertyName3}ReferenceStateValue ?{PropertyName3}ReferenceStateUnitValue 
 WHERE {{
     ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label .
 
@@ -159,9 +177,17 @@ WHERE {{
     OPTIONAL{{?{PropertyName3}IRI os:hasReferenceState ?{PropertyName3}ReferenceStateIRI .
     ?{PropertyName3}ReferenceStateIRI os:value ?{PropertyName3}ReferenceStateValue ; os:unit ?{PropertyName3}ReferenceStateUnitIRI .
     ?{PropertyName3}ReferenceStateUnitIRI rdfs:label ?{PropertyName3}ReferenceStateUnitValue .}}
-}}
-    """
-  
+}}"""
+
+    query_text_compact = f"""SELECT DISTINCT ?{PropertyName1}Value ?{PropertyName2}Value ?{PropertyName3}Value 
+WHERE {{
+    ?SpeciesIRI ?hasIdentifier ?species .
+    FILTER( ?species = "{species}")
+    ?SpeciesIRI os:hasProperty{PropertyName1} ?{PropertyName1}Value .
+    ?SpeciesIRI os:hasProperty{PropertyName2} ?{PropertyName2}Value .
+    ?SpeciesIRI os:hasProperty{PropertyName3} ?{PropertyName3}Value .
+}}"""
+
     PropertyName1 = add_space_and_lower(PropertyName1)
     PropertyName2 = add_space_and_lower(PropertyName2)
     PropertyName3 = add_space_and_lower(PropertyName3)
@@ -189,13 +215,16 @@ Share insights into the {PropertyName1}, {PropertyName2}, and {PropertyName3} of
     lines = question_text.splitlines()
     prompt = random.choice(lines)
 
-    return query_text, prompt
+    return dict(
+        question=prompt,
+        sparql_query=query_text,
+        sparql_query_compact=query_text_compact
+    )
 
 ###
 
 def get_identifier_from_species(IdentifierName, species):
-    query_text = f"""
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    query_text = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -211,8 +240,14 @@ WHERE {{
 
     ?SpeciesIRI os:has{IdentifierName} ?{IdentifierName}IRI .
     ?{IdentifierName}IRI os:value ?{IdentifierName}Value .
-}}
-    """
+}}"""
+
+    query_text_compact = f"""SELECT DISTINCT ?label ?{IdentifierName}Value
+WHERE {{
+    ?SpeciesIRI ?hasIdentifier ?species .
+    FILTER( ?species = "{species}")
+    ?SpeciesIRI os:hasIdentifier{IdentifierName} ?{IdentifierName}Value .
+}}"""
   
     IdentifierName = add_space_and_lower(IdentifierName)
 
@@ -234,13 +269,16 @@ Please elaborate on the {IdentifierName} of {species}."""
     lines = question_text.splitlines()
     prompt = random.choice(lines)
 
-    return query_text, prompt
+    return dict(
+        question=prompt,
+        sparql_query=query_text,
+        sparql_query_compact=query_text_compact
+    )
 
 ###
 
 def get_chemclass_from_species(species):
-    query_text = f"""
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    query_text = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -258,9 +296,16 @@ WHERE {{
 	?x ?y ?z .
 	?z rdfs:subClassOf* ?ChemicalClassIRI .
 	?ChemicalClassIRI rdf:type os:ChemicalClass  ; rdfs:label ?ChemicalClassValue .
-}}
-    """
-  
+}}"""
+
+    query_text_compact = f"""SELECT DISTINCT ?ChemicalClassValue 
+WHERE {{
+    ?SpeciesIRI ?hasIdentifier ?species .
+    FILTER( ?species = "{species}")
+	?SpeciesIRI os:hasChemicalClass ?ChemicalClassValue .
+}}"""
+
+
     question_text = f"""What are the chemical classes of {species}?
 Could you list the chemical classes that {species} belongs to?
 What are the categorizations of {species} in terms of chemical classes?
@@ -285,13 +330,16 @@ What can you tell me about the chemical classes categorization for {species}?"""
     lines = question_text.splitlines()
     prompt = random.choice(lines)
 
-    return query_text, prompt
+    return dict(
+        question=prompt,
+        sparql_query=query_text,
+        sparql_query_compact=query_text_compact
+    )
 
 ###
 
 def get_use_from_species(species):
-    query_text = f"""
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    query_text = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -307,8 +355,14 @@ WHERE {{
 
     ?SpeciesIRI os:hasUse ?UseIRI .
     ?UseIRI os:value ?UseValue .
-}}
-    """
+}}"""
+
+    query_text_compact = f"""SELECT DISTINCT ?label ?UseValue 
+WHERE {{
+    ?SpeciesIRI ?hasIdentifier ?species .
+    FILTER( ?species = "{species}")
+    ?SpeciesIRI os:hasUse ?UseValue .
+}}"""
   
     question_text = f"""What are the uses of {species}?
 How can {species} be utilized?
@@ -335,13 +389,15 @@ How can {species} contribute to different endeavors?"""
     lines = question_text.splitlines()
     prompt = random.choice(lines)
 
-    return query_text, prompt
-
+    return dict(
+        question=prompt,
+        sparql_query=query_text,
+        sparql_query_compact=query_text_compact
+    )
 ###
 
 def get_use_and_chemclass_from_species(species):
-    query_text = f"""
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    query_text = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -362,8 +418,15 @@ WHERE {{
 	?x ?y ?z .
 	?z rdfs:subClassOf* ?ChemicalClassIRI .
 	?ChemicalClassIRI rdf:type os:ChemicalClass  ; rdfs:label ?ChemicalClassValue .
-}}
-    """
+}}"""
+
+    query_text_compact = f"""SELECT DISTINCT ?UseValue ?ChemicalClassValue
+WHERE {{
+    ?SpeciesIRI ?hasIdentifier ?species .
+    FILTER( ?species = "{species}")
+    ?SpeciesIRI os:hasUse ?UseValue .
+    ?SpeciesIRI os:hasChemicalClass ?ChemicalClassValue .
+}}"""
   
     question_text = f"""What are the chemical classes and uses of {species}?
 What are the various chemical categories and applications of {species}?
@@ -390,13 +453,16 @@ Share some information about {species} and its chemical classes, along with its 
     lines = question_text.splitlines()
     prompt = random.choice(lines)
 
-    return query_text, prompt
+    return dict(
+        question=prompt,
+        sparql_query=query_text,
+        sparql_query_compact=query_text_compact
+    )
 
 ###
 
 def get_all_properties(species):
-    query_text = f"""
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    query_text = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -420,9 +486,15 @@ WHERE {{
     ?PropertyNameReferenceStateUnitIRI rdfs:label ?PropertyNameReferenceStateUnitValue .}}
     
   	BIND(strafter(str(?PropertyName),'#') AS ?PropertyLabel)   
-}}
-    """
-  
+}}"""
+
+    query_text_compact = f"""SELECT DISTINCT ?PropertyNameValue
+WHERE {{
+    ?SpeciesIRI ?hasIdentifier ?species .
+    FILTER( ?species = "{species}")
+    ?SpeciesIRI ?hasPropertyName ?PropertyNameValue .
+}}"""
+
     question_text = f"""What are the properties of {species}?
 What characteristics does {species} possess?
 Can you list the attributes of {species}?
@@ -469,13 +541,16 @@ Can you briefly describe {species}?"""
     lines = question_text.splitlines()
     prompt = random.choice(lines)
 
-    return query_text, prompt
+    return dict(
+        question=prompt,
+        sparql_query=query_text,
+        sparql_query_compact=query_text_compact
+    )
 
 ###
 
 def get_all_identifiers(species):
-    query_text = f"""
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    query_text = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -495,8 +570,14 @@ WHERE {{
     ?IdentifierNameIRI os:value ?IdentifierNameValue .
     
   	BIND(strafter(str(?IdentifierName),'#') AS ?IdentifierLabel)   
-}}
-    """
+}}"""
+
+    query_text_compact = f"""SELECT DISTINCT ?IdentifierNameValue
+WHERE {{
+    ?SpeciesIRI ?hasIdentifier ?species .
+    FILTER( ?species = "{species}")
+    ?SpeciesIRI ?hasIdentifierName ?IdentifierNameValue . 
+}}"""
   
     question_text = f"""What are the identifiers of {species}?
 Which attributes uniquely identify {species}?
@@ -510,13 +591,16 @@ What are the unique identifiers for {species} recognition?"""
     lines = question_text.splitlines()
     prompt = random.choice(lines)
 
-    return query_text, prompt
+    return dict(
+        question=prompt,
+        sparql_query=query_text,
+        sparql_query_compact=query_text_compact
+    )
 
 ###
 
 def get_compare_properties(PropertyName, species1, species2):
-    query_text = f"""
-PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+    query_text = f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
@@ -536,8 +620,14 @@ WHERE {{
     OPTIONAL{{?{PropertyName}IRI os:hasReferenceState ?{PropertyName}ReferenceStateIRI .
     ?{PropertyName}ReferenceStateIRI os:value ?{PropertyName}ReferenceStateValue ; os:unit ?{PropertyName}ReferenceStateUnitIRI .
     ?{PropertyName}ReferenceStateUnitIRI rdfs:label ?{PropertyName}ReferenceStateUnitValue .}}
-}}
-    """
+}}"""
+
+    query_text_compact = f"""SELECT DISTINCT ?{PropertyName}Value
+WHERE {{
+    ?SpeciesIRI ?hasIdentifier ?species .
+    FILTER( ?species = "{species1}" || ?species = "{species2}")
+    ?SpeciesIRI os:hasProperty{PropertyName} ?{PropertyName}Value .
+}}"""
   
     question_text = f"""Compare {PropertyName} of {species1} and {species2}
 What is the {PropertyName} of {species1} and {species2}
@@ -565,6 +655,8 @@ Break down the differences in {PropertyName} between {species1} and {species2}."
     lines = question_text.splitlines()
     prompt = random.choice(lines)
 
-    return query_text, prompt
-
-
+    return dict(
+        question=prompt,
+        sparql_query=query_text,
+        sparql_query_compact=query_text_compact
+    )
