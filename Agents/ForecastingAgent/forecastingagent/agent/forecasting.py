@@ -109,7 +109,8 @@ class ForecastingAgent(DerivationAgent):
                     raise TypeError(f"Derivation {derivationIRI}: More than one '{inp_name}' IRI provided.")
 
         # Retrieve IRI to forecast
-        # Prio 1) If an om:Quantity is provided, use this one
+        # For createSyncDerivationForNewInfo ... 
+        # Prio 1) If (subclass of) an om:Quantity is provided, use this one
         # Prio 2) If not, try to extract the appropriate owl:Thing
         if inputs.get(OM_QUANTITY):
             inp = inputs.get(OM_QUANTITY)
@@ -134,6 +135,24 @@ class ForecastingAgent(DerivationAgent):
             else:
                 self.logger.error(f"Derivation {derivationIRI}: No unique 'owl:Thing' IRI provided to forecast.")
                 raise TypeError(f"Derivation {derivationIRI}: No unique 'owl:Thing' IRI provided to forecast.")
+        
+        # ... for existing derivations
+        else:
+            # If neither om:Quantity nor owl:Thing is marked up directly as input
+            # (e.g., in cases where a subclass of om:Quantity is forecasted), try to
+            # extract the appropriate IRI
+            type_to_forecast = [k for k in inputs if k not in input_iris.keys()]
+            if len(type_to_forecast) != 1:
+                self.logger.error(f"Derivation {derivationIRI}: Rdf:type to forecast could not be determined.")
+                raise TypeError(f"Derivation {derivationIRI}: Rdf:type to forecast could not be determined.")
+            else:
+                inp = inputs.get(type_to_forecast[0])
+                # Check whether only one input has been provided
+                if len(inp) == 1:
+                    input_iris['iri_to_forecast'] = inp[0]
+                else:
+                    self.logger.error(f"Derivation {derivationIRI}: IRI to forecast could not be determined.")
+                    raise TypeError(f"Derivation {derivationIRI}: IRI to forecast could not be determined.")
 
         return input_iris
 
@@ -211,6 +230,14 @@ class ForecastingAgent(DerivationAgent):
                 # NOTE: Derivation Framework only supports one output per rdf type
                 self.sparql_client.reconnect_forecast_with_derivation(old_fc_iri, fc_iri)
 
+            # Add output graph to ensure complete derivation markup
+            # --> this part of the code is only relevant when called via 
+            # 'createSyncDerivationForNewInfo' and its only purpose is to ensure
+            #  that forecast instance is marked up as "belongsTo" the derivation
+            g = Graph()
+            g.add((URIRef(fc_iri), URIRef(RDF_TYPE), URIRef(TS_FORECAST)))   
+            derivation_outputs.addGraph(g)
+
         else:
             # Only update forecast metadata in KG
             self.sparql_client.instantiate_forecast(forecast=fc_ts, config=cfg)
@@ -219,17 +246,11 @@ class ForecastingAgent(DerivationAgent):
         
         created_at = pd.to_datetime('now', utc=True)
         logger.info(f'Created forecast at: {created_at}')
-        
-        # Add output graph to ensure complete derivation markup
-        # NOTE: DerivationWithTimeSeries does not return any output triples, as all
-        #       updates to the time series are expected to be conducted within the 
-        #       agent logic --> this part of the code is only reached when called
-        #       via 'createSyncDerivationForNewInfo' and its only purpose is to ensure
-        #       that the forecast instance is marked up as "belongsTo" the derivation
-        g = Graph()
-        g.add((URIRef(fc_iri), URIRef(RDF_TYPE), URIRef(TS_FORECAST)))   
-        derivation_outputs.addGraph(g)
 
+        # NOTE: DerivationWithTimeSeries does not return any output triples, 
+        #       as all updates to the time series are expected to be conducted
+        #       within the agent logic 
+        
 
     def evaluate_forecast_error(self):
         """

@@ -103,10 +103,10 @@ FC_FREQUENCY_1 = TEST_TRIPLES_BASE_IRI + 'Frequency_1'
 HIST_DURATION_1 = TEST_TRIPLES_BASE_IRI + 'Duration_1'
 HIST_DURATION_2 = TEST_TRIPLES_BASE_IRI + 'Duration_2'
 
-# Define derivation input sets to test
-# Forecast 1 : 
-#  - Prophet
-#   - Jan 01 2020 00:00:00 UTC - Jan 02 2020 00:00:00 UTC
+# Define derivation input sets to test: forecasts created using Prophet for
+# Jan 01 2020 00:00:00 UTC - Jan 02 2020 00:00:00 UTC
+TEST_CASE_1 = 'OM_Quantity_with_Measure_with_Unit'
+TEST_CASE_2 = 'OM_Quantity_without_Measure_without_Unit'
 DERIVATION_INPUTS_1 = [IRI_TO_FORECAST_1, FORECASTING_MODEL_1, 
                        FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_1]
 DERIVATION_INPUTS_2 = [IRI_TO_FORECAST_2, FORECASTING_MODEL_1,

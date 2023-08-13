@@ -365,8 +365,8 @@ class KGClient(PySparqlClient):
 
         # Only delete/update old unit if new one is available
         if cfg.get('unit'):
-            unit_insert = "?fc_iri <{OM_HASUNIT}> <{cfg['unit']}> . "
-            unit_delete = "?fc_iri <{OM_HASUNIT}> ?unit . "
+            unit_insert = f"?fc_iri <{OM_HASUNIT}> <{cfg['unit']}> . "
+            unit_delete = f"?fc_iri <{OM_HASUNIT}> ?unit . "
         else:
             unit_insert = ""
             unit_delete = ""

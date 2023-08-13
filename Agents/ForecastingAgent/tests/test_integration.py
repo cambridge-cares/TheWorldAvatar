@@ -91,8 +91,8 @@ def test_example_data_instantiation(initialise_clients):
 @pytest.mark.parametrize(
     "derivation_input_set, dataIRI, with_unit, ts_times, ts_values, case",
     [
-        (cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, True, cf.TIMES, cf.VALUES_1, 'TestCase1'),
-        #(cf.DERIVATION_INPUTS_1, cf.IRI_TO_FORECAST_1, False, cf.TIMES, cf.VALUES_1),
+        (cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_1),
+        #(cf.DERIVATION_INPUTS_1, cf.IRI_TO_FORECAST_1, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_2),
         #(cf.DERIVATION_INPUTS_2, cf.IRI_TO_FORECAST_2, cf.TIMES, cf.VALUES_3)
     ],
 )
@@ -175,6 +175,14 @@ def test_create_forecast(
     print('Forecast errors:')
     for k,v in errors.items():
         print(f'{k}: {round(v,5)}')
+
+    # Request for derivation update 
+    # (after updating timestamp of pure input to trigger new derivation)
+    any_pure_input = [i for inp in derivation_inputs.values() for i in inp][0]
+    derivation_client.updateTimestamp(any_pure_input)
+    
+    #derivation_client.updatePureSyncDerivation(derivation_iri)
+    derivation_client.unifiedUpdateDerivation(derivation_iri)
 
     print("All check passed.")
 
