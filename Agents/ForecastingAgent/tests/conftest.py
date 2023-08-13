@@ -18,6 +18,7 @@ import uuid
 import numpy as np
 import pandas as pd
 import psycopg2 as pg
+import matplotlib.pyplot as plt
 from flask import Flask
 from pathlib import Path
 from rdflib import Graph
@@ -289,6 +290,53 @@ def create_example_agent():
 # ----------------------------------------------------------------------------------
 # Helper functions
 # ----------------------------------------------------------------------------------
+
+def assess_forecast_error(data_iri, forecast_iri, kg_client, ts_client, 
+                          name='test'):
+    """
+    Assess the error of a derived forecast and plot both time series
+    NOTE: Plots are saved to the 'test_plots' folder in 'tests' volume as 
+          Docker test container does not have GUIs
+    """
+
+    # 1) Create forecast plot for visual inspection
+    # Retrieve time series data and create a DataFrame
+    ts1 = ts_client.retrieve_timeseries(data_iri)
+    ts2 = ts_client.retrieve_timeseries(forecast_iri)
+    df1 = pd.DataFrame({'timestamp': ts1[0], 'actual data': ts1[1]})
+    df2 = pd.DataFrame({'timestamp': ts2[0], 'forecast': ts2[1]})
+    # Convert 'timestamp' column to a datetime data type
+    df1['timestamp'] = pd.to_datetime(df1['timestamp'])
+    df1.set_index('timestamp', inplace=True)
+    df2['timestamp'] = pd.to_datetime(df2['timestamp'])
+    df2.set_index('timestamp', inplace=True)
+    # Merge DataFrames (while keeping all historical data) and slice to relevant period
+    df = pd.merge(df1, df2, on='timestamp', how='outer')
+    offset1 = pd.DateOffset(days=3)
+    offset2 = pd.DateOffset(days=1)
+    valid_indices = (df.index - offset2 <= df2.index.max()) & (df.index + offset1 >= df2.index.min())
+    valid_entries = df[valid_indices]
+
+    # Create plot and save to volume
+    ax = valid_entries.plot()
+    ax.set_xlabel('Timestamp')
+    ax.set_ylabel('Values')
+    ax.set_title(name)
+    ax.grid(which='minor', axis='both')
+    fp = '/app/tests/test_plots/' + name + '.png'
+    plt.savefig(fp)
+
+    # 2) Calculate forecast errors
+    http_request = ERROR_REQUEST.copy()
+    http_request['query']['tsIRI_target'] = kg_client.get_tsIRI(data_iri)
+    http_request['query']['tsIRI_fc'] = kg_client.get_tsIRI(forecast_iri)
+    # Create HTTP request to evaluate forecast errors
+    headers = {'Content-Type': 'application/json'}
+    url = AGENT_BASE_URL + '/evaluate_errors'
+    response = requests.post(url, json=http_request, headers=headers)
+
+    return response.json()
+
 
 def get_derivation_inputs_outputs(derivation_iri: str, sparql_client):
     query_output = f"""SELECT ?output ?output_type ?input ?input_type

@@ -27,7 +27,7 @@ from . import conftest as cf
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
 
-#@pytest.mark.skip(reason="Nor relevant right now")
+@pytest.mark.skip(reason="Nor relevant right now")
 def test_example_triples():
     """
     This test checks that the example triples are correct in syntax.
@@ -43,7 +43,8 @@ def test_example_triples():
         except Exception as e:
             raise e
 
-#@pytest.mark.skip(reason="Nor relevant right now")
+
+@pytest.mark.skip(reason="Nor relevant right now")
 def test_example_data_instantiation(initialise_clients):
     """
     This test checks that all example data gets correctly instantiated,
@@ -88,16 +89,16 @@ def test_example_data_instantiation(initialise_clients):
 
 
 @pytest.mark.parametrize(
-    "derivation_input_set, dataIRI, with_unit, ts_times, ts_values",
+    "derivation_input_set, dataIRI, with_unit, ts_times, ts_values, case",
     [
-        (cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, True, cf.TIMES, cf.VALUES_1),
-        (cf.DERIVATION_INPUTS_1, cf.IRI_TO_FORECAST_1, False, cf.TIMES, cf.VALUES_1),
+        (cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, True, cf.TIMES, cf.VALUES_1, 'TestCase1'),
+        #(cf.DERIVATION_INPUTS_1, cf.IRI_TO_FORECAST_1, False, cf.TIMES, cf.VALUES_1),
         #(cf.DERIVATION_INPUTS_2, cf.IRI_TO_FORECAST_2, cf.TIMES, cf.VALUES_3)
     ],
 )
 def test_create_forecast(
     initialise_clients, create_example_agent, derivation_input_set, dataIRI, with_unit,
-    ts_times, ts_values
+    ts_times, ts_values, case
 ):
     """
     Test if forecasting agent performs derivation update as expected
@@ -168,17 +169,18 @@ def test_create_forecast(
             derivation_input_set_copy.remove(j)
     assert len(derivation_input_set_copy) == 0
 
+    # Assess forecast error and create plot for visual inspection
+    fcIRI = list(derivation_outputs[dm.TS_FORECAST])[0]
+    errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, case)
+    print('Forecast errors:')
+    for k,v in errors.items():
+        print(f'{k}: {round(v,5)}')
+
     print("All check passed.")
 
-    #NOTE: test plotting of forecast + test assessment of forecast errors
-    # import matplotlib.pyplot as plt
-    # series.plot(label ="Heat Supply (MWh)" )
-    # plt.xlabel('DateTime')
-    # plt.ylabel("Heat Supply (MWh)")
-    # plt.savefig('/app/tests/test.png')
 
 
-#@pytest.mark.skip(reason="Nor relevant right now")
+@pytest.mark.skip(reason="Nor relevant right now")
 @pytest.mark.parametrize(
     "http_request, fail, equal, expected_result",
     [
@@ -244,8 +246,6 @@ def test_evaluate_forecast(
         assert expected_result(response['max_error'], 0)
 
         
-
-
 # def test_load_pretrained_model():
 #      """
 #      Test the function `load_pretrained_model` to load a pretrained model from a

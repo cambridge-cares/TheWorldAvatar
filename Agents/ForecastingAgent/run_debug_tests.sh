@@ -17,8 +17,11 @@ else
   echo "Container exited with an error (Exit Code: $EXIT_CODE)."
 fi
 
-echo "Inspect test container logs now if needed. Otherwise, press any key to continue."
+echo "Inspect test container logs and plots now if needed. Otherwise, press any key to continue and remove both."
 read -r
 
 # Remove the containers
 docker compose -f "docker-compose-test_dockerised_debug.yml" down -v
+
+# Delete potentially created test plots
+find ./tests/test_plots -type f ! -name '.gitkeep' -exec rm -f {} +
