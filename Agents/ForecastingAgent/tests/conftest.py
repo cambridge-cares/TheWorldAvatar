@@ -57,7 +57,7 @@ TEST_TRIPLES_BASE_IRI = 'https://www.theworldavatar.com/test/'
 
 # Expected number of triples
 TBOX_TRIPLES = 7
-ABOX_TRIPLES = 36
+ABOX_TRIPLES = 44
 TS_TRIPLES = 4
 TIME_TRIPLES_PER_PURE_INPUT = 6
 AGENT_SERVICE_TRIPLES = 4       # agent service triples
@@ -65,7 +65,12 @@ DERIV_INPUT_TRIPLES = 2 + 6*3   # triples for derivation input message
 DERIV_OUTPUT_TRIPLES = 2 + 1*3  # triples for derivation output message
 FORECAST_TRIPLES = 35           # triples for newly instantiated forecast (w/o unit)
 UNIT_TRIPLES = 1                # triples to assign unit to forecast
-
+# Forecast interval time bounds in unix seconds
+T_1 = 1577836800
+T_2 = 1577923200
+T_3 = 1578009600
+# Forecast data history (in hours)
+DURATION_1 = 336
 
 # 
 #  Values which should not require changing
@@ -99,12 +104,12 @@ IRI_TO_FORECAST_3 = TEST_TRIPLES_BASE_IRI + 'Availability_1'    #owl:Thing
 IRI_TO_FORECAST_4 = TEST_TRIPLES_BASE_IRI + 'Availability_2'    #owl:Thing
 FORECASTING_MODEL_1 = TEST_TRIPLES_BASE_IRI + 'ForecastingModel_1'
 FC_INTERVAL_1 = TEST_TRIPLES_BASE_IRI + 'OptimisationInterval_1'
+FC_INTERVAL_2 = TEST_TRIPLES_BASE_IRI + 'OptimisationInterval_2'
 FC_FREQUENCY_1 = TEST_TRIPLES_BASE_IRI + 'Frequency_1'
 HIST_DURATION_1 = TEST_TRIPLES_BASE_IRI + 'Duration_1'
 HIST_DURATION_2 = TEST_TRIPLES_BASE_IRI + 'Duration_2'
 
-# Define derivation input sets to test: forecasts created using Prophet for
-# Jan 01 2020 00:00:00 UTC - Jan 02 2020 00:00:00 UTC
+# Define derivation input sets to test
 TEST_CASE_1 = 'OM_Quantity_with_Measure_with_Unit'
 TEST_CASE_2 = 'OM_Quantity_without_Measure_without_Unit'
 DERIVATION_INPUTS_1 = [IRI_TO_FORECAST_1, FORECASTING_MODEL_1, 
@@ -358,6 +363,22 @@ def get_derivation_inputs_outputs(derivation_iri: str, sparql_client):
         outputs = {k: set([x['output'] for x in response if x['output_type'] == k]) for k in key}
     
     return inputs, outputs
+
+
+def update_derivation_interval(derivation_iri: str, interval_iri: str, sparql_client):
+    # Replace the derivation's forecast interval with a new interval
+    update = f"""
+        DELETE {{ 
+            ?deriv_iri <{ONTODERIVATION_ISDERIVEDFROM}> ?interval . 
+        }} INSERT {{
+            ?deriv_iri  <{ONTODERIVATION_ISDERIVEDFROM}> <{interval_iri}> . 
+        }} WHERE {{
+            VALUES ?deriv_iri {{ <{derivation_iri}> }}
+            ?deriv_iri <{ONTODERIVATION_ISDERIVEDFROM}> ?interval .
+            ?interval <{RDF_TYPE}> <{TIME_INTERVAL}> .
+        }}
+        """
+    sparql_client.performUpdate(update)
 
 
 def initialise_triples(sparql_client):

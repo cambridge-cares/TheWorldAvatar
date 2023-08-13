@@ -56,6 +56,15 @@
     time:hasTRS <http://dbpedia.org/resource/Unix_time> ;
     time:numericPosition 1577923200.0 .
 
+:OptimisationInterval_2 rdf:type time:Interval ;
+    time:hasBeginning :OptimisationEndInstant_1 ;
+    time:hasEnd :OptimisationEndInstant_2 .
+:OptimisationEndInstant_2 rdf:type time:Instant ;
+    time:inTimePosition :TimePosition_3 .
+:TimePosition_3 rdf:type time:TimePosition ;
+    time:hasTRS <http://dbpedia.org/resource/Unix_time> ;
+    time:numericPosition 1578009600.0 .
+
 :Frequency_1 rdf:type ts:Frequency ;
     time:numericDuration 1.0 ;
     time:unitType time:unitHour ;

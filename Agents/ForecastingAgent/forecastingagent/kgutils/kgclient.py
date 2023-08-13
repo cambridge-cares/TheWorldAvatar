@@ -209,6 +209,42 @@ class KGClient(PySparqlClient):
             msg = "No unique interval details could be retrieved from KG."
             logger.error(msg)
             raise ValueError(msg)
+        
+
+    def get_forecast_details(self, forecastIRI:str):
+        """
+        Returns relevant forecast details (i.e., input and output interval, and
+        unit if available) for given forecast IRI.
+
+        Returns:
+            fc (dict) -- dictionary with keys 'input_interval_iri', 
+                         'output_interval_iri', and 'unit'
+        """
+        query = f"""
+            SELECT DISTINCT ?input_interval_iri ?output_interval_iri ?unit
+            WHERE {{   
+            VALUES ?iri {{ <{forecastIRI}> }} 
+            ?iri <{TS_HASINPUTTIMEINTERVAL}> ?input_interval_iri ;
+                 <{TS_HASOUTPUTTIMEINTERVAL}> ?output_interval_iri .
+            OPTIONAL {{ ?iri <{OM_HASUNIT}> ?unit . }}
+            }}
+        """
+        query = remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Extract relevant information from unique query result
+        if len(res) == 1:
+            fc = {'input_interval_iri': get_unique_value(res, 'input_interval_iri'),
+                  'output_interval_iri': get_unique_value(res, 'output_interval_iri'),
+                  'unit': get_unique_value(res, 'unit')
+            }
+            return fc
+        
+        else:
+            msg = "No unique forecast details could be retrieved from KG."
+            logger.error(msg)
+            raise ValueError(msg)
+
 
 
     def get_dataIRI(self, tsIRI:str):

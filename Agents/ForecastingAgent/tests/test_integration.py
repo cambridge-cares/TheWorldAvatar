@@ -101,7 +101,13 @@ def test_create_forecast(
     ts_times, ts_values, case
 ):
     """
-    Test if forecasting agent performs derivation update as expected
+    Test if forecasting agent performs derivation update as expected    
+        - forecasts are created using Prophet
+        - historical data length: 336h (HIST_DURATION_1, DURATION_1)
+        - initial interval: OptimisationInterval_1
+                            Jan 01 2020 00:00:00 UTC - Jan 02 2020 00:00:00 UTC
+        - updated interval: OptimisationInterval_2
+                            Jan 02 2020 00:00:00 UTC - Jan 03 2020 00:00:00 UTC
     """
 
     # Get required clients from fixture
@@ -138,7 +144,6 @@ def test_create_forecast(
     # Create derivation instance for new information (incl. timestamps for pure inputs)
     derivation = derivation_client.createSyncDerivationForNewInfo(agent.agentIRI, derivation_input_set,
                                                                   dm.ONTODERIVATION_DERIVATIONWITHTIMESERIES)
-
     derivation_iri = derivation.getIri()
     print(f"Initialised successfully, created synchronous derivation instance: {derivation_iri}")
     
@@ -151,7 +156,7 @@ def test_create_forecast(
     triples += len(derivation_input_set) + 3    # number of inputs + derivation type + associated agent + belongsTo
     assert sparql_client.getAmountOfTriples() == triples
 
-    # Query the output of the derivation instance
+    # Query input & output of the derivation instance
     derivation_inputs, derivation_outputs = cf.get_derivation_inputs_outputs(derivation_iri, sparql_client)
     print(f"Generated derivation outputs that belongsTo the derivation instance: {', '.join(derivation_outputs)}")
     
@@ -169,20 +174,49 @@ def test_create_forecast(
             derivation_input_set_copy.remove(j)
     assert len(derivation_input_set_copy) == 0
 
-    # Assess forecast error and create plot for visual inspection
+    # Retrieve instantiated forecast and verify its details
     fcIRI = list(derivation_outputs[dm.TS_FORECAST])[0]
+    fc_intervals = sparql_client.get_forecast_details(fcIRI)
+    inp_interval = sparql_client.get_interval_details(fc_intervals['input_interval_iri'])
+    outp_interval = sparql_client.get_interval_details(fc_intervals['output_interval_iri'])
+    assert inp_interval['start_unix'] == cf.T_1 - cf.DURATION_1*3600
+    assert inp_interval['end_unix'] == cf.T_1 - 3600
+    assert outp_interval['start_unix'] == cf.T_1
+    #TODO: Verify that the end of the forecast is correct (i.e. 24h after the start)
+    assert outp_interval['end_unix'] == cf.T_2 - 3600
+
+    # Assess initial forecast error and create plot for visual inspection
     errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, case)
     print('Forecast errors:')
     for k,v in errors.items():
         print(f'{k}: {round(v,5)}')
 
-    # Request for derivation update 
-    # (after updating timestamp of pure input to trigger new derivation)
-    any_pure_input = [i for inp in derivation_inputs.values() for i in inp][0]
-    derivation_client.updateTimestamp(any_pure_input)
-    
-    #derivation_client.updatePureSyncDerivation(derivation_iri)
+    # Update derivation interval and add latest timestamp to trigger update
+    cf.update_derivation_interval(derivation_iri, cf.FC_INTERVAL_2, sparql_client)
+    assert sparql_client.getAmountOfTriples() == triples
+    derivation_client.addTimeInstanceCurrentTimestamp(cf.FC_INTERVAL_2)
+    triples += cf.TIME_TRIPLES_PER_PURE_INPUT
+    assert sparql_client.getAmountOfTriples() == triples
+
+    # Request for derivation update and verify that no new triples have been added,
+    # only time series and interval values have been amended
     derivation_client.unifiedUpdateDerivation(derivation_iri)
+    assert sparql_client.getAmountOfTriples() == triples
+
+    # Retrieve updated forecast details
+    fc_intervals = sparql_client.get_forecast_details(fcIRI)
+    inp_interval = sparql_client.get_interval_details(fc_intervals['input_interval_iri'])
+    outp_interval = sparql_client.get_interval_details(fc_intervals['output_interval_iri'])
+    assert inp_interval['start_unix'] == cf.T_2 - cf.DURATION_1*3600
+    assert inp_interval['end_unix'] == cf.T_2 - 3600
+    assert outp_interval['start_unix'] == cf.T_2
+    assert outp_interval['end_unix'] == cf.T_3 - 3600
+    
+    # Assess updated forecast error and create plot for visual inspection
+    errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, case)
+    print('Forecast errors:')
+    for k,v in errors.items():
+        print(f'{k}: {round(v,5)}')
 
     print("All check passed.")
 
