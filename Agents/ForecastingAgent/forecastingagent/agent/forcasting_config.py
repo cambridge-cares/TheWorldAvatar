@@ -126,6 +126,7 @@ def create_forecast_configuration(model:dict, ts_details:dict, ts_frequency:dict
     # NOTE: pd.Timestamp expects the input to be in nanoseconds -> specify unit explicitly
     cfg['fc_start_timestamp'] = pd.Timestamp(fc_interval['start_unix'], unit='s')
     horizon = dt.timedelta(seconds=(fc_interval['end_unix']-fc_interval['start_unix']))
+    # NOTE: Conversion to int ensures rounding down to full time steps
     # Adding 1 to horizon to ensure inclusion of interval bounds
     cfg['horizon'] = int(horizon / cfg['frequency']) + 1
 

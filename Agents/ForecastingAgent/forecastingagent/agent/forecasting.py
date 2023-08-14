@@ -23,7 +23,7 @@ from forecastingagent.agent.forecasting_tasks import forecast, calculate_error
 from forecastingagent.errorhandling.exceptions import InvalidInput
 from forecastingagent.kgutils.kgclient import KGClient
 from forecastingagent.kgutils.tsclient import TSClient
-from forecastingagent.utils.env_configs import DB_USER, DB_PASSWORD, ROUNDING
+from forecastingagent.utils.env_configs import DB_USER, DB_PASSWORD
 
 
 class ForecastingAgent(DerivationAgent):
@@ -31,6 +31,9 @@ class ForecastingAgent(DerivationAgent):
     def __init__(self, **kwargs):
         # Set flag whether to overwrite existing forecast or not (i.e., create new one)
         self.fc_overwrite = kwargs.pop('overwrite_fc')
+        # Specify default rounding behavior for forecast values 
+        # (i.e. number of target decimal places; no rounding if not specified)
+        self.fc_round = kwargs.pop('round_fc')
         # Initialise DerivationAgent parent instance
         super().__init__(**kwargs)
 
@@ -210,9 +213,9 @@ class ForecastingAgent(DerivationAgent):
         # Extract times and values from darts TimeSeries
         times = [str(x) for x in fc_ts.time_index.tz_localize('UTC').strftime(time_format)]
         values = fc_ts.values().squeeze().tolist()
-        if ROUNDING:
+        if self.fc_round:
             # Round data values if set in environment variables
-            values = [round(x, ROUNDING) for x in values]
+            values = [round(x, self.fc_round) for x in values]
 
         # Instantiate new forecast in KG and RDB (if requested or not yet existing)
         if not self.fc_overwrite or not bool(cfg.get('fc_iri')):
@@ -242,7 +245,10 @@ class ForecastingAgent(DerivationAgent):
             # Only update forecast metadata in KG
             self.sparql_client.instantiate_forecast(forecast=fc_ts, config=cfg)
             # Update forecast time series data in RDB
-            ts_client.add_ts_data(dataIRI=cfg['fc_iri'], times=times, values=values)
+            # NOTE: Entire previous forecast data is replaced, i.e., NOT just appending
+            #       new data and potentially overwriting existing data
+            ts_client.replace_ts_data(dataIRI=cfg['fc_iri'], times=times, values=values)
+            #ts_client.add_ts_data(dataIRI=cfg['fc_iri'], times=times, values=values)
         
         created_at = pd.to_datetime('now', utc=True)
         logger.info(f'Created forecast at: {created_at}')

@@ -129,6 +129,28 @@ class TSClient:
         logger.info(f"Time series data successfully added to dataIRI: {dataIRI}")
 
 
+    def replace_ts_data(self, dataIRI, times, values):
+        """
+        This method replaces all data of an already instantiated time series
+        (i.e., clears all existing data and adds new data)
+        
+        Arguments:
+            dataIRI (str): IRI of instance with hasTimeSeries relationship
+            times (list): List of times/dates
+            values (list): List of actual values
+        """
+
+        with self.connect() as conn:
+            # Clear existing data
+            t1 = self.tsclient.getMinTime(dataIRI, conn)
+            t2 = self.tsclient.getMaxTime(dataIRI, conn)
+            self.tsclient.deleteTimeSeriesHistory(dataIRI, t1, t2, conn)
+            # Add new data
+            ts = TSClient.create_timeseries(times, [dataIRI], [values])
+            self.tsclient.addTimeSeriesData(ts, conn)
+        logger.info(f"Time series data successfully added to dataIRI: {dataIRI}")
+
+
     def retrieve_timeseries(self, dataIRI, lowerbound=None, upperbound=None):
         """
         This method retrieves the time series data for a given dataIRI

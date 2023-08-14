@@ -187,7 +187,7 @@ def test_create_forecast(
     # Assess initial forecast error and create plot for visual inspection
     errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
                                       name=case)
-    print('Forecast errors:')
+    print(f'Forecast errors for case: {case}')
     for k,v in errors.items():
         print(f'{k}: {round(v,5)}')
 
@@ -215,7 +215,7 @@ def test_create_forecast(
     # Assess updated forecast error and create plot for visual inspection
     errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
                                       name=case+'_updated')
-    print('Forecast errors:')
+    print(f'Forecast errors for case: {case}_updated')
     for k,v in errors.items():
         print(f'{k}: {round(v,5)}')
 

@@ -34,7 +34,7 @@ from forecastingagent.kgutils.tsclient import TSClient
 from forecastingagent.utils.env_configs import DB_URL, DB_USER, DB_PASSWORD, \
                                                SPARQL_QUERY_ENDPOINT, \
                                                SPARQL_UPDATE_ENDPOINT, \
-                                               OVERWRITE_FORECAST
+                                               OVERWRITE_FORECAST, ROUNDING
 
 
 # ----------------------------------------------------------------------------------
@@ -275,7 +275,11 @@ def initialise_clients(get_blazegraph_service_url, get_postgres_service_url):
 
 @pytest.fixture(scope="module")
 def create_example_agent():
-    def _create_example_agent(random_agent_iri:bool=False, register_agent:bool=True):
+    def _create_example_agent(
+            random_agent_iri:bool=False, 
+            register_agent:bool=True,
+            #over
+            ):
         agent = ForecastingAgent(
             register_agent=register_agent,
             agent_iri=os.getenv('ONTOAGENT_SERVICE_IRI') if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
@@ -285,6 +289,7 @@ def create_example_agent():
             kg_update_url=SPARQL_UPDATE_ENDPOINT,
             agent_endpoint=os.getenv('ONTOAGENT_OPERATION_HTTP_URL'),
             overwrite_fc=OVERWRITE_FORECAST,
+            round_fc=ROUNDING,
             app=Flask(__name__),
             logger_name='dev'
         )
@@ -322,7 +327,7 @@ def assess_forecast_error(data_iri, forecast_iri, kg_client, ts_client,
     valid_indices = (df.index - offset2 <= df2.index.max()) & (df.index + offset1 >= df2.index.min())
     valid_entries = df[valid_indices]
 
-    # Create plot and save to volume
+    # Create new figure, plot and save to volume
     ax = valid_entries.plot()
     ax.set_xlabel('Timestamp')
     ax.set_ylabel('Values')

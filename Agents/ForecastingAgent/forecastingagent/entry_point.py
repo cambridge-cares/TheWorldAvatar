@@ -8,7 +8,7 @@ from py4jps import agentlogging
 from pyderivationagent.conf import config_derivation_agent
 
 from forecastingagent.utils.env_configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, \
-                                               OVERWRITE_FORECAST
+                                               OVERWRITE_FORECAST, ROUNDING
 from forecastingagent.agent import ForecastingAgent
 from forecastingagent.agent import default
 
@@ -31,6 +31,7 @@ def create_app():
         time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,        
         register_agent=agent_config.REGISTER_AGENT,
         overwrite_fc=OVERWRITE_FORECAST,
+        round_fc=ROUNDING,
         # Settings read from env vars/stack clients (depending on deployment mode)
         kg_url=SPARQL_QUERY_ENDPOINT,
         kg_update_url=SPARQL_UPDATE_ENDPOINT,      
