@@ -16,9 +16,11 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js" ></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-adapter-moment/1.0.0/chartjs-adapter-moment.js"></script>
         <!---<script src="https://kg.cmclinnovations.com/cdn/dtvf/3.3.4/dtvf.min.js" charset="UTF-8"></script>-->
+        <script src="./cesium-tilesetEffect.js"></script>
         <script src="./dtvf.min.js" charset="UTF-8"></script>
         <script src="./CesiumHeatmap.js"></script>
         <script src="./HeatmapImageryProvider.js"></script>
+
 
         <!-- ===== CUSTOMISABLE ===== -->
         <!-- JavaScript files to provide functionality specifically for this visualisation instance can go here. -->
@@ -82,14 +84,6 @@
                     </div>
                 </div>
 
-                <!-- Help icon -->
-                <div id="helpContainer" class="controlBlock expanded" onclick="openHelpURL()">
-                    <div class="tooltip" id="coordEditor">
-                        <i class="fas fa-question fa-lg"></i>
-                        <span class="tooltiptext right">Help</span>
-                    </div>
-                </div>
-
                 <!-- Container for developer info -->
                 <div id="developerContainer" class="controlBlock" style="display: none;">
                     <div class="tooltip" id="coordEditor" style="float: right;">
@@ -136,8 +130,10 @@
         </div>
 
         <!--OPF Button (to be loaded by the dtvf.min.js -->
-        <button id="runPVButton" class="custom-button1" style="position: absolute">Run Photovoltaic Panel Agent (Calculate PV output)</button>
-        <button id="runOPFButton" class="custom-button2" style="position: absolute">Run Optimal Power Flow Agent</button>
+        <!-- <button id="runPVButton" class="custom-button1" style="position: absolute">Run Photovoltaic Panel Agent (Calculate PV output)</button> -->
+        <!-- <button id="runOPFButton" class="custom-button2" style="position: absolute">Run Optimal Power Flow Agent</button> -->
+        <button id="getBuildingUsageButton" class="custom-button2" style="position: absolute">Show Property Use</button>
+        <button id="getShowHeatmapButton" class="custom-button2" style="position: absolute">Show Power Heatmap</button>
         <style>
             .custom-button1 {
                 font-size: 15px;
@@ -214,7 +210,6 @@
 
                 // Plot data
                 manager.plotData();
-
 
             }
 

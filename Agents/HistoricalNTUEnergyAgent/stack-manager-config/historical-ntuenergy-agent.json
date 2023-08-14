@@ -1,4 +1,4 @@
-{
+    {
     "ServiceSpec": {
         "Name": "historical-ntuenergy-agent",
         "TaskTemplate": {
@@ -33,7 +33,7 @@
     "endpoints": {
         "ui": {
             "url": "http://localhost:8080/historical-ntuenergy-agent/",
-            "externalPath": "/historical-ntuenergy-agent/retrieve"
+            "externalPath": "/historical-ntuenergy-agent/"
         }
     }
 }
