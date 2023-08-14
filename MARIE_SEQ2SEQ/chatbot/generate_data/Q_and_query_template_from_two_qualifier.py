@@ -570,7 +570,7 @@ WHERE {{
     FILTER(?{PropertyName2}Value < {minvalue2} || ?{PropertyName2}Value > {maxvalue2})
 }}"""
 
-    query_text_compact = f"""SELECT DISTINCT ?IUPACNameValue ?{PropertyName1}Value 
+    query_text_compact = f"""SELECT DISTINCT ?IUPACNameValue ?{PropertyName1}Value ?{PropertyName2}Value
 WHERE {{
     ?SpeciesIRI os:hasIUPACName ?IUPACNameValue .
     ?SpeciesIRI os:hasProperty{PropertyName1} ?{PropertyName1}Value .

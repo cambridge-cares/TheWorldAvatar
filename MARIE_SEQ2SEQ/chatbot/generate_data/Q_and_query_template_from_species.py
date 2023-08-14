@@ -147,7 +147,7 @@ def get_three_property_from_species(PropertyName1, PropertyName2, PropertyName3,
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-SELECT DISTINCT ?label ?{PropertyName1}Value ?{PropertyName1}UnitValue ?{PropertyName1}ReferenceStateValue ?{PropertyName1}ReferenceStateUnitValue ?{PropertyName2}Value ?{PropertyName2}UnitValue ?{PropertyName2}ReferenceStateValue ?{PropertyName2}ReferenceStateUnitValue ?{PropertyName3}UnitValue ?{PropertyName3}ReferenceStateValue ?{PropertyName3}ReferenceStateUnitValue 
+SELECT DISTINCT ?label ?{PropertyName1}Value ?{PropertyName1}UnitValue ?{PropertyName1}ReferenceStateValue ?{PropertyName1}ReferenceStateUnitValue ?{PropertyName2}Value ?{PropertyName2}UnitValue ?{PropertyName2}ReferenceStateValue ?{PropertyName2}ReferenceStateUnitValue ?{PropertyName3}Value ?{PropertyName3}UnitValue ?{PropertyName3}ReferenceStateValue ?{PropertyName3}ReferenceStateUnitValue 
 WHERE {{
     ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label .
 
@@ -242,7 +242,7 @@ WHERE {{
     ?{IdentifierName}IRI os:value ?{IdentifierName}Value .
 }}"""
 
-    query_text_compact = f"""SELECT DISTINCT ?label ?{IdentifierName}Value
+    query_text_compact = f"""SELECT DISTINCT ?{IdentifierName}Value
 WHERE {{
     ?SpeciesIRI ?hasIdentifier ?species .
     FILTER( ?species = "{species}")

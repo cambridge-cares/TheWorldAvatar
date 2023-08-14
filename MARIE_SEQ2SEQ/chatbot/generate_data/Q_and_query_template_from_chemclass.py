@@ -18,7 +18,7 @@ WHERE {{
     ?SpeciesIRI os:hasChemicalClass* ?x .
 	?x ?y ?z .
 	?z rdfs:subClassOf* ?ChemicalClassIRI .
-	?ChemicalClassIRI rdf:type os:ChemicalClass  ; rdfs:label rdfs:label ?ChemicalClassValue .
+	?ChemicalClassIRI rdf:type os:ChemicalClass ; rdfs:label ?ChemicalClassValue .
 
     FILTER( ?ChemicalClassValue = "{ChemClass}")
 
@@ -169,7 +169,7 @@ WHERE {{
     ?SpeciesIRI os:hasChemicalClass* ?x .
 	?x ?y ?z .
 	?z rdfs:subClassOf* ?ChemicalClassIRI .
-	?ChemicalClassIRI rdf:type os:ChemicalClass  ; rdfs:label rdfs:label ?ChemicalClassValue .
+	?ChemicalClassIRI rdf:type os:ChemicalClass ; rdfs:label ?ChemicalClassValue .
 
     FILTER( ?ChemicalClassValue = "{ChemClass}")
 
