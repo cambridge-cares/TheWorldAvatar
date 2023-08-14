@@ -52,6 +52,12 @@ TEST_TRIPLES_DIR = os.path.join(THIS_DIR, 'test_triples')
 KG_SERVICE = "blazegraph_test"
 RDB_SERVICE = "postgres_test"
 
+# Derivation agent IRIs
+AGENT_w_OVERWRITING_IRI = 'https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent_wOverwriting/Service'
+AGENT_w_OVERWRITING_URL = 'http://host.docker.internal:5001/ForecastingAgent'
+AGENT_wo_OVERWRITING_IRI = 'https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent_woOverwriting/Service'
+AGENT_wo_OVERWRITING_URL = 'http://host.docker.internal:5002/ForecastingAgent'
+
 # IRIs of derivation's (pure) inputs
 TEST_TRIPLES_BASE_IRI = 'https://www.theworldavatar.com/test/'
 
@@ -78,8 +84,6 @@ DURATION_1 = 336
 
 # Derivation agent and markup base urls
 DERIVATION_INSTANCE_BASE_URL = os.getenv('DERIVATION_INSTANCE_BASE_URL')
-AGENT_BASE_URL = os.getenv('ONTOAGENT_OPERATION_HTTP_URL')
-AGENT_BASE_URL = AGENT_BASE_URL[:AGENT_BASE_URL.rfind('/')+1]
 
 # Create synthetic time series data
 times = pd.date_range(start='2019-10-01T00:00:00Z', freq='H', 
@@ -110,8 +114,9 @@ HIST_DURATION_1 = TEST_TRIPLES_BASE_IRI + 'Duration_1'
 HIST_DURATION_2 = TEST_TRIPLES_BASE_IRI + 'Duration_2'
 
 # Define derivation input sets to test
-TEST_CASE_1 = 'OM_Quantity_with_Measure_with_Unit'
-TEST_CASE_2 = 'OM_Quantity_without_Measure_without_Unit'
+TEST_CASE_1 = 'OM_Quantity_with_Measure_with_Unit__overwriting'
+TEST_CASE_2 = 'OM_Quantity_with_Measure_with_Unit__no_overwriting'
+TEST_CASE_3 = 'OM_Quantity_without_Measure_without_Unit'
 DERIVATION_INPUTS_1 = [IRI_TO_FORECAST_1, FORECASTING_MODEL_1, 
                        FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_1]
 DERIVATION_INPUTS_2 = [IRI_TO_FORECAST_2, FORECASTING_MODEL_1,
@@ -276,19 +281,25 @@ def initialise_clients(get_blazegraph_service_url, get_postgres_service_url):
 @pytest.fixture(scope="module")
 def create_example_agent():
     def _create_example_agent(
-            random_agent_iri:bool=False, 
             register_agent:bool=True,
-            #over
+            ontoagent_service_iri=None,
+            ontoagent_http_url=None,
+            overwrite_forecast:bool=True
             ):
         agent = ForecastingAgent(
             register_agent=register_agent,
-            agent_iri=os.getenv('ONTOAGENT_SERVICE_IRI') if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
+            agent_iri=ontoagent_service_iri if ontoagent_service_iri else 
+                      os.getenv('ONTOAGENT_SERVICE_IRI'),
+            agent_endpoint=ontoagent_http_url if ontoagent_http_url else
+                           os.getenv('ONTOAGENT_OPERATION_HTTP_URL'),
+            overwrite_fc=overwrite_forecast,
+            # Settings which don't really matter for dockerised testing (as settings of
+            # already running dockerised agents will be used once this one gets registered)
+            # NOTE: only relevant to allow for unit testing with "fake" agent
             time_interval=int(os.getenv('DERIVATION_PERIODIC_TIMESCALE')),
             derivation_instance_base_url=os.getenv('DERIVATION_INSTANCE_BASE_URL'),
             kg_url=SPARQL_QUERY_ENDPOINT,
             kg_update_url=SPARQL_UPDATE_ENDPOINT,
-            agent_endpoint=os.getenv('ONTOAGENT_OPERATION_HTTP_URL'),
-            overwrite_fc=OVERWRITE_FORECAST,
             round_fc=ROUNDING,
             app=Flask(__name__),
             logger_name='dev'
@@ -302,7 +313,7 @@ def create_example_agent():
 # ----------------------------------------------------------------------------------
 
 def assess_forecast_error(data_iri, forecast_iri, kg_client, ts_client, 
-                          name='test'):
+                          agent_url, name='test'):
     """
     Assess the error of a derived forecast and plot both time series
     NOTE: Plots are saved to the 'test_plots' folder in 'tests' volume as 
@@ -342,7 +353,8 @@ def assess_forecast_error(data_iri, forecast_iri, kg_client, ts_client,
     http_request['query']['tsIRI_fc'] = kg_client.get_tsIRI(forecast_iri)
     # Create HTTP request to evaluate forecast errors
     headers = {'Content-Type': 'application/json'}
-    url = AGENT_BASE_URL + '/evaluate_errors'
+    agent_base_url = agent_url[:agent_url.rfind('/')+1]
+    url = agent_base_url + '/evaluate_errors'
     response = requests.post(url, json=http_request, headers=headers)
 
     return response.json()

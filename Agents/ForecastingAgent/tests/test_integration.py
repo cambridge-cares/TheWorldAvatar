@@ -89,16 +89,17 @@ def test_example_data_instantiation(initialise_clients):
 
 
 @pytest.mark.parametrize(
-    "derivation_input_set, dataIRI, with_unit, ts_times, ts_values, case",
+    "derivation_input_set, dataIRI, with_unit, overwrite_forecast, ts_times, ts_values, case",
     [
-        (cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_1),
+        (cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, True, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_1),
+        (cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, True, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_2),
         #(cf.DERIVATION_INPUTS_1, cf.IRI_TO_FORECAST_1, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_2),
         #(cf.DERIVATION_INPUTS_2, cf.IRI_TO_FORECAST_2, cf.TIMES, cf.VALUES_3)
     ],
 )
 def test_create_forecast(
     initialise_clients, create_example_agent, derivation_input_set, dataIRI, with_unit,
-    ts_times, ts_values, case
+    overwrite_forecast, ts_times, ts_values, case
 ):
     """
     Test if forecasting agent performs derivation update as expected    
@@ -109,6 +110,14 @@ def test_create_forecast(
         - updated interval: OptimisationInterval_2
                             Jan 02 2020 00:00:00 UTC - Jan 03 2020 00:00:00 UTC
     """
+
+    # Get forecast agent IRI for current test case
+    if overwrite_forecast:
+        agent_iri = cf.AGENT_w_OVERWRITING_IRI
+        agent_url = cf.AGENT_w_OVERWRITING_URL
+    else:
+        agent_iri = cf.AGENT_wo_OVERWRITING_IRI
+        agent_url = cf.AGENT_wo_OVERWRITING_URL
 
     # Get required clients from fixture
     sparql_client, ts_client, derivation_client, rdb_url = initialise_clients
@@ -125,13 +134,14 @@ def test_create_forecast(
     triples = cf.TBOX_TRIPLES + cf.ABOX_TRIPLES + cf.TS_TRIPLES
     assert sparql_client.getAmountOfTriples() == triples
 
-    # Create agent instance and register agent in KG
-    # - Successful agent registration within the KG is required to pick up marked up derivations
-    # - Hence, the Dockerised agent is started without initial registration within the Stack and
-    #   registration is done within the test to guarantee that test Blazegraph will be ready
-    # - The "belated" registration of the Dockerised agent can be achieved by registering "another"
+    # Register derivation agent in KG
+    # - Successful agent registration within the KG is required to create/pick up derivations
+    # - Hence, the dockerised agents are started without initial registration and registration
+    #   is done within the test to guarantee that test Blazegraph will be ready
+    # - The "belated" registration of the dockerised agents can be achieved by registering "another"
     #   agent instance with the same ONTOAGENT_SERVICE_IRI
-    agent = create_example_agent(random_agent_iri=True)
+    create_example_agent(ontoagent_service_iri=agent_iri,
+                         ontoagent_http_url=agent_url) 
 
     # Verify expected number of triples after derivation registration
     triples += cf.AGENT_SERVICE_TRIPLES
@@ -142,7 +152,7 @@ def test_create_forecast(
     assert not sparql_client.check_if_triple_exist(None, RDF.type.toPython(), dm.TS_FORECAST)
 
     # Create derivation instance for new information (incl. timestamps for pure inputs)
-    derivation = derivation_client.createSyncDerivationForNewInfo(agent.agentIRI, derivation_input_set,
+    derivation = derivation_client.createSyncDerivationForNewInfo(agent_iri, derivation_input_set,
                                                                   dm.ONTODERIVATION_DERIVATIONWITHTIMESERIES)
     derivation_iri = derivation.getIri()
     print(f"Initialised successfully, created synchronous derivation instance: {derivation_iri}")
@@ -186,7 +196,7 @@ def test_create_forecast(
 
     # Assess initial forecast error and create plot for visual inspection
     errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
-                                      name=case)
+                                      agent_url=agent_url, name=case)
     print(f'Forecast errors for case: {case}')
     for k,v in errors.items():
         print(f'{k}: {round(v,5)}')
@@ -201,9 +211,15 @@ def test_create_forecast(
     # Request for derivation update and verify that no new triples have been added,
     # only time series and interval values have been amended
     derivation_client.unifiedUpdateDerivation(derivation_iri)
+    if not overwrite_forecast:
+        triples += cf.FORECAST_TRIPLES          # triples for new forecast
+        if with_unit:
+            triples += cf.UNIT_TRIPLES
     assert sparql_client.getAmountOfTriples() == triples
 
     # Retrieve updated forecast details
+    _, derivation_outputs = cf.get_derivation_inputs_outputs(derivation_iri, sparql_client)
+    fcIRI = list(derivation_outputs[dm.TS_FORECAST])[0]
     fc_intervals = sparql_client.get_forecast_details(fcIRI)
     inp_interval = sparql_client.get_interval_details(fc_intervals['input_interval_iri'])
     outp_interval = sparql_client.get_interval_details(fc_intervals['output_interval_iri'])
@@ -214,7 +230,7 @@ def test_create_forecast(
     
     # Assess updated forecast error and create plot for visual inspection
     errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
-                                      name=case+'_updated')
+                                      agent_url=agent_url, name=case+'_updated')
     print(f'Forecast errors for case: {case}_updated')
     for k,v in errors.items():
         print(f'{k}: {round(v,5)}')

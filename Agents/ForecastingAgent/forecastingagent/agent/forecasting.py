@@ -316,6 +316,8 @@ class ForecastingAgent(DerivationAgent):
             #       have at least one overlapping time point -> error metrics are
             #       calculated based on overlapping time series
             response = calculate_error(**inputs)
+            if self.fc_round:
+                response = {key: round(value, self.fc_round) for key, value in response.items()}
             return jsonify(response), 200
 
         except Exception as ex:

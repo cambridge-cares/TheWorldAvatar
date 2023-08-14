@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  forecasting_agent:
+  forecasting_agent_w_overwrite:
     image:  ghcr.io/cambridge-cares/forecasting_agent_test_debug:2.0.0
     build:
       context: .
@@ -9,10 +9,43 @@ services:
     env_file:
       # Specify environment variables for debug testing
       - debug_test.env
+    environment:
+      - OVERWRITE_FORECAST=true
+      - ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent_wOverwriting/Service
+      - ONTOAGENT_OPERATION_HTTP_URL=http://host.docker.internal:5001/ForecastingAgent
     # Launch agent app and wait for debugger to attach
-    command: python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
+    command: python -m debugpy --listen 0.0.0.0:5677 -m flask run -h 0.0.0.0 -p 5000
     ports:
       - 5001:5000
+      - 5677:5677
+    extra_hosts:
+      # To allow connecting to 'host.docker.internal' on Linux
+      # details: https://github.com/moby/libnetwork/pull/2348#issuecomment-1177610499
+      - "host.docker.internal:host-gateway"
+    volumes:
+      # To run docker inside docker, mount default Unix socket docker.sock as a volume
+      # (https://devopscube.com/run-docker-in-docker/)
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Mount agent code as well as tests as volumes
+      - ./forecastingagent:/app/forecastingagent
+      - ./tests:/app/tests
+
+  forecasting_agent_wo_overwrite:
+    image:  ghcr.io/cambridge-cares/forecasting_agent_test_debug:2.0.0
+    build:
+      context: .
+      target: debug_test
+    env_file:
+      # Specify environment variables for debug testing
+      - debug_test.env
+    environment:
+      - OVERWRITE_FORECAST=false
+      - ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent_woOverwriting/Service
+      - ONTOAGENT_OPERATION_HTTP_URL=http://host.docker.internal:5002/ForecastingAgent
+    # Launch agent app and wait for debugger to attach
+    command: python -m debugpy --listen 0.0.0.0:5678 -m flask run -h 0.0.0.0 -p 5000
+    ports:
+      - 5002:5000
       - 5678:5678
     extra_hosts:
       # To allow connecting to 'host.docker.internal' on Linux
@@ -29,7 +62,8 @@ services:
   tests:
     build: .
     depends_on:
-      - forecasting_agent
+      - forecasting_agent_w_overwrite
+      - forecasting_agent_wo_overwrite
     env_file:
       - debug_test.env
     # Launch pytest in separate container with separate debugger (-s flag to enable more output/logging)

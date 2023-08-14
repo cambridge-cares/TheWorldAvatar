@@ -24,7 +24,23 @@
             "jinja": true
         },
         {
-            "name": "Python: Debug dockerised agent",
+            "name": "Python: Debug dockerised agent 1 (forecast overwriting)",
+            "type": "python",
+            "request": "attach",
+            //"justMyCode": false,
+            "connect": {
+                "host": "localhost",
+                "port": 5677
+            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/",
+                    "remoteRoot": "/app/"
+                }
+            ]
+        },
+        {
+            "name": "Python: Debug dockerised agent 2 (no forecast overwriting)",
             "type": "python",
             "request": "attach",
             //"justMyCode": false,
