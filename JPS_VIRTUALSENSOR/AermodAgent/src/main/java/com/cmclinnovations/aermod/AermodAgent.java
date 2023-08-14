@@ -122,7 +122,7 @@ public class AermodAgent extends DerivationAgent {
 
         // update derivation of ships (on demand)
         List<String> derivationsToUpdate = queryClient.getDerivationsOfPointSources(allSources);
-        updateDerivations(derivationsToUpdate);
+        derivationsToUpdate.parallelStream().forEach(derivation -> devClient.updatePureSyncDerivation(derivation));
 
         // get emissions and set the values in the ships
         LOGGER.info("Querying emission values");
@@ -233,7 +233,6 @@ public class AermodAgent extends DerivationAgent {
 
             // Get contour plots as geoJSON objects from PythonService and upload them to
             // PostGIS using GDAL
-
             JSONObject response = aermod.getGeoJsonAndColourbar(EnvConfig.PYTHON_SERVICE_URL, outputFileURL, srid);
             JSONObject geoJSON = response.getJSONObject("contourgeojson");
             String colourBarUrl = response.getString("colourbar");
@@ -271,7 +270,6 @@ public class AermodAgent extends DerivationAgent {
             virtualTable.setEscapeSql(true);
             virtualTable.setName("dispersionVirtualTable");
             virtualTable.addVirtualTableGeometry("wkb_geometry", "MultiPolygon", "4326");
-            LOGGER.info(virtualTable.getName());
             geoServerDispersionSettings.setVirtualTable(virtualTable);
 
             geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, layerName,
@@ -291,10 +289,6 @@ public class AermodAgent extends DerivationAgent {
 
         // ships_ is hardcoded here and in ShipInputAgent
         queryClient.updateOutputs(derivationInputs.getDerivationIRI(), dispersionOutput, shipLayerName, simulationTime);
-    }
-
-    void updateDerivations(List<String> derivationsToUpdate) {
-        derivationsToUpdate.parallelStream().forEach(derivation -> devClient.updatePureSyncDerivation(derivation));
     }
 
     /**
