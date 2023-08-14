@@ -182,11 +182,11 @@ def test_create_forecast(
     assert inp_interval['start_unix'] == cf.T_1 - cf.DURATION_1*3600
     assert inp_interval['end_unix'] == cf.T_1 - 3600
     assert outp_interval['start_unix'] == cf.T_1
-    #TODO: Verify that the end of the forecast is correct (i.e. 24h after the start)
-    assert outp_interval['end_unix'] == cf.T_2 - 3600
+    assert outp_interval['end_unix'] == cf.T_2
 
     # Assess initial forecast error and create plot for visual inspection
-    errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, case)
+    errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
+                                      name=case)
     print('Forecast errors:')
     for k,v in errors.items():
         print(f'{k}: {round(v,5)}')
@@ -210,10 +210,11 @@ def test_create_forecast(
     assert inp_interval['start_unix'] == cf.T_2 - cf.DURATION_1*3600
     assert inp_interval['end_unix'] == cf.T_2 - 3600
     assert outp_interval['start_unix'] == cf.T_2
-    assert outp_interval['end_unix'] == cf.T_3 - 3600
+    assert outp_interval['end_unix'] == cf.T_3
     
     # Assess updated forecast error and create plot for visual inspection
-    errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, case)
+    errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
+                                      name=case+'_updated')
     print('Forecast errors:')
     for k,v in errors.items():
         print(f'{k}: {round(v,5)}')

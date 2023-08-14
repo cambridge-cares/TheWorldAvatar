@@ -123,10 +123,11 @@ def create_forecast_configuration(model:dict, ts_details:dict, ts_frequency:dict
     cfg['data_length'] = int(dur['duration'] / cfg['frequency'])
 
     # Add forecast interval details
-    # NOTE: pd.Timestamp expects the input to be in nanoseconds -> specify unit
+    # NOTE: pd.Timestamp expects the input to be in nanoseconds -> specify unit explicitly
     cfg['fc_start_timestamp'] = pd.Timestamp(fc_interval['start_unix'], unit='s')
     horizon = dt.timedelta(seconds=(fc_interval['end_unix']-fc_interval['start_unix']))
-    cfg['horizon'] = int(horizon / cfg['frequency'])
+    # Adding 1 to horizon to ensure inclusion of interval bounds
+    cfg['horizon'] = int(horizon / cfg['frequency']) + 1
 
     return cfg
 
