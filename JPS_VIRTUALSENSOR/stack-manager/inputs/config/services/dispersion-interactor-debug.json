@@ -56,7 +56,7 @@
                     "Name": "web",
                     "Protocol": "tcp",
                     "TargetPort": "5005",
-                    "PublishedPort": "5005"
+                    "PublishedPort": "5006"
                 }
             ]
         }
