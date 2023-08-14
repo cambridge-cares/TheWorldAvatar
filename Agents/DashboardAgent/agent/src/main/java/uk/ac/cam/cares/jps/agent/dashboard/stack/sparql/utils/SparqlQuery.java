@@ -10,7 +10,7 @@ public class SparqlQuery {
     /**
      * Generate a simple SPARQL query for facilities. This query is meant to detect which namespace contains the
      * building hierarchy. Even one result will indicate the namespace contains the hierarchy.
-
+     *
      * @return The query for execution.
      */
     public static String genSimpleFacilityQuery() {
@@ -43,12 +43,18 @@ public class SparqlQuery {
                 // The below line performs a recursive query to retrieve all sub devices in the possible permutations of:
                 // Device sendsSignalTo subDevice; sendsSignalTo/consistsOf subDevice; consistsOf subDevice;
                 // consistsOf/sendsSignalTo subDevice; consistsOf/sendsSignalTo/consistsOf subDevice
+                .append("{")
                 .append("?element ontodevice:sendsSignalTo*/saref:consistsOf*/ontodevice:sendsSignalTo*/saref:consistsOf* ?subdevices.")
                 // Retrieve the measure and its name associated with either the element or their subdevices
                 .append("{?element ontodevice:measures/om:hasValue ?measure.            ?measure rdfs:label ?measurename.}")
                 .append("UNION {?element ontodevice:observes ?measure.                  ?measure rdfs:label?measurename.}")
                 .append("UNION {?subdevices ontodevice:measures/om:hasValue ?measure.   ?measure rdfs:label ?measurename.}")
                 .append("UNION {?subdevices ontodevice:observes ?measure.               ?measure rdfs:label ?measurename.}")
+                .append("} UNION {")
+                // For non-sensor devices which is being measured by sensors attached to them
+                .append("?element ontodevice:hasOperatingRange/ssn:hasOperatingProperty/ontodevice:hasQuantity/om:hasValue ?measure. ")
+                .append("?measure rdfs:label ?measurename.")
+                .append("}")
                 // Once retrieved, all measures has a time series
                 .append("?measure ontotimeseries:hasTimeSeries ?timeseries.")
                 .append("}")
@@ -70,7 +76,8 @@ public class SparqlQuery {
                 .append("PREFIX om:<http://www.ontology-of-units-of-measure.org/resource/om-2/>")
                 .append("PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>")
                 .append("PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>")
-                .append("PREFIX saref:<https://saref.etsi.org/core/>");
+                .append("PREFIX saref:<https://saref.etsi.org/core/>")
+                .append("PREFIX ssn:<http://www.w3.org/ns/ssn/systems/>");
         return query;
     }
 
