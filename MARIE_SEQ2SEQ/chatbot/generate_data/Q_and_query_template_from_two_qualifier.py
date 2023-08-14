@@ -572,7 +572,7 @@ WHERE {{
 
     query_text_compact = f"""SELECT DISTINCT ?IUPACNameValue ?{PropertyName1}Value 
 WHERE {{
-    ?SpeciesIRI os:hasIUPACName ?IUPACNameIRI .
+    ?SpeciesIRI os:hasIUPACName ?IUPACNameValue .
     ?SpeciesIRI os:hasProperty{PropertyName1} ?{PropertyName1}Value .
     FILTER(?{PropertyName1}Value > {value1})
     ?SpeciesIRI os:hasProperty{PropertyName2} ?{PropertyName2}Value .
@@ -802,7 +802,6 @@ WHERE {{
 WHERE {{
     ?SpeciesIRI os:hasIUPACName ?IUPACNameValue .
     ?SpeciesIRI os:hasProperty{PropertyName1} ?{PropertyName1}Value .
-    OPTIONAL{{?{PropertyName1}IRI os:hasReferenceState ?{PropertyName1}Refere
     FILTER(?{PropertyName1}Value > {minvalue1} && ?{PropertyName1}Value < {maxvalue1})
     ?SpeciesIRI os:hasProperty{PropertyName2} ?{PropertyName2}Value .
     FILTER(?{PropertyName2}Value < {minvalue2} || ?{PropertyName2}Value > {maxvalue2})
