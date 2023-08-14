@@ -363,25 +363,9 @@ public class QueryClient {
      */
     void createNewDerivations(List<Ship> ships) {
         if (Boolean.parseBoolean(EnvConfig.PARALLELISE_CALCULATIONS)) {
-            CompletableFuture<Derivation> getAsync = null;
-
-            for (Ship ship : ships) {
-                getAsync = CompletableFuture.supplyAsync(() -> {
-                    Derivation derivation = null;
-                    try {
-                        derivation = derivationClient.createSyncDerivationForNewInfo(EnvConfig.EMISSIONS_AGENT_IRI,
-                                Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION);
-                    } catch (Exception e) {
-                        LOGGER.error(e.getMessage());
-                        LOGGER.error("Failed to create new derivation for {}", ship.getIri());
-                    }
-                    return derivation;
-                });
-            }
-
-            if (getAsync != null) {
-                getAsync.join();
-            }
+            ships.parallelStream()
+                    .forEach(ship -> derivationClient.createSyncDerivationForNewInfo(EnvConfig.EMISSIONS_AGENT_IRI,
+                            Arrays.asList(ship.getIri()), DerivationSparql.ONTODERIVATION_DERIVATION));
         } else {
             for (Ship ship : ships) {
                 try {

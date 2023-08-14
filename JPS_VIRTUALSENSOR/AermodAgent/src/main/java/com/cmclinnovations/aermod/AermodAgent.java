@@ -294,23 +294,7 @@ public class AermodAgent extends DerivationAgent {
     }
 
     void updateDerivations(List<String> derivationsToUpdate) {
-        CompletableFuture<String> getAsync = null;
-        for (String derivation : derivationsToUpdate) {
-            getAsync = CompletableFuture.supplyAsync(() -> {
-                try {
-                    devClient.updatePureSyncDerivation(derivation);
-                    return null; // need to return something, could not get it to work with
-                                 // CompletableFuture<Void>
-                } catch (Exception e) {
-                    LOGGER.error(e.getMessage());
-                    LOGGER.error("Error occured while updating ship derivations");
-                    return null;
-                }
-            });
-        }
-        if (getAsync != null) {
-            getAsync.join();
-        }
+        derivationsToUpdate.parallelStream().forEach(derivation -> devClient.updatePureSyncDerivation(derivation));
     }
 
     /**
