@@ -357,7 +357,7 @@ WHERE {{
     ?UseIRI os:value ?UseValue .
 }}"""
 
-    query_text_compact = f"""SELECT DISTINCT ?label ?UseValue 
+    query_text_compact = f"""SELECT DISTINCT ?UseValue 
 WHERE {{
     ?SpeciesIRI ?hasIdentifier ?species .
     FILTER( ?species = "{species}")
