@@ -1,6 +1,6 @@
 from typing import List
 
-from marie.utils import advance_idx_thru_space, advance_idx_to_kw, advance_idx_to_space
+from marie.utils import advance_ptr_thru_space, advance_ptr_to_kw, advance_ptr_to_space
 
 
 RESULT_CLAUSE_KWS = ["SELECT"]
@@ -112,7 +112,7 @@ class AbstractQueryRep:
                 where_clause.extend(SPECIES_FROM_IDENTIFIER_PATTERNS_VERBOSE)
             elif pattern.startswith(PROPERTY_PATTERN_COMPACT_PREFIX):
                 property_name = pattern[
-                    len(PROPERTY_PATTERN_COMPACT_PREFIX) : advance_idx_to_space(
+                    len(PROPERTY_PATTERN_COMPACT_PREFIX) : advance_ptr_to_space(
                         pattern, len(PROPERTY_PATTERN_COMPACT_PREFIX)
                     )
                 ].strip()
@@ -123,7 +123,7 @@ class AbstractQueryRep:
                 where_clause.extend(PROPERTY_PATTERNS_VERBOSE(property_name))
             elif pattern.startswith(IDENTIFIER_PATTERN_COMPACT_PREFIX):
                 identifier_name = pattern[
-                    len(IDENTIFIER_PATTERN_COMPACT_PREFIX) : advance_idx_to_space(
+                    len(IDENTIFIER_PATTERN_COMPACT_PREFIX) : advance_ptr_to_space(
                         pattern, len(PROPERTY_PATTERN_COMPACT_PREFIX)
                     )
                 ].strip()
@@ -161,7 +161,7 @@ class AbstractQueryRep:
             raise ValueError("Result clause is missing from the query: ", query)
         result_clause_idx = ptr
 
-        ptr = advance_idx_to_kw(query, "WHERE", ptr)
+        ptr = advance_ptr_to_kw(query, "WHERE", ptr)
         if ptr >= len(query):
             raise ValueError("WHERE clause is missing from the query: ", query)
         where_clause_idx = ptr
@@ -169,7 +169,7 @@ class AbstractQueryRep:
         result_clause = query[result_clause_idx:where_clause_idx].strip()
 
         ptr += len("WHERE")
-        ptr = advance_idx_thru_space(query, ptr)
+        ptr = advance_ptr_thru_space(query, ptr)
         if query[ptr] != "{":
             raise ValueError("Missing open bracket after WHERE keyword: ", query)
 
@@ -177,7 +177,7 @@ class AbstractQueryRep:
         # assume that WHERE clause contains only basic triple patterns and FILTER clauses
         where_clause = []
         while True:
-            ptr = advance_idx_thru_space(query, ptr)
+            ptr = advance_ptr_thru_space(query, ptr)
 
             if query[ptr] == "}":
                 break
@@ -189,7 +189,7 @@ class AbstractQueryRep:
             start_idx = ptr
             if query.startswith("FILTER", ptr):
                 ptr += len("FILTER")
-                ptr = advance_idx_thru_space(query, ptr)
+                ptr = advance_ptr_thru_space(query, ptr)
                 if query[ptr] != "(":
                     raise ValueError(
                         "Open bracket is missing from FITLER clause: "
@@ -206,7 +206,7 @@ class AbstractQueryRep:
 
                 ptr += 1
             else:  # assume it's the triple pattern
-                ptr = advance_idx_to_kw(query, ".", ptr)
+                ptr = advance_ptr_to_kw(query, ".", ptr)
                 if ptr >= len(query):
                     raise ValueError(
                         "Full-stop is missing from triple pattern: " + query[start_idx:]

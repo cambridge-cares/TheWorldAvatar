@@ -1,4 +1,4 @@
-from marie.utils import advance_idx_thru_space, advance_idx_to_kw
+from marie.utils import advance_ptr_thru_space, advance_ptr_to_kw, advance_ptr_to_space
 from marie.data_processing.abstract_query_rep import AbstractQueryRep
 
 
@@ -27,16 +27,16 @@ def decode_special_chars(query: str):
 
 
 def remove_prefixes(query: str):
-    idx = advance_idx_to_kw(query, "PREFIX")
+    idx = advance_ptr_to_kw(query, "PREFIX")
     if idx == len(query):
         return query
 
     while query.startswith("PREFIX", idx):
-        "PREFIX prefix: <iri>"
+        # PREFIX prefix: <iri>
         idx += len("PREFIX")
-        idx = advance_idx_to_kw(query, ">", idx)
+        idx = advance_ptr_to_kw(query, ">", idx)
         idx += len(">")
-        idx = advance_idx_thru_space(query, idx)
+        idx = advance_ptr_thru_space(query, idx)
 
     return query[idx:]
 
@@ -54,3 +54,10 @@ def postprocess_query(query: str):
     except:
         query = None
     return query
+
+
+def normalize_query(query: str):
+    for c in [".", ",", "{", "}", "(", ")", "<", ">", "&&", "||"]:
+        query = query.replace(c, f" {c} ")
+
+    return " ".join(query.split())

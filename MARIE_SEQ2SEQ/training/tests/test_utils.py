@@ -1,6 +1,6 @@
 import pytest
 
-from marie.utils import advance_idx_thru_space, advance_idx_to_kw, advance_idx_to_space
+from marie.utils import advance_ptr_thru_space, advance_ptr_to_kw, advance_ptr_to_space
 
 
 class TestStrUtils:
@@ -13,7 +13,7 @@ class TestStrUtils:
         ],
     )
     def test_advanceIdxToKw(self, text, kw, idx, expected):
-        assert advance_idx_to_kw(text, kw, idx) == expected
+        assert advance_ptr_to_kw(text, kw, idx) == expected
 
     @pytest.mark.parametrize(
         "text, idx, expected",
@@ -23,7 +23,7 @@ class TestStrUtils:
         ],
     )
     def test_advanceIdxThruSpace(self, text, idx, expected):
-        assert advance_idx_thru_space(text, idx) == expected
+        assert advance_ptr_thru_space(text, idx) == expected
 
     @pytest.mark.parametrize(
             "text, idx, expected",
@@ -33,4 +33,4 @@ class TestStrUtils:
             ]
     )
     def test_advanceIdxToSpace(self, text, idx, expected):
-        assert advance_idx_to_space(text, idx) == expected
+        assert advance_ptr_to_space(text, idx) == expected
