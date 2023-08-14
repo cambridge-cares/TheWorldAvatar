@@ -6,8 +6,8 @@ QUERY_ENCODINGS = {
     "{": " op_br ",
     "}": " cl_br ",
     "?": " var_",
-    "<": " lt ",
-    ">": " gt ",
+    "<": " ls_th ",
+    ">": " gr_th ",
 }
 QUERY_DECODINGS = {v.strip(): k for k, v in QUERY_ENCODINGS.items()}
 
