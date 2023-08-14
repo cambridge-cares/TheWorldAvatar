@@ -34,7 +34,6 @@ public class GenerateData extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpPost httpPost = new HttpPost(Config.SHIP_INPUT_AGENT);
-        CloseableHttpResponse response;
         long timestamp;
 
         int numsteps = Integer.parseInt(req.getParameter("numsteps"));
@@ -43,8 +42,8 @@ public class GenerateData extends HttpServlet {
         LOGGER.info("Recevied POST request to generate dispersion data for {} timesteps", numsteps);
 
         for (int i = 0; i < numsteps; i++) {
-            try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
-                response = httpClient.execute(httpPost);
+            try (CloseableHttpClient httpClient = HttpClients.createDefault();
+                    CloseableHttpResponse response = httpClient.execute(httpPost);) {
                 JSONObject json = new JSONObject(EntityUtils.toString(response.getEntity()));
                 timestamp = json.getLong("averageTimestamp"); // key defined in ShipInputAgent
             } catch (JSONException | IOException | ParseException e) {
