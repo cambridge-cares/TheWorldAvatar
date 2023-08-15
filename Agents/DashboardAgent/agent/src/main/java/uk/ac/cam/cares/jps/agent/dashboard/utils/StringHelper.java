@@ -7,9 +7,9 @@ package uk.ac.cam.cares.jps.agent.dashboard.utils;
  */
 public class StringHelper {
     /**
-     * Formats the variable names to remove white spaces and use only lower cases for Grafana syntax.
+     * Formats the variable names to remove white spaces, dashes, and underscores and use only lower cases for Grafana syntax.
      */
-    public static String formatVariableName(String variable) {return variable.toLowerCase().replaceAll("\\s", "");}
+    public static String formatVariableName(String variable) {return variable.toLowerCase().replaceAll("[\\s\\-_]", "");}
 
     /**
      * Add space between each word, which is defined by having the first letter be capital. For eg, MyTestCase will return My Test Case.
