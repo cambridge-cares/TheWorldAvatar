@@ -7,8 +7,8 @@ services:
       context: .
       target: debug_test
     env_file:
-      # Specify environment variables for debug testing
-      - debug_test.env
+      # Specify environment variables for testing
+      - agent_test.env
     environment:
       - OVERWRITE_FORECAST=true
       - ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent_wOverwriting/Service
@@ -36,8 +36,8 @@ services:
       context: .
       target: debug_test
     env_file:
-      # Specify environment variables for debug testing
-      - debug_test.env
+      # Specify environment variables for testing
+      - agent_test.env
     environment:
       - OVERWRITE_FORECAST=false
       - ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent_woOverwriting/Service
@@ -65,7 +65,7 @@ services:
       - forecasting_agent_w_overwrite
       - forecasting_agent_wo_overwrite
     env_file:
-      - debug_test.env
+      - agent_test.env
     # Launch pytest in separate container with separate debugger (-s flag to enable more output/logging)
     command: python -m debugpy --listen 0.0.0.0:5679 --wait-for-client -m pytest -s
     ports:
