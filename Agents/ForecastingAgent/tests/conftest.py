@@ -63,7 +63,7 @@ TEST_TRIPLES_BASE_IRI = 'https://www.theworldavatar.com/test/'
 
 # Expected number of triples
 TBOX_TRIPLES = 7
-ABOX_TRIPLES = 44
+ABOX_TRIPLES = 42
 TS_TRIPLES = 4
 TIME_TRIPLES_PER_PURE_INPUT = 6
 AGENT_SERVICE_TRIPLES = 4       # agent service triples
@@ -116,11 +116,20 @@ HIST_DURATION_2 = TEST_TRIPLES_BASE_IRI + 'Duration_2'
 # Define derivation input sets to test
 TEST_CASE_1 = 'OM_Quantity_with_Measure_with_Unit__overwriting'
 TEST_CASE_2 = 'OM_Quantity_with_Measure_with_Unit__no_overwriting'
-TEST_CASE_3 = 'OM_Quantity_without_Measure_without_Unit'
+TEST_CASE_3 = 'OM_Quantity_without_Measure_with_Unit__overwriting'
+TEST_CASE_4 = 'OM_Quantity_without_Measure_with_Unit__no_overwriting'
+TEST_CASE_5 = 'OM_Quantity_without_Measure_without_Unit__overwriting'
+TEST_CASE_6 = 'OM_Quantity_without_Measure_without_Unit__no_overwriting'
+TEST_CASE_7 = 'OWL_Thing_without_Measure_without_Unit__overwriting'
+TEST_CASE_8 = 'OWL_Thing_without_Measure_without_Unit__no_overwriting'
 DERIVATION_INPUTS_1 = [IRI_TO_FORECAST_1, FORECASTING_MODEL_1, 
                        FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_1]
 DERIVATION_INPUTS_2 = [IRI_TO_FORECAST_2, FORECASTING_MODEL_1,
                        FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_1]
+DERIVATION_INPUTS_3 = [IRI_TO_FORECAST_1, FORECASTING_MODEL_1, 
+                       FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_2]
+DERIVATION_INPUTS_4 = [IRI_TO_FORECAST_3, FORECASTING_MODEL_1,
+                       FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_2]
 
 # Define erroneous derivation input sets as retrieved by derivation agent
 # --> correct exceptions tested as unit tests
