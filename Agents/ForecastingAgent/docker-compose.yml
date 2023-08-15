@@ -4,6 +4,9 @@ services:
   forecasting_agent:
     image: ghcr.io/cambridge-cares/forecasting_agent:2.0.0
     environment:
+      - OVERWRITE_FORECAST=true
+      - ROUNDING=6
+      #--- Deployment specific parameters ---#
       # Required environment variables for both Stack and "standalone" (i.e. outside stack) deployment
       - STACK_NAME=TEST         # to be left blank for "standalone" deployment
       # Additional environment variables required for Stack deployment
@@ -17,12 +20,24 @@ services:
       - DB_PASSWORD=
       - SPARQL_QUERY_ENDPOINT=
       - SPARQL_UPDATE_ENDPOINT=
+      #--- Derivation Agent parameters ---#
+      - ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent/Service
+      - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5001/ForecastingAgent
+      - DERIVATION_INSTANCE_BASE_URL=https://www.theworldavatar.com/kg/derivation/
+      - DERIVATION_PERIODIC_TIMESCALE=100000
+      - REGISTER_AGENT=true
+      # Required inputs, although not used when initialising DerivationAgent
+      - KG_USERNAME=''
+      - KG_PASSWORD=''
+      - FILE_SERVER_ENDPOINT=''
+      - FILE_SERVER_USERNAME=''
+      - FILE_SERVER_PASSWORD=''
     build:
       # Path to dockerfile ('.' represents current directory with .yml file)
       context: .
       target: prod
     ports:
-      - "5001:5000"
+      - 5001:5000
     volumes:
       - logs:/root/.jps
 
