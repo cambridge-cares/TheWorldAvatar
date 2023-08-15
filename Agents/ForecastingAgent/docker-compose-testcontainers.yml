@@ -3,11 +3,11 @@ version: '3.8'
 services:
   # Blazegraph
   blazegraph_test:
-    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0
     container_name: blazegraph_test
     restart: unless-stopped
     ports:
-      - 27149:8080
+      - 27149:9999
 
   # PostgreSQL
   postgres_test:
