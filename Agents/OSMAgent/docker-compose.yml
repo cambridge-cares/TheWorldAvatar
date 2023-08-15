@@ -1,0 +1,37 @@
+version: "3.8"
+
+services:
+  osmagent:
+    image: osmagent:1.0.0
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
+    environment:
+      - STACK_NAME=${STACK_NAME}
+      - DATABASE=sensorlogger
+      - FILE_SERVER_URL=http://file-server:8080/FileServer/
+      - VIS_FOLDER=/vis_data
+      - GEOSERVER_URL=http://host.docker.internal:3838/geoserver # specifying here because WMS endpoint does not work with container name
+    configs:
+      - postgis
+      - blazegraph
+      - geoserver
+      - ontop
+    secrets:
+      - postgis_password
+      - geoserver_password
+    ports:
+      - "10104:8080"
+    volumes:
+      - logs:/root/.jps
+      - vis_data:/vis_data
+    networks:
+      - stack
+
+volumes:
+  logs:
+    name: "logs"
+  vis_data:
+    name: "vis_data"
