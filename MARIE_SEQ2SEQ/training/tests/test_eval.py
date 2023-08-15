@@ -2,12 +2,6 @@ from marie.eval import convert_kg_results_to_hashable
 
 
 class TestEval:
-    def test_getBleuMetrics(self):
-        pass
-
-    def test_getTranslationMetrics(self):
-        pass
-
     def test_convertKgResultsToHashable(self):
         kg_results = [
             {
@@ -80,6 +74,3 @@ class TestEval:
             ),
         )
         assert convert_kg_results_to_hashable(kg_results) == expected
-
-    def test_getRetrievalPerformanceMetrics(self):
-        pass
