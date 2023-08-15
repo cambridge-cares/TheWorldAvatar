@@ -1,10 +1,14 @@
 import argparse
 import json
-from typing import List, TypedDict
+from typing import Dict, List, TypedDict
 
 from SPARQLWrapper import SPARQLExceptions
 from tqdm import tqdm
-from marie.eval import get_retrieval_performance_metrics, get_translation_metrics
+from marie.eval import (
+    convert_kg_results_to_hashable,
+    get_retrieval_performance_metrics,
+    get_translation_metrics,
+)
 
 from marie.kg_client import KgClient
 
@@ -37,27 +41,38 @@ def get_answer_data(data: dict):
     print("***Finished obtaining ground-truth answers***")
 
     print("***Obtaining predicted answers***")
-    predicted_answers = [get_answer(kg_client, datum["prediction"]) for datum in tqdm(data)]
+    predicted_answers = [
+        get_answer(kg_client, datum["prediction"]) for datum in tqdm(data)
+    ]
     print("***Finished obtaining predicted answers***")
 
     return gt_answers, predicted_answers
 
 
-def get_answer_metrics(gt_answers_data: List[AnswerDatum], predicted_answers_data: List[AnswerDatum]):
+def get_answer_metrics(
+    gt_answers_data: List[AnswerDatum], predicted_answers_data: List[AnswerDatum]
+):
     assert len(gt_answers_data) == len(predicted_answers_data)
 
-    gt_malform_rate = sum(datum["is_query_malformed"] for datum in gt_answers_data) / len(gt_answers_data)
-    prediction_malform_rate = sum(datum["is_query_malformed"] for datum in predicted_answers_data) / len(predicted_answers_data)
+    gt_malform_rate = sum(
+        datum["is_query_malformed"] for datum in gt_answers_data
+    ) / len(gt_answers_data)
+    prediction_malform_rate = sum(
+        datum["is_query_malformed"] for datum in predicted_answers_data
+    ) / len(predicted_answers_data)
 
     gt_answers = [datum["answer"] for datum in gt_answers_data]
     predicted_answers = [datum["answer"] for datum in predicted_answers_data]
 
-    retrieval_performance_metrics = get_retrieval_performance_metrics(gt_answers, predicted_answers)
+    retrieval_performance_metrics = get_retrieval_performance_metrics(
+        convert_kg_results_to_hashable(gt_answers),
+        convert_kg_results_to_hashable(predicted_answers),
+    )
 
     return {
         "gt_malform_rate": gt_malform_rate,
         "prediction_malform_rate": prediction_malform_rate,
-        **retrieval_performance_metrics
+        **retrieval_performance_metrics,
     }
 
 
@@ -89,9 +104,10 @@ def eval():
             {
                 **datum,
                 "is_gt_malformed": gt["is_query_malformed"],
-                "is_prediction_malformed": pred["is_query_malformed"]
-            } for datum, gt, pred in zip(data, gt_answers, predicted_answers)
-        ]
+                "is_prediction_malformed": pred["is_query_malformed"],
+            }
+            for datum, gt, pred in zip(data, gt_answers, predicted_answers)
+        ],
     )
 
     with open(args.output_file, "w") as f:

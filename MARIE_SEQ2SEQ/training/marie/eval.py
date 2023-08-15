@@ -1,14 +1,11 @@
 
-from typing import List
+from typing import Dict, List
 from sacrebleu.metrics import BLEU
 from sklearn.metrics import precision_recall_fscore_support, accuracy_score
 from sklearn.preprocessing import MultiLabelBinarizer
 
-from marie.data_processing.query_processing import remove_prefixes
+from marie.data_processing.query_processing import normalize_query, remove_prefixes
 
-
-def normalise_space(text: str):
-    return " ".join(text.strip().split())
 
 
 def get_bleu_metrics(refs: List[List[str]], sys: List[str]):
@@ -18,18 +15,37 @@ def get_bleu_metrics(refs: List[List[str]], sys: List[str]):
 
 
 def get_translation_metrics(data: List[dict]):
-    queries = [normalise_space(remove_prefixes(datum["gt"])) for datum in data]
-    predictions = [normalise_space(datum["prediction"]) for datum in data]
+    queries = [normalize_query(remove_prefixes(datum["gt"])) for datum in data]
+    predictions = [normalize_query(datum["prediction_postprocessed"]) for datum in data]
 
     return dict(
         bleu=get_bleu_metrics([queries], predictions),
         accuracy=accuracy_score(queries, predictions)
     )
 
+    
+def convert_kg_results_to_hashable(results: List[Dict[str, Dict[str, str]]]):
+    # [
+    #     Dict[
+    #         str, 
+    #         {
+    #             "datatype": NotRequired[str],
+    #             "type": str
+    #             "value" str
+    #         }
+    #     ]
+    # ]
+    _results = [[(k, v["value"]) for k, v in row.items()] for row in results]
+
+    for row in _results:
+        row.sort(key=lambda x: x[0])
+    _results.sort(key=lambda row: tuple(x[1] for x in row))
+
+    return tuple(tuple(row) for row in _results)
+
 
 def get_retrieval_performance_metrics(gt_list: List[list], predictions_list: List[list]):
     mlb = MultiLabelBinarizer()
-    # TODO: convert to non-None, hashable type
     multilabel_encodings = mlb.fit_transform(gt_list + predictions_list)
     gt_encodings = multilabel_encodings[:len(gt_list)]
     pred_encodings = multilabel_encodings[len(gt_list):]
