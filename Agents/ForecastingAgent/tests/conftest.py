@@ -77,6 +77,7 @@ T_2 = 1577923200
 T_3 = 1578009600
 # Forecast data history (in hours)
 DURATION_1 = 336
+DURATION_2 = 8760
 
 # 
 #  Values which should not require changing
@@ -86,13 +87,13 @@ DURATION_1 = 336
 DERIVATION_INSTANCE_BASE_URL = os.getenv('DERIVATION_INSTANCE_BASE_URL')
 
 # Create synthetic time series data
-times = pd.date_range(start='2019-10-01T00:00:00Z', freq='H', 
+times = pd.date_range(start='2018-12-01T00:00:00Z', freq='H', 
                       end='2020-02-01T00:00:00Z')
 TIMES = times.strftime("%Y-%m-%dT%H:%M:%SZ").tolist()
 # Linearly increasing time series
-VALUES_1 = [round(i*(100/len(times)),5) for i in range(1, len(times)+1)]    # original
+VALUES_1 = [round(i*(1000/len(times)),5) for i in range(1, len(times)+1)]    # original
 VALUES_2 = VALUES_1.copy()
-VALUES_2[100] = VALUES_2[100]*2     # slightly distorted copy
+VALUES_2[500] = VALUES_2[500]*2     # slightly distorted copy
 # Constant value time series
 VALUES_3 = [1 for i in range(1, len(times)+1)]
 
