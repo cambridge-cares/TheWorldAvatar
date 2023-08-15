@@ -21,10 +21,6 @@ import org.postgis.PGgeometry;
 
 public class FootPrint {
 
-    // private static final Logger LOGGER = LogManager.getLogger(FootPrint.class);
-    // private static final String INVALID_CONNECTION_MESSAGE = "Connection is invalid...";
-    // private SqlConnectionPool pool;
-
     List<GeoObject3D> allObject3D = new ArrayList<>();
     boolean thematic = false;
     String surfaceType = null;
@@ -38,45 +34,35 @@ public class FootPrint {
             this.thematic = true;
         }else{
             this.thematic = false;
+            object3D.identifySurface(this.surfaceType);
         }
-        classifySurfaces(this.allObject3D);
-    }
-    
-    private void classifySurfaces(List<GeoObject3D> allObject3D){
         for(int i = 0; i < allObject3D.size(); i++){
-            GeoObject3D object3D = allObject3D.get(i);
+            object3D = allObject3D.get(i);
             int objectid = object3D.getId();
-            int srid = object3D.getSrid(object3D.getGeometry3D());
+            // int srid = object3D.getSrid(object3D.getGeometry3D());
             PGgeometry print = new PGgeometry();
-            // Map<Integer, PGgeometry> allSurfaces  = object3D.queryBuildingSurfaces(objectid, this.thematic);
-            List<PGgeometry> groundList = new ArrayList<>();
-            // groundList = new ArrayList<PGgeometry>(allSurfaces.values());
-            if(this.thematic){
-                print = object3D.extractPrint_thematic(objectid, this.surfaceType);
-            }else{
-                print = object3D.extractPrint(objectid, surfaceType);
-            }
-            
-            // if(this.thematic && allSurfaces.size() > 0){
-            //     groundList = new ArrayList<Polygon>(allSurfaces.values());
-            // }else{
-            //     for (Map.Entry<Integer, Polygon> entry : allSurfaces.entrySet()) {
-            //         double z = entry.getValue().norm().getCoordinate().getZ();
-            //         double zratio = Math.abs(z);
-            //         double threshold = Math.sin(Math.toRadians(15));// parameter can be changed
-            //         if(z > 0 && zratio > threshold){
-            //             groundList.add(entry.getValue());
-            //             object3D.updateGroundSurface(entry.getKey(), objectid);
-            //         }               
-            //     }
-            // }
-            // GeometryFactory fact = new GeometryFactory();
-            // LinearRing footRing = extractFootprint(groundList);
-            // Polygon poly = new Polygon(footRing, null, fact);
-            // poly.setSRID(srid);
+            // List<PGgeometry> groundList = new ArrayList<>();               
+            print = object3D.extractPrint_thematic(objectid, this.surfaceType);
             object3D.updatePrint(objectid, print, this.surfaceType);
         }
     }
+    
+    // private void classifySurfaces(List<GeoObject3D> allObject3D){
+    //     GeoObject3D object3D = new GeoObject3D();
+    //     if(!this.thematic){
+    //         object3D.identifySurface(this.surfaceType);               
+    //     }
+
+    //     for(int i = 0; i < allObject3D.size(); i++){
+    //         object3D = allObject3D.get(i);
+    //         int objectid = object3D.getId();
+    //         // int srid = object3D.getSrid(object3D.getGeometry3D());
+    //         PGgeometry print = new PGgeometry();
+    //         // List<PGgeometry> groundList = new ArrayList<>();               
+    //         print = object3D.extractPrint_thematic(objectid, this.surfaceType);
+    //         object3D.updatePrint(objectid, print, this.surfaceType);
+    //     }
+    // }
       /**
      * Extracts the footprint of the building from its ground surface geometries
      * 
