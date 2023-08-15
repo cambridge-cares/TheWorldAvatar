@@ -28,6 +28,19 @@ RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository,sharing=locked m
 
 #==================================================================================================
 
+# Test build stage: create an image for unit testing based on common build stage
+#==================================================================================================
+FROM builder as test
+
+RUN --mount=type=cache,id=agent-mvn,target=/root/.m2/repository2,sharing=locked cp -r /root/.m2/repository2/* /root/.m2/repository
+
+COPY /agent/src/test ./src/test
+
+# Execute test
+CMD mvn test
+
+#==================================================================================================
+
 # Production build step: copy the downloaded dependency from first stage into a new image and build into an app
 #==================================================================================================
 FROM tomcat:9.0.68-jre11-temurin as agent

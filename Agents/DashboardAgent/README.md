@@ -25,7 +25,7 @@ This agent requires the following tools, which **MUST** run on the same stack. P
 
 (1) [Grafana](https://grafana.com/docs/grafana/latest/) dashboard
 - Required for this agent to configure and set up dashboards
-- Image version: **grafana-oss:9.5.2** 
+- Image version: **grafana-oss:10.0.3** 
 - Mandatory configuration url: `http://<STACK_NAME>-grafana:3000`
 
 (2) PostGIS database
@@ -38,6 +38,13 @@ This agent requires the following tools, which **MUST** run on the same stack. P
   - All sensor measures are attached according to the [OntoDevice](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodevice) ontology.
 
 #### 1.2 Docker Deployment
+**TEST ENVIRONMENT**
+- Deploy the agent to execute the unit tests by running the following code in the CLI at the <root> directory. 
+- The success of all tests must be verified through the Docker logs.
+```
+docker compose -f "./docker/docker-compose.test.yml" up -d --build
+```
+**PRODUCTION ENVIRONMENT**
 - Build this agent's image by issuing `docker compose build` within this folder. Do not start the container.
 - Copy the `dashboard-agent.json` file from the `stack-manager-input-config` folder into the `inputs/config/services` folder of the stack manager, adjusting the absolute path of the bind mount as required. 
 Please review the [different routes](#2-agent-route) to understand the purpose of these bind mounts. See [sample bind mounts](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#bind-mounts) for the configuration syntax.
