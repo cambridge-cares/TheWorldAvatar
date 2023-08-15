@@ -44,12 +44,16 @@ public class SparqlQuery {
                 // Device sendsSignalTo subDevice; sendsSignalTo/consistsOf subDevice; consistsOf subDevice;
                 // consistsOf/sendsSignalTo subDevice; consistsOf/sendsSignalTo/consistsOf subDevice
                 .append("{")
-                .append("?element ontodevice:sendsSignalTo*/saref:consistsOf*/ontodevice:sendsSignalTo*/saref:consistsOf* ?subdevices.")
+                // Sensors may be linked to the element in two ways
+                // First way is through sendsSignalTo and consistsOf
+                .append("{?element ontodevice:sendsSignalTo*/saref:consistsOf*/ontodevice:sendsSignalTo*/saref:consistsOf* ?sensor.}")
+                // Second way is through consistsOf and isAttachedTo
+                .append("UNION { ?subelement rdfs:label ?subelementname; ^saref:consistsOf ?element; ^ontodevice:isAttachedTo ?sensor.}")
                 // Retrieve the measure and its name associated with either the element or their subdevices
                 .append("{?element ontodevice:measures/om:hasValue ?measure.            ?measure rdfs:label ?measurename.}")
                 .append("UNION {?element ontodevice:observes ?measure.                  ?measure rdfs:label?measurename.}")
-                .append("UNION {?subdevices ontodevice:measures/om:hasValue ?measure.   ?measure rdfs:label ?measurename.}")
-                .append("UNION {?subdevices ontodevice:observes ?measure.               ?measure rdfs:label ?measurename.}")
+                .append("UNION {?sensor ontodevice:measures/om:hasValue ?measure.   ?measure rdfs:label ?measurename.}")
+                .append("UNION {?sensor ontodevice:observes ?measure.               ?measure rdfs:label ?measurename.}")
                 .append("} UNION {")
                 // For non-sensor devices which is being measured by sensors attached to them
                 .append("?element ontodevice:hasOperatingRange/ssn:hasOperatingProperty/ontodevice:hasQuantity/om:hasValue ?measure. ")
@@ -58,6 +62,9 @@ public class SparqlQuery {
                 // Once retrieved, all measures has a time series
                 .append("?measure ontotimeseries:hasTimeSeries ?timeseries.")
                 .append("}")
+                // If there is a sub element name, append it to the element label to get element name
+                // Else, element label should be the element name
+                .append("BIND(IF(BOUND(?subelementname), CONCAT(?elementlabel, \" \", ?subelementname), ?elementlabel) AS ?elementname)")
                 .append("}");
         return query.toString();
     }
@@ -94,7 +101,7 @@ public class SparqlQuery {
                 .append("   ontobim:hasRoom ?room.")
                 .append("?room rdf:type ontobim:Room;")
                 .append("   bot:containsElement ?element.")
-                .append("?element rdfs:label ?elementname;")
+                .append("?element rdfs:label ?elementlabel;")
                 .append("   rdf:type ?elementtype.");
         return query;
     }
