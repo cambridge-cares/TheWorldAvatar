@@ -4,10 +4,9 @@
 ################################################
 
 # The purpose of this module is to provide functionality to execute
-# KG queries and updates using the StoreRouter from the JPS_BASE_LIB
+# KG queries and updates using the PySparqlClient from the DerivationAgent
 
 import uuid
-import pandas as pd
 
 from py4jps import agentlogging
 
@@ -29,7 +28,7 @@ class KGClient(PySparqlClient):
     def get_time_series_details(self, iri_to_forecast:str):
         """
         Returns the dataIRI, tsIRI, RDB URL and time format of the time series 
-        instance associated with the given instance IRI.
+        instance associated with the given instance IRI to forecast.
         NOTE: iri_to_forecast and dataIRI do not need to be equivalent, especially
               when OM representation for data is used, where a om:Measure concept 
               is used "in between":
@@ -44,8 +43,9 @@ class KGClient(PySparqlClient):
             iri_to_forecast (str) -- IRI of instance for which to create forecast
         Returns:
             ts (dict) -- dictionary with keys 'data_iri', 'ts_iri', 'fc_iri',
-                         'rdb_url' and 'time_format'
+                         'unit', 'rdb_url' and 'time_format'
         """
+
         query = f"""
             SELECT DISTINCT ?data_iri ?ts_iri ?fc_iri ?unit ?rdb_url ?time_format
             WHERE {{   
@@ -90,6 +90,7 @@ class KGClient(PySparqlClient):
             fcmodel (dict) -- dictionary with keys 'fcmodel_iri', 'label', 'scale_data',
                               'model_url', 'chkpt_url' and 'covariate_iris'
         """
+
         query = f"""
             SELECT DISTINCT ?fcmodel_iri ?label ?scale_data ?model_url ?chkpt_url ?covariate_iri
             WHERE {{   
@@ -131,6 +132,7 @@ class KGClient(PySparqlClient):
             duration (dict) -- dictionary with keys 'iri', 'unit', 'value', 
                                and 'resample_data' (only relevant for frequency)
         """
+
         query = f"""
             SELECT DISTINCT ?iri ?resample_data ?unit ?value
             WHERE {{   
@@ -229,6 +231,7 @@ class KGClient(PySparqlClient):
             OPTIONAL {{ ?iri <{OM_HASUNIT}> ?unit . }}
             }}
         """
+
         query = remove_unnecessary_whitespace(query)
         res = self.performQuery(query)
 
@@ -246,7 +249,6 @@ class KGClient(PySparqlClient):
             raise ValueError(msg)
 
 
-
     def get_dataIRI(self, tsIRI:str):
         """
         Returns dataIRI associated with given tsIRI.
@@ -254,6 +256,7 @@ class KGClient(PySparqlClient):
         Returns:
             dataIRI {str} -- dataIRI associated with given tsIRI
         """
+
         query = f"""
             SELECT DISTINCT ?dataIRI
             WHERE {{   
@@ -274,6 +277,7 @@ class KGClient(PySparqlClient):
         Returns:
             tsIRI {str} -- tsIRI associated with given dataIRI
         """
+
         query = f"""
             SELECT DISTINCT ?tsIRI
             WHERE {{   
@@ -291,6 +295,7 @@ class KGClient(PySparqlClient):
         """
         Returns list of all instantiated time series IRIs.
         """
+
         query = f"""
             SELECT DISTINCT ?tsIRI
             WHERE {{   
@@ -302,7 +307,6 @@ class KGClient(PySparqlClient):
 
         # Return unique query result (otherwise exception is thrown)
         return get_list_of_unique_values(res, 'tsIRI')
-
 
     #
     # SPARQL UPDATES
@@ -447,6 +451,7 @@ class KGClient(PySparqlClient):
         Returns SPARQL UPDATE to reconnect a newly created forecast with 
         corresponding derivation (and delete old connection)
         """
+        
         # Create Delete-Insert query
         update = f"""
             DELETE {{

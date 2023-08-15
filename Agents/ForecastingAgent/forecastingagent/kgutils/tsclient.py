@@ -1,6 +1,6 @@
 ################################################
 # Authors: Markus Hofmeister (mh807@cam.ac.uk) #
-# Date: 17 Oct 2022                            #
+# Date: 20 Jul 2022                            #
 ################################################
 
 # The purpose of this module is to provide functionality to use
@@ -13,6 +13,7 @@ from py4jps import agentlogging
 from forecastingagent.errorhandling.exceptions import TSException
 from forecastingagent.utils.baselib_gateway import jpsBaseLibGW
 from forecastingagent.utils.env_configs import DB_URL, DB_USER, DB_PASSWORD
+
 
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
@@ -160,6 +161,7 @@ class TSClient:
             lowerbound (str): Lower bound of time series data
             upperbound (str): Upper bound of time series data
         """
+        
         with self.connect() as conn:
             ts = self.tsclient.getTimeSeriesWithinBounds([dataIRI], lowerbound, 
                                                          upperbound, conn)

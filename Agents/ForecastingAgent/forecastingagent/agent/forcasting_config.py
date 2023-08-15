@@ -67,6 +67,16 @@ def create_forecast_configuration(model:dict, ts_details:dict, ts_frequency:dict
     Returns a dictionary with a forecast configuration as follows:
     Required (always present):
         'ts_data_type': Java data type for time series values
+        'fc_model': The forecasting model which is used to create the forecast.
+            It is a dict with the following keys:
+            Required:
+                'name': The name of the forecasting model ('prophet' as default)
+                'scale_data': If True, the data is scaled before the forecast is created
+                'train_again': If True, the model is trained again before the forecast is created
+            Only required for pre-trained models, i.e. models other than Prophet:
+                'model_path_ckpt_link': The link from where to load the darts checkpoint file of the model
+                'model_path_pth_link': The link from where to load the darts pth file of the model
+                'covariate_iris':TODO
         'frequency': The frequency of the time series data, as a datetime timedelta object 
                     (i.e. representing a duration of time)
         'data_length': The maximum length of the time series data, which is loaded before
@@ -78,17 +88,6 @@ def create_forecast_configuration(model:dict, ts_details:dict, ts_frequency:dict
                         Neural Methods have a fixed input length (same as during training),
                         therefore they use the last values of the time series data with
                         respect to their input length to create the forecast.
-        'fc_model': The forecasting model which is used to create the forecast.
-            It is a dict with the following keys:
-            Required:
-                'name': The name of the forecasting model ('prophet' as default)
-                'scale_data': If True, the data is scaled before the forecast is created
-                'train_again': If True, the model is trained again before the forecast is created
-            Only required for pre-trained models, i.e. models other than Prophet:
-                If 'model_path_ckpt_link' and 'model_path_pth_link' are give, the model 
-                is loaded from the given paths
-                'model_path_ckpt_link': The link to the darts checkpoint file of the model
-                'model_path_pth_link': The link to the darts pth file of the model
             
     Optional:
         'resample_data': String specifying the resampling frequency for irregularly spaced time series
@@ -111,7 +110,7 @@ def create_forecast_configuration(model:dict, ts_details:dict, ts_frequency:dict
     if ts_details.get('unit'): cfg['unit'] = ts_details['unit']
     if ts_details.get('fc_iri'): cfg['fc_iri'] = ts_details['fc_iri']
     
-    # Add time series frequency details
+    # Add time series frequency details (incl. potential 'resample_data' entry)
     f = create_duration_entries(ts_frequency)
     cfg['frequency'] = f.pop('duration')
     cfg.update(f)
@@ -123,7 +122,7 @@ def create_forecast_configuration(model:dict, ts_details:dict, ts_frequency:dict
     cfg['data_length'] = int(dur['duration'] / cfg['frequency'])
 
     # Add forecast interval details
-    # NOTE: pd.Timestamp expects the input to be in nanoseconds -> specify unit explicitly
+    # NOTE: pd.Timestamp expects default input to be in nanoseconds -> specify unit explicitly
     cfg['fc_start_timestamp'] = pd.Timestamp(fc_interval['start_unix'], unit='s')
     horizon = dt.timedelta(seconds=(fc_interval['end_unix']-fc_interval['start_unix']))
     # NOTE: Conversion to int ensures rounding down to full time steps

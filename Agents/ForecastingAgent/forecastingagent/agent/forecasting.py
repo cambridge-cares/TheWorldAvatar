@@ -3,11 +3,10 @@
 # Date: 17 Jul 2023                            #
 ################################################
 
-# The purpose of this module is to provide the forecasting agent class based on 
+# The purpose of this module is to provide the ForecastingAgent class based on 
 # the pyderivationagent.DerivationAgent class, i.e., implementing the forecasting
 # agent as derivation agent using synchronous derivation with time series
 
-import uuid
 import pandas as pd
 from darts import TimeSeries
 from flask import request, jsonify
@@ -112,9 +111,9 @@ class ForecastingAgent(DerivationAgent):
                     raise TypeError(f"Derivation {derivationIRI}: More than one '{inp_name}' IRI provided.")
 
         # Retrieve IRI to forecast
-        # For createSyncDerivationForNewInfo ... 
-        # Prio 1) If (subclass of) an om:Quantity is provided, use this one
-        # Prio 2) If not, try to extract the appropriate owl:Thing
+        # 1) For createSyncDerivationForNewInfo
+        #       Prio 1) If (subclass of) an om:Quantity is provided, use this one
+        #       Prio 2) If not, try to extract the appropriate owl:Thing
         if inputs.get(OM_QUANTITY):
             inp = inputs.get(OM_QUANTITY)
             # Check whether only one input has been provided
@@ -139,7 +138,7 @@ class ForecastingAgent(DerivationAgent):
                 self.logger.error(f"Derivation {derivationIRI}: No unique 'owl:Thing' IRI provided to forecast.")
                 raise TypeError(f"Derivation {derivationIRI}: No unique 'owl:Thing' IRI provided to forecast.")
         
-        # ... for existing derivations
+        # 2) For existing derivations
         else:
             # If neither om:Quantity nor owl:Thing is marked up directly as input
             # (e.g., in cases where a subclass of om:Quantity is forecasted), try to
@@ -173,11 +172,11 @@ class ForecastingAgent(DerivationAgent):
                                                time series to be forecasted)
         and generates
             1 IRI of OntoTimeSeries:Forecast (incl. further relationships 
-                                                detailing forecast instance)
+                                              detailing forecast instance)
         
         Please Note: Output triples will only be generated when creating new info, i.e.,
-                        instantiating new derivations. Otherwise, no outputs are generated
-                        for derivations with time series
+                     instantiating new derivations. Otherwise, no outputs are generated
+                     for derivations with time series
         """
 
         # Get input IRIs from the agent inputs (derivation_inputs)
@@ -188,7 +187,7 @@ class ForecastingAgent(DerivationAgent):
         input_iris = self.validate_input_values(inputs=inputs, derivationIRI=derivIRI)
 
         # Query relevant forecasting inputs from KG
-        # 1) Time series data to forecast (incl. ts RDB link and format)
+        # 1) Time series data to forecast (incl. time series RDB link and format)
         ts = self.sparql_client.get_time_series_details(input_iris['iri_to_forecast'])
         # 2) Forecasting model
         fcmodel = self.sparql_client.get_fcmodel_details(input_iris[TS_FORECASTINGMODEL])
@@ -229,7 +228,7 @@ class ForecastingAgent(DerivationAgent):
                                       ts_type=cfg['ts_data_type'], time_format=time_format)
             if old_fc_iri:
                 # In case new forecast has been created for existing derivation,
-                # disconnect old forecast instance from derivation
+                # disconnect old forecast instance from derivation and connect with new one
                 # NOTE: Derivation Framework only supports one output per rdf type
                 self.sparql_client.reconnect_forecast_with_derivation(old_fc_iri, fc_iri)
 
@@ -330,8 +329,9 @@ def default():
     """
     Instructional message at the agent root.
     """
+
     msg = '<B>Forecasting agent</B>:<BR><BR>'
-    msg += 'The Forecasting Agent can predict instantiated time series and instantiate the forecasted series in the KG.<BR>'
+    msg += 'The Forecasting Agent can predict instantiated time series and instantiate the forecast in the KG.<BR>'
     msg += "The agent is implemented as derivation agent using ontoderivation:DerivationWithTimeSeries"
     msg += "<BR><BR>"
     msg += 'For further details please see the <a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ForecastingAgent/">Forecasting Agent README</a>.'

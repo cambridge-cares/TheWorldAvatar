@@ -14,8 +14,6 @@ import os
 import pytest
 import requests
 import time
-import uuid
-import numpy as np
 import pandas as pd
 import psycopg2 as pg
 import matplotlib.pyplot as plt
@@ -34,7 +32,7 @@ from forecastingagent.kgutils.tsclient import TSClient
 from forecastingagent.utils.env_configs import DB_URL, DB_USER, DB_PASSWORD, \
                                                SPARQL_QUERY_ENDPOINT, \
                                                SPARQL_UPDATE_ENDPOINT, \
-                                               OVERWRITE_FORECAST, ROUNDING
+                                               ROUNDING
 
 
 # ----------------------------------------------------------------------------------

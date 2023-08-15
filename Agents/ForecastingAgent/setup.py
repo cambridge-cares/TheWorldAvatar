@@ -9,7 +9,7 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_namespace_packages(exclude=['tests','tests.*']),
-    description="The `Forecasting Agent` predicts a time series and instantiates the forecast into a given KG as part of The World Avatar project.",
+    description="The `Forecasting Agent` predicts a time series and instantiates the forecast as part of The World Avatar project.",
     url="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/ForecastingAgent/",
     python_requires='>=3.7',
     include_package_data=True,

@@ -21,23 +21,30 @@ logger = agentlogging.get_logger('prod')
 
 
 def remove_unnecessary_whitespace(query: str) -> str:
-    # Remove unnecessary whitespaces
+    """
+    Remove unnecessary whitespaces
+    """
     query = ' '.join(query.split())
     return query
 
 
 def get_list_of_unique_values(res: list, key: str) -> list:
-    # Unpacks a query result list (i.e., list of dicts) into a list of 
-    # unique values for the given key.
-    
+    """
+    Unpacks a query result list (i.e., list of dicts) into a list of 
+    unique values for the given dict key.
+    """    
     res_list =  list(set([r.get(key) for r in res]))
     res_list = [v for v in res_list if v is not None]
     return res_list
 
 
 def get_unique_value(res: list, key: str, cast_to=None) -> str:
-    # Unpacks a query result list (i.e., list of dicts) into unique 
-    # value for the given key (returns None if no unique value is found)
+    """
+    Unpacks a query result list (i.e., list of dicts) into unique 
+    value for the given dict key (returns None if no unique value is found)
+
+    Tries to cast result in case 'cast_to' datatype is provided
+    """
     
     res_list =  get_list_of_unique_values(res, key)
     if len(res_list) == 1:
@@ -77,7 +84,8 @@ def add_enclosing(s):
 def create_triple(subj, pred, obj):
     """
     Constructs object property triple from given subject, predicate and object.
-    ( literals are handled by create_triple_literal)
+    (literals are handled by create_triple_literal)
+    
     Arguments:
         subj {str} - subject of the triple
         pred {str} - predicate of the triple
@@ -98,6 +106,7 @@ def create_triple(subj, pred, obj):
 def create_triple_literal(subj, pred, literal, literal_type=None):
     """
     Constructs data property triple from given subject, predicate and literal.
+    
     Arguments:
         subj {str} - subject of the triple
         pred {str} - predicate of the triple
@@ -129,6 +138,7 @@ def create_properties_for_subj(subj: str, pred_obj: dict = {}, pred_literal: dic
     """
     Constructs SPARQL INSERT DATA triples for given subject, predicate-object and
     predicate-literal dictionary.
+
     Arguments:
         subj {str} - instance IRI
         pred_obj {dict} - object properties: dictionary of pred-object pairs
@@ -206,9 +216,12 @@ def convert_time_to_timestamp(time):
     """
     Converts a time to a unix timestamp (in seconds)
 
-    :param time: a time (int, str, pd.Timestamp)
-    :return: unix timestamp (in s)
+    Arguments:
+        time: a time (int, str, pd.Timestamp)
+    Returns:
+        unix timestamp (in s)
     """
+
     # convert time to unix timestamp
     if isinstance(time, int):
         time_stamp = time

@@ -9,7 +9,6 @@
 
 import copy
 import pytest
-import json
 import requests
 from pathlib import Path
 from rdflib import Graph
@@ -26,6 +25,7 @@ from . import conftest as cf
 
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
+
 
 #@pytest.mark.skip(reason="Nor relevant right now")
 def test_example_triples():

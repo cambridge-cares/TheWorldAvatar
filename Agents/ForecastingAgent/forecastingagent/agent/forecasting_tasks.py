@@ -27,7 +27,7 @@ from forecastingagent.utils.env_configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPD
 from forecastingagent.agent.forcasting_config import *
 from forecastingagent.kgutils.kgclient import KGClient
 from forecastingagent.kgutils.tsclient import TSClient
-from forecastingagent.errorhandling.exceptions import KGException
+
 
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
@@ -37,8 +37,7 @@ def forecast(config, db_url, time_format, kgClient=None, tsClient=None,
              query_endpoint=SPARQL_QUERY_ENDPOINT, update_endpoint=SPARQL_UPDATE_ENDPOINT,
              db_user=DB_USER, db_password=DB_PASSWORD):
     """
-    Forecast a time series using a pre trained model or Prophet.
-    returns a dictionary with the forecast and some metadata.
+    Forecasts a time series using a pre-trained model or Prophet using darts.
 
     Arguments:
         kgClient {KGClient} - KG client to use
@@ -130,13 +129,14 @@ def get_forecast(series, covariates, model, cfg):
     It takes a series, covariates, model, and a model configuration as inputs, 
     and returns a forecast.
 
-    :param series: the time series data
-    :param covariates: darts series  of covariates
-    :param model: the model to use for forecasting
-    :param cfg: a dictionary containing the following keys:
-        'fc_model': a dictionary containing the following keys:
-            'input_length': the number of time steps to use as input for the model
-    :return: The forecasted values
+    Arguments:
+        series: the time series data
+        covariates: darts series  of covariates
+        model: the model to use for forecasting
+        cfg: a dictionary of forecast characteristics as created by
+             'create_forecast_configuration'
+    Returns:
+        darts.TimeSeries object with forecasted time series
     """
 
     if cfg['fc_model'].get('scale_data'):
@@ -185,16 +185,18 @@ def load_ts_data(cfg, kgClient, tsClient):
     """
     Load time series and covariates data (if applicable) from RDB. 
 
-    :param cfg: dicti.onary with forecast configuration as returned by 'create_forecast_configuration'
-        Relevant keys:
-            'fc_model': configuration of forecasting model to use, i.e. relevant covariates
-            'dataIRI': dataIRI of the time series to forecast (i.e., for which to retrieve data)
-            'loaded_data_bounds': lowerbound and upperbound between which to load data
-            'resample_data': string describing potential resampling frequency (for pandas resample function)
-    :param kgClient: initialised KG client
-    :param tsClient: initialised TS client
+    Arguments:
+        cfg: dicti.onary with forecast configuration as returned by 'create_forecast_configuration'
+            Relevant keys:
+                'fc_model': configuration of forecasting model to use, i.e. relevant covariates
+                'dataIRI': dataIRI of the time series to forecast (i.e., for which to retrieve data)
+                'loaded_data_bounds': lowerbound and upperbound between which to load data
+                'resample_data': string describing potential resampling frequency (for pandas resample function)
+        kgClient: initialised KG client
+        tsClient: initialised TS client
     
-    :return: darts.TimeSeries objects of timeseries (and covariates)
+    Returns:
+        darts.TimeSeries objects of timeseries (and covariates)
     """
 
     if cfg['fc_model'].get('covariate_iris'):
@@ -255,14 +257,16 @@ def get_ts_lower_upper_bound(cfg, time_format=TIME_FORMAT):
     It takes the forecast start date, the frequency, the horizon, and the data length, 
     and returns the lower and upper bounds of the time series
 
-    :param cfg: a dictionary with the following keys:
-        'fc_start_timestamp': the start of the forecast (pd.Timestamp)
-        'frequency': the frequency of the time series data (dt.timedelta)
-        'horizon': the length of the forecast, i.e. number of time steps (int)
-        'data_length': the length of the time series data to retrieve before the
-                       fc_start_timestamp, i.e. number of time steps (int)
+    Arguments:
+        cfg: a dictionary with the following keys:
+            'fc_start_timestamp': the start of the forecast (pd.Timestamp)
+            'frequency': the frequency of the time series data (dt.timedelta)
+            'horizon': the length of the forecast, i.e. number of time steps (int)
+            'data_length': the length of the time series data to retrieve before the
+                        fc_start_timestamp, i.e. number of time steps (int)
 
-    :return: the lower and upper bounds of the time series as strings
+    Returns:
+        Lower and upper bounds of the time series as strings
     """
 
     # upper bound is fc_start_timestamp + forecast horizon

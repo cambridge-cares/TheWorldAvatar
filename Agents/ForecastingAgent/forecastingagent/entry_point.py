@@ -12,6 +12,7 @@ from forecastingagent.utils.env_configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPD
 from forecastingagent.agent import ForecastingAgent
 from forecastingagent.agent import default
 
+
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
 
