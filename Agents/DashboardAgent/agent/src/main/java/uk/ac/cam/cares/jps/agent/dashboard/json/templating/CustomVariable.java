@@ -19,14 +19,6 @@ class CustomVariable extends TemplateVariable {
     private static final String IS_ASSET_TYPE = "Assets";
 
     /**
-     * Constructor for filtering asset types. Only used this for that purpose.
-     *
-     * @param values                 An array of values to be included into the query component. Tentatively, this is a value of all available asset types or individual assets within one type.
-     * @param dashboardDisplayOption The display options for the variable on the dashboard by Grafana. 0 - Display both label and values; 1 - Display only value; 2 - Display nothing.
-     */
-    protected CustomVariable(String[] values, Integer dashboardDisplayOption) {this(IS_ASSET_TYPE, values, dashboardDisplayOption);}
-
-    /**
      * Basic Constructor that provides customised settings.
      *
      * @param name                   The name of the assets to create for this variable.
@@ -36,10 +28,7 @@ class CustomVariable extends TemplateVariable {
     protected CustomVariable(String name, String[] values, Integer dashboardDisplayOption) {
         // Construct the super class
         super(name, dashboardDisplayOption);
-        // If it is for filtering asset types, just keep a similar label
-        this.LABEL = name.equals(IS_ASSET_TYPE) ? IS_ASSET_TYPE :
-                // Otherwise add white space before each capital letter for the label, and add " Assets" at the end
-                StringHelper.addSpaceBetweenCapitalWords(name) + " Assets";
+        this.LABEL = StringHelper.addSpaceBetweenCapitalWords(name) + " Assets";
         // Description should follow label
         this.DESCRIPTION = "Default filters for the " + this.LABEL;
         // Create a default option for all values

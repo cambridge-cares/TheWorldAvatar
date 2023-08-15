@@ -21,14 +21,6 @@ public class TemplatingModel {
     public TemplatingModel(Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> assets) {
         // Initialise a queue to store these template variables
         Queue<TemplateVariable> variableQueue = new ArrayDeque<>();
-        // Create the first custom variable for filtering asset types ONLY IF >1 asset type
-        if (assets.keySet().size() > 1) {
-            // Initialise an array for all the available types
-            String[] assetTypes = assets.keySet().toArray(new String[0]);
-            // Initialise a custom variable
-            CustomVariable variable = new CustomVariable(assetTypes, 0);
-            variableQueue.offer(variable);
-        }
         // For each asset type available
         for (String assetType : assets.keySet()) {
             // Retrieve the map of measures to their asset and time series metadata
