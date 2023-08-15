@@ -14,7 +14,7 @@ class KgClient:
         sparql.setMethod(POST)
         self.sparql = sparql
 
-    def query(self, query: str, add_prefixes=True):
+    def query(self, query: str):
         """Queries the KG and returns the response with the following format
         {
             "head": {
@@ -34,7 +34,8 @@ class KgClient:
             }
         }
         """
-        if add_prefixes:
+        query = query.strip()
+        if not query.startswith("PREFIX"):
             query = QUERY_PREFIXES + query
             
         self.sparql.setQuery(query)

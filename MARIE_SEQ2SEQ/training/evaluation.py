@@ -1,6 +1,6 @@
 import argparse
 import json
-from typing import Dict, List, TypedDict
+from typing import Dict, List, Optional, TypedDict
 
 from SPARQLWrapper import SPARQLExceptions
 from tqdm import tqdm
@@ -21,14 +21,17 @@ class AnswerDatum(TypedDict):
     is_query_malformed: bool
 
 
-def get_answer(kg_client: KgClient, query: str):
+def get_answer(kg_client: KgClient, query: Optional[str]):
     answer = None
     is_query_malformed = False
 
-    try:
-        answer = kg_client.query(query)["results"]["bindings"]
-    except SPARQLExceptions.QueryBadFormed:
+    if query is None:
         is_query_malformed = True
+    else:
+        try:
+            answer = kg_client.query(query)["results"]["bindings"]
+        except SPARQLExceptions.QueryBadFormed:
+            is_query_malformed = True
 
     return AnswerDatum(answer=answer, is_query_malformed=is_query_malformed)
 
@@ -42,7 +45,7 @@ def get_answer_data(data: dict):
 
     print("***Obtaining predicted answers***")
     predicted_answers = [
-        get_answer(kg_client, datum["prediction"]) for datum in tqdm(data)
+        get_answer(kg_client, datum["prediction_postprocessed"]) for datum in tqdm(data)
     ]
     print("***Finished obtaining predicted answers***")
 
@@ -61,12 +64,12 @@ def get_answer_metrics(
         datum["is_query_malformed"] for datum in predicted_answers_data
     ) / len(predicted_answers_data)
 
-    gt_answers = [datum["answer"] for datum in gt_answers_data]
-    predicted_answers = [datum["answer"] for datum in predicted_answers_data]
-
     retrieval_performance_metrics = get_retrieval_performance_metrics(
-        convert_kg_results_to_hashable(gt_answers),
-        convert_kg_results_to_hashable(predicted_answers),
+        [convert_kg_results_to_hashable(datum["answer"]) for datum in gt_answers_data],
+        [
+            convert_kg_results_to_hashable(datum["answer"])
+            for datum in predicted_answers_data
+        ],
     )
 
     return {
@@ -97,8 +100,7 @@ def eval():
 
     eval_results = dict(
         metrics=dict(
-            translation_metrics=translation_metrics,
-            answer_metrics=answer_metrics
+            translation_metrics=translation_metrics, answer_metrics=answer_metrics
         ),
         data=[
             {
