@@ -12,7 +12,6 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 
-import uk.ac.cam.cares.jps.base.derivation.Derivation;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;

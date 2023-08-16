@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,6 +50,7 @@ public class ShipInputAgent extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(ShipInputAgent.class);
     private static final String JSON_EXT = ".json";
     private QueryClient queryClient;
+    private RemoteRDBStoreClient remoteRDBStoreClient;
 
     @Override
     public void init() throws ServletException {
@@ -55,7 +58,7 @@ public class ShipInputAgent extends HttpServlet {
         RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient, Long.class);
         DerivationClient derivationClient = new DerivationClient(storeClient, QueryClient.PREFIX);
-        RemoteRDBStoreClient remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(),
+        remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(),
                 endpointConfig.getDbuser(), endpointConfig.getDbpassword());
         queryClient = new QueryClient(storeClient, tsClient, derivationClient, remoteRDBStoreClient);
     }
@@ -182,6 +185,19 @@ public class ShipInputAgent extends HttpServlet {
             // new derivations are created on the spot (request sent to agent immediately)
             queryClient.createNewDerivations(newlyCreatedShips);
 
+            // populate ship iri lookup table, for creation of geoserver layer in aermod
+            // agent
+            try (Connection conn = remoteRDBStoreClient.getConnection()) {
+                ShipRDBClient rdbClient = new ShipRDBClient();
+                rdbClient.createIriLookUpTable(conn);
+                rdbClient.populateTable(newlyCreatedShips, conn);
+            } catch (SQLException e) {
+                String errmsg = "Probably failed to close connection while dealing with ship look up table";
+                LOGGER.error(errmsg);
+                LOGGER.error(e.getMessage());
+                throw new RuntimeException(errmsg, e);
+            }
+
             // calculate average timestep for ship layer name
             long averageTimestamp = ships.stream().mapToLong(s -> s.getTimestamp().getEpochSecond()).sum()
                     / ships.size();
@@ -194,14 +210,6 @@ public class ShipInputAgent extends HttpServlet {
             resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
             resp.setCharacterEncoding("UTF-8");
             resp.getWriter().print(responseJson);
-
-            // // first time adding ontop mapping
-            // if (initialiseObda) {
-            // LOGGER.info("Initialising ontop mapping file");
-            // // add ontop mapping
-            // Path obdaFile = new ClassPathResource("ontop.obda").getFile().toPath();
-            // new OntopClient().updateOBDA(obdaFile);
-            // }
         }
     }
 
