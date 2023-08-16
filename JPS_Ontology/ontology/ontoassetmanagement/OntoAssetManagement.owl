@@ -9,7 +9,7 @@
      xmlns:ontoassetmanagement="https://www.theworldavatar.com/kg/ontoassetmanagement/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">15 August 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">16 August 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoAssetManagement is an ontology that is designed to represent asset and its related information (e.g. purchase documents).</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -129,19 +129,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the address of an organization.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has address</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasAfterTaxPrice -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasAfterTaxPrice">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/PriceDetails"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/AfterTaxPrice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes an after-tax price component of the price details.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has after-tax price</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -280,15 +267,15 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasDiscountedUnitPrice -->
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasDiscount -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasDiscountedUnitPrice">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasDiscount">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/PriceDetails"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/DiscountedUnitPrice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a discounted unit price component of the price details.</rdfs:comment>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/Discount"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a discount component of the price details.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has discounted unit price</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has discount</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -302,19 +289,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the effective date of a payment. The date may be a past, present or future date.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has effective date</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasHomeTotalAfterTaxPrice -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasHomeTotalAfterTaxPrice">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/PriceDetails"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/HomeTotalAfterTaxPrice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the home total after-tax price component of the price details.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has home total after-tax price</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -355,26 +329,13 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasPretaxPrice -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasPretaxPrice">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/PriceDetails"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/PretaxPrice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a pretax price component of the price details.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has pretax price</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasPrice -->
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasPrice">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/PriceDetails"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/Price"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a general price component of the price details.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a price component of the price details.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has price</rdfs:label>
     </owl:ObjectProperty>
@@ -460,15 +421,28 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasUnitPrice -->
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasTax -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasUnitPrice">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasTax">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/PriceDetails"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/UnitPrice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes an unit price component of the price details.</rdfs:comment>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/Tax"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a tax component of the price details.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has unit price</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has tax</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasTaxRate -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasTaxRate">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/PriceDetails"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/TaxRate"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a tax rate component of the price details.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has tax rate</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -563,26 +537,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes something alluding to or referring to another thing.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">references</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/subjectedTo -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/subjectedTo">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/Price"/>
-        <rdfs:range>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/Discount"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/Tax"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:range>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the amount of tax or discount that a price is subjected to.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">subjected to</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -908,18 +862,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/AfterTaxPrice -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/AfterTaxPrice">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/Price"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Price of a purchase including tax.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">After-tax price</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/ApprovingParty -->
 
 
@@ -1025,14 +967,14 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/HomeTotalAfterTaxPrice -->
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/HomeTotalDiscountedAfterTaxPrice -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/HomeTotalAfterTaxPrice">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/HomeTotalDiscountedAfterTaxPrice">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/Price"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Price of a purchase including tax and converted to a local currency.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Total Price of a purchase including tax and discount, converted to a local currency.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Home total after-tax price</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Home total discounted after-tax price</rdfs:label>
     </owl:Class>
     
 
@@ -1068,18 +1010,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Terms pertaining to how and when customers pay for products or services.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Payment terms</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/PretaxPrice -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/PretaxPrice">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/Price"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Price of a purchase excluding tax.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pretax price</rdfs:label>
     </owl:Class>
     
 
@@ -1223,6 +1153,18 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A compulsory contribution to state revenue stated in percentage, levied by the government on workers income and business profits, or added to the cost of some goods, services, and transactions.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tax rate</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/TotalDiscountedPretaxPrice -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/TotalDiscountedPretaxPrice">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/Price"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Total price of a purchase including discount and excluding tax.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Total discounted pretax price</rdfs:label>
     </owl:Class>
     
 
