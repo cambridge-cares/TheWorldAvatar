@@ -1,0 +1,21 @@
+{
+    "name": "pirmasens",
+    "database": "postgres",
+    "datasetDirectory": "pirmasens",
+    "dataSubsets": [
+		  {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "polygon",
+            "table": "polygons"
+      },
+      {
+        "type": "vector",
+        "skip": false,
+        "schema": "public",
+        "subdirectory": "point",
+        "table": "points"
+      }
+	]
+}
