@@ -15,11 +15,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
+import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -37,13 +37,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
 import com.cmclinnovations.aermod.objects.Building;
-import com.cmclinnovations.aermod.objects.DispersionOutput;
 import com.cmclinnovations.aermod.objects.PointSource;
 import com.cmclinnovations.aermod.objects.Pollutant;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
@@ -51,6 +49,10 @@ import com.cmclinnovations.aermod.objects.WeatherData;
 import com.cmclinnovations.aermod.objects.Pollutant.PollutantType;
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.GDALTranslateOptions;
+import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
+import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
 
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
@@ -301,39 +303,41 @@ public class Aermod {
         writeToFile(bpipprmDirectory.resolve("buildings.dat"), sb.toString());
     }
 
-    public JSONObject createStaticPointSourcesJSON(List<StaticPointSource> pointSources) {
-        // define a list of (longitude, latitude) coordinates
-        List<List<Double>> lonlatCoordinates = new ArrayList<>();
-
-        for (int i = 0; i < pointSources.size(); i++) {
-            StaticPointSource sps = pointSources.get(i);
-            String originalSrid = "EPSG:" + sps.getLocation().getSRID();
-            double[] xyOriginal = { sps.getLocation().getX(), sps.getLocation().getY() };
-            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:4326", xyOriginal);
-            List<Double> tmp = Arrays.asList(xyTransformed[0], xyTransformed[1]);
-            lonlatCoordinates.add(tmp);
-        }
-
-        // create a JSONObject that represents a GeoJSON Feature Collection
+    public String createStaticPointSourcesLayer(List<StaticPointSource> pointSources) {
         JSONObject featureCollection = new JSONObject();
         featureCollection.put("type", "FeatureCollection");
         JSONArray features = new JSONArray();
 
-        // loop through the coordinates and add them as GeoJSON Points to the Feature
-        // Collection
-        for (List<Double> coordinate : lonlatCoordinates) {
+        pointSources.forEach(pointSource -> {
+            String originalSrid = "EPSG:" + pointSource.getLocation().getSRID();
+            double[] xyOriginal = { pointSource.getLocation().getX(), pointSource.getLocation().getY() };
+            double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:4326", xyOriginal);
+
             JSONObject geometry = new JSONObject();
             geometry.put("type", "Point");
-            geometry.put("coordinates", new JSONArray(coordinate));
+            geometry.put("coordinates", new JSONArray().put(xyTransformed[0]).put(xyTransformed[1]));
             JSONObject feature = new JSONObject();
             feature.put("type", "Feature");
             feature.put("geometry", geometry);
+
+            JSONObject properties = new JSONObject();
+            properties.put("iri", pointSource.getIri());
+            feature.put("properties", properties);
+
             features.put(feature);
-        }
+        });
+
         featureCollection.put("features", features);
 
-        LOGGER.info("Uploading static point sources GeoJSON to PostGIS");
-        return featureCollection;
+        GDALClient gdalClient = GDALClient.getInstance();
+        GeoServerClient geoServerClient = GeoServerClient.getInstance();
+        String staticPointSourceLayer = UUID.randomUUID().toString();
+        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, staticPointSourceLayer,
+                featureCollection.toString(), new Ogr2OgrOptions(), false);
+        geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
+                staticPointSourceLayer, new GeoServerVectorSettings());
+
+        return staticPointSourceLayer;
     }
 
     public void createAERMODReceptorInput(Polygon scope, int nx, int ny, int simulationSrid) {
@@ -826,5 +830,44 @@ public class Aermod {
 
     void createPollutantSubDirectory(PollutantType pollutantType) {
         aermodDirectory.resolve(Pollutant.getPollutantLabel(pollutantType)).toFile().mkdir();
+    }
+
+    String createDispersionLayer(JSONObject geoJSON, String derivationIri, PollutantType pollutantType,
+            long simulationTime) {
+        JSONArray features = geoJSON.getJSONArray("features");
+        for (int j = 0; j < features.length(); j++) {
+            JSONObject feature = features.getJSONObject(j);
+            JSONObject featureProperties = feature.getJSONObject("properties");
+            featureProperties.put("derivationIRI", derivationIri);
+            featureProperties.put("pollutantID", Pollutant.getPollutantLabel(pollutantType));
+            featureProperties.put("simulation_time", simulationTime);
+        }
+
+        GDALClient gdalClient = GDALClient.getInstance();
+        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.DISPERSION_CONTOURS_TABLE,
+                geoJSON.toString(), new Ogr2OgrOptions(), true); // true = append
+
+        String layerName = UUID.randomUUID().toString();
+
+        String sqlQuery = String.format(
+                "SELECT ogc_fid, \"stroke-opacity\", \"stroke-width\", fill, title, \"fill-opacity\", stroke, wkb_geometry from %s"
+                        + " WHERE \"derivationIRI\"='%s' and \"pollutantID\"='%s' and simulation_time = %d",
+                EnvConfig.DISPERSION_CONTOURS_TABLE, derivationIri, Pollutant.getPollutantLabel(pollutantType),
+                simulationTime);
+
+        GeoServerVectorSettings geoServerDispersionSettings = new GeoServerVectorSettings();
+
+        UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
+        virtualTable.setSql(sqlQuery);
+        virtualTable.setEscapeSql(true);
+        virtualTable.setName("dispersionVirtualTable");
+        virtualTable.addVirtualTableGeometry("wkb_geometry", "MultiPolygon", "4326");
+        geoServerDispersionSettings.setVirtualTable(virtualTable);
+
+        GeoServerClient geoServerClient = GeoServerClient.getInstance();
+        geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, layerName,
+                geoServerDispersionSettings);
+
+        return layerName;
     }
 }

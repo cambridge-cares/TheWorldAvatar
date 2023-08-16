@@ -138,6 +138,7 @@ public class QueryClient {
     private static final String DISPERSION_MATRIX = PREFIX_DISP + "DispersionMatrix";
     private static final String DISPERSION_LAYER = PREFIX_DISP + "DispersionLayer";
     private static final String SHIPS_LAYER = PREFIX_DISP + "ShipsLayer";
+    private static final String STATIC_POINT_SOURCE_LAYER = PREFIX_DISP + "StaticPointSourceLayer";
 
     // properties
     private static final Iri HAS_PROPERTY = P_DISP.iri("hasProperty");
@@ -1061,7 +1062,8 @@ public class QueryClient {
 
     }
 
-    void updateOutputs(String derivation, DispersionOutput dispersionOutput, String shipLayer, long timeStamp) {
+    void updateOutputs(String derivation, DispersionOutput dispersionOutput, String shipLayer, long timeStamp,
+            String staticPointSourceLayer) {
         SelectQuery query = Queries.SELECT();
 
         Variable entity = query.var();
@@ -1113,19 +1115,26 @@ public class QueryClient {
         }
 
         SelectQuery query2 = Queries.SELECT();
+        Variable entityType = SparqlBuilder.var("entityType");
+        Variable layerVar = SparqlBuilder.var("layerVar");
+        ValuesPattern<Iri> valuesPattern = new ValuesPattern<>(entityType,
+                List.of(iri(SHIPS_LAYER), iri(STATIC_POINT_SOURCE_LAYER)), Iri.class);
 
-        query2.where(entity.isA(iri(SHIPS_LAYER)).andHas(belongsTo, iri(derivation))).prefix(P_DISP).select(entity);
+        query2.where(layerVar.isA(entityType).andHas(belongsTo, iri(derivation)), valuesPattern).prefix(P_DISP);
 
         queryResult = storeClient.executeQuery(query2.getQueryString());
 
-        String shipLayerIri = null;
-        if (!queryResult.isEmpty()) {
-            shipLayerIri = queryResult.getJSONObject(0).getString(entity.getQueryString().substring(1));
-        }
-
-        if (shipLayerIri != null) {
-            tsDataList.add(shipLayerIri);
-            tsValuesList.add(List.of(shipLayer));
+        for (int i = 0; i < queryResult.length(); i++) {
+            String entityIri = queryResult.getJSONObject(i).getString(layerVar.getQueryString().substring(1));
+            String entityTypeString = queryResult.getJSONObject(i)
+                    .getString(entityType.getQueryString().substring(1));
+            if (entityTypeString.contentEquals(SHIPS_LAYER) && shipLayer != null) {
+                tsDataList.add(entityIri);
+                tsValuesList.add(List.of(shipLayer));
+            } else if (entityTypeString.contentEquals(STATIC_POINT_SOURCE_LAYER) && staticPointSourceLayer != null) {
+                tsDataList.add(entityIri);
+                tsValuesList.add(List.of(staticPointSourceLayer));
+            }
         }
 
         TimeSeries<Long> timeSeries = new TimeSeries<>(List.of(timeStamp), tsDataList, tsValuesList);

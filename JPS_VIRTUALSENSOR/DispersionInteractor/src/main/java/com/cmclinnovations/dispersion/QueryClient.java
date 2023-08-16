@@ -90,6 +90,7 @@ public class QueryClient {
     private static final Iri DISPERSION_COLOUR_BAR = P_DISP.iri("DispersionColourBar");
     private static final Iri SHIPS_LAYER = P_DISP.iri("ShipsLayer");
     private static final Iri CITIES_NAMESPACE = P_DISP.iri("OntoCityGMLNamespace");
+    private static final Iri STATIC_POINT_SOURCE_LAYER = P_DISP.iri("StaticPointSourceLayer");
 
     private static final Iri NO_X = P_DISP.iri("NOx");
     private static final Iri UHC = P_DISP.iri("uHC");
@@ -201,18 +202,18 @@ public class QueryClient {
             modify.insert(iri(citiesNamespaceIri).isA(CITIES_NAMESPACE).andHas(HAS_NAME, citiesNamespace));
         }
 
-        // outputs (DispersionOutput, ShipsLayer, AERMAPOutput) as time series
+        // outputs (DispersionOutput, ShipsLayer, StaticPointSourceLayer) as time series
         // Create columns for one DispersionOutput per pollutant
         List<Iri> pollutantsList = Arrays.asList(CO, CO2, NO_X, PM25, PM10, SO2, UHC);
         List<String> tsList = new ArrayList<>();
-        List<String> derivationList = new ArrayList<>();
+        List<String> entityList = new ArrayList<>();
 
         pollutantsList.stream().forEach(p -> {
             String dispOutputIri = PREFIX + UUID.randomUUID();
             String pollutantIdIri = PREFIX + UUID.randomUUID();
             modify.insert(iri(dispOutputIri).isA(DISPERSION_OUTPUT).andHas(HAS_POLLUTANT_ID, iri(pollutantIdIri)));
             modify.insert(iri(pollutantIdIri).isA(p));
-            derivationList.add(dispOutputIri);
+            entityList.add(dispOutputIri);
 
             String dispLayerIri = PREFIX + UUID.randomUUID();
             String dispMatrixIri = PREFIX + UUID.randomUUID();
@@ -237,12 +238,16 @@ public class QueryClient {
         String shipsLayerIri = PREFIX + UUID.randomUUID();
         modify.insert(iri(shipsLayerIri).isA(SHIPS_LAYER));
 
+        String staticPointSourceLayerIri = PREFIX + UUID.randomUUID();
+        modify.insert(iri(staticPointSourceLayerIri).isA(STATIC_POINT_SOURCE_LAYER));
+
         modify.prefix(P_DISP, P_OM);
         storeClient.executeUpdate(modify.getQueryString());
 
         // initialise time series for dispersion matrix
 
         tsList.add(shipsLayerIri);
+        tsList.add(staticPointSourceLayerIri);
         List<Class<?>> dataClass = Collections.nCopies(tsList.size(), String.class);
 
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
@@ -260,10 +265,11 @@ public class QueryClient {
         inputs.add(nyIri);
         if (citiesNamespace != null)
             inputs.add(citiesNamespaceIri);
-        derivationList.add(shipsLayerIri);
+        entityList.add(shipsLayerIri);
+        entityList.add(staticPointSourceLayerIri);
 
         String derivation = derivationClient.createDerivationWithTimeSeries(
-                derivationList, Config.AERMOD_AGENT_IRI, inputs);
+                entityList, Config.AERMOD_AGENT_IRI, inputs);
 
         // timestamp for pure inputs
         derivationClient.addTimeInstance(inputs);
