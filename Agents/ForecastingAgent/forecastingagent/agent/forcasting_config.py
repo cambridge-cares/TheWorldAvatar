@@ -71,6 +71,7 @@ def create_forecast_configuration(model:dict, ts_details:dict, ts_frequency:dict
             It is a dict with the following keys:
             Required:
                 'name': The name of the forecasting model ('prophet' as default)
+                'model_iri': IRI of the used forecasting model
                 'scale_data': If True, the data is scaled before the forecast is created
                 'train_again': If True, the model is trained again before the forecast is created
             Only required for pre-trained models, i.e. models other than Prophet:
@@ -78,17 +79,17 @@ def create_forecast_configuration(model:dict, ts_details:dict, ts_frequency:dict
                 'model_path_pth_link': The link from where to load the darts pth file of the model
                 'covariate_iris':TODO
         'frequency': The frequency of the time series data, as a datetime timedelta object 
-                    (i.e. representing a duration of time)
-        'data_length': The maximum length of the time series data, which is loaded before
-                    the forecast_start_data.
-                    The loaded data is used to:
+                     (i.e. representing a duration of time)
+        'fc_start_timestamp': The first time stamp to forecast (as pd.Timestamp)
+        'horizon': The number of time steps to forecast (incl. the start timestamp)
+        'data_length': The number of historical time steps loaded before the forecast_start_data
+                       The loaded data is used to:
                         1. Train the model if `train_again` is True or
                         2. Scale the data if `scale_data` is True
                         3. Create the forecast as Input to the model. 
                         Neural Methods have a fixed input length (same as during training),
                         therefore they use the last values of the time series data with
                         respect to their input length to create the forecast.
-            
     Optional:
         'resample_data': String specifying the resampling frequency for irregularly spaced time series
                          (for supported options see: 'resample_data': pandas.DataFrame.resample)

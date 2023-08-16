@@ -15,10 +15,14 @@ from rdflib import Graph
 from rdflib import RDF
 from operator import eq, gt
 
+from darts.models import TFTModel
+
 from py4jps import agentlogging
 
 import forecastingagent.datamodel as dm
-from forecastingagent.agent.forcasting_config import DOUBLE, TIME_FORMAT
+from forecastingagent.agent.forcasting_config import DOUBLE, TIME_FORMAT, \
+                                                     create_model_dict
+from forecastingagent.agent.forecasting_tasks import load_pretrained_model
 
 from . import conftest as cf
 
@@ -309,29 +313,34 @@ def test_evaluate_forecast(
         assert expected_result(response['rmse'], 0)
         assert expected_result(response['max_error'], 0)
 
-        
-# def test_load_pretrained_model():
-#      """
-#      Test the function `load_pretrained_model` to load a pretrained model from a
-#      checkpoint file or a PyTorch model file
-#      NOTE: Test will fail if the model is not available at the given link
-#      """
-#      # Test if pretrained model is loaded correctly
-#      cfg = {
-#           'model_configuration_name': 'test_model',
-#           'fc_model': {
-#                'name': 'TFTModel_test',
-#                'model_path_ckpt_link': cf.DARTS_MODEL_OBJECT,
-#                'model_path_pth_link': cf.DARTS_CHECKPOINTS,
-#           },
-#      }
-#      model = load_pretrained_model(cfg, TFTModel, force_download=True)    
-#      assert model.__class__.__name__ == 'TFTModel'
-#      assert model.model.input_chunk_length == 168
-#      assert model.model.output_chunk_length == 24
-     
-#      # use previously downloaded model
-#      model = load_pretrained_model(cfg, TFTModel, force_download=False)    
-#      assert model.__class__.__name__ == 'TFTModel'
-#      assert model.model.input_chunk_length == 168
-#      assert model.model.output_chunk_length == 24
+
+@pytest.mark.skip(reason="Test will fail if the model is not available at the given link")        
+def test_load_pretrained_model(initialise_clients):
+    """
+    Test the function `load_pretrained_model` to load a pretrained model from 
+    a PyTorch checkpoint and model file
+    """
+
+    # Get required clients from fixture
+    sparql_client, _, _, _ = initialise_clients
+    # Initialise all triples in test_triples
+    cf.initialise_triples(sparql_client)
+
+    # Retrieve instantiated model details for pretrained model
+    model = sparql_client.get_fcmodel_details(cf.FORECASTING_MODEL_2)
+    # Create relevant entries of overarching forecasting configuration
+    cfg = {
+        'fc_model': create_model_dict(model)
+    }
+
+    # Test if pretrained model is loaded correctly
+    model = load_pretrained_model(cfg, TFTModel, force_download=True)    
+    assert model.__class__.__name__ == 'TFTModel'
+    assert model.model.input_chunk_length == 168
+    assert model.model.output_chunk_length == 24
+    
+    # Use previously downloaded model
+    model = load_pretrained_model(cfg, TFTModel, force_download=False)    
+    assert model.__class__.__name__ == 'TFTModel'
+    assert model.model.input_chunk_length == 168
+    assert model.model.output_chunk_length == 24

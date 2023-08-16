@@ -76,7 +76,7 @@ def forecast(config, db_url, time_format, kgClient=None, tsClient=None,
     logger.info(f'Loaded time bounds for forecast: {cfg["loaded_data_bounds"]}')
     
     # Load time series (and covariate) data
-    series, covariates = load_ts_data(cfg, kgClient, tsClient)    
+    series, covariates = load_ts_data(cfg, kgClient, tsClient)
 
     # Verify that forecast start time is in series ...
     if cfg['fc_start_timestamp'] in series.time_index:
@@ -282,57 +282,57 @@ def get_ts_lower_upper_bound(cfg, time_format=TIME_FORMAT):
 
 def load_pretrained_model(cfg, ModelClass, force_download=False):
     """
-    It downloads a model from a link, and then loads it into a Darts model
+    This method downloads a pre-trained model given a model and checkpoint link,
+    and then loads it into a Darts model
 
-    :param cfg: a dictionary containing the configuration of the model
-    :param ModelClass: the class of the model
-    :param force_download: If you want to download the model again if a folder already exists, set this to True, defaults to False
-    (optional)
-    :return: The model is being returned.
+    Arguments:
+        cfg: a dictionary containing the configuration of the model
+        ModelClass: the class of the model
+        force_download: boolean flag whether to download the model again if a 
+                        folder already exists (optional)
+    Returns:
+        Darts model object
     """
-    model_path_ckpt_link, model_path_pth_link = cfg['fc_model'][
-        'model_path_ckpt_link'], cfg['fc_model']['model_path_pth_link']
 
-    # try to load from checkpoint link
+    model_path_ckpt_link = cfg['fc_model']['model_path_ckpt_link']
+    model_path_pth_link = cfg['fc_model']['model_path_pth_link']
+
+    # Try to load from checkpoint link
     path_ckpt = ""
     path_pth = ""
     path_to_store = Path(__file__).parent.absolute() / \
-        'Models' / cfg['model_configuration_name'] / 'checkpoints'
-
-    # TODO: until now we need to download both, checkpoint and model file
-    # maybe you find a better way to just have one link
+        'Models' / cfg['fc_model']['name'] / 'checkpoints'
 
     if os.path.exists(path_to_store) and not force_download:
-        # model already exists
+        # Model already exists
         path_ckpt = path_to_store / "best-model.ckpt"
     else:
-
-        # create folder
+        # Create folder
         if not os.path.exists(path_to_store):
             os.makedirs(path_to_store)
 
         if model_path_ckpt_link.startswith("https://"):
-            # download checkpoint model
+            # Download checkpoint model
             path_ckpt, _ = urllib.request.urlretrieve(
                 model_path_ckpt_link, path_to_store / "best-model.ckpt")
             logger.info(
                 f'Downloaded checkpoint model from {model_path_ckpt_link} to {path_ckpt}')
 
         if model_path_pth_link.startswith("https://"):
-            # download model
+            # Download model
             path_pth, _ = urllib.request.urlretrieve(
                 model_path_pth_link, path_to_store.parent.absolute() / "_model.pth.tar")
             logger.info(f'Downloaded model from {model_path_pth_link} to {path_pth}')
 
 
-    # load pre-trained model from best checkpoints
+    # Load pre-trained model from best checkpoints
     # NOTE: TFT model has been trained and saved on a CUDA device (i.e., using GPUs);
     #       Attempting to deserialize saved model on a CPU-only machine requires
     #       torchmetrics==0.9.3 and pytorch-lightning==1.7.7 (and will fail otherwise)
     model = ModelClass.load_from_checkpoint(path_ckpt.parent.parent.as_posix())
     logger.info(f'Loaded model from  {path_ckpt.parent.parent.__str__()}')
 
-    # convert loaded model to device
+    # Convert loaded model to device
     trainer_params = {
             "accelerator": "auto",
             "devices": "auto",
