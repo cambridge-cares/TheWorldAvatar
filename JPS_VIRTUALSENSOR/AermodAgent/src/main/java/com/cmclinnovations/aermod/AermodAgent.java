@@ -93,12 +93,9 @@ public class AermodAgent extends DerivationAgent {
             }
 
         }
-        List<Ship> ships = queryClient.getShipsWithinTimeAndScopeViaTsClient(simulationTime, scope);
 
-        String shipLayerName = null;
-        if (!ships.isEmpty()) {
-            shipLayerName = "ships_" + simulationTime;
-        }
+        long timeBuffer = 1800; // 30 minutes
+        List<Ship> ships = queryClient.getShipsWithinTimeAndScopeViaTsClient(simulationTime, scope, timeBuffer);
 
         List<PointSource> allSources = new ArrayList<>();
         allSources.addAll(staticPointSources);
@@ -175,6 +172,11 @@ public class AermodAgent extends DerivationAgent {
         String staticPointSourceLayer = null;
         if (!staticPointSources.isEmpty()) {
             staticPointSourceLayer = aermod.createStaticPointSourcesLayer(staticPointSources);
+        }
+
+        String shipLayerName = null;
+        if (!ships.isEmpty()) {
+            shipLayerName = aermod.createShipLayer(simulationTime, ships, timeBuffer);
         }
 
         // The receptor.dat file may have been previously created by running AERMAP. If

@@ -22,6 +22,7 @@
 					"ELEVATION_TABLE=elevation",
 					"DISPERSION_CONTOURS_TABLE=dispersion_contours",
 					"DISPERSION_RASTER_TABLE=dispersion_raster",
+					"SHIP_IRI_LOOKUP_TABLE=ship_location_iri",
 					"JPDA_ADDRESS=0.0.0.0:5005",
 					"JPDA_TRANSPORT=dt_socket",
 					"DEBUG=ON"

@@ -17,9 +17,12 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -44,6 +47,7 @@ import org.locationtech.jts.geom.Polygon;
 import com.cmclinnovations.aermod.objects.Building;
 import com.cmclinnovations.aermod.objects.PointSource;
 import com.cmclinnovations.aermod.objects.Pollutant;
+import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
 import com.cmclinnovations.aermod.objects.WeatherData;
 import com.cmclinnovations.aermod.objects.Pollutant.PollutantType;
@@ -867,6 +871,45 @@ public class Aermod {
         GeoServerClient geoServerClient = GeoServerClient.getInstance();
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, layerName,
                 geoServerDispersionSettings);
+
+        return layerName;
+    }
+
+    String createShipLayer(long timestamp, List<Ship> ships, long timeBuffer) {
+        Set<String> shipSet = new HashSet<>();
+        ships.forEach(ship -> shipSet.add(String.format("'%s'", ship.getLocationMeasureIri())));
+        String shipList = shipSet.stream().collect(Collectors.joining(","));
+
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append(
+                String.format("SELECT timeseries.value as geom, %s.ship as iri ", EnvConfig.SHIP_IRI_LOOKUP_TABLE));
+        queryBuilder
+                .append(String.format(
+                        "FROM \"dbTable\", public.get_geometry_table(\"tableName\", \"columnName\") as timeseries, %s ",
+                        EnvConfig.SHIP_IRI_LOOKUP_TABLE));
+        queryBuilder.append(
+                String.format(
+                        "WHERE \"dbTable\".\"dataIRI\" IN (%s) and timeseries.time > %d and timeseries.time < %d and \"dbTable\".\"dataIRI\" = %s.location",
+                        shipList, timestamp - timeBuffer, timestamp + timeBuffer, EnvConfig.SHIP_IRI_LOOKUP_TABLE));
+        String sqlQuery = queryBuilder.toString();
+
+        GeoServerClient geoserverClient = GeoServerClient.getInstance();
+
+        String layerName = UUID.randomUUID().toString();
+
+        GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
+
+        UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
+        virtualTable.setSql(sqlQuery);
+        virtualTable.setEscapeSql(true);
+        virtualTable.setName("shipVirtualTable");
+        virtualTable.addVirtualTableGeometry("geom", "Point", "4326"); // geom needs to match the sql query
+        LOGGER.info(virtualTable.getName());
+        geoServerVectorSettings.setVirtualTable(virtualTable);
+
+        geoserverClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
+        geoserverClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, layerName,
+                geoServerVectorSettings);
 
         return layerName;
     }

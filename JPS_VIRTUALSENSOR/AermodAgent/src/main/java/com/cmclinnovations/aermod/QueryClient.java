@@ -388,7 +388,7 @@ public class QueryClient {
 
     }
 
-    List<Ship> getShipsWithinTimeAndScopeViaTsClient(long simulationTime, Geometry scope) {
+    List<Ship> getShipsWithinTimeAndScopeViaTsClient(long simulationTime, Geometry scope, long timeBuffer) {
         long simTimeUpperBound = simulationTime + 1800; // +30 minutes
         long simTimeLowerBound = simulationTime - 1800; // -30 minutes
 
@@ -418,6 +418,7 @@ public class QueryClient {
                         // measureToShipMap.get(measure) gives the iri
                         Ship ship = new Ship(measureToShipMap.get(measure));
                         ship.setLocation(point);
+                        ship.setLocationMeasureIri(measure);
                         ships.add(ship);
                     }
                 } catch (ParseException e) {

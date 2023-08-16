@@ -12,9 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
@@ -28,11 +26,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.springframework.core.io.ClassPathResource;
-
-import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
-import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
-import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 
 import org.apache.commons.io.FilenameUtils;
@@ -201,8 +194,6 @@ public class ShipInputAgent extends HttpServlet {
             // calculate average timestep for ship layer name
             long averageTimestamp = ships.stream().mapToLong(s -> s.getTimestamp().getEpochSecond()).sum()
                     / ships.size();
-            LOGGER.info("Creating GeoServer layer for the average timestamp = {}", averageTimestamp);
-            createGeoServerLayer(averageTimestamp, ships);
 
             JSONObject responseJson = new JSONObject();
             responseJson.put("averageTimestamp", averageTimestamp);
@@ -219,40 +210,5 @@ public class ShipInputAgent extends HttpServlet {
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
         }
-    }
-
-    void createGeoServerLayer(long averageTimestamp, List<Ship> ships) {
-        // build sql query to get points within 30 minutes of average timestamp
-        Set<String> shipSet = new HashSet<>();
-        ships.forEach(ship -> shipSet.add(String.format("'%s'", ship.getLocationMeasureIri())));
-        String shipList = shipSet.stream().collect(Collectors.joining(","));
-
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("SELECT timeseries.value as geom, \"dbTable\".\"dataIRI\" as iri ");
-        queryBuilder
-                .append("FROM \"dbTable\", public.get_geometry_table(\"tableName\", \"columnName\") as timeseries ");
-        queryBuilder.append(
-                String.format("WHERE \"dbTable\".\"dataIRI\" IN (%s) and timeseries.time > %d and timeseries.time < %d",
-                        shipList, averageTimestamp - 1800, averageTimestamp + 1800));
-        String sqlQuery = queryBuilder.toString();
-
-        GeoServerClient geoserverClient = new GeoServerClient();
-        geoserverClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
-
-        // hardcoded "ships_" in AermodAgent
-        String layerName = "ships_" + averageTimestamp;
-
-        GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
-
-        UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
-        virtualTable.setSql(sqlQuery);
-        virtualTable.setEscapeSql(true);
-        virtualTable.setName("shipVirtualTable");
-        virtualTable.addVirtualTableGeometry("geom", "Point", "4326"); // geom needs to match the sql query
-        LOGGER.info(virtualTable.getName());
-        geoServerVectorSettings.setVirtualTable(virtualTable);
-
-        geoserverClient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, layerName,
-                geoServerVectorSettings);
     }
 }
