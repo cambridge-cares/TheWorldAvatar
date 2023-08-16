@@ -21,13 +21,14 @@ public class Asset {
      *
      * @param assetType     The asset type.
      * @param measureName   Name of the measure associated with the asset.
+     * @param unit          Measure unit symbol
      * @param measureIri    Corresponding dataIRI of the measure associated with the asset.
      * @param timeSeriesIri Corresponding time series IRI of the measure.
      */
-    protected Asset(String assetName, String assetType, String measureName, String measureIri, String timeSeriesIri) {
+    protected Asset(String assetName, String assetType, String measureName, String unit, String measureIri, String timeSeriesIri) {
         this.ASSET_NAME = assetName;
         this.ASSET_TYPE = assetType;
-        this.addMeasure(assetType, measureName, measureIri, timeSeriesIri);
+        this.addMeasure(assetType, measureName, unit, measureIri, timeSeriesIri);
     }
 
     /**
