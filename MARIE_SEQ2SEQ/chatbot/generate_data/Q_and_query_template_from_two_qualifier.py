@@ -1102,7 +1102,7 @@ WHERE {{
     FILTER(?{PropertyName2}Value > {value2}*0.9 && ?{PropertyName2}Value < {value2}*1.1) 
 }}"""
 
-    query_text_compact = f"""SELECT DISTINCT ?IUPACNameValue ?{PropertyName1}Value 
+    query_text_compact = f"""SELECT DISTINCT ?IUPACNameValue ?{PropertyName1}Value ?{PropertyName2}Value 
 WHERE {{
     ?SpeciesIRI os:hasIUPACName ?IUPACNameValue .
     ?SpeciesIRI os:hasProperty{PropertyName1} ?{PropertyName1}Value .
@@ -1190,7 +1190,7 @@ I'm interested in knowing the {ChemClass} species that double as {Use}; could yo
 Please outline a compilation of {ChemClass} species that meet the criteria of being {Use}.
 I'd like information on {ChemClass} species functioning as {Use}; could you furnish me with a list?
 Could you provide a rundown of {ChemClass} entities that fall within the category of {Use}?
-I'm looking for a catalog of {ChemClass} molecules known for their solvent properties; can you assist?
+I'm looking for a catalog of {ChemClass} molecules known for their use as {Use}; can you assist?
 In need of a list of {ChemClass} compounds, specifically those put to use as {Use}.
 Please compose a list of {ChemClass} chemical species acknowledged as {Use}.
 Seeking a compilation of {ChemClass} species recognized both as {Use}; can you compile this?
@@ -1199,7 +1199,7 @@ I'm curious about {ChemClass} species functioning in the capacity of {Use}; prov
 I require a catalog of {ChemClass} compounds that fit the description of {Use}.
 Could you present a roster of {ChemClass} molecules typically utilized as {Use}?
 Please draft a list of {ChemClass} chemical species that fulfill the role of {Use}.
-I'm inquiring about {ChemClass} entities recognized for their solvent attributes and applications; can you compile a list?
+I'm inquiring about {ChemClass} entities recognized for their use as {Use}; can you compile a list?
 Provide me with an inventory of {ChemClass} compounds known to possess {Use} qualities.
 Can you enlist {ChemClass} species acknowledged for their role as {Use}?"""
 
@@ -1302,7 +1302,7 @@ WHERE {{
     ?SpeciesIRI os:hasChemicalClass* ?x .
 	?x ?y ?z .
 	?z rdfs:subClassOf* ?ChemicalClassIRI .
-	?ChemicalClassIRI rdf:type os:ChemicalClass  ; rdfs:label ?ChemicalClassValue .
+	?ChemicalClassIRI rdf:type os:ChemicalClass ; rdfs:label ?ChemicalClassValue .
 
     FILTER( ?ChemicalClassValue = "{ChemClass}")
 
@@ -1402,7 +1402,7 @@ WHERE {{
     PropertyName = add_space_and_lower(PropertyName)
 
     question_text = f"""Give me a list of species that have {PropertyName} lower than {minvalue} and higher than {maxvalue} and are classified as {ChemClass}
-Provide a catalog of chemical species with {PropertyName} ranging between {minvalue} and {maxvalue}, falling under the category of {ChemClass}.
+Provide a catalog of chemical species with {PropertyName} ranging below {minvalue} and above {maxvalue}, falling under the category of {ChemClass}.
 List molecules characterized by {PropertyName} levels below {minvalue} and above {maxvalue} and grouped as {ChemClass}.
 Enumerate compounds exhibiting {PropertyName} values less than {minvalue} and greater than {maxvalue}, and belonging to the {ChemClass} classification.
 Compile a record of species wherein {PropertyName} is below {minvalue} and above {maxvalue}, and these entities are categorized as {ChemClass}.

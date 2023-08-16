@@ -569,7 +569,7 @@ WHERE {{
     ?IdentifierName rdfs:subClassOf os:Identifier .
     ?IdentifierNameIRI os:value ?IdentifierNameValue .
     
-  	BIND(strafter(str(?IdentifierName),'#') AS ?IdentifierLabel)   
+  	BIND(strafter(str(?IdentifierName),'#') AS ?IdentifierLabel)
 }}"""
 
     query_text_compact = f"""SELECT DISTINCT ?IdentifierNameValue
