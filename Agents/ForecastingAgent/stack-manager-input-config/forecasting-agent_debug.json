@@ -4,6 +4,9 @@
         "TaskTemplate": {
             "ContainerSpec": {
                 "Image": "ghcr.io/cambridge-cares/forecasting_agent:2.0.0",
+                "Command": [
+                    "tail", "-f",  "/dev/null"
+                ],
                 "Env": [
                     "NAMESPACE=kb",
                     "DATABASE=postgres",
