@@ -8,6 +8,13 @@ from marie.arguments_schema import ModelArguments
 
 
 def get_model(model_args: ModelArguments):
+    # if we are in a distributed setting, we need to set the device map per device
+    if os.environ.get('LOCAL_RANK') is not None:
+        local_rank = int(os.environ.get('LOCAL_RANK', '0'))
+        device_map = {'': local_rank}
+    else:
+        device_map = "auto"
+
     if model_args.bits is not None:
         bnb_config = BitsAndBytesConfig(
             load_in_8bit=model_args.bits == 8,
@@ -16,10 +23,8 @@ def get_model(model_args: ModelArguments):
             bnb_4bit_quant_type="nf4",
             bnb_4bit_compute_dtype=torch.bfloat16,
         )
-        device_map = {"": 0} # quantization only works in GPU
     else:
         bnb_config = None
-        device_map = "auto"
 
     model = AutoModelForSeq2SeqLM.from_pretrained(
         model_args.model_path,

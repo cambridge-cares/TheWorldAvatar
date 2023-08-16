@@ -52,11 +52,13 @@
    export WANDB_PROJECT=marie
    ```
 
-### Fine-tuning execution
+### Training
 
 See [`finetune.sh`](./scripts/finetune.sh) for example usage. The script will save the weights of the fine-tuned model in the specified `output_dir`.
 
 For a list all arguments that can be passed to the fine-tune script, see classes `arguments_schema.ModelArguments`, `arguments_schema.DatasetArguments` and `transformers.TrainingArguments`.
+
+Note that [`finetune.sh`](./scripts/finetune.sh) is written for single-node, multi-GPU training. For single-GPU training, execute `python finetune.py <--arguments>`. 
 
 ## Inference
 

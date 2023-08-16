@@ -1,4 +1,4 @@
-python -m torch.distributed.launch \
+torchrun \
     --nproc_per_node 4 finetune.py \
     --model_path google/flan-t5-base \
     --train_data_path ./data/train.json \
