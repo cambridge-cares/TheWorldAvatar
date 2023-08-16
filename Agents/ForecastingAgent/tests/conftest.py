@@ -61,7 +61,7 @@ TEST_TRIPLES_BASE_IRI = 'https://www.theworldavatar.com/test/'
 
 # Expected number of triples
 TBOX_TRIPLES = 7
-ABOX_TRIPLES = 47
+ABOX_TRIPLES = 51
 TS_TRIPLES = 4
 TIME_TRIPLES_PER_PURE_INPUT = 6
 AGENT_SERVICE_TRIPLES = 4       # agent service triples
@@ -84,7 +84,7 @@ DURATION_2 = 8760
 # Derivation agent and markup base urls
 DERIVATION_INSTANCE_BASE_URL = os.getenv('DERIVATION_INSTANCE_BASE_URL')
 
-# Create synthetic time series data
+# Create synthetic time series data (for Prophet tests)
 times = pd.date_range(start='2018-12-01T00:00:00Z', freq='H', 
                       end='2020-02-01T00:00:00Z')
 TIMES = times.strftime("%Y-%m-%dT%H:%M:%SZ").tolist()
@@ -112,6 +112,8 @@ FC_INTERVAL_2 = TEST_TRIPLES_BASE_IRI + 'OptimisationInterval_2'
 FC_FREQUENCY_1 = TEST_TRIPLES_BASE_IRI + 'Frequency_1'
 HIST_DURATION_1 = TEST_TRIPLES_BASE_IRI + 'Duration_1'
 HIST_DURATION_2 = TEST_TRIPLES_BASE_IRI + 'Duration_2'
+AIRTEMPERATURE_1 = TEST_TRIPLES_BASE_IRI + 'AirTemperature_1'
+ISHOLIDAY_1 = TEST_TRIPLES_BASE_IRI + 'IsHoliday_1'
 
 # Define derivation input sets to test
 TEST_CASE_1 = 'OM_Quantity_with_Measure_with_Unit__overwriting'
@@ -130,6 +132,7 @@ DERIVATION_INPUTS_3 = [IRI_TO_FORECAST_1, FORECASTING_MODEL_1,
                        FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_2]
 DERIVATION_INPUTS_4 = [IRI_TO_FORECAST_3, FORECASTING_MODEL_1,
                        FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_2]
+COVARIATES_1 = [AIRTEMPERATURE_1, ISHOLIDAY_1]
 
 # Define erroneous derivation input sets as retrieved by derivation agent
 # --> correct exceptions tested as unit tests
@@ -462,102 +465,3 @@ def clear_loggers():
         handlers = getattr(logger, 'handlers', [])
         for handler in handlers:
             logger.removeHandler(handler)
-
-
-# def initialise_prophet(kgClient, tsClient, rdb_url):
-#     """
-#     Initialise Blazegrph and PostgreSQL with test data for Prophet test
-#     """
-
-#     # Clear Blazegraph and PostgreSQL
-#     clear_database(rdb_url)
-#     clear_triplestore(kgClient)
-
-#     # Verify that Triplestore and RDB are empty
-#     assert get_number_of_rdb_tables(rdb_url) == 0
-#     assert get_number_of_triples(kgClient) == 0
-
-#     # Initialise SPARQL update
-#     update = ''
-
-#     # Generate test data
-#     test_data = pd.DataFrame({
-#         'timestamp': TIMESTAMPS,
-#         'generatedHeat': np.random.rand(PERIODS)})
-
-#     update += get_properties_for_subj(subj=GENERATED_HEAT_DATAIRI, 
-#                                       verb_obj={RDF_TYPE: OM_MEASURE,
-#                                                 OM_HASUNIT: OM_MEGAWATTHOUR
-#                                             })
-#     update += get_properties_for_subj(subj=GENERATED_HEAT_IRI, 
-#                                       verb_obj={RDF_TYPE: OHN_GENERATEDHEATAMOUNT,
-#                                                 OM_HASVALUE: GENERATED_HEAT_DATAIRI
-#                                             })
-#     # Convert to proper format
-#     update = add_insert_data(update)
-
-#     # Execute query
-#     kgClient.performUpdate(update)
-
-#     # Initialise time series and add data
-#     tsClient.init_ts(GENERATED_HEAT_DATAIRI, test_data['timestamp'], test_data['generatedHeat'], 
-#                      ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
-
-
-# def initialise_tft(kgClient, tsClient, rdb_url):
-#     """
-#     Initialise Blazegrph and PostgreSQL with test data for TFT test
-#     """
-
-#     # Clear Blazegraph and PostgreSQL
-#     clear_database(rdb_url)
-#     clear_triplestore(kgClient)
-
-#     # Verify that Triplestore and RDB are empty
-#     assert get_number_of_rdb_tables(rdb_url) == 0
-#     assert get_number_of_triples(kgClient) == 0
-
-#     # Initialise SPARQL update
-#     update = ''
-
-#     # Generate test data
-#     test_data = pd.DataFrame({
-#         'timestamp': TIMESTAMPS,
-#         'heatDemand': np.random.rand(PERIODS),
-#         'airTemp': np.random.rand(PERIODS),
-#         'isHoliday': np.random.randint(0, 2, PERIODS)})
-
-#     update += get_properties_for_subj(subj=HEAT_DEMAND_DATA_IRI, 
-#                                       verb_obj={RDF_TYPE: OM_MEASURE,
-#                                                 OM_HASUNIT: OM_MEGAWATTHOUR
-#                                             })
-#     update += get_properties_for_subj(subj=HEAT_DEMAND_IRI, 
-#                                       verb_obj={RDF_TYPE: OHN_HEATDEMAND,
-#                                                 OM_HASVALUE: HEAT_DEMAND_DATA_IRI
-#                                             })
-
-#     # Initialise time series and add data
-#     tsClient.init_ts(HEAT_DEMAND_DATA_IRI, test_data['timestamp'], test_data['heatDemand'],  
-#                      ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
-
-#     # Instantiate covariates
-#     # air temperature
-#     airTemp_dataIRI = KB + "AirTemperature_" + str(uuid.uuid4())
-#     update += get_properties_for_subj(subj=airTemp_dataIRI, 
-#                                       verb_obj={RDF_TYPE: ONTOEMS_AIRTEMPERATURE,
-#                                                 OM_HASVALUE: airTemp_dataIRI
-#                                             })
-#     tsClient.init_ts(airTemp_dataIRI, test_data['timestamp'], test_data['airTemp'],
-#                      ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
-
-#     # is holiday
-#     isHoliday_dataIRI = KB + "IsHoliday_" + str(uuid.uuid4())
-#     update += get_properties_for_subj(subj=isHoliday_dataIRI, 
-#                                       verb_obj={RDF_TYPE: OHN_ISPUBLICHOLIDAY,
-#                                                 OM_HASVALUE: isHoliday_dataIRI
-#                                             })
-#     tsClient.init_ts(isHoliday_dataIRI, test_data['timestamp'], test_data['isHoliday'],  
-#                      ts_type=DOUBLE, time_format=TIME_FORMAT_TS)
-
-#     # Execute SPARQL update
-#     kgClient.performUpdate(add_insert_data(update))

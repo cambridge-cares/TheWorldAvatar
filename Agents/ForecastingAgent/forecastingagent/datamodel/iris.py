@@ -80,7 +80,6 @@ XSD_DECIMAL = XSD + 'decimal'
 XSD_INTEGER = XSD + 'integer'
 
 ### ONTOEMS ###
-#TODO: verify if still needed after removing method to get covariates
 ONTOEMS_AIRTEMPERATURE = ONTOEMS + "AirTemperature"
 
 ### OM ###

@@ -88,18 +88,22 @@ class KGClient(PySparqlClient):
 
         Returns:
             fcmodel (dict) -- dictionary with keys 'fcmodel_iri', 'label', 'scale_data',
-                              'model_url', 'chkpt_url' and 'covariate_iris'
+                              'model_url', 'chkpt_url' and 'covariates'
+                              'covariates' (if available) is itself a dictionary with
+                              covariate_iri as key and covariate_type as value
         """
 
         query = f"""
-            SELECT DISTINCT ?fcmodel_iri ?label ?scale_data ?model_url ?chkpt_url ?covariate_iri
+            SELECT DISTINCT ?fcmodel_iri ?label ?scale_data ?model_url ?chkpt_url 
+                            ?covariate_iri ?covariate_type
             WHERE {{   
             VALUES ?fcmodel_iri {{ <{fcmodelIRI}> }} 
             ?fcmodel_iri <{RDFS_LABEL}> ?label .
             OPTIONAL {{ ?fcmodel_iri <{TS_SCALE_DATA}> ?scale_data . }}
             OPTIONAL {{ ?fcmodel_iri <{TS_HAS_MODEL_URL}> ?model_url ;
                                      <{TS_HAS_CHKPT_URL}> ?chkpt_url . }}
-            OPTIONAL {{ ?fcmodel_iri <{TS_HASCOVARIATE}> ?covariate_iri . }}
+            OPTIONAL {{ ?fcmodel_iri <{TS_HASCOVARIATE}> ?covariate_iri . 
+                        ?covariate_iri <{RDF_TYPE}> ?covariate_type . }}
             }}
         """
         query = remove_unnecessary_whitespace(query)
@@ -112,9 +116,21 @@ class KGClient(PySparqlClient):
                        'scale_data': get_unique_value(res, 'scale_data', bool),
                        'model_url': get_unique_value(res, 'model_url'),
                        'chkpt_url': get_unique_value(res, 'chkpt_url'),
-                       #TODO: covariates should become dictionary with type and IRI
-                       'covariate_iris': get_list_of_unique_values(res, 'covariate_iri')
             }
+            # Retrieve potentially associated covariate iris and types
+            cov_types = get_list_of_unique_values(res, 'covariate_type')
+            covariates = {}
+            for cov in cov_types:
+                cov_iris = [r['covariate_iri'] for r in res if r['covariate_type']==cov]
+                if len(cov_iris) != 1:
+                    msg = "Multiple covariates with the same type have been identified."
+                    logger.error(msg)
+                    raise ValueError(msg)
+                else:
+                    covariates[cov_iris[0]] = cov
+            if covariates:
+                fcmodel['covariates'] = covariates
+            
             return fcmodel
         
         else:

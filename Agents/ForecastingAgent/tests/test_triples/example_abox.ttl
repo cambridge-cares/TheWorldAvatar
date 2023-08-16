@@ -8,6 +8,7 @@
 @prefix deriv:	<https://www.theworldavatar.com/kg/derivation/> .
 @prefix disp:	<https://www.theworldavatar.com/kg/ontodispersion/> .
 @prefix dh:	    <https://www.theworldavatar.com/kg/ontoheatnetwork/> .
+@prefix ems:    <https://www.theworldavatar.com/kg/ontoems/> .
 @prefix :       <https://www.theworldavatar.com/test/> . 
 
 ################################################
@@ -84,4 +85,9 @@
     rdfs:label "TFTModel" ;
     ts:scaleData "True"^^xsd:boolean ;
     ts:hasModelURL "https://www.dropbox.com/s/8pnne7gv34btr9x/_model.pth.tar?dl=1"^^xsd:string ;
-    ts:hasCheckpointURL "https://www.dropbox.com/s/ia1nwqbepu8lbeh/best.ckpt?dl=1"^^xsd:string .
+    ts:hasCheckpointURL "https://www.dropbox.com/s/ia1nwqbepu8lbeh/best.ckpt?dl=1"^^xsd:string ;
+    ts:hasCovariate :AirTemperature_1 ;
+    ts:hasCovariate :IsHoliday_1 .
+
+:AirTemperature_1 rdf:type ems:AirTemperature .
+:IsHoliday_1 rdf:type dh:isPublicHoliday .

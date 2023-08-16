@@ -8,6 +8,7 @@
 @prefix deriv:	<https://www.theworldavatar.com/kg/derivation/> .
 @prefix disp:	<https://www.theworldavatar.com/kg/ontodispersion/> .
 @prefix dh:	    <https://www.theworldavatar.com/kg/ontoheatnetwork/> .
+@prefix ems:    <https://www.theworldavatar.com/kg/ontoems/> .
 @prefix :       <https://www.theworldavatar.com/test/> . 
 
 ################################################
