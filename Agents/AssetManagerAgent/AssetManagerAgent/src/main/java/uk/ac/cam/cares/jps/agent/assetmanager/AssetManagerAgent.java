@@ -36,8 +36,20 @@ public class AssetManagerAgent extends JPSAgent{
     public final String KEY_FOLDERqr = "FOLDERQR";
 
     //Properties params
-    public String ENDPOINT_KG;
+    public String ENDPOINT_KG_ASSET, ENDPOINT_KG_DEVICE, ENDPOINT_KG_PURCHASEDOC;
     public String ENDPOINT_PRINTER;
+
+    /*
+     * ontology enums
+     */
+    public enum OntologyList {
+        ONTODEV,
+        ONTOLAB,
+        ONTOSYSTEM,
+        ONTOINMA,
+        ONTOEPE,
+        ONTOASSET
+    }
 
     /**
      * Logger for reporting info/errors.
@@ -47,7 +59,7 @@ public class AssetManagerAgent extends JPSAgent{
     //Clients and util classes
     private static RemoteStoreClient storeClient;
     public QRPrinter printerHandler;
-    public AssetInstantiator instanceHandler;
+    public AssetKGInterface instanceHandler;
     
     //hanlde request
     @Override
@@ -74,9 +86,13 @@ public class AssetManagerAgent extends JPSAgent{
             }
             
 
-            String[] args = new String[] {ENDPOINT_KG, ENDPOINT_PRINTER, FOLDER_QR, excelFile, iriMapperFile};
-
-            printerHandler = new QRPrinter(ENDPOINT_PRINTER, FOLDER_QR);
+            String[] args = new String[] {ENDPOINT_KG_ASSET, ENDPOINT_KG_DEVICE, ENDPOINT_KG_PURCHASEDOC, ENDPOINT_PRINTER, FOLDER_QR, excelFile, iriMapperFile};
+            try {
+                printerHandler = new QRPrinter(ENDPOINT_PRINTER, FOLDER_QR);
+            } catch (Exception e) {
+                throw new JPSRuntimeException("Failed to create QR code printer handler", e);
+            }
+            
 
             if (urlPath.contains("retrieve")){
                 String ID = requestParams.getString("ID");
@@ -109,7 +125,9 @@ public class AssetManagerAgent extends JPSAgent{
 
             try {
                 // Read the mappings folder from the properties file
-                ENDPOINT_KG = prop.getProperty("endpoint.kg");
+                ENDPOINT_KG_ASSET = prop.getProperty("endpoint.kg.asset");
+                ENDPOINT_KG_DEVICE= prop.getProperty("endpoint.kg.device");
+                ENDPOINT_KG_PURCHASEDOC  = prop.getProperty("endpoint.kg.purchasedocs");
                 ENDPOINT_PRINTER = prop.getProperty("endpoint.printer");
             }
             catch (Exception e) {
@@ -161,7 +179,6 @@ public class AssetManagerAgent extends JPSAgent{
     //hanlde instantiate
     public JSONObject instantiateAsset (String[] arg) {
         JSONObject message = new JSONObject();
-        // read excel file
         //create IRI if not exist or need update
         //send to asset inst
         return message;
@@ -175,7 +192,7 @@ public class AssetManagerAgent extends JPSAgent{
         JSONObject message = new JSONObject();
         message.put("Result", "Printing job initiated for ID: " + ID);
         // get IRI from ID
-
+        
         // get QR code
         // send to server
         return message;
@@ -186,7 +203,7 @@ public class AssetManagerAgent extends JPSAgent{
     //retrieve
     public JSONObject retrieveAssetInstance (String[] arg, String ID){
         JSONObject message = new JSONObject();
-        // create query
+        // create query  
         // display result
         return message;
     }
