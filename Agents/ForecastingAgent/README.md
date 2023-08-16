@@ -71,26 +71,16 @@ If you intend to use a forecasting model pre-trained with [Darts]: Please be awa
 
 ## 1.3 Required derivation markup
 
-Before any forecast can be created (and instantiated), all corresponding inputs need to be properly instantiated. This includes:
-- `owl:Thing`: Instance to be forecasted (most likely `om:Measure` instance, but kept general)
-- `ts:ForecastingModel`: Forecasting model to be used (i.e., Prophet, pre-trained transformer, ...)
-- `ts:Frequency`: Frequency of the forecast (i.e., spacing of time steps)
-- `time:Interval`: Interval to forecast (i.e., defining start and end time)
-- `time:Duration`: Historical data length to use (i.e., duration prior to start time to use for model fitting and/or scaling of data for pre-trained models)
+Before any forecast can be created (and instantiated), all required inputs need to be properly instantiated. This includes:
+- 1 `om:Quantity` or `owl:Thing`: the instance associated with the time series to be forecasted. This instance must pertain to a type that is either a direct or nested subclass of `om:Quantity` (priority 1) or `owl:Thing` (priority 2).
+- 1 `ts:ForecastingModel`: the forecasting model to be used (i.e., Prophet, pre-trained transformer, ...)
+- 1 `ts:Frequency`: the frequency of the forecast to be created (i.e., spacing of time steps)
+- 1 `time:Interval`: the interval to forecast (i.e., defining start and end time of the forecast to be created, both bounds inclusive)
+- 1 `time:Duration`: the historical data length to use (i.e., duration prior to start time to use for model fitting and/or scaling of data for pre-trained models)
 
-Used namespaces:
-```xml
-om    : http://www.ontology-of-units-of-measure.org/resource/om-2/
-owl   : http://www.w3.org/2002/07/owl#
-rdf   : http://www.w3.org/1999/02/22-rdf-syntax-ns#
-rdfs  : http://www.w3.org/2000/01/rdf-schema#
-xsd   : http://www.w3.org/2001/XMLSchema#
-time  : http://www.w3.org/2006/time#
-ts    : https://www.theworldavatar.com/kg/ontotimeseries/
-deriv : https://www.theworldavatar.com/kg/ontoderivation/
-```
 
-Required forecast derivation inputs:
+The following snippet provides an overview of the expected instantiation structure of required forecast derivation inputs (further examples can be found in the integration tests): 
+
 ```xml
 ###   Required inputs   ###
 <IRI_to_forecast> rdf:type owl:Thing ; 
@@ -115,7 +105,7 @@ Required forecast derivation inputs:
 # Both Frequency and Duration need to be represented as follows
 <IRI_of_Duration> time:numericDuration <xsd:decimal> ;
                   ts:unitType <time:unitHour> .
-# Alternative unit concepts: time:unitDay, time:unitMinute, time:unitSecond, ...
+# Alternative unit concepts: time:unitDay, time:unitMinute, time:unitSecond
 
 
 ###   Optional inputs   ###
@@ -128,24 +118,87 @@ Required forecast derivation inputs:
                    ts:hasTimeSeries <IRI_of_time_series> . 
 <IRI_of_forecast_frequency> ts:resampleData <xsd:boolean> .
 ```
+Used namespaces:
+```xml
+om    : http://www.ontology-of-units-of-measure.org/resource/om-2/
+owl   : http://www.w3.org/2002/07/owl#
+rdf   : http://www.w3.org/1999/02/22-rdf-syntax-ns#
+rdfs  : http://www.w3.org/2000/01/rdf-schema#
+xsd   : http://www.w3.org/2001/XMLSchema#
+time  : http://www.w3.org/2006/time#
+ts    : https://www.theworldavatar.com/kg/ontotimeseries/
+deriv : https://www.theworldavatar.com/kg/ontoderivation/
+```
 
-<!-- 
-## 2.1 General workflow
+&nbsp;
+# 2. Agent Operation
 
-This section describes the workflow and most important steps to access and extent the agent.
-The Agent UML diagram provides an overview of how the agent works:
+The agent is implemented as [derivation agent] using `DerivationWithTimeSeries`. Please note: 1) derivations with time series are currently restricted to synchronous derivations, i.e., derivations which get computed immediately upon request and 2) derivations with time series do not return any specific output triples, as all updates to the time series are expected to be conducted within the agent logic. Initial derivation output triples will only be generated when creating new derivation using `createSyncDerivationForNewInfo`.
 
-<p align="center">
-    <img src="https://lucid.app/publicSegments/view/2f775ad5-4445-4036-8965-0021df53f6d9/image.png" alt="drawing" width="500"/>
-</p>
+The internal Forecasting Agent logic ensures that updated forecasts either completely replace the previously instantiated forecast (i.e., overwrite entire time series table and update input/output intervals in KG) if `OVERWRITE_FORECAST=true` or create a new forecast instance and connect it as output to the corresponding derivation if `OVERWRITE_FORECAST=false` (the outdated forecast instance will be disconnected from the derivation, but remains to exists in the KG).
 
-The `Forecasting Agent` forecasts an existing time series in an KG using its `iri`. After verifying the received HTTP request, the agent loads a model configuration from the [mapping file]. This is either the `DEFAULT` one (which will use [Prophet]) or else must be specified with the `use_model_configuration` parameter in the HTTP request to use a pre-trained model other than Prophet. The [mapping File ] describes in detail what a model configuration `dict` consists of. 
+Forecast models
+
+The following code snippet provides an overview of how to create new and update forecasts:
+```python
+# Create derivation client
+from pyderivationagent.kg_operations import PyDerivationClient
+deriv_client = PyDerivationClient(derivation_instance_base_url, query_endpoint, update_endpoint)
+
+# Create new forecast derivation
+agent_iri = <ONTOAGENT_SERVICE_IRI of target Forecasting Agent instance>
+derivation_input_set = [
+    <IRI of om:Quantity or owl:Thing instance>, 
+    <IRI of ts:ForecastingModel instance>, 
+    <IRI of ts:Frequency instance>, 
+    <IRI of time:Interval instance>, 
+    <IRI of time:Duration instance>
+]
+derivation_type = <https://www.theworldavatar.com/kg/ontoderivation/DerivationWithTimeSeries>
+# Markup derivation inputs and immediately compute and instantiate forecast
+derivation = deriv_client.createSyncDerivationForNewInfo(agent_iri, derivation_input_set, derivation_type)
+derivation_iri = derivation.getIri()
+
+# Update existing forecast derivation
+deriv_client.unifiedUpdateDerivation(derivation_iri)
+```
+
+
+## 2.1 Forecasting logic
+
+Upon invocation, the agent first verifies the suitability of received inputs to derive a forecast. Afterwards, the agent loads a model configuration from the [mapping file]. This is either the `DEFAULT` one (which will use [Prophet]) or else must be specified with the `use_model_configuration` parameter in the HTTP request to use a pre-trained model other than Prophet. The [mapping File ] describes in detail what a model configuration `dict` consists of. 
 
 Next the agent loads the time series (+ `covariates` if `load_covariates_func` is given in the loaded configuration) with the TSClient. 
 
 Then, it loads the model. This is either a pre-trained model specified in the model configuration with the model link `model_path_pth_link` and the checkpoint link `model_path_ckpt_link` or else a new Prophet model is fitted to predict the data. The forecast starts from the optional parameter `forecast start date` in the request or if not specifed the last available date is taken. The forecast lasts over the number of specified time steps (`horizon`).
 
-Finally the forecasted time series is instantiated. For that purpose a new `forecast iri` is created and attached to the `iri` specified in the request. Further metadata, e.g. which data and models are used, are included as well using the [OntoTimeSeries] ontology. -->
+Finally the forecasted time series is instantiated. For that purpose a new `forecast iri` is created and attached to the `iri` specified in the request. Further metadata, e.g. which data and models are used, are included as well using the [OntoTimeSeries] ontology. 
+
+The following UML diagram provides an overview of how the agent works:
+
+<p align="center">
+    <img src="https://lucid.app/publicSegments/view/721f9fea-c153-45bb-8478-0178a457f55e/image.png" alt="drawing" width="500"/>
+</p>
+
+
+## 2.2 Custom forecasting models
+
+<!-- ## 2.5 Custom model configurations and new models
+Specify your custom configurations following the example of the `TFT_HEAT_SUPPLY` model configuration in the [mapping file]. 
+
+If you need covariates, define a function which load them (similarly to `get_covs_heat_supply`) for the `load_covariates_func` parameter in your configuration. To use your own pre-trained model with [Darts], expand the [agent module] where `load_pretrained_model` is called just like the model for `TFT_HEAT_SUPPLY` is loaded. You can use the function `load_pretrained_model` as well if thats suits your model, just specify your model class and set the `input_length` as for `TFT_HEAT_SUPPLY`. -->
+
+## 2.3 Forecast error evaluation
+
+The agent also provides an HTTP endpoint to assess multiple error metrics of created forecasts (i.e., errors between any two time series). It is triggered by receiving an HTTP `POST` request with a JSON body. An example request is provided in [HTTP forecast error request]: 
+
+```
+{ "query": {
+      "tsIRI_target": <IRI of time series 1>,
+      "tsIRI_fc" : <IRI of time series 2>
+    }
+}
+```
 
 &nbsp;
 # 3. Using the Agent
@@ -204,34 +257,6 @@ To debug the agent within the stack, follow these steps (similar)
 5) Start local debugging session inside container by running `entry_point.py` in debug mode; if HTTP requests from outside do not reach the container, send requests locally from inside the container as workaround
 
 
-<!-- &nbsp;
-## 2.4 Forecasting time series via HTTP requests
-
-Forecasting a time series is triggered by receiving an HTTP `POST` request with a JSON body. An example request to forecast an `iri` is provided in [HTTP_Request_forecast]: 
-
-### HTTP request parameters
-
-- **iri**: the `iri` of the instance which has a time series attached to it. This `iri` will receive the `hasForecastedValue` relationship
-- **horizon**: the number of time steps to forecast autorecursively into the future
-- **forecast_start_date**: the start `dateTime` of the forecast. If not specified, simply the last value is taken as a starting point. The series is split at this point and future available data is used to calculate the forecasting error
-- **data_length**: the number of values loaded before `forecast_start_date`. This data is used directly as input to fit [Prophet] or to scale the input for the pre-trained neural network (If not set the default value from the [mapping file] is used)
-- **use_model_configuration**: if specified this model configuration from the [mapping file] is used
-
-Further optional parameters can be provided to specify the connection configurations to use. All specified parameters overwrite potential default values specified in the docker-compose file. To use the default values, simply exclude the respective parameter from the HTTP request:
-- **namespace**: target Blazegraph namespace (only relevant for Stack deployment)
-- **database**: target PostGIS database (only relevant for Stack deployment)
-- **query_endpoint**: SPARQL query endpoint (only relevant for standalone deployment)
-- **update_endpoint**: SPARQL update endpoint (only relevant for standalone deployment)
-- **db_url**: PostGIS/PostgreSQL database URL (only relevant for standalone deployment)
-- **db_user**: PostGIS/PostgreSQL database user (only relevant for standalone deployment)
-- **db_password**" PostGIS/PostgreSQL database password (only relevant for standalone deployment)
-
-
-## 2.5 Custom model configurations and new models
-Specify your custom configurations following the example of the `TFT_HEAT_SUPPLY` model configuration in the [mapping file]. 
-
-If you need covariates, define a function which load them (similarly to `get_covs_heat_supply`) for the `load_covariates_func` parameter in your configuration. To use your own pre-trained model with [Darts], expand the [agent module] where `load_pretrained_model` is called just like the model for `TFT_HEAT_SUPPLY` is loaded. You can use the function `load_pretrained_model` as well if thats suits your model, just specify your model class and set the `input_length` as for `TFT_HEAT_SUPPLY`.  -->
-
 &nbsp;
 # 4. Dockerised agent tests
 
@@ -276,9 +301,10 @@ Magnus Mueller (mm2692@cam.ac.uk), November 2022
 [personal access token]: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
 [Derived Information Framework]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/derivation
 [Stack manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
+[derivation agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent
 
 <!-- files -->
-[HTTP_Request_forecast]: ./resources/HTTP_request_forecast.http
+[HTTP forecast error request]: ./resources/HTTP_evaluate_errors.http
 [agent module]: ./forecasting/forecasting_agent/agent.py
 [mapping file]: ./forecasting/datamodel/data_mapping.py
 [docker-compose.debug.yml]: ./docker-compose.debug.yml
