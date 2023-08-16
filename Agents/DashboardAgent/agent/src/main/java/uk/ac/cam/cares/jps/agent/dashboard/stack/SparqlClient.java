@@ -192,17 +192,24 @@ public class SparqlClient {
                 String assetName = qs.getLiteral("elementname").toString();
                 String assetType = qs.getResource("elementtype").getLocalName();
                 String measureIri = qs.getResource("measure").toString();
-                // Measure name might contain UUID
                 String measureName = qs.getLiteral("measurename").toString();
+                // If there is no unit to retrieve, this will throw a null pointer exception
+                String unit;
+                try {
+                    unit = qs.getLiteral("unit").toString();
+                } catch (NullPointerException ne) {
+                    // But as this is an optional variable, we can ignore the error and explicitly treat it as null
+                    unit = null;
+                }
                 String timeSeriesIri = qs.getResource("timeseries").toString();
                 // Check if the facility already exists in the map
                 if (this.SPATIAL_ZONES.containsKey(facilityName)) {
                     // If it does exist, add the asset to the existing facility object
                     Facility facility = this.SPATIAL_ZONES.get(facilityName);
-                    facility.addAsset(assetName, assetType, measureName, measureIri, timeSeriesIri);
+                    facility.addAsset(assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
                 } else {
                     // If it does not exist, initialise a new facility object and add it in
-                    Facility facility = new Facility(assetName, assetType, measureName, measureIri, timeSeriesIri);
+                    Facility facility = new Facility(assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
                     this.SPATIAL_ZONES.put(facilityName, facility);
                 }
             });

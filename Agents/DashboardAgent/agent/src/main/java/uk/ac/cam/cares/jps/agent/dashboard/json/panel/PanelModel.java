@@ -41,8 +41,10 @@ public class PanelModel {
                     // Assumes that each measure of a specific asset type belongs to only one database
                     String database = measures.get(measure).get(0)[3];
                     String databaseID = databaseConnectionMap.get(database);
+                    // Assume the unit of each measure for each asset type is consistent
+                    String unit = measures.get(measure).get(0)[4];
                     // Creates a chart object and add it to the queue
-                    TimeSeriesChart chart = new TimeSeriesChart(measure, assetType, databaseID, measures.get(measure));
+                    TimeSeriesChart chart = new TimeSeriesChart(measure, assetType, unit, databaseID, measures.get(measure));
                     panelQueue.offer(chart);
                 }
             }

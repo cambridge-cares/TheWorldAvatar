@@ -79,13 +79,13 @@ public class PostGisClient {
      * The returned map will have the following structure:
      * { assetType1: {
      * assets: [AssetName1, AssetName2, AssetName3],
-     * measure1: [[AssetName1, ColName1, TableName1, Database],[AssetName2, ColName2, TableName1, Database],[AssetName3, ColName3, TableName1, Database]],
-     * measure2: [[AssetName1, ColName5, TableName1, Database],[AssetName2, ColName6, TableName1, Database],[AssetName3, ColName7, TableName1, Database]],
+     * measure1: [[AssetName1, ColName1, TableName1, Database, unit],[AssetName2, ColName2, TableName1, Database, unit],[AssetName3, ColName3, TableName1, Database, unit]],
+     * measure2: [[AssetName1, ColName5, TableName1, Database, unit],[AssetName2, ColName6, TableName1, Database, unit],[AssetName3, ColName7, TableName1, Database, unit]],
      * },
      * assetType2: {
      * assets: [AssetName5, AssetName6, AssetName7],
-     * measure1: [[AssetName5, ColName1, TableName1, Database],[AssetName6, ColName2, TableName1, Database],[AssetName7, ColName3, TableName1, Database]],
-     * measure2: [[AssetName5, ColName5, TableName1, Database],[AssetName6, ColName6, TableName1, Database],[AssetName7, ColName7, TableName1, Database]],
+     * measure1: [[AssetName5, ColName1, TableName1, Database, unit],[AssetName6, ColName2, TableName1, Database, unit],[AssetName7, ColName3, TableName1, Database, unit]],
+     * measure2: [[AssetName5, ColName5, TableName1, Database, unit],[AssetName6, ColName6, TableName1, Database, unit],[AssetName7, ColName7, TableName1, Database, unit]],
      * }
      * }
      *
@@ -161,10 +161,11 @@ public class PostGisClient {
      */
     private String[] parseTimeSeriesMapForQuery(Map<String, Queue<String[]>> timeSeries) {
         // Initialise require objects to put values in
-        String[] querySyntax = new String[4];
+        String[] querySyntax = new String[5];
         StringBuilder assetCaseWhenValues = new StringBuilder();
         StringBuilder measureCaseWhenValues = new StringBuilder();
         StringBuilder assetTypeCaseWhenValues = new StringBuilder();
+        StringBuilder unitCaseWhenValues = new StringBuilder();
         StringBuilder matchingTableValues = new StringBuilder();
         // For each asset
         for (String asset : timeSeries.keySet()) {
@@ -186,6 +187,12 @@ public class PostGisClient {
                 assetTypeCaseWhenValues.append("WHEN \"dataIRI\" = '").append(timeSeriesIRIs[1])
                         .append("' AND \"timeseriesIRI\"= '").append(timeSeriesIRIs[2])
                         .append("' THEN '").append(timeSeriesIRIs[3]).append("'");
+                // For the unit case when values, only attach the unit if it exists. Not all measures have units
+                if (timeSeriesIRIs.length == 5) {
+                    unitCaseWhenValues.append("WHEN \"dataIRI\" = '").append(timeSeriesIRIs[1])
+                            .append("' AND \"timeseriesIRI\"= '").append(timeSeriesIRIs[2])
+                            .append("' THEN '").append(timeSeriesIRIs[4]).append("'");
+                }
                 // For the matching table values,
                 // Only append comma if there are already existing values
                 if (matchingTableValues.length() != 0) matchingTableValues.append(", ");
@@ -198,7 +205,8 @@ public class PostGisClient {
         querySyntax[0] = assetCaseWhenValues.toString();
         querySyntax[1] = measureCaseWhenValues.toString();
         querySyntax[2] = assetTypeCaseWhenValues.toString();
-        querySyntax[3] = matchingTableValues.toString();
+        querySyntax[3] = unitCaseWhenValues.toString();
+        querySyntax[4] = matchingTableValues.toString();
         return querySyntax;
     }
 
@@ -207,8 +215,8 @@ public class PostGisClient {
      *
      * @param conn               A connection object to the required database.
      * @param database           The database name.
-     * @param measureQuerySyntax An array containing three query syntax to be appended to the query.
-     * @return A list of the required column and table names mapped to their asset and measures. Position 0 - measure name; Position 1 - asset name; Position 2 - asset type; Position 3 - column name; Position 4 - table name; Position 5 - database name.
+     * @param measureQuerySyntax An array containing five query syntax to be appended to the query.
+     * @return A list of the required column and table names mapped to their asset and measures. Position 0 - measure name; Position 1 - asset name; Position 2 - asset type; Position 3 - measure unit; Position 4 - column name; Position 5 - table name; Position 6 - database name.
      */
     private Queue<String[]> retrieveAllColAndTableNames(Connection conn, String database, String[] measureQuerySyntax) {
         Queue<String[]> results = new ArrayDeque<>();
@@ -218,27 +226,30 @@ public class PostGisClient {
                     // Add a third variable to map asset name
                     "CASE " + measureQuerySyntax[0] + "ELSE 'Unknown asset' END AS asset, " +
                     // Add a forth variable to map measure
-                    "CASE " + measureQuerySyntax[1] + "ELSE 'Unknown asset' END AS measure, " +
+                    "CASE " + measureQuerySyntax[1] + "ELSE 'Unknown measure' END AS measure, " +
                     // Add a fifth variable to map asset type
-                    "CASE " + measureQuerySyntax[2] + "ELSE 'Unknown asset' END AS assettype " +
+                    "CASE " + measureQuerySyntax[2] + "ELSE 'Unknown asset type' END AS assettype, " +
+                    // Add a sixth variable to map units
+                    "CASE " + measureQuerySyntax[3] + "ELSE '' END AS unit " +
                     // Table should be fixed to dbTable
                     "FROM \"dbTable\" " +
                     // Create a new table containing the values that we wish to filter for
-                    "JOIN (VALUES " + measureQuerySyntax[3] +
+                    "JOIN (VALUES " + measureQuerySyntax[4] +
                     ") AS matches (measure, timeseries) " +
                     "ON \"dbTable\".\"dataIRI\"= matches.measure AND \"dbTable\".\"timeseriesIRI\"= matches.timeseries";
             ResultSet rowResultSet = stmt.executeQuery(retrieveColAndTableNameQuery);
             // When there is a next row available in the result,
             while (rowResultSet.next()) {
                 // Retrieve the necessary values and append it into the queue
-                String[] rowValues = new String[6];
+                String[] rowValues = new String[7];
                 rowValues[0] = rowResultSet.getString("measure");
                 rowValues[1] = rowResultSet.getString("asset");
                 rowValues[2] = rowResultSet.getString("assettype");
-                rowValues[3] = rowResultSet.getString("columnName");
-                rowValues[4] = rowResultSet.getString("tableName");
+                rowValues[3] = rowResultSet.getString("unit");
+                rowValues[4] = rowResultSet.getString("columnName");
+                rowValues[5] = rowResultSet.getString("tableName");
                 // If there are results returned from this database, attach this metadata on it
-                rowValues[5] = database;
+                rowValues[6] = database;
                 results.offer(rowValues);
             }
         } catch (SQLException e) {
@@ -257,13 +268,13 @@ public class PostGisClient {
      * Processes the query results into the required nested map structure so that it is easier for the Dashboard client to parse:
      * { assetType1: {
      * assets: [AssetName1, AssetName2, AssetName3],
-     * measure1: [[AssetName1, ColName1, TableName1, Database],[AssetName2, ColName2, TableName1, Database],[AssetName3, ColName3, TableName1, Database]],
-     * measure2: [[AssetName1, ColName5, TableName1, Database],[AssetName2, ColName6, TableName1, Database],[AssetName3, ColName7, TableName1, Database]],
+     * measure1: [[AssetName1, ColName1, TableName1, Database, unit],[AssetName2, ColName2, TableName1, Database, unit],[AssetName3, ColName3, TableName1, Database, unit]],
+     * measure2: [[AssetName1, ColName5, TableName1, Database, unit],[AssetName2, ColName6, TableName1, Database, unit],[AssetName3, ColName7, TableName1, Database, unit]],
      * },
      * assetType2: {
      * assets: [AssetName5, AssetName6, AssetName7],
-     * measure1: [[AssetName5, ColName1, TableName1, Database],[AssetName6, ColName2, TableName1, Database],[AssetName7, ColName3, TableName1, Database]],
-     * measure2: [[AssetName5, ColName5, TableName1, Database],[AssetName6, ColName6, TableName1, Database],[AssetName7, ColName7, TableName1, Database]],
+     * measure1: [[AssetName5, ColName1, TableName1, Database, unit],[AssetName6, ColName2, TableName1, Database, unit],[AssetName7, ColName3, TableName1, Database, unit]],
+     * measure2: [[AssetName5, ColName5, TableName1, Database, unit],[AssetName6, ColName6, TableName1, Database, unit],[AssetName7, ColName7, TableName1, Database, unit]],
      * }
      * }
      *
@@ -278,9 +289,10 @@ public class PostGisClient {
             String measureKey = assetMetadata[0];
             String assetName = assetMetadata[1];
             String assetTypeKey = assetMetadata[2];
-            String columnName = assetMetadata[3];
-            String tableName = assetMetadata[4];
-            String database = assetMetadata[5];
+            String unit = assetMetadata[3];
+            String columnName = assetMetadata[4];
+            String tableName = assetMetadata[5];
+            String database = assetMetadata[6];
             // If the asset type does not exist in the map,
             if (!results.containsKey(assetTypeKey)) {
                 // Initialise a new hashmap containing only one key-value pair to link the asset names to their type
@@ -296,7 +308,7 @@ public class PostGisClient {
             // If the measure specified does not exist in the map, initialise a new empty list
             if (!measureMap.containsKey(measureKey)) measureMap.put(measureKey, new ArrayList<>());
             // Add the required measure metadata into the list
-            measureMap.get(measureKey).add(new String[]{assetName, columnName, tableName, database});
+            measureMap.get(measureKey).add(new String[]{assetName, columnName, tableName, database, unit});
         }
         return results;
     }

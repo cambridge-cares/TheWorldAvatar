@@ -18,17 +18,18 @@ public class Facility {
      * @param assetName     Name of the asset to be included.
      * @param assetType     Type of the asset to be included.
      * @param measureName   Name of the measure associated with the asset.
+     * @param unit          Measure unit symbol
      * @param measureIri    Corresponding dataIRI of the measure associated with the asset.
      * @param timeSeriesIri Corresponding time series IRI of the measure.
      */
-    public Facility(String assetName, String assetType, String measureName, String measureIri, String timeSeriesIri) {
-        addAsset(assetName, assetType, measureName, measureIri, timeSeriesIri);
+    public Facility(String assetName, String assetType, String measureName, String unit, String measureIri, String timeSeriesIri) {
+        addAsset(assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
     }
 
     /**
      * A getter method to retrieve all available assets and their corresponding time series and information in the facility.
-     * Format: {asset1: [measure1, dataIRI, timeseriesIRI, assetType], [measure2, dataIRI, timeseriesIRI, assetType]],
-     * asset2: [[measureName, dataIRI, timeseriesIRI, assetType]], ...]}
+     * Format: {asset1: [measure1, dataIRI, timeseriesIRI, assetType, unit], [measure2, dataIRI, timeseriesIRI, assetType, unit]],
+     * asset2: [[measureName, dataIRI, timeseriesIRI, assetType, unit]], ...]}
      *
      * @return A map linking all assets to their measures.
      */
@@ -45,15 +46,18 @@ public class Facility {
     /**
      * Add an asset into this class.
      *
-     * @param assetName Name of the asset to be included.
-     * @param assetType Type of the asset to be included.
+     * @param assetName     Name of the asset to be included.
+     * @param assetType     Type of the asset to be included.
+     * @param unit          Measure unit symbol
+     * @param measureIri    Corresponding dataIRI of the measure associated with the asset.
+     * @param timeSeriesIri Corresponding time series IRI of the measure.
      */
-    public void addAsset(String assetName, String assetType, String measureName, String measureIri, String timeSeriesIri) {
+    public void addAsset(String assetName, String assetType, String measureName, String unit, String measureIri, String timeSeriesIri) {
         // Check if the asset already exists in the map using its name as a key
         if (this.ASSETS.containsKey(assetName)) {
             // If there is a preceding asset object, add only the measure to the right asset
             Asset asset = this.ASSETS.get(assetName);
-            asset.addMeasure(measureName, measureIri, timeSeriesIri);
+            asset.addMeasure(measureName, unit, measureIri, timeSeriesIri);
         } else {
             // If it does not exist, create a new asset and add it into the map
             Asset element = new Asset(assetName, assetType, measureName, measureIri, timeSeriesIri);

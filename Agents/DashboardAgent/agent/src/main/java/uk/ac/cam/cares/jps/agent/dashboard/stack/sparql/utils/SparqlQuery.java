@@ -34,7 +34,7 @@ public class SparqlQuery {
     public static String genFacilityMeasureQuery(String endpoint) {
         StringBuilder query = new StringBuilder();
         query.append(genPrefixes())
-                .append("SELECT DISTINCT ?facilityname ?elementname ?elementtype ?measure ?measurename ?timeseries ")
+                .append("SELECT DISTINCT ?facilityname ?elementname ?elementtype ?measure ?measurename ?unit ?timeseries ")
                 .append("WHERE {")
                 // Query to get assets within a facility
                 .append(genFacilitySyntax())
@@ -61,6 +61,8 @@ public class SparqlQuery {
                 .append("}")
                 // Once retrieved, all measures has a time series
                 .append("?measure ontotimeseries:hasTimeSeries ?timeseries.")
+                // Retrieves unit if it is available
+                .append("OPTIONAL {?measure om:hasUnit/om:symbol ?unit}")
                 .append("}")
                 // If there is a sub element name, append it to the element label to get element name
                 // Else, element label should be the element name
