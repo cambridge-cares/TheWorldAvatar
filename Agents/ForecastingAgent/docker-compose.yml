@@ -6,20 +6,13 @@ services:
     environment:
       - OVERWRITE_FORECAST=true
       - ROUNDING=6
-      #--- Deployment specific parameters ---#
-      # Required environment variables for both Stack and "standalone" (i.e. outside stack) deployment
-      - STACK_NAME=TEST         # to be left blank for "standalone" deployment
-      # Additional environment variables required for Stack deployment
-      # (can be left blank for "standalone" deployment)
-      - NAMESPACE=test          # Target Blazegraph namespace
-      - DATABASE=test           # Target PostGIS/PostgreSQL database name
-      # Additional environment variables required for "standalone deployment"
-      # (can be left blank for Stack deployment)
-      - DB_URL=
-      - DB_USER=
-      - DB_PASSWORD=
-      - SPARQL_QUERY_ENDPOINT=
-      - SPARQL_UPDATE_ENDPOINT=
+      # Required environment variables for "standalone" deployment
+      - STACK_NAME=
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_URL=jdbc:postgresql://host.docker.internal:7432/postgres
+      - SPARQL_QUERY_ENDPOINT=http://host.docker.internal:27149/blazegraph/namespace/kb/sparql
+      - SPARQL_UPDATE_ENDPOINT=http://host.docker.internal:27149/blazegraph/namespace/kb/sparql
       #--- Derivation Agent parameters ---#
       - ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent/Service
       - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5001/ForecastingAgent
@@ -38,6 +31,10 @@ services:
       target: prod
     ports:
       - 5001:5000
+    extra_hosts:
+      # To allow connecting to 'host.docker.internal' on Linux
+      # details: https://github.com/moby/libnetwork/pull/2348#issuecomment-1177610499
+      - "host.docker.internal:host-gateway"
     volumes:
       - logs:/root/.jps
 
