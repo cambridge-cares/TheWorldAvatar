@@ -26,7 +26,7 @@ This agent requires the following tools, which **MUST** run on the same stack. P
 (1) [Grafana](https://grafana.com/docs/grafana/latest/) dashboard
 - Required for this agent to configure and set up dashboards
 - Image version: **grafana-oss:10.0.3** 
-- Mandatory configuration url: `http://<STACK_NAME>-grafana:3000`
+- Please run this container with a name of `grafana` within the stack. At the moment, the agent requires the dashboard url at `http://<STACK_NAME>-grafana:3000`.
 
 (2) PostGIS database
 - Contains the time series data
@@ -34,8 +34,9 @@ This agent requires the following tools, which **MUST** run on the same stack. P
 (3) SPARQL endpoint
 - Contains triples linking time series to facilities and/or assets
 - Mandatory structure:
-  - A name must be appended to all buildings, facilities, assets, sensors, and measures/dataIRIs through the `Instance rdfs:label "name"^^xsd:string` triple.
+  - A name must be appended to all buildings, facilities, rooms, assets, sensors, and measures/dataIRIs through the `Instance rdfs:label "name"^^xsd:string` triple.
   - All sensor measures are attached according to the [OntoDevice](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodevice) ontology.
+  - Units can be included into the dashboard through the `MeasureInstance om:hasUnit UnitInstance. UnitInstance om:symbol "symbols"^^xsd:string.` triples but are **OPTIONAL**.
 
 #### 1.2 Docker Deployment
 **TEST ENVIRONMENT**
@@ -48,7 +49,7 @@ docker compose -f "./docker/docker-compose.test.yml" up -d --build
 - Build this agent's image by issuing `docker compose build` within this folder. Do not start the container.
 - Copy the `dashboard-agent.json` file from the `stack-manager-input-config` folder into the `inputs/config/services` folder of the stack manager, adjusting the absolute path of the bind mount as required. 
 Please review the [different routes](#2-agent-route) to understand the purpose of these bind mounts. See [sample bind mounts](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#bind-mounts) for the configuration syntax.
-- Start the stack manager as usual.
+- Start the stack manager as usual following [these instructions](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
 
 ### 2. Agent Route
 The agent currently offers two API routes:
@@ -63,8 +64,11 @@ If the agent ran successfully, a JSON Object would be returned as follows:
 ```
 
 #### 2.2 GET ROUTE: `~url~/dashboard-agent/setup`
-The agent will require a GET request without any parameters and a configuration file called `credentials.properties` placed at the `<root>/config/` directory of your bind mount. This will contain the
-configuration for:
+This route will communicate with the stack's dashboard container to set up a live analytical dashboard. At the moment, this agent will set up dashboards for the following:
+1) **Facility level** - Room- and asset-related time series are included.
+
+To execute this route, please send a GET request without any parameters and a configuration file called `credentials.properties` placed at the `<root>/config/` directory of your bind mount. 
+The file will contain the configuration for:
 - `dashboard.user`: The username for the dashboard container running within the stack. Default for Grafana is admin.
 - `dashboard.pass`: The password for the dashboard container running within the stack. Default for Grafana is admin.
 
