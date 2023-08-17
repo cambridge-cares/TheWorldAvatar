@@ -3,14 +3,12 @@ package uk.ac.cam.cares.jps.agent.dashboard;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TestUtils {
     private static final String DASHBOARD_USER = "dashboard.user";
     private static final String DASHBOARD_PASSWORD = "dashboard.pass";
+    public static final String BASE_URI = "http://www.test.org/example/";
     public static final String ASSET_TYPE_ONE = "Lamp";
     public static final String ASSET_LAMP_ONE = "L1";
     public static final String ASSET_LAMP_TWO = "L2";
@@ -104,6 +102,19 @@ public class TestUtils {
         sampleMap.put(ASSET_TYPE_TWO, measures);
         return sampleMap;
     }
+
+    /**
+     * Generates a valid Instance for testing from its input concept.
+     *
+     * @param concept The concept to be instantiated.
+     * @return The instance as a string.
+     */
+    public static String genInstance(String concept) {return BASE_URI + concept + "_" + UUID.randomUUID();}
+
+    /**
+     * Generates a time series instance for testing.
+     */
+    public static String genTimeSeriesInstance() {return genInstance("TimeSeries");}
 
     /**
      * Generates a sample database connection map for testing.
