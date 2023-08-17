@@ -4,6 +4,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
@@ -13,8 +15,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 
 public class UsageMatcher {
-    public void updateOntoBuilt(Connection conn) {
-        List<String> tableNames = List.of("points", "polygons");
+    public void updateOntoBuilt(Connection conn, List<String> tableNames) {
 
         for (String tableName : tableNames) {
 
@@ -75,4 +76,38 @@ public class UsageMatcher {
         }
     }
 
+    public void checkAndAddColumns(Connection connection, List<String> tableNames) throws SQLException {
+
+        Map<String, String> columns = new HashMap<>();
+        columns.put("building_iri", "TEXT");
+        columns.put("propertyusage_iri", "TEXT");
+        columns.put("ontobuilt", "TEXT");
+        columns.put("usageshare", "FLOAT");
+
+        for (String tableName : tableNames) {
+            for (Map.Entry<String, String> entry : columns.entrySet()) {
+                if (!isColumnExist(connection, tableName, entry.getKey())) {
+                    String addColumnSql = "ALTER TABLE " + tableName +
+                            " ADD COLUMN " + entry.getKey() + " " + entry.getValue();
+                    executeSql(connection, addColumnSql);
+                } else {
+                    System.out.println("Column " + entry.getKey() + " already exists in " + tableName + ".");
+                }
+            }
+        }
+    }
+
+    private static boolean isColumnExist(Connection connection, String tableName, String columnName)
+            throws SQLException {
+        DatabaseMetaData metaData = connection.getMetaData();
+        try (ResultSet resultSet = metaData.getColumns(null, null, tableName, columnName)) {
+            return resultSet.next();
+        }
+    }
+
+    private static void executeSql(Connection connection, String sql) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(sql);
+        }
+    }
 }

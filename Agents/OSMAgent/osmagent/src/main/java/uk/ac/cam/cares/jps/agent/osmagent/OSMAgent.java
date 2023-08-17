@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.List;
 
 @WebServlet(urlPatterns = "/update")
 
@@ -20,6 +21,8 @@ public class OSMAgent extends JPSAgent {
     private RemoteRDBStoreClient rdbStoreClient;
 
     private UsageMatcher usageMatcher;
+
+    private List<String> tableNames = List.of("points", "polygons");
 
     public void init() {
         EndpointConfig endpointConfig = new EndpointConfig();
@@ -33,7 +36,9 @@ public class OSMAgent extends JPSAgent {
             throws ServletException, IOException {
 
         try (Connection conn = rdbStoreClient.getConnection()) {
-            usageMatcher.updateOntoBuilt(conn);
+
+            usageMatcher.checkAndAddColumns(conn, tableNames);
+            usageMatcher.updateOntoBuilt(conn, tableNames);
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
@@ -41,7 +46,7 @@ public class OSMAgent extends JPSAgent {
         }
 
         // Log the request data
-        System.out.println("Received POST request with data");
+        System.out.println("Received POST request");
 
         // Set the content type of the response
         response.setContentType("text/plain");
