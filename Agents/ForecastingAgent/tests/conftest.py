@@ -14,6 +14,7 @@ import os
 import pytest
 import requests
 import time
+import numpy as np
 import pandas as pd
 import psycopg2 as pg
 import matplotlib.pyplot as plt
@@ -25,7 +26,6 @@ from urllib.parse import urlparse
 from forecastingagent.datamodel.iris import *
 from forecastingagent.agent import ForecastingAgent
 from forecastingagent.agent.forcasting_config import *
-from forecastingagent.utils.tools import *
 from forecastingagent.kgutils.kgclient import KGClient
 from forecastingagent.kgutils.tsclient import TSClient
 
@@ -76,6 +76,9 @@ T_3 = 1578009600
 # Forecast data history (in hours)
 DURATION_1 = 336
 DURATION_2 = 8760
+# Input_chunk_length of pre-trained TFT model
+DURATION_3 = 168
+
 
 # 
 #  Values which should not require changing
@@ -326,6 +329,17 @@ def create_example_agent():
 # ----------------------------------------------------------------------------------
 # Helper functions
 # ----------------------------------------------------------------------------------
+
+def generate_bounded_random_walk(initial_value, num_values, step_size_mean, 
+                                 step_size_std, value_min, value_max):
+    random_walk = [initial_value]
+    for _ in range(1, num_values):
+        step = np.random.normal(step_size_mean, step_size_std)
+        next_value = random_walk[-1] + step
+        next_value = max(value_min, min(value_max, next_value))  # Apply value constraints
+        random_walk.append(round(next_value,2))
+    return random_walk
+
 
 def assess_forecast_error(data_iri, forecast_iri, kg_client, ts_client, 
                           agent_url, name='test'):

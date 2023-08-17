@@ -4,21 +4,21 @@
 # Date: 30 Nov 2022                            #
 ################################################
 
-# This module represents the main forecasting agent to forecast a time series using 
-# a trained model or Prophet (as default). The forecast is then stored in the KG.
-
-import pandas as pd
+# This module represents the main forecasting agent tasks to 1) forecast a time
+# series (using either a trained model or Prophet (as default)) and 2) evaluate
+# forecast errors between instantiated time series.
+# NOTE: Only forecasts are stored in the KG, not the forecast errors
 
 from darts import TimeSeries
-from darts.models import Prophet, TFTModel
+from darts.models import Prophet
 from darts.dataprocessing.transformers import Scaler
 from darts.metrics import mape, mse, rmse, smape
 
 from py4jps import agentlogging
 
-from forecastingagent.fcmodels import FC_MODELS
 from forecastingagent.datamodel.iris import *
-from forecastingagent.utils.tools import *
+from forecastingagent.utils.ts_utils import *
+from forecastingagent.fcmodels import FC_MODELS
 from forecastingagent.utils.env_configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, \
                                                DB_USER, DB_PASSWORD
 from forecastingagent.agent.forcasting_config import *
@@ -100,7 +100,7 @@ def forecast(config, db_url, time_format, kgClient=None, tsClient=None,
     else:
         # 2) ... or load pre-trained custom model
         mapped_model = FC_MODELS.get(cfg['fc_model'].get('name'))
-        if mapped_model:
+        if bool(mapped_model) and bool(mapped_model[0]):
             logger.info('Loading (pre-trained) custom forecasting model ...')
             cfg, model = mapped_model[0](cfg, series)
             logger.info('Custom forecasting model loaded successfully.')
@@ -139,24 +139,30 @@ def get_forecast(series, covariates, model, cfg):
         scaler = Scaler()
         series = scaler.fit_transform(series)
 
-    #model.__class__.__name__ =='Prophet'
-
     # Make forecast with covariates
     if covariates is not None:
         if cfg['fc_model'].get('train_again'):
             logger.info('Training model again with covariates.')
-            # Train again with covariates
             model.fit(series, future_covariates=covariates)
         logger.info('Making forecast with covariates.')
         try:
-            forecast = model.predict(
-                n=cfg['horizon'], future_covariates=covariates, series=series)
+            # NOTE: While most of Darts forecasting models accept a "series" argument
+            #       representing the history of the target series at which's end the
+            #       forecast will start, Prophet does not accept this argument
+            if model.__class__.__name__ == 'Prophet':
+                forecast = model.predict(n=cfg['horizon'], future_covariates=covariates)
+            else:
+                forecast = model.predict(n=cfg['horizon'], future_covariates=covariates, 
+                                         series=series)
         except RuntimeError as e:
             # Prediction sometimes fails due to wrong dtype -> convert to same dtype
             series = series.astype('float32')
             covariates = covariates.astype('float32')
-            forecast = model.predict(
-                n=cfg['horizon'], future_covariates=covariates, series=series)
+            if model.__class__.__name__ == 'Prophet':
+                forecast = model.predict(n=cfg['horizon'], future_covariates=covariates)
+            else:
+                forecast = model.predict(n=cfg['horizon'], future_covariates=covariates, 
+                                         series=series)
 
     # Make prediction without covariates (e.g. default for Prophet)
     else:
@@ -164,8 +170,13 @@ def get_forecast(series, covariates, model, cfg):
             logger.info('Training model again without covariates.')
             model.fit(series)
         logger.info('Making forecast without covariates.')
-        # NOTE: 
-        forecast = model.predict(n=cfg['horizon'])
+        # NOTE: While most of Darts forecasting models accept a "series" argument
+        #       representing the history of the target series at which's end the
+        #       forecast will start, Prophet does not accept this argument
+        if model.__class__.__name__ == 'Prophet':
+            forecast = model.predict(n=cfg['horizon'])
+        else:
+            forecast = model.predict(n=cfg['horizon'], series=series)
 
     if cfg['fc_model'].get('scale_data'):
         # Scale predicted data back
@@ -193,15 +204,21 @@ def load_ts_data(cfg, kgClient, tsClient):
         darts.TimeSeries objects of timeseries (and covariates)
     """
 
-    if cfg['fc_model'].get('covariate_iris'):
+    if cfg['fc_model'].get('covariates'):
         # Load covariates data
-        # TODO to be reworked for TFT & others
-        logger.info('Loading covariates with function: ' + cfg['load_covariates_func'].__name__)
-        covariates_iris, covariates = cfg['load_covariates_func'](
-            kgClient, tsClient, cfg['loaded_data_bounds']['lowerbound'], cfg['loaded_data_bounds']['upperbound'])
-        cfg['fc_model']['covariates_iris'] = covariates_iris
+        mapped_model = FC_MODELS.get(cfg['fc_model'].get('name'))
+        if bool(mapped_model) and bool(mapped_model[1]):
+            logger.info('Loading covariates using custom loading function ...')
+            covariates = mapped_model[1](cfg['fc_model']['covariates'], tsClient, 
+                                         cfg['loaded_data_bounds']['lowerbound'], 
+                                         cfg['loaded_data_bounds']['upperbound'])
+            logger.info('Covariates loaded successfully.')
+        else:
+            msg = 'No covariate loading function has been provided for the specified forecasting model.'
+            logger.error(msg)
+            raise ValueError(msg)
 
-        # check if covariates are given for complete future horizon from fc_start_timestamp
+        # Check if covariates are given for complete forecast horizon
         check_if_enough_covs_exist(cfg, covariates)
     else:
         logger.info('No covariates specified by forecasting model, no covariates are loaded.')
@@ -235,43 +252,6 @@ def load_ts_data(cfg, kgClient, tsClient):
 
     logger.info('Time series (and covariate) data successfully loaded.')
     return series, covariates
-
-
-def check_if_enough_covs_exist(cfg, covariates):
-    if covariates is not None and (cfg['fc_start_timestamp'] + cfg['frequency'] * (cfg['horizon'] - 1) > covariates.end_time()):
-        logger.error(
-            f'Not enough covariates exist for the given fc_start_timestamp and horizon. The last covariate timestamp is {covariates.end_time()}')
-        raise ValueError(
-            f'Not enough covariates for complete future horizon. Covariates end at {covariates.end_time()} but forecast horizon ends at {cfg["fc_start_timestamp"] + cfg["frequency"] * (cfg["horizon"] - 1)}')
-    return True
-
-
-def get_ts_lower_upper_bound(cfg, time_format=TIME_FORMAT):
-    """
-    It takes the forecast start date, the frequency, the horizon, and the data length, 
-    and returns the lower and upper bounds of the time series
-
-    Arguments:
-        cfg: a dictionary with the following keys:
-            'fc_start_timestamp': the start of the forecast (pd.Timestamp)
-            'frequency': the frequency of the time series data (dt.timedelta)
-            'horizon': the length of the forecast, i.e. number of time steps (int)
-            'data_length': the length of the time series data to retrieve before the
-                        fc_start_timestamp, i.e. number of time steps (int)
-
-    Returns:
-        Lower and upper bounds of the time series as strings
-    """
-
-    # upper bound is fc_start_timestamp + forecast horizon
-    upperbound = cfg['fc_start_timestamp'] + \
-                 cfg['frequency'] * (cfg['horizon'] - 1)
-
-    # lower bound is fc_start_timestamp - (historical) data_length
-    lowerbound = cfg['fc_start_timestamp'] - \
-        cfg['frequency'] * (cfg['data_length'])
-    
-    return lowerbound.strftime(time_format), upperbound.strftime(time_format)
 
 
 def calculate_error(target, forecast):

@@ -7,10 +7,10 @@ logging.getLogger("py4j").setLevel(logging.ERROR)
 from py4jps import agentlogging
 from pyderivationagent.conf import config_derivation_agent
 
+from forecastingagent.agent import default
+from forecastingagent.agent import ForecastingAgent
 from forecastingagent.utils.env_configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, \
                                                OVERWRITE_FORECAST, ROUNDING
-from forecastingagent.agent import ForecastingAgent
-from forecastingagent.agent import default
 
 
 # Initialise logger instance (ensure consistent logger level`)

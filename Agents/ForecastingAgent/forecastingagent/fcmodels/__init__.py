@@ -5,5 +5,6 @@ from .model_mapping import *
 # target model instance
 # value: (custom model loading function, custom covariate loading function)
 FC_MODELS = {
-    'tft_pirmasens_heat_demand': (load_tft_pirmasens_heat_demand, None),
+    'tft_pirmasens_heat_demand': (load_tft_pirmasens_heat_demand, 
+                                  load_pirmasens_heat_demand_covariates),
 }

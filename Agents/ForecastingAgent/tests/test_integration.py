@@ -94,26 +94,27 @@ def test_example_data_instantiation(initialise_clients):
     assert cf.get_number_of_rdb_tables(rdb_url) == 0
 
 
-#@pytest.mark.skip(reason="")
+@pytest.mark.skip(reason="")
 @pytest.mark.parametrize(
-    "derivation_input_set, dataIRI, duration, with_unit, overwrite_forecast, ts_times, ts_values, case",
+    "derivation_input_set, dataIRI, hist_data_length, with_unit, overwrite_forecast, ts_times, ts_values, case",
     [
         (cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, cf.DURATION_1, True, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_1),
-        #(cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, cf.DURATION_1, True, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_2),
-        #(cf.DERIVATION_INPUTS_2, cf.IRI_TO_FORECAST_2, cf.DURATION_1, True, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_3),
-        #(cf.DERIVATION_INPUTS_2, cf.IRI_TO_FORECAST_2, cf.DURATION_1, True, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_4),
-        #(cf.DERIVATION_INPUTS_3, cf.IRI_TO_FORECAST_1, cf.DURATION_2, False, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_5),
-        #(cf.DERIVATION_INPUTS_3, cf.IRI_TO_FORECAST_1, cf.DURATION_2, False, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_6),
-        #(cf.DERIVATION_INPUTS_4, cf.IRI_TO_FORECAST_3, cf.DURATION_2, False, True, cf.TIMES, cf.VALUES_3, cf.TEST_CASE_7),
-        #(cf.DERIVATION_INPUTS_4, cf.IRI_TO_FORECAST_3, cf.DURATION_2, False, False, cf.TIMES, cf.VALUES_3, cf.TEST_CASE_8),
+        (cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, cf.DURATION_1, True, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_2),
+        (cf.DERIVATION_INPUTS_2, cf.IRI_TO_FORECAST_2, cf.DURATION_1, True, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_3),
+        (cf.DERIVATION_INPUTS_2, cf.IRI_TO_FORECAST_2, cf.DURATION_1, True, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_4),
+        (cf.DERIVATION_INPUTS_3, cf.IRI_TO_FORECAST_1, cf.DURATION_2, False, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_5),
+        (cf.DERIVATION_INPUTS_3, cf.IRI_TO_FORECAST_1, cf.DURATION_2, False, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_6),
+        (cf.DERIVATION_INPUTS_4, cf.IRI_TO_FORECAST_3, cf.DURATION_2, False, True, cf.TIMES, cf.VALUES_3, cf.TEST_CASE_7),
+        (cf.DERIVATION_INPUTS_4, cf.IRI_TO_FORECAST_3, cf.DURATION_2, False, False, cf.TIMES, cf.VALUES_3, cf.TEST_CASE_8),
     ],
 )
 def test_create_forecast(
-    initialise_clients, create_example_agent, derivation_input_set, dataIRI, duration,
+    initialise_clients, create_example_agent, derivation_input_set, dataIRI, hist_data_length,
     with_unit, overwrite_forecast, ts_times, ts_values, case
 ):
     """
-    Test if forecasting agent performs derivation update as expected    
+    Test if Forecasting Agent performs derivation update as expected (using 
+    default Prophet model without covariates)
         - forecasts are created using Prophet
         - historical data length: 336/8760h (HIST_DURATION_1, DURATION_1)
         - initial interval: OptimisationInterval_1
@@ -200,7 +201,7 @@ def test_create_forecast(
     fc_intervals = sparql_client.get_forecast_details(fcIRI)
     inp_interval = sparql_client.get_interval_details(fc_intervals['input_interval_iri'])
     outp_interval = sparql_client.get_interval_details(fc_intervals['output_interval_iri'])
-    assert inp_interval['start_unix'] == cf.T_1 - duration*3600
+    assert inp_interval['start_unix'] == cf.T_1 - hist_data_length*3600
     assert inp_interval['end_unix'] == cf.T_1 - 3600
     assert outp_interval['start_unix'] == cf.T_1
     assert outp_interval['end_unix'] == cf.T_2
@@ -234,7 +235,7 @@ def test_create_forecast(
     fc_intervals = sparql_client.get_forecast_details(fcIRI)
     inp_interval = sparql_client.get_interval_details(fc_intervals['input_interval_iri'])
     outp_interval = sparql_client.get_interval_details(fc_intervals['output_interval_iri'])
-    assert inp_interval['start_unix'] == cf.T_2 - duration*3600
+    assert inp_interval['start_unix'] == cf.T_2 - hist_data_length*3600
     assert inp_interval['end_unix'] == cf.T_2 - 3600
     assert outp_interval['start_unix'] == cf.T_2
     assert outp_interval['end_unix'] == cf.T_3
@@ -350,13 +351,13 @@ def test_load_pretrained_model(initialise_clients):
 
 #@pytest.mark.skip(reason="Test will fail if the model is not available at the given link")        
 @pytest.mark.parametrize(
-    "derivation_input_set, heatDemand, duration, with_unit, overwrite_forecast, ts_times, covariates, case",
+    "derivation_input_set, heatDemand, hist_data_length, with_unit, overwrite_forecast, ts_times, covariates, case",
     [
-        (cf.DERIVATION_INPUTS_5, cf.ASSOCIATED_DATAIRI_1, cf.DURATION_1, True, True, cf.TIMES, cf.COVARIATES_1, cf.TEST_CASE_9),
+        (cf.DERIVATION_INPUTS_5, cf.ASSOCIATED_DATAIRI_1, cf.DURATION_3, True, True, cf.TIMES, cf.COVARIATES_1, cf.TEST_CASE_9),
     ],
 )
 def test_create_tft_forecast(
-    initialise_clients, create_example_agent, derivation_input_set, heatDemand, duration,
+    initialise_clients, create_example_agent, derivation_input_set, heatDemand, hist_data_length,
     with_unit, overwrite_forecast, ts_times, covariates, case
 ):
     """
@@ -373,18 +374,18 @@ def test_create_tft_forecast(
         agent_iri = cf.AGENT_wo_OVERWRITING_IRI
         agent_url = cf.AGENT_wo_OVERWRITING_URL
 
-    # Generate test data
+    # Generate test time series data (incl. required covariates)    
     test_data = {
-        heatDemand: np.random.uniform(0, 20, len(ts_times)),
-        covariates[0]: np.random.uniform(0, 30, len(ts_times)),
+        heatDemand: cf.generate_bounded_random_walk(5, len(ts_times), 0, 0.5, 0, 20),
+        # air temprature, public holiday (one hot encoded)
+        covariates[0]: cf.generate_bounded_random_walk(10, len(ts_times), 0, 1, -10, 30),
         covariates[1]: [float(x) for x in np.random.randint(0, 2, len(ts_times))]
     }
 
     # Get required clients from fixture
     sparql_client, ts_client, derivation_client, rdb_url = initialise_clients
 
-    # Initialise all triples in test_triples
-    # (it first DELETES ALL DATA in the specified SPARQL/RDB endpoints)
+    # Initialise all triples in test_triples repository
     cf.initialise_triples(sparql_client)
     cf.clear_database(rdb_url)
     # Verify correct number of triples (not marked up with timestamp yet)
@@ -399,13 +400,7 @@ def test_create_tft_forecast(
     assert sparql_client.getAmountOfTriples() == triples
 
     # Register derivation agent in KG
-    # - Successful agent registration within the KG is required to create/pick up derivations
-    # - Hence, the dockerised agents are started without initial registration and registration
-    #   is done within the test to guarantee that test Blazegraph will be ready
-    # - The "belated" registration of the dockerised agents can be achieved by registering "another"
-    #   agent instance with the same ONTOAGENT_SERVICE_IRI
-    create_example_agent(ontoagent_service_iri=agent_iri,
-                         ontoagent_http_url=agent_url) 
+    create_example_agent(ontoagent_service_iri=agent_iri, ontoagent_http_url=agent_url) 
 
     # Verify expected number of triples after derivation registration
     triples += cf.AGENT_SERVICE_TRIPLES
@@ -448,55 +443,55 @@ def test_create_tft_forecast(
             derivation_input_set_copy.remove(j)
     assert len(derivation_input_set_copy) == 0
 
-    # # Retrieve instantiated forecast and verify its details
-    # fcIRI = list(derivation_outputs[dm.TS_FORECAST])[0]
-    # fc_intervals = sparql_client.get_forecast_details(fcIRI)
-    # inp_interval = sparql_client.get_interval_details(fc_intervals['input_interval_iri'])
-    # outp_interval = sparql_client.get_interval_details(fc_intervals['output_interval_iri'])
-    # assert inp_interval['start_unix'] == cf.T_1 - duration*3600
-    # assert inp_interval['end_unix'] == cf.T_1 - 3600
-    # assert outp_interval['start_unix'] == cf.T_1
-    # assert outp_interval['end_unix'] == cf.T_2
+    # Retrieve instantiated forecast and verify its details
+    fcIRI = list(derivation_outputs[dm.TS_FORECAST])[0]
+    fc_intervals = sparql_client.get_forecast_details(fcIRI)
+    inp_interval = sparql_client.get_interval_details(fc_intervals['input_interval_iri'])
+    outp_interval = sparql_client.get_interval_details(fc_intervals['output_interval_iri'])
+    assert inp_interval['start_unix'] == cf.T_1 - hist_data_length*3600
+    assert inp_interval['end_unix'] == cf.T_1 - 3600
+    assert outp_interval['start_unix'] == cf.T_1
+    assert outp_interval['end_unix'] == cf.T_2
 
-    # # Assess initial forecast error and create plot for visual inspection
-    # errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
-    #                                   agent_url=agent_url, name=case)
-    # print(f'Forecast errors for case: {case}')
-    # for k,v in errors.items():
-    #     print(f'{k}: {round(v,5)}')
+    # Assess initial forecast error and create plot for visual inspection
+    errors = cf.assess_forecast_error(heatDemand, fcIRI, sparql_client, ts_client, 
+                                      agent_url=agent_url, name=case)
+    print(f'Forecast errors for case: {case}')
+    for k,v in errors.items():
+        print(f'{k}: {round(v,5)}')
 
-    # # Update derivation interval and add latest timestamp to trigger update
-    # cf.update_derivation_interval(derivation_iri, cf.FC_INTERVAL_2, sparql_client)
-    # assert sparql_client.getAmountOfTriples() == triples
-    # derivation_client.addTimeInstanceCurrentTimestamp(cf.FC_INTERVAL_2)
-    # triples += cf.TIME_TRIPLES_PER_PURE_INPUT
-    # assert sparql_client.getAmountOfTriples() == triples
+    # Update derivation interval and add latest timestamp to trigger update
+    cf.update_derivation_interval(derivation_iri, cf.FC_INTERVAL_2, sparql_client)
+    assert sparql_client.getAmountOfTriples() == triples
+    derivation_client.addTimeInstanceCurrentTimestamp(cf.FC_INTERVAL_2)
+    triples += cf.TIME_TRIPLES_PER_PURE_INPUT
+    assert sparql_client.getAmountOfTriples() == triples
 
-    # # Request for derivation update and verify that no new triples have been added,
-    # # only time series and interval values have been amended
-    # derivation_client.unifiedUpdateDerivation(derivation_iri)
-    # if not overwrite_forecast:
-    #     triples += cf.FORECAST_TRIPLES          # triples for new forecast
-    #     if with_unit:
-    #         triples += cf.UNIT_TRIPLES
-    # assert sparql_client.getAmountOfTriples() == triples
+    # Request for derivation update and verify that no new triples have been added,
+    # only time series and interval values have been amended
+    derivation_client.unifiedUpdateDerivation(derivation_iri)
+    if not overwrite_forecast:
+        triples += cf.FORECAST_TRIPLES          # triples for new forecast
+        if with_unit:
+            triples += cf.UNIT_TRIPLES
+    assert sparql_client.getAmountOfTriples() == triples
 
-    # # Retrieve updated forecast details
-    # _, derivation_outputs = cf.get_derivation_inputs_outputs(derivation_iri, sparql_client)
-    # fcIRI = list(derivation_outputs[dm.TS_FORECAST])[0]
-    # fc_intervals = sparql_client.get_forecast_details(fcIRI)
-    # inp_interval = sparql_client.get_interval_details(fc_intervals['input_interval_iri'])
-    # outp_interval = sparql_client.get_interval_details(fc_intervals['output_interval_iri'])
-    # assert inp_interval['start_unix'] == cf.T_2 - duration*3600
-    # assert inp_interval['end_unix'] == cf.T_2 - 3600
-    # assert outp_interval['start_unix'] == cf.T_2
-    # assert outp_interval['end_unix'] == cf.T_3
+    # Retrieve updated forecast details
+    _, derivation_outputs = cf.get_derivation_inputs_outputs(derivation_iri, sparql_client)
+    fcIRI = list(derivation_outputs[dm.TS_FORECAST])[0]
+    fc_intervals = sparql_client.get_forecast_details(fcIRI)
+    inp_interval = sparql_client.get_interval_details(fc_intervals['input_interval_iri'])
+    outp_interval = sparql_client.get_interval_details(fc_intervals['output_interval_iri'])
+    assert inp_interval['start_unix'] == cf.T_2 - hist_data_length*3600
+    assert inp_interval['end_unix'] == cf.T_2 - 3600
+    assert outp_interval['start_unix'] == cf.T_2
+    assert outp_interval['end_unix'] == cf.T_3
     
-    # # Assess updated forecast error and create plot for visual inspection
-    # errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
-    #                                   agent_url=agent_url, name=case+'_updated')
-    # print(f'Forecast errors for case: {case}_updated')
-    # for k,v in errors.items():
-    #     print(f'{k}: {round(v,5)}')
+    # Assess updated forecast error and create plot for visual inspection
+    errors = cf.assess_forecast_error(heatDemand, fcIRI, sparql_client, ts_client, 
+                                      agent_url=agent_url, name=case+'_updated')
+    print(f'Forecast errors for case: {case}_updated')
+    for k,v in errors.items():
+        print(f'{k}: {round(v,5)}')
 
     print("All check passed.")

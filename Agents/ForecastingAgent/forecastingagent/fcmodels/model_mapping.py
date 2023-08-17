@@ -12,9 +12,13 @@
 import os
 import urllib
 from pathlib import Path
+
 from darts.models import TFTModel
 
 from py4jps import agentlogging
+
+from forecastingagent.datamodel.iris import *
+from forecastingagent.utils.ts_utils import *
 
 
 # Initialise logger instance (ensure consistent logger level`)
@@ -64,9 +68,66 @@ def load_tft_pirmasens_heat_demand(cfg, series):
 
 
 #
-# Specify custom covariate loading function
-# ()
+# SPECIFY CUSTOM COVARIATE LOADING FUNCTIONS
+# NOTE: Custom covariate loading functions are required, as different pre-trained
+#       models require 1) different sets of covariates
+#                      2) covariate order to match order during training
+#                      3) some "implicite" covariates which are not marked up in
+#                         the KG (yet), e.g., day of week, etc. but can be extracted
+#                         from time stamps
 #
+
+def load_pirmasens_heat_demand_covariates(covariates_dict, tsClient, lowerbound, upperbound):
+    """
+    #TODO
+    The function which is used to load the covariates. If not provided, no covariates are loaded.
+        Be aware, that the returned covariates must be available for the whole 'horizon'. 
+        If the covariates are not long enough, Prophet is used, which does not require covariates.
+        The function must return parameters:
+        'covariates': A darts series object, which can be passed into model.predict()
+        
+        The function will receive the following parameters:
+        'kgClient': The kgClient
+        'tsClient': The tsClient
+        'lowerbound': The lower bound of the time series data (can be None)
+        'upperbound': The upper bound of the time series data (can be None)
+    
+
+    """
+
+    # Extract time series data for covariates based on their given dataIRIs
+    # NOTE: This approach only works for unique rdf types, i.e., one covariate per rdf type
+    df_air_temp, df_public_holiday = None, None
+    for iri, type in covariates_dict.items():
+        if type == ONTOEMS_AIRTEMPERATURE and df_air_temp is None:
+            logger.info(f'Loading air temperature covariate')
+            df_air_temp = get_df_of_ts(iri, tsClient, lowerbound=lowerbound, 
+                                       upperbound=upperbound, column_name='covariate')
+
+        if type == OHN_ISPUBLICHOLIDAY and df_public_holiday is None:
+            logger.info(f'Loading public holiday covariate')
+            df_public_holiday = get_df_of_ts(iri, tsClient, lowerbound=lowerbound, 
+                                             upperbound=upperbound, column_name='covariate')
+
+    # Create consolidated (scaled) covariates list incl. time covariates for the forecast
+    # NOTE: The covariate list MUST have the same order as during training
+    covariates = concatenate(
+        [
+            scale_covariate(df_air_temp, "covariate"),
+            # Use times of other covariate to create/extract time covariates
+            # NOTE: If no other covariate is available, the orginal series could be used;
+            #       however, you would need to extend the time range of the original series
+            #       in order to cover full length of forecast horizon
+            #       (just for reference and not relevant for this loading function)
+            get_time_covariates(df_air_temp, 
+                                {"dayofyear": True, "dayofweek": True, "hour": True}),
+            scale_covariate(df_public_holiday, "covariate"),
+        ],
+        axis="component",
+    )
+    logger.info(f'Created time covariates: "dayofyear", "dayofweek", "hour"')
+
+    return covariates
 
 
 ###############################################################################

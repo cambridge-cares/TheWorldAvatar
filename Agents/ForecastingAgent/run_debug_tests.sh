@@ -27,4 +27,4 @@ docker compose -f "docker-compose-test_dockerised_debug.yml" down -v
 find ./tests/test_plots -type f ! -name '.gitkeep' -exec rm -f {} +
 
 # Delete potentially downloaded pre-trained models
-sudo rm -rf ./forecastingagent/agent/Models
+sudo rm -rf ./forecastingagent/fcmodels/Models

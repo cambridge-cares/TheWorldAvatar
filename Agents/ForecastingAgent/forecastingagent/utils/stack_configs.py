@@ -1,5 +1,5 @@
 ################################################
-# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #
 # Date: 08 Dec 2022                            #
 ################################################
 
