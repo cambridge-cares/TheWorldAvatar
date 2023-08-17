@@ -1,3 +1,13 @@
+Generic Description
+
+This module retrieves generation data for UK generation units. These units are also mapped to stations, and are consistent between the BMRS and DUKES data sources. 
+
+Data Source
+
+This script imports data from the BMRS (https://www.bmreports.com/bmrs/?q=eds/main) which includes information on the output of generation units.
+
+Code Execution Details:
+
 'generation_data_importer.py', 'generate_visualisation_data.py' are the main scripts, but to run this locally from scratch there are a number of steps. 
 
 Steps to run: 

@@ -7,7 +7,7 @@ Data Source:
 This module takes battery specifications and a time series of price data as inputs. 
 These must be provided and are specified within the script.
 
-Implementation Details:
+Implementation and Execution Details:
 
 'ESSDispatchInput.txt' and 'ESSDispatchOutput.txt' serve as the input and output 
 text files for the 'ESS-pulp-JA-Split-26.py' script. 

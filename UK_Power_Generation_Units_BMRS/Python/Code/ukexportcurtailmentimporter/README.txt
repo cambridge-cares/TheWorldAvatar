@@ -1,3 +1,15 @@
+Description:
+
+This module retrieves energy exports and curtailments for UK generation units. 
+
+Data Source:
+
+This script imports data from the BMRS (https://www.bmreports.com/bmrs/?q=eds/main) which includes 
+information on wind farm exports and energy bids (where wind farms bid their full generation amounts). 
+The former allows for exports to be known, and the difference allows for curtailments to be known.
+
+Code Execution Details:
+
 With 'export_curtailment_data_importer.py' as the main script, 
 these files import data from BMRS/Excels of BMRS data to input into the KG. 
 
