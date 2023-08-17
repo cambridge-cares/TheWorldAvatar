@@ -17,10 +17,16 @@ public class BlazegraphService extends ContainerService {
 
     public BlazegraphService(String stackName, ServiceConfig config) {
         super(stackName, config);
+
+        BlazegraphEndpointConfig endpointConfig = new BlazegraphEndpointConfig(
+                EndpointNames.BLAZEGRAPH, getHostName(), DEFAULT_PORT,
+                getEnvironmentVariable(BLAZEGRAPH_USER_KEY), getEnvironmentVariable(BLAZEGRAPH_PASSWORD_FILE_KEY));
+
+        addEndpointConfig(endpointConfig);
     }
 
     @Override
-    protected void doPreStartUpConfigurationImpl() {
+    protected void doPreStartUpConfiguration() {
         if (ensureOptionalSecret("blazegraph_password")) {
             setEnvironmentVariableIfAbsent(BLAZEGRAPH_USER_KEY, DEFAULT_USERNAME);
             setEnvironmentVariableIfAbsent(BLAZEGRAPH_PASSWORD_FILE_KEY, DEFAULT_PASSWORD_FILE);
@@ -28,13 +34,5 @@ public class BlazegraphService extends ContainerService {
             removeEnvironmentVariable(BLAZEGRAPH_USER_KEY);
             removeEnvironmentVariable(BLAZEGRAPH_PASSWORD_FILE_KEY);
         }
-    }
-
-    @Override
-    public void createEndpoints() {
-        BlazegraphEndpointConfig endpointConfig = new BlazegraphEndpointConfig(
-                EndpointNames.BLAZEGRAPH, getHostName(), DEFAULT_PORT,
-                getEnvironmentVariable(BLAZEGRAPH_USER_KEY), getEnvironmentVariable(BLAZEGRAPH_PASSWORD_FILE_KEY));
-        writeEndpointConfig(endpointConfig);
     }
 }

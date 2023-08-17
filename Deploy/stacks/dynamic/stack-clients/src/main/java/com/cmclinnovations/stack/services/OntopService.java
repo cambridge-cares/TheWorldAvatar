@@ -46,10 +46,16 @@ public final class OntopService extends ContainerService {
         containerName = StackClient.removeStackName(getConfig().getName());
 
         configDir = Path.of(getEnvironmentVariable(ONTOP_MAPPING_FILE)).getParent().toString();
+
+        EndpointConfig endpointConfig = new OntopEndpointConfig(
+                containerName, getHostName(), DEFAULT_PORT,
+                "", null);
+
+        addEndpointConfig(endpointConfig);
     }
 
     @Override
-    protected void doPreStartUpConfigurationImpl() {
+    protected void doPreStartUpConfiguration() {
 
         ContainerSpec containerSpec = getContainerSpec();
 
@@ -89,14 +95,6 @@ public final class OntopService extends ContainerService {
                 .withTarget(configDir)
                 .withType(MountType.VOLUME)
                 .withReadOnly(false));
-    }
-
-    @Override
-    protected void createEndpoints() {
-        EndpointConfig endpointConfig = new OntopEndpointConfig(
-                containerName, getHostName(), DEFAULT_PORT,
-                "", null);
-        writeEndpointConfig(endpointConfig);
     }
 
     @Override

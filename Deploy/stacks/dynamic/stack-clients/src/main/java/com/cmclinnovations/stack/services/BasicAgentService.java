@@ -11,23 +11,16 @@ public class BasicAgentService extends ContainerService {
 
     public static final String TYPE = "basic-agent";
 
-    private Map<String, BasicEndpointConfig> endpointConfigMap;
-
     public BasicAgentService(String stackName, ServiceConfig config) {
         super(stackName, config);
 
-        endpointConfigMap = new HashMap<>();
-
+        String name = this.getName();
         this.getConfig().getEndpoints().entrySet().forEach(entry -> {
-            String endpointConfigName = StackClient.removeStackName(config.getName()) + "-" + entry.getKey();
-            String url = entry.getValue().getUrl().toString().replace("localhost", this.getName());
+            String endpointConfigName = StackClient.removeStackName(name) + "-" + entry.getKey();
+            String url = entry.getValue().getUrl().toString().replace("localhost", name);
             BasicEndpointConfig endpointConfig = new BasicEndpointConfig(endpointConfigName, url);
-            endpointConfigMap.put(entry.getKey(), endpointConfig);
-        });
-    }
 
-    @Override
-    public void doPostStartUpConfiguration() {
-        endpointConfigMap.entrySet().forEach(entry -> writeEndpointConfig(entry.getValue()));
+            addEndpointConfig(endpointConfig);
+        });
     }
 }

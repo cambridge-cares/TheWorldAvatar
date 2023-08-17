@@ -48,6 +48,8 @@ public final class GeoServerService extends ContainerService {
             geoserverEndpointConfig = new RESTEndpointConfig("geoserver",
                     new URL("http", getHostName(), 8080, "/geoserver/"),
                     ADMIN_USERNAME, passwordFile);
+
+            addEndpointConfig(geoserverEndpointConfig);
         } catch (MalformedURLException ex) {
             throw new RuntimeException("Failed to construct URL for GeoServer config file.", ex);
         }
@@ -55,9 +57,6 @@ public final class GeoServerService extends ContainerService {
 
     @Override
     public void doPostStartUpConfiguration() {
-
-        writeEndpointConfig(geoserverEndpointConfig);
-
         Builder settingsRequestBuilder = createBaseSettingsRequestBuilder();
 
         Optional<JsonNode> settings = getExistingSettings(settingsRequestBuilder);
