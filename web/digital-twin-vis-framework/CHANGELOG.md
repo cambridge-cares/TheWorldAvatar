@@ -1,5 +1,11 @@
 [//]: # (Note that version headers need to start with "# " characters to be picked up by some automated scripts)
 
+# 3.9.0
+### Features
+* Can now display a button to open an associated analytics dashboard.
+### Bug Fixes:
+* Minor CSS tweaks to filtering controls.
+  
 # 3.8.3
 ### Features
 * _No features present._

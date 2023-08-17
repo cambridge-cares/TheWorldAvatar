@@ -2,7 +2,7 @@
  * Opens the user help document associated with this version of the DTVF.
  */
 function openHelpURL() {
-    window.open("./dtvf/help", "_blank");
+    window.open("./dtvf/help/index.html", "_blank");
 }
 
 /**
@@ -182,5 +182,41 @@ function showHelpPage() {
         case MapProvider.MAPBOX:
             // TODO
         break;
+    }
+}
+
+
+/**
+ * Builds and adds a button to open the dashboard in a new tab.
+ * 
+ * Note: The 'dashboard' parameter must have been set within the
+ * visualisation's settings.json file for this to appear.
+ */
+function buildDashboardButton() {
+    if(Manager.SETTINGS.getSetting("dashboard") != null) {
+
+        let html = `
+            <div id="dashButtonContainer" class="controlBlock expanded" onclick="openDashboard()" style="cursor: pointer;">
+                <p>Open dashboard</p>
+            </div>
+        `;
+
+        // Parse into a HTML element
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(html, 'text/html');
+
+        let container = document.getElementById("controlContainer");
+        let searchButton = document.getElementById("helpandsearch");
+        container.insertBefore(doc.body.firstChild, searchButton);
+    }
+}
+
+/**
+ * Open the dashboard in a new link.
+ */
+function openDashboard() {
+    let url = Manager.SETTINGS.getSetting("dashboard");
+    if(url != null) {
+        window.open(url, '_blank').focus();
     }
 }

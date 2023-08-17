@@ -78,7 +78,7 @@ abstract class SearchHandler {
         // Build label
         let finderLabel = document.createElement("label");
         finderLabel.id = "finderLabel";
-        finderLabel.innerHTML = "Find locations where";
+        finderLabel.innerHTML = "Find locations where:";
         finderContainer.appendChild(finderLabel);
     
         // Build drop down
@@ -144,10 +144,14 @@ abstract class SearchHandler {
         let self = this;
         let finderContainer = document.getElementById("finderContainer");
 
-        // Cache the selected property
-        this.allSearchProperties.forEach(property => {
-            if(property["property"] === value) this.property = property;
-        })
+        if(value == null) {
+            this.property = this.allSearchProperties[0];
+        } else {
+            // Cache the selected property
+            this.allSearchProperties.forEach(property => {
+                if(property["property"] === value) this.property = property;
+            })
+        }
 
         // Initialise the range select if not done before
         let rangeSelect = document.getElementById("finderRangeSelect");

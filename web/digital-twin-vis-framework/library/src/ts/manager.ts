@@ -117,6 +117,9 @@ class Manager {
         // Show attributions if present
         showAttributions();
 
+        // Build dashboard button if appropriate
+        buildDashboardButton();
+
         // Listen for CTRL+F 
         let self = this;
         document.addEventListener("keydown", function(e){
@@ -553,6 +556,24 @@ class Manager {
                 if(newFilter !== null) MapHandler.MAP.setFilter(layer.id, newFilter);
             });
         });
+    }
+
+     /**
+     * Open the feature search controls.
+     */
+     public openSearch() {
+        if(Manager.SETTINGS.getSetting("search") == null) return;
+
+        if(this.searchHandler === null || this.searchHandler === undefined) {
+            // Initialise the seach handler instance
+            switch(Manager.PROVIDER) {
+                case MapProvider.MAPBOX:
+                    this.searchHandler = new SearchHandler_Mapbox();
+                break;
+            }
+        }
+
+        if(this.searchHandler != null) this.searchHandler.toggle();
     }
 
     /**

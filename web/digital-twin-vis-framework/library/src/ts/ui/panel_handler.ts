@@ -258,9 +258,6 @@ class PanelHandler {
             let meta = rawJSON["meta"];
             let time = rawJSON["time"];
 
-            if (meta != null) console.log("Got a meta object!");
-            if (time != null) console.log("Got a time object!");
-
             // Render metadata tree
             document.getElementById("metaTreeContainer").innerHTML = "";
 
@@ -269,7 +266,6 @@ class PanelHandler {
                 meta = JSONFormatter.formatJSON(meta);
 
                 let treeContainer = document.getElementById("metaTreeContainer");
-                if(treeContainer == null) console.log("TREE CONTAINER IS NULL, WHAT?!");
 
                 if(Array.isArray(meta) && meta.length === 0) {
                     this.showBuiltInData(properties);

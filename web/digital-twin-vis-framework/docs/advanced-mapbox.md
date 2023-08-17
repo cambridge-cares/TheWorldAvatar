@@ -96,3 +96,9 @@ An example snippet of the `settings.json` file defining search parameters is sho
 <p align="center">
  <em>Example of feature searching</em><br/><br/><br/>
 </p>
+
+<br/>
+
+## Dashboards
+
+Where applicable, the DTVF can now display a link to an associated analytics dashboard. To add this link, simply set the `dashboard` parameter in the visualisation's `settings.json` file to the dashboard's URL.
