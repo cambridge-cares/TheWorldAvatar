@@ -572,16 +572,20 @@ public class QueryClient {
         Variable pollutantType = query.var();
         Variable pollutantLabel = query.var();
         Variable dispLayerVar = query.var();
-        Variable wktVar = query.var();
+        Variable weatherStationVar = query.var();
+        Variable scopeWktVar = query.var();
+        Variable weatherStationWktVar = query.var();
 
         ServiceEndpoint ontopEndpoint = new ServiceEndpoint(ontopUrl);
 
         query.where(derivation.has(isDerivedFrom, scope), scope.isA(SCOPE).andHas(iri(RDFS.LABEL), scopelabelVar),
+                derivation.has(isDerivedFrom, weatherStationVar), weatherStationVar.isA(REPORTING_STATION),
                 dispersionOutput.isA(DISPERSION_OUTPUT).andHas(belongsTo, derivation)
                         .andHas(HAS_DISPERSION_LAYER, dispLayerVar)
                         .andHas(PropertyPaths.path(HAS_POLLUTANT_ID, iri(RDF.TYPE)), pollutantType),
                 pollutantType.has(RDFS.LABEL, pollutantLabel).optional(),
-                ontopEndpoint.service(scope.has(PropertyPaths.path(HAS_GEOMETRY, iri(GEO.AS_WKT)), wktVar)))
+                ontopEndpoint.service(scope.has(PropertyPaths.path(HAS_GEOMETRY, iri(GEO.AS_WKT)), scopeWktVar),
+                        weatherStationVar.has(PropertyPaths.path(HAS_GEOMETRY, iri(GEO.AS_WKT)), weatherStationWktVar)))
                 .prefix(P_DISP, P_GEO);
 
         Map<String, DispersionSimulation> iriToDispSimMap = new HashMap<>();
@@ -610,11 +614,20 @@ public class QueryClient {
 
             dispersionSimulation.setPollutantLabelAndDispLayer(pol, polLabel, dispLayer);
 
-            String wktLiteral = queryResult.getJSONObject(0).getString(wktVar.getQueryString().substring(1));
+            String wktLiteral = queryResult.getJSONObject(i).getString(scopeWktVar.getQueryString().substring(1));
             org.locationtech.jts.geom.Geometry scopePolygon = WKTReader.extract(wktLiteral).getGeometry();
             scopePolygon.setSRID(4326);
 
             dispersionSimulation.setScopePolygon((Polygon) scopePolygon);
+
+            String weatherStation = queryResult.getJSONObject(i)
+                    .getString(weatherStationVar.getQueryString().substring(1));
+            dispersionSimulation.setWeatherStationIri(weatherStation);
+
+            String weatherWkt = queryResult.getJSONObject(i)
+                    .getString(weatherStationWktVar.getQueryString().substring(1));
+            org.locationtech.jts.geom.Geometry weatherLocation = WKTReader.extract(weatherWkt).getGeometry();
+            dispersionSimulation.setWeatherStationLocation((org.locationtech.jts.geom.Point) weatherLocation);
         }
 
         return new ArrayList<>(iriToDispSimMap.values());

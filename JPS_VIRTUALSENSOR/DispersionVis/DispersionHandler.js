@@ -176,7 +176,8 @@ class DispersionHandler {
             timestep: this.selectedTimestep,
             scopeLabel: this.selectedSimulation,
             derivationIri: this.dispersions[this.selectedSimulation].derivationIri,
-            pollutantLabel: this.dispersions[this.selectedSimulation].pollutants[this.selectedPollutant]
+            pollutantLabel: this.dispersions[this.selectedSimulation].pollutants[this.selectedPollutant],
+            weatherStation: JSON.stringify(this.dispersions[this.selectedSimulation].weatherStation)
         };
 
         let searchParams = new URLSearchParams(params);

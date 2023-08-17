@@ -15,9 +15,11 @@ import org.locationtech.jts.geom.Polygon;
 public class DispersionSimulation {
     private String label;
     private String derivationIri;
+    private String weatherStationIri;
     private Map<String, String> pollutantIriToLabelMap;
     private Map<String, String> pollutantIriToDispLayerMap;
     private Polygon scopePolygon;
+    private Point weatherStationLocation;
 
     private List<Instant> timesteps;
 
@@ -73,6 +75,12 @@ public class DispersionSimulation {
         json.put("pollutants", pollutantIriToLabelMap);
         json.put("derivationIri", derivationIri);
 
+        JSONObject weatherStation = new JSONObject();
+        weatherStation.put("iri", weatherStationIri);
+        weatherStation.put("wkt", weatherStationLocation.toString());
+
+        json.put("weatherStation", weatherStation);
+
         Point centroid = scopePolygon.getCentroid();
         JSONArray centroidJson = new JSONArray();
         centroidJson.put(centroid.getX());
@@ -85,5 +93,21 @@ public class DispersionSimulation {
 
     public void setScopePolygon(Polygon scopePolygon) {
         this.scopePolygon = scopePolygon;
+    }
+
+    public void setWeatherStationIri(String weatherStationIri) {
+        this.weatherStationIri = weatherStationIri;
+    }
+
+    public String getWeatherStationIri() {
+        return weatherStationIri;
+    }
+
+    public void setWeatherStationLocation(Point weatherStationLocation) {
+        this.weatherStationLocation = weatherStationLocation;
+    }
+
+    public Point getWeatherStationLocation() {
+        return weatherStationLocation;
     }
 }
