@@ -103,8 +103,6 @@ public final class OntopService extends ContainerService {
         dockerClient.createComplexCommand(dockerClient.getContainerId(containerName),
                 "chown", "ontop:ontop", configDir)
                 .withUser("root");
-
-        OntopClient.getInstance(containerName).updateOBDA(null);
     }
 
     @Override
