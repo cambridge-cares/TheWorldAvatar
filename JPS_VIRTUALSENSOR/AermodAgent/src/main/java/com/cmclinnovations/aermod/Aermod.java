@@ -881,16 +881,15 @@ public class Aermod {
         String shipList = shipSet.stream().collect(Collectors.joining(","));
 
         StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append(
-                String.format("SELECT timeseries.value as geom, %s.ship as iri ", EnvConfig.SHIP_IRI_LOOKUP_TABLE));
+        queryBuilder.append("SELECT timeseries.value as geom, s.ship as iri, s.shipname as name ");
         queryBuilder
                 .append(String.format(
-                        "FROM \"dbTable\", public.get_geometry_table(\"tableName\", \"columnName\") as timeseries, %s ",
+                        "FROM \"dbTable\", public.get_geometry_table(\"tableName\", \"columnName\") as timeseries, %s as s ",
                         EnvConfig.SHIP_IRI_LOOKUP_TABLE));
         queryBuilder.append(
                 String.format(
-                        "WHERE \"dbTable\".\"dataIRI\" IN (%s) and timeseries.time > %d and timeseries.time < %d and \"dbTable\".\"dataIRI\" = %s.location",
-                        shipList, timestamp - timeBuffer, timestamp + timeBuffer, EnvConfig.SHIP_IRI_LOOKUP_TABLE));
+                        "WHERE \"dbTable\".\"dataIRI\" IN (%s) and timeseries.time > %d and timeseries.time < %d and \"dbTable\".\"dataIRI\" = s.location",
+                        shipList, timestamp - timeBuffer, timestamp + timeBuffer));
         String sqlQuery = queryBuilder.toString();
 
         GeoServerClient geoserverClient = GeoServerClient.getInstance();

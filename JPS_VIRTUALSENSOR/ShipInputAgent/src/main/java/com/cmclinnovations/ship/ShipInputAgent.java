@@ -238,7 +238,6 @@ public class ShipInputAgent extends HttpServlet {
         GeoServerClient geoserverClient = new GeoServerClient();
         geoserverClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
 
-        // hardcoded "ships_" in AermodAgent
         String layerName = "ships_" + averageTimestamp;
 
         GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
