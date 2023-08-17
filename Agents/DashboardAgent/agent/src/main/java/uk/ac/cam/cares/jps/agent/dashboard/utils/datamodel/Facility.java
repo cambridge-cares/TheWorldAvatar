@@ -8,7 +8,6 @@ import java.util.*;
  * @author qhouyee
  */
 public class Facility {
-    private final Set<String> TIME_SERIES_MEASURES = new HashSet<>();
     // Key value pair is asset name and its stored information respectively
     private final Map<String, Asset> ASSETS = new HashMap<>();
 
@@ -60,10 +59,8 @@ public class Facility {
             asset.addMeasure(measureName, unit, measureIri, timeSeriesIri);
         } else {
             // If it does not exist, create a new asset and add it into the map
-            Asset element = new Asset(assetName, assetType, measureName, measureIri, timeSeriesIri);
+            Asset element = new Asset(assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
             this.ASSETS.put(assetName, element);
         }
-        // Store all measure names as a set, which only allows unique values
-        this.TIME_SERIES_MEASURES.add(measureName);
     }
 }
