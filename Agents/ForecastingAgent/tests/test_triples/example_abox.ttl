@@ -82,7 +82,7 @@
     ts:scaleData "False"^^xsd:boolean .
 
 :ForecastingModel_2 rdf:type ts:ForecastingModel ;
-    rdfs:label "TFTModel" ;
+    rdfs:label "tft_pirmasens_heat_demand" ;
     ts:scaleData "True"^^xsd:boolean ;
     ts:hasModelURL "https://www.dropbox.com/s/8pnne7gv34btr9x/_model.pth.tar?dl=1"^^xsd:string ;
     ts:hasCheckpointURL "https://www.dropbox.com/s/ia1nwqbepu8lbeh/best.ckpt?dl=1"^^xsd:string ;

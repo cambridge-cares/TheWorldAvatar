@@ -7,23 +7,6 @@
 # The purpose of this module is to create a model configuration dictionary for 
 # the forecasting agent depending on the retrieved information from the KG
 
-""" 
-
-'load_covariates_func': The function which is used to load the covariates. If not provided, no covariates are loaded.
-    Be aware, that the returned covariates must be available for the whole 'horizon'. 
-    If the covariates are not long enough, Prophet is used, which does not require covariates.
-    The function must return parameters:
-    'covariates_iris': A list if iris, which are used.
-    'covariates': A darts series object, which can be passed into model.predict()
-    
-    The function will receive the following parameters:
-    'kgClient': The kgClient
-    'tsClient': The tsClient
-    'lowerbound': The lower bound of the time series data (can be None)
-    'upperbound': The upper bound of the time series data (can be None)
-    
-"""
-
 import pandas as pd
 import datetime as dt
 
@@ -56,6 +39,7 @@ def create_forecast_configuration(model:dict, ts_details:dict, ts_frequency:dict
     """
     Returns a consolidated forecasting configuration dictionary with parameters 
     describing the forecast to create.
+    create_forecast_configuration
 
     Arguments:
         model {dict} -- forecast model details as retrieved from the KG

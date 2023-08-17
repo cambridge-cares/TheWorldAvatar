@@ -7,10 +7,6 @@
 # This module represents the main forecasting agent to forecast a time series using 
 # a trained model or Prophet (as default). The forecast is then stored in the KG.
 
-import os
-import uuid
-import urllib
-from pathlib import Path
 import pandas as pd
 
 from darts import TimeSeries
@@ -20,6 +16,7 @@ from darts.metrics import mape, mse, rmse, smape
 
 from py4jps import agentlogging
 
+from forecastingagent.fcmodels import FC_MODELS
 from forecastingagent.datamodel.iris import *
 from forecastingagent.utils.tools import *
 from forecastingagent.utils.env_configs import SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, \
@@ -40,6 +37,7 @@ def forecast(config, db_url, time_format, kgClient=None, tsClient=None,
     Forecasts a time series using a pre-trained model or Prophet using darts.
 
     Arguments:
+        #TODO: update
         kgClient {KGClient} - KG client to use
         time_format {str} - time format to use to initialise the forecast TimeSeries
         query_endpoint {str} - endpoint to query the KG
@@ -93,30 +91,23 @@ def forecast(config, db_url, time_format, kgClient=None, tsClient=None,
         raise ValueError(msg)
 
     # Load the model
+    # 1) Use default prophet model ...
     if cfg['fc_model'].get('name') == 'prophet':
         logger.info('Using default Prophet model to forecast.')
         model = Prophet()
         cfg['fc_model']['input_length'] = len(series) 
 
-    # TODO to be reworked for TFT & others
-    elif 'TFT_HEAT_SUPPLY' == cfg['model_configuration_name']:
-    # NOTE: If you have multiple different models, you need to edit here the loading function,
-    # you can use the model_configuration_name to load the correct model or
-    # add a function to the model config like for loading the covariates
-        model = load_pretrained_model(
-            cfg, TFTModel)
-        # other models than TFT can have different key then 'input_chunk_length'
-        cfg['fc_model']['input_length'] = model.model_params['input_chunk_length']
-        # check if length of series is long enough for the model input length
-        if len(series) < cfg['fc_model']['input_length']:
-            logger.error('Series is too short for the model input length. Set data_length to at least the length of the model input length or use an other model.')
-            raise ValueError(
-                f'Length of series: {len(series)} is shorter than the required input length of the model: {cfg["fc_model"]["input_length"]}')
-        # check that horizon is bigger than output_chunk_length
-        if cfg['horizon'] < model.model_params['output_chunk_length']:
-            logger.error('Horizon is less than the the model output length. Set horizon to at least the length of the model output length or use an other model.')
-            raise ValueError(
-                f'horizon: {cfg["horizon"]} is smaller than output_chunk_length: {model.model_params["output_chunk_length"]}. Specify a horizon bigger than the output_chunk_length of your model.')
+    else:
+        # 2) ... or load pre-trained custom model
+        mapped_model = FC_MODELS.get(cfg['fc_model'].get('name'))
+        if mapped_model:
+            logger.info('Loading (pre-trained) custom forecasting model ...')
+            cfg, model = mapped_model[0](cfg, series)
+            logger.info('Custom forecasting model loaded successfully.')
+        else:
+            msg = 'No model loading function has been provided for the specified forecasting model.'
+            logger.error(msg)
+            raise ValueError(msg)
 
     # Create forecast time series
     forecast = get_forecast(series, covariates, model, cfg)
@@ -148,6 +139,8 @@ def get_forecast(series, covariates, model, cfg):
         scaler = Scaler()
         series = scaler.fit_transform(series)
 
+    #model.__class__.__name__ =='Prophet'
+
     # Make forecast with covariates
     if covariates is not None:
         if cfg['fc_model'].get('train_again'):
@@ -171,6 +164,7 @@ def get_forecast(series, covariates, model, cfg):
             logger.info('Training model again without covariates.')
             model.fit(series)
         logger.info('Making forecast without covariates.')
+        # NOTE: 
         forecast = model.predict(n=cfg['horizon'])
 
     if cfg['fc_model'].get('scale_data'):
@@ -278,69 +272,6 @@ def get_ts_lower_upper_bound(cfg, time_format=TIME_FORMAT):
         cfg['frequency'] * (cfg['data_length'])
     
     return lowerbound.strftime(time_format), upperbound.strftime(time_format)
-
-
-def load_pretrained_model(cfg, ModelClass, force_download=False):
-    """
-    This method downloads a pre-trained model given a model and checkpoint link,
-    and then loads it into a Darts model
-
-    Arguments:
-        cfg: a dictionary containing the configuration of the model
-        ModelClass: the class of the model
-        force_download: boolean flag whether to download the model again if a 
-                        folder already exists (optional)
-    Returns:
-        Darts model object
-    """
-
-    model_path_ckpt_link = cfg['fc_model']['model_path_ckpt_link']
-    model_path_pth_link = cfg['fc_model']['model_path_pth_link']
-
-    # Try to load from checkpoint link
-    path_ckpt = ""
-    path_pth = ""
-    path_to_store = Path(__file__).parent.absolute() / \
-        'Models' / cfg['fc_model']['name'] / 'checkpoints'
-
-    if os.path.exists(path_to_store) and not force_download:
-        # Model already exists
-        path_ckpt = path_to_store / "best-model.ckpt"
-    else:
-        # Create folder
-        if not os.path.exists(path_to_store):
-            os.makedirs(path_to_store)
-
-        if model_path_ckpt_link.startswith("https://"):
-            # Download checkpoint model
-            path_ckpt, _ = urllib.request.urlretrieve(
-                model_path_ckpt_link, path_to_store / "best-model.ckpt")
-            logger.info(
-                f'Downloaded checkpoint model from {model_path_ckpt_link} to {path_ckpt}')
-
-        if model_path_pth_link.startswith("https://"):
-            # Download model
-            path_pth, _ = urllib.request.urlretrieve(
-                model_path_pth_link, path_to_store.parent.absolute() / "_model.pth.tar")
-            logger.info(f'Downloaded model from {model_path_pth_link} to {path_pth}')
-
-
-    # Load pre-trained model from best checkpoints
-    # NOTE: TFT model has been trained and saved on a CUDA device (i.e., using GPUs);
-    #       Attempting to deserialize saved model on a CPU-only machine requires
-    #       torchmetrics==0.9.3 and pytorch-lightning==1.7.7 (and will fail otherwise)
-    model = ModelClass.load_from_checkpoint(path_ckpt.parent.parent.as_posix())
-    logger.info(f'Loaded model from  {path_ckpt.parent.parent.__str__()}')
-
-    # Convert loaded model to device
-    trainer_params = {
-            "accelerator": "auto",
-            "devices": "auto",
-            "logger": False,
-        }
-    model.trainer_params.update(trainer_params)
-
-    return model
 
 
 def calculate_error(target, forecast):

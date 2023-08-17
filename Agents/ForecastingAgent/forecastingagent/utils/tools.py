@@ -33,14 +33,29 @@ def get_covs_heat_supply(kgClient, tsClient, covariates, lowerbound, upperbound,
     NOTE: provide general load covariate function here with mapping in forecasting_config
     add note about complexity and need for revisiting, as order of covariates is important +
     day of week, etc. are not marked up but were used during training
+
+
+    'load_covariates_func': The function which is used to load the covariates. If not provided, no covariates are loaded.
+        Be aware, that the returned covariates must be available for the whole 'horizon'. 
+        If the covariates are not long enough, Prophet is used, which does not require covariates.
+        The function must return parameters:
+        'covariates_iris': A list if iris, which are used.
+        'covariates': A darts series object, which can be passed into model.predict()
+        
+        The function will receive the following parameters:
+        'kgClient': The kgClient
+        'tsClient': The tsClient
+        'lowerbound': The lower bound of the time series data (can be None)
+        'upperbound': The upper bound of the time series data (can be None)
+    
+
     """
     cov_iris = []
 
-    # The following approach just works for the data iris that have an unique rdf type.
+    # NOTE The following approach just works for the data iris that have an unique rdf type.
     ts_by_type = kgClient.performQuery(get_ts_by_type())
-    # two different types of ts:
-    # 1. ts with MEASURE
-    # 2. ts without MEASURE
+    #get_time_series_details
+
     
     df_air_temp, df_public_holiday = None, None
     # NOTE: If multiple ts have the same air_temp and public_holiday rdf type, then the first one is used.
@@ -93,28 +108,6 @@ def get_df_of_ts(dataIRI, tsClient, lowerbound, upperbound, column_name="cov", i
     df[index] = pd.to_datetime(df[index]).dt.tz_convert('UTC').dt.tz_localize(None)
     
     return df
-
-
-
-# def get_ts_by_type():
-#     """
-#     It returns a SPARQL query that will return all the iris and dataIRIs in the graph, along with the
-#     type of the iri.
-
-#     It distinguishes between measures and non-measures. 
-#     The type of Timeseries with measures is returned under the key 'type_with_measure' and those without measures are returned under the key 'type_without_measure'.
-#     """
-
-#     return f"""
-#      SELECT  distinct ?iri ?dataIRI ?type_with_measure ?type_without_measure
-#      WHERE {{
-      
-#        ?dataIRI <{TS_HASTIMESERIES}> ?ts . 
-#        ?dataIRI <{RDF_TYPE}> ?type_without_measure .
-#        OPTIONAL {{ ?iri <{OM_HASVALUE}> ?dataIRI . ?iri <{RDF_TYPE}> ?type_with_measure }} . 
-       
-#      }}
-#      """
 
 
 def get_data_cov(df, col):
