@@ -22,7 +22,6 @@ RUN --mount=type=cache,target=/root/.m2/repository mvn package
 FROM tomcat:9.0 as agent
 
 WORKDIR /root/osmagent
-ADD https://jdbc.postgresql.org/download/postgresql-42.5.4.jar ./resources/
 
 
 # #==================================================================================================
@@ -30,7 +29,5 @@ ADD https://jdbc.postgresql.org/download/postgresql-42.5.4.jar ./resources/
 COPY --from=builder /root/osmagent/output/OSMAgent##1.0.0.war $CATALINA_HOME/webapps/
 COPY ./docker/entrypoint.sh entrypoint.sh
 
-# # Port for Java debugging
-EXPOSE 5005
 
 ENTRYPOINT ["./entrypoint.sh"]
