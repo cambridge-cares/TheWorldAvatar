@@ -389,9 +389,9 @@ def ESSpulpJAfromText(DispatchInput, DispatchOutput, splitCharacter):
     f.close()    
 
 #Example of being run: 
-ESSpulpJAfromText('ESSDispatchInput.txt', 'ESSDispatchOutput.txt', '	')
-
-sys.exit()
+if __name__== '__main__':
+    ESSpulpJAfromText('ESSDispatchInput.txt', 'ESSDispatchOutput.txt', '	')
+    sys.exit()
 
 #At present all time related values are assumed to be in terms of the same unit of time (eg. If timesteps are all 1 hour, then Xmin and Xmax are per hour).
 #In other words, this model presumes inputs are all in terms of the same timestep (exactly what that timestep is does therefore not matter so long is it is consistent throughout inputs). 
