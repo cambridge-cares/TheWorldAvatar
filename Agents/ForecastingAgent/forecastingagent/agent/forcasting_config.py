@@ -159,7 +159,7 @@ def create_model_dict(model:dict):
         model_dict['scale_data'] = model['scale_data']
         model_dict['model_path_pth_link'] = model['model_url']
         model_dict['model_path_ckpt_link'] = model['chkpt_url']
-        model_dict['covariate_iris'] = model['covariate_iris']
+        model_dict['covariates'] = model.get('covariates')
 
     # Throw exception if any required parameter is missing (None)
     if any(value is None for value in model_dict.values()):

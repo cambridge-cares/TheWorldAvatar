@@ -25,3 +25,6 @@ docker compose -f "docker-compose-test_dockerised_debug.yml" down -v
 
 # Delete potentially created test plots
 find ./tests/test_plots -type f ! -name '.gitkeep' -exec rm -f {} +
+
+# Delete potentially downloaded pre-trained models
+sudo rm -rf ./forecastingagent/agent/Models
