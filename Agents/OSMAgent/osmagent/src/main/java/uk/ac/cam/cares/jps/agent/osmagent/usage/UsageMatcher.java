@@ -19,16 +19,10 @@ public class UsageMatcher {
         for (String tableName : tableNames) {
 
             try {
-                System.out.println("Current Directory: " + System.getProperty("user.dir"));
-                // CSVReader csvReader = new CSVReaderBuilder(new
-                // FileReader("/src/main/resources/osmbase.csv"))
-                // .withSkipLines(1).build();
 
                 InputStreamReader inputStreamReader = new InputStreamReader(
                         UsageMatcher.class.getResourceAsStream("/osmbase.csv"));
-                CSVReader csvReader = new CSVReaderBuilder(inputStreamReader)
-                        .withSkipLines(1)
-                        .build();
+                CSVReader csvReader = new CSVReaderBuilder(inputStreamReader).withSkipLines(1).build();
                 String[] line;
 
                 Map<String, StringBuilder> hashmap = new HashMap<>();
@@ -38,18 +32,17 @@ public class UsageMatcher {
                     String key = line[0];
                     String value = line[1];
 
-                    if (ontobuilt.equals("NA")) {
-                        break;
-                    }
+                    if (!ontobuilt.equals("NA") && !ontobuilt.isBlank()) {
 
-                    if (!hashmap.containsKey(ontobuilt)) {
-                        hashmap.put(ontobuilt, new StringBuilder(
-                                "UPDATE " + tableName + " SET ontobuilt = '" + ontobuilt + "' WHERE "));
-                    }
+                        if (!hashmap.containsKey(ontobuilt)) {
+                            hashmap.put(ontobuilt, new StringBuilder(
+                                    "UPDATE " + tableName + " SET ontobuilt = '" + ontobuilt + "' WHERE "));
+                        }
 
-                    if (!(tableName.equals("points") && key.equals("leisure"))) {
-                        StringBuilder sqlStatement = hashmap.get(ontobuilt);
-                        sqlStatement.append(key).append(" = '").append(value).append("' OR ");
+                        if (!(tableName.equals("points") && key.equals("leisure"))) {
+                            StringBuilder sqlStatement = hashmap.get(ontobuilt);
+                            sqlStatement.append(key).append(" = '").append(value).append("' OR ");
+                        }
                     }
                 }
 
