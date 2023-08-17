@@ -45,9 +45,10 @@ public class SpatialLink{
 
         GeoObject3D object3D = new GeoObject3D();
         GeoObject2D object2D = new GeoObject2D();
-
+        object3D.setConfig(config);
+        object3D.setSqlConnectionPool();
         this.allObject2D = object2D.getObject2D(config);
-        this.allObject3D = object3D.getObject3D(config);
+        this.allObject3D = object3D.getObject3D();
         try {
             findMatchedObjects(config);
         } catch (ParseException | FactoryException | TransformException | SQLException e) {

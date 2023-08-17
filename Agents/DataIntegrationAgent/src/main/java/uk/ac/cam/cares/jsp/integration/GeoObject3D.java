@@ -81,15 +81,15 @@ public class GeoObject3D {
 
     public ObjectAddress getAddress(){ return this.address;}
 
-    public List<GeoObject3D> getObject3D (String[] config) throws SQLException {
+    public List<GeoObject3D> getObject3D () throws SQLException {
 
         List<GeoObject3D> allObject3D = new ArrayList<>();
-        this.config = config;
+        // this.config = config;
+        if(this.pool == null){
+            this.pool = new SqlConnectionPool(this.config);
+        }
         if (this.srcConn==null) {
-            this.pool = new SqlConnectionPool(config);
-            LOGGER.info("Pinging source database for availability...");
             this.srcConn = this.pool.get3DConnection();
-
         }
 
         String sql = "SELECT id, gmlid, objectclass_id, name, public.ST_AsEWKT(envelope) AS geom FROM cityobject WHERE objectclass_id = 26";
@@ -102,7 +102,6 @@ public class GeoObject3D {
                 object3D.setObjectClassid(result.getInt("objectclass_id"));
                 object3D.setName(result.getString("name"));
                 object3D.setGeometry(result.getString("geom"));
-                object3D.setSqlConnectionPool(this.pool);
                 object3D.setAddress(this.address.queryAddress(result.getInt("id"), srcConn));
                 allObject3D.add(object3D);
             }
@@ -114,8 +113,11 @@ public class GeoObject3D {
         }
     }
 
-    void setSqlConnectionPool(SqlConnectionPool pool) {
-        this.pool = pool;
+    void setConfig(String[] config) {
+        this.config = config;
+    }
+    void setSqlConnectionPool() {
+        this.pool = new SqlConnectionPool(this.config);
     }
 
     public void updateName(GeoObject3D object3D, String[] config) throws SQLException{
@@ -183,7 +185,7 @@ public class GeoObject3D {
 
     // }
 
-    public PGgeometry extractPrint_thematic (int cityobjectid, String surfaceType){
+    public void extractPrint_thematic (List<GeoObject3D> allObject3D, String surfaceType){
         PGgeometry footprint = new PGgeometry();
         if(surfaceType.equals("footprint")){
             this.objectClassid = 35;
@@ -193,27 +195,31 @@ public class GeoObject3D {
             this.objectClassid = 0;
         }
         
-
         try {
-            if (this.srcConn == null) {
+            if (this.pool == null){
+                this.pool = new SqlConnectionPool(this.config);
+            }
+            if (this.srcConn == null) {               
                 this.srcConn = this.pool.get3DConnection();
             }
-            
-            String sql = "SELECT public.ST_MakePolygon(public.ST_ExteriorRing(public.ST_Union(geometry))) as footprint " +
-            "FROM surface_geometry WHERE root_id  IN (SELECT lod2_multi_surface_id FROM thematic_surface WHERE building_id = " 
-            + cityobjectid + " AND objectclass_id = " + this.objectClassid + ") AND geometry is not null"; 
-            Statement stmt = srcConn.createStatement();
-            ResultSet result = stmt.executeQuery(sql);
-            while (result.next()) {
-                footprint = (PGgeometry)result.getObject("footprint");                      
-            }                  
-            
-            return footprint;
-            
+            for(int i = 0; i < allObject3D.size(); i++){
+                cityobjectid = allObject3D.get(i).getId();
+                String sql = "SELECT public.ST_MakePolygon(public.ST_ExteriorRing(public.ST_Union(geometry))) as footprint " +
+                "FROM surface_geometry WHERE parent_id  IN (SELECT lod2_multi_surface_id FROM thematic_surface WHERE building_id = " 
+                + cityobjectid + " AND objectclass_id = " + this.objectClassid + ") AND geometry is not null"; 
+                Statement stmt = srcConn.createStatement();
+                ResultSet result = stmt.executeQuery(sql);
+                while (result.next()) {
+                    footprint = (PGgeometry)result.getObject("footprint");                      
+                }  
+                updatePrint(cityobjectid, footprint, surfaceType);
+            }
+                   
         }catch (SQLException e) {
             LOGGER.fatal("Error connecting to source database: " + e);
             throw new JPSRuntimeException("Error connecting to source database: " + e);
         }
+  
     }
 
     public void identifySurface (String surfaceType){
@@ -230,7 +236,7 @@ public class GeoObject3D {
                 srcConn = this.pool.get3DConnection();
             }
             if(this.objectClassid == 35){
-                String sql = "SELECT sg.id as surfaceid, sg.root_id as rootid, sg.cityobject_id as cityobjid, b.id as buildingid FROM surface_geometry sg "+
+                String sql = "SELECT sg.id as surfaceid, sg.root_id as rootid, sg.parent_id as parentid, sg.cityobject_id as cityobjid, b.id as buildingid FROM surface_geometry sg "+
                 "JOIN building b ON b.lod3_multi_surface_id = sg.parent_id "+
                 "WHERE sg.geometry IS NOT NULL AND public.ST_3DArea(public.ST_MakeValid(sg.geometry)) != 0 "+
                 "AND public.ST_Orientation(sg.geometry) = 1 " +
@@ -240,15 +246,17 @@ public class GeoObject3D {
                 Statement stmt = srcConn.createStatement();
                 ResultSet result = stmt.executeQuery(sql);
                 while (result.next()) {
-                    Integer[] groundSurface = new Integer[3];
+                    Integer[] groundSurface = new Integer[4];
                     List<Integer[]> groundList = new ArrayList<>();
                     int buildingId = result.getInt("buildingid");
                     int surfaceId = result.getInt("surfaceid");
+                    int parentid = result.getInt("parentid");
                     int rootid = result.getInt("rootid");
                     int cityobjid = result.getInt("cityobjid");
                     groundSurface[0] = surfaceId;
-                    groundSurface[1] = rootid;
-                    groundSurface[2] = cityobjid;
+                    groundSurface[1] = parentid;
+                    groundSurface[2] = rootid;
+                    groundSurface[3] = cityobjid;
 
                     if (groundMap.containsKey(buildingId)) {
                         groundList = groundMap.get(buildingId);
@@ -269,11 +277,11 @@ public class GeoObject3D {
     }
 
     public void updateSurface(Map<Integer, List<Integer[]>> groundMap) throws SQLException{
-        String queryCityObj;
         String upSql;
         String insertSql;
         int buildingid = 0;
         int surfaceid = 0;
+        int parentid = 0;
         int rootid = 0;
         int cityobjid = 0;
         
@@ -287,9 +295,9 @@ public class GeoObject3D {
                 // 1 building has only 1 ground surface cityobject and 1 ground surface thematic surface
                 // 1. new cityobject of ground surface 
                 // 2. new surface geometry of root ground surface, no geometry 
-                // 3. new thematic surface link to new rootid 
+                // 3. new thematic surface link to new parentid 
                 // 4. update all ground surface with new rootid and cityobjectid
-
+                rootid = entry.getValue().get(0)[2];
                 insertSql = "INSERT INTO cityobject (objectclass_id) VALUES (?);";
                 pstmt = srcConn.prepareStatement(insertSql, new String[] {"id"});
                 pstmt.setInt(1, this.objectClassid);
@@ -299,31 +307,32 @@ public class GeoObject3D {
                     cityobjid = rs.getInt(1);
                 }  
 
-                insertSql = "INSERT INTO surface_geometry (cityobject_id) VALUES (?);";
+                insertSql = "INSERT INTO surface_geometry (root_id, cityobject_id) VALUES (?,?);";
                 pstmt = srcConn.prepareStatement(insertSql, new String[] {"id"});
-                pstmt.setInt(1, cityobjid);
+                pstmt.setInt(1, rootid);
+                pstmt.setInt(2, cityobjid);
                 pstmt.executeUpdate();
                 rs =  pstmt.getGeneratedKeys();
                 if(rs.next()){
-                    rootid = rs.getInt(1);
+                    parentid = rs.getInt(1);
                 }
-                upSql = "UPDATE surface_geometry SET root_id = " + rootid + " WHERE id = " + rootid + " AND cityobject_id = " + cityobjid + ";";  
-                pstmt = srcConn.prepareStatement(upSql); 
-                pstmt.executeUpdate();
+                // upSql = "UPDATE surface_geometry SET root_id = " + rootid + " WHERE id = " + rootid + " AND cityobject_id = " + cityobjid + ";";  
+                // pstmt = srcConn.prepareStatement(upSql); 
+                // pstmt.executeUpdate();
 
                 insertSql = "INSERT INTO thematic_surface (id,objectclass_id, building_id, lod2_multi_surface_id) VALUES (?,?,?,?);";
                 pstmt = srcConn.prepareStatement(insertSql);
                 pstmt.setInt(1, cityobjid);
                 pstmt.setInt(2, this.objectClassid);
                 pstmt.setInt(3, buildingid);
-                pstmt.setInt(4, rootid);
+                pstmt.setInt(4, parentid);
                 pstmt.executeUpdate();
 
                 List<Integer[]> groundList = entry.getValue();
                 for (int i = 0; i< groundList.size(); i++) {
                     surfaceid = groundList.get(i)[0];
 
-                    upSql = "UPDATE surface_geometry SET cityobject_id = " + cityobjid + ", root_id= " + rootid + " WHERE id = " + surfaceid + ";";  
+                    upSql = "UPDATE surface_geometry SET cityobject_id = " + cityobjid + ", parent_id= " + parentid + " WHERE id = " + surfaceid + ";";  
                     pstmt = srcConn.prepareStatement(upSql); 
                     pstmt.executeUpdate();
 
@@ -355,10 +364,11 @@ public class GeoObject3D {
         
         int pSurfaceid = 0;
         int surfaceid = 0;
-        if(this.pool == null){
-            this.pool = new SqlConnectionPool(this.config);
-        }
+       
         try {
+             if(this.pool == null){
+                this.pool = new SqlConnectionPool(this.config);
+            }
             if (this.srcConn == null) {
                 this.srcConn = this.pool.get3DConnection();
             }
@@ -390,8 +400,6 @@ public class GeoObject3D {
                 upStmt.executeUpdate(upSql);
                     
             }
-            stmt.close();
-            srcConn.close();
                       
         } catch (SQLException e) {
             LOGGER.fatal("Error connecting to source database: " + e);

@@ -20,15 +20,17 @@ public class GetHeight {
     private SqlConnectionPool pool;
     List<GeoObject3D> allObject3D = new ArrayList<>();
     
-    protected void preCalculation(String[] config) throws SQLException {
+    protected void preCalculation(String[] config, String thematicParams) throws SQLException {
 
         GeoObject3D object3D = new GeoObject3D();
         this.config = config;
-        this.allObject3D = object3D.getObject3D(config);   
-        calculateHeight(this.allObject3D);
+        object3D.setConfig(config);
+        object3D.setSqlConnectionPool();
+        this.allObject3D = object3D.getObject3D();   
+        calculateHeight(this.allObject3D, thematicParams);
     }
 
-    private void calculateHeight(List<GeoObject3D> allObject3D){
+    private void calculateHeight(List<GeoObject3D> allObject3D, String thematicParams){
         this.pool = new SqlConnectionPool(config);
         try (Connection srcConn = this.pool.get3DConnection()) {
             if (!srcConn.isValid(60)) {
@@ -41,20 +43,24 @@ public class GetHeight {
                         int objectid = object3D.getId();
                         double minZ = 0.0;
                         double maxZ = 0.0;
-                        // String sql = "SELECT public.ST_MaxDistance(( " 
-                        //     + "SELECT geometry FROM surface_geometry WHERE id IN ( "
-                        //     + "SELECT lod0_roofprint_id FROM building WHERE id = " + objectid + " AND lod0_roofprint_id is not null)), "
-                        //     + "(SELECT geometry FROM surface_geometry WHERE id IN "
-                        //     + "(SELECT lod0_footprint_id FROM building WHERE id = " + objectid + " AND lod0_footprint_id is not null))) As height";
+                        String maxZsql = null;
                         String minZsql = "SELECT public.ST_Zmin(geometry) FROM surface_geometry WHERE id IN (SELECT lod0_footprint_id FROM building WHERE id = " + objectid + " AND lod0_footprint_id is not null)";
-                        String maxZsql = "SELECT public.ST_Zmax(geometry) FROM surface_geometry WHERE id IN (SELECT lod0_roofprint_id FROM building WHERE id = " + objectid + " AND lod0_roofprint_id is not null)";
+                        if(thematicParams.equals("true")){
+                            maxZsql = "SELECT MAX(public.ST_Zmax(sg.geometry)) as maxZ FROM surface_geometry sg " + 
+                                            "JOIN thematic_surface ts ON ts.lod2_multi_surface_id = sg.parent_id " +
+                                            "JOIN building b ON b.id = ts.building_id WHERE b.id =" + objectid;
+                        }else{
+                            maxZsql = "SELECT MAX(public.ST_Zmax(sg.geometry)) as maxZ FROM surface_geometry sg " + 
+                                            "JOIN building b ON b.lod3_multi_surface_id = sg.root_id AND b.id =" + objectid;
+                        }
+                        
                         ResultSet resultMin = stmt.executeQuery(minZsql);
                         if (resultMin.next()){
                             minZ = resultMin.getDouble("st_zmin");
                         }
                         ResultSet resultMax = stmt.executeQuery(maxZsql);
                         if (resultMax.next()) {
-                             maxZ = resultMax.getDouble("st_zmax");                                                  
+                             maxZ = resultMax.getDouble("maxZ");                                                  
                         }
                         double height = maxZ - minZ;
                         if(height > 0){

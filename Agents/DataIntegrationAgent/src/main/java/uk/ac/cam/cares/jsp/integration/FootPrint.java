@@ -28,7 +28,8 @@ public class FootPrint {
     protected void proFootPrint(String[] config, String thematicParams, String surfaceType) throws SQLException {
 
         GeoObject3D object3D = new GeoObject3D();
-        this.allObject3D = object3D.getObject3D(config);   
+        object3D.setConfig(config);
+        this.allObject3D = object3D.getObject3D();   
         this.surfaceType = surfaceType;     
         if(thematicParams.equals("true")){
             this.thematic = true;
@@ -36,15 +37,19 @@ public class FootPrint {
             this.thematic = false;
             object3D.identifySurface(this.surfaceType);
         }
-        for(int i = 0; i < allObject3D.size(); i++){
-            object3D = allObject3D.get(i);
-            int objectid = object3D.getId();
-            // int srid = object3D.getSrid(object3D.getGeometry3D());
-            PGgeometry print = new PGgeometry();
-            // List<PGgeometry> groundList = new ArrayList<>();               
-            print = object3D.extractPrint_thematic(objectid, this.surfaceType);
-            object3D.updatePrint(objectid, print, this.surfaceType);
-        }
+        
+        object3D.extractPrint_thematic(allObject3D, this.surfaceType);
+        // for(int i = 0; i < allObject3D.size(); i++){
+        //     object3D = allObject3D.get(i);
+        //     object3D.setConfig(config);
+        //     object3D.setSqlConnectionPool();
+        //     int objectid = object3D.getId();
+        //     // int srid = object3D.getSrid(object3D.getGeometry3D());
+        //     PGgeometry print = new PGgeometry();
+        //     // List<PGgeometry> groundList = new ArrayList<>();               
+        //     object3D.extractPrint_thematic(objectid, this.surfaceType);
+        //     // object3D.updatePrint(objectid, print, this.surfaceType);
+        // }
     }
     
     // private void classifySurfaces(List<GeoObject3D> allObject3D){
