@@ -2,7 +2,7 @@
 
 <head>
     <!-- ===== CUSTOMISABLE ===== -->
-    <title>DTVF v3.3.4</title>
+    <title>Dispersion of pollutants</title>
     <!-- ===== CUSTOMISABLE ===== -->
 
     <!-- JS -->
@@ -30,7 +30,7 @@
     <link href="https://cdn.jsdelivr.net/gh/hummingbird-dev/hummingbird-treeview@v3.0.4/hummingbird-treeview.min.css"
         rel="stylesheet">
     <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
-    <link href="https://kg.cmclinnovations.com/cdn/dtvf/3.3.4/dtvf.min.css" rel="stylesheet" />
+    <link href="https://kg.cmclinnovations.com/cdn/dtvf/3.7.0/dtvf.min.css" rel="stylesheet" />
 
     <!-- ===== CUSTOMISABLE ===== -->
     <!-- CSS files to provide styling specifically for this visualisation instance can go here. -->
@@ -180,23 +180,30 @@
     <!-- Code entry point -->
     <script>
         $("#sidePanelInner").tabs();
-
-        // ===== CUSTOMISABLE =====
-        // Enter Mapbox account name and API key here!
-        MapHandler.MAP_USER = "";
-        MapHandler.MAP_API = "";
-
-        // ===== CUSTOMISABLE =====
-
         // Create a new manager instance
         var manager = new Manager(MapProvider.MAPBOX);
         window.manager = manager;
 
-        // Only start the map after data definitions have been read.
-        var settingsPromise = manager.loadSettings();
-        settingsPromise.then(() => start());
-
         var dispersionHandler = new DispersionHandler("http://localhost:3838", manager);
+
+        // Only start the map after data definitions have been read.
+        manager.readCredentials().then(() => {
+            return dispersionHandler.setDispersions(dispersionHandler);
+        }).then(() => {
+            return new Promise(function (resolve) {
+                let settings = {};
+                settings.center = dispersionHandler.dispersions[dispersionHandler.selectedSimulation].centroid;
+                settings.zoom = 10.5;
+                settings.bearing = 0;
+                settings.pitch = 0;
+                Manager.SETTINGS = new Settings();
+                Manager.SETTINGS.settings = { "start": settings };
+                MapboxUtils.generateDefaultImagery();
+                if (Manager.SETTINGS.settings != null) {
+                    resolve();
+                }
+            });
+        }).then(() => start());
 
         /**
          * Starts the visualisation setup process.
@@ -238,14 +245,8 @@
 
                 // Load registered images and linked files
                 manager.loadImagesAndLinks().then(() => {
-
-                    // TODO: This SHOULD only kick in after all images have bee loaded and added to the map,
-                    // but I cannot get the nest Promises to wait for each other properly. As it doesn't
-                    // seem to be causing any issues, I'm leaving it as is for the time being. - Michael
-
-                    // Plot the default visible data
-                    dispersionHandler.initialise();
-                });
+                    return dispersionHandler.buildDropdown(dispersionHandler);
+                }).then(() => dispersionHandler.plotData());
             });
         }
 

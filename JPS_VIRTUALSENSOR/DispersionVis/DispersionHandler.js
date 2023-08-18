@@ -16,8 +16,8 @@ class DispersionHandler {
         return new Promise(function (resolve) {
             let setDispersionFunction = (function (dispersionsJson) {
                 dispersionHandler.dispersions = dispersionsJson;
+                dispersionHandler.selectedSimulation = Object.keys(dispersionHandler.dispersions)[0];
             });
-
             dispersionHandler.queryForDispersions(dispersionHandler, setDispersionFunction).then(() => resolve());
         });
     }
@@ -44,10 +44,8 @@ class DispersionHandler {
     buildDropdown(dispersionHandler) {
         return new Promise(function (resolve) {
             dispersionHandler.buildSimulationDropdown(dispersionHandler.dispersions);
-            if (dispersionHandler.selectedSimulation != null) {
-                dispersionHandler.buildPollutantDropdown(dispersionHandler.dispersions[dispersionHandler.selectedSimulation]);
-                dispersionHandler.buildTimestepDropdown(dispersionHandler.dispersions[dispersionHandler.selectedSimulation]);
-            }
+            dispersionHandler.buildPollutantDropdown(dispersionHandler.dispersions[dispersionHandler.selectedSimulation]);
+            dispersionHandler.buildTimestepDropdown(dispersionHandler.dispersions[dispersionHandler.selectedSimulation]);
 
             if ((document.getElementById("Simulation") != null) && (document.getElementById("Pollutant") != null) && (document.getElementById("Timestep") != null)) {
                 resolve();
@@ -188,7 +186,9 @@ class DispersionHandler {
             MapHandler.MAP.jumpTo({ center: this.dispersions[this.selectedSimulation].centroid });
         }).bind(this);
 
-        this.manager.loadDefinitionsFromURL(dataJsonUrl).then(plotFunction());
+        this.manager.loadDefinitionsFromURL(dataJsonUrl).then(() =>
+            plotFunction()
+        );
         this.addColourBar();
     }
 
