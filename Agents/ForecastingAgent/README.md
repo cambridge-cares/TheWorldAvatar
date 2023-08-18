@@ -4,7 +4,7 @@ This `Forecasting Agent` can be used to predict instantiated time series from Th
 
 As of version `2.0.0` the agent is implemented using the [Derived Information Framework]'s (DIF) `DerivationWithTimeSeries` concept to ensure proper data provenance. The required input instances to derive a forecast are described in the [required derivation markup](#13-required-derivation-markup) section below. The agent is designed to be deployed as a Docker container and can be deployed either as standalone version or as part of a larger Docker stack.
 
-The Python library [Darts] is used to create the forecasts (and similarly to define, train, and store forecasting models). It contains a variety of models, from classics such as ARIMA over Facebook's Prophet to deep neural networks and transformers.
+The Python library [Darts] is used to create the forecasts (and similarly to define, train, and store forecasting models). It contains a variety of models, from classics such as ARIMA over [Facebook Prophet] to deep neural networks and transformers.
 
 
 &nbsp;
@@ -12,7 +12,7 @@ The Python library [Darts] is used to create the forecasts (and similarly to def
 
 This section specifies the minimum requirements to build and deploy the Docker image. 
 
-## 1.1 Agent settings
+## 1.1 Agent Settings
 
 The dockerised agent can be deployed as "standalone" version (i.e., outside a larger Docker stack) or deployed to an (existing) stack. Several key environment variables need to be set in the
 - [docker compose file] for "standalone" deployment
@@ -69,7 +69,7 @@ Please note:
 
 If you intend to use a forecasting model pre-trained with [Darts]: Please be aware of potential issues when loading the model, in case of version clashes between the current environment and the one used for training.
 
-## 1.3 Required derivation markup
+## 1.3 Required Derivation Markup
 
 Before any forecast can be created (and instantiated), all required inputs need to be properly instantiated. This includes:
 - 1 `om:Quantity` or `owl:Thing`: the instance associated with the time series to be forecasted. This instance must pertain to a type that is either a direct or nested subclass of `om:Quantity` (priority 1) or `owl:Thing` (priority 2).
@@ -118,6 +118,14 @@ The following snippet provides an overview of the expected instantiation structu
                    ts:hasTimeSeries <IRI_of_time_series> . 
 <IRI_of_forecast_frequency> ts:resampleData <xsd:boolean> .
 ```
+
+To use the default forecasting model (i.e., [Prophet] without covariates), the following triples are required:
+```xml
+<IRI_of_forecasting_model> rdf:type ts:ForecastingModel ; 
+                           rdfs:label "Prophet" ;
+                           ts:scaleData "False"^^xsd:boolean .
+```
+
 Used namespaces:
 ```xml
 om    : http://www.ontology-of-units-of-measure.org/resource/om-2/
@@ -135,11 +143,9 @@ deriv : https://www.theworldavatar.com/kg/ontoderivation/
 
 The agent is implemented as [derivation agent] using `DerivationWithTimeSeries`. Please note: 1) derivations with time series are currently restricted to synchronous derivations, i.e., derivations which get computed immediately upon request and 2) derivations with time series do not return any specific output triples, as all updates to the time series are expected to be conducted within the agent logic. Initial derivation output triples will only be generated when creating new derivation using `createSyncDerivationForNewInfo`.
 
-The internal Forecasting Agent logic ensures that updated forecasts either completely replace the previously instantiated forecast (i.e., overwrite entire time series table and update input/output intervals in KG) if `OVERWRITE_FORECAST=true` or create a new forecast instance and connect it as output to the corresponding derivation if `OVERWRITE_FORECAST=false` (the outdated forecast instance will be disconnected from the derivation, but remains to exists in the KG).
+The internal Forecasting Agent logic ensures that updated forecasts either completely replace the previously instantiated forecast (i.e., overwrite entire time series table and update input/output intervals in KG) if `OVERWRITE_FORECAST=true` or create a new forecast instance (incl. all associated triples) and connect it as output to the corresponding derivation if `OVERWRITE_FORECAST=false` (the outdated forecast instance will be disconnected from the derivation, but remains to exists in the KG).
 
-Forecast models
-
-The following code snippet provides an overview of how to create new and update forecasts:
+The following code snippet provides an overview of how to create new and update existing forecast derivations:
 ```python
 # Create derivation client
 from pyderivationagent.kg_operations import PyDerivationClient
@@ -164,31 +170,26 @@ deriv_client.unifiedUpdateDerivation(derivation_iri)
 ```
 
 
-## 2.1 Forecasting logic
+## 2.1 Forecasting Logic
 
-Upon invocation, the agent first verifies the suitability of received inputs to derive a forecast. Afterwards, the agent loads a model configuration from the [mapping file]. This is either the `DEFAULT` one (which will use [Prophet]) or else must be specified with the `use_model_configuration` parameter in the HTTP request to use a pre-trained model other than Prophet. The [mapping File ] describes in detail what a model configuration `dict` consists of. 
+Upon invocation, the agent first verifies the suitability of received inputs to derive a forecast. If so, the agent queries all relevant inputs from the KG and creates an overarching configuration dictionary `cfg` describing the forecast to create. The `fc_model` node of this dictionary describes the target forecasting model: If the `name` entry equals `prophet` (irrespective of capitalisation), the default [Prophet] model will be used for forecasting. Otherwise, the agent will try to load a custom pre-trained model as specified in the [model mapping] file (for details see [usage of custom forecast models](#22-usage-of-custom-forecasting-models) below).
 
-Next the agent loads the time series (+ `covariates` if `load_covariates_func` is given in the loaded configuration) with the TSClient. 
+After creating the forecast configuration, the agent loads the time series data (including covariates if specified) using the [TimeSeriesClient]. Afterwards, it loads the pre-trained model or creates a new Prophet model (and fits it to the retireved time series) to predict the data. Subsequently, the forecast is created for the specified `time:Interval` (with both bounds being inclusive). If the forecasting model requires scaled data, both the time series and covariates (if applicable) are scaled based on their historical values during `time:Duration` prior to the forecast start date. Subsequently, the forecasted values are transformed back to their original scale.
 
-Then, it loads the model. This is either a pre-trained model specified in the model configuration with the model link `model_path_pth_link` and the checkpoint link `model_path_ckpt_link` or else a new Prophet model is fitted to predict the data. The forecast starts from the optional parameter `forecast start date` in the request or if not specifed the last available date is taken. The forecast lasts over the number of specified time steps (`horizon`).
-
-Finally the forecasted time series is instantiated. For that purpose a new `forecast iri` is created and attached to the `iri` specified in the request. Further metadata, e.g. which data and models are used, are included as well using the [OntoTimeSeries] ontology. 
+Lastly, the forecasted time series is instantiated/updated in the KG: For that purpose a new `Forecast IRI` is created and attached to the `om:Quantity` or `owl:Thing` instance which has been forecasted. Further metadata, e.g., which data and models are used, are included as well using the [OntoTimeSeries] and [OntoDerivation] ontology.
 
 The following UML diagram provides an overview of how the agent works:
-
 <p align="center">
     <img src="https://lucid.app/publicSegments/view/721f9fea-c153-45bb-8478-0178a457f55e/image.png" alt="drawing" width="500"/>
 </p>
 
 
-## 2.2 Custom forecasting models
+## 2.2 Usage of Custom Forecasting Models
 
-<!-- ## 2.5 Custom model configurations and new models
-Specify your custom configurations following the example of the `TFT_HEAT_SUPPLY` model configuration in the [mapping file]. 
+To use pre-trained/custom models, both a model loading and covariate loading funtion need to be specified in the [model mapping] file, and referenced in the `FC_MODELS` dictionary. Specify any custom loading functions following the example of the `tft_pirmasens_heat_demand` model configuration.
 
-If you need covariates, define a function which load them (similarly to `get_covs_heat_supply`) for the `load_covariates_func` parameter in your configuration. To use your own pre-trained model with [Darts], expand the [agent module] where `load_pretrained_model` is called just like the model for `TFT_HEAT_SUPPLY` is loaded. You can use the function `load_pretrained_model` as well if thats suits your model, just specify your model class and set the `input_length` as for `TFT_HEAT_SUPPLY`. -->
 
-## 2.3 Forecast error evaluation
+## 2.3 Forecast Error Evaluation
 
 The agent also provides an HTTP endpoint to assess multiple error metrics of created forecasts (i.e., errors between any two time series). It is triggered by receiving an HTTP `POST` request with a JSON body. An example request is provided in [HTTP forecast error request]: 
 
@@ -205,7 +206,7 @@ The agent also provides an HTTP endpoint to assess multiple error metrics of cre
 
 ## 3.1 Building the Agent
 
-To build and publish the agent Docker image please use the following commands. Please note that both commands are bundled in the  `publish_docker_image.sh` convenience script.
+To build and publish the agent Docker image (e.g., after implementing new model/covariate loading functions) please use the following commands. Please note that both commands are bundled in the  `publish_docker_image.sh` convenience script.
 
 ```bash
 # Building the (production) image
@@ -248,7 +249,7 @@ If you want to spin up this agent as part of a stack, do the following:
 
 ## 3.3 Notes on Debugging
 
-To debug the agent within the stack, follow these steps (similar)
+To debug the agent within the stack, follow these steps (a similar appraoch should work for the standalone version)
 
 1) Overwrite command specified in Dockerfile by providing `tail -f /dev/null` `Command` in stack-manager config file (this keeps the container alive indefinitely while doing nothing). An amended `forecasting-agent_debug` config is provided in the [stack-manager-input-config] folder.
 2) Start stack-manager as usual
@@ -258,7 +259,7 @@ To debug the agent within the stack, follow these steps (similar)
 
 
 &nbsp;
-# 4. Dockerised agent tests
+# 4. Dockerised Agent Tests
 
 Both dockerised unit and integration tests are provided. Tests check for expected behaviour of the forecasting agents with and without overwriting existing forecasts. Hence, 4 containers will be created when running the tests:
 - Forecasting Agent, which overwrites existing forecasts when creating new ones
@@ -292,23 +293,22 @@ Magnus Mueller (mm2692@cam.ac.uk), November 2022
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
 [CMCL Docker registry wiki page]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Using-Docker-images
 [py4jps]: https://pypi.org/project/py4jps/#description
-[JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
-[OntoTimeSeries]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontotimeseries
 [TimeSeriesClient]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries
 [Darts]: https://unit8co.github.io/darts/index.html
-[Prophet]: https://github.com/facebook/prophet
+[Prophet]: https://unit8co.github.io/darts/generated_api/darts.models.forecasting.prophet_model.html
+[Facebook Prophet]: https://github.com/facebook/prophet
 [Github container registry]: https://ghcr.io
 [personal access token]: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
 [Derived Information Framework]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/derivation
 [Stack manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
 [derivation agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_derivation_agent
 
+[OntoTimeSeries]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontotimeseries
+[OntoDerivation]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoderivation
+
 <!-- files -->
 [HTTP forecast error request]: ./resources/HTTP_evaluate_errors.http
-[agent module]: ./forecasting/forecasting_agent/agent.py
-[mapping file]: ./forecasting/datamodel/data_mapping.py
-[docker-compose.debug.yml]: ./docker-compose.debug.yml
-[docker-compose.test.yml]: ./docker-compose.test.yml
+[model mapping]: ./forecastingagent/fcmodels/model_mapping.py
 [docker compose file]: ./docker-compose.yml
 [stack manager input config file]: ./stack-manager-input-config/forecasting-agent.json
 [stack-manager-input-config]: ./stack-manager-input-config

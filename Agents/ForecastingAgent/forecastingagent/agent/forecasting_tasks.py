@@ -76,7 +76,7 @@ def forecast(config, db_url, time_format, kgClient=None, tsClient=None,
     logger.info(f'Loaded time bounds for forecast: {cfg["loaded_data_bounds"]}')
     
     # Load time series (and covariate) data
-    series, covariates = load_ts_data(cfg, kgClient, tsClient)
+    series, covariates = load_ts_data(cfg, tsClient)
 
     # Verify that forecast start time is in series ...
     if cfg['fc_start_timestamp'] in series.time_index:
