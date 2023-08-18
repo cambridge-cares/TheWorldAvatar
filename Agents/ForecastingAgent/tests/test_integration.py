@@ -94,9 +94,9 @@ def test_example_data_instantiation(initialise_clients):
     assert cf.get_number_of_rdb_tables(rdb_url) == 0
 
 
-@pytest.mark.skip(reason="")
+#@pytest.mark.skip(reason="")
 @pytest.mark.parametrize(
-    "derivation_input_set, dataIRI, hist_data_length, with_unit, overwrite_forecast, ts_times, ts_values, case",
+    "derivation_input_set, dataIRI, input_chunk_length, with_unit, overwrite_forecast, ts_times, ts_values, case",
     [
         (cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, cf.DURATION_1, True, True, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_1),
         (cf.DERIVATION_INPUTS_1, cf.ASSOCIATED_DATAIRI_1, cf.DURATION_1, True, False, cf.TIMES, cf.VALUES_1, cf.TEST_CASE_2),
@@ -109,14 +109,15 @@ def test_example_data_instantiation(initialise_clients):
     ],
 )
 def test_create_forecast(
-    initialise_clients, create_example_agent, derivation_input_set, dataIRI, hist_data_length,
+    initialise_clients, create_example_agent, derivation_input_set, dataIRI, input_chunk_length,
     with_unit, overwrite_forecast, ts_times, ts_values, case
 ):
     """
     Test if Forecasting Agent performs derivation update as expected (using 
     default Prophet model without covariates)
         - forecasts are created using Prophet
-        - historical data length: 336/8760h (HIST_DURATION_1, DURATION_1)
+        - historical data length (same as input_chunk_length for non-neural method):
+            336/8760h (HIST_DURATION_1, DURATION_1 or HIST_DURATION_2, DURATION_2)
         - initial interval: OptimisationInterval_1
                             Jan 01 2020 00:00:00 UTC - Jan 02 2020 00:00:00 UTC
         - updated interval: OptimisationInterval_2
@@ -201,7 +202,7 @@ def test_create_forecast(
     fc_intervals = sparql_client.get_forecast_details(fcIRI)
     inp_interval = sparql_client.get_interval_details(fc_intervals['input_interval_iri'])
     outp_interval = sparql_client.get_interval_details(fc_intervals['output_interval_iri'])
-    assert inp_interval['start_unix'] == cf.T_1 - hist_data_length*3600
+    assert inp_interval['start_unix'] == cf.T_1 - input_chunk_length*3600
     assert inp_interval['end_unix'] == cf.T_1 - 3600
     assert outp_interval['start_unix'] == cf.T_1
     assert outp_interval['end_unix'] == cf.T_2
@@ -235,7 +236,7 @@ def test_create_forecast(
     fc_intervals = sparql_client.get_forecast_details(fcIRI)
     inp_interval = sparql_client.get_interval_details(fc_intervals['input_interval_iri'])
     outp_interval = sparql_client.get_interval_details(fc_intervals['output_interval_iri'])
-    assert inp_interval['start_unix'] == cf.T_2 - hist_data_length*3600
+    assert inp_interval['start_unix'] == cf.T_2 - input_chunk_length*3600
     assert inp_interval['end_unix'] == cf.T_2 - 3600
     assert outp_interval['start_unix'] == cf.T_2
     assert outp_interval['end_unix'] == cf.T_3
@@ -250,7 +251,7 @@ def test_create_forecast(
     print("All check passed.")
 
 
-@pytest.mark.skip(reason="")
+#@pytest.mark.skip(reason="")
 @pytest.mark.parametrize(
     "http_request, fail, equal, expected_result",
     [
@@ -317,7 +318,7 @@ def test_evaluate_forecast(
         assert expected_result(response['max_error'], 0)
 
 
-@pytest.mark.skip(reason="Test will fail if the model is not available at the given link")        
+@pytest.mark.skip(reason="Test will fail if the model is not available at the given link")
 def test_load_pretrained_model(initialise_clients):
     """
     Test the function `load_pretrained_model` to load a pretrained model from 
@@ -349,21 +350,29 @@ def test_load_pretrained_model(initialise_clients):
     assert model.model.output_chunk_length == 24
 
 
-#@pytest.mark.skip(reason="Test will fail if the model is not available at the given link")        
+@pytest.mark.skip(reason="Test will fail if the model is not available at the given link")
 @pytest.mark.parametrize(
-    "derivation_input_set, heatDemand, hist_data_length, with_unit, overwrite_forecast, ts_times, covariates, case",
+    "derivation_input_set, heatDemand, input_chunk_length, with_unit, overwrite_forecast, ts_times, covariates, case",
     [
         (cf.DERIVATION_INPUTS_5, cf.ASSOCIATED_DATAIRI_1, cf.DURATION_3, True, True, cf.TIMES, cf.COVARIATES_1, cf.TEST_CASE_9),
+        (cf.DERIVATION_INPUTS_5, cf.ASSOCIATED_DATAIRI_1, cf.DURATION_3, True, False, cf.TIMES, cf.COVARIATES_1, cf.TEST_CASE_10),
+        (cf.DERIVATION_INPUTS_6, cf.IRI_TO_FORECAST_2, cf.DURATION_3, True, True, cf.TIMES, cf.COVARIATES_1, cf.TEST_CASE_11),
+        (cf.DERIVATION_INPUTS_6, cf.IRI_TO_FORECAST_2, cf.DURATION_3, True, False, cf.TIMES, cf.COVARIATES_1, cf.TEST_CASE_12)
     ],
 )
 def test_create_tft_forecast(
-    initialise_clients, create_example_agent, derivation_input_set, heatDemand, hist_data_length,
+    initialise_clients, create_example_agent, derivation_input_set, heatDemand, input_chunk_length,
     with_unit, overwrite_forecast, ts_times, covariates, case
 ):
     """
     Test if forecasting agent performs derivation update as expected for 
     pre-trained temporal fusion transformer model 
     (as required for district heating optimisation use case)
+
+    NOTE: historical_data_length (marked up Duration instance) and input_chunk_length
+          are not equivalent for pre-trained neural method:
+          - historical_data_length: used to scale input data (and covariates)
+          - input_chunk_length: length of historical data used to generate (next) forecast
     """
 
     # Get forecast agent IRI for current test case
@@ -374,13 +383,26 @@ def test_create_tft_forecast(
         agent_iri = cf.AGENT_wo_OVERWRITING_IRI
         agent_url = cf.AGENT_wo_OVERWRITING_URL
 
-    # Generate test time series data (incl. required covariates)    
-    test_data = {
-        heatDemand: cf.generate_bounded_random_walk(5, len(ts_times), 0, 0.5, 0, 20),
-        # air temprature, public holiday (one hot encoded)
-        covariates[0]: cf.generate_bounded_random_walk(10, len(ts_times), 0, 1, -10, 30),
-        covariates[1]: [float(x) for x in np.random.randint(0, 2, len(ts_times))]
-    }
+    # Generate test time series data (incl. required covariates)
+    try:
+        # Prio1: Try extracting meaningful test data from actual historical data
+        df = pd.read_csv(cf.DH_DATA)
+        df.set_index(pd.to_datetime(df['Date']).dt.strftime(TIME_FORMAT), inplace=True)
+        df2 = df.loc[ts_times]
+        test_data = {
+            heatDemand: df2['Waermeeinspeisung (MW)'].values.astype(float),
+            # air temprature, public holiday (one hot encoded)
+            covariates[0]: df2['Aussentemperatur (degC)'].values.astype(float),
+            covariates[1]: (df2['Holiday'] | df2['Vacation']).values.astype(float)
+        }
+    except:
+        # Prio2: Create random test data in case download of actual data fails
+        test_data = {
+            heatDemand: cf.generate_bounded_random_walk(5, len(ts_times), 0, 0.5, 0, 20),
+            # air temprature, public holiday (one hot encoded)
+            covariates[0]: cf.generate_bounded_random_walk(10, len(ts_times), 0, 1, -10, 30),
+            covariates[1]: [float(x) for x in np.random.randint(0, 2, len(ts_times))]
+        }
 
     # Get required clients from fixture
     sparql_client, ts_client, derivation_client, rdb_url = initialise_clients
@@ -448,7 +470,7 @@ def test_create_tft_forecast(
     fc_intervals = sparql_client.get_forecast_details(fcIRI)
     inp_interval = sparql_client.get_interval_details(fc_intervals['input_interval_iri'])
     outp_interval = sparql_client.get_interval_details(fc_intervals['output_interval_iri'])
-    assert inp_interval['start_unix'] == cf.T_1 - hist_data_length*3600
+    assert inp_interval['start_unix'] == cf.T_1 - input_chunk_length*3600
     assert inp_interval['end_unix'] == cf.T_1 - 3600
     assert outp_interval['start_unix'] == cf.T_1
     assert outp_interval['end_unix'] == cf.T_2
@@ -482,7 +504,7 @@ def test_create_tft_forecast(
     fc_intervals = sparql_client.get_forecast_details(fcIRI)
     inp_interval = sparql_client.get_interval_details(fc_intervals['input_interval_iri'])
     outp_interval = sparql_client.get_interval_details(fc_intervals['output_interval_iri'])
-    assert inp_interval['start_unix'] == cf.T_2 - hist_data_length*3600
+    assert inp_interval['start_unix'] == cf.T_2 - input_chunk_length*3600
     assert inp_interval['end_unix'] == cf.T_2 - 3600
     assert outp_interval['start_unix'] == cf.T_2
     assert outp_interval['end_unix'] == cf.T_3

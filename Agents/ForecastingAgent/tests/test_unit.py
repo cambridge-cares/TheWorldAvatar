@@ -15,8 +15,8 @@ from dateutil.parser import isoparse
 
 # Import modules under test
 from forecastingagent.kgutils.utils import convert_time_to_timestamp
-from forecastingagent.agent.forecasting_tasks import get_ts_lower_upper_bound, \
-                                                     check_if_enough_covs_exist
+from forecastingagent.utils.ts_utils import get_ts_lower_upper_bound, \
+                                            check_if_enough_covs_exist
 
 from . import conftest as cf
 

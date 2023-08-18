@@ -125,12 +125,13 @@ def create_model_dict(model:dict):
         model {dict} -- forecast model details as retrieved from the KG
     """
 
-    # Initialise config with forecast model name
+    # Initialise config with forecast model name and IRI
     model_dict = {
         'name': model['label'].lower(),
-        'model_iri': model['fcmodel_iri'],
-        'covariates': model.get('covariates')
+        'model_iri': model['fcmodel_iri']
     }
+    if model.get('covariates'):
+        model_dict['covariates'] = model['covariates']
 
     # Prophet is the default model
     if model_dict['name'] == 'prophet':

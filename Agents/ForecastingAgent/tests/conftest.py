@@ -97,6 +97,8 @@ VALUES_2 = VALUES_1.copy()
 VALUES_2[500] = VALUES_2[500]*2     # slightly distorted copy
 # Constant value time series
 VALUES_3 = [1 for i in range(1, len(times)+1)]
+# Link to historical district heating data (to allow for more meaningful testing)
+DH_DATA = 'https://www.dropbox.com/s/qqosbkg38fv6s93/dh_timeseries_data_2020.csv?dl=1'
 
 
 # ----------------------------------------------------------------------------------
@@ -119,14 +121,15 @@ AIRTEMPERATURE_1 = TEST_TRIPLES_BASE_IRI + 'AirTemperature_1'
 ISHOLIDAY_1 = TEST_TRIPLES_BASE_IRI + 'IsHoliday_1'
 
 # Define derivation input sets to test
-TEST_CASE_1 = 'OM_Quantity_with_Measure_with_Unit__overwriting'
-TEST_CASE_2 = 'OM_Quantity_with_Measure_with_Unit__no_overwriting'
-TEST_CASE_3 = 'OM_Quantity_without_Measure_with_Unit__overwriting'
-TEST_CASE_4 = 'OM_Quantity_without_Measure_with_Unit__no_overwriting'
-TEST_CASE_5 = 'OM_Quantity_without_Measure_without_Unit__overwriting'
-TEST_CASE_6 = 'OM_Quantity_without_Measure_without_Unit__no_overwriting'
-TEST_CASE_7 = 'OWL_Thing_without_Measure_without_Unit__overwriting'
-TEST_CASE_8 = 'OWL_Thing_without_Measure_without_Unit__no_overwriting'
+# Prophet test cases
+TEST_CASE_1 = 'Propeht_OM_Quantity_with_Measure_with_Unit__overwriting'
+TEST_CASE_2 = 'Propeht_OM_Quantity_with_Measure_with_Unit__no_overwriting'
+TEST_CASE_3 = 'Propeht_OM_Quantity_without_Measure_with_Unit__overwriting'
+TEST_CASE_4 = 'Propeht_OM_Quantity_without_Measure_with_Unit__no_overwriting'
+TEST_CASE_5 = 'Propeht_OM_Quantity_without_Measure_without_Unit__overwriting'
+TEST_CASE_6 = 'Propeht_OM_Quantity_without_Measure_without_Unit__no_overwriting'
+TEST_CASE_7 = 'Propeht_OWL_Thing_without_Measure_without_Unit__overwriting'
+TEST_CASE_8 = 'Propeht_OWL_Thing_without_Measure_without_Unit__no_overwriting'
 DERIVATION_INPUTS_1 = [IRI_TO_FORECAST_1, FORECASTING_MODEL_1, 
                        FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_1]
 DERIVATION_INPUTS_2 = [IRI_TO_FORECAST_2, FORECASTING_MODEL_1,
@@ -135,9 +138,15 @@ DERIVATION_INPUTS_3 = [IRI_TO_FORECAST_1, FORECASTING_MODEL_1,
                        FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_2]
 DERIVATION_INPUTS_4 = [IRI_TO_FORECAST_3, FORECASTING_MODEL_1,
                        FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_2]
-TEST_CASE_9 = 'TFT_Model'
+# TFT test cases (require long data history/duration to meaningfully scale data)
+TEST_CASE_9 = 'TFT_OM_Quantity_with_Measure_with_Unit__overwriting'
+TEST_CASE_10 = 'TFT_OM_Quantity_with_Measure_with_Unit__no_overwriting'
+TEST_CASE_11 = 'TFT_OM_Quantity_without_Measure_with_Unit__overwriting'
+TEST_CASE_12 = 'TFT_OM_Quantity_without_Measure_with_Unit__no_overwriting'
 DERIVATION_INPUTS_5 = [IRI_TO_FORECAST_1, FORECASTING_MODEL_2,
-                       FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_1]
+                       FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_2]
+DERIVATION_INPUTS_6 = [IRI_TO_FORECAST_2, FORECASTING_MODEL_2,
+                       FC_INTERVAL_1, FC_FREQUENCY_1, HIST_DURATION_2]
 COVARIATES_1 = [AIRTEMPERATURE_1, ISHOLIDAY_1]
 
 # Define erroneous derivation input sets as retrieved by derivation agent
