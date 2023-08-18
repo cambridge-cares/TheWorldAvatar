@@ -9,7 +9,7 @@ DispersionLayer,Class,,,,,,Name of the dispersion matrix layer in GeoServer stor
 DispersionRaster,Class,,,,,,"Name of raster file, stored as time series",https://www.theworldavatar.com/kg/ontodispersion/,
 DispersionColourBar,Class,,,,,,"File server URL to download colour bar, stored as time series",https://www.theworldavatar.com/kg/ontodispersion/,
 ShipsLayer,Class,,,,,,Name of the ships layer in GeoServer stored as time series,https://www.theworldavatar.com/kg/ontodispersion/,
-StaticPointSourceLayer,Class,,,,,,"Name of the layer in GeoServer, stored as a single value",https://www.theworldavatar.com/kg/ontodispersion/,
+StaticPointSourceLayer,Class,,,,,,"Name of the layer containing static point sources in GeoServer, stored as time series",https://www.theworldavatar.com/kg/ontodispersion/,
 Scope,Class,http://www.opengis.net/ont/geosparql#Feature,IS-A,,,,Geospatial extend defining the simulation box as rectangle,https://www.theworldavatar.com/kg/ontodispersion/,
 PointSource,Class,,,,,,A point source emitting emissions,https://www.theworldavatar.com/kg/ontodispersion/,
 DynamicPointSource,Class,PointSource,IS-A,,,,A moving point source,https://www.theworldavatar.com/kg/ontodispersion/,
@@ -56,4 +56,3 @@ hasDispersionLayer,Object Property,,,DispersionOutput,DispersionLayer,,,https://
 hasDispersionRaster,Object Property,,,DispersionOutput,DispersionRaster,,,https://www.theworldavatar.com/kg/ontodispersion/,
 hasDispersionColourBar,Object Property,,,DispersionOutput,DispersionColourBar,,,https://www.theworldavatar.com/kg/ontodispersion/,
 hasName,Data Property,,,OntoCityGMLNamespace,String,,To store the literal of the namespace,https://www.theworldavatar.com/kg/ontodispersion/,
-hasName,Data Property,,,StaticPointSourceLayer,String,,,https://www.theworldavatar.com/kg/ontodispersion/,
