@@ -61,7 +61,9 @@ def create_forecast_configuration(model:dict, ts_details:dict, ts_frequency:dict
             Only required for pre-trained models, i.e. models other than Prophet:
                 'model_path_ckpt_link': The link from where to load the darts checkpoint file of the model
                 'model_path_pth_link': The link from where to load the darts pth file of the model
-                'covariate_iris':TODO
+                'covariates': Dictionary of covariates to be used for forecasting, with
+                              instance IRIs as keys and rdf types as values:
+                              {covariate_iri: covariate_type}
         'frequency': The frequency of the time series data, as a datetime timedelta object 
                      (i.e. representing a duration of time)
         'fc_start_timestamp': The first time stamp to forecast (as pd.Timestamp)
@@ -125,7 +127,7 @@ def create_model_dict(model:dict):
         model {dict} -- forecast model details as retrieved from the KG
     """
 
-    # Initialise config with forecast model name and IRI
+    # Initialise config with forecast model name an IRI
     model_dict = {
         'name': model['label'].lower(),
         'model_iri': model['fcmodel_iri']

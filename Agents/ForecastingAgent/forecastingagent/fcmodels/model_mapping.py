@@ -4,8 +4,7 @@
 ################################################
 
 # The purpose of this module is to provide custom model and covariate loading
-# functions for pre-trained models 
-#
+# functions for pre-trained models:
 # Own/new loading functions shall be added below and included in the 'FC_MODELS'
 # mapping dictionary for their applicable forecasting models
 
@@ -68,7 +67,7 @@ def load_tft_pirmasens_heat_demand(cfg, series):
 
 
 #
-# SPECIFY CUSTOM COVARIATE LOADING FUNCTIONS
+# 2) SPECIFY CUSTOM COVARIATE LOADING FUNCTIONS
 # NOTE: Custom covariate loading functions are required, as different pre-trained
 #       models require 1) different sets of covariates
 #                      2) covariate order to match order during training
@@ -79,20 +78,18 @@ def load_tft_pirmasens_heat_demand(cfg, series):
 
 def load_pirmasens_heat_demand_covariates(covariates_dict, tsClient, lowerbound, upperbound):
     """
-    #TODO
-    The function which is used to load the covariates. If not provided, no covariates are loaded.
-        Be aware, that the returned covariates must be available for the whole 'horizon'. 
-        If the covariates are not long enough, Prophet is used, which does not require covariates.
-        The function must return parameters:
-        'covariates': A darts series object, which can be passed into model.predict()
-        
-        The function will receive the following parameters:
-        'kgClient': The kgClient
-        'tsClient': The tsClient
-        'lowerbound': The lower bound of the time series data (can be None)
-        'upperbound': The upper bound of the time series data (can be None)
-    
+    Load covariates as required for pre-trained temporal fusion transformer model
+    for Pirmasens' district heating heat demand
 
+    Arguments:
+        covariates_dict -- dictionary of relevant covariates, with covariate
+                           IRIs as keys and RDFTYPEs as values
+        tsClient -- tsClient onject
+        lowerbound -- lower bound of the time series data
+        upperbound -- upper bound of the time series data
+        
+    Returns:
+        darts.TimeSeries object with all covariates to consider
     """
 
     # Extract time series data for covariates based on their given dataIRIs

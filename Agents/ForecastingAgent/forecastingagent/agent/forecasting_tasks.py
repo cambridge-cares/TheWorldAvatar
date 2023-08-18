@@ -37,12 +37,14 @@ def forecast(config, db_url, time_format, kgClient=None, tsClient=None,
     Forecasts a time series using a pre-trained model or Prophet using darts.
 
     Arguments:
-        #TODO: update
-        kgClient {KGClient} - KG client to use
+        cfg {dict} - consolidated forecasting configuration dictionary as 
+                     created by 'create_forecast_configuration'
+        db_url {str} - URL to the RDB
         time_format {str} - time format to use to initialise the forecast TimeSeries
+        kgClient {KGClient} - KG client object to use
+        tsClient {TSClient} - TS client object to use
         query_endpoint {str} - endpoint to query the KG
         update_endpoint {str} - endpoint to update the KG
-        db_url {str} - URL to the RDB
         db_user {str} - username for the RDB
         db_password {str} - password for the RDB
     
@@ -121,9 +123,9 @@ def get_forecast(series, covariates, model, cfg):
     and returns a forecast.
 
     Arguments:
-        series: the time series data
-        covariates: darts series  of covariates
-        model: the model to use for forecasting
+        series: darts.TimeSeries object to forecast
+        covariates: darts.TimeSeries of covariates
+        model: the darts model object to use for forecasting
         cfg: a dictionary of forecast characteristics as created by
              'create_forecast_configuration'
     Returns:
@@ -186,7 +188,7 @@ def get_forecast(series, covariates, model, cfg):
     return forecast
 
 
-def load_ts_data(cfg, kgClient, tsClient):
+def load_ts_data(cfg, tsClient):
     """
     Load time series and covariates data (if applicable) from RDB. 
 
@@ -197,7 +199,6 @@ def load_ts_data(cfg, kgClient, tsClient):
                 'dataIRI': dataIRI of the time series to forecast (i.e., for which to retrieve data)
                 'loaded_data_bounds': lowerbound and upperbound between which to load data
                 'resample_data': string describing potential resampling frequency (for pandas resample function)
-        kgClient: initialised KG client
         tsClient: initialised TS client
     
     Returns:
@@ -260,8 +261,8 @@ def calculate_error(target, forecast):
     returns a dictionary with error metrics.
 
     Arguments:
-        target {TimeSeries} -- actual (historical) time series
-        forecast {TimeSeries} -- forecasted time series
+        target {darts.TimeSeries} -- actual (historical) time series
+        forecast {darts.TimeSeries} -- forecasted time series
     Returns:
         dict: dictionary with error metrics
     """

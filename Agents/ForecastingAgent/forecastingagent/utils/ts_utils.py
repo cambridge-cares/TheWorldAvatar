@@ -53,7 +53,7 @@ def scale_covariate(df, column_name):
     Arguments:
         df {pd.DataFrame} -- the dataframe containing the data
         col {str} -- the column name of the dataframe to extract
-    :Returns
+    Returns
         A darts.TimeSeries object of the scaled time series
     """
 
@@ -120,7 +120,7 @@ def get_ts_lower_upper_bound(cfg, time_format=TIME_FORMAT):
             'frequency': the frequency of the time series data (dt.timedelta)
             'horizon': the length of the forecast, i.e. number of time steps (int)
             'data_length': the length of the time series data to retrieve before the
-                        fc_start_timestamp, i.e. number of time steps (int)
+                           fc_start_timestamp, i.e. number of time steps (int)
 
     Returns:
         Lower and upper bounds of the time series as strings
