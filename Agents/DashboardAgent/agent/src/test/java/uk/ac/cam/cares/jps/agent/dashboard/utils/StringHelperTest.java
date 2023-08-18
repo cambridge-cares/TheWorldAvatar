@@ -5,18 +5,25 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class StringHelperTest {
+    private static final String SPARQL_VAR_FORMAT_TEST_CASE1 = "concept";
+    private static final String SPARQL_VAR_FORMAT_TEST_CASE2 = "node";
     private static final String VAR_FORMAT_TEST_CASE1 = "LOWERCASE";
     private static final String VAR_FORMAT_TEST_CASE2 = "Ensure it is conjoined";
     private static final String VAR_FORMAT_TEST_CASE3 = "nochangerequired";
     private static final String VAR_FORMAT_TEST_CASE4 = "TEST-dash-removal";
     private static final String VAR_FORMAT_TEST_CASE5 = "tESt_under_score_";
-
     private static final String CAPITAL_TEST_CASE1 = "ThisIsTest";
     private static final String CAPITAL_TEST_CASE2 = "ThisisTest";
     private static final String CAPITAL_TEST_CASE3 = "thisisatest";
     private static final String CAPITAL_TEST_CASE4 = "ThisIsATest";
     private static final String CAPITAL_TEST_CASE5 = "EndOfLINENoSPLIT";
     private static final String CAPITAL_TEST_CASE6 = "TESTMustSplit";
+
+    @Test
+    void testFormatSparqlVarName() {
+        assertEquals(" ?" + SPARQL_VAR_FORMAT_TEST_CASE1, StringHelper.formatSparqlVarName(SPARQL_VAR_FORMAT_TEST_CASE1));
+        assertEquals(" ?" + SPARQL_VAR_FORMAT_TEST_CASE2, StringHelper.formatSparqlVarName(SPARQL_VAR_FORMAT_TEST_CASE2));
+    }
 
     @Test
     void testFormatVariableName() {

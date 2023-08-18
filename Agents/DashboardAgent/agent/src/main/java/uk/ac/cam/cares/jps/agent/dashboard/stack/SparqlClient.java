@@ -186,22 +186,22 @@ public class SparqlClient {
         // Effectively, we repeatedly perform the following steps for all remaining endpoints
         for (String serviceEndpoint : this.REMAINING_SPARQL_ENDPOINTS) {
             // Execute SELECT query and upon execution, run the following lines for each result row
-            conn.querySelect(SparqlQuery.genFacilityMeasureQuery(serviceEndpoint), (qs) -> {
+            conn.querySelect(SparqlQuery.genFacilityAssetMeasureQuery(serviceEndpoint), (qs) -> {
                 // Retrieve relevant information
-                String facilityName = qs.getLiteral("facilityname").toString();
-                String assetName = qs.getLiteral("elementname").toString();
-                String assetType = qs.getResource("elementtype").getLocalName();
-                String measureIri = qs.getResource("measure").toString();
-                String measureName = qs.getLiteral("measurename").toString();
+                String facilityName = qs.getLiteral(SparqlQuery.FACILITY_NAME).toString();
+                String assetName = qs.getLiteral(SparqlQuery.ELEMENT_NAME).toString();
+                String assetType = qs.getResource(SparqlQuery.ELEMENT_TYPE).getLocalName();
+                String measureIri = qs.getResource(SparqlQuery.MEASURE).toString();
+                String measureName = qs.getLiteral(SparqlQuery.MEASURE_NAME).toString();
                 // If there is no unit to retrieve, this will throw a null pointer exception
                 String unit;
                 try {
-                    unit = qs.getLiteral("unit").toString();
+                    unit = qs.getLiteral(SparqlQuery.UNIT).toString();
                 } catch (NullPointerException ne) {
                     // But as this is an optional variable, we can ignore the error and explicitly treat it as null
                     unit = null;
                 }
-                String timeSeriesIri = qs.getResource("timeseries").toString();
+                String timeSeriesIri = qs.getResource(SparqlQuery.TIME_SERIES).toString();
                 // Check if the facility already exists in the map
                 if (this.SPATIAL_ZONES.containsKey(facilityName)) {
                     // If it does exist, add the asset to the existing facility object

@@ -1,11 +1,21 @@
 package uk.ac.cam.cares.jps.agent.dashboard.stack.sparql.utils;
 
+import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
+
 /**
  * A class that generates the required SPARQL queries.
  *
  * @author qhouyee
  */
 public class SparqlQuery {
+    public static final String FACILITY_NAME = "facilityname";
+    public static final String ROOM_NAME = "roomname";
+    public static final String ELEMENT_NAME = "elementname";
+    public static final String ELEMENT_TYPE = "elementtype";
+    public static final String MEASURE = "measure";
+    public static final String MEASURE_NAME = "measurename";
+    public static final String UNIT = "unit";
+    public static final String TIME_SERIES = "timeseries";
 
     /**
      * Generate a simple SPARQL query for facilities. This query is meant to detect which namespace contains the
@@ -16,8 +26,9 @@ public class SparqlQuery {
     public static String genSimpleFacilityQuery() {
         StringBuilder query = new StringBuilder();
         query.append(genPrefixes())
-                .append("SELECT DISTINCT ?facilityname ")
-                .append("WHERE {")
+                .append("SELECT DISTINCT")
+                .append(StringHelper.formatSparqlVarName(FACILITY_NAME))
+                .append(" WHERE {")
                 .append(genFacilitySyntax())
                 // Limit the results to reduce performance overhead
                 .append("} LIMIT 1");
@@ -25,19 +36,57 @@ public class SparqlQuery {
     }
 
     /**
-     * Generates a dynamic query for all measures that can be retrieved from the current namespace
-     * and external namespace holding the time series triples.
+     * Generates a dynamic query for all measures associated with rooms
+     * that can be retrieved from the current and external namespace holding the time series triples.
+     *
+     * @return The query for execution.
+     */
+    public static String genFacilityRoomMeasureQuery() {
+        StringBuilder query = new StringBuilder();
+        query.append(genPrefixes())
+                .append("SELECT DISTINCT")
+                .append(StringHelper.formatSparqlVarName(FACILITY_NAME))
+                .append(StringHelper.formatSparqlVarName(ROOM_NAME))
+                .append(StringHelper.formatSparqlVarName(MEASURE))
+                .append(StringHelper.formatSparqlVarName(MEASURE_NAME))
+                .append(StringHelper.formatSparqlVarName(UNIT))
+                .append(StringHelper.formatSparqlVarName(TIME_SERIES))
+                .append(" WHERE {")
+                // Query to get assets within a facility
+                .append(genFacilitySyntax())
+                .append("?room ontobim:hasIfcRepresentation/rdfs:label").append(StringHelper.formatSparqlVarName(ROOM_NAME)).append(".")
+                // Possible measures are temperature and relative humidity
+                .append("{?room ontodevice:hasTemperature/om:hasValue").append(StringHelper.formatSparqlVarName(MEASURE)).append("}")
+                .append("UNION {?room ontodevice:hasRelativeHumidity/om:hasValue").append(StringHelper.formatSparqlVarName(MEASURE)).append("}")
+                .append(genCommonMeasureSyntax())
+                .append("}");
+        return query.toString();
+    }
+
+    /**
+     * Generates a dynamic query for all measures associated with assets
+     * that can be retrieved from the current and external namespace holding the time series triples.
      *
      * @param endpoint The non-spatial zone SPARQL endpoint.
      * @return The query for execution.
      */
-    public static String genFacilityMeasureQuery(String endpoint) {
+    public static String genFacilityAssetMeasureQuery(String endpoint) {
         StringBuilder query = new StringBuilder();
         query.append(genPrefixes())
-                .append("SELECT DISTINCT ?facilityname ?elementname ?elementtype ?measure ?measurename ?unit ?timeseries ")
-                .append("WHERE {")
+                .append("SELECT DISTINCT")
+                .append(StringHelper.formatSparqlVarName(FACILITY_NAME))
+                .append(StringHelper.formatSparqlVarName(ELEMENT_NAME))
+                .append(StringHelper.formatSparqlVarName(ELEMENT_TYPE))
+                .append(StringHelper.formatSparqlVarName(MEASURE))
+                .append(StringHelper.formatSparqlVarName(MEASURE_NAME))
+                .append(StringHelper.formatSparqlVarName(UNIT))
+                .append(StringHelper.formatSparqlVarName(TIME_SERIES))
+                .append(" WHERE {")
                 // Query to get assets within a facility
                 .append(genFacilitySyntax())
+                .append("?room bot:containsElement ?element.")
+                .append("?element rdfs:label ?elementlabel;")
+                .append("   rdf:type").append(StringHelper.formatSparqlVarName(ELEMENT_TYPE)).append(".")
                 // Query to retrieve the time series associated with devices at a separate endpoint
                 .append(" SERVICE <").append(endpoint).append(">{")
                 // The below line performs a recursive query to retrieve all sub devices in the possible permutations of:
@@ -50,23 +99,19 @@ public class SparqlQuery {
                 // Second way is through consistsOf and isAttachedTo
                 .append("UNION { ?subelement rdfs:label ?subelementname; ^saref:consistsOf ?element; ^ontodevice:isAttachedTo ?sensor.}")
                 // Retrieve the measure and its name associated with either the element or their subdevices
-                .append("{?element ontodevice:measures/om:hasValue ?measure.            ?measure rdfs:label ?measurename.}")
-                .append("UNION {?element ontodevice:observes ?measure.                  ?measure rdfs:label?measurename.}")
-                .append("UNION {?sensor ontodevice:measures/om:hasValue ?measure.   ?measure rdfs:label ?measurename.}")
-                .append("UNION {?sensor ontodevice:observes ?measure.               ?measure rdfs:label ?measurename.}")
+                .append("{?element ontodevice:measures/om:hasValue").append(StringHelper.formatSparqlVarName(MEASURE)).append(".}")
+                .append("UNION {?element ontodevice:observes").append(StringHelper.formatSparqlVarName(MEASURE)).append(".}")
+                .append("UNION {?sensor ontodevice:measures/om:hasValue").append(StringHelper.formatSparqlVarName(MEASURE)).append(".}")
+                .append("UNION {?sensor ontodevice:observes").append(StringHelper.formatSparqlVarName(MEASURE)).append(".}")
                 .append("} UNION {")
                 // For non-sensor devices which is being measured by sensors attached to them
-                .append("?element ontodevice:hasOperatingRange/ssn:hasOperatingProperty/ontodevice:hasQuantity/om:hasValue ?measure. ")
-                .append("?measure rdfs:label ?measurename.")
+                .append("?element ontodevice:hasOperatingRange/ssn:hasOperatingProperty/ontodevice:hasQuantity/om:hasValue").append(StringHelper.formatSparqlVarName(MEASURE)).append(".")
                 .append("}")
-                // Once retrieved, all measures has a time series
-                .append("?measure ontotimeseries:hasTimeSeries ?timeseries.")
-                // Retrieves unit if it is available
-                .append("OPTIONAL {?measure om:hasUnit/om:symbol ?unit}")
+                .append(genCommonMeasureSyntax())
                 .append("}")
                 // If there is a sub element name, append it to the element label to get element name
                 // Else, element label should be the element name
-                .append("BIND(IF(BOUND(?subelementname), CONCAT(?elementlabel, \" \", ?subelementname), ?elementlabel) AS ?elementname)")
+                .append("BIND(IF(BOUND(?subelementname), CONCAT(?elementlabel, \" \", ?subelementname), ?elementlabel) AS").append(StringHelper.formatSparqlVarName(ELEMENT_NAME)).append(")")
                 .append("}");
         return query.toString();
     }
@@ -99,12 +144,25 @@ public class SparqlQuery {
         StringBuilder query = new StringBuilder();
         query.append("?building rdf:type bot:Building;")
                 .append("   ontobim:hasFacility ?facility.")
-                .append("?facility rdfs:label ?facilityname;")
+                .append("?facility rdfs:label").append(StringHelper.formatSparqlVarName(FACILITY_NAME)).append(";")
                 .append("   ontobim:hasRoom ?room.")
-                .append("?room rdf:type ontobim:Room;")
-                .append("   bot:containsElement ?element.")
-                .append("?element rdfs:label ?elementlabel;")
-                .append("   rdf:type ?elementtype.");
+                .append("?room rdf:type ontobim:Room.");
+        return query;
+    }
+
+    /**
+     * Generate the common measure syntax for the corresponding queries.
+     *
+     * @return The syntax as a string builder.
+     */
+    private static StringBuilder genCommonMeasureSyntax() {
+        StringBuilder query = new StringBuilder();
+        // Retrieves measure name
+        query.append(StringHelper.formatSparqlVarName(MEASURE)).append(" rdfs:label").append(StringHelper.formatSparqlVarName(MEASURE_NAME)).append(";")
+                // Retrieves time series IRI
+                .append("ontotimeseries:hasTimeSeries").append(StringHelper.formatSparqlVarName(TIME_SERIES)).append(".")
+                // Retrieves unit if it is available
+                .append("OPTIONAL{").append(StringHelper.formatSparqlVarName(MEASURE)).append(" om:hasUnit/om:symbol").append(StringHelper.formatSparqlVarName(UNIT)).append("}");
         return query;
     }
 }

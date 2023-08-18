@@ -7,6 +7,11 @@ package uk.ac.cam.cares.jps.agent.dashboard.utils;
  */
 public class StringHelper {
     /**
+     * Formats the SPARQL variable name for a SPARQL query syntax. Note that a space will be appended beforehand.
+     */
+    public static String formatSparqlVarName(String variable) {return " ?" + variable;}
+
+    /**
      * Formats the variable names to remove white spaces, dashes, and underscores and use only lower cases for Grafana syntax.
      */
     public static String formatVariableName(String variable) {return variable.toLowerCase().replaceAll("[\\s\\-_]", "");}
