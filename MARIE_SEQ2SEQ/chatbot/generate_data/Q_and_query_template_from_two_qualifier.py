@@ -262,11 +262,7 @@ WHERE {{
     FILTER(?{PropertyName2}Value < {minvalue2} || ?{PropertyName2}Value > {maxvalue2})
 }}"""
 
-    query_text_compact =  f"""PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-
-SELECT DISTINCT ?IUPACNameValue ?{PropertyName1}Value ?{PropertyName2}Value
+    query_text_compact =  f"""SELECT DISTINCT ?IUPACNameValue ?{PropertyName1}Value ?{PropertyName2}Value
 WHERE {{
     ?SpeciesIRI os:hasIUPACName ?IUPACNameValue .
     ?SpeciesIRI os:hasProperty{PropertyName1} ?{PropertyName1}Value . 
@@ -862,7 +858,7 @@ WHERE {{
     ?{PropertyName1}ReferenceStateIRI os:value ?{PropertyName1}ReferenceStateValue ; os:unit ?{PropertyName1}ReferenceStateUnitIRI .
     ?{PropertyName1}ReferenceStateUnitIRI rdfs:label ?{PropertyName1}ReferenceStateUnitValue .}}
 
-    FILTER(?{PropertyName1}Value > {minvalue1} && ?{PropertyName2}Value < {maxvalue1})
+    FILTER(?{PropertyName1}Value > {minvalue1} && ?{PropertyName1}Value < {maxvalue1})
 
     ?SpeciesIRI os:has{PropertyName2} ?{PropertyName2}IRI .
     ?{PropertyName2}IRI os:value ?{PropertyName2}Value ; os:unit ?{PropertyName2}UnitIRI ; os:hasProvenance ?{PropertyName2}ProvenanceIRI . 
@@ -878,7 +874,7 @@ WHERE {{
 WHERE {{
     ?SpeciesIRI os:hasIUPACName ?IUPACNameValue .
     ?SpeciesIRI os:hasProperty{PropertyName1} ?{PropertyName1}Value .
-    FILTER(?{PropertyName1}Value > {minvalue1} && ?{PropertyName2}Value < {maxvalue1})
+    FILTER(?{PropertyName1}Value > {minvalue1} && ?{PropertyName1}Value < {maxvalue1})
     ?SpeciesIRI os:hasProperty{PropertyName2} ?{PropertyName2}Value .
     FILTER(?{PropertyName2}Value > {value2}*0.9 && ?{PropertyName2}Value < {value2}*1.1)
 }}"""
