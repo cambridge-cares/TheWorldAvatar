@@ -223,7 +223,7 @@ It is recommended to pull the published Docker image from [Github container regi
 
 ```bash
 # Pull published (production) image
-docker pull ghcr.io/cambridge-cares/forecasting_agent:2:0:0
+docker pull ghcr.io/cambridge-cares/forecasting_agent:2.0.0
 ```
 
 ###  **Standalone Deployment**
