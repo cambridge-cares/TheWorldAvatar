@@ -53,6 +53,7 @@ conda activate marie-llama
 
 export HF_ACCESS_TOKEN=
 export HF_HOME=/rds/user/nmdt2/hpc-work/.cache/huggingface
+export WANDB_PROJECT=marie
 
 #! Full path to application executable: 
 application="sh ./scripts/finetune.sh"
@@ -61,7 +62,7 @@ application="sh ./scripts/finetune.sh"
 options=""
 
 #! Work directory (i.e. where the job will run):
-workdir="/home/nmdt2/repos/marie-llama"
+workdir="/home/nmdt2/repos/TheWorldAvatar/MARIE_SEQ2SEQ/training"
 
 #! Are you using OpenMP (NB this is unrelated to OpenMPI)? If so increase this
 #! safe value to no more than 128:

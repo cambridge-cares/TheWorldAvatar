@@ -21,7 +21,7 @@
    ````
    pip install -r requirements.txt
    ````
-1. For access to any private models or datasets on Hugging Face, ensure that you have the necessary read privileges. Generate an [access token](https://huggingface.co/docs/hub/security-tokens) and make this an environment variable.
+1. For access to any private models or datasets on HuggingFace (e.g. Llama2), ensure that you have the necessary read privileges. Generate an [access token](https://huggingface.co/docs/hub/security-tokens) and make this an environment variable.
    ```
    export HF_ACCESS_TOKEN=<huggingface-access-token>
    ```
@@ -31,8 +31,9 @@
 ```{json}
 [
    {
-      "question": "",
-      "sparql_query": ""
+      "question": str,
+      "sparql_query": str,
+      "sparql_query_compact: str
    }
 ]
 ```
@@ -58,8 +59,6 @@ See [`finetune.sh`](./scripts/finetune.sh) for example usage. The script will sa
 
 For a list all arguments that can be passed to the fine-tune script, see classes `arguments_schema.ModelArguments`, `arguments_schema.DatasetArguments` and `transformers.TrainingArguments`.
 
-Note that [`finetune.sh`](./scripts/finetune.sh) is written for single-node, multi-GPU training. For single-GPU training, execute `python finetune.py <--arguments>`. 
-
 ## Inference
 
 See [`inference.sh`](./scripts/inference.sh) for example usage. The script will generate a json file containing  
@@ -70,22 +69,14 @@ For a list of all arguments that can be passed to the inference script, see clas
 
 
 ## Running jobs on CSD3
-Per [recommendation by CSD3](https://docs.hpc.cam.ac.uk/hpc/user-guide/io_management.html), I/O data should be placed under `/rds`. Cache for models and datasets should thus be placed here. Concretely, the Hugging Face cache directory should be set as follows.
-```
-export HF_HOME=/rds/user/nmdt2/hpc-work/.cache/huggingface
-``` 
 
+See [`finetune.slurm`](./scripts/finetune.slurm) and [`inference.slurm`](./scripts/inference.slurm) for example SLURM files. Please note the following parameters.
+
+- `#SBATCH --gres=gpu:4`: number of GPUs per node needed; set to 4 for multi-GPU training. 
+- `export HF_ACCESS_TOKEN=`: [HuggingFace access](#steps) token if needed.
+- `export HF_HOME=/rds/user/nmdt2/hpc-work/.cache/huggingface`: cache directory for HuggingFace models and datasets; per [recommendation by CSD3](https://docs.hpc.cam.ac.uk/hpc/user-guide/io_management.html), I/O data should be placed under `/rds`.
+- `export WANDB_PROJECT=marie`: [Weights & Biases project name](#weight--biases-configuration-for-monitoring).
 
 ## Development
 
-### Testing
-
-#### Installation
-```
-pip install pytest
-```
-
-#### Execute tests
-```
-pytest
-```
+First, install pytest with `pip install pytest`. To execute tests, run `pytest`.
