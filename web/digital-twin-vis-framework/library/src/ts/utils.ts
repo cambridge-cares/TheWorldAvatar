@@ -1,24 +1,17 @@
 /**
- * 
- * @returns 
+ * Opens the user help document associated with this version of the DTVF.
  */
 function openHelpURL() {
-    let scriptURL = null;
+    window.open("./dtvf/help/index.html", "_blank");
+}
 
-    var scripts = document.getElementsByTagName('script');
-    for(let i = 0; i < scripts.length; i++) {
-        if(scripts[i].src.endsWith("dtvf.min.js")) scriptURL = scripts[i].src;
-    };
-
-    if(scriptURL !== null)  {
-        // Split the URL by slash
-        let parts = scriptURL.toString().split("/");
-        parts[parts.length - 1] = "help";
-        
-        // Open in a new tab
-        let finalURL = parts.join("/") + "/";
-        window.open(finalURL, "_blank");
-    }
+/**
+ * Returns the current version of the DTVF.
+ */
+async function getDTVFVersion() {
+    return await fetch("./dtvf/VERSION").then(response => {
+        return response.text();
+    });
 }
 
 /**
@@ -62,7 +55,11 @@ function getDefaultImagery() {
     }
 
     let defaultSetting = imagerySettings["default"];
-    return imagerySettings[defaultSetting];
+
+    let url = imagerySettings[defaultSetting];
+    if(url.endsWith("_token=")) url += MapHandler.MAP_API;
+
+    return url;
 }
 
 /**
@@ -185,5 +182,41 @@ function showHelpPage() {
         case MapProvider.MAPBOX:
             // TODO
         break;
+    }
+}
+
+
+/**
+ * Builds and adds a button to open the dashboard in a new tab.
+ * 
+ * Note: The 'dashboard' parameter must have been set within the
+ * visualisation's settings.json file for this to appear.
+ */
+function buildDashboardButton() {
+    if(Manager.SETTINGS.getSetting("dashboard") != null) {
+
+        let html = `
+            <div id="dashButtonContainer" class="controlBlock expanded" onclick="openDashboard()" style="cursor: pointer;">
+                <p>Open dashboard</p>
+            </div>
+        `;
+
+        // Parse into a HTML element
+        var parser = new DOMParser();
+        var doc = parser.parseFromString(html, 'text/html');
+
+        let container = document.getElementById("controlContainer");
+        let searchButton = document.getElementById("helpandsearch");
+        container.insertBefore(doc.body.firstChild, searchButton);
+    }
+}
+
+/**
+ * Open the dashboard in a new link.
+ */
+function openDashboard() {
+    let url = Manager.SETTINGS.getSetting("dashboard");
+    if(url != null) {
+        window.open(url, '_blank').focus();
     }
 }

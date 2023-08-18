@@ -100,8 +100,6 @@ class TimeseriesHandler {
                 });
             }            
         }
-
-        console.log(this._selectedData);
     }
 
     /**

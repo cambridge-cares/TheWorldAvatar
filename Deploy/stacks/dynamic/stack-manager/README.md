@@ -1,5 +1,7 @@
 # The Stack Manager
 
+<img align="right" width="250" height="250" src="./img/twa-stack-logo-padded.svg">
+
 In the commands below placeholders are shown as `<STACK NAME>`, you will need to substitute in the required value when running the command.
 
 ## Prerequisites

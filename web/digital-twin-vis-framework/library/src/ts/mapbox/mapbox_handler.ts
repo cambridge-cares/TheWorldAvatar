@@ -32,7 +32,8 @@ class MapHandler_Mapbox extends MapHandler {
 
         // Set the default style imagery
         newOptions["style"] = getDefaultImagery();
-
+        newOptions["projection"] = "mercator";
+        
         if(MapHandler.MAP === null || MapHandler.MAP === undefined) {
             // Create new map (note the settings used here may be overriden when the map is loaded with data).
             // @ts-ignore
@@ -243,7 +244,6 @@ class MapHandler_Mapbox extends MapHandler {
             if(layer.metadata?.attribution === "CMCL") {
                 previousSources.add(layer.source);
                 MapHandler.MAP.removeLayer(layer.id);
-                console.log("REMOVED " + layer.id);
             }
         });
         previousSources.forEach(id => MapHandler.MAP.removeSource(id));
