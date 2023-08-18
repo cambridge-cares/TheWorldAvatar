@@ -255,7 +255,6 @@ def initial_product_instantiation(assembly_model, SingleComponent_original):
     if "Precursor_BS" in SingleComponent[component1]:
         Precursor_BS.extend(SingleComponent[component1]["Precursor_BS"])
     if "Linkage_BS" in SingleComponent[component2]:
-        #print(SingleComponent[component2])
         Linkage_BS.extend(SingleComponent[component2]["Linkage_BS"])
 
     if "Linkage_BS" in SingleComponent[component2] and "Precursor_BS" in SingleComponent[component1]:
@@ -280,18 +279,13 @@ def initial_product_instantiation(assembly_model, SingleComponent_original):
         "Precursor_BS": Precursor_BS,
         "Linkage_BS": Linkage_BS
     }
-    #print(Linkage_BS)
-    #print(Product_1)
     
     SingleComponent_original['Product_1'] = Product_1
-    #print("---------------------------------------")
-    #print(SingleComponent_original)
-    #print("---------------------------------------")
-    
+
     return SingleComponent_original
 
+
 def product_instantiation(assembly_model, CurrentComponent, product_name):
-       
     working_component = deepcopy(CurrentComponent)
     product1 = assembly_model["ConstructionSteps"][product_name]
     Product_1 = None 
@@ -300,75 +294,92 @@ def product_instantiation(assembly_model, CurrentComponent, product_name):
     matching_dummies = []
     outputFile = product_name+".mol"
     inputFile = [CurrentComponent[component1]['outputFile'], CurrentComponent[component2]['outputFile']]
-    if "Linkage_BS" in working_component[component1] and "Precursor_BS" in working_component[component2]:
-        for bs1 in working_component[component1]["Precursor_BS"]:
-            for bs2 in working_component[component1]["Linkage_BS"]:
-                for bs3 in working_component[component2]["Precursor_BS"]:
-                    if bs1["bindingSite"] == bs3["bindingSite"]:
-                        if bs2["bindingSite"] == bs3["bindingSite"]:
-                            matching_dummies = [bs2["Dummies"][0], bs3["Dummies"][0]]                       
-                            bs2["Dummies"].remove(matching_dummies[0])
-                            bs3["Dummies"].remove(matching_dummies[1])
-                            bs13 = merging_dummies(bs1, bs3)
-                            Product_1 = {"outputFile": outputFile, "inputFile": inputFile,
-                                        "BindingDummies": matching_dummies,
-                                        "Precursor_BS": [bs13],
-                                        "Linkage_BS": [bs2]}
+    if "Precursor_BS" in working_component[component1] and "Linkage_BS" in working_component[component2]:
+        for bs1 in working_component[component1]["Precursor_BS"]:        
+            for bs3 in working_component[component2]["Linkage_BS"]:      
+                if bs1["bindingSite"] == bs3["bindingSite"]:
+                    matching_dummies = [bs1["Dummies"][0], bs3["Dummies"][0]]
+                    bs1["Dummies"].remove(matching_dummies[0])
+                    bs3["Dummies"].remove(matching_dummies[1])                
+                    bs1_based = clean_dummies_list(working_component[component1]["Precursor_BS"])
+                    Product_1 = {"outputFile": outputFile, "inputFile": inputFile,
+                        "BindingDummies": matching_dummies,
+                        "Precursor_BS":working_component[component1]["Precursor_BS"] }                    
+                    bs2_based = clean_dummies_list(working_component[component1].get("Linkage_BS"))
+                    bs3_based = clean_dummies_list(working_component[component2].get("Linkage_BS"))
+                    if bs2_based is not None: 
+                        if bs3_based is not None:               
+                            bs23 = merging_dummies(bs2_based, bs3_based)
+                            Product_1.setdefault("Linkage_BS", bs23)
                             CurrentComponent[product_name] = Product_1
                             return CurrentComponent
-                    else:
-                        if bs2["bindingSite"] == bs3["bindingSite"]:
-                            matching_dummies = [bs2["Dummies"][0], bs3["Dummies"][0]]
-                            # If binding sites are not the same, add bs1 and bs3 to "Precursor_BS"
-                            Product_1 = {"outputFile": outputFile, "inputFile": inputFile,
-                                        "BindingDummies": matching_dummies,
-                                        "Precursor_BS": [bs1, bs3],
-                                        "Linkage_BS": [bs2]}
-                            CurrentComponent[product_name] = Product_1
-                            return CurrentComponent   
-    elif "Precursor_BS" in working_component[component1] and "Linkage_BS" in working_component[component2]:
-        for bs1 in working_component[component1]["Precursor_BS"]:
-            for bs2 in working_component[component1]["Linkage_BS"]:
-                for bs3 in working_component[component2]["Linkage_BS"]:
-                    if bs2["bindingSite"] == bs3["bindingSite"]:    
-                        if bs1["bindingSite"] == bs3["bindingSite"]:
-                            matching_dummies = [bs1["Dummies"][0], bs3["Dummies"][0]] 
-                            bs1["Dummies"].remove(matching_dummies[0])
-                            bs3["Dummies"].remove(matching_dummies[1])
-                            
-                            bs23 = merging_dummies(bs2, bs3)
-                            Product_1 = {"outputFile": outputFile, "inputFile": inputFile, 
-                                "BindingDummies": matching_dummies, 
-                                "Precursor_BS": [bs1],
-                                "Linkage_BS": [bs23]}
-                            CurrentComponent[product_name] = Product_1
-                            return CurrentComponent
-                    else:
-                        if bs1["bindingSite"] == bs3["bindingSite"]:
-                            matching_dummies = [bs1["Dummies"][0], bs3["Dummies"][0]] 
-                            bs1["Dummies"].remove(matching_dummies[0])
-                            bs3["Dummies"].remove(matching_dummies[1])      
-                            Product_1 = {"outputFile": outputFile, "inputFile": inputFile, 
-                                "BindingDummies": matching_dummies, 
-                                "Precursor_BS": [bs1],
-                                "Linkage_BS": [bs2,bs3]}
+                    else: 
+                        if bs2_based:                            
+                            Product_1.setdefault("Linkage_BS", bs2_based)
+                        if bs3_based:    
+                            Product_1.setdefault("Linkage_BS", bs3_based)
+                        CurrentComponent[product_name] = Product_1
+                        return CurrentComponent
+    elif "Linkage_BS" in working_component[component1] and "Precursor_BS" in working_component[component2]:
+        for bs1 in working_component[component1]["Linkage_BS"]:        
+            for bs3 in working_component[component2]["Precursor_BS"]:               
+                if bs1["bindingSite"] == bs3["bindingSite"]:
+                    matching_dummies = [bs1["Dummies"][0], bs3["Dummies"][0]]
+                    bs1["Dummies"].remove(matching_dummies[0])
+                    bs3["Dummies"].remove(matching_dummies[1])
+                    bs1_based = clean_dummies_list(working_component[component1]["Linkage_BS"])
+                    Product_1 = {"outputFile": outputFile, "inputFile": inputFile,
+                        "BindingDummies": matching_dummies}
+                    if bs1_based is not None: 
+                        Product_1.setdefault("Linkage_BS", bs1_based)
+                    bs2_based = clean_dummies_list(working_component[component1].get("Precursor_BS"))
+                    bs3_based = clean_dummies_list(working_component[component2].get("Precursor_BS"))
+                    if bs2_based is not None:
+                        if bs3_based is not None:                    
+                            bs23 = merging_dummies(bs2_based, bs3_based)
+                            Product_1.setdefault("Precursor_BS", bs23)
                             CurrentComponent[product_name] = Product_1
                             return CurrentComponent
+                    else: 
+                        if bs2_based:                            
+                            Product_1.setdefault("Precursor_BS", bs2_based)
+                        if bs3_based:    
+                            Product_1.setdefault("Precursor_BS", bs3_based)
+                        CurrentComponent[product_name] = Product_1
+                        return CurrentComponent
+                    
     return None
 
-def merging_dummies(*dicts):
-    merged_dict = {}
-    for d in dicts:
-        for key, value in d.items():
-            if key in merged_dict:
-                if isinstance(value, list):
-                    merged_dict[key].extend(value)
-                else:
-                    merged_dict[key] = value
+def clean_dummies_list(input_list):
+    #print(input_list)
+    cleaned_list = [item for item in input_list if item.get('Dummies')]
+    return cleaned_list if cleaned_list else None
+
+def merging_dummies(*lists_of_dicts):
+    merged_dicts = {}
+
+    for dict_list in lists_of_dicts:
+        for d in dict_list:
+            binding_site = d['bindingSite']
+            dummies = d['Dummies']
+
+            if not dummies:  # If 'Dummies' list is empty, continue to the next iteration.
+                continue
+
+            if binding_site in merged_dicts:
+                merged_dicts[binding_site]['Dummies'].extend(dummies)
             else:
-                merged_dict[key] = value
-    merged_dict['Dummies'] = sorted(merged_dict['Dummies'])
-    return merged_dict
+                merged_dicts[binding_site] = {'bindingSite': binding_site, 'Dummies': dummies}
+
+    # Convert the merged_dicts back to a list
+    result_list = list(merged_dicts.values())
+
+    # Sort the 'Dummies' values in each dictionary
+    for d in result_list:
+        d['Dummies'] = sorted(d['Dummies'])
+
+    return result_list
+
 
 def looping_to_cofmer(assembly_model, initiation_single_component, product_instantiation):
     result_dict = {}
@@ -383,10 +394,11 @@ def looping_to_cofmer(assembly_model, initiation_single_component, product_insta
             if components == "Product_1":
                 return initiation_single_component  # Return initiation_single_component if COFmer value is Product_1
             continue  # Skip COFmer since it's already initialized
-        
-        temp_dict = product_instantiation(assembly_model, current_component, product_name)
 
+        temp_dict = product_instantiation(assembly_model, current_component, product_name)
+        
         result_dict = {**result_dict, **temp_dict}
+
 
     return result_dict
 

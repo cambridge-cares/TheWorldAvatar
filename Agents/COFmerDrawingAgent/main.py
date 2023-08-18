@@ -3,71 +3,169 @@ import csv
 import re
 import os
 
+
+def extract_valency_and_type(component_string):
+    linkage_match = re.match(r"L:(\d+)-\w+", component_string)
+    if linkage_match:
+        valency = int(linkage_match.group(1))
+        return (valency, 'linkage')
+    
+    precursor_match = re.match(r"(\d+)-\w+", component_string)
+    if precursor_match:
+        valency = int(precursor_match.group(1))
+        return (valency, 'precursor')
+    
+    return None, None
+
+def construct_pattern(assemblyModel, component_num):
+    construction_steps = {}
+    product_counter = 1
+    component_counters = [0, 0, 0]
+    current_product = f"Component_1_Copy_1"
+    component_counters[0] += 1
+    
+    placement_stage = "white_after_red"
+
+    while sum(component_counters) < sum([assemblyModel[f"Component_{i} Copies"] for i in range(1, component_num + 1)]):
+        if placement_stage == "white_after_red":
+            for _ in range(3 - component_counters[2]):
+                if component_counters[2] < assemblyModel["Component_3 Copies"]:
+                    next_component = f"Component_3_Copy_{component_counters[2] + 1}"
+                    construction_steps[f"Product_{product_counter}"] = [current_product, next_component]
+                    current_product = f"Product_{product_counter}"
+                    product_counter += 1
+                    component_counters[2] += 1
+            placement_stage = "pink_after_white"
+
+        elif placement_stage == "pink_after_white":
+            if component_counters[1] < assemblyModel["Component_2 Copies"]:
+                next_component = f"Component_2_Copy_{component_counters[1] + 1}"
+                construction_steps[f"Product_{product_counter}"] = [current_product, next_component]
+                current_product = f"Product_{product_counter}"
+                product_counter += 1
+                component_counters[1] += 1
+            placement_stage = "white_after_pink"
+
+        elif placement_stage == "white_after_pink":
+            if component_counters[2] < assemblyModel["Component_3 Copies"]:
+                next_component = f"Component_3_Copy_{component_counters[2] + 1}"
+                construction_steps[f"Product_{product_counter}"] = [current_product, next_component]
+                current_product = f"Product_{product_counter}"
+                product_counter += 1
+                component_counters[2] += 1
+            placement_stage = "red_after_white"
+
+        elif placement_stage == "red_after_white":
+            if component_counters[0] < assemblyModel["Component_1 Copies"]:
+                next_component = f"Component_1_Copy_{component_counters[0] + 1}"
+                construction_steps[f"Product_{product_counter}"] = [current_product, next_component]
+                current_product = f"Product_{product_counter}"
+                product_counter += 1
+                component_counters[0] += 1
+            placement_stage = "white_after_red"
+
+    construction_steps["COFmer"] = current_product
+    assemblyModel["ConstructionSteps"] = construction_steps
+
+    return assemblyModel
+
 def create_assembly_model(AM_string):
-    # Try to match with three components pattern
     am_match = re.match(r"(\w+)-\[\(([\w:-]+)\)x(\d+)\(([\w:-]+)\)x(\d+)\(([\w:-]+)\)x(\d+)\]n", AM_string)
 
-    if am_match:
-        component_num = 3
-    else:
-        # Try to match with two components pattern
+    if not am_match:
         am_match = re.match(r"(\w+)-\[\(([\w:-]+)\)x(\d+)\(([\w:-]+)\)x(\d+)\]n", AM_string)
         component_num = 2
+    else:
+        component_num = 3
 
     assemblyModel = {}
     if am_match:
         assemblyModel["AM"] = AM_string
-        assemblyModel["Component_1"] = am_match.group(2)
-        assemblyModel["Component_1 Copies"] = int(am_match.group(3))
-        assemblyModel["Component_1 BS"] = None
-        assemblyModel["Component_2"] = am_match.group(4)
-        assemblyModel["Component_2 Copies"] = int(am_match.group(5))
-        assemblyModel["Component_2 BS"] = None
-
-        if component_num == 3:
-            assemblyModel["Component_3"] = am_match.group(6)
-            assemblyModel["Component_3 Copies"] = int(am_match.group(7))
-            assemblyModel["Component_3 BS"] = None
-
-        # Constructing the ConstructionSteps
-        construction_steps = {}
-        component_1_counter = 1
-        component_2_counter = 1
-        component_3_counter = 1 if component_num == 3 else 0
-        product_counter = 1
-
-        if assemblyModel["Component_1 Copies"] > 0 and (component_num == 2 or assemblyModel["Component_3 Copies"] > 0):
-            construction_steps[f"Product_{product_counter}"] = ["Component_1_Copy_1", f"Component_{component_num}_Copy_{component_3_counter if component_num == 3 else component_2_counter}"]
-            component_1_counter += 1
-            if component_num == 3:
-                component_3_counter += 1
-            else:
-                component_2_counter += 1
-            product_counter += 1
-
-        while component_1_counter <= assemblyModel["Component_1 Copies"] or component_2_counter <= assemblyModel["Component_2 Copies"] or (component_num == 3 and component_3_counter <= assemblyModel["Component_3 Copies"]):
-            if component_2_counter <= assemblyModel["Component_2 Copies"] and (component_num == 2 or component_3_counter <= assemblyModel["Component_3 Copies"]):
-                construction_steps[f"Product_{product_counter}"] = [f"Product_{product_counter - 1}", f"Component_2_Copy_{component_2_counter}"]
-                component_2_counter += 1
-                product_counter += 1
-
-            if component_1_counter <= assemblyModel["Component_1 Copies"] and (component_num == 2 or component_3_counter <= assemblyModel["Component_3 Copies"]):
-                construction_steps[f"Product_{product_counter}"] = [f"Product_{product_counter - 1}", f"Component_1_Copy_{component_1_counter}"]
-                component_1_counter += 1
-                product_counter += 1
-
-            if component_num == 3 and component_3_counter <= assemblyModel["Component_3 Copies"]:
-                construction_steps[f"Product_{product_counter}"] = [f"Product_{product_counter - 1}", f"Component_3_Copy_{component_3_counter}"]
-                component_3_counter += 1
-                product_counter += 1
-
-        construction_steps["COFmer"] = f"Product_{product_counter - 1}"
         
+        for i in range(1, component_num + 1):
+            assemblyModel[f"Component_{i}"], valency, _type = am_match.group(2 * i), *extract_valency_and_type(am_match.group(2 * i))
+            assemblyModel[f"Component_{i} Copies"] = int(am_match.group(2 * i + 1))
+            assemblyModel[f"Component_{i} Valency"] = valency
+            assemblyModel[f"Component_{i} Type"] = _type
+            assemblyModel[f"Component_{i} BS"] = None
+        
+        # Call the new construction function
+        assemblyModel = construct_pattern(assemblyModel, component_num)
+    else:
+        print("The provided AM string does not match the expected format.")
+    return assemblyModel
+
+
+
+def create_assembly_model1(AM_string):
+    am_match = re.match(r"(\w+)-\[\(([\w:-]+)\)x(\d+)\(([\w:-]+)\)x(\d+)\(([\w:-]+)\)x(\d+)\]n", AM_string)
+
+    if not am_match:
+        am_match = re.match(r"(\w+)-\[\(([\w:-]+)\)x(\d+)\(([\w:-]+)\)x(\d+)\]n", AM_string)
+        
+        component_num = 2
+    else:
+        component_num = 3
+
+    assemblyModel = {}
+    if am_match:
+        assemblyModel["AM"] = AM_string
+        
+        for i in range(1, component_num + 1):
+            assemblyModel[f"Component_{i}"], valency, _type = am_match.group(2 * i), *extract_valency_and_type(am_match.group(2 * i))
+            assemblyModel[f"Component_{i} Copies"] = int(am_match.group(2 * i + 1))
+            assemblyModel[f"Component_{i} Valency"] = valency
+            assemblyModel[f"Component_{i} Type"] = _type
+            assemblyModel[f"Component_{i} BS"] = None
+        
+        construction_steps = {}
+        product_counter = 1
+        component_counters = [0, 0, 0]
+        current_product = f"Component_1_Copy_1"
+        component_counters[0] += 1
+        
+        precursor_switch = False
+
+        while sum(component_counters) < sum([assemblyModel[f"Component_{i} Copies"] for i in range(1, component_num + 1)]):
+            # If precursor_switch is False, use Component 1, else use Component 2
+            current_precursor = 1 if not precursor_switch else 2
+            current_valency = assemblyModel[f"Component_{current_precursor} Valency"]
+
+            # Add linkage components based on the valency of the current component
+            for _ in range(current_valency):
+                if component_counters[2] < assemblyModel["Component_3 Copies"]:
+                    next_component = f"Component_3_Copy_{component_counters[2] + 1}"
+                    construction_steps[f"Product_{product_counter}"] = [current_product, next_component]
+                    current_product = f"Product_{product_counter}"
+                    product_counter += 1
+                    component_counters[2] += 1
+                else:
+                    break
+            
+            precursor_switch = not precursor_switch
+            if precursor_switch and component_counters[0] < assemblyModel["Component_1 Copies"]:
+                next_component = f"Component_1_Copy_{component_counters[0] + 1}"
+                construction_steps[f"Product_{product_counter}"] = [current_product, next_component]
+                current_product = f"Product_{product_counter}"
+                product_counter += 1
+                component_counters[0] += 1
+
+            elif not precursor_switch and component_counters[1] < assemblyModel["Component_2 Copies"]:
+                next_component = f"Component_2_Copy_{component_counters[1] + 1}"
+                construction_steps[f"Product_{product_counter}"] = [current_product, next_component]
+                current_product = f"Product_{product_counter}"
+                product_counter += 1
+                component_counters[1] += 1
+        
+        construction_steps["COFmer"] = current_product
         assemblyModel["ConstructionSteps"] = construction_steps
     else:
         print("The provided AM string does not match the expected format.")
-    #print(assemblyModel)
     return assemblyModel
+
+
+
+
 
 def create_componentTypeNumber_dict(assembly_model):
     componentTypeNumber = {"Precursor": 0, "Linkage": 0}
@@ -172,14 +270,14 @@ def initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir):
                 
                 
                 assembly_model_dict = create_assembly_model(assembly_model_string)
+                print(assembly_model_dict)
                 componentTypeNumber = create_componentTypeNumber_dict(assembly_model_string)
-
                 precursors = [precursor_values_1]
                 if precursor_2 is not None:
                     precursors.append(precursor_values_2)
             
                 input_dir = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\input_dir\\'
-
+                
                 #run_cofmer_pipeline(assembly_model_dict, componentTypeNumber, precursor_values_1, precursor_values_2, linkage, input_dir, full_output_path)
                 run_cofmer_pipeline(assembly_model_dict, componentTypeNumber, precursors, linkage, input_dir, full_output_path)
 
