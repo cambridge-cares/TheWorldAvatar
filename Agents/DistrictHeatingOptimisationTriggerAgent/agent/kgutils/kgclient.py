@@ -7,6 +7,8 @@
 # KG queries and updates using the StoreRouter from the JPS_BASE_LIB
 
 import uuid
+from pathlib import Path
+from rdflib import Graph
 
 from py4jps import agentlogging
 from pyderivationagent.kg_operations import PySparqlClient
@@ -118,6 +120,30 @@ class KGClient(PySparqlClient):
         """
 
         return query
+    
+
+    def initialise_namespace(self, folder_path:str):
+        """
+        This function initialises the agent's KG namespace by uploading all 
+        .ttl files in the given folder path, currently includes:
+            - required forecasting model triples 
+        """
+        
+        # Get all .ttl files in folder
+        pathlist = Path(folder_path).glob('*.ttl')
+        for path in pathlist:
+            # Load data
+            with open(path, 'r') as f:
+                filedata = f.readlines()
+            # Remove all comments and replace prefix placeholder
+            triples = [s for s in filedata if not s.startswith("#")]
+            triples = ' '.join(triples)
+            triples = triples.replace('[prefix]', KB)            
+            # Parse amended .ttl file and upload to KG
+            g = Graph()
+            g.parse(data=triples, format='turtle')
+            self.uploadGraph(g)
+
 
     #
     # Helper functions

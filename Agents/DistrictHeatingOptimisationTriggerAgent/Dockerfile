@@ -41,8 +41,9 @@ RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_j
 # Expose port
 EXPOSE 5000
 
-# Copy required source code (as code is not attached as volume)
+# Copy required source code and resources
 COPY ./agent ./agent
+COPY ./resources ./resources
 
 # Start the Celery worker and Gunicorn server
 # Create pipeline of multiple commands using Shell Form of CMD (to perform a series of operations)

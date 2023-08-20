@@ -22,8 +22,16 @@ from agent.utils.connection_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 logger = agentlogging.get_logger('prod')
 
 
-# Create Flask app and incorporate Celery task queue
+# Create and start Flask app
 app = Flask(__name__)
+
+# Import triples from 'resources' folder upon app startup
+logger.info("Importing triples from 'resources' folder...")
+kg_client = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
+kg_client.initialise_namespace('./resources')
+logger.info("Successfully imported triples.")
+
+# Launch celery task queue
 celery = Celery(app.name, broker='redis://localhost:6379/0')
 
 
