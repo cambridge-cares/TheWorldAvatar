@@ -1,8 +1,5 @@
 package com.cmclinnovations.stack.services;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.cmclinnovations.stack.clients.core.BasicEndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
