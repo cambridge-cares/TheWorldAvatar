@@ -25,9 +25,9 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 /**
  * combination of UpdateShipsAndSimulationTime & TriggerUpdateDispersion
  */
-@WebServlet(urlPatterns = { "/GenerateData" })
-public class GenerateData extends HttpServlet {
-    private static final Logger LOGGER = LogManager.getLogger(GenerateData.class);
+@WebServlet(urlPatterns = { "/GenerateDataWithShips" })
+public class GenerateDataWithShips extends HttpServlet {
+    private static final Logger LOGGER = LogManager.getLogger(GenerateDataWithShips.class);
     private QueryClient queryClient;
     private DerivationClient devClient;
 
