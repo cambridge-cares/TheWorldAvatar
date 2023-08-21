@@ -20,7 +20,7 @@ class TranslationModel:
         input_ids = self.tokenizer(question, return_tensors="pt").input_ids.to(
             self.model.device
         )
-        output_ids = self.model.generate(input_ids, max_new_tokens=self.max_new_tokens)
+        output_ids = self.model.generate(input_ids=input_ids, max_new_tokens=self.max_new_tokens)
         query = self.tokenizer.decode(output_ids[0], skip_special_tokens=True)
 
         return query
