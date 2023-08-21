@@ -1,32 +1,10 @@
 import os
 import torch
 
-import bitsandbytes as bnb
 from transformers import BitsAndBytesConfig, AutoModelForSeq2SeqLM, AutoTokenizer, PreTrainedModel
 from peft import LoraConfig, TaskType, get_peft_model
 
 from marie.arguments_schema import ModelArguments
-
-
-def find_all_linear_names(model: PreTrainedModel, bits: int):
-    if bits == 4:
-        cls = bnb.nn.Linear4bit  
-    elif bits == 8:
-        cls = bnb.nn.Linear8bitLt
-    else:
-        cls = torch.nn.Linear
-
-    lora_module_names = set()
-    for name, module in model.named_modules():
-        if isinstance(module, cls):
-            names = name.split('.')
-            lora_module_names.add(names[0] if len(names) == 1 else names[-1])
-
-
-    if 'lm_head' in lora_module_names: # needed for 16-bit
-        lora_module_names.remove('lm_head')
-
-    return list(lora_module_names)
 
 
 def get_model(model_args: ModelArguments):
@@ -56,15 +34,12 @@ def get_model(model_args: ModelArguments):
     )
     
     if all(x is not None for x in (model_args.lora_r, model_args.lora_alpha, model_args.lora_dropout)): 
-        target_modules = find_all_linear_names(model, model_args.bits)
-        print("Target modules for LoRA training: ", target_modules)
-        
         lora_config = LoraConfig(
             r=model_args.lora_r,
             lora_alpha=model_args.lora_alpha,
             lora_dropout=model_args.lora_dropout,
             bias="none",
-            target_modules=target_modules,
+            target_modules=["q", "v"],
             task_type=TaskType.SEQ_2_SEQ_LM
         )
 
