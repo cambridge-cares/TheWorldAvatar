@@ -4,7 +4,8 @@ from typing import Optional
 
 @dataclass
 class ModelArguments:
-    model_path: str
+    model_path: str = field(default="google/flan-t5-base")
+    lora_path: Optional[str] = field(default=None)
     # quantization hyperparams
     bits: Optional[int] = field(
         default=None,

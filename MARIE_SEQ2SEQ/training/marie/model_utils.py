@@ -2,12 +2,12 @@ import os
 import torch
 
 from transformers import BitsAndBytesConfig, AutoModelForSeq2SeqLM, AutoTokenizer, PreTrainedModel
-from peft import LoraConfig, TaskType, get_peft_model
+from peft import PeftModel, LoraConfig, TaskType, get_peft_model
 
 from marie.arguments_schema import ModelArguments
 
 
-def get_model(model_args: ModelArguments):
+def get_model(model_args: ModelArguments, is_trainable: bool):
     # if we are in a distributed setting, we need to set the device map per device
     if os.environ.get('LOCAL_RANK') is not None:
         local_rank = int(os.environ.get('LOCAL_RANK', '0'))
@@ -33,7 +33,9 @@ def get_model(model_args: ModelArguments):
         use_auth_token=os.getenv("HF_ACCESS_TOKEN"),
     )
     
-    if all(x is not None for x in (model_args.lora_r, model_args.lora_alpha, model_args.lora_dropout)): 
+    if model_args.lora_path is not None:
+        model = PeftModel.from_pretrained(model, model_args.lora_path, is_trainable=is_trainable)
+    elif all(x is not None for x in (model_args.lora_r, model_args.lora_alpha, model_args.lora_dropout)): 
         lora_config = LoraConfig(
             r=model_args.lora_r,
             lora_alpha=model_args.lora_alpha,
@@ -49,8 +51,8 @@ def get_model(model_args: ModelArguments):
     return model
 
 
-def get_model_and_tokenizer(model_args: ModelArguments):
+def get_model_and_tokenizer(model_args: ModelArguments, is_trainable: bool):
     tokenizer = AutoTokenizer.from_pretrained(model_args.model_path)
-    model = get_model(model_args)
+    model = get_model(model_args, is_trainable)
 
     return model, tokenizer

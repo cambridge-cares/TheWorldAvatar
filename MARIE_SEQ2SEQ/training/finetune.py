@@ -27,7 +27,7 @@ def train():
     )
     model_args, data_args, train_args = hfparser.parse_args_into_dataclasses()
 
-    model, tokenizer = get_model_and_tokenizer(model_args)
+    model, tokenizer = get_model_and_tokenizer(model_args, is_trainable=True)
 
     def _tokenize(examples):
         model_inputs = tokenizer(

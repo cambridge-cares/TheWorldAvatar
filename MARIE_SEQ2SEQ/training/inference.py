@@ -20,7 +20,7 @@ def infer():
     model_args, data_args, infer_args = hfparser.parse_args_into_dataclasses()
 
     trans_model = TranslationModel(
-        model_args.model_path, device="cuda", max_new_tokens=infer_args.max_new_tokens
+        model_args, max_new_tokens=infer_args.max_new_tokens
     )
 
     with open(data_args.eval_data_path, "r") as f:
