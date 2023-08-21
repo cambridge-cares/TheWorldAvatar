@@ -803,35 +803,6 @@ public class Aermod {
         }
     }
 
-    /**
-     * this file sets the centre of the map on first load
-     */
-    void createVisSettingsFile(Point centroid) {
-        JSONObject start = new JSONObject();
-        start.put("center", new JSONArray().put(centroid.getX()).put(centroid.getY()));
-        start.put("zoom", 10.5);
-
-        JSONObject search = new JSONObject();
-        search.put("Name", "name");
-        search.put("ID", "id");
-
-        JSONObject overall = new JSONObject();
-        overall.put("start", start);
-        overall.put("search", search);
-
-        File settingsJson = Paths.get(EnvConfig.VIS_FOLDER, "settings.json").toFile();
-        try {
-            Files.deleteIfExists(settingsJson.toPath());
-        } catch (IOException e) {
-            String errmsg = "Failed to delete settings.json";
-            LOGGER.error(errmsg);
-            LOGGER.error(e.getMessage());
-            throw new RuntimeException(errmsg, e);
-        }
-
-        writeToFile(settingsJson.toPath(), overall.toString(4));
-    }
-
     void createPollutantSubDirectory(PollutantType pollutantType) {
         aermodDirectory.resolve(Pollutant.getPollutantLabel(pollutantType)).toFile().mkdir();
     }
