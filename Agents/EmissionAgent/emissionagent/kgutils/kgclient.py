@@ -61,13 +61,13 @@ class KGClient(PySparqlClient):
             ?dataIRI <{OM_HASUNIT}> ?unit .
             }}
         """
-        query = remove_unnecessary_whitespace(query)
+        query = self.remove_unnecessary_whitespace(query)
         res = self.performQuery(query)
 
         # Extract and return results
         if len(res) == 1:
-            return get_unique_value(res, 'dataIRI'),  \
-                   get_unique_value(res, 'unit')
+            return self.get_unique_value(res, 'dataIRI'),  \
+                   self.get_unique_value(res, 'unit')
 
         else:
             # Throw exception if no or multiple dataIRIs (with units) are found
@@ -112,3 +112,49 @@ class KGClient(PySparqlClient):
             graph = _add_emission_instance(graph, e)
 
         return graph
+    
+
+    #
+    # HELPER FUNCTIONS
+    #
+    def remove_unnecessary_whitespace(self, query: str) -> str:
+        """
+        Remove unnecessary whitespaces
+        """
+        query = ' '.join(query.split())
+        return query
+
+
+    def get_list_of_unique_values(self, res: list, key: str) -> list:
+        """
+        Unpacks a query result list (i.e., list of dicts) into a list of 
+        unique values for the given dict key.
+        """    
+        res_list =  list(set([r.get(key) for r in res]))
+        res_list = [v for v in res_list if v is not None]
+        return res_list
+
+
+    def get_unique_value(self, res: list, key: str, cast_to=None) -> str:
+        """
+        Unpacks a query result list (i.e., list of dicts) into unique 
+        value for the given dict key (returns None if no unique value is found)
+
+        Tries to cast result in case 'cast_to' datatype is provided
+        """
+        
+        res_list =  self.get_list_of_unique_values(res, key)
+        if len(res_list) == 1:
+            # Try to cast retrieved value to target type (throws error if not possible)
+            if cast_to and issubclass(cast_to, bool):
+                res_list[0] = bool(strtobool(res_list[0]))
+            elif cast_to and issubclass(cast_to, (int, float)):
+                res_list[0] = cast_to(res_list[0])
+            return res_list[0]
+        else:
+            if len(res_list) == 0:
+                msg = f"No value found for key: {key}."
+            else:
+                msg = f"Multiple values found for key: {key}."
+            logger.warning(msg)
+            return None
