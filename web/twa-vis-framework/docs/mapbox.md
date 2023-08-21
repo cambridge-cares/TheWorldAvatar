@@ -1,16 +1,16 @@
 # Working with Mapbox
 
-The DTVF supports a number of different data formats and representations; in the case of 2D data, the majority of features offered by the [Mapbox GL JS library](https://docs.mapbox.com/mapbox-gl-js/api/) are supported through the DTVF. 
+The TWA-VF supports a number of different data formats and representations; in the case of 2D data, the majority of features offered by the [Mapbox GL JS library](https://docs.mapbox.com/mapbox-gl-js/api/) are supported through the TWA-VF. 
 
-As the Mapbox API is primarily configured via JSON objects, the DTVF supports passing these through from the `data.json` configuration file. This means that the majority of features supported by Mapbox (e.g. source and layer configuration, filter expressions) are already supported. At the time of writing however, use of the lighting, fog, and projection features are unsupported (these can be added if there is a desire).
+As the Mapbox API is primarily configured via JSON objects, the TWA-VF supports passing these through from the `data.json` configuration file. This means that the majority of features supported by Mapbox (e.g. source and layer configuration, filter expressions) are already supported. At the time of writing however, use of the lighting, fog, and projection features are unsupported (these can be added if there is a desire).
 
-Mapbox is the primary visualisation provider for 2D geographic data within The World Avatar. It has a number of useful features, and is very easy to customise. As such, it's recommended that users create DTVF visualisations using Mapbox, rather than CesiumJS, unless display of 3D data is required.
+Mapbox is the primary visualisation provider for 2D geographic data within The World Avatar. It has a number of useful features, and is very easy to customise. As such, it's recommended that users create TWA-VF visualisations using Mapbox, rather than CesiumJS, unless display of 3D data is required.
 
 <br/>
 
 ## Features and restrictions
 
-Mapbox makes a wide range of features available through the DTVF, the native version of many of these can be see through their extensive [Examples](https://docs.mapbox.com/mapbox-gl-js/example/) page. However, as with any tool, a number of restrictions can also be found.
+Mapbox makes a wide range of features available through the TWA-VF, the native version of many of these can be see through their extensive [Examples](https://docs.mapbox.com/mapbox-gl-js/example/) page. However, as with any tool, a number of restrictions can also be found.
 
 **Features:**
 * Supports a wide range of data formats.
@@ -87,7 +87,7 @@ Mapbox supports a number of different layer formats, use the table below to iden
 | heatmap | Renders a range of colors to represent point density. |
 | hillshade | Renders DRM data on the client-side. |
 
-Specifying a layer within the `data.json` file closely follows the [Mapbox layer format](https://docs.mapbox.com/mapbox-gl-js/style-spec/layers/), with the addition of a few DTVF specific parameters. Required parameters, and DTVF specific ones are detailed in the table below.
+Specifying a layer within the `data.json` file closely follows the [Mapbox layer format](https://docs.mapbox.com/mapbox-gl-js/style-spec/layers/), with the addition of a few TWA-VF specific parameters. Required parameters, and TWA-VF specific ones are detailed in the table below.
 
 | Parameter   | Purpose |
 | ----------- | ------- |

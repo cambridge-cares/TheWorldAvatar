@@ -1,6 +1,6 @@
 # TWA Visualisation Framework
 
-<img align="right" width="250" height="250" src="./docs/img/twavf-logo-padded.svg">
+<img align="right" width="250" height="250" src="./docs/img/twa-vf-logo.svg">
 
 A central framework for TWA Visualisations (the TWA Visualisation Framework, or TWA-VF) has been created so that in most cases, the process of creating a new visualisation to display pre-generated data is as simple as possible. The goal is that a developer who is inexperienced with Typescript (or the JavaScript libraries we're using) can get a reasonable visualisation of the data by simply ensuring the data meets a set format and providing some basic configuration files.
 
@@ -34,7 +34,7 @@ Documentation for the TWA-VF is spread across a number of files, and is broken d
  <em>Example of 2D data on a Mapbox visualisation.</em><br/><br/><br/>
 </p>
 <p align="center">
- <img src="./example-cesium-vis/readme-example.JPG" alt="Example of 3D data on a CesiumJS visualisation" width="75%"/>
+ <img src="./example-cesium-vis/readme-styling.JPG" alt="Example of 3D data on a CesiumJS visualisation" width="75%"/>
 </p>
 <p align="center">
  <em>Example of 3D data on a CesiumJS visualisation.</em>
