@@ -4,6 +4,7 @@ package uk.ac.cam.cares.jps.agent.assetmanager;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.jooq.False;
+import org.jooq.UpdateQuery;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -25,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.bigdata.bop.Var;
+import com.github.jsonldjava.core.RDFDataset.Literal;
 import com.martiansoftware.jsap.Switch;
 
 import java.rmi.Remote;
@@ -73,7 +75,6 @@ public class AssetKGInterface {
     private static final Iri hasItemInventoryIdentifier = P_ASSET.iri("hasItemInventoryIdentifier");
     private static final Iri references = P_ASSET.iri("references");
     private static final Iri assignedTo = P_ASSET.iri("assignedTo");
-    private static final Iri suppliedBy = P_ASSET.iri("suppliedBy");
     private static final Iri serialNumber = P_ASSET.iri("serialNumber");
     private static final Iri isStoredIn = P_ASSET.iri("isStoredIn");
     private static final Iri availableAt = P_ASSET.iri("availableAt");
@@ -87,7 +88,7 @@ public class AssetKGInterface {
     private static final Iri hasPurchaseOrderLine = P_ASSET.iri("hasPurchaseOrderLine");
     private static final Iri deliveryOrderNumber = P_ASSET.iri("deliveryOrderNumber");
     private static final Iri purchaseOrderNumber = P_ASSET.iri("purchaseOrderNumber");
-    private static final Iri hasPriceDetail = P_ASSET.iri("hasPriceDetail");
+    private static final Iri hasPriceDetails = P_ASSET.iri("hasPriceDetails");
 
     private static final Iri hasDataSheet = P_DEV.iri("hasDataSheet");
     private static final Iri hasPrice = P_DEV.iri("hasPrice");
@@ -103,6 +104,7 @@ public class AssetKGInterface {
     private static final Iri invoiceNumber = P_P2P_INVOICE.iri("invoiceNumber");
     private static final Iri hasInvoiceLine = P_P2P_INVOICE.iri("hasInvoiceLine");
     private static final Iri hasItem = P_P2P_DOCLINE.iri("hasItem");
+    private static final Iri InvoicedQuantity = P_P2P_DOCLINE.iri("InvoicedQuantity"); 
 
     private static final Iri hasGivenName = P_FIBO_AAP.iri("People/hasGivenName");
     private static final Iri hasLegalName = iri("https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/hasLegalName");
@@ -112,6 +114,28 @@ public class AssetKGInterface {
     private static final Iri containsElement = P_BOT.iri("containsElement");
 
     //External classes
+    private static final Iri Item = P_P2P_ITEM.iri("Item");
+    
+    private static final Iri SpecSheet = P_ASSET.iri("SpecSheet");
+    private static final Iri Manual = P_ASSET.iri("Manual");
+    private static final Iri Workspace = P_ASSET.iri("Workspace");
+    private static final Iri ServiceCategory = P_ASSET.iri("ServiceCategory");
+    private static final Iri DeliveryOrder = P_ASSET.iri("DeliveryOrder");
+    private static final Iri DeliveryOrderLine = P_ASSET.iri("DeliveryOrderLine"); 
+    private static final Iri PurchaseOrder = P_ASSET.iri("PurchaseOrder");
+    private static final Iri PurchaseOrderLine = P_ASSET.iri("PurchaseOrderLine");
+    private static final Iri E_Invoice = P_ASSET.iri("E-Invoice");
+    private static final Iri InvoiceLine = P_ASSET.iri("InvoiceLine");
+    private static final Iri PriceDetails = P_ASSET.iri("PriceDetails");
+    private static final Iri HomeTotalDiscountedAfterTaxPrice = P_ASSET.iri("HomeTotalDiscountedAfterTaxPrice");
+
+    private static final Iri Person = P_FIBO_AAP.iri("Person");
+    private static final Iri PersonName = P_FIBO_AAP.iri("PersonName");
+    private static final Iri FormalOrganization = P_FIBO_ORG.iri("FormalOrganization");
+    private static final Iri OrganizationName = P_FIBO_ORG.iri("OrganizationName");
+
+    private static final Iri AmountOfMoney = P_OM.iri("AmountOfMoney");
+    private static final Iri Measure = P_OM.iri("Measure");
     private static final Iri SingaporeDollar = P_OM.iri("SingaporeDollar");
 
     /**
@@ -267,6 +291,268 @@ public class AssetKGInterface {
     }
 
     /*
+     * Create new instances
+     */
+    private void createInstance(JSONObject assetData) {
+
+    }
+
+    private void createAssetNameSpace (JSONObject data){
+        //Asset namespace query
+        ModifyQuery  query = Queries.MODIFY();
+        //Device
+        Iri deviceIRIVar = iri(data.getString("deviceIRI"));
+        Iri deviceTypeIRI = iri(data.getString("deviceType"));
+        String ID = data.getString("ID");
+        Iri itemIRIVar = iri(data.getString("itemIRI"));
+        String labelLiteralVar = data.getString("label");
+        //Owner and human
+        Iri PersonIRI = iri(data.getString("personIRI"));
+        Iri personNameIRI = iri(data.getString("personNameIRI"));
+        String deviceOwnerLiteral = data.getString("assignedTo");
+        //Serial and model number
+        String serialNumberLiteral = data.getString("serialNum");
+        String modelNumber = data.getString("modelNumber");
+        //price and money
+        Iri amountOfMoneyVar = iri(data.getString("amtMoney"));
+        Iri priceMeasureIRI = iri(data.getString("priceMeasureIRI"));
+        String priceLiteral = data.getString("price");
+        Iri priceCurrencyIRI = iri(data.getString("currencyIRI"));
+        //Storage
+        Iri storageIRI = iri(data.getString(("storage")));
+        //Spec sheets and manual
+        String manualURL = data.getString("manualURL");
+        Iri SpecSheetIRI = iri(data.getString("SpecSheetIRI")); 
+        String SpecSheetFileLiteral = data.getString("SpecSheet"); 
+        String SpecSheetPageLiteral = data.getString("SpecSheetPage");
+
+        Iri ManualIRI = iri(data.getString("SpecSheetIRI")); 
+        String ManualFileLiteral = data.getString("SpecSheet"); 
+
+
+        //Supplier and manuf
+        Iri supplierIRIVar = iri(data.getString("suppliedBy"));
+        Iri SupplierOrgIRI = iri(data.getString("SupplierOrgIRI"));
+        Iri SupplierNameIRI = iri(data.getString("SupplierNameIRI"));
+        String SupplierNameLiteral = data.getString("SupplierName");
+        Iri ManufacturerOrgIRI = iri(data.getString("ManufacturerIRI"));
+        Iri ManufacturerNameIRI = iri(data.getString("ManufacturerNameIRI"));
+        String ManufacturerNameLiteral = data.getString("ManufacturerName");
+
+
+        /*
+         * INSTANTIATE QUERY
+         */
+        //Classes
+        query.insert(deviceIRIVar.isA(deviceTypeIRI));
+        query.insert(itemIRIVar.isA(Item));
+
+
+
+        //Device
+        query.insert(deviceIRIVar.has(hasItemInventoryIdentifier, Rdf.literalOf(ID)));
+        //get Item IRI from device IRI from asset namespace
+        query.insert(itemIRIVar.has(references, deviceIRIVar));
+
+        //While we're querying the asset namespace, query for other available info too
+        //Device name from asset list
+        query.insert(deviceIRIVar.has(RDFS.LABEL, Rdf.literalOf(labelLiteralVar)));
+        //Device owner from asset list
+        query.insert(PersonIRI.isA(Person));
+        query.insert(personNameIRI.isA(PersonName));
+        query.insert(deviceIRIVar.has(assignedTo, PersonIRI));
+        query.insert(PersonIRI.has(hasName, personNameIRI));
+        query.insert(personNameIRI.has(hasGivenName, Rdf.literalOf(deviceOwnerLiteral)));
+
+        //Optional IRIs
+        //Serial number
+        if (!serialNumberLiteral.isBlank()){
+            query.insert(deviceIRIVar.has(serialNumber, Rdf.literalOf(serialNumberLiteral)));
+        }
+        //model number
+        if (!modelNumber.isBlank()){
+            query.insert(deviceIRIVar.has(hasModel, modelNumber));
+        }
+        //manual URL
+        if (!manualURL.isBlank()){
+            query.insert(deviceIRIVar.has(RDFS.SEEALSO, Rdf.literalOf(manualURL)));
+        }
+        //Price
+        if(!priceLiteral.isBlank()){
+            query.insert(amountOfMoneyVar.isA(AmountOfMoney));
+            query.insert(priceMeasureIRI.isA(Measure));
+            query.insert(deviceIRIVar.has(hasPrice, amountOfMoneyVar));
+            query.insert(amountOfMoneyVar.has(hasValue, priceMeasureIRI));
+            query.insert(priceMeasureIRI.has(hasNumericalValue, Rdf.literalOf(priceLiteral)));
+            query.insert(priceMeasureIRI.has(hasUnit, priceCurrencyIRI));
+        }
+
+        //Stored in -- Assumes the storage IRI exist somewhere
+        if(storageIRI != null){
+            query.insert(deviceIRIVar.has(isStoredIn, storageIRI));
+        }
+        
+        //Datasheet
+        if(!SpecSheetFileLiteral.isBlank()){
+            query.insert(SpecSheetIRI.isA(SpecSheet));
+            query.insert(deviceIRIVar.has(hasDataSheet, SpecSheetIRI));
+            query.insert(SpecSheetIRI.has(availableAt, SpecSheetFileLiteral));
+            if (!SpecSheetPageLiteral.isBlank()){
+                query.insert(SpecSheetIRI.has(RDFS.COMMENT, Rdf.literalOf(SpecSheetPageLiteral)));
+            }
+        }
+        //Manual
+        if(!ManualFileLiteral.isBlank()){
+            query.insert(ManualIRI.isA(Manual));
+            query.insert(deviceIRIVar.has(hasDataSheet, ManualIRI));
+            query.insert(ManualIRI.has(availableAt, ManualFileLiteral));
+        }
+
+        //Supplier & manufacturer
+        if (!ManufacturerNameLiteral.isBlank()){
+            query.insert(ManufacturerOrgIRI.isA(FormalOrganization));
+            query.insert(ManufacturerNameIRI.isA(OrganizationName));
+            query.insert(deviceIRIVar.has(isManufacturedBy, ManufacturerOrgIRI));
+            query.insert(ManufacturerOrgIRI.has(hasName, ManufacturerNameIRI));
+            query.insert(ManufacturerNameIRI.has(hasName, ManufacturerNameLiteral));
+        }
+        if(!SupplierNameLiteral.isBlank()){
+            query.insert(SupplierOrgIRI.isA(FormalOrganization));
+            query.insert(SupplierNameIRI.isA(OrganizationName));
+            query.insert(deviceIRIVar.has(isSuppliedBy, ManufacturerOrgIRI));
+            query.insert(ManufacturerOrgIRI.has(hasName, ManufacturerNameIRI));
+            query.insert(ManufacturerNameIRI.has(hasName, ManufacturerNameLiteral));
+        }
+
+        storeClientAsset.executeUpdate(query.getQueryString());
+    }
+
+    private void createDeviceNameSpace (JSONObject data){
+        ModifyQuery query = Queries.MODIFY();
+        Iri deviceIRI = iri(data.getString("deviceIRI"));
+        Iri deviceTypeIRI = iri(data.getString("deviceTypeIRI"));
+        Iri roomtypeIRI = iri(data.getString("RoomTypeIRI"));
+        Iri roomIRI = iri(data.getString("RoomIRI"));
+        Iri WorkspaceOwnerIRI = iri(data.getString("WorkspaceOwner"));
+        Iri WorkspaceIRI = iri(data.getString("WorkspaceIRI"));
+        String WorkspaceIDLiteral = data.getString("WorkspaceID");
+        
+        //Query
+        //get device type
+        query.insert(deviceIRI.isA(deviceTypeIRI));
+        //get location
+        if(roomIRI != null){
+            query.insert(roomIRI.isA(roomtypeIRI));
+            query.insert(roomIRI.has(containsElement, deviceIRI));
+            //Workspace
+            //NOTE when transcribing to update query, add isLocatedIn, hasAllocatedWorkspace
+            if(!WorkspaceIDLiteral.isBlank()){
+                query.insert(WorkspaceIRI.isA(Workspace));
+                query.insert(deviceIRI.has(isLocatedAt, WorkspaceIRI));
+                query.insert(WorkspaceIRI.has(isLocatedIn, roomIRI));
+                query.insert(WorkspaceOwnerIRI.has(hasAllocatedWorkspace, WorkspaceIRI));
+            }
+        }
+
+        storeClientDevice.executeQuery(query.getQueryString());
+    }
+
+    private void createPurchaseDocNamespace (JSONObject data){
+        ModifyQuery query = Queries.MODIFY();
+        Iri itemIRI = iri(data.getString("itemIRI"));
+        String itemNameLiteral = data.getString("itemName");
+        String itemCommentLiteral = data.getString("itemComment");
+        Iri ServiceCategoryIRI = iri(data.getString("ServiceCategoryIRI"));
+        String ServiceCategoryNameLiteral = data.getString("ServiceCategoryName");
+        String ServiceCategoryTypeLiteral = data.getString("ServiceCategoryType");
+        //invoice instances
+        Iri InvoiceIRI = iri(data.getString("InvoiceIRI"));
+        String InvoiceNumLiteral = data.getString("InvoiceNum");
+        Iri invoiceLineIRI = iri(data.getString("InvoiceLineIRI"));
+        Variable DeliveryOrderIRI = SparqlBuilder.var("DeliveryOrderIRI");
+        Variable PurchaseOrderIRI = SparqlBuilder.var("PurchaseOrderIRI");
+        Variable DeliveryOrderLineIRI = SparqlBuilder.var("DeliveryOrderLineIRI");
+        Variable DeliveryOrderNumLiteral = SparqlBuilder.var("DeliveryOrderNum");
+        Variable PurchaseOrderLineIRI = SparqlBuilder.var("PurchaseOrderLineIRI");
+        Variable PurchaseOrderNumLiteral = SparqlBuilder.var("PurchaseOrderNum");
+        Variable invoicedQuantityLiteral = SparqlBuilder.var("invoicedQUantity");
+        //price instances
+        Variable priceDetailsIRI = SparqlBuilder.var("priceDetailsIRI");
+        Variable priceIRI = SparqlBuilder.var("priceIRI");
+        Variable priceMeasureIRI = SparqlBuilder.var("priceMeasureIRI");
+        Variable priceLiteral = SparqlBuilder.var("price");
+        Variable priceCurrencyIRI = SparqlBuilder.var("currencyIRI");
+
+        //NOTE
+        //When transcribing to update query, add isSuppliedBy and isManufacturedBy to ItemIRI
+        //Invoice, PO, and DO are OPTIONAL
+
+
+        //QUERY
+        //item data
+        query.insert(itemIRI.isA(Item));
+        query.insert(ServiceCategoryIRI.isA(ServiceCategory));
+        query.insert(itemIRI.has(itemName, Rdf.literalOf(itemNameLiteral)));
+        query.insert(itemIRI.has(RDFS.COMMENT, Rdf.literalOf(itemCommentLiteral)));
+        query.insert(ServiceCategoryIRI.has(attributeName, ServiceCategoryTypeLiteral));
+        query.insert(ServiceCategoryIRI.has(attributeValue, ServiceCategoryNameLiteral));
+        //OPTIONAL QUERIES
+
+        //Invoice, DO and PO
+        //Invoice
+        if(!InvoiceNumLiteral.isBlank()){
+            query.insert(InvoiceIRI.isA(E_Invoice));
+            query.insert(invoiceLineIRI.isA(InvoiceLine));
+            query.insert(invoiceLineIRI.has(hasItem, itemIRI));
+            query.insert(InvoiceIRI.has(hasInvoiceLine, invoiceLineIRI));
+            query.insert(InvoiceIRI.has(invoiceNumber, InvoiceNumLiteral));
+            query.insert(invoiceLineIRI.has(hasItem, itemIRI));
+            query.insert(invoiceLineIRI.has(InvoicedQuantity, invoicedQuantityLiteral));
+        }
+
+        //DO
+        if(!DeliveryOrderNumLiteral.isBlank()){
+            query.insert(DeliveryOrderIRI.isA(DeliveryOrder));
+            query.insert(DeliveryOrderLineIRI.isA(DeliveryOrderLine));
+            query.insert(DeliveryOrderLineIRI.has(hasItem, itemIRI));
+            query.insert(DeliveryOrderIRI.has(hasDeliveryOrderLine, DeliveryOrderLineIRI));
+            query.insert(DeliveryOrderIRI.has(deliveryOrderNumber, DeliveryOrderNumLiteral));
+            query.insert(DeliveryOrderIRI.has(InvoicedQuantity,invoicedQuantityLiteral));
+        }
+
+        //PO
+        if(!PurchaseOrderNumLiteral.isBlank()){
+            query.insert(PurchaseOrderIRI.isA(PurchaseOrder));
+            query.insert(PurchaseOrderLineIRI.isA(PurchaseOrderLine));
+            query.insert(PurchaseOrderLineIRI.has(hasItem, itemIRI));
+            query.insert(PurchaseOrderIRI.has(hasPurchaseOrderLine, PurchaseOrderLineIRI));
+            query.insert(PurchaseOrderIRI.has(purchaseOrderNumber, PurchaseOrderNumLiteral));
+            query.insert(PurchaseOrderIRI.has(InvoicedQuantity,invoicedQuantityLiteral));
+        }
+        
+        //Price
+        //NOTE When transcribing to update query, add connections to DO and PO
+        if(!priceLiteral.isBlank()){
+            query.insert(priceDetailsIRI.isA(PriceDetails));
+            query.insert(priceIRI.isA(HomeTotalDiscountedAfterTaxPrice));
+            query.insert(priceMeasureIRI.isA(Measure));
+            query.insert(invoiceLineIRI.has(hasPriceDetails, priceDetailsIRI));
+            query.insert(priceDetailsIRI.has(hasPrice, priceIRI));
+            query.insert(priceIRI.has(hasValue, priceMeasureIRI));
+            query.insert(priceMeasureIRI.has(hasNumericalValue, Rdf.literalOf(priceLiteral)));
+            query.insert(priceMeasureIRI.has(hasUnit, priceCurrencyIRI));
+            if(!InvoiceNumLiteral.isBlank()){query.insert(invoiceLineIRI.has(hasPriceDetails, priceDetailsIRI));}
+            if(!DeliveryOrderNumLiteral.isBlank()){query.insert(DeliveryOrderLineIRI.has(hasPriceDetails, priceDetailsIRI));}
+            if(!PurchaseOrderNumLiteral.isBlank()){query.insert(PurchaseOrderLineIRI.has(hasPriceDetails, priceDetailsIRI));}
+        }
+        
+
+        storeClientPurchDoc.executeQuery(query.getQueryString());
+    }
+    
+
+
+    /*
      * Create new IRI
      */
     private Iri genIRI (String ID, Prefix prefix) {
@@ -284,6 +570,13 @@ public class AssetKGInterface {
         JSONObject result = new JSONObject();
         JSONObject assetNamespaceResult = retrieveAssetNamespace(ID);
 
+        Iri deviceIRI, itemIRI;
+        deviceIRI = iri(assetNamespaceResult.getString("deviceIRI"));
+        itemIRI = iri(assetNamespaceResult.getString("itemIRI"));
+
+        JSONObject deviceNamespaceResult = retrieveDeviceNamespace(deviceIRI);
+        JSONObject PurchDocNamespaceResult = retrievePurchaseDocNamespace(itemIRI);
+
         return result;
     }
 
@@ -292,8 +585,8 @@ public class AssetKGInterface {
 
         //Asset namespace query
         SelectQuery query = Queries.SELECT();
-        Variable deviceIRIVar = SparqlBuilder.var("deviceVar");
-        Variable itemIRIVar = SparqlBuilder.var("itemVar");
+        Variable deviceIRIVar = SparqlBuilder.var("deviceIRI");
+        Variable itemIRIVar = SparqlBuilder.var("itemIRI");
         Variable labelLiteralVar = SparqlBuilder.var("label");
         //Owner and human
         Variable PersonIRI = SparqlBuilder.var("personIRI");
@@ -315,14 +608,12 @@ public class AssetKGInterface {
         Variable SpecSheetPageLiteral = SparqlBuilder.var("SpecSheetPage");
         Variable SpecSheetTypeIRI = SparqlBuilder.var("SpecSheetType");//Should be between manual and specsheet
         //Supplier and manuf
-        Variable supplierIRIVar = SparqlBuilder.var("suppliedBy");
         Variable SupplierOrgIRI = SparqlBuilder.var("SupplierOrgIRI");
         Variable SupplierNameIRI = SparqlBuilder.var("SupplierNameIRI");
         Variable SupplierNameLiteral = SparqlBuilder.var("SupplierName");
         Variable ManufacturerOrgIRI = SparqlBuilder.var("ManufacturerIRI");
         Variable ManufacturerNameIRI = SparqlBuilder.var("ManufacturerNameIRI");
         Variable ManufacturerNameLiteral = SparqlBuilder.var("ManufacturerName");
-        Variable deviceTypeIRI = SparqlBuilder.var("deviceTypeIRI");
 
 
         /*
@@ -345,8 +636,6 @@ public class AssetKGInterface {
         query.where(deviceIRIVar.has(assignedTo, PersonIRI));
         query.where(PersonIRI.has(hasName, personNameIRI));
         query.where(personNameIRI.has(hasGivenName, deviceOwnerLiteral));
-        //Device supplier
-        query.where(deviceIRIVar.has(suppliedBy, supplierIRIVar));
         //Optional IRIs
         //Serial number
         query.where(GraphPatterns.optional(deviceIRIVar.has(serialNumber, serialNumberIRI)));
