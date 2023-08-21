@@ -89,6 +89,7 @@ public class QueryClient {
     private static final Iri DISPERSION_RASTER = P_DISP.iri("DispersionRaster");
     private static final Iri DISPERSION_COLOUR_BAR = P_DISP.iri("DispersionColourBar");
     private static final Iri SHIPS_LAYER = P_DISP.iri("ShipsLayer");
+    private static final Iri BUILDINGS_LAYER = P_DISP.iri("BuildingsLayer");
     private static final Iri CITIES_NAMESPACE = P_DISP.iri("OntoCityGMLNamespace");
     private static final Iri STATIC_POINT_SOURCE_LAYER = P_DISP.iri("StaticPointSourceLayer");
 
@@ -238,6 +239,9 @@ public class QueryClient {
         String shipsLayerIri = PREFIX + UUID.randomUUID();
         modify.insert(iri(shipsLayerIri).isA(SHIPS_LAYER));
 
+        String buildingsLayerIri = PREFIX + UUID.randomUUID();
+        modify.insert(iri(buildingsLayerIri).isA(BUILDINGS_LAYER));
+
         String staticPointSourceLayerIri = PREFIX + UUID.randomUUID();
         modify.insert(iri(staticPointSourceLayerIri).isA(STATIC_POINT_SOURCE_LAYER));
 
@@ -248,6 +252,7 @@ public class QueryClient {
 
         tsList.add(shipsLayerIri);
         tsList.add(staticPointSourceLayerIri);
+        tsList.add(buildingsLayerIri);
         List<Class<?>> dataClass = Collections.nCopies(tsList.size(), String.class);
 
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
@@ -266,6 +271,7 @@ public class QueryClient {
         if (citiesNamespace != null)
             inputs.add(citiesNamespaceIri);
         entityList.add(shipsLayerIri);
+        entityList.add(buildingsLayerIri);
         entityList.add(staticPointSourceLayerIri);
 
         String derivation = derivationClient.createDerivationWithTimeSeries(
@@ -300,6 +306,34 @@ public class QueryClient {
 
         // get IRI of sim time
         query.where(simTime.isA(SIMULATION_TIME)).prefix(P_DISP);
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+        List<String> simTimes = new ArrayList<>();
+        for (int i = 0; i < queryResult.length(); i++) {
+            simTimes.add(queryResult.getJSONObject(i).getString(simTime.getQueryString().substring(1)));
+        }
+        // update derivation timestamp of simulation time to trigger update
+        derivationClient.updateTimestamps(simTimes);
+    }
+
+    void updateSimulationTime(String derivation, long newValue) {
+        Iri isDerivedFrom = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
+        ModifyQuery modify = Queries.MODIFY();
+
+        SelectQuery query = Queries.SELECT();
+        Variable simTime = query.var();
+        Variable simTimeMeasure = query.var();
+        Variable oldValue = query.var();
+        GraphPattern gp = GraphPatterns.and(iri(derivation).has(isDerivedFrom, simTime),
+                simTime.isA(SIMULATION_TIME).andHas(HAS_VALUE, simTimeMeasure),
+                simTimeMeasure.has(HAS_NUMERICALVALUE, oldValue));
+
+        modify.insert(simTimeMeasure.has(HAS_NUMERICALVALUE, newValue))
+                .delete(simTimeMeasure.has(HAS_NUMERICALVALUE, oldValue)).where(gp).prefix(P_DISP, P_OM);
+
+        storeClient.executeUpdate(modify.getQueryString());
+
+        // get IRI of sim time
+        query.where(iri(derivation).has(isDerivedFrom, simTime), simTime.isA(SIMULATION_TIME)).prefix(P_DISP);
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
         List<String> simTimes = new ArrayList<>();
         for (int i = 0; i < queryResult.length(); i++) {

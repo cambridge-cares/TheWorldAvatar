@@ -338,6 +338,7 @@ public class Aermod {
         String staticPointSourceLayer = UUID.randomUUID().toString();
         gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, staticPointSourceLayer,
                 featureCollection.toString(), new Ogr2OgrOptions(), false);
+        geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
                 staticPointSourceLayer, new GeoServerVectorSettings());
 

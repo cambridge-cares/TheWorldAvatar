@@ -4,6 +4,7 @@ import org.locationtech.jts.geom.LinearRing;
 import org.locationtech.jts.geom.Point;
 
 public class Building {
+    private String iri;
     private LinearRing footPrint;
     private double height;
     private Point location;
@@ -39,4 +40,11 @@ public class Building {
         return location;
     }
 
+    public void setIri(String iri) {
+        this.iri = iri;
+    }
+
+    public String getIri() {
+        return iri;
+    }
 }

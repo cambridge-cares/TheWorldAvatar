@@ -52,7 +52,7 @@ public class GenerateDataWithShips extends HttpServlet {
                 return;
             }
 
-            queryClient.updateSimulationTime(timestamp);
+            queryClient.updateSimulationTime(derivation, timestamp);
             devClient.updatePureSyncDerivation(derivation);
         }
     }

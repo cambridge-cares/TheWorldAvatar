@@ -193,6 +193,7 @@ public class BuildingsData {
             double height = aveRoofZ - aveGroundZ;
 
             Building bd = new Building(basePolygon, height);
+            bd.setIri(ocgmlIRI);
             buildings.add(bd);
 
         }

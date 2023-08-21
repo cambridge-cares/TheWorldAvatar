@@ -110,6 +110,7 @@ public class AermodAgent extends DerivationAgent {
                 throw new JPSRuntimeException("Could not set building properties.");
             }
         }
+        String buildingsLayer = queryClient.createBuildingsLayer(buildings);
 
         // update derivation of ships (on demand)
         List<String> derivationsToUpdate = queryClient.getDerivationsOfPointSources(allSources);
@@ -236,7 +237,7 @@ public class AermodAgent extends DerivationAgent {
         aermod.uploadRasterToPostGIS(srid, append);
 
         queryClient.updateOutputs(derivationInputs.getDerivationIRI(), dispersionOutput, shipLayerName, simulationTime,
-                staticPointSourceLayer);
+                staticPointSourceLayer, buildingsLayer);
     }
 
     /**

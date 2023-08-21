@@ -14,9 +14,11 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.jooq.DSLContext;
+import org.jooq.Field;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -26,6 +28,11 @@ import org.locationtech.jts.geom.Point;
 import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
 
 import com.cmclinnovations.aermod.sparqlbuilder.ValuesPattern;
+import com.cmclinnovations.stack.clients.gdal.GDALClient;
+import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
+import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -58,8 +65,11 @@ import java.sql.Statement;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -135,10 +145,9 @@ public class QueryClient {
     private static final Iri LOCATION = P_DISP.iri("Location");
 
     // outputs (belongsTo)
-    private static final String DISPERSION_MATRIX = PREFIX_DISP + "DispersionMatrix";
-    private static final String DISPERSION_LAYER = PREFIX_DISP + "DispersionLayer";
     private static final String SHIPS_LAYER = PREFIX_DISP + "ShipsLayer";
     private static final String STATIC_POINT_SOURCE_LAYER = PREFIX_DISP + "StaticPointSourceLayer";
+    private static final String BUILDINGS_LAYER = PREFIX_DISP + "BuildingsLayer";
 
     // properties
     private static final Iri HAS_PROPERTY = P_DISP.iri("hasProperty");
@@ -965,18 +974,18 @@ public class QueryClient {
     }
 
     boolean tableExists(String tableName) {
-        String condition = String.format("table_name = '%s'", tableName);
-        boolean tableCheck = false;
         try (Connection conn = rdbStoreClient.getConnection()) {
-            tableCheck = getContext(conn).select(DSL.count()).from("information_schema.tables").where(condition)
-                    .fetchOne(0,
-                            int.class) == 1;
+            return tableExists(tableName, conn);
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
             return false;
         }
+    }
 
-        return tableCheck;
+    boolean tableExists(String tableName, Connection conn) {
+        String condition = String.format("table_name = '%s'", tableName);
+        return getContext(conn).select(DSL.count()).from("information_schema.tables").where(condition).fetchOne(0,
+                int.class) == 1;
     }
 
     public void setElevation(List<StaticPointSource> pointSources, List<Building> buildings, int simulationSrid) {
@@ -1064,7 +1073,7 @@ public class QueryClient {
     }
 
     void updateOutputs(String derivation, DispersionOutput dispersionOutput, String shipLayer, long timeStamp,
-            String staticPointSourceLayer) {
+            String staticPointSourceLayer, String buildingsLayer) {
         SelectQuery query = Queries.SELECT();
 
         Variable entity = query.var();
@@ -1119,7 +1128,7 @@ public class QueryClient {
         Variable entityType = SparqlBuilder.var("entityType");
         Variable layerVar = SparqlBuilder.var("layerVar");
         ValuesPattern<Iri> valuesPattern = new ValuesPattern<>(entityType,
-                List.of(iri(SHIPS_LAYER), iri(STATIC_POINT_SOURCE_LAYER)), Iri.class);
+                List.of(iri(SHIPS_LAYER), iri(STATIC_POINT_SOURCE_LAYER), iri(BUILDINGS_LAYER)), Iri.class);
 
         query2.where(layerVar.isA(entityType).andHas(belongsTo, iri(derivation)), valuesPattern).prefix(P_DISP);
 
@@ -1135,6 +1144,9 @@ public class QueryClient {
             } else if (entityTypeString.contentEquals(STATIC_POINT_SOURCE_LAYER) && staticPointSourceLayer != null) {
                 tsDataList.add(entityIri);
                 tsValuesList.add(List.of(staticPointSourceLayer));
+            } else if (entityTypeString.contentEquals(BUILDINGS_LAYER) && buildingsLayer != null) {
+                tsDataList.add(entityIri);
+                tsValuesList.add(List.of(buildingsLayer));
             }
         }
 
@@ -1159,4 +1171,92 @@ public class QueryClient {
         }
     }
 
+    String createBuildingsLayer(List<Building> buildings) {
+        String buildingsTable = "buildings";
+        String buildingsLayer = null;
+        if (!buildings.isEmpty()) {
+            JSONObject featureCollection = new JSONObject();
+            featureCollection.put("type", "FeatureCollection");
+
+            JSONArray features = new JSONArray();
+            try (Connection conn = rdbStoreClient.getConnection()) {
+                // only new buildings are added to the table
+                boolean tableExists = tableExists(buildingsTable, conn);
+                buildings.stream().filter(building -> !buildingExists(building, conn, buildingsTable, tableExists))
+                        .forEach(building -> {
+                            JSONObject feature = new JSONObject();
+                            feature.put("type", "Feature");
+
+                            JSONObject properties = new JSONObject();
+                            properties.put("color", "#666666");
+                            properties.put("opacity", 0.66);
+                            properties.put("base", 0);
+                            properties.put("height", building.getHeight());
+                            properties.put("iri", building.getIri());
+                            feature.put("properties", properties);
+
+                            JSONObject geometry = new JSONObject();
+                            geometry.put("type", "Polygon");
+                            JSONArray coordinates = new JSONArray();
+
+                            JSONArray footprintPolygon = new JSONArray();
+                            String srid = building.getSrid();
+                            for (Coordinate coordinate : building.getFootprint().getCoordinates()) {
+                                JSONArray point = new JSONArray();
+                                double[] xyOriginal = { coordinate.getX(), coordinate.getY() };
+                                double[] xyTransformed = CRSTransformer.transform(srid, "EPSG:4326", xyOriginal);
+                                point.put(xyTransformed[0]).put(xyTransformed[1]);
+                                footprintPolygon.put(point);
+                            }
+                            coordinates.put(footprintPolygon);
+                            geometry.put("coordinates", coordinates);
+
+                            feature.put("geometry", geometry);
+                            features.put(feature);
+                        });
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+            featureCollection.put("features", features);
+
+            GDALClient gdalClient = GDALClient.getInstance();
+            gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, buildingsTable,
+                    featureCollection.toString(), new Ogr2OgrOptions(), true);
+
+            GeoServerClient geoServerClient = GeoServerClient.getInstance();
+            geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
+
+            // only plot buildings that are used in this timestep
+            Set<String> buildingSet = new HashSet<>();
+            buildings.forEach(building -> buildingSet.add(String.format("'%s'", building.getIri())));
+            String buildingIriList = buildingSet.stream().collect(Collectors.joining(","));
+
+            String sql = String.format("SELECT * FROM %s WHERE iri IN (%s)", buildingsTable, buildingIriList);
+
+            GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
+
+            UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
+            virtualTable.setSql(sql);
+            virtualTable.setEscapeSql(true);
+            virtualTable.setName("buildingVirtualTable");
+            LOGGER.info(virtualTable.getName());
+            geoServerVectorSettings.setVirtualTable(virtualTable);
+
+            buildingsLayer = UUID.randomUUID().toString();
+            geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
+                    buildingsLayer, geoServerVectorSettings);
+        }
+
+        return buildingsLayer;
+    }
+
+    boolean buildingExists(Building building, Connection conn, String buildingsTable, boolean tableExists) {
+        boolean exists = false;
+        if (tableExists) {
+            Field<String> iriColumn = DSL.field(DSL.name("iri"), String.class);
+            exists = getContext(conn).fetchExists(DSL.table(buildingsTable), iriColumn.eq(building.getIri()));
+        }
+        return exists;
+    }
 }
