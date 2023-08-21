@@ -323,6 +323,44 @@ FILTER(?ViscosityValue < 54 || ?ViscosityValue > 87)
                     ],
                 ),
             ),
+            # two identical properties
+            (
+                AbstractQueryRep(
+                    result_clause="SELECT DISTINCT ?MolecularWeightValue ?MolecularWeightValue",
+                    where_clause=[
+                        "?SpeciesIRI ?hasIdentifier ?species .",
+                        'FILTER( ?species = "C22H29FO4")',
+                        "?SpeciesIRI os:hasPropertyMolecularWeight ?MolecularWeightValue .",
+                        "?SpeciesIRI os:hasPropertyMolecularWeight ?MolecularWeightValue .",
+                    ],
+                ),
+                AbstractQueryRep(
+                    result_clause="SELECT DISTINCT ?label ?MolecularWeightValue ?MolecularWeightUnitValue ?MolecularWeightReferenceStateValue ?MolecularWeightReferenceStateUnitValue ?MolecularWeightValue ?MolecularWeightUnitValue ?MolecularWeightReferenceStateValue ?MolecularWeightReferenceStateUnitValue",
+                    where_clause=[
+                        "?SpeciesIRI rdf:type os:Species ; rdfs:label ?label .",
+                        "?SpeciesIRI ?hasIdentifier ?IdentifierIRI .",
+                        "?IdentifierIRI rdf:type ?Identifier ; os:value ?species .",
+                        "?Identifier rdfs:subClassOf os:Identifier .",
+                        'FILTER( ?species = "C22H29FO4")',
+                        "?SpeciesIRI os:hasMolecularWeight ?MolecularWeightIRI .",
+                        "?MolecularWeightIRI os:value ?MolecularWeightValue ; os:unit ?MolecularWeightUnitIRI ; os:hasProvenance ?MolecularWeightProvenanceIRI .",
+                        "?MolecularWeightUnitIRI rdfs:label ?MolecularWeightUnitValue .",
+                        (
+                            "OPTIONAL{?MolecularWeightIRI os:hasReferenceState ?MolecularWeightReferenceStateIRI .\n"
+                            "?MolecularWeightReferenceStateIRI os:value ?MolecularWeightReferenceStateValue ; os:unit ?MolecularWeightReferenceStateUnitIRI .\n"
+                            "?MolecularWeightReferenceStateUnitIRI rdfs:label ?MolecularWeightReferenceStateUnitValue .}"
+                        ),
+                        "?SpeciesIRI os:hasMolecularWeight ?MolecularWeightIRI .",
+                        "?MolecularWeightIRI os:value ?MolecularWeightValue ; os:unit ?MolecularWeightUnitIRI ; os:hasProvenance ?MolecularWeightProvenanceIRI .",
+                        "?MolecularWeightUnitIRI rdfs:label ?MolecularWeightUnitValue .",
+                        (
+                            "OPTIONAL{?MolecularWeightIRI os:hasReferenceState ?MolecularWeightReferenceStateIRI .\n"
+                            "?MolecularWeightReferenceStateIRI os:value ?MolecularWeightReferenceStateValue ; os:unit ?MolecularWeightReferenceStateUnitIRI .\n"
+                            "?MolecularWeightReferenceStateUnitIRI rdfs:label ?MolecularWeightReferenceStateUnitValue .}"
+                        ),
+                    ],
+                ),
+            )
         ],
     )
     def test_compact2verbose_fromSpecies(self, compact_query, expected):

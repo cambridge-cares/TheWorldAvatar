@@ -1,6 +1,7 @@
 from typing import List
 
 from marie.utils import advance_ptr_thru_space, advance_ptr_to_kw, advance_ptr_to_space
+from marie.data_processing.utils import replace_list_element
 
 
 RESULT_CLAUSE_KWS = ["SELECT"]
@@ -13,9 +14,13 @@ USE_PATTERN_COMPACT_PREFIX = "?SpeciesIRI os:hasUse ?UseValue"
 ALL_PROPERTIES_PATTERN_COMPACT_PREFIX = (
     "?SpeciesIRI ?hasPropertyName ?PropertyNameValue"
 )
-ALL_IDENTIFIERS_PATTERN_COMPACT_PREFIX = "?SpeciesIRI ?hasIdentifierName ?IdentifierNameValue"
+ALL_IDENTIFIERS_PATTERN_COMPACT_PREFIX = (
+    "?SpeciesIRI ?hasIdentifierName ?IdentifierNameValue"
+)
 
-SPECIES_FROM_QUALIFIERS_PATTERN_COMPACT_PREFIX = "?SpeciesIRI os:hasIUPACName ?IUPACNameValue"
+SPECIES_FROM_QUALIFIERS_PATTERN_COMPACT_PREFIX = (
+    "?SpeciesIRI os:hasIUPACName ?IUPACNameValue"
+)
 
 SPECIES_FROM_IDENTIFIER_PATTERNS_VERBOSE = [
     "?SpeciesIRI rdf:type os:Species ; rdfs:label ?label .",
@@ -61,18 +66,19 @@ ALL_PROPERTIES_PATTERNS_VERBOSE = [
     "BIND(strafter(str(?PropertyName),'#') AS ?PropertyLabel)",
 ]
 ALL_IDENTIFIERS_PATTERNS_VERBOSE = [
- "?SpeciesIRI ?hasIdentifierName ?IdentifierNameIRI .",
+    "?SpeciesIRI ?hasIdentifierName ?IdentifierNameIRI .",
     "?IdentifierNameIRI  rdf:type ?IdentifierName .",
     "?IdentifierName rdfs:subClassOf os:Identifier .",
     "?IdentifierNameIRI os:value ?IdentifierNameValue .",
-  	"BIND(strafter(str(?IdentifierName),'#') AS ?IdentifierLabel)"
+    "BIND(strafter(str(?IdentifierName),'#') AS ?IdentifierLabel)",
 ]
 
 SPECIES_FROM_QUALIFIERS_PATTERNS_VERBOSE = [
     "?SpeciesIRI rdf:type os:Species ; rdfs:label ?label .",
     "?SpeciesIRI os:hasIUPACName ?IUPACNameIRI .",
-    "?IUPACNameIRI os:value ?IUPACNameValue ."
+    "?IUPACNameIRI os:value ?IUPACNameValue .",
 ]
+
 
 class AbstractQueryRep:
     def __init__(
@@ -92,21 +98,25 @@ class AbstractQueryRep:
 
     def __repr__(self):
         return repr(vars(self))
-    
+
     def to_query_string(self):
-        return "{result_clause}\nWHERE {{\n{where_clause}\n}}".format(result_clause=self.result_clause, where_clause='\n'.join(self.where_clause))
+        return "{result_clause}\nWHERE {{\n{where_clause}\n}}".format(
+            result_clause=self.result_clause, where_clause="\n".join(self.where_clause)
+        )
 
     def compact2verbose(self):
-        result_clause = self.result_clause
-        result_clause = result_clause.replace(
-            "SELECT DISTINCT", "SELECT DISTINCT ?label"
-        )
+        if not self.result_clause.startswith("SELECT DISTINCT"):
+            raise Exception("Unexpected result clause: " + self.result_clause)
+
+        result_clause_tokens = ["SELECT DISTINCT ?label"] + self.result_clause[
+            len("SELECT DISTINCT") :
+        ].strip().split()
 
         where_clause = []
         for pattern in self.where_clause:
             if pattern.startswith("FILTER"):
                 where_clause.append(pattern)
-            
+
             # assume it's triple pattern, species -> properties/identifiers/chemclass
             elif pattern.startswith(SPECIES_FROM_IDENTIFIER_PATTERN_COMPACT_PREFIX):
                 where_clause.extend(SPECIES_FROM_IDENTIFIER_PATTERNS_VERBOSE)
@@ -116,10 +126,13 @@ class AbstractQueryRep:
                         pattern, len(PROPERTY_PATTERN_COMPACT_PREFIX)
                     )
                 ].strip()
-                result_clause = result_clause.replace(
+
+                replace_list_element(
+                    result_clause_tokens,
                     f"?{property_name}Value",
                     f"?{property_name}Value ?{property_name}UnitValue ?{property_name}ReferenceStateValue ?{property_name}ReferenceStateUnitValue",
                 )
+
                 where_clause.extend(PROPERTY_PATTERNS_VERBOSE(property_name))
             elif pattern.startswith(IDENTIFIER_PATTERN_COMPACT_PREFIX):
                 identifier_name = pattern[
@@ -133,20 +146,29 @@ class AbstractQueryRep:
             elif pattern.startswith(USE_PATTERN_COMPACT_PREFIX):
                 where_clause.extend(USE_PATTERNS_VERBOSE)
             elif pattern.startswith(ALL_PROPERTIES_PATTERN_COMPACT_PREFIX):
-                result_clause = result_clause.replace("?PropertyNameValue", "?PropertyLabel ?PropertyNameValue ?PropertyNameUnitValue ?PropertyNameReferenceStateValue ?PropertyNameReferenceStateUnitValue")
+                replace_list_element(
+                    result_clause_tokens,
+                    old="?PropertyNameValue",
+                    new="?PropertyLabel ?PropertyNameValue ?PropertyNameUnitValue ?PropertyNameReferenceStateValue ?PropertyNameReferenceStateUnitValue",
+                )
+
                 where_clause.extend(ALL_PROPERTIES_PATTERNS_VERBOSE)
             elif pattern.startswith(ALL_IDENTIFIERS_PATTERN_COMPACT_PREFIX):
-                result_clause = result_clause.replace("?IdentifierNameValue", "?IdentifierLabel ?IdentifierNameValue")
+                replace_list_element(
+                    result_clause_tokens,
+                    old="?IdentifierNameValue",
+                    new="?IdentifierLabel ?IdentifierNameValue",
+                )
+
                 where_clause.extend(ALL_IDENTIFIERS_PATTERNS_VERBOSE)
-            
+
             # qualifiers -> species
             elif pattern.startswith(SPECIES_FROM_QUALIFIERS_PATTERN_COMPACT_PREFIX):
                 where_clause.extend(SPECIES_FROM_QUALIFIERS_PATTERNS_VERBOSE)
             else:
                 raise Exception("Unexpected compact clause: " + pattern)
-            
 
-        return AbstractQueryRep(result_clause, where_clause)
+        return AbstractQueryRep(" ".join(result_clause_tokens), where_clause)
 
     @classmethod
     def _does_startwith_result_clause_kw(cls, query: str, ptr: int):
@@ -195,7 +217,7 @@ class AbstractQueryRep:
                         "Open bracket is missing from FITLER clause: "
                         + query[start_idx:]
                     )
-                
+
                 open_brac_num = 1
                 while open_brac_num > 0:
                     ptr += 1
