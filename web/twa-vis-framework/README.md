@@ -15,13 +15,13 @@ Documentation for the TWA-VF is spread across a number of files, and is broken d
 * [Development](./library/README.md)
   * _Information for developers of the TWA-VF._
 * [Working with Mapbox](./docs/mapbox.md)
-  * Generating layers and handling interactions with [Mapbox](https://www.mapbox.com/).
+  * _Generating layers and handling interactions with [Mapbox](https://www.mapbox.com/)._
 * [Working with Cesium](./docs/cesium.md)
-  * Generated layers and handling interactions with [CesiumJS](https://cesium.com/platform/cesiumjs/).
+  * _Generated layers and handling interactions with [CesiumJS](https://cesium.com/platform/cesiumjs/)._
 * [Advanced features](./docs/advanced.md)
-  * Enabling and configuring more advanced features.
+  * _Enabling and configuring more advanced features._
 * [Tutorials](./docs/tutorials.md)
-  * Tutorials for creating new visualisations. 
+  * _Tutorials for creating new visualisations. _
 * [Troubleshooting](./docs/troubleshooting.md)
   * _Solutions to common issues and questions._ 
 
