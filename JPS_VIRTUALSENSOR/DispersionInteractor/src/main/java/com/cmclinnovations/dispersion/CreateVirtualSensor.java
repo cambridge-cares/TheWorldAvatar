@@ -20,10 +20,10 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
-@WebServlet(urlPatterns = { "/CreateVirtualSensors" })
-public class CreateVirtualSensors extends HttpServlet {
+@WebServlet(urlPatterns = { "/CreateVirtualSensor" })
+public class CreateVirtualSensor extends HttpServlet {
 
-    private static final Logger LOGGER = LogManager.getLogger(CreateVirtualSensors.class);
+    private static final Logger LOGGER = LogManager.getLogger(CreateVirtualSensor.class);
     private QueryClient queryClient;
     private DispersionPostGISClient dispersionPostGISClient;
 
