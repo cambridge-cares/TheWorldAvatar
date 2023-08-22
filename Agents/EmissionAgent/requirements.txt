@@ -8,3 +8,4 @@ pyderivationagent==1.5.0
 ## Third-party packages ##
 ##########################
 Flask==2.1.0
+pandas==2.0.3

@@ -109,7 +109,7 @@ To run the dockerised tests in Debug mode, please run the below script to start 
 
 ```bash
 # Build and run dockerised agent tests in debug mode
-bash run_debug_tests.sh
+docker compose -f "docker-compose-test_dockerised_debug.yml" up -d --build
 ```
 
 

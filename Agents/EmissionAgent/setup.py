@@ -15,6 +15,7 @@ setup(
     include_package_data=True,
     install_requires= [
         'flask~=2.1.0',
+        'pandas~=2.0.3',
         'py4jps~=1.0.37', 
         'pyderivationagent~=1.5.0'
     ],
