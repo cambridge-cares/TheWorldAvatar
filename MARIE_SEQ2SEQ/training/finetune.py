@@ -14,7 +14,7 @@ from trl import SFTTrainer, DataCollatorForCompletionOnlyLM
 
 from marie.data_processing.qn_processing import (
     LLAMA_COMPLETION_TEMPLATE,
-    LLAMA_PROMPT_TEMPLATE,
+    LLAMA_TEMPLATE,
     t5_preprocess_qn,
 )
 from marie.data_processing.query_processing import t5_preprocess_query
@@ -87,10 +87,9 @@ def get_llama_trainer(
     def formatting_func(examples):
         output_texts = []
         for i in range(len(examples["question"])):
-            text = (
-                LLAMA_PROMPT_TEMPLATE.format(question=examples["question"][i])
-                + LLAMA_COMPLETION_TEMPLATE
-                + examples["sparql_query_compact"][i]
+            text = LLAMA_TEMPLATE.format(
+                question=examples["question"][i],
+                sparql_query=examples["sparql_query_compact"][i],
             )
             output_texts.append(text)
         return output_texts
