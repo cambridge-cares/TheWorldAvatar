@@ -1,7 +1,7 @@
 import os
 import torch
 
-from transformers import BitsAndBytesConfig, AutoModelForSeq2SeqLM, AutoTokenizer, PreTrainedModel
+from transformers import BitsAndBytesConfig, AutoModelForSeq2SeqLM, AutoTokenizer
 from peft import PeftModel, LoraConfig, TaskType, get_peft_model
 
 from marie.arguments_schema import ModelArguments
@@ -9,9 +9,9 @@ from marie.arguments_schema import ModelArguments
 
 def get_model(model_args: ModelArguments, is_trainable: bool):
     # if we are in a distributed setting, we need to set the device map per device
-    if os.environ.get('LOCAL_RANK') is not None:
-        local_rank = int(os.environ.get('LOCAL_RANK', '0'))
-        device_map = {'': local_rank}
+    if os.environ.get("LOCAL_RANK") is not None:
+        local_rank = int(os.environ.get("LOCAL_RANK", "0"))
+        device_map = {"": local_rank}
     else:
         device_map = "auto"
 
@@ -26,23 +26,35 @@ def get_model(model_args: ModelArguments, is_trainable: bool):
     else:
         bnb_config = None
 
+    model_load_kwargs = {
+        k: v
+        for k, v in dict(
+            quantization_config=bnb_config,
+            device_map=device_map,
+            use_auth_token=os.getenv("HF_ACCESS_TOKEN"),
+        ).items()
+        if v is not None
+    }
+
     model = AutoModelForSeq2SeqLM.from_pretrained(
-        model_args.model_path,
-        quantization_config=bnb_config,
-        device_map=device_map,
-        use_auth_token=os.getenv("HF_ACCESS_TOKEN"),
+        model_args.model_path, **model_load_kwargs
     )
-    
+
     if model_args.lora_path is not None:
-        model = PeftModel.from_pretrained(model, model_args.lora_path, is_trainable=is_trainable)
-    elif all(x is not None for x in (model_args.lora_r, model_args.lora_alpha, model_args.lora_dropout)): 
+        model = PeftModel.from_pretrained(
+            model, model_args.lora_path, is_trainable=is_trainable
+        )
+    elif all(
+        x is not None
+        for x in (model_args.lora_r, model_args.lora_alpha, model_args.lora_dropout)
+    ):
         lora_config = LoraConfig(
             r=model_args.lora_r,
             lora_alpha=model_args.lora_alpha,
             lora_dropout=model_args.lora_dropout,
             bias="none",
             target_modules=["q", "v"],
-            task_type=TaskType.SEQ_2_SEQ_LM
+            task_type=TaskType.SEQ_2_SEQ_LM,
         )
 
         model = get_peft_model(model, lora_config)
