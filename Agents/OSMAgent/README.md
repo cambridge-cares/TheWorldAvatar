@@ -5,6 +5,8 @@ The OSMAgent is intended to do
 2) Categorize OSM data as according to OntoBuiltEnvironment
 3) Create column and populate columns. 
 
+## Pre-requisite
+Provide OSM data in the form of .gml data. 
 
 ## To deploy this agent with the stack locally
 1) Prepare the stack-manager
