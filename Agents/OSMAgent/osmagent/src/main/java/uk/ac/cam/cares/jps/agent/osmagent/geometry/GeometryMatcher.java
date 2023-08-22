@@ -60,7 +60,7 @@ public class GeometryMatcher {
         for (Map.Entry<Integer, OSMObject> entry : osmObjects.entrySet()){
             OSMObject osmObject = entry.getValue();
 
-            if (counter == 100) {
+            if (counter == 500) {
                 updates.add(update);
                 counter = 0;
                 update = "";
@@ -117,7 +117,7 @@ public class GeometryMatcher {
         for (Map.Entry<String, GeoObject> entry : geoObjects.entrySet()) {
             GeoObject geoObject = entry.getValue();
 
-            if (counter == 50) {
+            if (counter == 100) {
                 updates.add(update);
                 counter = 0;
                 update = "";
