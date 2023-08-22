@@ -875,7 +875,6 @@ public class Aermod {
         virtualTable.setEscapeSql(true);
         virtualTable.setName("shipVirtualTable");
         virtualTable.addVirtualTableGeometry("geom", "Point", "4326"); // geom needs to match the sql query
-        LOGGER.info(virtualTable.getName());
         geoServerVectorSettings.setVirtualTable(virtualTable);
 
         geoserverClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);

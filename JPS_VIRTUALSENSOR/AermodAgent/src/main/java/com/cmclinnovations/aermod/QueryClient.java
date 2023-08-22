@@ -1240,7 +1240,7 @@ public class QueryClient {
             virtualTable.setSql(sql);
             virtualTable.setEscapeSql(true);
             virtualTable.setName("buildingVirtualTable");
-            LOGGER.info(virtualTable.getName());
+            virtualTable.addVirtualTableGeometry("wkb_geometry", "Polygon", "4326");
             geoServerVectorSettings.setVirtualTable(virtualTable);
 
             buildingsLayer = UUID.randomUUID().toString();
