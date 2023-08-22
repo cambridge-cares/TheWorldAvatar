@@ -90,19 +90,28 @@ class DispersionHandler {
         let selectionsContainer = document.getElementById("selectionsContainer");
 
         let pollutantElementId = "Pollutant";
-        let pollutantElement = document.createElement("div");
-        pollutantElement.id = "selectContainer";
 
-        let pollutantElementLabel = document.createElement("label");
-        pollutantElementLabel.setAttribute("for", pollutantElementId);
-        pollutantElementLabel.innerHTML = "Pollutant:";
+        let pollutantElementSelect;
+        if (document.getElementById(pollutantElementId) == null) {
+            let pollutantElement = document.createElement("div");
+            pollutantElement.id = "selectContainer";
 
-        let pollutantElementSelect = document.createElement("select");
-        pollutantElementSelect.id = pollutantElementId;
-        pollutantElementSelect.setAttribute("onchange", "dispersionHandler.onPollutantChange(this.value)");
+            let pollutantElementLabel = document.createElement("label");
+            pollutantElementLabel.setAttribute("for", pollutantElementId);
+            pollutantElementLabel.innerHTML = "Pollutant:";
 
-        pollutantElement.appendChild(pollutantElementLabel);
-        pollutantElement.appendChild(pollutantElementSelect);
+            pollutantElementSelect = document.createElement("select");
+            pollutantElementSelect.id = pollutantElementId;
+            pollutantElementSelect.setAttribute("onchange", "dispersionHandler.onPollutantChange(this.value)");
+
+            pollutantElement.appendChild(pollutantElementLabel);
+            pollutantElement.appendChild(pollutantElementSelect);
+
+            selectionsContainer.appendChild(pollutantElement);
+        } else {
+            pollutantElementSelect = document.getElementById(pollutantElementId);
+            pollutantElementSelect.innerHTML = "";
+        }
 
         let pollutants = Object.keys(dispersion['pollutants']);
         for (let i in pollutants) {
@@ -116,24 +125,34 @@ class DispersionHandler {
                 this.selectedPollutant = pollutant;
             }
         }
-        selectionsContainer.appendChild(pollutantElement);
     }
 
     buildTimestepDropdown(dispersion) {
+        let selectionsContainer = document.getElementById("selectionsContainer");
         let timestepElementId = "Timestep";
-        let timestepElement = document.createElement("div");
-        timestepElement.id = "selectContainer";
 
-        let timestepElementLabel = document.createElement("label");
-        timestepElementLabel.setAttribute("for", timestepElementId);
-        timestepElementLabel.innerHTML = "Timestep:";
+        let timestepElementSelect;
 
-        let timestepElementSelect = document.createElement("select");
-        timestepElementSelect.id = timestepElementId;
-        timestepElementSelect.setAttribute("onchange", "dispersionHandler.onTimestepChange(this.value)");
+        if (document.getElementById(timestepElementId) == null) {
+            let timestepElement = document.createElement("div");
+            timestepElement.id = "selectContainer";
 
-        timestepElement.appendChild(timestepElementLabel);
-        timestepElement.appendChild(timestepElementSelect);
+            let timestepElementLabel = document.createElement("label");
+            timestepElementLabel.setAttribute("for", timestepElementId);
+            timestepElementLabel.innerHTML = "Timestep:";
+
+            timestepElementSelect = document.createElement("select");
+            timestepElementSelect.id = timestepElementId;
+            timestepElementSelect.setAttribute("onchange", "dispersionHandler.onTimestepChange(this.value)");
+
+            timestepElement.appendChild(timestepElementLabel);
+            timestepElement.appendChild(timestepElementSelect);
+
+            selectionsContainer.appendChild(timestepElement);
+        } else {
+            timestepElementSelect = document.getElementById(timestepElementId);
+            timestepElementSelect.innerHTML = "";
+        }
 
         let timesteps = dispersion['time'];
         for (let i in timesteps) {
@@ -147,7 +166,6 @@ class DispersionHandler {
                 this.selectedTimestep = timestep;
             }
         }
-        selectionsContainer.appendChild(timestepElement);
     }
 
     onPollutantChange(pollutant) {
@@ -162,6 +180,8 @@ class DispersionHandler {
 
     onSimulationChange(dispersion) {
         this.selectedSimulation = dispersion;
+        this.buildPollutantDropdown(this.dispersions[this.selectedSimulation]);
+        this.buildTimestepDropdown(this.dispersions[this.selectedSimulation]);
         this.plotData();
     }
 
