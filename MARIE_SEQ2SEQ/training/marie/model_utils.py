@@ -1,10 +1,22 @@
 import os
 import torch
 
-from transformers import BitsAndBytesConfig, AutoModelForSeq2SeqLM, AutoTokenizer
+from transformers import BitsAndBytesConfig, AutoModelForSeq2SeqLM, AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel, LoraConfig, TaskType, get_peft_model
 
 from marie.arguments_schema import ModelArguments
+
+
+TARGET_MODULES_BY_MODEL = dict(
+    t5=["q", "v"],
+    llama=["q_proj", "v_proj"]
+)
+
+
+def get_model_family_from_model_args(model_args: ModelArguments):
+    if model_args.model_family is not None:
+        return model_args.model_family
+    return get_model_family_from_model_name(model_args.model_path)
 
 
 def get_model_family_from_model_name(model_name: str):
@@ -44,7 +56,10 @@ def get_model(model_args: ModelArguments, is_trainable: bool):
         if v is not None
     }
 
-    model = AutoModelForSeq2SeqLM.from_pretrained(
+    model_family = get_model_family_from_model_args(model_args)
+    auto_model = AutoModelForSeq2SeqLM if model_family == "t5" else AutoModelForCausalLM
+    
+    model = auto_model.from_pretrained(
         model_args.model_path, **model_load_kwargs
     )
 
@@ -61,7 +76,7 @@ def get_model(model_args: ModelArguments, is_trainable: bool):
             lora_alpha=model_args.lora_alpha,
             lora_dropout=model_args.lora_dropout,
             bias="none",
-            target_modules=["q", "v"],
+            target_modules=TARGET_MODULES_BY_MODEL[model_family],
             task_type=TaskType.SEQ_2_SEQ_LM,
         )
 
@@ -71,10 +86,21 @@ def get_model(model_args: ModelArguments, is_trainable: bool):
     return model
 
 
-def get_model_and_tokenizer(model_args: ModelArguments, is_trainable: bool):
+def get_tokenizer(model_args: ModelArguments):
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.model_path, use_auth_token=os.environ.get("HF_ACCESS_TOKEN")
     )
+
+    model_family = get_model_family_from_model_args(model_args)
+    if model_family == "llama":
+        tokenizer.pad_token_id = tokenizer.unk_token_id
+        tokenizer.padding_side = "right"
+
+    return tokenizer
+
+
+def get_model_and_tokenizer(model_args: ModelArguments, is_trainable: bool):
+    tokenizer = get_tokenizer(model_args)
     model = get_model(model_args, is_trainable)
 
     return model, tokenizer
