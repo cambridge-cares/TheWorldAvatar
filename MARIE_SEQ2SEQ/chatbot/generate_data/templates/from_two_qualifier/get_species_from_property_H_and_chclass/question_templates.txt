@@ -1,0 +1,21 @@
+Give me a list of species that have {PropertyName} higher than {value} and are classified as {ChemClass}
+Provide a roster of chemical species possessing a {PropertyName} greater than {value} and falling under the category of {ChemClass}.
+Enumerate molecules with {PropertyName} exceeding {value} and falling into the {ChemClass} classification.
+List compounds that exhibit {PropertyName} surpassing {value} and are categorized as {ChemClass}.
+Catalog chemical species with {PropertyName} higher than {value} and falling under the {ChemClass} category.
+Outline a record of molecules displaying {PropertyName} above {value} and being classified as {ChemClass}.
+Compile a tally of compounds demonstrating {PropertyName} surpassing {value} and falling into the {ChemClass} grouping.
+Detail chemical species that showcase {PropertyName} greater than {value} and belong to the {ChemClass} classification.
+Present a rundown of molecules having {PropertyName} exceeding {value} and falling within the {ChemClass} class.
+Tabulate compounds with {PropertyName} surpassing {value} and being categorized as {ChemClass}.
+Provide a list of chemical species exhibiting {PropertyName} higher than {value} and falling into the {ChemClass} category.
+Furnish information on molecules that display {PropertyName} above {value} and are classified under {ChemClass}.
+Offer a compilation of compounds demonstrating {PropertyName} surpassing {value} and belonging to the {ChemClass} classification.
+Share a list of chemical species that have {PropertyName} greater than {value} and are grouped as {ChemClass}.
+Give details about molecules exhibiting {PropertyName} exceeding {value} and being categorized as {ChemClass}.
+Provide a roster of compounds with {PropertyName} surpassing {value} and falling into the {ChemClass} class.
+Enumerate chemical species showcasing {PropertyName} higher than {value} and falling within the {ChemClass} grouping.
+List molecules that demonstrate {PropertyName} above {value} and belong to the {ChemClass} category.
+Catalog compounds displaying {PropertyName} surpassing {value} and classified as {ChemClass}.
+Outline chemical species with {PropertyName} greater than {value} and categorized under {ChemClass}.
+Compile a record of molecules displaying {PropertyName} exceeding {value} and falling within the {ChemClass} classification.
