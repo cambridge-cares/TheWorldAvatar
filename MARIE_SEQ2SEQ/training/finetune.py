@@ -13,8 +13,8 @@ from transformers import (
 from trl import SFTTrainer, DataCollatorForCompletionOnlyLM
 
 from marie.data_processing.qn_processing import (
-    LLAMA_COMPLETION_PREFIX,
-    LLAMA_PROMPT_PREFIX,
+    LLAMA_COMPLETION_TEMPLATE,
+    LLAMA_PROMPT_TEMPLATE,
     t5_preprocess_qn,
 )
 from marie.data_processing.query_processing import t5_preprocess_query
@@ -88,16 +88,15 @@ def get_llama_trainer(
         output_texts = []
         for i in range(len(examples["question"])):
             text = (
-                LLAMA_PROMPT_PREFIX
-                + examples["question"][i]
-                + LLAMA_COMPLETION_PREFIX
+                LLAMA_PROMPT_TEMPLATE.format(question=examples["question"][i])
+                + LLAMA_COMPLETION_TEMPLATE
                 + examples["sparql_query_compact"][i]
             )
             output_texts.append(text)
         return output_texts
 
     collator = DataCollatorForCompletionOnlyLM(
-        LLAMA_COMPLETION_PREFIX, tokenizer=tokenizer
+        LLAMA_COMPLETION_TEMPLATE, tokenizer=tokenizer
     )
 
     return SFTTrainer(
