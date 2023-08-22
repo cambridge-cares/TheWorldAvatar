@@ -9,6 +9,7 @@
 import uuid
 from distutils.util import strtobool
 from rdflib import URIRef, Literal, Graph
+from rdflib.namespace import XSD
 
 from py4jps import agentlogging
 
@@ -40,6 +41,7 @@ class KGClient(PySparqlClient):
                                or forecast data (default: actual data)
         Returns:
             dataIRI {str} -- IRI of associated dataIRI
+            unit {str} -- unit of associated dataIRI
         """
 
         # Constrain unit value if given
@@ -76,7 +78,59 @@ class KGClient(PySparqlClient):
             else:
                 msg = f'Multiple "dataIRI"s associated with given instance: {instance_iri}.'
             logger.error(msg)
-            raise ValueError(msg) 
+            raise ValueError(msg)
+        
+
+    def get_emission_details(self, emission_iris:list=None) -> dict:
+        """
+        Retrieves details for (a given list of) emission instances 
+        (i.e., pollutantID, temperature, density, and massflow)
+
+        Arguments:
+            emission_iris {list} -- list of emission IRIs for which to retrieve 
+                                    details (optional); otherwise, details for all
+                                    emission instances are retrieved
+        Returns:
+            dictionary with pollutantIDs as top-level keys and nested dicts as 
+            values with keys: temperature, density, and massflow
+        """
+        
+        # Constrain emission IRIs if given
+        emission_values = ''
+        if emission_iris:
+            emission_values = f'VALUES ?emission_iri {{ <{"> <".join(emission_iris)}> }} '
+
+        query = f"""
+            SELECT ?emission_iri ?pollutantID ?temperature ?density ?massflow
+            WHERE {{
+            {emission_values}
+            ?emission_iri <{RDF_TYPE}> <{OD_EMISSION}> ;
+                          <{OD_HAS_POLLUTANT_ID}> ?pollutantID ;
+                          <{OM_HAS_QUANTITY}> ?quantity . 
+            OPTIONAL {{ ?quantity <{RDF_TYPE}> <{OM_TEMPERATURE}> ;
+                                  <{OM_HASVALUE}>/<{OM_HAS_NUMERICAL_VALUE}> ?temperature }}
+            OPTIONAL {{ ?quantity <{RDF_TYPE}> <{OM_DENSITY}> ;
+                                  <{OM_HASVALUE}>/<{OM_HAS_NUMERICAL_VALUE}> ?density }}
+            OPTIONAL {{ ?quantity <{RDF_TYPE}> <{OM_MASSFLOW}> ;
+                                  <{OM_HASVALUE}>/<{OM_HAS_NUMERICAL_VALUE}> ?massflow }}
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Structure results in dictionary with pollutantIDs as top-level keys
+        # and temperature, density, and massflow as sub-keys
+        res_consolidated = {}
+        for e in emission_iris:
+            vals = [r for r in res if r.get('emission_iri') == e]
+            res_consolidated[self.get_unique_value(vals, 'pollutantID')] = \
+            {
+                'temperature': self.get_unique_value(vals, 'temperature', float),
+                'density': self.get_unique_value(vals, 'density', float),
+                'massflow': self.get_unique_value(vals, 'massflow', float)
+            }
+        
+        return res_consolidated
 
 
     #
@@ -121,7 +175,7 @@ class KGClient(PySparqlClient):
             g.add((URIRef(quantity_iri), URIRef(RDF_TYPE), URIRef(quantity_type)))
             g.add((URIRef(quantity_iri), URIRef(OM_HASVALUE), URIRef(measure_iri)))
             g.add((URIRef(measure_iri), URIRef(RDF_TYPE), URIRef(OM_MEASURE)))
-            g.add((URIRef(measure_iri), URIRef(OM_HAS_NUMERICAL_VALUE), Literal(value, datatype=XSD_FLOAT)))
+            g.add((URIRef(measure_iri), URIRef(OM_HAS_NUMERICAL_VALUE), Literal(value, datatype=XSD.float)))
             g.add((URIRef(measure_iri), URIRef(OM_HASUNIT), URIRef(unit_iri)))
 
             return g

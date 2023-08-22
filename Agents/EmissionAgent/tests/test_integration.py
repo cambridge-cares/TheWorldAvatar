@@ -89,14 +89,14 @@ def test_example_data_instantiation(initialise_clients):
 
 #@pytest.mark.skip(reason="")
 @pytest.mark.parametrize(
-    "derivation_input_set, amount_iri, ts_times, ts_values",
+    "derivation_input_set, amount_iri, ts_times, ts_values, expected_results",
     [
-        (cf.DERIVATION_INPUTS_1, cf.PROVIDED_HEAT_AMOUNT_1, cf.TIMES, cf.VALUES_1)
+        (cf.DERIVATION_INPUTS_1, cf.PROVIDED_HEAT_AMOUNT_1, cf.TIMES, cf.VALUES_1, cf.EXPECTED_OUTPUTS_1)
     ],
 )
 def test_create_forecast(
     initialise_clients, create_example_agent, derivation_input_set, amount_iri, 
-    ts_times, ts_values
+    ts_times, ts_values, expected_results
 ):
     """
     Test if Emission Agent performs synchronous derivation update as expected
@@ -147,40 +147,28 @@ def test_create_forecast(
     triples += len(derivation_input_set) + 2    # number of inputs + derivation type + associated agent
     assert sparql_client.getAmountOfTriples() == triples
 
-#     # Query input & output of the derivation instance
-#     derivation_inputs, derivation_outputs = cf.get_derivation_inputs_outputs(derivation_iri, sparql_client)
-#     print(f"Generated derivation outputs that belongsTo the derivation instance: {', '.join(derivation_outputs)}")
+    # Query input & output of the derivation instance
+    derivation_inputs, derivation_outputs = cf.get_derivation_inputs_outputs(derivation_iri, sparql_client)
+    print(f"Generated derivation outputs that belongsTo the derivation instance: {', '.join(derivation_outputs)}")
     
-#     # Verify that there is 1 derivation output (i.e. Forecast IRI)
-#     assert len(derivation_outputs) == 1
-#     assert dm.TS_FORECAST in derivation_outputs
-#     assert len(derivation_outputs[dm.TS_FORECAST]) == 1
+    # Verify correct number of output types
+    assert len(derivation_outputs) == cf.OUTPUT_TYPES
+    assert dm.OD_EMISSION in derivation_outputs
+    assert len(derivation_outputs[dm.OD_EMISSION]) == len(agent.POLLUTANTS)
 
-#     # Verify inputs (i.e. derived from)
-#     # Create deeepcopy to avoid modifying original cf.DERIVATION_INPUTS_... between tests
-#     derivation_input_set_copy = copy.deepcopy(derivation_input_set)
-#     for i in derivation_inputs:
-#         for j in derivation_inputs[i]:
-#             assert j in derivation_input_set_copy
-#             derivation_input_set_copy.remove(j)
-#     assert len(derivation_input_set_copy) == 0
+    # Verify inputs (i.e., derived from)
+    # Create deeepcopy to avoid modifying original cf.DERIVATION_INPUTS_... between tests
+    derivation_input_set_copy = copy.deepcopy(derivation_input_set)
+    for i in derivation_inputs:
+        for j in derivation_inputs[i]:
+            assert j in derivation_input_set_copy
+            derivation_input_set_copy.remove(j)
+    assert len(derivation_input_set_copy) == 0
 
-#     # Retrieve instantiated forecast and verify its details
-#     fcIRI = list(derivation_outputs[dm.TS_FORECAST])[0]
-#     fc_intervals = sparql_client.get_forecast_details(fcIRI)
-#     inp_interval = sparql_client.get_interval_details(fc_intervals['input_interval_iri'])
-#     outp_interval = sparql_client.get_interval_details(fc_intervals['output_interval_iri'])
-#     assert inp_interval['start_unix'] == cf.T_1 - input_chunk_length*3600
-#     assert inp_interval['end_unix'] == cf.T_1 - 3600
-#     assert outp_interval['start_unix'] == cf.T_1
-#     assert outp_interval['end_unix'] == cf.T_2
-
-#     # Assess initial forecast error and create plot for visual inspection
-#     errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
-#                                       agent_url=agent_url, name=case)
-#     print(f'Forecast errors for case: {case}')
-#     for k,v in errors.items():
-#         print(f'{k}: {round(v,5)}')
+    # Retrieve instantiated forecast and verify its details
+    emission_iris = list(derivation_outputs[dm.OD_EMISSION])
+    emissions = sparql_client.get_emission_details(emission_iris)
+    assert emissions == expected_results
 
 #     # Update derivation interval and add latest timestamp to trigger update
 #     cf.update_derivation_interval(derivation_iri, cf.FC_INTERVAL_2, sparql_client)

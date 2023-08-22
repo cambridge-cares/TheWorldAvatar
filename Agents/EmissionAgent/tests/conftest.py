@@ -63,9 +63,10 @@ AGENT_SERVICE_TRIPLES = 4       # agent service triples
 DERIV_INPUT_TRIPLES = 2 + 4*3   # triples for derivation input message
 DERIV_OUTPUT_TRIPLES = 2 + 1*3  # triples for derivation output message
 EMISSION_TRIPLES = 21           # triples for newly instantiated emission instance
-RDF_TYPES_PER_EMISSION = 7      # number of rdf types per emission instance 
-                                # (incl. quantity, measure, ...)
 # NOTE: Derivation Framework attaches belongsTo relationship to each output with rdf type
+RDF_TYPES_PER_EMISSION = 7      # number of rdf type statements per emission instance 
+                                # (incl. quantity, measure, ...)
+OUTPUT_TYPES = 5                # Emission, Temperature, Density, MassFlow, Measure
 
 # 
 #  Values which should not require changing
@@ -109,6 +110,14 @@ CONSUMED_GAS_AMOUNT_3 = TEST_TRIPLES_BASE_IRI + 'ConsumedGasAmount_3'
 # Define derivation input sets to test
 DERIVATION_INPUTS_1 = [SIMULATION_TIME_1, POINT_SOURCE_1, 
                        PROVIDED_HEAT_AMOUNT_1]
+DERIVATION_INPUTS_2 = []
+# Expected emission outputs
+EXPECTED_OUTPUTS_1 = {
+    OD_NO2: {'temperature': 10.0, 'density': 10.0, 'massflow': 10.0}, 
+    OD_PM2_5: {'temperature': 10.0, 'density': 10.0, 'massflow': 10.0}, 
+    OD_PM10: {'temperature': 10.0, 'density': 10.0, 'massflow': 10.0}
+}
+
 
 # Define erroneous derivation input sets as retrieved by derivation agent
 # --> correct exceptions tested as unit tests
@@ -271,26 +280,26 @@ def create_example_agent():
 # Helper functions
 # ----------------------------------------------------------------------------------
 
-# def get_derivation_inputs_outputs(derivation_iri: str, sparql_client):
-#     query_output = f"""SELECT ?output ?output_type ?input ?input_type
-#         WHERE {{
-#             <{derivation_iri}> <{ONTODERIVATION_ISDERIVEDFROM}> ?input .
-#             ?input a ?input_type .
-#             ?output <{ONTODERIVATION_BELONGSTO}> <{derivation_iri}> .
-#             ?output a ?output_type .
-#         }}"""
-#     response = sparql_client.performQuery(query_output)
-#     if len(response) == 0:
-#         return None
-#     else:
-#         # Derivation inputs (i.e. isDerivedFrom)
-#         key = set([x['input_type'] for x in response])
-#         inputs = {k: set([x['input'] for x in response if x['input_type'] == k]) for k in key}
-#         # Derivation outputs (i.e. belongsTo)
-#         key = set([x['output_type'] for x in response])
-#         outputs = {k: set([x['output'] for x in response if x['output_type'] == k]) for k in key}
+def get_derivation_inputs_outputs(derivation_iri: str, sparql_client):
+    query_output = f"""SELECT ?output ?output_type ?input ?input_type
+        WHERE {{
+            <{derivation_iri}> <{ONTODERIVATION_ISDERIVEDFROM}> ?input .
+            ?input a ?input_type .
+            ?output <{ONTODERIVATION_BELONGSTO}> <{derivation_iri}> .
+            ?output a ?output_type .
+        }}"""
+    response = sparql_client.performQuery(query_output)
+    if len(response) == 0:
+        return None
+    else:
+        # Derivation inputs (i.e. isDerivedFrom)
+        key = set([x['input_type'] for x in response])
+        inputs = {k: set([x['input'] for x in response if x['input_type'] == k]) for k in key}
+        # Derivation outputs (i.e. belongsTo)
+        key = set([x['output_type'] for x in response])
+        outputs = {k: set([x['output'] for x in response if x['output_type'] == k]) for k in key}
     
-#     return inputs, outputs
+    return inputs, outputs
 
 
 # def update_derivation_interval(derivation_iri: str, interval_iri: str, sparql_client):

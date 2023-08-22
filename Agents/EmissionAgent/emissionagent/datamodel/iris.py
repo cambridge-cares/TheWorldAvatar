@@ -6,7 +6,6 @@ OM =   'http://www.ontology-of-units-of-measure.org/resource/om-2/'
 OWL =  'http://www.w3.org/2002/07/owl#'
 RDF =  'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 RDFS = 'http://www.w3.org/2000/01/rdf-schema#'
-XSD =  'http://www.w3.org/2001/XMLSchema#'
 TIME = 'http://www.w3.org/2006/time#'
 # CoMo / CARES ontologies
 ONTOCHEMPLANT = 'http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#'
@@ -70,9 +69,3 @@ OM_KG_PER_S = OM + 'kilogramPerSecond-Time'
 OWL_THING = OWL + 'Thing'
 RDF_TYPE = RDF + 'type'
 RDFS_LABEL = RDFS + 'label'
-
-# Data types
-XSD_STRING = XSD + 'string'
-XSD_FLOAT = XSD + 'float'
-XSD_DECIMAL = XSD + 'decimal'
-XSD_INTEGER = XSD + 'integer'
