@@ -1,6 +1,8 @@
 package com.cmclinnovations.dispersion;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.util.List;
 
@@ -28,6 +30,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 public class GetDataJson extends HttpServlet {
     private static final Logger LOGGER = LogManager.getLogger(GetDataJson.class);
     QueryClient queryClient;
+    DispersionPostGISClient dispersionPostGISClient;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
@@ -38,16 +41,15 @@ public class GetDataJson extends HttpServlet {
         String pollutantLabel = req.getParameter("pollutantLabel");
         JSONObject weatherStation = new JSONObject(req.getParameter("weatherStation"));
 
-        List<String> layers = queryClient.getLayers(pollutant,
-                Instant.parse(timestep).getEpochSecond(), derivationIri);
+        JSONObject dataJson = null;
+        try (Connection conn = dispersionPostGISClient.getConnection()) {
+            List<String> layers = queryClient.getLayers(pollutant,
+                    Instant.parse(timestep).getEpochSecond(), derivationIri, conn);
 
-        String dispersionLayer = layers.get(0);
-        String shipsLayer = layers.get(1);
-        String buildingsLayer = layers.get(2);
-        String staticPointSourceLayer = layers.get(3);
-
-        JSONObject dataJson = createDataJson(pollutantLabel, scopeLabel, weatherStation, dispersionLayer, shipsLayer,
-                buildingsLayer, staticPointSourceLayer);
+            dataJson = createDataJson(pollutantLabel, scopeLabel, weatherStation, layers, conn);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
         try {
             resp.getWriter().print(dataJson);
@@ -72,15 +74,20 @@ public class GetDataJson extends HttpServlet {
         TimeSeriesClient<Instant> tsClientInstant = new TimeSeriesClient<>(storeClient,
                 Instant.class);
         queryClient = new QueryClient(storeClient, remoteRDBStoreClient, tsClient, tsClientInstant);
+        dispersionPostGISClient = new DispersionPostGISClient(endpointConfig.getDburl(), endpointConfig.getDbuser(),
+                endpointConfig.getDbpassword());
     }
 
+    /**
+     * Index of layers: 0) dispersion, 1) ships, 2) buildings, 3) static point
+     */
     private JSONObject createDataJson(String pollutantLabel, String scopeLabel, JSONObject weatherStation,
-            String dispersionLayerName, String shipLayerName, String buildingLayerName, String staticSourceLayerName) {
+            List<String> layerNames, Connection conn) {
         String dispWms = Config.GEOSERVER_URL + "/" + Config.GEOSERVER_WORKSPACE +
                 "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true"
                 +
                 "&bbox={bbox-epsg-3857}"
-                + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, dispersionLayerName);
+                + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, layerNames.get(0));
 
         JSONObject group = new JSONObject();
         group.put("name", scopeLabel);
@@ -110,7 +117,7 @@ public class GetDataJson extends HttpServlet {
         dispersionLayer.put("type", "fill");
         dispersionLayer.put("name", pollutantLabel);
         dispersionLayer.put("source", "dispersion-source");
-        dispersionLayer.put("source-layer", dispersionLayerName);
+        dispersionLayer.put("source-layer", layerNames.get(0));
         dispersionLayer.put("minzoom", 4);
         dispersionLayer.put("layout", visibility);
 
@@ -136,11 +143,11 @@ public class GetDataJson extends HttpServlet {
         group.put("layers", layers);
 
         // optional layers
-        if (shipLayerName != null) {
+        if (layerNames.get(1) != null) {
             String shipWms = Config.GEOSERVER_URL + "/" + Config.GEOSERVER_WORKSPACE +
                     "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     + "&bbox={bbox-epsg-3857}"
-                    + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, shipLayerName);
+                    + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, layerNames.get(1));
             JSONObject shipSource = new JSONObject();
             shipSource.put("id", "ship-source");
             shipSource.put("type", "vector");
@@ -152,7 +159,7 @@ public class GetDataJson extends HttpServlet {
             shipLayer.put("type", "circle");
             shipLayer.put("name", "Ships");
             shipLayer.put("source", "ship-source");
-            shipLayer.put("source-layer", shipLayerName);
+            shipLayer.put("source-layer", layerNames.get(1));
             shipLayer.put("minzoom", 4);
             shipLayer.put("layout", visibility);
 
@@ -163,12 +170,12 @@ public class GetDataJson extends HttpServlet {
             layers.put(shipLayer);
         }
 
-        if (buildingLayerName != null) {
+        if (layerNames.get(2) != null) {
             String buildingWms = Config.GEOSERVER_URL + "/" + Config.GEOSERVER_WORKSPACE +
                     "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true"
                     +
                     "&bbox={bbox-epsg-3857}"
-                    + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, buildingLayerName);
+                    + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, layerNames.get(2));
             JSONObject buildingSource = new JSONObject();
             buildingSource.put("id", "building-source");
             buildingSource.put("type", "vector");
@@ -180,7 +187,7 @@ public class GetDataJson extends HttpServlet {
             buildingLayer.put("type", "fill-extrusion");
             buildingLayer.put("name", "Buildings");
             buildingLayer.put("source", "building-source");
-            buildingLayer.put("source-layer", buildingLayerName);
+            buildingLayer.put("source-layer", layerNames.get(2));
             buildingLayer.put("minzoom", 4);
             buildingLayer.put("layout", visibility);
 
@@ -193,11 +200,11 @@ public class GetDataJson extends HttpServlet {
             layers.put(buildingLayer);
         }
 
-        if (staticSourceLayerName != null) {
+        if (layerNames.get(3) != null) {
             String staticSourceWMS = Config.GEOSERVER_URL + "/" + Config.GEOSERVER_WORKSPACE +
                     "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     + "&bbox={bbox-epsg-3857}"
-                    + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, staticSourceLayerName);
+                    + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, layerNames.get(3));
             JSONObject staticSource = new JSONObject();
             staticSource.put("id", "static-source");
             staticSource.put("type", "vector");
@@ -209,7 +216,7 @@ public class GetDataJson extends HttpServlet {
             staticLayer.put("type", "circle");
             staticLayer.put("name", "Static emission source");
             staticLayer.put("source", "static-source");
-            staticLayer.put("source-layer", staticSourceLayerName);
+            staticLayer.put("source-layer", layerNames.get(3));
             staticLayer.put("minzoom", 4);
             staticLayer.put("layout", visibility);
 
@@ -218,6 +225,34 @@ public class GetDataJson extends HttpServlet {
             staticLayer.put("paint", staticPaint);
 
             layers.put(staticLayer);
+        }
+
+        if (dispersionPostGISClient.tableExists(Config.SENSORS_TABLE_NAME, conn)) {
+            String sensorWms = Config.GEOSERVER_URL + "/" + Config.GEOSERVER_WORKSPACE +
+                    "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    + "&bbox={bbox-epsg-3857}"
+                    + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, Config.SENSORS_TABLE_NAME);
+
+            JSONObject sensorSource = new JSONObject();
+            sensorSource.put("id", "sensor-source");
+            sensorSource.put("type", "vector");
+            sensorSource.put("tiles", new JSONArray().put(sensorWms));
+            sources.put(sensorSource);
+
+            JSONObject sensorLayer = new JSONObject();
+            sensorLayer.put("id", "sensor-layer");
+            sensorLayer.put("type", "circle");
+            sensorLayer.put("name", "Virtual sensors");
+            sensorLayer.put("source", "sensor-source");
+            sensorLayer.put("source-layer", Config.SENSORS_TABLE_NAME);
+            sensorLayer.put("minzoom", 4);
+            sensorLayer.put("layout", visibility);
+
+            JSONObject sensorPaint = new JSONObject();
+            sensorPaint.put("circle-color", "red");
+            sensorPaint.put("paint", sensorPaint);
+
+            layers.put(sensorLayer);
         }
 
         JSONObject data = new JSONObject();

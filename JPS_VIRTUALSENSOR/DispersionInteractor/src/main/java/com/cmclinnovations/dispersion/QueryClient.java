@@ -717,7 +717,7 @@ public class QueryClient {
      * @param derivation
      * @return
      */
-    public List<String> getLayers(String pollutant, long timeStep, String derivation) {
+    public List<String> getLayers(String pollutant, long timeStep, String derivation, Connection conn) {
         Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
 
         SelectQuery query = Queries.SELECT();
@@ -751,18 +751,13 @@ public class QueryClient {
         String buildingsLayerName = null;
         String staticPointLayerName = null;
 
-        try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            TimeSeries<Long> queriedTimeSeries = tsClient.getTimeSeriesWithinBounds(
-                    List.of(dispLayerIri, shipLayerIri, buildingsLayerIri, staticPointLayerIri),
-                    timeStep, timeStep, conn);
-            dispLayerName = queriedTimeSeries.getValuesAsString(dispLayerIri).get(0);
-            shipLayerName = queriedTimeSeries.getValuesAsString(shipLayerIri).get(0);
-            buildingsLayerName = queriedTimeSeries.getValuesAsString(buildingsLayerIri).get(0);
-            staticPointLayerName = queriedTimeSeries.getValuesAsString(staticPointLayerIri).get(0);
-        } catch (SQLException e) {
-            LOGGER.error(e.getMessage());
-            LOGGER.error("Closing connection failed when retrieving the dispersion layer name");
-        }
+        TimeSeries<Long> queriedTimeSeries = tsClient.getTimeSeriesWithinBounds(
+                List.of(dispLayerIri, shipLayerIri, buildingsLayerIri, staticPointLayerIri),
+                timeStep, timeStep, conn);
+        dispLayerName = queriedTimeSeries.getValuesAsString(dispLayerIri).get(0);
+        shipLayerName = queriedTimeSeries.getValuesAsString(shipLayerIri).get(0);
+        buildingsLayerName = queriedTimeSeries.getValuesAsString(buildingsLayerIri).get(0);
+        staticPointLayerName = queriedTimeSeries.getValuesAsString(staticPointLayerIri).get(0);
 
         List<String> layers = new ArrayList<>();
         layers.add(dispLayerName);

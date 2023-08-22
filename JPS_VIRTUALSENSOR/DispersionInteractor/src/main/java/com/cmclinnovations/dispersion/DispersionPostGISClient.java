@@ -102,7 +102,6 @@ public class DispersionPostGISClient {
     }
 
     boolean sensorExists(Point target, Connection conn) {
-
         if (!tableExists(Config.SENSORS_TABLE_NAME, conn))
             return false;
 
