@@ -237,4 +237,19 @@ class DispersionHandler {
 
         colourBarElement.setAttribute("style", "background-image: url(" + colourBarUrl + ")");
     }
+
+    createVirtualSensor(lat, lng) {
+        let url = this.agentBaseUrl;
+        url += '/dispersion-interactor/CreateVirtualSensor?';
+
+        let params = {
+            lat: lat,
+            lng: lng
+        };
+
+        let searchParams = new URLSearchParams(params);
+        url += searchParams;
+
+        $.post(url);
+    }
 }

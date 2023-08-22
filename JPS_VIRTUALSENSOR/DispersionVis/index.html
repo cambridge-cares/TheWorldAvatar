@@ -248,6 +248,11 @@
                     return dispersionHandler.buildDropdown(dispersionHandler);
                 }).then(() => dispersionHandler.plotData());
             });
+
+            MapHandler.MAP.doubleClickZoom.disable();
+            MapHandler.MAP.on("dblclick", (e) => {
+                dispersionHandler.createVirtualSensor(e.lngLat.lat, e.lngLat.lng);
+            });
         }
 
     </script>
