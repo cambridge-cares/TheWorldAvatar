@@ -7,6 +7,8 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import org.json.JSONArray;
 
@@ -40,16 +42,30 @@ public class GeometryMatcher {
         osmClient = new RemoteRDBStoreClient(configs.get(OSM_DB), configs.get(OSM_USER), configs.get(OSM_PASSWORD));
     }
 
+    /**
+     * Matches building geometry and OpenStreetMap geometry, then updates OSM table with matched building IRI
+     */
     public void matchGeometry() throws ParseException {
         WKTReader wktReader = new WKTReader();
 
-        Map<Integer, OSMObject> osmObjects = OSMObject.getOSMObject(osmDb, osmUser, osmPassword, tableName, "building IS NOT NULL AND iri IS NULL");
+        Map<Integer, OSMObject> osmObjects = OSMObject.getOSMObject(osmDb, osmUser, osmPassword, tableName, "building IS NOT NULL AND building_iri IS NULL");
 
 
-        String update = "UPDATE " + tableName + " SET iri = CASE";
+        String updateStart = "UPDATE " + tableName + " SET building_iri = CASE";
+        String updateEnd = " ELSE building_iri END";
+
+        List<String> updates = new ArrayList<>();
+        int counter = 0;
+        String update = "";
 
         for (Map.Entry<Integer, OSMObject> entry : osmObjects.entrySet()){
             OSMObject osmObject = entry.getValue();
+
+            if (counter == 100) {
+                updates.add(update);
+                counter = 0;
+                update = "";
+            }
 
             if (osmObject.getGeometry().contains("POINT")) {
                 String query = booleanQuery(osmObject);
@@ -77,23 +93,34 @@ public class GeometryMatcher {
             if (!osmObject.getIri().isEmpty()) {
                 geoObjects.remove(osmObject.getIri());
                 update += " " + caseOgcFid(osmObject.getOgcfid(), osmObject.getIri());
+                counter++;
             }
         }
 
-        update += " ELSE iri END";
-
-        if (update.contains("WHEN") && update.contains("THEN")) {
-            osmClient.executeUpdate(update);
+        if (!update.isEmpty()) {
+            updates.add(update);
         }
 
-        update = "UPDATE " + tableName + " SET iri = CASE";
+        for (int i = 0; i < updates.size(); i++) {
+            osmClient.executeUpdate(updateStart + updates.get(i) + updateEnd);
+        }
 
-        osmObjects = OSMObject.getOSMObject(osmDb, osmUser, osmPassword, tableName, "iri IS NULL");
+        updates.clear();
+        counter = 0;
+        update = "";
+
+        osmObjects = OSMObject.getOSMObject(osmDb, osmUser, osmPassword, tableName, "building_iri IS NULL");
 
         boolean flag = checkIfPoints(tableName);
 
         for (Map.Entry<String, GeoObject> entry : geoObjects.entrySet()) {
             GeoObject geoObject = entry.getValue();
+
+            if (counter == 50) {
+                updates.add(update);
+                counter = 0;
+                update = "";
+            }
 
             String query = queryFromOSM(tableName, geoObject, flag, threshold);
 
@@ -112,16 +139,24 @@ public class GeometryMatcher {
 
             if (!iriUpdate.isEmpty()) {
                 update += " " + iriUpdate;
+                counter++;
             }
         }
 
-        update += " ELSE iri END";
+        if (!update.isEmpty()) {
+            updates.add(update);
+        }
 
-        if (update.contains("WHEN") && update.contains("THEN")) {
-            osmClient.executeUpdate(update);
+        for (int i = 0; i < updates.size(); i++) {
+            osmClient.executeUpdate(updateStart + updates.get(i) + updateEnd);
         }
     }
 
+    /**
+     * Checks whether if a table has point geometry
+     * @param table table to check
+     * @return true if point geometry, false otherwise
+     */
     private boolean checkIfPoints(String table) {
         boolean flag = false;
         String query = "SELECT ST_ASText(\"geometryProperty\") as geostring FROM " + table + " LIMIT 1";
@@ -133,6 +168,15 @@ public class GeometryMatcher {
 
         return flag;
     }
+
+    /**
+     * Returns SQL query string from table with OpenStreetMap data
+     * @param table table to query from
+     * @param geoObject GeoObject
+     * @param flag flag indicating whether table contains point geometry
+     * @param threshold intersection area ratio threshold
+     * @return SQL query string
+     */
     private String queryFromOSM(String table, GeoObject geoObject, Boolean flag, Double threshold) {
         String query;
         Integer srid = geoObject.getSrid();
@@ -152,16 +196,30 @@ public class GeometryMatcher {
         return query;
     }
 
+    /**
+     * Returns SQL query string for building geometry and IRI as sub query
+     * @return SQL query string
+     */
     private String subQuery() {
         return " (" + GeoObject.getQuery() + ") AS q";
     }
 
+    /**
+     * Returns SQL query string for whether a building geometry intersects with OpenStreetMap geometry
+     * @param osmObject OSMObject
+     * @return SQL query string
+     */
     private String booleanQuery(OSMObject osmObject) {
         String osmObjectString = transformString(geometryString(osmObject.getGeometry(), osmObject.getSrid()));
 
         return "SELECT q.urival AS iri FROM " +  subQuery() + " WHERE public.ST_Intersects(q.geometry," + osmObjectString + ")";
     }
 
+    /**
+     * Returns SQL query string for intersection area between building geometry and OpenStreetMap geometry
+     * @param osmObject OSMObject
+     * @return SQL query string
+     */
     private String areaQuery(OSMObject osmObject) {
         String osmObjectString = transformString(geometryString(osmObject.getGeometry(), osmObject.getSrid()));
 
@@ -171,20 +229,43 @@ public class GeometryMatcher {
         return "SELECT area, iri FROM (" + query + ") AS intersection ORDER BY intersection.area DESC LIMIT 1";
     }
 
-    private String geometryString(String geometry, Integer srid) {
-        return "public.ST_GeomFromText(\'" + geometry + "\'," + srid + ")";
+    /**
+     * Returns SQL query string for creating geometry object from WKT string
+     * @param wkt WKT string
+     * @param srid SRID of wkt
+     * @return SQL query string
+     */
+    private String geometryString(String wkt, Integer srid) {
+        return "public.ST_GeomFromText(\'" + wkt + "\'," + srid + ")";
     }
 
+    /**
+     * Returns SQL query string to transform a geometry to the same SRID as building geometry
+     * @param geometry geometry object
+     * @return SQL query string
+     */
     private String transformString(String geometry) {
         return "public.ST_Transform(" + geometry + ",ST_Srid(q.geometry))";
     }
 
+    /**
+     * Inserts case conditions to SQL case statement where the building IRI is the same
+     * @param query SQL case statement string
+     * @param ogcFid ogc_fid of the OSMObject
+     * @return SQL case statement string
+     */
     private String insertUpdate(String query, Integer ogcFid) {
        String[] split = query.split("THEN");
 
        return split[0] + "OR ogc_fid = " + ogcFid + " THEN" + split[1];
     }
 
+    /**
+     * SQL case condition string
+     * @param ogcFid ogc_fid of the condition
+     * @param iri IRI to set to
+     * @return SQL case condition string
+     */
     private String caseOgcFid(Integer ogcFid, String iri) {
         return "WHEN ogc_fid = " + ogcFid + " THEN \'" + iri + "\'";
     }

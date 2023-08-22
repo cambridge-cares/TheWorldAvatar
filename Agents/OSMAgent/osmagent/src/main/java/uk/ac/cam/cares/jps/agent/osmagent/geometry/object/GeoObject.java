@@ -35,6 +35,13 @@ public class GeoObject {
         return this.srid;
     }
 
+    /**
+     * Queries for and returns a map of GeoObjects storing building IRI, geometry and SRID of geometry
+     * @param url database url
+     * @param user database username
+     * @param password database password
+     * @return map with building IRI as key and GeoObject as value
+     */
     public static Map<String, GeoObject> getGeoObjects(String url, String user, String password) {
         RemoteRDBStoreClient postgisClient = new RemoteRDBStoreClient(url, user, password);
 
@@ -55,6 +62,10 @@ public class GeoObject {
         return result;
     }
 
+    /**
+     * Returns SQL query string for building IRI, geometry and SRID of geometry
+     * @return SQL query string
+     */
     public static String getQuery() {
         return "SELECT cga.urival AS urival, sg.geometry as geometry, ST_AsText(sg.geometry) AS geostring, ST_SRID(sg.geometry) AS srid " +
                 "FROM citydb.building b " +
