@@ -44,13 +44,23 @@ public class OSMObject {
         return this.iri;
     }
 
-    public static Map<Integer, OSMObject> getOSMObject(String url, String user, String password, String table, String filter) {
+    /**
+     * Queries for and returns a map of OSMObjects storing information from OpenStreetMap data
+     * @param url database url
+     * @param user database username
+     * @param password database password
+     * @param table table to query from
+     * @param whereFilter filter in where statement
+     * @return map with ogc_fid as the key and OSMObject as the value
+     */
+
+    public static Map<Integer, OSMObject> getOSMObject(String url, String user, String password, String table, String whereFilter) {
         RemoteRDBStoreClient postgisClient = new RemoteRDBStoreClient(url, user, password);
 
         String query = "SELECT ST_AsText(\"geometryProperty\") AS geometry, ST_SRID(\"geometryProperty\") AS srid, ogc_fid " + "FROM " + table;
 
-        if (!filter.isEmpty()) {
-            query += " WHERE " + filter;
+        if (!whereFilter.isEmpty()) {
+            query += " WHERE " + whereFilter;
         }
 
         JSONArray resultArray = postgisClient.executeQuery(query);
