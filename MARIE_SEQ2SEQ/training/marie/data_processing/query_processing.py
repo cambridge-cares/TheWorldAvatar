@@ -1,28 +1,23 @@
 from marie.utils import advance_ptr_thru_space, advance_ptr_to_kw, advance_ptr_to_space
 from marie.data_processing.abstract_query_rep import AbstractQueryRep
+from marie.data_processing.utils import replace_multi
 
 
 QUERY_ENCODINGS = {
-    "{": " op_br ",
-    "}": " cl_br ",
-    "?": " var_",
-    "<": " ls_th ",
-    ">": " gr_th ",
+    "{": "op_br",
+    "}": "cl_br",
+    "?": "var_",
+    "<": "ls_th",
+    ">": "gr_th",
 }
-QUERY_DECODINGS = {v.strip(): k for k, v in QUERY_ENCODINGS.items()}
+QUERY_DECODINGS = {v: k for k, v in QUERY_ENCODINGS.items()}
 
 
-def replace_multi(text: str, mapper: dict):
-    for k, v in mapper.items():
-        text = text.replace(k, v)
-    return text
-
-
-def encode_special_chars(query: str):
+def encode_query_special_chars(query: str):
     return replace_multi(query, QUERY_ENCODINGS)
 
 
-def decode_special_chars(query: str):
+def decode_query_special_chars(query: str):
     return replace_multi(query, QUERY_DECODINGS)
 
 
@@ -43,12 +38,12 @@ def remove_prefixes(query: str):
 
 def preprocess_query(query: str):
     query = remove_prefixes(query)
-    query = encode_special_chars(query)
+    query = encode_query_special_chars(query)
     return query
 
 
 def postprocess_query(query: str):
-    query = decode_special_chars(query)
+    query = decode_query_special_chars(query)
     try:
         query = AbstractQueryRep.from_string(query).compact2verbose().to_query_string()
     except:
