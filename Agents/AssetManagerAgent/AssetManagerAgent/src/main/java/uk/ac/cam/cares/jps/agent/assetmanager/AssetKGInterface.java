@@ -20,7 +20,7 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
-
+import org.eclipse.rdf4j.query.algebra.Str;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -154,7 +154,6 @@ public class AssetKGInterface {
      * Instantiate asset based on data from excel file
      */
     void instantiate (JSONObject AssetData) throws Exception{
-        ModifyQuery modify = Queries.MODIFY();
         Prefix prefix;
         Iri device;
         String id;
@@ -168,7 +167,7 @@ public class AssetKGInterface {
         Iri deviceIRI = getIRIbyID(id, storeClientAsset);
         if (deviceIRI==null){
             //TODO create instance here
-            //createInstance(AssetData);
+            createInstance(AssetData);
         }
         else{
             retrieve(deviceIRI);
@@ -294,7 +293,9 @@ public class AssetKGInterface {
      * Create new instances
      */
     private void createInstance(JSONObject assetData) {
-
+        createAssetNameSpace(assetData);
+        createDeviceNameSpace(assetData);
+        createPurchaseDocNamespace(assetData);
     }
 
     private void createAssetNameSpace (JSONObject data){
@@ -469,24 +470,26 @@ public class AssetKGInterface {
         Iri InvoiceIRI = iri(data.getString("InvoiceIRI"));
         String InvoiceNumLiteral = data.getString("InvoiceNum");
         Iri invoiceLineIRI = iri(data.getString("InvoiceLineIRI"));
-        Variable DeliveryOrderIRI = SparqlBuilder.var("DeliveryOrderIRI");
-        Variable PurchaseOrderIRI = SparqlBuilder.var("PurchaseOrderIRI");
-        Variable DeliveryOrderLineIRI = SparqlBuilder.var("DeliveryOrderLineIRI");
-        Variable DeliveryOrderNumLiteral = SparqlBuilder.var("DeliveryOrderNum");
-        Variable PurchaseOrderLineIRI = SparqlBuilder.var("PurchaseOrderLineIRI");
-        Variable PurchaseOrderNumLiteral = SparqlBuilder.var("PurchaseOrderNum");
-        Variable invoicedQuantityLiteral = SparqlBuilder.var("invoicedQUantity");
+        Iri DeliveryOrderIRI = iri(data.getString("DeliveryOrderIRI"));
+        Iri PurchaseOrderIRI = iri(data.getString("PurchaseOrderIRI"));
+        Iri DeliveryOrderLineIRI = iri(data.getString("DeliveryOrderLineIRI"));
+        String DeliveryOrderNumLiteral = data.getString("DeliveryOrderNum");
+        Iri PurchaseOrderLineIRI = iri(data.getString("PurchaseOrderLineIRI"));
+        String PurchaseOrderNumLiteral = data.getString("PurchaseOrderNum");
+        String invoicedQuantityLiteral = data.getString("invoicedQUantity");
         //price instances
-        Variable priceDetailsIRI = SparqlBuilder.var("priceDetailsIRI");
-        Variable priceIRI = SparqlBuilder.var("priceIRI");
-        Variable priceMeasureIRI = SparqlBuilder.var("priceMeasureIRI");
-        Variable priceLiteral = SparqlBuilder.var("price");
-        Variable priceCurrencyIRI = SparqlBuilder.var("currencyIRI");
-
-        //NOTE
-        //When transcribing to update query, add isSuppliedBy and isManufacturedBy to ItemIRI
-        //Invoice, PO, and DO are OPTIONAL
-
+        Iri priceDetailsIRI = iri(data.getString("priceDetailsIRI"));
+        Iri priceIRI = iri(data.getString("priceIRI"));
+        Iri priceMeasureIRI = iri(data.getString("priceMeasureIRI"));
+        String priceLiteral = data.getString("price");
+        Iri priceCurrencyIRI = iri(data.getString("currencyIRI"));
+        //supplier and manuf
+        Iri SupplierOrgIRI = iri(data.getString("SupplierOrgIRI"));
+        Iri SupplierNameIRI = iri(data.getString("SupplierNameIRI"));
+        String SupplierNameLiteral = data.getString("SupplierName");
+        Iri ManufacturerOrgIRI = iri(data.getString("ManufacturerIRI"));
+        Iri ManufacturerNameIRI = iri(data.getString("ManufacturerNameIRI"));
+        String ManufacturerNameLiteral = data.getString("ManufacturerName");
 
         //QUERY
         //item data
@@ -531,7 +534,6 @@ public class AssetKGInterface {
         }
         
         //Price
-        //NOTE When transcribing to update query, add connections to DO and PO
         if(!priceLiteral.isBlank()){
             query.insert(priceDetailsIRI.isA(PriceDetails));
             query.insert(priceIRI.isA(HomeTotalDiscountedAfterTaxPrice));
@@ -545,7 +547,22 @@ public class AssetKGInterface {
             if(!DeliveryOrderNumLiteral.isBlank()){query.insert(DeliveryOrderLineIRI.has(hasPriceDetails, priceDetailsIRI));}
             if(!PurchaseOrderNumLiteral.isBlank()){query.insert(PurchaseOrderLineIRI.has(hasPriceDetails, priceDetailsIRI));}
         }
-        
+
+        //Supplier & manufacturer
+        if (!ManufacturerNameLiteral.isBlank()){
+            query.insert(ManufacturerOrgIRI.isA(FormalOrganization));
+            query.insert(ManufacturerNameIRI.isA(OrganizationName));
+            query.insert(itemIRI.has(isManufacturedBy, ManufacturerOrgIRI));
+            query.insert(ManufacturerOrgIRI.has(hasName, ManufacturerNameIRI));
+            query.insert(ManufacturerNameIRI.has(hasName, ManufacturerNameLiteral));
+        }
+        if(!SupplierNameLiteral.isBlank()){
+            query.insert(SupplierOrgIRI.isA(FormalOrganization));
+            query.insert(SupplierNameIRI.isA(OrganizationName));
+            query.insert(itemIRI.has(isSuppliedBy, ManufacturerOrgIRI));
+            query.insert(ManufacturerOrgIRI.has(hasName, ManufacturerNameIRI));
+            query.insert(ManufacturerNameIRI.has(hasName, ManufacturerNameLiteral));
+        }
 
         storeClientPurchDoc.executeQuery(query.getQueryString());
     }
