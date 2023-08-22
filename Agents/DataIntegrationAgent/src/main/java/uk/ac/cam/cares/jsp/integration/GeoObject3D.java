@@ -343,7 +343,7 @@ public class GeoObject3D {
             LOGGER.fatal("Error connecting to source database: " + e);
             throw new JPSRuntimeException("Error connecting to source database: " + e);
         }
-        this.srcConn.close();
+        // this.srcConn.close();
     }
 
     //1. insert data in surface_geometry 2. update data in building

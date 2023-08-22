@@ -82,7 +82,7 @@ public class Config extends ContainerClient {
                 prop.setProperty(SRC_DB_URL, "jdbc:postgresql://dataintegrationagent-postgis:5432");
                 prop.setProperty(SRC_DB_USER, "postgres");
                 prop.setProperty(SRC_DB_PASSWORD, "postgis");
-                prop.setProperty(SRC_DB_3D, "sg_ntu");
+                prop.setProperty(SRC_DB_3D, "sg_lod3");
                 prop.setProperty(SRC_DB_2D, "pirmasens_2d");
                 prop.setProperty(SRC_TABLE_2D, "pirmasens_2d");
             }
