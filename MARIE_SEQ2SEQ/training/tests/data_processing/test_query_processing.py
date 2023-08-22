@@ -1,8 +1,8 @@
 import pytest
 
 from marie.data_processing.query_processing import (
-    decode_special_chars,
-    encode_special_chars,
+    t5_decode_query_special_chars,
+    t5_encode_query_special_chars,
     normalize_query,
     remove_prefixes,
 )
@@ -14,16 +14,16 @@ class TestQueryUtils:
         [
             (
                 "SELECT *\nWHERE { ?s ?p ?o }\n",
-                "SELECT *\nWHERE  op_br   var_s  var_p  var_o  cl_br \n",
+                "SELECT *\nWHERE op_br var_s var_p var_o cl_br\n",
             ),
             (
-                "SELECT *\nWHERE { ?s ?p ?o FILTER()}\n",
-                "SELECT *\nWHERE  op_br   var_s  var_p  var_o FILTER() cl_br \n",
+                "SELECT *\nWHERE { ?s ?p ?o FILTER() }\n",
+                "SELECT *\nWHERE op_br var_s var_p var_o FILTER() cl_br\n",
             ),
         ],
     )
     def test_encodeQuery(self, query, expected):
-        assert encode_special_chars(query) == expected
+        assert t5_encode_query_special_chars(query) == expected
 
     @pytest.mark.parametrize(
         "query, expected",
@@ -39,7 +39,7 @@ class TestQueryUtils:
         ],
     )
     def test_decodeQuery(self, query, expected):
-        assert decode_special_chars(query) == expected
+        assert t5_decode_query_special_chars(query) == expected
 
     @pytest.mark.parametrize(
         "query, expected",

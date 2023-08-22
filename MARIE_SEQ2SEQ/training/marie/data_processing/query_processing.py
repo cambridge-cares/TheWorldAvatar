@@ -3,28 +3,22 @@ from marie.data_processing.abstract_query_rep import AbstractQueryRep
 from marie.data_processing.utils import replace_multi
 
 
-QUERY_ENCODINGS_BY_MODEL = dict(
-    t5={
-        "{": "op_br",
-        "}": "cl_br",
-        "?": "var_",
-        "<": "ls_th",
-        ">": "gr_th",
-    },
-    llama={},
-)
-QUERY_DECODINGS_BY_MODEL = {
-    model: {v: k for k, v in encodings.items()}
-    for model, encodings in QUERY_ENCODINGS_BY_MODEL.items()
+T5_QUERY_ENCODINGS = {
+    "{": "op_br",
+    "}": "cl_br",
+    "?": "var_",
+    "<": "ls_th",
+    ">": "gr_th",
 }
+T5_QUERY_DECODINGS = {v: k for k, v in T5_QUERY_ENCODINGS.items()}
 
 
-def encode_query_special_chars(query: str, model_family: str):
-    return replace_multi(query, QUERY_ENCODINGS_BY_MODEL[model_family])
+def t5_encode_query_special_chars(query: str):
+    return replace_multi(query, T5_QUERY_ENCODINGS)
 
 
-def decode_query_special_chars(query: str, model_family: str):
-    return replace_multi(query, QUERY_DECODINGS_BY_MODEL[model_family])
+def t5_decode_query_special_chars(query: str):
+    return replace_multi(query, T5_QUERY_DECODINGS)
 
 
 def remove_prefixes(query: str):
@@ -42,14 +36,15 @@ def remove_prefixes(query: str):
     return query[idx:]
 
 
-def preprocess_query(query: str, model_family: str):
+def t5_preprocess_query(query: str):
     query = remove_prefixes(query)
-    query = encode_query_special_chars(query, model_family=model_family)
+    query = t5_encode_query_special_chars(query)
     return query
 
 
 def postprocess_query(query: str, model_family: str):
-    query = decode_query_special_chars(query, model_family=model_family)
+    if model_family == "t5":
+        query = t5_decode_query_special_chars(query)
     try:
         query = AbstractQueryRep.from_string(query).compact2verbose().to_query_string()
     except:

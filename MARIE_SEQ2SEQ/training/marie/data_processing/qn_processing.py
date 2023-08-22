@@ -1,37 +1,26 @@
 from marie.data_processing.utils import replace_multi
 
+LLAMA_PROMPT_PREFIX = "translate to SPARQL: "
+LLAMA_COMPLETION_PREFIX = "\n\n###\n\n"
 
 T5_INPUT_PREFIX = "translate to SPARQL: "
-
-INPUT_TEMPLATE_BY_MODEL = dict(
-    t5="translate to SPARQL: {input}",
-    llama="translate to SPARQL: {input}\n\n###\n\n"
-)
-
-QN_ENCODINGS_BY_MODEL = dict(
-    t5={
-        "<": "ls_th",
-        ">": "gt_th",
-    },
-    llama={},
-)
-
-QN_DECODINGS_BY_MODEL = {
-    model: {v: k for k, v in encodings.items()}
-    for model, encodings in QN_ENCODINGS_BY_MODEL.items()
+T5_QN_ENCODINGS = {
+    "<": "ls_th",
+    ">": "gt_th",
 }
+T5_QN_DECODINGS = {v: k for k, v in T5_QN_ENCODINGS.items()}
 
 
-def encode_qn_special_chars(query: str, model_family: str):
-    return replace_multi(query, QN_ENCODINGS_BY_MODEL[model_family])
+def t5_encode_qn_special_chars(qn: str):
+    return replace_multi(qn, T5_QN_ENCODINGS)
 
 
-def decode_qn_special_chars(query: str, model_family: str):
-    return replace_multi(query, QN_DECODINGS_BY_MODEL[model_family])
+def t5_decode_qn_special_chars(query: str):
+    return replace_multi(query, T5_QN_DECODINGS)
 
 
-def preprocess_qn(qn: str, model_family: str):
+def t5_preprocess_qn(qn: str):
     # TODO: convert units
-    qn = encode_qn_special_chars(qn, model_family=model_family)
-    qn = INPUT_TEMPLATE_BY_MODEL[model_family].format(input=qn)
+    qn = t5_encode_qn_special_chars(qn)
+    qn = T5_INPUT_PREFIX + qn
     return qn

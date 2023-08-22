@@ -1,6 +1,6 @@
 from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 
-from marie.data_processing.qn_processing import preprocess_qn
+from marie.data_processing.qn_processing import t5_preprocess_qn
 from marie.model_utils import get_model_and_tokenizer, get_model_family_from_model_name
 from marie.arguments_schema import ModelArguments
 from training.marie.data_processing.query_processing import postprocess_query
@@ -28,7 +28,7 @@ class TranslationModel:
         Returns:
             A dict with keys `prediction_raw` and `prediction_postprocessed`
         """
-        question = preprocess_qn(question, model_family=self.model_family)
+        question = t5_preprocess_qn(question, model_family=self.model_family)
 
         input_ids = self.tokenizer(question, return_tensors="pt").input_ids.to(
             self.model.device

@@ -77,7 +77,7 @@ def get_model(model_args: ModelArguments, is_trainable: bool):
             lora_dropout=model_args.lora_dropout,
             bias="none",
             target_modules=TARGET_MODULES_BY_MODEL[model_family],
-            task_type=TaskType.SEQ_2_SEQ_LM,
+            task_type=TaskType.SEQ_2_SEQ_LM if model_family == "t5" else TaskType.CAUSAL_LM,
         )
 
         model = get_peft_model(model, lora_config)
