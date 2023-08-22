@@ -39,7 +39,7 @@ def get_model(model_args: ModelArguments, is_trainable: bool):
         for k, v in dict(
             quantization_config=bnb_config,
             device_map=device_map,
-            use_auth_token=os.getenv("HF_ACCESS_TOKEN"),
+            use_auth_token=os.environ.get("HF_ACCESS_TOKEN"),
         ).items()
         if v is not None
     }
@@ -72,7 +72,9 @@ def get_model(model_args: ModelArguments, is_trainable: bool):
 
 
 def get_model_and_tokenizer(model_args: ModelArguments, is_trainable: bool):
-    tokenizer = AutoTokenizer.from_pretrained(model_args.model_path)
+    tokenizer = AutoTokenizer.from_pretrained(
+        model_args.model_path, use_auth_token=os.environ.get("HF_ACCESS_TOKEN")
+    )
     model = get_model(model_args, is_trainable)
 
     return model, tokenizer
