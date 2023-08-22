@@ -512,7 +512,7 @@ public class QueryClient {
                         null, conn);
 
                 // Create derivation for each virtual sensor
-                String sensorDerivation = derivationClient.createDerivationWithTimeSeries(
+                derivationClient.createDerivationWithTimeSeries(
                         List.of(stationIri), virtualSensorUpdateIri, inputs);
                 derivationClient.addTimeInstance(inputs);
 
