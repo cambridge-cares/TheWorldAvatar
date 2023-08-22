@@ -4,7 +4,7 @@
 ################################################
 
 # The purpose of this module is to provide the EmissionAgent class based on 
-# the pyderivationagent.DerivationAgent class, i.e., implementing the emssion
+# the pyderivationagent.DerivationAgent class, i.e., implementing the emission
 # agent as derivation agent using synchronous derivation
 
 import pandas as pd
@@ -18,7 +18,7 @@ from emissionagent.datamodel.iris import *
 from emissionagent.kgutils.kgclient import KGClient
 from emissionagent.kgutils.tsclient import TSClient
 from emissionagent.agent.emission_estimation import *
-from emissionagent.utils.env_configs import DB_USER, DB_PASSWORD
+from emissionagent.utils.env_configs import DB_URL, DB_USER, DB_PASSWORD
 
 
 class EmissionAgent(DerivationAgent):
@@ -157,6 +157,8 @@ class EmissionAgent(DerivationAgent):
             dataIRIs.append(data_iri)
 
         # Retrieve and consolidate time series data for dataIRIs
+        ts_client = TSClient(kg_client=self.sparql_client, rdb_url=DB_URL, 
+                             rdb_user=DB_USER, rdb_password=DB_PASSWORD)
 
         # Extract time series value for SimulationTime
         amount = 10
@@ -172,7 +174,8 @@ class EmissionAgent(DerivationAgent):
                                                                       consumed_gas=amount))
 
         # Create graph of emission instance triples and add to derivation outputs
-        g = self.sparql_client.instantiate_emissions(emissions)
+        g = self.sparql_client.instantiate_emissions(location=input_iris[OD_STATIC_POINT_SOURCE][0],
+                                                     emission=emissions)
         derivation_outputs.addGraph(g)
         
 
@@ -185,7 +188,7 @@ def default():
     msg += 'The Emission Agent "converts" instantiated (time series) data for burned natural gas '
     msg += 'or generated heat amounts by an energy from waste plant into corresponding emission '
     msg += 'values for certain emission types.<BR>'
-    msg += "The agent is implemented as derivation agent using synchronous derivationa"
+    msg += "The agent is implemented as derivation agent using synchronous derivation."
     msg += "<BR><BR>"
     msg += 'For further details please see the <a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/EmissionAgent/">Emission Agent README</a>.'
     return msg

@@ -7,6 +7,7 @@
 # KG queries and updates using the PySparqlClient from the DerivationAgent
 
 import uuid
+from distutils.util import strtobool
 from rdflib import URIRef, Literal, Graph
 
 from py4jps import agentlogging
@@ -14,7 +15,6 @@ from py4jps import agentlogging
 from pyderivationagent.kg_operations import PySparqlClient
 
 from emissionagent.datamodel.iris import *
-from emissionagent.kgutils.utils import *
 
 
 # Initialise logger instance (ensure consistent logger level`)
@@ -82,7 +82,7 @@ class KGClient(PySparqlClient):
     #
     # SPARQL UPDATES
     # 
-    def instantiate_emissions(self, emissions:list) -> Graph:
+    def instantiate_emissions(self, location_iri:str, emissions:list) -> Graph:
         """
         Takes a list of dictionaries with emissions data and creates 
         new emission instances
@@ -92,14 +92,52 @@ class KGClient(PySparqlClient):
                                 mass flow rate - kg/s
 
         Arguments:
+            location_iri {str} -- IRI of StaticPointSource where emissions are located
             emissions {list} -- emission data dictionaries with the following keys:
                                 'pollutantID', 'temperature', 'density', 'massflow'
         Returns:
             graph {Graph} -- Graph of updated forecast instance
         """
+
+        def _instantiate_om_quantity(g:Graph, emission_iri:str, quantity:str, 
+                                     value=float) -> Graph:
+            # Create new OM:Quantity and OM:Measure instances
+            if quantity == 'temperature':
+                quantity_iri = KB + 'Temperature_' + str(uuid.uuid4())
+                quantity_type = OM_TEMPERATURE
+                unit_iri = OM_KELVIN
+            elif quantity == 'density':
+                quantity_iri = KB + 'Density_' + str(uuid.uuid4())
+                quantity_type = OM_DENSITY
+                unit_iri = OM_KG_PER_M3
+            elif quantity == 'massflow':
+                quantity_iri = KB + 'MassFlow_' + str(uuid.uuid4())
+                quantity_type = OM_MASSFLOW
+                unit_iri = OM_KG_PER_S
+            measure_iri = KB + 'Measure_' + str(uuid.uuid4())
+            
+            # Add triples to graph
+            g.add(URIRef(emission_iri), URIRef(OM_HAS_QUANTITY), URIRef(quantity_iri))
+            g.add(URIRef(quantity_iri), URIRef(RDF_TYPE), URIRef(quantity_type))
+            g.add(URIRef(quantity_iri), URIRef(OM_HASVALUE), URIRef(measure_iri))
+            g.add(URIRef(measure_iri), URIRef(RDF_TYPE), URIRef(OM_MEASURE))
+            g.add(URIRef(measure_iri), URIRef(OM_HAS_NUMERICAL_VALUE), Literal(value, datatype=XSD_FLOAT))
+            g.add(URIRef(measure_iri), URIRef(OM_HASUNIT), URIRef(unit_iri))
+
+            return g
         
-        def _add_emission_instance(graph: Graph, emission:dict) -> Graph:
+        def _add_emission_instance(g:Graph, location_iri:str, emission:dict) -> Graph:
+            # Create new emission instance
+            emission_iri = KB + 'Emission_' + str(uuid.uuid4())
             # Add triples for single emission instance
+            g.add(URIRef(location_iri), URIRef(OD_EMITS), URIRef(emission_iri))
+            g.add(URIRef(emission_iri), URIRef(RDF_TYPE), URIRef(OD_EMISSION))
+            g.add(URIRef(emission_iri), URIRef(OD_HAS_POLLUTANT_ID), 
+                  URIRef(emission.pop('pollutantID')))
+            # Create OM:Quantity instances for temperature, density, and mass flow rate
+            for k, v in emission.items():
+                g = _instantiate_om_quantity(g, emission_iri=emission_iri,
+                                             quantity=k, value=v)
             
             return graph
 
@@ -109,7 +147,7 @@ class KGClient(PySparqlClient):
 
         # Add triples for each emission instance
         for e in emissions:
-            graph = _add_emission_instance(graph, e)
+            graph = _add_emission_instance(graph, location_iri, e)
 
         return graph
     
