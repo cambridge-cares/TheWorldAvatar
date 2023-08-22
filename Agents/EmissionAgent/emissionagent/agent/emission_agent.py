@@ -53,7 +53,7 @@ class EmissionAgent(DerivationAgent):
 
     def validate_input_values(self, inputs, derivationIRI=None):
         """
-        Check whether received input instances are suitable to derive forecast.
+        Check whether received input instances are suitable to derive emissions.
         Throw exception if data is not suitable.
 
         Arguments:
@@ -147,11 +147,12 @@ class EmissionAgent(DerivationAgent):
         # (returns dict of inputs with input concepts as keys and values as list)
         inputs = derivation_inputs.getInputs()
         derivIRI = derivation_inputs.getDerivationIRI()
-        # Get validated inputs as still as key-value pairs with lists
+        # Get validated inputs still as key-value pairs with lists
         input_iris = self.validate_input_values(inputs=inputs, derivationIRI=derivIRI)
 
-        # Query all dataIRIs for emission estimation calculation (create consolidated 
-        # list as either only ProvidedHeatAmount or ConsumedGasAmount instances are provided)
+        # Query all dataIRIs for emission estimation calculation (i.e., required
+        # to retrieve time series data) -> create consolidated list as either
+        # only ProvidedHeatAmount or ConsumedGasAmount instances will be provided
         dataIRIs = []
         iris = [input_iris.get(OHN_PROVIDED_HEAT_AMOUNT), input_iris.get(OHN_CONSUMED_GAS_AMOUNT)]
         iris = [iri for sublist in iris if sublist is not None for iri in sublist]
@@ -163,9 +164,31 @@ class EmissionAgent(DerivationAgent):
         # Retrieve and consolidate time series data for dataIRIs
         ts_client = TSClient(kg_client=self.sparql_client, rdb_url=DB_URL, 
                              rdb_user=DB_USER, rdb_password=DB_PASSWORD)
+        dfs = []
+        for dataIRI in dataIRIs:
+            times, values = ts_client.retrieve_timeseries(dataIRI=dataIRI)
+            # Create DataFrame with DateTimeIndex per dataIRI and append to list
+            df = pd.DataFrame({'time': times, dataIRI: values})
+            df['time'] = pd.to_datetime(df['time'])
+            df.set_index('time', inplace=True)
+            dfs.append(df)
+        # Concatenate all individual DataFrames based on index and sum values
+        df = pd.concat(dfs, axis=1)
+        df['sum'] = df.sum(axis=1)
+        # Create column with unix time stamps (in seconds, not nanoseconds)
+        df.reset_index(inplace=True)
+        df['unix'] = df['time'].apply(lambda x: x.timestamp())
+        df['unix'] = df['unix'].astype(int)
 
         # Extract time series value for SimulationTime
-        amount = 10
+        unix_time = self.sparql_client.get_unix_timestamps(input_iris[OD_SIMULATION_TIME][0])
+        try:
+            amount = df[df['unix'] == unix_time]['sum'].values[0]
+        except IndexError:
+            msg = f'Derivation {derivIRI}: SimulationTime unix value {unix_time} not found in time series data. '
+            msg += f'Time series data unix range: [ {df["unix"].min()} , {df["unix"].max()} ]'
+            logger.error(msg)
+            raise ValueError(msg)
 
         # Estimate associated emissions for each pollutant of interest
         emissions = []

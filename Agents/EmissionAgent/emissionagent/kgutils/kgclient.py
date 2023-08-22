@@ -131,6 +131,37 @@ class KGClient(PySparqlClient):
             }
         
         return res_consolidated
+    
+
+    def get_unix_timestamps(self, instant_iri:str) -> int:
+        """
+        Retrieves the unix timestamp for a given instant IRI
+
+        Arguments:
+            instant_iri {str} -- IRI of instant for which to retrieve timestamp
+        Returns:
+            unix {int} -- unix timestamp (in s)
+        """
+
+        query = f"""
+            SELECT ?unix
+            WHERE {{
+                <{instant_iri}> <{TIME_INTIMEPOSITION}> ?pos .
+                ?pos <{TIME_HASTRS}> <{UNIX_TIME}> ;
+                    <{TIME_NUMERICPOSITION}> ?unix . 
+            }}
+        """        
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+
+        # Extract unix timestamp and cast to int
+        if len(res) == 1:
+            return self.get_unique_value(res, 'unix', int)
+
+        else:
+            msg = "No unique Unix timestamp could be retrieved from KG."
+            logger.error(msg)
+            raise ValueError(msg)
 
 
     #

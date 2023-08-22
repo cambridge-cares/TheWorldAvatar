@@ -61,27 +61,3 @@ def calculate_emissions_for_provided_heat(pollutant_iri:str, provided_heat:float
     # TODO: Implement emission calculation
 
     return emission
-
-
-def convert_time_to_timestamp(time):
-    """
-    Converts a time to a unix timestamp (in seconds)
-
-    Arguments:
-        time: a time (int, str, pd.Timestamp)
-    Returns:
-        unix timestamp (in s)
-    """
-
-    # convert time to unix timestamp
-    if isinstance(time, int):
-        time_stamp = time
-    elif isinstance(time, str):
-        time_stamp = pd.Timestamp(
-            isoparse(time)).tz_convert('UTC').tz_localize(None).timestamp()
-    elif isinstance(time, pd.Timestamp):
-        time_stamp = time.timestamp()
-    else:
-        raise ValueError(
-            f'Unknown time format: {time}. Please use int, str or pd.Timestamp')
-    return int(time_stamp)

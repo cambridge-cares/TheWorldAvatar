@@ -91,10 +91,10 @@ def test_example_data_instantiation(initialise_clients):
 @pytest.mark.parametrize(
     "derivation_input_set, amount_iri, ts_times, ts_values, expected_results",
     [
-        (cf.DERIVATION_INPUTS_1, cf.PROVIDED_HEAT_AMOUNT_1, cf.TIMES, cf.VALUES_1, cf.EXPECTED_OUTPUTS_1)
+        (cf.DERIVATION_INPUTS_1, cf.DATA_IRI_1, cf.TIMES, cf.VALUES_1, cf.EXPECTED_OUTPUTS_1)
     ],
 )
-def test_create_forecast(
+def test_estimate_emissions(
     initialise_clients, create_example_agent, derivation_input_set, amount_iri, 
     ts_times, ts_values, expected_results
 ):
@@ -165,7 +165,7 @@ def test_create_forecast(
             derivation_input_set_copy.remove(j)
     assert len(derivation_input_set_copy) == 0
 
-    # Retrieve instantiated forecast and verify its details
+    # Retrieve instantiated emissions and verify their details
     emission_iris = list(derivation_outputs[dm.OD_EMISSION])
     emissions = sparql_client.get_emission_details(emission_iris)
     assert emissions == expected_results
