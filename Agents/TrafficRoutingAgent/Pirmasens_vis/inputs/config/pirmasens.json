@@ -5,33 +5,25 @@
     "datasetDirectory": "pirmasens",
     "dataSubsets": [
         {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "polygon",
+            "table": "polygons"
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "point",
+            "table": "points"
+        },
+        {
             "type": "OSMRouting",
-            "skip": true,
+            "skip": false,
             "schema": "public",
             "subdirectory": "routing",
             "name": "routing"
-        },
-        {
-            "type": "raster",
-            "name": "flood",
-            "skip": true,
-            "subdirectory": "flood",
-            "geoServerSettings": {
-                "layerSettings": {
-                    "defaultStyle": "elevation"
-                }
-            }
-        },
-        {
-            "type": "raster",
-            "name": "population",
-            "skip": true,
-            "subdirectory": "population",
-            "geoServerSettings": {
-                "layerSettings": {
-                    "defaultStyle": "elevation"
-                }
-            }
         }
     ]
 }
