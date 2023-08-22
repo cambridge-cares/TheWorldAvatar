@@ -29,6 +29,7 @@ from emissionagent.datamodel.iris import *
 from emissionagent.agent import EmissionAgent
 from emissionagent.kgutils.kgclient import KGClient
 from emissionagent.kgutils.tsclient import TSClient
+from emissionagent.utils.baselib_gateway import jpsBaseLibGW
 
 from emissionagent.utils.env_configs import DB_URL, DB_USER, DB_PASSWORD, \
                                                SPARQL_QUERY_ENDPOINT, \
@@ -58,8 +59,7 @@ AGENT_URL = 'http://host.docker.internal:5001/EmissionAgent'
 TEST_TRIPLES_BASE_IRI = 'https://www.theworldavatar.com/test/'
 
 # Expected number of triples
-TBOX_TRIPLES = 7
-ABOX_TRIPLES = 51
+ABOX_TRIPLES = 9
 TS_TRIPLES = 4
 TIME_TRIPLES_PER_PURE_INPUT = 6
 AGENT_SERVICE_TRIPLES = 4       # agent service triples
@@ -76,6 +76,12 @@ UNIT_TRIPLES = 1                # triples to assign unit to forecast
 # Derivation agent and markup base urls
 DERIVATION_INSTANCE_BASE_URL = os.getenv('DERIVATION_INSTANCE_BASE_URL')
 
+
+# Time series value data types (default: Double)
+jpsBaseLibView = jpsBaseLibGW.createModuleView()
+DOUBLE = jpsBaseLibView.java.lang.Double.TYPE
+# Time series format
+TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 # Create synthetic time series data (for Prophet tests)
 times = pd.date_range(start='2023-01-01T00:00:00Z', freq='H', 
                       end='2023-02-01T00:00:00Z')
@@ -84,6 +90,9 @@ TIMES = times.strftime("%Y-%m-%dT%H:%M:%SZ").tolist()
 VALUES_1 = [5.0 for i in range(len(times))]
 VALUES_2 = [10.0 for i in range(len(times))]
 
+# Times for which to test extraction of time series values
+TIME_1 = 1673308800     # 2023-01-10T00:00:00Z 
+TIME_2 = 1677628800     # 2023-03-01T00:00:00Z
 
 # ----------------------------------------------------------------------------------
 #  Test Inputs

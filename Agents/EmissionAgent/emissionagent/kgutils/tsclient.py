@@ -78,6 +78,44 @@ class TSClient:
                 conn.close()
 
 
+    @staticmethod
+    def create_timeseries(times: list, dataIRIs: list, values: list):
+        """
+        Create Java TimeSeries object (i.e. to attach via TSClient)
+        
+        Arguments:
+            times (list): List of time stamps
+            dataIRIs (list): List of dataIRIs
+            values (list): List of list of values per dataIRI     
+        """
+        try:
+            timeseries = TSClient.jpsBaseLibView.TimeSeries(times, dataIRIs, values)
+        except Exception as ex:
+            logger.error("Unable to create TimeSeries object.")
+            raise TSException("Unable to create timeseries.") from ex
+        
+        return timeseries
+
+
+    def init_timeseries(self, dataIRI, times, values, ts_type, time_format):
+        """
+        This method instantiates a new time series and immediately adds data to it.
+        
+        Arguments:
+            dataIRI (str): IRI of instance with hasTimeSeries relationship
+            times (list): List of times/dates
+            values (list): List of actual values
+            ts_type (Java class): Java class of time series values
+            time_format (str): Time format (e.g. "%Y-%m-%dT%H:%M:%SZ")
+        """
+
+        with self.connect() as conn:
+            self.tsclient.initTimeSeries([dataIRI], [ts_type], time_format, conn)
+            ts = TSClient.create_timeseries(times, [dataIRI], [values])
+            self.tsclient.addTimeSeriesData(ts, conn)
+        logger.info(f"Time series successfully initialised in KG and RDB for dataIRI: {dataIRI}")
+
+
     def retrieve_timeseries(self, dataIRI, lowerbound=None, upperbound=None):
         """
         This method retrieves the time series data for a given dataIRI
