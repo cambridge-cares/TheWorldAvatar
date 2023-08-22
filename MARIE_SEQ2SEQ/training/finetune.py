@@ -89,9 +89,9 @@ def get_llama_trainer(
         for i in range(len(examples["question"])):
             text = (
                 LLAMA_PROMPT_PREFIX
-                + examples[i]["question"]
+                + examples["question"][i]
                 + LLAMA_COMPLETION_PREFIX
-                + examples[i]["sparql_query_compact"]
+                + examples["sparql_query_compact"][i]
             )
             output_texts.append(text)
         return output_texts
