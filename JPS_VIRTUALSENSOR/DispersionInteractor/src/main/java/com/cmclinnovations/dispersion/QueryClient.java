@@ -708,7 +708,16 @@ public class QueryClient {
         });
     }
 
-    public List<String> getDispersionAndShipLayer(String pollutant, long timeStep, String derivation) {
+    /**
+     * index in output - 0) dispersion, 1) ships, 2) buildings, 3) static point
+     * source
+     * 
+     * @param pollutant
+     * @param timeStep
+     * @param derivation
+     * @return
+     */
+    public List<String> getLayers(String pollutant, long timeStep, String derivation) {
         Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
 
         SelectQuery query = Queries.SELECT();
@@ -717,32 +726,51 @@ public class QueryClient {
         Variable dispOutput = query.var();
         Variable dispLayer = query.var();
         Variable shipLayer = query.var();
+        Variable buildingsLayer = query.var();
+        Variable staticPointLayer = query.var();
 
         query.where(dispOutput.has(belongsTo, iri(derivation)),
                 shipLayer.has(belongsTo, iri(derivation)).andIsA(SHIPS_LAYER),
+                buildingsLayer.has(belongsTo, iri(derivation)).andIsA(BUILDINGS_LAYER),
+                staticPointLayer.has(belongsTo, iri(derivation)).andIsA(STATIC_POINT_SOURCE_LAYER),
                 dispOutput.isA(DISPERSION_OUTPUT).andHas(HAS_POLLUTANT_ID, pollutantIri).andHas(HAS_DISPERSION_LAYER,
                         dispLayer),
-                pollutantIri.isA(iri(pollutant))).select(dispLayer, shipLayer).prefix(P_DISP);
+                pollutantIri.isA(iri(pollutant))).select(dispLayer, shipLayer, buildingsLayer, staticPointLayer)
+                .prefix(P_DISP);
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         String dispLayerIri = queryResult.getJSONObject(0).getString(dispLayer.getQueryString().substring(1));
         String shipLayerIri = queryResult.getJSONObject(0).getString(shipLayer.getQueryString().substring(1));
+        String buildingsLayerIri = queryResult.getJSONObject(0).getString(buildingsLayer.getQueryString().substring(1));
+        String staticPointLayerIri = queryResult.getJSONObject(0)
+                .getString(staticPointLayer.getQueryString().substring(1));
 
         String dispLayerName = null;
         String shipLayerName = null;
+        String buildingsLayerName = null;
+        String staticPointLayerName = null;
 
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
-            TimeSeries<Long> queriedTimeSeries = tsClient.getTimeSeriesWithinBounds(List.of(dispLayerIri, shipLayerIri),
+            TimeSeries<Long> queriedTimeSeries = tsClient.getTimeSeriesWithinBounds(
+                    List.of(dispLayerIri, shipLayerIri, buildingsLayerIri, staticPointLayerIri),
                     timeStep, timeStep, conn);
             dispLayerName = queriedTimeSeries.getValuesAsString(dispLayerIri).get(0);
             shipLayerName = queriedTimeSeries.getValuesAsString(shipLayerIri).get(0);
+            buildingsLayerName = queriedTimeSeries.getValuesAsString(buildingsLayerIri).get(0);
+            staticPointLayerName = queriedTimeSeries.getValuesAsString(staticPointLayerIri).get(0);
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
             LOGGER.error("Closing connection failed when retrieving the dispersion layer name");
         }
 
-        return List.of(dispLayerName, shipLayerName);
+        List<String> layers = new ArrayList<>();
+        layers.add(dispLayerName);
+        layers.add(shipLayerName);
+        layers.add(buildingsLayerName);
+        layers.add(staticPointLayerName);
+
+        return layers;
     }
 
     public String getColourBarURL(String pollutant, long timeStep, String derivation) {
