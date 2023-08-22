@@ -2,6 +2,44 @@
     "name": "Singapore",
     "groups": [
         {
+            "name": "Buildings",
+            "stack": "http://10.25.188.85:3838",
+            "sources": [
+                {
+                    "id": "building",  
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://10.25.188.85:3838/geoserver/3DcityDB/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=3DcityDB%3Asg_ntu&outputFormat=application%2Fjson"
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "building",
+                    "name": "Building geometry",
+                    "source": "building",
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#2F5F8A",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "measured_height"],
+                            ["get", "measured_height"],
+                            8
+                        ]
+                    }
+                }
+            ]
+        },
+        {
             "name": "Active Traffic Incidents",
             "stack": "http://174.138.31.224:3838",
             "sources": [
