@@ -3,10 +3,8 @@ import json
 import transformers
 from tqdm.auto import tqdm
 
-from marie.translation import TranslationModel
-
 from marie.arguments_schema import DatasetArguments, InferenceArguments, ModelArguments
-from marie.data_processing.query_processing import postprocess_query
+from marie.translation import TranslationModel
 
 
 def rename_dict_keys(d: dict, mappings: dict):
@@ -19,23 +17,22 @@ def infer():
     )
     model_args, data_args, infer_args = hfparser.parse_args_into_dataclasses()
 
-    trans_model = TranslationModel(
-        model_args, max_new_tokens=infer_args.max_new_tokens
-    )
+    trans_model = TranslationModel(model_args, max_new_tokens=infer_args.max_new_tokens)
 
     with open(data_args.eval_data_path, "r") as f:
         data = json.load(f)
 
     preds = []
     for datum in tqdm(data):
-        pred = trans_model(datum["question"])
+        pred = trans_model.nl2sparql(datum["question"])
         preds.append(pred)
 
     data_out = [
         {
-            **rename_dict_keys(datum, dict(sparql_query="gt", sparql_query_compact="gt_compact")),
-            "prediction_raw": pred,
-            "prediction_postprocessed": postprocess_query(pred)
+            **rename_dict_keys(
+                datum, {"sparql_query": "gt", "sparql_query_compact": "gt_compact"}
+            ),
+            **pred,
         }
         for datum, pred in zip(data, preds)
     ]

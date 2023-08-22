@@ -12,13 +12,7 @@ from marie.data_processing.qn_processing import preprocess_qn
 from marie.data_processing.query_processing import preprocess_query
 
 from marie.arguments_schema import DatasetArguments, ModelArguments
-from marie.model_utils import get_model_and_tokenizer
-
-
-def preprocess_examples(examples):
-    sources = [preprocess_qn(qn) for qn in examples["question"]]
-    targets = [preprocess_query(query) for query in examples["sparql_query_compact"]]
-    return dict(source=sources, target=targets)
+from marie.model_utils import get_model_and_tokenizer, get_model_family_from_model_name
 
 
 def train():
@@ -38,15 +32,32 @@ def train():
         )
         model_inputs["labels"] = labels["input_ids"]
         return model_inputs
-    
+
+    model_family = (
+        model_args.model_family
+        if model_args.model_family is not None
+        else get_model_family_from_model_name(model_args.model_path)
+    )
+
+    def _preprocess_examples(examples):
+        sources = [
+            preprocess_qn(qn, model_family=model_family) for qn in examples["question"]
+        ]
+        targets = [
+            preprocess_query(query, model_family=model_family) for query in examples["sparql_query_compact"]
+        ]
+        return dict(source=sources, target=targets)
+
     def _get_tokenized_dataset(data_path: str):
         dataset = Dataset.from_json(data_path)
         dataset = dataset.map(
-            preprocess_examples, batched=True, remove_columns=[x for x in dataset.column_names if x not in ["source", "target"]]
+            _preprocess_examples,
+            batched=True,
+            remove_columns=[
+                x for x in dataset.column_names if x not in ["source", "target"]
+            ],
         )
-        return dataset.map(
-            _tokenize, batched=True, remove_columns=["source", "target"]
-        )
+        return dataset.map(_tokenize, batched=True, remove_columns=["source", "target"])
 
     train_dataset = _get_tokenized_dataset(data_args.train_data_path)
     eval_dataset = _get_tokenized_dataset(data_args.eval_data_path)

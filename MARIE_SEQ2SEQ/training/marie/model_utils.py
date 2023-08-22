@@ -7,6 +7,14 @@ from peft import PeftModel, LoraConfig, TaskType, get_peft_model
 from marie.arguments_schema import ModelArguments
 
 
+def get_model_family_from_model_name(model_name: str):
+    model_name = model_name.lower()
+    for model_family in ["t5", "llama"]:
+        if model_family in model_name:
+            return model_family
+    raise ValueError("Unable to infer model family from model name: " + model_name)
+
+
 def get_model(model_args: ModelArguments, is_trainable: bool):
     # if we are in a distributed setting, we need to set the device map per device
     if os.environ.get("LOCAL_RANK") is not None:

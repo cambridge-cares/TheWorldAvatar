@@ -5,6 +5,7 @@ from typing import Optional
 @dataclass
 class ModelArguments:
     model_path: str = field(default="google/flan-t5-base")
+    model_family: Optional[str] = field(default=None)
     lora_path: Optional[str] = field(default=None)
     # quantization hyperparams
     bits: Optional[int] = field(
