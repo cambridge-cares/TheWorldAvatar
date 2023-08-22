@@ -117,23 +117,23 @@ class KGClient(PySparqlClient):
             measure_iri = KB + 'Measure_' + str(uuid.uuid4())
             
             # Add triples to graph
-            g.add(URIRef(emission_iri), URIRef(OM_HAS_QUANTITY), URIRef(quantity_iri))
-            g.add(URIRef(quantity_iri), URIRef(RDF_TYPE), URIRef(quantity_type))
-            g.add(URIRef(quantity_iri), URIRef(OM_HASVALUE), URIRef(measure_iri))
-            g.add(URIRef(measure_iri), URIRef(RDF_TYPE), URIRef(OM_MEASURE))
-            g.add(URIRef(measure_iri), URIRef(OM_HAS_NUMERICAL_VALUE), Literal(value, datatype=XSD_FLOAT))
-            g.add(URIRef(measure_iri), URIRef(OM_HASUNIT), URIRef(unit_iri))
+            g.add((URIRef(emission_iri), URIRef(OM_HAS_QUANTITY), URIRef(quantity_iri)))
+            g.add((URIRef(quantity_iri), URIRef(RDF_TYPE), URIRef(quantity_type)))
+            g.add((URIRef(quantity_iri), URIRef(OM_HASVALUE), URIRef(measure_iri)))
+            g.add((URIRef(measure_iri), URIRef(RDF_TYPE), URIRef(OM_MEASURE)))
+            g.add((URIRef(measure_iri), URIRef(OM_HAS_NUMERICAL_VALUE), Literal(value, datatype=XSD_FLOAT)))
+            g.add((URIRef(measure_iri), URIRef(OM_HASUNIT), URIRef(unit_iri)))
 
             return g
         
-        def _add_emission_instance(g:Graph, location_iri:str, emission:dict) -> Graph:
+        def _add_emission_instance(g:Graph, location:str, emission:dict) -> Graph:
             # Create new emission instance
             emission_iri = KB + 'Emission_' + str(uuid.uuid4())
             # Add triples for single emission instance
-            g.add(URIRef(location_iri), URIRef(OD_EMITS), URIRef(emission_iri))
-            g.add(URIRef(emission_iri), URIRef(RDF_TYPE), URIRef(OD_EMISSION))
-            g.add(URIRef(emission_iri), URIRef(OD_HAS_POLLUTANT_ID), 
-                  URIRef(emission.pop('pollutantID')))
+            g.add((URIRef(location), URIRef(OD_EMITS), URIRef(emission_iri)))
+            g.add((URIRef(emission_iri), URIRef(RDF_TYPE), URIRef(OD_EMISSION)))
+            g.add((URIRef(emission_iri), URIRef(OD_HAS_POLLUTANT_ID),
+                   URIRef(emission.pop('pollutantID'))))
             # Create OM:Quantity instances for temperature, density, and mass flow rate
             for k, v in emission.items():
                 g = _instantiate_om_quantity(g, emission_iri=emission_iri,

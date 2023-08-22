@@ -156,8 +156,8 @@ class EmissionAgent(DerivationAgent):
         iris = [input_iris.get(OHN_PROVIDED_HEAT_AMOUNT), input_iris.get(OHN_CONSUMED_GAS_AMOUNT)]
         iris = [iri for sublist in iris if sublist is not None for iri in sublist]
         for iri in iris:
-            data_iri, _ = self.sparql_client.get_associated_dataIRIs(instance_iri=iri, 
-                                                                     unit=OM_MEGAWATTHOUR)
+            data_iri, _ = self.sparql_client.get_associated_dataIRI(instance_iri=iri, 
+                                                                    unit=OM_MEGAWATTHOUR)
             dataIRIs.append(data_iri)
 
         # Retrieve and consolidate time series data for dataIRIs
@@ -178,8 +178,8 @@ class EmissionAgent(DerivationAgent):
                                                                       consumed_gas=amount))
 
         # Create graph of emission instance triples and add to derivation outputs
-        g = self.sparql_client.instantiate_emissions(location=input_iris[OD_STATIC_POINT_SOURCE][0],
-                                                     emission=emissions)
+        g = self.sparql_client.instantiate_emissions(location_iri=input_iris[OD_STATIC_POINT_SOURCE][0],
+                                                     emissions=emissions)
         derivation_outputs.addGraph(g)
         
 

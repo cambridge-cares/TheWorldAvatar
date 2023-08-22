@@ -22,7 +22,7 @@ services:
       # Partially overwritten by environment node values in docker-compose file for testing 
       # forecast agents, but some value required for tests container to start
       - ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__EmissionAgent/Service
-      - ONTOAGENT_OPERATION_HTTP_URL=http://host.docker.internal:5000/EmissionAgent
+      - ONTOAGENT_OPERATION_HTTP_URL=http://host.docker.internal:5001/EmissionAgent
       - DERIVATION_INSTANCE_BASE_URL=https://www.example.com/kg/derivation/
       - DERIVATION_PERIODIC_TIMESCALE=600
       - REGISTER_AGENT=false

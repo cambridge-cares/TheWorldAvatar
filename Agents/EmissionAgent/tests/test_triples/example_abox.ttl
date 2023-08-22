@@ -30,6 +30,16 @@
     time:hasTRS <http://dbpedia.org/resource/Unix_time> ;
     time:numericPosition 1673308800.0 .
 
-:ProvidedHeatAmount_1 rdf:type dh:ProvidedHeatAmount .
-:ConsumedGasAmount_1 rdf:type dh:ConsumedGasAmount .
-:ConsumedGasAmount_2 rdf:type dh:ConsumedGasAmount .
+:ProvidedHeatAmount_1 rdf:type dh:ProvidedHeatAmount ;
+                      om:hasValue :Measure_1 .
+:Measure_1 rdf:type om:Measure ;
+           om:hasUnit om:megawattHour .
+
+:ConsumedGasAmount_1 rdf:type dh:ConsumedGasAmount ;
+                     om:hasValue :Measure_2 .
+:Measure_2 rdf:type om:Measure ;
+           om:hasUnit om:megawattHour .
+:ConsumedGasAmount_2 rdf:type dh:ConsumedGasAmount ;
+                     om:hasValue :Measure_3 .
+:Measure_3 rdf:type om:Measure ;
+           om:hasUnit om:megawattHour .

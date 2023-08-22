@@ -23,7 +23,8 @@ from rdflib import Graph
 from urllib.parse import urlparse
 
 from pyderivationagent.data_model.iris import ONTODERIVATION_ISDERIVEDFROM, \
-                                              ONTODERIVATION_BELONGSTO
+                                              ONTODERIVATION_BELONGSTO, \
+                                              ONTODERIVATION_DERIVATION
 
 from emissionagent.datamodel.iris import *
 from emissionagent.agent import EmissionAgent
@@ -51,23 +52,20 @@ TEST_TRIPLES_DIR = os.path.join(THIS_DIR, 'test_triples')
 KG_SERVICE = "blazegraph_test"
 RDB_SERVICE = "postgres_test"
 
-# Derivation agent IRIs
-AGENT_IRI = 'https://www.theworldavatar.com/resource/agents/Service__EmissionAgent/Service'
-AGENT_URL = 'http://host.docker.internal:5001/EmissionAgent'
-
 # IRIs of derivation's (pure) inputs
 TEST_TRIPLES_BASE_IRI = 'https://www.theworldavatar.com/test/'
 
 # Expected number of triples
-ABOX_TRIPLES = 9
+ABOX_TRIPLES = 18
 TS_TRIPLES = 4
 TIME_TRIPLES_PER_PURE_INPUT = 6
 AGENT_SERVICE_TRIPLES = 4       # agent service triples
-DERIV_INPUT_TRIPLES = 2 + 6*3   # triples for derivation input message
+DERIV_INPUT_TRIPLES = 2 + 4*3   # triples for derivation input message
 DERIV_OUTPUT_TRIPLES = 2 + 1*3  # triples for derivation output message
-FORECAST_TRIPLES = 35           # triples for newly instantiated forecast (w/o unit)
-UNIT_TRIPLES = 1                # triples to assign unit to forecast
-
+EMISSION_TRIPLES = 21           # triples for newly instantiated emission instance
+RDF_TYPES_PER_EMISSION = 7      # number of rdf types per emission instance 
+                                # (incl. quantity, measure, ...)
+# NOTE: Derivation Framework attaches belongsTo relationship to each output with rdf type
 
 # 
 #  Values which should not require changing
@@ -109,7 +107,8 @@ CONSUMED_GAS_AMOUNT_2 = TEST_TRIPLES_BASE_IRI + 'ConsumedGasAmount_2'
 CONSUMED_GAS_AMOUNT_3 = TEST_TRIPLES_BASE_IRI + 'ConsumedGasAmount_3'
 
 # Define derivation input sets to test
-DERIVATION_INPUTS_1 = []
+DERIVATION_INPUTS_1 = [SIMULATION_TIME_1, POINT_SOURCE_1, 
+                       PROVIDED_HEAT_AMOUNT_1]
 
 # Define erroneous derivation input sets as retrieved by derivation agent
 # --> correct exceptions tested as unit tests
