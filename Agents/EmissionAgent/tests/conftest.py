@@ -56,7 +56,7 @@ RDB_SERVICE = "postgres_test"
 TEST_TRIPLES_BASE_IRI = 'https://www.theworldavatar.com/test/'
 
 # Expected number of triples
-ABOX_TRIPLES = 18
+ABOX_TRIPLES = 28
 TS_TRIPLES = 4
 TIME_TRIPLES_PER_PURE_INPUT = 6
 AGENT_SERVICE_TRIPLES = 4       # agent service triples
@@ -75,12 +75,11 @@ OUTPUT_TYPES = 5                # Emission, Temperature, Density, MassFlow, Meas
 # Derivation agent and markup base urls
 DERIVATION_INSTANCE_BASE_URL = os.getenv('DERIVATION_INSTANCE_BASE_URL')
 
-
-# Time series value data types (default: Double)
+# Define time series value data type and format
 jpsBaseLibView = jpsBaseLibGW.createModuleView()
 DOUBLE = jpsBaseLibView.java.lang.Double.TYPE
-# Time series format
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+
 # Create synthetic time series data (for Prophet tests)
 times = pd.date_range(start='2023-01-01T00:00:00Z', freq='H', 
                       end='2023-02-01T00:00:00Z')
@@ -90,8 +89,15 @@ VALUES_1 = [5.0 for i in range(len(times))]
 VALUES_2 = [10.0 for i in range(len(times))]
 
 # Times for which to test extraction of time series values
-TIME_1 = 1673308800     # 2023-01-10T00:00:00Z 
-TIME_2 = 1677628800     # 2023-03-01T00:00:00Z
+TIME_1 = 1673308800     # 2023-01-10T00:00:00Z
+TIME_2 = 1674172800     # 2023-01-20T00:00:00Z
+TIME_3 = 1677628800     # 2023-03-01T00:00:00Z (out of bounds)
+VALUE_1 = 11.11
+VALUE_2 = 22.22
+VALUE_3 = f'SimulationTime unix value {TIME_3} not found in time series data.'
+# Replace values at specific times
+VALUES_1[TIMES.index('2023-01-10T00:00:00Z')] = VALUE_1
+VALUES_1[TIMES.index('2023-01-20T00:00:00Z')] = VALUE_2
 
 # ----------------------------------------------------------------------------------
 #  Test Inputs
@@ -99,6 +105,7 @@ TIME_2 = 1677628800     # 2023-03-01T00:00:00Z
 
 SIMULATION_TIME_1 = TEST_TRIPLES_BASE_IRI + 'SimulationTime_1'
 SIMULATION_TIME_2 = TEST_TRIPLES_BASE_IRI + 'SimulationTime_2'
+SIMULATION_TIME_3 = TEST_TRIPLES_BASE_IRI + 'SimulationTime_3'
 POINT_SOURCE_1 = TEST_TRIPLES_BASE_IRI + 'StaticPointSource_1'
 POINT_SOURCE_2 = TEST_TRIPLES_BASE_IRI + 'StaticPointSource_2'
 PROVIDED_HEAT_AMOUNT_1 = TEST_TRIPLES_BASE_IRI + 'ProvidedHeatAmount_1'

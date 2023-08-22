@@ -164,31 +164,10 @@ class EmissionAgent(DerivationAgent):
         # Retrieve and consolidate time series data for dataIRIs
         ts_client = TSClient(kg_client=self.sparql_client, rdb_url=DB_URL, 
                              rdb_user=DB_USER, rdb_password=DB_PASSWORD)
-        dfs = []
-        for dataIRI in dataIRIs:
-            times, values = ts_client.retrieve_timeseries(dataIRI=dataIRI)
-            # Create DataFrame with DateTimeIndex per dataIRI and append to list
-            df = pd.DataFrame({'time': times, dataIRI: values})
-            df['time'] = pd.to_datetime(df['time'])
-            df.set_index('time', inplace=True)
-            dfs.append(df)
-        # Concatenate all individual DataFrames based on index and sum values
-        df = pd.concat(dfs, axis=1)
-        df['sum'] = df.sum(axis=1)
-        # Create column with unix time stamps (in seconds, not nanoseconds)
-        df.reset_index(inplace=True)
-        df['unix'] = df['time'].apply(lambda x: x.timestamp())
-        df['unix'] = df['unix'].astype(int)
-
-        # Extract time series value for SimulationTime
-        unix_time = self.sparql_client.get_unix_timestamps(input_iris[OD_SIMULATION_TIME][0])
-        try:
-            amount = df[df['unix'] == unix_time]['sum'].values[0]
-        except IndexError:
-            msg = f'Derivation {derivIRI}: SimulationTime unix value {unix_time} not found in time series data. '
-            msg += f'Time series data unix range: [ {df["unix"].min()} , {df["unix"].max()} ]'
-            logger.error(msg)
-            raise ValueError(msg)
+        amount = extract_relevant_gas_or_heat_amount(ts_client=ts_client, 
+                        kg_client=self.sparql_client, derivationIRI=derivIRI, 
+                        simulation_time_iri=input_iris[OD_SIMULATION_TIME][0],
+                        dataIRIs=dataIRIs)
 
         # Estimate associated emissions for each pollutant of interest
         emissions = []

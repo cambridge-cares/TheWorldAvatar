@@ -3,7 +3,7 @@
 # Date: 22 Aug 2023                            #
 ################################################
 
-# This module contains a few unit tests for the emission agent
+# This module contains unit tests for the emission agent
 
 import pytest
 
@@ -14,16 +14,6 @@ from . import conftest as cf
 
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('dev')
-
-
-@pytest.mark.skip(reason="Test not implemented yet")
-def test_extraction_of_emission_input_value():
-    """
-    This function tests whether the correct time series values are extracted
-    from ConsumedGas and ProvidedHeat time series for given SimulationTime
-    """
-    #TODO: implement
-    pass
 
 
 @pytest.mark.parametrize(

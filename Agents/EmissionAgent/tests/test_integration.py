@@ -18,6 +18,7 @@ from operator import eq, gt
 from py4jps import agentlogging
 
 import emissionagent.datamodel as dm
+from emissionagent.agent.emission_estimation import extract_relevant_gas_or_heat_amount
 
 from . import conftest as cf
 
@@ -89,12 +90,56 @@ def test_example_data_instantiation(initialise_clients):
 
 #@pytest.mark.skip(reason="")
 @pytest.mark.parametrize(
+    "amount_iri, ts_times, ts_values, expected_to_fail, simulation_time, expected_amount",
+    [
+        (cf.DATA_IRI_1, cf.TIMES, cf.VALUES_1, False, cf.SIMULATION_TIME_1, cf.VALUE_1),
+        (cf.DATA_IRI_1, cf.TIMES, cf.VALUES_1, False, cf.SIMULATION_TIME_2, cf.VALUE_2),
+        (cf.DATA_IRI_1, cf.TIMES, cf.VALUES_1, True, cf.SIMULATION_TIME_3, cf.VALUE_3),
+    ],
+)
+def test_extract_time_series_amounts(
+    initialise_clients, amount_iri, ts_times, ts_values, expected_to_fail,
+    simulation_time, expected_amount
+):
+    """
+    This function tests whether the correct time series values are extracted
+    from ConsumedGas and ProvidedHeat time series for given SimulationTime
+    """
+
+    # Get required clients from fixture
+    sparql_client, ts_client, _, rdb_url = initialise_clients
+
+    # Initialise all triples in test_triples + initialise time series in RDB
+    # (it first DELETES ALL DATA in the specified SPARQL/RDB endpoints)
+    cf.initialise_triples(sparql_client)
+    cf.clear_database(rdb_url)
+    ts_client.init_timeseries(dataIRI=amount_iri,
+                              times=ts_times, values=ts_values,
+                              ts_type=cf.DOUBLE, time_format=cf.TIME_FORMAT)
+    
+    if not expected_to_fail:
+        amount = extract_relevant_gas_or_heat_amount(ts_client=ts_client, 
+                        kg_client=sparql_client, derivationIRI='TestDerivation',
+                        dataIRIs=[amount_iri], simulation_time_iri=simulation_time)
+        assert amount == expected_amount
+    
+    else:
+        with pytest.raises(ValueError) as exc_info:
+            extract_relevant_gas_or_heat_amount(ts_client=ts_client, 
+                        kg_client=sparql_client, derivationIRI='TestDerivation',
+                        dataIRIs=[amount_iri], simulation_time_iri=simulation_time)
+        # Check if expected error message is raised
+        assert expected_amount in str(exc_info.value)
+
+
+@pytest.mark.skip(reason="")
+@pytest.mark.parametrize(
     "derivation_input_set, amount_iri, ts_times, ts_values, expected_results",
     [
         (cf.DERIVATION_INPUTS_1, cf.DATA_IRI_1, cf.TIMES, cf.VALUES_1, cf.EXPECTED_OUTPUTS_1)
     ],
 )
-def test_estimate_emissions(
+def test_derive_emissions(
     initialise_clients, create_example_agent, derivation_input_set, amount_iri, 
     ts_times, ts_values, expected_results
 ):

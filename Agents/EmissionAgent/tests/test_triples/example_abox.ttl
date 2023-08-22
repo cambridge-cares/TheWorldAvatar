@@ -30,6 +30,18 @@
     time:hasTRS <http://dbpedia.org/resource/Unix_time> ;
     time:numericPosition 1673308800.0 .
 
+:SimulationTime_2 rdf:type disp:SimulationTime ;
+                  time:inTimePosition :TimePosition_2 .
+:TimePosition_2 rdf:type time:TimePosition ;
+    time:hasTRS <http://dbpedia.org/resource/Unix_time> ;
+    time:numericPosition 1674172800.0 .
+
+:SimulationTime_3 rdf:type disp:SimulationTime ;
+                  time:inTimePosition :TimePosition_3 .
+:TimePosition_3 rdf:type time:TimePosition ;
+    time:hasTRS <http://dbpedia.org/resource/Unix_time> ;
+    time:numericPosition 1677628800.0 .
+
 :ProvidedHeatAmount_1 rdf:type dh:ProvidedHeatAmount ;
                       om:hasValue :Measure_1 .
 :Measure_1 rdf:type om:Measure ;
