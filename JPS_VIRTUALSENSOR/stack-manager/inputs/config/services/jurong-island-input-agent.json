@@ -38,7 +38,7 @@
 	"endpoints": {
 		"aermod-agent": {
 			"url": "http://localhost:8080/JurongIslandInputAgent/",
-			"externalPath": "/JurongIslandInputAgent/"
+			"externalPath": "/jurong-island-input-agent/"
 		}
 	}
 }
