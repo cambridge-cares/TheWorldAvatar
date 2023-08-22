@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -34,7 +35,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * Tests for the ClassHandler class.
  */
 public class ClassHandlerTest {
-    
+
     /**
      * Logger for reporting info/errors.
      */
@@ -62,15 +63,17 @@ public class ClassHandlerTest {
             CONFIG.loadFile(stringBuilder.toString());
             FeatureInfoAgent.CONFIG = CONFIG;
 
-        } catch(Exception exception) {
+        } catch (Exception exception) {
             exception.printStackTrace(System.out);
             throw new RuntimeException("Could not read mock config file!");
         }
 
         // Add mock endpoints to the config
         CONFIG.addEndpoint(new ConfigEndpoint("ONTOP", "http://my-fake-ontop.com/", null, null, EndpointType.ONTOP));
-        CONFIG.addEndpoint(new ConfigEndpoint("POSTGRES", "http://my-fake-postgres.com/", null, null, EndpointType.POSTGRES));
-        CONFIG.addEndpoint(new ConfigEndpoint("blazegraph-test", "http://my-fake-blazegraph.com/namespace/blazegraph-test/sparql", null, null, EndpointType.BLAZEGRAPH));
+        CONFIG.addEndpoint(
+                new ConfigEndpoint("POSTGRES", "http://my-fake-postgres.com/", null, null, EndpointType.POSTGRES));
+        CONFIG.addEndpoint(new ConfigEndpoint("blazegraph-test",
+                "http://my-fake-blazegraph.com/namespace/blazegraph-test/sparql", null, null, EndpointType.BLAZEGRAPH));
 
         // Write a temporary query file
         try {
@@ -81,7 +84,7 @@ public class ClassHandlerTest {
             // Add to the config
             CONFIG.addMetaQueryForClass("SAMPLE-QUERY-CLASS", tmpQuery.toString());
             LOGGER.info("Written temporary query file for testing (" + tmpQuery.toString() + ").");
-        } catch(IOException exception) {
+        } catch (IOException exception) {
             exception.printStackTrace(System.out);
             throw new RuntimeException("Could not write temporary query file!");
         }
@@ -92,14 +95,14 @@ public class ClassHandlerTest {
      */
     @AfterAll
     public static void cleanup() {
-          // Delete the temporary query file
-          try {
+        // Delete the temporary query file
+        try {
             String tmpdir = System.getProperty("java.io.tmpdir");
             Path tmpQuery = Paths.get(tmpdir, "MetaHandlerTest.sparql");
             Files.deleteIfExists(tmpQuery);
 
             LOGGER.info("Removed temporary query file (" + tmpQuery.toString() + ").");
-        } catch(IOException exception) {
+        } catch (IOException exception) {
             exception.printStackTrace(System.out);
             throw new RuntimeException("Could not delete temporary query file!");
         }
@@ -108,8 +111,8 @@ public class ClassHandlerTest {
     /**
      * Tests that an array of class names can be determined for a given IRI.
      * 
-     * Note that this does not test the functionality of the queries, simply that the
-     * MetaHandler class can handle sending the query and parsing the result.
+     * Note that this does not test the functionality of the queries, simply that
+     * the MetaHandler class can handle sending the query and parsing the result.
      */
     @Test
     public void getClasses() {
@@ -123,11 +126,9 @@ public class ClassHandlerTest {
 
             // Respond to the non-ONTOP query with a fake class
             when(rsClient.executeFederatedQuery(
-                ArgumentMatchers.anyList(),
-                ArgumentMatchers.anyString()))
-                .thenReturn(
-                    new org.json.JSONArray("[{\"class\": \"com.cmclinnovations.kg.ClassOne\"}]")
-                );
+                    ArgumentMatchers.anyList(),
+                    ArgumentMatchers.anyString()))
+                    .thenReturn(new JSONArray("[{\"class\": \"com.cmclinnovations.kg.ClassOne\"}]"));
 
             // Ask the handler to query to determine the classes
             List<String> classMatches = handler.getClasses();
@@ -135,21 +136,23 @@ public class ClassHandlerTest {
             // Check result
             Assertions.assertNotNull(classMatches, "Expected a non-null return result!");
             Assertions.assertFalse(classMatches.isEmpty(), "Did not expect an empty String!");
-            Assertions.assertTrue(classMatches.contains("com.cmclinnovations.kg.ClassOne"), "Could not find expected class within collection!");
+            Assertions.assertTrue(classMatches.contains("com.cmclinnovations.kg.ClassOne"),
+                    "Could not find expected class within collection!");
 
-        } catch(Exception exception) {
+        } catch (Exception exception) {
             exception.printStackTrace(System.out);
             Assertions.fail("Unexpected exception thrown when trying to determine classes for mock IRI.");
         }
     }
 
     /**
-     * Tests that an array of class names can be determined for a given IRI; this differs
-     * from the previous test in that it intentionally fails the simple class query, and
-     * tests the functionality to run a second query that contains the ONTOP service.
+     * Tests that an array of class names can be determined for a given IRI; this
+     * differs from the previous test in that it intentionally fails the simple
+     * class query, and tests the functionality to run a second query that contains
+     * the ONTOP service.
      * 
-     * Note that this does not test the functionality of the queries, simply that the
-     * MetaHandler class can handle sending the query and parsing the result.
+     * Note that this does not test the functionality of the queries, simply that
+     * the MetaHandler class can handle sending the query and parsing the result.
      */
     @Test
     public void getClassesOntop() {
@@ -163,19 +166,15 @@ public class ClassHandlerTest {
 
             // Respond to the non-ONTOP query with nothing
             when(rsClient.executeFederatedQuery(
-                ArgumentMatchers.anyList(),
-                AdditionalMatchers.not(ArgumentMatchers.contains("ontop")))
-            ).thenReturn(
-                 new org.json.JSONArray("[]")
-            );
+                    ArgumentMatchers.anyList(),
+                    AdditionalMatchers.not(ArgumentMatchers.contains("ontop"))))
+                    .thenReturn(new JSONArray());
 
             // Respond to the ONTOP query with a fake class
             when(rsClient.executeFederatedQuery(
-                ArgumentMatchers.anyList(),
-                ArgumentMatchers.contains("ontop"))
-            ).thenReturn(
-                new org.json.JSONArray("[{\"class\": \"com.cmclinnovations.kg.ClassOne\"}]")
-            );
+                    ArgumentMatchers.anyList(),
+                    ArgumentMatchers.contains("ontop")))
+                    .thenReturn(new JSONArray("[{\"class\": \"com.cmclinnovations.kg.ClassOne\"}]"));
 
             // Ask the handler to query to determine the classes
             List<String> classMatches = handler.getClasses();
@@ -183,10 +182,10 @@ public class ClassHandlerTest {
             // Check result
             Assertions.assertNotNull(classMatches, "Expected a non-null return result!");
             Assertions.assertFalse(classMatches.isEmpty(), "Did not expect an empty String!");
-            Assertions.assertTrue(classMatches.contains("com.cmclinnovations.kg.ClassOne"), "Could not find expected class within collection!");
-   
+            Assertions.assertTrue(classMatches.contains("com.cmclinnovations.kg.ClassOne"),
+                    "Could not find expected class within collection!");
 
-        } catch(Exception exception) {
+        } catch (Exception exception) {
             exception.printStackTrace(System.out);
             Assertions.fail("Unexpected exception thrown when trying to determine classes for mock IRI.");
         }
@@ -197,40 +196,39 @@ public class ClassHandlerTest {
      */
     @Test
     public void readQueryFile() {
-          // Create a handler
-          ClassHandler handler = new ClassHandler("http://some-fake-iri/", new ArrayList<>());
+        // Create a handler
+        ClassHandler handler = new ClassHandler("http://some-fake-iri/", new ArrayList<>());
 
-          try {
-              // Set up a mock RemoteStoreClient with a set response
-              RemoteStoreClient rsClient = mock(RemoteStoreClient.class);
-              handler.setClient(rsClient);
-  
-              // Respond to the non-ONTOP query with a fake class
-              when(rsClient.executeFederatedQuery(
-                  ArgumentMatchers.anyList(),
-                  ArgumentMatchers.anyString()))
-                  .thenReturn(
-                      new org.json.JSONArray("[{\"class\": \"SAMPLE-QUERY-CLASS\"}]")
-                  );
-  
-              // Ask the handler to query to determine the classes
-              String classMatch = handler.getClassMatch();
-  
-              // Check result
-              Assertions.assertNotNull(classMatch, "Expected a non-null return result!");
-              Assertions.assertFalse(classMatch.isEmpty(), "Did not expect an empty String!");
-              Assertions.assertEquals("SAMPLE-QUERY-CLASS", classMatch, "Could not find expected class within collection!");
-  
-              // Get the query for that class
-              String queryContent = CONFIG.getMetaQuery(classMatch);
-              Assertions.assertNotNull(queryContent, "Expected a non-null return result!");
-              Assertions.assertFalse(queryContent.isEmpty(), "Did not expect an empty String!");
-              Assertions.assertEquals("SAMPLE-QUERY", queryContent, "Could not find expected class within collection!");
+        try {
+            // Set up a mock RemoteStoreClient with a set response
+            RemoteStoreClient rsClient = mock(RemoteStoreClient.class);
+            handler.setClient(rsClient);
 
-          } catch(Exception exception) {
-              exception.printStackTrace(System.out);
-              Assertions.fail("Unexpected exception thrown when trying to read a sample query file!");
-          }
+            // Respond to the non-ONTOP query with a fake class
+            when(rsClient.executeFederatedQuery(
+                    ArgumentMatchers.anyList(),
+                    ArgumentMatchers.anyString()))
+                    .thenReturn(new JSONArray("[{\"class\": \"SAMPLE-QUERY-CLASS\"}]"));
+
+            // Ask the handler to query to determine the classes
+            String classMatch = handler.getClassMatch();
+
+            // Check result
+            Assertions.assertNotNull(classMatch, "Expected a non-null return result!");
+            Assertions.assertFalse(classMatch.isEmpty(), "Did not expect an empty String!");
+            Assertions.assertEquals("SAMPLE-QUERY-CLASS", classMatch,
+                    "Could not find expected class within collection!");
+
+            // Get the query for that class
+            String queryContent = CONFIG.getMetaQuery(classMatch);
+            Assertions.assertNotNull(queryContent, "Expected a non-null return result!");
+            Assertions.assertFalse(queryContent.isEmpty(), "Did not expect an empty String!");
+            Assertions.assertEquals("SAMPLE-QUERY", queryContent, "Could not find expected class within collection!");
+
+        } catch (Exception exception) {
+            exception.printStackTrace(System.out);
+            Assertions.fail("Unexpected exception thrown when trying to read a sample query file!");
+        }
     }
 
 }
