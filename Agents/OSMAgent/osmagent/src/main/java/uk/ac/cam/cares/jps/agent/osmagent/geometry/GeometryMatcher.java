@@ -27,13 +27,11 @@ public class GeometryMatcher {
     private String osmDb;
     private String osmUser;
     private String osmPassword;
-    private String tableName;
 
     private RemoteRDBStoreClient geoClient;
     private RemoteRDBStoreClient osmClient;
 
-    public GeometryMatcher(Map<String, String> configs, String table) {
-        tableName = table;
+    public GeometryMatcher(Map<String, String> configs) {
         geoObjects = GeoObject.getGeoObjects(configs.get(GEO_DB), configs.get(GEO_USER), configs.get(GEO_PASSWORD));
         osmDb = configs.get(OSM_DB);
         osmUser = configs.get(OSM_USER);
@@ -44,20 +42,21 @@ public class GeometryMatcher {
 
     /**
      * Matches building geometry and OpenStreetMap geometry, then updates OSM table with matched building IRI
+     * @param table OSM table
      */
-    public void matchGeometry() throws ParseException {
+    public void matchGeometry(String table) throws ParseException {
         WKTReader wktReader = new WKTReader();
 
-        Map<Integer, OSMObject> osmObjects = OSMObject.getOSMObject(osmDb, osmUser, osmPassword, tableName, "building IS NOT NULL AND building_iri IS NULL");
+        Map<Integer, OSMObject> osmObjects = OSMObject.getOSMObject(osmDb, osmUser, osmPassword, table, "building IS NOT NULL AND building_iri IS NULL");
 
-
-        String updateStart = "UPDATE " + tableName + " SET building_iri = CASE";
+        String updateStart = "UPDATE " + table + " SET building_iri = CASE";
         String updateEnd = " ELSE building_iri END";
 
         List<String> updates = new ArrayList<>();
         int counter = 0;
         String update = "";
 
+        // match building geometry with OSM building geometry
         for (Map.Entry<Integer, OSMObject> entry : osmObjects.entrySet()){
             OSMObject osmObject = entry.getValue();
 
@@ -101,6 +100,7 @@ public class GeometryMatcher {
             updates.add(update);
         }
 
+        // update OSM table with matched building IRI
         for (int i = 0; i < updates.size(); i++) {
             osmClient.executeUpdate(updateStart + updates.get(i) + updateEnd);
         }
@@ -109,10 +109,11 @@ public class GeometryMatcher {
         counter = 0;
         update = "";
 
-        osmObjects = OSMObject.getOSMObject(osmDb, osmUser, osmPassword, tableName, "building_iri IS NULL");
+        osmObjects = OSMObject.getOSMObject(osmDb, osmUser, osmPassword, table, "building_iri IS NULL");
 
-        boolean flag = checkIfPoints(tableName);
+        boolean flag = checkIfPoints(table);
 
+        // match building geometry, which were not matched in the first round, with OSM geometry that don't have building IRI
         for (Map.Entry<String, GeoObject> entry : geoObjects.entrySet()) {
             GeoObject geoObject = entry.getValue();
 
@@ -122,7 +123,7 @@ public class GeometryMatcher {
                 update = "";
             }
 
-            String query = queryFromOSM(tableName, geoObject, flag, threshold);
+            String query = queryFromOSM(table, geoObject, flag, threshold);
 
             JSONArray result = osmClient.executeQuery(query);
 
@@ -147,6 +148,7 @@ public class GeometryMatcher {
             updates.add(update);
         }
 
+        // update OSM table with matched building IRI
         for (int i = 0; i < updates.size(); i++) {
             osmClient.executeUpdate(updateStart + updates.get(i) + updateEnd);
         }
