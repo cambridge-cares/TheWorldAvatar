@@ -1,12 +1,12 @@
 # Install the Emission Agent in Docker container
 #==================================================================================================
 # Reference published Docker image for Stack-Client resources to use
-FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
+FROM docker.cmclinnovations.com/stack-client:1.6.2 AS stackclients
 
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
-FROM python:3.9.14-slim-buster as base
+FROM python:3.9.14-slim-buster AS base
 # Meta data
 LABEL authors = "mh807@cam.ac.uk"
 LABEL description = "Emission Agent"
@@ -46,7 +46,7 @@ EXPOSE 5000
 #------------------------------------------------------
 # Production image reusing the base
 #------------------------------------------------------
-FROM base as prod
+FROM base AS prod
 # Install additional dependencies
 RUN pip install gunicorn==20.0.4
 
@@ -61,7 +61,7 @@ ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "emissionagent:create_app()" --timeout 3
 #------------------------------------------------------
 # Testing image reusing the base
 #------------------------------------------------------
-FROM base as test
+FROM base AS test
 # Install additional dependencies
 RUN apt-get update
 RUN apt install libpq-dev python3-dev gcc -y
@@ -86,7 +86,7 @@ CMD gunicorn --bind 0.0.0.0:5000 "emissionagent:create_app()" & pytest
 #------------------------------------------------------
 # Debug testing image reusing the base
 #------------------------------------------------------
-FROM base as debug_test
+FROM base AS debug_test
 # Install additional dependencies
 RUN apt-get update
 RUN apt install libpq-dev python3-dev gcc -y

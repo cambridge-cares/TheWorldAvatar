@@ -105,6 +105,10 @@ class EmissionAgent(DerivationAgent):
             msg = f"Derivation {derivationIRI}: Both 'ProvidedHeatAmount' and 'ConsumedGasAmount' instances provided."
             self.logger.error(msg)
             raise TypeError(msg)
+        if not provided_heat and not consumed_gas:
+            msg = f"Derivation {derivationIRI}: Neither 'ProvidedHeatAmount' nor 'ConsumedGasAmount' instances provided."
+            self.logger.error(msg)
+            raise TypeError(msg)
         if provided_heat:                
             if len(provided_heat) > 1:
                 msg = f"Derivation {derivationIRI}: More than one 'ProvidedHeatAmount' instance provided."
