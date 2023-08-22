@@ -1,0 +1,15 @@
+torch
+bitsandbytes
+transformers
+peft
+accelerate
+scipy
+sentencepiece
+trl
+datasets
+wandb
+tqdm
+levenshtein
+sparqlwrapper
+sacrebleu
+scikit-learn
