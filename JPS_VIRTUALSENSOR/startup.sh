@@ -14,3 +14,4 @@ docker pull ghcr.io/cambridge-cares/feature-info-agent:2.0.1
 # copy required files into containers
 (cd DispersionVis && ./copy_vis_file.sh)
 (cd ShipInputAgent && ./copy_ship_file.sh)
+(cd FeatureInfoAgent && ./copy_fia_config.sh)
