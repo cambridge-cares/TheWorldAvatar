@@ -12,6 +12,8 @@ Documentation for the TWA-VF is spread across a number of files, and is broken d
 
 * [Overview](./docs/overview.md)
   * _Provides a high level overview on the TWA-VF._
+* [Change Log](./CHANGELOG.md)
+  * _History of changes and requirements for each version._ 
 * [Development](./library/README.md)
   * _Information for developers of the TWA-VF._
 * [Working with Mapbox](./docs/mapbox.md)

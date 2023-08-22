@@ -1,15 +1,15 @@
 /**
- * Opens the user help document associated with this version of the DTVF.
+ * Opens the user help document associated with this version of the TWA-VF.
  */
 function openHelpURL() {
-    window.open("./dtvf/help/index.html", "_blank");
+    window.open("./twa-vf/help/index.html", "_blank");
 }
 
 /**
- * Returns the current version of the DTVF.
+ * Returns the current version of the TWA-V.
  */
-async function getDTVFVersion() {
-    return await fetch("./dtvf/VERSION").then(response => {
+async function getVisVersion() {
+    return await fetch("./twa-vf/VERSION").then(response => {
         return response.text();
     });
 }

@@ -68,7 +68,7 @@ class SearchHandler_Mapbox extends SearchHandler {
 
         for(const layer of layers) {
 
-            // Skip if a layer not provided by the DTVF
+            // Skip if a layer not provided by the TWA-VF
             let meta = layer["metadata"];
             if(meta === null || meta === undefined) continue;
             let attr = meta["attribution"];
@@ -100,7 +100,7 @@ class SearchHandler_Mapbox extends SearchHandler {
         let layers = MapHandler.MAP.getStyle().layers;
 
         for(const layer of layers) {
-            // Skip if a layer not provided by the DTVF
+            // Skip if a layer not provided by the TWA-VF
             let meta = layer["metadata"];
             if(meta === null || meta === undefined) continue;
             let attr = meta["attribution"];

@@ -3,7 +3,7 @@
 #
 # Use this script to run the example visualisation. Note that this uses the version of the
 # TWA-VF currently listed in the "../library/VERSION" file, which may mean you have to
-# build and push the "dtvf-base-image" first.
+# build and push the "twa-vf" first.
 #
 
 # Read the version

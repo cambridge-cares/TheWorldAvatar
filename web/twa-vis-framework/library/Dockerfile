@@ -24,7 +24,7 @@ FROM alpine:3.14.0 AS run
 # Install utilities, Apache, and PHP
 RUN apk update && apk add procps nano wget bash busybox-initscripts dos2unix apache2 php7-apache2
 
-# Copy the final DTVF files
+# Copy the final TWA-VF files
 RUN mkdir -p /var/www/twa-vf
 COPY --from=build /app/output/ /var/www/twa-vf/
 
