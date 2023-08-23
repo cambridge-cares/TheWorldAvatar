@@ -114,6 +114,8 @@ Mapbox also supports a system called [SDF Icons](https://docs.mapbox.com/help/tr
 These are effectively PNG icons that only contains transparency and a single colour; when used it allows Mapbox to dynamically change the colour of icons based on their dynamic styling system. 
 As SDF icons are loaded slightly differently to regular ones, any icons you wish to be treated as SDF icons will need `-sdf` added to their file name.
 
+Icons can be uploaded to and served by GeoServer via the [stack-data-uploader](../../../Deploy/stacks/dynamic/stack-data-uploader/README.md#staticgeoserverdata).
+
 <br/>
 
 ## Settings
