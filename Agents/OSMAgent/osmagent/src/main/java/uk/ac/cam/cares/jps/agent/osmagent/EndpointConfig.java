@@ -1,49 +1,29 @@
 package uk.ac.cam.cares.jps.agent.osmagent;
 
-import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
-import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 
 public class EndpointConfig {
-	private String kgurl;
-	private String kguser;
-	private String kgpassword;
+    private PostGISEndpointConfig postGISEndpointConfig;
+    private String dbUser;
+    private String dbPassword;
 
-    private String ontopurl;
-
-    private String dburl;
-    private String dbuser;
-    private String dbpassword;
-    
     public EndpointConfig() {
         ContainerClient containerClient = new ContainerClient();
-        BlazegraphEndpointConfig blazegraphEndpointConfig = containerClient.readEndpointConfig("blazegraph",
-                    BlazegraphEndpointConfig.class);
-        this.kgurl = blazegraphEndpointConfig.getUrl("kb");
-        this.kguser = blazegraphEndpointConfig.getUsername();
-        this.kgpassword = blazegraphEndpointConfig.getPassword();
+        postGISEndpointConfig = containerClient.readEndpointConfig("postgis", PostGISEndpointConfig.class);
+        this.dbUser = postGISEndpointConfig.getUsername();
+        this.dbPassword = postGISEndpointConfig.getPassword();
+    }
 
-        PostGISEndpointConfig postGISEndpointConfig = containerClient.readEndpointConfig("postgis",
-                    PostGISEndpointConfig.class);
-        this.dburl = postGISEndpointConfig.getJdbcURL(EnvConfig.DATABASE);
-        this.dbuser = postGISEndpointConfig.getUsername();
-        this.dbpassword = postGISEndpointConfig.getPassword();
+    public String getDbUrl(String dbName) {
+        return this.postGISEndpointConfig.getJdbcURL(dbName);
+    }
 
-        OntopEndpointConfig ontopEndpointConfig = containerClient.readEndpointConfig("ontop", OntopEndpointConfig.class);
-        this.ontopurl = ontopEndpointConfig.getUrl();
+    public String getDbUser() {
+        return this.dbUser;
+    }
 
+    public String getDbPassword() {
+        return this.dbPassword;
     }
-    public String getKgurl() {
-        return this.kgurl;
-    }
-    public String getDburl() {
-        return this.dburl;
-    }
-    public String getDbuser() {
-        return this.dbuser;
-    }
-    public String getDbpassword() {
-        return this.dbpassword;
-    } 
 }

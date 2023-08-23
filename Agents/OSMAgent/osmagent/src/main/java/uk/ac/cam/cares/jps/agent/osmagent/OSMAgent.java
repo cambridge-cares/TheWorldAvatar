@@ -1,55 +1,64 @@
 package uk.ac.cam.cares.jps.agent.osmagent;
 
-import uk.ac.cam.cares.jps.agent.osmagent.usage.UsageMatcher;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.agent.osmagent.geometry.GeometryMatcher;
+import uk.ac.cam.cares.jps.agent.osmagent.usage.UsageMatcher;
+import uk.ac.cam.cares.jps.agent.osmagent.usage.UsageShareCalculator;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.sql.Connection;
-import java.util.List;
+import java.util.*;
+
+import org.json.JSONObject;
 
 @WebServlet(urlPatterns = "/update")
 
 public class OSMAgent extends JPSAgent {
-    private RemoteStoreClient storeClient;
     private RemoteRDBStoreClient rdbStoreClient;
 
-    private UsageMatcher usageMatcher;
+    private String geoDatabase;
+    private String osmDatabase;
+    private List<String> tableNames;
 
-    private List<String> tableNames = List.of("points", "polygons");
+    private Map<String, String> configs = new HashMap<>();
 
     public void init() {
+        readConfig();
         EndpointConfig endpointConfig = new EndpointConfig();
-        rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(),
-                endpointConfig.getDbpassword());
-        storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
-        usageMatcher = new UsageMatcher();
+        rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDbUrl(osmDatabase), endpointConfig.getDbUser(),
+                endpointConfig.getDbPassword());
+        configs.put(GeometryMatcher.GEO_DB, endpointConfig.getDbUrl(geoDatabase));
+        configs.put(GeometryMatcher.GEO_USER, endpointConfig.getDbUser());
+        configs.put(GeometryMatcher.GEO_PASSWORD, endpointConfig.getDbPassword());
+        configs.put(GeometryMatcher.OSM_DB, endpointConfig.getDbUrl(osmDatabase));
+        configs.put(GeometryMatcher.OSM_USER, endpointConfig.getDbUser());
+        configs.put(GeometryMatcher.OSM_PASSWORD, endpointConfig.getDbPassword());
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    public void readConfig() {
+        ResourceBundle config = ResourceBundle.getBundle("config");
+        geoDatabase = config.getString("geo.database");
+        osmDatabase = config.getString("osm.database");
+        tableNames = Arrays.asList(config.getString("osm.tables").split(","));
+    }
 
+    @Override
+    public JSONObject processRequestParameters(JSONObject requestParams) {
         try (Connection conn = rdbStoreClient.getConnection()) {
-
-            usageMatcher.checkAndAddColumns(conn, tableNames);
-            usageMatcher.updateOntoBuilt(conn, tableNames);
-        } catch (Exception e) {
+            UsageMatcher.checkAndAddColumns(conn, tableNames);
+            UsageMatcher.updateOntoBuilt(conn, tableNames);
+            GeometryMatcher geometryMatcher = new GeometryMatcher(configs);
+            geometryMatcher.matchGeometry("points");
+            geometryMatcher.matchGeometry("polygons");
+            UsageShareCalculator.updateUsageShare(conn, tableNames);
+        }
+        catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
-
         }
 
-        // Log the request data
-        System.out.println("Received POST request");
-
-        // Set the content type of the response
-        response.setContentType("text/plain");
+        return requestParams;
     }
-
 }
