@@ -4,7 +4,5 @@ services:
   osmagent:
     image: osmagent:1.0.0
     build: .
-    environment:
-      - DATABASE=osm
     ports:
       - "10104:8080"
