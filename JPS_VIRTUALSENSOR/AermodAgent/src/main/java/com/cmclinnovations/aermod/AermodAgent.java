@@ -190,42 +190,44 @@ public class AermodAgent extends DerivationAgent {
         // names, and raster filenames
         DispersionOutput dispersionOutput = new DispersionOutput();
 
-        for (PollutantType pollutantType : Pollutant.getPollutantList()) {
-            if (!allSources.stream().allMatch(p -> p.hasPollutant(pollutantType))) {
-                continue;
-            }
-            aermod.createPollutantSubDirectory(pollutantType);
+        Pollutant.getPollutantList().parallelStream()
+                .filter(pollutantType -> allSources.stream().allMatch(p -> p.hasPollutant(pollutantType)))
+                .forEach(pollutantType -> {
+                    aermod.createPollutantSubDirectory(pollutantType);
 
-            // create emissions input
-            aermod.createPointsFile(allSources, srid, pollutantType);
-            aermod.runAermod(pollutantType);
+                    // create emissions input
+                    aermod.createPointsFile(allSources, srid, pollutantType);
+                    aermod.runAermod(pollutantType);
 
-            // Upload files used by scripts within Python Service to file server.
-            Path concFile = simulationDirectory.resolve(
-                    Paths.get("aermod", Pollutant.getPollutantLabel(pollutantType), "averageConcentration.dat"));
-            String outputFileURL = aermod.uploadToFileServer(concFile);
-            dispersionOutput.addDispMatrix(pollutantType, outputFileURL);
+                    // Upload files used by scripts within Python Service to file server.
+                    Path concFile = simulationDirectory.resolve(
+                            Paths.get("aermod", Pollutant.getPollutantLabel(pollutantType),
+                                    "averageConcentration.dat"));
+                    String outputFileURL = aermod.uploadToFileServer(concFile);
+                    dispersionOutput.addDispMatrix(pollutantType, outputFileURL);
 
-            String rasterFileName = UUID.randomUUID().toString();
-            try {
-                aermod.createFileForRaster(rasterFileName, pollutantType);
-                dispersionOutput.addDispRaster(pollutantType, rasterFileName + ".tif");
-            } catch (FileNotFoundException e) {
-                LOGGER.error("Average concentration file not found, probably failed to run simulation");
-            }
+                    String rasterFileName = UUID.randomUUID().toString();
+                    try {
+                        aermod.createFileForRaster(rasterFileName, pollutantType);
+                        dispersionOutput.addDispRaster(pollutantType, rasterFileName + ".tif");
+                    } catch (FileNotFoundException e) {
+                        LOGGER.error("Average concentration file not found, probably failed to run simulation");
+                    }
 
-            // Get contour plots as geoJSON objects from PythonService and upload them to
-            // PostGIS using GDAL
-            JSONObject response = aermod.getGeoJsonAndColourbar(EnvConfig.PYTHON_SERVICE_URL, outputFileURL, srid);
-            String colourBarUrl = response.getString("colourbar");
-            dispersionOutput.addColourBar(pollutantType, colourBarUrl);
+                    // Get contour plots as geoJSON objects from PythonService and upload them to
+                    // PostGIS using GDAL
+                    JSONObject response = aermod.getGeoJsonAndColourbar(EnvConfig.PYTHON_SERVICE_URL, outputFileURL,
+                            srid);
+                    String colourBarUrl = response.getString("colourbar");
+                    dispersionOutput.addColourBar(pollutantType, colourBarUrl);
 
-            JSONObject geoJSON = response.getJSONObject("contourgeojson");
-            String dispersionLayerName = aermod.createDispersionLayer(geoJSON, derivationInputs.getDerivationIRI(),
-                    pollutantType, simulationTime);
+                    JSONObject geoJSON = response.getJSONObject("contourgeojson");
+                    String dispersionLayerName = aermod.createDispersionLayer(geoJSON,
+                            derivationInputs.getDerivationIRI(),
+                            pollutantType, simulationTime);
 
-            dispersionOutput.addDispLayer(pollutantType, dispersionLayerName);
-        }
+                    dispersionOutput.addDispLayer(pollutantType, dispersionLayerName);
+                });
 
         boolean append = false;
         if (queryClient.tableExists(EnvConfig.DISPERSION_RASTER_TABLE)) {
