@@ -35,5 +35,5 @@ class TranslationModel:
         pred_postprocessed = postprocess_query(pred_raw, model_family=self.model_family)
 
         return dict(
-            prediction_raw=pred_raw, predicition_postprocessed=pred_postprocessed
+            prediction_raw=pred_raw, prediction_postprocessed=pred_postprocessed
         )
