@@ -28,7 +28,7 @@ class TranslationModel:
         Returns:
             A dict with keys `prediction_raw` and `prediction_postprocessed`
         """
-        question = t5_preprocess_qn(question, model_family=self.model_family)
+        question = t5_preprocess_qn(question)
 
         input_ids = self.tokenizer(question, return_tensors="pt").input_ids.to(
             self.model.device
