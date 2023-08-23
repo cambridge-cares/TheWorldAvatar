@@ -1,6 +1,6 @@
 # First stage: build war file
 #==================================================================================================
-FROM maven:3.8.5-openjdk-17-slim as builder
+FROM maven:3.8.5-openjdk-17-slim AS builder
 
 # Copy all files into root's home, including the source, pom file, ./m2 directory and credentials
 ADD . /root
@@ -21,9 +21,7 @@ RUN --mount=type=cache,target=/root/.m2/repository mvn package
 
 # Second stage: copy the downloaded dependency into a new image and build into an app
 #==================================================================================================
-FROM tomcat:9.0.69-jdk17 as agent
-
-RUN apt-get update && apt-get install -y nano
+FROM tomcat:9.0.69-jdk17 AS agent
 
 WORKDIR /app
 
