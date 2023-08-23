@@ -33,42 +33,34 @@ public class CreateVirtualSensor extends HttpServlet {
 
         double lat = Double.parseDouble(req.getParameter("lat"));
         double lng = Double.parseDouble(req.getParameter("lng"));
+        List<String> pollutants = List.of(req.getParameterValues("pollutant")); // pollutant IRIs to instantiate
 
         Point virtualSensorLocation = new Point(lng, lat);
         virtualSensorLocation.setSrid(4326);
 
         // Retrieve the iri of the scope containing the virtual sensor location for each
-        // virtual sensor.
-        // For now, each virtual sensor location is only allowed to lie within one
-        // scope.
-        // Need to check if there is already a virtual sensor at any of the input
-        // locations. If so, the existing sensor should not be duplicated.
+        // virtual sensor. For now, each virtual sensor location is only allowed to lie
+        // within one scope. Need to check if there is already a virtual sensor at any
+        // of the input locations. If so, the existing sensor should not be duplicated.
         List<String> vsScopeList = new ArrayList<>();
-        List<Point> vsLocationsInScope = new ArrayList<>();
 
         try (Connection conn = dispersionPostGISClient.getConnection()) {
             List<String> scopeIriList = new ArrayList<>();
             scopeIriList = queryClient.getScopesIncludingPoint(virtualSensorLocation);
             if (scopeIriList.size() == 1 && !dispersionPostGISClient.sensorExists(virtualSensorLocation, conn)) {
                 vsScopeList.add(scopeIriList.get(0));
-                vsLocationsInScope.add(virtualSensorLocation);
+                if (!dispersionPostGISClient.tableExists(Config.SENSORS_TABLE_NAME, conn))
+                    queryClient.initialiseVirtualSensorAgent();
+                queryClient.initialiseVirtualSensors(vsScopeList, virtualSensorLocation, pollutants);
             } else if (scopeIriList.isEmpty()) {
                 LOGGER.warn(" The specified virtual sensor location " +
                         "at {} does not fall within any existing scope. No sensor will be created at this location.",
-                        virtualSensorLocation.toString());
+                        virtualSensorLocation);
             } else if (scopeIriList.size() > 1) {
                 LOGGER.warn(
                         " The specified virtual sensor location at {} is contained within more than one scope polygon."
-                                +
-                                " No sensor will be created at this location.",
-                        virtualSensorLocation.toString());
-            }
-
-            if (!vsLocationsInScope.isEmpty()) {
-                if (!dispersionPostGISClient.tableExists(Config.SENSORS_TABLE_NAME, conn))
-                    queryClient.initialiseVirtualSensorAgent();
-                queryClient.initializeVirtualSensors(vsScopeList, vsLocationsInScope);
-
+                                + " No sensor will be created at this location.",
+                        virtualSensorLocation);
             }
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());

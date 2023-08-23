@@ -93,13 +93,14 @@ public class QueryClient {
     private static final Iri CITIES_NAMESPACE = P_DISP.iri("OntoCityGMLNamespace");
     private static final Iri STATIC_POINT_SOURCE_LAYER = P_DISP.iri("StaticPointSourceLayer");
 
-    private static final Iri NO_X = P_DISP.iri("NOx");
-    private static final Iri UHC = P_DISP.iri("uHC");
-    private static final Iri CO = P_DISP.iri("CO");
-    private static final Iri SO2 = P_DISP.iri("SO2");
-    private static final Iri PM10 = P_DISP.iri("PM10");
-    private static final Iri PM25 = P_DISP.iri("PM2.5");
-    private static final Iri CO2 = P_DISP.iri("CO2");
+    private static final String NO_X = PREFIX + "NOx";
+    private static final String UHC = PREFIX + "uHC";
+    private static final String CO = PREFIX + "CO";
+    private static final String SO2 = PREFIX + "SO2";
+    private static final String PM10 = PREFIX + "PM10";
+    private static final String PM25 = PREFIX + "PM2.5";
+    private static final String CO2 = PREFIX + "CO2";
+
     // Pollutant concentrations and units
     private static final Iri NO_X_CONC = P_EMS.iri("NitrogenOxidesConcentration");
     private static final Iri UHC_CONC = P_EMS.iri("UhcConcentration");// Currently not in ONTOEMS
@@ -205,7 +206,8 @@ public class QueryClient {
 
         // outputs (DispersionOutput, ShipsLayer, StaticPointSourceLayer) as time series
         // Create columns for one DispersionOutput per pollutant
-        List<Iri> pollutantsList = Arrays.asList(CO, CO2, NO_X, PM25, PM10, SO2, UHC);
+        List<Iri> pollutantsList = List.of(CO, CO2, NO_X, PM25, PM10, SO2, UHC).stream().map(Rdf::iri)
+                .collect(Collectors.toList());
         List<String> tsList = new ArrayList<>();
         List<String> entityList = new ArrayList<>();
 
@@ -400,157 +402,95 @@ public class QueryClient {
 
     }
 
-    void initializeVirtualSensors(List<String> scopeIriList, List<Point> virtualSensorLocations) {
+    void initialiseVirtualSensors(List<String> scopeIriList, Point virtualSensorLocation,
+            List<String> pollutants) {
         // Get data IRIs of dispersion outputs belonging to the input derivation
         Iri isDerivedFrom = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
         Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
         String virtualSensorUpdateIri = Config.VIRTUAL_SENSOR_AGENT_IRI;
 
-        // create a JSONObject that represents a GeoJSON Feature Collection
-        JSONObject featureCollection = new JSONObject();
-        featureCollection.put("type", "FeatureCollection");
-        JSONArray features = new JSONArray();
-
         String sparqlEndpoint = new EndpointConfig().getKgurl();
         ModifyQuery modify = Queries.MODIFY();
 
-        try (Connection conn = remoteRDBStoreClient.getConnection()) {
+        Map<String, Iri> pollutantToConcMap = new HashMap<>();
+        pollutantToConcMap.put(CO2, CO2_CONC);
+        pollutantToConcMap.put(CO, CO_CONC);
+        pollutantToConcMap.put(NO_X, NO_X_CONC);
+        pollutantToConcMap.put(PM25, PM25_CONC);
+        pollutantToConcMap.put(PM10, PM10_CONC);
+        pollutantToConcMap.put(SO2, SO2_CONC);
+        pollutantToConcMap.put(UHC, UHC_CONC);
 
-            for (int i = 0; i < virtualSensorLocations.size(); i++) {
+        String scopeIri = scopeIriList.get(0);
 
-                String scopeIri = scopeIriList.get(i);
-                Point location = virtualSensorLocations.get(i);
+        SelectQuery query = Queries.SELECT();
+        Variable entity = query.var();
+        Variable derivation = query.var();
+        query.where(iri(scopeIri).isA(SCOPE), derivation.has(isDerivedFrom, iri(scopeIri)),
+                entity.isA(DISPERSION_OUTPUT).andHas(belongsTo, derivation))
+                .prefix(P_DISP)
+                .select(entity).distinct();
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
-                SelectQuery query = Queries.SELECT();
-                Variable entity = query.var();
-                Variable derivation = query.var();
-                query.where(iri(scopeIri).isA(SCOPE), derivation.has(isDerivedFrom, iri(scopeIri)),
-                        entity.isA(DISPERSION_OUTPUT).andHas(belongsTo, derivation))
-                        .prefix(P_DISP)
-                        .select(entity).distinct();
-                JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+        List<String> dispersionOutputs = new ArrayList<>();
 
-                List<String> dispersionOutputs = new ArrayList<>();
-
-                for (int j = 0; j < queryResult.length(); j++) {
-                    String dispOutput = queryResult.getJSONObject(j).getString(entity.getQueryString().substring(1));
-                    dispersionOutputs.add(dispOutput);
-                }
-
-                List<String> inputs = new ArrayList<>(dispersionOutputs);
-
-                // output (OntoEMS reporting station)
-                String stationIri = ONTO_EMS + "virtualsensor_" + UUID.randomUUID();
-                Iri station = iri(stationIri);
-
-                // Update triples for station in blazegraph
-                String locationIri = PREFIX + UUID.randomUUID();
-                modify.insert(station.isA(REPORTING_STATION));
-
-                List<String> dataListForTimeSeries = new ArrayList<>();
-
-                // triples to insert for each station
-                // NOx
-                Iri quantity = P_EMS.iri("quantity_" + UUID.randomUUID());
-                String measure = ONTO_EMS + "measure_" + UUID.randomUUID();
-                modify.insert(station.has(REPORTS, quantity));
-                modify.insert(quantity.isA(NO_X_CONC).andHas(HAS_VALUE, iri(measure)));
-                modify.insert(iri(measure).isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
-                dataListForTimeSeries.add(measure);
-
-                // UHC
-                quantity = P_EMS.iri("quantity_" + UUID.randomUUID());
-                measure = ONTO_EMS + "measure_" + UUID.randomUUID();
-                modify.insert(station.has(REPORTS, quantity));
-                modify.insert(quantity.isA(UHC_CONC).andHas(HAS_VALUE, iri(measure)));
-                modify.insert(iri(measure).isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
-                dataListForTimeSeries.add(measure);
-
-                // CO
-                quantity = P_EMS.iri("quantity_" + UUID.randomUUID());
-                measure = ONTO_EMS + "measure_" + UUID.randomUUID();
-                modify.insert(station.has(REPORTS, quantity));
-                modify.insert(quantity.isA(CO_CONC).andHas(HAS_VALUE, iri(measure)));
-                modify.insert(iri(measure).isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
-                dataListForTimeSeries.add(measure);
-
-                // CO2
-                quantity = P_EMS.iri("quantity_" + UUID.randomUUID());
-                measure = ONTO_EMS + "measure_" + UUID.randomUUID();
-                modify.insert(station.has(REPORTS, quantity));
-                modify.insert(quantity.isA(CO2_CONC).andHas(HAS_VALUE, iri(measure)));
-                modify.insert(iri(measure).isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
-                dataListForTimeSeries.add(measure);
-
-                // SO2
-                quantity = P_EMS.iri("quantity_" + UUID.randomUUID());
-                measure = ONTO_EMS + "measure_" + UUID.randomUUID();
-                modify.insert(station.has(REPORTS, quantity));
-                modify.insert(quantity.isA(SO2_CONC).andHas(HAS_VALUE, iri(measure)));
-                modify.insert(iri(measure).isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
-                dataListForTimeSeries.add(measure);
-
-                // PM10
-                quantity = P_EMS.iri("quantity_" + UUID.randomUUID());
-                measure = ONTO_EMS + "measure_" + UUID.randomUUID();
-                modify.insert(station.has(REPORTS, quantity));
-                modify.insert(quantity.isA(PM10_CONC).andHas(HAS_VALUE, iri(measure)));
-                modify.insert(iri(measure).isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
-                dataListForTimeSeries.add(measure);
-
-                // PM2.5
-                quantity = P_EMS.iri("quantity_" + UUID.randomUUID());
-                measure = ONTO_EMS + "measure_" + UUID.randomUUID();
-                modify.insert(station.has(REPORTS, quantity));
-                modify.insert(quantity.isA(PM25_CONC).andHas(HAS_VALUE, iri(measure)));
-                modify.insert(iri(measure).isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
-                dataListForTimeSeries.add(measure);
-
-                // Create timeseries of pollutant concentrations for OntoEMS station
-                List<Class<?>> classListForTimeSeries = Collections.nCopies(dataListForTimeSeries.size(), Double.class);
-                tsClientInstant.initTimeSeries(dataListForTimeSeries, classListForTimeSeries,
-                        null, conn);
-
-                // Create derivation for each virtual sensor
-                derivationClient.createDerivationWithTimeSeries(
-                        List.of(stationIri), virtualSensorUpdateIri, inputs);
-                derivationClient.addTimeInstance(inputs);
-
-                // Create POSTGIS and GeoServer feature for this OntoEMS station
-                JSONObject geometry = new JSONObject();
-                geometry.put("type", "Point");
-                List<Double> coordinate = Arrays.asList(location.x, location.y);
-                geometry.put("coordinates", new JSONArray(coordinate));
-                JSONObject feature = new JSONObject();
-                feature.put("type", "Feature");
-                feature.put("geometry", geometry);
-                feature.put("iri", stationIri);
-                feature.put("name", "VirtualSensor_" + (i + 1));
-                feature.put("endpoint", sparqlEndpoint);
-                feature.put("scope_iri", scopeIri);
-                feature.put("geom_iri", locationIri);
-                features.put(feature);
-
-            }
-        } catch (SQLException e) {
-            LOGGER.error("SQL exception when updating virtual sensor data.");
-            LOGGER.error(e.getMessage());
+        for (int j = 0; j < queryResult.length(); j++) {
+            String dispOutput = queryResult.getJSONObject(j).getString(entity.getQueryString().substring(1));
+            dispersionOutputs.add(dispOutput);
         }
+
+        List<String> inputs = new ArrayList<>(dispersionOutputs);
+
+        // output (OntoEMS reporting station)
+        String stationIri = ONTO_EMS + "virtualsensor_" + UUID.randomUUID();
+        Iri station = iri(stationIri);
+
+        // Update triples for station in blazegraph
+        String locationIri = PREFIX + UUID.randomUUID();
+        modify.insert(station.isA(REPORTING_STATION));
+
+        List<String> dataListForTimeSeries = new ArrayList<>();
+
+        // triples to insert for each station
+        pollutants.forEach(pollutant -> {
+            Iri quantity = P_EMS.iri("quantity_" + UUID.randomUUID());
+            String measure = ONTO_EMS + "measure_" + UUID.randomUUID();
+            modify.insert(station.has(REPORTS, quantity));
+            modify.insert(quantity.isA(pollutantToConcMap.get(pollutant)).andHas(HAS_VALUE, iri(measure)));
+            modify.insert(iri(measure).isA(MEASURE).andHas(HAS_UNIT, UNIT_POLLUTANT_CONC));
+            dataListForTimeSeries.add(measure);
+        });
+
+        // Create timeseries of pollutant concentrations for OntoEMS station
+        List<Class<?>> classListForTimeSeries = Collections.nCopies(dataListForTimeSeries.size(), Double.class);
+        tsClientInstant.initTimeSeries(dataListForTimeSeries, classListForTimeSeries, null);
+
+        // Create derivation for each virtual sensor
+        derivationClient.createDerivationWithTimeSeries(
+                List.of(stationIri), virtualSensorUpdateIri, inputs);
+        derivationClient.addTimeInstance(inputs);
+
+        // Create POSTGIS and GeoServer feature for this OntoEMS station
+        JSONObject geometry = new JSONObject();
+        geometry.put("type", "Point");
+        geometry.put("coordinates", new JSONArray(List.of(virtualSensorLocation.x, virtualSensorLocation.y)));
+        JSONObject feature = new JSONObject();
+        feature.put("type", "Feature");
+        feature.put("geometry", geometry);
+        feature.put("iri", stationIri);
+        feature.put("name", "Virtual Sensor");
+        feature.put("endpoint", sparqlEndpoint);
+        feature.put("scope_iri", scopeIri);
+        feature.put("geom_iri", locationIri);
 
         modify.prefix(P_DISP, P_OM, P_EMS);
         storeClient.executeUpdate(modify.getQueryString());
-        // Upload virtual sensor layer to POSTGIS and GeoServer for visualization
-        // purposes
-
-        featureCollection.put("features", features);
 
         LOGGER.info("Uploading virtual sensors GeoJSON to PostGIS");
         GDALClient gdalclient = GDALClient.getInstance();
-        gdalclient.uploadVectorStringToPostGIS(Config.DATABASE, Config.SENSORS_TABLE_NAME, featureCollection.toString(),
+        gdalclient.uploadVectorStringToPostGIS(Config.DATABASE, Config.SENSORS_TABLE_NAME, feature.toString(),
                 new Ogr2OgrOptions(), true);
-        // GeoServer layer creation is handled in the agent that creates the data.json
-        // file. That agent will query for sensors that lie within the scope for which
-        // the visualization is being created.
+
         LOGGER.info("Creating virtual sensors layer in Geoserver");
         GeoServerClient geoserverclient = GeoServerClient.getInstance();
         geoserverclient.createWorkspace(Config.GEOSERVER_WORKSPACE);
