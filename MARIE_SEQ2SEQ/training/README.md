@@ -26,7 +26,7 @@
    export HF_ACCESS_TOKEN=<huggingface-access-token>
    ```
 
-## Data Generation/Preparation
+## Data format
 
 ```{json}
 [
@@ -59,6 +59,7 @@ See [`finetune.sh`](./scripts/finetune.sh) for example usage. The script will sa
 
 For a list all arguments that can be passed to the fine-tune script, see classes `arguments_schema.ModelArguments`, `arguments_schema.DatasetArguments` and `transformers.TrainingArguments`.
 
+
 ## Inference
 
 See [`inference.sh`](./scripts/inference.sh) for example usage. The script will generate a json file containing  
@@ -68,7 +69,9 @@ For a list of all arguments that can be passed to the inference script, see clas
 ## Evaluation
 
 
-## Running jobs on CSD3
+## Running jobs on CSD3 and similar SLURM environments
+
+### SLURM file
 
 See [`finetune.slurm`](./scripts/finetune.slurm) and [`inference.slurm`](./scripts/inference.slurm) for example SLURM files. Please note the following parameters.
 
@@ -76,6 +79,17 @@ See [`finetune.slurm`](./scripts/finetune.slurm) and [`inference.slurm`](./scrip
 - `export HF_ACCESS_TOKEN=`: [HuggingFace access](#steps) token if needed.
 - `export HF_HOME=/rds/user/nmdt2/hpc-work/.cache/huggingface`: cache directory for HuggingFace models and datasets; per [recommendation by CSD3](https://docs.hpc.cam.ac.uk/hpc/user-guide/io_management.html), I/O data should be placed under `/rds`.
 - `export WANDB_PROJECT=marie`: [Weights & Biases project name](#weight--biases-configuration-for-monitoring).
+
+### Model sharing 
+
+For convenience, fine-tuned models can be uploaded to HuggingFace model hub as per instructions [here](https://huggingface.co/docs/hub/repositories-getting-started#getting-started-with-repositories). 
+
+Should `git-lfs` be required to be installed without `sudo` privileges, one can perform the installation from a tarball. Below is an example for `git-lfs-3.4.0`.
+1. `wget https://github.com/git-lfs/git-lfs/releases/download/v3.4.0/git-lfs-linux-amd64-v3.4.0.tar.gz`
+1. `tar xvzf git-lfs-linux-amd64-v3.4.0.tar.gz`
+1. `cd git-lfs-3.4.0`
+1. In the file `install.sh`, update the `prefix` variable to a writable directory e.g. `/home/nmdt2/`.
+1. `sh install.sh`
 
 ## Development
 
