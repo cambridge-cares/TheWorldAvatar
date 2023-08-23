@@ -1,9 +1,11 @@
 package uk.ac.cam.cares.jps.assetinfo;
 
+import android.content.Context;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -18,8 +20,6 @@ import java.util.Map;
 import uk.ac.cam.cares.jps.data.AssetInfo;
 
 public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.ViewHolder>{
-
-    private List<Pair<String, String>> properties = new ArrayList<>();
     private List<Pair<String, String>> basicProperties = new ArrayList<>();
     private List<Pair<String, String>> locationProperties = new ArrayList<>();
     private List<Pair<String, String>> supplierProperties = new ArrayList<>();
@@ -28,37 +28,25 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
     private List<Pair<String, String>> otherProperties = new ArrayList<>();
 
     // todo: remove space and case when comparing/searching for the key?
-    List<String> basicInfoOrder = new ArrayList<>(Arrays.asList("Reference Label", "Type", "Assigned to", "IRI", "Inventory ID", "Comment"));
+    List<String> basicInfoOrder = new ArrayList<>(Arrays.asList("Reference Label", "Type", "Assigned to", "IRI", "Inventory ID"));
     List<String> locationInfoOrder = new ArrayList<>(Arrays.asList("Located in", "Seat Location", "Stored in"));
-    List<String> supplierInfoOrder = new ArrayList<>(Arrays.asList("Vendor", "Serial Number", "Model Number"));  // todo: incomplete list, need to check the FIA query file
-    List<String> priceInfoOrder = new ArrayList<>(Arrays.asList("Price", "Unit"));
-    List<String> docLineInfoOrder = new ArrayList<>(Arrays.asList("Quotation Number", "Purchase Request Number", "Purchase Order Number", "Invoice Number", "Delivery Order Number"));
+    List<String> supplierInfoOrder = new ArrayList<>(Arrays.asList("Vendor", "Manufacturer", "Manufacture URL", "Serial Number", "Model Number"));
+    List<String> priceInfoOrder = new ArrayList<>(Arrays.asList("Purchase Price", "Unit"));
+    List<String> docLineInfoOrder = new ArrayList<>(Arrays.asList("Service Category Code", "Service Category Description", "Quotation Number", "Purchase Request Number", "Purchase Order Number", "Invoice Number", "Delivery Order Number"));
 
-    List<String> sectionTitles = new ArrayList<>(Arrays.asList("Basic", "Location", "Supplier", "Price", "Purchase"));
+    List<String> sectionTitles = new ArrayList<>(Arrays.asList("Basic", "Location", "Supplier", "Price", "Purchase", "Others"));
+    List<List<Pair<String, String>>> sectionContents = new ArrayList<>(Arrays.asList(basicProperties, locationProperties, supplierProperties, priceProperties, docLineProperties, otherProperties));
 
+    Context context;
     public AssetInfoAdapter() { }
 
     public AssetInfoAdapter(AssetInfo assetInfo) {
-        properties = convertMapToList(assetInfo.getProperties());
-
         buildAllPropertiesList(assetInfo);
     }
 
     public void updateProperties(AssetInfo assetInfo) {
-        properties = convertMapToList(assetInfo.getProperties());
-
         buildAllPropertiesList(assetInfo);
         notifyDataSetChanged();
-    }
-
-    private <K, V> List<Pair<K, V>> convertMapToList(Map<K, V> map) {
-        List<Pair<K, V>> result = new ArrayList<>();
-        for (K key : map.keySet()) {
-            result.add(new Pair<>(key, map.get(key)));
-        }
-
-        result.sort(Comparator.comparing(kvPair -> kvPair.first.toString()));
-        return result;
     }
 
     private void buildAllPropertiesList(AssetInfo assetInfo) {
@@ -68,13 +56,17 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
         priceProperties = getOrderedPropertiesList(assetInfo.getProperties(), priceInfoOrder);
         docLineProperties = getOrderedPropertiesList(assetInfo.getProperties(), docLineInfoOrder);
         otherProperties = getOrderedPropertiesList(assetInfo.getProperties(), null);
+
+        sectionContents = new ArrayList<>(Arrays.asList(basicProperties, locationProperties, supplierProperties, priceProperties, docLineProperties, otherProperties));
     }
 
     private List<Pair<String, String>> getOrderedPropertiesList(Map<String, String> map, List<String> orderList) {
         List<Pair<String, String>> result = new ArrayList<>();
         if (orderList != null) {
             for (String key : orderList) {
-                result.add(new Pair<>(key, map.get(key)));
+                if (map.containsKey(key) && !map.get(key).isEmpty()) {
+                    result.add(new Pair<>(key, map.get(key)));
+                }
             }
             return result;
         }
@@ -101,39 +93,47 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.property_item_view, parent, false);
+                .inflate(R.layout.property_section_view, parent, false);
+        context = view.getContext();
 
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.getLabelView().setText(properties.get(position).first);
-        holder.getContentView().setText(properties.get(position).second);
+        holder.getLabelView().setText(sectionTitles.get(position));
+
+        LinearLayout linearLayout = holder.getLinearLayout();
+        for (Pair<String, String> content : sectionContents.get(position)) {
+            PropertyItemView propertyItemView = new PropertyItemView(context);
+            propertyItemView.initView(content.first, content.second);
+            linearLayout.addView(propertyItemView);
+        }
+
     }
 
     @Override
     public int getItemCount() {
-        return properties.size();
+        return sectionTitles.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView label;
-        private final TextView content;
-
+        private final LinearLayout linearLayout;
 
         public ViewHolder(View view) {
             super(view);
-            label = (TextView) view.findViewById(R.id.label);
-            content = (TextView) view.findViewById(R.id.content);
+
+            label = view.findViewById(R.id.section_label);
+            linearLayout = view.findViewById(R.id.linear_layout);
         }
 
         public TextView getLabelView() {
             return label;
         }
 
-        public TextView getContentView() {
-            return content;
+        public LinearLayout getLinearLayout() {
+            return linearLayout;
         }
     }
 
