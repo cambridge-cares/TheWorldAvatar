@@ -348,7 +348,9 @@ public class FeatureInfoAgentTest {
 
             System.out.println(jsonResult.toString());
 
-            Assertions.assertTrue(jsonResult.similar(expected), "Response body did not contain expected JSON object!");
+            if (!jsonResult.similar(expected)) {
+                Assertions.assertEquals(expected, jsonResult, "Response body did not contain expected JSON object!");
+            }
         }
     }
 
@@ -408,7 +410,9 @@ public class FeatureInfoAgentTest {
                                 \"units\":[\"m/s\"],\"time\":[\"-1000000000-01-01T00:00:00Z\",\"1970-01-01T00:00:00Z\",\"+1000000000-12-31T23:59:59.999999999Z\"],\"properties\":[{}]}]}
                             """);
 
-            Assertions.assertTrue(jsonResult.similar(expected), "Response body did not contain expected JSON object!");
+            if (!jsonResult.similar(expected)) {
+                Assertions.assertEquals(expected, jsonResult, "Response body did not contain expected JSON object!");
+            }
         }
     }
 
@@ -455,7 +459,9 @@ public class FeatureInfoAgentTest {
                         {\"meta\":[{\"propertyOne\":\"1.0 [s]\"}]}
                     """);
 
-            Assertions.assertTrue(jsonResult.similar(expected), "Response body did not contain expected JSON object!");
+            if (!jsonResult.similar(expected)) {
+                Assertions.assertEquals(expected, jsonResult, "Response body did not contain expected JSON object!");
+            }
         }
     }
 
@@ -550,7 +556,10 @@ public class FeatureInfoAgentTest {
             // Check against the expected result
             JSONObject jsonResult = new JSONObject(strWriter.toString());
             JSONObject expected = new JSONObject("{\"meta\": [{\"Forced\": \"Yes\"}]}");
-            Assertions.assertTrue(jsonResult.similar(expected), "JSON response did not match expected result!");
+
+            if (!jsonResult.similar(expected)) {
+                Assertions.assertEquals(expected, jsonResult, "Response body did not contain expected JSON object!");
+            }
         }
     }
 
