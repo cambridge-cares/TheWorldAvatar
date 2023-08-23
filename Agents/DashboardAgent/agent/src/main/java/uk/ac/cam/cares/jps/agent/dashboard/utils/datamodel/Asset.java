@@ -58,9 +58,9 @@ public class Asset {
         iris[0] = measureName;
         iris[1] = measureIri;
         iris[2] = timeSeriesIri;
-        iris[3] = assetType;
         // Only append a unit if the inserted value is not null
-        if (unit != null) iris[4] = unit;
+        if (unit != null) iris[3] = unit;
+        iris[4] = assetType;
         this.MEASURES.put(measureName, iris);
     }
 
@@ -72,7 +72,7 @@ public class Asset {
     /**
      * A getter method to retrieve all assets and their associated metadata
      *
-     * @returns A queue containing all asset information. Within the array, first position is measure name; Second position is the dataIRI; Third position is time series IRI; Fourth position is the asset type; Fifth position is unit if available.
+     * @returns A queue containing all asset information. Within the array, first position is measure name; Second position is the dataIRI; Third position is time series IRI; Fourth position is unit if available; Fifth position is the asset type.
      */
     protected Queue<String[]> getAssetData() {
         Queue<String[]> measureInfo = new ArrayDeque<>();

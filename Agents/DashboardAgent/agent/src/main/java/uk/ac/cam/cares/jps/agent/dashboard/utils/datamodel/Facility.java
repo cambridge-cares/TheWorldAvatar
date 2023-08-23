@@ -10,9 +10,23 @@ import java.util.*;
 public class Facility {
     // Key value pair is asset name and its stored information respectively
     private final Map<String, Asset> ASSETS = new HashMap<>();
+    private final Map<String, Room> ROOMS = new HashMap<>();
 
     /**
-     * Standard Constructor to initialise a facility object with one asset and measure.
+     * Constructor to initialise a facility object with one room and measure.
+     *
+     * @param roomName      Name of the room to be included.
+     * @param measureName   Name of the measure associated with the room.
+     * @param unit          Measure unit symbol
+     * @param measureIri    Corresponding dataIRI of the measure associated with the room.
+     * @param timeSeriesIri Corresponding time series IRI of the measure.
+     */
+    public Facility(String roomName, String measureName, String unit, String measureIri, String timeSeriesIri) {
+        addRoom(roomName, measureName, unit, measureIri, timeSeriesIri);
+    }
+
+    /**
+     * Constructor to initialise a facility object with one asset and measure.
      *
      * @param assetName     Name of the asset to be included.
      * @param assetType     Type of the asset to be included.
@@ -26,20 +40,45 @@ public class Facility {
     }
 
     /**
-     * A getter method to retrieve all available assets and their corresponding time series and information in the facility.
-     * Format: {asset1: [measure1, dataIRI, timeseriesIRI, assetType, unit], [measure2, dataIRI, timeseriesIRI, assetType, unit]],
-     * asset2: [[measureName, dataIRI, timeseriesIRI, assetType, unit]], ...]}
+     * A getter method to retrieve all available rooms, assets and their corresponding time series and information in the facility.
+     * Format: {asset1: [measure1, dataIRI, timeseriesIRI, unit, assetType], [measure2, dataIRI, timeseriesIRI, null(if no unit), assetType]],
+     * room1: [[measureName, dataIRI, timeseriesIRI, unit], [measureName, dataIRI, timeseriesIRI, unit]], ...]}
      *
-     * @return A map linking all assets to their measures.
+     * @return A map linking all assets and rooms to their measures.
      */
-    public Map<String, Queue<String[]>> getAllAssets() {
+    public Map<String, Queue<String[]>> getAllMeasures() {
         // For all assets, store them in a map with their asset type as a key and individual asset names as values
-        Map<String, Queue<String[]>> assetMeasures = new HashMap<>();
+        Map<String, Queue<String[]>> measures = new HashMap<>();
         for (Asset asset : this.ASSETS.values()) {
             String assetName = asset.getAssetName();
-            assetMeasures.put(assetName, asset.getAssetData());
+            measures.put(assetName, asset.getAssetData());
         }
-        return assetMeasures;
+        for (Room room : this.ROOMS.values()) {
+            String roomName = room.getRoomName();
+            measures.put(roomName, room.getRoomData());
+        }
+        return measures;
+    }
+
+    /**
+     * Add a room into this class.
+     *
+     * @param roomName      Name of the room to be included.
+     * @param unit          Measure unit symbol
+     * @param measureIri    Corresponding dataIRI of the measure associated with the room.
+     * @param timeSeriesIri Corresponding time series IRI of the measure.
+     */
+    public void addRoom(String roomName, String measureName, String unit, String measureIri, String timeSeriesIri) {
+        // Check if the room already exists in the map using its name as a key
+        if (this.ROOMS.containsKey(roomName)) {
+            // If there is a preceding room object, add only the measure to the right room
+            Room room = this.ROOMS.get(roomName);
+            room.addMeasure(measureName, unit, measureIri, timeSeriesIri);
+        } else {
+            // If it does not exist, create a new room and add it into the map
+            Room room = new Room(roomName, measureName, unit, measureIri, timeSeriesIri);
+            this.ROOMS.put(roomName, room);
+        }
     }
 
     /**

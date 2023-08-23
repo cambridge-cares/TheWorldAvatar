@@ -71,7 +71,7 @@ class AssetTest {
         assertEquals(measureName, measure[0]);
         assertEquals(measureIRI, measure[1]);
         assertEquals(measureTSIri, measure[2]);
-        assertEquals(assetType, measure[3]);
-        assertEquals(measureUnit, measure[4]);
+        assertEquals(measureUnit, measure[3]);
+        assertEquals(assetType, measure[4]);
     }
 }

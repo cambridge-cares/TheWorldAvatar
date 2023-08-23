@@ -30,9 +30,9 @@ class TimeSeriesChart {
         // Assumes that each measure of a specific asset type belongs to only table
         String tableName = timeSeriesMetadata.get(0)[2];
         // Title is: Measure [Unit] of Asset Type
+        String titleContent = StringHelper.addSpaceBetweenCapitalWords(measure) + " of " + StringHelper.addSpaceBetweenCapitalWords(assetType);
         // Unit is optional
-        this.TITLE = unit.equals("null") ? StringHelper.addSpaceBetweenCapitalWords(measure) + " of " + StringHelper.addSpaceBetweenCapitalWords(assetType)
-                : StringHelper.addSpaceBetweenCapitalWords(measure) + " of " + StringHelper.addSpaceBetweenCapitalWords(assetType) + " [" + unit + "]";
+        this.TITLE = unit.equals("null") ? titleContent : titleContent + " [" + unit + "]";
         // Description should follow the measure name and asset type
         this.DESCRIPTION = "A chart displaying the time series of " + measure.toLowerCase() + " for " + assetType.toLowerCase();
         this.DATABASE_CONNECTION_ID = databaseId;

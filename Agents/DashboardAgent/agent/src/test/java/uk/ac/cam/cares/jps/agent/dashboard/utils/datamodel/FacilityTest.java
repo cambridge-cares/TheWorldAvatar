@@ -29,7 +29,7 @@ class FacilityTest {
         // Initialise object
         Facility sample = new Facility(ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, electricityMeasureIri, electricityTimeSeriesIri);
         // Execute method
-        Map<String, Queue<String[]>> results = sample.getAllAssets();
+        Map<String, Queue<String[]>> results = sample.getAllMeasures();
         // Test results
         assertEquals(1, results.size()); // Only one asset expected
         for (String assetKey : results.keySet()) {
@@ -54,7 +54,7 @@ class FacilityTest {
         // Execute method
         sample.addAsset(ASSET_LAMP_TWO_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, lampTwoElectricityMeasureIri, lampTwoElectricityTimeSeriesIri);
         // Retrieve and test results
-        Map<String, Queue<String[]>> results = sample.getAllAssets();
+        Map<String, Queue<String[]>> results = sample.getAllMeasures();
         assertEquals(2, results.size()); // Two assets expected
         // Retrieve and verify contents of first asset
         Queue<String[]> assetMetadataResult = results.get(ASSET_LAMP_ONE_NAME);
@@ -80,7 +80,7 @@ class FacilityTest {
         // Execute method
         sample.addAsset(ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_STATE_NAME, MEASURE_STATE_UNIT, lampStateMeasureIri, lampStateTimeSeriesIri);
         // Retrieve and test results
-        Map<String, Queue<String[]>> results = sample.getAllAssets();
+        Map<String, Queue<String[]>> results = sample.getAllMeasures();
         assertEquals(1, results.size()); // Only one asset expected
         Queue<String[]> assetMetadataResult = results.get(ASSET_LAMP_ONE_NAME);
         assertEquals(2, assetMetadataResult.size()); // Two measures expected
@@ -109,7 +109,7 @@ class FacilityTest {
         sample.addAsset(ASSET_FRIDGE_ONE_NAME, ASSET_FRIDGE_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, fridgeElectricityMeasureIri, fridgeElectricityTimeSeriesIri);
         sample.addAsset(ASSET_FRIDGE_ONE_NAME, ASSET_FRIDGE_TYPE, MEASURE_STATE_NAME, MEASURE_STATE_UNIT, fridgeStateMeasureIri, fridgeStateTimeSeriesIri);
         // Retrieve and test results
-        Map<String, Queue<String[]>> results = sample.getAllAssets();
+        Map<String, Queue<String[]>> results = sample.getAllMeasures();
         assertEquals(3, results.size()); // Three assets expected
         // Retrieve and verify contents of first asset
         Queue<String[]> assetMetadataResult = results.get(ASSET_LAMP_ONE_NAME);

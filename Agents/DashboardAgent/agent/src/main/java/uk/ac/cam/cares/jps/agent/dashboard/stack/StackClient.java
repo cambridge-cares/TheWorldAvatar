@@ -8,13 +8,6 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.time.Duration;
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -111,14 +104,14 @@ public class StackClient {
     }
 
     /**
-     * Get all assets from a specific spatial zone in the knowledge graph with groups of measures tied to group of asset types.
+     * Get all time series associated with assets from a specific spatial zone and rooms in the knowledge graph with groups of measures tied to group of asset types.
      *
      * @param spatialZone The spatial zone of interest.
-     * @return A map: {assetType: {assets:[asset name list], measure[[measureDetails],[measureDetails]]}}.
+     * @return A map: {assetType: {assets:[asset name list], measure[[measureDetails],[measureDetails]]}, room : {measure: [[measureDetails],[measureDetails]]}}.
      */
-    public Map<String, Map<String, List<String[]>>> getAllAssets(String spatialZone) {
+    public Map<String, Map<String, List<String[]>>> getAllTimeSeries(String spatialZone) {
         LOGGER.debug("Retrieving the time series metadata from PostGIS...");
-        Map<String, Queue<String[]>> measures = this.SPARQL_CLIENT.getAllAssetMetaData(spatialZone);
+        Map<String, Queue<String[]>> measures = this.SPARQL_CLIENT.getAllSpatialZoneMetaData(spatialZone);
         return this.POSTGIS_CLIENT.getMeasureColAndTableName(measures);
     }
 }

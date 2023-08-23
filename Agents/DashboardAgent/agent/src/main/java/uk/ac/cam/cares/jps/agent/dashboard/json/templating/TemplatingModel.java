@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json.templating;
 
+import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
+
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -16,29 +18,30 @@ public class TemplatingModel {
      * Constructor that process customisable options for the templating variable in Grafana's JSON model.
      *
      * @param databaseConnectionMap A map linking each database to its connection ID.
-     * @param assets                A map of all assets mapped to their asset types.
+     * @param timeSeries            A map of all assets and rooms mapped to their time series.
      */
-    public TemplatingModel(Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> assets) {
+    public TemplatingModel(Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> timeSeries) {
         // Initialise a queue to store these template variables
         Queue<TemplateVariable> variableQueue = new ArrayDeque<>();
-        // For each asset type available
-        for (String assetType : assets.keySet()) {
-            // Retrieve the map of measures to their asset and time series metadata
-            Map<String, List<String[]>> measures = assets.get(assetType);
-            // Within the map, there is a list containing only the asset names
+        // For each asset type or rooms available
+        for (String item : timeSeries.keySet()) {
+            // Retrieve the map of measures to their time series metadata
+            Map<String, List<String[]>> measures = timeSeries.get(item);
+            // Within the map, there is a list containing only the asset or room names
+            String nestedKey = item.equals(StringHelper.ROOM_KEY) ? StringHelper.ROOM_KEY : StringHelper.ASSET_KEY; // The key name will vary depending on if it is a room or asset
             // Retrieve this list and convert it into one array to be processed for
-            // creating the custom variable for filtering individual assets in one asset type group, and add into the queue
-            String[] individualAssets = measures.get("assets").stream().flatMap(Stream::of).distinct().toArray(String[]::new);
-            CustomVariable variable = new CustomVariable(assetType, individualAssets, 0);
+            // creating the custom variable for filtering individual assets in one asset type group or rooms, and add into the queue
+            String[] arrayItems = measures.get(nestedKey).stream().flatMap(Stream::of).distinct().toArray(String[]::new);
+            CustomVariable variable = new CustomVariable(item, arrayItems, 0);
             variableQueue.offer(variable);
-            // For each of the measures, create a postgres variable that is tied to their asset type custom variable
+            // For each of the measures, create a postgres variable that is tied to their asset type or room custom variable
             for (String measure : measures.keySet()) {
-                // Take note to exclude the assets key as that is not required
-                if (!measure.equals("assets")) {
+                // Take note to exclude the assets and rooms keys as they are not required
+                if (!measure.equals(StringHelper.ASSET_KEY) && !measure.equals(StringHelper.ROOM_KEY)) {
                     // Retrieve the relevant database and database ID from the first item
                     // Assumes that each measure of a specific asset type belongs to only one database
                     String database = measures.get(measure).get(0)[3];
-                    PostgresVariable postgresVariable = new PostgresVariable(measure, assetType, databaseConnectionMap.get(database), measures.get(measure));
+                    PostgresVariable postgresVariable = new PostgresVariable(measure, item, databaseConnectionMap.get(database), measures.get(measure));
                     variableQueue.offer(postgresVariable);
                 }
             }

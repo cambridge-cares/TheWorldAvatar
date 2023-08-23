@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.dashboard.stack;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
+import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.sql.*;
@@ -18,7 +19,6 @@ public class PostGisClient {
     private final String STACK_POSTGIS_USER;
     private final String STACK_POSTGIS_PASSWORD;
     private final List<String> DATABASE_LIST = new ArrayList<>();
-    private static final String ASSET_KEY = "assets";
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
 
     /**
@@ -86,6 +86,10 @@ public class PostGisClient {
      * assets: [AssetName5, AssetName6, AssetName7],
      * measure1: [[AssetName5, ColName1, TableName1, Database, unit],[AssetName6, ColName2, TableName1, Database, unit],[AssetName7, ColName3, TableName1, Database, unit]],
      * measure2: [[AssetName5, ColName5, TableName1, Database, unit],[AssetName6, ColName6, TableName1, Database, unit],[AssetName7, ColName7, TableName1, Database, unit]],
+     * },
+     * rooms:{
+     * measure1: [[RoomName1, ColName1, TableName2, Database, unit],[RoomName2, ColName3, TableName2, Database, unit]],
+     * measure2: [[RoomName1, ColName2, TableName2, Database, unit],[RoomName2, ColName4, TableName2, Database, unit]]
      * }
      * }
      *
@@ -154,55 +158,54 @@ public class PostGisClient {
     }
 
     /**
-     * Parses the time series into the query format required for two CASE WHEN variables and one matching table query.
+     * Parses the time series into the query format required for four CASE WHEN variables and one matching table query.
      *
-     * @param timeSeries The time series mapping each asset to their list of measure and time series. The String[] = measureName, dataIRI, timeseriesIRI.
-     * @return An array of query syntax as a String. Within the array, first position is the assetVariable; Second position is the measureVariable; Third position is assetTypeVariable; Forth position is matchingTable.
+     * @param timeSeries The time series mapping each asset and room to their list of measure and time series. The String[] = measureName, dataIRI, timeseriesIRI.
+     * @return An array of query syntax as a String. Within the array, first position is the roomOrAssetVariable; Second position is the measureVariable; Third position is assetTypeVariable; Forth position is unit; Fifth position is matchingTable.
      */
     private String[] parseTimeSeriesMapForQuery(Map<String, Queue<String[]>> timeSeries) {
         // Initialise require objects to put values in
         String[] querySyntax = new String[5];
-        StringBuilder assetCaseWhenValues = new StringBuilder();
+        StringBuilder roomOrAssetCaseWhenValues = new StringBuilder();
         StringBuilder measureCaseWhenValues = new StringBuilder();
         StringBuilder assetTypeCaseWhenValues = new StringBuilder();
         StringBuilder unitCaseWhenValues = new StringBuilder();
         StringBuilder matchingTableValues = new StringBuilder();
-        // For each asset
-        for (String asset : timeSeries.keySet()) {
+        // For each asset or room
+        for (String roomOrAsset : timeSeries.keySet()) {
             // Retrieve all their measureIRIs
-            Queue<String[]> measureIRIs = timeSeries.get(asset);
+            Queue<String[]> measureIRIs = timeSeries.get(roomOrAsset);
             // While the queue isn't empty, retrieve and remove the first time series IRI set
             // Parse them according to the desired format
             while (!measureIRIs.isEmpty()) {
                 String[] timeSeriesIRIs = measureIRIs.poll();
-                // For the asset case when values, attach the right asset name to the right combination
-                assetCaseWhenValues.append("WHEN \"dataIRI\" = '").append(timeSeriesIRIs[1])
+                // For the matching table values,
+                if (matchingTableValues.length() != 0)
+                    matchingTableValues.append(", "); // Only append comma if there are already existing values
+                // Enclose dataIRI and time series IRI together in brackets
+                matchingTableValues.append("('").append(timeSeriesIRIs[1]).append("', '")
+                        .append(timeSeriesIRIs[2]).append("') ");
+                // For the room and asset case when values, attach the right asset or room name to the right combination
+                roomOrAssetCaseWhenValues.append("WHEN \"dataIRI\" = '").append(timeSeriesIRIs[1])
                         .append("' AND \"timeseriesIRI\"= '").append(timeSeriesIRIs[2])
-                        .append("' THEN '").append(asset).append("'");
+                        .append("' THEN '").append(roomOrAsset).append("'");
                 // For the measure case when values, attach the right measure name to the right combination
                 measureCaseWhenValues.append("WHEN \"dataIRI\" = '").append(timeSeriesIRIs[1])
                         .append("' AND \"timeseriesIRI\"= '").append(timeSeriesIRIs[2])
                         .append("' THEN '").append(timeSeriesIRIs[0]).append("'");
-                // For the asset type case when values, attach the right asset type to the right combination
-                assetTypeCaseWhenValues.append("WHEN \"dataIRI\" = '").append(timeSeriesIRIs[1])
+                // For the unit case when values, attach the unit if it exists. Otherwise, attach null. Not all measures have units
+                unitCaseWhenValues.append("WHEN \"dataIRI\" = '").append(timeSeriesIRIs[1])
                         .append("' AND \"timeseriesIRI\"= '").append(timeSeriesIRIs[2])
                         .append("' THEN '").append(timeSeriesIRIs[3]).append("'");
-                // For the unit case when values, only attach the unit if it exists. Not all measures have units
-                if (timeSeriesIRIs.length == 5) {
-                    unitCaseWhenValues.append("WHEN \"dataIRI\" = '").append(timeSeriesIRIs[1])
-                            .append("' AND \"timeseriesIRI\"= '").append(timeSeriesIRIs[2])
-                            .append("' THEN '").append(timeSeriesIRIs[4]).append("'");
-                }
-                // For the matching table values,
-                // Only append comma if there are already existing values
-                if (matchingTableValues.length() != 0) matchingTableValues.append(", ");
-                // Enclose dataIRI and time series IRI together in brackets
-                matchingTableValues.append("('").append(timeSeriesIRIs[1]).append("', '")
-                        .append(timeSeriesIRIs[2]).append("') ");
+                // For the asset type case when values, only attach the right asset type to the right combination
+                // Rooms will have an asset type of rooms
+                assetTypeCaseWhenValues.append("WHEN \"dataIRI\" = '").append(timeSeriesIRIs[1])
+                        .append("' AND \"timeseriesIRI\"= '").append(timeSeriesIRIs[2])
+                        .append("' THEN '").append(timeSeriesIRIs[4]).append("'");
             }
         }
         // Once added, attach the right syntax to the final array returned
-        querySyntax[0] = assetCaseWhenValues.toString();
+        querySyntax[0] = roomOrAssetCaseWhenValues.toString();
         querySyntax[1] = measureCaseWhenValues.toString();
         querySyntax[2] = assetTypeCaseWhenValues.toString();
         querySyntax[3] = unitCaseWhenValues.toString();
@@ -216,21 +219,21 @@ public class PostGisClient {
      * @param conn               A connection object to the required database.
      * @param database           The database name.
      * @param measureQuerySyntax An array containing five query syntax to be appended to the query.
-     * @return A list of the required column and table names mapped to their asset and measures. Position 0 - measure name; Position 1 - asset name; Position 2 - asset type; Position 3 - measure unit; Position 4 - column name; Position 5 - table name; Position 6 - database name.
+     * @return A list of the required column and table names mapped to their asset and rooms alongside their measures. Position 0 - measure name; Position 1 - asset or room name; Position 2 - asset type if available; Position 3 - measure unit; Position 4 - column name; Position 5 - table name; Position 6 - database name.
      */
     private Queue<String[]> retrieveAllColAndTableNames(Connection conn, String database, String[] measureQuerySyntax) {
         Queue<String[]> results = new ArrayDeque<>();
         try (Statement stmt = conn.createStatement()) {
             // Retrieve only from dbTable of each database and try to find certain info if available
             String retrieveColAndTableNameQuery = "SELECT \"columnName\", \"tableName\", " +
-                    // Add a third variable to map asset name
-                    "CASE " + measureQuerySyntax[0] + "ELSE 'Unknown asset' END AS asset, " +
+                    // Add a third variable to map asset or room name
+                    "CASE " + measureQuerySyntax[0] + "ELSE 'Unknown item' END AS item, " +
                     // Add a forth variable to map measure
-                    "CASE " + measureQuerySyntax[1] + "ELSE 'Unknown measure' END AS measure, " +
-                    // Add a fifth variable to map asset type
-                    "CASE " + measureQuerySyntax[2] + "ELSE 'Unknown asset type' END AS assettype, " +
-                    // Add a sixth variable to map units
-                    "CASE " + measureQuerySyntax[3] + "ELSE '' END AS unit " +
+                    "CASE " + measureQuerySyntax[1] + "ELSE 'Unknown measure' END AS measure, ";
+            // Add a fifth variable to map asset type
+            retrieveColAndTableNameQuery += "CASE " + measureQuerySyntax[2] + "ELSE 'Unknown asset type' END AS assettype, ";
+            // Add a sixth variable to map units
+            retrieveColAndTableNameQuery += "CASE " + measureQuerySyntax[3] + "ELSE '' END AS unit " +
                     // Table should be fixed to dbTable
                     "FROM \"dbTable\" " +
                     // Create a new table containing the values that we wish to filter for
@@ -243,8 +246,9 @@ public class PostGisClient {
                 // Retrieve the necessary values and append it into the queue
                 String[] rowValues = new String[7];
                 rowValues[0] = rowResultSet.getString("measure");
-                rowValues[1] = rowResultSet.getString("asset");
-                rowValues[2] = rowResultSet.getString("assettype");
+                rowValues[1] = rowResultSet.getString("item");
+                // Only retrieve asset type if it has been queried, as this spatial zone may not have any assets
+                if (measureQuerySyntax[2] != null) rowValues[2] = rowResultSet.getString("assettype");
                 rowValues[3] = rowResultSet.getString("unit");
                 rowValues[4] = rowResultSet.getString("columnName");
                 rowValues[5] = rowResultSet.getString("tableName");
@@ -275,40 +279,49 @@ public class PostGisClient {
      * assets: [AssetName5, AssetName6, AssetName7],
      * measure1: [[AssetName5, ColName1, TableName1, Database, unit],[AssetName6, ColName2, TableName1, Database, unit],[AssetName7, ColName3, TableName1, Database, unit]],
      * measure2: [[AssetName5, ColName5, TableName1, Database, unit],[AssetName6, ColName6, TableName1, Database, unit],[AssetName7, ColName7, TableName1, Database, unit]],
+     * },
+     * Rooms:{
+     * Rooms: [RoomName1, RoomName2],
+     * measure1: [[RoomName1, ColName1, TableName2, Database, unit],[RoomName2, ColName3, TableName2, Database, unit]],
+     * measure2: [[RoomName1, ColName2, TableName2, Database, unit],[RoomName2, ColName4, TableName2, Database, unit]]
      * }
      * }
      *
      * @param postGisResults The postGIS query results that has been stored as a queue containing all row values.
-     * @return The required map structure {assetType: {assets:[asset name list], measure[[measureDetails],[measureDetails]]}}.
+     * @return The required map structure {assetType: {assets:[asset name list], measure: [[measureDetails],[measureDetails]]}, room : {measure: [[measureDetails],[measureDetails]]}}.
      */
     private Map<String, Map<String, List<String[]>>> processQueryResultsAsNestedMap(Queue<String[]> postGisResults) {
         Map<String, Map<String, List<String[]>>> results = new HashMap<>();
         // While there are still results
         while (!postGisResults.isEmpty()) {
-            String[] assetMetadata = postGisResults.poll();
-            String measureKey = assetMetadata[0];
-            String assetName = assetMetadata[1];
-            String assetTypeKey = assetMetadata[2];
-            String unit = assetMetadata[3];
-            String columnName = assetMetadata[4];
-            String tableName = assetMetadata[5];
-            String database = assetMetadata[6];
-            // If the asset type does not exist in the map,
+            String[] metadata = postGisResults.poll();
+            String measureKey = metadata[0];
+            String assetOrRoomName = metadata[1];
+            String assetType = metadata[2];
+            String unit = metadata[3];
+            String columnName = metadata[4];
+            String tableName = metadata[5];
+            String database = metadata[6];
+            Map<String, List<String[]>> measureMap;
+            // Depending on whether it is a room or not, set the keys accordingly
+            String assetTypeKey = assetType.equals(StringHelper.ROOM_KEY) ? StringHelper.ROOM_KEY : assetType;
+            String nestedItemKey = assetType.equals(StringHelper.ROOM_KEY) ? StringHelper.ROOM_KEY : StringHelper.ASSET_KEY;
+            // If the asset type or room key does not exist in the map,
             if (!results.containsKey(assetTypeKey)) {
-                // Initialise a new hashmap containing only one key-value pair to link the asset names to their type
-                Map<String, List<String[]>> measureMap = new HashMap<>();
-                // Asset key will be consistently available to make it easier to link asset names to their type
-                measureMap.put(ASSET_KEY, new ArrayList<>());
+                // Initialise a new hashmap containing only one key-value pair to consolidate the rooms or link the asset names to their type
+                measureMap = new HashMap<>();
+                // Corresponding Asset and Room key will be consistently available to make it easier to link asset names to their type and find all rooms
+                measureMap.put(nestedItemKey, new ArrayList<>());
                 results.put(assetTypeKey, measureMap);
             }
-            // Retrieve either an existing or newly created map with the asset type key
-            Map<String, List<String[]>> measureMap = results.get(assetTypeKey);
-            // Add the asset name directly to the asset list
-            measureMap.get(ASSET_KEY).add(new String[]{assetName});
+            // Retrieve either an existing or newly created map with the corresponding asset type or room key
+            measureMap = results.get(assetTypeKey);
+            // Add the room or asset name directly to the room or asset list
+            measureMap.get(nestedItemKey).add(new String[]{assetOrRoomName});
             // If the measure specified does not exist in the map, initialise a new empty list
             if (!measureMap.containsKey(measureKey)) measureMap.put(measureKey, new ArrayList<>());
             // Add the required measure metadata into the list
-            measureMap.get(measureKey).add(new String[]{assetName, columnName, tableName, database, unit});
+            measureMap.get(measureKey).add(new String[]{assetOrRoomName, columnName, tableName, database, unit});
         }
         return results;
     }

@@ -21,14 +21,14 @@ class CustomVariable extends TemplateVariable {
     /**
      * Basic Constructor that provides customised settings.
      *
-     * @param name                   The name of the assets to create for this variable.
-     * @param values                 An array of values to be included into the query component. Tentatively, this is a value of all available asset types or individual assets within one type.
+     * @param name                   The name of the assets or rooms to create for this variable.
+     * @param values                 An array of values to be included into the query component. Tentatively, this is a value of all available asset types, rooms or individual assets within one type.
      * @param dashboardDisplayOption The display options for the variable on the dashboard by Grafana. 0 - Display both label and values; 1 - Display only value; 2 - Display nothing.
      */
     protected CustomVariable(String name, String[] values, Integer dashboardDisplayOption) {
         // Construct the super class
         super(name, dashboardDisplayOption);
-        this.LABEL = StringHelper.addSpaceBetweenCapitalWords(name) + " Assets";
+        this.LABEL = name.equals(StringHelper.ROOM_KEY) ? "Rooms" : StringHelper.addSpaceBetweenCapitalWords(name) + " Assets";
         // Description should follow label
         this.DESCRIPTION = "Default filters for the " + this.LABEL;
         // Create a default option for all values

@@ -22,21 +22,21 @@ public class PanelModel {
      * Constructor that process customisable options for the panels in Grafana's JSON model.
      *
      * @param databaseConnectionMap A map linking each database to its connection ID.
-     * @param assets                A map of all assets mapped to their asset types.
+     * @param timeSeries            A map of all assets and rooms mapped to their time series.
      */
-    public PanelModel(Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> assets) {
+    public PanelModel(Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> timeSeries) {
         // Initialise a queue to store these panels
         Queue<TimeSeriesChart> panelQueue = new ArrayDeque<>();
         // Row numbers to compute x positions; Starts from 0
         int rowNumber = 0; // Each row correspond to one asset type
-        // Generate a panel for each measure of each asset type available
-        for (String assetType : assets.keySet()) {
-            // Retrieve the map of measures to their asset and time series metadata
-            Map<String, List<String[]>> measures = assets.get(assetType);
+        // Generate a panel for each measure of each asset type and room available
+        for (String item : timeSeries.keySet()) {
+            // Retrieve the map of measures to their asset and room alongside their time series metadata
+            Map<String, List<String[]>> measures = timeSeries.get(item);
             // For each of the measures, create a chart
             for (String measure : measures.keySet()) {
-                // Take note to exclude the assets key as that is not required
-                if (!measure.equals("assets")) {
+                // Take note to exclude the assets and rooms key as that is not required
+                if (!measure.equals(StringHelper.ASSET_KEY) && !measure.equals(StringHelper.ROOM_KEY)) {
                     // Retrieve the relevant database name and ID from the first item
                     // Assumes that each measure of a specific asset type belongs to only one database
                     String database = measures.get(measure).get(0)[3];
@@ -44,7 +44,7 @@ public class PanelModel {
                     // Assume the unit of each measure for each asset type is consistent
                     String unit = measures.get(measure).get(0)[4];
                     // Creates a chart object and add it to the queue
-                    TimeSeriesChart chart = new TimeSeriesChart(measure, assetType, unit, databaseID, measures.get(measure));
+                    TimeSeriesChart chart = new TimeSeriesChart(measure, item, unit, databaseID, measures.get(measure));
                     panelQueue.offer(chart);
                 }
             }
@@ -54,7 +54,7 @@ public class PanelModel {
             // Generate the row panel syntax
             this.PANEL_SYNTAX.append("{")
                     .append("\"id\":null, \"type\":\"row\", \"collapsed\":true,")
-                    .append("\"title\": \"").append(StringHelper.addSpaceBetweenCapitalWords(assetType)).append("\",")
+                    .append("\"title\": \"").append(StringHelper.addSpaceBetweenCapitalWords(item)).append("\",")
                     .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(CHART_WIDTH * 2)
                     .append(",\"x\": 0,\"y\": ").append(rowNumber++).append("},")
                     .append("\"panels\": [").append(genPanelSyntaxForEachRow(rowNumber, panelQueue))

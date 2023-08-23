@@ -118,10 +118,10 @@ public class DashboardClient {
         String route = this.SERVICE_CLIENT.getDashboardUrl() + DASHBOARD_CREATION_ROUTE;
         // Generate title
         String title = "Overview for " + spatialZone;
-        // Retrieve all assets for the model
-        Map<String, Map<String, List<String[]>>> assets = this.SERVICE_CLIENT.getAllAssets(spatialZone);
+        // Retrieve all time series for the model
+        Map<String, Map<String, List<String[]>>> timeSeries = this.SERVICE_CLIENT.getAllTimeSeries(spatialZone);
         // Generate JSON model syntax
-        String jsonSyntax = new GrafanaModel(title, this.DATABASE_CONNECTION_MAP, assets).construct();
+        String jsonSyntax = new GrafanaModel(title, this.DATABASE_CONNECTION_MAP, timeSeries).construct();
         // Create a new dashboard based on the JSON model using a POST request with security token
         HttpResponse response = AgentCommunicationClient.sendPostRequest(route, jsonSyntax, this.SERVICE_ACCOUNT_TOKEN);
         // WIP: Retrieve the required information to form the URL

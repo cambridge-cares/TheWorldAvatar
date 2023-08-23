@@ -6,6 +6,9 @@ package uk.ac.cam.cares.jps.agent.dashboard.utils;
  * @author qhouyee
  */
 public class StringHelper {
+    public static String ASSET_KEY = "assets";
+    public static String ROOM_KEY = "Rooms";
+
     /**
      * Formats the SPARQL variable name for a SPARQL query syntax. Note that a space will be appended beforehand.
      */

@@ -54,7 +54,8 @@ public class SparqlClient {
         LOGGER.debug("Retrieving all metadata from SPARQL endpoints...");
         // For each of the spatial zone endpoint, retrieve the metadata associated with them
         for (String endpoint : this.SPATIAL_ZONE_SPARQL_ENDPOINTS) {
-            executeSparqlAction(endpoint, this::retrieveMetaData);
+            executeSparqlAction(endpoint, this::retrieveRoomMetaData);
+            executeSparqlAction(endpoint, this::retrieveAssetMetaData);
         }
     }
 
@@ -69,13 +70,13 @@ public class SparqlClient {
     }
 
     /**
-     * Get all assets and their time series information from a specific spatial zone in the knowledge graph.
+     * Get all assets and rooms alongside their time series information from a specific spatial zone in the knowledge graph.
      *
-     * @param spatialZone The spatial zone to retrieve all assets.
-     * @return A map linking all assets to their measures.
+     * @param spatialZone The spatial zone to retrieve all their associated time series.
+     * @return A map linking all rooms and assets to their measures.
      */
-    protected Map<String, Queue<String[]>> getAllAssetMetaData(String spatialZone) {
-        return this.SPATIAL_ZONES.get(spatialZone).getAllAssets();
+    protected Map<String, Queue<String[]>> getAllSpatialZoneMetaData(String spatialZone) {
+        return this.SPATIAL_ZONES.get(spatialZone).getAllMeasures();
     }
 
     /**
@@ -175,12 +176,48 @@ public class SparqlClient {
     }
 
     /**
-     * Retrieves metadata required for generating the dashboard syntax.
+     * Retrieves room-related metadata required for generating the dashboard syntax.
      *
      * @param conn     Connection object to the SPARQL endpoint.
      * @param endpoint The current SPARQL endpoint.
      */
-    private void retrieveMetaData(RDFConnection conn, String endpoint) {
+    private void retrieveRoomMetaData(RDFConnection conn, String endpoint) {
+        // Execute SELECT query and upon execution, run the following lines for each result row
+        conn.querySelect(SparqlQuery.genFacilityRoomMeasureQuery(), (qs) -> {
+            // Retrieve relevant information
+            String facilityName = qs.getLiteral(SparqlQuery.FACILITY_NAME).toString();
+            String roomName = qs.getLiteral(SparqlQuery.ROOM_NAME).toString();
+            String measureIri = qs.getResource(SparqlQuery.MEASURE).toString();
+            String measureName = qs.getLiteral(SparqlQuery.MEASURE_NAME).toString();
+            // If there is no unit to retrieve, this will throw a null pointer exception
+            String unit;
+            try {
+                unit = qs.getLiteral(SparqlQuery.UNIT).toString();
+            } catch (NullPointerException ne) {
+                // But as this is an optional variable, we can ignore the error and explicitly treat it as null
+                unit = null;
+            }
+            String timeSeriesIri = qs.getResource(SparqlQuery.TIME_SERIES).toString();
+            // Check if the facility already exists in the map
+            if (this.SPATIAL_ZONES.containsKey(facilityName)) {
+                // If it does exist, add the asset to the existing facility object
+                Facility facility = this.SPATIAL_ZONES.get(facilityName);
+                facility.addRoom(roomName, measureName, unit, measureIri, timeSeriesIri);
+            } else {
+                // If it does not exist, initialise a new facility object and add it in
+                Facility facility = new Facility(roomName, measureName, unit, measureIri, timeSeriesIri);
+                this.SPATIAL_ZONES.put(facilityName, facility);
+            }
+        });
+    }
+
+    /**
+     * Retrieves asset-related metadata required for generating the dashboard syntax.
+     *
+     * @param conn     Connection object to the SPARQL endpoint.
+     * @param endpoint The current SPARQL endpoint.
+     */
+    private void retrieveAssetMetaData(RDFConnection conn, String endpoint) {
         // Execute a SELECT query on the current spatial zone endpoint
         // As the time series triples are stored on the remaining endpoints, these have to be executed one by one using the SERVICE keyword
         // Effectively, we repeatedly perform the following steps for all remaining endpoints
