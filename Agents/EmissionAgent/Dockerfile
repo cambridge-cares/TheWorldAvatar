@@ -56,7 +56,9 @@ COPY ./emissionagent ./emissionagent
 
 # Set the entrypoint: timeout set to 5min to avoid exceptions for 
 # longer API/KG calls, but still be considered "synchronous"
-ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "emissionagent:create_app()" --timeout 300
+# NOTE: Remove gunicorn server request length limit to avoid that HTTP GET requests
+#       to update synchronous derivations are rejected by the server (to be used with caution!)
+ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "emissionagent:create_app()" --timeout 300 --limit-request-line 0
 
 #------------------------------------------------------
 # Testing image reusing the base
@@ -81,7 +83,9 @@ RUN sed -i "s|logger_name='prod',|logger_name='dev',|g" ./emissionagent/entry_po
 
 # Start dockerised agent app as well as pytest
 # (combining commands using & ensures they are started in parallel in background)
-CMD gunicorn --bind 0.0.0.0:5000 "emissionagent:create_app()" & pytest
+# NOTE: Remove gunicorn server request length limit to avoid that HTTP GET requests
+#       to update synchronous derivations are rejected by the server (to be used with caution!)
+CMD gunicorn --bind 0.0.0.0:5000 "emissionagent:create_app()" --limit-request-line 0 & pytest
 
 #------------------------------------------------------
 # Debug testing image reusing the base
@@ -110,7 +114,7 @@ WORKDIR /app
 
 # Start dockerised agent app as well as pytest
 # (combining commands using & ensures they are started in parallel in background)
-CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000 & \
+CMD python -m debugpy --listen 0.0.0.0:5678 -m flask run -h 0.0.0.0 -p 5000 & \
     python -m debugpy --listen 0.0.0.0:5679 --wait-for-client -m pytest -s
 
 #==================================================================================================

@@ -14,7 +14,6 @@ import os
 import pytest
 import requests
 import time
-import numpy as np
 import pandas as pd
 import psycopg2 as pg
 from flask import Flask
@@ -107,7 +106,6 @@ SIMULATION_TIME_1 = TEST_TRIPLES_BASE_IRI + 'SimulationTime_1'
 SIMULATION_TIME_2 = TEST_TRIPLES_BASE_IRI + 'SimulationTime_2'
 SIMULATION_TIME_3 = TEST_TRIPLES_BASE_IRI + 'SimulationTime_3'
 POINT_SOURCE_1 = TEST_TRIPLES_BASE_IRI + 'StaticPointSource_1'
-POINT_SOURCE_2 = TEST_TRIPLES_BASE_IRI + 'StaticPointSource_2'
 PROVIDED_HEAT_AMOUNT_1 = TEST_TRIPLES_BASE_IRI + 'ProvidedHeatAmount_1'
 DATA_IRI_1 = TEST_TRIPLES_BASE_IRI + 'Measure_1'
 PROVIDED_HEAT_AMOUNT_2 = TEST_TRIPLES_BASE_IRI + 'ProvidedHeatAmount_2'
@@ -115,17 +113,32 @@ CONSUMED_GAS_AMOUNT_1 = TEST_TRIPLES_BASE_IRI + 'ConsumedGasAmount_1'
 DATA_IRI_2 = TEST_TRIPLES_BASE_IRI + 'Measure_2'
 CONSUMED_GAS_AMOUNT_2 = TEST_TRIPLES_BASE_IRI + 'ConsumedGasAmount_2'
 DATA_IRI_3 = TEST_TRIPLES_BASE_IRI + 'Measure_3'
-CONSUMED_GAS_AMOUNT_3 = TEST_TRIPLES_BASE_IRI + 'ConsumedGasAmount_3'
 
 # Define derivation input sets to test
 DERIVATION_INPUTS_1 = [SIMULATION_TIME_1, POINT_SOURCE_1, 
                        PROVIDED_HEAT_AMOUNT_1]
-DERIVATION_INPUTS_2 = []
+DERIVATION_INPUTS_2 = [SIMULATION_TIME_1, POINT_SOURCE_1,
+                       CONSUMED_GAS_AMOUNT_1, CONSUMED_GAS_AMOUNT_2]
 # Expected emission outputs
 EXPECTED_OUTPUTS_1 = {
-    OD_NO2: {'temperature': 10.0, 'density': 10.0, 'massflow': 10.0}, 
-    OD_PM2_5: {'temperature': 10.0, 'density': 10.0, 'massflow': 10.0}, 
-    OD_PM10: {'temperature': 10.0, 'density': 10.0, 'massflow': 10.0}
+    OD_NO2: {'temperature': VALUE_1, 'density': VALUE_1, 'massflow': VALUE_1}, 
+    OD_PM2_5: {'temperature': VALUE_1, 'density': VALUE_1, 'massflow': VALUE_1}, 
+    OD_PM10: {'temperature': VALUE_1, 'density': VALUE_1, 'massflow': VALUE_1}
+}
+EXPECTED_OUTPUTS_2 = {
+    OD_NO2: {'temperature': VALUE_2, 'density': VALUE_2, 'massflow': VALUE_2}, 
+    OD_PM2_5: {'temperature': VALUE_2, 'density': VALUE_2, 'massflow': VALUE_2}, 
+    OD_PM10: {'temperature': VALUE_2, 'density': VALUE_2, 'massflow': VALUE_2}
+}
+EXPECTED_OUTPUTS_3 = {
+    OD_NO2: {'temperature': 2*VALUE_1, 'density': 2*VALUE_1, 'massflow': 2*VALUE_1}, 
+    OD_PM2_5: {'temperature': 2*VALUE_1, 'density': 2*VALUE_1, 'massflow': 2*VALUE_1}, 
+    OD_PM10: {'temperature': 2*VALUE_1, 'density': 2*VALUE_1, 'massflow': 2*VALUE_1}
+}
+EXPECTED_OUTPUTS_4 = {
+    OD_NO2: {'temperature': 2*VALUE_2, 'density': 2*VALUE_2, 'massflow': 2*VALUE_2}, 
+    OD_PM2_5: {'temperature': 2*VALUE_2, 'density': 2*VALUE_2, 'massflow': 2*VALUE_2}, 
+    OD_PM10: {'temperature': 2*VALUE_2, 'density': 2*VALUE_2, 'massflow': 2*VALUE_2}
 }
 
 
@@ -312,20 +325,20 @@ def get_derivation_inputs_outputs(derivation_iri: str, sparql_client):
     return inputs, outputs
 
 
-# def update_derivation_interval(derivation_iri: str, interval_iri: str, sparql_client):
-#     # Replace the derivation's forecast interval with a new interval
-#     update = f"""
-#         DELETE {{ 
-#             ?deriv_iri <{ONTODERIVATION_ISDERIVEDFROM}> ?interval . 
-#         }} INSERT {{
-#             ?deriv_iri  <{ONTODERIVATION_ISDERIVEDFROM}> <{interval_iri}> . 
-#         }} WHERE {{
-#             VALUES ?deriv_iri {{ <{derivation_iri}> }}
-#             ?deriv_iri <{ONTODERIVATION_ISDERIVEDFROM}> ?interval .
-#             ?interval <{RDF_TYPE}> <{TIME_INTERVAL}> .
-#         }}
-#         """
-#     sparql_client.performUpdate(update)
+def update_simulation_time(derivation_iri: str, sim_time_iri: str, sparql_client):
+    # Replace the derivation's simulation time with new instance
+    update = f"""
+        DELETE {{ 
+            ?deriv_iri <{ONTODERIVATION_ISDERIVEDFROM}> ?sim_time . 
+        }} INSERT {{
+            ?deriv_iri  <{ONTODERIVATION_ISDERIVEDFROM}> <{sim_time_iri}> . 
+        }} WHERE {{
+            VALUES ?deriv_iri {{ <{derivation_iri}> }}
+            ?deriv_iri <{ONTODERIVATION_ISDERIVEDFROM}> ?sim_time .
+            ?sim_time <{RDF_TYPE}> <{OD_SIMULATION_TIME}> .
+        }}
+        """
+    sparql_client.performUpdate(update)
 
 
 def initialise_triples(sparql_client):

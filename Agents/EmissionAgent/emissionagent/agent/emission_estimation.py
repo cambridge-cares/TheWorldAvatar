@@ -78,9 +78,9 @@ def calculate_emissions_for_consumed_gas(pollutant_iri:str, consumed_gas:float) 
     # Initialise return dictionary
     emission = {
         'pollutantID': pollutant_iri,
-        'temperature': 10.0,
-        'density': 10.0,
-        'massflow': 10.0
+        'temperature': consumed_gas,
+        'density': consumed_gas,
+        'massflow': consumed_gas
     }
     
     # TODO: Implement emission calculation
@@ -102,9 +102,9 @@ def calculate_emissions_for_provided_heat(pollutant_iri:str, provided_heat:float
     # Initialise return dictionary
     emission = {
         'pollutantID': pollutant_iri,
-        'temperature': 10.0,
-        'density': 10.0,
-        'massflow': 10.0
+        'temperature': provided_heat,
+        'density': provided_heat,
+        'massflow': provided_heat
     }
     
     # TODO: Implement emission calculation

@@ -8,12 +8,9 @@
 
 import copy
 import pytest
-import numpy as np
-import pandas as pd
 from pathlib import Path
 from rdflib import Graph
 from rdflib import RDF
-from operator import eq, gt
 
 from py4jps import agentlogging
 
@@ -27,7 +24,6 @@ from . import conftest as cf
 logger = agentlogging.get_logger('dev')
 
 
-#@pytest.mark.skip(reason="")
 def test_example_triples():
     """
     This test checks that the example triples are correct in syntax.
@@ -44,7 +40,6 @@ def test_example_triples():
             raise e
 
 
-#@pytest.mark.skip(reason="")
 def test_example_data_instantiation(initialise_clients):
     """
     This test checks that all example data gets correctly instantiated,
@@ -88,7 +83,6 @@ def test_example_data_instantiation(initialise_clients):
     assert cf.get_number_of_rdb_tables(rdb_url) == 0
 
 
-#@pytest.mark.skip(reason="")
 @pytest.mark.parametrize(
     "amount_iri, ts_times, ts_values, expected_to_fail, simulation_time, expected_amount",
     [
@@ -132,15 +126,15 @@ def test_extract_time_series_amounts(
         assert expected_amount in str(exc_info.value)
 
 
-@pytest.mark.skip(reason="")
 @pytest.mark.parametrize(
-    "derivation_input_set, amount_iri, ts_times, ts_values, expected_results",
+    "derivation_input_set, amount_iris, ts_times, ts_values, expected_results",
     [
-        (cf.DERIVATION_INPUTS_1, cf.DATA_IRI_1, cf.TIMES, cf.VALUES_1, cf.EXPECTED_OUTPUTS_1)
+        (cf.DERIVATION_INPUTS_1, [cf.DATA_IRI_1], cf.TIMES, cf.VALUES_1, [cf.EXPECTED_OUTPUTS_1, cf.EXPECTED_OUTPUTS_2]),
+        (cf.DERIVATION_INPUTS_2, [cf.DATA_IRI_2, cf.DATA_IRI_3], cf.TIMES, cf.VALUES_1, [cf.EXPECTED_OUTPUTS_3, cf.EXPECTED_OUTPUTS_4])
     ],
 )
 def test_derive_emissions(
-    initialise_clients, create_example_agent, derivation_input_set, amount_iri, 
+    initialise_clients, create_example_agent, derivation_input_set, amount_iris, 
     ts_times, ts_values, expected_results
 ):
     """
@@ -154,12 +148,12 @@ def test_derive_emissions(
     # (it first DELETES ALL DATA in the specified SPARQL/RDB endpoints)
     cf.initialise_triples(sparql_client)
     cf.clear_database(rdb_url)
-    ts_client.init_timeseries(dataIRI=amount_iri,
-                              times=ts_times, values=ts_values,
-                              ts_type=cf.DOUBLE, time_format=cf.TIME_FORMAT)
+    for iri in amount_iris:
+        ts_client.init_timeseries(dataIRI=iri, times=ts_times, values=ts_values,
+                                  ts_type=cf.DOUBLE, time_format=cf.TIME_FORMAT)
 
     # Verify correct number of triples (not marked up with timestamp yet)
-    triples = cf.ABOX_TRIPLES + cf.TS_TRIPLES
+    triples = cf.ABOX_TRIPLES + len(amount_iris) * cf.TS_TRIPLES
     assert sparql_client.getAmountOfTriples() == triples
 
     # Register derivation agent in KG
@@ -201,6 +195,11 @@ def test_derive_emissions(
     assert dm.OD_EMISSION in derivation_outputs
     assert len(derivation_outputs[dm.OD_EMISSION]) == len(agent.POLLUTANTS)
 
+    # Retrieve instantiated emissions and verify their details
+    emission_iris = list(derivation_outputs[dm.OD_EMISSION])
+    emissions = sparql_client.get_emission_details(emission_iris)
+    assert emissions == expected_results[0]
+
     # Verify inputs (i.e., derived from)
     # Create deeepcopy to avoid modifying original cf.DERIVATION_INPUTS_... between tests
     derivation_input_set_copy = copy.deepcopy(derivation_input_set)
@@ -210,43 +209,26 @@ def test_derive_emissions(
             derivation_input_set_copy.remove(j)
     assert len(derivation_input_set_copy) == 0
 
-    # Retrieve instantiated emissions and verify their details
+    # Update derivation's simulation time and add latest timestamp to trigger update
+    cf.update_simulation_time(derivation_iri, cf.SIMULATION_TIME_2, sparql_client)
+    assert sparql_client.getAmountOfTriples() == triples
+    derivation_client.addTimeInstanceCurrentTimestamp(cf.SIMULATION_TIME_2)
+    triples += cf.TIME_TRIPLES_PER_PURE_INPUT
+    assert sparql_client.getAmountOfTriples() == triples
+
+    # Request for derivation update and verify that no new triples have been added,
+    # only emission values have been amended
+    derivation_client.unifiedUpdateDerivation(derivation_iri)
+    assert sparql_client.getAmountOfTriples() == triples
+
+    # Retrieve updated emission derivation details
+    _, derivation_outputs = cf.get_derivation_inputs_outputs(derivation_iri, sparql_client)
+    # Verify correct number and details of updated derivation outputs
+    assert len(derivation_outputs) == cf.OUTPUT_TYPES
+    assert dm.OD_EMISSION in derivation_outputs
+    assert len(derivation_outputs[dm.OD_EMISSION]) == len(agent.POLLUTANTS)
     emission_iris = list(derivation_outputs[dm.OD_EMISSION])
     emissions = sparql_client.get_emission_details(emission_iris)
-    assert emissions == expected_results
+    assert emissions == expected_results[1]
 
-#     # Update derivation interval and add latest timestamp to trigger update
-#     cf.update_derivation_interval(derivation_iri, cf.FC_INTERVAL_2, sparql_client)
-#     assert sparql_client.getAmountOfTriples() == triples
-#     derivation_client.addTimeInstanceCurrentTimestamp(cf.FC_INTERVAL_2)
-#     triples += cf.TIME_TRIPLES_PER_PURE_INPUT
-#     assert sparql_client.getAmountOfTriples() == triples
-
-#     # Request for derivation update and verify that no new triples have been added,
-#     # only time series and interval values have been amended
-#     derivation_client.unifiedUpdateDerivation(derivation_iri)
-#     if not overwrite_forecast:
-#         triples += cf.FORECAST_TRIPLES          # triples for new forecast
-#         if with_unit:
-#             triples += cf.UNIT_TRIPLES
-#     assert sparql_client.getAmountOfTriples() == triples
-
-#     # Retrieve updated forecast details
-#     _, derivation_outputs = cf.get_derivation_inputs_outputs(derivation_iri, sparql_client)
-#     fcIRI = list(derivation_outputs[dm.TS_FORECAST])[0]
-#     fc_intervals = sparql_client.get_forecast_details(fcIRI)
-#     inp_interval = sparql_client.get_interval_details(fc_intervals['input_interval_iri'])
-#     outp_interval = sparql_client.get_interval_details(fc_intervals['output_interval_iri'])
-#     assert inp_interval['start_unix'] == cf.T_2 - input_chunk_length*3600
-#     assert inp_interval['end_unix'] == cf.T_2 - 3600
-#     assert outp_interval['start_unix'] == cf.T_2
-#     assert outp_interval['end_unix'] == cf.T_3
-    
-#     # Assess updated forecast error and create plot for visual inspection
-#     errors = cf.assess_forecast_error(dataIRI, fcIRI, sparql_client, ts_client, 
-#                                       agent_url=agent_url, name=case+'_updated')
-#     print(f'Forecast errors for case: {case}_updated')
-#     for k,v in errors.items():
-#         print(f'{k}: {round(v,5)}')
-
-    print("All check passed.")
+    print("All checks passed.")

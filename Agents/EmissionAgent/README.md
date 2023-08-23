@@ -113,6 +113,13 @@ docker compose -f "docker-compose-test_dockerised_debug.yml" up -d --build
 ```
 
 
+## Issues
+1. Length of the request line exceeds the limit of gunicorn server when `FloodAssessmentAgent` requesting `AverageSquareMetreAgent` and `PropertyValueEstimationAgent` for synchronous derivation update via HTTP GET request, e.g. `Request Line is too large (4807 &gt; 4094)`
+
+    **Workaround:** add `"--limit-request-line", "0"` (unlimited request line length) to the list of `entrypoint` of relevant agents in [docker-compose-agents.yml], see https://docs.gunicorn.org/en/stable/settings.html#limit-request-line **NOTE This should be used with caution especially in production image**
+    
+
+
 &nbsp;
 # Authors #
 Markus Hofmeister (mh807@cam.ac.uk), August 2023
