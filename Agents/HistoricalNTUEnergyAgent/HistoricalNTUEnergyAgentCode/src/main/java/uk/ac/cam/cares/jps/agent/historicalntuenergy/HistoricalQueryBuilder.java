@@ -63,7 +63,10 @@ public class HistoricalQueryBuilder {
     public static final String RatedPower = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedPower";
     public static final String TemperatureCoefficientOfPower = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#TemperatureCoefficientOfPower";
     public static final String Tilt = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Tilt";
-    private static final String scalarValue = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue";
+
+    // undeveloped NTU ontologies
+    public static final String venue = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Venue";
+    public static final String classSchedule = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ClassSchedule";
 
 
     /**
@@ -110,6 +113,24 @@ public class HistoricalQueryBuilder {
     private static final String hasTiltAngle = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasTiltAngle";
     private static final String hasOntoCityGML = "https://www.theworldavatar.com/kg/ontobuiltenv/hasOntoCityGMLRepresentation";
 
+    // Undeveloped venue-related ontologies
+    private static final String hasVenueName = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasVenueName";
+    private static final String hasVenueCapacity = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasVenueCapacity";
+    private static final String hasLocation = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasLocation";
+    private static final String hasBookableByStaff = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasBookableByStaff";
+    private static final String hasBookableByStudent = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasBookableByStudent";
+
+    // Undeveloped class-related ontologies
+    private static final String hasType = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasType";
+    private static final String hasGroup = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasGroup";
+    private static final String hasDay = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasDay";
+    private static final String hasTime = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasTime";
+    private static final String hasVenue = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasVenue";
+    private static final String hasRemark = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasRemark";
+    private static final String hasCode = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasCode";
+    private static final String hasName = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasName";
+    private static final String hasStudentProfiles = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#hasStudentProfiles";
+
 
     /**
      * Individuals
@@ -150,6 +171,16 @@ public class HistoricalQueryBuilder {
     HashMap<String, List<String>> pvParams = new HashMap<String, List<String>>();
 
     /**
+     * Venue-related parameters stored in a hashmap
+     */
+    HashMap<String, List<String>> NTUVenues = new HashMap<String, List<String>>();
+
+    /**
+     * ClassSchedule-related parameters stored in a hashmap
+     */
+    HashMap<String, List<String>> NTUClassSchedule = new HashMap<String, List<String>>();
+
+    /**
      * Bus-related parameters stored in a hashmap
      */
     HashMap<String, List<String>> busParams = new HashMap<String, List<String>>();
@@ -167,7 +198,7 @@ public class HistoricalQueryBuilder {
 
     private List<JSONKeyToIRIMapper> mappings;
 
-    public HistoricalQueryBuilder(String agentProp, RemoteStoreClient kbClient, JSONArray busNodeSpecs, JSONArray branchSpecs, JSONArray generatorSpecs, JSONArray pvSpecs) throws IOException
+    public HistoricalQueryBuilder(String agentProp, RemoteStoreClient kbClient, JSONArray busNodeSpecs, JSONArray branchSpecs, JSONArray generatorSpecs, JSONArray pvSpecs, JSONArray venueInfo, JSONArray classSchedule) throws IOException
     {
         agentProperties = agentProp;
         loadproperties(agentProperties);
@@ -287,6 +318,40 @@ public class HistoricalQueryBuilder {
             PVModelVariables.put(key, PowerSystemRealizaionPrefix + key);
         }
 
+        // pop up venue information in the hashmap
+        for (int i = 0; i < venueInfo.length(); i++) {
+            JSONObject jsonObject = venueInfo.getJSONObject(i);
+            for (String key : jsonObject.keySet()) {
+                String value = jsonObject.getString(key);
+                if (!NTUVenues.containsKey(key)) {
+                    NTUVenues.put(key, new ArrayList<>());
+                }
+                NTUVenues.get(key).add(value);
+            }
+        }
+
+        /*
+        for (int i = 0; i < classSchedule.length(); i++) {
+            JSONObject jsonObject = classSchedule.getJSONObject(i);
+            for (String key : jsonObject.keySet()) {
+                String value = jsonObject.getString(key);
+                NTUClassSchedule.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
+            }
+        }
+        */
+
+        // pop up class schedule in the hashmap
+        for (int i = 0; i < classSchedule.length(); i++) {
+            LOGGER.info("poping up class schedule: " + i);
+            JSONObject jsonObject = classSchedule.getJSONObject(i);
+            for (String key : jsonObject.keySet()) {
+                String value = jsonObject.getString(key);
+                if (!NTUClassSchedule.containsKey(key)) {
+                    NTUClassSchedule.put(key, new ArrayList<>());
+                }
+                NTUClassSchedule.get(key).add(value);
+            }
+        }
     }
 
     public void loadproperties(String propfile) throws IOException
@@ -378,9 +443,66 @@ public class HistoricalQueryBuilder {
         kbClient.executeUpdate(powersysInsertion.getQueryString());
 
         /**
+         * Instantiate Venue-related triples
+         */
+        for (int entry=0; entry < NTUVenues.get("FACILITY").size(); entry++){
+
+            String venueIRI = PowsysPrefix + "NTU_Venue_" + String.valueOf(entry);
+
+            String venueName = NTUVenues.get("FACILITY").get(entry);
+            LOGGER.info("Instantiating Venue name: " + venueName);
+            String venueCapacity = NTUVenues.get("CAPACITY").get(entry);
+            String location = NTUVenues.get("LOCATION").get(entry);
+            String bookableByStaff = NTUVenues.get("Bookable by staff").get(entry);
+            String bookableByStudent = NTUVenues.get("Bookable by student organisations").get(entry);
+
+            TriplePattern venueIsType = iri(venueIRI).isA(iri(venue));
+            TriplePattern venueHasName = iri(venueIRI).has(iri(hasVenueName), venueName);
+            TriplePattern venueHasCapacity = iri(venueIRI).has(iri(hasVenueCapacity), venueCapacity);
+            TriplePattern venueHasLocation = iri(venueIRI).has(iri(hasLocation), location);
+            TriplePattern venueHasBookableByStaff = iri(venueIRI).has(iri(hasBookableByStaff), bookableByStaff);
+            TriplePattern venueHasBookableByStudent = iri(venueIRI).has(iri(hasBookableByStudent), bookableByStudent);
+
+            InsertDataQuery venueInsertion = Queries.INSERT_DATA(venueIsType, venueHasName, venueHasCapacity, venueHasLocation, venueHasBookableByStaff, venueHasBookableByStudent);
+            kbClient.executeUpdate(venueInsertion.getQueryString());
+        }
+
+        /**
+         * Instantiate Class Schedule-related triples
+         */
+        //There should be another loop through all the class schedules
+        for (int entry=0; entry < NTUClassSchedule.get("TYPE").size(); entry++){
+            String classScheduleIRI = PowsysPrefix + "NTU_ClassSchedule_" + String.valueOf(entry);
+
+            String classScheduleType = NTUClassSchedule.get("TYPE").get(entry);
+            String classScheduleDay = NTUClassSchedule.get("DAY").get(entry);
+            String classScheduleTime = NTUClassSchedule.get("TIME").get(entry);
+            String classVenue = NTUClassSchedule.get("VENUE").get(entry);
+            String classRemark = NTUClassSchedule.get("REMARK").get(entry);
+            String classCode = NTUClassSchedule.get("ClassCode").get(entry);
+            String className = NTUClassSchedule.get("ClassName").get(entry);
+            String studentProfiles = NTUClassSchedule.get("StudentProfiles").get(entry);
+            LOGGER.info("Instantiating Class Schedule name: " + className);
+
+            TriplePattern classIsType = iri(classScheduleIRI).isA(iri(classSchedule));
+            TriplePattern classHasType = iri(classScheduleIRI).has(iri(hasType), classScheduleType);
+            TriplePattern classHasDay = iri(classScheduleIRI).has(iri(hasDay), classScheduleDay);
+            TriplePattern classHasTime = iri(classScheduleIRI).has(iri(hasTime), classScheduleTime);
+            TriplePattern classHasVenue = iri(classScheduleIRI).has(iri(hasVenue), classVenue);
+            TriplePattern classHasRemark = iri(classScheduleIRI).has(iri(hasRemark), classRemark);
+            TriplePattern classHasCode = iri(classScheduleIRI).has(iri(hasCode), classCode);
+            TriplePattern classHasName = iri(classScheduleIRI).has(iri(hasName), className);
+            TriplePattern classHasStudentProfiles = iri(classScheduleIRI).has(iri(hasStudentProfiles), studentProfiles);
+
+            InsertDataQuery classInsertion = Queries.INSERT_DATA(classIsType, classHasType, classHasDay, classHasTime, classHasVenue, classHasRemark, classHasCode, classHasName, classHasStudentProfiles);
+            kbClient.executeUpdate(classInsertion.getQueryString());
+        }
+
+
+        /**
          * Instantiate PV-related triples
          */
-        for (int entry=0; entry < pvParams.size(); entry++){
+        for (int entry=0; entry < pvParams.get("BuildingName").size(); entry++){
             String buildingFullName = pvParams.get("BuildingName").get(entry);
             String buildingIRI = null;
             for (Map.Entry<String, String> buildingEntry : BuildingAbbrevToName.entrySet()) {

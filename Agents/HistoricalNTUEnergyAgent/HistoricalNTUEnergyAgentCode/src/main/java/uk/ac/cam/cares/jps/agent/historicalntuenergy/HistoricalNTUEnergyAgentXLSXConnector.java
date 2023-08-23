@@ -22,6 +22,8 @@ public class HistoricalNTUEnergyAgentXLSXConnector {
     private String busNodeSpecFilePath;
     private String branchSpecFilePath;
     private String pvFilePath;
+    private String venueInfoFilePath;
+    private String classScheduleFilePath;
     private String numOfEnergyKeys;
     JSONArray readings;
     JSONObject readingsPerHour;
@@ -37,12 +39,14 @@ public class HistoricalNTUEnergyAgentXLSXConnector {
     /**
      * Standard constructor
      */
-    public HistoricalNTUEnergyAgentXLSXConnector(String energyReadingsFilePath, String numOfKeysFilePath, String generatorSpecFilePath, String busNodeSpecFilePath, String branchSpecFilePath, String pvFilePath) throws IOException {
+    public HistoricalNTUEnergyAgentXLSXConnector(String energyReadingsFilePath, String numOfKeysFilePath, String generatorSpecFilePath, String busNodeSpecFilePath, String branchSpecFilePath, String pvFilePath, String venueInfoFilePath, String classScheduleFilePath) throws IOException {
         this.energyReadingsFilePath = energyReadingsFilePath;
         this.generatorSpecFilePath = generatorSpecFilePath;
         this.branchSpecFilePath = branchSpecFilePath;
         this.busNodeSpecFilePath = busNodeSpecFilePath;
         this.pvFilePath = pvFilePath;
+        this.venueInfoFilePath = venueInfoFilePath;
+        this.classScheduleFilePath = classScheduleFilePath;
 
         File file = new File(numOfKeysFilePath);
         if (!file.exists()) {
@@ -105,6 +109,23 @@ public class HistoricalNTUEnergyAgentXLSXConnector {
             throw new JPSRuntimeException(ENERGY_ERROR_MSG, e);
         }
     }
+    public JSONArray getVenueInfo() {
+        try {
+            return retrieveSpecs(venueInfoFilePath);
+        } catch (IOException | JSONException e) {
+            LOGGER.error(ENERGY_ERROR_MSG, e);
+            throw new JPSRuntimeException(ENERGY_ERROR_MSG, e);
+        }
+    }
+
+    public JSONArray getClassSchedule() {
+        try {
+            return retrieveSpecs(classScheduleFilePath);
+        } catch (IOException | JSONException e) {
+            LOGGER.error(ENERGY_ERROR_MSG, e);
+            throw new JPSRuntimeException(ENERGY_ERROR_MSG, e);
+        }
+    }
 
     /**
      * @param filePath  file path of where the Excel file is located
@@ -149,6 +170,26 @@ public class HistoricalNTUEnergyAgentXLSXConnector {
         }
         return readings;
     }
+
+    /*
+    public static JSONArray retrieveSpecsFromDirectory(String directoryPath) throws IOException {
+        File directory = new File(directoryPath);
+        File[] files = directory.listFiles((dir, name) -> name.endsWith(".xlsx"));
+        JSONArray allSpecs = new JSONArray();
+
+        if (files != null) {
+            for (File file : files) {
+                LOGGER.info("printing file name: " + file.getName());
+                JSONArray specs = retrieveSpecs(file.getAbsolutePath());
+                for (int i = 0; i < specs.length(); i++) {
+                    //LOGGER.info("printing schedules: " + specs.get(i));
+                    allSpecs.put(specs.get(i));
+                }
+            }
+        }
+        return allSpecs;
+    }
+    */
 
     public static JSONArray retrieveSpecs(String filePath) throws IOException {
         FileInputStream fileInputStream = new FileInputStream(new File(filePath));

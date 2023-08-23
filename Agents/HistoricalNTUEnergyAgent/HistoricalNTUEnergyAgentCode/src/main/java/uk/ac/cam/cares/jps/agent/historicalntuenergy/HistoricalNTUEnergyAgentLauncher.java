@@ -166,10 +166,10 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
         try {
             if (properties.length == 2) {
                 connector = new HistoricalNTUEnergyAgentXLSXConnector(System.getenv("ENERGY_READINGS"), properties[1],
-                        System.getenv("GENERATOR_SPECS"), System.getenv("BUSNODE_SPECS"), System.getenv("BRANCH_SPECS"), System.getenv("PV_SPECS"));
+                        System.getenv("GENERATOR_SPECS"), System.getenv("BUSNODE_SPECS"), System.getenv("BRANCH_SPECS"), System.getenv("PV_SPECS"), System.getenv("VENUE_INFO"), System.getenv("CLASS_SCHEDULE"));
             } else {
                 connector = new HistoricalNTUEnergyAgentXLSXConnector(System.getenv("ENERGY_READINGS"), properties[2],
-                        System.getenv("GENERATOR_SPECS"), System.getenv("BUSNODE_SPECS"), System.getenv("BRANCH_SPECS"),  System.getenv("PV_SPECS"));
+                        System.getenv("GENERATOR_SPECS"), System.getenv("BUSNODE_SPECS"), System.getenv("BRANCH_SPECS"),  System.getenv("PV_SPECS"), System.getenv("VENUE_INFO"), System.getenv("CLASS_SCHEDULE"));
             }
         } catch (IOException e) {
             LOGGER.error(CONNECTOR_ERROR_MSG, e);
@@ -209,12 +209,16 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
         JSONArray branchSpecs;
         JSONArray generatorSpecs;
         JSONArray pvSpecs;
+        JSONArray venueInfo;
+        JSONArray classSchedule;
 
         try {
             busNodeSpecs = connector.getBusNodeSpecs();
             branchSpecs = connector.getBranchSpecs();
             generatorSpecs = connector.getGeneratorSpecs();
             pvSpecs = connector.getPVSpecs();
+            venueInfo = connector.getVenueInfo();
+            classSchedule = connector.getClassSchedule();
         } catch (Exception e) {
             LOGGER.error(GET_SPECS_ERROR_MSG, e);
             throw new JPSRuntimeException(GET_SPECS_ERROR_MSG, e);
@@ -222,7 +226,7 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
 
         HistoricalQueryBuilder queryBuilder;
         try {
-            queryBuilder = new HistoricalQueryBuilder(properties[0], kbClient, busNodeSpecs, branchSpecs, generatorSpecs, pvSpecs);
+            queryBuilder = new HistoricalQueryBuilder(properties[0], kbClient, busNodeSpecs, branchSpecs, generatorSpecs, pvSpecs, venueInfo, classSchedule);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
