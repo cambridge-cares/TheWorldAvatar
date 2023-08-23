@@ -91,7 +91,6 @@ def get_tokenizer(model_args: ModelArguments):
     model_family = get_model_family_from_model_path(model_args.model_path)
     if model_family == "llama":
         tokenizer.pad_token_id = tokenizer.unk_token_id
-        tokenizer.padding_side = "right"
 
     return tokenizer
 
