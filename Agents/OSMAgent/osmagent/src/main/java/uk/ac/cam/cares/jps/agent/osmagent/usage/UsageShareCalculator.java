@@ -7,7 +7,7 @@ import java.util.List;
 
 public class UsageShareCalculator {
 
-    public void updateUsageShare(Connection conn, List<String> tableNames) {
+    public static void updateUsageShare(Connection conn, List<String> tableNames) {
 
         String points = tableNames.get(1);
         String polygons = tableNames.get(0);

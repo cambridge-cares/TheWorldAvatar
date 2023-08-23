@@ -15,7 +15,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 
 public class UsageMatcher {
-    public void updateOntoBuilt(Connection conn, List<String> tableNames) {
+    public static void updateOntoBuilt(Connection conn, List<String> tableNames) {
 
         for (String tableName : tableNames) {
 
@@ -76,7 +76,7 @@ public class UsageMatcher {
         }
     }
 
-    public void checkAndAddColumns(Connection connection, List<String> tableNames) throws SQLException {
+    public static void checkAndAddColumns(Connection connection, List<String> tableNames) throws SQLException {
 
         Map<String, String> columns = new HashMap<>();
         columns.put("building_iri", "TEXT");
