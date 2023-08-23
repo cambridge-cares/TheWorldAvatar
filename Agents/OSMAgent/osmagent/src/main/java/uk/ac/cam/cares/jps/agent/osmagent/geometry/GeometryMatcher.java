@@ -47,7 +47,7 @@ public class GeometryMatcher {
     public void matchGeometry(String table) throws ParseException {
         WKTReader wktReader = new WKTReader();
 
-        Map<Integer, OSMObject> osmObjects = OSMObject.getOSMObject(osmDb, osmUser, osmPassword, table, "building IS NOT NULL AND building_iri IS NULL");
+        Map<Integer, OSMObject> osmObjects = OSMObject.getOSMObjects(osmDb, osmUser, osmPassword, table, "building IS NOT NULL AND building_iri IS NULL");
 
         String updateStart = "UPDATE " + table + " SET building_iri = CASE";
         String updateEnd = " ELSE building_iri END";
@@ -57,7 +57,7 @@ public class GeometryMatcher {
         String update = "";
 
         // match building geometry with OSM building geometry
-        for (Map.Entry<Integer, OSMObject> entry : osmObjects.entrySet()){
+        for (Map.Entry<Integer, OSMObject> entry : osmObjects.entrySet()) {
             OSMObject osmObject = entry.getValue();
 
             if (counter == 500) {
@@ -109,7 +109,7 @@ public class GeometryMatcher {
         counter = 0;
         update = "";
 
-        osmObjects = OSMObject.getOSMObject(osmDb, osmUser, osmPassword, table, "building_iri IS NULL");
+        osmObjects = OSMObject.getOSMObjects(osmDb, osmUser, osmPassword, table, "building_iri IS NULL");
 
         boolean flag = checkIfPoints(table);
 
