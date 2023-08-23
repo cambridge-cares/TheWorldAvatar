@@ -3,7 +3,7 @@ from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
 from marie.data_processing.qn_processing import t5_preprocess_qn
 from marie.model_utils import get_model_and_tokenizer, get_model_family_from_model_name
 from marie.arguments_schema import ModelArguments
-from training.marie.data_processing.query_processing import postprocess_query
+from marie.data_processing.query_processing import postprocess_query
 
 
 class TranslationModel:
