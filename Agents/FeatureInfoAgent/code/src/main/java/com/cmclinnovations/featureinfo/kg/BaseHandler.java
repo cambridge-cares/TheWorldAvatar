@@ -2,7 +2,9 @@ package com.cmclinnovations.featureinfo.kg;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.logging.log4j.LogManager;
@@ -107,27 +109,21 @@ public abstract class BaseHandler {
         return endpoints.stream().map(ConfigEndpoint::url).toList();
     }
 
-    /**
-     * Returns the URL for the ONTOP endpoint.
-     *
-     * @return ONTOP url.
-     */
-    private final String getOntopURL() {
-        final Optional<ConfigEndpoint> result = FeatureInfoAgent.CONFIG.getOntopEndpoint();
-        if (result.isPresent()) {
-            return result.get().url();
-        }
-        return null;
-    }
-
-    private final String filterOntopEndpoints(final String query) {
+    private final String filterOntopEndpoints(String query) {
+        Map<String, String> ontopURLs = FeatureInfoAgent.CONFIG.getOntopURLs();
         // Inject ontop endpoint
-        if (query.contains("[ONTOP]")) {
-            final String ontopEndpoint = this.getOntopURL();
-            if (ontopEndpoint == null) {
-                throw new IllegalStateException("Could not determine Ontop endpoint!");
+        for (Entry<String, String> entry : ontopURLs.entrySet()) {
+            String name = entry.getKey();
+            String url = entry.getValue();
+            Pattern pattern = Pattern.compile("[" + name + "]",
+                    Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE | Pattern.LITERAL);
+            Matcher matcher = pattern.matcher(query);
+            if (matcher.find()) {
+                if (url == null) {
+                    throw new IllegalStateException("Could not determine URL for '" + name + "'' endpoint!");
+                }
+                query = matcher.replaceAll("<" + url + ">");
             }
-            return query.replaceAll(Pattern.quote("[ONTOP]"), "<" + ontopEndpoint + ">");
         }
         return query;
     }

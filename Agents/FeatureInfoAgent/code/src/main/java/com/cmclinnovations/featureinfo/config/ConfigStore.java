@@ -9,16 +9,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.cmclinnovations.featureinfo.FeatureInfoAgent;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
+import com.cmclinnovations.stack.clients.docker.DockerClient;
 import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
+import com.github.dockerjava.api.model.Config;
 
 /**
  * Handles reading and storing the configuration settings.
@@ -112,21 +114,21 @@ public class ConfigStore extends ContainerClient {
         try {
             determineOntop();
         } catch (RuntimeException exception) {
-            LOGGER.error("Could not dynamically determine Ontop endpoint, this is only permittable during unit tests!");
+            LOGGER.error("Could not dynamically determine Ontop endpoint, this is only permissible during unit tests!");
         }
 
         try {
             determinePostgres();
         } catch (RuntimeException exception) {
             LOGGER.error(
-                    "Could not dynamically determine Postgres endpoint, this is only permittable during unit tests!");
+                    "Could not dynamically determine Postgres endpoint, this is only permissible during unit tests!");
         }
 
         try {
             determineBlazegraph();
         } catch (RuntimeException exception) {
             LOGGER.error(
-                    "Could not dynamically determine any Blazegraph endpoints, this is only permittable during unit tests!");
+                    "Could not dynamically determine any Blazegraph endpoints, this is only permissible during unit tests!");
         }
 
         // All loaded
@@ -158,10 +160,11 @@ public class ConfigStore extends ContainerClient {
      * 
      * @return ONTOP endpoint object.
      */
-    public Optional<ConfigEndpoint> getOntopEndpoint() {
+    public Map<String, String> getOntopURLs() {
         return endpoints.stream()
                 .filter(end -> end.type() == EndpointType.ONTOP)
-                .findFirst();
+                .collect(Collectors.toMap(ConfigEndpoint::name, ConfigEndpoint::url));
+
     }
 
     /**
@@ -306,18 +309,23 @@ public class ConfigStore extends ContainerClient {
      * determine, and store, the location of the ONTOP container.
      */
     private void determineOntop() {
-        OntopEndpointConfig ontopConfig = readEndpointConfig("ontop", OntopEndpointConfig.class);
 
-        ConfigEndpoint endpoint = new ConfigEndpoint(
-                "ONTOP",
-                ontopConfig.getUrl(),
-                ontopConfig.getUsername(),
-                ontopConfig.getPassword(),
-                EndpointType.ONTOP);
-        endpoints.add(endpoint);
+        DockerClient dockerClient = new DockerClient();
+        List<Config> configs = dockerClient.getConfigs();
+        configs.stream().map(config -> config.getSpec().getName())
+                .forEach(name -> {
+                    OntopEndpointConfig ontopConfig = readEndpointConfig(name, OntopEndpointConfig.class);
 
-        String url = endpoint.url();
-        LOGGER.info("Have determined Ontop endpoint as: {}", url);
+                    ConfigEndpoint endpoint = new ConfigEndpoint(
+                            name,
+                            ontopConfig.getUrl(),
+                            ontopConfig.getUsername(),
+                            ontopConfig.getPassword(),
+                            EndpointType.ONTOP);
+                    String url = endpoint.url();
+                    LOGGER.info("Have found Ontop endpoint: {}", url);
+                    endpoints.add(endpoint);
+                });
     }
 
     /**
