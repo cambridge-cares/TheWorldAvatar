@@ -24,7 +24,7 @@ import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
  * Handles reading and storing the configuration settings.
  */
 public class ConfigStore extends ContainerClient {
- 
+
     /**
      * Logger for reporting info/errors.
      */
@@ -59,7 +59,7 @@ public class ConfigStore extends ContainerClient {
      * Any other settings specified in the config file.
      */
     protected final Map<String, Object> otherSettings = new HashMap<>();
-    
+
     /**
      * Set of endpoint definitions.
      */
@@ -99,7 +99,7 @@ public class ConfigStore extends ContainerClient {
     }
 
     /**
-     * Loads the configuration file from the environment variable 
+     * Loads the configuration file from the environment variable
      * and initialises stack configuration.
      * 
      * @throws Exception
@@ -111,20 +111,22 @@ public class ConfigStore extends ContainerClient {
         // Determine stack links
         try {
             determineOntop();
-        } catch(RuntimeException exception ) {
+        } catch (RuntimeException exception) {
             LOGGER.error("Could not dynamically determine Ontop endpoint, this is only permittable during unit tests!");
         }
 
         try {
             determinePostgres();
-        } catch(RuntimeException exception ) {
-            LOGGER.error("Could not dynamically determine Postgres endpoint, this is only permittable during unit tests!");
+        } catch (RuntimeException exception) {
+            LOGGER.error(
+                    "Could not dynamically determine Postgres endpoint, this is only permittable during unit tests!");
         }
 
         try {
             determineBlazegraph();
-        } catch(RuntimeException exception ) {
-            LOGGER.error("Could not dynamically determine any Blazegraph endpoints, this is only permittable during unit tests!");
+        } catch (RuntimeException exception) {
+            LOGGER.error(
+                    "Could not dynamically determine any Blazegraph endpoints, this is only permittable during unit tests!");
         }
 
         // All loaded
@@ -147,8 +149,8 @@ public class ConfigStore extends ContainerClient {
      */
     public List<ConfigEndpoint> getBlazegraphEndpoints() {
         return endpoints.stream()
-            .filter(end -> end.type() == EndpointType.BLAZEGRAPH)
-            .toList();
+                .filter(end -> end.type() == EndpointType.BLAZEGRAPH)
+                .toList();
     }
 
     /**
@@ -158,8 +160,8 @@ public class ConfigStore extends ContainerClient {
      */
     public Optional<ConfigEndpoint> getOntopEndpoint() {
         return endpoints.stream()
-            .filter(end -> end.type() == EndpointType.ONTOP)
-            .findFirst();
+                .filter(end -> end.type() == EndpointType.ONTOP)
+                .findFirst();
     }
 
     /**
@@ -169,8 +171,8 @@ public class ConfigStore extends ContainerClient {
      */
     public Optional<ConfigEndpoint> getPostgresEndpoint() {
         return endpoints.stream()
-            .filter(end -> end.type() == EndpointType.POSTGRES)
-            .findFirst();
+                .filter(end -> end.type() == EndpointType.POSTGRES)
+                .findFirst();
     }
 
     /**
@@ -181,20 +183,20 @@ public class ConfigStore extends ContainerClient {
      * @return sparql content (or null if not linked).
      */
     public String getMetaQuery(String clazz) throws IOException {
-        if(metaQueries.containsKey(clazz)) {
+        if (metaQueries.containsKey(clazz)) {
             // File name relative to config file location
             String fileName = metaQueries.get(clazz);
 
             // Try as an absolute path first
             Path filePath = Paths.get(fileName);
 
-            if(!Files.exists(filePath) && this.getConfigLocation() != null) {
+            if (!Files.exists(filePath) && this.getConfigLocation() != null) {
                 // Try as an a relative path to the config file
                 Path configFile = Paths.get(this.getConfigLocation());
                 filePath = configFile.getParent().resolve(fileName);
-            } 
+            }
 
-            if(!Files.exists(filePath)) {
+            if (!Files.exists(filePath)) {
                 // Still does not exist, return null
                 return null;
             }
@@ -214,20 +216,20 @@ public class ConfigStore extends ContainerClient {
      * @return sparql content (or null if not linked).
      */
     public String getTimeQuery(String clazz) throws IOException {
-        if(timeQueries.containsKey(clazz)) {
+        if (timeQueries.containsKey(clazz)) {
             // File name relative to config file location
             String fileName = timeQueries.get(clazz);
-            
+
             // Try as an absolute path first
             Path filePath = Paths.get(fileName);
-            
-            if(!Files.exists(filePath) && this.getConfigLocation() != null) {
+
+            if (!Files.exists(filePath) && this.getConfigLocation() != null) {
                 // Try as an a relative path to the config file
                 Path configFile = Paths.get(this.getConfigLocation());
                 filePath = configFile.getParent().resolve(fileName);
             }
 
-            if(!Files.exists(filePath)) {
+            if (!Files.exists(filePath)) {
                 // Still does not exist, return null
                 return null;
             }
@@ -243,7 +245,7 @@ public class ConfigStore extends ContainerClient {
      * @return time limit (hours)
      */
     public int getTimeLimit(String clazz) {
-        if(!timeLimits.keySet().contains(clazz)) {
+        if (!timeLimits.keySet().contains(clazz)) {
             return 24;
         }
         return timeLimits.get(clazz);
@@ -257,14 +259,13 @@ public class ConfigStore extends ContainerClient {
      * @return SQL database name
      */
     public String getDatabaseName(String clazz) throws IOException {
-       return dbNames.get(clazz);
+        return dbNames.get(clazz);
     }
-
 
     /**
      * Registers a metadata query file for the input class name.
      * 
-     * @param clazz class name.
+     * @param clazz     class name.
      * @param queryFile location of query file.
      */
     public void addMetaQueryForClass(String clazz, String queryFile) {
@@ -274,7 +275,7 @@ public class ConfigStore extends ContainerClient {
     /**
      * Registers a timeseries file for the input class name.
      * 
-     * @param clazz class name.
+     * @param clazz     class name.
      * @param queryFile location of query file.
      */
     public void addTimeQueryForClass(String clazz, String queryFile) {
@@ -284,7 +285,7 @@ public class ConfigStore extends ContainerClient {
     /**
      * Add a time limit (hours) for the input class.
      * 
-     * @param clazz class name
+     * @param clazz     class name
      * @param timeLimit time limit (hours)
      */
     public void addTimeLimitForClass(String clazz, int timeLimit) {
@@ -301,19 +302,18 @@ public class ConfigStore extends ContainerClient {
     }
 
     /**
-     * If running within a stack, use the stack client library to 
+     * If running within a stack, use the stack client library to
      * determine, and store, the location of the ONTOP container.
      */
     private void determineOntop() {
         OntopEndpointConfig ontopConfig = readEndpointConfig("ontop", OntopEndpointConfig.class);
-        
+
         ConfigEndpoint endpoint = new ConfigEndpoint(
-            "ONTOP",
-            ontopConfig.getUrl(),
-            ontopConfig.getUsername(),
-            ontopConfig.getPassword(),
-            EndpointType.ONTOP
-        );
+                "ONTOP",
+                ontopConfig.getUrl(),
+                ontopConfig.getUsername(),
+                ontopConfig.getPassword(),
+                EndpointType.ONTOP);
         endpoints.add(endpoint);
 
         String url = endpoint.url();
@@ -321,7 +321,7 @@ public class ConfigStore extends ContainerClient {
     }
 
     /**
-     * If running within a stack, use the stack client library to 
+     * If running within a stack, use the stack client library to
      * determine, and store, the location of the POSTGRES container.
      * 
      * Note that this only stores the driver URL of the POSTGRES container, as
@@ -330,14 +330,13 @@ public class ConfigStore extends ContainerClient {
      */
     private void determinePostgres() {
         PostGISEndpointConfig postConfig = readEndpointConfig("postgis", PostGISEndpointConfig.class);
-        
+
         ConfigEndpoint endpoint = new ConfigEndpoint(
-            "POSTGRES",
-            postConfig.getJdbcDriverURL(),
-            postConfig.getUsername(),
-            postConfig.getPassword(),
-            EndpointType.POSTGRES
-        );
+                "POSTGRES",
+                postConfig.getJdbcDriverURL(),
+                postConfig.getUsername(),
+                postConfig.getPassword(),
+                EndpointType.POSTGRES);
         endpoints.add(endpoint);
 
         String url = endpoint.url();
@@ -352,20 +351,19 @@ public class ConfigStore extends ContainerClient {
 
         // Dynamically determine namespaces
         Map<String, String> namespaces = getter.listNamespaces();
-        
+
         // Store as endpoint objects
-        for(Map.Entry<String, String> entry : namespaces.entrySet()) {
+        for (Map.Entry<String, String> entry : namespaces.entrySet()) {
             ConfigEndpoint endpoint = new ConfigEndpoint(
-                entry.getKey(),
-                entry.getValue(),
-                getter.getUsername(),
-                getter.getPassword(),
-                EndpointType.BLAZEGRAPH
-            );
+                    entry.getKey(),
+                    entry.getValue(),
+                    getter.getUsername(),
+                    getter.getPassword(),
+                    EndpointType.BLAZEGRAPH);
 
             endpoints.add(endpoint);
             String url = endpoint.url();
-            
+
             LOGGER.info("Have found a Blazegraph endpoint at: {}", url);
             LOGGER.info("Using username: {}", getter.getUsername());
         }
@@ -380,21 +378,22 @@ public class ConfigStore extends ContainerClient {
         try {
             PostGISEndpointConfig postConfig = readEndpointConfig("postgis", PostGISEndpointConfig.class);
             return postConfig.getJdbcURL(dbName);
-        } catch(RuntimeException exception) {
+        } catch (RuntimeException exception) {
             // Probably not running within a stack
             return "";
         }
     }
 
     /**
-     * Attempts to load the configuration file at the location specified by the 
+     * Attempts to load the configuration file at the location specified by the
      * environment variable.
      * 
      * @throws Exception if config file cannot be read
      */
     public void loadFile() throws IOException {
         String configLocation = this.getConfigLocation();
-        if(configLocation != null) this.loadFile(Paths.get(configLocation));
+        if (configLocation != null)
+            this.loadFile(Paths.get(configLocation));
     }
 
     /**
@@ -404,16 +403,17 @@ public class ConfigStore extends ContainerClient {
      * @throws Exception if config file cannot be read
      */
     public void loadFile(Path configFile) throws IOException {
-        if(configFile == null) return;
+        if (configFile == null)
+            return;
 
         // Check the file is okay
-        if(!Files.exists(configFile)) {
+        if (!Files.exists(configFile)) {
             throw new IOException("Could not find configuration file at: " + configFile);
         }
-        if(!Files.isRegularFile(configFile)) {
+        if (!Files.isRegularFile(configFile)) {
             throw new IOException("Configuration file does not appear to be regular file.");
         }
-        if(!Files.isReadable(configFile)) {
+        if (!Files.isReadable(configFile)) {
             throw new IOException("Configuration file exists, but is not readable.");
         }
 
@@ -434,51 +434,53 @@ public class ConfigStore extends ContainerClient {
 
         // Get the definition of query files
         JSONArray queries = jsonConfig.getJSONArray("queries");
-        if(queries == null) throw new IllegalStateException("Could not find required 'queries' node in configuration.");
+        if (queries == null)
+            throw new IllegalStateException("Could not find required 'queries' node in configuration.");
 
         int classCount = 0;
 
-        for(int i = 0; i < queries.length(); i++) {
+        for (int i = 0; i < queries.length(); i++) {
             JSONObject entry = queries.getJSONObject(i);
 
             // Load in class to file mapping
             String className = entry.getString("class");
             LOGGER.info("Registering queries for class: {}", className);
 
-            if(entry.has("metaFile")) {
+            if (entry.has("metaFile")) {
                 String metaFile = entry.getString("metaFile");
-                if(!metaFile.isBlank()) {
+                if (!metaFile.isBlank()) {
                     classCount++;
                     metaQueries.put(className, metaFile);
                     LOGGER.info("Found linked 'metaFile' entry: {}", metaFile);
                 }
             }
 
-            if(entry.has("timeFile")){
+            if (entry.has("timeFile")) {
                 String timeFile = entry.getString("timeFile");
-                if(!timeFile.isBlank()) {
+                if (!timeFile.isBlank()) {
                     timeQueries.put(className, timeFile);
                     LOGGER.info("Found linked 'timeFile' entry: {}", timeFile);
                 }
-            } 
+            }
 
-            if(entry.has("timeLimit")) {
+            if (entry.has("timeLimit")) {
                 Integer timeLimit = entry.getInt("timeLimit");
                 timeLimits.put(className, timeLimit);
             } else {
                 timeLimits.put(className, 24);
             }
 
-            if(entry.has("databaseName")) {
+            if (entry.has("databaseName")) {
                 dbNames.put(className, entry.getString("databaseName"));
             }
         }
 
         // Store other settings
         jsonConfig.keySet().forEach(key -> {
-            if(!key.equals("queries")) otherSettings.put(key, jsonConfig.get(key));
+            if (!key.equals("queries"))
+                otherSettings.put(key, jsonConfig.get(key));
         });
-        
+
         LOGGER.info("Configuration settings have been loaded into memory.");
         LOGGER.info("{} classes have been regisistered.", classCount);
     }
@@ -489,11 +491,11 @@ public class ConfigStore extends ContainerClient {
      */
     private String getConfigLocation() throws IllegalStateException {
         String location = System.getenv(VARIABLE);
-        if(location == null || location.isBlank()) {
+        if (location == null || location.isBlank()) {
             LOGGER.warn("Cannot find value for the '" + VARIABLE + "' environment variable.");
         }
         return location;
     }
-    
+
 }
 // End of class.

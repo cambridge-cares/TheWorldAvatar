@@ -17,7 +17,6 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,9 +25,7 @@ import javax.ws.rs.core.Response;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hamcrest.Matchers;
 import org.json.JSONObject;
-import org.junit.Ignore;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -36,7 +33,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import org.mockito.hamcrest.MockitoHamcrest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 import com.cmclinnovations.featureinfo.config.ConfigEndpoint;
@@ -54,7 +50,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
  * Unit tests for the FeatureInfoAgent class.
  */
 public class FeatureInfoAgentTest {
-    
+
     /**
      * Logger for reporting info/errors.
      */
@@ -80,15 +76,17 @@ public class FeatureInfoAgentTest {
             }
             CONFIG.loadFile(stringBuilder.toString());
 
-        } catch(Exception exception) {
+        } catch (Exception exception) {
             exception.printStackTrace(System.out);
             throw new RuntimeException("Could not read mock config file!");
         }
 
         // Add mock endpoints to the config
         CONFIG.addEndpoint(new ConfigEndpoint("ONTOP", "http://my-fake-ontop.com/", null, null, EndpointType.ONTOP));
-        CONFIG.addEndpoint(new ConfigEndpoint("POSTGRES", "http://my-fake-postgres.com/", null, null, EndpointType.POSTGRES));
-        CONFIG.addEndpoint(new ConfigEndpoint("blazegraph-test", "http://fake-website.com/blazegraph/namespace/test/sparql", null, null, EndpointType.BLAZEGRAPH));
+        CONFIG.addEndpoint(
+                new ConfigEndpoint("POSTGRES", "http://my-fake-postgres.com/", null, null, EndpointType.POSTGRES));
+        CONFIG.addEndpoint(new ConfigEndpoint("blazegraph-test",
+                "http://fake-website.com/blazegraph/namespace/test/sparql", null, null, EndpointType.BLAZEGRAPH));
 
         // Write a temporary query file
         try {
@@ -118,7 +116,7 @@ public class FeatureInfoAgentTest {
 
             FeatureInfoAgent.CONFIG = CONFIG;
 
-        } catch(IOException exception) {
+        } catch (IOException exception) {
             exception.printStackTrace(System.out);
             throw new RuntimeException("Could not write temporary query file!");
         }
@@ -129,10 +127,10 @@ public class FeatureInfoAgentTest {
      */
     @AfterAll
     public static void cleanup() {
-          // Delete the temporary query files
-          try {
+        // Delete the temporary query files
+        try {
             String tmpdir = System.getProperty("java.io.tmpdir");
-            
+
             Path tempMeta = Paths.get(tmpdir, "FeatureInfoAgentTest-Meta.sparql");
             Path tempTime = Paths.get(tmpdir, "FeatureInfoAgentTest-Time.sparql");
             Path tempForced = Paths.get(tmpdir, "FeatureInfoAgentTest-Forces.sparql");
@@ -141,7 +139,7 @@ public class FeatureInfoAgentTest {
             Files.deleteIfExists(tempForced);
 
             LOGGER.info("Removed temporary query files.");
-        } catch(IOException exception) {
+        } catch (IOException exception) {
             exception.printStackTrace(System.out);
             throw new RuntimeException("Could not delete temporary query file!");
         }
@@ -155,12 +153,10 @@ public class FeatureInfoAgentTest {
         FeatureInfoAgent agent = new FeatureInfoAgent();
 
         // Mock AgentCaller.readJsonParameter() method
-        try(MockedStatic<AgentCaller> caller = Mockito.mockStatic(AgentCaller.class)) {
+        try (MockedStatic<AgentCaller> caller = Mockito.mockStatic(AgentCaller.class)) {
             caller.when(() -> {
                 AgentCaller.readJsonParameter(ArgumentMatchers.any());
-            }).thenReturn(
-                new JSONObject("{\"property-one\":\"value-one\",\"property-two\":\"value-two\"}")
-            );
+            }).thenReturn(new JSONObject("{\"property-one\":\"value-one\",\"property-two\":\"value-two\"}"));
 
             // Mock request
             HttpServletRequest request = spy(HttpServletRequest.class);
@@ -177,14 +173,16 @@ public class FeatureInfoAgentTest {
             agent.doGet(request, response);
 
             // Check response code
-            Assertions.assertEquals(Response.Status.NOT_IMPLEMENTED.getStatusCode(), response.getStatus(), "Status code did not match the expected value!");
-            Assertions.assertTrue(strWriter.toString().contains("Unknown route"), "Response body did not contain expected string!");
-        
-        } catch(Exception exception) {
+            Assertions.assertEquals(Response.Status.NOT_IMPLEMENTED.getStatusCode(), response.getStatus(),
+                    "Status code did not match the expected value!");
+            Assertions.assertTrue(strWriter.toString().contains("Unknown route"),
+                    "Response body did not contain expected string!");
+
+        } catch (Exception exception) {
             exception.printStackTrace(System.out);
             Assertions.fail("Exception occured when attempting to test a bad request!");
         }
-     }
+    }
 
     /**
      * Tests the response of a badly formed incoming request.
@@ -194,12 +192,10 @@ public class FeatureInfoAgentTest {
         FeatureInfoAgent agent = new FeatureInfoAgent();
 
         // Mock AgentCaller.readJsonParameter() method
-        try(MockedStatic<AgentCaller> caller = Mockito.mockStatic(AgentCaller.class)) {
+        try (MockedStatic<AgentCaller> caller = Mockito.mockStatic(AgentCaller.class)) {
             caller.when(() -> {
                 AgentCaller.readJsonParameter(ArgumentMatchers.any());
-            }).thenReturn(
-                new JSONObject("{\"property-one\":\"value-one\",\"property-two\":\"value-two\"}")
-            );
+            }).thenReturn(new JSONObject("{\"property-one\":\"value-one\",\"property-two\":\"value-two\"}"));
 
             // Mock request
             HttpServletRequest request = spy(HttpServletRequest.class);
@@ -216,17 +212,20 @@ public class FeatureInfoAgentTest {
             agent.doGet(request, response);
 
             // Check response code
-            Assertions.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus(), "Status code did not match the expected value!");
-            Assertions.assertTrue(strWriter.toString().contains("Bad request"), "Response body did not contain expected string!");
-        
-        } catch(Exception exception) {
+            Assertions.assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus(),
+                    "Status code did not match the expected value!");
+            Assertions.assertTrue(strWriter.toString().contains("Bad request"),
+                    "Response body did not contain expected string!");
+
+        } catch (Exception exception) {
             exception.printStackTrace(System.out);
             Assertions.fail("Exception occured when attempting to test a bad request!");
         }
-     }
+    }
 
     /**
-     * Tests the response of status request (when the FeatureInfoAgent is in an invalid state).
+     * Tests the response of status request (when the FeatureInfoAgent is in an
+     * invalid state).
      */
     @Test
     public void testBadStatus() throws Exception {
@@ -250,7 +249,8 @@ public class FeatureInfoAgentTest {
         agent.doGet(request, response);
 
         // Check response code
-        Assertions.assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus(), "Status code did not match the expected value!");
+        Assertions.assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus(),
+                "Status code did not match the expected value!");
         Assertions.assertFalse(strWriter.toString().isBlank(), "Response body is empty!");
 
         // Restore the config
@@ -258,19 +258,19 @@ public class FeatureInfoAgentTest {
     }
 
     /**
-     * Tests the response of status request (when the FeatureInfoAgent is in a valid state).
+     * Tests the response of status request (when the FeatureInfoAgent is in a valid
+     * state).
      */
     @Test
     public void testGoodStatus() throws Exception {
         FeatureInfoAgent agent = new FeatureInfoAgent();
 
         // Mock AgentCaller.readJsonParameter() method
-        try(MockedStatic<AgentCaller> caller = Mockito.mockStatic(AgentCaller.class)) {
+        try (MockedStatic<AgentCaller> caller = Mockito.mockStatic(AgentCaller.class)) {
             caller.when(() -> {
                 AgentCaller.readJsonParameter(ArgumentMatchers.any());
             }).thenReturn(
-                new JSONObject("{\"property-one\":\"value-one\",\"property-two\":\"value-two\"}")
-            );
+                    new JSONObject("{\"property-one\":\"value-one\",\"property-two\":\"value-two\"}"));
 
             // Mock request
             HttpServletRequest request = spy(HttpServletRequest.class);
@@ -287,10 +287,12 @@ public class FeatureInfoAgentTest {
             agent.doGet(request, response);
 
             // Check the response
-            Assertions.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus(), "Status code did not match the expected value!");
-            Assertions.assertTrue(strWriter.toString().contains("Ready"), "Response body did not contain expected string!");
-        
-        } catch(Exception exception) {
+            Assertions.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus(),
+                    "Status code did not match the expected value!");
+            Assertions.assertTrue(strWriter.toString().contains("Ready"),
+                    "Response body did not contain expected string!");
+
+        } catch (Exception exception) {
             exception.printStackTrace(System.out);
             Assertions.fail("Exception occured when attempting to test a bad request!");
         }
@@ -323,35 +325,35 @@ public class FeatureInfoAgentTest {
         when(response.getWriter()).thenReturn(printWriter);
 
         // Mock AgentCaller.readJsonParameter() method
-        try(MockedStatic<AgentCaller> caller = Mockito.mockStatic(AgentCaller.class)) {
+        try (MockedStatic<AgentCaller> caller = Mockito.mockStatic(AgentCaller.class)) {
             caller.when(() -> {
                 AgentCaller.readJsonParameter(ArgumentMatchers.any());
-            }).thenReturn(
-                new JSONObject("{\"iri\":\"http://fake-iri.com\"}")
-            );
+            }).thenReturn(new JSONObject("{\"iri\":\"http://fake-iri.com\"}"));
 
             // Run the agent
             agent.doGet(request, response);
 
             // Check the response code
-            Assertions.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus(), "Status code did not match the expected value!");
-            
+            Assertions.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus(),
+                    "Status code did not match the expected value!");
+
             // Check against expected result
             JSONObject jsonResult = new JSONObject(strWriter.toString());
-            JSONObject expected = new JSONObject("""
-                {\"meta\":[{\"propertyOne\":\"1.0 [s]\"}],\"time\":[{\"data\":[\"Measurement One\"],\"values\":[[\"1.0\",\"2.0\",\"3.0\"]],
-                \"timeClass\":\"Instant\",\"valuesClass\":[\"String\"],\"id\":0,\"units\":[\"m/s\"],\"time\":[\"-1000000000-01-01T00:00:00Z\",
-                \"1970-01-01T00:00:00Z\",\"+1000000000-12-31T23:59:59.999999999Z\"],\"properties\":[{}]}]}
-            """);
+            JSONObject expected = new JSONObject(
+                    """
+                                {\"meta\":[{\"propertyOne\":\"1.0 [s]\"}],\"time\":[{\"data\":[\"Measurement One\"],\"values\":[[\"1.0\",\"2.0\",\"3.0\"]],
+                                \"timeClass\":\"Instant\",\"valuesClass\":[\"String\"],\"id\":0,\"units\":[\"m/s\"],\"time\":[\"-1000000000-01-01T00:00:00Z\",
+                                \"1970-01-01T00:00:00Z\",\"+1000000000-12-31T23:59:59.999999999Z\"],\"properties\":[{}]}]}
+                            """);
 
             System.out.println(jsonResult.toString());
 
             Assertions.assertTrue(jsonResult.similar(expected), "Response body did not contain expected JSON object!");
-        } 
+        }
     }
 
     /**
-     * Tests that the agent can run using a class that has an associated 
+     * Tests that the agent can run using a class that has an associated
      * timeseries query, but no meta query.
      */
     @Test
@@ -359,15 +361,13 @@ public class FeatureInfoAgentTest {
         FeatureInfoAgent agent = new FeatureInfoAgent();
         FeatureInfoAgent.RDB_CONN = mock(Connection.class);
 
-        // Mock the RemoteStoreClient 
+        // Mock the RemoteStoreClient
         RemoteStoreClient rsClient = this.mockRemoteStoreClient(false, true, null);
 
         // Mock result when querying for class
         when(rsClient.executeQuery(
-            ArgumentMatchers.contains("?class")))
-            .thenReturn(
-                new org.json.JSONArray("[{\"class\": \"TIME-ONLY-CLASS\"}]")
-            );
+                ArgumentMatchers.contains("?class")))
+                .thenReturn(new org.json.JSONArray("[{\"class\": \"TIME-ONLY-CLASS\"}]"));
 
         FeatureInfoAgent.RS_CLIENT_OVER = rsClient;
         FeatureInfoAgent.RDB_CLIENT_OVER = this.mockRDBClient();
@@ -388,28 +388,28 @@ public class FeatureInfoAgentTest {
         when(response.getWriter()).thenReturn(printWriter);
 
         // Mock AgentCaller.readJsonParameter() method
-        try(MockedStatic<AgentCaller> caller = Mockito.mockStatic(AgentCaller.class)) {
+        try (MockedStatic<AgentCaller> caller = Mockito.mockStatic(AgentCaller.class)) {
             caller.when(() -> {
                 AgentCaller.readJsonParameter(ArgumentMatchers.any());
-            }).thenReturn(
-                new JSONObject("{\"iri\":\"http://fake-iri.com\"}")
-            );
+            }).thenReturn(new JSONObject("{\"iri\":\"http://fake-iri.com\"}"));
 
             // Run the agent
             agent.doGet(request, response);
 
             // Check the response code
-            Assertions.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus(), "Status code did not match the expected value!");
-            
+            Assertions.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus(),
+                    "Status code did not match the expected value!");
+
             // Check against expected result
             JSONObject jsonResult = new JSONObject(strWriter.toString());
-            JSONObject expected = new JSONObject("""
-                {\"time\":[{\"data\":[\"Measurement One\"],\"values\":[[\"1.0\",\"2.0\",\"3.0\"]],\"timeClass\":\"Instant\",\"valuesClass\":[\"String\"],\"id\":0,
-                \"units\":[\"m/s\"],\"time\":[\"-1000000000-01-01T00:00:00Z\",\"1970-01-01T00:00:00Z\",\"+1000000000-12-31T23:59:59.999999999Z\"],\"properties\":[{}]}]}
-            """);
+            JSONObject expected = new JSONObject(
+                    """
+                                {\"time\":[{\"data\":[\"Measurement One\"],\"values\":[[\"1.0\",\"2.0\",\"3.0\"]],\"timeClass\":\"Instant\",\"valuesClass\":[\"String\"],\"id\":0,
+                                \"units\":[\"m/s\"],\"time\":[\"-1000000000-01-01T00:00:00Z\",\"1970-01-01T00:00:00Z\",\"+1000000000-12-31T23:59:59.999999999Z\"],\"properties\":[{}]}]}
+                            """);
 
             Assertions.assertTrue(jsonResult.similar(expected), "Response body did not contain expected JSON object!");
-        } 
+        }
     }
 
     /**
@@ -420,7 +420,7 @@ public class FeatureInfoAgentTest {
         FeatureInfoAgent agent = new FeatureInfoAgent();
         FeatureInfoAgent.RDB_CONN = mock(Connection.class);
 
-        // Mock the RemoteStoreClient 
+        // Mock the RemoteStoreClient
         RemoteStoreClient rsClient = this.mockRemoteStoreClient(true, false, null);
         FeatureInfoAgent.RS_CLIENT_OVER = rsClient;
         FeatureInfoAgent.RDB_CLIENT_OVER = this.mockRDBClient();
@@ -437,32 +437,34 @@ public class FeatureInfoAgentTest {
         when(response.getWriter()).thenReturn(printWriter);
 
         // Mock AgentCaller.readJsonParameter() method
-        try(MockedStatic<AgentCaller> caller = Mockito.mockStatic(AgentCaller.class)) {
+        try (MockedStatic<AgentCaller> caller = Mockito.mockStatic(AgentCaller.class)) {
             caller.when(() -> {
                 AgentCaller.readJsonParameter(ArgumentMatchers.any());
-            }).thenReturn(
-                new JSONObject("{\"iri\":\"http://fake-iri.com\"}")
-            );
+            }).thenReturn(new JSONObject("{\"iri\":\"http://fake-iri.com\"}"));
 
             // Run the agent
             agent.doGet(request, response);
 
             // Check the response code
-            Assertions.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus(), "Status code did not match the expected value!");
-            
+            Assertions.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus(),
+                    "Status code did not match the expected value!");
+
             // Check against expected result
             JSONObject jsonResult = new JSONObject(strWriter.toString());
             JSONObject expected = new JSONObject("""
-                {\"meta\":[{\"propertyOne\":\"1.0 [s]\"}]}
-            """);
+                        {\"meta\":[{\"propertyOne\":\"1.0 [s]\"}]}
+                    """);
 
             Assertions.assertTrue(jsonResult.similar(expected), "Response body did not contain expected JSON object!");
-        } 
+        }
     }
 
-     /**
-     * Tests running the FeatureInfoAgent with bad configuration settings (unreachable endpoints).
-     * Note that this should not throw an exception here but instead update the HTTP code sent back.
+    /**
+     * Tests running the FeatureInfoAgent with bad configuration settings
+     * (unreachable endpoints).
+     * Note that this should not throw an exception here but instead update the HTTP
+     * code sent back.
+     * 
      * @throws Exception
      */
     @Test
@@ -482,37 +484,39 @@ public class FeatureInfoAgentTest {
         when(response.getWriter()).thenReturn(printWriter);
 
         // Mock AgentCaller.readJsonParameter() method
-        try(MockedStatic<AgentCaller> caller = Mockito.mockStatic(AgentCaller.class)) {
+        try (MockedStatic<AgentCaller> caller = Mockito.mockStatic(AgentCaller.class)) {
             caller.when(() -> {
                 AgentCaller.readJsonParameter(ArgumentMatchers.any());
-            }).thenReturn(
-                new JSONObject("{\"iri\":\"http://fake-iri.com\"}")
-            );
+            }).thenReturn(new JSONObject("{\"iri\":\"http://fake-iri.com\"}"));
 
             // Run the agent
             agent.doGet(request, response);
 
             // Check the response code
-            Assertions.assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus(), "Status code did not match the expected value!");
-            
+            Assertions.assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatus(),
+                    "Status code did not match the expected value!");
+
             // Check against expected result
             JSONObject jsonResult = new JSONObject(strWriter.toString());
-            Assertions.assertTrue(jsonResult.toString().contains("Could not contact endpoints"), "Response body did not contain expected content!");
-        } 
+            Assertions.assertTrue(jsonResult.toString().contains("Could not contact endpoints"),
+                    "Response body did not contain expected content!");
+        }
     }
 
     /**
      * Test the agent with an enforced Blazegraph endpoint.
      * 
-     * NOTE: This tests a feature that is currently disabled (commented out). If it is
-     * re-enabled within the FeatureInfoAgent, then remove the @Ignore annotation.
+     * NOTE: This tests a feature that is currently disabled (commented out). If it
+     * is re-enabled within the FeatureInfoAgent, then remove the @Ignore
+     * annotation.
      */
     @Test
     public void testEnforcedEndpoint() throws Exception {
         FeatureInfoAgent agent = new FeatureInfoAgent();
 
         // Mock clients
-        RemoteStoreClient rsClient = this.mockRemoteStoreClient(true, true, "http://fake-website.com/blazegraph/namespace/test/sparql");
+        RemoteStoreClient rsClient = this.mockRemoteStoreClient(true, true,
+                "http://fake-website.com/blazegraph/namespace/test/sparql");
         FeatureInfoAgent.RS_CLIENT_OVER = rsClient;
         FeatureInfoAgent.RDB_CLIENT_OVER = this.mockRDBClient();
         TimeSeriesClient<Instant> tsClient = this.mockTimeSeriesClient();
@@ -530,24 +534,24 @@ public class FeatureInfoAgentTest {
         when(response.getWriter()).thenReturn(printWriter);
 
         // Mock AgentCaller.readJsonParameter() method
-        try(MockedStatic<AgentCaller> caller = Mockito.mockStatic(AgentCaller.class)) {
+        try (MockedStatic<AgentCaller> caller = Mockito.mockStatic(AgentCaller.class)) {
             caller.when(() -> {
                 AgentCaller.readJsonParameter(ArgumentMatchers.any());
-            }).thenReturn(
-                new JSONObject("{\"iri\":\"http://fake-iri.com\", \"endpoint\":\"http://fake-website.com/blazegraph/namespace/test/sparql\"}")
-            );
+            }).thenReturn(new JSONObject(
+                    "{\"iri\":\"http://fake-iri.com\", \"endpoint\":\"http://fake-website.com/blazegraph/namespace/test/sparql\"}"));
 
             // Run the agent
             agent.doGet(request, response);
 
             // Check the response code
-            Assertions.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus(), "Status code did not match the expected value!");
-            
+            Assertions.assertEquals(Response.Status.OK.getStatusCode(), response.getStatus(),
+                    "Status code did not match the expected value!");
+
             // Check against the expected result
             JSONObject jsonResult = new JSONObject(strWriter.toString());
             JSONObject expected = new JSONObject("{\"meta\": [{\"Forced\": \"Yes\"}]}");
             Assertions.assertTrue(jsonResult.similar(expected), "JSON response did not match expected result!");
-        } 
+        }
     }
 
     /**
@@ -557,7 +561,7 @@ public class FeatureInfoAgentTest {
     private RemoteRDBStoreClient mockRDBClient() throws Exception {
         RemoteRDBStoreClient rdbClient = mock(RemoteRDBStoreClient.class);
         when(rdbClient.getConnection())
-        .thenReturn(null);
+                .thenReturn(null);
 
         return rdbClient;
     }
@@ -569,52 +573,44 @@ public class FeatureInfoAgentTest {
      * @param endpoint enforced endpoint URL
      * @return
      */
-    private RemoteStoreClient mockRemoteStoreClient(boolean mockMeta, boolean mockTime, String endpoint) throws Exception {
+    private RemoteStoreClient mockRemoteStoreClient(boolean mockMeta, boolean mockTime, String endpoint)
+            throws Exception {
         // Mock the RemoteStoreClient
         RemoteStoreClient rsClient = mock(RemoteStoreClient.class);
-        
-        if(endpoint != null) {
+
+        if (endpoint != null) {
             // Mock result when querying for class
             when(rsClient.executeQuery(
-                ArgumentMatchers.contains("?class")))
-                .thenReturn(
-                    new org.json.JSONArray("[{\"class\": \"FORCED-ENDPOINT\"}]")
-                );
+                    ArgumentMatchers.contains("?class")))
+                    .thenReturn(new org.json.JSONArray("[{\"class\": \"FORCED-ENDPOINT\"}]"));
         } else {
             // Mock result when querying for class
             when(rsClient.executeQuery(
-                ArgumentMatchers.contains("?class")))
-                .thenReturn(
-                    new org.json.JSONArray("[{\"class\": \"SAMPLE-CLASS\"}]")
-                );
+                    ArgumentMatchers.contains("?class")))
+                    .thenReturn(new org.json.JSONArray("[{\"class\": \"SAMPLE-CLASS\"}]"));
         }
-      
 
         // Mock result when querying for metadata
-        if(mockMeta) {
+        if (mockMeta) {
             when(rsClient.executeQuery(
-                eq("SAMPLE-META-QUERY")))
-                .thenReturn(
-                    new org.json.JSONArray("[{\"Property\":\"propertyOne\",\"Value\":\"1.0\",\"Unit\":\"s\"}]")
-                );
+                    eq("SAMPLE-META-QUERY")))
+                    .thenReturn(new org.json.JSONArray(
+                            "[{\"Property\":\"propertyOne\",\"Value\":\"1.0\",\"Unit\":\"s\"}]"));
         }
 
         // Mock result when querying for measurements
-        if(mockTime) {
+        if (mockTime) {
             when(rsClient.executeQuery(
-                eq("SAMPLE-TIME-QUERY")))
-                .thenReturn(
-                    new org.json.JSONArray("[{\"Measurement\":\"http://measurement-iri.com\",\"Name\":\"Measurement One\",\"Unit\":\"m/s\"}]")
-                );
+                    eq("SAMPLE-TIME-QUERY")))
+                    .thenReturn(new org.json.JSONArray(
+                            "[{\"Measurement\":\"http://measurement-iri.com\",\"Name\":\"Measurement One\",\"Unit\":\"m/s\"}]"));
         }
 
         // Mock result when querying with a forced endpoint
-        if(endpoint != null) {
+        if (endpoint != null) {
             when(rsClient.executeQuery(
-                eq("FORCED-ENDPOINT-QUERY")))
-                .thenReturn(
-                    new org.json.JSONArray("[{\"Property\":\"Forced\",\"Value\":\"Yes\"}]")
-                );
+                    eq("FORCED-ENDPOINT-QUERY")))
+                    .thenReturn(new org.json.JSONArray("[{\"Property\":\"Forced\",\"Value\":\"Yes\"}]"));
         }
 
         return rsClient;
@@ -631,35 +627,31 @@ public class FeatureInfoAgentTest {
         TimeSeriesClient<Instant> tsClient = mock(TimeSeriesClient.class);
 
         when(tsClient.convertToJSON(
-            ArgumentMatchers.anyList(),
-            ArgumentMatchers.anyList(), 
-            ArgumentMatchers.anyList(),
-            ArgumentMatchers.anyList())
-            ).thenCallRealMethod();
+                ArgumentMatchers.anyList(),
+                ArgumentMatchers.anyList(),
+                ArgumentMatchers.anyList(),
+                ArgumentMatchers.anyList()))
+                .thenCallRealMethod();
 
         when(tsClient.getTimeSeries(
-            ArgumentMatchers.anyList(),
-            ArgumentMatchers.any(Connection.class)))
-            .thenReturn(
-                new TimeSeries<Instant>(
-                    Arrays.asList(Instant.MIN, Instant.EPOCH, Instant.MAX),
-                    Arrays.asList("http://measurement-iri.com"),
-                    Arrays.asList(Arrays.asList("1.0", "2.0", "3.0"))
-                )
-            );
+                ArgumentMatchers.anyList(),
+                ArgumentMatchers.any(Connection.class)))
+                .thenReturn(
+                        new TimeSeries<Instant>(
+                                Arrays.asList(Instant.MIN, Instant.EPOCH, Instant.MAX),
+                                Arrays.asList("http://measurement-iri.com"),
+                                Arrays.asList(Arrays.asList("1.0", "2.0", "3.0"))));
 
         when(tsClient.getTimeSeriesWithinBounds(
-            ArgumentMatchers.any(),
-            ArgumentMatchers.any(),
-            ArgumentMatchers.any(),
-            ArgumentMatchers.any()))
-            .thenReturn(
-                new TimeSeries<Instant>(
-                    Arrays.asList(Instant.MIN, Instant.EPOCH, Instant.MAX),
-                    Arrays.asList("http://measurement-iri.com"),
-                    Arrays.asList(Arrays.asList("1.0", "2.0", "3.0"))
-                )
-            );
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any(),
+                ArgumentMatchers.any()))
+                .thenReturn(
+                        new TimeSeries<Instant>(
+                                Arrays.asList(Instant.MIN, Instant.EPOCH, Instant.MAX),
+                                Arrays.asList("http://measurement-iri.com"),
+                                Arrays.asList(Arrays.asList("1.0", "2.0", "3.0"))));
 
         return tsClient;
     }
