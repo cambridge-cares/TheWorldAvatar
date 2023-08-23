@@ -1,7 +1,5 @@
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
-
-from marie.data_processing.qn_processing import t5_preprocess_qn
-from marie.model_utils import get_model_and_tokenizer, get_model_family_from_model_name
+from marie.data_processing.qn_processing import preprocess_qn
+from marie.model_utils import get_model_and_tokenizer, get_model_family_from_model_path
 from marie.arguments_schema import ModelArguments
 from marie.data_processing.query_processing import postprocess_query
 
@@ -15,11 +13,7 @@ class TranslationModel:
         self.model, self.tokenizer = get_model_and_tokenizer(
             model_args, is_trainable=False
         )
-        self.model_family = (
-            model_args.model_family
-            if model_args.model_family is not None
-            else get_model_family_from_model_name(model_args.model_path)
-        )
+        self.model_family = get_model_family_from_model_path(model_args.model_path)
         self.max_new_tokens = max_new_tokens
 
     def nl2sparql(self, question: str):
@@ -28,7 +22,7 @@ class TranslationModel:
         Returns:
             A dict with keys `prediction_raw` and `prediction_postprocessed`
         """
-        question = t5_preprocess_qn(question)
+        question = preprocess_qn(question, model_family=self.model_family)
 
         input_ids = self.tokenizer(question, return_tensors="pt").input_ids.to(
             self.model.device

@@ -1,7 +1,7 @@
 import os
 import torch
 
-from transformers import BitsAndBytesConfig, AutoModelForSeq2SeqLM, AutoModelForCausalLM, AutoTokenizer
+from transformers import BitsAndBytesConfig, AutoModelForSeq2SeqLM, AutoModelForCausalLM, AutoTokenizer, AutoConfig
 from peft import PeftModel, LoraConfig, TaskType, get_peft_model
 
 from marie.arguments_schema import ModelArguments
@@ -13,18 +13,15 @@ TARGET_MODULES_BY_MODEL = dict(
 )
 
 
-def get_model_family_from_model_args(model_args: ModelArguments):
-    if model_args.model_family is not None:
-        return model_args.model_family
-    return get_model_family_from_model_name(model_args.model_path)
+def get_model_family_from_model_path(model_path: str):
+    config = AutoConfig.from_pretrained(model_path)
+    config_class = str(config.__class__).lower()
 
-
-def get_model_family_from_model_name(model_name: str):
-    model_name = model_name.lower()
     for model_family in ["t5", "llama"]:
-        if model_family in model_name:
+        if model_family in config_class:
             return model_family
-    raise ValueError("Unable to infer model family from model name: " + model_name)
+
+    raise ValueError("Unable to infer model family from model config: " + config)
 
 
 def get_model(model_args: ModelArguments, is_trainable: bool):
@@ -56,7 +53,7 @@ def get_model(model_args: ModelArguments, is_trainable: bool):
         if v is not None
     }
 
-    model_family = get_model_family_from_model_args(model_args)
+    model_family = get_model_family_from_model_path(model_args.model_path)
     auto_model = AutoModelForSeq2SeqLM if model_family == "t5" else AutoModelForCausalLM
     
     model = auto_model.from_pretrained(
@@ -91,7 +88,7 @@ def get_tokenizer(model_args: ModelArguments):
         model_args.model_path, use_auth_token=os.environ.get("HF_ACCESS_TOKEN")
     )
 
-    model_family = get_model_family_from_model_args(model_args)
+    model_family = get_model_family_from_model_path(model_args.model_path)
     if model_family == "llama":
         tokenizer.pad_token_id = tokenizer.unk_token_id
         tokenizer.padding_side = "right"

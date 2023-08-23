@@ -2,6 +2,7 @@ from marie.data_processing.utils import replace_multi
 
 # must have the whitespace in front and behind ### for DataCollatorForCompletionOnlyLM to work
 LLAMA_TEMPLATE = "translate to SPARQL: {question}\n\n ### \n\n{sparql_query}" 
+LLAMA_PROMPT_TEMPLATE = "translate to SPARQL: {question}\n\n ### \n\n"
 LLAMA_COMPLETION_TEMPLATE = "### \n\n"
 
 T5_INPUT_PREFIX = "translate to SPARQL: "
@@ -20,8 +21,11 @@ def t5_decode_qn_special_chars(query: str):
     return replace_multi(query, T5_QN_DECODINGS)
 
 
-def t5_preprocess_qn(qn: str):
+def preprocess_qn(qn: str, model_family: str):
     # TODO: convert units
-    qn = t5_encode_qn_special_chars(qn)
-    qn = T5_INPUT_PREFIX + qn
+    if model_family == "t5":
+        qn = t5_encode_qn_special_chars(qn)
+        qn = T5_INPUT_PREFIX + qn
+    elif model_family == "llama":
+        qn = LLAMA_PROMPT_TEMPLATE.format(question=qn)
     return qn

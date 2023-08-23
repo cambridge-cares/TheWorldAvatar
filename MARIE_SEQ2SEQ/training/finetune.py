@@ -15,14 +15,13 @@ from trl import SFTTrainer, DataCollatorForCompletionOnlyLM
 from marie.data_processing.qn_processing import (
     LLAMA_COMPLETION_TEMPLATE,
     LLAMA_TEMPLATE,
-    t5_preprocess_qn,
+    preprocess_qn,
 )
 from marie.data_processing.query_processing import t5_preprocess_query
-
 from marie.arguments_schema import DatasetArguments, ModelArguments
 from marie.model_utils import (
     get_model_and_tokenizer,
-    get_model_family_from_model_args,
+    get_model_family_from_model_path,
 )
 
 
@@ -43,7 +42,7 @@ def get_t5_trainer(
         return model_inputs
 
     def _preprocess_examples(examples):
-        sources = [t5_preprocess_qn(qn) for qn in examples["question"]]
+        sources = [preprocess_qn(qn, model_family="t5") for qn in examples["question"]]
         targets = [
             t5_preprocess_query(query) for query in examples["sparql_query_compact"]
         ]
@@ -109,6 +108,8 @@ def get_llama_trainer(
     )
 
 
+TRAINER_GETTER_BY_MODEL = dict(t5=get_t5_trainer, llama=get_llama_trainer)
+
 def train():
     hfparser = transformers.HfArgumentParser(
         (ModelArguments, DatasetArguments, Seq2SeqTrainingArguments)
@@ -116,14 +117,9 @@ def train():
     model_args, data_args, train_args = hfparser.parse_args_into_dataclasses()
 
     model, tokenizer = get_model_and_tokenizer(model_args, is_trainable=True)
-    model_family = get_model_family_from_model_args(model_args)
+    model_family = get_model_family_from_model_path(model_args.model_path)
 
-    if model_family == "t5":
-        trainer_getter = get_t5_trainer
-    else:
-        trainer_getter = get_llama_trainer
-
-    trainer = trainer_getter(
+    trainer = TRAINER_GETTER_BY_MODEL[model_family](
         model=model, tokenizer=tokenizer, data_args=data_args, train_args=train_args
     )
 
