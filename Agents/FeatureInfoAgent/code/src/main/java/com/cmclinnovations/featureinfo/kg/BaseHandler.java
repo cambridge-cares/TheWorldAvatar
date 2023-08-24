@@ -2,8 +2,7 @@ package com.cmclinnovations.featureinfo.kg;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -109,22 +108,33 @@ public abstract class BaseHandler {
         return endpoints.stream().map(ConfigEndpoint::url).toList();
     }
 
-    private final String filterOntopEndpoints(String query) {
-        Map<String, String> ontopURLs = FeatureInfoAgent.CONFIG.getOntopURLs();
+    protected final String filterOntopEndpoints(final String query) {
+        Optional<ConfigEndpoint> ontopEndpoint = FeatureInfoAgent.CONFIG.getOntopEndpoint();
+        String ontopURL;
         // Inject ontop endpoint
-        for (Entry<String, String> entry : ontopURLs.entrySet()) {
-            String name = entry.getKey();
-            String url = entry.getValue();
-            Pattern pattern = Pattern.compile("[" + name + "]",
-                    Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE | Pattern.LITERAL);
-            Matcher matcher = pattern.matcher(query);
-            if (matcher.find()) {
-                if (url == null) {
-                    throw new IllegalStateException("Could not determine URL for '" + name + "'' endpoint!");
-                }
-                query = matcher.replaceAll("<" + url + ">");
+        if (ontopEndpoint.isEmpty()) {
+            ontopURL = null;
+        } else {
+            ontopURL = ontopEndpoint.get().url();
+        }
+        if (ontopURL == null) {
+            throw new IllegalStateException("Could not determine URL for Ontop endpoint!");
+        }
+        Pattern pattern = Pattern.compile("\\[ONTOP(-?[^\\]]*)\\]",
+                Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+        Matcher matcher = pattern.matcher(query);
+        StringBuilder sb = new StringBuilder();
+        int lastIndex = 0;
+        while (matcher.find()) {
+            for (int i = 0; i < matcher.groupCount(); ++i) {
+                String replacementUrlComponent = "/ontop" + matcher.group(2 * i + 1) + "/";
+                String url = ontopURL.replaceFirst("/ontop/", replacementUrlComponent);
+                sb.append(query, lastIndex, matcher.start())
+                        .append("<" + url + ">");
+                lastIndex = matcher.end();
             }
         }
-        return query;
+        sb.append(query, lastIndex, query.length());
+        return sb.toString();
     }
 }

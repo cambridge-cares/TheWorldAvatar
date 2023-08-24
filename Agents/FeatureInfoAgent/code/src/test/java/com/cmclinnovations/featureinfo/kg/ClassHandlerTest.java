@@ -69,7 +69,7 @@ public class ClassHandlerTest {
         }
 
         // Add mock endpoints to the config
-        CONFIG.addEndpoint(new ConfigEndpoint("ONTOP", "http://my-fake-ontop.com/", null, null, EndpointType.ONTOP));
+        CONFIG.addEndpoint(new ConfigEndpoint("ONTOP", "http://my-fake-ontop.com/ontop/sparql", null, null, EndpointType.ONTOP));
         CONFIG.addEndpoint(
                 new ConfigEndpoint("POSTGRES", "http://my-fake-postgres.com/", null, null, EndpointType.POSTGRES));
         CONFIG.addEndpoint(new ConfigEndpoint("blazegraph-test",

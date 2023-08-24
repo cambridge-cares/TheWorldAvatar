@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,10 +16,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
-import com.cmclinnovations.stack.clients.docker.DockerClient;
 import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
-import com.github.dockerjava.api.model.Config;
 
 /**
  * Handles reading and storing the configuration settings.
@@ -160,11 +157,10 @@ public class ConfigStore extends ContainerClient {
      * 
      * @return ONTOP endpoint object.
      */
-    public Map<String, String> getOntopURLs() {
+    public Optional<ConfigEndpoint> getOntopEndpoint() {
         return endpoints.stream()
                 .filter(end -> end.type() == EndpointType.ONTOP)
-                .collect(Collectors.toMap(ConfigEndpoint::name, ConfigEndpoint::url));
-
+                .findFirst();
     }
 
     /**
@@ -309,23 +305,18 @@ public class ConfigStore extends ContainerClient {
      * determine, and store, the location of the ONTOP container.
      */
     private void determineOntop() {
+        OntopEndpointConfig ontopConfig = readEndpointConfig("ontop", OntopEndpointConfig.class);
 
-        DockerClient dockerClient = new DockerClient();
-        List<Config> configs = dockerClient.getConfigs();
-        configs.stream().map(config -> config.getSpec().getName())
-                .forEach(name -> {
-                    OntopEndpointConfig ontopConfig = readEndpointConfig(name, OntopEndpointConfig.class);
+        ConfigEndpoint endpoint = new ConfigEndpoint(
+                "ONTOP",
+                ontopConfig.getUrl(),
+                ontopConfig.getUsername(),
+                ontopConfig.getPassword(),
+                EndpointType.ONTOP);
+        endpoints.add(endpoint);
 
-                    ConfigEndpoint endpoint = new ConfigEndpoint(
-                            name,
-                            ontopConfig.getUrl(),
-                            ontopConfig.getUsername(),
-                            ontopConfig.getPassword(),
-                            EndpointType.ONTOP);
-                    String url = endpoint.url();
-                    LOGGER.info("Have found Ontop endpoint: {}", url);
-                    endpoints.add(endpoint);
-                });
+        String url = endpoint.url();
+        LOGGER.info("Have determined Ontop endpoint as: {}", url);
     }
 
     /**
