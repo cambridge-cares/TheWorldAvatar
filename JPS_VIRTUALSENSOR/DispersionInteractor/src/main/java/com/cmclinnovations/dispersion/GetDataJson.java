@@ -250,7 +250,7 @@ public class GetDataJson extends HttpServlet {
 
             JSONObject sensorPaint = new JSONObject();
             sensorPaint.put("circle-color", "red");
-            sensorPaint.put("paint", sensorPaint);
+            sensorLayer.put("paint", sensorPaint);
 
             layers.put(sensorLayer);
         }

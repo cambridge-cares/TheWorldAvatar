@@ -403,7 +403,7 @@ public class QueryClient {
     }
 
     void initialiseVirtualSensors(List<String> scopeIriList, Point virtualSensorLocation,
-            List<String> pollutants) {
+            List<String> pollutants, Connection conn) {
         // Get data IRIs of dispersion outputs belonging to the input derivation
         Iri isDerivedFrom = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
         Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
@@ -463,7 +463,7 @@ public class QueryClient {
 
         // Create timeseries of pollutant concentrations for OntoEMS station
         List<Class<?>> classListForTimeSeries = Collections.nCopies(dataListForTimeSeries.size(), Double.class);
-        tsClientInstant.initTimeSeries(dataListForTimeSeries, classListForTimeSeries, null);
+        tsClientInstant.initTimeSeries(dataListForTimeSeries, classListForTimeSeries, null, conn);
 
         // Create derivation for each virtual sensor
         derivationClient.createDerivationWithTimeSeries(
@@ -478,9 +478,8 @@ public class QueryClient {
         feature.put("type", "Feature");
         feature.put("geometry", geometry);
         feature.put("iri", stationIri);
-        feature.put("name", "Virtual Sensor");
+        feature.put("name", "Virtual sensor");
         feature.put("endpoint", sparqlEndpoint);
-        feature.put("scope_iri", scopeIri);
         feature.put("geom_iri", locationIri);
 
         modify.prefix(P_DISP, P_OM, P_EMS);
@@ -500,7 +499,6 @@ public class QueryClient {
 
     public List<String> getVirtualSensorDerivations(String dispersionDerivation) {
         List<String> derivationList = new ArrayList<>();
-        List<String> dispOutputList = new ArrayList<>();
 
         Iri isDerivedFrom = iri(DerivationSparql.derivednamespace + "isDerivedFrom");
         Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
@@ -513,7 +511,7 @@ public class QueryClient {
 
         query.where(dispOutput.has(belongsTo, iri(dispersionDerivation)),
                 derivation.has(isDerivedFrom, dispOutput), dispOutput.isA(DISPERSION_OUTPUT),
-                station.isA(REPORTING_STATION).andHas(belongsTo, derivation)).select(derivation, dispOutput)
+                station.isA(REPORTING_STATION).andHas(belongsTo, derivation)).select(derivation)
                 .prefix(P_DISP, P_OM, P_EMS);
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
@@ -521,16 +519,9 @@ public class QueryClient {
         for (int i = 0; i < queryResult.length(); i++) {
             String derivationIri = queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1));
             derivationList.add(derivationIri);
-            String dispOutputIri = queryResult.getJSONObject(i).getString(dispOutput.getQueryString().substring(1));
-            dispOutputList.add(dispOutputIri);
         }
 
-        // update derivation timestamp of dispersion output to trigger update of virtual
-        // sensor derivations contained in derivationList
-        derivationClient.updateTimestamps(dispOutputList);
-
         return derivationList;
-
     }
 
     public List<DispersionSimulation> getDispersionSimulations() {

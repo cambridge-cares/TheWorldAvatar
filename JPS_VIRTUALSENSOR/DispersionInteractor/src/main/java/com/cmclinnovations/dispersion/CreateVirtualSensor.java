@@ -51,7 +51,7 @@ public class CreateVirtualSensor extends HttpServlet {
                 vsScopeList.add(scopeIriList.get(0));
                 if (!dispersionPostGISClient.tableExists(Config.SENSORS_TABLE_NAME, conn))
                     queryClient.initialiseVirtualSensorAgent();
-                queryClient.initialiseVirtualSensors(vsScopeList, virtualSensorLocation, pollutants);
+                queryClient.initialiseVirtualSensors(vsScopeList, virtualSensorLocation, pollutants, conn);
             } else if (scopeIriList.isEmpty()) {
                 LOGGER.warn(" The specified virtual sensor location " +
                         "at {} does not fall within any existing scope. No sensor will be created at this location.",
