@@ -1,6 +1,12 @@
 # District Heating Optimisation Trigger Agent
 
-This `District Heating Optimisation Trigger Agent` can be used to trigger recurring optimisations of the district heating system in Pirmasens (including the simulation of corresponding emission dispersion) according to the latest use case design using [chained derivations]. For each time step to optimise/simulate, a corresponding `SimulationTime` instance is instantiated or update, together with a time `Interval` instance representing the current optimisation horizon and two time `Durations` specifying the length of historical time series data required for the Forecasting Agent. 
+This `District Heating Optimisation Trigger Agent` can be used to trigger recurring optimisations of the district heating system in Pirmasens (including the simulation of corresponding emission dispersion) according to the latest use case design using [chained derivations]. For each time step to simulate (i.e., using Aermod Agent), a corresponding `SimulationTime` instance is instantiated or updated, together with a time `Interval` instance representing the associated optimisation horizon (for the DH Optimisation Agent) and two time `Duration`s specifying the length of historical time series data required for the Forecasting Agent. 
+
+On agent startup, the specified SPARQL endpoint will also be populated with all triples provided as `.ttl` files in the [resources] folder, e.g., upload required descriptions of used forecasting models etc.
+
+<!-- 
+TODO: elaborate on the overall role of this agent in the use case/deployment design: sequence of deployments, dependencies, etc. 
+-->
 
 For details, please see the provided link to the derivation design together with the [OntoTimeSeries (Miro board)] and [OntoHeatNet (Miro board)].
 
@@ -65,13 +71,13 @@ For more details see the stack manager README on [specifying custom containers].
 The agent accepts POST requests with json bodies and requires the following keys. The agent locks after receiving a request and unlocks after the optimisation is finished. The agent will not accept any further requests while locked and provide a HTTP 423 status code instead.
 
 - start: (string) Optimisation start dateTime in UTC, indicating the first time step to optimize and forecast
-- mpcHorizon: (integer) Length of the optimisation horizon in time steps
-- numberOfTimeSteps: (integer) Number of time steps to optimize
+- optHorizon: (integer) Length of the optimisation horizon in time steps (i.e., number of time steps to be forecast and optimised in each iteration)
+- numberOfTimeSteps: (integer) Number of total time steps to optimise
 - timeDelta: (string) Spacing of optimisation time steps. Possible values are "day", "hour", "minute", or "second".
 - heatDemandDataLength: (integer) Length (i.e., number of time steps with given time delta) of historical heat demand time series to use for forecasting
 - gridTemperatureDataLength: (integer) Length of historical grid temperature time series to use for forecasting
 
-An example HTTP request is provided in the [example_mpc_request] file.
+An example HTTP request is provided in the [example_opt_request] file.
 
 
 &nbsp;
@@ -86,7 +92,8 @@ Markus Hofmeister (mh807@cam.ac.uk), July 2023
 [specifying custom containers]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#specifying-custom-containers
 
 <!-- files -->
-[example_mpc_request]: ./resources/example_mpc_request.http
+[resources]: ./resources/
+[example_opt_request]: ./resources/example_opt_request.http
 [Docker compose file]: ./docker-compose.yml
 [stack-manager-input-config]: ./stack-manager-input-config
 [stack-manager-input-config file]: ./stack-manager-input-config/dhoptimisationtrigger_agent.json

@@ -3,7 +3,7 @@
 # Request parameters
 // Optimisation parameters:
 #   start: Optimisation start dateTime in UTC, i.e., first time step to optimise (and forecast)
-#   mpcHorizon: Number of time steps to optimise in each optimisation run
+#   optHorizon: Number of time steps to optimise in each optimisation run
 #   numberOfTimeSteps: Number of total time steps to optimise
 #   timeDelta: Frequency (i.e., spacing) of time steps - one of "day", "hour", "minute", "second"
 // Forecast parameters:
@@ -21,7 +21,7 @@ Content-Type: application/json
 { 
   // Optimisation parameters
   "start": "2020-01-01T00:00:00Z",
-  "mpcHorizon": 24,
+  "optHorizon": 24,
   "numberOfTimeSteps": 24,
   "timeDelta": "hour",
 

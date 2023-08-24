@@ -76,7 +76,7 @@ def trigger_optimisation_task(params):
         opti_int = KB + 'OptimisationInterval_' + str(uuid.uuid4())
         opti_t1 = KB + 'OptimisationStartInstant_' + str(uuid.uuid4())
         opti_t2 = KB + 'OptimisationEndInstant_' + str(uuid.uuid4())
-        opti_dt = params['mpcHorizon']*params['timeDelta_unix']
+        opti_dt = params['optHorizon']*params['timeDelta_unix']
         # Heat demand & grid temperature data length
         heat_length = KB + 'HeatDemandDuration_' + str(uuid.uuid4())
         tmp_length = KB + 'GridTemperatureDuration_' + str(uuid.uuid4())
@@ -151,7 +151,7 @@ def validate_input_params(params_dict):
             raise ValueError(f"{param_name} should be an integer greater than 0")
 
     # Check if all required keys are present
-    required_keys = ['start', 'mpcHorizon', 'numberOfTimeSteps', 'timeDelta', 
+    required_keys = ['start', 'optHorizon', 'numberOfTimeSteps', 'timeDelta', 
                      'heatDemandDataLength', 'gridTemperatureDataLength']
     for key in required_keys:
         if key not in params_dict:
@@ -169,7 +169,7 @@ def validate_input_params(params_dict):
     params_dict['start'] = int(unix_timestamp)
 
     # Validate integer parameters
-    _validate_int_parameter('mpcHorizon', params_dict['mpcHorizon'])
+    _validate_int_parameter('optHorizon', params_dict['optHorizon'])
     _validate_int_parameter('numberOfTimeSteps', params_dict['numberOfTimeSteps'])
     _validate_int_parameter('heatDemandDataLength', params_dict['heatDemandDataLength'])
     _validate_int_parameter('gridTemperatureDataLength', params_dict['gridTemperatureDataLength'])
