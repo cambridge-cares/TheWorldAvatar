@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import uk.ac.cam.cares.jps.data.AssetInfo;
 
@@ -34,7 +35,7 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
     List<String> locationInfoOrder = new ArrayList<>(Arrays.asList(LOCATED_IN, SEAT_LOCATION, STORED_IN));
     List<String> supplierInfoOrder = new ArrayList<>(Arrays.asList(VENDOR, MANUFACTURER, MANUFACTURE_URL, SERIAL_NUMBER, MODEL_NUMBER));
     List<String> priceInfoOrder = new ArrayList<>(Arrays.asList(PURCHASE_PRICE));
-    List<String> docLineInfoOrder = new ArrayList<>(Arrays.asList(QUOTATION_NUMBER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER, SERVICE_CATEGORY_CODE, SERVICE_CATEGORY_DESCRIPTION, SERVICE_CODE, SERVICE_CODE_DESCRIPTION));
+    List<String> docLineInfoOrder = new ArrayList<>(Arrays.asList(SERVICE_CATEGORY_CODE, SERVICE_CATEGORY_DESCRIPTION, SERVICE_CODE, SERVICE_CODE_DESCRIPTION, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER));
 
     List<String> sectionTitles = new ArrayList<>(Arrays.asList("Basic", "Location", "Supplier", "Price", "Purchase", "Others"));
     List<List<Pair<String, String>>> sectionContents = new ArrayList<>(Arrays.asList(basicProperties, locationProperties, supplierProperties, priceProperties, docLineProperties, otherProperties));
@@ -52,12 +53,13 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
     }
 
     private void buildAllPropertiesList(AssetInfo assetInfo) {
-        basicProperties = getOrderedPropertiesList(assetInfo.getProperties(), basicInfoOrder);
-        locationProperties = getOrderedPropertiesList(assetInfo.getProperties(), locationInfoOrder);
-        supplierProperties = getOrderedPropertiesList(assetInfo.getProperties(), supplierInfoOrder);
-        priceProperties = getOrderedPropertiesList(assetInfo.getProperties(), priceInfoOrder);
-        docLineProperties = getOrderedPropertiesList(assetInfo.getProperties(), docLineInfoOrder);
-        otherProperties = getOrderedPropertiesList(assetInfo.getProperties(), null);
+        Map<String, String> map = (Map<String, String>) assetInfo.getProperties().clone();
+        basicProperties = getOrderedPropertiesList(map, basicInfoOrder);
+        locationProperties = getOrderedPropertiesList(map, locationInfoOrder);
+        supplierProperties = getOrderedPropertiesList(map, supplierInfoOrder);
+        priceProperties = getOrderedPropertiesList(map, priceInfoOrder);
+        docLineProperties = getDocLineOrderedPropertiesList(map);
+        otherProperties = getOrderedPropertiesList(map, null);
 
         sectionContents = new ArrayList<>(Arrays.asList(basicProperties, locationProperties, supplierProperties, priceProperties, docLineProperties, otherProperties));
     }
@@ -68,6 +70,7 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
             for (String key : orderList) {
                 if (map.containsKey(key) && !map.get(key).isEmpty()) {
                     result.add(new Pair<>(key, map.get(key)));
+                    map.remove(key);
                 }
             }
             return result;
@@ -88,6 +91,44 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
         }
 
         result.sort(Comparator.comparing(kvPair -> kvPair.first));
+        return result;
+    }
+
+    // handle multiple attachment and comment
+    private List<Pair<String, String>> getDocLineOrderedPropertiesList(Map<String, String> map) {
+        List<Pair<String, String>> result = new ArrayList<>();
+        for (String key : docLineInfoOrder) {
+            if (!map.containsKey(key) || (map.containsKey(key) && map.get(key).isEmpty())) {
+                continue;
+            }
+
+            // service code and category related
+            if (!Arrays.asList(PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER).contains(key)) {
+                result.add(new Pair<>(key, map.get(key)));
+                map.remove(key);
+                continue;
+            }
+
+            // docLine
+            String type = key.split(" ")[0];
+            result.add(new Pair<>(key, map.get(key)));
+            List<String> attachmentKeys = map.keySet().stream().filter(k -> k.contains(type) && k.contains("Attachment")).collect(Collectors.toList());
+            for (String attachmentKey : attachmentKeys) {
+                int leftBracketInd = attachmentKey.indexOf("(");
+                int rightBracketInd = attachmentKey.indexOf(")");
+                String fileName = attachmentKey.substring(leftBracketInd + 1, rightBracketInd);
+                String commentKey = "Comments for " + fileName;
+
+                result.add(new Pair<>(attachmentKey, map.get(attachmentKey)));
+                map.remove(attachmentKey);
+
+                if (!map.get(commentKey).isEmpty()) {
+                    result.add(new Pair<>(commentKey, map.get(commentKey)));
+                    map.remove(commentKey);
+                }
+            }
+        }
+
         return result;
     }
 
