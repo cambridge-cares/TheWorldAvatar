@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.assetinfo;
 
+import static uk.ac.cam.cares.jps.assetinfo.AssetInfoConstant.*;
+
 import android.content.Context;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -28,11 +30,11 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
     private List<Pair<String, String>> otherProperties = new ArrayList<>();
 
     // todo: remove space and case when comparing/searching for the key?
-    List<String> basicInfoOrder = new ArrayList<>(Arrays.asList("Reference Label", "Type", "Assigned to", "IRI", "Inventory ID"));
-    List<String> locationInfoOrder = new ArrayList<>(Arrays.asList("Located in", "Seat Location", "Stored in"));
-    List<String> supplierInfoOrder = new ArrayList<>(Arrays.asList("Vendor", "Manufacturer", "Manufacture URL", "Serial Number", "Model Number"));
-    List<String> priceInfoOrder = new ArrayList<>(Arrays.asList("Purchase Price", "Unit"));
-    List<String> docLineInfoOrder = new ArrayList<>(Arrays.asList("Service Category Code", "Service Category Description", "Quotation Number", "Purchase Request Number", "Purchase Order Number", "Invoice Number", "Delivery Order Number"));
+    List<String> basicInfoOrder = new ArrayList<>(Arrays.asList(REFERENCE_LABEL, TYPE, ASSIGNED_TO, IRI, INVENTORY_ID));
+    List<String> locationInfoOrder = new ArrayList<>(Arrays.asList(LOCATED_IN, SEAT_LOCATION, STORED_IN));
+    List<String> supplierInfoOrder = new ArrayList<>(Arrays.asList(VENDOR, MANUFACTURER, MANUFACTURE_URL, SERIAL_NUMBER, MODEL_NUMBER));
+    List<String> priceInfoOrder = new ArrayList<>(Arrays.asList(PURCHASE_PRICE, UNIT));     // TODO: NEED TO CHECK UNIT HANDLE!!
+    List<String> docLineInfoOrder = new ArrayList<>(Arrays.asList(SERVICE_CATEGORY_CODE, SERVICE_CATEGORY_DESCRIPTION, QUOTATION_NUMBER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER));
 
     List<String> sectionTitles = new ArrayList<>(Arrays.asList("Basic", "Location", "Supplier", "Price", "Purchase", "Others"));
     List<List<Pair<String, String>>> sectionContents = new ArrayList<>(Arrays.asList(basicProperties, locationProperties, supplierProperties, priceProperties, docLineProperties, otherProperties));
