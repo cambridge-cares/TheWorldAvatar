@@ -4,7 +4,7 @@ bot:    https://w3id.org/bot#
 : 	https://www.theworldavatar.com/kg/ontobuiltenv/
 
 [MappingDeclaration] @collection [[
-mappingId	lod0footprint
+mappingId	usage
 target		<{building_iri}> a bot:Building ;
                 :hasPropertyUsage <{propertyusage_iri}> .
             <{propertyusage_iri}> a :{ontobuilt} ;
