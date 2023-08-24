@@ -220,6 +220,10 @@ def get_rdb_endpoint(ts_details:dict):
     else:
         # Replace potentially occurring 'localhost' (i.e., depending on TimeSeriesClient setting
         # when time series was instantiated) with 'host.docker.internal' for Docker deployment
+        # NOTE: This is a workaround for the fact that the Docker container cannot access the
+        #       local host (i.e., the host machine) via 'localhost' --> ideally, this will become
+        #       obsolete in the future, i.e., once we have a single point of access for RDB data
+        #       similar to the Access Agent
         rdb_url = rdb_url.replace('localhost', 'host.docker.internal')
 
     time_format = ts_details.get('time_format')

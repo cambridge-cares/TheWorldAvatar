@@ -4,7 +4,6 @@ services:
   forecasting_agent:
     image: ghcr.io/cambridge-cares/forecasting_agent:2.0.0
     environment:
-      - OVERWRITE_FORECAST=true
       - ROUNDING=6
       # Required environment variables for "standalone" deployment
       - STACK_NAME=

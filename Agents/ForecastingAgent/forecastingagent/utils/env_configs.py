@@ -46,7 +46,12 @@ def retrieve_default_settings():
         raise ValueError('"STACK_NAME" is missing in environment variables.')
     
     # Retrieve boolean flag whether to instantiate output forecast as new instance
-    # or add data to existing instance (potentially overwriting existing data)
+    # or add data to existing instance (i.e., overwriting existing data)
+    # NOTE: Overwriting/replacing previous forecast is DEFAULT behavior and most in
+    #       line with intended derivation framework, meaning that an update actually
+    #       replaces the previous output instead of creating a new one
+    #       Hence, this setting is only here to provide more flexibility in creating 
+    #       new forecasts, but should not be reproduced/copied in other derivation agents
     OVERWRITE_FORECAST = os.getenv('OVERWRITE_FORECAST')
     if OVERWRITE_FORECAST is None:
         OVERWRITE_FORECAST = True

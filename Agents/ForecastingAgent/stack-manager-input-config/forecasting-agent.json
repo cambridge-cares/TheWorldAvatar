@@ -7,7 +7,6 @@
                 "Env": [
                     "NAMESPACE=kb",
                     "DATABASE=postgres",
-                    "OVERWRITE_FORECAST=true",
                     "ROUNDING=6",
                     "ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__ForecastingAgent/Service",
                     "ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5000/ForecastingAgent",

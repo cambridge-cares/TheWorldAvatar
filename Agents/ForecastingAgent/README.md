@@ -19,7 +19,8 @@ The dockerised agent can be deployed as "standalone" version (i.e., outside a la
 - [stack manager input config file] for deployment using the [Stack manager]
 
 ```bash
-OVERWRITE_FORECAST            # Boolean flag whether to overwrite data of existing forecast instance or create new one when updating forecast/derivation
+OVERWRITE_FORECAST            # Boolean flag whether to overwrite data of existing forecast instance or create new one when updating forecast/derivation (optional)
+                              # NOTE: To align most closely with the intended use of the derivation framework, the default behavior is overwriting/replacing
 ROUNDING                      # Number of wanted decimal places (int) of forecast values (optional)
 
 #--- Deployment specific parameters ---#
