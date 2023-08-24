@@ -27,7 +27,6 @@ public class AssetInfoConstant {
 
     // PRICE KEYS
     static public final String PURCHASE_PRICE = "Purchase Price";
-    static public final String UNIT = "Unit";
 
     // DOC LINE INFO KEYS
     static public final String SERVICE_CATEGORY_CODE = "Service Category Code";
