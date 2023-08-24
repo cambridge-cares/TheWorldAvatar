@@ -1,20 +1,25 @@
 import os
 import torch
 
-from transformers import BitsAndBytesConfig, AutoModelForSeq2SeqLM, AutoModelForCausalLM, AutoTokenizer, AutoConfig
+from transformers import (
+    BitsAndBytesConfig,
+    AutoModelForSeq2SeqLM,
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    AutoConfig,
+)
 from peft import PeftModel, LoraConfig, TaskType, get_peft_model
 
 from marie.arguments_schema import ModelArguments
 
 
-TARGET_MODULES_BY_MODEL = dict(
-    t5=["q", "v"],
-    llama=["q_proj", "v_proj"]
-)
+TARGET_MODULES_BY_MODEL = dict(t5=["q", "v"], llama=["q_proj", "v_proj"])
 
 
 def get_model_family_from_model_path(model_path: str):
-    config = AutoConfig.from_pretrained(model_path)
+    config = AutoConfig.from_pretrained(
+        model_path, use_auth_token=os.environ.get("HF_ACCESS_TOKEN")
+    )
     config_class = str(config.__class__).lower()
 
     for model_family in ["t5", "llama"]:
@@ -55,10 +60,8 @@ def get_model(model_args: ModelArguments, is_trainable: bool):
 
     model_family = get_model_family_from_model_path(model_args.model_path)
     auto_model = AutoModelForSeq2SeqLM if model_family == "t5" else AutoModelForCausalLM
-    
-    model = auto_model.from_pretrained(
-        model_args.model_path, **model_load_kwargs
-    )
+
+    model = auto_model.from_pretrained(model_args.model_path, **model_load_kwargs)
 
     if model_args.lora_path is not None:
         model = PeftModel.from_pretrained(
@@ -74,7 +77,9 @@ def get_model(model_args: ModelArguments, is_trainable: bool):
             lora_dropout=model_args.lora_dropout,
             bias="none",
             target_modules=TARGET_MODULES_BY_MODEL[model_family],
-            task_type=TaskType.SEQ_2_SEQ_LM if model_family == "t5" else TaskType.CAUSAL_LM,
+            task_type=TaskType.SEQ_2_SEQ_LM
+            if model_family == "t5"
+            else TaskType.CAUSAL_LM,
         )
 
         model = get_peft_model(model, lora_config)
