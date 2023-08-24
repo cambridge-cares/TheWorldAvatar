@@ -1,6 +1,0 @@
-SELECT DISTINCT ?ChemicalClassValue 
-WHERE {{
-    ?SpeciesIRI ?hasIdentifier ?species .
-    FILTER( ?species = "{species}")
-	?SpeciesIRI os:hasChemicalClass ?ChemicalClassValue .
-}}

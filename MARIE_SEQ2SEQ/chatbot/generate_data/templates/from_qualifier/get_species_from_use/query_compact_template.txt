@@ -1,6 +1,0 @@
-SELECT DISTINCT ?IUPACNameValue 
-WHERE {{
-    ?SpeciesIRI os:hasIUPACName ?IUPACNameValue .
-    ?SpeciesIRI os:hasUse ?UseValue .
-    FILTER( ?UseValue = "{Use}")
-}}
