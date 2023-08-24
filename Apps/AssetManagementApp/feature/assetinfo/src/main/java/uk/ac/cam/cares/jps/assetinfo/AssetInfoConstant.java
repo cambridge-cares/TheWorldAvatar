@@ -31,6 +31,8 @@ public class AssetInfoConstant {
     // DOC LINE INFO KEYS
     static public final String SERVICE_CATEGORY_CODE = "Service Category Code";
     static public final String SERVICE_CATEGORY_DESCRIPTION = "Service Category Description";
+    static public final String SERVICE_CODE = "Service Code";
+    static public final String SERVICE_CODE_DESCRIPTION = "Service Code Description";
     static public final String QUOTATION_NUMBER = "Quotation Number";
     static public final String PURCHASE_REQUEST_NUMBER = "Purchase Request Number";
     static public final String PURCHASE_ORDER_NUMBER = "Purchase Order Number";

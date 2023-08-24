@@ -34,7 +34,7 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
     List<String> locationInfoOrder = new ArrayList<>(Arrays.asList(LOCATED_IN, SEAT_LOCATION, STORED_IN));
     List<String> supplierInfoOrder = new ArrayList<>(Arrays.asList(VENDOR, MANUFACTURER, MANUFACTURE_URL, SERIAL_NUMBER, MODEL_NUMBER));
     List<String> priceInfoOrder = new ArrayList<>(Arrays.asList(PURCHASE_PRICE));
-    List<String> docLineInfoOrder = new ArrayList<>(Arrays.asList(SERVICE_CATEGORY_CODE, SERVICE_CATEGORY_DESCRIPTION, QUOTATION_NUMBER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER));
+    List<String> docLineInfoOrder = new ArrayList<>(Arrays.asList(QUOTATION_NUMBER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER, SERVICE_CATEGORY_CODE, SERVICE_CATEGORY_DESCRIPTION, SERVICE_CODE, SERVICE_CODE_DESCRIPTION));
 
     List<String> sectionTitles = new ArrayList<>(Arrays.asList("Basic", "Location", "Supplier", "Price", "Purchase", "Others"));
     List<List<Pair<String, String>>> sectionContents = new ArrayList<>(Arrays.asList(basicProperties, locationProperties, supplierProperties, priceProperties, docLineProperties, otherProperties));
