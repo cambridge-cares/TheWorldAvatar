@@ -132,7 +132,7 @@ public class GetDataJson extends HttpServlet {
         weatherLayer.put("type", "circle");
         weatherLayer.put("name", "Weather station");
         weatherLayer.put("source", "weather-source");
-        weatherLayer.put("layout", new JSONObject().put("visibility", "none"));
+        weatherLayer.put("layout", visibility);
 
         JSONObject weatherPaint = new JSONObject();
         weatherPaint.put("circle-color", "blue");
