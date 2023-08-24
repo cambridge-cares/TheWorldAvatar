@@ -1,0 +1,190 @@
+PREFIX b: <https://www.theworldavatar.com/kg/ontobuiltenv/>
+PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT ?Property ?Value ?Unit
+WHERE {
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:Domestic ;
+            b:hasUsageShare ?Value .
+
+        BIND("Domestic" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:Non-Domestic ;
+            b:hasUsageShare ?Value .
+
+        BIND("Non-Domestic" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:SingleResidential ;
+            b:hasUsageShare ?Value .
+
+        BIND("Single Residential" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:MultiResidential ;
+            b:hasUsageShare ?Value .
+
+        BIND("Multi Residential" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:EmergencyService ;
+            b:hasUsageShare ?Value .
+
+        BIND("Emergency Service" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:MedicalCare ;
+            b:hasUsageShare ?Value .
+
+        BIND("Medical Care" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:Education ;
+            b:hasUsageShare ?Value .
+
+        BIND("Education" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:FireStation ;
+            b:hasUsageShare ?Value .
+
+        BIND("Fire Station" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:PoliceStation ;
+            b:hasUsageShare ?Value .
+
+        BIND("Police Station" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:Hospital ;
+            b:hasUsageShare ?Value .
+
+        BIND("Hospital" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:Clinic ;
+            b:hasUsageShare ?Value .
+
+        BIND("Clinic" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:School ;
+            b:hasUsageShare ?Value .
+
+        BIND("School" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:UniversityFacility ;
+            b:hasUsageShare ?Value .
+
+        BIND("University Facility" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:Office ;
+            b:hasUsageShare ?Value .
+
+        BIND("Office" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:RetailEstablishment ;
+            b:hasUsageShare ?Value .
+
+        BIND("Retail Establishment" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:ReligiousFacility ;
+            b:hasUsageShare ?Value .
+
+        BIND("Religious Facility" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:IndustrialFacility ;
+            b:hasUsageShare ?Value .
+
+        BIND("Industrial Facility" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:EatingEstablishment ;
+            b:hasUsageShare ?Value .
+
+        BIND("Eating Establishment" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:DrinkingEstablishment ;
+            b:hasUsageShare ?Value .
+
+        BIND("Drinking Establishment" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:Hotel ;
+            b:hasUsageShare ?Value .
+
+        BIND("Hotel" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:SportsFacility ;
+            b:hasUsageShare ?Value .
+
+        BIND("Sports Facility" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:Cultural Facility ;
+            b:hasUsageShare ?Value .
+
+        BIND("Cultural Facility" AS ?Property) .
+    }
+    UNION
+    {
+        [IRI] b:hasPropertyUsage ?usageiri .
+        ?usageiri rdf:type b:TransportFacility ;
+            b:hasUsageShare ?Value .
+
+        BIND("Transport Facility" AS ?Property) .
+    }
+}
