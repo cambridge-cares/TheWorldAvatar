@@ -186,6 +186,7 @@ class DispersionHandler {
     }
 
     plotData() {
+        this.updateVirtualSensors(this.dispersions[this.selectedSimulation].derivationIri);
         let dataJsonUrl = this.agentBaseUrl;
         dataJsonUrl += '/dispersion-interactor/GetDataJson?';
 
@@ -244,7 +245,23 @@ class DispersionHandler {
 
         let params = {
             lat: lat,
-            lng: lng
+            lng: lng,
+        };
+
+        let searchParams = new URLSearchParams(params);
+
+        Object.keys(this.dispersions[this.selectedSimulation].pollutants).forEach(pollutant => searchParams.append("pollutant", pollutant));
+        url += searchParams;
+
+        $.post(url);
+    }
+
+    updateVirtualSensors(derivation) {
+        let url = this.agentBaseUrl;
+        url += '/dispersion-interactor/UpdateVirtualSensors?';
+
+        let params = {
+            derivation: derivation
         };
 
         let searchParams = new URLSearchParams(params);
