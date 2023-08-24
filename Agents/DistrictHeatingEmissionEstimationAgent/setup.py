@@ -1,7 +1,7 @@
 from setuptools import setup, find_namespace_packages 
 
 setup(
-    name='emissionagent',
+    name='dhemission',
     version='1.0.0',
     author='Markus Hofmeister',
     author_email='mh807@cam.ac.uk',
@@ -10,7 +10,7 @@ setup(
     long_description_content_type="text/markdown",
     packages=find_namespace_packages(exclude=['tests','tests.*']),
     description="The `Emission Agent` converts consumed gas and generated heat amounts into associated emission values.",
-    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/EmissionAgent/",
+    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DistrictHeatingEmissionEstimationAgent/",
     python_requires='>=3.7',
     include_package_data=True,
     install_requires= [

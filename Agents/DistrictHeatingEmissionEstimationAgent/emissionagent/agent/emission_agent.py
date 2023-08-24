@@ -196,5 +196,5 @@ def default():
     msg += 'values for certain emission types.<BR>'
     msg += "The agent is implemented as derivation agent using synchronous derivation."
     msg += "<BR><BR>"
-    msg += 'For further details please see the <a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/EmissionAgent/">Emission Agent README</a>.'
+    msg += 'For further details please see the <a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DistrictHeatingEmissionEstimationAgent/">District Heating Emission Estimation Agent README</a>.'
     return msg

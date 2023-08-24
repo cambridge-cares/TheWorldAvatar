@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   emission_agent:
-    image: ghcr.io/cambridge-cares/emission_agent:1.0.0
+    image: ghcr.io/cambridge-cares/dhemission_agent:1.0.0
     build:
       # Path to dockerfile ('.' represents current directory with .yml file)
       context: .
@@ -20,8 +20,8 @@ services:
       - SPARQL_QUERY_ENDPOINT=http://host.docker.internal:27149/blazegraph/namespace/kb/sparql
       - SPARQL_UPDATE_ENDPOINT=http://host.docker.internal:27149/blazegraph/namespace/kb/sparql
       #--- Derivation Agent parameters ---#
-      - ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__EmissionAgent/Service
-      - ONTOAGENT_OPERATION_HTTP_URL=http://host.docker.internal:5001/EmissionAgent
+      - ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__DHEmissionAgent/Service
+      - ONTOAGENT_OPERATION_HTTP_URL=http://host.docker.internal:5001/DHEmissionAgent
       - DERIVATION_INSTANCE_BASE_URL=https://www.theworldavatar.com/kg/derivation/
       - DERIVATION_PERIODIC_TIMESCALE=100000
       - REGISTER_AGENT=true

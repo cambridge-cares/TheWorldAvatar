@@ -78,7 +78,7 @@ If you want to spin up this agent as part of a stack, do the following:
 1) Build OR pull the (production) image using the commands provided above (do not spin up the image)
 2) Copy the `emission-agent.json` file from the [stack-manager-input-config] folder into the `inputs/config/services` folder of the stack manager
 3) Start the stack manager as usual (i.e. `bash ./stack.sh start <STACK_NAME>` from the stack-manager repo). This should start the container. Please use a bash terminal to avoid potential issues with inconsistent path separators.
-4) The agent shall become available at `http://<HOST>:<PORT>/emissionAgent/`
+4) The agent shall become available at `http://<HOST>:<PORT>/DHemissionAgent/`
 
 
 ## 3.3 Notes on Debugging
