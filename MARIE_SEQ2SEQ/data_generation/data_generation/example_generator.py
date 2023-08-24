@@ -3,8 +3,6 @@ from typing import Any, Dict, List
 
 from sklearn.model_selection import train_test_split
 
-from data_generation.template_utils import add_space_and_lower
-
 
 def ExampleGenerator(
     template_name: str,
@@ -139,3 +137,13 @@ def _remove_numerical_suffix(text: str):
     while idx >= 0 and text[idx - 1].isdigit():
         idx -= 1
     return text[:idx]
+
+
+def add_space_and_lower(string: str):
+    new_string = ""
+    for char in string:
+        if char.isupper():
+            new_string += " " + char.lower()
+        else:
+            new_string += char
+    return new_string.strip()

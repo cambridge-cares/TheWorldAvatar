@@ -23,7 +23,7 @@ np.random.seed(2023)
 
 
 def generate_dataset(
-    directory="data_generation/resources/",
+    directory="data/",
     N_train: int = 30,
     N_dev: int = 3,
     N_test: int = 3,
@@ -99,16 +99,17 @@ def generate_dataset(
     dev_examples = [next(example_generator) for _ in range(N_dev) for example_generator in test_example_generators]
     test_examples = [next(example_generator) for _ in range(N_test) for example_generator in test_example_generators]
 
-    with open(os.path.join(directory, f"train_{timestamp}.json"), "w") as f:
-        json.dump(train_examples, f, indent=4)
-
-    with open(os.path.join(directory, f"dev_{timestamp}.json"), "w") as f:
-        json.dump(dev_examples, f, indent=4)
-
-    with open(os.path.join(directory, f"test_{timestamp}.json"), "w") as f:
-        json.dump(test_examples, f, indent=4)
-
+    json_dump(train_examples, os.path.join(directory, f"train_{timestamp}.json"))
+    json_dump(dev_examples, os.path.join(directory, f"dev_{timestamp}.json"))
+    json_dump(test_examples, os.path.join(directory, f"test_{timestamp}.json"))
+    
     print("all done")
+
+
+def json_dump(data, path: str):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w") as f:
+        json.dump(data, f, indent=4)
 
 
 def write_json(prompt, completion):
@@ -121,7 +122,7 @@ def write_json(prompt, completion):
 
 if __name__ == "__main__":
     generate_dataset(
-        directory="data_generation/resources/",
+        directory="data/",
         N_train=100,
         N_dev=10,
         N_test=10,

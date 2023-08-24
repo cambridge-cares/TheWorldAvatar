@@ -10,7 +10,7 @@
 
 ### Setup steps
 
-1. Create a virtual environment and install required dependencies by executing `./install_script_pip.sh -v -i` in a bash shell. 
+1. Create a virtual environment and install required dependencies by executing `./install_script_pip.sh -v -i -e` in a bash shell. 
 1. Activate the virtual environment.
 
    `(Windows)`
@@ -49,6 +49,24 @@ The three files must contain the same set of arguments, and the every argument m
 - `ChemClass`
 - `Use`
 - `value`, `minvalue`, `maxvalue`
+
+### Data augmentation
+
+Adapted from https://arxiv.org/pdf/1901.11196.pdf.
+
+```python
+import nltk
+nltk.download("punkt")
+nltk.download("stopwords")
+```
+
+```
+python data_generation/augment_data.py --input_path data/train.json --output_path data/train_augmented.json --alpha 0.1 --n_aug 4
+```
+
+## Tests
+
+Execute `pytest`.
 
 ## Authors
 

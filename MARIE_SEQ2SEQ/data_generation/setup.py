@@ -10,5 +10,5 @@ setup(
     url="",
     python_requires='>=3.5',
     include_package_data=True,
-    install_requires= ['numpy', 'scikit-learn'],
+    install_requires= ['numpy', 'scikit-learn', 'nltk'],
 )
