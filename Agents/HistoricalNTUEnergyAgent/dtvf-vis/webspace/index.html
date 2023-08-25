@@ -113,7 +113,8 @@
                 </ul>
                 <div id="sidePanelGeneral">
                     <div id="titleContainer" onclick="manager.moveMapToFeature()"></div>
-                    <div id="contentContainer"></div>
+                    <div id="contentContainer">
+                    </div>
                     <div id="legendContainer"></div>
                     <div id="footerContainer">
                         <div id="footerContent"></div>
@@ -132,8 +133,7 @@
         <!--OPF Button (to be loaded by the dtvf.min.js -->
         <!-- <button id="runPVButton" class="custom-button1" style="position: absolute">Run Photovoltaic Panel Agent (Calculate PV output)</button> -->
         <!-- <button id="runOPFButton" class="custom-button2" style="position: absolute">Run Optimal Power Flow Agent</button> -->
-        <button id="getBuildingUsageButton" class="custom-button2" style="position: absolute">Show Property Use</button>
-        <button id="getShowHeatmapButton" class="custom-button2" style="position: absolute">Show Power Heatmap</button>
+
         <style>
             .custom-button1 {
                 font-size: 15px;
@@ -150,13 +150,14 @@
             }
             .custom-button2 {
                 font-size: 15px;
-                padding: 7px 15px;
+                padding: 7px 10px;
                 color: white;
-                background-color: #0a5ef0;
+                background-color: #146a7a;
                 border: none;
                 border-radius: 5px;
                 cursor: pointer;
                 transition: background-color 0.3s ease;
+                margin:3px;
             }
             .custom-button2:hover {
                 background-color: #5989de;
@@ -191,7 +192,7 @@
 
                 // ===== CUSTOMISABLE =====
                 // Set the default content in the "General" tab of the side panel
-                manager.getPanelHandler().setTitle("<h1>NTU Power Network Visualisation</h1>");
+                manager.getPanelHandler().setTitle("<h1>NTU Digital Twin Visualisation</h1>");
                 manager.getPanelHandler().setContent(`
                     <p>This NTU visualisation has been put together to demonstrate the intended use of the centralised Digital Twin Visualisation Framework (DTVF).
                     This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put 
