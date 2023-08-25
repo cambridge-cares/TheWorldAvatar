@@ -511,7 +511,7 @@ public class QueryClient {
 
         query.where(dispOutput.has(belongsTo, iri(dispersionDerivation)),
                 derivation.has(isDerivedFrom, dispOutput), dispOutput.isA(DISPERSION_OUTPUT),
-                station.isA(REPORTING_STATION).andHas(belongsTo, derivation)).select(derivation)
+                station.isA(REPORTING_STATION).andHas(belongsTo, derivation)).select(derivation).distinct()
                 .prefix(P_DISP, P_OM, P_EMS);
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
