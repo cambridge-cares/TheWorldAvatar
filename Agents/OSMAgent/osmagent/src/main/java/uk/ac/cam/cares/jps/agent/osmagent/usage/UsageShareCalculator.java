@@ -1,16 +1,19 @@
 package uk.ac.cam.cares.jps.agent.osmagent.usage;
 
+import uk.ac.cam.cares.jps.agent.osmagent.OSMAgent;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 
 public class UsageShareCalculator {
 
-    public static void updateUsageShare(Connection conn, List<String> tableNames) {
+    public static void updateUsageShare(String database, String user, String password) {
+        RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
 
-        String points = tableNames.get(1);
-        String polygons = tableNames.get(0);
+        String points = OSMAgent.POINT_TABLE;
+        String polygons = OSMAgent.POLYGON_TABLE;
 
         String add_uuid_ossp_Extension = "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";";
 
@@ -103,16 +106,11 @@ public class UsageShareCalculator {
                 "    AND p.ontobuilt = subquery.ontobuilt;";
 
         // Execute the SQL statement
-        try (Statement statement = conn.createStatement()) {
 
-            statement.executeUpdate(add_uuid_ossp_Extension);
-            statement.executeUpdate(assignUsageShare);
-            statement.executeUpdate(updatePropertyUsageStatement);
-            System.out.println("UsageShare calculated and propertyUsage assigned.");
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        rdbStoreClient.executeUpdate(add_uuid_ossp_Extension);
+        rdbStoreClient.executeUpdate(assignUsageShare);
+        rdbStoreClient.executeUpdate(updatePropertyUsageStatement);
+        System.out.println("UsageShare calculated and propertyUsage assigned.");
 
     }
 }

@@ -16,43 +16,43 @@ import org.json.JSONObject;
 @WebServlet(urlPatterns = "/update")
 
 public class OSMAgent extends JPSAgent {
-    private RemoteRDBStoreClient rdbStoreClient;
-
+    private EndpointConfig endpointConfig = new EndpointConfig();
     private String geoDatabase;
     private String osmDatabase;
-    private List<String> tableNames;
+    private String dbUser;
+    private String dbPassword;
+    public static final String POINT_TABLE = "points";
+    public static final String POLYGON_TABLE = "polygons";
 
     private Map<String, String> configs = new HashMap<>();
 
     public void init() {
         readConfig();
-        EndpointConfig endpointConfig = new EndpointConfig();
-        rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDbUrl(osmDatabase), endpointConfig.getDbUser(),
-                endpointConfig.getDbPassword());
+        dbUser = endpointConfig.getDbUser();
+        dbPassword = endpointConfig.getDbPassword();
         configs.put(GeometryMatcher.GEO_DB, endpointConfig.getDbUrl(geoDatabase));
-        configs.put(GeometryMatcher.GEO_USER, endpointConfig.getDbUser());
-        configs.put(GeometryMatcher.GEO_PASSWORD, endpointConfig.getDbPassword());
+        configs.put(GeometryMatcher.GEO_USER, dbUser);
+        configs.put(GeometryMatcher.GEO_PASSWORD, dbPassword);
         configs.put(GeometryMatcher.OSM_DB, endpointConfig.getDbUrl(osmDatabase));
-        configs.put(GeometryMatcher.OSM_USER, endpointConfig.getDbUser());
-        configs.put(GeometryMatcher.OSM_PASSWORD, endpointConfig.getDbPassword());
+        configs.put(GeometryMatcher.OSM_USER, dbUser);
+        configs.put(GeometryMatcher.OSM_PASSWORD, dbPassword);
     }
 
     public void readConfig() {
         ResourceBundle config = ResourceBundle.getBundle("config");
         geoDatabase = config.getString("geo.database");
         osmDatabase = config.getString("osm.database");
-        tableNames = Arrays.asList(config.getString("osm.tables").split(","));
     }
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
-        try (Connection conn = rdbStoreClient.getConnection()) {
-            UsageMatcher.checkAndAddColumns(conn, tableNames);
-            UsageMatcher.updateOntoBuilt(conn, tableNames);
+        try {
+            UsageMatcher.checkAndAddColumns(endpointConfig.getDbUrl(osmDatabase), dbUser, dbPassword);
+            UsageMatcher.updateOntoBuilt(endpointConfig.getDbUrl(osmDatabase), dbUser, dbPassword);
             GeometryMatcher geometryMatcher = new GeometryMatcher(configs);
-            geometryMatcher.matchGeometry("points");
-            geometryMatcher.matchGeometry("polygons");
-            UsageShareCalculator.updateUsageShare(conn, tableNames);
+            geometryMatcher.matchGeometry(POINT_TABLE);
+            geometryMatcher.matchGeometry(POLYGON_TABLE);
+            UsageShareCalculator.updateUsageShare(endpointConfig.getDbUrl(osmDatabase), dbUser, dbPassword);
         }
         catch (Exception e) {
             e.printStackTrace();

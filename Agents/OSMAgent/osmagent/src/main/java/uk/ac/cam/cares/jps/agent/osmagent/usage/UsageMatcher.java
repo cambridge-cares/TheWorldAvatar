@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.agent.osmagent.usage;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
@@ -8,14 +7,21 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
+import uk.ac.cam.cares.jps.agent.osmagent.OSMAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 public class UsageMatcher {
-    public static void updateOntoBuilt(Connection conn, List<String> tableNames) {
+    private static final List<String> tableNames = Arrays.asList(OSMAgent.POLYGON_TABLE, OSMAgent.POINT_TABLE);
+
+    public static void updateOntoBuilt(String database, String user, String password) {
+        RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
 
         for (String tableName : tableNames) {
 
@@ -64,11 +70,7 @@ public class UsageMatcher {
                     System.out.println(sql);
 
                     // Execute the SQL statement
-                    try (Statement statement = conn.createStatement()) {
-                        statement.executeUpdate(sql);
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
+                    rdbStoreClient.executeUpdate(sql);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -76,7 +78,8 @@ public class UsageMatcher {
         }
     }
 
-    public static void checkAndAddColumns(Connection connection, List<String> tableNames) throws SQLException {
+    public static void checkAndAddColumns(String database, String user, String password) {
+        RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
 
         Map<String, String> columns = new HashMap<>();
         columns.put("building_iri", "TEXT");
@@ -84,16 +87,22 @@ public class UsageMatcher {
         columns.put("ontobuilt", "TEXT");
         columns.put("usageshare", "FLOAT");
 
-        for (String tableName : tableNames) {
-            for (Map.Entry<String, String> entry : columns.entrySet()) {
-                if (!isColumnExist(connection, tableName, entry.getKey())) {
-                    String addColumnSql = "ALTER TABLE " + tableName +
-                            " ADD COLUMN " + entry.getKey() + " " + entry.getValue();
-                    executeSql(connection, addColumnSql);
-                } else {
-                    System.out.println("Column " + entry.getKey() + " already exists in " + tableName + ".");
+        try (Connection connection = rdbStoreClient.getConnection()) {
+            for (String tableName : tableNames) {
+                for (Map.Entry<String, String> entry : columns.entrySet()) {
+                    if (!isColumnExist(connection, tableName, entry.getKey())) {
+                        String addColumnSql = "ALTER TABLE " + tableName +
+                                " ADD COLUMN " + entry.getKey() + " " + entry.getValue();
+                        executeSql(connection, addColumnSql);
+                    } else {
+                        System.out.println("Column " + entry.getKey() + " already exists in " + tableName + ".");
+                    }
                 }
             }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException(e);
         }
     }
 
