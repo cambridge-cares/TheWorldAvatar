@@ -1,6 +1,6 @@
 package uk.ac.cam.cares.jps.assetinfo;
 
-import static uk.ac.cam.cares.jps.assetinfo.AssetInfoConstant.*;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.*;
 
 import android.content.Context;
 import android.util.Pair;
@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,22 +25,8 @@ import java.util.stream.Collectors;
 import uk.ac.cam.cares.jps.data.AssetInfo;
 
 public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.ViewHolder>{
-    private List<Pair<String, String>> basicProperties = new ArrayList<>();
-    private List<Pair<String, String>> locationProperties = new ArrayList<>();
-    private List<Pair<String, String>> supplierProperties = new ArrayList<>();
-    private List<Pair<String, String>> priceProperties = new ArrayList<>();
-    private List<Pair<String, String>> docLineProperties = new ArrayList<>();
-    private List<Pair<String, String>> otherProperties = new ArrayList<>();
-
     // todo: remove space and case when comparing/searching for the key?
-    List<String> basicInfoOrder = new ArrayList<>(Arrays.asList(REFERENCE_LABEL, TYPE, ASSIGNED_TO, IRI, INVENTORY_ID));
-    List<String> locationInfoOrder = new ArrayList<>(Arrays.asList(LOCATED_IN, SEAT_LOCATION, STORED_IN));
-    List<String> supplierInfoOrder = new ArrayList<>(Arrays.asList(VENDOR, MANUFACTURER, MANUFACTURE_URL, SERIAL_NUMBER, MODEL_NUMBER));
-    List<String> priceInfoOrder = new ArrayList<>(Arrays.asList(PURCHASE_PRICE));
-    List<String> docLineInfoOrder = new ArrayList<>(Arrays.asList(SERVICE_CATEGORY_CODE, SERVICE_CATEGORY_DESCRIPTION, SERVICE_CODE, SERVICE_CODE_DESCRIPTION, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER));
-
-    List<String> sectionTitles = new ArrayList<>(Arrays.asList("Basic", "Location", "Supplier", "Price", "Purchase", "Others"));
-    List<List<Pair<String, String>>> sectionContents = new ArrayList<>(Arrays.asList(basicProperties, locationProperties, supplierProperties, priceProperties, docLineProperties, otherProperties));
+    Map<String, List<Pair<String, String>>> propertiesBySections = new LinkedHashMap<>();
 
     Context context;
     public AssetInfoAdapter() { }
@@ -54,14 +42,12 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
 
     private void buildAllPropertiesList(AssetInfo assetInfo) {
         Map<String, String> map = (Map<String, String>) assetInfo.getProperties().clone();
-        basicProperties = getOrderedPropertiesList(map, basicInfoOrder);
-        locationProperties = getOrderedPropertiesList(map, locationInfoOrder);
-        supplierProperties = getOrderedPropertiesList(map, supplierInfoOrder);
-        priceProperties = getOrderedPropertiesList(map, priceInfoOrder);
-        docLineProperties = getDocLineOrderedPropertiesList(map);
-        otherProperties = getOrderedPropertiesList(map, null);
+        propertiesBySections.put(BASIC, getOrderedPropertiesList(map, basicInfoOrder));
+        propertiesBySections.put(LOCATION, getOrderedPropertiesList(map, locationInfoOrder));
+        propertiesBySections.put(SUPPLIER, getOrderedPropertiesList(map, supplierInfoOrder));
+        propertiesBySections.put(PURCHASE, getItemAndDocLineOrderedPropertiesList(map));
+        propertiesBySections.put(OTHERS, getOrderedPropertiesList(map, null));
 
-        sectionContents = new ArrayList<>(Arrays.asList(basicProperties, locationProperties, supplierProperties, priceProperties, docLineProperties, otherProperties));
     }
 
     private List<Pair<String, String>> getOrderedPropertiesList(Map<String, String> map, List<String> orderList) {
@@ -81,7 +67,7 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
         allKeys.addAll(basicInfoOrder);
         allKeys.addAll(locationInfoOrder);
         allKeys.addAll(supplierInfoOrder);
-        allKeys.addAll(priceInfoOrder);
+        allKeys.addAll(itemInfoOrder);
         allKeys.addAll(docLineInfoOrder);
 
         for (String key : map.keySet()) {
@@ -95,15 +81,19 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
     }
 
     // handle multiple attachment and comment
-    private List<Pair<String, String>> getDocLineOrderedPropertiesList(Map<String, String> map) {
+    private List<Pair<String, String>> getItemAndDocLineOrderedPropertiesList(Map<String, String> map) {
         List<Pair<String, String>> result = new ArrayList<>();
-        for (String key : docLineInfoOrder) {
+        List<String> itemAndDocLineKeys = new ArrayList<>();
+        itemAndDocLineKeys.addAll(itemInfoOrder);
+        itemAndDocLineKeys.addAll(docLineInfoOrder);
+
+        for (String key : itemAndDocLineKeys) {
             if (!map.containsKey(key) || (map.containsKey(key) && map.get(key).isEmpty())) {
                 continue;
             }
 
-            // service code and category related
-            if (!Arrays.asList(PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER).contains(key)) {
+            // item related
+            if (itemInfoOrder.contains(key)) {
                 result.add(new Pair<>(key, map.get(key)));
                 map.remove(key);
                 continue;
@@ -144,10 +134,12 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.getLabelView().setText(sectionTitles.get(position));
+        String currentSectionName = new ArrayList<>(propertiesBySections.keySet()).get(position);
+        holder.getLabelView().setText(currentSectionName);
 
         LinearLayout linearLayout = holder.getLinearLayout();
-        for (Pair<String, String> content : sectionContents.get(position)) {
+        linearLayout.removeAllViews();
+        for (Pair<String, String> content : propertiesBySections.getOrDefault(currentSectionName, new ArrayList<>())) {
             PropertyItemView propertyItemView = new PropertyItemView(context);
             propertyItemView.initView(content.first, content.second);
             linearLayout.addView(propertyItemView);
@@ -157,7 +149,7 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
 
     @Override
     public int getItemCount() {
-        return sectionTitles.size();
+        return propertiesBySections.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
