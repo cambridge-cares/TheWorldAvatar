@@ -7,6 +7,7 @@ SmellAgent is an IoT sensor Python Agent designed to detect and categorise smell
 - [Smell Agent](#smell-agent)
   - [Table of Contents](#table-of-contents)
   - [Installation](#installation)
+  - [Resources](#resources)
   - [Usage](#usage)
   - [Docker Deployment](#docker-deployment)
 - [Author](#author)
@@ -16,7 +17,16 @@ SmellAgent is an IoT sensor Python Agent designed to detect and categorise smell
 
 `pip install -r requirements.txt`
 
+## Resources
+
+The `resources` directory contains essential files for the SmellAgent application, including:
+
+- `*.joblib`: The trained machine learning model used for smell prediction.
+- `smellagent.properties`: Configuration settings for connecting to InfluxDB and other parameters.
+
 ## Usage
+
+Use command:
 
 `python -m smellagent.entry_point`
 
