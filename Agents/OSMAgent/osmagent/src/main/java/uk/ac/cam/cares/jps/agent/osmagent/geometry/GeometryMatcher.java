@@ -13,20 +13,20 @@ import java.util.Map;
 import org.json.JSONArray;
 
 public class GeometryMatcher {
-    public static String GEO_DB = "GEODB";
-    public static String GEO_USER = "GEOUSER";
-    public static String GEO_PASSWORD = "GEOPASSWORD";
-    public static String OSM_DB = "OSMDB";
-    public static String OSM_USER = "OSMUSER";
-    public static String OSM_PASSWORD = "OSMPASSWORD";
+    public static final String GEO_DB = "GEODB";
+    public static final String GEO_USER = "GEOUSER";
+    public static final String GEO_PASSWORD = "GEOPASSWORD";
+    public static final String OSM_DB = "OSMDB";
+    public static final String OSM_USER = "OSMUSER";
+    public static final String OSM_PASSWORD = "OSMPASSWORD";
 
-    private double threshold = 0.7;
+    private final double threshold = 0.7;
 
     private Map<String, GeoObject> geoObjects;
 
-    private String osmDb;
-    private String osmUser;
-    private String osmPassword;
+    private final String osmDb;
+    private final String osmUser;
+    private final String osmPassword;
 
     private RemoteRDBStoreClient geoClient;
     private RemoteRDBStoreClient osmClient;
@@ -56,6 +56,8 @@ public class GeometryMatcher {
         int counter = 0;
         String update = "";
 
+        System.out.println(table + " matching start");
+
         // match building geometry with OSM building geometry
         for (Map.Entry<Integer, OSMObject> entry : osmObjects.entrySet()) {
             OSMObject osmObject = entry.getValue();
@@ -72,7 +74,7 @@ public class GeometryMatcher {
                 JSONArray result = geoClient.executeQuery(query);
 
                 if (!result.isEmpty()) {
-                    osmObject.setIri(result.getJSONObject(0).getString("iri"));
+                    osmObject.setIri(result.getJSONObject(0).getString("building_iri"));
                 }
             }
             else {
@@ -85,7 +87,7 @@ public class GeometryMatcher {
                 Geometry geometry = wktReader.read(osmObject.getGeometry());
 
                 if (matchedArea / geometry.getArea() >= threshold) {
-                    osmObject.setIri(matchResult.getJSONObject(0).getString("iri"));
+                    osmObject.setIri(matchResult.getJSONObject(0).getString("building_iri"));
                 }
             }
 
@@ -101,15 +103,13 @@ public class GeometryMatcher {
         }
 
         // update OSM table with matched building IRI
-        for (int i = 0; i < updates.size(); i++) {
-            osmClient.executeUpdate(updateStart + updates.get(i) + updateEnd);
+        for (String str : updates) {
+            osmClient.executeUpdate(updateStart + str + updateEnd);
         }
 
         updates.clear();
         counter = 0;
         update = "";
-
-        osmObjects = OSMObject.getOSMObjects(osmDb, osmUser, osmPassword, table, "building_iri IS NULL");
 
         boolean flag = checkIfPoints(table);
 
@@ -130,11 +130,9 @@ public class GeometryMatcher {
             String iriUpdate = "";
 
             if (!result.isEmpty()) {
-                OSMObject osmObject = osmObjects.get(result.getJSONObject(0).get("id"));
-                iriUpdate = caseOgcFid(osmObject.getOgcfid(), geoObject.getUrival());
+                iriUpdate = caseOgcFid(result.getJSONObject(0).getInt("id"), geoObject.getUrival());
                 for (int i = 1; i < result.length(); i++) {
-                    osmObject = osmObjects.get(result.getJSONObject(i).getInt("id"));
-                    iriUpdate = insertUpdate(iriUpdate, osmObject.getOgcfid());
+                    iriUpdate = insertUpdate(iriUpdate, result.getJSONObject(i).getInt("id"));
                 }
             }
 
@@ -149,9 +147,10 @@ public class GeometryMatcher {
         }
 
         // update OSM table with matched building IRI
-        for (int i = 0; i < updates.size(); i++) {
-            osmClient.executeUpdate(updateStart + updates.get(i) + updateEnd);
+        for (String str : updates) {
+            osmClient.executeUpdate(updateStart + str + updateEnd);
         }
+        System.out.println(table + " matching end");
     }
 
     /**
@@ -186,11 +185,11 @@ public class GeometryMatcher {
 
         if (flag) {
             query = "SELECT ogc_fid AS id FROM " + table + " WHERE public.ST_Intersects(public.ST_GeomFromText(\'" + geometry + "\'," + srid + ")," +
-                    "public.ST_Transform(\"geometryProperty\"," + srid + ")) AND iri IS NULL";
+                    "public.ST_Transform(\"geometryProperty\"," + srid + ")) AND building_iri IS NULL";
         }
         else {
             String subQuery = "(SELECT ogc_fid, public.ST_Area(public.ST_Intersection(public.ST_GeomFromText(\'" + geometry + "\'," + srid +
-                    "),public.ST_Transform(\"geometryProperty\"," + srid + "))) AS matchedarea, public.ST_Area(\"geometryProperty\") AS area FROM " + table + " WHERE iri is NULL) AS q";
+                    "),public.ST_Transform(\"geometryProperty\"," + srid + "))) AS matchedarea, public.ST_Area(\"geometryProperty\") AS area FROM " + table + " WHERE building_iri is NULL) AS q";
 
             query = "SELECT q.ogc_fid AS id FROM " + subQuery + " WHERE (matchedarea / area) >= " + threshold;
         }
@@ -214,7 +213,7 @@ public class GeometryMatcher {
     private String booleanQuery(OSMObject osmObject) {
         String osmObjectString = transformString(geometryString(osmObject.getGeometry(), osmObject.getSrid()));
 
-        return "SELECT q.urival AS iri FROM " +  subQuery() + " WHERE public.ST_Intersects(q.geometry," + osmObjectString + ")";
+        return "SELECT q.urival AS building_iri FROM " +  subQuery() + " WHERE public.ST_Intersects(q.geometry," + osmObjectString + ")";
     }
 
     /**
@@ -225,10 +224,10 @@ public class GeometryMatcher {
     private String areaQuery(OSMObject osmObject) {
         String osmObjectString = transformString(geometryString(osmObject.getGeometry(), osmObject.getSrid()));
 
-        String query =  "SELECT public.ST_Area(public.ST_Intersection(q.geometry," + osmObjectString + ")) AS area, q.urival AS iri";
+        String query =  "SELECT public.ST_Area(public.ST_Intersection(q.geometry," + osmObjectString + ")) AS area, q.urival AS building_iri";
         query += " FROM " + subQuery();
 
-        return "SELECT area, iri FROM (" + query + ") AS intersection ORDER BY intersection.area DESC LIMIT 1";
+        return "SELECT area, building_iri FROM (" + query + ") AS intersection ORDER BY intersection.area DESC LIMIT 1";
     }
 
     /**
