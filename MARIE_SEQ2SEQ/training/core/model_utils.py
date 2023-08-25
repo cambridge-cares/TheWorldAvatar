@@ -31,8 +31,10 @@ def get_model_family_from_model_path(model_path: str):
 
 
 def get_hf_model(model_args: ModelArguments, is_trainable: bool, model_family: str):
+    if model_args.cpu:
+        device_map = "cpu"
     # if we are in a distributed setting, we need to set the device map per device
-    if os.environ.get("LOCAL_RANK") is not None:
+    elif os.environ.get("LOCAL_RANK") is not None:
         local_rank = int(os.environ.get("LOCAL_RANK", "0"))
         device_map = {"": local_rank}
     else:
@@ -109,5 +111,5 @@ def get_hf_model_and_tokenizer(model_args: ModelArguments, is_trainable: bool, m
 
 def get_ctranslate2_model_and_tokenizer(model_args: ModelArguments, model_family: str):
     tokenizer = get_tokenizer(model_args, model_family=model_family)
-    model = ctranslate2.Translator("../model_hub/20230818_2-ct2/")
+    model = ctranslate2.Translator("../model_hub/20230818_2-ct2/", device="cpu" if model_args.cpu else "auto")
     return model, tokenizer

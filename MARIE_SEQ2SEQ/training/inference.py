@@ -22,7 +22,7 @@ def infer():
     if model_args.model_format == "hf":
         trans_model = HfTranslationModel(model_args, model_family=model_family, max_new_tokens=infer_args.max_new_tokens)
     elif model_args.model_format == "ctranslate2":
-        trans_model = CTranslate2TranslationModel(model_args, model_family=model_family)
+        trans_model = CTranslate2TranslationModel(model_args, model_family=model_family, max_new_tokens=infer_args.max_new_tokens)
 
     with open(data_args.eval_data_path, "r") as f:
         data = json.load(f)
