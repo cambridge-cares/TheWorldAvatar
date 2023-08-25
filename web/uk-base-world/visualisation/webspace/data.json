@@ -1,5 +1,26 @@
 {
     "name": "UK Base World",
+    "sources": [
+        {
+            "id": "uk-population-source",
+            "type": "raster",
+            "tiles": [
+                "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+            ]
+        }
+    ],
+    "layers": [
+        {
+            "id": "uk-population-layer",
+            "name": "UK Population Count",
+            "source": "uk-population-source",
+            "type": "raster",
+            "slot": "middle",
+            "layout": {
+                "visibility": "visible"
+            }
+        }
+    ],
     "groups": [
         {
             "name": "Power Generation Sites",

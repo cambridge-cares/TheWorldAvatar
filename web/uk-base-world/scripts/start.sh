@@ -98,6 +98,8 @@ then
 
     # Copy in the stack uploader config(s)
     cp "./inputs/config/dukes_2023.json" "$UPLOAD_CONFIG/"
+    cp "./inputs/config/population.json" "$UPLOAD_CONFIG/"
+    cp "./inputs/config/uk-population-style.sld" "$UPLOAD_CONFIG/"
 
     # Copy in the data for upload
     UPLOAD_DATA="$ROOT/Deploy/stacks/dynamic/stack-data-uploader/inputs/data"
@@ -165,7 +167,7 @@ then
     # Update the default grafana dashboard to be the "Overview" one
     curl -X PUT --insecure -H "Content-Type: application/json" -H "Authorization: Bearer $API_KEY" --data-binary @inputs/dashboard/grafana-org-config.json http://admin:$PASSWORD@localhost:38383/dashboard/api/org/preferences
 
-    echo 
+    echo ""
     echo "Script completed, may need to wait a few minutes for the stack-data-uploader to finish."
     echo "Visualisation should be available now at http://localhost:38383/visualisation/"
 else

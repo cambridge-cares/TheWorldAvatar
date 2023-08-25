@@ -16,6 +16,13 @@ Once a year, the UK government publishes a Digest of UK Energy Statistics (DUKES
 
 Read the associated [DUKES Data](./docs/data-dukes.md) page for details on how the DUKES data was acquired and processed.
 
+### United Kingdom: High Resolution Population Density
+
+The [Humanitarian Data Exchange](https://data.humdata.org/) publishes a number of data sets from around the globe. On an irregular basis, they publish population density data for the UK. In this example we're using the `population_gbr.geotiff.zip` file (which contains a GeoTIFF of population density) from the [United Kingdom: High Resolution Population Density Maps + Demographic Estimates](https://data.humdata.org/dataset/united-kingdom-high-resolution-population-density-maps-demographic-estimates) page.
+
+No processing is needed on this data set, we're using it as is.
+
+
 ## Uploading data
 
 Now that we have a clean CSV for each data set, we can spin up an instance of the stack (see [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) for details on how to do this) then run the data uploader to get our data into a relational database. Before trying to upload data, the [uploader's documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader) is considered required reading; this file will not detail the generic upload process.
@@ -35,13 +42,21 @@ The below files relate to the aforementioned DUKES 2023 data set.
   * Note that when uploading the ontology files, you may need to rename any Turtle files with the `.ttl` extension. The stack data uploader assumes that `.owl` files are using the XML format, if an `.owl` file is using Turtle then this will cause errors during upload.
 
 
+### UK Population Density
+
+The below files relate to the aforementioned UK Population Density data set.
+
+* [Uploader config](./inputs/config/population.json)
+* [Raster style](./inputs/config/uk-population-style.sld)
+  * SLD file to style the population raster data in GeoServer. 
+
 ## Creating a visualisation
 
-A visualisation has also been created for the UK Base World, the `visualisation/webspace` directory contains the files required and are copied into a `dtvf-base-image` container for hosting during the start-up process. As with all DTVF visualisations, the `data.json` file defines the data to be loaded on the visualisation, and in what grouping. Users running the visualisation in a new location may need to adjust the URLs listed in this file.
+A visualisation has also been created for the UK Base World, the `visualisation/webspace` directory contains the files required and are copied into a `twa-vf` container for hosting during the start-up process. As with all TWA-VF visualisations, the `data.json` file defines the data to be loaded on the visualisation, and in what grouping. Users running the visualisation in a new location may need to adjust the URLs listed in this file.
 
-For more information on how visualisations are created and configured using the DTVF, please read its [documentation page](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework).
+For more information on how visualisations are created and configured using the TWA-VF, please read its [documentation page](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework).
 
-Note that this __may__ require building a local copy of the `dtvf-base-image` Docker image. If so, please run the `build.sh` script from within the `/web/digital-twin-vis-framework/library` directory.
+Note that this __may__ require building a local copy of the `twa-vf` Docker image. If so, please run the `build.sh` script from within the `/web/twa-vis-framework/library` directory.
 
 ### Feature info agent
 
@@ -72,6 +87,7 @@ To run the script and bring up a local instance of the UK Base World visualisati
 4. Add the data files:
    - Add the processed DUKES 2023 CSV to the `./inputs/data/uk_base_world/dukes_2023` directory.
    - Add the OntoEIP OWL and TTL files to the `./inputs/data/ontoeip` directory (note that these need to be in a flat structure, no subdirectories).
+   - Add the UK population density GeoTIFF to the `./inputs/data/population` directory.
 5. Run the script from the `uk-base-world` directory, passing a password for PostGIS and Geoserver:
    - Example command: `./scripts/start.sh PASSWORD=pickapassword`
    - If deploying behind an existing URL, the `HOST` parameter can be passed to auto-update the visualisation's client side files (e.g. `./scripts/start.sh PASSWORD=pickapassword HOST=https://theworldavatar.io/demo/uk-base-world`)

@@ -6,3 +6,4 @@ grafana_api_key
 *.log
 *.xlsx
 *.temp
+*.tif
