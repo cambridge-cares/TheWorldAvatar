@@ -1,14 +1,15 @@
 import os
 import torch
 
+import ctranslate2
 from transformers import (
     BitsAndBytesConfig,
     AutoModelForSeq2SeqLM,
-    AutoModelForCausalLM,
+    LlamaForCausalLM,
     AutoTokenizer,
     AutoConfig,
 )
-from peft import PeftModel, LoraConfig, TaskType, get_peft_model
+from peft import PeftModel, LoraConfig, TaskType, get_peft_model, prepare_model_for_kbit_training
 
 from core.arguments_schema import ModelArguments
 
@@ -29,7 +30,7 @@ def get_model_family_from_model_path(model_path: str):
     raise ValueError("Unable to infer model family from model config: " + config)
 
 
-def get_model(model_args: ModelArguments, is_trainable: bool, model_family: str):
+def get_hf_model(model_args: ModelArguments, is_trainable: bool, model_family: str):
     # if we are in a distributed setting, we need to set the device map per device
     if os.environ.get("LOCAL_RANK") is not None:
         local_rank = int(os.environ.get("LOCAL_RANK", "0"))
@@ -58,8 +59,11 @@ def get_model(model_args: ModelArguments, is_trainable: bool, model_family: str)
         if v is not None
     }
 
-    auto_model = AutoModelForSeq2SeqLM if model_family == "t5" else AutoModelForCausalLM
+    auto_model = AutoModelForSeq2SeqLM if model_family == "t5" else LlamaForCausalLM
     model = auto_model.from_pretrained(model_args.model_path, **model_load_kwargs)
+    
+    if getattr(model, "is_loaded_in_8bit", False) or getattr(model, "is_loaded_in_4bit", False):
+        model = prepare_model_for_kbit_training(model)
 
     if model_args.lora_path is not None:
         model = PeftModel.from_pretrained(
@@ -97,8 +101,13 @@ def get_tokenizer(model_args: ModelArguments, model_family: str):
     return tokenizer
 
 
-def get_model_and_tokenizer(model_args: ModelArguments, is_trainable: bool, model_family: str):
+def get_hf_model_and_tokenizer(model_args: ModelArguments, is_trainable: bool, model_family: str):
     tokenizer = get_tokenizer(model_args, model_family=model_family)
-    model = get_model(model_args, is_trainable=is_trainable, model_family=model_family)
+    model = get_hf_model(model_args, is_trainable=is_trainable, model_family=model_family)
+    return model, tokenizer
 
+
+def get_ctranslate2_model_and_tokenizer(model_args: ModelArguments, model_family: str):
+    tokenizer = get_tokenizer(model_args, model_family=model_family)
+    model = ctranslate2.Translator("../model_hub/20230818_2-ct2/")
     return model, tokenizer

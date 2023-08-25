@@ -13,3 +13,4 @@ levenshtein
 sparqlwrapper
 sacrebleu
 scikit-learn
+ctranslate2
