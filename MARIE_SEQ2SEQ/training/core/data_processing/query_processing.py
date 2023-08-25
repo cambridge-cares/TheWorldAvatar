@@ -46,6 +46,9 @@ def preprocess_query(query: str, model_family: str):
 def postprocess_query(query: str, model_family: str):
     if model_family == "t5":
         query = t5_decode_query_special_chars(query)
+    elif model_family == "llama":
+        if "\n\n##\n\n" in query:
+            query = query.split("\n\n##\n\n", maxsplit=1)[1]
     try:
         return AbstractQueryRep.from_string(query).compact2verbose().to_query_string()
     except:
