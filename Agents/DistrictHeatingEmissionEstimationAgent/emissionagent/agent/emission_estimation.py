@@ -7,6 +7,7 @@
 # calculate emissions from consumed gas and provided heat
 
 import pandas as pd
+import CoolProp.CoolProp as CP
 
 from py4jps import agentlogging
 
@@ -16,6 +17,35 @@ from emissionagent.datamodel.iris import *
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
 
+
+#
+# ESTIMATION PARAMETERS
+#
+
+# Fluid properties
+FLUID = 'Air'           # Assume exhaust gases as hot air
+PRESSURE = 101325.0     # Assume atmospheric pressure of 1atm (in Pa)
+
+# Emission factors (kg/MWh)
+EFW_FACTORS = {
+    # factors in kg/MWh heat sourced
+    OD_NO2: 4.01351, 
+    OD_PM10: 0.13260,
+    OD_PM2_5: 0.11883
+}
+DH_FACTORS = {
+    # factors in kg/MWh gas burned
+    OD_NO2: None, 
+    OD_PM10: None,
+    OD_PM2_5: None 
+}
+
+# Default rounding behaviour
+ROUNDING = 6
+
+#
+# ESTIMATION METHODS
+#
 
 def extract_relevant_gas_or_heat_amount(ts_client, kg_client, derivationIRI:str,
                                         dataIRIs:list, simulation_time_iri:str) -> float:
@@ -90,23 +120,39 @@ def calculate_emissions_for_consumed_gas(pollutant_iri:str, consumed_gas:float) 
 
 def calculate_emissions_for_provided_heat(pollutant_iri:str, provided_heat:float) -> dict:
     """
-    Calculates the emissions for consumed gas
+    Calculates the emissions associated with a certain amount of sourced heat
+    NOTE: Assumes that the amount of provided heat refers to MWh/h (in line
+          with the overall district heating optimisation based on hourly data)
 
     Arguments:
         pollutant_iri {str} -- IRI of pollutant ID for which to calculate emissions
         provided_heat {float} -- amount of sourced heat, MWh
     Returns:
         emission {dict} -- emission data to be instantiated as derivation output
+        NOTE: All returned values are in SI units i.e.,
+                temperature - K, 
+                density - kg/m3, 
+                mass flow rate - kg/s
     """
     
+    # Temperature of flue gas: 220 degC based on EfW plant operator
+    temp = 220.0 + 273.15    # Kelvin
+    # Assume: density of exhaust stream = density of hot air
+    rho = CP.PropsSI('D', 'P', PRESSURE, 'T', temp, FLUID)
+
+    # Calculate emission mass flow rate 
+    # NOTE: this mass flow represents the pure pollutant mass flow, not the
+    #       total mass flow of the exhaust stream
+    mass_flow = EFW_FACTORS[pollutant_iri] * provided_heat  # kg/MWh * MWh = kg
+    # Assume: equal mass flow throughout entire hour
+    mass_flow /= 3600.0                                     # kg/s
+
     # Initialise return dictionary
     emission = {
         'pollutantID': pollutant_iri,
-        'temperature': provided_heat,
-        'density': provided_heat,
-        'massflow': provided_heat
+        'temperature': temp,
+        'density': round(rho, 6),
+        'massflow': round(mass_flow, 6)
     }
-    
-    # TODO: Implement emission calculation
 
     return emission

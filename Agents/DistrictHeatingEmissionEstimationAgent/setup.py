@@ -14,6 +14,7 @@ setup(
     python_requires='>=3.7',
     include_package_data=True,
     install_requires= [
+        'CoolProp~=6.5.0',
         'flask~=2.1.0',
         'pandas~=2.0.3',
         'py4jps~=1.0.37', 

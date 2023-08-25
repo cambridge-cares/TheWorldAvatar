@@ -20,6 +20,7 @@ from flask import Flask
 from pathlib import Path
 from rdflib import Graph
 from urllib.parse import urlparse
+import CoolProp.CoolProp as CP
 
 from pyderivationagent.data_model.iris import ONTODERIVATION_ISDERIVEDFROM, \
                                               ONTODERIVATION_BELONGSTO, \
@@ -120,15 +121,18 @@ DERIVATION_INPUTS_1 = [SIMULATION_TIME_1, POINT_SOURCE_1,
 DERIVATION_INPUTS_2 = [SIMULATION_TIME_1, POINT_SOURCE_1,
                        CONSUMED_GAS_AMOUNT_1, CONSUMED_GAS_AMOUNT_2]
 # Expected emission outputs
+# EfW plant
+temp_efw = 220 + 273.15
+density_efw = round(CP.PropsSI('D', 'T', temp_efw, 'P', 101325, 'Air'), 6)
 EXPECTED_OUTPUTS_1 = {
-    OD_NO2: {'temperature': VALUE_1, 'density': VALUE_1, 'massflow': VALUE_1}, 
-    OD_PM2_5: {'temperature': VALUE_1, 'density': VALUE_1, 'massflow': VALUE_1}, 
-    OD_PM10: {'temperature': VALUE_1, 'density': VALUE_1, 'massflow': VALUE_1}
+    OD_NO2: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.012386}, 
+    OD_PM2_5: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.000367}, 
+    OD_PM10: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.000409}
 }
 EXPECTED_OUTPUTS_2 = {
-    OD_NO2: {'temperature': VALUE_2, 'density': VALUE_2, 'massflow': VALUE_2}, 
-    OD_PM2_5: {'temperature': VALUE_2, 'density': VALUE_2, 'massflow': VALUE_2}, 
-    OD_PM10: {'temperature': VALUE_2, 'density': VALUE_2, 'massflow': VALUE_2}
+    OD_NO2: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.024772}, 
+    OD_PM2_5: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.000733}, 
+    OD_PM10: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.000818}
 }
 EXPECTED_OUTPUTS_3 = {
     OD_NO2: {'temperature': 2*VALUE_1, 'density': 2*VALUE_1, 'massflow': 2*VALUE_1}, 
