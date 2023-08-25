@@ -20,7 +20,7 @@ from core.data_processing.qn_processing import (
 from core.data_processing.query_processing import preprocess_query
 from core.arguments_schema import DatasetArguments, ModelArguments
 from core.model_utils import (
-    get_model_and_tokenizer,
+    get_hf_model_and_tokenizer,
     get_model_family_from_model_path,
 )
 
@@ -80,13 +80,18 @@ def get_llama_trainer(
     data_args: DatasetArguments,
     train_args: TrainingArguments,
 ):
+    model.config.use_cache = False 
+    model.config.pretraining_tp = 1
+    
     train_dataset = Dataset.from_json(data_args.train_data_path)
     eval_dataset = Dataset.from_json(data_args.eval_data_path)
 
+    # template = LLAMA_TEMPLATE
+    template = "{question}\n\n###\n\n{sparql_query}"
     def formatting_func(examples):
         output_texts = []
         for i in range(len(examples["question"])):
-            text = LLAMA_TEMPLATE.format(
+            text = template.format(
                 question=examples["question"][i],
                 sparql_query=preprocess_query(examples["sparql_query_compact"][i], model_family="llama"),
             )
@@ -117,7 +122,7 @@ def train():
     model_args, data_args, train_args = hfparser.parse_args_into_dataclasses()
 
     model_family = get_model_family_from_model_path(model_args.model_path)
-    model, tokenizer = get_model_and_tokenizer(model_args, is_trainable=True, model_family=model_family)
+    model, tokenizer = get_hf_model_and_tokenizer(model_args, is_trainable=True, model_family=model_family)
     
     trainer = TRAINER_GETTER_BY_MODEL[model_family](
         model=model, tokenizer=tokenizer, data_args=data_args, train_args=train_args
