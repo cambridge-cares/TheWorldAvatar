@@ -21,13 +21,11 @@ def t5_decode_qn_special_chars(query: str):
     return replace_multi(query, T5_QN_DECODINGS)
 
 
-def t5_preprocess_qn(qn: str):
+def preprocess_qn(qn: str, model_family: str):
     # TODO: convert units
-    qn = t5_encode_qn_special_chars(qn)
-    qn = T5_INPUT_PREFIX + qn
-    return qn
-
-
-def llama_preprocess_qn(qn: str):
-    qn = LLAMA_PROMPT_TEMPLATE.format(question=qn)
+    if model_family == "t5":
+        qn = t5_encode_qn_special_chars(qn)
+        qn = T5_INPUT_PREFIX + qn
+    elif model_family == "llama":
+        qn = LLAMA_PROMPT_TEMPLATE.format(question=qn)
     return qn

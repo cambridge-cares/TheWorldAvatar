@@ -36,25 +36,20 @@ def remove_prefixes(query: str):
     return query[idx:]
 
 
-def t5_preprocess_query(query: str):
+def preprocess_query(query: str, model_family: str):
     query = remove_prefixes(query)
-    query = t5_encode_query_special_chars(query)
+    if model_family == "t5":
+        query = t5_encode_query_special_chars(query)
     return query
 
 
-def t5_postprocess_query(query: str):
-    query = t5_decode_query_special_chars(query)
+def postprocess_query(query: str, model_family: str):
+    if model_family == "t5":
+        query = t5_decode_query_special_chars(query)
     try:
         return AbstractQueryRep.from_string(query).compact2verbose().to_query_string()
     except:
         return None
-
-
-def llama_postprocess_query(query: str):
-    try:
-        return AbstractQueryRep.from_string(query).compact2verbose().to_query_string()
-    except:
-        return None    
 
 
 def normalize_query(query: str):

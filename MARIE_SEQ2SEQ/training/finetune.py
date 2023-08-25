@@ -17,7 +17,7 @@ from core.data_processing.qn_processing import (
     LLAMA_TEMPLATE,
     preprocess_qn,
 )
-from core.data_processing.query_processing import t5_preprocess_query
+from core.data_processing.query_processing import preprocess_query
 from core.arguments_schema import DatasetArguments, ModelArguments
 from core.model_utils import (
     get_model_and_tokenizer,
@@ -44,7 +44,7 @@ def get_t5_trainer(
     def _preprocess_examples(examples):
         sources = [preprocess_qn(qn, model_family="t5") for qn in examples["question"]]
         targets = [
-            t5_preprocess_query(query) for query in examples["sparql_query_compact"]
+            preprocess_query(query, model_family="t5") for query in examples["sparql_query_compact"]
         ]
         return dict(source=sources, target=targets)
 
@@ -88,7 +88,7 @@ def get_llama_trainer(
         for i in range(len(examples["question"])):
             text = LLAMA_TEMPLATE.format(
                 question=examples["question"][i],
-                sparql_query=examples["sparql_query_compact"][i],
+                sparql_query=preprocess_query(examples["sparql_query_compact"][i], model_family="llama"),
             )
             output_texts.append(text)
         return output_texts
@@ -116,9 +116,9 @@ def train():
     )
     model_args, data_args, train_args = hfparser.parse_args_into_dataclasses()
 
-    model, tokenizer = get_model_and_tokenizer(model_args, is_trainable=True)
     model_family = get_model_family_from_model_path(model_args.model_path)
-
+    model, tokenizer = get_model_and_tokenizer(model_args, is_trainable=True, model_family=model_family)
+    
     trainer = TRAINER_GETTER_BY_MODEL[model_family](
         model=model, tokenizer=tokenizer, data_args=data_args, train_args=train_args
     )
