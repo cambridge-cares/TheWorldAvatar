@@ -93,6 +93,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoapplication/hasApplicationID -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoapplication/hasApplicationID">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoapplication/Application"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An identifier assigned to an application.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoapplication/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has application ID</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoapplication/hasContent -->
 
 
@@ -106,20 +119,26 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoapplication/hasFirebaseID -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoapplication/hasFirebaseID">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoapplication/Application"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The firebase Id assigned to an application.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoapplication/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has firebase ID</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoapplication/hasID -->
 
 
     <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoapplication/hasID">
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoapplication/Application"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoapplication/Message"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoapplication/Message"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An identifier assigned to a message or application.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An identifier assigned to a message.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoapplication/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has ID</rdfs:label>
     </owl:DatatypeProperty>

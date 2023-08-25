@@ -14,6 +14,8 @@ hasInstalled,Object Property,,,https://www.theworldavatar.com/kg/ontodevice/Smar
 hasInbox,Object Property,,,Application,Inbox,,A relationship that describes the inbox provided by an application.,https://www.theworldavatar.com/kg/ontoapplication/,has inbox
 contains,Object Property,,,Inbox,Message,,A relationship that describes the messages contained in an inbox.,https://www.theworldavatar.com/kg/ontoapplication/,contains
 hasMessageCategory,Object Property,,,Message,MessageCategory,,A relationship that describes the category in which a message falls under.,https://www.theworldavatar.com/kg/ontoapplication/,has message category
-hasID,Data Property,,,Message UNION Application,String,,An identifier assigned to a message or application.,https://www.theworldavatar.com/kg/ontoapplication/,has ID
+hasID,Data Property,,,Message,String,,An identifier assigned to a message.,https://www.theworldavatar.com/kg/ontoapplication/,has ID
 hasTitle,Data Property,,,Message,String,,A descriptive or general heading of a message.,https://www.theworldavatar.com/kg/ontoapplication/,has title
 hasContent,Data Property,,,Message,String,,The information contained in a message.,https://www.theworldavatar.com/kg/ontoapplication/,has content
+hasFirebaseID,Data Property,,,Application,String,,The firebase Id assigned to an application.,https://www.theworldavatar.com/kg/ontoapplication/,has firebase ID
+hasApplicationID,Data Property,,,Application,String,,An identifier assigned to an application.,https://www.theworldavatar.com/kg/ontoapplication/,has application ID
