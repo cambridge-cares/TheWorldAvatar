@@ -29,7 +29,7 @@ def get_model_family_from_model_path(model_path: str):
     raise ValueError("Unable to infer model family from model config: " + config)
 
 
-def get_model(model_args: ModelArguments, is_trainable: bool):
+def get_model(model_args: ModelArguments, is_trainable: bool, model_family: str):
     # if we are in a distributed setting, we need to set the device map per device
     if os.environ.get("LOCAL_RANK") is not None:
         local_rank = int(os.environ.get("LOCAL_RANK", "0"))
@@ -58,9 +58,7 @@ def get_model(model_args: ModelArguments, is_trainable: bool):
         if v is not None
     }
 
-    model_family = get_model_family_from_model_path(model_args.model_path)
     auto_model = AutoModelForSeq2SeqLM if model_family == "t5" else AutoModelForCausalLM
-
     model = auto_model.from_pretrained(model_args.model_path, **model_load_kwargs)
 
     if model_args.lora_path is not None:
@@ -88,20 +86,19 @@ def get_model(model_args: ModelArguments, is_trainable: bool):
     return model
 
 
-def get_tokenizer(model_args: ModelArguments):
+def get_tokenizer(model_args: ModelArguments, model_family: str):
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.model_path, use_auth_token=os.environ.get("HF_ACCESS_TOKEN")
     )
 
-    model_family = get_model_family_from_model_path(model_args.model_path)
     if model_family == "llama":
         tokenizer.pad_token_id = tokenizer.unk_token_id
 
     return tokenizer
 
 
-def get_model_and_tokenizer(model_args: ModelArguments, is_trainable: bool):
-    tokenizer = get_tokenizer(model_args)
-    model = get_model(model_args, is_trainable)
+def get_model_and_tokenizer(model_args: ModelArguments, is_trainable: bool, model_family: str):
+    tokenizer = get_tokenizer(model_args, model_family=model_family)
+    model = get_model(model_args, is_trainable=is_trainable, model_family=model_family)
 
     return model, tokenizer

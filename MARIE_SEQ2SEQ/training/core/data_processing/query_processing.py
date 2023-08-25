@@ -42,14 +42,19 @@ def t5_preprocess_query(query: str):
     return query
 
 
-def postprocess_query(query: str, model_family: str):
-    if model_family == "t5":
-        query = t5_decode_query_special_chars(query)
+def t5_postprocess_query(query: str):
+    query = t5_decode_query_special_chars(query)
     try:
-        query = AbstractQueryRep.from_string(query).compact2verbose().to_query_string()
+        return AbstractQueryRep.from_string(query).compact2verbose().to_query_string()
     except:
-        query = None
-    return query
+        return None
+
+
+def llama_postprocess_query(query: str):
+    try:
+        return AbstractQueryRep.from_string(query).compact2verbose().to_query_string()
+    except:
+        return None    
 
 
 def normalize_query(query: str):
