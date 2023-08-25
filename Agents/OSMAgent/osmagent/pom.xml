@@ -101,65 +101,49 @@
 
     <!-- Dependencies -->
     <dependencies>
-
         <!-- JPS Base Library -->
         <dependency>
             <groupId>uk.ac.cam.cares.jps</groupId>
             <artifactId>jps-base-lib</artifactId>
             <version>${jps.base.version}</version>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
             <version>6.0.5</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-core</artifactId>
             
         </dependency>
-
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-jdbc-core</artifactId>
             
         </dependency>
-
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-jdbc-driver-remote</artifactId>
 
         </dependency>
-
-        
-
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-jdbc-driver-bundle</artifactId>
             <version>4.6.1</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena</artifactId>
             <version>4.6.1</version>
             <type>pom</type>
         </dependency>
-
-        
-
-
-
-
         <!-- Java servlet API, version pulled from parent -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
-
         <!-- JSON handling -->
         <dependency>
             <groupId>org.json</groupId>
@@ -167,8 +151,6 @@
             <version>20180813</version>
             <type>jar</type>
         </dependency>
-
-
         <!-- Logging, versions pulled from parent -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
@@ -182,7 +164,6 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-web</artifactId>
         </dependency>
-
         <!-- Testing, versions pulled from parent -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -192,28 +173,34 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>3.11.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+            <version>3.11.2</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-geosparql</artifactId>
             <version>4.1.0</version>
         </dependency>
-
-
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.5.4</version>
         </dependency>
-
-
         <!-- for interacting with the stack -->
         <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
             <version>1.14.1</version>
         </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -221,21 +208,17 @@
             <version>1.18.22</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>uk.ac.cam.cares.ogm</groupId>
             <artifactId>ogm</artifactId>
             <version>1.1.1</version>
         </dependency>
-
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>7.6.1</version>
             <scope>test</scope>
         </dependency>
-
-
     </dependencies>
     <dependencyManagement>
 
