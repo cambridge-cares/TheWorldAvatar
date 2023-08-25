@@ -3,8 +3,8 @@ import json
 import transformers
 from tqdm.auto import tqdm
 
-from marie.arguments_schema import DatasetArguments, InferenceArguments, ModelArguments
-from marie.translation import TranslationModel
+from core.arguments_schema import DatasetArguments, InferenceArguments, ModelArguments
+from core.translation import TranslationModel
 
 
 def rename_dict_keys(d: dict, mappings: dict):

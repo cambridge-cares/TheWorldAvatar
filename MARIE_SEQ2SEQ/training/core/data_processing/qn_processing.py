@@ -1,8 +1,8 @@
-from marie.data_processing.utils import replace_multi
+from core.data_processing.utils import replace_multi
 
 # must have the whitespace in front and behind ### for DataCollatorForCompletionOnlyLM to work
-LLAMA_TEMPLATE = "translate to SPARQL: {question}\n\n ### \n\n{sparql_query}" 
-LLAMA_PROMPT_TEMPLATE = "translate to SPARQL: {question}\n\n ### \n\n"
+LLAMA_TEMPLATE = "translate to SPARQL: {question}\n\n###\n\n{sparql_query}" 
+LLAMA_PROMPT_TEMPLATE = "translate to SPARQL: {question}\n\n###\n\n"
 LLAMA_COMPLETION_TEMPLATE = "### \n\n"
 
 T5_INPUT_PREFIX = "translate to SPARQL: "

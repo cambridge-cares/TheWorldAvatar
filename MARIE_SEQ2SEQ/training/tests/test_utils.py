@@ -1,6 +1,6 @@
 import pytest
 
-from marie.utils import advance_ptr_thru_space, advance_ptr_to_kw, advance_ptr_to_space
+from core.utils import advance_ptr_thru_space, advance_ptr_to_kw, advance_ptr_to_space
 
 
 class TestStrUtils:

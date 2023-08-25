@@ -1,5 +1,5 @@
-from marie.kg_client import KgClient
-from marie.translation import TranslationModel
+from core.kg_client import KgClient
+from core.translation import TranslationModel
 
 
 class Marie:

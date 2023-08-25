@@ -1,6 +1,6 @@
-from marie.utils import advance_ptr_thru_space, advance_ptr_to_kw, advance_ptr_to_space
-from marie.data_processing.abstract_query_rep import AbstractQueryRep
-from marie.data_processing.utils import replace_multi
+from core.utils import advance_ptr_thru_space, advance_ptr_to_kw, advance_ptr_to_space
+from core.data_processing.abstract_query_rep import AbstractQueryRep
+from core.data_processing.utils import replace_multi
 
 
 T5_QUERY_ENCODINGS = {

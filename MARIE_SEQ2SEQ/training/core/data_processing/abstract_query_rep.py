@@ -1,7 +1,7 @@
 from typing import List
 
-from marie.utils import advance_ptr_thru_space, advance_ptr_to_kw, advance_ptr_to_space
-from marie.data_processing.utils import replace_list_element
+from core.utils import advance_ptr_thru_space, advance_ptr_to_kw, advance_ptr_to_space
+from core.data_processing.utils import replace_list_element
 
 
 RESULT_CLAUSE_KWS = ["SELECT"]

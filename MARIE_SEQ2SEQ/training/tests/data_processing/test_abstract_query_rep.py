@@ -1,6 +1,6 @@
 import pytest
 
-from marie.data_processing.abstract_query_rep import AbstractQueryRep
+from core.data_processing.abstract_query_rep import AbstractQueryRep
 
 
 class TestQueryParser:

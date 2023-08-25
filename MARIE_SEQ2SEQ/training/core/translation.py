@@ -1,7 +1,7 @@
-from marie.data_processing.qn_processing import preprocess_qn
-from marie.model_utils import get_model_and_tokenizer, get_model_family_from_model_path
-from marie.arguments_schema import ModelArguments
-from marie.data_processing.query_processing import postprocess_query
+from core.data_processing.qn_processing import preprocess_qn
+from core.model_utils import get_model_and_tokenizer, get_model_family_from_model_path
+from core.arguments_schema import ModelArguments
+from core.data_processing.query_processing import postprocess_query
 
 
 class TranslationModel:

@@ -1,6 +1,6 @@
 import pytest
 
-from marie.data_processing.query_processing import (
+from core.data_processing.query_processing import (
     t5_decode_query_special_chars,
     t5_encode_query_special_chars,
     normalize_query,

@@ -1,4 +1,4 @@
-from marie.eval import convert_kg_results_to_hashable
+from core.eval import convert_kg_results_to_hashable
 
 
 class TestEval:

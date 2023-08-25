@@ -10,7 +10,7 @@ from transformers import (
 )
 from peft import PeftModel, LoraConfig, TaskType, get_peft_model
 
-from marie.arguments_schema import ModelArguments
+from core.arguments_schema import ModelArguments
 
 
 TARGET_MODULES_BY_MODEL = dict(t5=["q", "v"], llama=["q_proj", "v_proj"])

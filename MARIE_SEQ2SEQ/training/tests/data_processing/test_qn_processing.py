@@ -1,5 +1,5 @@
 import pytest
-from marie.data_processing.qn_processing import preprocess_qn
+from core.data_processing.qn_processing import preprocess_qn
 
 
 class TestQnProcessing:

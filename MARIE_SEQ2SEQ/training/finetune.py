@@ -12,14 +12,14 @@ from transformers import (
 )
 from trl import SFTTrainer, DataCollatorForCompletionOnlyLM
 
-from marie.data_processing.qn_processing import (
+from core.data_processing.qn_processing import (
     LLAMA_COMPLETION_TEMPLATE,
     LLAMA_TEMPLATE,
     preprocess_qn,
 )
-from marie.data_processing.query_processing import t5_preprocess_query
-from marie.arguments_schema import DatasetArguments, ModelArguments
-from marie.model_utils import (
+from core.data_processing.query_processing import t5_preprocess_query
+from core.arguments_schema import DatasetArguments, ModelArguments
+from core.model_utils import (
     get_model_and_tokenizer,
     get_model_family_from_model_path,
 )
@@ -103,7 +103,7 @@ def get_llama_trainer(
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
         formatting_func=formatting_func,
-        data_collator=collator,
+        # data_collator=collator,
         args=train_args,
     )
 
