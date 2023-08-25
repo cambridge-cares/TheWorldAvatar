@@ -1,6 +1,6 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoAssetManagement,TBox,https://www.theworldavatar.com/kg/ontoassetmanagement/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
-OntoAssetManagement,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoAssetManagement,TBox,1.1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoAssetManagement,TBox,OntoAssetManagement is an ontology that is designed to represent asset and its related information (e.g. purchase documents).,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoAssetManagement,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 DeliveryOrder,Class,http://xmlns.com/foaf/0.1/Document,IS-A,,,,A legal document that authorizes the transportation of goods from one location to another. ,https://www.theworldavatar.com/kg/ontoassetmanagement/,Delivery order
@@ -32,6 +32,14 @@ TotalDiscountedPretaxPrice,Class,Price,IS-A,,,,Total price of a purchase includi
 HomeTotalDiscountedAfterTaxPrice,Class,Price,IS-A,,,,"Total Price of a purchase including tax and discount, converted to a local currency.",https://www.theworldavatar.com/kg/ontoassetmanagement/,Home total discounted after-tax price
 ServiceCategory,Class,https://purl.org/p2p-o/item#ItemAttribute,IS-A,,,,An attribute of an item that describes the service category it falls under.,https://www.theworldavatar.com/kg/ontoassetmanagement/,Service category
 ServiceCode,Class,https://purl.org/p2p-o/item#ItemAttribute,IS-A,,,,An attribute of an item that describes the service code it falls under.,https://www.theworldavatar.com/kg/ontoassetmanagement/,Service code
+MaintenanceSchedule,Class,,,,,,"A maintenance schedule tells and records when an asset is scheduled for maintenance, when was it last maintained, who performs the maintenance etc.",https://www.theworldavatar.com/kg/ontoassetmanagement/,Maintenance schedule
+MaintenanceTask,Class,,,,,,"A small, identifiable piece of work that indicates the actions one must take to complete a maintenance work order.",https://www.theworldavatar.com/kg/ontoassetmanagement/,Maintenance task
+hasMaintenanceSchedule,Object Property,,,https://w3id.org/bot#Element,MaintenanceSchedule,,A relationship that describes the maintenance schedule of an asset.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has maintenance schedule
+hasTask,Object Property,,,MaintenanceSchedule,MaintenanceTask,,A relationship that describes the tasks carried out for a maintenance schedule.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has task
+hasInterval,Object Property,,,MaintenanceTask,http://www.w3.org/2006/time#Interval,,A relationship that describes the interval in which an asset is scheduled for maintenance.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has interval
+isPerformedBy,Object Property,,,MaintenanceTask,https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Parties/IndependentParty,,A relationship that describes the party responsible for performing the maintenance.,https://www.theworldavatar.com/kg/ontoassetmanagement/,is performed by
+performedAt,Object Property,,,MaintenanceTask,http://www.w3.org/2006/time#Instant,,A relationship that describes when a maintenance task was last performed.,https://www.theworldavatar.com/kg/ontoassetmanagement/,performed at
+plannedFor,Object Property,,,MaintenanceTask,http://www.w3.org/2006/time#Instant,,A relationship that describes when the next maintenance task will be carried out.,https://www.theworldavatar.com/kg/ontoassetmanagement/,planned for
 hasAllocatedWorkspace,Object Property,,,https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/Person,Workspace,,A relationship that describes the workspace allocated to a person.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has allocated workspace
 isLocatedIn,Object Property,,,Workspace,https://www.theworldavatar.com/kg/ontobim/Room,,A relationship that describes the room in which a workspace is located in.,https://www.theworldavatar.com/kg/ontoassetmanagement/,is located in
 hasAddress,Object Property,,,https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/Organizations/Organization,http://ontology.eil.utoronto.ca/icontact.owl#Address,,A relationship that describes the address of an organization.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has address

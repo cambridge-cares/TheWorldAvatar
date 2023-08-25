@@ -9,9 +9,9 @@
      xmlns:ontoassetmanagement="https://www.theworldavatar.com/kg/ontoassetmanagement/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">16 August 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">25 August 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoAssetManagement is an ontology that is designed to represent asset and its related information (e.g. purchase documents).</rdfs:comment>
-        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
@@ -306,6 +306,32 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasInterval -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasInterval">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/MaintenanceTask"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2006/time#Interval"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the interval in which an asset is scheduled for maintenance.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has interval</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasMaintenanceSchedule -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasMaintenanceSchedule">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Element"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/MaintenanceSchedule"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the maintenance schedule of an asset.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has maintenance schedule</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasPaymentTerms -->
 
 
@@ -421,6 +447,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasTask -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasTask">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/MaintenanceSchedule"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/MaintenanceTask"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the tasks carried out for a maintenance schedule.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has task</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasTax -->
 
 
@@ -493,6 +532,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/isPerformedBy -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/isPerformedBy">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/MaintenanceTask"/>
+        <rdfs:range rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Parties/IndependentParty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the party responsible for performing the maintenance.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is performed by</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/isStoredIn -->
 
 
@@ -522,6 +574,32 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the supplier of a product or service.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is supplied by</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/performedAt -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/performedAt">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/MaintenanceTask"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2006/time#Instant"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes when a maintenance task was last performed.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">performed at</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/plannedFor -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/plannedFor">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/MaintenanceTask"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2006/time#Instant"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes when the next maintenance task will be carried out.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">planned for</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -740,6 +818,13 @@
 
 
     <owl:Class rdf:about="http://www.w3.org/2006/time#Instant"/>
+    
+
+
+    <!-- http://www.w3.org/2006/time#Interval -->
+
+
+    <owl:Class rdf:about="http://www.w3.org/2006/time#Interval"/>
     
 
 
@@ -987,6 +1072,28 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A payment levied on the import of goods.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Import duties</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/MaintenanceSchedule -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/MaintenanceSchedule">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A maintenance schedule tells and records when an asset is scheduled for maintenance, when was it last maintained, who performs the maintenance etc.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Maintenance schedule</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/MaintenanceTask -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/MaintenanceTask">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A small, identifiable piece of work that indicates the actions one must take to complete a maintenance work order.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Maintenance task</rdfs:label>
     </owl:Class>
     
 
