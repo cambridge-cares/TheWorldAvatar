@@ -22,6 +22,7 @@ public class MessagingService extends FirebaseMessagingService {
     public void onNewToken(@NonNull String token) {
         super.onNewToken(token);
         LOGGER.info("Refreshed token: " + token);
+        getSharedPreferences("firebase", MODE_PRIVATE).edit().putString("firebaseId", token).apply();
     }
 
     @Override
@@ -50,7 +51,7 @@ public class MessagingService extends FirebaseMessagingService {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
-                        .setSmallIcon(R.drawable.ic_launcher_foreground)
+                        .setSmallIcon(uk.ac.cam.cares.jps.ui.R.mipmap.ic_launcher)
                         .setContentTitle(notificationTitle)
                         .setContentText(notificationBody)
                         .setAutoCancel(true)

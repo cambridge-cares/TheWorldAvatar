@@ -48,6 +48,7 @@ dependencies {
     implementation project(path: ':feature:mailbox')
     implementation project(path: ':core:network')
     implementation project(path: ':core:notification')
+    implementation project(path: ':core:ui')
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'

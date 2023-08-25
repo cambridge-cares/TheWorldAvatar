@@ -41,8 +41,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         // todo: refine ask for notification permission
-//        askNotificationPermission();
-
+        askNotificationPermission();
 
     }
 
