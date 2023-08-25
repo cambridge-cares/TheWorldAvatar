@@ -40,15 +40,6 @@ public class VirtualSensorAgent extends DerivationAgent {
                 endpointConfig.getDbuser(), endpointConfig.getDbpassword());
         queryClient = new QueryClient(storeClient, tsClientLong, tsClientInstant, remoteRDBStoreClient);
         super.devClient = new DerivationClient(storeClient, QueryClient.PREFIX);
-        // add ontop mapping
-        Path obdaFile = null;
-        try {
-            obdaFile = new ClassPathResource("ontop.obda").getFile().toPath();
-        } catch (IOException e) {
-            LOGGER.error("Could not retrieve virtual sensor ontop.obda file.");
-        }
-        OntopClient ontopClient = OntopClient.getInstance();
-        ontopClient.updateOBDA(obdaFile);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.cmclinnovations.dispersion;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -16,6 +17,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.postgis.Point;
+import org.springframework.core.io.ClassPathResource;
+
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
+
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -49,8 +54,10 @@ public class CreateVirtualSensor extends HttpServlet {
             scopeIriList = queryClient.getScopesIncludingPoint(virtualSensorLocation);
             if (scopeIriList.size() == 1 && !dispersionPostGISClient.sensorExists(virtualSensorLocation, conn)) {
                 vsScopeList.add(scopeIriList.get(0));
-                if (!dispersionPostGISClient.tableExists(Config.SENSORS_TABLE_NAME, conn))
+                if (!dispersionPostGISClient.tableExists(Config.SENSORS_TABLE_NAME, conn)) {
                     queryClient.initialiseVirtualSensorAgent();
+                    initialiseObda();
+                }
                 queryClient.initialiseVirtualSensors(vsScopeList, virtualSensorLocation, pollutants, conn);
             } else if (scopeIriList.isEmpty()) {
                 LOGGER.warn(" The specified virtual sensor location " +
@@ -66,6 +73,18 @@ public class CreateVirtualSensor extends HttpServlet {
             LOGGER.error(e.getMessage());
         }
 
+    }
+
+    private void initialiseObda() {
+        Path obdaFile = null;
+        try {
+            obdaFile = new ClassPathResource("sensor.obda").getFile().toPath();
+        } catch (IOException e) {
+            LOGGER.error("Could not retrieve virtual sensor ontop.obda file.");
+            throw new RuntimeException(e);
+        }
+        OntopClient ontopClient = OntopClient.getInstance();
+        ontopClient.updateOBDA(obdaFile);
     }
 
     @Override
