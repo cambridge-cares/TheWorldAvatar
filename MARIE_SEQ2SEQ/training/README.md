@@ -59,6 +59,11 @@ See [`finetune.sh`](./scripts/finetune.sh) for example usage. The script will sa
 
 For a list all arguments that can be passed to the fine-tune script, see classes `arguments_schema.ModelArguments`, `arguments_schema.DatasetArguments` and `transformers.TrainingArguments`.
 
+## Conversion of Hugging Face models to the OpenNMT format
+
+```
+sh hf2onmt.sh <path-to-hf-model-directory> <path-to-output-directory>
+```
 
 ## Inference
 
@@ -68,6 +73,9 @@ For a list of all arguments that can be passed to the inference script, see clas
 
 ## Evaluation
 
+```
+python evaluate.py predictions.json evaluation.json
+```
 
 ## Running jobs on CSD3 and similar SLURM environments
 
