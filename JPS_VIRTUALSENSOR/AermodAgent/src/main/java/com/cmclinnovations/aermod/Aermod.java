@@ -300,7 +300,8 @@ public class Aermod {
         writeToFile(bpipprmDirectory.resolve("buildings.dat"), sb.toString());
     }
 
-    public String createStaticPointSourcesLayer(List<StaticPointSource> pointSources, long simulationTime) {
+    void createStaticPointSourcesLayer(List<StaticPointSource> pointSources, long simulationTime,
+            String derivationIri) {
         JSONObject featureCollection = new JSONObject();
         featureCollection.put("type", "FeatureCollection");
         JSONArray features = new JSONArray();
@@ -320,6 +321,7 @@ public class Aermod {
             JSONObject properties = new JSONObject();
             properties.put("iri", pointSource.getIri());
             properties.put("time", simulationTime);
+            properties.put("derivation", derivationIri);
             feature.put("properties", properties);
 
             features.put(feature);
@@ -332,12 +334,10 @@ public class Aermod {
 
         String staticPointSourceLayer = "static";
         gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, staticPointSourceLayer,
-                featureCollection.toString(), new Ogr2OgrOptions(), false);
+                featureCollection.toString(), new Ogr2OgrOptions(), true);
         geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
                 staticPointSourceLayer, new GeoServerVectorSettings());
-
-        return staticPointSourceLayer;
     }
 
     public void createAERMODReceptorInput(Polygon scope, int nx, int ny, int simulationSrid) {
@@ -773,43 +773,17 @@ public class Aermod {
         return featureCollection;
     }
 
-    /**
-     * required for current way of writing into a volume shared by visualisation
-     * container
-     * without this the visualisation container cannot access the file
-     * 
-     * @return
-     */
-    void modifyFilePermissions(String filename) {
-        try {
-            Process process = Runtime.getRuntime().exec(new String[] { "chmod", "a+rwx", filename }, null,
-                    new File(EnvConfig.VIS_FOLDER));
-            process.waitFor();
-        } catch (IOException e) {
-            String errmsg = "Error changing permissions of " + filename;
-            LOGGER.error(errmsg);
-            LOGGER.error(e.getMessage());
-            throw new RuntimeException(errmsg, e);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            String errmsg = "Error changing permissions of " + filename;
-            LOGGER.error(errmsg);
-            LOGGER.error(e.getMessage());
-            throw new RuntimeException(errmsg, e);
-        }
-    }
-
     void createPollutantSubDirectory(PollutantType pollutantType) {
         aermodDirectory.resolve(Pollutant.getPollutantLabel(pollutantType)).toFile().mkdir();
     }
 
-    String createDispersionLayer(JSONObject geoJSON, String derivationIri, PollutantType pollutantType,
+    void createDispersionLayer(JSONObject geoJSON, String derivationIri, PollutantType pollutantType,
             long simulationTime) {
         JSONArray features = geoJSON.getJSONArray("features");
         for (int j = 0; j < features.length(); j++) {
             JSONObject feature = features.getJSONObject(j);
             JSONObject featureProperties = feature.getJSONObject("properties");
-            featureProperties.put("derivationIRI", derivationIri);
+            featureProperties.put("derivation", derivationIri);
             featureProperties.put("pollutant", Pollutant.getPollutantIri(pollutantType));
             featureProperties.put("time", simulationTime);
         }
@@ -817,13 +791,8 @@ public class Aermod {
         GDALClient gdalClient = GDALClient.getInstance();
         gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.DISPERSION_CONTOURS_TABLE,
                 geoJSON.toString(), new Ogr2OgrOptions(), true); // true = append
-
-        String layerName = EnvConfig.DISPERSION_CONTOURS_TABLE;
-
         GeoServerClient geoServerClient = GeoServerClient.getInstance();
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
                 EnvConfig.DISPERSION_CONTOURS_TABLE, new GeoServerVectorSettings());
-
-        return layerName;
     }
 }

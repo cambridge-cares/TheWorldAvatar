@@ -110,7 +110,9 @@ public class AermodAgent extends DerivationAgent {
                 throw new JPSRuntimeException("Could not set building properties.");
             }
         }
-        String buildingsLayer = queryClient.createBuildingsLayer(buildings);
+        if (!buildings.isEmpty()) {
+            queryClient.createBuildingsLayer(buildings, derivationInputs.getDerivationIRI(), simulationTime);
+        }
 
         // update derivation of ships (on demand)
         List<String> derivationsToUpdate = queryClient.getDerivationsOfPointSources(allSources);
@@ -170,9 +172,9 @@ public class AermodAgent extends DerivationAgent {
         aermod.runAermet(scope);
 
         // Upload point sources layer to POSTGIS and GeoServer
-        String staticPointSourceLayer = null;
         if (!staticPointSources.isEmpty()) {
-            staticPointSourceLayer = aermod.createStaticPointSourcesLayer(staticPointSources, simulationTime);
+            aermod.createStaticPointSourcesLayer(staticPointSources, simulationTime,
+                    derivationInputs.getDerivationIRI());
         }
 
         // The receptor.dat file may have been previously created by running AERMAP. If
@@ -217,11 +219,8 @@ public class AermodAgent extends DerivationAgent {
                     dispersionOutput.addColourBar(pollutantType, colourBarUrl);
 
                     JSONObject geoJSON = response.getJSONObject("contourgeojson");
-                    String dispersionLayerName = aermod.createDispersionLayer(geoJSON,
-                            derivationInputs.getDerivationIRI(),
-                            pollutantType, simulationTime);
-
-                    dispersionOutput.addDispLayer(pollutantType, dispersionLayerName);
+                    aermod.createDispersionLayer(geoJSON, derivationInputs.getDerivationIRI(), pollutantType,
+                            simulationTime);
                 });
 
         boolean append = false;
@@ -234,7 +233,7 @@ public class AermodAgent extends DerivationAgent {
         aermod.uploadRasterToPostGIS(srid, append);
 
         queryClient.updateOutputs(derivationInputs.getDerivationIRI(), dispersionOutput, !ships.isEmpty(),
-                simulationTime, staticPointSourceLayer, buildingsLayer);
+                simulationTime, !staticPointSources.isEmpty(), !buildings.isEmpty());
     }
 
     /**

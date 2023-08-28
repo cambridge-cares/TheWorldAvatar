@@ -1073,24 +1073,22 @@ public class QueryClient {
     }
 
     void updateOutputs(String derivation, DispersionOutput dispersionOutput, boolean hasShips, long timeStamp,
-            String staticPointSourceLayer, String buildingsLayer) {
+            boolean hasStaticPoints, boolean hasBuildings) {
         SelectQuery query = Queries.SELECT();
 
         Variable entity = query.var();
         Variable pollutant = query.var();
         Variable pollutantIri = query.var();
         Variable dispMatrix = query.var();
-        Variable dispLayer = query.var();
         Variable dispRaster = query.var();
         Variable dispColourBar = query.var();
 
         Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
 
         query.where(entity.has(belongsTo, iri(derivation)).andHas(HAS_POLLUTANT_ID, pollutantIri)
-                .andHas(HAS_DISPERSION_MATRIX, dispMatrix).andHas(HAS_DISPERSION_LAYER, dispLayer)
-                .andHas(HAS_DISPERSION_RASTER, dispRaster).andHas(HAS_DISPERSION_COLOUR_BAR, dispColourBar),
-                pollutantIri.isA(pollutant)).prefix(P_DISP)
-                .select(entity, pollutant, dispMatrix, dispLayer, dispRaster, dispColourBar).distinct();
+                .andHas(HAS_DISPERSION_MATRIX, dispMatrix).andHas(HAS_DISPERSION_RASTER, dispRaster)
+                .andHas(HAS_DISPERSION_COLOUR_BAR, dispColourBar), pollutantIri.isA(pollutant)).prefix(P_DISP)
+                .select(entity, pollutant, dispMatrix, dispRaster, dispColourBar).distinct();
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         List<String> tsDataList = new ArrayList<>();
@@ -1100,7 +1098,6 @@ public class QueryClient {
             String pollutantIRI = queryResult.getJSONObject(i).getString(pollutant.getQueryString().substring(1));
             String dispersionMatrixIRI = queryResult.getJSONObject(i)
                     .getString(dispMatrix.getQueryString().substring(1));
-            String dispersionLayerIRI = queryResult.getJSONObject(i).getString(dispLayer.getQueryString().substring(1));
             String dispersionRasterIRI = queryResult.getJSONObject(i)
                     .getString(dispRaster.getQueryString().substring(1));
             String dispersionColourBarIRI = queryResult.getJSONObject(i)
@@ -1109,15 +1106,12 @@ public class QueryClient {
             PollutantType pollutantType = Pollutant.getPollutantType(pollutantIRI);
             if (dispersionOutput.hasPollutant(pollutantType)) {
                 tsDataList.add(dispersionMatrixIRI);
-                tsDataList.add(dispersionLayerIRI);
                 tsDataList.add(dispersionRasterIRI);
                 tsDataList.add(dispersionColourBarIRI);
                 String dispersionMatrix = dispersionOutput.getDispMatrix(pollutantType);
-                String dispersionLayer = dispersionOutput.getDispLayer(pollutantType);
                 String dispersionRaster = dispersionOutput.getDispRaster(pollutantType);
                 String dispersionColourBar = dispersionOutput.getColourBar(pollutantType);
                 tsValuesList.add(List.of(dispersionMatrix));
-                tsValuesList.add(List.of(dispersionLayer));
                 tsValuesList.add(List.of(dispersionRaster));
                 tsValuesList.add(List.of(dispersionColourBar));
             }
@@ -1141,12 +1135,12 @@ public class QueryClient {
             if (entityTypeString.contentEquals(SHIPS_LAYER)) {
                 tsDataList.add(entityIri);
                 tsValuesList.add(List.of(hasShips));
-            } else if (entityTypeString.contentEquals(STATIC_POINT_SOURCE_LAYER) && staticPointSourceLayer != null) {
+            } else if (entityTypeString.contentEquals(STATIC_POINT_SOURCE_LAYER)) {
                 tsDataList.add(entityIri);
-                tsValuesList.add(List.of(staticPointSourceLayer));
-            } else if (entityTypeString.contentEquals(BUILDINGS_LAYER) && buildingsLayer != null) {
+                tsValuesList.add(List.of(hasStaticPoints));
+            } else if (entityTypeString.contentEquals(BUILDINGS_LAYER)) {
                 tsDataList.add(entityIri);
-                tsValuesList.add(List.of(buildingsLayer));
+                tsValuesList.add(List.of(hasBuildings));
             }
         }
 
@@ -1171,84 +1165,63 @@ public class QueryClient {
         }
     }
 
-    String createBuildingsLayer(List<Building> buildings) {
+    /**
+     * will be replaced by new postgis cities kg
+     */
+    void createBuildingsLayer(List<Building> buildings, String derivationIri, long time) {
         String buildingsTable = "buildings";
-        String buildingsLayer = null;
-        if (!buildings.isEmpty()) {
-            JSONObject featureCollection = new JSONObject();
-            featureCollection.put("type", "FeatureCollection");
+        String buildingsLayer = "buildings";
 
-            JSONArray features = new JSONArray();
-            try (Connection conn = rdbStoreClient.getConnection()) {
-                // only new buildings are added to the table
-                boolean tableExists = tableExists(buildingsTable, conn);
-                buildings.stream().filter(building -> !buildingExists(building, conn, buildingsTable, tableExists))
-                        .forEach(building -> {
-                            JSONObject feature = new JSONObject();
-                            feature.put("type", "Feature");
+        JSONObject featureCollection = new JSONObject();
+        featureCollection.put("type", "FeatureCollection");
 
-                            JSONObject properties = new JSONObject();
-                            properties.put("color", "#666666");
-                            properties.put("opacity", 0.66);
-                            properties.put("base", 0);
-                            properties.put("height", building.getHeight());
-                            properties.put("iri", building.getIri());
-                            feature.put("properties", properties);
+        JSONArray features = new JSONArray();
 
-                            JSONObject geometry = new JSONObject();
-                            geometry.put("type", "Polygon");
-                            JSONArray coordinates = new JSONArray();
+        buildings.stream().forEach(building -> {
+            JSONObject feature = new JSONObject();
+            feature.put("type", "Feature");
 
-                            JSONArray footprintPolygon = new JSONArray();
-                            String srid = building.getSrid();
-                            for (Coordinate coordinate : building.getFootprint().getCoordinates()) {
-                                JSONArray point = new JSONArray();
-                                double[] xyOriginal = { coordinate.getX(), coordinate.getY() };
-                                double[] xyTransformed = CRSTransformer.transform(srid, "EPSG:4326", xyOriginal);
-                                point.put(xyTransformed[0]).put(xyTransformed[1]);
-                                footprintPolygon.put(point);
-                            }
-                            coordinates.put(footprintPolygon);
-                            geometry.put("coordinates", coordinates);
+            JSONObject properties = new JSONObject();
+            properties.put("color", "#666666");
+            properties.put("opacity", 0.66);
+            properties.put("base", 0);
+            properties.put("height", building.getHeight());
+            properties.put("iri", building.getIri());
+            properties.put("derivation", derivationIri);
+            properties.put("time", time);
+            feature.put("properties", properties);
 
-                            feature.put("geometry", geometry);
-                            features.put(feature);
-                        });
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
+            JSONObject geometry = new JSONObject();
+            geometry.put("type", "Polygon");
+            JSONArray coordinates = new JSONArray();
+
+            JSONArray footprintPolygon = new JSONArray();
+            String srid = building.getSrid();
+            for (Coordinate coordinate : building.getFootprint().getCoordinates()) {
+                JSONArray point = new JSONArray();
+                double[] xyOriginal = { coordinate.getX(), coordinate.getY() };
+                double[] xyTransformed = CRSTransformer.transform(srid, "EPSG:4326", xyOriginal);
+                point.put(xyTransformed[0]).put(xyTransformed[1]);
+                footprintPolygon.put(point);
             }
+            coordinates.put(footprintPolygon);
+            geometry.put("coordinates", coordinates);
 
-            featureCollection.put("features", features);
+            feature.put("geometry", geometry);
+            features.put(feature);
+        });
 
-            GDALClient gdalClient = GDALClient.getInstance();
-            gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, buildingsTable,
-                    featureCollection.toString(), new Ogr2OgrOptions(), true);
+        featureCollection.put("features", features);
 
-            GeoServerClient geoServerClient = GeoServerClient.getInstance();
-            geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
+        GDALClient gdalClient = GDALClient.getInstance();
+        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, buildingsTable,
+                featureCollection.toString(), new Ogr2OgrOptions(), true);
 
-            // only plot buildings that are used in this timestep
-            Set<String> buildingSet = new HashSet<>();
-            buildings.forEach(building -> buildingSet.add(String.format("'%s'", building.getIri())));
-            String buildingIriList = buildingSet.stream().collect(Collectors.joining(","));
+        GeoServerClient geoServerClient = GeoServerClient.getInstance();
+        geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
 
-            String sql = String.format("SELECT * FROM %s WHERE iri IN (%s)", buildingsTable, buildingIriList);
-
-            GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
-
-            UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
-            virtualTable.setSql(sql);
-            virtualTable.setEscapeSql(true);
-            virtualTable.setName("buildingVirtualTable");
-            virtualTable.addVirtualTableGeometry("wkb_geometry", "Polygon", "4326");
-            geoServerVectorSettings.setVirtualTable(virtualTable);
-
-            buildingsLayer = UUID.randomUUID().toString();
-            geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
-                    buildingsLayer, geoServerVectorSettings);
-        }
-
-        return buildingsLayer;
+        geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
+                buildingsLayer, new GeoServerVectorSettings());
     }
 
     boolean buildingExists(Building building, Connection conn, String buildingsTable, boolean tableExists) {

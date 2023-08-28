@@ -9,14 +9,12 @@ import com.cmclinnovations.aermod.objects.Pollutant.PollutantType;
 
 public class DispersionOutput {
     Map<PollutantType, String> pollutantToDispMatrixMap;
-    Map<PollutantType, String> pollutantToDispLayerMap;
     Map<PollutantType, String> pollutantToRasterMap;
     Map<PollutantType, String> pollutantToColourBarMap;
     List<PollutantType> pollutantTypeList;
 
     public DispersionOutput() {
         pollutantToDispMatrixMap = new EnumMap<>(PollutantType.class);
-        pollutantToDispLayerMap = new EnumMap<>(PollutantType.class);
         pollutantToRasterMap = new EnumMap<>(PollutantType.class);
         pollutantToColourBarMap = new EnumMap<>(PollutantType.class);
         pollutantTypeList = new ArrayList<>();
@@ -24,13 +22,6 @@ public class DispersionOutput {
 
     public void addDispMatrix(PollutantType pollutantType, String dispMatrix) {
         pollutantToDispMatrixMap.put(pollutantType, dispMatrix);
-        if (!pollutantTypeList.contains(pollutantType)) {
-            pollutantTypeList.add(pollutantType);
-        }
-    }
-
-    public void addDispLayer(PollutantType pollutantType, String dispLayer) {
-        pollutantToDispLayerMap.put(pollutantType, dispLayer);
         if (!pollutantTypeList.contains(pollutantType)) {
             pollutantTypeList.add(pollutantType);
         }
@@ -50,17 +41,8 @@ public class DispersionOutput {
         }
     }
 
-    public boolean checkDataHasSamePollutants() {
-        return ((pollutantToDispMatrixMap.keySet().size() == pollutantToDispLayerMap.keySet().size())
-                && (pollutantToDispMatrixMap.keySet().size() == pollutantToRasterMap.keySet().size()));
-    }
-
     public String getDispMatrix(PollutantType pollutantType) {
         return pollutantToDispMatrixMap.get(pollutantType);
-    }
-
-    public String getDispLayer(PollutantType pollutantType) {
-        return pollutantToDispLayerMap.get(pollutantType);
     }
 
     public String getDispRaster(PollutantType pollutantType) {
