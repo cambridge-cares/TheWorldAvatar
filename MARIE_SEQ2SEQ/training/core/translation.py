@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
 from core.data_processing.input_processing import preprocess_input, preprocess_input
-from core.data_processing.output_processing import postprocess_output, postprocess_output
+from core.data_processing.output_processing import (
+    postprocess_output,
+    postprocess_output,
+)
 from core.model_utils import (
     get_onmt_model_and_tokenizer,
     get_hf_model_and_tokenizer,
@@ -21,7 +24,9 @@ class TranslationModel(ABC):
         """
         question = preprocess_input(question, model_family=self.model_family)
         pred_raw = self._translate(question)
-        pred_postprocessed = postprocess_output(pred_raw, model_family=self.model_family)
+        pred_postprocessed = postprocess_output(
+            pred_raw, model_family=self.model_family
+        )
 
         return dict(
             prediction_raw=pred_raw, prediction_postprocessed=pred_postprocessed
@@ -67,6 +72,9 @@ class CTranslate2TranslationModel(TranslationModel):
     def _translate(self, question: str):
         input_tokens = self.tokenizer(question)
         output_tokens = self.model.translate_batch(
-            [input_tokens], max_decoding_length=self.max_new_tokens
+            [input_tokens],
+            beam_size=1,
+            min_decoding_length=0,
+            max_decoding_length=self.max_new_tokens,
         )[0].hypotheses[0]
         return self.tokenizer.detokenize(output_tokens)
