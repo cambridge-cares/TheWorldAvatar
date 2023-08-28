@@ -6,7 +6,7 @@ from typing import Optional, Union
 class ModelArguments:
     model_path: str = field(default="google/flan-t5-base")
     model_format: str = field(
-        default="hf", metadata={"help": "Either `hf` (Hugging Face) or `ctranslate2`."}
+        default="hf", metadata={"help": "Either `hf` (Hugging Face) or `onmt` (OpenNMT)."}
     )
     model_family: Optional[str] = field(
         default=None,

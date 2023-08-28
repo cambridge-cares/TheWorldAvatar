@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from training.core.data_processing.input_processing import preprocess_input, preprocess_input
-from training.core.data_processing.output_processing import postprocess_output, postprocess_output
+from core.data_processing.input_processing import preprocess_input, preprocess_input
+from core.data_processing.output_processing import postprocess_output, postprocess_output
 from core.model_utils import (
     get_onmt_model_and_tokenizer,
     get_hf_model_and_tokenizer,
