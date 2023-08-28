@@ -14,3 +14,4 @@ sparqlwrapper
 sacrebleu
 scikit-learn
 ctranslate2
+pyonmttok
