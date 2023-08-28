@@ -12,9 +12,6 @@
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:endIconMode="custom"
-        app:endIconDrawable="@drawable/baseline_search_24"
-        app:endIconContentDescription="@string/search_end_icon_description"
         android:hint="label">
 
         <com.google.android.material.textfield.TextInputEditText

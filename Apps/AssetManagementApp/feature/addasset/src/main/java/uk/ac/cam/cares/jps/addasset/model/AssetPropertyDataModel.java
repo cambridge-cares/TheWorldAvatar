@@ -7,28 +7,29 @@ public class AssetPropertyDataModel {
     String fieldName;
     // ui related
 
-    public static enum ViewType {
+    public enum ViewType {
         INPUT_FIELD,
         DROP_DOWN,
         DOCUMENT
     }
     ViewType type;
     boolean isRequired;
-    boolean isSearchable;
-    String hint;
+    boolean disallowInput;
+    String helperText;
 
-    AssetPropertyDataModel(String fieldName, boolean isRequired, boolean isSearchable, ViewType type) {
+    AssetPropertyDataModel(String fieldName, boolean isRequired, boolean disallowInput, ViewType type) {
         this.fieldName = fieldName;
         this.isRequired = isRequired;
-        this.isSearchable = isSearchable;
         this.type = type;
+        this.disallowInput = disallowInput;
     }
 
-    AssetPropertyDataModel(String fieldName, boolean isRequired, boolean isSearchable, String hint) {
+    AssetPropertyDataModel(String fieldName, boolean isRequired, boolean disallowInput, ViewType type, String helperText) {
         this.fieldName = fieldName;
         this.isRequired = isRequired;
-        this.isSearchable = isSearchable;
-        this.hint = hint;
+        this.helperText = helperText;
+        this.disallowInput = disallowInput;
+        this.type = type;
     }
 
 
@@ -52,15 +53,15 @@ public class AssetPropertyDataModel {
         return isRequired;
     }
 
-    public boolean isSearchable() {
-        return isSearchable;
-    }
-
-    public String getHint() {
-        return hint;
+    public String getHelperText() {
+        return helperText;
     }
 
     public void setFieldValue(String fieldValue) {
         this.fieldValue = fieldValue;
+    }
+
+    public boolean isDisallowInput() {
+        return disallowInput;
     }
 }

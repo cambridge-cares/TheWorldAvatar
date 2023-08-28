@@ -42,15 +42,15 @@ public class PropertyInputTextView extends RelativeLayout {
             inputLayout.setHint(property.getFieldName());
         }
 
-        if (!property.isSearchable()) {
-            inputLayout.setEndIconMode(TextInputLayout.END_ICON_NONE);
-            inputLayout.setEndIconDrawable(null);
-            inputLayout.setEndIconContentDescription("");
-        } else {
-            inputLayout.setEndIconOnClickListener(view -> {
-                LOGGER.info("end icon clicked");
-            });
-        }
+//        if (!property.isSearchable()) {
+//            inputLayout.setEndIconMode(TextInputLayout.END_ICON_NONE);
+//            inputLayout.setEndIconDrawable(null);
+//            inputLayout.setEndIconContentDescription("");
+//        } else {
+//            inputLayout.setEndIconOnClickListener(view -> {
+//                LOGGER.info("end icon clicked");
+//            });
+//        }
 
         TextInputEditText editText = inputLayout.findViewById(R.id.edit_text);
         editText.addTextChangedListener(new TextWatcher() {

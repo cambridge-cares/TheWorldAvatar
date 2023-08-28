@@ -26,9 +26,9 @@ public class AddAssetViewModel extends ViewModel {
     private Map<String, List<AssetPropertyDataModel>> inputFieldsBySection = new LinkedHashMap<>();
 
     private List<String> mandatoryFieldKeys = Arrays.asList(TYPE, REFERENCE_LABEL, LOCATED_IN);
-    private List<String> searchableFieldKeys = Arrays.asList(TYPE, ASSIGNED_TO, LOCATED_IN, SEAT_LOCATION, STORED_IN, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER, ITEM_NAME);
     // todo: not sure how to use this yet
-    private List<String> dropDownFieldKeys = Arrays.asList(SERVICE_CODE, SERVICE_CATEGORY);
+    private List<String> dropDownFieldKeys = Arrays.asList(TYPE, ASSIGNED_TO, LOCATED_IN, SEAT_LOCATION, STORED_IN, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER, ITEM_NAME, SERVICE_CODE, SERVICE_CATEGORY);
+    private List<String> disallowInputForDropDown = Arrays.asList(TYPE, ASSIGNED_TO);
     private List<String> skippedFieldKeys = Arrays.asList(IRI, INVENTORY_ID, MANUFACTURE_URL);
 
     @Inject
@@ -54,9 +54,9 @@ public class AddAssetViewModel extends ViewModel {
 
             AssetPropertyDataModel assetPropertyDataModel;
             if (dropDownFieldKeys.contains(key)) {
-                assetPropertyDataModel = new AssetPropertyDataModel(key, mandatoryFieldKeys.contains(key), searchableFieldKeys.contains(key), AssetPropertyDataModel.ViewType.DROP_DOWN);
+                assetPropertyDataModel = new AssetPropertyDataModel(key, mandatoryFieldKeys.contains(key), disallowInputForDropDown.contains(key), AssetPropertyDataModel.ViewType.DROP_DOWN);
             } else {
-                assetPropertyDataModel = new AssetPropertyDataModel(key, mandatoryFieldKeys.contains(key), searchableFieldKeys.contains(key), AssetPropertyDataModel.ViewType.INPUT_FIELD);
+                assetPropertyDataModel = new AssetPropertyDataModel(key, mandatoryFieldKeys.contains(key), disallowInputForDropDown.contains(key), AssetPropertyDataModel.ViewType.INPUT_FIELD);
             }
             results.add(assetPropertyDataModel);
         }

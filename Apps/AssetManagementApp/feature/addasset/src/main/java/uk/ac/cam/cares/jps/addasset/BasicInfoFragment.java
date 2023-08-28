@@ -21,6 +21,7 @@ import java.util.List;
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.addasset.model.AddAssetViewModel;
 import uk.ac.cam.cares.jps.addasset.model.AssetPropertyDataModel;
+import uk.ac.cam.cares.jps.addasset.view.PropertyAutoCompleteTextView;
 import uk.ac.cam.cares.jps.addasset.view.PropertyInputTextView;
 
 @AndroidEntryPoint
@@ -54,7 +55,12 @@ public class BasicInfoFragment extends Fragment {
 
             LinearLayout sectionRoot = sectionView.findViewById(R.id.linear_layout);
             for (AssetPropertyDataModel property : viewModel.getInputFieldsBySection().get(section)) {
-                View inputText = new PropertyInputTextView(requireContext(), property);
+                View inputText;
+                if (property.getType().equals(AssetPropertyDataModel.ViewType.DROP_DOWN)) {
+                    inputText = new PropertyAutoCompleteTextView(requireContext(), property);
+                } else {
+                    inputText = new PropertyInputTextView(requireContext(), property);
+                }
 
                 sectionRoot.addView(inputText);
             }
