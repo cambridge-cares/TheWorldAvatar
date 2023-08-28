@@ -1072,7 +1072,7 @@ public class QueryClient {
 
     }
 
-    void updateOutputs(String derivation, DispersionOutput dispersionOutput, String shipLayer, long timeStamp,
+    void updateOutputs(String derivation, DispersionOutput dispersionOutput, boolean hasShips, long timeStamp,
             String staticPointSourceLayer, String buildingsLayer) {
         SelectQuery query = Queries.SELECT();
 
@@ -1138,9 +1138,9 @@ public class QueryClient {
             String entityIri = queryResult.getJSONObject(i).getString(layerVar.getQueryString().substring(1));
             String entityTypeString = queryResult.getJSONObject(i)
                     .getString(entityType.getQueryString().substring(1));
-            if (entityTypeString.contentEquals(SHIPS_LAYER) && shipLayer != null) {
+            if (entityTypeString.contentEquals(SHIPS_LAYER)) {
                 tsDataList.add(entityIri);
-                tsValuesList.add(List.of(shipLayer));
+                tsValuesList.add(List.of(hasShips));
             } else if (entityTypeString.contentEquals(STATIC_POINT_SOURCE_LAYER) && staticPointSourceLayer != null) {
                 tsDataList.add(entityIri);
                 tsValuesList.add(List.of(staticPointSourceLayer));

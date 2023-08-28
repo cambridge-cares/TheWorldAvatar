@@ -172,12 +172,7 @@ public class AermodAgent extends DerivationAgent {
         // Upload point sources layer to POSTGIS and GeoServer
         String staticPointSourceLayer = null;
         if (!staticPointSources.isEmpty()) {
-            staticPointSourceLayer = aermod.createStaticPointSourcesLayer(staticPointSources);
-        }
-
-        String shipLayerName = null;
-        if (!ships.isEmpty()) {
-            shipLayerName = aermod.createShipLayer(simulationTime, ships, timeBuffer);
+            staticPointSourceLayer = aermod.createStaticPointSourcesLayer(staticPointSources, simulationTime);
         }
 
         // The receptor.dat file may have been previously created by running AERMAP. If
@@ -238,8 +233,8 @@ public class AermodAgent extends DerivationAgent {
         }
         aermod.uploadRasterToPostGIS(srid, append);
 
-        queryClient.updateOutputs(derivationInputs.getDerivationIRI(), dispersionOutput, shipLayerName, simulationTime,
-                staticPointSourceLayer, buildingsLayer);
+        queryClient.updateOutputs(derivationInputs.getDerivationIRI(), dispersionOutput, !ships.isEmpty(),
+                simulationTime, staticPointSourceLayer, buildingsLayer);
     }
 
     /**

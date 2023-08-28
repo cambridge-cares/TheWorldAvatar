@@ -36,12 +36,27 @@ public class Pollutant {
         iriToTypeMap.put(QueryClient.PM25, PollutantType.PM2_5);
     }
 
+    private static Map<PollutantType, String> typeToIriMap = new HashMap<>();
+    static {
+        typeToIriMap.put(PollutantType.NO_X, QueryClient.NO_X);
+        typeToIriMap.put(PollutantType.UHC, QueryClient.UHC);
+        typeToIriMap.put(PollutantType.CO, QueryClient.CO);
+        typeToIriMap.put(PollutantType.CO, QueryClient.CO2);
+        typeToIriMap.put(PollutantType.SO2, QueryClient.SO2);
+        typeToIriMap.put(PollutantType.PM10, QueryClient.PM10);
+        typeToIriMap.put(PollutantType.PM2_5, QueryClient.PM25);
+    }
+
     public static String getPollutantLabel(PollutantType type) {
         return idToLabelMap.get(type);
     }
 
     public static PollutantType getPollutantType(String iri) {
         return iriToTypeMap.get(iri);
+    }
+
+    public static String getPollutantIri(PollutantType pollutantType) {
+        return typeToIriMap.get(pollutantType);
     }
 
     public static List<PollutantType> getPollutantList() {

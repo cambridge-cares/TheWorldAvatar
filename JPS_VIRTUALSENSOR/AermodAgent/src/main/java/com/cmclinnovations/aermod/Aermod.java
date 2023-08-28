@@ -13,16 +13,12 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -41,13 +37,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
 import com.cmclinnovations.aermod.objects.Building;
 import com.cmclinnovations.aermod.objects.PointSource;
 import com.cmclinnovations.aermod.objects.Pollutant;
-import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
 import com.cmclinnovations.aermod.objects.WeatherData;
 import com.cmclinnovations.aermod.objects.Pollutant.PollutantType;
@@ -56,7 +50,6 @@ import com.cmclinnovations.stack.clients.gdal.GDALTranslateOptions;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
-import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
 
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
@@ -307,7 +300,7 @@ public class Aermod {
         writeToFile(bpipprmDirectory.resolve("buildings.dat"), sb.toString());
     }
 
-    public String createStaticPointSourcesLayer(List<StaticPointSource> pointSources) {
+    public String createStaticPointSourcesLayer(List<StaticPointSource> pointSources, long simulationTime) {
         JSONObject featureCollection = new JSONObject();
         featureCollection.put("type", "FeatureCollection");
         JSONArray features = new JSONArray();
@@ -326,6 +319,7 @@ public class Aermod {
 
             JSONObject properties = new JSONObject();
             properties.put("iri", pointSource.getIri());
+            properties.put("time", simulationTime);
             feature.put("properties", properties);
 
             features.put(feature);
@@ -335,7 +329,8 @@ public class Aermod {
 
         GDALClient gdalClient = GDALClient.getInstance();
         GeoServerClient geoServerClient = GeoServerClient.getInstance();
-        String staticPointSourceLayer = UUID.randomUUID().toString();
+
+        String staticPointSourceLayer = "static";
         gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, staticPointSourceLayer,
                 featureCollection.toString(), new Ogr2OgrOptions(), false);
         geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
@@ -815,71 +810,19 @@ public class Aermod {
             JSONObject feature = features.getJSONObject(j);
             JSONObject featureProperties = feature.getJSONObject("properties");
             featureProperties.put("derivationIRI", derivationIri);
-            featureProperties.put("pollutantID", Pollutant.getPollutantLabel(pollutantType));
-            featureProperties.put("simulation_time", simulationTime);
+            featureProperties.put("pollutant", Pollutant.getPollutantIri(pollutantType));
+            featureProperties.put("time", simulationTime);
         }
 
         GDALClient gdalClient = GDALClient.getInstance();
         gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.DISPERSION_CONTOURS_TABLE,
                 geoJSON.toString(), new Ogr2OgrOptions(), true); // true = append
 
-        String layerName = UUID.randomUUID().toString();
-
-        String sqlQuery = String.format(
-                "SELECT ogc_fid, \"stroke-opacity\", \"stroke-width\", fill, title, \"fill-opacity\", stroke, wkb_geometry from %s"
-                        + " WHERE \"derivationIRI\"='%s' and \"pollutantID\"='%s' and simulation_time = %d",
-                EnvConfig.DISPERSION_CONTOURS_TABLE, derivationIri, Pollutant.getPollutantLabel(pollutantType),
-                simulationTime);
-
-        GeoServerVectorSettings geoServerDispersionSettings = new GeoServerVectorSettings();
-
-        UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
-        virtualTable.setSql(sqlQuery);
-        virtualTable.setEscapeSql(true);
-        virtualTable.setName("dispersionVirtualTable");
-        virtualTable.addVirtualTableGeometry("wkb_geometry", "MultiPolygon", "4326");
-        geoServerDispersionSettings.setVirtualTable(virtualTable);
+        String layerName = EnvConfig.DISPERSION_CONTOURS_TABLE;
 
         GeoServerClient geoServerClient = GeoServerClient.getInstance();
-        geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, layerName,
-                geoServerDispersionSettings);
-
-        return layerName;
-    }
-
-    String createShipLayer(long timestamp, List<Ship> ships, long timeBuffer) {
-        Set<String> shipSet = new HashSet<>();
-        ships.forEach(ship -> shipSet.add(String.format("'%s'", ship.getLocationMeasureIri())));
-        String shipList = shipSet.stream().collect(Collectors.joining(","));
-
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("SELECT timeseries.value as geom, s.ship as iri, s.shipname as name ");
-        queryBuilder
-                .append(String.format(
-                        "FROM \"dbTable\", public.get_geometry_table(\"tableName\", \"columnName\") as timeseries, %s as s ",
-                        EnvConfig.SHIP_IRI_LOOKUP_TABLE));
-        queryBuilder.append(
-                String.format(
-                        "WHERE \"dbTable\".\"dataIRI\" IN (%s) and timeseries.time > %d and timeseries.time < %d and \"dbTable\".\"dataIRI\" = s.location",
-                        shipList, timestamp - timeBuffer, timestamp + timeBuffer));
-        String sqlQuery = queryBuilder.toString();
-
-        GeoServerClient geoserverClient = GeoServerClient.getInstance();
-
-        String layerName = UUID.randomUUID().toString();
-
-        GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
-
-        UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
-        virtualTable.setSql(sqlQuery);
-        virtualTable.setEscapeSql(true);
-        virtualTable.setName("shipVirtualTable");
-        virtualTable.addVirtualTableGeometry("geom", "Point", "4326"); // geom needs to match the sql query
-        geoServerVectorSettings.setVirtualTable(virtualTable);
-
-        geoserverClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
-        geoserverClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, layerName,
-                geoServerVectorSettings);
+        geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
+                EnvConfig.DISPERSION_CONTOURS_TABLE, new GeoServerVectorSettings());
 
         return layerName;
     }
