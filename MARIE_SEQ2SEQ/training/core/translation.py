@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from core.data_processing.qn_processing import preprocess_qn, preprocess_qn
-from core.data_processing.query_processing import postprocess_query, postprocess_query
+from training.core.data_processing.input_processing import preprocess_input, preprocess_input
+from training.core.data_processing.output_processing import postprocess_output, postprocess_output
 from core.model_utils import (
     get_onmt_model_and_tokenizer,
     get_hf_model_and_tokenizer,
@@ -19,9 +19,9 @@ class TranslationModel(ABC):
         Returns:
             A dict with keys `prediction_raw` and `prediction_postprocessed`
         """
-        question = preprocess_qn(question, model_family=self.model_family)
+        question = preprocess_input(question, model_family=self.model_family)
         pred_raw = self._translate(question)
-        pred_postprocessed = postprocess_query(pred_raw, model_family=self.model_family)
+        pred_postprocessed = postprocess_output(pred_raw, model_family=self.model_family)
 
         return dict(
             prediction_raw=pred_raw, prediction_postprocessed=pred_postprocessed

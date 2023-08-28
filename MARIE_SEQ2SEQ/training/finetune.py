@@ -12,12 +12,12 @@ from transformers import (
 )
 from trl import SFTTrainer, DataCollatorForCompletionOnlyLM
 
-from core.data_processing.qn_processing import (
+from core.data_processing.input_processing import (
     LLAMA_COMPLETION_TEMPLATE,
     LLAMA_TEMPLATE,
-    preprocess_qn,
+    preprocess_input,
 )
-from core.data_processing.query_processing import preprocess_query
+from core.data_processing.output_processing import preprocess_output
 from core.arguments_schema import DatasetArguments, ModelArguments
 from core.model_utils import (
     get_hf_model_and_tokenizer,
@@ -42,9 +42,9 @@ def get_t5_trainer(
         return model_inputs
 
     def _preprocess_examples(examples):
-        sources = [preprocess_qn(qn, model_family="t5") for qn in examples["question"]]
+        sources = [preprocess_input(qn, model_family="t5") for qn in examples["question"]]
         targets = [
-            preprocess_query(query, model_family="t5") for query in examples["sparql_query_compact"]
+            preprocess_output(query, model_family="t5") for query in examples["sparql_query_compact"]
         ]
         return dict(source=sources, target=targets)
 
@@ -93,7 +93,7 @@ def get_llama_trainer(
         for i in range(len(examples["question"])):
             text = template.format(
                 question=examples["question"][i],
-                sparql_query=preprocess_query(examples["sparql_query_compact"][i], model_family="llama"),
+                sparql_query=preprocess_output(examples["sparql_query_compact"][i], model_family="llama"),
             )
             output_texts.append(text)
         return output_texts

@@ -1,14 +1,14 @@
 import pytest
 
-from core.data_processing.query_processing import (
-    t5_decode_query_special_chars,
-    t5_encode_query_special_chars,
+from core.data_processing.output_processing import (
+    t5_decode_output_special_chars,
+    t5_encode_output_special_chars,
     normalize_query,
     remove_prefixes,
 )
 
 
-class TestQueryUtils:
+class TestOutputProcessing:
     @pytest.mark.parametrize(
         "query, expected",
         [
@@ -22,8 +22,8 @@ class TestQueryUtils:
             ),
         ],
     )
-    def test_encodeQuery(self, query, expected):
-        assert t5_encode_query_special_chars(query) == expected
+    def test_encodeOutput(self, query, expected):
+        assert t5_encode_output_special_chars(query) == expected
 
     @pytest.mark.parametrize(
         "query, expected",
@@ -38,8 +38,8 @@ class TestQueryUtils:
             ),
         ],
     )
-    def test_decodeQuery(self, query, expected):
-        assert t5_decode_query_special_chars(query) == expected
+    def test_decodeOutput(self, query, expected):
+        assert t5_decode_output_special_chars(query) == expected
 
     @pytest.mark.parametrize(
         "query, expected",

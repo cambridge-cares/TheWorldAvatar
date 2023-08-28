@@ -3,7 +3,7 @@ from sacrebleu.metrics import BLEU
 from sklearn.metrics import precision_recall_fscore_support, accuracy_score
 from sklearn.preprocessing import MultiLabelBinarizer
 
-from core.data_processing.query_processing import normalize_query, remove_prefixes
+from core.data_processing.output_processing import normalize_query, remove_prefixes
 
 
 def get_bleu_metrics(refs: List[List[str]], sys: List[str]):
