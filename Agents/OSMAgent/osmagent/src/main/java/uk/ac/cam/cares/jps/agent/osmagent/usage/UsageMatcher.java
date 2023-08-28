@@ -20,6 +20,13 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 public class UsageMatcher {
     private static final List<String> tableNames = Arrays.asList(OSMAgent.POLYGON_TABLE, OSMAgent.POINT_TABLE);
 
+    /**
+     * Inputs database name, postgis username, postgis password and subsequently update the OSM rows with ontobuilt category by
+     * running SQL query to categorize as according to osm_tags.csv
+     * @param database
+     * @param user
+     * @param password
+     */
     public static void updateOntoBuilt(String database, String user, String password) {
         RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
 
@@ -28,7 +35,7 @@ public class UsageMatcher {
             try {
 
                 InputStreamReader inputStreamReader = new InputStreamReader(
-                        UsageMatcher.class.getResourceAsStream("/osmbase.csv"));
+                        UsageMatcher.class.getResourceAsStream("/osm_tags.csv"));
                 CSVReader csvReader = new CSVReaderBuilder(inputStreamReader).withSkipLines(1).build();
                 String[] line;
 
@@ -78,6 +85,13 @@ public class UsageMatcher {
         }
     }
 
+    /**
+     * Inputs database name, postgis username, postgis password.
+     * Check if "building_iri", "propertyusage_iri", "ontobuilt", "usageshare" columns exist, if not create it
+     * @param database
+     * @param user
+     * @param password
+     */
     public static void checkAndAddColumns(String database, String user, String password) {
         RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
 
@@ -106,6 +120,14 @@ public class UsageMatcher {
         }
     }
 
+    /**
+     * Check if the column name exists
+     * @param connection
+     * @param tableName
+     * @param columnName
+     * @return
+     * @throws SQLException
+     */
     private static boolean isColumnExist(Connection connection, String tableName, String columnName)
             throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
@@ -114,6 +136,12 @@ public class UsageMatcher {
         }
     }
 
+    /**
+     * Create connections to remoteStoreClient and execute SQL statements
+     * @param connection
+     * @param sql
+     * @throws SQLException
+     */
     private static void executeSql(Connection connection, String sql) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             statement.execute(sql);

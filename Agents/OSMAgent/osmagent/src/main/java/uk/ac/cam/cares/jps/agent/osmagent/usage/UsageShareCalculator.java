@@ -9,6 +9,18 @@ import java.sql.Statement;
 
 public class UsageShareCalculator {
 
+    /**
+     * UsageShareCalculator contains 3 parts that run using SQL query
+     * 1) assignUsageShare - For each building_iri, assign Propertyusage_iri, calculate and assign usageShare to each OSM item.
+     * 2) updatePropertyUsageStatement - For each building_iri, that has two OSM items, check if they are the same ontoBuilt type,
+     * if they are the same ontoBuilt type, return the first instance as the propertyusage_iri
+     * 3) landUseMatcher - For building_iri which are untagged to any osm_tags, as a default fallback,
+     * SQL query is run check and tag buildings with buildings_iri with propertyusage_iri and usageshare as according to the osm_landuse.csv
+     *
+     * @param database
+     * @param user
+     * @param password
+     */
     public static void updateUsageShare(String database, String user, String password) {
         RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
 
@@ -60,6 +72,11 @@ public class UsageShareCalculator {
                 "WHERE pt.building_iri = c.building_iri\n" +
                 "  AND pt.OntoBuilt = c.OntoBuilt;";
 
+
+
+        /**
+         *
+         */
         String updatePropertyUsageStatement = "-- Both table\n" +
                 "UPDATE " + polygons + " AS p\n" +
                 "SET propertyusage_iri = subquery.min_propertyusage_iri\n" +
@@ -104,6 +121,8 @@ public class UsageShareCalculator {
                 ") AS subquery\n" +
                 "WHERE p.building_iri = subquery.building_iri\n" +
                 "    AND p.ontobuilt = subquery.ontobuilt;";
+
+        String updateLanduse="";
 
         // Execute the SQL statement
 
