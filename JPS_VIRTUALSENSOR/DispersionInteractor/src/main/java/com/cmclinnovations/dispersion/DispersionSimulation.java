@@ -17,7 +17,7 @@ public class DispersionSimulation {
     private String derivationIri;
     private String weatherStationIri;
     private Map<String, String> pollutantIriToLabelMap;
-    private Map<String, String> pollutantIriToDispLayerMap;
+    private Map<String, String> pollutantIriToDispRasterMap;
     private Polygon scopePolygon;
     private Point weatherStationLocation;
 
@@ -26,7 +26,7 @@ public class DispersionSimulation {
     public DispersionSimulation(String derivationIri) {
         this.derivationIri = derivationIri;
         pollutantIriToLabelMap = new HashMap<>();
-        pollutantIriToDispLayerMap = new HashMap<>();
+        pollutantIriToDispRasterMap = new HashMap<>();
     }
 
     public void setScopeLabel(String label) {
@@ -51,22 +51,22 @@ public class DispersionSimulation {
         return derivationIri;
     }
 
-    public void setPollutantLabelAndDispLayer(String pollutant, String pollutantLabel, String dispLayer) {
+    public void setPollutantLabelAndDispRaster(String pollutant, String pollutantLabel, String dispRaster) {
         pollutantIriToLabelMap.put(pollutant, pollutantLabel);
-        pollutantIriToDispLayerMap.put(pollutant, dispLayer);
+        pollutantIriToDispRasterMap.put(pollutant, dispRaster);
     }
 
     public void removePollutant(String pollutant) {
-        pollutantIriToDispLayerMap.remove(pollutant);
+        pollutantIriToDispRasterMap.remove(pollutant);
         pollutantIriToLabelMap.remove(pollutant);
     }
 
     public List<String> getPollutants() {
-        return new ArrayList<>(pollutantIriToDispLayerMap.keySet());
+        return new ArrayList<>(pollutantIriToDispRasterMap.keySet());
     }
 
-    public String getDispersionLayer(String pollutant) {
-        return pollutantIriToDispLayerMap.get(pollutant);
+    public String getDispersionRaster(String pollutant) {
+        return pollutantIriToDispRasterMap.get(pollutant);
     }
 
     public JSONObject toJson() {

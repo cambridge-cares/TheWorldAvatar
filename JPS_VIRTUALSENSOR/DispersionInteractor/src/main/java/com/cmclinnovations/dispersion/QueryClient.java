@@ -85,7 +85,6 @@ public class QueryClient {
     private static final Iri REPORTING_STATION = iri("https://www.theworldavatar.com/kg/ontoems/ReportingStation");
     private static final Iri DISPERSION_OUTPUT = P_DISP.iri("DispersionOutput");
     private static final Iri DISPERSION_MATRIX = P_DISP.iri("DispersionMatrix");
-    private static final Iri DISPERSION_LAYER = P_DISP.iri("DispersionLayer");
     private static final Iri DISPERSION_RASTER = P_DISP.iri("DispersionRaster");
     private static final Iri DISPERSION_COLOUR_BAR = P_DISP.iri("DispersionColourBar");
     private static final Iri SHIPS_LAYER = P_DISP.iri("ShipsLayer");
@@ -219,13 +218,10 @@ public class QueryClient {
             modify.insert(iri(pollutantIdIri).isA(p));
             entityList.add(dispOutputIri);
 
-            String dispLayerIri = PREFIX + UUID.randomUUID();
             String dispMatrixIri = PREFIX + UUID.randomUUID();
             String dispRasterIri = PREFIX + UUID.randomUUID();
             String dispColourBar = PREFIX + UUID.randomUUID();
 
-            modify.insert(iri(dispLayerIri).isA(DISPERSION_LAYER));
-            modify.insert(iri(dispOutputIri).has(HAS_DISPERSION_LAYER, iri(dispLayerIri)));
             modify.insert(iri(dispMatrixIri).isA(DISPERSION_MATRIX));
             modify.insert(iri(dispOutputIri).has(HAS_DISPERSION_MATRIX, iri(dispMatrixIri)));
             modify.insert(iri(dispRasterIri).isA(DISPERSION_RASTER));
@@ -233,11 +229,9 @@ public class QueryClient {
             modify.insert(iri(dispColourBar).isA(DISPERSION_COLOUR_BAR));
             modify.insert(iri(dispOutputIri).has(HAS_DISPERSION_COLOUR_BAR, iri(dispColourBar)));
 
-            tsList.add(dispLayerIri);
             tsList.add(dispMatrixIri);
             tsList.add(dispRasterIri);
             tsList.add(dispColourBar);
-            dataClass.add(String.class);
             dataClass.add(String.class);
             dataClass.add(String.class);
             dataClass.add(String.class);
@@ -260,8 +254,8 @@ public class QueryClient {
         tsList.add(staticPointSourceLayerIri);
         tsList.add(buildingsLayerIri);
         dataClass.add(Boolean.class);
-        dataClass.add(String.class);
-        dataClass.add(String.class);
+        dataClass.add(Boolean.class);
+        dataClass.add(Boolean.class);
 
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
             tsClient.initTimeSeries(tsList, dataClass, null, conn);
@@ -542,7 +536,7 @@ public class QueryClient {
         Variable scopelabelVar = query.var();
         Variable pollutantType = query.var();
         Variable pollutantLabel = query.var();
-        Variable dispLayerVar = query.var();
+        Variable dispRasterVar = query.var();
         Variable weatherStationVar = query.var();
         Variable scopeWktVar = query.var();
         Variable weatherStationWktVar = query.var();
@@ -552,7 +546,7 @@ public class QueryClient {
         query.where(derivation.has(isDerivedFrom, scope), scope.isA(SCOPE).andHas(iri(RDFS.LABEL), scopelabelVar),
                 derivation.has(isDerivedFrom, weatherStationVar), weatherStationVar.isA(REPORTING_STATION),
                 dispersionOutput.isA(DISPERSION_OUTPUT).andHas(belongsTo, derivation)
-                        .andHas(HAS_DISPERSION_LAYER, dispLayerVar)
+                        .andHas(HAS_DISPERSION_RASTER, dispRasterVar)
                         .andHas(PropertyPaths.path(HAS_POLLUTANT_ID, iri(RDF.TYPE)), pollutantType),
                 pollutantType.has(RDFS.LABEL, pollutantLabel).optional(),
                 ontopEndpoint.service(scope.has(PropertyPaths.path(HAS_GEOMETRY, iri(GEO.AS_WKT)), scopeWktVar),
@@ -569,7 +563,7 @@ public class QueryClient {
 
             String scopeLabel = queryResult.getJSONObject(i).getString(scopelabelVar.getQueryString().substring(1));
             String pol = queryResult.getJSONObject(i).getString(pollutantType.getQueryString().substring(1));
-            String dispLayer = queryResult.getJSONObject(i).getString(dispLayerVar.getQueryString().substring(1));
+            String dispRaster = queryResult.getJSONObject(i).getString(dispRasterVar.getQueryString().substring(1));
 
             DispersionSimulation dispersionSimulation = iriToDispSimMap.get(derivationIri);
             dispersionSimulation.setScopeLabel(scopeLabel);
@@ -583,7 +577,7 @@ public class QueryClient {
                 polLabel = pol;
             }
 
-            dispersionSimulation.setPollutantLabelAndDispLayer(pol, polLabel, dispLayer);
+            dispersionSimulation.setPollutantLabelAndDispRaster(pol, polLabel, dispRaster);
 
             String wktLiteral = queryResult.getJSONObject(i).getString(scopeWktVar.getQueryString().substring(1));
             org.locationtech.jts.geom.Geometry scopePolygon = WKTReader.extract(wktLiteral).getGeometry();
@@ -613,19 +607,19 @@ public class QueryClient {
             Connection conn) {
         dispersionSimulations.forEach(dispersionSimulation -> {
             List<String> pollutants = dispersionSimulation.getPollutants();
-            List<String> dispersionLayers = pollutants.stream().map(dispersionSimulation::getDispersionLayer)
+            List<String> dispersionLayers = pollutants.stream().map(dispersionSimulation::getDispersionRaster)
                     .collect(Collectors.toList());
 
             Long latestTime = tsClient.getMaxTime(dispersionLayers.get(0), conn);
 
             pollutants.forEach(pollutant -> {
-                String dispersionLayer = dispersionSimulation.getDispersionLayer(pollutant);
+                String dispersionRaster = dispersionSimulation.getDispersionRaster(pollutant);
                 if (latestTime == null) {
                     dispersionSimulation.removePollutant(pollutant);
                 } else {
                     TimeSeries<Long> latestTimeSeries = tsClient.getTimeSeriesWithinBounds(dispersionLayers, latestTime,
                             latestTime, conn);
-                    if (latestTimeSeries.getValues(dispersionLayer).get(0) == null) {
+                    if (latestTimeSeries.getValues(dispersionRaster).get(0) == null) {
                         dispersionSimulation.removePollutant(pollutant);
                     }
                 }
@@ -634,9 +628,9 @@ public class QueryClient {
             // set timesteps
             List<Long> simulationTimes;
             if (latestTime != null) {
-                String dispersionLayer = dispersionSimulation
-                        .getDispersionLayer(dispersionSimulation.getPollutants().get(0));
-                simulationTimes = tsClient.getTimeSeries(List.of(dispersionLayer), conn).getTimes();
+                String dispersionRaster = dispersionSimulation
+                        .getDispersionRaster(dispersionSimulation.getPollutants().get(0));
+                simulationTimes = tsClient.getTimeSeries(List.of(dispersionRaster), conn).getTimes();
             } else {
                 simulationTimes = new ArrayList<>();
             }
@@ -654,53 +648,40 @@ public class QueryClient {
      * @param derivation
      * @return
      */
-    public List<String> getLayers(String pollutant, long timeStep, String derivation, Connection conn) {
+    public List<Boolean> getLayers(long timeStep, String derivation, Connection conn) {
         Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
 
         SelectQuery query = Queries.SELECT();
 
-        Variable pollutantIri = query.var();
-        Variable dispOutput = query.var();
-        Variable dispLayer = query.var();
         Variable shipLayer = query.var();
         Variable buildingsLayer = query.var();
         Variable staticPointLayer = query.var();
 
-        query.where(dispOutput.has(belongsTo, iri(derivation)),
-                shipLayer.has(belongsTo, iri(derivation)).andIsA(SHIPS_LAYER),
+        query.where(shipLayer.has(belongsTo, iri(derivation)).andIsA(SHIPS_LAYER),
                 buildingsLayer.has(belongsTo, iri(derivation)).andIsA(BUILDINGS_LAYER),
-                staticPointLayer.has(belongsTo, iri(derivation)).andIsA(STATIC_POINT_SOURCE_LAYER),
-                dispOutput.isA(DISPERSION_OUTPUT).andHas(HAS_POLLUTANT_ID, pollutantIri).andHas(HAS_DISPERSION_LAYER,
-                        dispLayer),
-                pollutantIri.isA(iri(pollutant))).select(dispLayer, shipLayer, buildingsLayer, staticPointLayer)
+                staticPointLayer.has(belongsTo, iri(derivation)).andIsA(STATIC_POINT_SOURCE_LAYER))
+                .select(shipLayer, buildingsLayer, staticPointLayer)
                 .prefix(P_DISP);
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
-        String dispLayerIri = queryResult.getJSONObject(0).getString(dispLayer.getQueryString().substring(1));
         String shipLayerIri = queryResult.getJSONObject(0).getString(shipLayer.getQueryString().substring(1));
         String buildingsLayerIri = queryResult.getJSONObject(0).getString(buildingsLayer.getQueryString().substring(1));
         String staticPointLayerIri = queryResult.getJSONObject(0)
                 .getString(staticPointLayer.getQueryString().substring(1));
 
-        String dispLayerName = null;
-        String shipLayerName = null;
-        String buildingsLayerName = null;
-        String staticPointLayerName = null;
-
         TimeSeries<Long> queriedTimeSeries = tsClient.getTimeSeriesWithinBounds(
-                List.of(dispLayerIri, shipLayerIri, buildingsLayerIri, staticPointLayerIri),
+                List.of(shipLayerIri, buildingsLayerIri, staticPointLayerIri),
                 timeStep, timeStep, conn);
-        dispLayerName = queriedTimeSeries.getValuesAsString(dispLayerIri).get(0);
-        shipLayerName = queriedTimeSeries.getValuesAsString(shipLayerIri).get(0);
-        buildingsLayerName = queriedTimeSeries.getValuesAsString(buildingsLayerIri).get(0);
-        staticPointLayerName = queriedTimeSeries.getValuesAsString(staticPointLayerIri).get(0);
 
-        List<String> layers = new ArrayList<>();
-        layers.add(dispLayerName);
-        layers.add(shipLayerName);
-        layers.add(buildingsLayerName);
-        layers.add(staticPointLayerName);
+        boolean hasShips = (Boolean) queriedTimeSeries.getValues(shipLayerIri).get(0);
+        boolean hasBuildings = (Boolean) queriedTimeSeries.getValues(buildingsLayerIri).get(0);
+        boolean hasStaticSources = (Boolean) queriedTimeSeries.getValues(staticPointLayerIri).get(0);
+
+        List<Boolean> layers = new ArrayList<>();
+        layers.add(hasShips);
+        layers.add(hasBuildings);
+        layers.add(hasStaticSources);
 
         return layers;
     }
