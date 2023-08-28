@@ -14,7 +14,7 @@ class ModelArguments:
             "help": "Either t5 or llama. If None, it will be inferred from config.json."
         },
     )
-    device_map: Optional[Union[str, dict]] = field(default=None)
+    device_map: Optional[str] = field(default=None)
     lora_path: Optional[str] = field(default=None)
     # quantization hyperparams
     bits: Optional[int] = field(
