@@ -201,7 +201,7 @@ public class ShipInputAgent extends HttpServlet {
             long averageTimestamp = ships.stream().mapToLong(s -> s.getTimestamp().getEpochSecond()).sum()
                     / ships.size();
             LOGGER.info("Creating GeoServer layer for the average timestamp = {}", averageTimestamp);
-            createGeoServerLayer(averageTimestamp, ships);
+            createGeoServerLayer();
 
             JSONObject responseJson = new JSONObject();
             responseJson.put("averageTimestamp", averageTimestamp);
@@ -220,25 +220,27 @@ public class ShipInputAgent extends HttpServlet {
         }
     }
 
-    void createGeoServerLayer(long averageTimestamp, List<Ship> ships) {
-        // build sql query to get points within 30 minutes of average timestamp
-        Set<String> shipSet = new HashSet<>();
-        ships.forEach(ship -> shipSet.add(String.format("'%s'", ship.getLocationMeasureIri())));
-        String shipList = shipSet.stream().collect(Collectors.joining(","));
-
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("SELECT timeseries.value as geom, \"dbTable\".\"dataIRI\" as iri ");
-        queryBuilder
-                .append("FROM \"dbTable\", public.get_geometry_table(\"tableName\", \"columnName\") as timeseries ");
-        queryBuilder.append(
-                String.format("WHERE \"dbTable\".\"dataIRI\" IN (%s) and timeseries.time > %d and timeseries.time < %d",
-                        shipList, averageTimestamp - 1800, averageTimestamp + 1800));
-        String sqlQuery = queryBuilder.toString();
+    void createGeoServerLayer() {
+        String sqlQuery = """
+                SELECT timeseries.time AS time,
+                    timeseries.value AS geom,
+                    s.ship AS iri,
+                    s.shipname AS name
+                FROM "dbTable",
+                    public.get_geometry_table("tableName", "columnName") AS timeseries,
+                    ship_location_iri AS s,
+                    information_schema.columns c
+                WHERE "dbTable"."dataIRI" = s.location
+                    AND c.table_schema = 'public'
+                    AND c.table_name = "tableName"
+                    AND c.column_name = "columnName"
+                    AND c.udt_name = 'geometry'
+                """;
 
         GeoServerClient geoserverClient = new GeoServerClient();
         geoserverClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
 
-        String layerName = "ships_" + averageTimestamp;
+        String layerName = "ships";
 
         GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
 
