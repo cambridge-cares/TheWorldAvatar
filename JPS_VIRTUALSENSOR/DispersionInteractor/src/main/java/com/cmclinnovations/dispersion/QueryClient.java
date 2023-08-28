@@ -209,6 +209,7 @@ public class QueryClient {
         List<Iri> pollutantsList = List.of(CO, CO2, NO_X, PM25, PM10, SO2, UHC).stream().map(Rdf::iri)
                 .collect(Collectors.toList());
         List<String> tsList = new ArrayList<>();
+        List<Class<?>> dataClass = new ArrayList<>();
         List<String> entityList = new ArrayList<>();
 
         pollutantsList.stream().forEach(p -> {
@@ -236,6 +237,10 @@ public class QueryClient {
             tsList.add(dispMatrixIri);
             tsList.add(dispRasterIri);
             tsList.add(dispColourBar);
+            dataClass.add(String.class);
+            dataClass.add(String.class);
+            dataClass.add(String.class);
+            dataClass.add(String.class);
         });
 
         String shipsLayerIri = PREFIX + UUID.randomUUID();
@@ -251,11 +256,12 @@ public class QueryClient {
         storeClient.executeUpdate(modify.getQueryString());
 
         // initialise time series for dispersion matrix
-
         tsList.add(shipsLayerIri);
         tsList.add(staticPointSourceLayerIri);
         tsList.add(buildingsLayerIri);
-        List<Class<?>> dataClass = Collections.nCopies(tsList.size(), String.class);
+        dataClass.add(Boolean.class);
+        dataClass.add(String.class);
+        dataClass.add(String.class);
 
         try (Connection conn = remoteRDBStoreClient.getConnection()) {
             tsClient.initTimeSeries(tsList, dataClass, null, conn);
