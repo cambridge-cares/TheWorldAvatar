@@ -10,5 +10,6 @@
     <include app:graph="@navigation/asset_info_graph"/>
     <include app:graph="@navigation/scan_graph"/>
     <include app:graph="@navigation/mailbox_graph"/>
+    <include app:graph="@navigation/add_asset_graph"/>
 
 </navigation>

@@ -45,6 +45,10 @@ public class AssetInfoConstant {
     static public final String INVOICE_NUMBER = "Invoice No.";
     static public final String DELIVERY_ORDER_NUMBER = "Delivery Order No.";
 
+    // DATASHEET KEYS
+    static public final String SPEC_SHEET = "Spec Sheet";
+    static public final String MANUAL = "Manual";
+
     static public final String OTHERS = "Others";
 
     // ORDERED KEYS

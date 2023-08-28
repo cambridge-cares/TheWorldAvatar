@@ -39,6 +39,13 @@ public class HomeFragment extends Fragment {
             NavHostFragment.findNavController(this).navigate(request);
         });
 
+        binding.mailBt.setOnClickListener(v -> {
+            NavDeepLinkRequest request = NavDeepLinkRequest.Builder
+                    .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/mail_box"))
+                    .build();
+            NavHostFragment.findNavController(this).navigate(request);
+        });
+
         binding.scanCard.setOnClickListener(v -> {
             NavDeepLinkRequest request = NavDeepLinkRequest.Builder
                     .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/scan_page"))
@@ -46,11 +53,13 @@ public class HomeFragment extends Fragment {
             NavHostFragment.findNavController(this).navigate(request);
         });
 
-        binding.mailBt.setOnClickListener(v -> {
+        binding.addAssetCard.setOnClickListener(v -> {
             NavDeepLinkRequest request = NavDeepLinkRequest.Builder
-                    .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/mail_box"))
+                    .fromUri(Uri.parse("android-app://uk.ac.cam.cares.jps.app/add_asset"))
                     .build();
             NavHostFragment.findNavController(this).navigate(request);
         });
+
+
     }
 }
