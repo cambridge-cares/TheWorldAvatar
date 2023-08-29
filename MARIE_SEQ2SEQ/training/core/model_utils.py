@@ -134,12 +134,19 @@ def get_ort_model(model_args: ModelArguments):
     model_cls = (
         ORTModelForSeq2SeqLM if model_args.model_family == "t5" else ORTModelForCausalLM
     )
-    model_load_kwargs = (
-        dict()
-        if model_args.device_map == "cpu"
-        else dict(provider="CUDAExecutionProvider")
-    )
-    model = model_cls.from_pretrained(model_args.model_path, **model_load_kwargs)
+
+    if model_args.device_map == "cpu" or (
+        model_args.device_map == "auto" and not torch.cuda.is_available()
+    ):
+        model = model_cls.from_pretrained(model_args.model_path)
+        print("ONNX Runtime model is loaded to CPU.")
+    else:
+        model = model_cls.from_pretrained(
+            model_args.model_path, provider="CUDAExecutionProvider"
+        )
+        assert model.providers == ["CUDAExecutionProvider", "CPUExecutionProvider"]
+        print("ONNX Runtime model is loaded to CUDA.")
+
     return model
 
 
