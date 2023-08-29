@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 import torch
 from optimum.intel import OVModelForSeq2SeqLM, OVModelForCausalLM
+from optimum.onnxruntime import ORTModelForSeq2SeqLM, ORTModelForCausalLM
 from transformers import PreTrainedTokenizer
 
 from core.data_processing.input_processing import preprocess_input, preprocess_input
@@ -113,12 +114,36 @@ class OVHfTranslationModel(_HfTranslationModelBase):
 
     def _translate(self, question: str):
         input_ids = self.tokenizer(
-            question, return_tensors="pt", padding="max_length", max_length=self.input_length
+            question,
+            return_tensors="pt",
+            padding="max_length",
+            max_length=self.input_length,
         ).input_ids.to(self.model.device)
         output_ids = self.model.generate(
             input_ids=input_ids, max_new_tokens=self.max_new_tokens
         )
         return self.tokenizer.decode(output_ids[0], skip_special_tokens=True)
+
+
+class OrtHfTranslationModel(_HfTranslationModelBase):
+    def __init__(
+        self, model_args: ModelArguments, model_family: str, max_new_tokens: int = 256
+    ):
+        if model_family == "t5":
+            model = ORTModelForSeq2SeqLM.from_pretrained(model_args.model_path)
+        elif model_family == "llama":
+            model = ORTModelForCausalLM.from_pretrained(model_args.model_path)
+        else:
+            raise ValueError("Unsupported model family: " + model_family)
+        
+        tokenizer = get_hf_tokenizer(model_args.model_path, model_family=model_family)
+
+        super().__init__(
+            model_family=model_family,
+            model=model,
+            tokenizer=tokenizer,
+            max_new_tokens=max_new_tokens,
+        )
 
 
 class ONmtTranslationModel(TranslationModel):

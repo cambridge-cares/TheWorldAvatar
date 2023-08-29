@@ -4,7 +4,12 @@ import transformers
 from tqdm.auto import tqdm
 
 from core.arguments_schema import DatasetArguments, InferenceArguments, ModelArguments
-from core.translation import ONmtTranslationModel, HfTranslationModel, OVHfTranslationModel
+from core.translation import (
+    ONmtTranslationModel,
+    HfTranslationModel,
+    OVHfTranslationModel,
+    OrtHfTranslationModel,
+)
 from core.model_utils import get_model_family_from_model_path
 
 
@@ -32,7 +37,13 @@ def infer():
         trans_model = OVHfTranslationModel(
             model_args,
             model_family=model_family,
-            max_new_tokens=infer_args.max_new_tokens
+            max_new_tokens=infer_args.max_new_tokens,
+        )
+    elif model_args.model_format == "ort":
+        trans_model = OrtHfTranslationModel(
+            model_args,
+            model_family=model_family,
+            max_new_tokens=infer_args.max_new_tokens,
         )
     elif model_args.model_format == "onmt":
         trans_model = ONmtTranslationModel(
@@ -40,6 +51,8 @@ def infer():
             model_family=model_family,
             max_new_tokens=infer_args.max_new_tokens,
         )
+    else:
+        raise ValueError("Unsupported model format: " + model_args.model_format)
 
     with open(data_args.eval_data_path, "r") as f:
         data = json.load(f)
