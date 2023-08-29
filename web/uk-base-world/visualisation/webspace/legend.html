@@ -101,37 +101,36 @@
                 </p>
             </div>
         </div>
-
     </div>
 
-    <!-- Legend section -->
-    <div id="legend-power-lines">
+    <div id="legend-lines">
 
         <!-- Section header -->
-        <div id="header-power-lines"
+        <div id="header"
             style="display: flex; flex-direction: row; margin-bottom: 12px; border-width: 0 0 2px 0 !important; border-style: solid; border-color: lightgray; cursor: pointer;"
-            onclick="toggleLegend('legend-power-lines')">
+            onclick="toggleLegend('legend-lines')">
             <h3 style="padding: 0px !important; margin: 0px !important; flex-grow: 1; line-height: 30px;">
-                Power Network
+                Power Lines
             </h3>
             <i id="icon" class="fas fa-angle-up fa-lg" style="height: 30px; line-height: 30px; flex-grow: 0;"></i>
         </div>
 
-        <!-- Section contents -->
-        <div>
-            <br />
+        <br />
+
+        <!-- Contents -->
+        <div id="contents" style="display: block;"> <!-- Add this line -->
             <img src="http://localhost:38383/geoserver/www/icons/NG_logo.png" height="25">
             <table class="legendtable">
                 <tr>
                     <td>
                         <div id="legend-entry"><img
-                                src="http://localhost:38383/geoserver/www/icons/line_ng_superhigh_icon.png">
+                                src="http://localhost:38383/geoserver/www/icons/line_ng_superhigh_icon.png" height="25">
                             <p>Super-High Voltage Line</p>
                         </div>
                     </td>
                     <td>
                         <div id="legend-entry"><img
-                                src="http://localhost:38383/geoserver/www/icons/line_ng_high_icon.png">
+                                src="http://localhost:38383/geoserver/www/icons/line_ng_high_icon.png" height="25">
                             <p>High Voltage Line</p>
                         </div>
                     </td>
@@ -139,37 +138,46 @@
                 <tr>
                     <td>
                         <div id="legend-entry"><img
-                                src="http://localhost:38383/geoserver/www/icons/line_ng_medium_icon.png">
+                                src="http://localhost:38383/geoserver/www/icons/line_ng_medium_icon.png" height="25">
                             <p>Medium Voltage Pylon</p>
                         </div>
                     </td>
                     <td>
-                        <div id="legend-entry"><img src="http://localhost:38383/geoserver/www/icons/cable_ng.png">
+                        <div id="legend-entry"><img src="http://localhost:38383/geoserver/www/icons/cable_ng.png"
+                                height="25">
                             <p>Underground Cable</p>
                         </div>
                     </td>
                 </tr>
-                <td>
-                    <div id="legend-entry"><img
-                            src="http://localhost:38383/geoserver/www/icons/pylon_superhigh_icon.png">
-                        <p>Pylon</p>
-                    </div>
-                </td>
+                <tr>
+                    <td>
+                        <div id="legend-entry"><img
+                                src="http://localhost:38383/geoserver/www/icons/pylon_superhigh_icon.png" height="25">
+                            <p>Pylon</p>
+                        </div>
+                    </td>
+                    <td>
+                        <div id="legend-entry"><img src="http://localhost:38383/geoserver/www/icons/substation_icon.png"
+                                height="25">
+                            <p>Substation</p>
+                        </div>
+                    </td>
                 </tr>
             </table>
+
             <br />
             <img src="http://localhost:38383/geoserver/www/icons/UKPN_logo.png" height="50">
             <table class="legendtable">
                 <tr>
                     <td>
-                        <div id="legend-entry"><img
-                                src="http://localhost:38383/geoserver/www/icons/pylon_high_icon.png">
+                        <div id="legend-entry"><img src="http://localhost:38383/geoserver/www/icons/pylon_high_icon.png"
+                                height="25">
                             <p>High Voltage Pylon</p>
                         </div>
                     </td>
                     <td>
                         <div id="legend-entry"><img
-                                src="http://localhost:38383/geoserver/www/icons/pylon_medium_icon.png">
+                                src="http://localhost:38383/geoserver/www/icons/pylon_medium_icon.png" height="25">
                             <p>Medium Voltage Pylon</p>
                         </div>
                     </td>
@@ -177,13 +185,13 @@
                 <tr>
                     <td>
                         <div id="legend-entry"><img
-                                src="http://localhost:38383/geoserver/www/icons/line_ukpn_high_icon.png">
+                                src="http://localhost:38383/geoserver/www/icons/line_ukpn_high_icon.png" height="25">
                             <p>High Voltage Line</p>
                         </div>
                     </td>
                     <td>
                         <div id="legend-entry"><img
-                                src="http://localhost:38383/geoserver/www/icons/line_ukpn_medium_icon.png">
+                                src="http://localhost:38383/geoserver/www/icons/line_ukpn_medium_icon.png" height="25">
                             <p>Medium Voltage Line</p>
                         </div>
                     </td>
@@ -191,22 +199,20 @@
                 <tr>
                     <td>
                         <div id="legend-entry"><img
-                                src="http://localhost:38383/geoserver/www/icons/line_ukpn_distribution_high_icon.png">
+                                src="http://localhost:38383/geoserver/www/icons/line_ukpn_distribution_high_icon.png"
+                                height="25">
                             <p>Distribution High Voltage Line</p>
                         </div>
                     </td>
                     <td>
                         <div id="legend-entry"><img
-                                src="http://localhost:38383/geoserver/www/icons/line_ukpn_distribution_low_icon.png">
+                                src="http://localhost:38383/geoserver/www/icons/line_ukpn_distribution_low_icon.png"
+                                height="25">
                             <p>Distribution Low Voltage Line</p>
                         </div>
                     </td>
                 </tr>
             </table>
         </div>
-
-
-    </div>
-
-
+    </div> <!-- Add this line -->
 </div>
