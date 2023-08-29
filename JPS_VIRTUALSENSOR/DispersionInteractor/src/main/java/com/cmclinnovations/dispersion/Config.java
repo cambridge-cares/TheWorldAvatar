@@ -12,6 +12,10 @@ public class Config {
     public static final EndpointConfig ENDPOINT_CONFIG = new EndpointConfig();
     public static final String SENSORS_TABLE_NAME = System.getenv("SENSORS_TABLE_NAME");
     public static final String VIRTUAL_SENSOR_AGENT_IRI = System.getenv("VIRTUAL_SENSOR_AGENT_IRI");
+    public static final String DISPERSION_CONTOURS_TABLE = System.getenv("DISPERSION_CONTOURS_TABLE");
+    public static final String SHIPS_LAYER_NAME = System.getenv("SHIPS_LAYER_NAME");
+    public static final String BUILDINGS_TABLE = System.getenv("BUILDINGS_TABLE");
+    public static final String STATIC_SOURCE_TABLE = System.getenv("STATIC_SOURCE_TABLE");
 
     private Config() {
         throw new IllegalStateException();

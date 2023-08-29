@@ -86,7 +86,7 @@ public class GetDataJson extends HttpServlet {
         String dispWms = Config.GEOSERVER_URL + "/" + Config.GEOSERVER_WORKSPACE +
                 "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true"
                 + "&bbox={bbox-epsg-3857}"
-                + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, "dispersion_contours")
+                + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, Config.DISPERSION_CONTOURS_TABLE)
                 + String.format("&CQL_FILTER=pollutant='%s' AND derivation='%s' AND time=%d", pollutant,
                         derivationIri, timestep);
         JSONObject group = new JSONObject();
@@ -117,7 +117,7 @@ public class GetDataJson extends HttpServlet {
         dispersionLayer.put("type", "fill");
         dispersionLayer.put("name", pollutantLabel);
         dispersionLayer.put("source", "dispersion-source");
-        dispersionLayer.put("source-layer", "dispersion-contours");
+        dispersionLayer.put("source-layer", Config.DISPERSION_CONTOURS_TABLE);
         dispersionLayer.put("minzoom", 4);
         dispersionLayer.put("layout", visibility);
 
@@ -148,7 +148,7 @@ public class GetDataJson extends HttpServlet {
             String shipWms = Config.GEOSERVER_URL + "/" + Config.GEOSERVER_WORKSPACE +
                     "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     + "&bbox={bbox-epsg-3857}"
-                    + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, "ships")
+                    + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, Config.SHIPS_LAYER_NAME)
                     + String.format("&CQL_FILTER=time<%d AND time>%d", timestep + timeBuffer, timestep - timeBuffer);
             JSONObject shipSource = new JSONObject();
             shipSource.put("id", "ship-source");
@@ -161,7 +161,7 @@ public class GetDataJson extends HttpServlet {
             shipLayer.put("type", "circle");
             shipLayer.put("name", "Ships");
             shipLayer.put("source", "ship-source");
-            shipLayer.put("source-layer", "ships");
+            shipLayer.put("source-layer", Config.SHIPS_LAYER_NAME);
             shipLayer.put("minzoom", 4);
             shipLayer.put("layout", visibility);
 
@@ -177,7 +177,7 @@ public class GetDataJson extends HttpServlet {
                     "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true"
                     +
                     "&bbox={bbox-epsg-3857}"
-                    + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, "buildings")
+                    + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, Config.BUILDINGS_TABLE)
                     + String.format("&CQL_FILTER=derivation='%s' AND time=%d", derivationIri, timestep);
             JSONObject buildingSource = new JSONObject();
             buildingSource.put("id", "building-source");
@@ -190,7 +190,7 @@ public class GetDataJson extends HttpServlet {
             buildingLayer.put("type", "fill-extrusion");
             buildingLayer.put("name", "Buildings");
             buildingLayer.put("source", "building-source");
-            buildingLayer.put("source-layer", "buildings");
+            buildingLayer.put("source-layer", Config.BUILDINGS_TABLE);
             buildingLayer.put("minzoom", 4);
             buildingLayer.put("layout", visibility);
 
@@ -207,7 +207,7 @@ public class GetDataJson extends HttpServlet {
             String staticSourceWMS = Config.GEOSERVER_URL + "/" + Config.GEOSERVER_WORKSPACE +
                     "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     + "&bbox={bbox-epsg-3857}"
-                    + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, "static")
+                    + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, Config.STATIC_SOURCE_TABLE)
                     + String.format("&CQL_FILTER=derivation='%s' AND time=%d", derivationIri, timestep);
             JSONObject staticSource = new JSONObject();
             staticSource.put("id", "static-source");
@@ -220,7 +220,7 @@ public class GetDataJson extends HttpServlet {
             staticLayer.put("type", "circle");
             staticLayer.put("name", "Static emission source");
             staticLayer.put("source", "static-source");
-            staticLayer.put("source-layer", "static");
+            staticLayer.put("source-layer", Config.STATIC_SOURCE_TABLE);
             staticLayer.put("minzoom", 4);
             staticLayer.put("layout", visibility);
 
