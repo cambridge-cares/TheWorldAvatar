@@ -19,6 +19,9 @@ from core.arguments_schema import ModelArguments
 
 
 class TranslationModel(ABC):
+    def __init__(self, model_family: str):
+        self.model_family = model_family
+        
     @abstractmethod
     def _translate(self, question: str):
         pass
@@ -43,10 +46,12 @@ class TranslationModel(ABC):
 class _HfTranslationModelBase(TranslationModel):
     def __init__(
         self,
+        model_family: str,
         model,
         tokenizer: PreTrainedTokenizer,
         max_new_tokens: int = 256,
     ):
+        super().__init__(model_family)
         self.model = model
         self.tokenizer = tokenizer
         self.max_new_tokens = max_new_tokens
@@ -73,6 +78,7 @@ class HfTranslationModel(_HfTranslationModelBase):
             model = torch.compile(model)
 
         super().__init__(
+            model_family=model_args.model_family,
             model=model,
             tokenizer=tokenizer,
             max_new_tokens=max_new_tokens,
@@ -85,6 +91,7 @@ class OVHfTranslationModel(_HfTranslationModelBase):
         model = get_ov_model(model_args)
         tokenizer = get_hf_tokenizer(model_args)
         super().__init__(
+            model_family=model_args.model_family,
             model=model,
             tokenizer=tokenizer,
             max_new_tokens=max_new_tokens,
@@ -109,6 +116,7 @@ class OrtHfTranslationModel(_HfTranslationModelBase):
         tokenizer = get_hf_tokenizer(model_args)
 
         super().__init__(
+            model_family=model_args.model_family,
             model=model,
             tokenizer=tokenizer,
             max_new_tokens=max_new_tokens,
@@ -123,6 +131,7 @@ class ONmtTranslationModel(TranslationModel):
     ):
         self.model, self.tokenizer = get_onmt_model_and_tokenizer(model_args)
         self.max_new_tokens = max_new_tokens
+        super().__init__(model_args.model_family)
 
     def _translate(self, question: str):
         input_tokens = self.tokenizer(question)
