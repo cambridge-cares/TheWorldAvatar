@@ -9,50 +9,42 @@ import android.text.TextWatcher;
 import android.text.style.ForegroundColorSpan;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.RelativeLayout;
 
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.apache.log4j.Logger;
 
-import uk.ac.cam.cares.jps.addasset.model.AssetPropertyDataModel;
 import uk.ac.cam.cares.jps.addasset.R;
+import uk.ac.cam.cares.jps.addasset.model.AssetPropertyDataModel;
 
-public class PropertyInputTextView extends RelativeLayout {
-    private final Logger LOGGER = Logger.getLogger(PropertyInputTextView.class);
+abstract public class PropertyBaseInputTextView extends RelativeLayout {
+    private final Logger LOGGER = Logger.getLogger(PropertyBaseInputTextView.class);
 
-    public PropertyInputTextView(Context context) {
+    TextInputLayout inputLayout;
+    EditText editText;
+
+    public PropertyBaseInputTextView(Context context) {
         super(context);
-        inflate(getContext(), R.layout.view_input_text_layout, this);
     }
 
-    public PropertyInputTextView(Context context, AttributeSet attrs) {
+    public PropertyBaseInputTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        inflate(getContext(), R.layout.view_input_text_layout, this);
     }
 
-    public PropertyInputTextView(Context context, AssetPropertyDataModel property) {
+    // Subclass of this class should have input_layout for InputLayout and edit_text for EditText type
+    public PropertyBaseInputTextView(Context context, int layoutId, AssetPropertyDataModel property) {
         super(context);
-        View inputText = inflate(getContext(), R.layout.view_input_text_layout, this);
-        TextInputLayout inputLayout = inputText.findViewById(R.id.textField);
+        View view = inflate(getContext(), layoutId, this);
+        inputLayout = view.findViewById(R.id.input_layout);
         if (property.isRequired()) {
             inputLayout.setHint(getMandatoryHintText(property.getFieldName()));
         } else {
             inputLayout.setHint(property.getFieldName());
         }
 
-//        if (!property.isSearchable()) {
-//            inputLayout.setEndIconMode(TextInputLayout.END_ICON_NONE);
-//            inputLayout.setEndIconDrawable(null);
-//            inputLayout.setEndIconContentDescription("");
-//        } else {
-//            inputLayout.setEndIconOnClickListener(view -> {
-//                LOGGER.info("end icon clicked");
-//            });
-//        }
-
-        TextInputEditText editText = inputLayout.findViewById(R.id.edit_text);
+        editText = inputLayout.findViewById(R.id.edit_text);
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {;}
@@ -73,5 +65,4 @@ public class PropertyInputTextView extends RelativeLayout {
         hint.setSpan(new ForegroundColorSpan(Color.RED), hint.length() - 1, hint.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return hint;
     }
-
 }

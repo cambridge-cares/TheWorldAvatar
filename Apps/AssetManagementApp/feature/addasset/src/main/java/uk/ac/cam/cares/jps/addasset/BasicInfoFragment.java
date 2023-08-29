@@ -22,7 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.addasset.model.AddAssetViewModel;
 import uk.ac.cam.cares.jps.addasset.model.AssetPropertyDataModel;
 import uk.ac.cam.cares.jps.addasset.view.PropertyAutoCompleteTextView;
-import uk.ac.cam.cares.jps.addasset.view.PropertyInputTextView;
+import uk.ac.cam.cares.jps.addasset.view.PropertyGeneralInputTextView;
 
 @AndroidEntryPoint
 public class BasicInfoFragment extends Fragment {
@@ -59,7 +59,7 @@ public class BasicInfoFragment extends Fragment {
                 if (property.getType().equals(AssetPropertyDataModel.ViewType.DROP_DOWN)) {
                     inputText = new PropertyAutoCompleteTextView(requireContext(), property);
                 } else {
-                    inputText = new PropertyInputTextView(requireContext(), property);
+                    inputText = new PropertyGeneralInputTextView(requireContext(), property);
                 }
 
                 sectionRoot.addView(inputText);
