@@ -4,7 +4,9 @@
     <div id="legend-dukes">
 
         <!-- Section header -->
-        <div id="header" style="display: flex; flex-direction: row; margin-bottom: 12px; border-width: 0 0 2px 0 !important; border-style: solid; border-color: lightgray; cursor: pointer;" onclick="toggleLegend('legend-dukes')">
+        <div id="header"
+            style="display: flex; flex-direction: row; margin-bottom: 12px; border-width: 0 0 2px 0 !important; border-style: solid; border-color: lightgray; cursor: pointer;"
+            onclick="toggleLegend('legend-dukes')">
             <h3 style="padding: 0px !important; margin: 0px !important; flex-grow: 1; line-height: 30px;">
                 Power Generation Sites
             </h3>
@@ -15,7 +17,7 @@
         <div id="contents" style="display: block;">
             <p style="color: grey; font-size: 11pt; font-style: italic; padding-bottom: 12px;">
                 Power generation sites are primarily grouped by their main fuel as reported by the DUKES 2023 data set.
-                <br/><br/>
+                <br /><br />
                 The visual size of sites is representative of their reported Installed Capacity (MW).
             </p>
             <div style="height: 30px; padding-bottom: 6px;">
@@ -99,5 +101,112 @@
                 </p>
             </div>
         </div>
+
     </div>
+
+    <!-- Legend section -->
+    <div id="legend-power-lines">
+
+        <!-- Section header -->
+        <div id="header-power-lines"
+            style="display: flex; flex-direction: row; margin-bottom: 12px; border-width: 0 0 2px 0 !important; border-style: solid; border-color: lightgray; cursor: pointer;"
+            onclick="toggleLegend('legend-power-lines')">
+            <h3 style="padding: 0px !important; margin: 0px !important; flex-grow: 1; line-height: 30px;">
+                Power Network
+            </h3>
+            <i id="icon" class="fas fa-angle-up fa-lg" style="height: 30px; line-height: 30px; flex-grow: 0;"></i>
+        </div>
+
+        <!-- Section contents -->
+        <div>
+            <br />
+            <img src="http://localhost:38383/geoserver/www/icons/NG_logo.png" height="25">
+            <table class="legendtable">
+                <tr>
+                    <td>
+                        <div id="legend-entry"><img
+                                src="http://localhost:38383/geoserver/www/icons/line_ng_superhigh_icon.png">
+                            <p>Super-High Voltage Line</p>
+                        </div>
+                    </td>
+                    <td>
+                        <div id="legend-entry"><img
+                                src="http://localhost:38383/geoserver/www/icons/line_ng_high_icon.png">
+                            <p>High Voltage Line</p>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div id="legend-entry"><img
+                                src="http://localhost:38383/geoserver/www/icons/line_ng_medium_icon.png">
+                            <p>Medium Voltage Pylon</p>
+                        </div>
+                    </td>
+                    <td>
+                        <div id="legend-entry"><img src="http://localhost:38383/geoserver/www/icons/cable_ng.png">
+                            <p>Underground Cable</p>
+                        </div>
+                    </td>
+                </tr>
+                <td>
+                    <div id="legend-entry"><img
+                            src="http://localhost:38383/geoserver/www/icons/pylon_superhigh_icon.png">
+                        <p>Pylon</p>
+                    </div>
+                </td>
+                </tr>
+            </table>
+            <br />
+            <img src="http://localhost:38383/geoserver/www/icons/UKPN_logo.png" height="50">
+            <table class="legendtable">
+                <tr>
+                    <td>
+                        <div id="legend-entry"><img
+                                src="http://localhost:38383/geoserver/www/icons/pylon_high_icon.png">
+                            <p>High Voltage Pylon</p>
+                        </div>
+                    </td>
+                    <td>
+                        <div id="legend-entry"><img
+                                src="http://localhost:38383/geoserver/www/icons/pylon_medium_icon.png">
+                            <p>Medium Voltage Pylon</p>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div id="legend-entry"><img
+                                src="http://localhost:38383/geoserver/www/icons/line_ukpn_high_icon.png">
+                            <p>High Voltage Line</p>
+                        </div>
+                    </td>
+                    <td>
+                        <div id="legend-entry"><img
+                                src="http://localhost:38383/geoserver/www/icons/line_ukpn_medium_icon.png">
+                            <p>Medium Voltage Line</p>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div id="legend-entry"><img
+                                src="http://localhost:38383/geoserver/www/icons/line_ukpn_distribution_high_icon.png">
+                            <p>Distribution High Voltage Line</p>
+                        </div>
+                    </td>
+                    <td>
+                        <div id="legend-entry"><img
+                                src="http://localhost:38383/geoserver/www/icons/line_ukpn_distribution_low_icon.png">
+                            <p>Distribution Low Voltage Line</p>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+
+    </div>
+
+
 </div>

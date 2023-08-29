@@ -1,0 +1,24 @@
+[PrefixDeclaration]
+pow:    http://www.theworldavatar.com/ontology/ontopower/OntoPower.owl#
+om:     http://www.ontology-of-units-of-measure.org/resource/om-2/
+xsd:    http://www.w3.org/2001/XMLSchema#
+geo:    http://www.opengis.net/ont/geosparql#
+rdfs:   http://www.w3.org/2000/01/rdf-schema#
+credo:  http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#
+
+[MappingDeclaration] @collection [[
+mappingId	ng-substations
+target		pow:ng_substations/{ogc_fid} a pow:Substation ;
+                rdfs:label {name}^^xsd:string ;
+                credo:hasID {SUBSTATION}^^xsd:string ; 
+                pow:hasVoltageLevel pow:VoltageLevel/HighVoltage ;
+                pow:hasMaxVoltage pow:ng_substations/MaxVoltage/{ogc_fid} ;
+                geo:hasDefaultGeometry pow:ng_substations/geometry/0/{ogc_fid} .
+            pow:ng_substations/MaxVoltage/{ogc_fid} a om:PotentialDifference ;
+                om:hasValue pow:ng_substations/MaxVoltage/Measure/{ogc_fid} .
+            pow:ng_substations/MaxVoltage/Measure/{ogc_fid} om:hasUnit om:kilovolt ;
+                om:hasNumericValue {max_voltage_kv}^^xsd:float .
+            pow:ng_substations/geometry/0/{ogc_fid} geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/27700> {wkt}"^^geo:wktLiteral .
+source      SELECT ogc_fid, name, "SUBSTATION", ST_ASTEXT(wkb_geometry) AS wkt, max_voltage_kv
+            FROM substations_polygons
+]]

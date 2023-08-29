@@ -50,6 +50,9 @@ then
     FIA_DIR="$ROOT/Agents/FeatureInfoAgent/queries"
     cp "./inputs/config/fia-config.json" "$FIA_DIR/"
     cp "./inputs/config/dukes_query.sparql" "$FIA_DIR/"
+    cp "./inputs/config/power_line_query.sparql" "$FIA_DIR/"
+    cp "./inputs/config/substation_query.sparql" "$FIA_DIR/"
+    cp "./inputs/config/woodland_query.sparql" "$FIA_DIR/"
 
     # Clear any existing stack manager configs
     MANAGER_CONFIG="$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/config/"
@@ -70,6 +73,9 @@ then
     rm -rf "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/*"
     cp "./inputs/config/fia-config.json" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
     cp "./inputs/config/dukes_query.sparql" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
+    cp "./inputs/config/woodland_query.sparql" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
+    cp "./inputs/config/substation_query.sparql" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
+    cp "./inputs/config/power_line_query.sparql" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
 
     # Copy the visualisation files into the special volume populator folder
     mkdir -p "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/"
@@ -98,6 +104,7 @@ then
 
     # Copy in the stack uploader config(s)
     cp "./inputs/config/dukes_2023.json" "$UPLOAD_CONFIG/"
+    cp -r ./inputs/config/pylons-and-veg/* "$UPLOAD_CONFIG/"
 
     # Copy in the data for upload
     UPLOAD_DATA="$ROOT/Deploy/stacks/dynamic/stack-data-uploader/inputs/data"
