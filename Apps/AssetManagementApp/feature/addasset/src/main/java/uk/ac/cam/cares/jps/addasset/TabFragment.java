@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -22,7 +23,7 @@ import java.util.List;
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.addasset.model.AddAssetViewModel;
 import uk.ac.cam.cares.jps.addasset.model.AssetPropertyDataModel;
-import uk.ac.cam.cares.jps.addasset.view.DataSheetView;
+import uk.ac.cam.cares.jps.addasset.view.DataSheetItemView;
 import uk.ac.cam.cares.jps.addasset.view.PropertyAutoCompleteTextView;
 import uk.ac.cam.cares.jps.addasset.view.PropertyGeneralInputTextView;
 
@@ -40,7 +41,8 @@ public class TabFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         BasicConfigurator.configure();
-        ScrollView scrollView = new ScrollView(inflater.getContext());
+//        ScrollView scrollView = new ScrollView(inflater.getContext());
+        NestedScrollView scrollView = new NestedScrollView(inflater.getContext());
         scrollView.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
@@ -87,14 +89,9 @@ public class TabFragment extends Fragment {
         View sectionView = inflater.inflate(R.layout.view_data_sheet_section, null);
         ((TextView) sectionView.findViewById(R.id.section_label)).setText(section);
 
-        ImageButton addDocumentButton = sectionView.findViewById(R.id.add_bt);
-        addDocumentButton.setOnClickListener(view -> {
-            LOGGER.info("add document button clicked");
-        });
-
         LinearLayout linearLayout = sectionView.findViewById(R.id.linear_layout);
         for (AssetPropertyDataModel property : viewModel.getInputFieldsBySection().get(section)) {
-            View dataSheetItem = new DataSheetView(requireContext(), property);
+            View dataSheetItem = new DataSheetItemView(requireContext(), property);
             linearLayout.addView(dataSheetItem);
         }
         return sectionView;

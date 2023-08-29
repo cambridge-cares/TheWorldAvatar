@@ -1,7 +1,10 @@
 package uk.ac.cam.cares.jps.addasset.view;
 
 import android.content.Context;
+import android.text.InputType;
 import android.util.AttributeSet;
+import android.view.Gravity;
+import android.view.View;
 
 import org.apache.log4j.Logger;
 
@@ -23,6 +26,10 @@ public class PropertyGeneralInputTextView extends PropertyBaseInputTextView {
 
     public PropertyGeneralInputTextView(Context context, AssetPropertyDataModel property) {
         super(context, R.layout.view_input_text_layout, property);
+        if (property.isMultiLine()) {
+            editText.setMinLines(6);
+            editText.setGravity(Gravity.START | Gravity.TOP);
+        }
     }
 
 

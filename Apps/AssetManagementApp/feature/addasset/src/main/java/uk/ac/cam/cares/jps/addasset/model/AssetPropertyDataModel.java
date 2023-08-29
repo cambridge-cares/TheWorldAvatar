@@ -15,7 +15,13 @@ public class AssetPropertyDataModel {
     ViewType type;
     boolean isRequired;
     boolean disallowInput;
+    boolean isMultiLine;
     String helperText;
+
+    AssetPropertyDataModel(String fieldName, ViewType type) {
+        this.fieldName = fieldName;
+        this.type = type;
+    }
 
     AssetPropertyDataModel(String fieldName, boolean isRequired, boolean disallowInput, ViewType type) {
         this.fieldName = fieldName;
@@ -63,5 +69,21 @@ public class AssetPropertyDataModel {
 
     public boolean isDisallowInput() {
         return disallowInput;
+    }
+
+    public void setRequired(boolean required) {
+        isRequired = required;
+    }
+
+    public void setDisallowInput(boolean disallowInput) {
+        this.disallowInput = disallowInput;
+    }
+
+    public void setMultiLine(boolean multiLine) {
+        isMultiLine = multiLine;
+    }
+
+    public boolean isMultiLine() {
+        return isMultiLine;
     }
 }

@@ -35,6 +35,7 @@ public class AddAssetViewModel extends ViewModel {
     private final List<String> dropDownFieldKeys = Arrays.asList(TYPE, ASSIGNED_TO, LOCATED_IN, SEAT_LOCATION, STORED_IN, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER, ITEM_NAME, SERVICE_CODE, SERVICE_CATEGORY);
     private final List<String> disallowInputForDropDown = Arrays.asList(TYPE, ASSIGNED_TO);
     private final List<String> skippedFieldKeys = Arrays.asList(IRI, INVENTORY_ID, MANUFACTURE_URL);
+    private final List<String> multiLineInputFieldKeys = Arrays.asList(ITEM_DESCRIPTION, SERVICE_CODE_DESCRIPTION, SERVICE_CATEGORY_DESCRIPTION);
 
     @Inject
     AddAssetViewModel() {
@@ -51,7 +52,7 @@ public class AddAssetViewModel extends ViewModel {
         inputFieldsBySection.put(PURCHASE, getInputFieldListForSection(docLineInfoOrder));
         inputFieldsBySection.put(ITEM, getInputFieldListForSection(itemInfoOrder));
 
-        // todo: incorrect fields data!
+        // assume only 1 spec sheet and 1 manual
         inputFieldsBySection.put(SPEC_SHEET, getInputFieldListForSection(Collections.singletonList(SPEC_SHEET)));
         inputFieldsBySection.put(MANUAL, getInputFieldListForSection(Collections.singletonList(MANUAL)));
     }
@@ -78,10 +79,15 @@ public class AddAssetViewModel extends ViewModel {
 
             AssetPropertyDataModel assetPropertyDataModel;
             if (dropDownFieldKeys.contains(key)) {
-                assetPropertyDataModel = new AssetPropertyDataModel(key, mandatoryFieldKeys.contains(key), disallowInputForDropDown.contains(key), AssetPropertyDataModel.ViewType.DROP_DOWN);
+                assetPropertyDataModel = new AssetPropertyDataModel(key, AssetPropertyDataModel.ViewType.DROP_DOWN);
             } else {
-                assetPropertyDataModel = new AssetPropertyDataModel(key, mandatoryFieldKeys.contains(key), disallowInputForDropDown.contains(key), AssetPropertyDataModel.ViewType.INPUT_FIELD);
+                assetPropertyDataModel = new AssetPropertyDataModel(key, AssetPropertyDataModel.ViewType.INPUT_FIELD);
             }
+
+            assetPropertyDataModel.setDisallowInput(disallowInputForDropDown.contains(key));
+            assetPropertyDataModel.setRequired(mandatoryFieldKeys.contains(key));
+            assetPropertyDataModel.setMultiLine(multiLineInputFieldKeys.contains(key));
+
             results.add(assetPropertyDataModel);
         }
         return results;
