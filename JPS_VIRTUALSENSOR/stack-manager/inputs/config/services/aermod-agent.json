@@ -17,12 +17,13 @@
 					"DISPERSION_LAYER=dispersion_layer",
 					"SIMULATION_DIR=/root/aermod/simulations",
 					"FILE_SERVER_URL=http://ship-stack-file-server:8080/FileServer/",
-					"VIS_FOLDER=/vis_data",
 					"GEOSERVER_URL=http://localhost:3838/geoserver",
 					"ELEVATION_TABLE=elevation",
 					"DISPERSION_CONTOURS_TABLE=dispersion_contours",
 					"DISPERSION_RASTER_TABLE=dispersion_raster",
-					"SHIP_IRI_LOOKUP_TABLE=ship_location_iri"
+					"SHIP_IRI_LOOKUP_TABLE=ship_location_iri",
+					"BUILDINGS_TABLE=buildings",
+					"STATIC_SOURCE_TABLE=static"
 				],
 				"Configs": [
 					{

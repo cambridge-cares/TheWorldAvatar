@@ -14,7 +14,11 @@
 					"GEOSERVER_WORKSPACE=dispersion",
 					"GEOSERVER_URL=http://localhost:3838/geoserver",
 					"SENSORS_TABLE_NAME=sensors",
-					"VIRTUAL_SENSOR_AGENT_IRI=https://theworldavatar.com/kg/ontodispersion/VirtualSensorAgent"
+					"VIRTUAL_SENSOR_AGENT_IRI=https://theworldavatar.com/kg/ontodispersion/VirtualSensorAgent",
+					"DISPERSION_CONTOURS_TABLE=dispersion_contours",
+					"SHIPS_LAYER_NAME=ships",
+					"BUILDINGS_TABLE=buildings",
+					"STATIC_SOURCE_TABLE=static"
 				],
 				"Configs": [
 					{

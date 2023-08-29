@@ -14,7 +14,9 @@
 					"EMISSIONS_AGENT_IRI=http://theworldavatar.com/kg/dispersion/EmissionsAgent",
 					"PYTHON_SERVICE_URL=http://ship-stack-python-service:5000",
 					"PARALLELISE_CALCULATIONS=true",
-					"SHIP_IRI_LOOKUP_TABLE=ship_location_iri"
+					"SHIP_IRI_LOOKUP_TABLE=ship_location_iri",
+					"SCOPE_TABLE_NAME=scopes",
+					"SHIPS_LAYER_NAME=ships"
 				],
 				"Configs": [
 					{

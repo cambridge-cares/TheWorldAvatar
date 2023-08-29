@@ -15,6 +15,10 @@
                     "GEOSERVER_WORKSPACE=dispersion",
 					"GEOSERVER_URL=http://localhost:3838/geoserver",
                     "SENSORS_TABLE_NAME=sensors",
+					"DISPERSION_CONTOURS_TABLE=dispersion_contours",
+					"SHIPS_LAYER_NAME=ships",
+					"BUILDINGS_TABLE=buildings",
+					"STATIC_SOURCE_TABLE=static",
                     "JPDA_ADDRESS=0.0.0.0:5005",
                     "JPDA_TRANSPORT=dt_socket",
                     "DEBUG=ON"
