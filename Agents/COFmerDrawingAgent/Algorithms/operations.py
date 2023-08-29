@@ -1,6 +1,7 @@
 from rdkit import Chem
 from rdkit.Chem import rdchem
 from rdkit.Chem import AllChem
+from collections import deque
 from copy import deepcopy
 from itertools import product
 import os
@@ -16,35 +17,18 @@ import os
 def component_handler(assemblyModel, componentTypeNumber, precursors, linkages):
     components = {}
     result = component_am_mol_matcher(assemblyModel, componentTypeNumber, precursors=precursors, linkages=linkages)
-    #print(assemblyModel)
     precursor_dict, linkage_dict = ordering_components(result)
     linkage_copies = dummify_linkages(linkage_dict)
     precursor_copies = dummify_precursors(precursor_dict)
     components.update(linkage_copies)
     components.update(precursor_copies)
-    #print(components)
     return components
 
-def component_handler1(assemblyModel, componentTypeNumber,*, precursors, linkages):
-    components = {}
-    result = component_am_mol_matcher(assemblyModel, componentTypeNumber, precursors=precursors, linkages=linkages)
-    #print(result)
-    precursor_dict, linkage_dict = ordering_components(result)
-    linkage_copies = dummify_linkages(linkage_dict)
-    precursor_copies = dummify_precursors(precursor_dict)
-    components.update(linkage_copies)
-    components.update(precursor_copies)
-    #print(components)
-    return components
 
 def component_am_mol_matcher(assemblyModel, componentTypeNumber, *, precursors=None, linkages=None):
-    #print(componentTypeNumber)
-    #print(precursors)
-    #print(linkages)
-    
+
     # check if number of precursors match ComponentTypeNumber for Precursor
     if precursors is None and componentTypeNumber.get("Precursor", 0) > 0:
-        #print(precursors)
         return "Error: Number of Precursors does not match ComponentTypeNumber for Precursor"
     elif precursors is not None and componentTypeNumber.get("Precursor", 0) != len(precursors):
         return "Error: Number of Precursors does not match ComponentTypeNumber for Precursor"
@@ -73,8 +57,7 @@ def component_am_mol_matcher(assemblyModel, componentTypeNumber, *, precursors=N
                 break  # Break out of the loop once a match is found
 
     for linkage in linkages:
-        #print(linkages)
-        #print(linkage)
+
         gbu = linkage.get("GBU", "")
         linkage_info = {
             "ConstructingMol": linkage.get("ConstructingMol", ""),
@@ -85,18 +68,13 @@ def component_am_mol_matcher(assemblyModel, componentTypeNumber, *, precursors=N
                 components[k] = linkage_info["ConstructingMol"]
                 components[k + " BS"] = linkage_info["BS"]
                 break  # Break out of the loop once a match is found
-    #print(components)
     return components
 
 def ordering_components(input_dict):
     precursor_dict = {}
     linkage_dict = {}
-    #print(input_dict)
     # Get all the Component_names
     component_names = set(key.replace(" Copies", "").replace(" BS", "") for key in input_dict.keys() if 'Component' in key)
-    #print("--------------------------------------------")
-    #print(input_dict)
-    #print("--------------------------------------------")
     # Create a dictionary for each Component_with its corresponding data
     for component_name in component_names:
         
@@ -126,39 +104,38 @@ def dummify_linkages(component_dict):
             bs_data_list = [{'bindingSite': bs_data['bindingSite'], 'Dummies': bs_data['Dummies']} for bs_data in component_data['BS']]
             
             output_dict[copy_name] = {'inputFile': input_file, 'outputFile': output_file, 'Linkage_BS': bs_data_list}
-    #print(output_dict)
     return output_dict
 
 def dummify_precursors(component_dict):
     dummies_start = 100
     output_dict = {}
-    total_dummies = sum([component_data['Copies'] * len(component_data['BS']) for component_data in component_dict.values()])
+    
     for component_name, component_data in component_dict.items():
         component_copies = component_data['Copies']
         bs_data_sorted = sorted(component_data['BS'], key=lambda x: x['bsIndex'])
+        
+        # Generate dummy atoms for the first copy
+        first_copy_bs_data_list = []
+        for bs_data in bs_data_sorted:
+            bs_index = bs_data['bsIndex']
+            bs_data_copy = {'bindingSite': bs_data['bindingSite'], 'Dummies': []}
+            for j in range(bs_index):
+                bs_data_copy['Dummies'].append(dummies_start)
+                dummies_start += 1
+            first_copy_bs_data_list.append(bs_data_copy)
+        
+        # Assign to all copies
         for i in range(1, component_copies + 1):
             copy_name = f"{component_name}_Copy_{i}"
             input_file = component_data[component_name]
             output_file = f"{copy_name}.mol"
-            bs_data_list = []
-            for bs_data in bs_data_sorted:
-                bs_index = bs_data['bsIndex']
-                bs_data_copy = {'bindingSite': bs_data['bindingSite'], 'Dummies': []}
-                for j in range(bs_index):
-                    bs_data_copy['Dummies'].append(dummies_start)
-                    dummies_start += 1
-                bs_data_list.append(bs_data_copy)
-            if copy_name in output_dict:
-                output_dict[copy_name]['Precursor_BS'].extend(bs_data_list)
-            else:
-                output_dict[copy_name] = {'inputFile': input_file, 'outputFile': output_file, 'Precursor_BS': bs_data_list}
+            output_dict[copy_name] = {'inputFile': input_file, 'outputFile': output_file, 'Precursor_BS': first_copy_bs_data_list.copy()}
     return output_dict
 
 #----------------------COMPONENT ISTANCE MOLECULIZER-------------------------
 
 def component_mol_handler(component_dict, input_dir, output_dir):
     for component_name, component_data in component_dict.items():
-        #print(component_data)
         input_file = os.path.join(input_dir, component_data['inputFile'])
         output_file = os.path.join(output_dir, component_data['outputFile'])
         dummies = None
@@ -183,29 +160,6 @@ def component_mol_handler(component_dict, input_dir, output_dir):
         with open(output_file, 'w') as f:
             f.write(Chem.MolToMolBlock(mol))
         
-        component_mol_cleaner(output_dir)
-
-def component_mol_handler_complex(component_dict, input_dir, output_dir):
-    for component_name, component_data in component_dict.items():
-        #print(component_data)
-        input_file = os.path.join(input_dir, component_data['inputFile'])
-        output_file = os.path.join(output_dir, component_data['outputFile'])
-        dummies = None
-        
-        if 'Linkage_BS' in component_data:
-            dummies = [d['Dummies'] for d in component_data['Linkage_BS']][0]
-        elif 'Precursor_BS' in component_data:
-            dummies = [d['Dummies'] for d in component_data['Precursor_BS']][0]
-        
-        with open(input_file, 'r') as f:
-            mol_block = f.read()
-        mol = Chem.MolFromMolBlock(mol_block)
-        
-        if dummies is not None:
-            mol = dummy_atom_replacer(mol, dummies)
-            
-        with open(output_file, 'w') as f:
-            f.write(Chem.MolToMolBlock(mol))
         component_mol_cleaner(output_dir)
 
 def dummy_atom_replacer(mol, dummies):
@@ -238,7 +192,6 @@ def component_mol_cleaner(directory):
 
 def initial_product_instantiation(assembly_model, SingleComponent_original):
     SingleComponent = deepcopy(SingleComponent_original)
-    #print(SingleComponent_original)
     product1 = assembly_model["ConstructionSteps"]["Product_1"]
     
     component1 = product1[0]
@@ -351,7 +304,6 @@ def product_instantiation(assembly_model, CurrentComponent, product_name):
     return None
 
 def clean_dummies_list(input_list):
-    #print(input_list)
     cleaned_list = [item for item in input_list if item.get('Dummies')]
     return cleaned_list if cleaned_list else None
 
@@ -394,9 +346,8 @@ def looping_to_cofmer(assembly_model, initiation_single_component, product_insta
             if components == "Product_1":
                 return initiation_single_component  # Return initiation_single_component if COFmer value is Product_1
             continue  # Skip COFmer since it's already initialized
-
-        temp_dict = product_instantiation(assembly_model, current_component, product_name)
         
+        temp_dict = product_instantiation(assembly_model, current_component, product_name)
         result_dict = {**result_dict, **temp_dict}
 
 
@@ -406,10 +357,9 @@ def looping_to_cofmer(assembly_model, initiation_single_component, product_insta
 
 def product_mol_handler(input_dict, output_dir):
     output_list = []
-    
+   
     # Loop through all keys in the dictionary
     for key in input_dict.keys():
-   #     print(key)
         # Check if the key contains the word "Product_"
         if "Product_" in key:
             # Extract the relevant information from the dictionary
@@ -417,18 +367,9 @@ def product_mol_handler(input_dict, output_dir):
             #output_file = output_dir + input_dict[key]["outputFile"]
             output_file = os.path.join(output_dir, input_dict[key]["outputFile"])
             
-           #output_file = r"C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\output_dir\\" + input_dict[key]["outputFile"]
             binding_dummies = input_dict[key]["BindingDummies"]
-    #        print(binding_dummies)
-            # Generate the variables needed for combine_molecules
             input_component_1 = os.path.join(output_dir, input_files[0])
             input_component_2 = os.path.join(output_dir, input_files[1])
-            #print(input_component_1)
-            #print(input_component_2)
-            #input_component_1 = r"C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\output_dir\\" + input_files[0]
-            #input_component_2 = r"C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\output_dir\\" + input_files[1]
-            #print(binding_dummies[0])
-            #print(binding_dummies[1])
             binding_dummy_1 = binding_dummies[0]
             binding_dummy_2 = binding_dummies[1]
             product_mol_combiner(input_component_1, binding_dummy_1, input_component_2, binding_dummy_2, output_file)
@@ -445,26 +386,41 @@ def product_mol_handler(input_dict, output_dir):
 def product_mol_combiner(mol1_path, dummy1, mol2_path, dummy2, output_file):
     form_dummy1= '[#{}]'.format(dummy1)
     form_dummy2= '[#{}]'.format(dummy2)
+    
     # Read the input molecule files
     mol1 = Chem.MolFromMolFile(mol1_path)
     mol2 = Chem.MolFromMolFile(mol2_path)
+    
     try:
         dummy_idx1 = mol1.GetSubstructMatch(Chem.MolFromSmarts(form_dummy1))[0]
         dummy_idx2 = mol2.GetSubstructMatch(Chem.MolFromSmarts(form_dummy2))[0]
     except IndexError:
         dummy_idx1 = mol1.GetSubstructMatch(Chem.MolFromSmarts(form_dummy2))[0]
         dummy_idx2 = mol2.GetSubstructMatch(Chem.MolFromSmarts(form_dummy1))[0]
-    adjacent_atom1 = mol1.GetAtomWithIdx(dummy_idx1).GetNeighbors()[0]
-    adjacent_atom2 = mol2.GetAtomWithIdx(dummy_idx2).GetNeighbors()[0]
+    
+    neighbors1 = mol1.GetAtomWithIdx(dummy_idx1).GetNeighbors()
+    neighbors2 = mol2.GetAtomWithIdx(dummy_idx2).GetNeighbors()
+    adjacent_atom1 = neighbors1[0]
+    adjacent_atom2 = neighbors2[0]
+    adjacent_atom3 = neighbors2[1] if len(neighbors2) > 1 else None
     # Combine the molecules
     combined_mol = Chem.CombineMols(mol1, mol2)
     # Add a bond between the atoms adjacent to the dummy atoms
     combined_mol_edit = Chem.EditableMol(combined_mol)
     combined_mol_edit.AddBond(adjacent_atom1.GetIdx(), len(mol1.GetAtoms()) + adjacent_atom2.GetIdx(), Chem.rdchem.BondType.SINGLE)
+    
+    if adjacent_atom3:
+        combined_mol_edit.AddBond(adjacent_atom1.GetIdx(), len(mol1.GetAtoms()) + adjacent_atom3.GetIdx(), Chem.rdchem.BondType.SINGLE)
+
     # Remove the dummy atoms from the combined molecule
     combined_mol_edit.RemoveAtom(len(mol1.GetAtoms()) + dummy_idx2)
     combined_mol_edit.RemoveAtom(dummy_idx1)
-
+    
+    # Remove the Tm elements if present
+    tm_atoms = combined_mol_edit.GetMol().GetSubstructMatches(Chem.MolFromSmiles('[Tm]'))
+    for atom in reversed(tm_atoms):
+        combined_mol_edit.RemoveAtom(atom[0])
+        
     combined_mol = combined_mol_edit.GetMol()
     Chem.Kekulize(combined_mol)
     Chem.SanitizeMol(combined_mol)
@@ -529,6 +485,7 @@ def run_cofmer_pipeline(assemblyModel, componentTypeNumber, precursors, linkages
     SingleComponents = component_handler(assemblyModel, componentTypeNumber, precursors, linkages)
     component_mol_handler(SingleComponents, input_dir, output_dir)
     initiation_single_component = initial_product_instantiation(assemblyModel, SingleComponents)
+    #initiation_single_component
     looping_single_components = looping_to_cofmer(assemblyModel, initiation_single_component, product_instantiation)
     product_mol_handler(looping_single_components, output_dir)
     cofmer_cleaner(output_dir)

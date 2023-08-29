@@ -1,171 +1,8 @@
 from Algorithms.operations import run_cofmer_pipeline
+from Data.assemblies import assembly_db
 import csv
 import re
 import os
-
-
-def extract_valency_and_type(component_string):
-    linkage_match = re.match(r"L:(\d+)-\w+", component_string)
-    if linkage_match:
-        valency = int(linkage_match.group(1))
-        return (valency, 'linkage')
-    
-    precursor_match = re.match(r"(\d+)-\w+", component_string)
-    if precursor_match:
-        valency = int(precursor_match.group(1))
-        return (valency, 'precursor')
-    
-    return None, None
-
-def construct_pattern(assemblyModel, component_num):
-    construction_steps = {}
-    product_counter = 1
-    component_counters = [0, 0, 0]
-    current_product = f"Component_1_Copy_1"
-    component_counters[0] += 1
-    
-    placement_stage = "white_after_red"
-
-    while sum(component_counters) < sum([assemblyModel[f"Component_{i} Copies"] for i in range(1, component_num + 1)]):
-        if placement_stage == "white_after_red":
-            for _ in range(3 - component_counters[2]):
-                if component_counters[2] < assemblyModel["Component_3 Copies"]:
-                    next_component = f"Component_3_Copy_{component_counters[2] + 1}"
-                    construction_steps[f"Product_{product_counter}"] = [current_product, next_component]
-                    current_product = f"Product_{product_counter}"
-                    product_counter += 1
-                    component_counters[2] += 1
-            placement_stage = "pink_after_white"
-
-        elif placement_stage == "pink_after_white":
-            if component_counters[1] < assemblyModel["Component_2 Copies"]:
-                next_component = f"Component_2_Copy_{component_counters[1] + 1}"
-                construction_steps[f"Product_{product_counter}"] = [current_product, next_component]
-                current_product = f"Product_{product_counter}"
-                product_counter += 1
-                component_counters[1] += 1
-            placement_stage = "white_after_pink"
-
-        elif placement_stage == "white_after_pink":
-            if component_counters[2] < assemblyModel["Component_3 Copies"]:
-                next_component = f"Component_3_Copy_{component_counters[2] + 1}"
-                construction_steps[f"Product_{product_counter}"] = [current_product, next_component]
-                current_product = f"Product_{product_counter}"
-                product_counter += 1
-                component_counters[2] += 1
-            placement_stage = "red_after_white"
-
-        elif placement_stage == "red_after_white":
-            if component_counters[0] < assemblyModel["Component_1 Copies"]:
-                next_component = f"Component_1_Copy_{component_counters[0] + 1}"
-                construction_steps[f"Product_{product_counter}"] = [current_product, next_component]
-                current_product = f"Product_{product_counter}"
-                product_counter += 1
-                component_counters[0] += 1
-            placement_stage = "white_after_red"
-
-    construction_steps["COFmer"] = current_product
-    assemblyModel["ConstructionSteps"] = construction_steps
-
-    return assemblyModel
-
-def create_assembly_model(AM_string):
-    am_match = re.match(r"(\w+)-\[\(([\w:-]+)\)x(\d+)\(([\w:-]+)\)x(\d+)\(([\w:-]+)\)x(\d+)\]n", AM_string)
-
-    if not am_match:
-        am_match = re.match(r"(\w+)-\[\(([\w:-]+)\)x(\d+)\(([\w:-]+)\)x(\d+)\]n", AM_string)
-        component_num = 2
-    else:
-        component_num = 3
-
-    assemblyModel = {}
-    if am_match:
-        assemblyModel["AM"] = AM_string
-        
-        for i in range(1, component_num + 1):
-            assemblyModel[f"Component_{i}"], valency, _type = am_match.group(2 * i), *extract_valency_and_type(am_match.group(2 * i))
-            assemblyModel[f"Component_{i} Copies"] = int(am_match.group(2 * i + 1))
-            assemblyModel[f"Component_{i} Valency"] = valency
-            assemblyModel[f"Component_{i} Type"] = _type
-            assemblyModel[f"Component_{i} BS"] = None
-        
-        # Call the new construction function
-        assemblyModel = construct_pattern(assemblyModel, component_num)
-    else:
-        print("The provided AM string does not match the expected format.")
-    return assemblyModel
-
-
-
-def create_assembly_model1(AM_string):
-    am_match = re.match(r"(\w+)-\[\(([\w:-]+)\)x(\d+)\(([\w:-]+)\)x(\d+)\(([\w:-]+)\)x(\d+)\]n", AM_string)
-
-    if not am_match:
-        am_match = re.match(r"(\w+)-\[\(([\w:-]+)\)x(\d+)\(([\w:-]+)\)x(\d+)\]n", AM_string)
-        
-        component_num = 2
-    else:
-        component_num = 3
-
-    assemblyModel = {}
-    if am_match:
-        assemblyModel["AM"] = AM_string
-        
-        for i in range(1, component_num + 1):
-            assemblyModel[f"Component_{i}"], valency, _type = am_match.group(2 * i), *extract_valency_and_type(am_match.group(2 * i))
-            assemblyModel[f"Component_{i} Copies"] = int(am_match.group(2 * i + 1))
-            assemblyModel[f"Component_{i} Valency"] = valency
-            assemblyModel[f"Component_{i} Type"] = _type
-            assemblyModel[f"Component_{i} BS"] = None
-        
-        construction_steps = {}
-        product_counter = 1
-        component_counters = [0, 0, 0]
-        current_product = f"Component_1_Copy_1"
-        component_counters[0] += 1
-        
-        precursor_switch = False
-
-        while sum(component_counters) < sum([assemblyModel[f"Component_{i} Copies"] for i in range(1, component_num + 1)]):
-            # If precursor_switch is False, use Component 1, else use Component 2
-            current_precursor = 1 if not precursor_switch else 2
-            current_valency = assemblyModel[f"Component_{current_precursor} Valency"]
-
-            # Add linkage components based on the valency of the current component
-            for _ in range(current_valency):
-                if component_counters[2] < assemblyModel["Component_3 Copies"]:
-                    next_component = f"Component_3_Copy_{component_counters[2] + 1}"
-                    construction_steps[f"Product_{product_counter}"] = [current_product, next_component]
-                    current_product = f"Product_{product_counter}"
-                    product_counter += 1
-                    component_counters[2] += 1
-                else:
-                    break
-            
-            precursor_switch = not precursor_switch
-            if precursor_switch and component_counters[0] < assemblyModel["Component_1 Copies"]:
-                next_component = f"Component_1_Copy_{component_counters[0] + 1}"
-                construction_steps[f"Product_{product_counter}"] = [current_product, next_component]
-                current_product = f"Product_{product_counter}"
-                product_counter += 1
-                component_counters[0] += 1
-
-            elif not precursor_switch and component_counters[1] < assemblyModel["Component_2 Copies"]:
-                next_component = f"Component_2_Copy_{component_counters[1] + 1}"
-                construction_steps[f"Product_{product_counter}"] = [current_product, next_component]
-                current_product = f"Product_{product_counter}"
-                product_counter += 1
-                component_counters[1] += 1
-        
-        construction_steps["COFmer"] = current_product
-        assemblyModel["ConstructionSteps"] = construction_steps
-    else:
-        print("The provided AM string does not match the expected format.")
-    return assemblyModel
-
-
-
-
 
 def create_componentTypeNumber_dict(assembly_model):
     componentTypeNumber = {"Precursor": 0, "Linkage": 0}
@@ -181,8 +18,20 @@ def create_componentTypeNumber_dict(assembly_model):
             
     return componentTypeNumber
 
+def extract_valency_and_type(component_string):
+    linkage_match = re.match(r"L:(\d+)-\w+", component_string)
+    if linkage_match:
+        valency = int(linkage_match.group(1))
+        return (valency, 'linkage')
+    
+    precursor_match = re.match(r"(\d+)-\w+", component_string)
+    if precursor_match:
+        valency = int(precursor_match.group(1))
+        return (valency, 'precursor')
+    
+    return None, None
 
-def initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir):
+def initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir, assembly_db):
     precursor_values_1 = None
     precursor_values_2 = None
     with open(COFs_path, 'r', encoding='utf-8-sig') as cof_file:
@@ -224,9 +73,9 @@ def initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir):
                                 }
                             
                             linkages[linkage_lfr]["BS"].append(bs_dict) # append the bs_dict to the list of BS dictionaries
-
+                            
                 linkage = linkages.get(linkage_lfr) # get the linkage, if it exists
-
+                #print(linkages)
                 # Processing Precursors.csv for Precursor1
                 with open(precursor_path, 'r', encoding='utf-8') as precursor_file:
                     precursor_reader = csv.DictReader(precursor_file)
@@ -268,9 +117,9 @@ def initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir):
 
                                 break
                 
-                
-                assembly_model_dict = create_assembly_model(assembly_model_string)
-                print(assembly_model_dict)
+                assembly_model_dict = assembly_db[assembly_model_string]
+                #assembly_model_dict = create_assembly_model(assembly_model_string)
+                #print(assembly_model_dict)
                 componentTypeNumber = create_componentTypeNumber_dict(assembly_model_string)
                 precursors = [precursor_values_1]
                 if precursor_2 is not None:
@@ -289,14 +138,14 @@ def initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir):
 # Assuming the CSV file is located at 'data.csv'
 linkage_path = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\data_csv\\Linkages.csv'
 precursor_path = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\data_csv\\Precursors.csv'
-COFs_path = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\data_csv\\COFs.csv'
+COFs_path = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\data_csv\\COFsTestZone.csv'
 output_dir = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\output_dir\\'
 #print(initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir))
 
 def main():
     # your code here
     
-    initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir)
+    initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir,assembly_db)
 
 if __name__ == '__main__':
     main()
