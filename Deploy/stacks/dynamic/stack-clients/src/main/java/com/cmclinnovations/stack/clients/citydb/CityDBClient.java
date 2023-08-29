@@ -248,20 +248,20 @@ public class CityDBClient extends ContainerClient {
         }
     }
 
-    public void preparePGforCityDB(String database, String table, String preProcesssql, double minArea,
+    public void preparePGforCityDB(String database, String table, String preprocessSql, double minArea,
             Map<String, String> columnMap) {
-        if (null == preProcesssql) {
+        if (null == preprocessSql) {
             String sqlFilename = "citydb_preprocess_building.sql";
             try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
-                preProcesssql = new String(is.readAllBytes()).replace("{table}", String.valueOf(table))
+                preprocessSql = new String(is.readAllBytes()).replace("{table}", String.valueOf(table))
                         .replace("{minArea}", String.valueOf(minArea));
                 for (Map.Entry<String, String> entry : columnMap.entrySet()) {
-                    preProcesssql = preProcesssql.replace("{" + entry.getKey() + "}", entry.getValue());
+                    preprocessSql = preprocessSql.replace("{" + entry.getKey() + "}", entry.getValue());
                 }
             } catch (IOException ex) {
                 throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
             }
         }
-        PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(preProcesssql);
+        PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(preprocessSql);
     }
 }

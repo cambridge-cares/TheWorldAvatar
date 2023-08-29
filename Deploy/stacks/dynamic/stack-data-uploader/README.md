@@ -442,7 +442,7 @@ The `"raw_surface"` table has the following columns:
 3. `"class"`: an integer indicating whether a surface is a roof, wall or ground
 4. `"geom"`: the 3D polygon geometry of each surface
 
-In some cases, the original data require more sophisticated processing. User can supply a custom SQL script with `"preProcesssql"` keyword using [File by Value Name](#value-by-file-name). It should create the `"raw_building"` and `"raw_surface"` tables in the public schema from the uploaded original data. In this case, only `"IDname"` and `"IDval"` will take effect and needed to be specified in `"columnMap`.
+In some cases, the original data require more sophisticated processing. User can supply a custom SQL script with `"preprocessSql"` keyword using [File by Value Name](#value-by-file-name). It should create the `"raw_building"` and `"raw_surface"` tables in the public schema from the uploaded original data. In this case, only `"IDname"` and `"IDval"` will take effect and needed to be specified in `"columnMap`.
 
 The second SQL script populates the 3DcityDB schema with preprocessed building data. This can be further post-processed with another custom SQL script speficied by the `"sql"` keyword.
 

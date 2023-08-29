@@ -24,7 +24,7 @@
             "importOptions": {
                 "sridIn": "4326"
             },
-            "preProcesssql": "@/inputs/config/building-hongkong_preprocess_building.sql",
+            "preprocessSql": "@/inputs/config/building-hongkong_preprocess_building.sql",
             "name": "hongkong_gsl",
             "geoServerSettings": {
                 "virtualTable": {

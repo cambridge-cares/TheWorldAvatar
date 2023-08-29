@@ -42,7 +42,7 @@ public class XtoCityDB extends PostgresDataSubset {
             "elevation", "abshmin",
             "height", "relh2"));
     @JsonProperty
-    private String preProcesssql;
+    private String preprocessSql;
 
     @Override
     public boolean usesGeoServer() {
@@ -64,7 +64,7 @@ public class XtoCityDB extends PostgresDataSubset {
                 .uploadVectorFilesToPostGIS(database, getTable(), dataSubsetDir.toString(), ogr2ogrOptions, false);
         CityDBClient.getInstance()
                 .updateDatabase(database, importOptions.getSridIn());
-        CityDBClient.getInstance().preparePGforCityDB(database, super.getTable(), handleFileValues(preProcesssql),
+        CityDBClient.getInstance().preparePGforCityDB(database, super.getTable(), handleFileValues(preprocessSql),
                 minArea, columnMap);
         CityDBClient.getInstance().populateCityDBbySQL(database, lineage, columnMap);
     }
