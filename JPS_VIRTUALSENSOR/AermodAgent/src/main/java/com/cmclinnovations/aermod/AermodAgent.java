@@ -23,6 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.locationtech.jts.geom.Polygon;
+import org.springframework.core.io.ClassPathResource;
 
 import com.cmclinnovations.aermod.objects.Building;
 import com.cmclinnovations.aermod.objects.DispersionOutput;
@@ -32,6 +33,7 @@ import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.StaticPointSource;
 import com.cmclinnovations.aermod.objects.WeatherData;
 import com.cmclinnovations.aermod.objects.Pollutant.PollutantType;
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
 
 import uk.ac.cam.cares.jps.base.agent.DerivationAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
@@ -186,6 +188,17 @@ public class AermodAgent extends DerivationAgent {
         // DispersionOutput object holds dispersion matrix (file), dispersion layer
         // names, and raster filenames
         DispersionOutput dispersionOutput = new DispersionOutput();
+
+        if (!queryClient.tableExists(EnvConfig.DISPERSION_CONTOURS_TABLE)) {
+            Path obdaFile = null;
+            try {
+                obdaFile = new ClassPathResource("dispersion.obda").getFile().toPath();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            OntopClient ontopClient = OntopClient.getInstance();
+            ontopClient.updateOBDA(obdaFile);
+        }
 
         Pollutant.getPollutantList().parallelStream()
                 .filter(pollutantType -> allSources.stream().allMatch(p -> p.hasPollutant(pollutantType)))

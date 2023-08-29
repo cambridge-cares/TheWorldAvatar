@@ -17,6 +17,8 @@ public class EnvConfig {
     public static final String DISPERSION_RASTER_TABLE = System.getenv("DISPERSION_RASTER_TABLE");
     public static final String DISPERSION_CONTOURS_TABLE = System.getenv("DISPERSION_CONTOURS_TABLE");
     public static final String SHIP_IRI_LOOKUP_TABLE = System.getenv("SHIP_IRI_LOOKUP_TABLE");
+    public static final String BUILDINGS_TABLE = System.getenv("BUILDINGS_TABLE");
+    public static final String STATIC_SOURCE_TABLE = System.getenv("STATIC_SOURCE_TABLE");
 
     private EnvConfig() {
         throw new IllegalStateException();

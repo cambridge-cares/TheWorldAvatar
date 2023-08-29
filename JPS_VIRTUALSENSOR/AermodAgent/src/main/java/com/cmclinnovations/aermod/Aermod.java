@@ -19,6 +19,7 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
+import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -50,6 +51,7 @@ import com.cmclinnovations.stack.clients.gdal.GDALTranslateOptions;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
+import com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder;
 
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
@@ -332,12 +334,11 @@ public class Aermod {
         GDALClient gdalClient = GDALClient.getInstance();
         GeoServerClient geoServerClient = GeoServerClient.getInstance();
 
-        String staticPointSourceLayer = "static";
-        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, staticPointSourceLayer,
+        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.STATIC_SOURCE_TABLE,
                 featureCollection.toString(), new Ogr2OgrOptions(), true);
         geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
-                staticPointSourceLayer, new GeoServerVectorSettings());
+                EnvConfig.STATIC_SOURCE_TABLE, new GeoServerVectorSettings());
     }
 
     public void createAERMODReceptorInput(Polygon scope, int nx, int ny, int simulationSrid) {
@@ -786,13 +787,24 @@ public class Aermod {
             featureProperties.put("derivation", derivationIri);
             featureProperties.put("pollutant", Pollutant.getPollutantIri(pollutantType));
             featureProperties.put("time", simulationTime);
+            featureProperties.put("iri", QueryClient.PREFIX_DISP + UUID.randomUUID());
         }
 
         GDALClient gdalClient = GDALClient.getInstance();
         gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.DISPERSION_CONTOURS_TABLE,
                 geoJSON.toString(), new Ogr2OgrOptions(), true); // true = append
+
         GeoServerClient geoServerClient = GeoServerClient.getInstance();
+        GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
+
+        UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
+        virtualTable.setSql(String.format("select *, title as name from %s", EnvConfig.DISPERSION_CONTOURS_TABLE));
+        virtualTable.setEscapeSql(true);
+        virtualTable.setName("dispersion");
+        virtualTable.addVirtualTableGeometry("wkb_geometry", "MultiPolygon", "4326");
+        geoServerVectorSettings.setVirtualTable(virtualTable);
+
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
-                EnvConfig.DISPERSION_CONTOURS_TABLE, new GeoServerVectorSettings());
+                EnvConfig.DISPERSION_CONTOURS_TABLE, geoServerVectorSettings);
     }
 }

@@ -1169,9 +1169,6 @@ public class QueryClient {
      * will be replaced by new postgis cities kg
      */
     void createBuildingsLayer(List<Building> buildings, String derivationIri, long time) {
-        String buildingsTable = "buildings";
-        String buildingsLayer = "buildings";
-
         JSONObject featureCollection = new JSONObject();
         featureCollection.put("type", "FeatureCollection");
 
@@ -1214,14 +1211,14 @@ public class QueryClient {
         featureCollection.put("features", features);
 
         GDALClient gdalClient = GDALClient.getInstance();
-        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, buildingsTable,
+        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.BUILDINGS_TABLE,
                 featureCollection.toString(), new Ogr2OgrOptions(), true);
 
         GeoServerClient geoServerClient = GeoServerClient.getInstance();
         geoServerClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
 
         geoServerClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
-                buildingsLayer, new GeoServerVectorSettings());
+                EnvConfig.BUILDINGS_TABLE, new GeoServerVectorSettings());
     }
 
     boolean buildingExists(Building building, Connection conn, String buildingsTable, boolean tableExists) {
