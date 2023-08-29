@@ -40,7 +40,7 @@ You'll need to provide  your credentials in single-word text files located like 
 ### Starting the agent
 Run in command prompt
 ```
-curl -X POST localhost:10102/osmagent/update
+curl -X POST localhost:3838/osmagent/update
 ```
 
 [stack-data-uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader

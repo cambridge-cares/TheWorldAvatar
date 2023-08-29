@@ -1,11 +1,17 @@
 package uk.ac.cam.cares.jps.agent.osmagent.usage;
 
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import uk.ac.cam.cares.jps.agent.osmagent.OSMAgent;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UsageShareCalculator {
 
@@ -73,10 +79,6 @@ public class UsageShareCalculator {
                 "  AND pt.OntoBuilt = c.OntoBuilt;";
 
 
-
-        /**
-         *
-         */
         String updatePropertyUsageStatement = "-- Both table\n" +
                 "UPDATE " + polygons + " AS p\n" +
                 "SET propertyusage_iri = subquery.min_propertyusage_iri\n" +
@@ -130,6 +132,61 @@ public class UsageShareCalculator {
         rdbStoreClient.executeUpdate(assignUsageShare);
         rdbStoreClient.executeUpdate(updatePropertyUsageStatement);
         System.out.println("UsageShare calculated and propertyUsage assigned.");
+
+    }
+
+    public static void updateLandUse (String database, String user, String password) throws IOException {
+
+        RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
+
+        String points = OSMAgent.POINT_TABLE;
+        String polygons = OSMAgent.POLYGON_TABLE;
+
+        InputStreamReader inputStreamReader = new InputStreamReader(
+                UsageMatcher.class.getResourceAsStream("/dlm_landuse.csv"));
+        CSVReader csvReader = new CSVReaderBuilder(inputStreamReader).withSkipLines(1).build();
+        String[] line;
+
+        while ((line = csvReader.readNext()) != null) {
+            String ontobuilt = line[3];
+            String key = line[0];
+            String value = line[1];
+
+            String updateLandusePoints="UPDATE public."+points+" AS p\n" +
+                    "SET ontobuilt = '"+ontobuilt+"',\n" +
+                    "propertyusage_iri = 'https://www.theworldavatar.com/kg/'||'"+ontobuilt+"'||'_' || uuid_generate_v4()::text,\n" +
+                    "usageShare =1\n" +
+                    "\n" +
+                    "FROM public.dlmsie02f AS d\n" +
+                    "WHERE p.building_iri IS NOT NULL\n" +
+                    "  AND p.ontobuilt IS NULL\n" +
+                    "  AND ST_Intersects(p.\"geometryProperty\", \n" +
+                    "      ST_Transform((SELECT ST_Collect(wkb_geometry) \n" +
+                    "                    FROM public.dlmsie02f \n" +
+                    "                    WHERE \""+key+"\" = '"+value+"'), 4326)\n" +
+                    "      );";
+
+            String updateLandusePolygons="UPDATE public."+polygons+" AS p\n" +
+                    "SET ontobuilt = '"+ontobuilt+"',\n" +
+                    "propertyusage_iri = 'https://www.theworldavatar.com/kg/'||'"+ontobuilt+"'||'_' || uuid_generate_v4()::text,\n" +
+                    "usageShare =1\n" +
+                    "\n" +
+                    "FROM public.dlmsie02f AS d\n" +
+                    "WHERE p.building_iri IS NOT NULL\n" +
+                    "  AND p.ontobuilt IS NULL\n" +
+                    "  AND ST_Intersects(p.\"geometryProperty\", \n" +
+                    "      ST_Transform((SELECT ST_Collect(wkb_geometry) \n" +
+                    "                    FROM public.dlmsie02f \n" +
+                    "                    WHERE \""+key+"\" = '"+value+"'), 4326)\n" +
+                    "      );";
+
+            rdbStoreClient.executeUpdate(updateLandusePoints);
+            rdbStoreClient.executeUpdate(updateLandusePolygons);
+        }
+
+        csvReader.close();
+
+
 
     }
 }
