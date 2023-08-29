@@ -15,20 +15,20 @@ import org.apache.log4j.Logger;
 import uk.ac.cam.cares.jps.addasset.R;
 import uk.ac.cam.cares.jps.addasset.model.AssetPropertyDataModel;
 
-public class DataSheetView extends RelativeLayout {
-    private final Logger LOGGER = Logger.getLogger(DataSheetView.class);
+public class DataSheetItemView extends RelativeLayout {
+    private final Logger LOGGER = Logger.getLogger(DataSheetItemView.class);
 
-    public DataSheetView(Context context) {
+    public DataSheetItemView(Context context) {
         super(context);
         inflate(getContext(), R.layout.view_data_sheet_item, this);
     }
 
-    public DataSheetView(Context context, AttributeSet attrs) {
+    public DataSheetItemView(Context context, AttributeSet attrs) {
         super(context, attrs);
         inflate(getContext(), R.layout.view_data_sheet_item, this);
     }
 
-    public DataSheetView(Context context, AssetPropertyDataModel property) {
+    public DataSheetItemView(Context context, AssetPropertyDataModel property) {
         super(context);
         View view = inflate(getContext(), R.layout.view_data_sheet_item, this);
         EditText editText = view.findViewById(R.id.edit_text);

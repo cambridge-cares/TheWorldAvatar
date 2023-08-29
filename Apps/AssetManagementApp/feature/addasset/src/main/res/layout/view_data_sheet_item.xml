@@ -25,9 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/edit_text"
-            android:lines="8"
             android:minLines="6"
-            android:maxLines="10"
             android:gravity="top|start"
             />
 
