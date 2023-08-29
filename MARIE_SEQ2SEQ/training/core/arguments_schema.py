@@ -6,7 +6,8 @@ from typing import Optional, Union
 class ModelArguments:
     model_path: str = field(default="google/flan-t5-base")
     model_format: str = field(
-        default="hf", metadata={"help": "Either `hf` (Hugging Face) or `onmt` (OpenNMT)."}
+        default="hf",
+        metadata={"help": "Either `hf` (Hugging Face) or `onmt` (OpenNMT)."},
     )
     model_family: Optional[str] = field(
         default=None,
@@ -49,4 +50,10 @@ class InferenceArguments:
     out_file: str = field(metadata={"help": "File to write predictions to."})
     max_new_tokens: int = field(
         default=512, metadata={"help": "Maximum number of tokens to be generated."}
+    )
+    do_torch_compile: bool = field(
+        default=False,
+        metadata={
+            "help": "Whether to apply torch.compile() to the pytorch model before running inference."
+        },
     )

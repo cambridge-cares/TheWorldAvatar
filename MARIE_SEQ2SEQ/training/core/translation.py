@@ -1,4 +1,7 @@
 from abc import ABC, abstractmethod
+
+import torch
+
 from core.data_processing.input_processing import preprocess_input, preprocess_input
 from core.data_processing.output_processing import (
     postprocess_output,
@@ -39,10 +42,13 @@ class HfTranslationModel(TranslationModel):
         model_args: ModelArguments,
         model_family: str,
         max_new_tokens: int = 256,
+        do_torch_compile: bool = False
     ):
         self.model, self.tokenizer = get_hf_model_and_tokenizer(
             model_args, is_trainable=False, model_family=model_family
         )
+        if do_torch_compile:
+            self.model = torch.compile(self.model)
         self.model_family = model_family
         self.max_new_tokens = max_new_tokens
 

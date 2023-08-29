@@ -17,13 +17,23 @@ def infer():
         (ModelArguments, DatasetArguments, InferenceArguments)
     )
     model_args, data_args, infer_args = hfparser.parse_args_into_dataclasses()
-    model_family = model_args.model_family or get_model_family_from_model_path(model_args.model_path)
-    
+    model_family = model_args.model_family or get_model_family_from_model_path(
+        model_args.model_path
+    )
+
     if model_args.model_format == "hf":
-        
-        trans_model = HfTranslationModel(model_args, model_family=model_family, max_new_tokens=infer_args.max_new_tokens)
+        trans_model = HfTranslationModel(
+            model_args,
+            model_family=model_family,
+            max_new_tokens=infer_args.max_new_tokens,
+            do_torch_compile=infer_args.do_torch_compile,
+        )
     elif model_args.model_format == "onmt":
-        trans_model = CTranslate2TranslationModel(model_args, model_family=model_family, max_new_tokens=infer_args.max_new_tokens)
+        trans_model = CTranslate2TranslationModel(
+            model_args,
+            model_family=model_family,
+            max_new_tokens=infer_args.max_new_tokens,
+        )
 
     with open(data_args.eval_data_path, "r") as f:
         data = json.load(f)

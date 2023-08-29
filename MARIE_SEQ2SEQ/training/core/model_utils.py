@@ -104,7 +104,6 @@ def get_hf_model(model_args: ModelArguments, is_trainable: bool, model_family: s
 def get_hf_tokenizer(model_args: ModelArguments, model_family: str):
     tokenizer = AutoTokenizer.from_pretrained(
         model_args.model_path,
-        use_fast=False,
         use_auth_token=os.environ.get("HF_ACCESS_TOKEN"),
     )
 
