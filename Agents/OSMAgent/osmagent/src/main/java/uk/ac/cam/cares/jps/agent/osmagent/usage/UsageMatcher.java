@@ -18,8 +18,6 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 public class UsageMatcher {
-    private static final List<String> tableNames = Arrays.asList(OSMAgent.POLYGON_TABLE, OSMAgent.POINT_TABLE);
-
     /**
      * Inputs database name, postgis username, postgis password and subsequently update the OSM rows with ontobuilt category by
      * running SQL query to categorize as according to osm_tags.csv
@@ -27,8 +25,10 @@ public class UsageMatcher {
      * @param user
      * @param password
      */
-    public static void updateOntoBuilt(String database, String user, String password) {
+    public static void updateOntoBuilt(String database, String user, String password, String pointTable, String polygonTable) {
         RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
+
+        List<String> tableNames = Arrays.asList(polygonTable, pointTable);
 
         for (String tableName : tableNames) {
 
@@ -92,8 +92,10 @@ public class UsageMatcher {
      * @param user
      * @param password
      */
-    public static void checkAndAddColumns(String database, String user, String password) {
+    public static void checkAndAddColumns(String database, String user, String password,  String pointTable, String polygonTable) {
         RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
+
+        List<String> tableNames = Arrays.asList(polygonTable, pointTable);
 
         Map<String, String> columns = new HashMap<>();
         columns.put("building_iri", "TEXT");

@@ -7,11 +7,6 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
 
 public class UsageShareCalculator {
 
@@ -27,11 +22,11 @@ public class UsageShareCalculator {
      * @param user
      * @param password
      */
-    public static void updateUsageShare(String database, String user, String password) {
+    public static void updateUsageShare(String database, String user, String password, String pointTable, String polygonTable) {
         RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
 
-        String points = OSMAgent.POINT_TABLE;
-        String polygons = OSMAgent.POLYGON_TABLE;
+        String points = pointTable;
+        String polygons = polygonTable;
 
         String add_uuid_ossp_Extension = "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";";
 
@@ -135,12 +130,12 @@ public class UsageShareCalculator {
 
     }
 
-    public static void updateLandUse (String database, String user, String password) throws IOException {
+    public static void updateLandUse (String database, String user, String password, String pointTable, String polygonTable, String landUseTable) throws IOException {
 
         RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
 
-        String points = OSMAgent.POINT_TABLE;
-        String polygons = OSMAgent.POLYGON_TABLE;
+        String points = pointTable;
+        String polygons = polygonTable;
 
         InputStreamReader inputStreamReader = new InputStreamReader(
                 UsageMatcher.class.getResourceAsStream("/dlm_landuse.csv"));
@@ -152,31 +147,31 @@ public class UsageShareCalculator {
             String key = line[0];
             String value = line[1];
 
-            String updateLandusePoints="UPDATE public."+points+" AS p\n" +
+            String updateLandusePoints="UPDATE "+points+" AS p\n" +
                     "SET ontobuilt = '"+ontobuilt+"',\n" +
                     "propertyusage_iri = 'https://www.theworldavatar.com/kg/'||'"+ontobuilt+"'||'_' || uuid_generate_v4()::text,\n" +
                     "usageShare =1\n" +
                     "\n" +
-                    "FROM public.dlmsie02f AS d\n" +
+                    "FROM " + landUseTable + " AS d\n" +
                     "WHERE p.building_iri IS NOT NULL\n" +
                     "  AND p.ontobuilt IS NULL\n" +
                     "  AND ST_Intersects(p.\"geometryProperty\", \n" +
                     "      ST_Transform((SELECT ST_Collect(wkb_geometry) \n" +
-                    "                    FROM public.dlmsie02f \n" +
+                    "                    FROM " + landUseTable + " \n" +
                     "                    WHERE \""+key+"\" = '"+value+"'), 4326)\n" +
                     "      );";
 
-            String updateLandusePolygons="UPDATE public."+polygons+" AS p\n" +
+            String updateLandusePolygons="UPDATE "+polygons+" AS p\n" +
                     "SET ontobuilt = '"+ontobuilt+"',\n" +
                     "propertyusage_iri = 'https://www.theworldavatar.com/kg/'||'"+ontobuilt+"'||'_' || uuid_generate_v4()::text,\n" +
                     "usageShare =1\n" +
                     "\n" +
-                    "FROM public.dlmsie02f AS d\n" +
+                    "FROM " + landUseTable + " AS d\n" +
                     "WHERE p.building_iri IS NOT NULL\n" +
                     "  AND p.ontobuilt IS NULL\n" +
                     "  AND ST_Intersects(p.\"geometryProperty\", \n" +
                     "      ST_Transform((SELECT ST_Collect(wkb_geometry) \n" +
-                    "                    FROM public.dlmsie02f \n" +
+                    "                    FROM " + landUseTable + " \n" +
                     "                    WHERE \""+key+"\" = '"+value+"'), 4326)\n" +
                     "      );";
 

@@ -13,31 +13,22 @@ import java.util.Map;
 import org.json.JSONArray;
 
 public class GeometryMatcher {
-    public static final String GEO_DB = "GEODB";
-    public static final String GEO_USER = "GEOUSER";
-    public static final String GEO_PASSWORD = "GEOPASSWORD";
-    public static final String OSM_DB = "OSMDB";
-    public static final String OSM_USER = "OSMUSER";
-    public static final String OSM_PASSWORD = "OSMPASSWORD";
-
     private final double threshold = 0.7;
 
     private Map<String, GeoObject> geoObjects;
 
-    private final String osmDb;
-    private final String osmUser;
-    private final String osmPassword;
+    private final String dbUrl;
+    private final String user;
+    private final String password;
 
-    private RemoteRDBStoreClient geoClient;
-    private RemoteRDBStoreClient osmClient;
+    private RemoteRDBStoreClient postgisClient;
 
-    public GeometryMatcher(Map<String, String> configs) {
-        geoObjects = GeoObject.getGeoObjects(configs.get(GEO_DB), configs.get(GEO_USER), configs.get(GEO_PASSWORD));
-        osmDb = configs.get(OSM_DB);
-        osmUser = configs.get(OSM_USER);
-        osmPassword = configs.get(OSM_PASSWORD);
-        geoClient = new RemoteRDBStoreClient(configs.get(GEO_DB), configs.get(GEO_USER), configs.get(GEO_PASSWORD));
-        osmClient = new RemoteRDBStoreClient(configs.get(OSM_DB), configs.get(OSM_USER), configs.get(OSM_PASSWORD));
+    public GeometryMatcher(String postgisDb, String postgisUser, String postgisPassword) {
+        this.dbUrl = postgisDb;
+        this.user = postgisUser;
+        this.password = postgisPassword;
+        this.geoObjects = GeoObject.getGeoObjects(dbUrl, user, password);
+        this.postgisClient = new RemoteRDBStoreClient(dbUrl, user, password);
     }
 
     /**
@@ -47,7 +38,7 @@ public class GeometryMatcher {
     public void matchGeometry(String table) throws ParseException {
         WKTReader wktReader = new WKTReader();
 
-        Map<Integer, OSMObject> osmObjects = OSMObject.getOSMObjects(osmDb, osmUser, osmPassword, table, "building IS NOT NULL AND building_iri IS NULL");
+        Map<Integer, OSMObject> osmObjects = OSMObject.getOSMObjects(dbUrl, user, password, table, "building IS NOT NULL AND building_iri IS NULL");
 
         String updateStart = "UPDATE " + table + " SET building_iri = CASE";
         String updateEnd = " ELSE building_iri END";
@@ -71,7 +62,7 @@ public class GeometryMatcher {
             if (osmObject.getGeometry().contains("POINT")) {
                 String query = booleanQuery(osmObject);
 
-                JSONArray result = geoClient.executeQuery(query);
+                JSONArray result = postgisClient.executeQuery(query);
 
                 if (!result.isEmpty()) {
                     osmObject.setIri(result.getJSONObject(0).getString("building_iri"));
@@ -80,7 +71,7 @@ public class GeometryMatcher {
             else {
                 String query = areaQuery(osmObject);
 
-                JSONArray matchResult = geoClient.executeQuery(query);
+                JSONArray matchResult = postgisClient.executeQuery(query);
 
                 float matchedArea = matchResult.getJSONObject(0).getFloat("area");
 
@@ -104,7 +95,7 @@ public class GeometryMatcher {
 
         // update OSM table with matched building IRI
         for (String str : updates) {
-            osmClient.executeUpdate(updateStart + str + updateEnd);
+            postgisClient.executeUpdate(updateStart + str + updateEnd);
         }
 
         updates.clear();
@@ -125,7 +116,7 @@ public class GeometryMatcher {
 
             String query = queryFromOSM(table, geoObject, flag, threshold);
 
-            JSONArray result = osmClient.executeQuery(query);
+            JSONArray result = postgisClient.executeQuery(query);
 
             String iriUpdate = "";
 
@@ -148,7 +139,7 @@ public class GeometryMatcher {
 
         // update OSM table with matched building IRI
         for (String str : updates) {
-            osmClient.executeUpdate(updateStart + str + updateEnd);
+            postgisClient.executeUpdate(updateStart + str + updateEnd);
         }
         System.out.println(table + " matching end");
     }
@@ -161,7 +152,7 @@ public class GeometryMatcher {
     private boolean checkIfPoints(String table) {
         boolean flag = false;
         String query = "SELECT ST_ASText(\"geometryProperty\") as geostring FROM " + table + " LIMIT 1";
-        JSONArray result = osmClient.executeQuery(query);
+        JSONArray result = postgisClient.executeQuery(query);
 
         if (!result.isEmpty()) {
             flag = result.getJSONObject(0).getString("geostring").contains("POINT") ? true : false;

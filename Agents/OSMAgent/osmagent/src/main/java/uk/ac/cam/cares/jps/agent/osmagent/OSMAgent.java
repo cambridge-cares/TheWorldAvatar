@@ -2,13 +2,11 @@ package uk.ac.cam.cares.jps.agent.osmagent;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.agent.osmagent.geometry.GeometryMatcher;
 import uk.ac.cam.cares.jps.agent.osmagent.usage.UsageMatcher;
 import uk.ac.cam.cares.jps.agent.osmagent.usage.UsageShareCalculator;
 
 import javax.servlet.annotation.WebServlet;
-import java.sql.Connection;
 import java.util.*;
 
 import org.json.JSONObject;
@@ -17,42 +15,42 @@ import org.json.JSONObject;
 
 public class OSMAgent extends JPSAgent {
     private EndpointConfig endpointConfig = new EndpointConfig();
-    private String geoDatabase;
-    private String osmDatabase;
+
+    private String dbName;
+    private String dbUrl;
+    private String osmSchema;
     private String dbUser;
     private String dbPassword;
-    public static final String POINT_TABLE = "points";
-    public static final String POLYGON_TABLE = "polygons";
-
-    private Map<String, String> configs = new HashMap<>();
+    public String pointTable;
+    public String polygonTable;
+    public String landUseTable;
 
     public void init() {
         readConfig();
-        dbUser = endpointConfig.getDbUser();
-        dbPassword = endpointConfig.getDbPassword();
-        configs.put(GeometryMatcher.GEO_DB, endpointConfig.getDbUrl(geoDatabase));
-        configs.put(GeometryMatcher.GEO_USER, dbUser);
-        configs.put(GeometryMatcher.GEO_PASSWORD, dbPassword);
-        configs.put(GeometryMatcher.OSM_DB, endpointConfig.getDbUrl(osmDatabase));
-        configs.put(GeometryMatcher.OSM_USER, dbUser);
-        configs.put(GeometryMatcher.OSM_PASSWORD, dbPassword);
+        this.pointTable = osmSchema + "." + "points";
+        this.polygonTable = osmSchema + "." + "polygons";
+        this.dbUrl = endpointConfig.getDbUrl(dbName);
+        this.dbUser = endpointConfig.getDbUser();
+        this.dbPassword = endpointConfig.getDbPassword();
     }
 
     public void readConfig() {
         ResourceBundle config = ResourceBundle.getBundle("config");
-        geoDatabase = config.getString("geo.database");
-        osmDatabase = config.getString("osm.database");
+        this.dbName = config.getString("db.name");
+        this.osmSchema = config.getString("osm.schema");
+        this.landUseTable = config.getString("landuse.table");
     }
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
         try {
-            UsageMatcher.checkAndAddColumns(endpointConfig.getDbUrl(osmDatabase), dbUser, dbPassword);
-            UsageMatcher.updateOntoBuilt(endpointConfig.getDbUrl(osmDatabase), dbUser, dbPassword);
-            GeometryMatcher geometryMatcher = new GeometryMatcher(configs);
-            geometryMatcher.matchGeometry(POINT_TABLE);
-            geometryMatcher.matchGeometry(POLYGON_TABLE);
-            UsageShareCalculator.updateUsageShare(endpointConfig.getDbUrl(osmDatabase), dbUser, dbPassword);
+            UsageMatcher.checkAndAddColumns(dbUrl, dbUser, dbPassword, pointTable, polygonTable);
+            UsageMatcher.updateOntoBuilt(dbUrl, dbUser, dbPassword, pointTable, polygonTable);
+            GeometryMatcher geometryMatcher = new GeometryMatcher(dbUrl, dbUser, dbPassword);
+            geometryMatcher.matchGeometry(pointTable);
+            geometryMatcher.matchGeometry(polygonTable);
+            UsageShareCalculator.updateUsageShare(dbUrl, dbUser, dbPassword, pointTable, polygonTable);
+            UsageShareCalculator.updateLandUse(dbUrl, dbUser, dbPassword, pointTable, polygonTable, landUseTable);
         }
         catch (Exception e) {
             e.printStackTrace();
