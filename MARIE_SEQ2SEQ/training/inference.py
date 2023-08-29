@@ -33,7 +33,7 @@ def infer():
             max_new_tokens=infer_args.max_new_tokens,
             do_torch_compile=infer_args.do_torch_compile,
         )
-    if model_args.model_format == "ov":
+    elif model_args.model_format == "ov":
         trans_model = OVHfTranslationModel(
             model_args,
             model_family=model_family,
