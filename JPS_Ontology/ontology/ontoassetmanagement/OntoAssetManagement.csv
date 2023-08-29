@@ -30,10 +30,24 @@ UnitPrice,Class,Price,IS-A,,,,Price per individual product or service.,https://w
 DiscountedUnitPrice,Class,Price,IS-A,,,,Discounted price of one unit of a product or service.,https://www.theworldavatar.com/kg/ontoassetmanagement/,Discounted unit price
 TotalDiscountedPretaxPrice,Class,Price,IS-A,,,,Total price of a purchase including discount and excluding tax.,https://www.theworldavatar.com/kg/ontoassetmanagement/,Total discounted pretax price
 HomeTotalDiscountedAfterTaxPrice,Class,Price,IS-A,,,,"Total Price of a purchase including tax and discount, converted to a local currency.",https://www.theworldavatar.com/kg/ontoassetmanagement/,Home total discounted after-tax price
-ServiceCategory,Class,https://purl.org/p2p-o/item#ItemAttribute,IS-A,,,,An attribute of an item that describes the service category it falls under.,https://www.theworldavatar.com/kg/ontoassetmanagement/,Service category
-ServiceCode,Class,https://purl.org/p2p-o/item#ItemAttribute,IS-A,,,,An attribute of an item that describes the service code it falls under.,https://www.theworldavatar.com/kg/ontoassetmanagement/,Service code
 MaintenanceSchedule,Class,,,,,,"A maintenance schedule tells and records when an asset is scheduled for maintenance, when was it last maintained, who performs the maintenance etc.",https://www.theworldavatar.com/kg/ontoassetmanagement/,Maintenance schedule
 MaintenanceTask,Class,,,,,,"A small, identifiable piece of work that indicates the actions one must take to complete a maintenance work order.",https://www.theworldavatar.com/kg/ontoassetmanagement/,Maintenance task
+AssetUpdateHistory,Class,,,,,,A record of updates applied to the information of an asset.,https://www.theworldavatar.com/kg/ontoassetmanagement/,Asset update history
+Event,Class,,,,,,"A thing that happens or takes place, especially one of importance.",https://www.theworldavatar.com/kg/ontoassetmanagement/,Event
+Project,Class,,,,,,"Any undertaking, carried out individually or collaboratively and possibly involving research or design, that is carefully planned to achieve a particular goal.",https://www.theworldavatar.com/kg/ontoassetmanagement/,Project
+Budget,Class,,,,,,The amount of money needed or available for a purpose. ,https://www.theworldavatar.com/kg/ontoassetmanagement/,Budget
+BudgetCategory,Class,,,,,,A sub-divison of a budget allocated for a more specific purpose.,https://www.theworldavatar.com/kg/ontoassetmanagement/,Budget category
+ServiceCategory,Class,,,,,,An attribute that describes the service category of a budget category.,https://www.theworldavatar.com/kg/ontoassetmanagement/,Service category
+ServiceCode,Class,,,,,,An attribute that describes the service code of a budget category.,https://www.theworldavatar.com/kg/ontoassetmanagement/,Service code
+belongsTo,Object Property,,,http://xmlns.com/foaf/0.1/Document,Project,,A relationship which describes the project in which a document belongs to.,https://www.theworldavatar.com/kg/ontoassetmanagement/,belongs to
+hasSubproject,Object Property,,,Project,Project,,A relationship which describes smaller projects under a larger one.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has subproject
+hasServiceCode,Object Property,,,BudgetCategory,ServiceCode,,A relationship which describes the service code of a budget category.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has service code
+hasServiceCategory,Object Property,,,BudgetCategory,ServiceCategory,,A relationship which describes the service category of a budget category.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has service category
+hasBudgetCategory,Object Property,,,Budget,BudgetCategory,,A relationship which describes the categories under a budget.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has budget category
+hasBudget,Object Property,,,https://spec.edmcouncil.org/fibo/ontology/FBC/ProductsAndServices/ClientsAndAccounts/Account,Budget,,A relationship which describes the available budget of an account.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has budget
+wasExecutedBy,Object Property,,,Event,https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Parties/IndependentParty,,A relationship which describes the party that executed the event.,https://www.theworldavatar.com/kg/ontoassetmanagement/,was executed by
+hasEvent,Object Property,,,AssetUpdateHistory,Event,,A relationship which describes the events that has occurred.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has event
+hasUpdateHistory,Object Property,,,https://w3id.org/bot#Element,AssetUpdateHistory,,A relationship that describes the update history of something.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has update history
 hasMaintenanceSchedule,Object Property,,,https://w3id.org/bot#Element,MaintenanceSchedule,,A relationship that describes the maintenance schedule of an asset.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has maintenance schedule
 hasTask,Object Property,,,MaintenanceSchedule,MaintenanceTask,,A relationship that describes the tasks carried out for a maintenance schedule.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has task
 hasInterval,Object Property,,,MaintenanceTask,http://www.w3.org/2006/time#Interval,,A relationship that describes the interval in which an asset is scheduled for maintenance.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has interval
@@ -87,3 +101,6 @@ purchaseRequisitionNumber,Data Property,,,PurchaseRequisition,String,,A referenc
 trackingNumber,Data Property,,,DeliveryDetails,String,,A reference number for tracking the delivery status of a product or service.,https://www.theworldavatar.com/kg/ontoassetmanagement/,tracking number
 serialNumber,Data Property,,,https://w3id.org/bot#Element,String,,"A unique identifier assigned incrementally or sequentially to an item, to uniquely identify it.",https://www.theworldavatar.com/kg/ontoassetmanagement/,serial number
 hasItemInventoryIdentifier,Data Property,,,https://w3id.org/bot#Element,String,,A unique identifier assigned to an asset mainly for inventory management purposes.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has item inventory identifier
+hasProjectIdentifier,Data Property,,,Project,String,,An identifier assigned to a project.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has project identifier
+hasServiceCategoryIdentifier,Data Property,,,ServiceCategory,String,,An identifier assigned to a service category.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has service category identifier
+hasServiceCodeIdentifier,Data Property,,,ServiceCode,String,,An identifier assigned to a service code.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has service code identifier
