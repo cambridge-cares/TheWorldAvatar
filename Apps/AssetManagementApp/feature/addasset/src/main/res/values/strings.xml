@@ -2,4 +2,6 @@
 <resources>
     <string name="search_end_icon_description">Click to search for availabel options</string>
     <string name="add_asset">Add Asset</string>
+    <string name="upload_document">Upload Document</string>
+    <string name="description">Description</string>
 </resources>

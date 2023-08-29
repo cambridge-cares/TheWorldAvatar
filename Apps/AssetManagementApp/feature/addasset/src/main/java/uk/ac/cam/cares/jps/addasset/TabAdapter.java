@@ -3,7 +3,9 @@ package uk.ac.cam.cares.jps.addasset;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.BASIC;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.ITEM;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.LOCATION;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.PURCHASE;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SPEC_SHEET;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SUPPLIER;
 
 import androidx.annotation.NonNull;
@@ -25,12 +27,12 @@ public class TabAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         if (position == 0) {
-            return new BasicInfoFragment(Arrays.asList(BASIC, LOCATION, SUPPLIER));
+            return new TabFragment(Arrays.asList(BASIC, LOCATION, SUPPLIER));
         } else if (position == 1) {
-            return new BasicInfoFragment(Arrays.asList(PURCHASE, ITEM));
+            return new TabFragment(Arrays.asList(PURCHASE, ITEM));
         } else {
             // todo: maybe need a separate fragment for datasheet, because the section items look very different from other input fields
-            return new BasicInfoFragment(Arrays.asList());
+            return new TabFragment(Arrays.asList(SPEC_SHEET, MANUAL));
         }
     }
 
