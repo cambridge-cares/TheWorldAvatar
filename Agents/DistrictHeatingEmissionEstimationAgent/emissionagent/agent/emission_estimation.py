@@ -28,16 +28,16 @@ PRESSURE = 101325.0     # Assume atmospheric pressure of 1atm (in Pa)
 
 # Emission factors (kg/MWh)
 EFW_FACTORS = {
-    # factors in kg/MWh heat sourced
+    # in kg/MWh heat sourced
     OD_NO2: 4.01351, 
     OD_PM10: 0.13260,
     OD_PM2_5: 0.11883
 }
 DH_FACTORS = {
-    # factors in kg/MWh gas burned
-    OD_NO2: None, 
-    OD_PM10: None,
-    OD_PM2_5: None 
+    # in kg/MWh (lower calorific value) gas burned
+    OD_NO2: 0.22429, 
+    OD_PM10: 0.00753,
+    OD_PM2_5: 0.00605 
 }
 
 # Default rounding behaviour
@@ -96,24 +96,42 @@ def extract_relevant_gas_or_heat_amount(ts_client, kg_client, derivationIRI:str,
 
 def calculate_emissions_for_consumed_gas(pollutant_iri:str, consumed_gas:float) -> dict:
     """
-    Calculates the emissions for consumed gas
+    Calculates the emissions associated with a certain amount of burned gas
+    NOTE: Assumes that the amount of consumed gas refers to MWh/h (in line
+          with the overall district heating optimisation based on hourly data)
 
     Arguments:
         pollutant_iri {str} -- IRI of pollutant ID for which to calculate emissions
-        consumed_gas {float} -- amount of consumed gas, MWh
+        consumed_gas {float} -- amount of consumed gas (expressed with regards
+                                to lower calorific value), MWh
     Returns:
         emission {dict} -- emission data to be instantiated as derivation output
+        NOTE: All returned values are in SI units i.e.,
+                temperature - K, 
+                density - kg/m3, 
+                mass flow rate - kg/s
     """
     
-    # Initialise return dictionary
+    # Temperature of flue gas: 200 degC (assumption due to use of heat recovery,
+    #  in line with typical flue gas value by IPCC)
+    temp = 200.0 + 273.15    # Kelvin
+    # Assume: density of exhaust stream = density of hot air
+    rho = CP.PropsSI('D', 'P', PRESSURE, 'T', temp, FLUID)
+
+    # Calculate emission mass flow rate 
+    # NOTE: this mass flow represents the pure pollutant mass flow, not the
+    #       total mass flow of the exhaust stream
+    mass_flow = DH_FACTORS[pollutant_iri] * consumed_gas    # kg/MWh * MWh = kg
+    # Assume: equal mass flow throughout entire hour
+    mass_flow /= 3600.0                                     # kg/s
+
+    # Populate return dictionary
     emission = {
         'pollutantID': pollutant_iri,
-        'temperature': consumed_gas,
-        'density': consumed_gas,
-        'massflow': consumed_gas
+        'temperature': temp,
+        'density': round(rho, 6),
+        'massflow': round(mass_flow, 6)
     }
-    
-    # TODO: Implement emission calculation
 
     return emission
 
@@ -147,7 +165,7 @@ def calculate_emissions_for_provided_heat(pollutant_iri:str, provided_heat:float
     # Assume: equal mass flow throughout entire hour
     mass_flow /= 3600.0                                     # kg/s
 
-    # Initialise return dictionary
+    # Populate return dictionary
     emission = {
         'pollutantID': pollutant_iri,
         'temperature': temp,

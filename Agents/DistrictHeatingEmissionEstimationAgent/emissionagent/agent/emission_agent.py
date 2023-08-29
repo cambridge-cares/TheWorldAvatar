@@ -7,9 +7,6 @@
 # the pyderivationagent.DerivationAgent class, i.e., implementing the emission
 # agent as derivation agent using synchronous derivation
 
-import pandas as pd
-from rdflib import Graph, URIRef
-
 from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
 from pyderivationagent import DerivationOutputs
@@ -173,9 +170,13 @@ class EmissionAgent(DerivationAgent):
         emissions = []
         for pollutant in self.POLLUTANTS:
             if input_iris.get(OHN_PROVIDED_HEAT_AMOUNT):
+                # Estimate emissions from EfW plant sourcing, i.e.,
+                # amount refers to amount of sourced heat
                 emissions.append(calculate_emissions_for_provided_heat(pollutant, 
                                                                        provided_heat=amount))
             else:
+                # Estimate emissions from natural gas burning, i.e.,
+                # amount refers to amount of consumed gas (wrt lower calorific value)
                 emissions.append(calculate_emissions_for_consumed_gas(pollutant, 
                                                                       consumed_gas=amount))
 

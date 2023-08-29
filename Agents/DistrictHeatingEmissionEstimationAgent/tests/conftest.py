@@ -134,15 +134,18 @@ EXPECTED_OUTPUTS_2 = {
     OD_PM2_5: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.000733}, 
     OD_PM10: {'temperature': temp_efw, 'density': density_efw, 'massflow': 0.000818}
 }
+# HKW plant
+temp_hkw = 200 + 273.15
+density_hkw = round(CP.PropsSI('D', 'T', temp_hkw, 'P', 101325, 'Air'), 6)
 EXPECTED_OUTPUTS_3 = {
-    OD_NO2: {'temperature': 2*VALUE_1, 'density': 2*VALUE_1, 'massflow': 2*VALUE_1}, 
-    OD_PM2_5: {'temperature': 2*VALUE_1, 'density': 2*VALUE_1, 'massflow': 2*VALUE_1}, 
-    OD_PM10: {'temperature': 2*VALUE_1, 'density': 2*VALUE_1, 'massflow': 2*VALUE_1}
+    OD_NO2: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 0.001384}, 
+    OD_PM2_5: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 3.7e-05}, 
+    OD_PM10: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 4.6e-05}
 }
 EXPECTED_OUTPUTS_4 = {
-    OD_NO2: {'temperature': 2*VALUE_2, 'density': 2*VALUE_2, 'massflow': 2*VALUE_2}, 
-    OD_PM2_5: {'temperature': 2*VALUE_2, 'density': 2*VALUE_2, 'massflow': 2*VALUE_2}, 
-    OD_PM10: {'temperature': 2*VALUE_2, 'density': 2*VALUE_2, 'massflow': 2*VALUE_2}
+    OD_NO2: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 0.002769}, 
+    OD_PM2_5: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 7.5e-05}, 
+    OD_PM10: {'temperature': temp_hkw , 'density': density_hkw, 'massflow': 9.3e-05}
 }
 
 
