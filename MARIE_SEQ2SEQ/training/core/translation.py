@@ -92,7 +92,7 @@ class OVHfTranslationModel(_HfTranslationModelBase):
     def __init__(
         self, model_args: ModelArguments, model_family: str, max_new_tokens: int = 256
     ):
-        self.input_length = 128
+        self.input_length = 256
 
         if model_family == "t5":
             model = OVModelForSeq2SeqLM.from_pretrained(model_args.model_path)
