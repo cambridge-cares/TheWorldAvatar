@@ -7,7 +7,6 @@ from transformers import (
     AutoModelForSeq2SeqLM,
     LlamaForCausalLM,
     AutoTokenizer,
-    AutoConfig,
 )
 from peft import (
     PeftModel,
@@ -17,6 +16,7 @@ from peft import (
     prepare_model_for_kbit_training,
 )
 from optimum.onnxruntime import ORTModelForSeq2SeqLM, ORTModelForCausalLM
+from optimum.intel import OVModelForSeq2SeqLM, OVModelForCausalLM
 import pyonmttok
 
 from core.arguments_schema import ModelArguments
@@ -143,7 +143,11 @@ def get_ort_model(model_args: ModelArguments):
     return model
 
 
-def get_ort_model_and_tokenizer(model_args: ModelArguments):
-    tokenizer = get_hf_tokenizer(model_args)
-    model = get_ort_model(model_args)
-    return model, tokenizer
+def get_ov_model(model_args: ModelArguments, max_input_tokens: int = 256):
+    model_cls = (
+        OVModelForSeq2SeqLM if model_args.model_family == "t5" else OVModelForCausalLM
+    )
+    model = model_cls.from_pretrained(model_args.model_path)
+
+    model.reshape(1, max_input_tokens)
+    model.compile()
