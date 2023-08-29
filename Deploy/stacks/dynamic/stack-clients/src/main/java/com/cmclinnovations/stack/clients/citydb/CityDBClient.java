@@ -175,7 +175,7 @@ public class CityDBClient extends ContainerClient {
             String sqlQuery = new String(is.readAllBytes());
             String idList = Arrays.stream(fudgedThematicSurfaceIDs)
                     .mapToObj(Long::toString)
-                    .collect(Collectors.joining(","));
+                    .collect(Collectors.joining("','"));
             sqlQuery = sqlQuery.replaceFirst("\\{idList\\}", idList);
             PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
         } catch (IOException ex) {
