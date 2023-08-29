@@ -19,9 +19,6 @@ from core.arguments_schema import ModelArguments
 
 
 class TranslationModel(ABC):
-    def __init__(self, model_family: str):
-        self.model_family = model_family
-
     @abstractmethod
     def _translate(self, question: str):
         pass
@@ -46,12 +43,10 @@ class TranslationModel(ABC):
 class _HfTranslationModelBase(TranslationModel):
     def __init__(
         self,
-        model_family: str,
         model,
         tokenizer: PreTrainedTokenizer,
         max_new_tokens: int = 256,
     ):
-        super().__init__(model_family)
         self.model = model
         self.tokenizer = tokenizer
         self.max_new_tokens = max_new_tokens
@@ -70,18 +65,14 @@ class HfTranslationModel(_HfTranslationModelBase):
     def __init__(
         self,
         model_args: ModelArguments,
-        model_family: str,
         max_new_tokens: int = 256,
         do_torch_compile: bool = False,
     ):
-        model, tokenizer = get_hf_model_and_tokenizer(
-            model_args, is_trainable=False, model_family=model_family
-        )
+        model, tokenizer = get_hf_model_and_tokenizer(model_args, is_trainable=False)
         if do_torch_compile:
             model = torch.compile(model)
 
         super().__init__(
-            model_family=model_family,
             model=model,
             tokenizer=tokenizer,
             max_new_tokens=max_new_tokens,
@@ -89,24 +80,21 @@ class HfTranslationModel(_HfTranslationModelBase):
 
 
 class OVHfTranslationModel(_HfTranslationModelBase):
-    def __init__(
-        self, model_args: ModelArguments, model_family: str, max_new_tokens: int = 256
-    ):
+    def __init__(self, model_args: ModelArguments, max_new_tokens: int = 256):
         self.input_length = 256
 
-        if model_family == "t5":
-            model = OVModelForSeq2SeqLM.from_pretrained(model_args.model_path)
-        elif model_family == "llama":
-            model = OVModelForCausalLM.from_pretrained(model_args.model_path)
-        else:
-            raise ValueError("Unrecognised model family: " + model_family)
+        model_cls = (
+            OVModelForSeq2SeqLM
+            if model_args.model_family == "t5"
+            else OVModelForCausalLM
+        )
+        model = model_cls.from_pretrained(model_args.model_path)
 
         model.reshape(1, self.input_length)
         model.compile()
 
-        tokenizer = get_hf_tokenizer(model_args.model_path, model_family=model_family)
+        tokenizer = get_hf_tokenizer(model_args)
         super().__init__(
-            model_family=model_family,
             model=model,
             tokenizer=tokenizer,
             max_new_tokens=max_new_tokens,
@@ -126,13 +114,10 @@ class OVHfTranslationModel(_HfTranslationModelBase):
 
 
 class OrtHfTranslationModel(_HfTranslationModelBase):
-    def __init__(
-        self, model_args: ModelArguments, model_family: str, max_new_tokens: int = 256
-    ):
-        model, tokenizer = get_ort_model_and_tokenizer(model_args, model_family=model_family)
+    def __init__(self, model_args: ModelArguments, max_new_tokens: int = 256):
+        model, tokenizer = get_ort_model_and_tokenizer(model_args)
 
         super().__init__(
-            model_family=model_family,
             model=model,
             tokenizer=tokenizer,
             max_new_tokens=max_new_tokens,
@@ -143,13 +128,9 @@ class ONmtTranslationModel(TranslationModel):
     def __init__(
         self,
         model_args: ModelArguments,
-        model_family: str,
         max_new_tokens: int = 256,
     ):
-        self.model, self.tokenizer = get_onmt_model_and_tokenizer(
-            model_args, model_family=model_family
-        )
-        self.model_family = model_family
+        self.model, self.tokenizer = get_onmt_model_and_tokenizer(model_args)
         self.max_new_tokens = max_new_tokens
 
     def _translate(self, question: str):

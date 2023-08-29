@@ -25,20 +25,7 @@ from core.arguments_schema import ModelArguments
 TARGET_MODULES_BY_MODEL = dict(t5=["q", "v"], llama=["q_proj", "v_proj"])
 
 
-def get_model_family_from_model_path(model_path: str):
-    config = AutoConfig.from_pretrained(
-        model_path, use_auth_token=os.environ.get("HF_ACCESS_TOKEN")
-    )
-    config_class = str(config.__class__).lower()
-
-    for model_family in ["t5", "llama"]:
-        if model_family in config_class:
-            return model_family
-
-    raise ValueError("Unable to infer model family from model config: " + config)
-
-
-def get_hf_model(model_args: ModelArguments, is_trainable: bool, model_family: str):
+def get_hf_model(model_args: ModelArguments, is_trainable: bool):
     if model_args.device_map:
         device_map = model_args.device_map
     # if we are in a distributed setting, we need to set the device map per device
@@ -69,7 +56,9 @@ def get_hf_model(model_args: ModelArguments, is_trainable: bool, model_family: s
         if v is not None
     }
 
-    model_cls = AutoModelForSeq2SeqLM if model_family == "t5" else LlamaForCausalLM
+    model_cls = (
+        AutoModelForSeq2SeqLM if model_args.model_family == "t5" else LlamaForCausalLM
+    )
     model = model_cls.from_pretrained(model_args.model_path, **model_load_kwargs)
 
     if getattr(model, "is_loaded_in_8bit", False) or getattr(
@@ -86,14 +75,16 @@ def get_hf_model(model_args: ModelArguments, is_trainable: bool, model_family: s
         for x in (model_args.lora_r, model_args.lora_alpha, model_args.lora_dropout)
     ):
         task_type = (
-            TaskType.SEQ_2_SEQ_LM if model_family == "t5" else TaskType.CAUSAL_LM
+            TaskType.SEQ_2_SEQ_LM
+            if model_args.model_family == "t5"
+            else TaskType.CAUSAL_LM
         )
         lora_config = LoraConfig(
             r=model_args.lora_r,
             lora_alpha=model_args.lora_alpha,
             lora_dropout=model_args.lora_dropout,
             bias="none",
-            target_modules=TARGET_MODULES_BY_MODEL[model_family],
+            target_modules=TARGET_MODULES_BY_MODEL[model_args.model_family],
             task_type=task_type,
         )
 
@@ -103,54 +94,56 @@ def get_hf_model(model_args: ModelArguments, is_trainable: bool, model_family: s
     return model
 
 
-def get_hf_tokenizer(model_path: str, model_family: str):
+def get_hf_tokenizer(model_args: ModelArguments):
     tokenizer = AutoTokenizer.from_pretrained(
-        model_path,
+        model_args.model_path,
         use_auth_token=os.environ.get("HF_ACCESS_TOKEN"),
     )
 
-    if model_family == "llama":
+    if model_args.model_family == "llama":
         tokenizer.pad_token_id = tokenizer.unk_token_id
 
     return tokenizer
 
 
-def get_hf_model_and_tokenizer(
-    model_args: ModelArguments, is_trainable: bool, model_family: str
-):
-    tokenizer = get_hf_tokenizer(model_args.model_path, model_family=model_family)
-    model = get_hf_model(
-        model_args, is_trainable=is_trainable, model_family=model_family
-    )
+def get_hf_model_and_tokenizer(model_args: ModelArguments, is_trainable: bool):
+    tokenizer = get_hf_tokenizer(model_args)
+    model = get_hf_model(model_args, is_trainable=is_trainable)
     return model, tokenizer
 
 
-def get_onmt_tokenizer(model_args: ModelArguments, model_family: str):
-    if model_family != "t5":
+def get_onmt_tokenizer(model_args: ModelArguments):
+    if model_args.model_family != "t5":
         raise ValueError(
-            f"Only T5 tokenizer has been tested and supported, while the model family is {model_family}."
+            f"Only T5 tokenizer has been tested and supported, while the model family is {model_args.model_family}."
         )
     return pyonmttok.SentencePieceTokenizer(
         os.path.join(model_args.model_path, "spiece.model")
     )
 
 
-def get_onmt_model_and_tokenizer(model_args: ModelArguments, model_family: str):
-    tokenizer = get_onmt_tokenizer(model_args, model_family=model_family)
+def get_onmt_model_and_tokenizer(model_args: ModelArguments):
+    tokenizer = get_onmt_tokenizer(model_args)
     model = ctranslate2.Translator(
         model_args.model_path, device=model_args.device_map or "auto"
     )
     return model, tokenizer
 
 
-def get_ort_model(model_args: ModelArguments, model_family: str):
-    model_cls = ORTModelForSeq2SeqLM if model_family == "t5" else ORTModelForCausalLM
-    model_load_kwargs = dict() if model_args.device_map == "cpu" else dict(provider="CUDAExecutionProvider")
+def get_ort_model(model_args: ModelArguments):
+    model_cls = (
+        ORTModelForSeq2SeqLM if model_args.model_family == "t5" else ORTModelForCausalLM
+    )
+    model_load_kwargs = (
+        dict()
+        if model_args.device_map == "cpu"
+        else dict(provider="CUDAExecutionProvider")
+    )
     model = model_cls.from_pretrained(model_args.model_path, **model_load_kwargs)
     return model
 
 
-def get_ort_model_and_tokenizer(model_args: ModelArguments, model_family: str):
-    tokenizer = get_hf_tokenizer(model_args.model_path, model_family=model_family)
-    model = get_ort_model(model_args, model_family=model_family)
+def get_ort_model_and_tokenizer(model_args: ModelArguments):
+    tokenizer = get_hf_tokenizer(model_args)
+    model = get_ort_model(model_args)
     return model, tokenizer

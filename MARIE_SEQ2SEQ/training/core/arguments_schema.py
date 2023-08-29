@@ -9,8 +9,8 @@ class ModelArguments:
         default="hf",
         metadata={"help": "Either `hf` (Hugging Face) or `onmt` (OpenNMT)."},
     )
-    model_family: Optional[str] = field(
-        default=None,
+    model_family: str = field(
+        default="t5",
         metadata={
             "help": "Either t5 or llama. If None, it will be inferred from config.json."
         },

@@ -19,10 +19,7 @@ from core.data_processing.input_processing import (
 )
 from core.data_processing.output_processing import preprocess_output
 from core.arguments_schema import DatasetArguments, ModelArguments
-from core.model_utils import (
-    get_hf_model_and_tokenizer,
-    get_model_family_from_model_path,
-)
+from core.model_utils import get_hf_model_and_tokenizer
 
 
 def get_t5_trainer(
@@ -42,9 +39,12 @@ def get_t5_trainer(
         return model_inputs
 
     def _preprocess_examples(examples):
-        sources = [preprocess_input(qn, model_family="t5") for qn in examples["question"]]
+        sources = [
+            preprocess_input(qn, model_family="t5") for qn in examples["question"]
+        ]
         targets = [
-            preprocess_output(query, model_family="t5") for query in examples["sparql_query_compact"]
+            preprocess_output(query, model_family="t5")
+            for query in examples["sparql_query_compact"]
         ]
         return dict(source=sources, target=targets)
 
@@ -80,20 +80,23 @@ def get_llama_trainer(
     data_args: DatasetArguments,
     train_args: TrainingArguments,
 ):
-    model.config.use_cache = False 
+    model.config.use_cache = False
     model.config.pretraining_tp = 1
-    
+
     train_dataset = Dataset.from_json(data_args.train_data_path)
     eval_dataset = Dataset.from_json(data_args.eval_data_path)
 
     # template = LLAMA_TEMPLATE
     template = "{question}\n\n###\n\n{sparql_query}"
+
     def formatting_func(examples):
         output_texts = []
         for i in range(len(examples["question"])):
             text = template.format(
                 question=examples["question"][i],
-                sparql_query=preprocess_output(examples["sparql_query_compact"][i], model_family="llama"),
+                sparql_query=preprocess_output(
+                    examples["sparql_query_compact"][i], model_family="llama"
+                ),
             )
             output_texts.append(text)
         return output_texts
@@ -115,19 +118,17 @@ def get_llama_trainer(
 
 TRAINER_GETTER_BY_MODEL = dict(t5=get_t5_trainer, llama=get_llama_trainer)
 
+
 def train():
     hfparser = transformers.HfArgumentParser(
         (ModelArguments, DatasetArguments, Seq2SeqTrainingArguments)
     )
     model_args, data_args, train_args = hfparser.parse_args_into_dataclasses()
+    model, tokenizer = get_hf_model_and_tokenizer(model_args, is_trainable=True)
 
-    model_family = get_model_family_from_model_path(model_args.model_path)
-    model, tokenizer = get_hf_model_and_tokenizer(model_args, is_trainable=True, model_family=model_family)
-    
-    trainer = TRAINER_GETTER_BY_MODEL[model_family](
+    trainer = TRAINER_GETTER_BY_MODEL[model_args.model_family](
         model=model, tokenizer=tokenizer, data_args=data_args, train_args=train_args
     )
-
     trainer.train()
 
     model_output_dir = os.path.join(train_args.output_dir, "model")

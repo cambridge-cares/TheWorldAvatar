@@ -10,7 +10,6 @@ from core.translation import (
     OVHfTranslationModel,
     OrtHfTranslationModel,
 )
-from core.model_utils import get_model_family_from_model_path
 
 
 def rename_dict_keys(d: dict, mappings: dict):
@@ -22,33 +21,26 @@ def infer():
         (ModelArguments, DatasetArguments, InferenceArguments)
     )
     model_args, data_args, infer_args = hfparser.parse_args_into_dataclasses()
-    model_family = model_args.model_family or get_model_family_from_model_path(
-        model_args.model_path
-    )
 
     if model_args.model_format == "hf":
         trans_model = HfTranslationModel(
             model_args,
-            model_family=model_family,
             max_new_tokens=infer_args.max_new_tokens,
             do_torch_compile=infer_args.do_torch_compile,
         )
     elif model_args.model_format == "ov":
         trans_model = OVHfTranslationModel(
             model_args,
-            model_family=model_family,
             max_new_tokens=infer_args.max_new_tokens,
         )
     elif model_args.model_format == "ort":
         trans_model = OrtHfTranslationModel(
             model_args,
-            model_family=model_family,
             max_new_tokens=infer_args.max_new_tokens,
         )
     elif model_args.model_format == "onmt":
         trans_model = ONmtTranslationModel(
             model_args,
-            model_family=model_family,
             max_new_tokens=infer_args.max_new_tokens,
         )
     else:
