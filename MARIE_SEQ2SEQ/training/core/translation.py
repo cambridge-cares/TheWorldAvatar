@@ -91,6 +91,8 @@ class OVHfTranslationModel(_HfTranslationModelBase):
     def __init__(
         self, model_args: ModelArguments, model_family: str, max_new_tokens: int = 256
     ):
+        self.input_length = 128
+
         if model_family == "t5":
             model = OVModelForSeq2SeqLM.from_pretrained(model_args.model_path)
         elif model_family == "llama":
@@ -98,7 +100,7 @@ class OVHfTranslationModel(_HfTranslationModelBase):
         else:
             raise ValueError("Unrecognised model family: " + model_family)
 
-        model.reshape(1, 256)
+        model.reshape(1, self.input_length)
         model.compile()
 
         tokenizer = get_hf_tokenizer(model_args.model_path, model_family=model_family)
@@ -111,7 +113,7 @@ class OVHfTranslationModel(_HfTranslationModelBase):
 
     def _translate(self, question: str):
         input_ids = self.tokenizer(
-            question, return_tensors="pt", padding="max_length", max_length=128
+            question, return_tensors="pt", padding="max_length", max_length=self.input_length
         ).input_ids.to(self.model.device)
         output_ids = self.model.generate(
             input_ids=input_ids, max_new_tokens=self.max_new_tokens
