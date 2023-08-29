@@ -4,7 +4,7 @@ import transformers
 from tqdm.auto import tqdm
 
 from core.arguments_schema import DatasetArguments, InferenceArguments, ModelArguments
-from core.translation import ONmtTranslationModel, HfTranslationModel
+from core.translation import ONmtTranslationModel, HfTranslationModel, OVHfTranslationModel
 from core.model_utils import get_model_family_from_model_path
 
 
@@ -27,6 +27,12 @@ def infer():
             model_family=model_family,
             max_new_tokens=infer_args.max_new_tokens,
             do_torch_compile=infer_args.do_torch_compile,
+        )
+    if model_args.model_format == "ov":
+        trans_model = OVHfTranslationModel(
+            model_args,
+            model_family=model_family,
+            max_new_tokens=infer_args.max_new_tokens
         )
     elif model_args.model_format == "onmt":
         trans_model = ONmtTranslationModel(

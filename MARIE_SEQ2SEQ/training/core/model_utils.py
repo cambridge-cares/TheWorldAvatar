@@ -84,15 +84,20 @@ def get_hf_model(model_args: ModelArguments, is_trainable: bool, model_family: s
         x is not None
         for x in (model_args.lora_r, model_args.lora_alpha, model_args.lora_dropout)
     ):
+        if model_family == "t5":
+            task_type = TaskType.SEQ_2_SEQ_LM
+        elif model_family == "llama":
+            task_type = TaskType.CAUSAL_LM
+        else:
+            raise ValueError("Unrecognised model family: " + model_family)
+        
         lora_config = LoraConfig(
             r=model_args.lora_r,
             lora_alpha=model_args.lora_alpha,
             lora_dropout=model_args.lora_dropout,
             bias="none",
             target_modules=TARGET_MODULES_BY_MODEL[model_family],
-            task_type=TaskType.SEQ_2_SEQ_LM
-            if model_family == "t5"
-            else TaskType.CAUSAL_LM,
+            task_type=task_type,
         )
 
         model = get_peft_model(model, lora_config)
@@ -101,9 +106,9 @@ def get_hf_model(model_args: ModelArguments, is_trainable: bool, model_family: s
     return model
 
 
-def get_hf_tokenizer(model_args: ModelArguments, model_family: str):
+def get_hf_tokenizer(model_path: str, model_family: str):
     tokenizer = AutoTokenizer.from_pretrained(
-        model_args.model_path,
+        model_path,
         use_auth_token=os.environ.get("HF_ACCESS_TOKEN"),
     )
 
@@ -116,7 +121,7 @@ def get_hf_tokenizer(model_args: ModelArguments, model_family: str):
 def get_hf_model_and_tokenizer(
     model_args: ModelArguments, is_trainable: bool, model_family: str
 ):
-    tokenizer = get_hf_tokenizer(model_args, model_family=model_family)
+    tokenizer = get_hf_tokenizer(model_args.model_path, model_family=model_family)
     model = get_hf_model(
         model_args, is_trainable=is_trainable, model_family=model_family
     )
