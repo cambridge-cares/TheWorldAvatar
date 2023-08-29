@@ -16,6 +16,7 @@ from peft import (
     get_peft_model,
     prepare_model_for_kbit_training,
 )
+from optimum.onnxruntime import ORTModelForSeq2SeqLM, ORTModelForCausalLM
 import pyonmttok
 
 from core.arguments_schema import ModelArguments
@@ -68,8 +69,8 @@ def get_hf_model(model_args: ModelArguments, is_trainable: bool, model_family: s
         if v is not None
     }
 
-    auto_model = AutoModelForSeq2SeqLM if model_family == "t5" else LlamaForCausalLM
-    model = auto_model.from_pretrained(model_args.model_path, **model_load_kwargs)
+    model_cls = AutoModelForSeq2SeqLM if model_family == "t5" else LlamaForCausalLM
+    model = model_cls.from_pretrained(model_args.model_path, **model_load_kwargs)
 
     if getattr(model, "is_loaded_in_8bit", False) or getattr(
         model, "is_loaded_in_4bit", False
@@ -84,13 +85,9 @@ def get_hf_model(model_args: ModelArguments, is_trainable: bool, model_family: s
         x is not None
         for x in (model_args.lora_r, model_args.lora_alpha, model_args.lora_dropout)
     ):
-        if model_family == "t5":
-            task_type = TaskType.SEQ_2_SEQ_LM
-        elif model_family == "llama":
-            task_type = TaskType.CAUSAL_LM
-        else:
-            raise ValueError("Unrecognised model family: " + model_family)
-        
+        task_type = (
+            TaskType.SEQ_2_SEQ_LM if model_family == "t5" else TaskType.CAUSAL_LM
+        )
         lora_config = LoraConfig(
             r=model_args.lora_r,
             lora_alpha=model_args.lora_alpha,
@@ -143,4 +140,17 @@ def get_onmt_model_and_tokenizer(model_args: ModelArguments, model_family: str):
     model = ctranslate2.Translator(
         model_args.model_path, device=model_args.device_map or "auto"
     )
+    return model, tokenizer
+
+
+def get_ort_model(model_args: ModelArguments, model_family: str):
+    model_cls = ORTModelForSeq2SeqLM if model_family == "t5" else ORTModelForCausalLM
+    model_load_kwargs = dict() if model_args.device_map == "cpu" else dict(provider="CUDAExecutionProvider")
+    model = model_cls.from_pretrained(model_args.model_path, **model_load_kwargs)
+    return model
+
+
+def get_ort_model_and_tokenizer(model_args: ModelArguments, model_family: str):
+    tokenizer = get_hf_tokenizer(model_args.model_path, model_family=model_family)
+    model = get_ort_model(model_args, model_family=model_family)
     return model, tokenizer

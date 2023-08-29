@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 
 import torch
 from optimum.intel import OVModelForSeq2SeqLM, OVModelForCausalLM
-from optimum.onnxruntime import ORTModelForSeq2SeqLM, ORTModelForCausalLM
 from transformers import PreTrainedTokenizer
 
 from core.data_processing.input_processing import preprocess_input, preprocess_input
@@ -14,6 +13,7 @@ from core.model_utils import (
     get_hf_tokenizer,
     get_onmt_model_and_tokenizer,
     get_hf_model_and_tokenizer,
+    get_ort_model_and_tokenizer,
 )
 from core.arguments_schema import ModelArguments
 
@@ -129,14 +129,7 @@ class OrtHfTranslationModel(_HfTranslationModelBase):
     def __init__(
         self, model_args: ModelArguments, model_family: str, max_new_tokens: int = 256
     ):
-        if model_family == "t5":
-            model = ORTModelForSeq2SeqLM.from_pretrained(model_args.model_path)
-        elif model_family == "llama":
-            model = ORTModelForCausalLM.from_pretrained(model_args.model_path)
-        else:
-            raise ValueError("Unsupported model family: " + model_family)
-        
-        tokenizer = get_hf_tokenizer(model_args.model_path, model_family=model_family)
+        model, tokenizer = get_ort_model_and_tokenizer(model_args, model_family=model_family)
 
         super().__init__(
             model_family=model_family,
