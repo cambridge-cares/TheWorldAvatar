@@ -6,7 +6,7 @@
         {
             "type": "XtoCityDB",
             "skip": false,
-			"subdirectory": "vector",
+            "subdirectory": "vector",
             "table": "raw_data",
             "ogr2ogrOptions": {
                 "otherOptions": {
@@ -15,18 +15,18 @@
                     ]
                 }
             },
-			"columnMap": {
-				"IDval": "os_topo_toid",
-				"IDname": "os_topo_toid",
-				"footprint": "polygon",
-				"elevation": "abshmin",
-				"height": "relh2"
-			},
-			"importOptions": {
-				"sridIn": "27700"
-			},
-			"name": "cambridge_gsl",
-			"geoServerSettings": {
+            "columnMap": {
+                "IDval": "os_topo_toid",
+                "IDname": "os_topo_toid",
+                "footprint": "polygon",
+                "elevation": "abshmin",
+                "height": "relh2"
+            },
+            "importOptions": {
+                "sridIn": "27700"
+            },
+            "name": "cambridge_gsl",
+            "geoServerSettings": {
                 "virtualTable": {
                     "name": "mapbox_layer",
                     "sql": "@/inputs/config/building-cambridge.sql",
@@ -40,18 +40,18 @@
                 "defaultStyle": "polygon"
             }
         },
-		{
-			"type": "tabular",
-			"skip": false,
-			"schema": "public",
+        {
+            "type": "tabular",
+            "skip": false,
+            "schema": "public",
             "subdirectory": "tabular",
-			"table": "TOID_UPRN_MatchingTable",
-			"ogr2ogrOptions": {
+            "table": "TOID_UPRN_MatchingTable",
+            "ogr2ogrOptions": {
                 "layerCreationOptions": {
                     "schema": "public"
                 }
             }
-		}
+        }
     ],
     "mappings": [
         "ontop_v2.obda"

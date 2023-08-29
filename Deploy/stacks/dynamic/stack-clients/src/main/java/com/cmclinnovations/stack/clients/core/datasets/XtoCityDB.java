@@ -36,13 +36,14 @@ public class XtoCityDB extends PostgresDataSubset {
     private double minArea = 0.;
     @JsonProperty
     Map<String, String> columnMap = new HashMap<>(Map.of(
-        "IDval", "os_topo_toid",
-        "IDname", "os_topo_toid",
-        "polygon", "polygon",
-        "elevation", "abshmin",
-        "height", "relh2"));
+            "IDval", "os_topo_toid",
+            "IDname", "os_topo_toid",
+            "polygon", "polygon",
+            "elevation", "abshmin",
+            "height", "relh2"));
     @JsonProperty
     private String preProcesssql;
+
     @Override
     public boolean usesGeoServer() {
         return !isSkip();
@@ -51,7 +52,7 @@ public class XtoCityDB extends PostgresDataSubset {
     @Override
     void loadInternal(Dataset parent) {
         super.loadInternal(parent);
-        CityDBClient.getInstance().addIRIs(parent.getDatabase(),parent.baseIRI());
+        CityDBClient.getInstance().addIRIs(parent.getDatabase(), parent.baseIRI());
         createLayer(parent.getDatabase());
         createLayer(parent.getWorkspaceName(), parent.getDatabase());
     }
@@ -62,9 +63,10 @@ public class XtoCityDB extends PostgresDataSubset {
         GDALClient.getInstance()
                 .uploadVectorFilesToPostGIS(database, getTable(), dataSubsetDir.toString(), ogr2ogrOptions, false);
         CityDBClient.getInstance()
-                .updateDatabase(database,importOptions.getSridIn());
-        CityDBClient.getInstance().preparePGforCityDB(database,super.getTable(),handleFileValues(preProcesssql),minArea,columnMap);
-        CityDBClient.getInstance().populateCityDBbySQL(database,lineage,columnMap);
+                .updateDatabase(database, importOptions.getSridIn());
+        CityDBClient.getInstance().preparePGforCityDB(database, super.getTable(), handleFileValues(preProcesssql),
+                minArea, columnMap);
+        CityDBClient.getInstance().populateCityDBbySQL(database, lineage, columnMap);
     }
 
     public void createLayer(String database) {
