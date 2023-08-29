@@ -240,8 +240,6 @@ public class ShipInputAgent extends HttpServlet {
         GeoServerClient geoserverClient = new GeoServerClient();
         geoserverClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
 
-        String layerName = "ships";
-
         GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
 
         UpdatedGSVirtualTableEncoder virtualTable = new UpdatedGSVirtualTableEncoder();
@@ -252,7 +250,7 @@ public class ShipInputAgent extends HttpServlet {
         LOGGER.info(virtualTable.getName());
         geoServerVectorSettings.setVirtualTable(virtualTable);
 
-        geoserverClient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, layerName,
-                geoServerVectorSettings);
+        geoserverClient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
+                EnvConfig.SHIPS_LAYER_NAME, geoServerVectorSettings);
     }
 }

@@ -63,7 +63,7 @@ public class QueryClient {
     private static final String LOCATION_STRING = PREFIX + "Location";
     private static final Iri LOCATION = iri(LOCATION_STRING);
     private static final Iri SHIP_TYPE = P_DISP.iri("ShipType");
-    private static final Iri MEASURE = P_DISP.iri("Measure");
+    private static final Iri MEASURE = P_OM.iri("Measure");
 
     // properties
     private static final Iri HAS_PROPERTY = P_DISP.iri("hasProperty");
@@ -376,5 +376,9 @@ public class QueryClient {
                 }
             }
         }
+    }
+
+    void updateLatestValues(List<Ship> ships) {
+
     }
 }

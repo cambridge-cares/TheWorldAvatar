@@ -37,10 +37,11 @@ public class Ship {
         this.timestamp = LocalDateTime.parse(json.getString("TIMESTAMP")).toInstant(ZoneOffset.UTC)
                 .plus(Duration.ofHours(timeOffset));
 
+        shipName = "Ship: ";
         if (json.has("SHIPNAME")) {
-            shipName = json.getString("SHIPNAME");
+            shipName += json.getString("SHIPNAME");
         } else {
-            shipName = "Ship - " + mmsi;
+            shipName += "Ship - " + mmsi;
         }
     }
 
