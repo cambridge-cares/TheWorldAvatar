@@ -62,7 +62,7 @@ class HfTranslationModel(TranslationModel):
         return self.tokenizer.decode(output_ids[0], skip_special_tokens=True)
 
 
-class CTranslate2TranslationModel(TranslationModel):
+class ONmtTranslationModel(TranslationModel):
     def __init__(
         self,
         model_args: ModelArguments,
