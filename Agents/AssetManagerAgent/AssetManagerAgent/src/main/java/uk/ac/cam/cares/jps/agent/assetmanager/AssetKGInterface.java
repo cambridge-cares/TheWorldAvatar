@@ -27,7 +27,9 @@ import org.json.JSONObject;
 
 import com.bigdata.bop.Var;
 import com.github.jsonldjava.core.RDFDataset.Literal;
+import com.martiansoftware.jsap.Switch;
 
+import java.rmi.Remote;
 import java.util.*;
 
 import org.apache.jena.sparql.function.library.print;
