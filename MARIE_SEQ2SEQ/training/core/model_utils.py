@@ -15,8 +15,12 @@ from peft import (
     get_peft_model,
     prepare_model_for_kbit_training,
 )
-from optimum.onnxruntime import ORTModelForSeq2SeqLM, ORTModelForCausalLM
+from optimum.onnxruntime import ORTModelForSeq2SeqLM, ORTQuantizer
+from optimum.onnxruntime.configuration import AutoQuantizationConfig
 from optimum.intel import OVModelForSeq2SeqLM, OVModelForCausalLM
+from optimum.utils.save_utils import maybe_load_preprocessors
+from transformers.generation.configuration_utils import GenerationConfig
+from transformers import PreTrainedTokenizer
 import pyonmttok
 
 from core.arguments_schema import ModelArguments
@@ -134,7 +138,6 @@ def get_onmt_model_and_tokenizer(model_args: ModelArguments):
     return model, tokenizer
 
 
-
 def get_ov_model_and_tokenizer(model_args: ModelArguments, max_input_tokens: int = 256):
     model_cls = (
         OVModelForSeq2SeqLM if model_args.model_family == "t5" else OVModelForCausalLM
@@ -148,63 +151,159 @@ def get_ov_model_and_tokenizer(model_args: ModelArguments, max_input_tokens: int
     return model, tokenizer
 
 
-def get_ort_model_and_tokenizer(model_args: ModelArguments):
-    model_cls = (
-        ORTModelForSeq2SeqLM if model_args.model_family == "t5" else ORTModelForCausalLM
+def load_ort_model_seq2seq_quantized_cpu(model_args: ModelArguments):
+    quantized_models_dir = os.path.join(model_args.model_path, "quantized_models")
+    quantized_encoder_path = os.path.join(
+        quantized_models_dir, "encoder_model_quantized.onnx"
     )
+    quantized_decoder_path = os.path.join(
+        quantized_models_dir, "decoder_model_quantized.onnx"
+    )
+    quantized_decoder_wp_path = os.path.join(
+        quantized_models_dir, "decoder_with_past_model_quantized.onnx"
+    )
+
+    if all(
+        os.path.exists(x)
+        for x in [
+            quantized_models_dir,
+            quantized_encoder_path,
+            quantized_decoder_path,
+            quantized_decoder_wp_path,
+        ]
+    ):
+        print("-----A cache of quantized model is found-----")
+    else:
+        print("-----No cache of quantized model is found-----")
+        print("-----Performing avx512_vnni quantization-----")
+
+        encoder_quanitizer = ORTQuantizer.from_pretrained(
+            model_args.model_path, file_name="encoder_model.onnx"
+        )
+        decoder_quantizer = ORTQuantizer.from_pretrained(
+            model_args.model_path, file_name="decoder_model.onnx"
+        )
+        decoder_wp_quantizer = ORTQuantizer.from_pretrained(
+            model_args.model_path, file_name="decoder_with_past_model.onnx"
+        )
+
+        quantizers = [
+            encoder_quanitizer,
+            decoder_quantizer,
+            decoder_wp_quantizer,
+        ]
+        dqconfig = AutoQuantizationConfig.avx512_vnni(
+            is_static=False, per_channel=False
+        )
+
+        for q in quantizers:
+            q.quantize(
+                save_dir=quantized_models_dir,
+                quantization_config=dqconfig,
+            )
+
+        print("-----Quantization done-----")
+
+    (
+        encoder_session,
+        decoder_session,
+        decoder_wp_session,
+    ) = ORTModelForSeq2SeqLM.load_model(
+        encoder_path=quantized_encoder_path,
+        decoder_path=quantized_decoder_path,
+        decoder_with_past_path=quantized_decoder_wp_path,
+    )
+    config = ORTModelForSeq2SeqLM._load_config(quantized_models_dir)
+    generation_config = GenerationConfig.from_pretrained(model_args.model_path)
+    preprocessors = maybe_load_preprocessors(model_args.model_path)
+
+    return ORTModelForSeq2SeqLM(
+        encoder_session=encoder_session,
+        decoder_session=decoder_session,
+        config=config,
+        onnx_paths=[
+            quantized_encoder_path,
+            quantized_decoder_path,
+            quantized_decoder_wp_path,
+        ],
+        decoder_with_past_session=decoder_wp_session,
+        model_save_dir=model_args.model_path,
+        preprocessors=preprocessors,
+        generation_config=generation_config,
+    )
+
+
+def load_ort_model_with_tensorrt(model_args: ModelArguments, tokenizer: PreTrainedTokenizer):
+    trt_engine_cache_path = os.path.join(model_args.model_path, "trt_cache")
+    os.makedirs(trt_engine_cache_path, exist_ok=True)
+
+    model = ORTModelForSeq2SeqLM.from_pretrained(
+        model_args.model_path,
+        provider="TensorrtExecutionProvider",
+        provider_options=dict(
+            trt_engine_cache_enable=True,
+            trt_engine_cache_path=trt_engine_cache_path,
+        ),
+    )
+
+    assert model.providers == [
+        "TensorrtExecutionProvider",
+        "CUDAExecutionProvider",
+        "CPUExecutionProvider",
+    ]
+
+    if any(f.endswith(".engine") for f in os.listdir(trt_engine_cache_path)):
+        print("-----TensorRT engine cache found-----")
+    else:
+        print("-----TensorRT engine cache not found-----")
+        print("-----Building TensorRT engine-----")
+        for example in [SHORT_INPUT_EXAMPLE, LONG_INPUT_EXAMPLE]:
+            input_ids = tokenizer(
+                preprocess_input(example, model_family=model_args.model_family),
+                return_tensors="pt",
+            ).input_ids.to("cuda")
+            model(input_ids)
+
+    print("-----Performing engine warm-up-----")
+    input_ids = tokenizer(
+        preprocess_input(SHORT_INPUT_EXAMPLE, model_family=model_args.model_family),
+        return_tensors="pt",
+    ).input_ids.to("cuda")
+
+    for _ in range(3):
+        model.generate(input_ids=input_ids, max_new_tokens=256)
+    
+    return model
+
+
+def get_ort_model_and_tokenizer(model_args: ModelArguments):
+    if model_args.model_family != "t5":
+        raise ValueError("Function not implemented for :" + model_args.model_family)
+
+    tokenizer = get_hf_tokenizer(model_args)
 
     if model_args.device_map == "cpu" or (
         model_args.device_map == "auto" and not torch.cuda.is_available()
     ):
-        model = model_cls.from_pretrained(model_args.model_path)
+        if model_args.bits is None or model_args.bits == 32:
+            model = ORTModelForSeq2SeqLM.from_pretrained(model_args.model_path)
+        elif model_args.bits == 8:
+            print("-----Loading ONNX model in 8 bits-----")
+            model = load_ort_model_seq2seq_quantized_cpu(model_args)
+        else:
+            raise ValueError(
+                str(model_args.bits)
+                + "-bit quantization is not supported for ONNX Runtime on CPU."
+            )
         print("-----ONNX Runtime model is loaded to CPU-----")
     elif not model_args.use_tensorrt:
-        model = model_cls.from_pretrained(
+        model = ORTModelForSeq2SeqLM.from_pretrained(
             model_args.model_path, provider="CUDAExecutionProvider"
         )
         assert model.providers == ["CUDAExecutionProvider", "CPUExecutionProvider"]
 
         print("-----ONNX Runtime model is loaded to CUDA-----")
     else:
-        trt_engine_cache_path = os.path.join(model_args.model_path, "trt_cache")
-        os.makedirs(trt_engine_cache_path, exist_ok=True)
+        model = load_ort_model_with_tensorrt(model_args, tokenizer=tokenizer)
 
-        model = model_cls.from_pretrained(
-            model_args.model_path,
-            provider="TensorrtExecutionProvider",
-            provider_options=dict(
-                trt_engine_cache_enable=True,
-                trt_engine_cache_path=trt_engine_cache_path,
-            ),
-        )
-
-        assert model.providers == [
-            "TensorrtExecutionProvider",
-            "CUDAExecutionProvider",
-            "CPUExecutionProvider",
-        ]
-
-        if any(f.endswith(".engine") for f in os.listdir(trt_engine_cache_path)):
-            print("-----TensorRT engine cache found-----")
-        else:
-            print("-----TensorRT engine cache not found-----")
-            print("-----Building TensorRT engine-----")
-            for example in [SHORT_INPUT_EXAMPLE, LONG_INPUT_EXAMPLE]:
-                input_ids = tokenizer(
-                    preprocess_input(example, model_family=model_args.model_family),
-                    return_tensors="pt",
-                ).input_ids.to("cuda")
-                model(input_ids)
-
-        print("-----Performing engine warm-up-----")
-        input_ids = tokenizer(
-            preprocess_input(SHORT_INPUT_EXAMPLE, model_family=model_args.model_family),
-            return_tensors="pt",
-        ).input_ids.to("cuda")
-        
-        for _ in range(3):
-            model.generate(input_ids=input_ids, max_new_tokens=256)
-
-
-    tokenizer = get_hf_tokenizer(model_args)
     return model, tokenizer
