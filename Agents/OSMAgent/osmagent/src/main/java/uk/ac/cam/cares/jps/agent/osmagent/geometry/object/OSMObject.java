@@ -57,10 +57,11 @@ public class OSMObject {
     public static Map<Integer, OSMObject> getOSMObjects(String url, String user, String password, String table, String whereFilter) {
         RemoteRDBStoreClient postgisClient = new RemoteRDBStoreClient(url, user, password);
 
-        String query = "SELECT ST_AsText(\"geometryProperty\") AS geometry, ST_SRID(\"geometryProperty\") AS srid, ogc_fid " + "FROM " + table;
+        String query = "SELECT ST_AsText(\"geometryProperty\") AS geometry, ST_SRID(\"geometryProperty\") AS srid, ogc_fid " + "FROM " + table
+                + " WHERE \"geometryProperty\" IS NOT NULL";
 
         if (!whereFilter.isEmpty()) {
-            query += " WHERE " + whereFilter;
+            query += " AND " + whereFilter;
         }
 
         JSONArray resultArray = postgisClient.executeQuery(query);
