@@ -1,5 +1,6 @@
 from Algorithms.operations import run_cofmer_pipeline
 from Data.assemblies import assembly_db
+import traceback
 import csv
 import re
 import os
@@ -18,20 +19,11 @@ def create_componentTypeNumber_dict(assembly_model):
             
     return componentTypeNumber
 
-def extract_valency_and_type(component_string):
-    linkage_match = re.match(r"L:(\d+)-\w+", component_string)
-    if linkage_match:
-        valency = int(linkage_match.group(1))
-        return (valency, 'linkage')
-    
-    precursor_match = re.match(r"(\d+)-\w+", component_string)
-    if precursor_match:
-        valency = int(precursor_match.group(1))
-        return (valency, 'precursor')
-    
-    return None, None
+
 
 def initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir, assembly_db):
+    
+    
     precursor_values_1 = None
     precursor_values_2 = None
     with open(COFs_path, 'r', encoding='utf-8-sig') as cof_file:
@@ -77,68 +69,71 @@ def initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir, a
                 linkage = linkages.get(linkage_lfr) # get the linkage, if it exists
                 #print(linkages)
                 # Processing Precursors.csv for Precursor1
+                # Processing Precursors.csv for multiple precursors.
+                precursors = []
+                
                 with open(precursor_path, 'r', encoding='utf-8') as precursor_file:
                     precursor_reader = csv.DictReader(precursor_file)
+                    
+                    precursor_dict = {}  # Dictionary to hold the current precursor info
                     for precursor_row in precursor_reader:
-                        if precursor_row['Precursor'] == precursor_1:
-                            precursor_values_1 = {
-                                "Precursor": precursor_row["Precursor"],
-                                "GBU": precursor_row["GBU"],
-                                "ConstructingMol": precursor_row["ConstructingMol"],
-                                "BS": [
-                                    {
-                                        "UnitFrom": precursor_row["UnitFrom"],
-                                        "bindingSite": precursor_row["bindingSite"],
-                                        "bsIndex": int(precursor_row["bsIndex"]) # Converting bsIndex to integer
-                                    }
-                                ]
-                            }
-
-                            break
-
-                # Processing Precursors.csv for Precursor2, if exists
-                if precursor_2:
-                    with open(precursor_path, 'r', encoding='utf-8') as precursor_file:
-                        precursor_reader = csv.DictReader(precursor_file)
-                        for precursor_row in precursor_reader:
-                            if precursor_row['Precursor'] == precursor_2:
-                                precursor_values_2 = {
+                        if precursor_row['Precursor'] in [precursor_1, precursor_2]:
+                            if precursor_row['Precursor'] not in precursor_dict:
+                                # Create the precursor dictionary with default values
+                                precursor_dict[precursor_row['Precursor']] = {
                                     "Precursor": precursor_row["Precursor"],
                                     "GBU": precursor_row["GBU"],
                                     "ConstructingMol": precursor_row["ConstructingMol"],
-                                    "BS": [
-                                        {
-                                            "UnitFrom": precursor_row["UnitFrom"],
-                                            "bindingSite": precursor_row["bindingSite"],
-                                            "bsIndex": int(precursor_row["bsIndex"])
-                                        }
-                                    ]
+                                    "BS": []  # Placeholder for binding sites
                                 }
+                            dummies_str = precursor_row.get("Dummies", "").replace('"', '')
+                            if dummies_str and dummies_str != "NA":
+                                dummies_list = [int(x) for x in dummies_str.split(',')]
+                            else:
+                                dummies_list = []
+                            bs_dict = {
+                                "UnitFrom": precursor_row["UnitFrom"],
+                                "bindingSite": precursor_row["bindingSite"],
+                                "bsIndex": int(precursor_row["bsIndex"]),
+                                "Dummies": dummies_list
+                            }
+                            precursor_dict[precursor_row['Precursor']]["BS"].append(bs_dict)
+                            
+      
 
-                                break
-                
+                    # Appending precursor dictionaries to the precursors list
+                    if precursor_1 in precursor_dict:
+                        precursors.append(precursor_dict[precursor_1])
+                    if precursor_2 and precursor_2 in precursor_dict:
+                        precursors.append(precursor_dict[precursor_2])
+                        
+               
                 assembly_model_dict = assembly_db[assembly_model_string]
                 #assembly_model_dict = create_assembly_model(assembly_model_string)
                 #print(assembly_model_dict)
                 componentTypeNumber = create_componentTypeNumber_dict(assembly_model_string)
-                precursors = [precursor_values_1]
-                if precursor_2 is not None:
-                    precursors.append(precursor_values_2)
+                #precursors = [precursor_values_1]
+                #if precursor_2 is not None:
+                #    precursors.append(precursor_values_2)
             
                 input_dir = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\input_dir\\'
-                
                 #run_cofmer_pipeline(assembly_model_dict, componentTypeNumber, precursor_values_1, precursor_values_2, linkage, input_dir, full_output_path)
                 run_cofmer_pipeline(assembly_model_dict, componentTypeNumber, precursors, linkage, input_dir, full_output_path)
 
+#            except Exception as e:
+#                print(f"Error processing line with COF_Nr {cof_row['COF_Nr']}: {str(e)}")
+#                continue
             except Exception as e:
                 print(f"Error processing line with COF_Nr {cof_row['COF_Nr']}: {str(e)}")
+                #print(traceback.format_exc())  # This prints the traceback
                 continue
+
 
 
 # Assuming the CSV file is located at 'data.csv'
 linkage_path = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\data_csv\\Linkages.csv'
-precursor_path = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\data_csv\\Precursors.csv'
-COFs_path = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\data_csv\\COFsTestZone.csv'
+precursor_path = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\data_csv\\Precursors2.csv'
+COFs_path = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\data_csv\\COFs_CLEAN.csv'
 output_dir = r'C:\\TheWorldAvatar\\Agents\\COFmerDrawingAgent\\Data\\output_dir\\'
 #print(initial_dict_creation(COFs_path, linkage_path, precursor_path, output_dir))
 

@@ -26,11 +26,12 @@ def component_handler(assemblyModel, componentTypeNumber, precursors, linkages):
 
 
 def component_am_mol_matcher(assemblyModel, componentTypeNumber, *, precursors=None, linkages=None):
-
+    
     # check if number of precursors match ComponentTypeNumber for Precursor
     if precursors is None and componentTypeNumber.get("Precursor", 0) > 0:
         return "Error: Number of Precursors does not match ComponentTypeNumber for Precursor"
     elif precursors is not None and componentTypeNumber.get("Precursor", 0) != len(precursors):
+        
         return "Error: Number of Precursors does not match ComponentTypeNumber for Precursor"
 
     # check if number of linkages match ComponentTypeNumber for Linkage
@@ -71,6 +72,7 @@ def component_am_mol_matcher(assemblyModel, componentTypeNumber, *, precursors=N
     return components
 
 def ordering_components(input_dict):
+    #print(input_dict)
     precursor_dict = {}
     linkage_dict = {}
     # Get all the Component_names
@@ -119,9 +121,15 @@ def dummify_precursors(component_dict):
         for bs_data in bs_data_sorted:
             bs_index = bs_data['bsIndex']
             bs_data_copy = {'bindingSite': bs_data['bindingSite'], 'Dummies': []}
-            for j in range(bs_index):
-                bs_data_copy['Dummies'].append(dummies_start)
-                dummies_start += 1
+
+            # Check if 'Dummies' exists and is not empty
+            if 'Dummies' in bs_data and bs_data['Dummies'] and isinstance(bs_data['Dummies'][0], int):
+                bs_data_copy['Dummies'] = bs_data['Dummies'][:]  # Use a slice to create a copy of the list
+            else:  # Dummies not given or empty
+                for j in range(bs_index):
+                    bs_data_copy['Dummies'].append(dummies_start)
+                    dummies_start += 1
+
             first_copy_bs_data_list.append(bs_data_copy)
         
         # Assign to all copies
@@ -204,12 +212,12 @@ def initial_product_instantiation(assembly_model, SingleComponent_original):
     Linkage_BS = []
 
     matching_dummies = []
-
     if "Precursor_BS" in SingleComponent[component1]:
+        
         Precursor_BS.extend(SingleComponent[component1]["Precursor_BS"])
     if "Linkage_BS" in SingleComponent[component2]:
         Linkage_BS.extend(SingleComponent[component2]["Linkage_BS"])
-
+        
     if "Linkage_BS" in SingleComponent[component2] and "Precursor_BS" in SingleComponent[component1]:
         for bs1 in SingleComponent[component1]["Precursor_BS"]:
             for bs2 in SingleComponent[component2]["Linkage_BS"]:
@@ -335,7 +343,6 @@ def merging_dummies(*lists_of_dicts):
 
 def looping_to_cofmer(assembly_model, initiation_single_component, product_instantiation):
     result_dict = {}
-
     construction_steps = assembly_model["ConstructionSteps"]
     current_component = initiation_single_component
 
@@ -348,6 +355,7 @@ def looping_to_cofmer(assembly_model, initiation_single_component, product_insta
             continue  # Skip COFmer since it's already initialized
         
         temp_dict = product_instantiation(assembly_model, current_component, product_name)
+        #print(temp_dict)
         result_dict = {**result_dict, **temp_dict}
 
 
@@ -383,7 +391,40 @@ def product_mol_handler(input_dict, output_dir):
     
     return output_list
 
+
 def product_mol_combiner(mol1_path, dummy1, mol2_path, dummy2, output_file):
+    form_dummy1= '[#{}]'.format(dummy1)
+    form_dummy2= '[#{}]'.format(dummy2)
+    # Read the input molecule files
+    mol1 = Chem.MolFromMolFile(mol1_path)
+    mol2 = Chem.MolFromMolFile(mol2_path)
+    try:
+        dummy_idx1 = mol1.GetSubstructMatch(Chem.MolFromSmarts(form_dummy1))[0]
+        dummy_idx2 = mol2.GetSubstructMatch(Chem.MolFromSmarts(form_dummy2))[0]
+    except IndexError:
+        dummy_idx1 = mol1.GetSubstructMatch(Chem.MolFromSmarts(form_dummy2))[0]
+        dummy_idx2 = mol2.GetSubstructMatch(Chem.MolFromSmarts(form_dummy1))[0]
+    adjacent_atom1 = mol1.GetAtomWithIdx(dummy_idx1).GetNeighbors()[0]
+    adjacent_atom2 = mol2.GetAtomWithIdx(dummy_idx2).GetNeighbors()[0]
+    # Combine the molecules
+    combined_mol = Chem.CombineMols(mol1, mol2)
+    # Add a bond between the atoms adjacent to the dummy atoms
+    combined_mol_edit = Chem.EditableMol(combined_mol)
+    combined_mol_edit.AddBond(adjacent_atom1.GetIdx(), len(mol1.GetAtoms()) + adjacent_atom2.GetIdx(), Chem.rdchem.BondType.SINGLE)
+    # Remove the dummy atoms from the combined molecule
+    combined_mol_edit.RemoveAtom(len(mol1.GetAtoms()) + dummy_idx2)
+    combined_mol_edit.RemoveAtom(dummy_idx1)
+
+    combined_mol = combined_mol_edit.GetMol()
+    Chem.Kekulize(combined_mol)
+    Chem.SanitizeMol(combined_mol)
+
+    with open(output_file, 'w') as f:
+        f.write(Chem.MolToMolBlock(combined_mol))
+
+    return combined_mol
+
+def product_mol_combiner1(mol1_path, dummy1, mol2_path, dummy2, output_file):
     form_dummy1= '[#{}]'.format(dummy1)
     form_dummy2= '[#{}]'.format(dummy2)
     
@@ -483,9 +524,10 @@ def run_cofmer_pipeline(assemblyModel, componentTypeNumber, precursors, linkages
         linkages = [linkages]
 
     SingleComponents = component_handler(assemblyModel, componentTypeNumber, precursors, linkages)
+    
     component_mol_handler(SingleComponents, input_dir, output_dir)
     initiation_single_component = initial_product_instantiation(assemblyModel, SingleComponents)
-    #initiation_single_component
+    #print(initiation_single_component)
     looping_single_components = looping_to_cofmer(assemblyModel, initiation_single_component, product_instantiation)
     product_mol_handler(looping_single_components, output_dir)
     cofmer_cleaner(output_dir)
