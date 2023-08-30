@@ -7,14 +7,14 @@
             "type": "vector",
             "skip": false,
             "schema": "public",
-            "subdirectory": "polygon",
+            "subdirectory": "polygons",
             "table": "polygons"
       },
       {
         "type": "vector",
         "skip": false,
         "schema": "public",
-        "subdirectory": "point",
+        "subdirectory": "points",
         "table": "points"
       }
 	]
