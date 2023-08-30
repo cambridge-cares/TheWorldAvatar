@@ -4,12 +4,16 @@ import com.google.zxing.*;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.itextpdf.io.image.ImageData;
+import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.pdf.PdfDocument; 
+import com.itextpdf.kernel.pdf.PdfWriter; 
 
-import com.itextpdf.text.Image;
-import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.text.BadElementException;
-import com.itextpdf.text.Document;
-import com.itextpdf.text.DocumentException;
+import com.itextpdf.layout.Document; 
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Image;
+import com.itextpdf.layout.element.Table;
+import com.itextpdf.layout.properties.UnitValue;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -41,6 +45,17 @@ public class QRPrinter {
     static String folderQR;
     //filename encoding
     String charset = "UTF-8";
+    //The paper is assumed to be portrait
+    //The office printer is 1200 ppi
+    final Double A4_PIXEL_WIDTH = 9922.; //210 mm
+    final Double A4_PIXEL_HEIGHT = 14032.; //297 mm
+    //With the given ppi, 1 cm corresponds to:
+    final Double PIXEL_PER_CM = 472.44;
+    //QR per page (sticker size is targetSize x targetSize+2 cm to accomodate ID text)
+    Double targetSize;
+    int targetSizePX;
+    int row, col;
+
     //IPP handler for sending request to printer
     IPPHandler ipphandler;
 
@@ -50,9 +65,13 @@ public class QRPrinter {
     private static final Logger LOGGER = LogManager.getLogger(AssetManagerAgent.class);
 
     //constructor
-    public QRPrinter(String printServerURL, String qrStorageFolder) throws Exception {
+    public QRPrinter(String printServerURL, String qrStorageFolder, Double targetSizeCM) throws Exception {
         printingURL = printServerURL;
         folderQR = qrStorageFolder;
+        targetSize = targetSizeCM;
+        targetSizePX = new Double(PIXEL_PER_CM * targetSizeCM).intValue();
+        row = new Double(A4_PIXEL_WIDTH/(targetSize*PIXEL_PER_CM)).intValue();
+        col = new Double(A4_PIXEL_WIDTH/((targetSize+2)*PIXEL_PER_CM)).intValue();
         ipphandler = new IPPHandler(printServerURL);
     }
 
@@ -71,36 +90,20 @@ public class QRPrinter {
     }
 
     //send print request
-    void sendPrintingRequest (String iriString) throws Exception{
-        String PDFPathString;
-        // Create/get pdf from IRI
-        try {
-            String QRpathString = getQRPath (iriString);
-            PDFPathString = QRpathString.replace(".png", ".pdf");
-        
-            Path QRpath = Paths.get(ClassLoader.getSystemResource(QRpathString).toURI());
-
-            Document document = new Document();
-            PdfWriter.getInstance(document, new FileOutputStream(PDFPathString));
-            document.open();
-            Image img = Image.getInstance(QRpath.toAbsolutePath().toString());
-            document.add(img);
-
-            document.close();
-            
-        } catch (URISyntaxException e) {
-            // Cant get path
-            throw new Exception("Failed to get QR code path", e);
-        }
-        catch (IOException e){
-            throw new Exception("Writer failed to access QR code", e);
-        }
-        catch (WriterException e){
-            throw new Exception("Writer failed to create QR code", e);
-        }
-        catch (DocumentException e){
-            throw new Exception("Failed to load QR code .png", e);
-        }
+    public void sendPrintingRequest (String iriString) throws Exception{       
+        String PDFPathString = java.time.LocalDateTime.now().toString() + "_QRCodes.pdf";    
+        PdfWriter writer = new PdfWriter(PDFPathString);        
+     
+        PdfDocument pdf = new PdfDocument(writer);              
+        Document document = new Document(pdf);              
+    
+        String imFile = getQRPath(iriString);       
+        ImageData data = ImageDataFactory.create(imFile);                    
+        Image image = new Image(data);                        
+    
+        document.add(image);              
+     
+        document.close();    
 
         //Send pdf to printer
         try {
@@ -111,17 +114,63 @@ public class QRPrinter {
 
     }
 
+    public void sendPrintRequest (String[] iriStringArr) throws Exception {
+        try{    
+            String PDFPathString = java.time.LocalDateTime.now().toString() + "_QRCodes.pdf";
+            // Creating a PdfDocument object    
+            PdfWriter writer = new PdfWriter(PDFPathString);       
+                
+            // Creating a PdfDocument object      
+            PdfDocument pdf = new PdfDocument(writer);                  
+            
+            // Creating a Document object       
+            Document doc = new Document(pdf);                       
+            Table table = new Table(UnitValue.createPercentArray(col)).useAllAvailableWidth();
+            for (int i=0; i < iriStringArr.length;i++) {
+                //if row runs out create a new page.
+                if((i/col) >= row){
+
+                }
+
+                String iriString = iriStringArr[i];
+                String QRPath = getQRPath(iriString);
+                //Add image 
+                Cell cell = new Cell();                   
+                ImageData data = ImageDataFactory.create(QRPath);        
+                Image img = new Image(data);              
+                cell.add(img.setAutoScale(true));              
+                table.addCell(cell);
+
+                //Add label on the next row
+                if (i % col == 0){
+                    for(int j =i-col; j % col !=0 ; j++){
+                        //add ID here
+                    }
+
+                }
+            }
+
+            doc.close();
+        }
+        catch (IOException e){
+            throw new Exception("Writer failed to access QR code", e);
+        }
+
+
+    }
+
     String getQRPath (String iriString) throws IOException, WriterException {
         String path = folderQR + "/" + iriString.split("/")[iriString.split("/").length-1] + ".png";
         //Check the folder
         File f = new File(path);
         if(!(f.exists() && !f.isDirectory())) { 
             //If does not exist in folder, create a new one
-            createQR(iriString, path, charset, 1000, 1000);
+            createQR(iriString, path, charset, targetSizePX, targetSizePX);
         }
 
         return path;
     }
+
 
 
 }

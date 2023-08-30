@@ -18,12 +18,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 
 /**
  * A class for instantiating, retrieving and printing QR code for assets in CARES.
  * Will be used for the asset manager app.
  */
-@WebServlet(urlPatterns = {"/retrieve", "/instantiate", "print"})
+@WebServlet(urlPatterns = {"/retrieve", "/retrievebydocs", "/getuidata", "/instantiate", "/print", "/printbulk"})
 public class AssetManagerAgent extends JPSAgent{
     /**
      * Global params
@@ -31,8 +32,6 @@ public class AssetManagerAgent extends JPSAgent{
     //Request params
     String requestURL;
     public final String KEY_AGENTPROPERTIES = "AGENTPROPERTIES";
-    public final String KEY_EXCELFILE = "EXCELFILE";
-    public final String KEY_IRIMAPFILE = "IRIMAPFILE";
     public final String KEY_FOLDERqr = "FOLDERQR";
 
     //Properties params
@@ -57,7 +56,6 @@ public class AssetManagerAgent extends JPSAgent{
     private static final Logger LOGGER = LogManager.getLogger(AssetManagerAgent.class);
 
     //Clients and util classes
-    private static RemoteStoreClient storeClient;
     public QRPrinter printerHandler;
     public AssetKGInterface instanceHandler;
     
@@ -74,10 +72,9 @@ public class AssetManagerAgent extends JPSAgent{
         JSONObject jsonMessage = new JSONObject();
         if (validateInput(requestParams, urlPath)) {
             LOGGER.info("Passing request to Asset Manager Agent..");
-            String agentProperties = System.getenv(requestParams.getString(KEY_AGENTPROPERTIES));
-            String excelFile = System.getenv(requestParams.getString(KEY_EXCELFILE));
-            String iriMapperFile = System.getenv(requestParams.getString(KEY_IRIMAPFILE));
-            String FOLDER_QR = System.getenv(requestParams.getString(KEY_FOLDERqr));
+            String agentProperties = System.getenv(KEY_AGENTPROPERTIES);
+            String FOLDER_QR = System.getenv(KEY_FOLDERqr);
+            JSONObject assetData = requestParams.getJSONObject("AssetData");
 
             try {
                 readPropFile(agentProperties);
@@ -86,24 +83,36 @@ public class AssetManagerAgent extends JPSAgent{
             }
             
 
-            String[] args = new String[] {ENDPOINT_KG_ASSET, ENDPOINT_KG_DEVICE, ENDPOINT_KG_PURCHASEDOC, ENDPOINT_PRINTER, FOLDER_QR, excelFile, iriMapperFile};
+            String[] args = new String[] {ENDPOINT_KG_ASSET, ENDPOINT_KG_DEVICE, ENDPOINT_KG_PURCHASEDOC, ENDPOINT_PRINTER, FOLDER_QR};
             try {
-                printerHandler = new QRPrinter(ENDPOINT_PRINTER, FOLDER_QR);
+                printerHandler = new QRPrinter(ENDPOINT_PRINTER, FOLDER_QR, 5.);
             } catch (Exception e) {
                 throw new JPSRuntimeException("Failed to create QR code printer handler", e);
             }
             
-
+            if (urlPath.contains("retrievebydocs")){
+                String ID = requestParams.getString("ID");
+                jsonMessage = retrieveAssetInstance(args, ID);
+            }
             if (urlPath.contains("retrieve")){
                 String ID = requestParams.getString("ID");
                 jsonMessage = retrieveAssetInstance(args, ID);
             }
-            else if (urlPath.contains("instantiate")){
-                jsonMessage = instantiateAsset(args);
+
+            if (urlPath.contains("getuidata")){
+                jsonMessage = getDataForUI();
             }
-            else if (urlPath.contains("print")){
-                String ID = requestParams.getString("ID");
-                jsonMessage = contactPrintServer(args, ID);
+            if (urlPath.contains("instantiate")){
+                jsonMessage = instantiateAsset(args, assetData);
+            }
+            
+            if (urlPath.contains("printbulk")){
+                String[] IRI = assetData.getJSONArray("IRI").toList().toArray(new String[0]);
+                jsonMessage = contactPrintServer(args, IRI);
+            }
+            if (urlPath.contains("print")){
+                String IRI = assetData.getString("IRI");
+                jsonMessage = contactPrintServer(args, IRI);
             }
 
             jsonMessage.accumulate("Result", "Command Success");
@@ -143,31 +152,23 @@ public class AssetManagerAgent extends JPSAgent{
 
     public boolean validateInput(JSONObject requestParams, String pathURL) throws BadRequestException {
         boolean validate = true;
-        String agentProperties;
 
         if (requestParams.isEmpty()) {
             validate = false;
         }
         else {
-            validate = requestParams.has(KEY_AGENTPROPERTIES);
+            validate = requestParams.has("assetData");
             if (validate == true) {
-                validate = requestParams.has(KEY_EXCELFILE);
-            }
-            if (validate == true) {
-                validate = requestParams.has(KEY_IRIMAPFILE);
-            }
-            if (validate == true) {
-                validate = requestParams.has(KEY_IRIMAPFILE);
-            }
-            if (validate == true) {
-                agentProperties = (requestParams.getString(KEY_AGENTPROPERTIES));
                 
-                if (System.getenv(agentProperties) == null) {
+                if (System.getenv(KEY_AGENTPROPERTIES) == null) {
                     validate = false; 
                 }
 
-                if (pathURL.contains("retrieve") || pathURL.contains("print")) {
-                    validate = requestParams.has("ID");
+                if (pathURL.contains("retrieve")) {
+                    validate = requestParams.getJSONObject("assetData").has("ID");
+                }
+                if (pathURL.contains("print")) {
+                    validate = requestParams.getJSONObject("assetData").has("IRI");
                 }
            
             }
@@ -177,24 +178,86 @@ public class AssetManagerAgent extends JPSAgent{
     }
 
     //hanlde instantiate
-    public JSONObject instantiateAsset (String[] arg) {
+    public JSONObject instantiateAsset (String[] arg, JSONObject assetData) {
         JSONObject message = new JSONObject();
-        //create IRI if not exist or need update
-        //send to asset inst
+        // handle input
+        if (validateAssetData(assetData)){
+
+        }
+        else{
+            throw new JPSRuntimeException("Asset data is invalid. Input requires minimum of ID (yyyy-mm-dd/id), Name, Location and ontology prefix and class.");
+        }
+
+
+
         return message;
     }
 
-    //Create IRI
-    //record IRI
+    //validate asset data
+    private Boolean validateAssetData (JSONObject data){
+        if(!data.has("ID")){
+            return false;
+        }
+        else{
+            String id = data.getString("ID");
+            String[] idSplits = id.split("/");
+            if (idSplits.length!=2){
+                return false;
+            }
+            if (idSplits[0].length()!=8 && idSplits[0].split("-").length!=3){
+                return false;
+            }
+        }
+        if (!data.has("Name")){
+            return false;
+        }
+        if (!data.has("Location")){
+            return false;
+        }
+        if(!data.has("Prefix") && !data.has("AssetClass")){
+            return false;
+        }
+
+        return true;
+    }
 
     //handle print
-    public JSONObject contactPrintServer (String[] arg, String ID){
+    public JSONObject contactPrintServer (String[] arg, String IRI){
         JSONObject message = new JSONObject();
-        message.put("Result", "Printing job initiated for ID: " + ID);
+        message.put("Result", "Printing job initiated for IRI: " + IRI);
+        // send to server
+        try{
+            printerHandler.sendPrintingRequest(IRI);
+        }
+        catch(Exception e) {
+            message.accumulate("Result", "Failed to contact printer: " + e);
+        }
+        
+        return message;
+    }
+
+    public JSONObject contactPrintServer (String[] arg, String[] IRIArray){
+        JSONObject message = new JSONObject();
+        message.put("Result", "Bulk printing job initiated for ID: " + IRIArray);
         // get IRI from ID
         
         // get QR code
         // send to server
+        return message;
+    }
+
+    public JSONObject getDataForUI (){
+        JSONObject message = new JSONObject();
+        message.accumulate("result", instanceHandler.getRequiredIriUI());
+        return message;
+    }
+
+    public JSONObject getItemsByDocs (JSONObject docsIRI) {
+        JSONObject message = new JSONObject();
+        String InvoiceIRI = docsIRI.getString("invoice");
+        String POiri = docsIRI.getString("PO");
+        String DOiri = docsIRI.getString("DO");
+        message.accumulate("Result", instanceHandler.getItemListByDocIRI(InvoiceIRI, POiri, DOiri));
         return message;
     }
 

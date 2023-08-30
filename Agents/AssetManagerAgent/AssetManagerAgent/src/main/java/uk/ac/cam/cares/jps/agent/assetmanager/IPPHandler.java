@@ -35,7 +35,11 @@ public class IPPHandler {
         } catch (Exception e) {
             throw new IOException("Failed to retrieve file.", e);
         }
-        PrintJob printJob = new PrintJob.Builder(inputStream).build();
+        PrintJob printJob = new PrintJob.Builder(inputStream)
+            .pageFormat("a4")
+            .portrait(true)
+            .resolution("1200dpi")
+            .build();
 
         try {
             PrintRequestResult printRequestResult = cupsPrinter.print(printJob);

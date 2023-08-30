@@ -1,7 +1,7 @@
 version: "1.0"
 
 services:
-  fh-agent:
+  asset-manager-agent:
     image: asset-manager-agent:1.0.0
     build: .
     container_name: asset-manager-agent
