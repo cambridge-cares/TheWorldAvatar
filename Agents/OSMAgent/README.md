@@ -30,7 +30,7 @@ If unavailable, DLM files can be uploaded via the stack-data-uploader in Pirmase
 
 ## Build
 ### GitHub Credentials
-The docker image uses TheWorldAvatar maven repository (https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/).
+The docker image uses TheWorldAvatar maven repository (`https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/`).
 You will need to provide your credentials (GitHub username/personal access token) in single-word text files as follows:
 ```
 ./credentials/
@@ -39,7 +39,7 @@ You will need to provide your credentials (GitHub username/personal access token
 ```
 
 ### Properties File
-In the [config.properties](osmagent\src\main\resources\config.properties) file, specify the following:
+In the [config.properties](osmagent/src/main/resources/config.properties) file, specify the following:
 - Database name containing both 3D building and OSM data as `db.name`.
 - Schema name containing OSM data as `osm.schema`.
 - Table name (inclusive of schema) containing DLM land use data as `landuse.table`.
@@ -48,12 +48,12 @@ In the [config.properties](osmagent\src\main\resources\config.properties) file, 
 In the same directory as this README, run `docker-compose build`. This will build the OSMAgent Docker Image
 
 ## Deployment
-The agent has been implemented to work in the stack, which requires the OSMAgent Docker container to be deployed in the stack. To do so, place [osmagent.json](/stack-manager-input-config/osmagent.json) in the [stack-manager config directory](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services). 
+The agent has been implemented to work in the stack, which requires the OSMAgent Docker container to be deployed in the stack. To do so, place [osmagent.json](stack-manager-input-config/osmagent.json) in the [stack-manager config directory](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services). 
 Then, run `./stack.sh start <STACK NAME>` in the [stack-manager main folder](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager). This will spin up the agent in the stack.
 Please ensure that the stack the agent is spun up in is the same stack where the OSM and DLM data were uploaded.
 
 ## Debugging
-To debug the agent, place [osmagent-debug.json](/stack-manager-input-config/osmagent-debug.json) instead of `osmagent.json` in the stack-manager config directory](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services). 
+To debug the agent, place [osmagent-debug.json](stack-manager-input-config/osmagent-debug.json) instead of `osmagent.json` in the [stack-manager config directory](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services). 
 Then, spin up with `./stack.sh start <STACK NAME>` in the [stack-manager main folder](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
 The debugger port will be available at 5005.
 
@@ -66,4 +66,4 @@ curl -X POST localhost:3838/osmagent/update
 ```
 
 [stack-data-uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
-[inputs]: /inputs/
+[inputs]: inputs/
