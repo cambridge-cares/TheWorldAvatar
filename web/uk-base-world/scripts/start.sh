@@ -115,10 +115,12 @@ then
     echo "Running the stack start up script..."
     ./stack.sh start UKBASEWORLD 38383
 
-    # Wait for the stack to start
-    echo 
-    read -p "Press enter to continue once the stack is up and running..."
-    
+    # Wait for the stack manager container to exit
+while docker ps --format '{{.Names}}' | grep -qE 'stack-manager'; do
+    sleep 1
+done
+    sleep 5
+
     # Run the uploader to upload data
     cd "$ROOT/Deploy/stacks/dynamic/stack-data-uploader"
     echo "Running the stack uploader script..."
