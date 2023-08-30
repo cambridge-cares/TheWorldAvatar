@@ -23,6 +23,7 @@ import matplotlib.animation as animation
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
+# ------------------------ Indexies ----------------------- #
 
 # ------------------------ Some 'shortcut' functions ----------------------- #
 # data calculation ----------------------- #
@@ -105,7 +106,7 @@ def save_figures(arg_name, pdf = True):
     Argument:
     arg_name: the name of this figure file
     '''
-    plt.savefig('figure_output/'+f"{arg_name}".lower()+'.png',dpi=200) 
+    plt.savefig('figure_output/'+f"{arg_name}".lower()+'.png',dpi=300) 
     if pdf:
         plt.savefig('figure_output/'+f"{arg_name}".lower()+'.pdf')
 
@@ -464,15 +465,15 @@ def normalization(val_values, cb_scale):
     '''
     iqr = st.iqr(val_values)
     q1,q3 = st.mstats.idealfourths(val_values)
-    bottom = q1 - cb_scale * iqr
-    top = q3 + cb_scale * iqr
-    # bottom = -1
-    # top = 1
+    # bottom = q1 - cb_scale * iqr
+    # top = q3 + cb_scale * iqr
+    bottom = -1
+    top = 1
     divnorm = cl.Normalize(vmin=bottom, vmax=top)
 
     return divnorm
 
-def create_color_bar(color_theme: str, divnorm, label: str, axs, cax1, val_df: pd.DataFrame):
+def create_color_bar(color_theme: str, divnorm, label: str, axs, cax1, val_df: pd.DataFrame, orientation = 'ver'):
     '''
     Provide color bar
     Arguments:
@@ -487,9 +488,13 @@ def create_color_bar(color_theme: str, divnorm, label: str, axs, cax1, val_df: p
     # Create a colorbar for the plot
     scalar_mappable = cm.ScalarMappable(cmap=color_theme, norm=divnorm)
     scalar_mappable.set_array(val_df)
-    colorbar = plt.colorbar(scalar_mappable, ax=axs, cax=cax1)
+    if orientation == 'ho':
+        colorbar = plt.colorbar(scalar_mappable, ax=axs, cax=cax1, orientation='horizontal')
+    if orientation == 'ver':
+        colorbar = plt.colorbar(scalar_mappable, ax=axs, cax=cax1)
     # Set the label for the colorbar
     colorbar.set_label(label)
+    return colorbar
 
 # Others ----------------------- #
 def add_prefix(x, prefix):
@@ -536,6 +541,23 @@ def get_median(df_in:pd.DataFrame, row_name: str = '0'):
     median_df.index = [row_name]
 
     return median_df
+
+def get_percentile_average(df_in):
+    df_in = df_in.iloc[:, 1:]
+    # Calculate the 1st percentile and 99th percentile for each column
+    percentiles_1st = np.nanpercentile(df_in, 1, axis=0)
+    percentiles_99th = np.nanpercentile(df_in, 99, axis=0)
+
+    # Calculate the average of the 1st and 99th percentiles
+    percentile_average = (percentiles_1st + percentiles_99th) / 2
+
+    # Create a DataFrame with columns "variable" and "value" for plotting
+    df_plot = pd.DataFrame({
+        "variable": df_in.columns,
+        "value": percentile_average
+    })
+    return df_plot
+
 
 def call_pickle(pathname):
     '''
@@ -589,29 +611,108 @@ def parse_to_file(query, filepath = "demofile"):
   #open and read the file after the appending:
   f = open(f"./Data/{filepath}.txt", "r")
 
+def process_list(data):
+      # Remove the first bracket using indexing
+      data = data[0]
+      # Convert the list to a numpy array
+      data = np.array(data)
+      return data
+
+def read_from_excel_elec(year:str = '2019'):
+    '''
+        Return lists of readings from Excel
+        
+        Arguments:
+        year: the number of year of which the data you may want to read
+    '''
+
+    data = pd.read_excel('./Data/LSOA_domestic_elec_2010-21.xlsx', sheet_name=year, skiprows=4)
+
+    LSOA_codes = data["LSOA code"].values
+    met_num = data["Number\nof meters\n"].values
+    consump = data["Total \nconsumption\n(kWh)"].values
+    # Calculate consumption per household
+    consumption_per_household = consump / met_num
+
+    df = pd.DataFrame({
+    "LSOA_code": LSOA_codes,
+    "Electricity_meter": met_num,
+    "Total consumption (kWh)": consump,
+    "Electricty_cosumption_per_household": consumption_per_household
+    })
+    
+    return df
+
+def read_from_excel_gas(year:str = '2019'):
+    '''
+        Return lists of readings from Excel
+        
+        Arguments:
+        year: the number of year of which the data you may want to read
+    '''
+
+    data = pd.read_excel('./Data/LSOA_domestic_gas_2010-21.xlsx', sheet_name=year, skiprows=4)
+    LSOA_codes = data["LSOA code"].values
+    met_num = data["Number\nof meters\n"].values
+    consump = data["Total \nconsumption\n(kWh)"].values
+
+    consumption_per_household = consump / met_num
+
+    df = pd.DataFrame({
+    "LSOA_code": LSOA_codes,
+    "Gas_meter": met_num,
+    "Total consumption (kWh)": consump,
+    "Gas_consumption_per_household": consumption_per_household
+    })
+    
+    return df
+
+def read_from_excel_fuel_poor():
+
+    data = pd.read_excel("./Data/2021-sub-regional-fuel-poverty-tables.xlsx",sheet_name="Table 3", skiprows=2, skipfooter=9)
+
+    LSOA_codes = data["LSOA Code"].values
+    proportion = data["Proportion of households fuel poor (%)"].values/100
+    df = pd.DataFrame({
+        "LSOA_code": LSOA_codes,
+        "Proportion of households fuel poor (%)": proportion
+        })
+
+    return df
+
 def properties_to_csv():
 
-    def all_source_to_csv(df):
-
-        df.to_csv('./Data/properties_csv/2020/All_source.csv', index=False)
-    
     def geom_to_csv(df):
 
         df_geom = df[['LSOA_code', 'ons_shape']]
 
         df_geom.to_csv('./Data/properties_csv/2020/geometry.csv', index=False)
     
-    def electricity_consumption_per_house_to_csv(df):
+    def all_source_to_csv_2019():
 
-        monthly_ref = [28.19,26.08,26.82,20.73,20.48,20.36,21.38,21.95,22.39,25.14,25.91,27.89]
-
+        # monthly_ref = [28.19,26.08,26.82,20.73,20.48,20.36,21.38,21.95,22.39,25.14,25.91,27.89]
+        monthly_ref = [11.37, 9.39, 9.45, 8.35, 7.73, 6.78, 6.61, 6.41, 7.17, 8.8, 9.92, 10.56]
+        df = read_from_excel_elec('2019')
         df_elec = df[['LSOA_code', 'Electricty_cosumption_per_household']]
+        df_elec = monthly_disaggregation(df_elec, monthly_ref, annual = False)
+        df_elec = pd.concat([df_elec, df["Electricity_meter"]], axis=1)
 
-        df_elec = monthly_disaggregation(df_elec, monthly_ref, annual = True)
-        
-        df_final = pd.concat([df_elec, df["Electricity_meter"]], axis=1)
-    
-        df_final.to_csv('./Data/properties_csv/2020/Elec_Consump_per_house.csv', index=False)
+        monthly_ref = [9.4,7.4,7.2,6.0,5.0,4.3,4.1,3.4,3.5,6.2,7.6,8.5]
+        df = read_from_excel_gas('2019')
+        df_gas = df[['LSOA_code', 'Gas_consumption_per_household']]
+        df_gas = monthly_disaggregation(df_gas, monthly_ref, annual = False)
+        df_gas = pd.concat([df_gas, df["Gas_meter"]], axis=1)
+
+        df = read_from_excel_fuel_poor()
+        df_fp = df[['LSOA_code', 'Proportion of households fuel poor (%)']]
+        df_fp = df_fp[df_fp['Proportion of households fuel poor (%)'] > 0.001]
+        df_cop = pd.read_csv(f"./Data/properties_csv/COP_mean.csv")
+
+
+        df_elec, df_gas, df_cop, df_fp= sort_muiltiple_df(df_elec, df_gas, df_cop, df_fp)
+        df_fp.to_csv('./Data/properties_csv/2019/fuel_poverty.csv', index=False)
+        df_elec.to_csv('./Data/properties_csv/2019/Elec_Consump_per_house.csv', index=False)
+        df_gas.to_csv('./Data/properties_csv/2019/Gas_Consump_per_house.csv', index=False)
     
     def gas_consumption_per_house_to_csv(df):
 
@@ -740,25 +841,64 @@ def properties_to_csv():
             return df_cost_total, df_cost_elec, df_cost_gas
         df_elec = df[['LSOA_code','Electricty_cosumption_per_household']]
         df_gas = df[['LSOA_code','Gas_consumption_per_household']]
-        cost_elec = 0.172
-        cost_gas = 0.0355
-        monthly_electricity_consumption = [28.19,26.08,26.82,20.73,20.48,20.36,21.38,21.95,22.39,25.14,25.91,27.89]
-        monthly_gas_consumption = [7.88,7.54,7.54,4.86,4.14,3.78,3.78,3.64,4.05,6.09,6.74,8.46]   
+        year = 2019
+        if year == 2020:
+            cost_elec = 0.172
+            cost_gas = 0.0355
+            monthly_electricity_consumption = [28.19,26.08,26.82,20.73,20.48,20.36,21.38,21.95,22.39,25.14,25.91,27.89]
+            monthly_gas_consumption = [7.88,7.54,7.54,4.86,4.14,3.78,3.78,3.64,4.05,6.09,6.74,8.46]   
 
         df_cost_total, df_cost_elec, df_cost_gas = fuel_cost(df_elec,df_gas,cost_elec,cost_gas,monthly_electricity_consumption,monthly_gas_consumption, annual=True)
         
-        df_cost_total.to_csv('./Data/properties_csv/2020/Total_Cost.csv', index=False)
-        df_cost_elec.to_csv('./Data/properties_csv/2020/Elec_Cost.csv', index=False)
-        df_cost_gas.to_csv('./Data/properties_csv/2020/Gas_Cost.csv', index=False)
+        df_cost_total.to_csv(f'./Data/properties_csv/{year}/Total_Cost.csv', index=False)
+        df_cost_elec.to_csv(f'./Data/properties_csv/{year}/Elec_Cost.csv', index=False)
+        df_cost_gas.to_csv(f'./Data/properties_csv/{year}/Gas_Cost.csv', index=False)
 
-    df = call_pickle("./Data/pickles/df in function get_all_data")
+    # df = call_pickle("./Data/pickles/df in function get_all_data")
     #all_source_to_csv(df)
     #geom_to_csv(df)
-    #electricity_consumption_per_house_to_csv(df)
+    # all_source_to_csv_2019()
     #gas_consumption_per_house_to_csv(df)
     #fuel_poverty_to_csv(df)
     #temperature_to_csv(df) 
-    #COP_to_csv()
-    fuel_cost_to_csv(df)
+    # COP_to_csv()
+    # fuel_cost_to_csv(df)
 
-#properties_to_csv()
+# properties_to_csv()
+# df = pd.read_csv('./Data/trends/Inequality_Index_raw.csv')
+# trend_values = []  # List to store the trend values
+# for index, row in df.iterrows():
+#     trend = ""
+#     for i in range(2, len(row)):
+#         if row[i] > row[i - 1]:
+#             trend += "+"
+#         else:
+#             trend += "-"
+#     trend_values.append(trend)
+
+# df['trend'] = trend_values
+# # Group the DataFrame by the "trend" column
+# grouped_df = df.groupby(df['trend'])
+
+# for group_name, group_data in grouped_df:
+#     # Define the filename for the CSV file
+#     filename = f"./Data/trends/Inequality_Index_{group_name}.csv"  
+    
+#     # Save the group data to the CSV file
+#     group_data.to_csv(filename, index=False)
+# Read the CSV file into a DataFrame
+
+# df = pd.read_csv('./Data/trends/Inequality_Index_-----.csv')
+
+# # Check for empty values in the first column and delete corresponding rows
+# df = df[df['3.0'].notna()]
+
+# df = drop_column(df,"Unnamed: 0")
+# # Reset the index of the DataFrame
+# df = df.reset_index(drop=True)
+
+# df.to_csv("./Data/trends/Inequality_Index_-----.csv",index=False)
+
+# grouped_df = pd.DataFrame(grouped_df)
+
+# grouped_df.to_csv("./Inequality Index.csv")

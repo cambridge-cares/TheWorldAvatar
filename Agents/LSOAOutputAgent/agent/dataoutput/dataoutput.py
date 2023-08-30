@@ -243,14 +243,17 @@ def calculate_inequality_df(df_change_of_cost_in: pd.DataFrame, df_fuel_poverty_
     return df_all
 
 def calculate_change_of_cost(year, ratio, uptake,df_cop, elec_increase = 0, gas_increase = 0 ):
+    
     df_elec = pd.read_csv(f'./Data/properties_csv/{year}/Elec_Consump_per_house.csv')
     df_gas = pd.read_csv(f'./Data/properties_csv/{year}/Gas_Consump_per_house.csv')
     # df_cost = pd.read_csv(f"./Data/properties_csv/{year}/Total_Cost.csv")
     # df_cost = df_cost[['LSOA_code','Annual cost']]
     if year in ['2020','2021','2022']:
         df_fp = pd.read_csv(f"./Data/properties_csv/2020/fuel_poverty.csv")
-        df_fp = df_fp[df_fp['Proportion of households fuel poor (%)'] > 0.001]
+        df_fp = df_fp[df_fp['Proportion of households fuel poor (%)'] > 0.01]
         df_fp_ref = pd.read_csv(f"./Data/properties_csv/2020/fuel_poverty.csv")
+        df_elec = pd.read_csv(f'./Data/properties_csv/2020/Elec_Consump_per_house.csv')
+        df_gas = pd.read_csv(f'./Data/properties_csv/2020/Gas_Consump_per_house.csv')
     else:
         df_fp = pd.read_csv(f"./Data/properties_csv/{year}/fuel_poverty.csv")
         df_fp_ref = pd.read_csv(f"./Data/properties_csv/{year}/fuel_poverty.csv")
@@ -258,7 +261,6 @@ def calculate_change_of_cost(year, ratio, uptake,df_cop, elec_increase = 0, gas_
     df_elec, df_gas, df_cop, df_fp, _ = sort_muiltiple_df(df_elec, df_gas, df_cop, df_fp, df_fp_ref)
 
     cop = df_cop.iloc[:, 1:13].values
-    elec_consump = df_elec.iloc[:, 1:13].values
     gas_consump = df_gas.iloc[:, 1:13].values
     fp = df_fp.iloc[:, 1].values
     fp = fp*100
@@ -269,10 +271,10 @@ def calculate_change_of_cost(year, ratio, uptake,df_cop, elec_increase = 0, gas_
     # resulted_elec_consump = elec_consump + delta_elect_array
     # resulted_gas_consump = gas_consump - delta_gas_array
 
-    #cost_elec = read_from_web_price_elec(year=year)
-    cost_gas =  read_from_web_price_gas(year=year) * ratio
-    #cost_gas =  cost_elec / ratio
-    cost_elec =  cost_gas * 4
+    # cost_elec = read_from_web_price_elec(year=year)
+    cost_gas =  read_from_web_price_gas(year=year) 
+    # cost_gas =  cost_elec / ratio
+    cost_elec =  cost_gas * ratio
 
     # final_cost = cost_elec * resulted_elec_consump + cost_gas * resulted_gas_consump
     # final_cost = np.sum(final_cost, axis=1)
@@ -307,7 +309,7 @@ def plot_geodistribution(label: str, title:str, df_in: pd.DataFrame, cb_scale: f
     def basic_settings(df_geo):
         # Set the plot
         color_theme = 'coolwarm'
-        fig = plt.figure(figsize=(3.5,4.5))
+        fig = plt.figure(figsize=(4,3.5))
         plt.subplots_adjust(left=0.032,right=0.799)
         plt.tight_layout()
         axs = plt.axes()
@@ -358,11 +360,11 @@ def plot_geodistribution(label: str, title:str, df_in: pd.DataFrame, cb_scale: f
     axs.spines["right"].set_visible(False)
     axs.spines["left"].set_visible(False)
     axs.spines["bottom"].set_visible(False)
-    axs.set_title(f"{title}",y=1.08)
+    # axs.set_title(f"{title}",y=1.08)
     cax1.ticklabel_format(axis="y", style="sci", scilimits=(0,0))  
     
     # Store the figures
-    save_figures(title)
+    save_figures(title, False)
 
 def plot_geodistribution_with_cities(label: str, title:str, df_in: pd.DataFrame, cb_scale: float = 0, pdf = True):
     '''
@@ -399,6 +401,26 @@ def plot_geodistribution_with_cities(label: str, title:str, df_in: pd.DataFrame,
 
         return axs, cax, color_theme, UK_gdf
 
+    def normalization_a(val_values, cb_scale):
+        '''
+        Provide normalization for color bar
+        Arguments:
+                    *** Please use this function with plot_geodistribution***
+        val_values: NDArray which have NO nan data
+        cb_scale: to adjust the scale of colorbar, sometimes the figure is ugly because the max and min value are too close
+                    in a nutshell, the bigger the cb_scale, the larger the gap between max and min for colorbar
+                    I suggest start with 0, and then try 1, 1.5 maybe. Need a few try and error.
+        '''
+        iqr = st.iqr(val_values)
+        q1,q3 = st.mstats.idealfourths(val_values)
+        # bottom = q1 - cb_scale * iqr
+        # top = q3 + cb_scale * iqr
+        bottom = -1
+        top = 1
+        divnorm = cl.Normalize(vmin=bottom, vmax=top)
+
+        return divnorm
+   
     # Get Geospatial shapes:
     df_geo = call_pickle('./Data/pickles/df_geo in function retrieve_ONS_shape_from_KG')
 
@@ -412,7 +434,7 @@ def plot_geodistribution_with_cities(label: str, title:str, df_in: pd.DataFrame,
     axs, cax, color_theme, UK_gdf = basic_settings(df_geo)
     
     # Specify the interquartile range (IQR) and the first and third quartiles (q1 and q3)
-    divnorm = normalization(val_values, cb_scale)
+    divnorm = normalization_a(val_values, cb_scale)
 
     axs_xbounds = [np.array([-2.815E5,-2E5]),np.array([-2.838E5,-1.05E5]),np.array([-3.35E4,9.4E3]),np.array([-6.5E5,-1.957E5])]
     axs_ybounds = [np.array([7.007E6,7.0652E6]),np.array([7.206E6,7.41E6]),np.array([6.656E6,6.6969E6]),np.array([6.39E6,6.78E6])]
@@ -470,7 +492,7 @@ def plot_geodistribution_with_cities(label: str, title:str, df_in: pd.DataFrame,
     # Store the figures
     save_figures(title, pdf)
 
-def plot_multiple_geodistribution(label: str, title:str, df_in: pd.DataFrame,cb_scale: float = 0):
+def plot_multiple_geodistribution(label: str, title:str, df_in: pd.DataFrame,cb_scale: float = 0, pdf = False):
     '''
     This module is aim to produce multiple geospatial scale figures in one plot
     Note: As the LSOA code is the unique identifier, this module accept the DataFrame which have one 
@@ -556,7 +578,7 @@ def plot_multiple_geodistribution(label: str, title:str, df_in: pd.DataFrame,cb_
         axs[plot_names[it]].spines["left"].set_visible(False)
         axs[plot_names[it]].spines["bottom"].set_visible(False)
     
-    save_figures(title)
+    save_figures(title, pdf)
 
 def plot_temperature_versus_var(label: str, title:str, df_dict: pd.DataFrame, month: int, df_temproal: pd.DataFrame = None, cb_scale: float = 0):
     '''
@@ -1111,6 +1133,36 @@ def plot_var_versus_result(filename: str, y_label: str, x_label:str, df_in: pd.D
     plt.subplots_adjust(left = 0.127)
     save_figures(filename)
 
+def plot_normalized_line_with_annotations(x_values, y1_values, y2_values, x_label, y_legend, y1_label, y2_label,title, pdf = False):
+    
+    y_min = min(np.min(y1_values), np.min(y2_values))
+    y_max = max(np.max(y1_values), np.max(y2_values))
+
+    y_values1_norm = (y1_values - np.min(y1_values)) / np.min(y1_values)
+    y_values2_norm = (y2_values- np.min(y2_values)) / np.min(y2_values)
+    
+    # Plot the lines
+    plt.plot(x_values, y_values1_norm,  marker='o', linestyle='-', color='blue', label= y1_label)
+    plt.plot(x_values, y_values2_norm, marker='s', linestyle='-', color='red', label= y2_label)
+
+    # Set labels and title
+    plt.xlabel(x_label)
+    plt.ylabel(y_legend)
+
+    # Add legend
+    plt.legend(fontsize='small')
+
+    x_ticks = np.linspace(np.min(x_values), np.max(x_values), num = 5)
+    x_ticks = np.around(x_ticks, decimals=1)
+    plt.xticks(ticks=x_ticks)
+
+    y_ticks = np.linspace(min(np.min(y_values1_norm), np.min(y_values2_norm)),
+                          max(np.max(y_values1_norm), np.max(y_values2_norm)), num = 6)
+    y_ticks = np.around(y_ticks, decimals=1)
+    plt.yticks(ticks=y_ticks)
+
+    save_figures(title, pdf)
+
 def plot_line_with_annotations(x_values, y1_values, y2_values, x_label, y1_label, y2_label, title, pdf = False):
     # Create figure and first subplot (left y-axis)
     fig, ax1 = plt.subplots()
@@ -1124,26 +1176,47 @@ def plot_line_with_annotations(x_values, y1_values, y2_values, x_label, y1_label
     ax2 = ax1.twinx()
 
     # Plot the second and third lines (y2_values, y3_values) with right y-axis
-    line2, =ax2.plot(x_values, y2_values, marker='s', linestyle='-', color='green', label = y2_label)
+    line2, =ax2.plot(x_values, y2_values, marker='s', linestyle='-', color='red', label = y2_label)
     ax2.set_ylabel(y2_label, color='black')
     ax2.tick_params(axis='y', labelcolor='black')
 
     # Combine the legend from both subplots
     lines = [line1, line2]
     labels = [line.get_label() for line in lines]
-    ax1.legend(lines, labels, loc='upper left')
+    ax1.legend(lines, labels, loc='upper left', fontsize='small')
 
     # Set x-axis label and title
-    plt.xlabel(x_label)
-    plt.title(title)
+    ax1.set_xlabel(x_label)
 
+    save_figures(title, pdf)
+
+def plot_line_with_annotations_single_y_axis(x_values, y1_values, y2_values, x_label, y1_label, y2_label, y_legend, title, pdf = False):
+    # Create figure and first subplot (left y-axis)
+    fig, ax1 = plt.subplots()
+
+    # Plot the first line (y1_values) with left y-axis
+    line1, =ax1.plot(x_values, y1_values, marker='o', linestyle='-', color='blue', label = y1_label)
+    ax1.set_ylabel(y_legend, color='black')
+    ax1.tick_params(axis='y', labelcolor='black')
+
+    # Plot the second and third lines (y2_values, y3_values) with right y-axis
+    line2, =ax1.plot(x_values, y2_values, marker='s', linestyle='-', color='red', label = y2_label)
+
+    # Combine the legend from both subplots
+    lines = [line1, line2]
+    labels = [line.get_label() for line in lines]
+    ax1.legend(lines, labels, loc='upper left', fontsize='small')
+
+    # Set x-axis label and title
+    ax1.set_xlabel(x_label)
+    
     save_figures(title, pdf)
 
 # ------------------------ Scatter Plot --------------------------------- #
 def scatter_plot(filename, x_values:np.array, y_values:np.array, x_label:str, y_label: str, title: str):
     
     # Plot scatter plot
-    plt.scatter(x_values, y_values)
+    plt.scatter(x_values, y_values, s=1, c='black')
 
     # Plot y=x line
     x_line = np.linspace(min(x_values.flatten()), max(x_values.flatten()), 100)
@@ -1152,8 +1225,22 @@ def scatter_plot(filename, x_values:np.array, y_values:np.array, x_label:str, y_
     # Set labels and title
     plt.xlabel(x_label)
     plt.ylabel(y_label)
-    plt.title(title)
-    save_figures(filename)
+    
+    # Calculate the range with margin
+    margin = 0.1  # adjust the margin as desired
+    x_range = max(x_values) - min(x_values)
+    y_range = max(y_values) - min(y_values)
+    max_range = max(x_range, y_range)
+    min_value = min(min(x_values), min(y_values)) - margin * max_range
+    max_value = max(max(x_values), max(y_values)) + margin * max_range
+
+    # Set the same range for both axes with margin
+    plt.xlim(min_value, max_value)
+    plt.ylim(min_value, max_value)
+    # plt.xlim(-4, 2)
+    # plt.ylim(-4, 2)
+
+    save_figures(filename, False)
 
 def plot_kernel_density(data, filename, label, linelable = ''):
     #plt.clf() 
@@ -1302,6 +1389,30 @@ def output_change_of_fuel_df(url_cop,url_change_of_fuel,):
     change_of_gas, change_of_elec = call_change_of_fuel_agent(url_change_of_fuel, uptake, gas_tensor,0.9,cop)
     return change_of_gas, change_of_elec
 
+def double_density_plot(data1, data2, label1, label2, xlegend, ylegend, title):
+        # Plot the kernel density estimate for data1
+        sns.kdeplot(data1, color='blue', shade=True, label=label1)
+        ax = plt.gca()  # Get the current axis
+
+        # Plot the kernel density estimate for data2
+        sns.kdeplot(data2, color='red', shade=True, label=label2)
+
+        # Set labels and title
+        plt.xlabel(xlegend)
+        plt.ylabel(ylegend)
+        plt.title(title)
+        # plt.figure(figsize=(8, 6))  # Adjust the figure size as desired
+
+        # Add legend
+        plt.legend()
+
+        # Add annotations with different colors
+        ax.fill_betweenx(ax.get_ylim(), min(data1), max(data1), facecolor='blue', alpha=0.2)
+        ax.fill_betweenx(ax.get_ylim(), min(data2), max(data2), facecolor='red', alpha=0.2)
+
+        # Add legend
+        plt.legend()
+        save_figures(title, False)
 # df_inequality_index = output_inequality_index_df('http://localhost:5010/api/lsoacalculationagent_cop/calculation/cop',\
 #                            'http://localhost:5040/api/lsoacalculationagent_change_of_fuel/calculation/change_of_fuel',\
 #                            'http://localhost:5020/api/lsoacalculationagent_fuel_cost/calculation/fuel_cost',\
@@ -1944,7 +2055,6 @@ plot_line_chart(filename='National_Gas_consump_2010-2020', y_label = 'Gas consum
 # ----------------------------------------------------------------
 ##########################################################
 
-# Do scatter plot (fuel price)
 # change year & all data 
 '''
 uptake = 1
@@ -2088,6 +2198,57 @@ def find_input_for_result(target_result, year, uptake,df_cop):
     # Return None if the target result is not found within the maximum iterations
     return None
 
+# trend_list = ['+++++',
+#               '++++-',
+#               '+++--',
+#               '++---',
+#               '+----',
+#               '-----',
+#               '---+-',
+#               '++-+-',
+#               '+---+',
+#               '----+',
+#               '++-++',
+#               '+--++',
+#               '---++',
+#               '+-+++',
+#               '--+++',
+#               '-++++',
+#               '+--+-',
+#               ]
+
+# for trend in trend_list:
+#     df = pd.read_csv(f'./Data/trends/Inequality_Index_{trend}.csv')
+#     df = df[['LSOA_code']]
+#     df['value'] = 1
+#     df['LSOA_code'] = df['LSOA_code'].apply(lambda x: add_prefix(x, prefix = ONS_ID))
+#     plot_multiple_geodistribution(f'Regions with {trend} trend',
+#                                 f'Regions with {trend} trend',
+#                                 df,
+#                                 0)
+
+# df = pd.read_csv(f'./Data/properties_csv/COP_mean.csv')
+# df = df[['LSOA_code', '2020-01-01T12:00:00.000Z']]
+
+# df = pd.read_csv(f'./Data/properties_csv/2020/fuel_poverty.csv')
+# df['LSOA_code'] = df['LSOA_code'].apply(lambda x: add_prefix(x, prefix = ONS_ID))
+# plot_multiple_geodistribution(f'fuel_poverty @2020',
+#                             f'fuel_poverty @2020',
+#                             df,
+#                             0)
+
+
+gas_price_2020 = read_from_web_price_gas('2020')
+elec_price_2020 = read_from_web_price_elec('2020')
+ratio_2020 = elec_price_2020 / gas_price_2020 # 4.84
+
+gas_price_2022 = read_from_web_price_gas('2022')
+elec_price_2022 = read_from_web_price_elec('2022')
+ratio_2022 = elec_price_2022 / gas_price_2022 # 3.74
+
+gas_price_2019 = read_from_web_price_gas('2019')
+elec_price_2019 = read_from_web_price_elec('2019')
+ratio_2019 = elec_price_2019 / gas_price_2019 # 4.49
 
 uptake = 1
 df_cop = pd.read_csv("./Data/properties_csv/COP_mean.csv")
@@ -2095,8 +2256,9 @@ df_cop = pd.read_csv("./Data/properties_csv/COP_mean.csv")
 final = []
 red_area_list = []
 very_red_area_list = []
-ratio_list = np.arange(0.8, 1.3, 0.05).tolist()
-#ratio_list = [0.8, 0.9, 1, 1.1, 1.2]
+# ratio_list = np.arange(0.8, 1.3, 0.05).tolist()
+ratio_list = [3.2, ratio_2022, ratio_2019, 5.1, 5.7]
+# ratio_list = [0.5, 2]
 ratio_list = np.round(ratio_list, decimals=2)
 
 
@@ -2111,136 +2273,192 @@ gas_increase_list = np.round(gas_increase_list, decimals=5)
 # year_list = ['2019','2020', '2021']
 year_list = ['2019']
 
+df_fp = pd.read_csv(f"./Data/properties_csv/2019/fuel_poverty.csv")
+df_fp = df_fp[df_fp['Proportion of households fuel poor (%)'] > 0.001]
+df_ref = pd.read_csv(f"./Data/properties_csv/2019/fuel_poverty.csv")
+df_ref = df_ref[['LSOA_code']]
+df_fp['LSOA_code'] = df_fp['LSOA_code'].apply(lambda x: add_prefix(x, prefix = ONS_ID))
 #ratio, result = find_input_for_result(0, year, uptake, df_cop)
-for year in year_list:
-    # for ratio in ratio_list:
-    if year in ['2020','2021','2022']:
-        df_fp = pd.read_csv(f"./Data/properties_csv/2020/fuel_poverty.csv")
-        df_fp = df_fp[df_fp['Proportion of households fuel poor (%)'] > 0.001]
-        df_ref = pd.read_csv(f"./Data/properties_csv/2020/fuel_poverty.csv")
-        df_ref = df_ref[['LSOA_code']]
-        df_fp['LSOA_code'] = df_fp['LSOA_code'].apply(lambda x: add_prefix(x, prefix = ONS_ID))
-    else:
-        df_fp = pd.read_csv(f"./Data/properties_csv/{year}/fuel_poverty.csv")
-        df_ref = pd.read_csv(f"./Data/properties_csv/{year}/fuel_poverty.csv")
-        df_ref = df_ref[['LSOA_code']]
-        df_fp['LSOA_code'] = df_fp['LSOA_code'].apply(lambda x: add_prefix(x, prefix = ONS_ID))
-        
-    for ratio in ratio_list:
-    # for i in tqdm(range(len(elec_increase_list))):
-        # red_area_list = []
-        # very_red_area_list = []
-        # for j in range(len(gas_increase_list)):
-            # ratio = 1
-            # elec_increase = elec_increase_list[i]
-            # gas_increase = gas_increase_list[j]
+if __name__ == '__main__':
 
-            fp = df_fp.iloc[:, 1].values
-            fp = fp*100
-            delta_cost, _ = calculate_change_of_cost(year, ratio, uptake, df_cop)
-
-        
-            min_deltaC_nth_percentile = 1
-            max_deltaC_nth_percentile = 99
-            min_fuel_poverty = 0
-            max_fuel_poverty = 0.2
-
-            min_fp = min_fuel_poverty * 100
-            max_fp = max_fuel_poverty * 100
-            min_dc = np.nanpercentile(delta_cost,min_deltaC_nth_percentile) 
-            max_dc = np.nanpercentile(delta_cost,max_deltaC_nth_percentile)
-            # min_dc = 26.197 
-            # max_dc = 124.262 
-
-            index = calculate_inequality_index(fp, delta_cost, min_fp, max_fp, min_dc, max_dc)
-            df_ref[f'{ratio}'] = index
-
-    # df_ref[f'Change'] = df_ref[f'{ratio_list[1]}'] - df_ref[f'{ratio_list[0]}'] 
-    # df_ref = df_ref[['LSOA_code','Change']]
-
-            df_ref['LSOA_code'] = df_ref['LSOA_code'].apply(lambda x: add_prefix(x, prefix = ONS_ID))
-    plot_box_and_whisker_for_muiltiple_entities(f'index @{year} @price ratio as 4',
-                                                f'index @{year} \n  @price ratio as 4 \n ',df_ref, pdf = False)
-        
-        # (f'Inequality Index @{year}','Inequality index',df_ref, pdf = False)
-        # (f'Change of cost @{year}','Change of Fuel Cost \n (£/month/household)',df_ref, pdf = False)
-
-            # red_area = round(np.sum(index > 0)/len(index)*100,3)
-            # very_red_area = round(np.sum(index > 0.5)/len(index)*100,3)
+    for year in year_list:
+        # for ratio in ratio_list:
             
-            # red_area = delta_cost[0]
-            # very_red_area = delta_cost[1000]
-            # red_area = np.nanmin(delta_cost)
-            # very_red_area = np.nanmax(delta_cost)
-            # red_area_list.append(red_area)
-            # very_red_area_list.append(very_red_area)
+        for ratio in ratio_list:
+        # for i in tqdm(range(len(elec_increase_list))):
+            # red_area_list = []
+            # very_red_area_list = []
+            # for j in range(len(gas_increase_list)):
+                # ratio = 1
+                # elec_increase = elec_increase_list[i]
+                # gas_increase = gas_increase_list[j]
+
+                fp = df_fp.iloc[:, 1].values
+                fp = fp*100
+                delta_cost, _  = calculate_change_of_cost(year, ratio, uptake, df_cop)
+    #             df_ref[f'{ratio}'] = delta_cost
+    # df_ref.to_csv("./Change of Cost.csv")
+            
+                min_deltaC_nth_percentile = 1
+                max_deltaC_nth_percentile = 99
+                min_fuel_poverty = 0
+                max_fuel_poverty = 0.2
+
+                min_fp = min_fuel_poverty * 100
+                max_fp = max_fuel_poverty * 100
+                # min_dc = 26.197 
+                # max_dc = 124.262 
+                min_dc = np.nanpercentile(delta_cost,min_deltaC_nth_percentile) 
+                max_dc = np.nanpercentile(delta_cost,max_deltaC_nth_percentile)
+                index = calculate_inequality_index(fp, delta_cost, min_fp, max_fp, min_dc, max_dc)
+                df_ref[f'{ratio}'] = index
+
+                # final.append(index)
+    df_ref['LSOA_code'] = df_ref['LSOA_code'].apply(lambda x: add_prefix(x, prefix = ONS_ID))
+    # df_ref['shift'] = df_ref['3.74'] - df_ref['4.49']
+    # df_ref = df_ref[['LSOA_code', 'shift']]
+    # plot_geodistribution('Shift of "change of cost" \n (£/household)',
+    #                     'Shift of change of cost',
+    #                     df_ref,
+    #                     0.8)
+    # plot_geodistribution_with_cities('Change of Fuel Cost \n (£/month/household)',
+    #                               'Change of Fuel Cost  geo plot with cities',
+    #                               df_ref,
+    #                               1.5,
+    #                             False)
+
+    # ('Inequality Index',
+    #                               'Inequality Index versus ratio geo plot with cities',
+    #                               df_ref,
+    #                               0,
+    #                             False)
+
+    # plot_multiple_geodistribution('Inequality Index',
+    #                               'Inequality Index versus ratio geo plot',
+    #                               df_ref,
+    #                               0)
+
+    # scatter_plot(f'Inequality index @two scaling factor',
+    #             final[0], final[1], 'Inequality index @scaling factor=0.5 ','Inequality index @scaling factor=2 ',
+    #             f'Inequality index @two scaling factor')
+    # (f'Inequality index @{uptake*100}% Uptake 2019 vs 2022 ',
+    #             final[0], final[1], 'Inequality index @2019 ','Inequality index @2022 ',
+    #             f'Inequality index @{uptake*100}% Uptake\n 2019 vs 2022')
+
+
+
+        #         df_ref[f'{ratio}'] = index
+
+        # # df_ref[f'Change'] = df_ref[f'{ratio_list[1]}'] - df_ref[f'{ratio_list[0]}'] 
+        # # df_ref = df_ref[['LSOA_code','Change']]
+
+        #         df_ref['LSOA_code'] = df_ref['LSOA_code'].apply(lambda x: add_prefix(x, prefix = ONS_ID))
+    # plot_box_and_whisker_for_muiltiple_entities(f'inequality index @{year} versus Price ratio',
+    #                                             f'inequality index @{year} \n versus Price ratio',df_ref, pdf = False)
+            
+            # (f'Inequality Index @{year}','Inequality index',df_ref, pdf = False)
+            # (f'Change of cost @{year}','Change of Fuel Cost \n (£/month/household)',df_ref, pdf = False)
+
+                # red_area = round(np.sum(index > 0)/len(index)*100,3)
+                # very_red_area = round(np.sum(index > 0.5)/len(index)*100,3)
+                
+                # red_area = np.nanpercentile(index,25)
+                # very_red_area = np.nanpercentile(index,75)
+
+                # red_area = np.nanpercentile(index,25)
+                # very_red_area = np.nanpercentile(index,75)
+
+                # red_area = np.nanpercentile(constant_index,min_deltaC_nth_percentile) 
+                # very_red_area = np.nanpercentile(constant_index,max_deltaC_nth_percentile) 
+
+                # red_area_list.append(red_area)
+                # very_red_area_list.append(very_red_area)
+            
+            # final.append(red_area_list)
+
+    # x_grid, y_grid = np.meshgrid(np.array(elec_increase_list)/cost_elec*100, np.array(gas_increase_list)/cost_gas*100)
+    # x_grid = np.round(x_grid, decimals=2)
+    # y_grid = np.round(y_grid, decimals=2)
+    # three_Dimensional_scatter_plot(x_grid, y_grid, np.array(final),
+    #                                'Electricity Price change(%)', 'Gas Price change(%)', 'Area index >0(%)',
+    #                                '3D elec gas price versus inequality')
+    plot_normalized_line_with_annotations(ratio_list, red_area_list, very_red_area_list ,'Price Ratio', 
+                                          'Normalized Proportion (Minimum Normalization)',
+                               'Proportion of Area Inequality index > 0',
+                               'Proportion of Area Inequality index > 0.5',
+                                'normalized Inequality Index versus Price ratio', False)
+
+    # plot_line_with_annotations_single_y_axis(ratio_list, red_area_list, very_red_area_list ,'ratio', 
+    #                                         'minimal constant_index P1',
+    #                                         'maximum constant_index P99',
+    #                                         'constant_index',
+    #                                 'constant_index versus Price Ratio', False)
+
+
+    # (ratio_list, red_area_list, very_red_area_list ,'ratio', 
+    #                                         'minimal change of cost P1',
+    #                                         'maximum change of cost P99',
+    #                                         'change of cost (£/year/household)',
+    #                                 'min&max change of cost versus Price Ratio', False)
+
+    # plot_line_with_annotations(ratio_list, red_area_list, very_red_area_list ,'ratio', 
+    #                                         'minimal change of cost P1 (£/year/household)',
+    #                                         'maximum change of cost P99 (£/year/household)',
+    #                                 'min&max change of cost versus Price Ratio', False)
+
+    # (ratio_list, red_area_list, very_red_area_list ,'ratio', 
+    #                            'Area index >0 (%)',
+    #                            'Area index >0.5 (%)',
+    #                             'Inequality Index versus Price ratio', False)
+    # (ratio_list, red_area_list, very_red_area_list ,'ratio', 
+    #                            'Standard Deviation',
+    #                            'Median',
+    #                             'Statistical constants versus Price', False)
+    # (ratio_list, red_area_list, very_red_area_list ,'ratio', 
+    #                            '25th percentile',
+    #                            '75th percentile',
+    #                             'Inequality Index percentile versus Price Ratio', False)
+    # (ratio_list, red_area_list, very_red_area_list ,'ratio', 
+    # 'minimal change of cost P1 (£/year/household)',
+    # 'maximum change of cost P99 (£/year/household)',
+    #                    'min&max change of cost versus Price Ratio', False)
+
+
+            #print(f'When Ratio: {ratio}, Area index >0 : {red_area}%, Area index >0.5 : {very_red_area}%')
+
+            # 'ratio', 
+            #                    'minimal change of cost P1 (£/year/household)','maximum change of cost P99 (£/year/household)',
+            #                    'min&max change of cost versus Price Ratio', False)
+
+            # df_fp['Inequality Index'] = index
+            # df_fp = df_fp[['LSOA_code','Inequality Index']]
+            # df_fp['LSOA_code'] = df_fp['LSOA_code'].apply(lambda x: add_prefix(x, prefix = ONS_ID))
         
-        # final.append(red_area_list)
-
-# x_grid, y_grid = np.meshgrid(np.array(elec_increase_list)/cost_elec*100, np.array(gas_increase_list)/cost_gas*100)
-# x_grid = np.round(x_grid, decimals=2)
-# y_grid = np.round(y_grid, decimals=2)
-# three_Dimensional_scatter_plot(x_grid, y_grid, np.array(final),
-#                                'Electricity Price change(%)', 'Gas Price change(%)', 'Area index >0(%)',
-#                                '3D elec gas price versus inequality')
-# plot_line_with_annotations(ratio_list, red_area_list, very_red_area_list ,'X', 
-#                            'Minimal change of cost',
-#                            'Max change of cost',
-#                             'Min & Max change of cost @Ratio 5', False)
-# (ratio_list, red_area_list, very_red_area_list ,'ratio', 
-#                            'Area index >0',
-#                            'Area index >0.5',
-#                             'Inequality Index versus Price', False)
-# (ratio_list, red_area_list, very_red_area_list ,'ratio', 
-#                            'Standard Deviation',
-#                            'Median',
-#                             'Statistical constants versus Price', False)
-# (ratio_list, red_area_list, very_red_area_list ,'ratio', 
-#                            '25th percentile',
-#                            '75th percentile',
-#                             'Inequality Index percentile versus Price Ratio', False)
-# (ratio_list, red_area_list, very_red_area_list ,'ratio', 
-# 'minimal change of cost P1 (£/year/household)',
-# 'maximum change of cost P99 (£/year/household)',
-#                    'min&max change of cost versus Price Ratio', False)
-
-
-        #print(f'When Ratio: {ratio}, Area index >0 : {red_area}%, Area index >0.5 : {very_red_area}%')
-
-        # 'ratio', 
-        #                    'minimal change of cost P1 (£/year/household)','maximum change of cost P99 (£/year/household)',
-        #                    'min&max change of cost versus Price Ratio', False)
-
-        # df_fp['Inequality Index'] = index
-        # df_fp = df_fp[['LSOA_code','Inequality Index']]
-        # df_fp['LSOA_code'] = df_fp['LSOA_code'].apply(lambda x: add_prefix(x, prefix = ONS_ID))
-    
-    # df_elec = pd.read_csv(f'./Data/properties_csv/{year}/Elec_Consump_per_house.csv')
-    # df_gas = pd.read_csv(f'./Data/properties_csv/{year}/Gas_Consump_per_house.csv')
-    # df_elec, df_gas, df_ref = sort_muiltiple_df(df_elec, df_gas, df_ref)
-    # sum = df_elec.iloc[1:13].sum(axis=1, skipna=True)
-    # df_elec['sum'] = sum
-    # df_elec = df_elec[['LSOA_code', 'sum']]
-    # df_elec['LSOA_code'] = df_elec['LSOA_code'].apply(lambda x: add_prefix(x, prefix = ONS_ID))
-            # plot_geodistribution_with_cities (f'change of fuel cost @{year} X @{ratio} @price ratio as 4',
-            #                                     f'change of fuel cost @{year} X @{ratio} @price ratio as 4',
-            #                                     df_ref,
-            #                                     1,
-            #                                     False)
-    # (f'change of inequality index @{year} @{ratio_list[0]} & @{ratio_list[1]}',
-    #                                 f'change of inequality index @{year} @{ratio_list[0]} & @{ratio_list[1]}',
-    #                                 df_ref,
-    #                                 1,
-    #                                 False)
-        # (f'change of fuel cost @{year} @{ratio}',
-        #                                 f'change of fuel cost @{year} @{ratio}',
-        #                                 df_fp,
+        # df_elec = pd.read_csv(f'./Data/properties_csv/{year}/Elec_Consump_per_house.csv')
+        # df_gas = pd.read_csv(f'./Data/properties_csv/{year}/Gas_Consump_per_house.csv')
+        # df_elec, df_gas, df_ref = sort_muiltiple_df(df_elec, df_gas, df_ref)
+        # sum = df_elec.iloc[1:13].sum(axis=1, skipna=True)
+        # df_elec['sum'] = sum
+        # df_elec = df_elec[['LSOA_code', 'sum']]
+        # df_elec['LSOA_code'] = df_elec['LSOA_code'].apply(lambda x: add_prefix(x, prefix = ONS_ID))
+                # plot_geodistribution_with_cities (f'change of fuel cost @{year} X @{ratio} @price ratio as 4',
+                #                                     f'change of fuel cost @{year} X @{ratio} @price ratio as 4',
+                #                                     df_ref,
+                #                                     1,
+                #                                     False)
+        # (f'change of inequality index @{year} @{ratio_list[0]} & @{ratio_list[1]}',
+        #                                 f'change of inequality index @{year} @{ratio_list[0]} & @{ratio_list[1]}',
+        #                                 df_ref,
         #                                 1,
         #                                 False)
-    
-    #plot_kernel_density(index,f'Inequality Index density @{ratio} price ratio @ Full uptake @{year}','Inequality index',f'price ratio = {ratio}')
+            # (f'change of fuel cost @{year} @{ratio}',
+            #                                 f'change of fuel cost @{year} @{ratio}',
+            #                                 df_fp,
+            #                                 1,
+            #                                 False)
+        
+        #plot_kernel_density(index,f'Inequality Index density @{ratio} price ratio @ Full uptake @{year}','Inequality index',f'price ratio = {ratio}')
 
-#scatter_plot(f'Inequality index @{uptake*100}% Uptake 2019 vs 2022 ',final[0], final[1], 'Inequality index @2019 ','Inequality index @2022 ',f'Inequality index @{uptake*100}% Uptake\n 2019 vs 2022')
 
 # ----------------------------------------------------------------
 # Get previous price ratio
