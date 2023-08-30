@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+
+</html>
+<html>
+
+<head>
+</head>
+
+<!------------------------------------------------------------------------------------------------------------------------------->
+
+    <!------------------------------------------------------------------------------------------------------------------------------->
+    <b>Basics:</b>
+    <p>
+        <div style="text-align:center;">
+          <table style="display: inline-block;">
+            <tr>
+                <td rowspan="1" style="text-align: center; padding: 0px 8px;">
+                    Electricity Cost &nbsp;= Resulted Electricity Consumption &times; Electricity unit cost
+                </td>
+                <td rowspan="1" style="text-align: center; padding: 0px 8px;">
+                    Gas Cost &nbsp;= Resulted Gas Consumption &times; Gas unit cost
+                </td>
+            </tr>
+          </table>
+        </div>
+      </p>
+    <!------------------------------------------------------------------------------------------------------------------------------->
+    <b>Example input:</b><br>
+    <div style="text-indent: 25px;"> <code>query = {<br> </code>
+        <div style="text-indent: 50px;"><code>       'input':{'Resulted Electricity Consumption': 10 ,<br></code>
+            <div style="text-indent: 120px;">
+                <code>                 'Resulted Gas Consumption': 10<br></code>
+                <div style="text-indent: 120px;">
+                    <code>                 'Electricity unit cost': 0.5<br></code>
+                <div style="text-indent: 120px;">
+                    <code>                 'Gas unit cost': 0.05<br></code>
+                <div style="text-indent: 100px;"><code>               }<br></code>
+                    <div style="text-indent: 50px;"><code>       }</code><br>
+                        <!------------------------------------------------------------------------------------------------------------------------------->
+                        <div style="text-indent: 50px;"> <br><b>Arguments:</b><br>
+                            <div style="text-indent: 25px;">
+                                <li><b>Resulted Electricity Consumption:</b> refer to <a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-heat-pump-migration-to-stack-3/Agents/ResultedConsumptionCalculationAgent">
+                                  resulted energy consumption calculation agents </a> for details
+                                </li><br>
+                                <li><b>Resulted Gas Consumption:</b> refer to <a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-heat-pump-migration-to-stack-3/Agents/ResultedConsumptionCalculationAgent">
+                                  resulted energy consumption calculation agents </a> for details
+                                </li><br>
+                                <li><b>Electricity unit cost:</b>Put the value in the docker-compose file, in the unit of £/kWh
+                                </li><br>
+                              </li><br>
+                              <li><b>Gas unit cost:</b>Put the value in the docker-compose file, in the unit of £/kWh
+                              </li><br>
+                                                <!------------------------------------------------------------------------------------------------------------------------------->
+                                                <div style="text-indent: 50px;"> <br><b>Example return:</b><br>
+                                                    <div style="text-indent: 50px;">
+                                                        <code>return = {
+                                                            <div style="text-indent: 120px;">'Electricity Cost': 100, <br></div>
+                                                            <div style="text-indent: 120px;">'Gas cost': 100 <br></div>
+                                                        </code>
+                                                        <div style="text-indent: 120px;">
+                                                            <div style="text-indent: 100px;"><code>       }</code><br>
+                                                            </div>
+                                                                      </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            <br>
+                                                        </div>
+                                                    </div>
+                                </li>
+                            </div> <br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+</body>
+
+</html>
