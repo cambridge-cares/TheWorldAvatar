@@ -22,6 +22,14 @@
                     "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27ReligiousFacility%27"
                 },
                 {
+                    "id": "IndustrialFacility",  
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27IndustrialFacility%27"
+                },
+                {
                     "id": "PoliceStation",  
                     "type": "geojson",
                     "cluster": false,
