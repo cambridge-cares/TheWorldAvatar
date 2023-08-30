@@ -12,8 +12,8 @@ from core.model_utils import (
     get_hf_model_and_tokenizer,
     get_hf_tokenizer,
     get_onmt_model_and_tokenizer,
-    get_ort_model,
-    get_ov_model,
+    get_ort_model_and_tokenizer,
+    get_ov_model_and_tokenizer,
 )
 from core.arguments_schema import ModelArguments
 
@@ -88,8 +88,7 @@ class HfTranslationModel(_HfTranslationModelBase):
 class OVHfTranslationModel(_HfTranslationModelBase):
     def __init__(self, model_args: ModelArguments, max_input_tokens: int = 256, max_new_tokens: int = 256):
         self.max_input_tokens = 256
-        model = get_ov_model(model_args)
-        tokenizer = get_hf_tokenizer(model_args)
+        model, tokenizer = get_ov_model_and_tokenizer(model_args)
         super().__init__(
             model_family=model_args.model_family,
             model=model,
@@ -112,9 +111,7 @@ class OVHfTranslationModel(_HfTranslationModelBase):
 
 class OrtHfTranslationModel(_HfTranslationModelBase):
     def __init__(self, model_args: ModelArguments, max_new_tokens: int = 256):
-        model = get_ort_model(model_args)
-        tokenizer = get_hf_tokenizer(model_args)
-
+        model, tokenizer = get_ort_model_and_tokenizer(model_args)
         super().__init__(
             model_family=model_args.model_family,
             model=model,

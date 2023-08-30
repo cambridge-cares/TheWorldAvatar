@@ -19,3 +19,4 @@ optimum[onnxruntime]
 optimum[onnxruntime-gpu]
 optimum[neural-compressor]
 optimum[openvino,nncf]
+tensorrt

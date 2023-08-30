@@ -7,13 +7,16 @@ class ModelArguments:
     model_path: str = field(default="google/flan-t5-base")
     model_format: str = field(
         default="hf",
-        metadata={"help": "Either `hf` (Hugging Face) or `onmt` (OpenNMT)."},
+        metadata={
+            "help": "`hf` (Hugging Face), `onmt` (OpenNMT), `ov` (OpenVINO), `ort` (ONNX Runtime)."
+        },
+    )
+    use_tensorrt: bool = field(
+        default=False, metadata={"help": "Whether to use TensorRT."}
     )
     model_family: str = field(
         default="t5",
-        metadata={
-            "help": "Either t5 or llama. If None, it will be inferred from config.json."
-        },
+        metadata={"help": "Either `t5` or `llama.`"},
     )
     device_map: Optional[str] = field(default=None)
     lora_path: Optional[str] = field(default=None)

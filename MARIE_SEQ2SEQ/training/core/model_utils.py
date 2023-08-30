@@ -20,9 +20,13 @@ from optimum.intel import OVModelForSeq2SeqLM, OVModelForCausalLM
 import pyonmttok
 
 from core.arguments_schema import ModelArguments
+from core.data_processing.input_processing import preprocess_input
 
 
 TARGET_MODULES_BY_MODEL = dict(t5=["q", "v"], llama=["q_proj", "v_proj"])
+
+SHORT_INPUT_EXAMPLE = "What labels can be used to recognize 3-(2,5-diketoimidazolidin-4-yl)propionic acid?"
+LONG_INPUT_EXAMPLE = "What are InChI=1S/C9H15N3O11P2/c10-5-1-2-12(9(15)11-5)8-7(14)6(13)4(22-8)3-21-25(19,20)23-24(16,17)18/h1-2,4,6-8,13-14H,3H2,(H,19,20)(H2,10,11,15)(H2,16,17,18)'s tautomer count, melting point, and tautomer count?"
 
 
 def get_hf_model(model_args: ModelArguments, is_trainable: bool):
@@ -130,7 +134,21 @@ def get_onmt_model_and_tokenizer(model_args: ModelArguments):
     return model, tokenizer
 
 
-def get_ort_model(model_args: ModelArguments):
+
+def get_ov_model_and_tokenizer(model_args: ModelArguments, max_input_tokens: int = 256):
+    model_cls = (
+        OVModelForSeq2SeqLM if model_args.model_family == "t5" else OVModelForCausalLM
+    )
+    model = model_cls.from_pretrained(model_args.model_path)
+
+    model.reshape(1, max_input_tokens)
+    model.compile()
+
+    tokenizer = get_hf_tokenizer(model_args)
+    return model, tokenizer
+
+
+def get_ort_model_and_tokenizer(model_args: ModelArguments):
     model_cls = (
         ORTModelForSeq2SeqLM if model_args.model_family == "t5" else ORTModelForCausalLM
     )
@@ -139,22 +157,54 @@ def get_ort_model(model_args: ModelArguments):
         model_args.device_map == "auto" and not torch.cuda.is_available()
     ):
         model = model_cls.from_pretrained(model_args.model_path)
-        print("ONNX Runtime model is loaded to CPU.")
-    else:
+        print("-----ONNX Runtime model is loaded to CPU-----")
+    elif not model_args.use_tensorrt:
         model = model_cls.from_pretrained(
             model_args.model_path, provider="CUDAExecutionProvider"
         )
         assert model.providers == ["CUDAExecutionProvider", "CPUExecutionProvider"]
-        print("ONNX Runtime model is loaded to CUDA.")
 
-    return model
+        print("-----ONNX Runtime model is loaded to CUDA-----")
+    else:
+        trt_engine_cache_path = os.path.join(model_args.model_path, "trt_cache")
+        os.makedirs(trt_engine_cache_path, exist_ok=True)
+
+        model = model_cls.from_pretrained(
+            model_args.model_path,
+            provider="TensorrtExecutionProvider",
+            provider_options=dict(
+                trt_engine_cache_enable=True,
+                trt_engine_cache_path=trt_engine_cache_path,
+            ),
+        )
+
+        assert model.providers == [
+            "TensorrtExecutionProvider",
+            "CUDAExecutionProvider",
+            "CPUExecutionProvider",
+        ]
+
+        if any(f.endswith(".engine") for f in os.listdir(trt_engine_cache_path)):
+            print("-----TensorRT engine cache found-----")
+        else:
+            print("-----TensorRT engine cache not found-----")
+            print("-----Building TensorRT engine-----")
+            for example in [SHORT_INPUT_EXAMPLE, LONG_INPUT_EXAMPLE]:
+                input_ids = tokenizer(
+                    preprocess_input(example, model_family=model_args.model_family),
+                    return_tensors="pt",
+                ).input_ids.to("cuda")
+                model(input_ids)
+
+        print("-----Performing engine warm-up-----")
+        input_ids = tokenizer(
+            preprocess_input(SHORT_INPUT_EXAMPLE, model_family=model_args.model_family),
+            return_tensors="pt",
+        ).input_ids.to("cuda")
+        
+        for _ in range(3):
+            model.generate(input_ids=input_ids, max_new_tokens=256)
 
 
-def get_ov_model(model_args: ModelArguments, max_input_tokens: int = 256):
-    model_cls = (
-        OVModelForSeq2SeqLM if model_args.model_family == "t5" else OVModelForCausalLM
-    )
-    model = model_cls.from_pretrained(model_args.model_path)
-
-    model.reshape(1, max_input_tokens)
-    model.compile()
+    tokenizer = get_hf_tokenizer(model_args)
+    return model, tokenizer
