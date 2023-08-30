@@ -91,8 +91,8 @@ public class AssetManagerAgent extends JPSAgent{
             }
             
             if (urlPath.contains("retrievebydocs")){
-                JSONObject docsID = requestParams.getJSONObject("docsID");
-                jsonMessage = getItemsByDocs(docsID);
+                String ID = requestParams.getString("ID");
+                jsonMessage = retrieveAssetInstance(args, ID);
             }
             if (urlPath.contains("retrieve")){
                 String ID = requestParams.getString("ID");

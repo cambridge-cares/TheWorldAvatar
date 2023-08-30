@@ -613,7 +613,7 @@ public class AssetKGInterface {
         return storeClientPurchDoc.executeQuery(query.getQueryString());
 
     }
-    private JSONArray getAllManufacturerIRI() {
+        private JSONArray getAllManufacturerIRI() {
         Variable ManufacturerOrgIRI = SparqlBuilder.var("ManufacturerIRI");
         Variable ManufacturerNameIRI = SparqlBuilder.var("ManufacturerNameIRI");
         Variable ManufacturerNameLiteral = SparqlBuilder.var("ManufacturerName");
