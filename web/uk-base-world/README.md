@@ -87,7 +87,7 @@ To run the script and bring up a local instance of the UK Base World visualisati
    - Example command: `./scripts/start.sh PASSWORD=pickapassword`
    - If deploying behind an existing URL, the `HOST` parameter can be passed to auto-update the visualisation's client side files (e.g. `./scripts/start.sh PASSWORD=pickapassword HOST=https://theworldavatar.io/demo/uk-base-world`)
 6. Confirm that the required data files are present by pressing the `Y` key.
-7. Once prompted, wait for the stack to spin up, then press `ENTER`.
+7. Once prompted, wait for the stack to spin up, the data uploader should run automatically a few seconds after the manager has exited.
    - That stack is considered "spun up" once the stack-manager container has stopped (although there is some wiggle-room here if you're also spinning up containers that have lengthy service start-ups).
    - If running for the first time, this may take a while as Docker images will need to be downloaded.
 8. Confirm the visualisation is working by visiting `localhost:38383/visualisation`
