@@ -1,11 +1,11 @@
 # OSMAgent
 ## 1. Description
-The OSMAgent is an agent that works with OpenStreetMap (OSM) data to link them to existing building IRI and instantiate semantic representation of building usage information from the OSM data.
+The OSMAgent is an agent that works with OpenStreetMap (OSM) data to link them to existing building IRI and instantiate the semantic representation of building usage information from OSM data.
 The workflow of the agent can be broadly outlined in the following steps:
-1) Categorize usage OSM data according to [OntoBuiltEnvironment](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobuiltenv) concept. 
-2) Identify and match OSM data points with the 3D buildings instantiated by the DataIntegrationAgent, in order to assign building IRI to OSM data points. This is achieved through matching the geometry of the OSM data points to the 3D buildings' footprint. 
-3) Calculate building usage share for all OSM data points with tagged building IRI and non-null usage information.
-4) For OSM data points with tagged building IRI but no usage information from OSM, the agent will attempt to tag it with the corresponding Digitales Landschaftsmodell (DLM) land use.  
+1) Categorize OSM tags according to [OntoBuiltEnvironment](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobuiltenv) concept. 
+2) Identify and match OSM data with the 3D buildings instantiated by the [DataIntegrationAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-1524-integration-data-2/Agents/DataIntegrationAgent). To assign building IRI to OSM data, this is carried out through matching the geometry of the OSM data to the 3D buildings' footprint. 
+3) Calculate building usage share for all OSM data with tagged building IRI and non-null usage information.
+4) For OSM data with a tagged building IRI without usage information from OSM, the agent will tag it with the corresponding Digitales Landschaftsmodell (DLM) land use.  
 
 ## 2. Prerequisites
 ### 2.1. OntoBuiltEnvironment Classification
@@ -17,12 +17,12 @@ In the [resource folder](osmagent/src/main/resources/), there are two CSV files 
 The agent has been implemented to work in the stack. Follow the instructions in the [stack-manager README](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md) to set up the stack.
 
 ### 2.3. DataIntegrationAgent
-This agent is designed to work with the data instantiated by the DataIntegrationAgent (henceforth, referred to as 3D data), and assumes the presence of 3D data inside the stack PostgreSQL. 
-**Please ensure that the DataIntegrationAgent is deployed in the stack and ran first before attempting to build and run this agent.**
+This agent is designed to work with the data instantiated by the DataIntegrationAgent (referred to as 3D data), and assumed the presence of 3D data inside the stack PostgreSQL. 
+**Please ensure that the DataIntegrationAgent is deployed in the stack and ran first before building and running this agent.**
 
 ### 2.4. Uploading Raw Data
 #### 2.4.1. OSM Data
-**Upload raw OSM data in the same stack PostgreSQL database as the 3D data using [stack-data-uploader] as a set of points and polygons of `.gml` data. The schema does not have to be the same but both datasets are assumed to be in the same database.**
+**Upload raw OSM data in the same stack PostgreSQL database as the 3D data using [stack-data-uploader] as a set of points and polygons of `.gml` data. The schema for OSM data does not have to be the same with 3D buildings. However, both OSM data and 3D Buildings have to be in the same database.**
 The data structure and config file to upload the raw OSM data in stack-data-uploader is located in [inputs] directory. 
 
 To prepare OSM data in `.gml` format
@@ -31,7 +31,7 @@ To prepare OSM data in `.gml` format
 3) `.osm` file is then imported into QGis's using [QuickOSM](https://plugins.qgis.org/plugins/QuickOSM/) plugin, the points and polygons layer are exported in `.gml` format.
 
 #### 2.4.2. DLM Land Use Data
-If unavailable, DLM files can be uploaded via the stack-data-uploader in Pirmasens Digital Twin (PSDT) repository. 
+If unavailable within the database, DLM files can be uploaded via the stack-data-uploader in Pirmasens Digital Twin (PSDT) repository. 
 The link to the DLM file in PSDT is available [here](https://github.com/cambridge-cares/pirmasens/tree/main/psdt/stack-data-uploader-inputs/data/dlm). 
 Please note that PSDT is a private repository, permission may be required.
 **Please ensure that the DLM land use data is uploaded in the same PostgreSQL database as the 3D data and OSM data. The schema does not have to be the same but all datasets are assumed to be in the same database.**
