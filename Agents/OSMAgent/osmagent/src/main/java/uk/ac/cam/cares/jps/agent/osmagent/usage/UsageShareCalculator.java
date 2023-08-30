@@ -172,6 +172,12 @@ public class UsageShareCalculator {
                                         "FROM " + landUseTable + " AS d\n" +
                                         "WHERE p.building_iri IS NOT NULL\n" +
                                         "  AND p.ontobuilt IS NULL\n" +
+                                        "  AND NOT EXISTS (\n" +
+                                        "    SELECT 1\n" +
+                                        "    FROM " + points + " AS p2\n" +
+                                        "    WHERE p2.building_iri = p.building_iri\n" +
+                                        "      AND p2.ontobuilt IS NOT NULL\n" +
+                                        "  )"+
                                         "  AND ST_Intersects(p.\"geometryProperty\", \n" +
                                         "      ST_Transform((SELECT ST_Collect(wkb_geometry) \n" +
                                         "                    FROM " + landUseTable + " \n" +
@@ -187,6 +193,13 @@ public class UsageShareCalculator {
                                         "FROM " + landUseTable + " AS d\n" +
                                         "WHERE p.building_iri IS NOT NULL\n" +
                                         "  AND p.ontobuilt IS NULL\n" +
+                                        "  AND NOT EXISTS (\n" +
+                                        "    SELECT 1\n" +
+                                        "    FROM " + polygons + " AS p2\n" +
+                                        "    WHERE p2.building_iri = p.building_iri\n" +
+                                        "      AND p2.ontobuilt IS NOT NULL\n" +
+                                        "  )"+
+
                                         "  AND ST_Intersects(p.\"geometryProperty\", \n" +
                                         "      ST_Transform((SELECT ST_Collect(wkb_geometry) \n" +
                                         "                    FROM " + landUseTable + " \n" +
