@@ -146,10 +146,16 @@ public class AermodAgent extends DerivationAgent {
             srid = Integer.valueOf("326" + centreZoneNumber);
         }
 
+        boolean usesElevation = false;
         if (citiesNamespace != null) {
             if (queryClient.tableExists(EnvConfig.ELEVATION_TABLE)) {
                 queryClient.setElevation(staticPointSources, buildings, srid);
                 List<byte[]> elevData = queryClient.getScopeElevation(scope);
+
+                if (!elevData.isEmpty()) {
+                    usesElevation = true;
+                }
+
                 aermod.createAERMAPInput(elevData, centreZoneNumber);
                 aermod.createAERMAPReceptorInput(scope, nx, ny, srid);
                 aermod.runAermap();
@@ -188,17 +194,6 @@ public class AermodAgent extends DerivationAgent {
         // DispersionOutput object holds dispersion matrix (file), dispersion layer
         // names, and raster filenames
         DispersionOutput dispersionOutput = new DispersionOutput();
-
-        if (!queryClient.tableExists(EnvConfig.DISPERSION_CONTOURS_TABLE)) {
-            Path obdaFile = null;
-            try {
-                obdaFile = new ClassPathResource("dispersion.obda").getFile().toPath();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            OntopClient ontopClient = OntopClient.getInstance();
-            ontopClient.updateOBDA(obdaFile);
-        }
 
         Pollutant.getPollutantList().parallelStream()
                 .filter(pollutantType -> allSources.stream().allMatch(p -> p.hasPollutant(pollutantType)))
@@ -242,11 +237,22 @@ public class AermodAgent extends DerivationAgent {
             // this is a temporary measure until an option is available to not add raster
             // constraints
             queryClient.dropRasterConstraints();
+        } else {
+            // assume first time running
+            Path obdaFile = null;
+            try {
+                obdaFile = new ClassPathResource("dispersion.obda").getFile().toPath();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            OntopClient ontopClient = OntopClient.getInstance();
+            ontopClient.updateOBDA(obdaFile);
+
         }
         aermod.uploadRasterToPostGIS(srid, append);
 
         queryClient.updateOutputs(derivationInputs.getDerivationIRI(), dispersionOutput, !ships.isEmpty(),
-                simulationTime, !staticPointSources.isEmpty(), !buildings.isEmpty());
+                simulationTime, !staticPointSources.isEmpty(), !buildings.isEmpty(), usesElevation);
     }
 
     /**

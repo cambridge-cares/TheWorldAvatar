@@ -148,6 +148,7 @@ public class QueryClient {
     private static final String SHIPS_LAYER = PREFIX_DISP + "ShipsLayer";
     private static final String STATIC_POINT_SOURCE_LAYER = PREFIX_DISP + "StaticPointSourceLayer";
     private static final String BUILDINGS_LAYER = PREFIX_DISP + "BuildingsLayer";
+    private static final String ELEVATION_LAYER = PREFIX_DISP + "Elevation";
 
     // properties
     private static final Iri HAS_PROPERTY = P_DISP.iri("hasProperty");
@@ -1073,7 +1074,7 @@ public class QueryClient {
     }
 
     void updateOutputs(String derivation, DispersionOutput dispersionOutput, boolean hasShips, long timeStamp,
-            boolean hasStaticPoints, boolean hasBuildings) {
+            boolean hasStaticPoints, boolean hasBuildings, boolean usesElevation) {
         SelectQuery query = Queries.SELECT();
 
         Variable entity = query.var();
@@ -1122,7 +1123,8 @@ public class QueryClient {
         Variable entityType = SparqlBuilder.var("entityType");
         Variable layerVar = SparqlBuilder.var("layerVar");
         ValuesPattern<Iri> valuesPattern = new ValuesPattern<>(entityType,
-                List.of(iri(SHIPS_LAYER), iri(STATIC_POINT_SOURCE_LAYER), iri(BUILDINGS_LAYER)), Iri.class);
+                List.of(iri(SHIPS_LAYER), iri(STATIC_POINT_SOURCE_LAYER), iri(BUILDINGS_LAYER), iri(ELEVATION_LAYER)),
+                Iri.class);
 
         query2.where(layerVar.isA(entityType).andHas(belongsTo, iri(derivation)), valuesPattern).prefix(P_DISP);
 
@@ -1141,6 +1143,9 @@ public class QueryClient {
             } else if (entityTypeString.contentEquals(BUILDINGS_LAYER)) {
                 tsDataList.add(entityIri);
                 tsValuesList.add(List.of(hasBuildings));
+            } else if (entityTypeString.contentEquals(ELEVATION_LAYER)) {
+                tsDataList.add(entityIri);
+                tsValuesList.add(List.of(usesElevation));
             }
         }
 
