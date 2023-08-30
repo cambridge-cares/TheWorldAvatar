@@ -22,7 +22,7 @@ This agent is designed to work with the data instantiated by the DataIntegration
 
 ### 2.4. Uploading Raw Data
 #### 2.4.1. OSM Data
-**Upload raw OSM data in the same stack PostgreSQL database as the 3D data using [stack-data-uploader] as a set of points and polygons of `.gml` data. The schema for OSM data does not have to be the same with 3D buildings. However, both OSM data and 3D Buildings have to be in the same database.**
+Upload raw OSM data in the same stack PostgreSQL database as the 3D data using [stack-data-uploader] as a set of points and polygons of `.gml` data.
 The data structure and config file to upload the raw OSM data in stack-data-uploader is located in [inputs] directory. 
 
 To prepare OSM data in `.gml` format
@@ -34,7 +34,8 @@ To prepare OSM data in `.gml` format
 If unavailable within the database, DLM files can be uploaded via the stack-data-uploader in Pirmasens Digital Twin (PSDT) repository. 
 The link to the DLM file in PSDT is available [here](https://github.com/cambridge-cares/pirmasens/tree/main/psdt/stack-data-uploader-inputs/data/dlm). 
 Please note that PSDT is a private repository, permission may be required.
-**Please ensure that the DLM land use data is uploaded in the same PostgreSQL database as the 3D data and OSM data. The schema does not have to be the same but all datasets are assumed to be in the same database.**
+
+**Please ensure that the DLM land use data is uploaded in the same PostgreSQL database as the 3D data and OSM data. All datasets can have different schemas however all datasets are assumed to be in the same PostgresSQL database.**
 
 ## 3. Build
 ### 3.1. GitHub Credentials
@@ -61,8 +62,9 @@ Then, run `./stack.sh start <STACK NAME>` in the [stack-manager main folder](htt
 Please ensure that the stack the agent is spun up in is the same stack where the OSM and DLM data were uploaded.
 
 ## 5. Debugging
-To debug the agent, place [osmagent-debug.json](stack-manager-input-config/osmagent-debug.json) instead of `osmagent.json` in the [stack-manager config directory](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services). 
-Then, spin up with `./stack.sh start <STACK NAME>` in the [stack-manager main folder](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+To debug the agent, replace [`osmagent-debug.json`](stack-manager-input-config/osmagent-debug.json) instead of [`osmagent.json`](stack-manager-input-config/osmagent.json) in the [stack-manager config directory](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services). 
+
+Spin up with `./stack.sh start <STACK NAME>` in the [stack-manager's main folder](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
 The debugger port will be available at 5005.
 
 ## 6. Running the Agent
