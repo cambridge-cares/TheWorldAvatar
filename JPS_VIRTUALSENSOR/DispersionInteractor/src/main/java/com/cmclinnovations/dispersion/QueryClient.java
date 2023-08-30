@@ -90,6 +90,7 @@ public class QueryClient {
     private static final Iri BUILDINGS_LAYER = P_DISP.iri("BuildingsLayer");
     private static final Iri CITIES_NAMESPACE = P_DISP.iri("OntoCityGMLNamespace");
     private static final Iri STATIC_POINT_SOURCE_LAYER = P_DISP.iri("StaticPointSourceLayer");
+    private static final Iri ELEVATION_LAYER = P_DISP.iri("Elevation");
 
     private static final String NO_X = PREFIX + "NOx";
     private static final String UHC = PREFIX + "uHC";
@@ -245,13 +246,23 @@ public class QueryClient {
         String staticPointSourceLayerIri = PREFIX + UUID.randomUUID();
         modify.insert(iri(staticPointSourceLayerIri).isA(STATIC_POINT_SOURCE_LAYER));
 
+        String elevationLayerIri = PREFIX + UUID.randomUUID();
+        modify.insert(iri(elevationLayerIri).isA(ELEVATION_LAYER));
+
         modify.prefix(P_DISP, P_OM);
         storeClient.executeUpdate(modify.getQueryString());
+
+        entityList.add(shipsLayerIri);
+        entityList.add(buildingsLayerIri);
+        entityList.add(staticPointSourceLayerIri);
+        entityList.add(elevationLayerIri);
 
         // initialise time series for dispersion matrix
         tsList.add(shipsLayerIri);
         tsList.add(staticPointSourceLayerIri);
         tsList.add(buildingsLayerIri);
+        tsList.add(elevationLayerIri);
+        dataClass.add(Boolean.class);
         dataClass.add(Boolean.class);
         dataClass.add(Boolean.class);
         dataClass.add(Boolean.class);
@@ -271,9 +282,6 @@ public class QueryClient {
         inputs.add(nyIri);
         if (citiesNamespace != null)
             inputs.add(citiesNamespaceIri);
-        entityList.add(shipsLayerIri);
-        entityList.add(buildingsLayerIri);
-        entityList.add(staticPointSourceLayerIri);
 
         String derivation = derivationClient.createDerivationWithTimeSeries(
                 entityList, Config.AERMOD_AGENT_IRI, inputs);
@@ -655,11 +663,13 @@ public class QueryClient {
         Variable shipLayer = query.var();
         Variable buildingsLayer = query.var();
         Variable staticPointLayer = query.var();
+        Variable elevationLayer = query.var();
 
         query.where(shipLayer.has(belongsTo, iri(derivation)).andIsA(SHIPS_LAYER),
                 buildingsLayer.has(belongsTo, iri(derivation)).andIsA(BUILDINGS_LAYER),
-                staticPointLayer.has(belongsTo, iri(derivation)).andIsA(STATIC_POINT_SOURCE_LAYER))
-                .select(shipLayer, buildingsLayer, staticPointLayer)
+                staticPointLayer.has(belongsTo, iri(derivation)).andIsA(STATIC_POINT_SOURCE_LAYER),
+                elevationLayer.has(belongsTo, iri(derivation)).andIsA(ELEVATION_LAYER))
+                .select(shipLayer, buildingsLayer, staticPointLayer, elevationLayer)
                 .prefix(P_DISP);
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
@@ -668,19 +678,22 @@ public class QueryClient {
         String buildingsLayerIri = queryResult.getJSONObject(0).getString(buildingsLayer.getQueryString().substring(1));
         String staticPointLayerIri = queryResult.getJSONObject(0)
                 .getString(staticPointLayer.getQueryString().substring(1));
+        String elevationLayerIri = queryResult.getJSONObject(0).getString(elevationLayer.getQueryString().substring(1));
 
         TimeSeries<Long> queriedTimeSeries = tsClient.getTimeSeriesWithinBounds(
-                List.of(shipLayerIri, buildingsLayerIri, staticPointLayerIri),
+                List.of(shipLayerIri, buildingsLayerIri, staticPointLayerIri, elevationLayerIri),
                 timeStep, timeStep, conn);
 
         boolean hasShips = (Boolean) queriedTimeSeries.getValues(shipLayerIri).get(0);
         boolean hasBuildings = (Boolean) queriedTimeSeries.getValues(buildingsLayerIri).get(0);
         boolean hasStaticSources = (Boolean) queriedTimeSeries.getValues(staticPointLayerIri).get(0);
+        boolean hasElevation = (Boolean) queriedTimeSeries.getValues(elevationLayerIri).get(0);
 
         List<Boolean> layers = new ArrayList<>();
         layers.add(hasShips);
         layers.add(hasBuildings);
         layers.add(hasStaticSources);
+        layers.add(hasElevation);
 
         return layers;
     }

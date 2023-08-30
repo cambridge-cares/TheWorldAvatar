@@ -231,6 +231,30 @@ public class GetDataJson extends HttpServlet {
             layers.put(staticLayer);
         }
 
+        // elevation
+        if (Boolean.TRUE.equals(hasLayers.get(3))) {
+            String elevationWms = Config.GEOSERVER_URL + "/" + Config.GEOSERVER_WORKSPACE +
+                    "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true"
+                    + "&bbox={bbox-epsg-3857}"
+                    + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, "elevation");
+            JSONObject elevationSource = new JSONObject();
+            elevationSource.put("id", "elevation-source");
+            elevationSource.put("type", "raster");
+            elevationSource.put("tiles", new JSONArray().put(elevationWms));
+            sources.put(elevationSource);
+
+            JSONObject elevationLayer = new JSONObject();
+            elevationLayer.put("id", "elevation-layer");
+            elevationLayer.put("type", "raster");
+            elevationLayer.put("name", "Elevation");
+            elevationLayer.put("source", "elevation-source");
+            elevationLayer.put("source-layer", "elevation");
+            elevationLayer.put("minzoom", 4);
+            elevationLayer.put("layout", new JSONObject().put("visibility", "none"));
+
+            layers.put(elevationLayer);
+        }
+
         if (dispersionPostGISClient.tableExists(Config.SENSORS_TABLE_NAME, conn)) {
             String sensorWms = Config.GEOSERVER_URL + "/" + Config.GEOSERVER_WORKSPACE +
                     "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
