@@ -39,24 +39,7 @@ class ResultedConsumptionAgent(DerivationAgent):
     
     def process_request_parameters(self, derivation_inputs: DerivationInputs, 
                                    derivation_outputs: DerivationOutputs):
-        # Update assumptions provided
-        try: 
-            with open('state.txt', "r") as file:
-                has_function_run = file.read().strip() == "True"
-        except:
-            has_function_run = False
-            with open('state.txt', "w") as file:
-                file.write("False")  # Initialize the file with "False"
-
-        if not has_function_run:
-            # Update assumptions provided
-            self.sparql_client.update_assumptions()
-            # Update consumption profiles provided#
-            self.sparql_client.update_consumption_profile()
-            print("Assumptions/Indecies has been updated!")
-            with open('state.txt', "w") as file:
-                file.write("True")
-
+        
         # ---------------- Get Input IRIs --------------- #
         inputs = derivation_inputs.getInputs()
         cop_iri_list = inputs[REGION_COP]

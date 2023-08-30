@@ -43,7 +43,25 @@ def create_app():
         logger_name='dev',
         max_thread_monitor_async_derivations=1
     )
-    
+
+    # Update assumptions provided
+    try: 
+        with open('state.txt', "r") as file:
+            has_function_run = file.read().strip() == "True"
+    except:
+        has_function_run = False
+        with open('state.txt', "w") as file:
+            file.write("False")  # Initialize the file with "False"
+
+    if not has_function_run:
+        # Update assumptions provided
+        agent.sparql_client.update_assumptions()
+        # Update consumption profiles provided#
+        agent.sparql_client.update_consumption_profile()
+        print("Assumptions/Indecies has been updated!")
+        with open('state.txt', "w") as file:
+            file.write("True")
+
     agent.add_url_pattern('/', 'root', default, methods=['GET'])
 
     agent.start_all_periodical_job()
