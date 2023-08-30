@@ -19,7 +19,7 @@ done
 # Check for required arguments
 if [[ ! -v PASSWORD ]]; then 
     echo "No PASSWORD argument supplied, cannot continue."
-    exit -1
+    exit 1
 fi
 
 # Check for optional arguments
@@ -43,7 +43,7 @@ then
     ROOT=$(git rev-parse --show-toplevel)
     if [[ "$ROOT" == *"not a git"* ]]; then
         echo "Not within a valid Git repository, cannot continue."
-        exit -1
+        exit 1
     fi
 
     # Copy in the FIA config and query
@@ -111,7 +111,7 @@ then
     cp -r "./inputs/data/." "$UPLOAD_DATA/" 
 
     # Run the stack manager to start a new stack
-    cd "$ROOT/Deploy/stacks/dynamic/stack-manager"
+    cd "$ROOT/Deploy/stacks/dynamic/stack-manager" || exit
     echo "Running the stack start up script..."
     ./stack.sh start UKBASEWORLD 38383
 
@@ -122,15 +122,16 @@ done
     sleep 5
 
     # Run the uploader to upload data
-    cd "$ROOT/Deploy/stacks/dynamic/stack-data-uploader"
+    cd "$ROOT/Deploy/stacks/dynamic/stack-data-uploader" || exit
     echo "Running the stack uploader script..."
     ./stack.sh start UKBASEWORLD 
 
     # Get the name of the grafana container
-    GRAFANA=$(docker container ls | grep -o UKBASEWORLD-grafana.*)
+    GRAFANA=$(docker ps --format '{{.Names}}' | grep 'UKBASEWORLD-grafana' | head -n 1)
+
 
     # Copy in the custom grafana images
-    cd "$START"
+    cd "$START" || exit
     docker cp "./inputs/twa-logo.svg" $GRAFANA:"/usr/share/grafana/public/img/grafana_icon.svg"
     docker cp "./inputs/twa-favicon.png" $GRAFANA:"/usr/share/grafana/public/img/fav32.png"
     docker cp "./inputs/twa-favicon.png" $GRAFANA:"/usr/share/grafana/public/img/apple-touch-icon.png"
@@ -140,7 +141,7 @@ done
     # Create a new Grafana organisation via HTTP API
     echo "Using Grafana API to create a new organisation..."
     RESPONSE="$(curl -X POST -H "Content-Type: application/json" -d '{"name":"CMCL"}' http://admin:$PASSWORD@localhost:38383/dashboard/api/orgs)"
-    ORG_ID="$(echo $RESPONSE | grep -o [0-9])"
+    ORG_ID=$(echo "$RESPONSE" | grep -o '[0-9]*')
 
     # Change the Grafana admin account to be part of the new org
     echo "Using Grafana API to switch admin account to the new organisation..."
@@ -179,5 +180,5 @@ done
     echo "Visualisation should be available now at http://localhost:38383/visualisation/"
 else
     echo "Please copy in the data sets as described in the README before re-running this script."
-    exit -1
+    exit 1
 fi
