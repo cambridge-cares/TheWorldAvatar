@@ -10,11 +10,22 @@ Data for this visualisation has been gathered from the below sources; the origin
 
 As a base world visualisation, more data sources will be added in future; as and when they are, they should be documented within this page, or in supplementary files linked to from this one.
 
+Several of the data sources are presented as examples of the stack data uploader and can be found separately at their [documentation page](https://github.com/cambridge-cares/TheWorldAvatar/tree/760-pylon-stack-and-visualisation-needs-updating-to-use-latest-version-of-stack-and-vis/Deploy/stacks/dynamic/stack-data-uploader#datasets-and-subsets). Currently some of these only exist in a branch for `pylons-and-veg` viz.
+
 ### Digest of UK Energy Statistics (DUKES)
 
 Once a year, the UK government publishes a Digest of UK Energy Statistics (DUKES);  note this was formally published by the Department for Business, Energy and Industrial Strategy (BEIS) before it was dissolved, subsequent publications should be from the new Department for Energy Security and Net Zero (DESNZ).
 
 Read the associated [DUKES Data](./docs/data-dukes.md) page for details on how the DUKES data was acquired and processed.
+
+### National Grid 
+National Grid publish shapefiles of their whole network including lines, pylons and substations. There are links to each download page in the relevant `data` subdirectory. There is a good number of files to download but they are all backed up on pavilion. 
+
+### UKPN
+Similarly to above, download links are in each of the relevant Uk Power Networks subdirectory and are backed up on pavilion.
+
+### Forestry
+Shapefiles are obtained from [national forestry inventory 2020](https://data-forestry.opendata.arcgis.com/datasets/eb05bd0be3b449459b9ad0692a8fc203_0/explore?location=55.089693%2C-2.724655%2C6.98) and backed upon pavilion. The feature info agent is used to cross reference with the power lines and determine whether or not they intersect.
 
 ## Uploading data
 
