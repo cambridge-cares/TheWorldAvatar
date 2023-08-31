@@ -21,4 +21,32 @@ REQUIRED_VERSION="1.13.3"
 sed -i "s/docker\.cmclinnovations\.com\/stack-manager\${IMAGE_SUFFIX}:[0-9]\+\.[0-9]\+\.[0-9]\+/docker.cmclinnovations.com\/stack-manager\${IMAGE_SUFFIX}:${REQUIRED_VERSION}/" docker-compose.yml
 
 # Restart stack with required version
-bash ./stack.sh start KINGS-LYNN
+bash ./stack.sh start $NETWORK_NAME
+
+# Wait until stack-manager container is stopped (indicating end of stack startup)
+while docker ps --format '{{.Names}}' | grep -q "stack-manager"; do
+    echo "Stack-manager is still running. Waiting..."
+    sleep 5
+done
+
+# Start agent containers
+# Declare an associative array for all containers to start
+declare -A agent_paths
+agent_paths["metoffice_agent"]="MetOfficeAgent"
+agent_paths["airquality_agent"]="AirQualityAgent"
+agent_paths["river-data-uploader"]="FloodAgent"
+
+cd "../../../../Agents/"
+for name in "${!agent_paths[@]}"; do
+    # Change to agent directory
+    cd ${agent_paths[$name]}
+    # Start agent
+    bash ./stack.sh start $NETWORK_NAME
+    # Wait until container has started
+    echo $name
+    while docker ps --format '{{.Names}}' | grep -q "^$name"; do
+        sleep 5
+    done
+    echo "$name container has started"
+    cd ..
+done
