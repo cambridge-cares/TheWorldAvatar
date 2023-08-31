@@ -14,37 +14,10 @@ from py4jps import agentlogging
 # Self imports
 import agent.app as state
 from agent.ifc2tileset.schema import Tileset, Tile, Content
-from agent.ifc2tileset.tile_helper import compute_bbox
+from agent.ifc2tileset.tile_helper import append_content_metadata_schema, compute_bbox
 from agent.kgutils.const import NAME_VAR, ID_VAR, IRI_VAR
 
 logger = agentlogging.get_logger("dev")
-
-
-def append_asset_metadata_schema(tileset: Tileset):
-    """Appends the schema of asset metadata to the tileset."""
-
-    tileset["schema"] = {"classes": {
-        "AssetMetaData": {
-            "name": "Asset metadata",
-            "description": "A metadata class for all individual assets",
-            # Store all asset information here even if they are not used for specific assets
-            "properties": {
-                NAME_VAR: {
-                    "description": "Name of the asset",
-                    "type": "STRING"
-                },
-                ID_VAR: {
-                    "description": "Unique identifier generated in IFC",
-                    "type": "STRING"
-                },
-                IRI_VAR: {
-                    "description": "Data IRI of the asset",
-                    "type": "STRING"
-                }
-            }
-        }
-    }}
-
 
 def append_assets_to_tile(tile: Tile, asset_df: pd.DataFrame):
     """Appends a child node containing the given assets to the given tile.
@@ -119,5 +92,5 @@ def append_tileset_assets(tileset: Optional[Tileset], asset_df: pd.DataFrame):
     logger.info(
         "Individual assets detected. Attaching tileset with asset metadata...")
 
-    append_asset_metadata_schema(tileset)
+    append_content_metadata_schema(tileset)
     append_assets_to_tileset(tileset, asset_df)

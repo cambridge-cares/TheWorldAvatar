@@ -18,10 +18,35 @@ from py4jps import agentlogging
 # Self imports
 import agent.app as state
 from agent.ifc2tileset.schema import Tileset, Tile
+from agent.kgutils.const import ID_VAR, IRI_VAR, NAME_VAR
 
 # Retrieve logger
 logger = agentlogging.get_logger("dev")
 
+def append_content_metadata_schema(tileset: Tileset):
+    """Appends the schema of content metadata for building and asset to the tileset."""
+
+    tileset["schema"] = {"classes": {
+        "ContentMetaData": {
+            "name": "Content metadata",
+            "description": "A metadata class for all content including building and individual assets",
+            # Store all content and asset information here even if they are not used
+            "properties": {
+                NAME_VAR: {
+                    "description": "Name of the asset/building",
+                    "type": "STRING"
+                },
+                ID_VAR: {
+                    "description": "Unique identifier generated in IFC",
+                    "type": "STRING"
+                },
+                IRI_VAR: {
+                    "description": "Data IRI of the asset/building",
+                    "type": "STRING"
+                }
+            }
+        }
+    }}
 
 def make_root_tile(bbox: Optional[List[float]] = None, geometry_file_paths: Optional[List[str]] = []):
     """Generates a root tile with the provided arguments and default values. The root tile will only

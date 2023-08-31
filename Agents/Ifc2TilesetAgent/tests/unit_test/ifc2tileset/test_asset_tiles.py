@@ -11,55 +11,10 @@ import os
 import trimesh
 
 # Self imports
-from agent.ifc2tileset.asset_tiles import append_asset_metadata_schema, append_tileset_assets, append_assets_to_tileset, \
+from agent.ifc2tileset.asset_tiles import append_tileset_assets, append_assets_to_tileset, \
     append_assets_to_tile
-from agent.ifc2tileset.root_tile import make_tileset
-from agent.ifc2tileset.tile_helper import make_root_tile
 from tests.unit_test.ifc2tileset.testutils import gen_sample_asset_df, gen_sample_tileset, gen_sample_asset_contents, \
     z_up_to_y_up
-
-
-def test_append_asset_metadata_schema():
-    # Arrange
-    root_tile = make_root_tile([])
-    tileset = make_tileset(root_tile)
-
-    expected_asset_metadata_schema = {
-        "description": "A metadata class for all individual assets",
-        "name": "Asset metadata",
-        "properties": {
-            "name": {
-                "description": "Name of the asset",
-                "type": "STRING"
-            },
-            "uid": {
-                "description": "Unique identifier generated in IFC",
-                "type": "STRING"
-            },
-            "iri": {
-                "description": "Data IRI of the asset",
-                "type": "STRING"
-            }
-        }
-    }
-
-    # Act
-    append_asset_metadata_schema(tileset)
-
-    # Assert
-    assert "asset" in tileset and tileset["asset"] == {"version": "1.1"}
-    assert "geometricError" in tileset and tileset["geometricError"] == 1024
-    assert "root" in tileset
-    assert "schema" in tileset
-
-    root = tileset["root"]
-    assert "geometricError" in root and root["geometricError"] == 512
-    assert "content" not in root
-    assert "contents" not in root
-
-    schema = tileset["schema"]
-    assert "classes" in schema and "AssetMetaData" in schema["classes"] \
-           and schema["classes"]["AssetMetaData"] == expected_asset_metadata_schema
 
 
 def test_append_assets_to_tile_node():

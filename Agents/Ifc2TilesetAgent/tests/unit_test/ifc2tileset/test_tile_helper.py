@@ -10,12 +10,57 @@ import os
 # Third-party import
 import numpy as np
 import pytest
+from agent.ifc2tileset.root_tile import make_tileset
 
 # Self imports
-from agent.ifc2tileset.tile_helper import gen_solarpanel_tileset, gen_sewagenetwork_tileset, jsonwriter, compute_bbox, \
+from agent.ifc2tileset.tile_helper import append_content_metadata_schema, gen_solarpanel_tileset, gen_sewagenetwork_tileset, jsonwriter, compute_bbox, \
     make_tileset, make_root_tile, y_up_to_z_up
 from . import testconsts as C
 from .testutils import read_json
+
+
+def test_append_content_metadata_schema():
+    # Arrange
+    root_tile = make_root_tile([])
+    tileset = make_tileset(root_tile)
+
+    expected_content_metadata_schema = {
+        "description": "A metadata class for all content including building and individual assets",
+        "name": "Content metadata",
+        "properties": {
+            "name": {
+                "description": "Name of the asset/building",
+                "type": "STRING"
+            },
+            "uid": {
+                "description": "Unique identifier generated in IFC",
+                "type": "STRING"
+            },
+            "iri": {
+                "description": "Data IRI of the asset/building",
+                "type": "STRING"
+            }
+        }
+    }
+
+    # Act
+    append_content_metadata_schema(tileset)
+
+    # Assert
+    assert "asset" in tileset and tileset["asset"] == {"version": "1.1"}
+    assert "geometricError" in tileset and tileset["geometricError"] == 1024
+    assert "root" in tileset
+    assert "schema" in tileset
+
+    root = tileset["root"]
+    assert "geometricError" in root and root["geometricError"] == 512
+    assert "content" not in root
+    assert "contents" not in root
+
+    schema = tileset["schema"]
+    assert "classes" in schema
+    assert "ContentMetaData" in schema["classes"]
+    assert schema["classes"]["ContentMetaData"] == expected_content_metadata_schema
 
 
 @pytest.mark.parametrize(
