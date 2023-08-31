@@ -2,10 +2,19 @@
 
 This project contains a step-by-step guide on how to spin up the Docker Stack (developed by CMCL) for the King's Lynn use case and instantiate all relevant data. It links to other projects and helper scripts where appropriate.
 
-&nbsp;
-## Prerequisites
+Key sections:
+- [1. Prerequisites](#1-prerequisites): Preparations required before spinning up the use case stack
+- [2. Spinning up the Stack](#2-spinning-up-the-stack): How to spin up the core stack and upload initial data sets
+- [3. Data instantiation workflow](#3-data-instantiation-workflow): How to deploy all required agents (sequence, interdependencies, etc.)
+- [5. Triggering new derivation cascades](#5-triggering-new-derivation-cascades): How to manually trigger new derivation cascades (mainly for showcase purposes)
+- [6. Redeployment](#6-redeployment): How to restart stack and agents (after initial data instantiation workflow)
+- [Potential refinements/next steps](#potential-refinementsnext-steps): Potential refinements for future work
 
-### <u>Access to Docker registries</u>
+
+&nbsp;
+# 1. Prerequisites
+
+## Access to Docker registries
 
 Spinning up the (core) Docker Stack requires access to the [CMCL Docker Registry] to pull required images. Deploying (pre-built) agents to the spun up Stack requires access to CARES' [Container registry on Github] to pull agent images. Access needs to be ensured beforehand via your Github [personal access token], which must have a `scope` that [allows you to publish and install packages].
 
@@ -21,7 +30,7 @@ $ <github_personal_access_token>
 ```
 
 &nbsp;
-# Spinning up the Stack
+# 2. Spinning up the Stack
 
 This section explains how to spin up the core stack and upload initial data sets, i.e. high-resolution population raster data and pre-instantiated OntoCityGml building triples.
 If using VSCode, all required VSCode extensions shall be installed (on the remote machine if applicable) for all convenience scripts to work properly, i.e. *augustocdias.tasks-shell-input*.
@@ -97,7 +106,7 @@ The following steps explain how to upload the data to the stack using the [Stack
     ```
 
 &nbsp;
-# Data instantiation workflow
+# 3. Data instantiation workflow
 
 The following provides an overview of all steps and agents required to instantiate the data into the KG. Copies of the (potentially) required `docker-compose.yml` files are provided in the [Agent docker-compose file folder] for convenience and reproducibility.
 
@@ -368,12 +377,12 @@ Content-Type: application/json
 ```
 
 &nbsp;
-# Tracking instantiated building information
+# 4. Tracking instantiated building information
 
 The [resources] folder contains an `instantiated_buildings.sparql` file which contains several SPARQL queries to track the instantiation process. It primarily helps to identify how many buildings are instantiated at all, how many buildings possess EPC information, and how many buildings have previous sales transaction information.
 
 &nbsp;
-# Triggering new derivation cascades
+# 5. Triggering new derivation cascades
 
 There are two ways to trigger new derivation cascades (e.g. for visualisation purposes) on demand. **Please note** that the respective updates in the property value and flood impact estimates only become available after the asynchronous `Flood Assessment Agent` has processed them (update frequency set in respective docker-compose file).
 
@@ -410,12 +419,17 @@ Content-Type: application/json
 
 
 &nbsp;
+# 6. Redeployment
+
+It has been observed that the stack tends to crash when RAM usage approaches 100%. Depending on when the stack has been created initially and how the `stack-manager` development has progressed since then, simple restarting the stack from `main` might not be sufficient due to potential version conflicts (e.g., it has been observed that initially created data volumes using PostGIS 14 are not compatible with PostGIS 15, which is used as of `stack-manager` version >1.13.3). To restart the stack using a specific version of the `stack-manager`, simply specify the `REQUIRED_VERSION` in the provided `redeploy.sh` convenience script and run it from the repository where this README is located.
+
+&nbsp;
 # Potential refinements/next steps
 
-General Watch Outs
+**General Watch Outs**
 - The current versions of the ontologies as well as agents refer to several custom units using the `ontouom` ontology. Those are likely to be incorporated into (our fork of) the ontology of units of measure, see [issue #576](https://github.com/cambridge-cares/TheWorldAvatar/issues/576). Any respective changes would need to be reflected in both the ontologies (i.e. OntoEMS, OntoBuiltEnv, OntoFlood) and agents!
 
-EPC Agent
+**EPC Agent**
 - HTTP response to `/epcagent/instantiate/certificates/all` does not seem to provide the correct number of instantiated and updated properties. Instead of providing the sum of all instantiated/updated properties from all API endpoints, it only seems to provide the number from the last endpoint and shall be revisited
 - There seems to be a very minor fraction of properties which are classified as Flat and Building/Property at the same time.
 - There is a very minor fraction of properties (less than 10 in total of ~13300), which do have multiple address details instantiated, e.g. 2 associated street names. This can cause issues with the HM Land Registry Agent when instantiating sales transactions, as the applicable property is determined by address matching and the instantiation of multiple possible addresses adds ambiguity here. This is currently handled by dropping duplicated addresses for the same property inside the Landregistry Agent, but should ideally be fixed on the instantaition side. The issue seems to affect mainly parent buildings with only one child property/flat.
@@ -446,7 +460,7 @@ GROUP BY ?address
 HAVING(?streets > 1)
 ```
 
-Property Value Estimation Agent
+**Property Value Estimation Agent**
 - There can be occasions where there are "too recent" actual property sales transactions with a date beyond the scope of the Property Price Index (PPI) are instantiated (as the PPI is always releassed with some lead time of ~2 months). In such a case the Property Value Estimation Agent will raise a KeyError (e.g. KeyError: '2023-02') and instantiate the property value as non-computable. As this only affects a very minor fraction of properties, it is not considered a major issue at the moment, but could be solved by simply using the latest available PPI value instead of raising an error.
 
 
