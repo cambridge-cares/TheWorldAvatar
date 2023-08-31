@@ -178,6 +178,12 @@ public class UsageShareCalculator {
                                         "    WHERE p2.building_iri = p.building_iri\n" +
                                         "      AND p2.ontobuilt IS NOT NULL\n" +
                                         "  )"+
+                                        "  AND NOT EXISTS (\n" +
+                                        "    SELECT 1\n" +
+                                        "    FROM "+polygons+" AS p3  \n" +
+                                        "    WHERE p3.building_iri = p.building_iri\n" +
+                                        "      AND p3.ontobuilt IS NOT NULL\n" +
+                                        "  )"+
                                         "  AND ST_Intersects(p.\"geometryProperty\", \n" +
                                         "      ST_Transform((SELECT ST_Collect(wkb_geometry) \n" +
                                         "                    FROM " + landUseTable + " \n" +
@@ -199,7 +205,12 @@ public class UsageShareCalculator {
                                         "    WHERE p2.building_iri = p.building_iri\n" +
                                         "      AND p2.ontobuilt IS NOT NULL\n" +
                                         "  )"+
-
+                                        "  AND NOT EXISTS (\n" +
+                                        "    SELECT 1\n" +
+                                        "    FROM "+points+" AS p3  \n" +
+                                        "    WHERE p3.building_iri = p.building_iri\n" +
+                                        "      AND p3.ontobuilt IS NOT NULL\n" +
+                                        "  )"+
                                         "  AND ST_Intersects(p.\"geometryProperty\", \n" +
                                         "      ST_Transform((SELECT ST_Collect(wkb_geometry) \n" +
                                         "                    FROM " + landUseTable + " \n" +
@@ -209,7 +220,7 @@ public class UsageShareCalculator {
                         rdbStoreClient.executeUpdate(updateLandusePoints);
                         rdbStoreClient.executeUpdate(updateLandusePolygons);
                         System.out.println(
-                                        "Untagged buildings are assigned ontobuilt type, usageshare and propertyusage_iri.");
+                                        "Untagged buildings are assigned  "+key+", "+value+", "+ontobuilt+".");
                 }
 
                 csvReader.close();
