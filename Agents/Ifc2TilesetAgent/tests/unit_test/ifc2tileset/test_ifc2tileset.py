@@ -77,31 +77,6 @@ def test_gen_tilesets_sewage():
     assert "boundingVolume" in root_tile and "box" in root_tile["boundingVolume"] \
         and np.allclose(root_tile["boundingVolume"]["box"], C.sample_cone_bbox)
 
-
-def assert_tileset_metadata(tileset_content: dict):
-    assert "schema" in tileset_content
-    assert "classes" in tileset_content["schema"]
-    assert "TilesetMetaData" in tileset_content["schema"]["classes"]
-    assert tileset_content["schema"]["classes"]["TilesetMetaData"] == {
-        "name": "Tileset metadata",
-        "description": "A metadata class for the tileset",
-        "properties": {
-            "buildingIri": {
-                "description": "Data IRI of the building",
-                "type": "STRING"
-            }
-        }
-    }
-
-    assert "metadata" in tileset_content
-    assert tileset_content["metadata"] == {
-        "class": "TilesetMetaData",
-        "properties": {
-            "buildingIri": "building_iri"
-        }
-    }
-
-
 def test_gen_tilesets_building():
     """Asserts gen_tilesets() for generating only the bim tileset without asset data."""
     # Arrange
@@ -131,8 +106,6 @@ def test_gen_tilesets_building():
     assert "boundingVolume" in root_tile and "box" in root_tile["boundingVolume"] \
         and np.allclose(root_tile["boundingVolume"]["box"], C.sample_box_bbox)
     assert "children" not in root_tile
-    assert_tileset_metadata(tileset)
-
 
 def test_gen_tilesets_3_assets():
     """Asserts gen_tilesets() for generating the bim tileset with only 3 assets."""
@@ -168,7 +141,6 @@ def test_gen_tilesets_3_assets():
 
     # Test content of tileset
     tileset = read_json(bim_json_filepath)
-    assert_tileset_metadata(tileset)
 
     # Test root tile
     assert "root" in tileset

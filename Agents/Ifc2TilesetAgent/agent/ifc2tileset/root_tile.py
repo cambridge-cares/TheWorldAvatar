@@ -13,39 +13,10 @@ from py4jps import agentlogging
 
 # Self imports
 import agent.app as state
-from agent.ifc2tileset.schema import Tileset
 from agent.ifc2tileset.tile_helper import make_tileset, make_root_tile, compute_bbox
 
 # Retrieve logger
 logger = agentlogging.get_logger("dev")
-
-
-def append_tileset_schema_and_metadata(tileset: Tileset, building_iri: str):
-    """Appends tileset schema and metadata to tileset.
-
-    Args:
-        tileset: A tileset.
-        building_iri: The data IRI of the building.
-    """
-    tileset["schema"] = {"classes": {
-        "TilesetMetaData": {
-            "name": "Tileset metadata",
-            "description": "A metadata class for the tileset",
-            "properties": {
-                "buildingIri": {
-                    "description": "Data IRI of the building",
-                    "type": "STRING"
-                }
-            }
-        }
-    }}
-
-    tileset["metadata"] = {
-        "class": "TilesetMetaData",
-        "properties": {
-            "buildingIri": building_iri
-        }
-    }
 
 
 def gen_root_content(building_iri: str, asset_data: pd.DataFrame):
@@ -98,6 +69,4 @@ def gen_root_content(building_iri: str, asset_data: pd.DataFrame):
             bbox=bbox, geometry_file_paths=root_content_list)
 
     tileset = make_tileset(root_tile)
-    append_tileset_schema_and_metadata(tileset, building_iri)
-
     return tileset

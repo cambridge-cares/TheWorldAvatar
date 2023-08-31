@@ -13,7 +13,7 @@ import trimesh
 # Self imports
 from agent.ifc2tileset.asset_tiles import append_asset_metadata_schema, append_tileset_assets, append_assets_to_tileset, \
     append_assets_to_tile
-from agent.ifc2tileset.root_tile import make_tileset, append_tileset_schema_and_metadata
+from agent.ifc2tileset.root_tile import make_tileset
 from agent.ifc2tileset.tile_helper import make_root_tile
 from tests.unit_test.ifc2tileset.testutils import gen_sample_asset_df, gen_sample_tileset, gen_sample_asset_contents, \
     z_up_to_y_up
@@ -23,7 +23,6 @@ def test_append_asset_metadata_schema():
     # Arrange
     root_tile = make_root_tile([])
     tileset = make_tileset(root_tile)
-    append_tileset_schema_and_metadata(tileset, "buildingIri")
 
     expected_asset_metadata_schema = {
         "description": "A metadata class for all individual assets",

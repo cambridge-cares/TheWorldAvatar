@@ -13,43 +13,11 @@ import pandas as pd
 import trimesh
 
 # Self imports
-from agent.ifc2tileset.root_tile import append_tileset_schema_and_metadata, gen_root_content
+from agent.ifc2tileset.root_tile import gen_root_content
 from . import testconsts as C
 from .testutils import gen_sample_asset_df, z_up_to_y_up
 
 ENDPOINT = "http://www.example.org/sparql"
-
-
-def test_append_tileset_schema():
-    # Arrange
-    building_iri = "http://www.theworldavatar.com/ifc/building/Building_5a9f7641-2d12-11b2-8040-cdbcaabc8e65"
-    expected_tileset = {
-        "schema": {"classes": {
-            "TilesetMetaData": {
-                "name": "Tileset metadata",
-                "description": "A metadata class for the tileset",
-                "properties": {
-                    "buildingIri": {
-                        "description": "Data IRI of the building",
-                        "type": "STRING"
-                    }
-                }
-            }}},
-        "metadata": {
-            "class": "TilesetMetaData",
-            "properties": {
-                "buildingIri": building_iri
-            }
-        }
-    }
-
-    # Act
-    actual_tileset = {}
-    append_tileset_schema_and_metadata(actual_tileset, building_iri)
-
-    # Assert
-    assert expected_tileset == actual_tileset
-
 
 def make_bim_tileset(bbox: List[str], building_iri: str):
     return {
@@ -59,26 +27,6 @@ def make_bim_tileset(bbox: List[str], building_iri: str):
             "boundingVolume": {"box": bbox},
             "geometricError": 512,
             "refine": "ADD",
-        },
-        "schema": {
-            "classes": {
-                "TilesetMetaData": {
-                    "name": "Tileset metadata",
-                    "description": "A metadata class for the tileset",
-                    "properties": {
-                        "buildingIri": {
-                            "description": "Data IRI of the building",
-                            "type": "STRING"
-                        }
-                    }
-                }
-            }
-        },
-        "metadata": {
-            "class": "TilesetMetaData",
-            "properties": {
-                "buildingIri": building_iri
-            }
         }
     }
 
