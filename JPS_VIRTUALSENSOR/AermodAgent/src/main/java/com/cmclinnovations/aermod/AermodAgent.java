@@ -7,7 +7,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -53,8 +55,10 @@ public class AermodAgent extends DerivationAgent {
         String weatherStationIri = derivationInputs.getIris(QueryClient.REPORTING_STATION).get(0);
         String nxIri = derivationInputs.getIris(QueryClient.NX).get(0);
         String nyIri = derivationInputs.getIris(QueryClient.NY).get(0);
+        List<String> zIriList = derivationInputs.getIris(QueryClient.Z);
         String scopeIri = derivationInputs.getIris(QueryClient.SCOPE).get(0);
         String simulationTimeIri = derivationInputs.getIris(QueryClient.SIMULATION_TIME).get(0);
+
         // citiesNamespaceIri will be null if this parameter was excluded from the POST
         // request sent to DispersionInteractor
         String citiesNamespace = null;
@@ -75,6 +79,7 @@ public class AermodAgent extends DerivationAgent {
 
         int nx = queryClient.getMeasureValueAsInt(nxIri);
         int ny = queryClient.getMeasureValueAsInt(nyIri);
+        Map<String, Integer> zMap = queryClient.getZMap(zIriList);
 
         // get ships within a scope and time
         Polygon scope = queryClient.getScopeFromOntop(scopeIri);
@@ -193,28 +198,29 @@ public class AermodAgent extends DerivationAgent {
 
         // DispersionOutput object holds dispersion matrix (file), dispersion layer
         // names, and raster filenames
-        DispersionOutput dispersionOutput = new DispersionOutput();
+        Map<String, DispersionOutput> zToOutputMap = new HashMap<>();
+        zIriList.forEach(z -> zToOutputMap.put(z, new DispersionOutput()));
 
         Pollutant.getPollutantList().parallelStream()
                 .filter(pollutantType -> allSources.stream().allMatch(p -> p.hasPollutant(pollutantType)))
-                .forEach(pollutantType -> {
-                    aermod.createPollutantSubDirectory(pollutantType);
+                .forEach(pollutantType -> zIriList.parallelStream().forEach(zIri -> {
+                    aermod.createSimulationSubDirectory(pollutantType, zMap.get(zIri));
 
                     // create emissions input
-                    aermod.createPointsFile(allSources, srid, pollutantType);
-                    aermod.runAermod(pollutantType);
+                    aermod.createPointsFile(allSources, srid, pollutantType, zMap.get(zIri));
+                    aermod.runAermod(pollutantType, zMap.get(zIri));
 
                     // Upload files used by scripts within Python Service to file server.
                     Path concFile = simulationDirectory.resolve(
                             Paths.get("aermod", Pollutant.getPollutantLabel(pollutantType),
-                                    "averageConcentration.dat"));
+                                    String.valueOf(zMap.get(zIri)), "averageConcentration.dat"));
                     String outputFileURL = aermod.uploadToFileServer(concFile);
-                    dispersionOutput.addDispMatrix(pollutantType, outputFileURL);
+                    zToOutputMap.get(zIri).addDispMatrix(pollutantType, outputFileURL);
 
                     String rasterFileName = UUID.randomUUID().toString();
                     try {
-                        aermod.createFileForRaster(rasterFileName, pollutantType);
-                        dispersionOutput.addDispRaster(pollutantType, rasterFileName + ".tif");
+                        aermod.createFileForRaster(rasterFileName, pollutantType, zMap.get(zIri));
+                        zToOutputMap.get(zIri).addDispRaster(pollutantType, rasterFileName + ".tif");
                     } catch (FileNotFoundException e) {
                         LOGGER.error("Average concentration file not found, probably failed to run simulation");
                     }
@@ -224,12 +230,12 @@ public class AermodAgent extends DerivationAgent {
                     JSONObject response = aermod.getGeoJsonAndColourbar(EnvConfig.PYTHON_SERVICE_URL, outputFileURL,
                             srid);
                     String colourBarUrl = response.getString("colourbar");
-                    dispersionOutput.addColourBar(pollutantType, colourBarUrl);
+                    zToOutputMap.get(zIri).addColourBar(pollutantType, colourBarUrl);
 
                     JSONObject geoJSON = response.getJSONObject("contourgeojson");
                     aermod.createDispersionLayer(geoJSON, derivationInputs.getDerivationIRI(), pollutantType,
-                            simulationTime);
-                });
+                            simulationTime, zMap.get(zIri));
+                }));
 
         boolean append = false;
         if (queryClient.tableExists(EnvConfig.DISPERSION_RASTER_TABLE)) {
@@ -247,11 +253,11 @@ public class AermodAgent extends DerivationAgent {
             }
             OntopClient ontopClient = OntopClient.getInstance();
             ontopClient.updateOBDA(obdaFile);
-
         }
+
         aermod.uploadRasterToPostGIS(srid, append);
 
-        queryClient.updateOutputs(derivationInputs.getDerivationIRI(), dispersionOutput, !ships.isEmpty(),
+        queryClient.updateOutputs(derivationInputs.getDerivationIRI(), zToOutputMap, !ships.isEmpty(),
                 simulationTime, !staticPointSources.isEmpty(), !buildings.isEmpty(), usesElevation);
     }
 

@@ -31,9 +31,10 @@ public class GetColourBar extends HttpServlet {
         String pollutant = req.getParameter("pollutant");
         String timestep = req.getParameter("timestep");
         String derivationIri = req.getParameter("derivationIri");
+        String zIri = req.getParameter("zIri");
 
         String colourBarUrl = queryClient.getColourBarURL(pollutant, Instant.parse(timestep).getEpochSecond(),
-                derivationIri);
+                derivationIri, zIri);
 
         HttpGet httpGet = new HttpGet(colourBarUrl);
         String auth = "fs_user" + ":" + "fs_pass"; // default credentials for the file server container

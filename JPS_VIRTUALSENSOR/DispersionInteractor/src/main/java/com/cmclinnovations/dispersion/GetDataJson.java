@@ -40,13 +40,14 @@ public class GetDataJson extends HttpServlet {
         String derivationIri = req.getParameter("derivationIri");
         String pollutantLabel = req.getParameter("pollutantLabel");
         JSONObject weatherStation = new JSONObject(req.getParameter("weatherStation"));
+        int z = Integer.parseInt(req.getParameter("z"));
 
         JSONObject dataJson = null;
         try (Connection conn = dispersionPostGISClient.getConnection()) {
             List<Boolean> layers = queryClient.getLayers(Instant.parse(timestep).getEpochSecond(), derivationIri, conn);
 
             dataJson = createDataJson(pollutantLabel, scopeLabel, weatherStation, layers, conn, pollutant,
-                    derivationIri, Instant.parse(timestep).getEpochSecond());
+                    derivationIri, Instant.parse(timestep).getEpochSecond(), z);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -82,13 +83,13 @@ public class GetDataJson extends HttpServlet {
      * Index of hasLayers: 0) ships, 1) buildings, 2) static point
      */
     private JSONObject createDataJson(String pollutantLabel, String scopeLabel, JSONObject weatherStation,
-            List<Boolean> hasLayers, Connection conn, String pollutant, String derivationIri, long timestep) {
+            List<Boolean> hasLayers, Connection conn, String pollutant, String derivationIri, long timestep, int z) {
         String dispWms = Config.GEOSERVER_URL + "/" + Config.GEOSERVER_WORKSPACE +
                 "/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&transparent=true"
                 + "&bbox={bbox-epsg-3857}"
                 + String.format("&layers=%s:%s", Config.GEOSERVER_WORKSPACE, Config.DISPERSION_CONTOURS_TABLE)
-                + String.format("&CQL_FILTER=pollutant='%s' AND derivation='%s' AND time=%d", pollutant,
-                        derivationIri, timestep);
+                + String.format("&CQL_FILTER=pollutant='%s' AND derivation='%s' AND time=%d AND z=%d", pollutant,
+                        derivationIri, timestep, z);
         JSONObject group = new JSONObject();
         group.put("name", scopeLabel);
         group.put("stack", "http://localhost:3838");

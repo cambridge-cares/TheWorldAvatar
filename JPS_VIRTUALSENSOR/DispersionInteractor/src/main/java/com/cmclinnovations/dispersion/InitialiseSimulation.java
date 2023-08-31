@@ -5,6 +5,8 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import javax.servlet.ServletException;
@@ -62,6 +64,21 @@ public class InitialiseSimulation extends HttpServlet {
         int ny = Integer.parseInt(req.getParameter("ny"));
         String citiesNamespace = req.getParameter("citiesnamespace");
         String scopeLabel = req.getParameter("label");
+        String[] zArray = req.getParameterValues("z");
+
+        List<Integer> zList = new ArrayList<>();
+        if (zArray == null) {
+            zList.add(0);
+        } else {
+            for (int i = 0; i < zArray.length; i++) {
+                int zInt = Integer.parseInt(zArray[i]);
+                if (zList.contains(zInt)) {
+                    LOGGER.warn("Duplicate value given for z = {}, will be ignored", zInt);
+                } else {
+                    zList.add(zInt);
+                }
+            }
+        }
 
         Polygon polygonProvided = null;
         try {
@@ -113,7 +130,7 @@ public class InitialiseSimulation extends HttpServlet {
                 String weatherStation = createVirtualWeatherStation(polygon4326);
 
                 String derivation = queryClient.initialiseScopeDerivation(scopeIri, scopeLabel, weatherStation, nx, ny,
-                        citiesNamespace);
+                        citiesNamespace, zList);
                 try {
                     resp.getWriter().print(new JSONObject().put("derivation", derivation));
                     resp.setContentType(ContentType.APPLICATION_JSON.getMimeType());
@@ -125,7 +142,6 @@ public class InitialiseSimulation extends HttpServlet {
                     LOGGER.error(e.getMessage());
                     LOGGER.error("Failed to create JSON object for HTTP response");
                 }
-
             }
         }
 

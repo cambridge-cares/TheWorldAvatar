@@ -20,6 +20,7 @@ public class DispersionSimulation {
     private Map<String, String> pollutantIriToDispRasterMap;
     private Polygon scopePolygon;
     private Point weatherStationLocation;
+    private Map<Integer, String> zMap;
 
     private List<Instant> timesteps;
 
@@ -27,6 +28,7 @@ public class DispersionSimulation {
         this.derivationIri = derivationIri;
         pollutantIriToLabelMap = new HashMap<>();
         pollutantIriToDispRasterMap = new HashMap<>();
+        zMap = new HashMap<>();
     }
 
     public void setScopeLabel(String label) {
@@ -74,6 +76,7 @@ public class DispersionSimulation {
         json.put("time", timesteps);
         json.put("pollutants", pollutantIriToLabelMap);
         json.put("derivationIri", derivationIri);
+        json.put("z", zMap);
 
         JSONObject weatherStation = new JSONObject();
         weatherStation.put("iri", weatherStationIri);
@@ -109,5 +112,9 @@ public class DispersionSimulation {
 
     public Point getWeatherStationLocation() {
         return weatherStationLocation;
+    }
+
+    public void addZValue(int zValue, String zIri) {
+        zMap.put(zValue, zIri);
     }
 }

@@ -81,6 +81,7 @@ public class QueryClient {
     private static final Iri SIMULATION_TIME = P_DISP.iri("SimulationTime");
     private static final Iri NX = P_DISP.iri("nx");
     private static final Iri NY = P_DISP.iri("ny");
+    private static final Iri Z = P_DISP.iri("z");
     private static final Iri REPORTING_STATION = iri("https://www.theworldavatar.com/kg/ontoems/ReportingStation");
     private static final Iri DISPERSION_OUTPUT = P_DISP.iri("DispersionOutput");
     private static final Iri DISPERSION_MATRIX = P_DISP.iri("DispersionMatrix");
@@ -116,13 +117,13 @@ public class QueryClient {
     private static final Iri HAS_NUMERICALVALUE = P_OM.iri("hasNumericalValue");
     private static final Iri HAS_NAME = P_DISP.iri("hasName");
     private static final Iri HAS_DISPERSION_MATRIX = P_DISP.iri("hasDispersionMatrix");
-    private static final Iri HAS_DISPERSION_LAYER = P_DISP.iri("hasDispersionLayer");
     private static final Iri HAS_DISPERSION_RASTER = P_DISP.iri("hasDispersionRaster");
     private static final Iri HAS_DISPERSION_COLOUR_BAR = P_DISP.iri("hasDispersionColourBar");
     private static final Iri HAS_POLLUTANT_ID = P_DISP.iri("hasPollutantID");
     private static final Iri AS_WKT = iri("http://www.opengis.net/ont/geosparql#asWKT");
     private static final Iri REPORTS = P_EMS.iri("reports");
     private static final Iri HAS_UNIT = P_OM.iri("hasUnit");
+    private static final Iri HAS_HEIGHT = P_DISP.iri("hasHeight");
 
     public QueryClient(RemoteStoreClient storeClient, RemoteRDBStoreClient remoteRDBStoreClient,
             TimeSeriesClient<Long> tsClient, TimeSeriesClient<Instant> tsClientInstant) {
@@ -169,13 +170,14 @@ public class QueryClient {
         modify.insert(partIri.has(hasType, CITIES_NAMESPACE));
         modify.insert(partIri.has(hasType, SIMULATION_TIME)).insert(partIri.has(hasType, NX))
                 .insert(partIri.has(hasType, NY)).insert(partIri.has(hasType, SCOPE))
-                .insert(partIri.has(hasType, REPORTING_STATION)).prefix(P_DISP);
+                .insert(partIri.has(hasType, REPORTING_STATION))
+                .insert(partIri.has(hasType, Z)).prefix(P_DISP);
 
         storeClient.executeUpdate(modify.getQueryString());
     }
 
     String initialiseScopeDerivation(String scopeIri, String scopeLabel, String weatherStation, int nx, int ny,
-            String citiesNamespace) {
+            String citiesNamespace, List<Integer> zList) {
         ModifyQuery modify = Queries.MODIFY();
         modify.insert(iri(scopeIri).isA(SCOPE).andHas(iri(RDFS.LABEL), scopeLabel));
 
@@ -197,6 +199,16 @@ public class QueryClient {
         modify.insert(iri(nyIri).isA(NY).andHas(HAS_VALUE, iri(nyMeasureIri)));
         modify.insert(iri(nyMeasureIri).isA(MEASURE).andHas(HAS_NUMERICALVALUE, ny));
 
+        // z (input)
+        List<String> zIriList = new ArrayList<>();
+        zList.stream().forEach(zValue -> {
+            String zIri = PREFIX + UUID.randomUUID();
+            zIriList.add(zIri);
+            String zMeasureIri = PREFIX + UUID.randomUUID();
+            modify.insert(iri(zIri).isA(Z).andHas(HAS_VALUE, iri(zMeasureIri)));
+            modify.insert(iri(zMeasureIri).isA(MEASURE).andHas(HAS_NUMERICALVALUE, zValue));
+        });
+
         // cities namespace (optional input)
         String citiesNamespaceIri = PREFIX + UUID.randomUUID();
         if (citiesNamespace != null) {
@@ -211,10 +223,11 @@ public class QueryClient {
         List<Class<?>> dataClass = new ArrayList<>();
         List<String> entityList = new ArrayList<>();
 
-        pollutantsList.stream().forEach(p -> {
+        pollutantsList.stream().forEach(p -> zIriList.stream().forEach(z -> {
             String dispOutputIri = PREFIX + UUID.randomUUID();
             String pollutantIdIri = PREFIX + UUID.randomUUID();
-            modify.insert(iri(dispOutputIri).isA(DISPERSION_OUTPUT).andHas(HAS_POLLUTANT_ID, iri(pollutantIdIri)));
+            modify.insert(iri(dispOutputIri).isA(DISPERSION_OUTPUT).andHas(HAS_POLLUTANT_ID, iri(pollutantIdIri))
+                    .andHas(HAS_HEIGHT, iri(z)));
             modify.insert(iri(pollutantIdIri).isA(p));
             entityList.add(dispOutputIri);
 
@@ -235,7 +248,7 @@ public class QueryClient {
             dataClass.add(String.class);
             dataClass.add(String.class);
             dataClass.add(String.class);
-        });
+        }));
 
         String shipsLayerIri = PREFIX + UUID.randomUUID();
         modify.insert(iri(shipsLayerIri).isA(SHIPS_LAYER));
@@ -280,6 +293,7 @@ public class QueryClient {
         inputs.add(scopeIri);
         inputs.add(nxIri);
         inputs.add(nyIri);
+        zIriList.forEach(inputs::add);
         if (citiesNamespace != null)
             inputs.add(citiesNamespaceIri);
 
@@ -547,6 +561,8 @@ public class QueryClient {
         Variable weatherStationVar = query.var();
         Variable scopeWktVar = query.var();
         Variable weatherStationWktVar = query.var();
+        Variable zVar = query.var();
+        Variable zValueVar = query.var();
 
         ServiceEndpoint ontopEndpoint = new ServiceEndpoint(ontopUrl);
 
@@ -554,11 +570,13 @@ public class QueryClient {
                 derivation.has(isDerivedFrom, weatherStationVar), weatherStationVar.isA(REPORTING_STATION),
                 dispersionOutput.isA(DISPERSION_OUTPUT).andHas(belongsTo, derivation)
                         .andHas(HAS_DISPERSION_RASTER, dispRasterVar)
-                        .andHas(PropertyPaths.path(HAS_POLLUTANT_ID, iri(RDF.TYPE)), pollutantType),
+                        .andHas(PropertyPaths.path(HAS_POLLUTANT_ID, iri(RDF.TYPE)), pollutantType)
+                        .andHas(HAS_HEIGHT, zVar),
+                zVar.has(PropertyPaths.path(HAS_VALUE, HAS_NUMERICALVALUE), zValueVar),
                 pollutantType.has(RDFS.LABEL, pollutantLabel).optional(),
                 ontopEndpoint.service(scope.has(PropertyPaths.path(HAS_GEOMETRY, iri(GEO.AS_WKT)), scopeWktVar),
                         weatherStationVar.has(PropertyPaths.path(HAS_GEOMETRY, iri(GEO.AS_WKT)), weatherStationWktVar)))
-                .prefix(P_DISP, P_GEO);
+                .prefix(P_DISP, P_GEO, P_OM);
 
         Map<String, DispersionSimulation> iriToDispSimMap = new HashMap<>();
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
@@ -572,8 +590,12 @@ public class QueryClient {
             String pol = queryResult.getJSONObject(i).getString(pollutantType.getQueryString().substring(1));
             String dispRaster = queryResult.getJSONObject(i).getString(dispRasterVar.getQueryString().substring(1));
 
+            String zIri = queryResult.getJSONObject(i).getString(zVar.getQueryString().substring(1));
+            int zValue = queryResult.getJSONObject(i).getInt(zValueVar.getQueryString().substring(1));
+
             DispersionSimulation dispersionSimulation = iriToDispSimMap.get(derivationIri);
             dispersionSimulation.setScopeLabel(scopeLabel);
+            dispersionSimulation.addZValue(zValue, zIri);
 
             // if pollutant type does not have the label attached (requires uploading of
             // tbox, use IRI as the user facing label)
@@ -698,7 +720,7 @@ public class QueryClient {
         return layers;
     }
 
-    public String getColourBarURL(String pollutant, long timeStep, String derivation) {
+    public String getColourBarURL(String pollutant, long timeStep, String derivation, String zIri) {
         Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
 
         SelectQuery query = Queries.SELECT();
@@ -708,7 +730,8 @@ public class QueryClient {
 
         query.where(dispOutput.has(belongsTo, iri(derivation)),
                 dispOutput.has(PropertyPaths.path(HAS_POLLUTANT_ID, iri(RDF.TYPE)), iri(pollutant))
-                        .andHas(HAS_DISPERSION_COLOUR_BAR, dispColourBar))
+                        .andHas(HAS_DISPERSION_COLOUR_BAR, dispColourBar)
+                        .andHas(HAS_HEIGHT, iri(zIri)))
                 .select(dispColourBar).prefix(P_DISP);
 
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());

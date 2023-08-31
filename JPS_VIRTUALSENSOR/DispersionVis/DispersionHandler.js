@@ -4,14 +4,6 @@ class DispersionHandler {
         this.manager = manager;
     }
 
-    initialise() {
-        this.setDispersions(this)
-            .then(() => this.buildDropdown(this))
-            .then(() => {
-                this.plotData();
-            });
-    }
-
     setDispersions(dispersionHandler) {
         return new Promise(function (resolve) {
             let setDispersionFunction = (function (dispersionsJson) {
@@ -46,8 +38,10 @@ class DispersionHandler {
             dispersionHandler.buildSimulationDropdown(dispersionHandler.dispersions);
             dispersionHandler.buildPollutantDropdown(dispersionHandler.dispersions[dispersionHandler.selectedSimulation]);
             dispersionHandler.buildTimestepDropdown(dispersionHandler.dispersions[dispersionHandler.selectedSimulation]);
+            dispersionHandler.buildHeightDropdown(dispersionHandler.dispersions[dispersionHandler.selectedSimulation]);
 
-            if ((document.getElementById("Simulation") != null) && (document.getElementById("Pollutant") != null) && (document.getElementById("Timestep") != null)) {
+            if ((document.getElementById("Simulation") != null) && (document.getElementById("Pollutant") != null)
+                && (document.getElementById("Timestep") != null) && (document.getElementById("Height") != null)) {
                 resolve();
             }
         });
@@ -168,6 +162,47 @@ class DispersionHandler {
         }
     }
 
+    buildHeightDropdown(dispersion) {
+        let selectionsContainer = document.getElementById("selectionsContainer");
+
+        let heightElementId = "Height";
+
+        let heightElementSelect;
+        if (document.getElementById(heightElementId) == null) {
+            let heightElement = document.createElement("div");
+            heightElement.id = "selectContainer";
+
+            let heightElementLabel = document.createElement("label");
+            heightElementLabel.setAttribute("for", heightElementId);
+            heightElementLabel.innerHTML = "Height:";
+
+            heightElementSelect = document.createElement("select");
+            heightElementSelect.id = heightElementId;
+            heightElementSelect.setAttribute("onchange", "dispersionHandler.onHeightChange(this.value)");
+
+            heightElement.appendChild(heightElementLabel);
+            heightElement.appendChild(heightElementSelect);
+
+            selectionsContainer.appendChild(heightElement);
+        } else {
+            heightElementSelect = document.getElementById(heightElementId);
+            heightElementSelect.innerHTML = "";
+        }
+
+        let heights = Object.keys(dispersion['z']).sort(function (a, b) { return a - b });
+        for (let i in heights) {
+            let height = heights[i];
+            let heightOption = document.createElement("option");
+            heightOption.setAttribute("value", height);
+            heightOption.innerHTML = height + " m";
+            heightElementSelect.appendChild(heightOption);
+
+            if (i == 0) {
+                this.selectedHeight = height;
+            }
+        }
+    }
+
     onPollutantChange(pollutant) {
         this.selectedPollutant = pollutant;
         this.plotData();
@@ -178,10 +213,16 @@ class DispersionHandler {
         this.plotData();
     }
 
+    onHeightChange(height) {
+        this.selectedHeight = height;
+        this.plotData();
+    }
+
     onSimulationChange(dispersion) {
         this.selectedSimulation = dispersion;
         this.buildPollutantDropdown(this.dispersions[this.selectedSimulation]);
         this.buildTimestepDropdown(this.dispersions[this.selectedSimulation]);
+        this.buildHeightDropdown(this.dispersions[this.selectedSimulation]);
         this.plotData();
     }
 
@@ -196,7 +237,8 @@ class DispersionHandler {
             scopeLabel: this.selectedSimulation,
             derivationIri: this.dispersions[this.selectedSimulation].derivationIri,
             pollutantLabel: this.dispersions[this.selectedSimulation].pollutants[this.selectedPollutant],
-            weatherStation: JSON.stringify(this.dispersions[this.selectedSimulation].weatherStation)
+            weatherStation: JSON.stringify(this.dispersions[this.selectedSimulation].weatherStation),
+            z: this.selectedHeight
         };
 
         let searchParams = new URLSearchParams(params);
@@ -227,7 +269,8 @@ class DispersionHandler {
         let params = {
             pollutant: this.selectedPollutant,
             timestep: this.selectedTimestep,
-            derivationIri: this.dispersions[this.selectedSimulation].derivationIri
+            derivationIri: this.dispersions[this.selectedSimulation].derivationIri,
+            zIri: this.dispersions[this.selectedSimulation].z[this.selectedHeight]
         };
 
         let colourBarUrl = this.agentBaseUrl;

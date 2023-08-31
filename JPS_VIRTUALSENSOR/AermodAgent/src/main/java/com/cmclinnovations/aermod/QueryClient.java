@@ -108,6 +108,7 @@ public class QueryClient {
     public static final String REPORTING_STATION = "https://www.theworldavatar.com/kg/ontoems/ReportingStation";
     public static final String NX = PREFIX_DISP + "nx";
     public static final String NY = PREFIX_DISP + "ny";
+    public static final String Z = PREFIX_DISP + "z";
     public static final String SCOPE = PREFIX_DISP + "Scope";
     public static final String CITIES_NAMESPACE = PREFIX_DISP + "OntoCityGMLNamespace";
     public static final String SIMULATION_TIME = PREFIX_DISP + "SimulationTime";
@@ -169,9 +170,9 @@ public class QueryClient {
     private static final Iri OCGML_BUILDINGID = P_OCGML.iri("buildingId");
     private static final Iri HAS_POLLUTANT_ID = P_DISP.iri("hasPollutantID");
     private static final Iri HAS_DISPERSION_MATRIX = P_DISP.iri("hasDispersionMatrix");
-    private static final Iri HAS_DISPERSION_LAYER = P_DISP.iri("hasDispersionLayer");
     private static final Iri HAS_DISPERSION_RASTER = P_DISP.iri("hasDispersionRaster");
     private static final Iri HAS_DISPERSION_COLOUR_BAR = P_DISP.iri("hasDispersionColourBar");
+    private static final Iri HAS_HEIGHT = P_DISP.iri("hasHeight");
 
     // fixed units for each measured property
     private static final Map<String, Iri> UNIT_MAP = new HashMap<>();
@@ -217,6 +218,25 @@ public class QueryClient {
         query.where(gp);
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
         return Long.parseLong(queryResult.getJSONObject(0).getString(value.getQueryString().substring(1)));
+    }
+
+    Map<String, Integer> getZMap(List<String> zIriList) {
+        SelectQuery query = Queries.SELECT().prefix(P_OM);
+        Variable valueVar = query.var();
+        Variable zVar = query.var();
+        ValuesPattern<Iri> valuesPattern = new ValuesPattern<>(zVar,
+                zIriList.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
+        query.where(zVar.has(PropertyPaths.path(HAS_VALUE, HAS_NUMERICALVALUE), valueVar), valuesPattern);
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+        Map<String, Integer> zMap = new HashMap<>();
+        for (int i = 0; i < queryResult.length(); i++) {
+            String zIri = queryResult.getJSONObject(i).getString(zVar.getQueryString().substring(1));
+            int value = queryResult.getJSONObject(i).getInt(valueVar.getQueryString().substring(1));
+            zMap.put(zIri, value);
+        }
+
+        return zMap;
     }
 
     private List<String> queryStaticPointSources() {
@@ -1073,8 +1093,8 @@ public class QueryClient {
 
     }
 
-    void updateOutputs(String derivation, DispersionOutput dispersionOutput, boolean hasShips, long timeStamp,
-            boolean hasStaticPoints, boolean hasBuildings, boolean usesElevation) {
+    void updateOutputs(String derivation, Map<String, DispersionOutput> zIriToOutputMap, boolean hasShips,
+            long timeStamp, boolean hasStaticPoints, boolean hasBuildings, boolean usesElevation) {
         SelectQuery query = Queries.SELECT();
 
         Variable entity = query.var();
@@ -1083,19 +1103,23 @@ public class QueryClient {
         Variable dispMatrix = query.var();
         Variable dispRaster = query.var();
         Variable dispColourBar = query.var();
+        Variable zVar = query.var();
 
         Iri belongsTo = iri(DerivationSparql.derivednamespace + "belongsTo");
 
-        query.where(entity.has(belongsTo, iri(derivation)).andHas(HAS_POLLUTANT_ID, pollutantIri)
-                .andHas(HAS_DISPERSION_MATRIX, dispMatrix).andHas(HAS_DISPERSION_RASTER, dispRaster)
-                .andHas(HAS_DISPERSION_COLOUR_BAR, dispColourBar), pollutantIri.isA(pollutant)).prefix(P_DISP)
-                .select(entity, pollutant, dispMatrix, dispRaster, dispColourBar).distinct();
+        query.where(
+                entity.has(belongsTo, iri(derivation)).andHas(HAS_POLLUTANT_ID, pollutantIri).andHas(HAS_HEIGHT, zVar)
+                        .andHas(HAS_DISPERSION_MATRIX, dispMatrix).andHas(HAS_DISPERSION_RASTER, dispRaster)
+                        .andHas(HAS_DISPERSION_COLOUR_BAR, dispColourBar),
+                pollutantIri.isA(pollutant)).prefix(P_DISP)
+                .select(zVar, pollutant, dispMatrix, dispRaster, dispColourBar);
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 
         List<String> tsDataList = new ArrayList<>();
         List<List<?>> tsValuesList = new ArrayList<>();
 
         for (int i = 0; i < queryResult.length(); i++) {
+            String zIri = queryResult.getJSONObject(i).getString(zVar.getQueryString().substring(1));
             String pollutantIRI = queryResult.getJSONObject(i).getString(pollutant.getQueryString().substring(1));
             String dispersionMatrixIRI = queryResult.getJSONObject(i)
                     .getString(dispMatrix.getQueryString().substring(1));
@@ -1105,6 +1129,7 @@ public class QueryClient {
                     .getString(dispColourBar.getQueryString().substring(1));
 
             PollutantType pollutantType = Pollutant.getPollutantType(pollutantIRI);
+            DispersionOutput dispersionOutput = zIriToOutputMap.get(zIri);
             if (dispersionOutput.hasPollutant(pollutantType)) {
                 tsDataList.add(dispersionMatrixIRI);
                 tsDataList.add(dispersionRasterIRI);
@@ -1116,7 +1141,6 @@ public class QueryClient {
                 tsValuesList.add(List.of(dispersionRaster));
                 tsValuesList.add(List.of(dispersionColourBar));
             }
-
         }
 
         SelectQuery query2 = Queries.SELECT();
