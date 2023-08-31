@@ -207,13 +207,13 @@ public class GeoObject3D {
             }
             for(int i = 0; i < allObject3D.size(); i++){
                 cityobjectid = allObject3D.get(i).getId();
-                String sql = "SELECT public.ST_MakePolygon(public.ST_ExteriorRing(public.ST_Union(geometry))) as footprint " +
+                String sql = "SELECT public.ST_BuildArea(public.ST_Collect(public.ST_ExteriorRing(geometry))) as geom " +
                 "FROM surface_geometry WHERE parent_id  IN (SELECT lod2_multi_surface_id FROM thematic_surface WHERE building_id = " 
                 + cityobjectid + " AND objectclass_id = " + this.objectClassid + ") AND geometry is not null"; 
                 Statement stmt = srcConn.createStatement();
                 ResultSet result = stmt.executeQuery(sql);
                 while (result.next()) {
-                    footprint = (PGgeometry)result.getObject("footprint");                      
+                    footprint = (PGgeometry)result.getObject("geom");                      
                 }  
                 updatePrint(cityobjectid, footprint, surfaceType);
             }
