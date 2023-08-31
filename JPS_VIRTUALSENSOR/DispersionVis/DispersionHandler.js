@@ -224,6 +224,7 @@ class DispersionHandler {
         this.buildTimestepDropdown(this.dispersions[this.selectedSimulation]);
         this.buildHeightDropdown(this.dispersions[this.selectedSimulation]);
         this.plotData();
+        MapHandler.MAP.jumpTo({ center: this.dispersions[this.selectedSimulation].centroid });
     }
 
     plotData() {
@@ -246,7 +247,6 @@ class DispersionHandler {
 
         let plotFunction = (function () {
             this.manager.plotData();
-            MapHandler.MAP.jumpTo({ center: this.dispersions[this.selectedSimulation].centroid });
         }).bind(this);
 
         this.manager.loadDefinitionsFromURL(dataJsonUrl).then(() =>
