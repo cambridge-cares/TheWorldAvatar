@@ -1,20 +1,20 @@
 #
 # Runs actions related to a new release (i.e. merged PR to main) of the
-# Digital Twin Visualisation Framework (DTVF).
+# TWA Visualisation Framework (TWA-VF).
 #
-# Author: Michael Hillman (mdhillman<@>cmclinnovations.com)
+# Author: Michael Hillman (mdhillman<@>cmcl.io)
 #
-name: Release the DTVF
+name: Release the TWA-VF
 
 
 # Trigger this workflow during pushes to the 'main' branch, and
-# ONLY when files within the DTVF source code are changed.
+# ONLY when files within the TWA-VF source code are changed.
 on:
   push:
     branches:
       - main
     paths:
-      - 'web/digital-twin-vis-framework/library/**'
+      - 'web/twa-vis-framework/library/**'
 
 
 # Job definitions
@@ -33,20 +33,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
           
-      # Get the version of the DTVF
-      - name: Get DTVF version
+      # Get the version of the TWA-VF
+      - name: Get TWA-VF version
         id: versioner
         run: |
-          echo version=$(cat web/digital-twin-vis-framework/library/VERSION) >> $GITHUB_ENV
+          echo version=$(cat web/twa-vis-framework/library/VERSION) >> $GITHUB_ENV
           
-      # Compile the DTVF and ZIP results
-      - name: Compile the DTVF
+      # Compile the TWA-VF and ZIP results
+      - name: Compile the TWA-VF
         id: compiler
-        working-directory: ./web/digital-twin-vis-framework/library
+        working-directory: ./web/twa-vis-framework/library
         run: |
           docker-compose -f docker-compose.dev.yml up compile
-          zip -r $HOME/dtvf.zip output/
-          echo zip=$HOME/dtvf.zip >> $GITHUB_ENV
+          zip -r $HOME/twa-vf.zip output/
+          echo zip=$HOME/twa-vf.zip >> $GITHUB_ENV
           
       # Login to Docker image registry
       - name: Login to Docker registry
@@ -61,26 +61,26 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          context: ./web/digital-twin-vis-framework/library
+          context: ./web/twa-vis-framework/library
           tags: |
-            ghcr.io/cambridge-cares/dtvf-base-image:${{ env.version }}
-            ghcr.io/cambridge-cares/dtvf-base-image:latest
+            ghcr.io/cambridge-cares/twa-vf:${{ env.version }}
+            ghcr.io/cambridge-cares/twa-vf:latest
          
       # Generate the release body text
       - name: Generate release text
         id: generate-text
         working-directory: ./
         run: |
-          chmod +x ./.github/scripts/dtvf/make-release-body.sh
-          ./.github/scripts/dtvf/make-release-body.sh > $HOME/body.md
+          chmod +x ./.github/scripts/twa-vf/make-release-body.sh
+          ./.github/scripts/twa-vf/make-release-body.sh > $HOME/body.md
           echo body=$HOME/body.md >> $GITHUB_ENV
           
       # Make a release on the main branch
       - name: Make release
         uses: ncipollo/release-action@v1
         with:
-          name: "dtvf-${{ env.version }}"
-          tag: "dtvf-${{ env.version }}"
+          name: "twa-vf-${{ env.version }}"
+          tag: "twa-vf-${{ env.version }}"
           commit: "main"
           bodyFile: "${{ env.body }}"
           artifacts: "${{ env.zip }}"
@@ -97,7 +97,7 @@ jobs:
         working-directory: ./
         run: |
           pip install markdown
-          python ./.github/scripts/dtvf/make-release-email.py
+          python ./.github/scripts/twa-vf/make-release-email.py
           echo email=$HOME/email.html >> $GITHUB_ENV
       
       # Send a notification email
@@ -109,7 +109,7 @@ jobs:
           secure: true
           username: ${{secrets.CMCL_MAIL_USERNAME}}
           password: ${{secrets.CMCL_MAIL_PASSWORD}}
-          subject: "New TWA release: DTVF ${{ env.version }}"
+          subject: "New TWA release: TWA-VF ${{ env.version }}"
           to: cares-twa@lists.cam.ac.uk,all@cmcl.io
           from: Automated TWA action
           html_body: "file://${{ env.email }}"

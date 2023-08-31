@@ -25,8 +25,8 @@ The knowledge graph and its agents are hosted using collections of containers. H
 **TWA Base Library:**<br/>
 The [base lib](./JPS_BASE_LIB) is a collection of functionality that is shared among many parts of the code. Core functions include the ability to generate and upload TBoxes, query KGs and RDBs, implement RESTful APIs, and triple cloning.
 
-**Digital Twin Visualisation Framework:**<br/>
-The [DTVF](./web/digital-twin-vis-framework) is a container that provides a web-page with which a user can view and explore geospatial information held in the TWA ecosystem. This includes not only map data, 3D-representations of buildings, and building information models (BIM), but also any data or information connected to them within the KG, such as data calculated by models, acquired sensor data, or other time series data.
+**TWA Visualisation Framework:**<br/>
+The [TWA-VF](./web/twa-vis-framework) is a container that provides a web-page with which a user can view and explore geospatial information held in the TWA ecosystem. This includes not only map data, 3D-representations of buildings, and building information models (BIM), but also any data or information connected to them within the KG, such as data calculated by models, acquired sensor data, or other time series data.
 
 **Autonomous Agents:**<br/>
 Agents are pieces of software that act on the knowledge graph - reading from it, writing to it, thus making it evolve dynamically in time. The currently available agents can be found in [the agents folder](./Agents). 

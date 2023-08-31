@@ -241,9 +241,9 @@ public class DataManager {
         // save om:Measure uris for scalars and create om:Quantity uris for scalars and time series
         // (time series om:Measure iris already created in createTimeSeries)
         for (String measurement: CEAConstants.SCALARS) {
-            String measure = measurement + UUID.randomUUID() + "/";
+            String measure = measurement + "_" + UUID.randomUUID() + "/";
             String quantity = measurement + "Quantity_" + UUID.randomUUID() + "/";
-            String facade = measurement.split("SolarSuitableArea")[0] + UUID.randomUUID() + "/";
+            String facade = measurement.split("SolarSuitableArea")[0] + "_" + UUID.randomUUID() + "/";
             if (!graph.isEmpty()){
                 measure = graph + measure;
                 quantity = graph + quantity;
@@ -256,7 +256,7 @@ public class DataManager {
             }
             scalarIris.put(measurement, measure);
 
-            switch(measurement){
+            switch(measurement) {
                 case(CEAConstants.KEY_ROOF_SOLAR_SUITABLE_AREA):
                     createFacadeUpdate(wb, buildingUri, facade, "obs:RoofFacade");
                     createSolarSuitableAreaUpdate(wb, facade, quantity, measure, scalars.get(CEAConstants.KEY_ROOF_SOLAR_SUITABLE_AREA).get(uriCounter));
@@ -398,7 +398,7 @@ public class DataManager {
             }
         }
 
-        if (graph.isEmpty()){
+        if (graph.isEmpty()) {
             ub.addInsert(wb);
         }
         else{

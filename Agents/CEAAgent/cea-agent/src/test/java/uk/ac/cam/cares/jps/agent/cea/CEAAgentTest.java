@@ -11,6 +11,7 @@ import org.mockito.MockedStatic;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.agent.cea.utils.AnnualValueHelper;
 import uk.ac.cam.cares.jps.agent.cea.utils.TimeSeriesHelper;
 
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
@@ -65,18 +66,6 @@ public class CEAAgentTest {
                         doReturn("").when(mock).getDbPassword();
                     })) {
                 JSONObject requestParams = new JSONObject();
-
-                // Test empty request params
-//                try {
-//                    CEAAgent agent = new CEAAgent();
-//                    agent.processRequestParameters(requestParams);
-//                } catch (Exception e) {
-//                    if (e != null) {
-//                        assert e instanceof InvocationTargetException;
-//                        assertEquals(((InvocationTargetException) e).getTargetException().getClass(),
-//                            BadRequestException.class);
-//                    }
-//                }
 
                 // Test the update endpoint
                 requestParams.put(CEAAgent.KEY_REQ_URL, "http://localhost:8086/agents/cea/update");
@@ -137,146 +126,149 @@ public class CEAAgentTest {
 
                 JSONObject returnParams;
 
+                // test update endpoint
                 try (MockedConstruction<DataManager> dataManagerMock = mockConstruction(DataManager.class,
                         (mock, context) -> {
                             doReturn("building").when(mock).checkBuildingInitialised(anyString(), anyString());
                             doReturn(true).when(mock).checkDataInitialised(anyString(), any(), any(), anyString());
                         })) {
                     try (MockedConstruction<TimeSeriesHelper> mockTs = mockConstruction(TimeSeriesHelper.class)) {
-                        // test update endpoint
-                        CEAAgent agent = new CEAAgent();
-                        returnParams = agent.processRequestParameters(requestParams);
+                        try (MockedConstruction<AnnualValueHelper> mockAnnualHelper = mockConstruction(AnnualValueHelper.class)) {
+                            CEAAgent agent = new CEAAgent();
+                            returnParams = agent.processRequestParameters(requestParams);
 
-                        verify(mockTs.constructed().get(0), times(1)).addDataToTimeSeries(anyList(), anyList(), any());
-                        assertEquals(requestParams, returnParams);
+                            verify(mockTs.constructed().get(0), times(1)).addDataToTimeSeries(anyList(), anyList(), any());
+                            verify(mockAnnualHelper.constructed().get(0), times(1)).instantiateAnnual(anyList(), any(), any());
+                            assertEquals(requestParams, returnParams);
+                        }
                     }
                 }
 
-                    requestParams.remove(CEAAgent.KEY_REQ_URL);
-                    requestParams.put(CEAAgent.KEY_REQ_URL, "http://localhost:8086/agents/cea/run");
+                requestParams.remove(CEAAgent.KEY_REQ_URL);
+                requestParams.put(CEAAgent.KEY_REQ_URL, "http://localhost:8086/agents/cea/run");
 
-                    List<String> endpoints = new ArrayList<>();
-                    endpoints.add("");
-                    endpoints.add("");
-                    Map<String, Double> usages = new HashMap<>();
-                    byte[] terrain = new byte[1];
+                List<String> endpoints = new ArrayList<>();
+                endpoints.add("");
+                endpoints.add("");
+                Map<String, Double> usages = new HashMap<>();
+                byte[] terrain = new byte[1];
 
-                    try (MockedStatic<RouteHelper> routeHelperMock = mockStatic(RouteHelper.class)) {
-                        routeHelperMock.when(() -> RouteHelper.checkQuadsEnabled(anyString())).thenReturn(true);
-                        routeHelperMock.when(() -> RouteHelper.getRouteEndpoints(anyString())).thenReturn(endpoints);
-                        try (MockedConstruction<GeometryQueryHelper> geometryQueryHelperMock = mockConstruction(GeometryQueryHelper.class,
+                try (MockedStatic<RouteHelper> routeHelperMock = mockStatic(RouteHelper.class)) {
+                    routeHelperMock.when(() -> RouteHelper.checkQuadsEnabled(anyString())).thenReturn(true);
+                    routeHelperMock.when(() -> RouteHelper.getRouteEndpoints(anyString())).thenReturn(endpoints);
+                    try (MockedConstruction<GeometryQueryHelper> geometryQueryHelperMock = mockConstruction(GeometryQueryHelper.class,
+                            (mock, context) -> {
+                                doReturn("").when(mock).getBuildingGeometry(anyString(), anyString(), anyString());
+                            })) {
+                        try (MockedConstruction<BuildingUsageHelper> usageHelpermock = mockConstruction(BuildingUsageHelper.class,
                                 (mock, context) -> {
-                                    doReturn("").when(mock).getBuildingGeometry(anyString(), anyString(), anyString());
+                                    doReturn(usages).when(mock).getBuildingUsages(anyString(), anyString());
                                 })) {
-                            try (MockedConstruction<BuildingUsageHelper> usageHelpermock = mockConstruction(BuildingUsageHelper.class,
+                            try (MockedConstruction<SurroundingsHelper> surroundingsHelper = mockConstruction(SurroundingsHelper.class,
                                     (mock, context) -> {
-                                        doReturn(usages).when(mock).getBuildingUsages(anyString(), anyString());
+                                        doReturn(new ArrayList<CEAInputData>()).when(mock).getSurroundings(anyString(), anyString(), anyList(), anyList());
                                     })) {
-                                try (MockedConstruction<SurroundingsHelper> surroundingsHelper = mockConstruction(SurroundingsHelper.class,
+                                try (MockedConstruction<WeatherHelper> weatherHelperMock = mockConstruction(WeatherHelper.class,
                                         (mock, context) -> {
-                                            doReturn(new ArrayList<CEAInputData>()).when(mock).getSurroundings(anyString(), anyString(), anyList(), anyList());
+                                            doReturn(false).when(mock).getWeather(anyString(), anyString(), anyString(), anyString(), anyList());
                                         })) {
-                                    try (MockedConstruction<WeatherHelper> weatherHelperMock = mockConstruction(WeatherHelper.class,
+                                    try (MockedConstruction<TerrainHelper> terrainHelperMock = mockConstruction(TerrainHelper.class,
                                             (mock, context) -> {
-                                                doReturn(false).when(mock).getWeather(anyString(), anyString(), anyString(), anyString(), anyList());
+                                                doReturn(terrain).when(mock).getTerrain(anyString(), anyString(), anyString(), anyList(), anyString(), any());
                                             })) {
-                                        try (MockedConstruction<TerrainHelper> terrainHelperMock = mockConstruction(TerrainHelper.class,
-                                                (mock, context) -> {
-                                                    doReturn(terrain).when(mock).getTerrain(anyString(), anyString(), anyString(), anyList(), anyString(), any());
-                                                })) {
-                                            try (MockedConstruction<RunCEATask> mockTask = mockConstruction(RunCEATask.class)) {
-                                                // test run endpoint
-                                                CEAAgent agent = new CEAAgent();
+                                        try (MockedConstruction<RunCEATask> mockTask = mockConstruction(RunCEATask.class)) {
+                                            // test run endpoint
+                                            CEAAgent agent = new CEAAgent();
 
-                                                ThreadPoolExecutor executor = mock(ThreadPoolExecutor.class);
-                                                Field CEAExecutor = agent.getClass().getDeclaredField("CEAExecutor");
-                                                CEAExecutor.setAccessible(true);
-                                                CEAExecutor.set(agent, executor);
+                                            ThreadPoolExecutor executor = mock(ThreadPoolExecutor.class);
+                                            Field CEAExecutor = agent.getClass().getDeclaredField("CEAExecutor");
+                                            CEAExecutor.setAccessible(true);
+                                            CEAExecutor.set(agent, executor);
 
-                                                returnParams = agent.processRequestParameters(requestParams);
+                                            returnParams = agent.processRequestParameters(requestParams);
 
-                                                verify(geometryQueryHelperMock.constructed().get(0), times(3)).getBuildingGeometry(anyString(), anyString(), anyString());
-                                                verify(usageHelpermock.constructed().get(0), times(1)).getBuildingUsages(anyString(), anyString());
-                                                verify(surroundingsHelper.constructed().get(0), times(1)).getSurroundings(anyString(), anyString(), anyList(), anyList());
-                                                verify(weatherHelperMock.constructed().get(0), times(1)).getWeather(anyString(), anyString(), anyString(), anyString(), any());
-                                                verify(terrainHelperMock.constructed().get(0), times(1)).getTerrain(anyString(), anyString(), anyString(), anyList(), anyString(), any());
-                                                verify(executor, times(1)).execute(mockTask.constructed().get(0));
-                                                assertEquals(requestParams, returnParams);
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        // test query endpoint
-                        requestParams.remove(CEAAgent.KEY_REQ_URL);
-                        requestParams.put(CEAAgent.KEY_REQ_URL, "http://localhost:8086/agents/cea/query");
-
-                        // test time series data
-                        String testUnit = "testUnit";
-                        String testScalar = "testScalar";
-                        ArrayList<String> testList = mock(ArrayList.class);
-                        when(testList.get(0)).thenReturn(testScalar);
-                        when(testList.get(1)).thenReturn(testUnit);
-                        String testReturnValue = "testAnnual";
-                        TimeSeries<OffsetDateTime> timeSeries = mock(TimeSeries.class);
-
-                        try(MockedConstruction<DataManager> dataManagerMock = mockConstruction(DataManager.class,
-                                (mock, context) -> {
-                                    doReturn("building").when(mock).checkBuildingInitialised(anyString(), anyString());
-                                })) {
-                            try (MockedConstruction<DataRetriever> dataRetrieverMock = mockConstruction(DataRetriever.class,
-                                    (mock, context) -> {
-                                        doReturn(testList).when(mock).getDataIRI(anyString(), anyString(), anyString());
-                                        doReturn(testUnit).when(mock).getUnit(anyString());
-                                        doReturn(testScalar).when(mock).getNumericalValue(anyString(), anyString(), anyString());
-                                    })) {
-                                try (MockedStatic<DataParser> dataParserMock = mockStatic(DataParser.class)) {
-                                    dataParserMock.when(() -> DataParser.calculateAnnual(any(), anyString())).thenReturn(testReturnValue);
-                                    try (MockedStatic<TimeSeriesHelper> timeSeriesHelperMock = mockStatic(TimeSeriesHelper.class)) {
-                                        timeSeriesHelperMock.when(() -> TimeSeriesHelper.retrieveData(anyString(), any(), any(), any())).thenReturn(timeSeries);
-
-                                        CEAAgent agent = new CEAAgent();
-
-                                        returnParams = agent.processRequestParameters(requestParams);
-                                        String result = returnParams.get(CEAAgent.CEA_OUTPUTS).toString();
-
-                                        for (String scalar : CEAConstants.SCALARS) {
-                                            String expected = "\"" + scalar + "\"" + ":\"testScalar testUnit\"";
-                                            assertTrue(result.contains(expected));
-                                        }
-
-                                        for (String ts : CEAConstants.TIME_SERIES) {
-                                            String expected;
-                                            if (ts.contains("Consumption")) {
-                                                expected = "\"Annual " + ts + "\"" + ":\"testAnnual testUnit\"";
-                                            } else {
-                                                expected = "\"Annual ";
-                                                if (ts.contains("ESupply")) {
-                                                    // PVT annual electricity supply
-                                                    expected = expected + ts.split("ESupply")[0] + " Electricity Supply";
-                                                } else if (ts.contains("QSupply")) {
-                                                    // PVT annual heat supply
-                                                    expected = expected + ts.split("QSupply")[0] + " Heat Supply";
-                                                } else {
-                                                    if (ts.contains("Thermal")) {
-                                                        // solar collector annual heat supply
-                                                        expected = expected + ts.split("Supply")[0] + " Heat Supply";
-                                                    } else if (ts.contains("PV")) {
-                                                        // PV annual electricity supply
-                                                        expected = expected + ts.split("Supply")[0] + " Electricity Supply";
-                                                    }
-                                                }
-                                                expected = expected + "\"" + ":\"testAnnual testUnit\"";
-                                            }
-                                            assertTrue(result.contains(expected));
+                                            verify(geometryQueryHelperMock.constructed().get(0), times(3)).getBuildingGeometry(anyString(), anyString(), anyString());
+                                            verify(usageHelpermock.constructed().get(0), times(1)).getBuildingUsages(anyString(), anyString());
+                                            verify(surroundingsHelper.constructed().get(0), times(1)).getSurroundings(anyString(), anyString(), anyList(), anyList());
+                                            verify(weatherHelperMock.constructed().get(0), times(1)).getWeather(anyString(), anyString(), anyString(), anyString(), any());
+                                            verify(terrainHelperMock.constructed().get(0), times(1)).getTerrain(anyString(), anyString(), anyString(), anyList(), anyString(), any());
+                                            verify(executor, times(1)).execute(mockTask.constructed().get(0));
+                                            assertEquals(requestParams, returnParams);
                                         }
                                     }
                                 }
                             }
                         }
                     }
+
+                    // test query endpoint
+                    requestParams.remove(CEAAgent.KEY_REQ_URL);
+                    requestParams.put(CEAAgent.KEY_REQ_URL, "http://localhost:8086/agents/cea/query");
+
+                    // test time series data
+                    String testUnit = "testUnit";
+                    String testScalar = "testScalar";
+                    ArrayList<String> testList = mock(ArrayList.class);
+                    when(testList.get(0)).thenReturn(testScalar);
+                    when(testList.get(1)).thenReturn(testUnit);
+                    String testReturnValue = "testAnnual";
+                    TimeSeries<OffsetDateTime> timeSeries = mock(TimeSeries.class);
+
+                    try(MockedConstruction<DataManager> dataManagerMock = mockConstruction(DataManager.class,
+                            (mock, context) -> {
+                                doReturn("building").when(mock).checkBuildingInitialised(anyString(), anyString());
+                            })) {
+                        try (MockedConstruction<DataRetriever> dataRetrieverMock = mockConstruction(DataRetriever.class,
+                                (mock, context) -> {
+                                    doReturn(testList).when(mock).getDataIRI(anyString(), anyString(), anyString());
+                                    doReturn(testUnit).when(mock).getUnit(anyString());
+                                    doReturn(testScalar).when(mock).getNumericalValue(anyString(), anyString(), anyString());
+                                })) {
+                            try (MockedStatic<DataParser> dataParserMock = mockStatic(DataParser.class)) {
+                                dataParserMock.when(() -> DataParser.calculateAnnual(any(), anyString())).thenReturn(testReturnValue);
+                                try (MockedStatic<TimeSeriesHelper> timeSeriesHelperMock = mockStatic(TimeSeriesHelper.class)) {
+                                    timeSeriesHelperMock.when(() -> TimeSeriesHelper.retrieveData(anyString(), any(), any(), any())).thenReturn(timeSeries);
+
+                                    CEAAgent agent = new CEAAgent();
+
+                                    returnParams = agent.processRequestParameters(requestParams);
+                                    String result = returnParams.get(CEAAgent.CEA_OUTPUTS).toString();
+
+                                    for (String scalar : CEAConstants.SCALARS) {
+                                        String expected = "\"" + scalar + "\"" + ":\"testScalar testUnit\"";
+                                        assertTrue(result.contains(expected));
+                                    }
+
+                                    for (String ts : CEAConstants.TIME_SERIES) {
+                                        String expected;
+                                        if (ts.contains("Consumption")) {
+                                            expected = "\"Annual " + ts + "\"" + ":\"testAnnual testUnit\"";
+                                        } else {
+                                            expected = "\"Annual ";
+                                            if (ts.contains("ESupply")) {
+                                                // PVT annual electricity supply
+                                                expected = expected + ts.split("ESupply")[0] + " Electricity Supply";
+                                            } else if (ts.contains("QSupply")) {
+                                                // PVT annual heat supply
+                                                expected = expected + ts.split("QSupply")[0] + " Heat Supply";
+                                            } else {
+                                                if (ts.contains("Thermal")) {
+                                                    // solar collector annual heat supply
+                                                    expected = expected + ts.split("Supply")[0] + " Heat Supply";
+                                                } else if (ts.contains("PV")) {
+                                                    // PV annual electricity supply
+                                                    expected = expected + ts.split("Supply")[0] + " Electricity Supply";
+                                                }
+                                            }
+                                            expected = expected + "\"" + ":\"testAnnual testUnit\"";
+                                        }
+                                        assertTrue(result.contains(expected));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
