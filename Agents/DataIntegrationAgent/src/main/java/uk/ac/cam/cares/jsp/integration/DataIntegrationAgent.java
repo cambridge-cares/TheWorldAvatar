@@ -47,7 +47,8 @@ public class DataIntegrationAgent extends JPSAgent {
     /**
      * An overloaded method to process all the different HTTP (GET/POST/PULL..) requests.
      * Do note all requests to JPS agents are processed similarly and will only return response objects.
-     *
+     * Parameter 1: function (attribute, footprint, height)
+     * Parameter 2: thematic (true or false)
      * @return A response to the request called as a JSON Object.
      */
     // @Override
@@ -71,6 +72,13 @@ public class DataIntegrationAgent extends JPSAgent {
 		} 
 	}
 
+    /**
+     * A method to call different functions based on the parameters that get from HTTP
+     * SpatialLink: spatial matching of OSM data and 3D buidling, then migrate name and address of building from OSM to 3D building
+     * FootPrint: extract footprint of 3D building and store in postgresql
+     * Height: calculate height of 3D buidling and store in postgresql
+     * @return json message 
+     */
     public JSONObject getParameters(String requestParams, String thematicParams) throws SQLException {
         JSONObject jsonMessage = new JSONObject();
         Config c = new Config();
@@ -95,43 +103,43 @@ public class DataIntegrationAgent extends JPSAgent {
      *
      * @return true or false depending on valid parameter status.
      */
-    @Override
-    public boolean validateInput(JSONObject requestParams) {
-        boolean validate = false;
-        // If request is sent to status route, there are no parameters to validate
-        if (requestParams.get("requestUrl").toString().contains("status")) return true;
+    // @Override
+    // public boolean validateInput(JSONObject requestParams) {
+    //     boolean validate = false;
+    //     // If request is sent to status route, there are no parameters to validate
+    //     if (requestParams.get("requestUrl").toString().contains("status")) return true;
 
-        // If there are parameters passed for the sql route
-        if (requestParams.get("requestUrl").toString().contains("sql")) {
-            if (requestParams.has(KEY_SOURCE_DATABASE) ) {
-                LOGGER.fatal("Detected `srcDbName` parameters!");
-                return false;
-            }
-            if (requestParams.has(KEY_SOURCE_DATABASE)) {
-                if (!(requestParams.get(KEY_SOURCE_DATABASE) instanceof String)) {
-                    LOGGER.fatal("`srcDbName` is not a string!");
-                    return false;
-                }
-            }
-            validate = true;
-        }
-        return validate;
-    }
+    //     // If there are parameters passed for the sql route
+    //     if (requestParams.get("requestUrl").toString().contains("sql")) {
+    //         if (requestParams.has(KEY_SOURCE_DATABASE) ) {
+    //             LOGGER.fatal("Detected `srcDbName` parameters!");
+    //             return false;
+    //         }
+    //         if (requestParams.has(KEY_SOURCE_DATABASE)) {
+    //             if (!(requestParams.get(KEY_SOURCE_DATABASE) instanceof String)) {
+    //                 LOGGER.fatal("`srcDbName` is not a string!");
+    //                 return false;
+    //             }
+    //         }
+    //         validate = true;
+    //     }
+    //     return validate;
+    // }
 
     /**
      * Run logic for the "/status" route that indicates the agent's current status.
      *
      * @return A response to the request called as a JSON Object.
      */
-    protected JSONObject statusRoute() {
-        JSONObject response = new JSONObject();
-        LOGGER.info("Detected request to get agent status...");
-        if (DataIntegrationAgent.VALID) {
-            response.put("Result", "Agent is ready to receive requests.");
-        } else {
-            response.put("Result", "Agent could not be initialised!");
-        }
-        return response;
-    }
+    // protected JSONObject statusRoute() {
+    //     JSONObject response = new JSONObject();
+    //     LOGGER.info("Detected request to get agent status...");
+    //     if (DataIntegrationAgent.VALID) {
+    //         response.put("Result", "Agent is ready to receive requests.");
+    //     } else {
+    //         response.put("Result", "Agent could not be initialised!");
+    //     }
+    //     return response;
+    // }
     
 }

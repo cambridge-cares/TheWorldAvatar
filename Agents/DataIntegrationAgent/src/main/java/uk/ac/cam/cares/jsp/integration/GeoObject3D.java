@@ -8,6 +8,7 @@ import org.postgis.PGgeometry;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -147,44 +148,46 @@ public class GeoObject3D {
         this.address.updateAddress(address,config);
     }
 
-    // public Map<Integer, PGgeometry> queryBuildingSurfaces(int cityobjectid, boolean thematic){
-    //     Map<Integer, PGgeometry> gourndSurface = new java.util.HashMap<>();
-    //     try (Connection srcConn = this.pool.get3DConnection()) {
-    //         if (!srcConn.isValid(60)) {
-    //             LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
-    //             throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
-    //         }else{
-    //             String sql = null;
-    //             if(thematic){
-    //                 sql = "SELECT public.ST_ExteriorRing(public.ST_Dump(public.ST_3DUnion(geometry))) as footprint, id "
-    //                 + "FROM surface_geometry WHERE root_id IN (SELECT lod2_multi_surface_id FROM thematic_surface WHERE building_id = "
-    //                 + cityobjectid+ " AND objectclass_id = 35) AND geometry is not null";
-    //             }else{
-    //                 sql = "SELECT geometry, id FROM surface_geometry WHERE root_id = " + cityobjectid + "AND geometry is not null";
-    //             }
+    public Map<Integer, PGgeometry> queryBuildingSurfaces(int cityobjectid, boolean thematic){
+        Map<Integer, PGgeometry> gourndSurface = new java.util.HashMap<>();
+        try (Connection srcConn = this.pool.get3DConnection()) {
+            if (!srcConn.isValid(60)) {
+                LOGGER.fatal(INVALID_CONNECTION_MESSAGE);
+                throw new JPSRuntimeException(INVALID_CONNECTION_MESSAGE);
+            }else{
+                String sql = null;
+                if(thematic){
+                    sql = "SELECT public.ST_ExteriorRing(public.ST_Dump(public.ST_3DUnion(geometry))) as footprint, id "
+                    + "FROM surface_geometry WHERE root_id IN (SELECT lod2_multi_surface_id FROM thematic_surface WHERE building_id = "
+                    + cityobjectid+ " AND objectclass_id = 35) AND geometry is not null";
+                }else{
+                    sql = "SELECT geometry, id FROM surface_geometry WHERE root_id = " + cityobjectid + "AND geometry is not null";
+                }
 
-    //             try (Statement stmt = srcConn.createStatement()) {
-    //                 ResultSet result = stmt.executeQuery(sql);
-    //                 while (result.next()) {
-    //                     SpatialLink sp = new SpatialLink();
-    //                     PGgeometry geom = (PGgeometry)result.getObject("footprint");
-    //                     if(geom != null){
-    //                         // String coordString = geom.getGeometry().getValue();
-    //                         // Geometry polygon = sp.createGeometry(coordString);
-    //                         // polygon.setSRID(geom.getGeometry().getSrid());
-    //                         gourndSurface.put(Integer.valueOf(result.getInt("id")) ,geom);
-    //                     }                        
-    //                 }                  
-    //             }
-    //             return gourndSurface;
-    //         }
-    //     } catch (SQLException e) {
-    //         LOGGER.fatal("Error connecting to source database: " + e);
-    //         throw new JPSRuntimeException("Error connecting to source database: " + e);
-    //     }
+                try (Statement stmt = srcConn.createStatement()) {
+                    ResultSet result = stmt.executeQuery(sql);
+                    while (result.next()) {
+                        SpatialLink sp = new SpatialLink();
+                        PGgeometry geom = (PGgeometry)result.getObject("footprint");
+                        if(geom != null){
+                            gourndSurface.put(Integer.valueOf(result.getInt("id")) ,geom);
+                        }                        
+                    }                  
+                }
+                return gourndSurface;
+            }
+        } catch (SQLException e) {
+            LOGGER.fatal("Error connecting to source database: " + e);
+            throw new JPSRuntimeException("Error connecting to source database: " + e);
+        }
 
-    // }
+    }
 
+     /**
+     * Extract footprint based on ground surface
+     * Extract roofprint based on roof surface
+     * Store resultes in postgresql
+     */
     public void extractPrint_thematic (List<GeoObject3D> allObject3D, String surfaceType){
         PGgeometry footprint = new PGgeometry();
         if(surfaceType.equals("footprint")){
@@ -222,7 +225,15 @@ public class GeoObject3D {
   
     }
 
-    public void identifySurface (String surfaceType){
+    /**
+     * To identify surface type (ground, roof and wall (current only work on ground, the others need to be developed))
+     * 1. If has not surface_calculation table, it will be created to store orientation and ratio (area/3d_area) of surface for types identification. 
+     *    Becasue the database would crash, the calculation will be processed on each building one by one and store in postgresql
+     *    a. The orientation: It returns -1 if the polygon is counterclockwise oriented (roof) and 1 if the polygon is clockwise oriented (ground)
+     *    b. Ratio: If the polygon is flat, the ratio will be 1. if it is vertical, the ratio will be zero. A threshold value to separate wall from roof and ground 
+     * 2. Surface types will be update in postgresql
+     */
+    public void identifySurface (List<GeoObject3D> allObject3D, String surfaceType){
         Map<Integer, List<Integer[]>> groundMap = new HashMap<>();
         if(surfaceType.equals("footprint")){
             this.objectClassid = 35;
@@ -235,15 +246,45 @@ public class GeoObject3D {
             if (this.srcConn == null) {
                 srcConn = this.pool.get3DConnection();
             }
+
+            String createTabel = 
+                "CREATE TABLE IF NOT EXISTS surface_calculation \r\n" + //
+                        "(\r\n" + //
+                        "    id serial primary key NOT NULL,\r\n" + //
+                        "    surface_id integer NOT NULL,\r\n" + //
+                        "    orientation numeric,\r\n" + //
+                        "    ratio double precision\r\n" + //
+                        ")";
+            Statement stmt = srcConn.createStatement();
+            stmt.execute(createTabel);
+
+            for(int i = 0; i < allObject3D.size(); i++){
+                int buildingid = allObject3D.get(i).getId();
+                String insertSql = "INSERT INTO surface_calculation (surface_id, orientation, ratio) " +
+                "SELECT * FROM ( " +
+                "SELECT sg.id, public.ST_Orientation(sg.geometry), public.ST_Area(sg.geometry)/public.ST_3DArea(public.ST_MakeValid(sg.geometry)) "+
+                "FROM surface_geometry sg " +
+                "JOIN building b ON b.lod3_multi_surface_id = sg.parent_id " +
+                "WHERE sg.geometry is NOT NULL AND public.ST_3DArea(public.ST_MakeValid(sg.geometry)) != 0 AND b.id = " + buildingid +
+                " ) AS i(surface_id, orientation, ratio) " +
+                "WHERE NOT EXISTS ( SELECT FROM surface_calculation sc WHERE sc.surface_id = i.surface_id);";
+                stmt.executeUpdate(insertSql);
+            }
+            
             if(this.objectClassid == 35){
+                // String sql = "SELECT sg.id as surfaceid, sg.root_id as rootid, sg.parent_id as parentid, sg.cityobject_id as cityobjid, b.id as buildingid FROM surface_geometry sg "+
+                // "JOIN building b ON b.lod3_multi_surface_id = sg.parent_id "+
+                // "WHERE sg.geometry IS NOT NULL AND public.ST_3DArea(public.ST_MakeValid(sg.geometry)) != 0 "+
+                // "AND public.ST_Orientation(sg.geometry) = 1 " +
+                // "AND public.ST_Area(sg.geometry)/public.ST_3DArea(public.ST_MakeValid(sg.geometry))>0.8 " +
+                // "GROUP BY buildingid, rootid, surfaceid"; 
+                
                 String sql = "SELECT sg.id as surfaceid, sg.root_id as rootid, sg.parent_id as parentid, sg.cityobject_id as cityobjid, b.id as buildingid FROM surface_geometry sg "+
                 "JOIN building b ON b.lod3_multi_surface_id = sg.parent_id "+
-                "WHERE sg.geometry IS NOT NULL AND public.ST_3DArea(public.ST_MakeValid(sg.geometry)) != 0 "+
-                "AND public.ST_Orientation(sg.geometry) = 1 " +
-                "AND public.ST_Area(sg.geometry)/public.ST_3DArea(public.ST_MakeValid(sg.geometry))>0.8 " +
-                "GROUP BY buildingid, rootid, surfaceid"; 
-                
-                Statement stmt = srcConn.createStatement();
+                "JOIN surface_calculation sc ON sg.id = sc.surface_id "+
+                "WHERE sc.orientation = 1 AND sc.ratio > 0.8 "+
+                "GROUP BY buildingid, rootid, surfaceid";
+                // Statement stmt = srcConn.createStatement();
                 ResultSet result = stmt.executeQuery(sql);
                 while (result.next()) {
                     Integer[] groundSurface = new Integer[4];
@@ -276,6 +317,13 @@ public class GeoObject3D {
         }
     }
 
+    /**
+     * 1 building has only 1 ground surface cityobject and 1 ground surface thematic surface
+     * 2. new cityobject of ground surface
+     * 3. new surface geometry of root ground surface, no geometry
+     * 4. new thematic surface link to new parentid
+     * 5. update all ground surface with new rootid and cityobjectid
+     */
     public void updateSurface(Map<Integer, List<Integer[]>> groundMap) throws SQLException{
         String upSql;
         String insertSql;
@@ -292,11 +340,6 @@ public class GeoObject3D {
             PreparedStatement pstmt;
             for (var entry : groundMap.entrySet()) {
                 buildingid = entry.getKey();
-                // 1 building has only 1 ground surface cityobject and 1 ground surface thematic surface
-                // 1. new cityobject of ground surface 
-                // 2. new surface geometry of root ground surface, no geometry 
-                // 3. new thematic surface link to new parentid 
-                // 4. update all ground surface with new rootid and cityobjectid
                 rootid = entry.getValue().get(0)[2];
                 insertSql = "INSERT INTO cityobject (objectclass_id) VALUES (?);";
                 pstmt = srcConn.prepareStatement(insertSql, new String[] {"id"});
@@ -316,9 +359,6 @@ public class GeoObject3D {
                 if(rs.next()){
                     parentid = rs.getInt(1);
                 }
-                // upSql = "UPDATE surface_geometry SET root_id = " + rootid + " WHERE id = " + rootid + " AND cityobject_id = " + cityobjid + ";";  
-                // pstmt = srcConn.prepareStatement(upSql); 
-                // pstmt.executeUpdate();
 
                 insertSql = "INSERT INTO thematic_surface (id,objectclass_id, building_id, lod2_multi_surface_id) VALUES (?,?,?,?);";
                 pstmt = srcConn.prepareStatement(insertSql);
@@ -346,7 +386,10 @@ public class GeoObject3D {
         // this.srcConn.close();
     }
 
-    //1. insert data in surface_geometry 2. update data in building
+    /**
+     * 1. insert footprint as a new surface in surface_geometry
+     * 2. update new surface id in building (lod0_XXXXprint_id)
+     */
     public void updatePrint(int buildingid, PGgeometry polygon, String surfaceType){
   
         String surface = null;

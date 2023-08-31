@@ -4,8 +4,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.CoordinateSequenceFilter;
@@ -17,8 +15,12 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.util.GeometryFixer;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
-import org.postgis.PGgeometry;
 
+/**
+ * Workflow of footprint extraction:
+ * 1. thematic-- true: query ground surface and extract footprint
+ * 2. thematic-- false: identify surface types, then extract footprint
+ */
 public class FootPrint {
 
     List<GeoObject3D> allObject3D = new ArrayList<>();
@@ -35,40 +37,14 @@ public class FootPrint {
             this.thematic = true;
         }else{
             this.thematic = false;
-            object3D.identifySurface(this.surfaceType);
+            object3D.identifySurface(allObject3D, this.surfaceType);
         }
         
         object3D.extractPrint_thematic(allObject3D, this.surfaceType);
-        // for(int i = 0; i < allObject3D.size(); i++){
-        //     object3D = allObject3D.get(i);
-        //     object3D.setConfig(config);
-        //     object3D.setSqlConnectionPool();
-        //     int objectid = object3D.getId();
-        //     // int srid = object3D.getSrid(object3D.getGeometry3D());
-        //     PGgeometry print = new PGgeometry();
-        //     // List<PGgeometry> groundList = new ArrayList<>();               
-        //     object3D.extractPrint_thematic(objectid, this.surfaceType);
-        //     // object3D.updatePrint(objectid, print, this.surfaceType);
-        // }
     }
     
-    // private void classifySurfaces(List<GeoObject3D> allObject3D){
-    //     GeoObject3D object3D = new GeoObject3D();
-    //     if(!this.thematic){
-    //         object3D.identifySurface(this.surfaceType);               
-    //     }
 
-    //     for(int i = 0; i < allObject3D.size(); i++){
-    //         object3D = allObject3D.get(i);
-    //         int objectid = object3D.getId();
-    //         // int srid = object3D.getSrid(object3D.getGeometry3D());
-    //         PGgeometry print = new PGgeometry();
-    //         // List<PGgeometry> groundList = new ArrayList<>();               
-    //         print = object3D.extractPrint_thematic(objectid, this.surfaceType);
-    //         object3D.updatePrint(objectid, print, this.surfaceType);
-    //     }
-    // }
-      /**
+    /**
      * Extracts the footprint of the building from its ground surface geometries
      * 
      * @param results JSONArray of the query results for ground surface geometries
