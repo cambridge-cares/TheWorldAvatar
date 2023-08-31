@@ -423,6 +423,8 @@ Content-Type: application/json
 
 It has been observed that the stack tends to crash when RAM usage approaches 100%. Depending on when the stack has been created initially and how the `stack-manager` development has progressed since then, simple restarting the stack from `main` might not be sufficient due to potential version conflicts (e.g., it has been observed that initially created data volumes using PostGIS 14 are not compatible with PostGIS 15, which is used as of `stack-manager` version >1.13.3). To restart the stack using a specific version of the `stack-manager`, simply specify the `REQUIRED_VERSION` in the provided `redeploy.sh` convenience script and run it from the repository where this README is located.
 
+Please note that this 1) only works after the initial data instantiation workflow has been executed (due to initial agent dependencies as explained above) and 2) requires all corresponding `docker-compose` files populated with all required parameters (i.e., aligned namespaces and API keys) in the corresponding agent repositories.
+
 &nbsp;
 # Potential refinements/next steps
 

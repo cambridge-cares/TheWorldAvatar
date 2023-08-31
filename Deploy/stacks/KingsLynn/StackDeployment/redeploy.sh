@@ -32,9 +32,16 @@ done
 # Start agent containers
 # Declare an associative array for all containers to start
 declare -A agent_paths
-agent_paths["metoffice_agent"]="MetOfficeAgent"
 agent_paths["airquality_agent"]="AirQualityAgent"
+agent_paths["metoffice_agent"]="MetOfficeAgent"
 agent_paths["river-data-uploader"]="FloodAgent"
+
+agent_paths["epc_agent"]="EnergyPerformanceCertificateAgent"
+agent_paths["landregistry_agent"]="HMLandRegistryAgent"
+agent_paths["avgsqmprice_agent"]="AverageSquareMetrePriceAgent"
+agent_paths["propertyvalue_agent"]="PropertyValueEstimationAgent"
+agent_paths["floodassessment_agent"]="FloodAssessmentAgent"
+agent_paths["floodwarnings_agent"]="FloodWarningAgent"
 
 cd "../../../../Agents/"
 for name in "${!agent_paths[@]}"; do
