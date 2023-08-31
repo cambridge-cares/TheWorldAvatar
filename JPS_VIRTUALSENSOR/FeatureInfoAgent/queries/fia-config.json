@@ -6,6 +6,16 @@
             "timeFile": "ReportingStations_Time.sparql",
             "timeLimit":-1,
             "databaseName": "postgres"
+        },
+		{
+            "class": "https://www.theworldavatar.com/kg/ontodispersion/DispersionPolygon",
+            "metaFile": "dispersion_polygon.sparql",
+            "databaseName": "postgres"
+        },
+		{
+            "class": "https://www.theworldavatar.com/kg/ontodispersion/Ship",
+            "metaFile": "ship_meta.sparql",
+            "databaseName": "postgres"
         }
     ]
 }
