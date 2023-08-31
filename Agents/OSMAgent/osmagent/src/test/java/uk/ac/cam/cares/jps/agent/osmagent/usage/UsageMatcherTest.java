@@ -72,7 +72,7 @@ public class UsageMatcherTest {
                 (mock, context) -> {
                     doReturn(connectionMock).when(mock).getConnection();
                 })) {
-            UsageMatcher.checkAndAddColumns("", "", "", "", "");
+            UsageMatcher.checkAndAddColumns("", "", "", "public.points", "public.polygons");
 
             verify(connectionMock, times(8)).getMetaData();
             verify(connectionMock, times(4)).createStatement();

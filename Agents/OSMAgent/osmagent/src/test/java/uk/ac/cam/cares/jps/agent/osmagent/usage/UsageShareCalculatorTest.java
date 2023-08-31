@@ -18,7 +18,7 @@ public class UsageShareCalculatorTest {
     @Test
     public void testUpdateUsageShare() {
         try (MockedConstruction<RemoteRDBStoreClient> remoteRDBStoreClientMock = mockConstruction(RemoteRDBStoreClient.class)) {
-            UsageShareCalculator.updateUsageShare("", "", "points", "polygons", "");
+            UsageShareCalculator.updateUsageShare("", "", "", "points", "polygons");
 
             ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
 

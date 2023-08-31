@@ -177,13 +177,13 @@ public class UsageShareCalculator {
                                         "    FROM " + points + " AS p2\n" +
                                         "    WHERE p2.building_iri = p.building_iri\n" +
                                         "      AND p2.ontobuilt IS NOT NULL\n" +
-                                        "  )"+
+                                        "  )" +
                                         "  AND NOT EXISTS (\n" +
                                         "    SELECT 1\n" +
-                                        "    FROM "+polygons+" AS p3  \n" +
+                                        "    FROM " + polygons + " AS p3  \n" +
                                         "    WHERE p3.building_iri = p.building_iri\n" +
                                         "      AND p3.ontobuilt IS NOT NULL\n" +
-                                        "  )"+
+                                        "  )" +
                                         "  AND ST_Intersects(p.\"geometryProperty\", \n" +
                                         "      ST_Transform((SELECT ST_Collect(wkb_geometry) \n" +
                                         "                    FROM " + landUseTable + " \n" +
@@ -204,13 +204,13 @@ public class UsageShareCalculator {
                                         "    FROM " + polygons + " AS p2\n" +
                                         "    WHERE p2.building_iri = p.building_iri\n" +
                                         "      AND p2.ontobuilt IS NOT NULL\n" +
-                                        "  )"+
+                                        "  )" +
                                         "  AND NOT EXISTS (\n" +
                                         "    SELECT 1\n" +
-                                        "    FROM "+points+" AS p3  \n" +
+                                        "    FROM " + points + " AS p3  \n" +
                                         "    WHERE p3.building_iri = p.building_iri\n" +
                                         "      AND p3.ontobuilt IS NOT NULL\n" +
-                                        "  )"+
+                                        "  )" +
                                         "  AND ST_Intersects(p.\"geometryProperty\", \n" +
                                         "      ST_Transform((SELECT ST_Collect(wkb_geometry) \n" +
                                         "                    FROM " + landUseTable + " \n" +
@@ -220,9 +220,13 @@ public class UsageShareCalculator {
                         rdbStoreClient.executeUpdate(updateLandusePoints);
                         rdbStoreClient.executeUpdate(updateLandusePolygons);
                         System.out.println(
-                                        "Untagged buildings are assigned  "+key+", "+value+", "+ontobuilt+".");
+                                        "Untagged buildings with building_iri are assigned for " + key + " with value:"
+                                                        + value + " under the ontobuiltenv:" + ontobuilt
+                                                        + " category.");
                 }
 
+                System.out.println(
+                                "Untagged building has been assigned an ontobuilt type according to the corresponding landuse.");
                 csvReader.close();
 
         }

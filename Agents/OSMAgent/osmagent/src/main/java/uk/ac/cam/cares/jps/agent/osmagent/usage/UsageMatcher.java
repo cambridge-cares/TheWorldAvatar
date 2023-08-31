@@ -125,15 +125,22 @@ public class UsageMatcher {
     /**
      * Check if the column name exists
      * @param connection
-     * @param tableName
+     * @param tableNamewSchema
      * @param columnName
      * @return
      * @throws SQLException
      */
-    private static boolean isColumnExist(Connection connection, String tableName, String columnName)
+    private static boolean isColumnExist(Connection connection, String tableNamewSchema, String columnName)
             throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
-        try (ResultSet resultSet = metaData.getColumns(null, null, tableName, columnName)) {
+
+        // Split the tableName string by the dot (.) separator
+        String[] tableNameParts = tableNamewSchema.split("\\.");
+        String schema = tableNameParts[0];
+        String table = tableNameParts[1];
+
+
+        try (ResultSet resultSet = metaData.getColumns(null, schema, table, columnName)) {
             return resultSet.next();
         }
     }
