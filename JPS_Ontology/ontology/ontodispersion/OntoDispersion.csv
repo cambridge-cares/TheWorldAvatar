@@ -53,5 +53,6 @@ hasPollutantID,Object Property,,,DispersionOutput,PollutantID,,,https://www.thew
 hasDispersionMatrix,Object Property,,,DispersionOutput,DispersionMatrix,,,https://www.theworldavatar.com/kg/ontodispersion/,
 hasDispersionRaster,Object Property,,,DispersionOutput,DispersionRaster,,,https://www.theworldavatar.com/kg/ontodispersion/,
 hasDispersionColourBar,Object Property,,,DispersionOutput,DispersionColourBar,,,https://www.theworldavatar.com/kg/ontodispersion/,
+hasHeight,Object Property,,,DispersionOutput,z,,Height above ground of dispersion output,https://www.theworldavatar.com/kg/ontodispersion/,
 hasName,Data Property,,,OntoCityGMLNamespace,String,,To store the literal of the namespace,https://www.theworldavatar.com/kg/ontodispersion/,
 hasValue,Data Property,,,DispersionPolygon,String,,To store the literal of the dispersion polygon,https://www.theworldavatar.com/kg/ontodispersion/,
