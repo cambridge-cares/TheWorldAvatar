@@ -19,15 +19,15 @@ from agent.ifc2tileset.tile_helper import make_tileset, make_root_tile, compute_
 logger = agentlogging.get_logger("dev")
 
 
-def gen_root_content(building_iri: str, asset_data: pd.DataFrame):
+def gen_root_content(asset_data: pd.DataFrame, building_data: list[str]):
     """Generates a tileset with building and furniture data.
 
     If there are no assets, the tileset generated in this function is sufficient for visualisation.
     If there are no building, furniture and assets, returns None.
 
     Arguments:
-        building_iri: The data IRI of the building.
         asset_data: A dataframe containing mappings for asset metadata, with headers 'file', 'name', 'uid', 'iri'.
+        building_data: A list containing the data IRI and name of the building in this order.
     Returns:
         A tileset with building and furniture data if either building or assets are present, otherwise None.
     """

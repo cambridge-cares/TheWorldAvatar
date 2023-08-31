@@ -18,19 +18,19 @@ from agent.ifc2tileset.asset_tiles import append_tileset_assets
 logger = agentlogging.get_logger("dev")
 
 
-def gen_tilesets(asset_data: pd.DataFrame, building_iri: str):
+def gen_tilesets(asset_data: pd.DataFrame, building_data: list[str]):
     """Generates the tileset in the json format.
 
     Args:
         asset_data: A dataframe containing all individual asset metadata with headers 'file', 'name', 'uid', 'iri'.
-        building_iri: The data IRI of the building.
+        building_data: A list containing the data IRI and name of the building in this order.
     """
     # Create and write separate tilesets if they exist
     gen_solarpanel_tileset()
     gen_sewagenetwork_tileset()
 
     # Generate tileset with root contents
-    bim_tileset = gen_root_content(building_iri, asset_data)
+    bim_tileset = gen_root_content(asset_data, building_data)
 
     # If there are assets, append tileset with asset information
     append_tileset_assets(bim_tileset, asset_data)

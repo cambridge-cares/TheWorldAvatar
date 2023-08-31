@@ -51,7 +51,7 @@ def test_gen_root_content_no_building_no_furniture_with_assets():
         [0, 0, 3,  10, 0, 0, 0, 10, 0, 0, 0, 3], building_iri)
 
     # Act
-    actual = gen_root_content("test_iri", asset_df)
+    actual = gen_root_content(asset_df, "test_iri")
 
     # Assert
     assert actual == expected
@@ -60,7 +60,7 @@ def test_gen_root_content_no_building_no_furniture_with_assets():
 def test_gen_root_content_no_building_no_furniture_no_assets():
     """Tests gen_root_content() when there are no geometry files."""
     # Act
-    actual = gen_root_content("test_iri", pd.DataFrame())
+    actual = gen_root_content(pd.DataFrame(), "test_iri")
 
     # Assert
     assert actual is None
