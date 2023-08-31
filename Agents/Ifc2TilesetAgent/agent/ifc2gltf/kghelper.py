@@ -143,6 +143,10 @@ def get_building_iri_name(query_endpoint: str, update_endpoint: str) -> str:
         .build()
 
     logger.debug("Executing query...")
-    # assume that there exists only one building in the KG subgraph for BIM models
-    results = client.execute_query(query)[0]
-    return results["iri"], results["name"]
+    results = client.execute_query(query)
+     # When there is no results, return empty tuple
+    if len(results) == 0:
+        return "",""
+    else:
+        # assume that there exists only one building in the KG subgraph for BIM models
+        return results[0]["iri"], results[0]["name"]

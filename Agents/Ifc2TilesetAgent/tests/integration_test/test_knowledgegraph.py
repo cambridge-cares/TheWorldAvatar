@@ -70,16 +70,30 @@ def test_retrieve_metadata(init_assets, expected, kg_client):
     assert_df_equal(actual, expected)
 
 
-def test_get_building_iri_name(endpoint, kg_client):
+@pytest.mark.parametrize(
+    "init_assets, expected_building_iri, expected_building_name",
+    [(
+        # when building exists, ensure that an iri and name can be retrieved
+        ["building"],
+        C.sample_building_iri,
+        C.sample_building_name
+    ), (
+        # when there is no building, no values should be returned
+        [],
+        "",
+        ""
+    )]
+)
+def test_get_building_iri_name(init_assets, expected_building_iri, expected_building_name, endpoint, kg_client):
     # Arrange
-    init_kg_client(kg_client, ["building"])
+    init_kg_client(kg_client, init_assets)
 
     # Act
     actual = get_building_iri_name(endpoint, endpoint)
 
     # Assert
-    assert actual[0] == C.sample_building_iri
-    assert actual[1] == C.sample_building_name
+    assert actual[0] == expected_building_iri
+    assert actual[1] == expected_building_name
 
 
 @pytest.mark.parametrize(
