@@ -7,7 +7,7 @@
                 "Image": "ghcr.io/cambridge-cares/twa-vf:4.0.0",
                 "Mounts": [
                     {
-                        "Type": "volume",
+                        "Type": "bind",
                         "Source": "vis-files",
                         "Target": "/var/www/html"
                     }

@@ -38,6 +38,10 @@ SELECT ?Property ?Value ?Unit WHERE {
 			BIND ("Installed Capacity" AS ?Property)
 			BIND ("MW" AS ?Unit)
 			[IRI] eip3:hasRequirementsAspect/cape0:hasValue/cape0:numericalValue ?Value .
-		} 
+		} UNION {
+            BIND ("Nearby Population (1 KM)" AS ?Property)
+            [IRI] eip1:hasPopulationInRadius ?temp
+            BIND (ROUND(?temp) AS ?Value) .
+        }
 	}
 }

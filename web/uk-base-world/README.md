@@ -16,12 +16,13 @@ Once a year, the UK government publishes a Digest of UK Energy Statistics (DUKES
 
 Read the associated [DUKES Data](./docs/data-dukes.md) page for details on how the DUKES data was acquired and processed.
 
-### United Kingdom: High Resolution Population Density
+### United Kingdom: High Resolution Population Count
 
 The [Humanitarian Data Exchange](https://data.humdata.org/) publishes a number of data sets from around the globe. On an irregular basis, they publish population density data for the UK. In this example we're using the `population_gbr.geotiff.zip` file (which contains a GeoTIFF of population density) from the [United Kingdom: High Resolution Population Density Maps + Demographic Estimates](https://data.humdata.org/dataset/united-kingdom-high-resolution-population-density-maps-demographic-estimates) page.
 
-No processing is needed on this data set, we're using it as is.
+**Note:** Whilst meta reports this data as a population density, their documentation tells another tale; it is in fact a population count. Having said that, this only matters when calculating the amount of people within the 1KM radius of a power plant.
 
+No pre-processing is needed on this data set, we're using it as is.
 
 ## Uploading data
 
@@ -35,7 +36,7 @@ Once the data uploader has finished running, you should be able to log into the 
 
 The below files relate to the aforementioned DUKES 2023 data set.
 
-* [Uploader config](./inputs/config/dukes_2023.json)
+* [Uploader config](./inputs/config/uploader/dukes_2023.json)
 * [Ontop mapping](./inputs/data/uk_base_world//dukes_2023.obda)
   * Note that at the time of writing, this mapping utilises TBoxes that do not appear within the OntoEIP ontology. Nothing in the mapping contradicts the ontology, but the existing ontology does not contain enough concepts to cover all of the concepts provided by DUKES. 
 * [OntoEIP ontology](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoeip)
@@ -46,7 +47,9 @@ The below files relate to the aforementioned DUKES 2023 data set.
 
 The below files relate to the aforementioned UK Population Density data set.
 
-* [Uploader config](./inputs/config/population.json)
+* [Uploader config](./inputs/config/uploader/population.json)
+* [Geospatial SQL Query](./inputs/config/uploader/dukes_2023_pop.sql)
+  * An SQL query to determine the number of people within a 1KM radius of each power plant. 
 * [Raster style](./inputs/config/uk-population-style.sld)
   * SLD file to style the population raster data in GeoServer. 
 
@@ -106,7 +109,7 @@ For any support in reproducing this visualisation, please contact the CMCL suppo
 ## Screenshot
 
 <p align="center">
-    <img src="./inputs/uk-base-world.jpg" alt="UK Base World visualisation, circa August 2023." width="66%"/>
+    <img src="./inputs/images/uk-base-world.jpg" alt="UK Base World visualisation, circa August 2023." width="66%"/>
 </p>
 <p align="center">
     <em>UK Base World visualisation, circa August 2023.</em>

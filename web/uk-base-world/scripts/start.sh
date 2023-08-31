@@ -46,11 +46,6 @@ then
         exit -1
     fi
 
-    # Copy in the FIA config and query
-    FIA_DIR="$ROOT/Agents/FeatureInfoAgent/queries"
-    cp "./inputs/config/fia-config.json" "$FIA_DIR/"
-    cp "./inputs/config/dukes_query.sparql" "$FIA_DIR/"
-
     # Clear any existing stack manager configs
     MANAGER_CONFIG="$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/config/"
     rm -rf "$MANAGER_CONFIG/*.json"
@@ -61,15 +56,15 @@ then
     echo $PASSWORD > "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/secrets/grafana_password"
 
     # Copy in the stack manager configs
-    cp "./inputs/config/UKBASEWORLD.json" "$MANAGER_CONFIG/"
-    cp "./inputs/config/visualisation.json" "$MANAGER_CONFIG/services/"
-    cp "./inputs/config/grafana.json" "$MANAGER_CONFIG/services/"
+    cp "./inputs/config/manager/UKBASEWORLD.json" "$MANAGER_CONFIG/"
+    cp "./inputs/config/manager/visualisation.json" "$MANAGER_CONFIG/services/"
+    cp "./inputs/config/manager/grafana.json" "$MANAGER_CONFIG/services/"
 
     # Copy the FIA files into the special volume populator folder
     mkdir -p "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries"
     rm -rf "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/*"
-    cp "./inputs/config/fia-config.json" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
-    cp "./inputs/config/dukes_query.sparql" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
+    cp "./inputs/config/manager/fia-config.json" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
+    cp "./inputs/config/manager/fia_dukes_query.sparql" "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/fia-queries/"
 
     # Copy the visualisation files into the special volume populator folder
     mkdir -p "$ROOT/Deploy/stacks/dynamic/stack-manager/inputs/data/vis-files/"
@@ -94,12 +89,18 @@ then
 
     # Clear any existing stack uploader configs
     UPLOAD_CONFIG="$ROOT/Deploy/stacks/dynamic/stack-data-uploader/inputs/config"
-    rm -rf "$UPLOAD_CONFIG/*.json"
+    rm -rf "${UPLOAD_CONFIG:?}"/*
+
+    # Clear any existing stack uploader data
+    UPLOAD_DATA="$ROOT/Deploy/stacks/dynamic/stack-data-uploader/inputs/data"
+    rm -rf "${UPLOAD_DATA:?}"/*
 
     # Copy in the stack uploader config(s)
-    cp "./inputs/config/dukes_2023.json" "$UPLOAD_CONFIG/"
-    cp "./inputs/config/population.json" "$UPLOAD_CONFIG/"
-    cp "./inputs/config/uk-population-style.sld" "$UPLOAD_CONFIG/"
+    cp "./inputs/config/uploader/UKBASEWORLD.json" "$UPLOAD_CONFIG/"
+    cp "./inputs/config/uploader/dukes_2023.json" "$UPLOAD_CONFIG/"
+    cp "./inputs/config/uploader/dukes_2023_pop.sql" "$UPLOAD_CONFIG/"
+    cp "./inputs/config/uploader/population.json" "$UPLOAD_CONFIG/"
+    cp "./inputs/config/uploader/uk-population-style.sld" "$UPLOAD_CONFIG/"
 
     # Copy in the data for upload
     UPLOAD_DATA="$ROOT/Deploy/stacks/dynamic/stack-data-uploader/inputs/data"
@@ -113,10 +114,11 @@ then
     # Wait for the stack to start
     echo 
     read -p "Press enter to continue once the stack is up and running..."
+    sleep 5
     
     # Run the uploader to upload data
     cd "$ROOT/Deploy/stacks/dynamic/stack-data-uploader"
-    echo "Running the stack uploader script..."
+    echo "Running the stack uploader script, this may take some time..."
     ./stack.sh start UKBASEWORLD 
 
     # Get the name of the grafana container
@@ -124,11 +126,11 @@ then
 
     # Copy in the custom grafana images
     cd "$START"
-    docker cp "./inputs/twa-logo.svg" $GRAFANA:"/usr/share/grafana/public/img/grafana_icon.svg"
-    docker cp "./inputs/twa-favicon.png" $GRAFANA:"/usr/share/grafana/public/img/fav32.png"
-    docker cp "./inputs/twa-favicon.png" $GRAFANA:"/usr/share/grafana/public/img/apple-touch-icon.png"
-    docker cp "./inputs/twa-background-light.svg" $GRAFANA:"/usr/share/grafana/public/img/g8_login_light.svg"
-    docker cp "./inputs/twa-background-dark.svg" $GRAFANA:"/usr/share/grafana/public/img/g8_login_dark.svg"
+    docker cp "./inputs/images/twa-logo.svg" $GRAFANA:"/usr/share/grafana/public/img/grafana_icon.svg"
+    docker cp "./inputs/images/twa-favicon.png" $GRAFANA:"/usr/share/grafana/public/img/fav32.png"
+    docker cp "./inputs/images/twa-favicon.png" $GRAFANA:"/usr/share/grafana/public/img/apple-touch-icon.png"
+    docker cp "./inputs/images/twa-background-light.svg" $GRAFANA:"/usr/share/grafana/public/img/g8_login_light.svg"
+    docker cp "./inputs/images/twa-background-dark.svg" $GRAFANA:"/usr/share/grafana/public/img/g8_login_dark.svg"
 
     # Create a new Grafana organisation via HTTP API
     echo "Using Grafana API to create a new organisation..."
@@ -167,9 +169,10 @@ then
     # Update the default grafana dashboard to be the "Overview" one
     curl -X PUT --insecure -H "Content-Type: application/json" -H "Authorization: Bearer $API_KEY" --data-binary @inputs/dashboard/grafana-org-config.json http://admin:$PASSWORD@localhost:38383/dashboard/api/org/preferences
 
-    echo ""
+    echo "----------"
     echo "Script completed, may need to wait a few minutes for the stack-data-uploader to finish."
-    echo "Visualisation should be available now at http://localhost:38383/visualisation/"
+    echo "Visualisation should be available at http://localhost:38383/visualisation/"
+    echo "----------"
 else
     echo "Please copy in the data sets as described in the README before re-running this script."
     exit -1
