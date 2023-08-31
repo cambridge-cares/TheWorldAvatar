@@ -66,7 +66,7 @@ public class Config extends ContainerClient {
 //        }
 //    }
     /**
-     * An overloaded method for non-stack transfers to retrieve the SQL database properties stored in the properties file.
+     * An overloaded method for stack transfers to retrieve the SQL database properties stored in the properties file.
      *
      * @return An array of these endpoints.
      */

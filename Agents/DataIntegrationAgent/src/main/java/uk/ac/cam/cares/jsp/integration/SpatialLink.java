@@ -40,6 +40,10 @@ public class SpatialLink{
     List<GeoObject3D> allObject3D = new ArrayList<>();
     List<GeoObject2D> allObject2D = new ArrayList<>();
 
+    /**
+     * Setup config of DB connection
+     * query all 2d geospatial objects from OSM and 3d buildings
+     */
     protected void SpatialLink(String[] config) throws SQLException {
         this.config = config;
 
@@ -57,9 +61,14 @@ public class SpatialLink{
 
 
     }
+    /**
+     * Spatial matching 2d and 3d objects to migrate name and address from OSM to 3d building
+     * 1. transform crs 
+     * 2. calculate intersection area ratio
+     * 3. update name and address in 3D building
+     */
     public void findMatchedObjects(String[] config) throws ParseException, FactoryException, TransformException, SQLException {
 
-        // GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
         GeometryFactory fac = new GeometryFactory();
         WKTReader reader = new WKTReader( fac );
         ObjectAddress address = new ObjectAddress();
@@ -124,7 +133,9 @@ public class SpatialLink{
 
     }
             
-
+    /**
+     * Convert coordinates in string format to Coordinate formate
+     */
     public List<Coordinate> str2coords(String st_geometry) {
         String[] pointXYZList = null;
         List<Coordinate> coords = new LinkedList<Coordinate>();

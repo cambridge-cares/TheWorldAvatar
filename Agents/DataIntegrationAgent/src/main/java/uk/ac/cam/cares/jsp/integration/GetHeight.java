@@ -9,12 +9,10 @@ import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.postgis.PGgeometry;
-
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class GetHeight {
-    private static final Logger LOGGER = LogManager.getLogger(GeoObject3D.class);
+    private static final Logger LOGGER = LogManager.getLogger(GetHeight.class);
     private String[] config;
     private static final String INVALID_CONNECTION_MESSAGE = "Connection is invalid...";
     private SqlConnectionPool pool;
@@ -30,6 +28,9 @@ public class GetHeight {
         calculateHeight(this.allObject3D, thematicParams);
     }
 
+    /**
+     * Get Max Z and Min Z of building to calculate height and store in building table as measeured height
+     */
     private void calculateHeight(List<GeoObject3D> allObject3D, String thematicParams){
         this.pool = new SqlConnectionPool(config);
         try (Connection srcConn = this.pool.get3DConnection()) {
