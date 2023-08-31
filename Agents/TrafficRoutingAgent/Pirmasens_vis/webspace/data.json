@@ -173,6 +173,24 @@
                     "clusterRadius": 100,
                     "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27Hospital%27"
                 }
+                ,
+                {
+                    "id": "Pharmacy",  
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27Pharmacy%27"
+                }
+                ,
+                {
+                    "id": "Bank",  
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/twa/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=twa%3Abuildings_pirmasens&outputFormat=application%2Fjson&CQL_FILTER=ontobuilt=%27Bank%27"
+                }
             ], 
             "layers": [
                 {
@@ -197,7 +215,7 @@
                             "FireStation", "#FF4500",
                             "SingleResidential", "#6495ED",
                             "Hotel", "#FF1493",
-                            "Non-domestic", "#1F77B4",
+                            "Non-domestic", "#F1EB9C",
                             "UniversityFacility", "#9932CC",
                             "MultiResidential", "#4169E1",
                             "Domestic", "#4682B4",
@@ -206,9 +224,11 @@
                             "School", "#008000",
                             "RetailFacility", "#DC143C",
                             "SportsFacility", "#FF69B4",
+                            "Bank", "#FF8C00",
                             "Office", "#FF8C00",
                             "Clinic", "#FF4500",
                             "Hospital", "#FF4500",
+                            "Pharmacy", "#FF4500",
                             "#A9A9A9"
                         ],
                         "fill-extrusion-opacity": 0.9,
@@ -408,7 +428,7 @@
                         "visibility": "visible"
                     },
                     "paint": {
-                        "fill-extrusion-color": "#1F77B4",
+                        "fill-extrusion-color": "#F1EB9C",
                         "fill-extrusion-opacity": 0.9,
                         "fill-extrusion-base": 0,
                         "fill-extrusion-height": [
@@ -657,6 +677,51 @@
                     },
                     "paint": {
                         "fill-extrusion-color": "#FF4500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "measured_height"],
+                            ["get", "measured_height"],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "Pharmacy",
+                    "name": "Pharmacy",
+                    "source": "Pharmacy",
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF4500",
+                        "fill-extrusion-opacity": 0.9,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "measured_height"],
+                            ["get", "measured_height"],
+                            8
+                        ]
+                    }
+                }
+                ,                
+                {
+                    "id": "Bank",
+                    "name": "Bank",
+                    "source": "Bank",
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 23,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#FF8C00",
                         "fill-extrusion-opacity": 0.9,
                         "fill-extrusion-base": 0,
                         "fill-extrusion-height": [
