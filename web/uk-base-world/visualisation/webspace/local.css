@@ -1,0 +1,29 @@
+/* Override settings for mouse popup content */
+.mapboxgl-popup-content {
+    text-align: center !important;
+    min-width: 200px !important;
+}
+
+/** Change position of Mapbox logo **/
+.mapboxgl-ctrl-bottom-left {
+    right: 5px !important;
+    bottom: 15px !important;
+    left: revert !important;
+    top: revert !important;
+}
+
+/** Remove the improve map link **/
+.mapbox-improve-map {
+    display: none;
+}
+
+/** Fix return container location **/
+#returnContainer {
+    right: 10px !important;
+}
+
+/** Fix legend container height **/
+#sidePanelLegend {
+    height: calc(100% - 40px) !important;
+    margin: 0 20px 20px 20px !important;
+}

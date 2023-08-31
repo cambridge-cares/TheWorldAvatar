@@ -17,14 +17,9 @@ WORKDIR /root/.m2
 RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|" settings-security.xml
 RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
-# Set username and password from credentials
-WORKDIR /root/cea-agent/src/main/resources
-RUN sed -i "s|USERNAME|$(cat ../../../../credentials/postgres_username.txt)|;s|PASSWORD|$(cat ../../../../credentials/postgres_password.txt)|" timeseriesclient.properties
-RUN sed -i "s|USERNAME|$(cat ../../../../credentials/postgis_username.txt)|;s|PASSWORD|$(cat ../../../../credentials/postgis_password.txt)|" postgis.properties
-
 # Build
 WORKDIR /root/cea-agent
-RUN mvn package
+RUN --mount=type=cache,target=/root/.m2/repository mvn package
 
 #==================================================================================================
 # Third stage: copy the downloaded dependency into a new image and build into an app
@@ -53,5 +48,5 @@ ENV PATH "/venv/bin:/venv/cea/bin:/venv/Daysim:$PATH"
 SHELL ["/bin/bash", "-c"]
 
 # Start the Tomcat server
-ENTRYPOINT ["java", "-cp", "target/cea-agent-0.3.1-jar-with-dependencies.jar" , "uk.ac.cam.cares.jps.agent.cea.Main"]
+ENTRYPOINT ["java", "-cp", "target/cea-agent-2.1.0-jar-with-dependencies.jar" , "uk.ac.cam.cares.jps.agent.cea.Main"]
 #==================================================================================================

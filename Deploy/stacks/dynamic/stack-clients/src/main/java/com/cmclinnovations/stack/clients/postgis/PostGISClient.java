@@ -41,7 +41,7 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
     public void createDatabase(String databaseName) {
         try (Connection conn = getDefaultConnection();
                 Statement stmt = conn.createStatement()) {
-            String sql = "CREATE DATABASE " + databaseName + " WITH TEMPLATE = template_postgis";
+            String sql = "CREATE DATABASE \"" + databaseName + "\" WITH TEMPLATE = template_postgis";
             stmt.executeUpdate(sql);
         } catch (SQLException ex) {
             if ("42P04".equals(ex.getSQLState())) {
@@ -56,7 +56,7 @@ public class PostGISClient extends ContainerClient implements ClientWithEndpoint
     public void removeDatabase(String databaseName) {
         try (Connection conn = getDefaultConnection();
                 Statement stmt = conn.createStatement()) {
-            String sql = "DROP DATABASE " + databaseName;
+            String sql = "DROP DATABASE \"" + databaseName + "\"";
             stmt.executeUpdate(sql);
         } catch (SQLException ex) {
             if ("3D000".equals(ex.getSQLState())) {

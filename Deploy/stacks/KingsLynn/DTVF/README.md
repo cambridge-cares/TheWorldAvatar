@@ -53,7 +53,7 @@ To ensure communication between the DTVF and the Feature Info Agent, the followi
 
 
 <!-- Links -->
-[DTVF]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations
+[DTVF]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/TWA-Visualisations
 [example Mapbox visualisation]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework/example-mapbox-vis
 [FeatureInfoAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent
 
