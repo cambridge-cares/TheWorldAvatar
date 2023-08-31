@@ -82,10 +82,10 @@ def create_app():
             return jsonify({"data": error_msg}), 400
 
         logger.info("Converting the model into geometry files...")
-        asset_data, building_iri = conv2gltf(ifc_filepath, query_endpoint, update_endpoint)
+        asset_data, building_data = conv2gltf(ifc_filepath, query_endpoint, update_endpoint)
 
         logger.info("Generating the tilesets...")
-        gen_tilesets(asset_data, building_iri)
+        gen_tilesets(asset_data, building_data[0])
 
         # Return the result in JSON format
         return jsonify(

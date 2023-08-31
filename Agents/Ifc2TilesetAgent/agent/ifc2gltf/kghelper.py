@@ -116,26 +116,33 @@ def retrieve_metadata(query_endpoint: str, update_endpoint: str):
     return metadata
 
 
-def get_building_iri(query_endpoint: str, update_endpoint: str) -> str:
-    """Retrieves the building IRI from the specified endpoint.
+def get_building_iri_name(query_endpoint: str, update_endpoint: str) -> str:
+    """Retrieves the building IRI and name from the specified endpoint for BIM models.
 
     Args:
         query_endpoint: SPARQL Query endpoint.
         update_endpoint: SPARQL Update endpoint.
 
     Returns:
-        A string of the building IRI.
+        A tuple (building_iri, building_name), where building_iri is the building IRI 
+        and building_name is building name.
     """
     logger.debug("Initialising KG Client...")
     client = KGClient(query_endpoint, update_endpoint)
 
     query = QueryBuilder() \
         .add_prefix("http://www.w3.org/1999/02/22-rdf-syntax-ns#", RDF_PREFIX) \
+        .add_prefix("http://www.w3.org/2000/01/rdf-schema#", RDFS_PREFIX) \
         .add_prefix("https://w3id.org/bot#", BOT_PREFIX) \
+        .add_prefix("https://www.theworldavatar.com/kg/ontobim/", BIM_PREFIX) \
         .add_select_var("iri") \
+        .add_select_var("name") \
         .add_where_triple("iri", RDF_PREFIX + ":type", BOT_PREFIX + ":Building", 1) \
+        .add_where_triple("iri", BIM_PREFIX + ":hasIfcRepresentation", "buildingrep", 5) \
+        .add_where_triple("buildingrep", RDFS_PREFIX + ":label", "name", 5) \
         .build()
 
     logger.debug("Executing query...")
-    # assume that there exists only one building in the KG subgraph
-    return client.execute_query(query)[0]["iri"]
+    # assume that there exists only one building in the KG subgraph for BIM models
+    results = client.execute_query(query)[0]
+    return results["iri"], results["name"]

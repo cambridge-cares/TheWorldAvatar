@@ -116,13 +116,14 @@ base:IfcModelRepresentation_{ifc_model_rep_num} rdf:type ontobim:IfcModelReprese
 
 sample_building_inst = "Building_1"
 sample_building_iri = base_namespace + sample_building_inst
+sample_building_name = "TestBuilding"
 building_triple = f"""\
 base:{sample_building_inst} bot:hasStorey base:Storey_5a9f7642-2d12-11b2-8040-cdbcaabc8e65;
                             rdf:type bot:Building;
                             ontobim:hasIfcRepresentation base:IfcBuildingRepresentation_130.
 base:IfcBuildingRepresentation_130 rdf:type ontobim:IfcModelRepresentation;
                                    ontobim:hasIfcId '0jvyVdjY901wSsMTGJsL4G'^^xsd:string;
-                                   rdfs:label 'TestBuilding'^^xsd:string.
+                                   rdfs:label '{sample_building_name}'^^xsd:string.
 """
 
 SAMPLE_ONTOBIM_TRIPLESTORE = dict(
