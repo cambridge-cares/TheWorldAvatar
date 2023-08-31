@@ -688,15 +688,15 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/isStoredIn -->
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/isStoredAt -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/isStoredIn">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/isStoredAt">
         <rdfs:domain rdf:resource="https://w3id.org/bot#Element"/>
         <rdfs:range rdf:resource="https://w3id.org/bot#Element"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes an element being stored in another element.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes an element being stored at another element.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is stored in</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is stored at</rdfs:label>
     </owl:ObjectProperty>
     
 
