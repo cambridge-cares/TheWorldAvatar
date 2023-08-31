@@ -66,7 +66,7 @@ def gen_sample_asset_contents(test_range: int):
         {
             "uri": f"./glb/asset{i}.glb",
             "metadata": {
-                "class": "AssetMetaData",
+                "class": "ContentMetaData",
                 "properties": {
                     "name": "element" + str(i),
                     "uid": "uid" + str(i),

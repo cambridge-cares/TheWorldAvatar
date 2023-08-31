@@ -32,7 +32,7 @@ def append_assets_to_tile(tile: Tile, asset_df: pd.DataFrame):
             "uri": state.asset_url + row["file"] + ".glb",
             # Add the asset name to establish a metadata skeleton
             "metadata": {
-                "class": "AssetMetaData",
+                "class": "ContentMetaData",
                 "properties": {
                     NAME_VAR: row[NAME_VAR].split(":")[0],
                     ID_VAR: row[ID_VAR],
