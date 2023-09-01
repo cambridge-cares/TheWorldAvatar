@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Dataset {
 
-    static final String DEFAULT_NAMESPACE = "https://www.theworldavatar.com/kg/";
+    static final String DEFAULT_BASE_IRI = "https://www.theworldavatar.com/";
 
     public static final String NAME_KEY = "name";
 
@@ -35,7 +35,7 @@ public class Dataset {
 
     private final boolean skip;
 
-    private String baseIRI = DEFAULT_NAMESPACE;
+    private final String baseIRI;
 
     @JsonCreator
     public Dataset(@JsonProperty(value = NAME_KEY) @JacksonInject(NAME_KEY) String name,
@@ -48,7 +48,8 @@ public class Dataset {
             @JsonProperty(value = "styles") List<GeoServerStyle> geoserverStyles,
             @JsonProperty(value = "mappings") List<String> ontopMappings,
             @JsonProperty(value = "staticGeoServerData") StaticGeoServerData staticGeoServerData,
-            @JsonProperty(value = "skip") boolean skip) {
+            @JsonProperty(value = "skip") boolean skip,
+            @JsonProperty(value = "baseIRI") String baseIRI) {
         this.name = name;
         this.datasetDirectory = datasetDirectory;
         this.database = database;
@@ -60,6 +61,7 @@ public class Dataset {
         this.ontopMappings = ontopMappings;
         this.staticGeoServerData = staticGeoServerData;
         this.skip = skip;
+        this.baseIRI = (null == baseIRI) ? DEFAULT_BASE_IRI : baseIRI;
     }
 
     public String getName() {
