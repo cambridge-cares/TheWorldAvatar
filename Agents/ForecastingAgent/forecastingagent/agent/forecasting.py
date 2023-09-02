@@ -229,7 +229,6 @@ class ForecastingAgent(DerivationAgent):
             if old_fc_iri:
                 # In case new forecast has been created for existing derivation,
                 # disconnect old forecast instance from derivation and connect with new one
-                # NOTE: Derivation Framework only supports one output per rdf type
                 self.sparql_client.reconnect_forecast_with_derivation(old_fc_iri, fc_iri)
 
             # Add output graph to ensure complete derivation markup
