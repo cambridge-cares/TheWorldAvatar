@@ -149,6 +149,7 @@ The internal Forecasting Agent logic ensures that updated forecasts either compl
 The following code snippet provides an overview of how to create new and update existing forecast derivations:
 ```python
 # Create derivation client
+from pyderivationagent.data_model.iris import ONTODERIVATION_DERIVATIONWITHTIMESERIES
 from pyderivationagent.kg_operations import PyDerivationClient
 deriv_client = PyDerivationClient(derivation_instance_base_url, query_endpoint, update_endpoint)
 
@@ -161,7 +162,11 @@ derivation_input_set = [
     <IRI of time:Interval instance>, 
     <IRI of time:Duration instance>
 ]
-derivation_type = <https://www.theworldavatar.com/kg/ontoderivation/DerivationWithTimeSeries>
+derivation_type = ONTODERIVATION_DERIVATIONWITHTIMESERIES
+# NOTE: It is recommended to import the derivation type from pyderivation agent directly;
+#       however, string reference of the full IRI works as well
+#derivation_type = "https://www.theworldavatar.com/kg/ontoderivation/DerivationWithTimeSeries"
+
 # Markup derivation inputs and immediately compute and instantiate forecast
 derivation = deriv_client.createSyncDerivationForNewInfo(agent_iri, derivation_input_set, derivation_type)
 derivation_iri = derivation.getIri()
