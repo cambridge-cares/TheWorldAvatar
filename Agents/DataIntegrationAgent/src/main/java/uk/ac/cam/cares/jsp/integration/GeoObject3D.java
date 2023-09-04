@@ -207,7 +207,7 @@ public class GeoObject3D {
             }
             for(int i = 0; i < allObject3D.size(); i++){
                 cityobjectid = allObject3D.get(i).getId();
-                String sql = "SELECT public.ST_BuildArea(public.ST_Collect(public.ST_ExteriorRing(geometry))) as geom " +
+                String sql = "SELECT public.ST_ConvexHull(public.ST_Collect(public.ST_ExteriorRing(geometry))) as geom " +
                 "FROM surface_geometry WHERE parent_id  IN (SELECT lod2_multi_surface_id FROM thematic_surface WHERE building_id = " 
                 + cityobjectid + " AND objectclass_id = " + this.objectClassid + ") AND geometry is not null"; 
                 Statement stmt = srcConn.createStatement();
