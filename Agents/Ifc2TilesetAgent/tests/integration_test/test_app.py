@@ -102,7 +102,7 @@ def test_api_simple(init_assets, expected_assets, expected_bim_bbox, kg_client, 
              "metadata": C.SAMPLE_BUILDING_METADATA}),
         [dict(uri="./glb/asset1.glb",
               metadata={"class": "ContentMetaData",
-                        "properties": {"name": C.sample_water_meter.label, "uid": C.sample_water_meter.ifc_id,
+                        "properties": {"name": C.sample_water_meter.label,
                                        "iri": C.base_namespace + C.sample_water_meter.iri}})],
         [2.5, 0.1, 1.5, 2.5, 0, 0, 0, 0.1, 0, 0, 0, 1.5],
         [0.5, 2.5, 0.5, 5.5, 0, 0, 0, 5.5, 0, 0, 0, 0.5],
@@ -115,7 +115,7 @@ def test_api_simple(init_assets, expected_assets, expected_bim_bbox, kg_client, 
              {"uri": "./glb/furniture.glb", "metadata": C.SAMPLE_BUILDING_METADATA}]),
         [dict(uri=f"./glb/asset{i + 1}.glb",
               metadata={"class": "ContentMetaData",
-                        "properties": {"name": e.label, "uid": e.ifc_id, "iri": C.base_namespace + e.iri}})
+                        "properties": {"name": e.label, "iri": C.base_namespace + e.iri}})
          for i, e in enumerate((C.sample_water_meter, C.sample_fridge))],
         [2.5, 1, 1.75, 2.5, 0, 0, 0, 1, 0, 0, 0, 1.75],
         [2.5, 1.5, 2.5, 7.5, 0, 0, 0, 6.5, 0, 0, 0, 2.5],
@@ -204,7 +204,7 @@ def test_api_no_building_structure_with_assets(kg_client, gen_sample_ifc_file, f
     expected_child_contents = [
         dict(uri="./glb/asset1.glb",
              metadata={"class": "ContentMetaData",
-                       "properties": {"name": C.sample_water_meter.label, "uid": C.sample_water_meter.ifc_id,
+                       "properties": {"name": C.sample_water_meter.label,
                                       "iri": C.base_namespace + C.sample_water_meter.iri}})
     ]
 

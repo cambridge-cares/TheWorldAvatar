@@ -35,7 +35,6 @@ def append_assets_to_tile(tile: Tile, asset_df: pd.DataFrame):
                 "class": "ContentMetaData",
                 "properties": {
                     NAME_VAR: row[NAME_VAR].split(":")[0],
-                    ID_VAR: row[ID_VAR],
                     IRI_VAR: row[IRI_VAR]
                 }
             }

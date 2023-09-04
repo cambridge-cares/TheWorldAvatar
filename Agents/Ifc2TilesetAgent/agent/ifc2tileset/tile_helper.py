@@ -18,7 +18,7 @@ from py4jps import agentlogging
 # Self imports
 import agent.app as state
 from agent.ifc2tileset.schema import Tileset, Tile
-from agent.kgutils.const import ID_VAR, IRI_VAR, NAME_VAR
+from agent.kgutils.const import IRI_VAR, NAME_VAR
 
 # Retrieve logger
 logger = agentlogging.get_logger("dev")
@@ -35,10 +35,6 @@ def append_content_metadata_schema(tileset: Tileset):
             "properties": {
                 NAME_VAR: {
                     "description": "Name of the asset/building",
-                    "type": "STRING"
-                },
-                ID_VAR: {
-                    "description": "Unique identifier generated in IFC",
                     "type": "STRING"
                 },
                 IRI_VAR: {

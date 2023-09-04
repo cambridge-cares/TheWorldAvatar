@@ -109,7 +109,6 @@ def gen_sample_asset_contents(test_range: int):
                 "class": "ContentMetaData",
                 "properties": {
                     "name": "element" + str(i),
-                    "uid": "uid" + str(i),
                     "iri": "iri" + str(i)
                 }
             }

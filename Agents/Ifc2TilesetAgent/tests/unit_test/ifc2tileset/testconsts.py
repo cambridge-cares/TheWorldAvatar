@@ -20,10 +20,6 @@ expected_content_metadata_schema = {"classes":
                                               "description": "Name of the asset/building",
                                               "type": "STRING"
                                           },
-                                          "uid": {
-                                              "description": "Unique identifier generated in IFC",
-                                              "type": "STRING"
-                                          },
                                           "iri": {
                                               "description": "Data IRI of the asset/building",
                                               "type": "STRING"
