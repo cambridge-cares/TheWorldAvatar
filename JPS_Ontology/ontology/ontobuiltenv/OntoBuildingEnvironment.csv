@@ -83,7 +83,7 @@ Non-Domestic,Class,PropertyUsage,IS-A,,,,"A property that serves non-living purp
 SingleResidential,Class,Domestic,IS-A,,,,A property that serves as living space for one party.,https://www.theworldavatar.com/kg/ontobuiltenv/,Single residential
 MultiResidential,Class,Domestic,IS-A,,,,A property that serves as living space for more than one party.,https://www.theworldavatar.com/kg/ontobuiltenv/,Multi residential
 EmergencyService,Class,Non-Domestic,IS-A,,,,Emergency services are organizations which ensure public safety and health by addressing different emergencies.,https://www.theworldavatar.com/kg/ontobuiltenv/,Emergency service
-Medical,Class,Non-Domestic,IS-A,,,,"Medical include buildings and sites focused on the provision of secondary medical care services or the dispensing of medicinal drugs, or both.",https://www.theworldavatar.com/kg/ontobuiltenv/,Medical
+Medical,Class,Non-Domestic,IS-A,,,,Medical include buildings and sites focused on the provision of medical care services or the dispensing of medicinal drugs, or both.,https://www.theworldavatar.com/kg/ontobuiltenv/,Medical
 Education,Class,Non-Domestic,IS-A,,,,Education includes a very broad group of sites with a common high level primary function of providing education (either state funded or by fees).,https://www.theworldavatar.com/kg/ontobuiltenv/,Education
 Office,Class,Non-Domestic,IS-A,,,,A place of business where professional or clerical duties are performed.,https://www.theworldavatar.com/kg/ontobuiltenv/,Office
 RetailEstablishment,Class,Non-Domestic,IS-A,,,,A feature that sells to the general public finished goods.,https://www.theworldavatar.com/kg/ontobuiltenv/,Retail establishment

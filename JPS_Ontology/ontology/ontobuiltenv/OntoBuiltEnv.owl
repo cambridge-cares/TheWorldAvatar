@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">31 August 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">04 September 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Building Environment ontology (OntoBuiltEnv) is an ontology developed for representing key information about properties (i.e. buildings as well as flats/apartments). It combines information about building usage, key construction characteristics, location and address, and estimated property value. More detailed geometric information can be retrieved from the associated OntoCityGml representation.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -411,7 +411,7 @@
 
     <owl:DatatypeProperty rdf:about="http://landregistry.data.gov.uk/def/ppi/transactionDate">
         <rdfs:domain rdf:resource="http://landregistry.data.gov.uk/def/ppi/TransactionRecord"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#date"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a transaction record and the associated transaction data.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Transaction date</rdfs:label>
@@ -1078,9 +1078,9 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Medical">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Medical include buildings and sites focused on the provision of secondary medical care services or the dispensing of medicinal drugs, or both.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Medical</rdfs:label>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Medical include buildings and sites focused on the provision of medical care services or the dispensing of medicinal drugs</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string"> or both.</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:label>
     </owl:Class>
     
 
