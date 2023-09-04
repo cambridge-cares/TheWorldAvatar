@@ -42,6 +42,7 @@ Budget,Class,,,,,,The amount of money needed or available for a purpose. ,https:
 BudgetCategory,Class,,,,,,A sub-divison of a budget allocated for a more specific purpose.,https://www.theworldavatar.com/kg/ontoassetmanagement/,Budget category
 ServiceCode,Class,,,,,,An attribute that describes the service code of a budget category.,https://www.theworldavatar.com/kg/ontoassetmanagement/,Service code
 ServiceCategory,Class,,,,,,An attribute that describes the service category of a budget category.,https://www.theworldavatar.com/kg/ontoassetmanagement/,Service category
+lastAssignedTo,Object Property,,,https://w3id.org/bot#Element,https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Parties/IndependentParty,,A relationship which describes who the asset was last assigned to.,https://www.theworldavatar.com/kg/ontoassetmanagement/,last assigned to
 wasExecutedBy,Object Property,,,Event,https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Parties/IndependentParty,,A relationship which describes the party that executed the event.,https://www.theworldavatar.com/kg/ontoassetmanagement/,was executed by
 hasEvent,Object Property,,,AssetUpdateHistory,Event,,A relationship which describes the events that has occurred.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has event
 hasUpdateHistory,Object Property,,,https://w3id.org/bot#Element,AssetUpdateHistory,,A relationship that describes the update history of something.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has update history
