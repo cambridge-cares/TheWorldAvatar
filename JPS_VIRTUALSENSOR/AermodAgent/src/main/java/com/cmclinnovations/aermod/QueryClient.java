@@ -242,10 +242,8 @@ public class QueryClient {
     private List<String> queryStaticPointSources() {
         SelectQuery query = Queries.SELECT().prefix(P_DISP);
         Variable sps = query.var();
-        Variable emissionIRI = query.var();
         Variable ocgmlIRI = query.var();
-        GraphPattern gp = GraphPatterns.and(sps.isA(STATIC_POINT_SOURCE).andHas(EMITS, emissionIRI),
-                emissionIRI.has(HAS_OCGML_OBJECT, ocgmlIRI));
+        GraphPattern gp = GraphPatterns.and(sps.isA(STATIC_POINT_SOURCE).andHas(HAS_OCGML_OBJECT, ocgmlIRI));
         query.select(ocgmlIRI).where(gp).distinct();
         JSONArray pointSourceIRI = storeClient
                 .executeQuery(query.getQueryString());
@@ -383,11 +381,8 @@ public class QueryClient {
         SelectQuery query = Queries.SELECT().prefix(P_DISP, P_OM);
         Variable ocgmlIRI = query.var();
         Variable sps = query.var();
-        Variable emissionIRI = query.var();
-        Variable pollutant = query.var();
 
-        GraphPattern gp = GraphPatterns.and(sps.isA(STATIC_POINT_SOURCE).andHas(EMITS, emissionIRI),
-                emissionIRI.isA(pollutant).andHas(HAS_OCGML_OBJECT, ocgmlIRI));
+        GraphPattern gp = sps.isA(STATIC_POINT_SOURCE).andHas(HAS_OCGML_OBJECT, ocgmlIRI);
 
         ValuesPattern<Iri> vp = new ValuesPattern<>(ocgmlIRI,
                 pointSourceOCGMLIRIWithinScope.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);

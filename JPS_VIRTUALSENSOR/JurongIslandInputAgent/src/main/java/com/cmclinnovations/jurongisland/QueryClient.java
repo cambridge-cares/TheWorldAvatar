@@ -136,8 +136,7 @@ public class QueryClient {
                                         .andHas(HAS_QUANTITY, iri(temperatureIRI)));
                         modify.insert(iri(pollutantId).isA(CO2));
 
-                        modify.insert(iri(emissionIRI).has(HAS_OCGML_OBJECT, iri(ocgmlIRI)));
-                        modify.insert(iri(ocgmlIRI).isA(OWL_THING));
+                        modify.insert(iri(pollutantSourceIRI).has(HAS_OCGML_OBJECT, iri(ocgmlIRI)));
 
                         // Triples for density, mass flow rate and temperature
                         modify.insert(iri(densityIRI).isA(DENSITY).andHas(HAS_VALUE, iri(densityMeasureIRI)));
@@ -222,10 +221,10 @@ public class QueryClient {
                         // Generic set of triples for a single emission source. Assign same temperature
                         // to all pollutants.
                         // However, density and mass flow rate will vary.
-                        modify.insert(iri(ocgmlIRI).isA(OWL_THING));
                         modify.insert(iri(pollutantSourceIRI).isA(STATIC_POINT_SOURCE)
                                         .andHas(EMITS, iri(noxEmissionIRI))
-                                        .andHas(EMITS, iri(pm25EmissionIRI)).andHas(EMITS, iri(pm10EmissionIRI)));
+                                        .andHas(EMITS, iri(pm25EmissionIRI)).andHas(EMITS, iri(pm10EmissionIRI))
+                                        .andHas(HAS_OCGML_OBJECT, iri(ocgmlIRI)));
                         modify.insert(iri(temperatureIRI).isA(TEMPERATURE).andHas(HAS_VALUE,
                                         iri(temperatureMeasureIRI)));
                         modify.insert(iri(temperatureMeasureIRI).isA(MEASURE).andHas(HAS_NUMERICALVALUE, tempValue)
@@ -238,7 +237,6 @@ public class QueryClient {
                                         .andHas(HAS_QUANTITY, iri(noxMassFlowIRI))
                                         .andHas(HAS_QUANTITY, iri(temperatureIRI)));
                         modify.insert(iri(noxPollutantId).isA(NOx));
-                        modify.insert(iri(noxEmissionIRI).has(HAS_OCGML_OBJECT, iri(ocgmlIRI)));
                         modify.insert(iri(noxDensityIRI).isA(DENSITY).andHas(HAS_VALUE, iri(noxDensityMeasureIRI)));
                         modify.insert(iri(noxDensityMeasureIRI).isA(MEASURE).andHas(HAS_NUMERICALVALUE, noxDensityValue)
                                         .andHas(HAS_UNIT, DENSITY_UNIT));
@@ -252,7 +250,6 @@ public class QueryClient {
                                         .andHas(HAS_QUANTITY, iri(pm25MassFlowIRI))
                                         .andHas(HAS_QUANTITY, iri(temperatureIRI)));
                         modify.insert(iri(pm25PollutantId).isA(PM25));
-                        modify.insert(iri(pm25EmissionIRI).has(HAS_OCGML_OBJECT, iri(ocgmlIRI)));
                         modify.insert(iri(pm25DensityIRI).isA(DENSITY).andHas(HAS_VALUE, iri(pm25DensityMeasureIRI)));
                         modify.insert(iri(pm25DensityMeasureIRI).isA(MEASURE)
                                         .andHas(HAS_NUMERICALVALUE, pm25DensityValue)
@@ -268,7 +265,6 @@ public class QueryClient {
                                         .andHas(HAS_QUANTITY, iri(pm10MassFlowIRI))
                                         .andHas(HAS_QUANTITY, iri(temperatureIRI)));
                         modify.insert(iri(pm10PollutantId).isA(PM10));
-                        modify.insert(iri(pm10EmissionIRI).has(HAS_OCGML_OBJECT, iri(ocgmlIRI)));
                         modify.insert(iri(pm10DensityIRI).isA(DENSITY).andHas(HAS_VALUE, iri(pm10DensityMeasureIRI)));
                         modify.insert(iri(pm10DensityMeasureIRI).isA(MEASURE)
                                         .andHas(HAS_NUMERICALVALUE, pm10DensityValue)
