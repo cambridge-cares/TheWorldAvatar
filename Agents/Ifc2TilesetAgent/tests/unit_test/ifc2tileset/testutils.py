@@ -6,7 +6,7 @@ This file contains util functions for ifc2tileset unit tests.
 
 # Standard library imports
 import json
-from typing import List
+from typing import List, Optional
 
 # Third-party imports
 import pandas as pd
@@ -33,6 +33,46 @@ def gen_sample_tileset(
     return tileset
 
 
+def gen_content_metadata(building_iri: str, building_name: str):
+    return {
+        "class": "ContentMetaData",
+        "properties": {
+            "name": building_name,
+            "iri": building_iri
+        }
+    }
+
+
+def append_tileset_contents(expected_tileset: dict, geometry_file_paths: List[str], building_iri: Optional[str] = "", building_name: Optional[str] = ""):
+    """Append the contents to the tilesets according to inputs for assertion.
+
+    Args:
+        expected_tileset: Tileset to attach these inputs.
+        geometry_file_paths: A list of file_paths for the geometry generated.
+        building_iri: IRI of the building. Optional.
+        building_name: Name of the building. Optional.
+    """
+    # Generate repeated metadata if it exists
+    if building_iri and building_name:
+        content_metadata = gen_content_metadata(building_iri, building_name)
+
+    # When there is only one geometry, it should have use content
+    if len(geometry_file_paths) == 1:
+        content = {"uri": geometry_file_paths[0]}
+        if building_iri and building_name:
+            content["metadata"] = content_metadata
+        expected_tileset["root"]["content"] = content
+    # otherwise, use contents
+    else:
+        content = []
+        for path in geometry_file_paths:
+            temp_dict = {"uri": path}
+            if building_iri and building_name:
+                temp_dict["metadata"] = content_metadata
+            content.append(temp_dict)
+        expected_tileset["root"]["contents"] = content
+
+
 def gen_sample_asset_df(test_range: int):
     """Generates sample datafarame for asset metadata.
 
@@ -55,10 +95,10 @@ def gen_sample_asset_df(test_range: int):
 
 def gen_sample_asset_contents(test_range: int):
     """Generates `contents` field of a tile populated with sample asset metadata.
-    
+
     Args:
         test_range: Number of assets to be generated.
-    
+
     Returns:
         A list of dict.
     """

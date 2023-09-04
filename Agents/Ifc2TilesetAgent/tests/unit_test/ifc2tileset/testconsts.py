@@ -11,6 +11,27 @@ import numpy as np
 # Self imports
 from tests.unit_test.ifc2tileset.testutils import z_up_to_y_up
 
+expected_content_metadata_schema = {"classes":
+                                    {"ContentMetaData":
+                                     {"description": "A metadata class for all content including building and individual assets",
+                                      "name": "Content metadata",
+                                      "properties": {
+                                          "name": {
+                                              "description": "Name of the asset/building",
+                                              "type": "STRING"
+                                          },
+                                          "uid": {
+                                              "description": "Unique identifier generated in IFC",
+                                              "type": "STRING"
+                                          },
+                                          "iri": {
+                                              "description": "Data IRI of the asset/building",
+                                              "type": "STRING"
+                                          }
+                                      }}
+                                     }
+                                    }
+
 
 def sample_box_gen():
     z_up_coordinates = -4, -6, -10, 6, 4, 10

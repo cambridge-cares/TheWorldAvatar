@@ -23,6 +23,7 @@ from agent.kgutils.const import ID_VAR, IRI_VAR, NAME_VAR
 # Retrieve logger
 logger = agentlogging.get_logger("dev")
 
+
 def append_content_metadata_schema(tileset: Tileset):
     """Appends the schema of content metadata for building and asset to the tileset."""
 
@@ -48,14 +49,15 @@ def append_content_metadata_schema(tileset: Tileset):
         }
     }}
 
-def make_root_tile(bbox: Optional[List[float]] = None, geometry_file_paths: Optional[List[str]] = []):
+
+def make_root_tile(bbox: Optional[List[float]] = None, geometry_file_paths: Optional[List[str]] = [], building_data: Optional[List[str]] = []):
     """Generates a root tile with the provided arguments and default values. The root tile will only
     include geometry content for non-asset elements like the building, furniture, and solar panels.
 
     Args:
         bbox (optional): A 12-element list that represents Next tileset's boundingVolume.box property. Defaults to None.
         geometry_file_paths (optional): A list of geometry file paths if available to be appended. Defaults to an empty list.
-
+        building_data (optional): A list containing the data IRI and name of the building in this order. Defaults to an empty list.
     Returns:
         A root tile.
     """
@@ -65,18 +67,33 @@ def make_root_tile(bbox: Optional[List[float]] = None, geometry_file_paths: Opti
         geometricError=512,
         refine="ADD",
     )
-
+    # If there is building data, generate a placeholder dictionary content
+    if len(building_data) > 0:
+        building_dict = {
+            "class": "ContentMetaData",
+            "properties": {
+                NAME_VAR: building_data[1],
+                IRI_VAR: building_data[0]
+            }
+        }
     # If there are geometry contents available
     if geometry_file_paths:
         # And if there is only one item in the list, use the "content" nomenclature
         if len(geometry_file_paths) == 1:
             root_tile["content"] = {"uri": geometry_file_paths[0]}
+            # If there is building data, append the metadata
+            if len(building_data) > 0:
+                root_tile["content"]["metadata"] = building_dict
         else:
             # If there are more than one item, use the "contents" nomenclature with a list
             # Sample format: {"contents": [{"uri":"path1"}, {"uri":"path2"}]}
             root_tile["contents"] = []
             for path in geometry_file_paths:
-                root_tile["contents"].append({"uri": path})
+                temp_dict = {"uri": path}
+                # If there is building data, append the metadata to all geometries
+                if len(building_data) > 0:
+                    temp_dict["metadata"] = building_dict
+                root_tile["contents"].append(temp_dict)
 
     return root_tile
 
@@ -90,11 +107,17 @@ def make_tileset(root_tile: Tile):
     Returns:
         A tileset.
     """
-    return Tileset(
+    tileset = Tileset(
         asset={"version": "1.1"},
         geometricError=1024,
         root=root_tile
     )
+    # If there is building data,
+    if ("content" in root_tile and "metadata" in root_tile["content"]) \
+            or ("contents" in root_tile and "metadata" in root_tile["contents"][0]):
+        # Attach the metadata schema
+        append_content_metadata_schema(tileset)
+    return tileset
 
 
 def y_up_to_z_up(x_min: float, y_min: float, z_min: float, x_max: float, y_max: float, z_max: float):
@@ -153,6 +176,7 @@ def gen_solarpanel_tileset():
         return
 
     bbox = compute_bbox(solarpath)
+    # No building data should be created
     root_tile = make_root_tile(
         bbox=bbox, geometry_file_paths=[state.asset_url + "solarpanel.glb"])
     tileset = make_tileset(root_tile)
@@ -170,6 +194,7 @@ def gen_sewagenetwork_tileset():
         return
 
     bbox = compute_bbox(sewagepath)
+    # No building data should be created
     root_tile = make_root_tile(
         bbox=bbox,  geometry_file_paths=[state.asset_url + "sewagenetwork.glb"])
     tileset = make_tileset(root_tile)

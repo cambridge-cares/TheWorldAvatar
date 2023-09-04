@@ -10,38 +10,21 @@ import os
 # Third-party import
 import numpy as np
 import pytest
-from agent.ifc2tileset.root_tile import make_tileset
 
 # Self imports
 from agent.ifc2tileset.tile_helper import append_content_metadata_schema, gen_solarpanel_tileset, gen_sewagenetwork_tileset, jsonwriter, compute_bbox, \
     make_tileset, make_root_tile, y_up_to_z_up
 from . import testconsts as C
-from .testutils import read_json
+from .testutils import gen_content_metadata, read_json
+
+TEST_BUILDING_IRI = "iri_test"
+TEST_BUILDING_NAME = "Building A"
 
 
 def test_append_content_metadata_schema():
     # Arrange
     root_tile = make_root_tile([])
     tileset = make_tileset(root_tile)
-
-    expected_content_metadata_schema = {
-        "description": "A metadata class for all content including building and individual assets",
-        "name": "Content metadata",
-        "properties": {
-            "name": {
-                "description": "Name of the asset/building",
-                "type": "STRING"
-            },
-            "uid": {
-                "description": "Unique identifier generated in IFC",
-                "type": "STRING"
-            },
-            "iri": {
-                "description": "Data IRI of the asset/building",
-                "type": "STRING"
-            }
-        }
-    }
 
     # Act
     append_content_metadata_schema(tileset)
@@ -57,24 +40,29 @@ def test_append_content_metadata_schema():
     assert "content" not in root
     assert "contents" not in root
 
-    schema = tileset["schema"]
-    assert "classes" in schema
-    assert "ContentMetaData" in schema["classes"]
-    assert schema["classes"]["ContentMetaData"] == expected_content_metadata_schema
+    assert tileset["schema"] == C.expected_content_metadata_schema
 
 
 @pytest.mark.parametrize(
-    "bbox, geometry_file_paths, kwargs",
+    "bbox, geometry_file_paths, building_data, kwargs",
     [
-        (list(range(12)), [], dict()),
-        (list(range(12)), ["./data/glb/building.glb"],
-         dict(content={"uri": "./data/glb/building.glb"})),
-        (None, None, dict()),
-        (None, ["./data/glb/building.glb", "./data/glb/furniture.glb"],
-         dict(contents=[{"uri": "./data/glb/building.glb"}, {"uri": "./data/glb/furniture.glb"}]))
+        # When there is only a bounding box and nothing else
+        (list(range(12)), [], [], dict()),
+        # When there is only a building, ensure content is used with metadata attached
+        (list(range(12)), ["./data/glb/building.glb"], [TEST_BUILDING_IRI, TEST_BUILDING_NAME],
+         dict(content={"uri": "./data/glb/building.glb", "metadata": gen_content_metadata(TEST_BUILDING_IRI, TEST_BUILDING_NAME)})),
+        # When there is only a furniture, ensure content is used and no metadata is attached
+        (list(range(12)), ["./data/glb/furniture.glb"], [],
+         dict(content={"uri": "./data/glb/furniture.glb"})),
+        # When there is nothing
+        (None, None, [], dict()),
+        # When there are multiple contents including building, ensure contents is used
+        (None, ["./data/glb/building.glb", "./data/glb/furniture.glb"], [TEST_BUILDING_IRI, TEST_BUILDING_NAME],
+         dict(contents=[{"uri": "./data/glb/building.glb", "metadata": gen_content_metadata(TEST_BUILDING_IRI, TEST_BUILDING_NAME)},
+                        {"uri": "./data/glb/furniture.glb", "metadata": gen_content_metadata(TEST_BUILDING_IRI, TEST_BUILDING_NAME)}]))
     ]
 )
-def test_make_root_tile(bbox, geometry_file_paths, kwargs):
+def test_make_root_tile(bbox, geometry_file_paths, building_data, kwargs):
     # Arrange
     expected = {
         **{
@@ -86,7 +74,7 @@ def test_make_root_tile(bbox, geometry_file_paths, kwargs):
     }
 
     # Act
-    actual = make_root_tile(bbox, geometry_file_paths)
+    actual = make_root_tile(bbox, geometry_file_paths, building_data)
 
     # Assert
     assert actual == expected
@@ -101,13 +89,41 @@ def test_make_tileset():
     }
     expected = {
         "asset": {"version": "1.1"},
-        "geometricError": 1024,
-        "root": {
-            "boundingVolume": {"box": []},
-            "geometricError": 512,
-            "refine": "ADD",
-        }
+        "geometricError": 1024
     }
+    expected["root"] = root_tile
+
+    # Act
+    actual = make_tileset(root_tile)
+
+    # Assert
+    assert expected == actual
+
+
+@pytest.mark.parametrize(
+    "contents, content_dict",
+    [
+        # When there is a content containing metadata
+        ("content", {"metadata": ""}),
+        # When there is contents containing a list of metadata
+        ("contents", [{"metadata": ""}]),
+    ]
+)
+def test_make_tileset_has_building_metadata(contents, content_dict):
+    # Arrange
+    root_tile = {
+        "boundingVolume": {"box": []},
+        "geometricError": 512,
+        "refine": "ADD",
+    }
+    root_tile[contents] = content_dict
+    expected = {
+        "asset": {"version": "1.1"},
+        "geometricError": 1024
+    }
+    expected["root"] = root_tile
+    # Both test cases should add the schema
+    expected["schema"] = C.expected_content_metadata_schema
 
     # Act
     actual = make_tileset(root_tile)

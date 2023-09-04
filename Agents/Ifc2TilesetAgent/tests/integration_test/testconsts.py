@@ -12,7 +12,7 @@ from dataclasses import dataclass
 # Configuration
 # ----------------------------------------------------------------------------------
 # Provide the endpoint to the Docker services
-# NOTE The static IP Address is only valid for the default Docker network 
+# NOTE The static IP Address is only valid for the default Docker network
 # NOTE Port must be mapped to host for this to work
 KG_ENDPOINT = "http://172.17.0.1:9999/blazegraph/namespace/kb/sparql"
 
@@ -114,17 +114,25 @@ base:IfcModelRepresentation_{ifc_model_rep_num} rdf:type ontobim:IfcModelReprese
 """
 
 
-sample_building_inst = "Building_1"
-sample_building_iri = base_namespace + sample_building_inst
-sample_building_name = "TestBuilding"
+SAMPLE_BUILDING_INST = "Building_1"
+SAMPLE_BUILDING_IRI = base_namespace + SAMPLE_BUILDING_INST
+SAMPLE_BUILDING_NAME = "TestBuilding"
 building_triple = f"""\
-base:{sample_building_inst} bot:hasStorey base:Storey_5a9f7642-2d12-11b2-8040-cdbcaabc8e65;
+base:{SAMPLE_BUILDING_INST} bot:hasStorey base:Storey_5a9f7642-2d12-11b2-8040-cdbcaabc8e65;
                             rdf:type bot:Building;
                             ontobim:hasIfcRepresentation base:IfcBuildingRepresentation_130.
 base:IfcBuildingRepresentation_130 rdf:type ontobim:IfcModelRepresentation;
                                    ontobim:hasIfcId '0jvyVdjY901wSsMTGJsL4G'^^xsd:string;
-                                   rdfs:label '{sample_building_name}'^^xsd:string.
+                                   rdfs:label '{SAMPLE_BUILDING_NAME}'^^xsd:string.
 """
+
+SAMPLE_BUILDING_METADATA = {
+    "class": "ContentMetaData",
+    "properties": {
+        "name": SAMPLE_BUILDING_NAME,
+        "iri": SAMPLE_BUILDING_IRI
+    }
+}
 
 SAMPLE_ONTOBIM_TRIPLESTORE = dict(
     building=building_triple,
@@ -137,9 +145,14 @@ SAMPLE_ONTOBIM_TRIPLESTORE = dict(
 )
 
 SAMPLE_ONTOBIM_GEOM_STORE = dict(
-    water_meter=((0., 2., 0.), (1., 3., 1.)),   # (1 x 1 x 1) box on ground floor
-    fridge=((4., 0., 3.), (5., 1., 5.)),        # (1 x 1 x 2) box on second floor
-    solar_panel=((0., 0., 6.), (3., 3., 6.5)),  # (3 x 3 x 0.5) box on third floor
-    chair=((3., 0., 0.), (3.5, 0.5, 1.)),       # (0.5, 0.5, 1) box on ground floor
-    table=((0., 1., 3.), (1., 2., 3.5))         # (1 x 1 x 0.5) box on second floor
+    # (1 x 1 x 1) box on ground floor
+    water_meter=((0., 2., 0.), (1., 3., 1.)),
+    # (1 x 1 x 2) box on second floor
+    fridge=((4., 0., 3.), (5., 1., 5.)),
+    # (3 x 3 x 0.5) box on third floor
+    solar_panel=((0., 0., 6.), (3., 3., 6.5)),
+    # (0.5, 0.5, 1) box on ground floor
+    chair=((3., 0., 0.), (3.5, 0.5, 1.)),
+    # (1 x 1 x 0.5) box on second floor
+    table=((0., 1., 3.), (1., 2., 3.5))
 )

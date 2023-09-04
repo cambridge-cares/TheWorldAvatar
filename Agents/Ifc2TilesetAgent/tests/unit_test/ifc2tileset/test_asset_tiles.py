@@ -9,13 +9,14 @@ import os
 
 # Third-party imports
 import trimesh
+import pandas as pd
 
 # Self imports
 from agent.ifc2tileset.asset_tiles import append_tileset_assets, append_assets_to_tileset, \
     append_assets_to_tile
 from tests.unit_test.ifc2tileset.testutils import gen_sample_asset_df, gen_sample_tileset, gen_sample_asset_contents, \
     z_up_to_y_up
-
+from tests.unit_test.ifc2tileset.testconsts import expected_content_metadata_schema
 
 def test_append_assets_to_tile_node():
     # Arrange
@@ -136,6 +137,17 @@ def test_append_assets_more_than_six_assets():
             assert "children" not in child_node
         assert expected_fields.items() <= child_node.items()
 
+def test_append_tileset_assets_no_asset_values():
+    """
+    Tests gen_tileset_assets() when there is an empty dataframe ie no assets
+    """
+    # Generate sample tileset
+    tileset = {}
+    # Act
+    append_tileset_assets(tileset, pd.DataFrame())
+
+    # Assert
+    assert len(tileset) == 0
 
 def test_append_tileset_assets():
     """
@@ -170,6 +182,7 @@ def test_append_tileset_assets():
 
     # Assert
     assert "root" in tileset
+    assert tileset["schema"] == expected_content_metadata_schema
     child_nodes = flatten_child_nodes(tileset["root"])
     assert "children" not in child_nodes[-1]
     for i, (child_node, expected_fields) in enumerate(zip(child_nodes, expected_fields_of_child_nodes)):

@@ -15,11 +15,14 @@ import trimesh
 # Self imports
 from agent.ifc2tileset.root_tile import gen_root_content
 from . import testconsts as C
-from .testutils import gen_sample_asset_df, z_up_to_y_up
+from .testutils import append_tileset_contents, gen_sample_asset_df, z_up_to_y_up
 
 ENDPOINT = "http://www.example.org/sparql"
+TEST_BUILDING_IRI = "iri_test"
+TEST_BUILDING_NAME = "name here"
 
-def make_bim_tileset(bbox: List[str], building_iri: str):
+
+def make_bim_tileset(bbox: List[str]):
     return {
         "asset": {"version": "1.1"},
         "geometricError": 1024,
@@ -34,8 +37,6 @@ def make_bim_tileset(bbox: List[str], building_iri: str):
 def test_gen_root_content_no_building_no_furniture_with_assets():
     """Tests gen_root_content() when there are geometry files for assets but not building or furniture."""
     # Arrange
-    building_iri = "test_iri"
-
     test_range = 6
     asset_df = gen_sample_asset_df(test_range)
 
@@ -47,11 +48,10 @@ def test_gen_root_content_no_building_no_furniture_with_assets():
         m = trimesh.creation.box(bounds=[y_up_coords[:3], y_up_coords[3:]])
         m.export(file)
 
-    expected = make_bim_tileset(
-        [0, 0, 3,  10, 0, 0, 0, 10, 0, 0, 0, 3], building_iri)
+    expected = make_bim_tileset([0, 0, 3,  10, 0, 0, 0, 10, 0, 0, 0, 3])
 
     # Act
-    actual = gen_root_content(asset_df, "test_iri")
+    actual = gen_root_content(asset_df, [])
 
     # Assert
     assert actual == expected
@@ -60,7 +60,8 @@ def test_gen_root_content_no_building_no_furniture_with_assets():
 def test_gen_root_content_no_building_no_furniture_no_assets():
     """Tests gen_root_content() when there are no geometry files."""
     # Act
-    actual = gen_root_content(pd.DataFrame(), "test_iri")
+    actual = gen_root_content(
+        pd.DataFrame(), [TEST_BUILDING_IRI, TEST_BUILDING_NAME])
 
     # Assert
     assert actual is None
@@ -69,9 +70,12 @@ def test_gen_root_content_no_building_no_furniture_no_assets():
 def test_gen_root_content_only_building():
     """Tests gen_root_content() when there is only geometry file for building."""
     # Arrange
-    building_iri = "test_iri"
-    expected = make_bim_tileset(C.sample_box_bbox, building_iri)
-    expected["root"]["content"] = {"uri": "./glb/building.glb"}
+    test_building_iri = "test_iri"
+    test_building_name = "building_name"
+    expected = make_bim_tileset(C.sample_box_bbox)
+    append_tileset_contents(
+        expected, ["./glb/building.glb"], TEST_BUILDING_IRI, TEST_BUILDING_NAME)
+    expected["schema"] = C.expected_content_metadata_schema
 
     # Create sample glb file
     building_glb = os.path.join("data", "glb", "building.glb")
@@ -79,7 +83,8 @@ def test_gen_root_content_only_building():
     m.export(building_glb)
 
     # Act
-    actual = gen_root_content("test_iri", pd.DataFrame())
+    actual = gen_root_content(
+        pd.DataFrame(), [TEST_BUILDING_IRI, TEST_BUILDING_NAME])
 
     # Assert
     assert actual == expected
@@ -88,9 +93,8 @@ def test_gen_root_content_only_building():
 def test_gen_root_content_only_furniture():
     """Tests gen_root_content() when there is only geometry file for furniture."""
     # Arrange
-    furniture_iri = "test_iri"
-    expected = make_bim_tileset(C.sample_box_bbox, furniture_iri)
-    expected["root"]["content"] = {"uri": "./glb/furniture.glb"}
+    expected = make_bim_tileset(C.sample_box_bbox)
+    append_tileset_contents(expected, ["./glb/furniture.glb"])
 
     # Create sample glb file
     furniture_glb = os.path.join("data", "glb", "furniture.glb")
@@ -98,7 +102,7 @@ def test_gen_root_content_only_furniture():
     m.export(furniture_glb)
 
     # Act
-    actual = gen_root_content("test_iri", pd.DataFrame())
+    actual = gen_root_content(pd.DataFrame(), [])
 
     # Assert
     assert actual == expected
@@ -107,12 +111,12 @@ def test_gen_root_content_only_furniture():
 def test_gen_root_content_with_building_and_furniture():
     """Tests gen_root_content() when there are geometry files for building and furniture."""
     # Arrange
-    building_iri = "test_iri"
-    expected = make_bim_tileset(C.combined_bbox, building_iri)
-    expected["root"]["contents"] = [
-        {"uri": "./glb/building.glb"},
-        {"uri": "./glb/furniture.glb"}
-    ]
+    test_building_iri = "test_iri"
+    test_building_name = "building_name"
+    expected = make_bim_tileset(C.combined_bbox)
+    append_tileset_contents(expected, [
+                            "./glb/building.glb", "./glb/furniture.glb"], TEST_BUILDING_IRI, TEST_BUILDING_NAME)
+    expected["schema"] = C.expected_content_metadata_schema
 
     # Create GLB files for testing
     building_glb = os.path.join("data", "glb", "building.glb")
@@ -122,7 +126,8 @@ def test_gen_root_content_with_building_and_furniture():
     C.sample_cone_gen().export(furniture_glb)
 
     # Act
-    actual = gen_root_content("test_iri", pd.DataFrame())
+    actual = gen_root_content(
+        pd.DataFrame(), [TEST_BUILDING_IRI, TEST_BUILDING_NAME])
 
     # Assert
     assert actual == expected

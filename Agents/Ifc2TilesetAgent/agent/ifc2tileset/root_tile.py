@@ -45,6 +45,13 @@ def gen_root_content(asset_data: pd.DataFrame, building_data: list[str]):
     if bpath.is_file():
         root_content_list.append(state.asset_url + "building.glb")
         compute_bbox_list.append(bpath)
+        # Verify if there are building_data in the knowledge graph
+        if len(building_data) == 0:
+            # If there are no results returned, stop the agent task
+            logger.fatal(
+                "Detected building geometry but the corresponding iri and name is not available in the knowledge graph!")
+            raise RuntimeError(
+                "Detected building geometry but the corresponding iri and name is not available in the knowledge graph!")
 
     # When there is a furniture file generated, append it to the list
     if fpath.is_file():
@@ -66,7 +73,6 @@ def gen_root_content(asset_data: pd.DataFrame, building_data: list[str]):
     else:
         bbox = compute_bbox(compute_bbox_list)
         root_tile = make_root_tile(
-            bbox=bbox, geometry_file_paths=root_content_list)
+            bbox=bbox, geometry_file_paths=root_content_list, building_data=building_data)
 
-    tileset = make_tileset(root_tile)
-    return tileset
+    return make_tileset(root_tile)

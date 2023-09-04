@@ -15,8 +15,10 @@ import trimesh
 # Self imports
 from agent.ifc2tileset import gen_tilesets
 from . import testconsts as C
-from .testutils import read_json, gen_sample_asset_df, gen_sample_asset_contents, z_up_to_y_up
+from .testutils import read_json, gen_content_metadata, gen_sample_asset_df, gen_sample_asset_contents, z_up_to_y_up
 
+TEST_BUILDING_IRI = "iri_test"
+TEST_BUILDING_NAME = "Building A"
 
 def test_gen_tilesets_solarpanel():
     """Asserts gen_tilesets() for generating only solarpanel tileset."""
@@ -30,7 +32,7 @@ def test_gen_tilesets_solarpanel():
     sewage_json_filepath = os.path.join("data", "tileset_sewage.json")
 
     # Act
-    gen_tilesets(pd.DataFrame(), "building_iri")
+    gen_tilesets(pd.DataFrame(), [])
 
     # Assert
     # Assert that only tileset for solar panel is generated
@@ -41,9 +43,11 @@ def test_gen_tilesets_solarpanel():
     # Test content of tileset
     solar_tileset = read_json(solar_json_filepath)
     assert "root" in solar_tileset
+    assert "schema" not in solar_tileset
 
     root_tile = solar_tileset["root"]
-    assert "content" in root_tile and root_tile["content"] == {"uri": "./glb/solarpanel.glb"}
+    assert "content" in root_tile and root_tile["content"] == {
+        "uri": "./glb/solarpanel.glb"}
     assert "boundingVolume" in root_tile and "box" in root_tile["boundingVolume"] \
         and np.allclose(root_tile["boundingVolume"]["box"], C.sample_box_bbox)
 
@@ -60,7 +64,7 @@ def test_gen_tilesets_sewage():
     sewage_json_filepath = os.path.join("data", "tileset_sewage.json")
 
     # Act
-    gen_tilesets(pd.DataFrame(), "building_iri")
+    gen_tilesets(pd.DataFrame(), [])
 
     # Assert
     # Assert that only sewage tileset is generated
@@ -71,11 +75,14 @@ def test_gen_tilesets_sewage():
     # Test content of tileset
     sewage_tileset = read_json(sewage_json_filepath)
     assert "root" in sewage_tileset
+    assert "schema" not in sewage_tileset
 
     root_tile = sewage_tileset["root"]
-    assert "content" in root_tile and root_tile["content"] == {"uri": "./glb/sewagenetwork.glb"}
+    assert "content" in root_tile and root_tile["content"] == {
+        "uri": "./glb/sewagenetwork.glb"}
     assert "boundingVolume" in root_tile and "box" in root_tile["boundingVolume"] \
         and np.allclose(root_tile["boundingVolume"]["box"], C.sample_cone_bbox)
+
 
 def test_gen_tilesets_building():
     """Asserts gen_tilesets() for generating only the bim tileset without asset data."""
@@ -89,7 +96,7 @@ def test_gen_tilesets_building():
     sewage_json_filepath = os.path.join("data", "tileset_sewage.json")
 
     # Act
-    gen_tilesets(pd.DataFrame(), "building_iri")
+    gen_tilesets(pd.DataFrame(), [TEST_BUILDING_IRI, TEST_BUILDING_NAME])
 
     # Assert
     # Assert that only bim tileset is generated
@@ -99,13 +106,17 @@ def test_gen_tilesets_building():
 
     # Test content of tileset
     tileset = read_json(bim_json_filepath)
+    # Test schema exists
+    assert tileset["schema"] == C.expected_content_metadata_schema
     assert "root" in tileset
 
     root_tile = tileset["root"]
-    assert "content" in root_tile and root_tile["content"] == {"uri": "./glb/building.glb"}
+    assert "content" in root_tile and root_tile["content"] == {
+        "uri": "./glb/building.glb", "metadata" : gen_content_metadata(TEST_BUILDING_IRI, TEST_BUILDING_NAME)}
     assert "boundingVolume" in root_tile and "box" in root_tile["boundingVolume"] \
         and np.allclose(root_tile["boundingVolume"]["box"], C.sample_box_bbox)
     assert "children" not in root_tile
+
 
 def test_gen_tilesets_3_assets():
     """Asserts gen_tilesets() for generating the bim tileset with only 3 assets."""
@@ -113,7 +124,8 @@ def test_gen_tilesets_3_assets():
     test_range = 3
     sample_asset_df = gen_sample_asset_df(test_range)
 
-    glb_files = [os.path.join("data", "glb", f"asset{i}.glb") for i in range(test_range)]
+    glb_files = [os.path.join(
+        "data", "glb", f"asset{i}.glb") for i in range(test_range)]
     for i, file in enumerate(glb_files):
         z_up_coords = -10, -10, i, 10, 10, i + 1
         y_up_coords = z_up_to_y_up(*z_up_coords)
@@ -131,7 +143,7 @@ def test_gen_tilesets_3_assets():
     }
 
     # Act
-    gen_tilesets(sample_asset_df, "building_iri")
+    gen_tilesets(sample_asset_df, [])
 
     # Assert
     # Assert that only bim tileset is generated
@@ -141,6 +153,8 @@ def test_gen_tilesets_3_assets():
 
     # Test content of tileset
     tileset = read_json(bim_json_filepath)
+    # Test schema exists
+    assert tileset["schema"] == C.expected_content_metadata_schema
 
     # Test root tile
     assert "root" in tileset

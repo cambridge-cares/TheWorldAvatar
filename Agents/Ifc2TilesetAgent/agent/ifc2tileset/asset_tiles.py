@@ -91,6 +91,6 @@ def append_tileset_assets(tileset: Optional[Tileset], asset_df: pd.DataFrame):
 
     logger.info(
         "Individual assets detected. Attaching tileset with asset metadata...")
-
-    append_content_metadata_schema(tileset)
+    if "schema" not in tileset:
+        append_content_metadata_schema(tileset)
     append_assets_to_tileset(tileset, asset_df)

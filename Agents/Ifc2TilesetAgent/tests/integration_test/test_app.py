@@ -46,17 +46,20 @@ def test_default(flaskapp):
 def assert_root_tile_compulsory_fields(tile: dict):
     assert "geometricError" in tile and tile["geometricError"] == 512
     assert "refine" in tile and tile["refine"] == "ADD"
-    assert "boundingVolume" in tile and "box" in tile["boundingVolume"] and len(tile["boundingVolume"]["box"]) == 12
+    assert "boundingVolume" in tile and "box" in tile["boundingVolume"] and len(
+        tile["boundingVolume"]["box"]) == 12
 
 
 def assert_child_tile_compulsory_fields(tile: dict):
     assert "geometricError" in tile and tile["geometricError"] == 50
-    assert "boundingVolume" in tile and "box" in tile["boundingVolume"] and len(tile["boundingVolume"]["box"]) == 12
+    assert "boundingVolume" in tile and "box" in tile["boundingVolume"] and len(
+        tile["boundingVolume"]["box"]) == 12
 
 
 @pytest.mark.parametrize(
     "init_assets, expected_assets, expected_bim_bbox",
-    [(["building", "wall"], ["building"], [2.5, 0.1, 1.5, 2.5, 0, 0, 0, 0.1, 0, 0, 0, 1.5])]
+    [(["building", "wall"], ["building"], [
+      2.5, 0.1, 1.5, 2.5, 0, 0, 0, 0.1, 0, 0, 0, 1.5])]
 )
 def test_api_simple(init_assets, expected_assets, expected_bim_bbox, kg_client, flaskapp, gen_sample_ifc_file):
     """Tests the POST request on an IFC model without assets."""
@@ -84,7 +87,8 @@ def test_api_simple(init_assets, expected_assets, expected_bim_bbox, kg_client, 
     root = tileset_content["root"]
     assert_root_tile_compulsory_fields(root)
     assert np.allclose(root["boundingVolume"]["box"], expected_bim_bbox)
-    assert root["content"] == {"uri": "./glb/building.glb"}
+    assert root["content"] == {
+        "uri": "./glb/building.glb", "metadata": C.SAMPLE_BUILDING_METADATA}
     assert "children" not in root
 
 
@@ -94,7 +98,8 @@ def test_api_simple(init_assets, expected_assets, expected_bim_bbox, kg_client, 
     [(
         ["building", "wall", "water_meter", "solar_panel"],
         ["building", "asset1", "solarpanel"],
-        dict(content={"uri": "./glb/building.glb"}),
+        dict(content={"uri": "./glb/building.glb",
+             "metadata": C.SAMPLE_BUILDING_METADATA}),
         [dict(uri="./glb/asset1.glb",
               metadata={"class": "ContentMetaData",
                         "properties": {"name": C.sample_water_meter.label, "uid": C.sample_water_meter.ifc_id,
@@ -103,9 +108,11 @@ def test_api_simple(init_assets, expected_assets, expected_bim_bbox, kg_client, 
         [0.5, 2.5, 0.5, 5.5, 0, 0, 0, 5.5, 0, 0, 0, 0.5],
         [1.5, 1.5, 6.25, 1.5, 0, 0, 0, 1.5, 0, 0, 0, 0.25]
     ), (
-        ["building", "wall", "water_meter", "fridge", "chair", "table", "solar_panel"],
+        ["building", "wall", "water_meter", "fridge",
+            "chair", "table", "solar_panel"],
         ["building", "asset1", "asset2", "furniture", "solarpanel"],
-        dict(contents=[{"uri": "./glb/building.glb"}, {"uri": "./glb/furniture.glb"}]),
+        dict(contents=[{"uri": "./glb/building.glb", "metadata": C.SAMPLE_BUILDING_METADATA},
+             {"uri": "./glb/furniture.glb", "metadata": C.SAMPLE_BUILDING_METADATA}]),
         [dict(uri=f"./glb/asset{i + 1}.glb",
               metadata={"class": "ContentMetaData",
                         "properties": {"name": e.label, "uid": e.ifc_id, "iri": C.base_namespace + e.iri}})
@@ -145,20 +152,24 @@ def test_api_complex(init_assets, expected_assets, expected_root_kvs, expected_c
     assert_root_tile_compulsory_fields(bim_root)
     assert np.allclose(bim_root["boundingVolume"]["box"], expected_bim_bbox)
     assert expected_root_kvs.items() <= bim_root.items()
-    assert "children" in bim_root and isinstance(bim_root["children"], list) and len(bim_root["children"]) == 1
+    assert "children" in bim_root and isinstance(
+        bim_root["children"], list) and len(bim_root["children"]) == 1
 
     child_tile = bim_root["children"][0]
     assert_child_tile_compulsory_fields(child_tile)
-    assert np.allclose(child_tile["boundingVolume"]["box"], expected_asset_bbox)
+    assert np.allclose(child_tile["boundingVolume"]
+                       ["box"], expected_asset_bbox)
     assert child_tile["contents"] == expected_child_contents
 
     # Assert solar tileset content contains the assetUrl passed and geometry files
     solar_content = read_json_file(tileset_solar_file)
     assert "root" in solar_content
+    assert "schema" not in solar_content
 
     solar_root = solar_content["root"]
     assert_root_tile_compulsory_fields(solar_root)
-    assert np.allclose(solar_root["boundingVolume"]["box"], expected_solar_panel_bbox)
+    assert np.allclose(solar_root["boundingVolume"]
+                       ["box"], expected_solar_panel_bbox)
     assert solar_root["content"] == {"uri": "./glb/solarpanel.glb"}
 
 
@@ -216,11 +227,13 @@ def test_api_no_building_structure_with_assets(kg_client, gen_sample_ifc_file, f
     bim_root = content["root"]
     assert_root_tile_compulsory_fields(bim_root)
     assert np.allclose(bim_root["boundingVolume"]["box"], expected_bim_bbox)
-    assert "children" in bim_root and isinstance(bim_root["children"], list) and len(bim_root["children"]) == 1
+    assert "children" in bim_root and isinstance(
+        bim_root["children"], list) and len(bim_root["children"]) == 1
 
     child_tile = bim_root["children"][0]
     assert_child_tile_compulsory_fields(child_tile)
-    assert np.allclose(child_tile["boundingVolume"]["box"], expected_asset_bbox)
+    assert np.allclose(child_tile["boundingVolume"]
+                       ["box"], expected_asset_bbox)
     assert child_tile["contents"] == expected_child_contents
 
 
@@ -269,7 +282,8 @@ def test_api_invalid_request_param(asset_url, flaskapp):
 def test_api_no_ifc(flaskapp):
     # Arrange
     route = "/api"
-    expected_response = {"data": "No ifc file is available at the ./data/ifc folder"}
+    expected_response = {
+        "data": "No ifc file is available at the ./data/ifc folder"}
 
     # Act
     response = flaskapp.post(route, json={"assetUrl": "./glb"})
@@ -308,7 +322,8 @@ def test_api_invalid_ifc(flaskapp):
     ifc_file = os.path.join("data", "ifc", "test.ifc")
     open(ifc_file, "x", encoding="utf-8").close()
 
-    expected_response = {"data": "IFC model validation fails. Cause: Unable to parse IFC SPF header"}
+    expected_response = {
+        "data": "IFC model validation fails. Cause: Unable to parse IFC SPF header"}
 
     # Act
     response = flaskapp.post(route, json={"assetUrl": "./glb"})

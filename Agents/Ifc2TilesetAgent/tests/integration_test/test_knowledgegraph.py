@@ -75,8 +75,8 @@ def test_retrieve_metadata(init_assets, expected, kg_client):
     [(
         # when building exists, ensure that an iri and name can be retrieved
         ["building"],
-        C.sample_building_iri,
-        C.sample_building_name
+        C.SAMPLE_BUILDING_IRI,
+        C.SAMPLE_BUILDING_NAME
     ), (
         # when there is no building, no values should be returned
         [],
@@ -103,16 +103,16 @@ def test_get_building_iri_name(init_assets, expected_building_iri, expected_buil
         ["building", "wall"],
         ["building"],
         pd.DataFrame(columns=["iri", "uid", "name", "file"]),
-        C.sample_building_iri,
-        C.sample_building_name
+        C.SAMPLE_BUILDING_IRI,
+        C.SAMPLE_BUILDING_NAME
     ), (
         # when only building, wall, and furniture are present, building and furniture gltf should be generated and
         # asset data should be empty
         ["building", "wall", "chair", "table"],
         ["building", "furniture"],
         pd.DataFrame(columns=["iri", "uid", "name", "file"]),
-        C.sample_building_iri,
-        C.sample_building_name
+        C.SAMPLE_BUILDING_IRI,
+        C.SAMPLE_BUILDING_NAME
     ), (
         # when assets, furniture, solar panel are present, gltf files should be generated and asset data present
         ["building", "wall", "water_meter", "fridge", "chair", "table", "solar_panel"],
@@ -123,8 +123,8 @@ def test_get_building_iri_name(init_assets, expected_building_iri, expected_buil
             name=[e.label for e in (C.sample_water_meter, C.sample_fridge)],
             file=[f"asset{i + 1}" for i in range(2)]
         )),
-        C.sample_building_iri,
-        C.sample_building_name
+        C.SAMPLE_BUILDING_IRI,
+        C.SAMPLE_BUILDING_NAME
     )]
 )
 def test_conv2gltf(init_assets, expected_gltf, expected_asset_data, expected_building_iri, expected_building_name,
