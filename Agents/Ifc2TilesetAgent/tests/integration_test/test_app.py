@@ -250,7 +250,7 @@ def test_api_invalid_request(flaskapp):
     """Tests that invalid requests returns the Bad request status code."""
     # Arrange
     route = "/api"
-    expected_response = {"data": "Missing `assetUrl` parameter in request!"}
+    expected_response = {"Error": "Missing `assetUrl` parameter in request!"}
 
     # Act
     response = flaskapp.post(route, json={"asset url": "./glb"})
@@ -268,7 +268,7 @@ def test_api_invalid_request_param(asset_url, flaskapp):
     """Tests that invalid assetUrl params returns the Bad request status code."""
     # Arrange
     route = "/api"
-    expected_response = {"data": f"`assetUrl` parameter <{asset_url}> is invalid. "
+    expected_response = {"Error": f"`assetUrl` parameter <{asset_url}> is invalid. "
                                  f"It must start with `.`, `..`, or `http://`, and must not end with `/`"}
 
     # Act
@@ -283,7 +283,7 @@ def test_api_no_ifc(flaskapp):
     # Arrange
     route = "/api"
     expected_response = {
-        "data": "No ifc file is available at the ./data/ifc folder"}
+        "Error": "No ifc file is available at the ./data/ifc folder"}
 
     # Act
     response = flaskapp.post(route, json={"assetUrl": "./glb"})
@@ -303,7 +303,7 @@ def test_api_multi_ifc(flaskapp):
         open(file, "x", encoding="utf-8").close()
 
     expected_response = {
-        "data": "More than one IFC file is located at the ./data/ifc folder. Please place only ONE IFC file."
+        "Error": "More than one IFC file is located at the ./data/ifc folder. Please place only ONE IFC file."
     }
 
     # Act
@@ -323,7 +323,7 @@ def test_api_invalid_ifc(flaskapp):
     open(ifc_file, "x", encoding="utf-8").close()
 
     expected_response = {
-        "data": "IFC model validation fails. Cause: Unable to parse IFC SPF header"}
+        "Error": "IFC model validation fails. Cause: Unable to parse IFC SPF header"}
 
     # Act
     response = flaskapp.post(route, json={"assetUrl": "./glb"})
