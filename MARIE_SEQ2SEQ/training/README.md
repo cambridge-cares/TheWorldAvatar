@@ -1,12 +1,14 @@
-## Installation
+## Basic setup
 
-### Prerequisites
+Prerequisites
+
 - Linux OS (recommended) . It is not advisable to run this project on Windows as [`bitsandbytes` is not supported on Windows]((https://github.com/TimDettmers/bitsandbytes/issues/30)).
 - [conda](https://conda.io/projects/conda/en/latest/index.html) (recommended).
 - `python==3.10`.
 - CUDA
 
-### Steps
+Installation steps
+
 1. Create a conda environment and activate it.
    ```
    conda create --name marie-llama python=3.10
@@ -66,6 +68,17 @@ sh hf2onmt.sh <path-to-hf-model-directory> <path-to-output-directory>
 ```
 
 ## Inference
+
+Install additional dependencies to run inference on different runtimes:
+
+- OpenNMT: `pip install ctranslate2 pyonmttok`
+- OpenVINO: `pip install --upgrade-strategy eager optimum[openvino,nncf]`
+- ONNX Runtime for CPU: `pip install --upgrade-strategy eager install optimum[onnxruntime]`
+- ONNX Runtime for GPU: `pip install optimum[onnxruntime-gpu]`
+- TensorRT: 
+  - [CUDA toolkit](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html)
+  - [cuDNN](https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html)
+  - [TensorRT](https://docs.nvidia.com/deeplearning/tensorrt/install-guide/index.html) (installation from tar ball recommended)
 
 See [`inference.sh`](./scripts/inference.sh) for example usage. The script will generate a json file containing  
 
