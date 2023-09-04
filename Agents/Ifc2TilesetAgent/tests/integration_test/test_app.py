@@ -57,19 +57,28 @@ def assert_child_tile_compulsory_fields(tile: dict):
 
 
 @pytest.mark.parametrize(
-    "init_assets, expected_assets, expected_bim_bbox",
-    [(["building", "wall"], ["building"], [
-      2.5, 0.1, 1.5, 2.5, 0, 0, 0, 0.1, 0, 0, 0, 1.5])]
+    "init_assets, expected_assets, expected_root_content, expected_bim_bbox, requires_optional_params",
+    [(["building", "wall"], ["building"], {"uri": "./glb/building.glb", "metadata": C.SAMPLE_BUILDING_METADATA},
+      [2.5, 0.1, 1.5, 2.5, 0, 0, 0, 0.1, 0, 0, 0, 1.5], False),
+      (["chair", "table"], ["furniture"], {"uri": "./glb/furniture.glb"},
+      [1.75, 1.0, 1.75, 1.75, 0, 0, 0, 1.0, 0, 0, 0, 1.75], False),
+      (["chair", "table"], ["furniture"], {"uri": "./glb/furniture.glb", "metadata": C.SAMPLE_ROOT_METADATA},
+       [1.75, 1.0, 1.75, 1.75, 0, 0, 0, 1.0, 0, 0, 0, 1.75], True)]
 )
-def test_api_simple(init_assets, expected_assets, expected_bim_bbox, kg_client, flaskapp, gen_sample_ifc_file):
+def test_api_simple(init_assets, expected_assets, expected_root_content, expected_bim_bbox, requires_optional_params,
+                    kg_client, flaskapp, gen_sample_ifc_file):
     """Tests the POST request on an IFC model without assets."""
     # Arrange
     route = "/api"
     init_kg_client(kg_client, init_assets)
     gen_sample_ifc_file("./data/ifc/sample.ifc", assets=init_assets)
+    request_params = {"assetUrl": "./glb"}
+    if requires_optional_params:
+        request_params["rootIri"] = C.SAMPLE_ROOT_IRI
+        request_params["rootName"] = C.SAMPLE_ROOT_NAME
 
     # Act
-    response = flaskapp.post(route, json={"assetUrl": "./glb"})
+    response = flaskapp.post(route, json=request_params)
 
     # Assert
     assert response.status_code == 200
@@ -87,8 +96,7 @@ def test_api_simple(init_assets, expected_assets, expected_bim_bbox, kg_client, 
     root = tileset_content["root"]
     assert_root_tile_compulsory_fields(root)
     assert np.allclose(root["boundingVolume"]["box"], expected_bim_bbox)
-    assert root["content"] == {
-        "uri": "./glb/building.glb", "metadata": C.SAMPLE_BUILDING_METADATA}
+    assert root["content"] == expected_root_content
     assert "children" not in root
 
 
@@ -269,10 +277,31 @@ def test_api_invalid_request_param(asset_url, flaskapp):
     # Arrange
     route = "/api"
     expected_response = {"Error": f"`assetUrl` parameter <{asset_url}> is invalid. "
-                                 f"It must start with `.`, `..`, or `http://`, and must not end with `/`"}
+                         f"It must start with `.`, `..`, or `http://`, and must not end with `/`"}
 
     # Act
     response = flaskapp.post(route, json={"assetUrl": asset_url})
+
+    # Assert
+    assert response.status_code == 400
+    assert response.json == expected_response
+
+
+@pytest.mark.parametrize(
+    "includedParam, paramVal, missingParam",
+    [("rootIri", "http://www.test.com/example", "rootName"),
+     ("rootName", "Test name", "rootIri")]
+)
+def test_api_invalid_optional_request_param(includedParam, paramVal, missingParam, flaskapp):
+    """Tests that only rootIri or rootName is passed and returns the Bad request status code."""
+    # Arrange
+    route = "/api"
+    expected_response = {
+        "Error": f"Detected {includedParam} parameter but {missingParam} is missing in request!"}
+
+    # Act
+    response = flaskapp.post(
+        route, json={"assetUrl": "./glb", includedParam: paramVal})
 
     # Assert
     assert response.status_code == 400

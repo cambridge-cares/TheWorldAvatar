@@ -134,6 +134,17 @@ SAMPLE_BUILDING_METADATA = {
     }
 }
 
+SAMPLE_ROOT_IRI = base_namespace + "Root_12"
+SAMPLE_ROOT_NAME = "Root Content"
+
+SAMPLE_ROOT_METADATA = {
+    "class": "ContentMetaData",
+    "properties": {
+        "name": SAMPLE_ROOT_NAME,
+        "iri": SAMPLE_ROOT_IRI
+    }
+}
+
 SAMPLE_ONTOBIM_TRIPLESTORE = dict(
     building=building_triple,
     wall=_elem_to_triple(sample_wall),
