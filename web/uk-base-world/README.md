@@ -6,52 +6,19 @@ This documentation was written in August of 2023. The data available from the li
 
 ## Gathering data
 
-Data for this visualisation has been gathered from the below sources; the original raw files and the processed files have been archived at CMCL on their Pavilion file server. Hopefully this process is repeatable with future versions of these data sets, if not then the archived data can be used as a fall-back. If the visualisation is updated with future versions of these data, the raw and processed versions of said files should also be archived.
+Data for this visualisation has been gathered from the sources listed on the [Data](./docs/data.md) page; the original raw files, as well as any processed files, have also been archived at CMCL on their Pavilion file server. Hopefully this process is repeatable with future versions of these data sets, if not then the archived data can be used as a fall-back. If the visualisation is updated with future versions of these data, the raw and processed versions of said files should also be archived.
 
-As a base world visualisation, more data sources will be added in future; as and when they are, they should be documented within this page, or in supplementary files linked to from this one.
+As a base world visualisation, more data sources will be added in future; as and when they are, they should be documented within the aforementioned page.
 
-### Digest of UK Energy Statistics (DUKES)
-
-Once a year, the UK government publishes a Digest of UK Energy Statistics (DUKES);  note this was formally published by the Department for Business, Energy and Industrial Strategy (BEIS) before it was dissolved, subsequent publications should be from the new Department for Energy Security and Net Zero (DESNZ).
-
-Read the associated [DUKES Data](./docs/data-dukes.md) page for details on how the DUKES data was acquired and processed.
-
-### United Kingdom: High Resolution Population Count
-
-The [Humanitarian Data Exchange](https://data.humdata.org/) publishes a number of data sets from around the globe. On an irregular basis, they publish population density data for the UK. In this example we're using the `population_gbr.geotiff.zip` file (which contains a GeoTIFF of population density) from the [United Kingdom: High Resolution Population Density Maps + Demographic Estimates](https://data.humdata.org/dataset/united-kingdom-high-resolution-population-density-maps-demographic-estimates) page.
-
-**Note:** Whilst meta reports this data as a population density, their documentation tells another tale; it is in fact a population count. Having said that, this only matters when calculating the amount of people within the 1KM radius of a power plant.
-
-No pre-processing is needed on this data set, we're using it as is.
 
 ## Uploading data
 
-Now that we have a clean CSV for each data set, we can spin up an instance of the stack (see [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) for details on how to do this) then run the data uploader to get our data into a relational database. Before trying to upload data, the [uploader's documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader) is considered required reading; this file will not detail the generic upload process.
+Once the correct files for each data source have been acquired, we can spin up an instance of the stack (see [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) for details on how to do this) then run the data uploader to get our data into a relational database. Before trying to upload data, the [uploader's documentation](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader) is considered required reading; this file will not detail the generic upload process.
 
-A number of pre-written configuration files (separated by data set) are linked to below, note that these (along with the data set CSVs) will need to be copied into the correct directories before running the uploader.
+With each data set come a number of pre-written associated files (configurations, queries, styles etc.). These files are documented along with their corresponding data source on the [Data](./docs/data.md) page.
 
 Once the data uploader has finished running, you should be able to log into the GeoServer web dashboard and preview the layers (and feature locations within them).
 
-### Power
-
-The below files relate to the aforementioned DUKES 2023 data set.
-
-* [Uploader config](./inputs/config/uploader/dukes_2023.json)
-* [Ontop mapping](./inputs/data/uk_base_world//dukes_2023.obda)
-  * Note that at the time of writing, this mapping utilises TBoxes that do not appear within the OntoEIP ontology. Nothing in the mapping contradicts the ontology, but the existing ontology does not contain enough concepts to cover all of the concepts provided by DUKES. 
-* [OntoEIP ontology](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoeip)
-  * Note that when uploading the ontology files, you may need to rename any Turtle files with the `.ttl` extension. The stack data uploader assumes that `.owl` files are using the XML format, if an `.owl` file is using Turtle then this will cause errors during upload.
-
-
-### UK Population Density
-
-The below files relate to the aforementioned UK Population Density data set.
-
-* [Uploader config](./inputs/config/uploader/population.json)
-* [Geospatial SQL Query](./inputs/config/uploader/dukes_2023_pop.sql)
-  * An SQL query to determine the number of people within a 1KM radius of each power plant. 
-* [Raster style](./inputs/config/uk-population-style.sld)
-  * SLD file to style the population raster data in GeoServer. 
 
 ## Creating a visualisation
 
@@ -91,7 +58,7 @@ To run the script and bring up a local instance of the UK Base World visualisati
    - Add the processed DUKES 2023 CSV to the `./inputs/data/uk_base_world/dukes_2023` directory.
    - Add the OntoEIP OWL and TTL files to the `./inputs/data/ontoeip` directory (note that these need to be in a flat structure, no subdirectories).
    - Add the UK population density GeoTIFF to the `./inputs/data/population` directory.
-5. Run the script from the `uk-base-world` directory, passing a password for PostGIS and Geoserver:
+5. Run the script from the `uk-base-world` directory, passing a password for PostGIS and GeoServer:
    - Example command: `./scripts/start.sh PASSWORD=pickapassword`
    - If deploying behind an existing URL, the `HOST` parameter can be passed to auto-update the visualisation's client side files (e.g. `./scripts/start.sh PASSWORD=pickapassword HOST=https://theworldavatar.io/demo/uk-base-world`)
 6. Confirm that the required data files are present by pressing the `Y` key.

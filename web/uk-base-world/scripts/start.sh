@@ -96,11 +96,7 @@ then
     rm -rf "${UPLOAD_DATA:?}"/*
 
     # Copy in the stack uploader config(s)
-    cp "./inputs/config/uploader/UKBASEWORLD.json" "$UPLOAD_CONFIG/"
-    cp "./inputs/config/uploader/dukes_2023.json" "$UPLOAD_CONFIG/"
-    cp "./inputs/config/uploader/dukes_2023_pop.sql" "$UPLOAD_CONFIG/"
-    cp "./inputs/config/uploader/population.json" "$UPLOAD_CONFIG/"
-    cp "./inputs/config/uploader/uk-population-style.sld" "$UPLOAD_CONFIG/"
+    cp "./inputs/config/uploader"/* "$UPLOAD_CONFIG/"
 
     # Copy in the data for upload
     UPLOAD_DATA="$ROOT/Deploy/stacks/dynamic/stack-data-uploader/inputs/data"
@@ -169,11 +165,12 @@ then
     # Update the default grafana dashboard to be the "Overview" one
     curl -X PUT --insecure -H "Content-Type: application/json" -H "Authorization: Bearer $API_KEY" --data-binary @inputs/dashboard/grafana-org-config.json http://admin:$PASSWORD@localhost:38383/dashboard/api/org/preferences
 
+    printf "\n"
     echo "----------"
     echo "Script completed, may need to wait a few minutes for the stack-data-uploader to finish."
     echo "Visualisation should be available at http://localhost:38383/visualisation/"
     echo "----------"
 else
     echo "Please copy in the data sets as described in the README before re-running this script."
-    exit -1
+    exit 1
 fi

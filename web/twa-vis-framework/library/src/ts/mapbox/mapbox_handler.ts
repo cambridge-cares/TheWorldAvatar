@@ -108,6 +108,11 @@ class MapHandler_Mapbox extends MapHandler {
             } else {
                 // Click on single feature
                 this.manager.showFeature(feature);
+
+                // Update the layer filters based on the new selection
+                if(feature?.properties?.iri) {
+                    MapboxUtils.updateFilters(feature.properties.iri);
+                }
             }
         }
     }

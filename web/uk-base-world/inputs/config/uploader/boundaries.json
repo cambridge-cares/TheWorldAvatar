@@ -1,0 +1,112 @@
+{
+    "database": "postgres",
+    "workspace": "twa",
+    "datasetDirectory": "uk_base_world",
+    "skip": false,
+    "dataSubsets": [
+        {
+            "type": "vector",
+            "skip": false,
+            "table": "countries_gb",
+            "subdirectory": "boundaries/countries_gb",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:27700",
+                "sridOut": "EPSG:4326",
+                "otherOptions": {
+                    "-nlt": ["MULTIPOLYGON"],
+                    "-unsetFieldWidth": []
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "countries_gb_geo",
+                    "sql": "SELECT ogc_fid, wkb_geometry, \"NAME\" as name FROM countries_gb",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "MultiPolygon",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "table": "countries_ni",
+            "subdirectory": "boundaries/countries_ni",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:29902",
+                "sridOut": "EPSG:4326",
+                "otherOptions": {
+                    "-nlt": ["MULTIPOLYGON"],
+                    "-unsetFieldWidth": []
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "countries_ni_geo",
+                    "sql": "SELECT ogc_fid, wkb_geometry, 'Northern Ireland' as name FROM countries_ni",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "MultiPolygon",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "table": "counties_gb",
+            "subdirectory": "boundaries/counties_gb",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:27700",
+                "sridOut": "EPSG:4326",
+                "otherOptions": {
+                    "-nlt": ["MULTIPOLYGON"],
+                    "-unsetFieldWidth": []
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "counties_gb_geo",
+                    "sql": "SELECT ogc_fid, wkb_geometry, \"NAME\" as name FROM counties_gb",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "MultiPolygon",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "table": "counties_ni",
+            "subdirectory": "boundaries/counties_ni",
+            "ogr2ogrOptions": {
+                "sridIn": "EPSG:29902",
+                "sridOut": "EPSG:4326",
+                "otherOptions": {
+                    "-nlt": ["MULTIPOLYGON"],
+                    "-unsetFieldWidth": []
+                }
+            },
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "counties_ni_geo",
+                    "sql": "SELECT ogc_fid, wkb_geometry, \"county\" as name FROM counties_ni",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "wkb_geometry",
+                        "type": "MultiPolygon",
+                        "srid": 4326
+                    }
+                }
+            }
+        }
+    ]
+}

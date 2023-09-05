@@ -1,0 +1,1 @@
+Files for NI counties (not GB) go here, they should be in EPSG:29902.

@@ -1,29 +1,130 @@
 {
     "name": "UK Base World",
-    "sources": [
-        {
-            "id": "uk-population-source",
-            "type": "raster",
-            "tiles": [
-                "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
-            ]
-        }
-    ],
-    "layers": [
-        {
-            "id": "uk-population-layer",
-            "name": "UK Population Count",
-            "source": "uk-population-source",
-            "type": "raster",
-            "slot": "middle",
-            "layout": {
-                "visibility": "visible"
-            }
-        }
-    ],
     "groups": [
         {
-            "name": "Power Generation Sites",
+            "name": "Regions",
+            "sources": [
+                {
+                    "id": "gb-countries-source",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:countries_gb&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "ni-countries-source",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:countries_ni&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "gb-counties-source",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:counties_gb&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "ni-counties-source",
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:counties_ni&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "gb-countries-layer",
+                    "name": "Countries",
+                    "source": "gb-countries-source",
+                    "source-layer": "countries_gb",
+                    "type": "fill",
+                    "clickable": false,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-color": "#000000",
+                        "fill-opacity": 0.2,
+                        "fill-outline-color": "#000000"
+                    }
+                },
+                {
+                    "id": "ni-countries-layer",
+                    "name": "Countries",
+                    "source": "ni-countries-source",
+                    "source-layer": "countries_ni",
+                    "type": "fill",
+                    "clickable": false,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-color": "#000000",
+                        "fill-opacity": 0.2,
+                        "fill-outline-color": "#000000"
+                    }
+                },
+                {
+                    "id": "gb-counties-layer",
+                    "name": "Ceremoninal counties",
+                    "source": "gb-counties-source",
+                    "source-layer": "counties_gb",
+                    "type": "fill",
+                    "clickable": false,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-color": "#000000",
+                        "fill-opacity": 0.2,
+                        "fill-outline-color": "#000000"
+                    }
+                },
+                {
+                    "id": "ni-counties-layer",
+                    "name": "Ceremoninal counties",
+                    "source": "ni-counties-source",
+                    "source-layer": "counties_ni",
+                    "type": "fill",
+                    "clickable": false,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-color": "#000000",
+                        "fill-opacity": 0.2,
+                        "fill-outline-color": "#000000"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Population data",
+            "sources": [
+                {
+                    "id": "uk-population-source",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:population&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    ]
+                }
+            ],
+            "layers": [
+                {
+                    "id": "uk-population-layer",
+                    "name": "UK Population Count",
+                    "source": "uk-population-source",
+                    "type": "raster",
+                    "layout": {
+                        "visibility": "visible"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Electrical infrastructure",
             "stack": "http://localhost:38383/",
             "sources": [
                 {
@@ -32,13 +133,20 @@
                     "tiles": [
                         "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:dukes_2023&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
+                },
+                {
+                    "id": "uk-power-radius-source",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://localhost:38383/geoserver/twa/wms?service=WMS&version=1.1.0&request=GetMap&layers=twa:dukes_2023_pop&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
                 }
                 
             ], 
             "layers": [
                 {
                     "id": "power_renewable_layer",
-                    "name": "Renewable",
+                    "name": "Power generation (renewable)",
                     "source": "uk-power-source",
                     "type": "circle",
                     "source-layer": "dukes_2023",
@@ -75,6 +183,7 @@
                             ["==", ["get", "primary_fuel"], "MSW"], "#006600",
                             ["==", ["get", "primary_fuel"], "Wind"], "#99ccff",
                             ["==", ["get", "primary_fuel"], "Hydro"], "#006699",
+                            ["==", ["get", "primary_fuel"], "Pumped hydro"], "#006699",
                             ["==", ["get", "primary_fuel"], "Solar"], "#ffff99",
                             "#FFFFFF"
                         ]
@@ -82,7 +191,7 @@
                 },
                 {
                     "id": "power_fossil_layer",
-                    "name": "Non-renewable",
+                    "name": "Power generation (non-renewable)",
                     "source": "uk-power-source",
                     "type": "circle",
                     "source-layer": "dukes_2023",
@@ -119,6 +228,44 @@
                             ["==", ["get", "primary_fuel"], "Nuclear"], "#999900",
                             "#FFFFFF"
                         ]
+                    }
+                },
+                {
+                    "id": "power_renewable_radius_layer",
+                    "name": "Power generation (renewable)",
+                    "source": "uk-power-radius-source",
+                    "treeable": false,
+                    "type": "fill",
+                    "source-layer": "dukes_2023_pop",
+                    "filter": [
+                        "in", ["get", "iri"], "[IRI]"
+                    ],
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-outline-color": "#000000",
+                        "fill-color": "#000000",
+                        "fill-opacity": 0.15
+                    }
+                },
+                {
+                    "id": "power_fossil_radius_layer",
+                    "name": "Power generation (non-renewable)",
+                    "source": "uk-power-radius-source",
+                    "treeable": false,
+                    "type": "fill",
+                    "source-layer": "dukes_2023_pop",
+                    "filter": [
+                        "in", ["get", "iri"], "[IRI]"
+                    ],
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-outline-color": "#000000",
+                        "fill-color": "#000000",
+                        "fill-opacity": 0.15
                     }
                 }
             ]

@@ -456,4 +456,33 @@ class MapboxUtils {
         }
     }
 
+    /**
+     * Iterates through all filters for all layers, and if the filter
+     * contains the string "[IRI]" at any point, this is substituted 
+     * with the input iri parameter.
+     * 
+     * @param iri IRI of selected feature
+     */
+    public static updateFilters(iri) {
+        let layers = MapHandler.MAP.getStyle().layers;
+
+        layers.forEach((layer) => {
+            console.log(layer?.id);
+            console.log(layer?.metadata?.attribution);
+
+            if(layer?.metadata?.attribution === "CMCL" && layer?.id) {
+                // Only run on layers we've added
+                let filter = MapHandler.MAP.getFilter(layer.id);
+                
+                if(filter != null) {
+                    let filterString = JSON.stringify(filter);
+                    filterString = filterString.replaceAll("[IRI]", iri);
+                    MapHandler.MAP.setFilter(layer.id, JSON.parse(filterString));
+                }
+                console.log(layer);
+            }
+            console.log("---");
+        });
+    }
+
 }

@@ -4,7 +4,7 @@
         "Name": "visualisation",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/twa-vf:4.0.0",
+                "Image": "ghcr.io/cambridge-cares/twa-vf:4.1.0-SNAPSHOT",
                 "Mounts": [
                     {
                         "Type": "bind",
