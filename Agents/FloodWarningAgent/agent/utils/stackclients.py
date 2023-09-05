@@ -186,21 +186,49 @@ class PostGISClient:
         except Exception as ex:
             logger.error(f'Unsuccessful JDBC interaction: {ex}')
             raise StackException('Unsuccessful JDBC interaction.') from ex
+        
+
+    def get_active_floodareas(self, flood_area_table: str = LAYERNAME):
+        """
+        This function retrieves a list of all flood areas which are currently
+        marked as active within PostGIS
+
+        flood_area_table - Name of table containing flood area polygons
+        """
+        try:
+            with jaydebeapi.connect(*self.conn_props) as conn:
+                with conn.cursor() as curs:
+                    curs.execute(f'SELECT DISTINCT area_uri \
+                                   FROM {flood_area_table} \
+                                   WHERE active=True')
+                    # Fetching the SQL results from the cursor only works on first call
+                    # Recurring calls return empty list and curs.execute needs to be run again
+                    res = curs.fetchall()
+                    # Extract IRI results from list of tuples
+                    res = [r[0] for r in res]
+                    return res
+        except Exception as ex:
+            logger.error(f'Unsuccessful JDBC interaction: {ex}')
+            raise StackException('Unsuccessful JDBC interaction.') from ex
 
 
-    def set_flood_area_activity(self, activity: bool, area_uri: str, table=LAYERNAME):
+    def set_flood_area_activity(self, activity: bool, area_uri, table=LAYERNAME):
         """
         This function sets the 'activity' of a flood area in the database to allow
         for visualisation of areas associated with active flood warnings only (later)
 
         activity: Boolean value whether a flood area is currently affected or not
+        area_uri: IRI(s) of flood area(s) of interest, string or list of strings
         """
+        if isinstance(area_uri, str):
+            area_uri = [area_uri]
+        area_uris = "('" + "', '".join(area_uri) + "')"
         try:
             with jaydebeapi.connect(*self.conn_props) as conn:
                 # Create a cursor object ...
                 with conn.cursor() as curs:
                     # ... and execute the SQL query
-                    curs.execute(f"UPDATE {table} SET active=? WHERE area_uri=?", (activity, area_uri))
+                    curs.execute(f"UPDATE {table} SET active={activity} WHERE area_uri IN {area_uris}")
                     # Get the number of rows affected by the update
                     num_rows = curs.rowcount
                     return num_rows

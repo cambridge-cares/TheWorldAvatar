@@ -1,6 +1,6 @@
 # Feature Info Agent
 
-This Feature Info Agent (FIA) acts as a single access point for [DTVF Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) to query for both meta and time series data of an individual feature (i.e. a single geographical location) before display within the side panel of the visualisation.
+This Feature Info Agent (FIA) acts as a single access point for [TWA Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/TWA-Visualisations) to query for both meta and time series data of an individual feature (i.e. a single geographical location) before display within the side panel of the visualisation.
 
 The current version of the FIA is v2.0.1.
 
@@ -25,7 +25,7 @@ The FIA is a relatively simple HTTP agent built using the JPS Base Lib's agent f
       3. Look up corresponding meta query for that class.
          1. If none found, send a NO_CONTENT response.
       4. Run query to get metadata.
-      5. Parse resulting metadata into approved DTVF format.
+      5. Parse resulting metadata into approved TWA-VF format.
       6. Look up corresponding timeseries query for that class.
          1. If none found, log warning but continue.
          2. If found, run query.
@@ -60,17 +60,40 @@ Follow the below configuration steps within the local `queries` directory.
       - `class`: Full IRI of the class.
       - `metaFile`: Name of the file (inc. extension) that contains the query to run when gathering metadata.
       - `timeFile`: Optional, name of the file (inc. extension) that contains the query to run when gathering timeseries measurement details.
-      - `timeLimit`: Optonal, this is an integer parameter that defaults to 24. When set, timeseries data from the last N hours will be pulled (or all data if the value is set to below 0).
+      - `timeLimit`: Optional, this is an integer parameter that defaults to 24. When set, timeseries data from the last N hours will be pulled (or all data if the value is set to below 0).
       - `databaseName`: Optional, but **required** if setting a timeFile. It should match the PostGreSQL database name that contains your timeseries data.
   - Add the aforementioned metadata and timeseries query files.
 
 An example configuration file is provided within the [queries] directory. Furthermore, two example `.sparql` files are provided to retrieve the meta and time series data, respectively. Both of these files refer to the example data as listed <a href="#example">below</a>.
 
+#### Class Discovery
+
+To determine the class that the input instance IRI belongs to, the FIA uses a couple of hard-coded SPARQL queries; if the first returns an empty result, then the second is attempted. If neither return any class IRIs, then the request ends early as a failure. Please be aware that you may need to add to your dataset to ensure that at least one of these queries can return a class IRI when your instance IRI is injected into the `[IRI]` placeholder.
+
+```
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT distinct ?class WHERE {
+    [IRI] rdf:type ?class
+}
+```
+
+```
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+select distinct ?class { 
+    SERVICE [ONTOP] { [IRI] a ?x . }
+    ?x rdfs:subClassOf* ?class .
+    ?class rdf:type owl:Class .
+}
+```
+
 #### Query Restrictions
 
-To properly parse the metadata and timeseries queries, the agent requires the results from queries to fulfill a set format. For each type of query a number of placeholder tokens can be added that will be populated by the agent just before execution. These are:
+To properly parse the metadata and timeseries queries, the agent requires the results from queries to fulfil a set format. For each type of query a number of placeholder tokens can be added that will be populated by the agent just before execution. These are:
 
-- `[IRI]`: The IRI of the **feature** of interest, i.e. the feature selected within the DTVF (the IRI will be injected here into the request)
+- `[IRI]`: The IRI of the **feature** of interest, i.e. the feature selected within the TWA-VF (the IRI will be injected here into the request)
 - `[ONTOP]`: The URL of the Ontop service within the stack will be injected
 
 <ins>Queries for metadata</ins> should not concern themselves with data relating to timeseries (that can be handled within the timeseries query). Queries here need to return a table with two (or optionally three) columns. The first column should be named `Property` and contains the name of the parameter we're reporting, the second should be `Value` and contain the value. The optional third column is `Unit`. **These are case sensitive and any other columns will be ignored**.
