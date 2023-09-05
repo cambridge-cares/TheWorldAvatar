@@ -328,17 +328,6 @@ def createModel_EGen(numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSy
             ## increase the number of number_of_localOWLFiles
             number_of_localOWLFiles += 1
     
-    print("...creating loacl file...")
-    textfile = open("C:\\Users\\wx243\\Documents\\TheWorldAvatar\\UK_Digital_Twin\\testOPFAnalysis\\gen.txt", "w")
-    for r in ret_gen_array:
-        textfile.write(r + "\n")
-    textfile.close()
-
-    textfile = open("C:\\Users\\wx243\\Documents\\TheWorldAvatar\\UK_Digital_Twin\\testOPFAnalysis\\genCost.txt", "w")
-    for r in ret_genCost_array:
-        textfile.write(r + "\n")
-    textfile.close()
-    
     print("################FINISH createModel_EGen#################")
     if isinstance(store, Sleepycat):  
         cg_model_EGen.close()       

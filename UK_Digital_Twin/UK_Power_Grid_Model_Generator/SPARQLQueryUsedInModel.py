@@ -584,7 +584,6 @@ if __name__ == '__main__':
     # res, a = queryELineTopologicalInformation(29, 99, 'ukdigitaltwin', None, False)
     # res, a = queryELineTopologicalInformation(10, 14, 'ukdigitaltwin', None, False)
     # res = branchGeometryQueryCreator('10', ['275kV', '400kV'])
-    # SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\Top_node\\Sleepycat_topnode"
     
     # res = queryEBusandRegionalDemand(10, None, False, "ukdigitaltwin")
     # geo = res[0]['Geo_InfoList']

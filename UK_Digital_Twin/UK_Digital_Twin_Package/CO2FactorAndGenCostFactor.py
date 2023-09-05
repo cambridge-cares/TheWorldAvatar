@@ -9,7 +9,6 @@ from pathlib import Path
 class ModelFactor:
     
     """ File path """
-    # DataPath = "C:/Users/wx243/Documents/TheWorldAvatar/UK_Digital_Twin/Data files/CO2FactorAndCostFactor/"
     
     DataPath = str(Path(__file__).resolve().parent.parent) + "/Data files/CO2FactorAndCostFactor/"
     CO2EmissionFactorAndCostFactor = DataPath + 'CO2EmissionFactorAndCostFactor.csv' 

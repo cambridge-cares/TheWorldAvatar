@@ -225,13 +225,6 @@ def createModel_ELine(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSyste
     ## TODO: disable sparql_client
     #sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)   #(endpoint_iri, endpoint_iri)
     #sparql_client.uploadOntology(filepath_)
-
-    print("...creating loacl file...")
-    textfile = open("C:\\Users\\wx243\\Documents\\TheWorldAvatar\\UK_Digital_Twin\\testOPFAnalysis\\branch.txt", "w")
-    for r in ret_branch_array:
-        textfile.write(r + "\n")
-    textfile.close()
-
     print("################FINISH createModel_ELine#################")
 
     if isinstance(store, Sleepycat):  

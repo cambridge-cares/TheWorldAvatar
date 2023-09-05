@@ -199,6 +199,5 @@ def addUKElectricityConsumptionTriples(ElectricitySystemIRI, version, OWLFileSto
     return  
 
 if __name__ == '__main__':
-    path = "C:\\Users\\wx243\\Desktop\\test\\new_elec_consump\\"
     addUKElectricityConsumptionTriples("http://www.theworldavatar.com/kb/ontoenergysystem/ElectricPowerSystem_71cf325f-727d-4618-9fd1-2aec80bb87bf", 2017, None, True, 'default')
     print('****************************Terminated****************************')

@@ -263,12 +263,6 @@ def createModel_EBus(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSystem
         ## update the graph to endpoint
         sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
         sparql_client.uploadOntology(filepath_)
-    
-    print("...creating local file bus.txt...")
-    textfile = open("C:\\Users\\wx243\\Documents\\TheWorldAvatar\\UK_Digital_Twin\\testOPFAnalysis\\bus.txt", "w")
-    for r in ret_bus_array:
-        textfile.write(r + "\n")
-    textfile.close()
 
     if isinstance(store, Sleepycat):  
         cg_model_EBus.close()       
