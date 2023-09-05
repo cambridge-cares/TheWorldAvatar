@@ -372,7 +372,7 @@ class KGClient(PySparqlClient):
         outputTimeInterval_iri = KB + 'Interval_' + str(uuid.uuid4())
         inputTimeInterval_iri = KB + 'Interval_' + str(uuid.uuid4())
 
-        # Initialise SPARQL update body witth forecast related triples
+        # Initialise SPARQL update body with forecast related triples
         body = ''
         body += create_properties_for_subj(subj=cfg['iri_to_forecast'], pred_obj={
                     TS_HASFORECAST: cfg['fc_iri']})

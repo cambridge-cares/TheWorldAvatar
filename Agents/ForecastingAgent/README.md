@@ -56,7 +56,7 @@ The `STACK_NAME` variable is used to identify the deployment mode of the agent: 
 Please note: 
 - The `DB_URL` is optional as the agent will first try to retrieve the database endpoint instantiated for the time series IRI to forecast from the KG (and only use the specified environment variable as fallback)
 - When deployed via the Stack manager, the `STACK_NAME` environment variable is set automatically and can be omitted in the config file
-- `SPARQL_QUERY_ENDPOINT` and `SPARQL_UPDATE_ENDPOINT` are both required inputs even for stack deployment (due to default derivation agent config); however, as the actual values for initialising the Forecasting Agent are retrieved via the Stack clientsm they can be left blank.
+- `SPARQL_QUERY_ENDPOINT` and `SPARQL_UPDATE_ENDPOINT` are both required inputs even for stack deployment (due to default derivation agent config); however, as the actual values for initialising the Forecasting Agent are retrieved via the Stack Clients, they can be left blank.
 
 ## 1.2 Miscellaneous
 
