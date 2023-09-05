@@ -8,7 +8,7 @@ A brief description of the workflow can be found below:
 1. Instantiate the semantic and geometry data in IFC models using the [Ifc2OntoBim agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent).
 2. Queries the metadata (IFC uid, asset name, data IRI) of relevant assets from a specified endpoint.
 3. Split the geometries in the IFC model based on these metadata into their individual assets (if necessary).* These are then converted into glb models that are stored locally.
-4. 3D Tilesets are generated for the building, solar panels, and sewerage network (if they exist). The building tileset are supplemented with the queried asset metadata (if any).
+4. 3D Tilesets are generated for the building, solar panels, and sewerage network (if they exist). The building tileset are supplemented with the queried asset and building metadata (if any). Root content metadata can also be added through the use of optional parameters.
 
 **At the moment, this agent is unable to process the geometry data queried from the knowledge graph, and will require the same IFC model file as an input to create the geometry files.*
 
@@ -40,7 +40,7 @@ A brief description of the workflow can be found below:
 
 # Instructions
 ## 1. Building the agent
-The agent is designed for deployment on [Docker](#12-docker-deployment). Although it can be deployed on a local development environment, this is not the recommended setup. 
+The agent is designed for deployment on [Docker](#12-docker-deployment). Although it can be deployed within a local development environment, this is not the recommended setup. 
 
 ### 1.1 Required dependencies:
 These dependencies have been added to the Dockerfile. But in the event there is a need to update their links, please read the steps below on how to find and extract the dependencies.
@@ -80,7 +80,6 @@ docker-compose up -d
 ```
 
 **STACK DEPLOYMENT**
-
 If you want to spin up this agent as part of a stack, do the following:
 - Build the image by issuing `docker compose build` in this folder. Do not start the container.
 - Copy the `json` file from the `stack-manager-input-config` folder into the `inputs/config/services` folder of the stack manager, adjusting the absolute path of the bind mounts as required. 
@@ -108,6 +107,11 @@ A brief overview is as follows:
     1. `assetUrl`  
     - Sets the file path to directory or url holding the glb assets in the tilesets generated.
     - Valid formats include `"."`, `"./file/path"`, `"../../file/path"`, and `"http://www.example.com"`. Please do not add an ending `/`, which will be generated in the code itself.
+    2. `rootIri`  
+    - An optional parameter to set an IRI for the root contents in the tileset when there is no building. Note that this will be ignored if there are no root contents or a `building.glb` is generated.
+    3. `rootName`  
+    - An optional parameter to set a name for the root contents in the tileset when there is no building. Note that this will be ignored if there are no root contents or a `building.glb` is generated.
+
 ```
 /api
 ```
@@ -116,6 +120,12 @@ A brief overview is as follows:
 Run the agent by sending a POST request with the required JSON Object to the necessary endpoint. A sample request in `curl` syntax is as follows:
 ```
 curl -X POST localhost:5105/api -H 'Content-Type: application/json' -d '{"assetUrl":"./glb"}'  
+
+# Including optional parameters
+curl -X POST localhost:5105/api -H 'Content-Type: application/json' -d '{"assetUrl":"./glb", "rootIri":"name", "rootName":"name"}'  
+
+# For VSCode's powershell, please append \ to the " for parameters
+curl -X POST localhost:5105/api -H 'Content-Type: application/json' -d '{\"assetUrl\":\"./glb\"}'  
 ```
 
 If running the agent within a stack:
