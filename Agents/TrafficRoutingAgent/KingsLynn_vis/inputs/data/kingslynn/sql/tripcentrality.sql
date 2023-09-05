@@ -84,7 +84,7 @@ CROSS JOIN LATERAL (
         the_geom
     FROM
         pgr_drivingDistance(
-            'SELECT id, source, target, cost_s as cost, reverse_cost_s as reverse_cost FROM flood_cost',
+            'SELECT id, source, target, cost_s as cost, reverse_cost_s as reverse_cost FROM flood_cost_10cm',
             hospital_id,
             minute_limit * 120,
             false
