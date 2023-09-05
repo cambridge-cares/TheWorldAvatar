@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">04 September 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">05 September 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Building Environment ontology (OntoBuiltEnv) is an ontology developed for representing key information about properties (i.e. buildings as well as flats/apartments). It combines information about building usage, key construction characteristics, location and address, and estimated property value. More detailed geometric information can be retrieved from the associated OntoCityGml representation.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -1078,9 +1078,9 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/Medical">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Medical include buildings and sites focused on the provision of medical care services or the dispensing of medicinal drugs</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string"> or both.</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:label>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Medical include buildings and sites focused on the provision of medical care services or the dispensing of medicinal drugs, or both.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuiltenv/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Medical</rdfs:label>
     </owl:Class>
     
 
