@@ -116,3 +116,4 @@ hasFurnitureIdentifier,Data Property,,,Furniture,String,,An identifier assigned 
 hasProjectIdentifier,Data Property,,,Project,String,,An identifier assigned to a project.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has project identifier
 hasServiceCodeIdentifier,Data Property,,,ServiceCode,String,,An identifier assigned to a service code.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has service code identifier
 hasServiceCategoryIdentifier,Data Property,,,ServiceCategory,String,,An identifier assigned to a service category.,https://www.theworldavatar.com/kg/ontoassetmanagement/,has service category identifier
+hasServiceTag,Data Property,,,https://w3id.org/bot#Element,String,,"An identifier used to identify a product and its information (e.g. compatible accessories, service history, parts).",https://www.theworldavatar.com/kg/ontoassetmanagement/,has service tag

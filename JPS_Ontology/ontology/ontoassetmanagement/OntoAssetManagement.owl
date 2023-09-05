@@ -950,6 +950,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasServiceTag -->
+
+
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasServiceTag">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Element"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An identifier used to identify a product and its information (e.g. compatible accessories, service history, parts).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has service tag</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasWorkspaceIdentifier -->
 
 
