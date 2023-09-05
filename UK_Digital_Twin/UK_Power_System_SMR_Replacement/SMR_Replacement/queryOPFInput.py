@@ -4,7 +4,7 @@
 ##########################################
 
 import os, sys, json
-BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, BASE)
 from UK_Digital_Twin_Package.queryInterface import performQuery, performFederatedQuery
 from UK_Digital_Twin_Package.OWLfileStorer import readFile
@@ -321,7 +321,7 @@ def queryAreaBoundaries(LA_code:str):
     SELECT DISTINCT ?area (GROUP_CONCAT(?areaBoundary;SEPARATOR = '***') AS ?Geo_InfoList)
     WHERE
     {
-    ?area ons:status "live" .
+    # ?area ons:status "live" .
     ?area rdf:type ons:Statistical-Geography .
     ?area <http://publishmydata.com/def/ontology/foi/code> "%s" .
     ?area ons_geosparql:hasGeometry ?geometry .
@@ -329,19 +329,25 @@ def queryAreaBoundaries(LA_code:str):
     } GROUP BY ?area
     """% (LA_code)
 
-    encodedString = urllib.parse.quote(queryStr)
-    getString = "http://statistics.data.gov.uk/sparql.json?query=" + str(encodedString)
+    ###-- The previous way of send http request to the ONS endpoint as the query interfeace in Py4jps does not work--###
+    # encodedString = urllib.parse.quote(queryStr)
+    # getString = "http://statistics.data.gov.uk/sparql.json?query=" + str(encodedString)
 
-    print('... HTTP GET demanding Area Boundaries...')
-    r = requests.get(getString, timeout=60)
-    res = json.loads(r.text)['results']['bindings'][0]['Geo_InfoList']['value']
-    print('...HTTP GET demanding Area Boundaries is done...')
+    # print('... HTTP GET demanding Area Boundaries...')
+    # r = requests.get(getString, timeout=60)
+    # res = json.loads(r.text)['results']['bindings'][0]['Geo_InfoList']['value']
+    # print('...HTTP GET demanding Area Boundaries is done...')
+
+    ###-- with the deployment of the ONS subset on digital ocean --###
+    endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ONS['queryendpoint_iri'])
+    print('...starts queryAreaBoundaries...')
+    res = json.loads(performQuery(endPointIRI, queryStr))[0]['Geo_InfoList']
+    print('...finishes queryAreaBoundaries...')  
     
     ## clear the symbols in the query results
-
     res = (res.split('\"^^')[0]).replace('\"','') 
 
-    # Check the availability of the geometry of each area
+    ## Check the availability of the geometry of each area
     if res == 0: 
         raise Exception('There is one place does not have geometry information which is', r["LACode_area"], ', please check the query string and the place status in ONS.')
     elif "***" in res:
@@ -350,6 +356,13 @@ def queryAreaBoundaries(LA_code:str):
     return res
      
 def queryifWithin(LACode_toBeCheck:str, givenLACode:str, ONS_Endpoint_label:str):
+    if ONS_Endpoint_label == str(EndPointConfigAndBlazegraphRepoLabel.ONS['label']):
+        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ONS['endpoint_iri'])
+    elif parse(ONS_Endpoint_label, rule='IRI'):
+        endPointIRI = ONS_Endpoint_label
+    else:
+        raiseExceptions("!!!!Please provide a valid query endpoint!!!!")
+
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -364,8 +377,9 @@ def queryifWithin(LACode_toBeCheck:str, givenLACode:str, ONS_Endpoint_label:str)
     ?areaToBeChecked foi:within ?areaGiven .
     }
     """%(str(LACode_toBeCheck), str(givenLACode))
+
     print('...query ifWithin condition...')
-    res = json.loads(performQuery(ONS_Endpoint_label, queryStr))  
+    res = json.loads(performQuery(endPointIRI, queryStr))  
     print('...queryifWithin is done...')
     res = res[0]['ASK']
     return res
@@ -375,6 +389,10 @@ if __name__ == '__main__':
     #     "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal", 
     #     "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil",
     #     "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#SourGas"]
+
+    # res = queryAreaBoundaries("E92000001") # ("E07000066")
+
+    res = queryifWithin ("E07000066", "K02000001", "ons")
 
 
     qsrt= """

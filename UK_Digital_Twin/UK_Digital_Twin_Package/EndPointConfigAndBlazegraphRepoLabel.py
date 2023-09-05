@@ -6,6 +6,10 @@
 """This module is used to recored the repository labels used in the remote triple store, Blazegraph. The lables will be refered when performing queries."""
 
 """The lables of different repositories maintained in RDF4j triple store deployed in CoMo server"""
+import sys, os
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, BASE)
+from UK_Digital_Twin_Package.endPointofDigitalOcean import ONSEndpoint
 
 ##################decommissioned repositories##################
 # UKDigitalTwinKG = { # the repo used to store the top node graph (lookup table)
@@ -76,11 +80,28 @@ ukdigitaltwin = { ## remote cmcl
 #     'updateendpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql"}
 
 """ONS in Blazegraph"""
+# ONS = {
+#     'label': 'ons',
+#     'type':'ORIGINAL',
+#     'endpoint_iri' : "http://statistics.data.gov.uk/sparql.json",
+#     'queryendpoint_iri' : "http://statistics.data.gov.uk/sparql.json",
+#     'updateendpoint_iri' : "http://statistics.data.gov.uk/sparql.json"}
+
+## Local ONS KG deployed in the digital ocean 
+# ONS = {
+#     'label': 'ons',
+#       'type':'DIGITALOCEAN',
+#     'endpoint_iri' : ONSEndpoint,
+#     'queryendpoint_iri' : ONSEndpoint,
+#     'updateendpoint_iri' : ONSEndpoint}
+
+## Deployed in CMCL Blazegraph
 ONS = {
     'label': 'ons',
-    'endpoint_iri' : "http://statistics.data.gov.uk/sparql.json",
-    'queryendpoint_iri' : "http://statistics.data.gov.uk/sparql.json",
-    'updateendpoint_iri' : "http://statistics.data.gov.uk/sparql.json"}
+    'type':'BLAZEGRAPH',
+    'endpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ONS_subset/sparql",
+    'queryendpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ONS_subset/sparql",
+    'updateendpoint_iri' : "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ONS_subset/sparql"}
 
 
 """ukdigitaltwin population density"""

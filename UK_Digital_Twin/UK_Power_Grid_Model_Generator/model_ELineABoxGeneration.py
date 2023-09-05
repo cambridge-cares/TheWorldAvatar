@@ -137,7 +137,7 @@ def createModel_ELine(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSyste
     g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontocape_upper_level_system)))  
     g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontopowsys_PowerSystemModel))) 
     g.set((g.identifier, RDFS.comment, Literal('This ontology represents mathematical model of the electricity branch of the UK energy system.'))) 
-    ## Link topologyNodeIRI with PowerSystemModel and ElectricalBusModelIRI
+    ## Link topologyNodeIRI with PowerSystemModel and ElectricalBranchModelIRI
     g.add((URIRef(powerSystemModelIRI), URIRef(ontopowsys_PowerSystemModel.hasModelingPrinciple.iri), URIRef(topologyNodeIRI)))
     g.add((URIRef(powerSystemModelIRI), URIRef(ontoecape_space_and_time_extended.hasTimestamp.iri), Literal(powerSystemNodetimeStamp, \
             datatype = XSD.dateTimeStamp)))
@@ -149,7 +149,6 @@ def createModel_ELine(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSyste
     for eline in ELineTopoAndGeometryInfo:         
     # if ELineTopoAndGeometryInfo[0] != None: # test
     #     eline = ELineTopoAndGeometryInfo[0] # test
-
         ELineNodeIRI = eline['ELineNode']
         ## link the ElectricalELineModelIRI with topology ELineNodeIRI
         g.add((URIRef(ELineNodeIRI), URIRef(ontocape_upper_level_system.isModeledBy.iri), URIRef(ElectricalELineModelIRI)))

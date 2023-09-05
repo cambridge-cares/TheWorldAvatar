@@ -227,7 +227,7 @@ def addBusTopologyNodes(graph, busTopoheader, busDataArray, ontopowsys_namespace
         ## Link bus node with root node and specify its type
         graph.add((URIRef(topology_root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(bus_node)))
         graph.add((URIRef(bus_node), RDF.type, URIRef(ontopowsys_PowSysRealization.BusNode.iri)))
-        ## Add GPS attribute tp BusNode
+        ## Add GPS attribute to BusNode
         graph.add((URIRef(bus_node), URIRef(ontoenergysystem.hasWGS84LatitudeLongitude.iri), Literal(latlon, datatype = 'http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon')))
         orderedBusList.append(bus_node)
         orderedLatlon.append(latlon)
@@ -272,7 +272,7 @@ def addBranchTopologyNodes(graph, numOfBranch, branchTopoHeader, filePathofBranc
         graph.add((URIRef(topology_root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(branch_node)))
         graph.add((URIRef(branch_node), RDF.type, URIRef(ontopowsys_PowSysRealization.ElectricalLine.iri)))
         
-        ## link with leaves(from) bus and enters(to) bus
+        ## link with leaves(from) bus and enters (to) bus
         graph.add((URIRef(branch_node), URIRef(ontocape_network_system.leaves.iri), URIRef(FromBus_iri)))
         graph.add((URIRef(branch_node), URIRef(ontocape_network_system.enters.iri), URIRef(ToBus_iri)))
         ## link buses with its hasOutput and hasInput

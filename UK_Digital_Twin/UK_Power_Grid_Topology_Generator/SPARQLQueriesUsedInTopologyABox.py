@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 12 April 2022        #
+# Last Update Date: 17 August 2023       #
 ##########################################
 
 """This module lists out the SPARQL queries used in generating the UK Grid Topology A-boxes"""
@@ -82,6 +82,13 @@ def queryPowerPlantAttributes(endPoint_label):
     
 # The query for the Region Boundaries returned from ONS
 def queryRegionBoundaries(ONS_Endpoint_label):
+    if ONS_Endpoint_label == str(EndPointConfigAndBlazegraphRepoLabel.ONS['label']):
+        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ONS['endpoint_iri'])
+    elif parse(ONS_Endpoint_label, rule='IRI'):
+        endPointIRI = ONS_Endpoint_label
+    else:
+        raiseExceptions("!!!!Please provide a valid ONS_Endpoint!!!!")
+
     queryStr_england_region = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -91,7 +98,7 @@ def queryRegionBoundaries(ONS_Endpoint_label):
     SELECT DISTINCT ?LACode_area (GROUP_CONCAT(?areaBoundary;SEPARATOR = '***') AS ?Geo_InfoList)
     WHERE
     {
-    ?area ons:status "live" .
+    #?area ons:status "live" .
     ?area rdf:type ons:Statistical-Geography .
     ?area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/E12> .
     ?area <http://publishmydata.com/def/ontology/foi/code> ?LACode_area .
@@ -109,7 +116,7 @@ def queryRegionBoundaries(ONS_Endpoint_label):
     SELECT DISTINCT ?LACode_area (GROUP_CONCAT(?areaBoundary;SEPARATOR = '***') AS ?Geo_InfoList)
     WHERE
     {
-    ?area ons:status "live" .
+    #?area ons:status "live" .
     ?area rdf:type ons:Statistical-Geography .
     { ?area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/W92> .} UNION 
     { ?area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/S92> .} UNION
@@ -121,34 +128,38 @@ def queryRegionBoundaries(ONS_Endpoint_label):
     } GROUP BY ?LACode_area   
     """
 
-    encodedString_1 = urllib.parse.quote(queryStr_england_region)
-    getString_1 = "http://statistics.data.gov.uk/sparql.json?query=" + str(encodedString_1)
+    ###-- The previous method for query the remote ONS endpoint with Http request --###
+    # encodedString_1 = urllib.parse.quote(queryStr_england_region)
+    # getString_1 = "http://statistics.data.gov.uk/sparql.json?query=" + str(encodedString_1)
 
-    encodedString_2 = urllib.parse.quote(queryStr_SWN)
-    getString_2 = "http://statistics.data.gov.uk/sparql.json?query=" + str(encodedString_2)
+    # encodedString_2 = urllib.parse.quote(queryStr_SWN)
+    # getString_2 = "http://statistics.data.gov.uk/sparql.json?query=" + str(encodedString_2)
 
-    print('...HTTP GET queryRegionBoundaries...')
-    r1 = requests.get(getString_1, timeout=60)
-    r2 = requests.get(getString_2, timeout=60)
+    # print('...HTTP GET queryRegionBoundaries...')
+    # r1 = requests.get(getString_1, timeout=60)
+    # r2 = requests.get(getString_2, timeout=60)
 
-    # print(json.loads(r1.text))
-    # print(json.loads(r2.text))
+    # res_england_region = json.loads(r1.text)['results']['bindings']# [0]['LACode_Region']['value']
+    # res_SWN = json.loads(r2.text)['results']['bindings']# [0]['LACode_Region']['value']
 
-    res_england_region = json.loads(r1.text)['results']['bindings']# [0]['LACode_Region']['value'] ## FIXME: this
-    res_SWN = json.loads(r2.text)['results']['bindings']# [0]['LACode_Region']['value'] ## FIXME: this
+    # # print(len(res_england_region))
 
-    # print(len(res_england_region))
+    # print('...HTTP GET queryRegionBoundaries is done...')
+    # if int(r1.status_code) != 200 or int(r2.status_code) != 200:
+    #     print('The Region Boundaries cannot be found.')
+    #     return None
 
-    print('...HTTP GET queryRegionBoundaries is done...')
-    if int(r1.status_code) != 200 or int(r2.status_code) != 200:
-        print('The Region Boundaries cannot be found.')
-        return None
+    ### -- Use the sub set of the ONS data deployed in the digital ocean --###
+    print('...starts queryRegionBoundaries...')
+    res_england_region = json.loads(performQuery(endPointIRI, queryStr_england_region)) # [0]['LACode_Region']
+    res_SWN = json.loads(performQuery(endPointIRI, queryStr_SWN)) # [0]['LACode_Region']
+    print('...finishes queryRegionBoundaries...')  
 
     for swn in res_SWN:
         res_england_region.append(swn)
     
     if len(res_england_region) != 12:
-        raise Exception('The number of the region should be 12 in total but the number of queried is ' + str(len(res)))
+        raise Exception('The number of the region should be 12 in total but the number of queried is ' + str(len(res_england_region)))
     # clear the symbols in the query results
     for r in res_england_region:
       for key in r.keys():
@@ -157,15 +168,12 @@ def queryRegionBoundaries(ONS_Endpoint_label):
             
     # Check the availability of the geometry of each area
     for r in res_england_region:
-      if len(r["Geo_InfoList"]["value"]) == 0: 
+      if len(r["Geo_InfoList"]) == 0: 
           raise Exception('There is one place does not have geometry information which is', r["LACode_area"], ', please check the query string and the place status in ONS.')
-      elif "***" in r['Geo_InfoList']["value"]:
-          r['Geo_InfoList']["value"] = r['Geo_InfoList']["value"].split("***")[0]
-      r['Geo_InfoList']["value"] = loads(r['Geo_InfoList']["value"]) # convert wkt into shapely polygons
+      elif "***" in r['Geo_InfoList']:
+          r['Geo_InfoList'] = r['Geo_InfoList'].split("***")[0]
+      r['Geo_InfoList'] = loads(r['Geo_InfoList']) # convert wkt into shapely polygons
     return res_england_region
-
-# if __name__ == '__main__':
-#     res = queryRegionBoundaries('ons')
 
 ## This function is designed to find the region which the given area within in 
 def queryWithinRegion(LACode:str, ONS_Endpoint):
@@ -192,29 +200,30 @@ def queryWithinRegion(LACode:str, ONS_Endpoint):
             WHERE
             {
             %s foi:within+ ?Region .
-            ?Region ons:status "live" .
+            # ?Region ons:status "live" .
             ?Region ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/E12> .
             ?Region <http://publishmydata.com/def/ontology/foi/code> ?LACode_Region .
             }
             """%LACode
 
-            encodedString = urllib.parse.quote(queryStr)
-            getString = "http://statistics.data.gov.uk/sparql.json?query=" + str(encodedString)
+            ###-- The previous method for query the remote ONS endpoint with Http request --###
+            # encodedString = urllib.parse.quote(queryStr)
+            # getString = "http://statistics.data.gov.uk/sparql.json?query=" + str(encodedString)
 
-            print('...HTTP GET WithinRegion of a given LA code...')
-            print('LACODE: %s' % LACode)
-            r = requests.get(getString, timeout=60)
-            RegionOrCountry = json.loads(r.text)['results']['bindings'][0]['LACode_Region']['value']
-            # RegionOrCountry = json.loads(r.text)['results']['bindings']
-            # for result in RegionOrCountry:
-            #     if result['LACode_Region']['value'][:3] == 'E12':
-            #         RegionOrCountry = result['LACode_Region']['value']
-            #         break
-            print('...HTTP GET queryWithinRegion is done...')
-            if int(r.status_code) != 200:
-                # raise Exception('The within region of the given LA code cannot be found, please check if the given LA code is in the hierarchy.')
-                print('The within region of the given LA code cannot be found, please check if the given LA code is in the hierarchy.')
-                return None
+            # print('...HTTP GET WithinRegion of a given LA code...')
+            # print('LACODE: %s' % LACode)
+            # r = requests.get(getString, timeout=60)
+            # RegionOrCountry = json.loads(r.text)['results']['bindings'][0]['LACode_Region']['value']
+            # print('...HTTP GET queryWithinRegion is done...')
+            # if int(r.status_code) != 200:
+            #     # raise Exception('The within region of the given LA code cannot be found, please check if the given LA code is in the hierarchy.')
+            #     print('The within region of the given LA code cannot be found, please check if the given LA code is in the hierarchy.')
+            #     return None
+            
+            ### -- Use the sub set of the ONS data deployed in the digital ocean --###
+            print('...starts queryWithinRegion...')
+            RegionOrCountry = json.loads(performQuery(endPointIRI, queryStr))[0]['LACode_Region']
+            print('...finishes queryWithinRegion...')  
         else :
             # raise Exception('The given LA coed is ', LACode,' which is not within any region of England.')
             print('The given LA coed is ', LACode,' which is not within any region of England.')
@@ -233,6 +242,13 @@ def queryWithinRegion(LACode:str, ONS_Endpoint):
 
 ## This query is used to query the boundary of the GB and Northern Ireland
 def queryGBOrNIBoundary(ONS_Endpoint_label):
+    if ONS_Endpoint_label == str(EndPointConfigAndBlazegraphRepoLabel.ONS['label']):
+        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ONS['endpoint_iri'])
+    elif parse(ONS_Endpoint_label, rule='IRI'):
+        endPointIRI = ONS_Endpoint_label
+    else:
+        raiseExceptions("!!!!Please provide a valid endpoint!!!!")
+
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -242,7 +258,7 @@ def queryGBOrNIBoundary(ONS_Endpoint_label):
     SELECT DISTINCT ?LACode_area (GROUP_CONCAT(?areaBoundary;SEPARATOR = '***') AS ?Geo_InfoList)
     WHERE
     {
-    ?area ons:status "live" .
+    # ?area ons:status "live" .
     ?area rdf:type ons:Statistical-Geography .
     { ?area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/K03> .} UNION 
     { ?area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/N92> .}
@@ -251,16 +267,24 @@ def queryGBOrNIBoundary(ONS_Endpoint_label):
     ?geometry ons_geosparql:asWKT ?areaBoundary .
     } GROUP BY ?LACode_area
     """
-    encodedString = urllib.parse.quote(queryStr)
-    getString = "http://statistics.data.gov.uk/sparql.json?query=" + str(encodedString)
 
-    print('...HTTP GET queryGBOrNIBoundary...')
-    r = requests.get(getString, timeout=60)
-    res = json.loads(r.text)['results']['bindings']# [0]['LACode_Region']['value']
-    print('...HTTP GET queryGBOrNIBoundary is done...')
-    if int(r.status_code) != 200:
-        raise Exception('The queryGBOrNIBoundary has returned nothing from ONS server.')
-    res = [ {"LACode_area": re["LACode_area"]['value'], "Geo_InfoList": re["Geo_InfoList"]['value']}  for re in res]
+    ### -- The previous way for HTTP requests to the remote ONS endpoint -- ### 
+    # encodedString = urllib.parse.quote(queryStr)
+    # getString = "http://statistics.data.gov.uk/sparql.json?query=" + str(encodedString)
+
+    # print('...HTTP GET queryGBOrNIBoundary...')
+    # r = requests.get(getString, timeout=60)
+    # res = json.loads(r.text)['results']['bindings']# [0]['LACode_Region']['value']
+    # print('...HTTP GET queryGBOrNIBoundary is done...')
+    # if int(r.status_code) != 200:
+    #     raise Exception('The queryGBOrNIBoundary has returned nothing from ONS server.')
+    # res = [ {"LACode_area": re["LACode_area"]['value'], "Geo_InfoList": re["Geo_InfoList"]['value']}  for re in res]
+
+    ### -- Use the sub set of the ONS data deployed in the digital ocean --###
+    print('...starts queryGBOrNIBoundary...')
+    res = json.loads(performQuery(endPointIRI, queryStr))
+    print('...finishes queryGBOrNIBoundary...')  
+
     for r in res:
       for key in r.keys():
           if '\"^^' in  r[key]:
@@ -302,6 +326,12 @@ def queryifWithin(LACode_toBeCheck, givenLACode, ONS_Endpoint_label):
     return res 
 
 def queryEnglandAndWalesAndScotlandBounderies(ONS_Endpoint_label):
+    if ONS_Endpoint_label == str(EndPointConfigAndBlazegraphRepoLabel.ONS['label']):
+        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ONS['endpoint_iri'])
+    elif parse(ONS_Endpoint_label, rule='IRI'):
+        endPointIRI = ONS_Endpoint_label
+    else:
+        raiseExceptions("!!!!Please provide a valid endpoint IRI!!!!")
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -312,7 +342,7 @@ def queryEnglandAndWalesAndScotlandBounderies(ONS_Endpoint_label):
     SELECT DISTINCT ?area (GROUP_CONCAT(?areaBoundary;SEPARATOR = '***') AS ?Geo_InfoList)
     WHERE
     {
-    ?area ons:status "live" .
+    # ?area ons:status "live" .
     ?area rdf:type ons:Statistical-Geography .
     { ?area ons_foi:code "K04000001" .} UNION 
     { ?area ons_foi:code "E92000001" .} UNION
@@ -323,7 +353,7 @@ def queryEnglandAndWalesAndScotlandBounderies(ONS_Endpoint_label):
     } GROUP BY ?area
     """
     print('...query EnglandAndWalesAndScotlandBounderies...')
-    res = json.loads(performQuery(ONS_Endpoint_label, queryStr))  
+    res = json.loads(performQuery(endPointIRI, queryStr))  
     print('...queryEnglandAndWalesAndScotlandBounderies is done...')
     # clear the symbols in the query results
     for r in res:
@@ -347,20 +377,18 @@ def queryEnglandAndWalesAndScotlandBounderies(ONS_Endpoint_label):
     return EngAndWalesBound, EngBound, WalesBound, ScotlandBound           
 
 if __name__ == '__main__':
-    # sl_pp = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Plant\\Sleepycat_UKpp"
-    # sl_topo = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Energy_Consumption\\Sleepycat_UKec_UKtopo"
     iri = "http://dbpedia.org/resource/West_Midlands_(county)"  
     test_region = "http://dbpedia.org/resource/North_West_England"
     # scot_iri = 'http://dbpedia.org/resource/Scotland'
     # res = queryRegionBoundaries('ons')
     # res = queryRegionBoundaries_testJSON('ons')
-    #res = queryEnglandAndWalesAndScotlandBounderies('ons')
+    # res = queryEnglandAndWalesAndScotlandBounderies('ons')
     # print(res)
     # res = queryPowerPlantAttributes('ukdigitaltwin_test2')
     # res = queryGBOrNIBoundary('ons')
-    res = queryWithinRegion('E07000066', 'ons')
+    # res = queryWithinRegion('E07000066', 'ons')
     # res = queryCardiffBound('ons')
-    # res = queryifWithin('E12000007', 'K03000001', 'ons')
+    res = queryifWithin('E07000066', 'K03000001', 'ons')
     # res = queryElectricitySystemIRI('ukdigitaltwin_test2', 'Great_Britain')
     print(res)
     # print(res[0], len(res))

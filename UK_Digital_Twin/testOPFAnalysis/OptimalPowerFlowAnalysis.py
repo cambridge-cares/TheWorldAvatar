@@ -194,6 +194,10 @@ class OptimalPowerFlowAnalysis:
         self.endPointUser = endPointUser
         self.endPointPassWord = endPointPassWord
         self.ons_endpointIRI = endpointList.ONS['endpoint_iri']
+        if endpointList.ONS['type'] == 'ORIGINAL':
+            self.ifQueryONSOrigionalEndpoint = True
+        else:
+            self.ifQueryONSOrigionalEndpoint = False
         self.ons_endpointLabel = endpointList.ONS['label']
         ## create the power system model node IRI
         self.powerSystemModelIRI = UK_PG.ontopowsys_namespace + UK_PG.powerSystemModelKey + str(uuid.uuid4())
@@ -298,7 +302,7 @@ class OptimalPowerFlowAnalysis:
         self.fix_om = round(SMR_LCOE - SMRCapitalCost/(self.NPVG) - 5, 2)
 
         ##--9. Demanding area query --##
-        self.regionalDemandingList = list(query_model.queryElectricityConsumption_Region(self.startTime_of_EnergyConsumption, self.queryUKDigitalTwinEndpointIRI, self.ons_endpointIRI))
+        self.regionalDemandingList = list(query_model.queryElectricityConsumption_Region(self.startTime_of_EnergyConsumption, self.queryUKDigitalTwinEndpointIRI, self.ons_endpointIRI, self.ifQueryONSOrigionalEndpoint))
         numpy.save(queryResultLocalPath + "np_regionalDemandingList.npy", numpy.array(self.regionalDemandingList))
             
         
@@ -7654,17 +7658,17 @@ if __name__ == '__main__':
     #                           [0.157, 0.78, "WLSH"], [0.157, 0.068, "WLSL"]]
 
     ## The setting of £60, base case
-    NumberOfSMRUnitList = [0, 1, 2, 5, 10, 12, 13, 15, 17, 18, 19, 20,  25, 28, 29, 30,  31, 32, 33, 34, 40, 42, 43, 45, 47, 48, 49]
-    weighterList = [0, 0.25, 0.5, 0.6, 0.75, 0.85, 0.9, 1]
-    CarbonTaxForOPFList = [0, 10, 15, 20, 30, 40, 45, 50, 55, 60, 70, 80, 100, 150, 200] 
-    weatherConditionList = [[0.93, 0.78, "WHSH"], [0.93, 0.068, "WHSL"],
-                            [0.49, 0.38, "WBSB"],
-                              [0.157, 0.78, "WLSH"], [0.157, 0.068, "WLSL"]]
-
-    # NumberOfSMRUnitList = [0]
+    # NumberOfSMRUnitList = [0, 1, 2, 5, 10, 12, 13, 15, 17, 18, 19, 20,  25, 28, 29, 30,  31, 32, 33, 34, 40, 42, 43, 45, 47, 48, 49]
     # weighterList = [0, 0.25, 0.5, 0.6, 0.75, 0.85, 0.9, 1]
-    # CarbonTaxForOPFList = [151]
-    # weatherConditionList = [[0.157, 0.78, "WLSH"]] 
+    # CarbonTaxForOPFList = [0, 10, 15, 20, 30, 40, 45, 50, 55, 60, 70, 80, 100, 150, 200] 
+    # weatherConditionList = [[0.93, 0.78, "WHSH"], [0.93, 0.068, "WHSL"],
+    #                         [0.49, 0.38, "WBSB"],
+    #                           [0.157, 0.78, "WLSH"], [0.157, 0.068, "WLSL"]]
+
+    NumberOfSMRUnitList = [0]
+    weighterList = [0.5]
+    CarbonTaxForOPFList = [0]
+    weatherConditionList = [[0.49, 0.38, "WBSB"]] 
 
 
     # # # # # ##FORTEST###
@@ -7675,11 +7679,12 @@ if __name__ == '__main__':
 
     ## stop generating the JSON files
     generateVisualisationJSON = True
-    ifReadLocalResults = True
+    ifReadLocalResults = False
     ifGenerateParetoFrontPDF = True
 
 
-    rootPath = '/mnt/d/wx243/FromTWA/npy/29bus_LCOE_60£_final/'
+    # rootPath = '/mnt/d/wx243/FromTWA/npy/29bus_LCOE_60£_final/'
+    rootPath = '/mnt/d/wx243/FromTWA/npy/29bus_LCOE_60£_test/'
     ## rootPath = '/mnt/d/wx243/FromAW/npy/29bus_LCOE_£40/'
     queryResultLocalPath = '/mnt/d/wx243/FromTWA/npy/queryResult/29bus/'
 

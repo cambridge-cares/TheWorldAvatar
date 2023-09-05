@@ -85,7 +85,7 @@ def createModel_EBus(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSystem
         ontopowsys_PowerSystemModel     = owlready2.get_ontology(t_box.ontopowsys_PowerSystemModel).load()
         ontoecape_space_and_time_extended = owlready2.get_ontology(t_box.ontoecape_space_and_time_extended).load()
     else:
-        print('---THE WORLD AVATAR NOT FOUND---')
+        print('--- THE WORLD AVATAR NOT FOUND ---')
 
     ## Query the bus node IRI and GPS of the given topology entity
     res_queryBusTopologicalInformation = list(query_model.queryBusTopologicalInformation(topologyNodeIRI, endpoint_label))
@@ -149,7 +149,7 @@ def createModel_EBus(numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSystem
     if aggregatedBusFlag == True:
         EBus_Load_List = addUpConsumptionForAggregatedBus(EBus_Load_List) # sum up the demand of an AggregatedBus
     
-    print('################START createModel_EBus#################')
+    print('################ START createModel_EBus #################')
     ontologyIRI = dt.baseURL + SLASH + dt.topNode + SLASH + str(uuid.uuid4())
     namespace = UK_PG.ontopowsys_namespace  
     ## ElectricalBusModel node IRI 

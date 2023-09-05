@@ -9,7 +9,7 @@ from rdflib.graph import ConjunctiveGraph
 from rdflib.store import NO_STORE
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
-from UK_Digital_Twin_Package.queryInterface import performQuery, performUpdate, performFederatedQuery
+from UK_Digital_Twin_Package.queryInterface import performQuery, performFederatedQuery
 from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endpointList
 # import numpy as np 
 from shapely.wkt import loads
@@ -20,6 +20,8 @@ from UK_Power_Grid_Topology_Generator.SPARQLQueriesUsedInTopologyABox import que
 import shapely.geometry
 from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel
 from rfc3987 import parse
+import urllib.parse
+import requests
 from logging import raiseExceptions
 
 qres = []
@@ -208,10 +210,7 @@ def queryEGenInfo(topologyNodeIRI, endPoint, eliminateClosedPlantIRIList:list):
                 float((r['Capacity'].split('\"^^')[0]).replace('\"','')), (str(r['PrimaryFuel']).split('#'))[1], \
                 [float(r['LatLon'].split('#')[0]), float(r['LatLon'].split('#')[1])], str(r['PowerPlant_LACode']), str(r['GenerationTech'])] for r in res]
     print('...finishes queryEGenInfo...')
-    # print('...starts querying counterBusNumber...')
-    # numOfBus = json.loads(performQuery(endPoint_label, counterBusNumber))
-    # print('...finishes querying counterBusNumber...')
-    return qres #, int(numOfBus[0]["count"])
+    return qres 
     
 # query the total electricity consumption of a UK official region 
 def queryTotalElecConsumptionofGBOrUK(endPoint_label, topologyNodeIRI, startTime_of_EnergyConsumption):
@@ -329,38 +328,79 @@ def queryPowerSystemLocation(endpoint_label, topologyNodeIRI):
 
 ###############EBus#############
 # Query the total consumption of the regions
-def queryElectricityConsumption_Region(startTime_of_EnergyConsumption, UKDigitalTwinEndPoint_iri, ONSEndPoint_iri):
-    queryStr = """
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    PREFIX ontoecape_space_and_time: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#>
-    PREFIX ontocape_derived_SI_units: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#>
-    PREFIX ontocape_coordinate_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#>    
-    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
-    PREFIX ons_entity: <http://statistics.data.gov.uk/def/statistical-entity#>
-    SELECT DISTINCT ?RegionOrCountry_LACode ?v_TotalELecConsumption
-    WHERE 
-    {   
-    ?Total_ele_consumption ontocape_derived_SI_units:hasTimePeriod/ontocape_upper_level_system:hasValue ?TimePeriod .
-    ?TimePeriod ontoecape_space_and_time:hasStartingTime ?startTime .
-    ?startTime rdf:type ontocape_coordinate_system:CoordinateValue . 
-    ?startTime ontocape_upper_level_system:numericalValue "%s"^^xsd:dateTime .
-    
-    ?Total_ele_consumption ontoenergysystem:isObservedIn/ontoenergysystem:hasLocalAuthorityCode ?RegionOrCountry_LACode .
-    ?RegionOrCountry <http://publishmydata.com/def/ontology/foi/code> ?RegionOrCountry_LACode .
-    {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/E12> .} UNION 
-    {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/W92> .} UNION
-    {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/S92> .} UNION
-    {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/N92> .}
-    ?Total_ele_consumption ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?v_TotalELecConsumption .
-    }
-    """% (startTime_of_EnergyConsumption)
+## `ifQueryONSOrigionalEndpoint` determines the endpoint of querying ONS data. 
+## If `ifQueryONSOrigionalEndpoint` set as `True`, the original ONS endpoint is used; when set as `False`, the subset of ONS deployed on CMCL Blazegraph is used. 
+def queryElectricityConsumption_Region(startTime_of_EnergyConsumption, UKDigitalTwinEndPoint_iri, ONSEndPoint_iri, ifQueryONSOrigionalEndpoint:bool = False):
+    if ONSEndPoint_iri == str(EndPointConfigAndBlazegraphRepoLabel.ONS['label']):
+        ONSEndPoint_iri = str(EndPointConfigAndBlazegraphRepoLabel.ONS['endpoint_iri'])
+    elif not parse(ONSEndPoint_iri, rule='IRI'):
+        raiseExceptions("!!!!Please provide a valid query endpoint!!!!")
+
+    if ifQueryONSOrigionalEndpoint is False: 
+        queryStr = """PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+        PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+        PREFIX ontoecape_space_and_time: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#>
+        PREFIX ontocape_derived_SI_units: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#>
+        PREFIX ontocape_coordinate_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#>    
+        PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+        PREFIX ons_entity: <http://statistics.data.gov.uk/def/statistical-entity#>
+        SELECT DISTINCT ?RegionOrCountry_LACode ?v_TotalELecConsumption
+        WHERE 
+        {   
+        ?Total_ele_consumption ontocape_derived_SI_units:hasTimePeriod/ontocape_upper_level_system:hasValue ?TimePeriod .
+        ?TimePeriod ontoecape_space_and_time:hasStartingTime ?startTime .
+        ?startTime rdf:type ontocape_coordinate_system:CoordinateValue . 
+        ?startTime ontocape_upper_level_system:numericalValue "%s"^^xsd:dateTime .
+        ?Total_ele_consumption ontoenergysystem:isObservedIn/ontoenergysystem:hasLocalAuthorityCode ?RegionOrCountry_LACode .
+        ?Total_ele_consumption ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?v_TotalELecConsumption .
+        
+        SERVICE <%s> {
+            ?RegionOrCountry <http://publishmydata.com/def/ontology/foi/code> ?RegionOrCountry_LACode .
+            {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/E12> .} UNION 
+            {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/W92> .} UNION
+            {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/S92> .} UNION
+            {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/N92> .}     
+            }
+        }"""%(startTime_of_EnergyConsumption, ONSEndPoint_iri)
+
+        print('...starts queryElectricityConsumption_Region...')   
+        res = json.loads(performQuery(UKDigitalTwinEndPoint_iri, queryStr))     
+        print('...queryElectricityConsumption_Region is done...') 
+    else:
+        queryStr = """
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+        PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+        PREFIX ontoecape_space_and_time: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#>
+        PREFIX ontocape_derived_SI_units: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#>
+        PREFIX ontocape_coordinate_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#>    
+        PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+        PREFIX ons_entity: <http://statistics.data.gov.uk/def/statistical-entity#>
+        SELECT DISTINCT ?RegionOrCountry_LACode ?v_TotalELecConsumption
+        WHERE 
+        {   
+        ?Total_ele_consumption ontocape_derived_SI_units:hasTimePeriod/ontocape_upper_level_system:hasValue ?TimePeriod .
+        ?TimePeriod ontoecape_space_and_time:hasStartingTime ?startTime .
+        ?startTime rdf:type ontocape_coordinate_system:CoordinateValue . 
+        ?startTime ontocape_upper_level_system:numericalValue "%s"^^xsd:dateTime .
+        
+        ?Total_ele_consumption ontoenergysystem:isObservedIn/ontoenergysystem:hasLocalAuthorityCode ?RegionOrCountry_LACode .
+        ?RegionOrCountry <http://publishmydata.com/def/ontology/foi/code> ?RegionOrCountry_LACode .
+        {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/E12> .} UNION 
+        {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/W92> .} UNION
+        {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/S92> .} UNION
+        {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/N92> .}
+        ?Total_ele_consumption ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?v_TotalELecConsumption .
+        }
+        """% (startTime_of_EnergyConsumption)
      
-    print('...starts queryElectricityConsumption_Region...')   
-    res = json.loads(performFederatedQuery(queryStr, [UKDigitalTwinEndPoint_iri, ONSEndPoint_iri]))
-    print('...queryElectricityConsumption_Region is done...') 
+        print('...starts queryElectricityConsumption_Region...')   
+        res = json.loads(performFederatedQuery(queryStr, [UKDigitalTwinEndPoint_iri, ONSEndPoint_iri]))
+        print('...queryElectricityConsumption_Region is done...') 
+
     for r in res:
         for key in r.keys():
            if '\"^^' in  r[key] :
@@ -370,6 +410,11 @@ def queryElectricityConsumption_Region(startTime_of_EnergyConsumption, UKDigital
          
 # query the total electricity consumption of each address area
 def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, UKDigitalTwinEndPoint_iri, ONSEndPoint_iri):    
+    if ONSEndPoint_iri == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['label']):
+        ONSEndPoint_iri = str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['endpoint_iri'])
+    elif not parse(ONSEndPoint_iri, rule='IRI'):
+        raiseExceptions("!!!!Please provide a valid query endpoint!!!!")
+
     queryStr = """
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -447,7 +492,6 @@ def branchGeometryQueryCreator(topologyNodeIRI, branch_voltage_level):
     
     SELECT_CLAUSE = """
     SELECT DISTINCT ?ELineNode ?From_Bus ?To_Bus ?Value_Length_ELine """
-    #TODO: change the SELECT_CLAUSE, 20220608why?
     for voltage in branch_voltage_level:
        SELECT_CLAUSE += "?Num_OHL_" + str(voltage) + " "
         
@@ -525,16 +569,17 @@ def queryELineTopologicalInformation(topologyNodeIRI, endpoint):
     return res, branch_voltage_level 
 
 if __name__ == '__main__': 
-    ONS_json = "http://statistics.data.gov.uk/sparql.json"
+    # ONS_json = "http://statistics.data.gov.uk/sparql.json"
+    ONS_json = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ONS_subset/sparql"
     ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql"
     ukdigitaltwinendpointLable = "ukdigitaltwin_test2"
     topologyNodeIRI = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_6017554a-98bb-4896-bc21-e455cb6b3958" 
-    res = queryBusTopologicalInformation(topologyNodeIRI, "http://localhost:3838/blazegraph/namespace/ukdigitaltwin_test1/sparql")
+    # res = queryBusTopologicalInformation(topologyNodeIRI, "http://localhost:3838/blazegraph/namespace/ukdigitaltwin_test1/sparql")
     #res = queryTotalElecConsumptionofGBOrUK( ukdigitaltwinendpointLable, topologyNodeIRI, "2017-01-31")
     #res = queryPowerSystemLocation(ukdigitaltwinendpointLable, topologyNodeIRI)
 
     # res = queryRegionalElecConsumption('ukdigitaltwin', 10, "2017-01-31", None, False)
-    res = queryElectricityConsumption_Region("2017-01-31", ukdigitaltwinendpoint, ONS_json)
+    res = queryElectricityConsumption_Region("2017-01-31", ukdigitaltwinendpoint, ONS_json, False)
     # res = queryElectricityConsumption_LocalArea("2017-01-31", ukdigitaltwinendpoint, ONS_json)
     # res, a = queryELineTopologicalInformation(29, 99, 'ukdigitaltwin', None, False)
     # res, a = queryELineTopologicalInformation(10, 14, 'ukdigitaltwin', None, False)
