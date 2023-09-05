@@ -151,9 +151,8 @@ public class ShipInputAgent extends HttpServlet {
                 }
             }
 
-            // boolean initialiseObda = false;
             if (!queryClient.initialised()) {
-                PostGISClient postGISClient = new PostGISClient();
+                PostGISClient postGISClient = PostGISClient.getInstance();
                 Path sqlFunctionFile = new ClassPathResource("function.sql").getFile().toPath();
                 String sqlFunction = null;
                 try {
@@ -162,8 +161,7 @@ public class ShipInputAgent extends HttpServlet {
                     LOGGER.error("Failed to read file containing custom SQL function");
                     LOGGER.error(e.getMessage());
                 }
-                postGISClient.executeUpdate(EnvConfig.DATABASE, sqlFunction);
-                // initialiseObda = true;
+                postGISClient.getRemoteStoreClient(EnvConfig.DATABASE).executeUpdate(sqlFunction);
 
                 // this adds the OntoAgent triples, only do this once
                 queryClient.initialiseAgent();
@@ -237,7 +235,7 @@ public class ShipInputAgent extends HttpServlet {
                     AND c.udt_name = 'geometry'
                 """;
 
-        GeoServerClient geoserverClient = new GeoServerClient();
+        GeoServerClient geoserverClient = GeoServerClient.getInstance();
         geoserverClient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
 
         GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
@@ -250,7 +248,7 @@ public class ShipInputAgent extends HttpServlet {
         LOGGER.info(virtualTable.getName());
         geoServerVectorSettings.setVirtualTable(virtualTable);
 
-        geoserverClient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
+        geoserverClient.createPostGISLayer(EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE,
                 EnvConfig.SHIPS_LAYER_NAME, geoServerVectorSettings);
     }
 }
