@@ -9,7 +9,7 @@
      xmlns:ontoassetmanagement="https://www.theworldavatar.com/kg/ontoassetmanagement/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">04 September 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">05 September 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoAssetManagement is an ontology that is designed to represent asset and its related information (e.g. purchase documents).</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -42,15 +42,15 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/allocatedUnder -->
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/allocatedTo -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/allocatedUnder">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/allocatedTo">
         <rdfs:domain rdf:resource="https://w3id.org/bot#Element"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/Project"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship which describes the project that an asset is allocated under.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship which describes the project that an asset is allocated to.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">allocated under</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">allocated to</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -350,7 +350,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasEvent">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/AssetUpdateHistory"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/Event"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/AssetUpdateEvent"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship which describes the events that has occurred.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has event</rdfs:label>
@@ -721,19 +721,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/lastAssignedTo -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/lastAssignedTo">
-        <rdfs:domain rdf:resource="https://w3id.org/bot#Element"/>
-        <rdfs:range rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Parties/IndependentParty"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship which describes who the asset was last assigned to.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">last assigned to</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/performedAt -->
 
 
@@ -747,15 +734,15 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/plannedFor -->
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/previouslyAssignedTo -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/plannedFor">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/MaintenanceTask"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2006/time#Instant"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes when the next maintenance task will be carried out.</rdfs:comment>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/previouslyAssignedTo">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Element"/>
+        <rdfs:range rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Parties/IndependentParty"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship which describes who the asset was previously assigned to.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">planned for</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">previously assigned to</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -788,13 +775,26 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/scheduledFor -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/scheduledFor">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/MaintenanceTask"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2006/time#Instant"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes when the next maintenance task will be carried out.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">scheduled for</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/wasExecutedBy -->
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/wasExecutedBy">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/Event"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/AssetUpdateEvent"/>
         <rdfs:range rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Parties/IndependentParty"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship which describes the party that executed the event.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship which describes the party that executed the asset update event.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">was executed by</rdfs:label>
     </owl:ObjectProperty>
@@ -1199,6 +1199,17 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/AssetUpdateEvent -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/AssetUpdateEvent">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An update applied to the information of an asset.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Asset update event</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/AssetUpdateHistory -->
 
 
@@ -1239,6 +1250,18 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A sub-divison of a budget allocated for a more specific purpose.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Budget category</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/BuiltInCabinet -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/BuiltInCabinet">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/Cabinet"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A case or cupboard that is integrated as part of a building structure (e.g. a wall).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Built-in cabinet</rdfs:label>
     </owl:Class>
     
 
@@ -1337,21 +1360,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/Event -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/Event">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A thing that happens or takes place, especially one of importance.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Event</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/Furniture -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/Furniture">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Element"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Objects intended to support various human activities such as seating (e.g., stools, chairs, and sofas ), eating ( tables ), storing items, working, and sleeping (e.g., beds and hammocks ). </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Furniture</rdfs:label>
@@ -1424,6 +1437,18 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Terms pertaining to how and when customers pay for products or services.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Payment terms</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/PedestalCabinet -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/PedestalCabinet">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/Cabinet"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A case or cupboard that is mobile and usually integrated with wheel castors.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pedestal cabinet</rdfs:label>
     </owl:Class>
     
 
