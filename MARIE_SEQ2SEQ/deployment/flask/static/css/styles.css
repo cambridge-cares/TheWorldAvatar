@@ -1,0 +1,11 @@
+.mybutton {
+    background-image: url(/static/img/search.svg); 
+    background-position: center; 
+    background-size: cover;
+    cursor: pointer;
+}
+
+.spinner {
+    background-image: url(/static/img/spinner.gif);
+    cursor: not-allowed
+}
