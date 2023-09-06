@@ -246,7 +246,7 @@ class DerivationAgent(ABC):
         """This method returns a list of output concepts of the agent. This should be overridden by the derived class."""
         pass
 
-    def add_url_pattern(self, url_pattern=None, url_pattern_name=None, function=None, methods=['GET'], *args, **kwargs):
+    def add_url_pattern(self, url_pattern=None, url_pattern_name=None, function=None, methods=['POST'], *args, **kwargs):
         """
             This method is a wrapper of add_url_rule method of Flask object that adds customised URL Pattern to derivation agent.
             For more information, visit https://flask.palletsprojects.com/en/2.0.x/api/#flask.Flask.add_url_rule
@@ -257,7 +257,7 @@ class DerivationAgent(ABC):
                 url_pattern - the endpoint url to associate with the rule and view function
                 url_pattern_name - the name of the endpoint
                 function - the view function to associate with the endpoint
-                methods - HTTP request methods, default to ['GET']
+                methods - HTTP request methods, default to ['POST']
         """
         self.app.add_url_rule(url_pattern, url_pattern_name,
                               function, methods=methods, *args, **kwargs)
@@ -453,7 +453,7 @@ class DerivationAgent(ABC):
 
         url_pattern = urlparse(self.agentEndpoint).path
         url_pattern_name = url_pattern.strip('/').replace('/', '_') + '_handle_sync_derivations'
-        self.add_url_pattern(url_pattern, url_pattern_name, self.handle_sync_derivations, methods=['GET'])
+        self.add_url_pattern(url_pattern, url_pattern_name, self.handle_sync_derivations, methods=['POST'])
         self.logger.info("Synchronous derivations can be handled at endpoint: " + self.agentEndpoint)
 
     def start_all_periodical_job(self):
@@ -465,7 +465,7 @@ class DerivationAgent(ABC):
     @send_email_when_exception(func_return_value=True)
     def handle_sync_derivations(self):
         self.logger.info("Received synchronous derivation request: %s." % (request.url))
-        requestParams = json.loads(unquote(urlparse(request.url).query)[len("query="):])
+        requestParams = request.json
         res = {}
         if self.validate_inputs(requestParams):
             # retrieve necessary information

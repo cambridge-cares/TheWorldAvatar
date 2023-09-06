@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.logging.log4j.LogManager;
@@ -71,7 +72,7 @@ public class DerivationAgent extends JPSAgent implements DerivationAgentInterfac
 	}
 
 	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams) {
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest req) {
 		// check if this.devClient is initialised properly, this will throw meaningful exception
 		checkIfDerivationClientInitialised();
 		JSONObject res = new JSONObject();
