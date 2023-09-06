@@ -92,8 +92,9 @@ public class GeoObject3D {
         if (this.srcConn==null) {
             this.srcConn = this.pool.get3DConnection();
         }
-
-        String sql = "SELECT id, gmlid, objectclass_id, name, public.ST_AsEWKT(envelope) AS geom FROM cityobject WHERE objectclass_id = 26";
+//ST_DWintin is temporary used to find building in MBS area of SG
+        String sql = "SELECT id, gmlid, objectclass_id, name, public.ST_AsEWKT(envelope) AS geom FROM cityobject " +
+                        "WHERE objectclass_id = 26 AND public.ST_DWithin(public.ST_Transform(envelope,4326), public.ST_Point(1.2840041999866776, 103.85908503862036, 4326),144.9);";
         try (Statement stmt = srcConn.createStatement()) {
             ResultSet result = stmt.executeQuery(sql);
             while (result.next()) {
@@ -249,44 +250,49 @@ public class GeoObject3D {
                 srcConn = this.pool.get3DConnection();
             }
 
-            String createTabel = 
-                "CREATE TABLE IF NOT EXISTS surface_calculation \r\n" + //
-                        "(\r\n" + //
-                        "    id serial primary key NOT NULL,\r\n" + //
-                        "    surface_id integer NOT NULL,\r\n" + //
-                        "    orientation numeric,\r\n" + //
-                        "    ratio double precision\r\n" + //
-                        ")";
+            // String createTabel = 
+            //     "CREATE TABLE IF NOT EXISTS surface_calculation \r\n" + //
+            //             "(\r\n" + //
+            //             "    id serial primary key NOT NULL,\r\n" + //
+            //             "    surface_id integer NOT NULL,\r\n" + //
+            //             "    orientation numeric,\r\n" + //
+            //             "    ratio double precision\r\n" + //
+            //             ")";
             Statement stmt = srcConn.createStatement();
-            stmt.execute(createTabel);
+            // stmt.execute(createTabel);
 
-            for(int i = 0; i < allObject3D.size(); i++){
-                int buildingid = allObject3D.get(i).getId();
-                String insertSql = "INSERT INTO surface_calculation (surface_id, orientation, ratio) " +
-                "SELECT * FROM ( " +
-                "SELECT sg.id, public.ST_Orientation(sg.geometry), public.ST_Area(sg.geometry)/public.ST_3DArea(public.ST_MakeValid(sg.geometry)) "+
-                "FROM surface_geometry sg " +
-                "JOIN building b ON b.lod3_multi_surface_id = sg.parent_id " +
-                "WHERE sg.geometry is NOT NULL AND public.ST_3DArea(public.ST_MakeValid(sg.geometry)) != 0 AND b.id = " + buildingid +
-                " ) AS i(surface_id, orientation, ratio) " +
-                "WHERE NOT EXISTS ( SELECT FROM surface_calculation sc WHERE sc.surface_id = i.surface_id);";
-                stmt.executeUpdate(insertSql);
-            }
+            // for(int i = 0; i < allObject3D.size(); i++){
+            //     int buildingid = allObject3D.get(i).getId();
+            //     String insertSql = "INSERT INTO surface_calculation (surface_id, orientation, ratio) " +
+            //     "SELECT * FROM ( " +
+            //     "SELECT sg.id, public.ST_Orientation(sg.geometry), public.ST_Area(sg.geometry)/public.ST_3DArea(public.ST_MakeValid(sg.geometry)) "+
+            //     "FROM surface_geometry sg " +
+            //     "JOIN building b ON b.lod3_multi_surface_id = sg.parent_id " +
+            //     "WHERE sg.geometry is NOT NULL AND public.ST_3DArea(public.ST_MakeValid(sg.geometry)) != 0 AND b.id = " + buildingid +
+            //     " ) AS i(surface_id, orientation, ratio) " +
+            //     "WHERE NOT EXISTS ( SELECT FROM surface_calculation sc WHERE sc.surface_id = i.surface_id);";
+            //     stmt.executeUpdate(insertSql);
+            // }
             
             if(this.objectClassid == 35){
+                
+                 for(int i = 0; i < allObject3D.size(); i++){
+                    int buildingid = allObject3D.get(i).getId();
+                    String sql = "SELECT sg.id as surfaceid, sg.root_id as rootid, sg.parent_id as parentid, sg.cityobject_id as cityobjid, b.id as buildingid FROM surface_geometry sg "+
+                    "JOIN building b ON b.lod3_multi_surface_id = sg.parent_id "+
+                    "WHERE sg.geometry IS NOT NULL AND public.ST_3DArea(public.ST_MakeValid(sg.geometry)) != 0 "+
+                    "AND public.ST_Orientation(sg.geometry) = 1 " +
+                    "AND public.ST_Area(sg.geometry)/public.ST_3DArea(public.ST_MakeValid(sg.geometry))>0.8 " +
+                    "AND b.id = " + buildingid +
+                    " GROUP BY buildingid, rootid, surfaceid"; 
+    
+                 
                 // String sql = "SELECT sg.id as surfaceid, sg.root_id as rootid, sg.parent_id as parentid, sg.cityobject_id as cityobjid, b.id as buildingid FROM surface_geometry sg "+
                 // "JOIN building b ON b.lod3_multi_surface_id = sg.parent_id "+
-                // "WHERE sg.geometry IS NOT NULL AND public.ST_3DArea(public.ST_MakeValid(sg.geometry)) != 0 "+
-                // "AND public.ST_Orientation(sg.geometry) = 1 " +
-                // "AND public.ST_Area(sg.geometry)/public.ST_3DArea(public.ST_MakeValid(sg.geometry))>0.8 " +
-                // "GROUP BY buildingid, rootid, surfaceid"; 
-                
-                String sql = "SELECT sg.id as surfaceid, sg.root_id as rootid, sg.parent_id as parentid, sg.cityobject_id as cityobjid, b.id as buildingid FROM surface_geometry sg "+
-                "JOIN building b ON b.lod3_multi_surface_id = sg.parent_id "+
-                "JOIN surface_calculation sc ON sg.id = sc.surface_id "+
-                "WHERE sc.orientation = 1 AND sc.ratio > 0.8 "+
-                "GROUP BY buildingid, rootid, surfaceid";
-                // Statement stmt = srcConn.createStatement();
+                // "JOIN surface_calculation sc ON sg.id = sc.surface_id "+
+                // "WHERE sc.orientation = 1 AND sc.ratio > 0.8 "+
+                // "GROUP BY buildingid, rootid, surfaceid";
+                // // Statement stmt = srcConn.createStatement();
                 ResultSet result = stmt.executeQuery(sql);
                 while (result.next()) {
                     Integer[] groundSurface = new Integer[4];
@@ -313,6 +319,7 @@ public class GeoObject3D {
                 updateSurface(groundMap);  
                 //else for the other surface type need to be developed
             }
+        }
         }catch (SQLException e) {
             LOGGER.fatal("Error connecting to source database: " + e);
             throw new JPSRuntimeException("Error connecting to source database: " + e);
