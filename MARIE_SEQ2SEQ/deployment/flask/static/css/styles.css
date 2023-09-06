@@ -1,6 +1,6 @@
 .mybutton {
-    background-image: url(/static/img/search.svg); 
-    background-position: center; 
+    background-image: url(/static/img/search.svg);
+    background-position: center;
     background-size: cover;
     cursor: pointer;
 }
@@ -8,4 +8,9 @@
 .spinner {
     background-image: url(/static/img/spinner.gif);
     cursor: not-allowed
+}
+
+.sample-question:hover {
+    border-color: #FFA500;
+    cursor: pointer;
 }

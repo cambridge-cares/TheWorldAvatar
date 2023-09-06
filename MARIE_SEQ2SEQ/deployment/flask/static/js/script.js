@@ -10,6 +10,15 @@ $('document').ready(function () {
     });
 });
 
+const sampleQuestions = document.getElementsByClassName("sample-question");
+for (let elem of sampleQuestions) {
+    elem.addEventListener("click", function() {
+        document.getElementById('input-field').value = elem.textContent
+        window.scrollTo(0, 0);
+        askQuestion();
+    })
+}
+
 let is_processing = false;
 
 function display_results(data) {
