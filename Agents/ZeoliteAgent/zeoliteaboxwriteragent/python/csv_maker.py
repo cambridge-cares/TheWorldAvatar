@@ -137,17 +137,18 @@ class CsvMaker:
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_uc_a, "", "a", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_a, "", round(structure.lattice.a, 10) , "decimal" ] )
+                     uuid_uc_a, "", round(structure.lattice.a, 12) , "decimal" ] )
+    #print( round( 10.123456789012345678, 15 ) )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_uc_b, "", "b", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_b, "", round(structure.lattice.b, 10) , "decimal" ] )
+                     uuid_uc_b, "", round(structure.lattice.b, 12) , "decimal" ] )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_uc_c, "", "c", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_c, "", round(structure.lattice.c, 10) , "decimal" ] )
+                     uuid_uc_c, "", round(structure.lattice.c, 12) , "decimal" ] )
     ###########################################
 
     # Vector for Unit Cell angles parameters (alpha,beta,gamma):
@@ -184,17 +185,20 @@ class CsvMaker:
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_uc_al, "", "alpha", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_al, "", round(structure.lattice.alpha, 10) , "decimal" ] )
+                     uuid_uc_al, "", 
+                     round(structure.lattice.alpha, 12) , "decimal" ] )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_uc_be, "", "beta",  "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_be, "", round(structure.lattice.beta,  10) , "decimal" ] )
+                     uuid_uc_be, "", 
+                     round(structure.lattice.beta,  12) , "decimal" ] )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_uc_gm, "", "gamma", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_gm, "", round(structure.lattice.gamma, 10) , "decimal" ] )
+                     uuid_uc_gm, "", 
+                     round(structure.lattice.gamma, 12) , "decimal" ] )
     ###########################################
 
 
@@ -230,17 +234,20 @@ class CsvMaker:
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_uc_r_a, "", "a*", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_r_a, "", round(structure.lattice.reciprocal_lattice.a/TWOPI, 10) , "decimal" ] )
+                     uuid_uc_r_a, "", 
+                     round(structure.lattice.reciprocal_lattice.a/TWOPI, 12) , "decimal" ] )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_uc_r_b, "", "b*", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_r_b, "", round(structure.lattice.reciprocal_lattice.b/TWOPI, 10) , "decimal" ] )
+                     uuid_uc_r_b, "", 
+                     round(structure.lattice.reciprocal_lattice.b/TWOPI, 12) , "decimal" ] )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_uc_r_c, "", "c*", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_r_c, "", round(structure.lattice.reciprocal_lattice.c/TWOPI, 10) , "decimal" ] )
+                     uuid_uc_r_c, "", 
+                     round(structure.lattice.reciprocal_lattice.c/TWOPI, 12) , "decimal" ] )
     ###########################################
     ###########################################
 
@@ -277,17 +284,20 @@ class CsvMaker:
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_uc_r_al, "", "alpha", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_r_al, "", round(structure.lattice.reciprocal_lattice.alpha, 10) , "decimal" ] )
+                     uuid_uc_r_al, "", 
+                     round(structure.lattice.reciprocal_lattice.alpha, 12) , "decimal" ] )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_uc_r_be, "", "beta",  "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_r_be, "", round(structure.lattice.reciprocal_lattice.beta,  10) , "decimal" ] )
+                     uuid_uc_r_be, "", 
+                     round(structure.lattice.reciprocal_lattice.beta,  12) , "decimal" ] )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_uc_r_gm, "", "gamma", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_uc_r_gm, "", round(structure.lattice.reciprocal_lattice.gamma, 10) , "decimal" ] )
+                     uuid_uc_r_gm, "", 
+                     round(structure.lattice.reciprocal_lattice.gamma, 12) , "decimal" ] )
     ###########################################
 
     # Vector to keep three Unit Cell vectors (a,b,c):
@@ -409,49 +419,58 @@ class CsvMaker:
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_ax, "", "x", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_ax, "", round(structure.lattice.matrix[0][0], 10) , "decimal" ] )
+                     uuid_vec_ax, "", 
+                     round(structure.lattice.matrix[0][0], 12) , "decimal" ] )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_ay, "", "y", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_ay, "", round(structure.lattice.matrix[0][1], 10) , "decimal" ] )
+                     uuid_vec_ay, "", 
+                     round(structure.lattice.matrix[0][1], 12) , "decimal" ] )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_az, "", "z", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_az, "", round(structure.lattice.matrix[0][2], 10) , "decimal" ] )
+                     uuid_vec_az, "", 
+                     round(structure.lattice.matrix[0][2], 12) , "decimal" ] )
 
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_bx, "", "x", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_bx, "", round(structure.lattice.matrix[1][0], 10) , "decimal" ] )
+                     uuid_vec_bx, "", 
+                     round(structure.lattice.matrix[1][0], 12) , "decimal" ] )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_by, "", "y", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_by, "", round(structure.lattice.matrix[1][1], 10) , "decimal" ] )
+                     uuid_vec_by, "", 
+                     round(structure.lattice.matrix[1][1], 12) , "decimal" ] )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_bz, "", "z", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_bz, "", round(structure.lattice.matrix[1][2], 10) , "decimal" ] )
+                     uuid_vec_bz, "", 
+                     round(structure.lattice.matrix[1][2], 12) , "decimal" ] )
 
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_cx, "", "x", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_cx, "", round(structure.lattice.matrix[2][0], 10) , "decimal" ] )
+                     uuid_vec_cx, "", 
+                     round(structure.lattice.matrix[2][0], 12) , "decimal" ] )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_cy, "", "y", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_cy, "", round(structure.lattice.matrix[2][1], 10) , "decimal" ] )
+                     uuid_vec_cy, "", 
+                     round(structure.lattice.matrix[2][1], 12) , "decimal" ] )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_cz, "", "z", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_cz, "", round(structure.lattice.matrix[2][2], 10) , "decimal" ] )
+                     uuid_vec_cz, "", 
+                     round(structure.lattice.matrix[2][2], 12) , "decimal" ] )
 
     ###########################################
 
@@ -573,68 +592,78 @@ class CsvMaker:
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_r_ax, "", "x", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_r_ax, "", round(structure.lattice.reciprocal_lattice.matrix[0][0]/TWOPI, 10) , "decimal" ] )
+                     uuid_vec_r_ax, "", 
+                     round(structure.lattice.reciprocal_lattice.matrix[0][0]/TWOPI, 12) , "decimal" ] )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_r_ay, "", "y", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_r_ay, "", round(structure.lattice.reciprocal_lattice.matrix[0][1]/TWOPI, 10) , "decimal" ] )
+                     uuid_vec_r_ay, "", 
+                     round(structure.lattice.reciprocal_lattice.matrix[0][1]/TWOPI, 12) , "decimal" ] )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_r_az, "", "z", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_r_az, "", round(structure.lattice.reciprocal_lattice.matrix[0][2]/TWOPI, 10) , "decimal" ] )
+                     uuid_vec_r_az, "", 
+                     round(structure.lattice.reciprocal_lattice.matrix[0][2]/TWOPI, 12) , "decimal" ] )
 
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_r_bx, "", "x", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_r_bx, "", round(structure.lattice.reciprocal_lattice.matrix[1][0]/TWOPI, 10) , "decimal" ] )
+                     uuid_vec_r_bx, "", 
+                     round(structure.lattice.reciprocal_lattice.matrix[1][0]/TWOPI, 12) , "decimal" ] )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_r_by, "", "y", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_r_by, "", round(structure.lattice.reciprocal_lattice.matrix[1][1]/TWOPI, 10) , "decimal" ] )
+                     uuid_vec_r_by, "", 
+                     round(structure.lattice.reciprocal_lattice.matrix[1][1]/TWOPI, 12) , "decimal" ] )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_r_bz, "", "z", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_r_bz, "", round(structure.lattice.reciprocal_lattice.matrix[1][2]/TWOPI, 10) , "decimal" ] )
+                     uuid_vec_r_bz, "", 
+                     round(structure.lattice.reciprocal_lattice.matrix[1][2]/TWOPI, 12) , "decimal" ] )
 
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_r_cx, "", "x", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_r_cx, "", round(structure.lattice.reciprocal_lattice.matrix[2][0]/TWOPI, 10) , "decimal" ] )
+                     uuid_vec_r_cx, "", 
+                     round(structure.lattice.reciprocal_lattice.matrix[2][0]/TWOPI, 12) , "decimal" ] )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_r_cy, "", "y", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_r_cy, "", round(structure.lattice.reciprocal_lattice.matrix[2][1]/TWOPI, 10) , "decimal" ] )
+                     uuid_vec_r_cy, "", 
+                     round(structure.lattice.reciprocal_lattice.matrix[2][1]/TWOPI, 12) , "decimal" ] )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_r_cz, "", "z", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
-                     uuid_vec_r_cz, "", round(structure.lattice.reciprocal_lattice.matrix[2][2]/TWOPI, 10) , "decimal" ] )
-
-
+                     uuid_vec_r_cz, "", 
+                     round(structure.lattice.reciprocal_lattice.matrix[2][2]/TWOPI, 12) , "decimal" ] )
 
     ###########################################
     # Unit cell volume, single value, not vector:
 
-
     uuid_uc_volume = tools.getUUID( uuidDB, 
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure", 
-                     "UnitCellVolume" + zeoname )
+                     "UnitCellVolume_" + zeoname )
 
     output.append( [ uuid_uc_volume, "Instance", 
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure",
                      "", "", "" ] )
 
-    output.append( [ self.ontoPrefix + "hasNumericalValue", "Data Property", 
-                     uuid_uc_volume, "", round(structure.lattice.volume, 10) , "decimal" ] )
+    output.append( [ uuid_cif_uc, "Instance", uuid_uc_volume,  
+                     self.ontoPrefix + "hasVolume", "", "" ] )
 
-    # FIXME cubic-meter is not in OM now. I can derive my own A^3 unit and replace it here
+    output.append( [ "http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue", 
+                     "Data Property", uuid_uc_volume, "", 
+                     round(structure.lattice.volume, 12) , "decimal" ] )
+
+    # FIXME cubic-A is not in OM now. I can derive my own A^3 unit and replace it here
     output.append( [ uuid_uc_volume, "Instance", 
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/cubic-angstrom",
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
