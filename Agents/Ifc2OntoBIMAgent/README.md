@@ -63,7 +63,7 @@ which must have a 'scope' that [allows you to publish and install packages](http
 Please note that this agent will require at least 16GB RAM due to the large size of IFC models. This has been set in the `docker-compose.yml` files of both development and production environments.
 If you have less free RAM available, it is possible to set 8GB RAM for smaller IFC models. For much larger IFC models, please increase RAM allocation.
 To change the memory allocation to the JVM Heap, please open the respective `docker-compose.yml` files, and update the `-Xms16g -Xmx16g` options at line 11.
-`-Xms16g` refers to the minimum heap size while `-Xmx16g` represents the maximum heap size.
+`-Xms16g` refers to the minimum heap size while `-Xmx16g` represents the maximum heap size. If you are running this agent inside a stack, you will need to make this change in the stack manager input config json file (editing the docker compose file will have no effect).
 
 #### 2.2 Docker Deployment
 **TEST ENVIRONMENT**
