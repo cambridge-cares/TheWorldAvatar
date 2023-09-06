@@ -5,10 +5,13 @@ import tools
 import zeolist
 import tilesignature
 import logging
+import math
 logging.basicConfig( level = logging.INFO )
 
 from pymatgen.core.structure import Structure, Lattice
 
+# FIXME
+#http://www.w3.org/2000/01/rdf-schema#Literal
 
 class CsvMaker:
 
@@ -62,6 +65,7 @@ class CsvMaker:
 
   def arrAtomSite( self, zeoname ):
     output = []
+    TWOPI = 2 * math.pi
 
     uuidDB = tools.loadUUID( )
 
@@ -78,6 +82,7 @@ class CsvMaker:
     #print( "  ", structure.lattice.gamma ) # angles, similarly a,b,c
     #print( "  ", structure.lattice.volume ) # volume
     #print( "  ", structure.lattice.reciprocal_lattice.a ) # reciprocal parameters
+    #print( "  ", structure.lattice.reciprocal_lattice.matrix[0][0] ) # reciprocal parameters
 
     # Define class instances:
     uuid_zeolite = tools.getUUID( uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
@@ -98,18 +103,19 @@ class CsvMaker:
 
     output.append( [ uuid_cif, "Instance", uuid_cif_uc,  
                      self.ontoPrefix + "hasCIFCoreCell", "", "" ] )
+    ###########################################
 
     # Vector for Unit Cell length parameters (a,b,c):
     uuid_uc_abc = tools.getUUID( uuidDB, "UnitCellLengths", "UnitCellLengths_" + zeoname )
     output.append( [ uuid_uc_abc, "Instance", "UnitCellLengths", "", "", "" ] )
  
-    uuid_uc_a = tools.getUUID( uuidDB, "Length", "UnitCellLengthA_" + zeoname )
+    uuid_uc_a = tools.getUUID( uuidDB, "VectorComponent", "UnitCellLengthA_" + zeoname )
     output.append( [ uuid_uc_a, "Instance", "Length", "", "", "" ] )
  
-    uuid_uc_b = tools.getUUID( uuidDB, "Length", "UnitCellLengthB_" + zeoname )
+    uuid_uc_b = tools.getUUID( uuidDB, "VectorComponent", "UnitCellLengthB_" + zeoname )
     output.append( [ uuid_uc_b, "Instance", "Length", "", "", "" ] )
 
-    uuid_uc_c = tools.getUUID( uuidDB, "Length", "UnitCellLengthC_" + zeoname )
+    uuid_uc_c = tools.getUUID( uuidDB, "VectorComponent", "UnitCellLengthC_" + zeoname )
     output.append( [ uuid_uc_c, "Instance", "Length", "", "", "" ] )
 
     output.append( [ uuid_cif_uc, "Instance", uuid_uc_abc,  
@@ -166,6 +172,7 @@ class CsvMaker:
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/degree",
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
                       "", "" ] )
+
     output.append( [ uuid_uc_abg, "Instance", uuid_uc_al,  
                      self.ontoPrefix + "hasComponent", "", "" ] )
     output.append( [ uuid_uc_abg, "Instance", uuid_uc_be,  
@@ -191,17 +198,109 @@ class CsvMaker:
     ###########################################
 
 
-    # Vector for Unit Cell vectors (a,b,c):
+    # Vector for reciprocal Unit Cell lengths (a*,b*,c*):
+    uuid_uc_r_abc = tools.getUUID( uuidDB, "UnitCellReciprocalLengths", "UnitCellReciprocalLengths_" + zeoname )
+    output.append( [ uuid_uc_r_abc, "Instance", "UnitCellLengths", "", "", "" ] )
+ 
+    uuid_uc_r_a = tools.getUUID( uuidDB, "VectorComponent", "UnitCellReciprocalLengthA_" + zeoname )
+    output.append( [ uuid_uc_r_a, "Instance", "Length", "", "", "" ] )
+ 
+    uuid_uc_r_b = tools.getUUID( uuidDB, "VectorComponent", "UnitCellReciprocalLengthB_" + zeoname )
+    output.append( [ uuid_uc_r_b, "Instance", "Length", "", "", "" ] )
+
+    uuid_uc_r_c = tools.getUUID( uuidDB, "VectorComponent", "UnitCellReciprocalLengthC_" + zeoname )
+    output.append( [ uuid_uc_r_c, "Instance", "Length", "", "", "" ] )
+
+    output.append( [ uuid_cif_uc, "Instance", uuid_uc_abc,  
+                     self.ontoPrefix + "hasUnitCellReciprocalLengths", "", "" ] )
+
+    # FIXME inverse-anstrom is not defined in OM:
+    output.append( [ uuid_uc_r_abc, "Instance", 
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocal-angstrom",
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                      "", "" ] )
+
+    output.append( [ uuid_uc_r_abc, "Instance", uuid_uc_r_a,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+    output.append( [ uuid_uc_r_abc, "Instance", uuid_uc_r_b,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+    output.append( [ uuid_uc_r_abc, "Instance", uuid_uc_r_c,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+
+    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                     uuid_uc_r_a, "", "a*", "string" ] )
+    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+                     uuid_uc_r_a, "", round(structure.lattice.reciprocal_lattice.a/TWOPI, 10) , "decimal" ] )
+
+    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                     uuid_uc_r_b, "", "b*", "string" ] )
+    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+                     uuid_uc_r_b, "", round(structure.lattice.reciprocal_lattice.b/TWOPI, 10) , "decimal" ] )
+
+    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                     uuid_uc_r_c, "", "c*", "string" ] )
+    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+                     uuid_uc_r_c, "", round(structure.lattice.reciprocal_lattice.c/TWOPI, 10) , "decimal" ] )
+    ###########################################
+    ###########################################
+
+    # Vector for Reciprocal Unit Cell angles parameters (alpha*,beta*,gamma*):
+    uuid_uc_r_abg = tools.getUUID( uuidDB, "UnitCellReciprocalAngles", "UnitCellReciprocalAngles_" + zeoname )
+    output.append( [ uuid_uc_r_abg, "Instance", "UnitCellReciprocalAngles", "", "", "" ] )
+ 
+    uuid_uc_r_al = tools.getUUID( uuidDB, "VectorComponent", "UnitCellReciprocalAngleAlpha_" + zeoname )
+    output.append( [ uuid_uc_r_al, "Instance", "VectorComponent", "", "", "" ] )
+ 
+    uuid_uc_r_be = tools.getUUID( uuidDB, "VectorComponent", "UnitCellReciprocalAngleBeta_" + zeoname )
+    output.append( [ uuid_uc_r_be, "Instance", "VectorComponent", "", "", "" ] )
+
+    uuid_uc_r_gm = tools.getUUID( uuidDB, "VectorComponent", "UnitCellReciprocalAngleGamma_" + zeoname )
+    output.append( [ uuid_uc_r_gm, "Instance", "VectorComponent", "", "", "" ] )
+
+    output.append( [ uuid_cif_uc, "Instance", uuid_uc_r_abg,  
+                     self.ontoPrefix + "hasUnitCellReciprocalAngles", "", "" ] )
+
+    # FIXME inverse-degree is not defined in OM-2.
+    output.append( [ uuid_uc_r_abg, "Instance", 
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/invercse-degree",
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                      "", "" ] )
+
+    output.append( [ uuid_uc_r_abg, "Instance", uuid_uc_r_al,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+    output.append( [ uuid_uc_r_abg, "Instance", uuid_uc_r_be,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+    output.append( [ uuid_uc_r_abg, "Instance", uuid_uc_r_gm,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+
+
+    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                     uuid_uc_r_al, "", "alpha", "string" ] )
+    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+                     uuid_uc_r_al, "", round(structure.lattice.reciprocal_lattice.alpha, 10) , "decimal" ] )
+
+    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                     uuid_uc_r_be, "", "beta",  "string" ] )
+    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+                     uuid_uc_r_be, "", round(structure.lattice.reciprocal_lattice.beta,  10) , "decimal" ] )
+
+    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                     uuid_uc_r_gm, "", "gamma", "string" ] )
+    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+                     uuid_uc_r_gm, "", round(structure.lattice.reciprocal_lattice.gamma, 10) , "decimal" ] )
+    ###########################################
+
+    # Vector to keep three Unit Cell vectors (a,b,c):
     uuid_uc_vec_abc = tools.getUUID( uuidDB, "UnitCellVectors", "UnitCellVectors_" + zeoname )
     output.append( [ uuid_uc_vec_abc, "Instance", "UnitCellVectors", "", "", "" ] )
  
-    uuid_uc_vec_a = tools.getUUID( uuidDB, "VectorComponent", "UnitCellLengthA_" + zeoname )
+    uuid_uc_vec_a = tools.getUUID( uuidDB, "VectorComponent", "UnitCellComponentA_" + zeoname )
     output.append( [ uuid_uc_vec_a, "Instance", "VectorComponent", "", "", "" ] )
  
-    uuid_uc_vec_b = tools.getUUID( uuidDB, "VectorComponent", "UnitCellLengthB_" + zeoname )
+    uuid_uc_vec_b = tools.getUUID( uuidDB, "VectorComponent", "UnitCellComponentB_" + zeoname )
     output.append( [ uuid_uc_vec_b, "Instance", "VectorComponent", "", "", "" ] )
 
-    uuid_uc_vec_c = tools.getUUID( uuidDB, "VectorComponent", "UnitCellLengthC_" + zeoname )
+    uuid_uc_vec_c = tools.getUUID( uuidDB, "VectorComponent", "UnitCellComponentC_" + zeoname )
     output.append( [ uuid_uc_vec_c, "Instance", "VectorComponent", "", "", "" ] )
 
     output.append( [ uuid_cif_uc, "Instance", uuid_uc_vec_abc,  
@@ -307,7 +406,6 @@ class CsvMaker:
                       "", "" ] )
 
 
-
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_ax, "", "x", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
@@ -357,6 +455,194 @@ class CsvMaker:
 
     ###########################################
 
+    # Vector for Reciprocal Unit Cell vectors (a*,b*,c*):
+    uuid_uc_vec_r_abc = tools.getUUID( uuidDB, "UnitCellVectors", "ReciprocalUnitCellVectors_" + zeoname )
+    output.append( [ uuid_uc_vec_r_abc, "Instance", "UnitCellVectors", "", "", "" ] )
+ 
+    #uuid_uc_vec_r_a = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorA_" + zeoname )
+    #output.append( [ uuid_uc_vec_r_a, "Instance", "VectorComponent", "", "", "" ] )
+ 
+    #uuid_uc_vec_r_b = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorB_" + zeoname )
+    #output.append( [ uuid_uc_vec_r_b, "Instance", "VectorComponent", "", "", "" ] )
+
+    #uuid_uc_vec_r_c = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorC_" + zeoname )
+    #output.append( [ uuid_uc_vec_r_c, "Instance", "VectorComponent", "", "", "" ] )
+    output.append( [ uuid_cif_uc, "Instance", uuid_uc_vec_r_abc,  
+                     self.ontoPrefix + "hasReciprocalUnitCellVectorSet", "", "" ] )
+
+    uuid_vec_r_a  = tools.getUUID( uuidDB, "UnitCellVector", "ReciprocalUnitCellVectorA_" + zeoname )
+    uuid_vec_r_b  = tools.getUUID( uuidDB, "UnitCellVector", "ReciprocalUnitCellVectorB_" + zeoname )
+    uuid_vec_r_c  = tools.getUUID( uuidDB, "UnitCellVector", "ReciprocalUnitCellVectorC_" + zeoname )
+
+    output.append( [ uuid_vec_r_a, "Instance", "VectorComponent", "", "", "" ] )
+    output.append( [ uuid_vec_r_b, "Instance", "VectorComponent", "", "", "" ] )
+    output.append( [ uuid_vec_r_c, "Instance", "VectorComponent", "", "", "" ] )
+
+    output.append( [ uuid_uc_vec_r_abc, "Instance", uuid_vec_r_a,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+    output.append( [ uuid_uc_vec_r_abc, "Instance", uuid_vec_r_b,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+    output.append( [ uuid_uc_vec_r_abc, "Instance", uuid_vec_r_c,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+
+    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                     uuid_vec_r_a, "", "a", "string" ] )
+    output.append( [ uuid_vec_r_a, "Instance", 
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocal-angstrom",
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                      "", "" ] )
+
+    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                     uuid_vec_r_b, "", "b", "string" ] )
+    output.append( [ uuid_vec_r_b, "Instance", 
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocal-angstrom",
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                      "", "" ] )
+
+    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                     uuid_vec_r_c, "", "c", "string" ] )
+    output.append( [ uuid_vec_r_c, "Instance", 
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocal-angstrom",
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                      "", "" ] )
+
+
+    uuid_vec_r_ax = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorAx_" + zeoname )
+    uuid_vec_r_ay = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorAy_" + zeoname )
+    uuid_vec_r_az = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorAz_" + zeoname )
+
+    uuid_vec_r_bx = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorBx_" + zeoname )
+    uuid_vec_r_by = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorBy_" + zeoname )
+    uuid_vec_r_bz = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorBz_" + zeoname )
+
+    uuid_vec_r_cx = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorCx_" + zeoname )
+    uuid_vec_r_cy = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorCy_" + zeoname )
+    uuid_vec_r_cz = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorCz_" + zeoname )
+
+    output.append( [ uuid_vec_r_ax, "Instance", "VectorComponent", "", "", "" ] )
+    output.append( [ uuid_vec_r_ay, "Instance", "VectorComponent", "", "", "" ] )
+    output.append( [ uuid_vec_r_az, "Instance", "VectorComponent", "", "", "" ] )
+
+    output.append( [ uuid_vec_r_bx, "Instance", "VectorComponent", "", "", "" ] )
+    output.append( [ uuid_vec_r_by, "Instance", "VectorComponent", "", "", "" ] )
+    output.append( [ uuid_vec_r_bz, "Instance", "VectorComponent", "", "", "" ] )
+
+    output.append( [ uuid_vec_r_cx, "Instance", "VectorComponent", "", "", "" ] )
+    output.append( [ uuid_vec_r_cy, "Instance", "VectorComponent", "", "", "" ] )
+    output.append( [ uuid_vec_r_cz, "Instance", "VectorComponent", "", "", "" ] )
+
+    #output.append( [ uuid_uc_vec_a, "Instance", uuid_vec_a,  
+    #                 self.ontoPrefix + "hasValue", "", "" ] )
+
+    output.append( [ uuid_vec_r_a, "Instance", uuid_vec_r_ax,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+
+    output.append( [ uuid_vec_r_a, "Instance", uuid_vec_r_ay,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+
+    output.append( [ uuid_vec_r_a, "Instance", uuid_vec_r_az,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+
+
+    #output.append( [ uuid_uc_vec_b, "Instance", uuid_vec_b,  
+    #                 self.ontoPrefix + "hasValue", "", "" ] )
+
+    output.append( [ uuid_vec_r_b, "Instance", uuid_vec_r_bx,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+
+    output.append( [ uuid_vec_r_b, "Instance", uuid_vec_r_by,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+
+    output.append( [ uuid_vec_r_b, "Instance", uuid_vec_r_bz,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+
+    #output.append( [ uuid_uc_vec_c, "Instance", uuid_vec_c,  
+    #                 self.ontoPrefix + "hasValue", "", "" ] )
+
+    output.append( [ uuid_vec_r_c, "Instance", uuid_vec_r_cx,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+
+    output.append( [ uuid_vec_r_c, "Instance", uuid_vec_r_cy,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+
+    output.append( [ uuid_vec_r_c, "Instance", uuid_vec_r_cz,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+    
+
+
+    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                     uuid_vec_r_ax, "", "x", "string" ] )
+    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+                     uuid_vec_r_ax, "", round(structure.lattice.reciprocal_lattice.matrix[0][0]/TWOPI, 10) , "decimal" ] )
+
+    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                     uuid_vec_r_ay, "", "y", "string" ] )
+    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+                     uuid_vec_r_ay, "", round(structure.lattice.reciprocal_lattice.matrix[0][1]/TWOPI, 10) , "decimal" ] )
+
+    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                     uuid_vec_r_az, "", "z", "string" ] )
+    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+                     uuid_vec_r_az, "", round(structure.lattice.reciprocal_lattice.matrix[0][2]/TWOPI, 10) , "decimal" ] )
+
+
+    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                     uuid_vec_r_bx, "", "x", "string" ] )
+    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+                     uuid_vec_r_bx, "", round(structure.lattice.reciprocal_lattice.matrix[1][0]/TWOPI, 10) , "decimal" ] )
+
+    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                     uuid_vec_r_by, "", "y", "string" ] )
+    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+                     uuid_vec_r_by, "", round(structure.lattice.reciprocal_lattice.matrix[1][1]/TWOPI, 10) , "decimal" ] )
+
+    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                     uuid_vec_r_bz, "", "z", "string" ] )
+    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+                     uuid_vec_r_bz, "", round(structure.lattice.reciprocal_lattice.matrix[1][2]/TWOPI, 10) , "decimal" ] )
+
+
+    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                     uuid_vec_r_cx, "", "x", "string" ] )
+    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+                     uuid_vec_r_cx, "", round(structure.lattice.reciprocal_lattice.matrix[2][0]/TWOPI, 10) , "decimal" ] )
+
+    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                     uuid_vec_r_cy, "", "y", "string" ] )
+    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+                     uuid_vec_r_cy, "", round(structure.lattice.reciprocal_lattice.matrix[2][1]/TWOPI, 10) , "decimal" ] )
+
+    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                     uuid_vec_r_cz, "", "z", "string" ] )
+    output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+                     uuid_vec_r_cz, "", round(structure.lattice.reciprocal_lattice.matrix[2][2]/TWOPI, 10) , "decimal" ] )
+
+
+
+    ###########################################
+    # Unit cell volume, single value, not vector:
+
+
+    uuid_uc_volume = tools.getUUID( uuidDB, 
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure", 
+                     "UnitCellVolume" + zeoname )
+
+    output.append( [ uuid_uc_volume, "Instance", 
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure",
+                     "", "", "" ] )
+
+    output.append( [ self.ontoPrefix + "hasNumericalValue", "Data Property", 
+                     uuid_uc_volume, "", round(structure.lattice.volume, 10) , "decimal" ] )
+
+    # FIXME cubic-meter is not in OM now. I can derive my own A^3 unit and replace it here
+    output.append( [ uuid_uc_volume, "Instance", 
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/cubic-angstrom",
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                      "", "" ] )
+
+    ###########################################
+
+    ###########################################
 
     tools.saveUUID( uuidDB )
 
