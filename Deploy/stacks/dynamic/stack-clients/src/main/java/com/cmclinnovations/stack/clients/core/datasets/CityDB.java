@@ -9,6 +9,9 @@ import com.cmclinnovations.stack.clients.citydb.CityTilerOptions;
 import com.cmclinnovations.stack.clients.citydb.ImpExpOptions;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.GSVirtualTableEncoder;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 
 public class CityDB extends PostgresDataSubset {
 
@@ -24,9 +27,16 @@ public class CityDB extends PostgresDataSubset {
     private boolean usePreviousIRIs = true;
     @JsonProperty
     private Path previousFile;
+    @JsonProperty
+    private GeoServerVectorSettings geoServerSettings = new GeoServerVectorSettings();
 
     @JsonIgnore
     private String lineage;
+
+    @Override
+    public boolean usesGeoServer() {
+        return !isSkip();
+    }
 
     @Override
     void loadInternal(Dataset parent) {
@@ -35,6 +45,8 @@ public class CityDB extends PostgresDataSubset {
         super.loadInternal(parent);
 
         writeOutPrevious(database);
+
+        createLayer(parent.getWorkspaceName(), parent.getDatabase());
 
         createLayer(database);
 
@@ -60,6 +72,16 @@ public class CityDB extends PostgresDataSubset {
                 .uploadFilesToPostGIS(dataSubsetDir.toString(), database, importOptions, lineage, baseIRI,
                         append || usePreviousIRIs);
 
+    }
+
+    public void createLayer(String workspaceName, String database) {
+        GSVirtualTableEncoder virtualTable = geoServerSettings.getVirtualTable();
+        if (null != virtualTable) {
+            virtualTable.setSql(handleFileValues(virtualTable.getSql()));
+        }
+
+        GeoServerClient.getInstance()
+                .createPostGISLayer(workspaceName, database, getName(), geoServerSettings);
     }
 
     public void createLayer(String database) {

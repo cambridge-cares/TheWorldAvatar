@@ -29,7 +29,7 @@
     <dependency>
       <groupId>com.cmclinnovations</groupId>
       <artifactId>stack-clients</artifactId>
-      <version>1.15.0</version>
+      <version>1.15.1-stack-building-thematic-vis-SNAPSHOT</version>
     </dependency>
 
     <dependency>
