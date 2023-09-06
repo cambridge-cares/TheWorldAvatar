@@ -1,0 +1,1 @@
+defaultKGStoragePath = "<KG_STORAGE_PATH>"
