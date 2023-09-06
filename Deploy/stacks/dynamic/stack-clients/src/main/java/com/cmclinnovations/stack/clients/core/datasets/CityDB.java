@@ -13,7 +13,7 @@ import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.GSVirtualTableEncoder;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 
-public class CityDB extends PostgresDataSubset {
+public class CityDB extends GeoServerDataSubset {
 
     @JsonProperty
     private final ImpExpOptions importOptions = new ImpExpOptions();
@@ -32,11 +32,6 @@ public class CityDB extends PostgresDataSubset {
 
     @JsonIgnore
     private String lineage;
-
-    @Override
-    public boolean usesGeoServer() {
-        return !isSkip();
-    }
 
     @Override
     void loadInternal(Dataset parent) {
@@ -74,6 +69,7 @@ public class CityDB extends PostgresDataSubset {
 
     }
 
+    @Override
     public void createLayer(String workspaceName, String database) {
         GSVirtualTableEncoder virtualTable = geoServerSettings.getVirtualTable();
         if (null != virtualTable) {
