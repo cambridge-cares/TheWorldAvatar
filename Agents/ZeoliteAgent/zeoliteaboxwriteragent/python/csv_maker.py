@@ -301,24 +301,47 @@ class CsvMaker:
     ###########################################
 
     # Vector to keep three Unit Cell vectors (a,b,c):
-    uuid_uc_vec_abc = tools.getUUID( uuidDB, "UnitCellVectors", "UnitCellVectors_" + zeoname )
-    output.append( [ uuid_uc_vec_abc, "Instance", "UnitCellVectors", "", "", "" ] )
- 
-    uuid_uc_vec_a = tools.getUUID( uuidDB, "VectorComponent", "UnitCellComponentA_" + zeoname )
-    output.append( [ uuid_uc_vec_a, "Instance", "VectorComponent", "", "", "" ] )
- 
-    uuid_uc_vec_b = tools.getUUID( uuidDB, "VectorComponent", "UnitCellComponentB_" + zeoname )
-    output.append( [ uuid_uc_vec_b, "Instance", "VectorComponent", "", "", "" ] )
-
-    uuid_uc_vec_c = tools.getUUID( uuidDB, "VectorComponent", "UnitCellComponentC_" + zeoname )
-    output.append( [ uuid_uc_vec_c, "Instance", "VectorComponent", "", "", "" ] )
+    uuid_uc_vec_abc = tools.getUUID( uuidDB, "UnitCellVectorSet", "UnitCellVectors_" + zeoname )
+    output.append( [ uuid_uc_vec_abc, "Instance", "UnitCellVectorSet", "", "", "" ] )
 
     output.append( [ uuid_cif_uc, "Instance", uuid_uc_vec_abc,  
-                     self.ontoPrefix + "hasUnitCellVectors", "", "" ] )
+                     self.ontoPrefix + "hasUnitCellVectorSet", "", "" ] )
 
     uuid_vec_a = tools.getUUID( uuidDB, "UnitCellVector", "UnitCellVectorA_" + zeoname )
     uuid_vec_b = tools.getUUID( uuidDB, "UnitCellVector", "UnitCellVectorB_" + zeoname )
     uuid_vec_c = tools.getUUID( uuidDB, "UnitCellVector", "UnitCellVectorC_" + zeoname )
+
+    output.append( [ uuid_vec_a, "Instance", "UnitCellVector", "", "", "" ] )
+    output.append( [ uuid_vec_b, "Instance", "UnitCellVector", "", "", "" ] )
+    output.append( [ uuid_vec_c, "Instance", "UnitCellVector", "", "", "" ] )
+
+    output.append( [ uuid_uc_vec_abc, "Instance", uuid_vec_a,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+    output.append( [ uuid_uc_vec_abc, "Instance", uuid_vec_b,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+    output.append( [ uuid_uc_vec_abc, "Instance", uuid_vec_c,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+
+    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                     uuid_vec_a, "", "a", "string" ] )
+    output.append( [ uuid_vec_a, "Instance", 
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                      "", "" ] )
+
+    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                     uuid_vec_b, "", "b", "string" ] )
+    output.append( [ uuid_vec_b, "Instance", 
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                      "", "" ] )
+
+    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                     uuid_vec_c, "", "c", "string" ] )
+    output.append( [ uuid_vec_c, "Instance", 
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                      "", "" ] )
 
     uuid_vec_ax = tools.getUUID( uuidDB, "VectorComponent", "UnitCellVectorAx_" + zeoname )
     uuid_vec_ay = tools.getUUID( uuidDB, "VectorComponent", "UnitCellVectorAy_" + zeoname )
@@ -332,9 +355,6 @@ class CsvMaker:
     uuid_vec_cy = tools.getUUID( uuidDB, "VectorComponent", "UnitCellVectorCy_" + zeoname )
     uuid_vec_cz = tools.getUUID( uuidDB, "VectorComponent", "UnitCellVectorCz_" + zeoname )
 
-    output.append( [ uuid_vec_a, "Instance", "UnitCellVector", "", "", "" ] )
-    output.append( [ uuid_vec_b, "Instance", "UnitCellVector", "", "", "" ] )
-    output.append( [ uuid_vec_c, "Instance", "UnitCellVector", "", "", "" ] )
 
     output.append( [ uuid_vec_ax, "Instance", "VectorComponent", "", "", "" ] )
     output.append( [ uuid_vec_ay, "Instance", "VectorComponent", "", "", "" ] )
@@ -348,17 +368,6 @@ class CsvMaker:
     output.append( [ uuid_vec_cy, "Instance", "VectorComponent", "", "", "" ] )
     output.append( [ uuid_vec_cz, "Instance", "VectorComponent", "", "", "" ] )
 
-    output.append( [ uuid_uc_vec_abc, "Instance", uuid_uc_vec_a,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-    output.append( [ uuid_uc_vec_abc, "Instance", uuid_uc_vec_b,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-    output.append( [ uuid_uc_vec_abc, "Instance", uuid_uc_vec_c,  
-                     self.ontoPrefix + "hasComponent", "", "" ] )
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_uc_vec_a, "", "a", "string" ] )
-    output.append( [ uuid_uc_vec_a, "Instance", uuid_vec_a,  
-                     self.ontoPrefix + "hasValue", "", "" ] )
 
     output.append( [ uuid_vec_a, "Instance", uuid_vec_ax,  
                      self.ontoPrefix + "hasComponent", "", "" ] )
@@ -369,17 +378,6 @@ class CsvMaker:
     output.append( [ uuid_vec_a, "Instance", uuid_vec_az,  
                      self.ontoPrefix + "hasComponent", "", "" ] )
 
-    output.append( [ uuid_vec_a, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-                      "", "" ] )
-
-
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_uc_vec_b, "", "b", "string" ] )
-    output.append( [ uuid_uc_vec_b, "Instance", uuid_vec_b,  
-                     self.ontoPrefix + "hasValue", "", "" ] )
 
     output.append( [ uuid_vec_b, "Instance", uuid_vec_bx,  
                      self.ontoPrefix + "hasComponent", "", "" ] )
@@ -390,16 +388,6 @@ class CsvMaker:
     output.append( [ uuid_vec_b, "Instance", uuid_vec_bz,  
                      self.ontoPrefix + "hasComponent", "", "" ] )
 
-    output.append( [ uuid_vec_b, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-                      "", "" ] )
-
-
-    output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                     uuid_uc_vec_c, "", "c", "string" ] )
-    output.append( [ uuid_uc_vec_c, "Instance", uuid_vec_c,  
-                     self.ontoPrefix + "hasValue", "", "" ] )
 
     output.append( [ uuid_vec_c, "Instance", uuid_vec_cx,  
                      self.ontoPrefix + "hasComponent", "", "" ] )
@@ -410,12 +398,6 @@ class CsvMaker:
     output.append( [ uuid_vec_c, "Instance", uuid_vec_cz,  
                      self.ontoPrefix + "hasComponent", "", "" ] )
     
-    output.append( [ uuid_vec_c, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
-                      "", "" ] )
-
-
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_ax, "", "x", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
@@ -475,17 +457,9 @@ class CsvMaker:
     ###########################################
 
     # Vector for Reciprocal Unit Cell vectors (a*,b*,c*):
-    uuid_uc_vec_r_abc = tools.getUUID( uuidDB, "UnitCellVectors", "ReciprocalUnitCellVectors_" + zeoname )
-    output.append( [ uuid_uc_vec_r_abc, "Instance", "UnitCellVectors", "", "", "" ] )
+    uuid_uc_vec_r_abc = tools.getUUID( uuidDB, "UnitCellVectorSet", "ReciprocalUnitCellVectors_" + zeoname )
+    output.append( [ uuid_uc_vec_r_abc, "Instance", "UnitCellVectorSet", "", "", "" ] )
  
-    #uuid_uc_vec_r_a = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorA_" + zeoname )
-    #output.append( [ uuid_uc_vec_r_a, "Instance", "VectorComponent", "", "", "" ] )
- 
-    #uuid_uc_vec_r_b = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorB_" + zeoname )
-    #output.append( [ uuid_uc_vec_r_b, "Instance", "VectorComponent", "", "", "" ] )
-
-    #uuid_uc_vec_r_c = tools.getUUID( uuidDB, "VectorComponent", "ReciprocalUnitCellVectorC_" + zeoname )
-    #output.append( [ uuid_uc_vec_r_c, "Instance", "VectorComponent", "", "", "" ] )
     output.append( [ uuid_cif_uc, "Instance", uuid_uc_vec_r_abc,  
                      self.ontoPrefix + "hasReciprocalUnitCellVectorSet", "", "" ] )
 
@@ -506,6 +480,7 @@ class CsvMaker:
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_r_a, "", "a", "string" ] )
+    # FIXME reciprocal angstrom
     output.append( [ uuid_vec_r_a, "Instance", 
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocal-angstrom",
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
@@ -550,9 +525,6 @@ class CsvMaker:
     output.append( [ uuid_vec_r_cy, "Instance", "VectorComponent", "", "", "" ] )
     output.append( [ uuid_vec_r_cz, "Instance", "VectorComponent", "", "", "" ] )
 
-    #output.append( [ uuid_uc_vec_a, "Instance", uuid_vec_a,  
-    #                 self.ontoPrefix + "hasValue", "", "" ] )
-
     output.append( [ uuid_vec_r_a, "Instance", uuid_vec_r_ax,  
                      self.ontoPrefix + "hasComponent", "", "" ] )
 
@@ -563,9 +535,6 @@ class CsvMaker:
                      self.ontoPrefix + "hasComponent", "", "" ] )
 
 
-    #output.append( [ uuid_uc_vec_b, "Instance", uuid_vec_b,  
-    #                 self.ontoPrefix + "hasValue", "", "" ] )
-
     output.append( [ uuid_vec_r_b, "Instance", uuid_vec_r_bx,  
                      self.ontoPrefix + "hasComponent", "", "" ] )
 
@@ -575,8 +544,6 @@ class CsvMaker:
     output.append( [ uuid_vec_r_b, "Instance", uuid_vec_r_bz,  
                      self.ontoPrefix + "hasComponent", "", "" ] )
 
-    #output.append( [ uuid_uc_vec_c, "Instance", uuid_vec_c,  
-    #                 self.ontoPrefix + "hasValue", "", "" ] )
 
     output.append( [ uuid_vec_r_c, "Instance", uuid_vec_r_cx,  
                      self.ontoPrefix + "hasComponent", "", "" ] )
@@ -587,8 +554,6 @@ class CsvMaker:
     output.append( [ uuid_vec_r_c, "Instance", uuid_vec_r_cz,  
                      self.ontoPrefix + "hasComponent", "", "" ] )
     
-
-
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_r_ax, "", "x", "string" ] )
     output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
@@ -646,6 +611,7 @@ class CsvMaker:
                      round(structure.lattice.reciprocal_lattice.matrix[2][2]/TWOPI, 12) , "decimal" ] )
 
     ###########################################
+
     # Unit cell volume, single value, not vector:
 
     uuid_uc_volume = tools.getUUID( uuidDB, 

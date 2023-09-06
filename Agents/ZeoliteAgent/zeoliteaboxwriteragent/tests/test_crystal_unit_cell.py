@@ -16,126 +16,110 @@ def getUCVectors( end ):
 PREFIX zeo:	<http://www.theworldavatar.com/kg/ontozeolite/>
 PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 
+#SELECT ?x ?y ?z
+#SELECT ?zeoname ?a ?b ?c ?alpha ?beta ?gamma ?ax ?ay ?az ?bx ?by ?bz ?cx ?cy ?cz ?unitA ?unitD
+# ?rabc  ?unitR
 SELECT ?zeoname ?ax ?ay ?az ?bx ?by ?bz ?cx ?cy ?cz ?rax ?ray ?raz ?rbx ?rby ?rbz ?rcx ?rcy ?rcz ?volume #?rax ?ray ?raz ?rcz
+#SELECT ?zeoname ?rax ?ay ?az ?volume
 WHERE {
   ?zeo       zeo:hasZeoliteCode     ?zeoname .
   ?zeo       zeo:hasCIF             ?cifcore .
   ?cifcore   zeo:hasCIFCoreCell     ?unitcell .
-  ?unitcell  zeo:hasUnitCellLengths ?abc .
 
   ?unitcell  zeo:hasReciprocalUnitCellVectorSet ?rabc .
 
   ?rabc      zeo:hasComponent       ?vec_ra .
   ?vec_ra    zeo:hasLabel           "a" .
-  ?vec_ra    om:hasUnit             ?rUnit .
-  ?vec_ra    zeo:hasComponent        ?vax .
-  ?vec_ra    zeo:hasComponent        ?vay .
-  ?vec_ra    zeo:hasComponent        ?vaz .
+  ?vec_ra    om:hasUnit             ?unitR .
+  ?vec_ra    zeo:hasComponent       ?uax .
+  ?vec_ra    zeo:hasComponent       ?uay .
+  ?vec_ra    zeo:hasComponent       ?uaz .
 
   ?rabc      zeo:hasComponent       ?vec_rb .
   ?vec_rb    zeo:hasLabel           "b" .
-  #?vec_rb    om:hasUnit             ?rUnit .
-  ?vec_rb    zeo:hasComponent        ?vbx .
-  ?vec_rb    zeo:hasComponent        ?vby .
-  ?vec_rb    zeo:hasComponent        ?vbz .
+  #?vec_rb    om:hasUnit            ?unitR .
+  ?vec_rb    zeo:hasComponent       ?ubx .
+  ?vec_rb    zeo:hasComponent       ?uby .
+  ?vec_rb    zeo:hasComponent       ?ubz .
 
   ?rabc      zeo:hasComponent       ?vec_rc .
   ?vec_rc    zeo:hasLabel           "c" .
-  #?vec_rc    om:hasUnit             ?rUnit .
-  ?vec_rc    zeo:hasComponent        ?vcx .
-  ?vec_rc    zeo:hasComponent        ?vcy .
-  ?vec_rc    zeo:hasComponent        ?vcz .
+  #?vec_rc    om:hasUnit             ?unitR .
+  ?vec_rc    zeo:hasComponent        ?ucx .
+  ?vec_rc    zeo:hasComponent        ?ucy .
+  ?vec_rc    zeo:hasComponent        ?ucz .
+
+  ?uax       zeo:hasLabel            "x" .
+  ?uax       zeo:hasValue            ?rax .
+  ?uay       zeo:hasLabel            "y" .
+  ?uay       zeo:hasValue            ?ray .
+  ?uaz       zeo:hasLabel            "z" .
+  ?uaz       zeo:hasValue            ?raz .
+
+  ?ubx       zeo:hasLabel            "x" .
+  ?ubx       zeo:hasValue            ?rbx .
+  ?uby       zeo:hasLabel            "y" .
+  ?uby       zeo:hasValue            ?rby .
+  ?ubz       zeo:hasLabel            "z" .
+  ?ubz       zeo:hasValue            ?rbz .
+
+  ?ucx       zeo:hasLabel            "x" .
+  ?ucx       zeo:hasValue            ?rcx .
+  ?ucy       zeo:hasLabel            "y" .
+  ?ucy       zeo:hasValue            ?rcy .
+  ?ucz       zeo:hasLabel            "z" .
+  ?ucz       zeo:hasValue            ?rcz .
+  ###
+  ?unitcell  zeo:hasUnitCellVectorSet ?abc .
+
+  ?abc       zeo:hasComponent        ?vec_a .
+  ?vec_a     zeo:hasLabel            "a" .
+  ?vec_a      om:hasUnit             ?unitA .
+  ?vec_a     zeo:hasComponent        ?vax .
+  ?vec_a     zeo:hasComponent        ?vay .
+  ?vec_a     zeo:hasComponent        ?vaz .
+
+
+  ?abc       zeo:hasComponent       ?vec_b .
+  ?vec_b     zeo:hasLabel           "b" .
+  #?vec_b     om:hasUnit            ?unitA .
+  ?vec_b     zeo:hasComponent       ?vbx .
+  ?vec_b     zeo:hasComponent       ?vby .
+  ?vec_b     zeo:hasComponent       ?vbz .
+
+  ?abc       zeo:hasComponent       ?vec_c .
+  ?vec_c     zeo:hasLabel           "c" .
+  #?vec_c     om:hasUnit             ?unitA .
+  ?vec_c     zeo:hasComponent        ?vcx .
+  ?vec_c     zeo:hasComponent        ?vcy .
+  ?vec_c     zeo:hasComponent        ?vcz .
 
   ?vax       zeo:hasLabel            "x" .
-  ?vax       zeo:hasValue            ?rax .
+  ?vax       zeo:hasValue            ?ax .
   ?vay       zeo:hasLabel            "y" .
-  ?vay       zeo:hasValue            ?ray .
+  ?vay       zeo:hasValue            ?ay .
   ?vaz       zeo:hasLabel            "z" .
-  ?vaz       zeo:hasValue            ?raz .
+  ?vaz       zeo:hasValue            ?az .
 
   ?vbx       zeo:hasLabel            "x" .
-  ?vbx       zeo:hasValue            ?rbx .
+  ?vbx       zeo:hasValue            ?bx .
   ?vby       zeo:hasLabel            "y" .
-  ?vby       zeo:hasValue            ?rby .
+  ?vby       zeo:hasValue            ?by .
   ?vbz       zeo:hasLabel            "z" .
-  ?vbz       zeo:hasValue            ?rbz .
+  ?vbz       zeo:hasValue            ?bz .
 
   ?vcx       zeo:hasLabel            "x" .
-  ?vcx       zeo:hasValue            ?rcx .
+  ?vcx       zeo:hasValue            ?cx .
   ?vcy       zeo:hasLabel            "y" .
-  ?vcy       zeo:hasValue            ?rcy .
+  ?vcy       zeo:hasValue            ?cy .
   ?vcz       zeo:hasLabel            "z" .
-  ?vcz       zeo:hasValue            ?rcz .
+  ?vcz       zeo:hasValue            ?cz .
 
-
-  ?abc       zeo:hasComponent       ?paramA .
-  ?abc       zeo:hasComponent       ?paramB .
-  ?abc       zeo:hasComponent       ?paramC .
-  ?paramA    zeo:hasLabel           "a"  ;
-             zeo:hasValue           ?a   .
-  ?paramB    zeo:hasLabel           "b"  ;
-             zeo:hasValue           ?b   .
-  ?paramC    zeo:hasLabel           "c"  ;
-             zeo:hasValue           ?c   .
-  #?abc       om:hasUnit             ?unitA  .
-
-  ?unitcell  zeo:hasUnitCellAngles  ?abg .
-  ?abg       zeo:hasComponent       ?paramAlpha   .
-  ?abg       zeo:hasComponent       ?paramBeta   .
-  ?abg       zeo:hasComponent       ?paramGamma   .
-  ?paramAlpha zeo:hasLabel           "alpha"  ;
-             zeo:hasValue           ?alpha   .
-  ?paramBeta zeo:hasLabel           "beta"  ;
-             zeo:hasValue           ?beta   .
-  ?paramGamma zeo:hasLabel           "gamma"  ;
-             zeo:hasValue           ?gamma   .
-#  ?abg       om:hasUnit             ?unitD  .
-
-  ?unitcell  zeo:hasUnitCellVectors ?ucvec .
-  ?ucvec     zeo:hasComponent       ?ptr_a .
-  ?ptr_a     zeo:hasLabel           "a";
-             zeo:hasValue           ?vec_a .
-  ?vec_a     zeo:hasComponent       ?vec_ax .
-  ?vec_a     zeo:hasComponent       ?vec_ay .
-  ?vec_a     zeo:hasComponent       ?vec_az .
-  ?vec_ax    zeo:hasLabel           "x" ;
-             zeo:hasValue           ?ax .
-  ?vec_ay    zeo:hasLabel           "y" ;
-             zeo:hasValue           ?ay .
-  ?vec_az    zeo:hasLabel           "z" ;
-             zeo:hasValue           ?az .
-  ?vec_a     om:hasUnit             ?unitA  .
-
-  ?ucvec     zeo:hasComponent       ?ptr_b .
-  ?ptr_b     zeo:hasLabel           "b";
-             zeo:hasValue           ?vec_b .
-  ?vec_b     zeo:hasComponent       ?vec_bx .
-  ?vec_b     zeo:hasComponent       ?vec_by .
-  ?vec_b     zeo:hasComponent       ?vec_bz .
-  ?vec_bx    zeo:hasLabel           "x" ;
-             zeo:hasValue           ?bx .
-  ?vec_by    zeo:hasLabel           "y" ;
-             zeo:hasValue           ?by .
-  ?vec_bz    zeo:hasLabel           "z" ;
-             zeo:hasValue           ?bz .
-  #?vec_b     om:hasUnit             ?unitA  .
-
-  ?ucvec     zeo:hasComponent       ?ptr_c .
-  ?ptr_c     zeo:hasLabel           "c";
-             zeo:hasValue           ?vec_c .
-  ?vec_c     zeo:hasComponent       ?vec_cx .
-  ?vec_c     zeo:hasComponent       ?vec_cy .
-  ?vec_c     zeo:hasComponent       ?vec_cz .
-  ?vec_cx    zeo:hasLabel           "x" ;
-             zeo:hasValue           ?cx .
-  ?vec_cy    zeo:hasLabel           "y" ;
-             zeo:hasValue           ?cy .
-  ?vec_cz    zeo:hasLabel           "z" ;
-             zeo:hasValue           ?cz .
-  #?vec_c     om:hasUnit             ?unitA  .
+  ###
 
   ?unitcell  zeo:hasVolume          ?om_v .
   ?om_v      om:hasNumericalValue   ?volume .
+  #?om_v  ?x ?y .
 
   }
   """ )
