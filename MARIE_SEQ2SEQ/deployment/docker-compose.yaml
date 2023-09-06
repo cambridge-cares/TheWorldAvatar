@@ -1,0 +1,17 @@
+services:
+  triton:
+    build:
+      context: triton
+    shm_size: 256m
+    ports:
+      - 8000:8000 
+      - 8001:8001 
+      - 8002:8002
+  flask:
+    build:
+      context: flask
+    stop_signal: SIGINT
+    ports:
+      - 5000:5000
+    depends_on:
+      - triton
