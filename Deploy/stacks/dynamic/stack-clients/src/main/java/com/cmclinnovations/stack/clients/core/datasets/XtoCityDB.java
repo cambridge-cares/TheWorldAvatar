@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.GSVirtualTableEncoder;
 
-public class XtoCityDB extends PostgresDataSubset {
+public class XtoCityDB extends GeoServerDataSubset {
 
     @JsonProperty
     private Ogr2OgrOptions ogr2ogrOptions = new Ogr2OgrOptions();
@@ -45,11 +45,6 @@ public class XtoCityDB extends PostgresDataSubset {
     private String preprocessSql;
 
     @Override
-    public boolean usesGeoServer() {
-        return !isSkip();
-    }
-
-    @Override
     void loadInternal(Dataset parent) {
         super.loadInternal(parent);
         CityDBClient.getInstance().addIRIs(parent.getDatabase(), parent.baseIRI());
@@ -73,6 +68,7 @@ public class XtoCityDB extends PostgresDataSubset {
         CityTilerClient.getInstance().generateTiles(database, "citydb", cityTilerOptions);
     }
 
+    @Override
     public void createLayer(String workspaceName, String database) {
         GSVirtualTableEncoder virtualTable = geoServerSettings.getVirtualTable();
         if (null != virtualTable) {
