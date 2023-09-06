@@ -33,6 +33,18 @@ public class CityDB extends GeoServerDataSubset {
     @JsonIgnore
     private String lineage;
 
+    protected String getSridIn() {
+        return importOptions.getSridIn();
+    }
+
+    protected CityTilerOptions getCityTilerOptions() {
+        return cityTilerOptions;
+    }
+
+    protected void setPreviousFile(Path previousFilePath) {
+        previousFile=previousFilePath;
+    }
+
     @Override
     void loadInternal(Dataset parent) {
         String database = parent.getDatabase();
@@ -40,8 +52,6 @@ public class CityDB extends GeoServerDataSubset {
         super.loadInternal(parent);
 
         writeOutPrevious(database);
-
-        createLayer(parent.getWorkspaceName(), parent.getDatabase());
 
         createLayer(database);
 
@@ -52,6 +62,11 @@ public class CityDB extends GeoServerDataSubset {
 
         lineage = dataSubsetDir.toString();
 
+        loadDataInternal(dataSubsetDir, database, baseIRI, lineage);
+
+    }
+
+    protected void loadDataInternal(Path dataSubsetDir, String database, String baseIRI, String lineage) {
         if (null == previousFile) {
             previousFile = dataSubsetDir.resolveSibling(dataSubsetDir.getFileName() + "_previous")
                     .resolve("previous.gz");
@@ -66,7 +81,6 @@ public class CityDB extends GeoServerDataSubset {
         CityDBClient.getInstance()
                 .uploadFilesToPostGIS(dataSubsetDir.toString(), database, importOptions, lineage, baseIRI,
                         append || usePreviousIRIs);
-
     }
 
     @Override
@@ -88,11 +102,15 @@ public class CityDB extends GeoServerDataSubset {
             fudgedThematicSurfaceIDs = CityDBClient.getInstance().applyThematicSurfacesFix(database);
         }
 
-        CityTilerClient.getInstance().generateTiles(database, "citydb", cityTilerOptions);
+        generateTiles(database);
 
         if (!skipThematicSurfacesFudge && 0 != fudgedThematicSurfaceIDs.length) {
             CityDBClient.getInstance().revertThematicSurfacesFix(database, fudgedThematicSurfaceIDs);
         }
+    }
+
+    protected void generateTiles(String database) {
+        CityTilerClient.getInstance().generateTiles(database, "citydb", cityTilerOptions);
     }
 
     private void writeOutPrevious(String database) {
