@@ -1,0 +1,278 @@
+{
+    "name": "kingslynn",
+    "database": "postgres",
+    "workspace": "kingslynn",
+    "datasetDirectory": "kingslynn",
+    "dataSubsets": [
+        {
+            "type": "OSMRouting",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "routing",
+            "name": "routing"
+        },
+        {
+            "type": "raster",
+            "name": "flood",
+            "skip": false,
+            "subdirectory": "flood",
+            "sql": "@/inputs/data/kingslynn/sql/flood.sql",
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "elevation"
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "nearest_vertex",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/nearest_vertex.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "the_geom",
+                        "type": "Point",
+                        "srid": 4326
+                    },
+                    "parameters": [
+                        {
+                            "name": "lon",
+                            "defaultValue": "1",
+                            "regexpValidator": "^[\\d\\.\\+-eE]+$"
+                        },
+                        {
+                            "name": "lat",
+                            "defaultValue": "10",
+                            "regexpValidator": "^[\\d\\.\\+-eE]+$"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "routing",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/roaddisplay.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "the_geom",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "routing",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/shortest_paths.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "the_geom",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    },
+                    "parameters": [
+                        {
+                            "name": "source",
+                            "defaultValue": "1",
+                            "regexpValidator": "^[\\d]+$"
+                        },
+                        {
+                            "name": "target",
+                            "defaultValue": "10",
+                            "regexpValidator": "^[\\d]+$"
+                        }
+                    ]
+                }
+            }
+        },
+        
+        {
+            "type": "raster",
+            "name": "elevation",
+            "skip": false,
+            "subdirectory": "elevation",
+            "sql": "@/inputs/data/kingslynn/sql/elevation.sql",
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "elevation"
+                }
+            }
+        },
+        {
+            "type": "raster",
+            "name": "population",
+            "skip": false,
+            "subdirectory": "population",
+            "sql": "@/inputs/data/kingslynn/sql/tripcentrality.sql",
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "elevation"
+                }
+            }
+        },
+        {
+            "type": "tabular",
+            "skip": false,
+            "sql": "@/inputs/data/kingslynn/sql/grid_primary_site.sql",
+            "table": "grid_primary_site",
+            "subdirectory": "grid_primary_site"
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "flood_polygon_single",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "select * from flood_polygon_single",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "MultiPolygon",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "isochrone_hospital_unflooded",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "select * from isochrone_hospital_unflooded",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "isochrone_polygon",
+                        "type": "Polygon",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "isochrone_hospital_flooded",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "select * from isochrone_hospital_flooded",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "isochrone_polygon",
+                        "type": "Polygon",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "isochrone_hospital_unflooded",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "select * from isochrone_hospital_unflooded",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "isochrone_polygon",
+                        "type": "Polygon",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "tsp_visualization",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/virtualTables/tsp_visualization.sql",
+                    "escapeSql": false
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "tsp_nodes",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/virtualTables/tsp_nodes.sql",
+                    "escapeSql": false
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "routing_pointofinterest_published",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/virtualTables/routing_pointofinterest.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "Point",
+                        "srid": 4326
+                    },
+                    "parameters": [
+                        {
+                            "name": "source",
+                            "defaultValue": "52",
+                            "regexpValidator": "^^[\\w\\d\\s]+$"
+                        },
+                        {
+                            "name": "target",
+                            "defaultValue": "4",
+                            "regexpValidator": "^[\\w\\d\\s]+$"
+                        }
+                    ]
+                }
+            }
+        }
+    ],
+    "staticGeoServerData": {
+        "iconsDir": "icons"
+    }
+}
