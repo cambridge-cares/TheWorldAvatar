@@ -1,10 +1,11 @@
+import os
 from flask import Flask, render_template, request
 
 from services import KgClient, TranslationClient
 
 app = Flask(__name__)
 
-translation_client = TranslationClient()
+translation_client = TranslationClient(triton_endpoint=os.environ.get("TRITON_ENDPOINT", "localhost:8000"))
 kg_client = KgClient()
 
 

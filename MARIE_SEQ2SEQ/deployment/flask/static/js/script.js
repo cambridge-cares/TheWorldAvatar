@@ -14,7 +14,7 @@ let is_processing = false;
 
 function display_results(data) {
     let content = "<table class='table table-sm table-hover'><thead><tr>"
-    
+
     let vars = data["head"]["vars"].slice();
     let is_var_used = new Array(vars.length).fill(false);
 
@@ -54,6 +54,8 @@ function askQuestion() {
     if (is_processing) { // No concurrent questions
         return;
     }
+
+    $('#search-result').empty()
 
     const question = $("#input-field").val();
     if (question === "") {

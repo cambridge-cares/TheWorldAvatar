@@ -4,8 +4,13 @@ from SPARQLWrapper import POST, SPARQLWrapper, JSON
 
 
 class TranslationClient:
-    def __init__(self, triton_endpoint: str = "0.0.0.0:8000"):
+    def __init__(self, triton_endpoint: str = "localhost:8000"):
+        print("Connecting to " + triton_endpoint)
         self.client = httpclient.InferenceServerClient(url=triton_endpoint)
+        if self.client.is_model_ready("translation"):
+            print("Translation server is ready")
+        else:
+            print("There are issues connecting to translation server")
 
     def translate(self, text: str):
         text = np.array(
