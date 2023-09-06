@@ -18,8 +18,12 @@ def home():
 def ask():
 	data = request.get_json()
 	question = data.get("question")
+	app.logger.info("Question received: " + str(question))
 
-	sparql_query = translation_client.translate(question).get("sparql_query")
+	translation_result = translation_client.translate(question)
+	app.logger.info("Translation result: " + str(translation_result))
+
+	sparql_query = translation_result.get("sparql_query")
 	results = kg_client.query(sparql_query)
 
 	return results
