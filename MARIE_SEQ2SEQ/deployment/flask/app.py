@@ -23,10 +23,14 @@ def ask():
 	translation_result = translation_client.translate(question)
 	app.logger.info("Translation result: " + str(translation_result))
 
-	sparql_query = translation_result.get("sparql_query")
-	results = kg_client.query(sparql_query)
+	sparql_query = translation_result.get("sparql_query").strip()
+	if sparql_query:
+		data = kg_client.query(sparql_query)
+	else:
+		sparql_query = None
+		data = None
 
-	return results
+	return dict(question=question, sparql_query=sparql_query, data=data)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 import numpy as np
 import tritonclient.http as httpclient
-from SPARQLWrapper import POST, SPARQLWrapper, JSON
+from SPARQLWrapper import SPARQLWrapper, SPARQLExceptions, POST, JSON
 
 
 class TranslationClient:
@@ -70,9 +70,12 @@ class KgClient:
             }
         }
         """
-        query = query.strip()
         if not query.startswith("PREFIX"):
             query = self.QUERY_PREFIXES + query
 
         self.sparql.setQuery(query)
-        return self.sparql.queryAndConvert()
+
+        try:
+            return self.sparql.queryAndConvert()
+        except SPARQLExceptions.QueryBadFormed:
+            return None

@@ -21,7 +21,16 @@ for (let elem of sampleQuestions) {
 
 let is_processing = false;
 
+function display_sparql_query(sparql_query) {
+    $('#sparql-query').append(sparql_query);
+    document.getElementById('sparql-query-container').style.display = "block";
+}
+
 function display_results(data) {
+    if (!data) {
+        // TODO
+        return
+    }
     let content = "<table class='table table-sm table-hover'><thead><tr>"
 
     let vars = data["head"]["vars"].slice();
@@ -56,7 +65,7 @@ function display_results(data) {
     })
 
     content += "</tbody></table>"
-    $('#search-result').append(content);
+    $('#results').append(content);
 }
 
 function askQuestion() {
@@ -64,15 +73,17 @@ function askQuestion() {
         return;
     }
 
-    $('#search-result').empty()
-
     const question = $("#input-field").val();
     if (question === "") {
         return;
     }
 
+    document.getElementById('sparql-query-container').style.display = "none";
+
+    $('#results').empty()
+    $('#sparql-query').empty()
+
     is_processing = true;
-    console.log(is_processing)
     document.getElementById('ask-button').className = "mybutton spinner"
 
     $.ajax({
@@ -81,8 +92,9 @@ function askQuestion() {
         data: JSON.stringify({ question }),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
-        success: function (data) {
-            display_results(data)
+        success: function (response) {
+            display_sparql_query(response["sparql_query"])
+            display_results(response["data"])
             is_processing = false;
             document.getElementById('ask-button').className = "mybutton"
         },
