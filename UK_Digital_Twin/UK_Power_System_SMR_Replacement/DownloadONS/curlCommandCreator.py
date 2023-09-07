@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 15 August 2023       #
+# Last Update Date: 07 Sept 2023         #
 ##########################################
 
 """This module is designed to create the curl command for downloading the triples"""
@@ -10,6 +10,10 @@ BASE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 sys.path.insert(0, BASE) 
 from UK_Digital_Twin_Package.queryInterface import performQuery
 from pyderivationagent.kg_operations.sparql_client import PySparqlClient
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endPointList
+
+with open('config.json', 'r') as config_file:
+    config_data = json.load(config_file)
 
 def curlCommandCreator(totalNumberOfTriples:int, interval:int, queryEndpoint:str, constructStr:str, fileName:str, batFileSavedPath:str, removedLines:int = 0):
     if interval > totalNumberOfTriples:
@@ -166,12 +170,6 @@ def queryLocalCode(startTime_of_EnergyConsumption, UKDigitalTwinEndPoint_iri):
                 r[key] = (r[key].split('\"^^')[0]).replace('\"','') 
     LAList = []
 
-    ## Only LA code within England
-    # for r in res:
-    #     if r['Area_LACode'][0] == 'E' and not int(r['Area_LACode'][1] + r['Area_LACode'][2]) >= 11:
-    #         LAList.append(r['Area_LACode'])      
-
-
     ## Eliminate the North Ireland and LA code represents the 
     for r in res:
         if r['Area_LACode'][0] != 'K' and r['Area_LACode'][0] != 'N':
@@ -179,7 +177,7 @@ def queryLocalCode(startTime_of_EnergyConsumption, UKDigitalTwinEndPoint_iri):
 
     return LAList          
 
-def uploadONSFile(numOfFile:int, filePath:str, fileName:str, extension:str, stratNum:int, interval:int, updateEndpointIRI:str, givenIndexList:[]):
+def uploadONSFile(numOfFile:int, filePath:str, fileName:str, extension:str, stratNum:int, interval:int, updateEndpointIRI:str, givenIndexList:[], withEXTENSION:bool):
     if filePath[-1:] != "/": 
         filePath = filePath + '/'
     if extension[0] != ".":
@@ -187,16 +185,26 @@ def uploadONSFile(numOfFile:int, filePath:str, fileName:str, extension:str, stra
 
     if len(givenIndexList) != 0:
         for index in givenIndexList:
-            filepath_ = filePath + fileName + str(index) + extension
-            # os.rename(filepath_, filepath_ + extension)
-            sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
-            sparql_client.uploadOntology(filepath_) # + extension)
+            if withEXTENSION is True:
+                filepath_ = filePath + fileName + str(index)
+                os.rename(filepath_, filepath_ + extension)
+                sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
+                sparql_client.uploadOntology(filepath_ + extension)
+            else:
+                filepath_ = filePath + fileName + str(index) + extension
+                sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
+                sparql_client.uploadOntology(filepath_)
     else:
         for i in range(numOfFile):
-            filepath_ = filePath + fileName + str(stratNum + interval * i) # + extension
-            os.rename(filepath_, filepath_ + extension)
-            sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
-            sparql_client.uploadOntology(filepath_ + extension)
+            if withEXTENSION is True:
+                filepath_ = filePath + fileName + str(stratNum + interval * i) 
+                os.rename(filepath_, filepath_ + extension)
+                sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
+                sparql_client.uploadOntology(filepath_ + extension)
+            else:
+                filepath_ = filePath + fileName + str(stratNum + interval * i) + extension
+                sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
+                sparql_client.uploadOntology(filepath_)
 
     print('--The upload of %s is done.--'%fileName)
     return 
@@ -238,6 +246,11 @@ if __name__ == '__main__':
 
     # curlQueryFOROBSOLETE(LACodeList, queryEndpoint, fileName, batFileSavedPath)
 
+    ##-- curl the triples describes the areas within K03000001 --##
+    # queryEndpoint = "https://statistics.data.gov.uk/sparql"
+    # lacodelist = queryLocalCode("2017-01-31", "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql")
+    # filePath = "/mnt/d/wx243/FromTWA/ONSBatFile/"
+    # findWITHINK03(lacodelist, queryEndpoint, "withinGB", filePath)
 
     ###-- The new within sub set --##
     # queryEndpoint = "https://statistics.data.gov.uk/sparql"
@@ -249,58 +262,60 @@ if __name__ == '__main__':
     # curlQueryFORWITHIN_withClearPath(res_record, queryEndpoint, fileName, batFileSavedPath)
     # # curlQueryFORWITHIN(queryStr, lacodelist, queryEndpoint, fileName, batFileSavedPath)
 
+    ## Update Endpoint IRI
+    updateEndpointIRI = endPointList.ONS['endpoint_iri']
+    withEXTENSION = endPointList.ONS['with_ttl']
 
-    ###-- upload the area bounderies and LA code --###
-    # filePath = "/mnt/d/wx243/FromTWA/ONS_KG/ONSKG_AreaBoundariesAndLACode/"
-    # fileName = "onsareaboundariesandlacode"
-    # numOfFile = 344
-    # stratNum = 1000
-    # interval = 1000
-    # updateEndpointIRI = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ONS_subset/sparql"
-    # givenIndexList = [219500, 219750, 280250, 280375, 280500, 281125, 281190, 281250, 281500, 281625, 281750, 317500, 318500, 319500, 321500, 322500, 323500]
+    ##-- upload the area bounderies and LA code --###
+    filePath = config_data['path'] + "/ONSKG_AreaBoundariesAndLACode/"
+    fileName = "onsareaboundariesandlacode"
+    numOfFile = 344
+    stratNum = 1000
+    interval = 1000
+    givenIndexList = []
+    uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList, withEXTENSION)  
 
+    filePath = config_data['path'] + "/ONSKG_AreaBoundariesAndLACode/"
+    fileName = "onsareaboundariesandlacode"
+    numOfFile = 344
+    stratNum = 1000
+    interval = 1000
+    givenIndexList = [219500, 219750, 280250, 280375, 280500, 281125, 281190, 281250, 281500, 281625, 281750, 317500, 318500, 319500, 321500, 322500, 323500]
+    uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList, withEXTENSION)  
 
-    ##-- upload the ONSKG_WithinRelations --## 
-    # filePath = "/mnt/d/wx243/FromTWA/ONS_KG/ONSKG_WithinRelations/"
-    # fileName = "ONSwithinSubset"
-    # numOfFile = 309
-    # stratNum = 0
-    # interval = 1
-    # updateEndpointIRI = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ONS_subset/sparql"
-    # givenIndexList = []
+    #-- upload the ONSKG_WithinRelations --## 
+    filePath = config_data['path'] + "/ONSKG_WithinRelations/"
+    fileName = "ONSwithinSubset"
+    numOfFile = 309
+    stratNum = 0
+    interval = 1
+    givenIndexList = []
+    uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList, withEXTENSION)  
 
-    ##-- upload the ONSKG_WithinRelations --## 
-    # filePath = "/mnt/d/wx243/FromTWA/ONS_KG/ONSKG_AreaCode/"
-    # fileName = "onsareacode"
-    # numOfFile = 11
-    # stratNum = 50000
-    # interval = 50000
-    # updateEndpointIRI = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ONS_subset/sparql"
-    # givenIndexList = []
+    #-- upload the ONSKG_WithinRelations --## 
+    filePath = config_data['path'] + "/ONSKG_AreaCode/"
+    fileName = "onsareacode"
+    numOfFile = 11
+    stratNum = 50000
+    interval = 50000
+    givenIndexList = []
+    uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList, withEXTENSION)  
 
-    ##-- upload the ONSKG_WithinRelations --## 
-    # filePath = "/mnt/d/wx243/FromTWA/ONS_KG/ONSObsolete/"
-    # fileName = "onsOBSOLETE"
-    # numOfFile = 7
-    # stratNum = 0
-    # interval = 1
-    # updateEndpointIRI = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ONS_subset/sparql"
-    # givenIndexList = []
-    # uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList)
-
-    ##-- curl the triples describes the areas within K03000001 --##
-    # queryEndpoint = "https://statistics.data.gov.uk/sparql"
-    # lacodelist = queryLocalCode("2017-01-31", "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql")
-    # filePath = "/mnt/d/wx243/FromTWA/ONSBatFile/"
-    # findWITHINK03(lacodelist, queryEndpoint, "withinGB", filePath)
+    #-- upload the ONSKG_WithinRelations --## 
+    filePath = config_data['path'] + "/ONSObsolete/"
+    fileName = "onsOBSOLETE"
+    numOfFile = 7
+    stratNum = 0
+    interval = 1
+    givenIndexList = []
+    uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList, withEXTENSION)  
 
     ##-- upload the ONSKG_WithinK03000001 (GB) --## 
-    filePath = "/mnt/d/wx243/FromTWA/ONS_KG/WithinGB/"
+    filePath = config_data['path'] + "/WithinGB/"
     fileName = "withinGB"
     numOfFile = 392
     stratNum = 0
     interval = 1
-    updateEndpointIRI = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ONS_subset/sparql"
     givenIndexList = []
-    uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList)
+    uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList, withEXTENSION)
     
