@@ -1,11 +1,14 @@
 import os
+import time
 from flask import Flask, render_template, request
 
 from services import KgClient, TranslationClient
 
 app = Flask(__name__)
 
-translation_client = TranslationClient(triton_endpoint=os.environ.get("TRITON_ENDPOINT", "localhost:8000"))
+translation_client = TranslationClient(
+    triton_endpoint=os.environ.get("TRITON_ENDPOINT", "localhost:8000")
+)
 kg_client = KgClient()
 
 
@@ -16,21 +19,31 @@ def home():
 
 @app.route("/", methods=["POST"])
 def ask():
-	data = request.get_json()
-	question = data.get("question")
-	app.logger.info("Question received: " + str(question))
+    data = request.get_json()
+    question = data.get("question")
+    app.logger.info("Question received: " + str(question))
 
-	translation_result = translation_client.translate(question)
-	app.logger.info("Translation result: " + str(translation_result))
+    start_trans = time.time()
+    translation_result = translation_client.translate(question)
+    end_trans = time.time()
+    app.logger.info("Translation result: " + str(translation_result))
 
-	sparql_query = translation_result.get("sparql_query").strip()
-	if sparql_query:
-		data = kg_client.query(sparql_query)
-	else:
-		sparql_query = None
-		data = None
+    sparql_query = translation_result.get("sparql_query").strip()
+    start_kg = time.time()
+    if sparql_query:
+        data = kg_client.query(sparql_query)
+    else:
+        sparql_query = None
+        data = None
+    end_kg = time.time()
 
-	return dict(question=question, sparql_query=sparql_query, data=data)
+    return dict(
+        question=question,
+        sparql_query=sparql_query,
+        data=data,
+        translation_latency=end_trans - start_trans,
+        kg_latency=end_kg - start_kg,
+    )
 
 
 if __name__ == "__main__":

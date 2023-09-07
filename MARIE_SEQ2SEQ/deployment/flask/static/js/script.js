@@ -1,13 +1,20 @@
 const sampleQuestions = document.getElementsByClassName("sample-question");
 for (let elem of sampleQuestions) {
     elem.addEventListener("click", function () {
-        document.getElementById('input-field').value = elem.textContent
+        const question = elem.textContent.match(/\S+/g).join(" ")
+        document.getElementById('input-field').value = question
         window.scrollTo(0, 0);
         askQuestion();
     })
 }
 
 let is_processing = false;
+
+function display_latency_info(trans_latency, kg_latency) {
+    elem = document.getElementById("latency-info")
+    elem.innerHTML = `<p style="margin: auto;">Translation latency: ${trans_latency.toFixed(2)}s.</p><p style="margin: auto;">SPARQL query execution latency: ${kg_latency.toFixed(2)}s.</p>`
+    elem.style.display = "block";
+}
 
 function display_sparql_query(sparql_query) {
     document.getElementById("sparql-query").innerHTML = sparql_query;
@@ -65,6 +72,7 @@ class HttpError extends Error {
 }
 
 function hideElems() {
+    document.getElementById("latency-info").style.display = "none";
     document.getElementById('sparql-query-container').style.display = "none";
     document.getElementById("error-container").style.display = "none"
 
@@ -100,6 +108,7 @@ function askQuestion() {
         }
         return res.json()
     }).then(json => {
+        display_latency_info(json["translation_latency"], json["kg_latency"])
         display_sparql_query(json["sparql_query"])
         display_results(json["data"])
     }).catch(error => {
@@ -116,8 +125,8 @@ function askQuestion() {
 
 
 function display500Error() {
-    errorElem = document.getElementById("error-container")
-    errorElem.innerHTML = "An internal server error is encountered. Please try again."
-    errorElem.style.color = "red"
-    errorElem.style.display = "block"
+    elem = document.getElementById("error-container")
+    elem.innerHTML = "An internal server error is encountered. Please try again."
+    elem.style.color = "red"
+    elem.style.display = "block"
 }
