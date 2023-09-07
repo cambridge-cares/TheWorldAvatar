@@ -63,7 +63,90 @@ class CsvMaker:
     return output
     pass # CsvMaker.arrInit()
 
+  def arrTransform( self, zeoname ):
+    print( "arrTransform started" )
+
+    output = []
+
+    uuidDB = tools.loadUUID( )
+
+    path = os.path.join( "CIF", zeoname.upper() + ".cif")
+    #dataIn = tools.readCsv( path )
+    if not os.path.isfile( path ):
+      logging.error( "File not found '" + path + "'." )
+      return
+
+    structure = Structure.from_file( path )
+    #uuid_zeolite = tools.getUUID( uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
+    uuid_cif = tools.getUUID( uuidDB, "CIFCore", "ZeoliteCIF_" + zeoname )
+
+    uuid_cif_core_trans = tools.getUUID( uuidDB, "CIFCoreTransform", "ZeoliteCIFCoreTransform_" + zeoname )
+    output.append( [ uuid_cif_core_trans, "Instance", "CIFCoreTransform", "", "", "" ] )
+    output.append( [ uuid_cif, "instance", uuid_cif_core_trans,  
+                     self.ontoPrefix + "hasCifCoreTransformation", "", "" ] )
+
+    uuid_m_frac_to_cart = tools.getUUID( uuidDB, "CIFCoreTransformationMatrixToCartesian", 
+                        "ZeoliteCIFTransformationMatrixToCartesian_" + zeoname )
+    output.append( [ uuid_m_frac_to_cart, "Instance", 
+                           "CIFCoreTransformationMatrixToCartesian", "", "", "" ] )
+    output.append( [ uuid_cif_core_trans, "instance", uuid_m_frac_to_cart,  
+                     self.ontoPrefix + "hasTransformationMatrixToCartesian", "", "" ] )
+
+    output.append( [ uuid_m_frac_to_cart, "Instance", 
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                      "", "" ] )
+
+    dirs = "xyz"
+    for iy in range(3):
+        for ix in range(3):
+            uuid_m_comp = tools.getUUID( uuidDB, "MatrixComponent", 
+                        "MatrixComponent"+str(ix)+str(iy)+"_" + zeoname )
+            output.append( [ uuid_m_comp, "Instance", 
+                           "CIFCoreTransformationMatrixToCartesian", "", "", "" ] )
+            output.append( [ uuid_m_frac_to_cart, "instance", uuid_m_comp,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+
+
+            output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                             uuid_m_comp, "", dirs[ix]+dirs[iy], "string" ] )
+
+            #output.append( [ self.ontoPrefix + "hasColumn", "Data Property", 
+            #                 uuid_m_comp, "", ix, "integer" ] )
+
+            output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+                             uuid_m_comp, "", 
+                             round(structure.lattice.matrix[ix][iy], 12), "decimal" ] )
+
+    tools.saveUUID( uuidDB )
+
+    return output
+    pass # CsvMaker.arrTransform()
+ 
   def arrAtomSite( self, zeoname ):
+    logging.warning( "arrAtomSite() is not implemented yet" )
+
+    output = []
+
+    uuidDB = tools.loadUUID( )
+
+    path = os.path.join( "CIF", zeoname.upper() + ".cif")
+    #dataIn = tools.readCsv( path )
+    if not os.path.isfile( path ):
+      logging.error( "File not found '" + path + "'." )
+      return
+
+    structure = Structure.from_file( path )
+
+    uuid_zeolite = tools.getUUID( uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
+
+    uuid_cif = tools.getUUID( uuidDB, "CIFCore", "ZeoliteCIF_" + zeoname )
+ 
+
+    return output
+    pass # CsvMaker.arrAtomSite()
+
+  def arrUnitCell( self, zeoname ):
     output = []
     TWOPI = 2 * math.pi
 
@@ -86,7 +169,6 @@ class CsvMaker:
 
     # Define class instances:
     uuid_zeolite = tools.getUUID( uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
-    #output.append( [ uuid_zeolite, "Instance", "ZeoliteFramework", "", "", "" ] )
  
     #output.append( [ self.ontoPrefix + "hasZeoliteCode", "Data Property", 
     #                 uuid_zeolite, "", zeoname.strip(' "'), "string" ] )
@@ -98,7 +180,7 @@ class CsvMaker:
     output.append( [ uuid_cif_uc, "Instance", "CIFCoreCell", "", "", "" ] )
 
     # Define relation between the class instances:
-    output.append( [ uuid_zeolite, "Instance", uuid_cif,  
+    output.append( [ uuid_zeolite, "instance", uuid_cif,  
                      self.ontoPrefix + "hasCIF", "", "" ] )
 
     output.append( [ uuid_cif, "Instance", uuid_cif_uc,  
@@ -642,7 +724,7 @@ class CsvMaker:
     tools.saveUUID( uuidDB )
 
     return output
-    pass # CsvMaker.arrAtomSite()
+    pass # CsvMaker.arrUnitCell()
 
   def arrTiles( self, zeoname ):
     output = []
@@ -652,18 +734,9 @@ class CsvMaker:
     path = os.path.join( self.inputDir, "Tile-signature-2023.csv" )
     dataIn = tools.readCsv( path )
 
-    #print( dataIn )
     data = tilesignature.getDataByCode( dataIn, zeoname )
-    #print( data)
-
-    baseName = self.ontoBase + "-" + zeoname
 
     uuid_zeolite = tools.getUUID( uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
-    #output.append( [ uuid_zeolite, "Instance", "ZeoliteFramework", "", "", "" ] )
-
-    #output.append( [ self.ontoPrefix + "hasZeoliteCode", "Data Property", 
-    #                 uuid_zeolite, "", zeoname.strip(' "'), "string" ] )
-
 
     uuid_tstructure = tools.getUUID( uuidDB, "TiledStructure", "TiledStructure_" + zeoname )
     output.append( [ uuid_tstructure, "Instance", "TiledStructure",
@@ -788,7 +861,6 @@ class CsvMaker:
                        #"http://www.w3.org/2001/XMLSchema#integer" ] )
 
 
-
       faces = tilesignature.cageToFaces( cage[1] )
 
       for f, face in enumerate(faces):
@@ -875,8 +947,10 @@ class CsvMaker:
     for z in self.zeoList:
       #print( "In zeolist z =", z )
       arr  = self.arrInit( z )
-      arr += self.arrTiles( z )
-      arr += self.arrAtomSite( z )
+      #arr += self.arrTiles( z )
+      arr += self.arrUnitCell( z )
+      #arr += self.arrAtomSite( z )
+      arr += self.arrTransform( z )
 
       #print( "arr =", arr )
       #csvWrite( arr )
