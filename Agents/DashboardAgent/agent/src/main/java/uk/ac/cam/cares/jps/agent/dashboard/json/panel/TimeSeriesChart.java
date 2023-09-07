@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.agent.dashboard.json.panel;
 
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -15,6 +17,7 @@ class TimeSeriesChart {
     private final String DESCRIPTION;
     private final String DATABASE_CONNECTION_ID;
     private final StringBuilder QUERY_SYNTAX = new StringBuilder();
+    private final StringBuilder FIELD_COLUMN_INDEX = new StringBuilder();
     private final StringBuilder FIELD_COLUMN_MAPPING = new StringBuilder();
 
     /**
@@ -41,11 +44,17 @@ class TimeSeriesChart {
                 // Custom csv parameter must be lower case with no spacing ie: measurenameassetname
                 .append(StringHelper.formatVariableName(measure)).append(StringHelper.formatVariableName(assetType)).append(":csv} ")
                 .append("FROM \\\"").append(tableName).append("\\\" WHERE $__timeFilter(time)");
+        // Sort the mappings based on their asset/room names
+        Collections.sort(timeSeriesMetadata, Comparator.comparing(metadata -> metadata[0]));
+        this.FIELD_COLUMN_INDEX.append("\"time\": 0"); // Ensure time is added as the first index
+        int indexCounter= 1; // Index should start from one and increment by 1
         for (String[] metadata : timeSeriesMetadata) {
             // Only append a comma at the start if it is not the first set
             if (this.FIELD_COLUMN_MAPPING.length() != 0) this.FIELD_COLUMN_MAPPING.append(", ");
             // Append in format of \"columnName\":\"assetName\"
             this.FIELD_COLUMN_MAPPING.append("\"").append(metadata[1]).append("\":\"").append(metadata[0]).append("\"");
+            // Append with a comma before in format of \"columnName\":indexNumber
+            this.FIELD_COLUMN_INDEX.append(",\"").append(metadata[1]).append("\":").append(indexCounter++);
         }
     }
 
@@ -109,7 +118,10 @@ class TimeSeriesChart {
                 .append("\"rawSql\":\"").append(this.QUERY_SYNTAX).append("\"}],")
                 // Rename fields from their columns to asset name
                 .append("\"transformations\": [{ \"id\": \"organize\",")
-                .append("\"options\": {\"renameByName\": {").append(this.FIELD_COLUMN_MAPPING).append("}}")
+                .append("\"options\": {")
+                .append("\"excludeByName\": {},")
+                .append("\"indexByName\": {").append(this.FIELD_COLUMN_INDEX).append("},")
+                .append("\"renameByName\": {").append(this.FIELD_COLUMN_MAPPING).append("}}")
                 .append("}]")
                 .append("}");
         return builder.toString();
