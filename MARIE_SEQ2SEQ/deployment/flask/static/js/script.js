@@ -26,7 +26,7 @@ function displayResults(data) {
         displayError("The predicted SPARQL query is malformed and cannot be executed against the OntoSpecies knowledge graph.")
         return
     }
-    let content = "<table class='table table-sm table-hover'><thead><tr>"
+    let content = "<table id='results-table' class='table table-striped table-bordered'><thead><tr>"
 
     let vars = data["head"]["vars"].slice();
     let is_var_used = new Array(vars.length).fill(false);
@@ -62,6 +62,9 @@ function displayResults(data) {
 
     content += "</tbody></table>"
     document.getElementById("results").innerHTML = content;
+
+    // create paginated table
+    new DataTable('#results-table');
 }
 
 class HttpError extends Error {
