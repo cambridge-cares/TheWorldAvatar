@@ -4,14 +4,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -19,6 +17,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.addasset.model.AddAssetViewModel;
@@ -26,6 +25,7 @@ import uk.ac.cam.cares.jps.addasset.model.AssetPropertyDataModel;
 import uk.ac.cam.cares.jps.addasset.view.DataSheetItemView;
 import uk.ac.cam.cares.jps.addasset.view.PropertyAutoCompleteTextView;
 import uk.ac.cam.cares.jps.addasset.view.PropertyGeneralInputTextView;
+import uk.ac.cam.cares.jps.data.OtherInfoModel;
 
 @AndroidEntryPoint
 public class TabFragment extends Fragment {
@@ -41,8 +41,7 @@ public class TabFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         BasicConfigurator.configure();
-//        ScrollView scrollView = new ScrollView(inflater.getContext());
-        NestedScrollView scrollView = new NestedScrollView(inflater.getContext());
+        ScrollView scrollView = new ScrollView(inflater.getContext());
         scrollView.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
@@ -76,6 +75,9 @@ public class TabFragment extends Fragment {
             View inputText;
             if (property.getType().equals(AssetPropertyDataModel.ViewType.DROP_DOWN)) {
                 inputText = new PropertyAutoCompleteTextView(requireContext(), property);
+                viewModel.getDropDownLiveDataByKey(property.getFieldName()).observe(this.getViewLifecycleOwner(), options -> {
+                    ((PropertyAutoCompleteTextView) inputText).updateAdapterList(options);
+                });
             } else {
                 inputText = new PropertyGeneralInputTextView(requireContext(), property);
             }
@@ -101,5 +103,6 @@ public class TabFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        viewModel.requestAllDropDownOptionsFromRepository();
     }
 }

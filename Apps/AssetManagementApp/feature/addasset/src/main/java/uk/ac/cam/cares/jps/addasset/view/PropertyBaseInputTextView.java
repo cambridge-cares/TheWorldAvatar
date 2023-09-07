@@ -24,6 +24,7 @@ abstract public class PropertyBaseInputTextView extends RelativeLayout {
 
     TextInputLayout inputLayout;
     EditText editText;
+    String propertyName; // debug use
 
     public PropertyBaseInputTextView(Context context) {
         super(context);
@@ -36,6 +37,8 @@ abstract public class PropertyBaseInputTextView extends RelativeLayout {
     // Subclass of this class should have input_layout for InputLayout and edit_text for EditText type
     public PropertyBaseInputTextView(Context context, int layoutId, AssetPropertyDataModel property) {
         super(context);
+        propertyName = property.getFieldName();
+
         View view = inflate(getContext(), layoutId, this);
         inputLayout = view.findViewById(R.id.input_layout);
         if (property.isRequired()) {

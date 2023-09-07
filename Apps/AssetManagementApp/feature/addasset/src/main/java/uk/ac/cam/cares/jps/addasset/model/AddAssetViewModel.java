@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.addasset.model;
 
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.*;
 
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import org.apache.log4j.BasicConfigurator;
@@ -9,24 +10,28 @@ import org.apache.log4j.BasicConfigurator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import uk.ac.cam.cares.jps.data.OtherInfoModel;
+import uk.ac.cam.cares.jps.data.OtherInfoRepository;
+import uk.ac.cam.cares.jps.data.RepositoryCallback;
 
 @HiltViewModel
 public class AddAssetViewModel extends ViewModel {
+    OtherInfoRepository repository;
 
     public Map<String, List<AssetPropertyDataModel>> getInputFieldsBySection() {
         return inputFieldsBySection;
     }
 
     private final Map<String, List<AssetPropertyDataModel>> inputFieldsBySection = new LinkedHashMap<>();
+    private final Map<String, MutableLiveData<List<OtherInfoModel>>> dropDownOptionsMap = new HashMap<>();
 
     public final List<String> INPUT_TEXT_SECTIONS = new ArrayList<>();
     public final List<String> DATA_SHEET_SECTIONS = new ArrayList<>();
@@ -38,11 +43,14 @@ public class AddAssetViewModel extends ViewModel {
     private final List<String> multiLineInputFieldKeys = Arrays.asList(ITEM_DESCRIPTION, SERVICE_CODE_DESCRIPTION, SERVICE_CATEGORY_DESCRIPTION);
 
     @Inject
-    AddAssetViewModel() {
+    AddAssetViewModel(OtherInfoRepository repository) {
         BasicConfigurator.configure();
         initInputFieldsDataModel();
         initInputTextSections();
         initDataSheetSections();
+        initDropDownLiveData();
+
+        this.repository = repository;
     }
 
     private void initInputFieldsDataModel() {
@@ -70,6 +78,12 @@ public class AddAssetViewModel extends ViewModel {
         DATA_SHEET_SECTIONS.add(MANUAL);
     }
 
+    private void initDropDownLiveData() {
+        for (String key : dropDownFieldKeys) {
+            dropDownOptionsMap.put(key, new MutableLiveData<>());
+        }
+    }
+
     private List<AssetPropertyDataModel> getInputFieldListForSection(List<String> fieldKeys) {
         List<AssetPropertyDataModel> results = new ArrayList<>();
         for (String key : fieldKeys) {
@@ -91,5 +105,23 @@ public class AddAssetViewModel extends ViewModel {
             results.add(assetPropertyDataModel);
         }
         return results;
+    }
+
+    public void requestAllDropDownOptionsFromRepository() {
+        repository.getTypes(new RepositoryCallback() {
+            @Override
+            public void onSuccess(Object result) {
+                dropDownOptionsMap.get(TYPE).postValue((List<OtherInfoModel>) result);
+            }
+
+            @Override
+            public void onFailure(Throwable error) {
+                // do nothing, update failed, or notify user?
+            }
+        });
+    }
+
+    public MutableLiveData<List<OtherInfoModel>> getDropDownLiveDataByKey(String key) {
+        return dropDownOptionsMap.get(key);
     }
 }
