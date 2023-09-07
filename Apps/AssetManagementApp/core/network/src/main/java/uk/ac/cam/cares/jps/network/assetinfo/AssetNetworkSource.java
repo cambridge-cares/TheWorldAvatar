@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.network;
+package uk.ac.cam.cares.jps.network.assetinfo;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -15,6 +15,9 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 
 import javax.inject.Inject;
+
+import uk.ac.cam.cares.jps.network.Connection;
+import uk.ac.cam.cares.jps.network.NetworkConfiguration;
 
 public class AssetNetworkSource {
 

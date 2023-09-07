@@ -6,8 +6,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import uk.ac.cam.cares.jps.network.AssetInfoModel;
-import uk.ac.cam.cares.jps.network.AssetNetworkSource;
+import uk.ac.cam.cares.jps.network.assetinfo.AssetInfoModel;
+import uk.ac.cam.cares.jps.network.assetinfo.AssetNetworkSource;
 
 public class AssetInfoRepository {
 

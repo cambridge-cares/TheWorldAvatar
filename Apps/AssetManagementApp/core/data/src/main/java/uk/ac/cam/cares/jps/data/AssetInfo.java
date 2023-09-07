@@ -2,7 +2,7 @@ package uk.ac.cam.cares.jps.data;
 
 import java.util.HashMap;
 
-import uk.ac.cam.cares.jps.network.AssetInfoModel;
+import uk.ac.cam.cares.jps.network.assetinfo.AssetInfoModel;
 
 public class AssetInfo {
     HashMap<String, String> properties;

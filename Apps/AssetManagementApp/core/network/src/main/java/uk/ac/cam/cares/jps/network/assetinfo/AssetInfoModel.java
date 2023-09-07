@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.network;
+package uk.ac.cam.cares.jps.network.assetinfo;
 
 import java.util.HashMap;
 

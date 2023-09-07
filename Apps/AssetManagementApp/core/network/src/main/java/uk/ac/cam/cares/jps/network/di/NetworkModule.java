@@ -7,9 +7,9 @@ import dagger.Provides;
 import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
-import uk.ac.cam.cares.jps.network.AssetNetworkSource;
+import uk.ac.cam.cares.jps.network.assetinfo.AssetNetworkSource;
 import uk.ac.cam.cares.jps.network.Connection;
-import uk.ac.cam.cares.jps.network.MailNetworkSource;
+import uk.ac.cam.cares.jps.network.mail.MailNetworkSource;
 
 @Module
 @InstallIn(SingletonComponent.class)

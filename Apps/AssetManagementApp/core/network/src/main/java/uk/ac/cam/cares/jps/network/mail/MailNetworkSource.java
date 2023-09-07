@@ -1,8 +1,10 @@
-package uk.ac.cam.cares.jps.network;
+package uk.ac.cam.cares.jps.network.mail;
 
 import org.apache.log4j.BasicConfigurator;
 
 import javax.inject.Inject;
+
+import uk.ac.cam.cares.jps.network.Connection;
 
 public class MailNetworkSource {
 
