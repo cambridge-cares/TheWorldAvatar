@@ -24,6 +24,7 @@ public class OSMAgent extends JPSAgent {
     public String pointTable;
     public String polygonTable;
     public String landUseTable;
+    public static final String usageTable = "usage.usage";
 
     public void init() {
         readConfig();
@@ -49,8 +50,9 @@ public class OSMAgent extends JPSAgent {
             GeometryMatcher geometryMatcher = new GeometryMatcher(dbUrl, dbUser, dbPassword);
             geometryMatcher.matchGeometry(pointTable);
             geometryMatcher.matchGeometry(polygonTable);
-            UsageShareCalculator.updateUsageShare(dbUrl, dbUser, dbPassword, pointTable, polygonTable);
-            UsageShareCalculator.updateLandUse(dbUrl, dbUser, dbPassword, pointTable, polygonTable, landUseTable);
+            UsageMatcher.copyFromOSM(dbUrl, dbUser, dbPassword, pointTable, polygonTable, usageTable);
+            UsageShareCalculator.updateLandUse(dbUrl, dbUser, dbPassword, usageTable, landUseTable);
+            UsageShareCalculator.updateUsageShare(dbUrl, dbUser, dbPassword, usageTable);
         }
         catch (Exception e) {
             e.printStackTrace();
