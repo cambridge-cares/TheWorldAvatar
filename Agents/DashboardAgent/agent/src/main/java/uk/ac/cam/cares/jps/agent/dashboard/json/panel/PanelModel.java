@@ -25,42 +25,27 @@ public class PanelModel {
      * @param timeSeries            A map of all assets and rooms mapped to their time series.
      */
     public PanelModel(Map<String, String> databaseConnectionMap, Map<String, Map<String, List<String[]>>> timeSeries) {
-        // Initialise a queue to store these panels
-        Queue<TimeSeriesChart> panelQueue = new ArrayDeque<>();
         // Row numbers to compute x positions; Starts from 0
-        int rowNumber = 0; // Each row correspond to one asset type
-        // Generate a panel for each measure of each asset type and room available
-        for (String item : timeSeries.keySet()) {
-            // Retrieve the map of measures to their asset and room alongside their time series metadata
-            Map<String, List<String[]>> measures = timeSeries.get(item);
-            // For each of the measures, create a chart
-            for (String measure : measures.keySet()) {
-                // Take note to exclude the assets and rooms key as that is not required
-                if (!measure.equals(StringHelper.ASSET_KEY) && !measure.equals(StringHelper.ROOM_KEY)) {
-                    // Retrieve the relevant database name and ID from the first item
-                    // Assumes that each measure of a specific asset type belongs to only one database
-                    String database = measures.get(measure).get(0)[3];
-                    String databaseID = databaseConnectionMap.get(database);
-                    // Assume the unit of each measure for each asset type is consistent
-                    String unit = measures.get(measure).get(0)[4];
-                    // Creates a chart object and add it to the queue
-                    TimeSeriesChart chart = new TimeSeriesChart(measure, item, unit, databaseID, measures.get(measure));
-                    panelQueue.offer(chart);
-                }
-            }
-            // For each asset type, generate a row with the set of panels
-            // Append a comma before if it is not the first row
-            if (this.PANEL_SYNTAX.length() != 0) this.PANEL_SYNTAX.append(",");
-            // Generate the row panel syntax
-            this.PANEL_SYNTAX.append("{")
-                    .append("\"id\":null, \"type\":\"row\", \"collapsed\":true,")
-                    .append("\"title\": \"").append(StringHelper.addSpaceBetweenCapitalWords(item)).append("\",")
-                    .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(CHART_WIDTH * 2)
-                    .append(",\"x\": 0,\"y\": ").append(rowNumber++).append("},")
-                    .append("\"panels\": [").append(genPanelSyntaxForEachRow(rowNumber, panelQueue))
-                    .append("]}");
-            // Increment the row number once this row has been set up
-            rowNumber++;
+        int rowNumber = 0; // Each row correspond to one item group
+        // Generate the syntax for all room-related panels if available
+        if (timeSeries.containsKey(StringHelper.ROOM_KEY)) {
+            // Room-related panels are designed to be at the top based on their topological hierarchy
+            // Generate all the panels and store them into a queue
+            Queue<TimeSeriesChart> panelQueue = genMeasurePanelsForItemGroup(StringHelper.ROOM_KEY, timeSeries.get(StringHelper.ROOM_KEY), databaseConnectionMap);
+            // Compute the ending y position for the room's charts - assumes that there are two panel per row
+            int lastYGroupPosition = rowNumber + (CHART_HEIGHT * (panelQueue.size() / 2));
+            // Append the room panels to the stored syntax
+            this.PANEL_SYNTAX.append(genPanelSyntax(rowNumber, panelQueue));
+            // Remove the room values once it has been processed
+            timeSeries.remove(StringHelper.ROOM_KEY);
+            // Update the row number accordingly as the last step to ensure the processing is not impacted
+            // Ensure that it is incremented by 1 so that the next panel starts below
+            rowNumber = lastYGroupPosition + 1;
+        }
+        // For each item group that is not a room
+        for (String currentItemGroup : timeSeries.keySet()) {
+            Queue<TimeSeriesChart> panelQueue = genMeasurePanelsForItemGroup(currentItemGroup, timeSeries.get(currentItemGroup), databaseConnectionMap);
+            groupPanelsAsRow(rowNumber, currentItemGroup, panelQueue);
         }
     }
 
@@ -74,13 +59,41 @@ public class PanelModel {
     }
 
     /**
-     * Generates all available panels for each asset groups/rows into the required Json format.
+     * Generates the various measure panels that can be found in the input item group.
      *
-     * @param rowNumber  The current row number. Starts from 0.
+     * @param itemGroup             The item group of interest. May be rooms or asset types.
+     * @param itemMeasures          A map containing all measures and their metadata to construct each panel.
+     * @param databaseConnectionMap A map linking each database to its connection ID.
+     * @return A queue storing all measure panels associated with this item group.
+     */
+    private Queue<TimeSeriesChart> genMeasurePanelsForItemGroup(String itemGroup, Map<String, List<String[]>> itemMeasures, Map<String, String> databaseConnectionMap) {
+        Queue<TimeSeriesChart> panelQueue = new ArrayDeque<>();
+        // For each of the measures, create a chart
+        for (String measure : itemMeasures.keySet()) {
+            // Take note to exclude the assets and rooms key as that is not required
+            if (!measure.equals(StringHelper.ASSET_KEY) && !measure.equals(StringHelper.ROOM_KEY)) {
+                // Retrieve the relevant database name and ID from the first item
+                // Assumes that each measure of a specific asset type belongs to only one database
+                String database = itemMeasures.get(measure).get(0)[3];
+                String databaseID = databaseConnectionMap.get(database);
+                // Assume the unit of each measure for each asset type is consistent
+                String unit = itemMeasures.get(measure).get(0)[4];
+                // Creates a chart object and add it to the queue
+                TimeSeriesChart chart = new TimeSeriesChart(measure, itemGroup, unit, databaseID, itemMeasures.get(measure));
+                panelQueue.offer(chart);
+            }
+        }
+        return panelQueue;
+    }
+
+    /**
+     * Generates all available panels for each item group into the required Json format.
+     *
+     * @param rowNumber  The current row number.
      * @param panelQueue A collection containing all the required charts to be appended to this row/group.
      * @return The group of panel syntax as a StringBuilder.
      */
-    private StringBuilder genPanelSyntaxForEachRow(int rowNumber, Queue<TimeSeriesChart> panelQueue) {
+    private StringBuilder genPanelSyntax(int rowNumber, Queue<TimeSeriesChart> panelQueue) {
         StringBuilder builder = new StringBuilder();
         // Initialise chart number when handling different asset types to compute position
         int chartNumber = 1;
@@ -101,5 +114,27 @@ public class PanelModel {
             chartNumber++;
         }
         return builder;
+    }
+
+    /**
+     * When necessary, this method supports the grouping of panels into a row for the dashboard in JSON format.
+     *
+     * @param rowNumber  The current row number.
+     * @param itemGroup  The item group of interest. Should only accommodate asset types at the moment.
+     * @param panelQueue A collection containing all the required charts to be appended to this row.
+     */
+    private void groupPanelsAsRow(int rowNumber, String itemGroup, Queue<TimeSeriesChart> panelQueue) {
+        // Append a comma before if it is not the first row
+        if (this.PANEL_SYNTAX.length() != 0) this.PANEL_SYNTAX.append(",");
+        // Generate the row panel syntax
+        this.PANEL_SYNTAX.append("{")
+                .append("\"id\":null, \"type\":\"row\", \"collapsed\":true,")
+                .append("\"title\": \"").append(StringHelper.addSpaceBetweenCapitalWords(itemGroup)).append("\",")
+                .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(CHART_WIDTH * 2)
+                .append(",\"x\": 0,\"y\": ").append(rowNumber++).append("},")
+                .append("\"panels\": [").append(genPanelSyntax(rowNumber, panelQueue))
+                .append("]}");
+        // Increment the row number once this row for the item group has been set up
+        rowNumber++;
     }
 }
