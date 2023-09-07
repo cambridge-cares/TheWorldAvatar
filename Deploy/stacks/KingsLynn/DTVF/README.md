@@ -1,12 +1,12 @@
 # Digital Twin Visualisation Framework (DTVF)
 
-The instantiated data is visualised using the Digital Twin Visualisation Framework ([DTVF]) version `3.3.4`. The configuration file structure (i.e. `data.json`) is based on the [example Mapbox visualisation].
+The instantiated data is visualised using the Digital Twin Visualisation Framework ([DTVF]) version `3.7.0`. The configuration file structure (i.e. `data.json`) is based on the [example Mapbox visualisation] (please note that the visualisation on `main` has meanwhile been upgraded to v4.0, requiring a slightly different structure of the `data.json`; respective changes might be incorporated here in a future iteration).
 
 The visualisation also includes some synthetic network data from CReDo. This data is directly gathered from a Geoserver at CMCL and currently includes
 1) Fully operational water and power network (based on 1:20yr flood scenario, i.e., scenario id `3LhiMsWN`)
-2) Partially affected water and power network (based on 1:1000yr flood scenario, i.e., scenario id`TEqUNh39`)
+2) Partially affected water and power network (based on 1:1000yr flood scenario, i.e., scenario id `TEqUNh39`)
 
-**Please note**: In case no network data shows up (and is required), it is likely that the resource ID of the data stream from Geoserver as changed (e.g. `3LhiMsWN` in  `http://kg.cmclinnovations.com:3839/geoserver/3LhiMsWN/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=3LhiMsWN%3AWater&outputFormat=application%2Fjson`). In this case, please get in touch with Michael or Sean and update the [data.json] with the latest IDs accordingly.
+**Please note**: In case no network data shows up (and is required), it is likely that the resource ID of the data stream from Geoserver as changed (e.g. `3LhiMsWN` in  `https://kg.cmclinnovations.com/credo/phase2/water/geoserver/3LhiMsWN/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=3LhiMsWN%3AWater&outputFormat=application%2Fjson`). In this case, please get in touch with Michael or Sean and update the [data.json] with the latest IDs accordingly.
 
 &nbsp;
 ## Creating the Visualisation

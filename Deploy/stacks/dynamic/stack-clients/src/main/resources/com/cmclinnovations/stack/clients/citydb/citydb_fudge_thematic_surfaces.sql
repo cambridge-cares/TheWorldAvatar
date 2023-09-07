@@ -18,12 +18,7 @@ SELECT b.id,
         b.lod1_solid_id
     ) AS lod2_multi_surface_id
 FROM citydb.building b
-WHERE NOT EXISTS(
-        SELECT 1
-        FROM citydb.thematic_surface ts
-        WHERE b.id = ts.building_id
-    )
-    AND COALESCE(
+WHERE COALESCE(
         b.lod2_multi_surface_id,
         b.lod3_multi_surface_id,
         b.lod4_multi_surface_id,
@@ -32,5 +27,5 @@ WHERE NOT EXISTS(
         b.lod3_solid_id,
         b.lod4_solid_id,
         b.lod1_solid_id
-    ) IS NOT NULL
+    ) IS NOT NULL ON CONFLICT (id) DO NOTHING
 RETURNING id;
