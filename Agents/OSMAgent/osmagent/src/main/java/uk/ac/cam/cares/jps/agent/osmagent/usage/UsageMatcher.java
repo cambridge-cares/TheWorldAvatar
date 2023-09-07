@@ -14,6 +14,7 @@ import java.util.Map;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import uk.ac.cam.cares.jps.agent.osmagent.OSMAgent;
+import uk.ac.cam.cares.jps.agent.osmagent.geometry.object.GeoObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
@@ -99,9 +100,7 @@ public class UsageMatcher {
 
         Map<String, String> columns = new HashMap<>();
         columns.put("building_iri", "TEXT");
-        columns.put("propertyusage_iri", "TEXT");
         columns.put("ontobuilt", "TEXT");
-        columns.put("usageshare", "FLOAT");
 
         try (Connection connection = rdbStoreClient.getConnection()) {
             for (String tableName : tableNames) {
@@ -120,6 +119,40 @@ public class UsageMatcher {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
+    }
+
+    public static void copyFromOSM(String database, String user, String password, String pointTable, String polygonTable, String usageTable) {
+        RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
+
+        String usageSchema = usageTable.split("\\.")[0];
+        String initialiseSchema = "CREATE SCHEMA IF NOT EXISTS " + usageSchema;
+        String initialiseTable = "CREATE TABLE IF NOT EXISTS " + usageTable;
+
+        initialiseTable += " (building_iri TEXT, propertyusage_iri TEXT, ontobuilt TEXT, usageshare FLOAT)";
+
+        rdbStoreClient.executeUpdate(initialiseSchema);
+        rdbStoreClient.executeUpdate(initialiseTable);
+
+        String copyIri = "INSERT INTO " + usageTable + " (building_iri, ontobuilt) " +
+                "SELECT building_iri, ontobuilt FROM table WHERE table.building_iri IS NOT NULL AND table.ontobuilt IS NOT NULL";
+
+        rdbStoreClient.executeUpdate(copyIri.replace("table", pointTable));
+        rdbStoreClient.executeUpdate(copyIri.replace("table", polygonTable));
+    }
+
+    public static void unmatchedBuilding(String database, String user, String password, String usageTable) {
+        RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
+
+        String subQuery = GeoObject.getQuery();
+
+        String insert = "INSERT INTO " + usageTable + " (building_iri) \n" +
+                "SELECT q.urival FROM (\n" +
+                subQuery +
+                ") as q \n" +
+                "LEFT JOIN " + usageTable + " u ON q.urival = u.building_iri \n" +
+                "WHERE u.building_iri IS NULL";
+
+        rdbStoreClient.executeUpdate(insert);
     }
 
     /**
