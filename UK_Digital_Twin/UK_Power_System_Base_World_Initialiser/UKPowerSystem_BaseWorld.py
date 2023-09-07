@@ -7,7 +7,7 @@ This python module is created for initialising the base world entities of the po
 The base world includes the power plant data, energy demand data, population data, and power grid topology entities.
 """
 
-import os, sys
+import os, sys, json
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 from UK_Digital_Twin_Package import UKDigitalTwin as UKDT
@@ -17,6 +17,9 @@ from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endP
 from UK_Digital_Twin_Package.KGLocalStoragePath import defaultKGStoragePath
 from UK_Power_Grid_Topology_Generator.topologyABoxGeneration import rootNodeAndNameSpace, createTopologyGraph
 from UKPopulationDensity import UKPopulationDensityABoxCreator
+
+with open('config.json', 'r') as config_file:
+    config_data = json.load(config_file)
 
 dt = UKDT.UKDigitalTwin()
 
@@ -55,27 +58,12 @@ class powerSystemBaseWorldInitialiser(object):
         return self.topologyConfigList
     
 if __name__ == '__main__':
-    DUKESDataVersion = "2019"
-    startTime_of_EnergyConsumption = "2017"
+    DUKESDataVersion = config_data["DUKESDataVersion"]
+    startTime_of_EnergyConsumption = config_data["startTime_of_EnergyConsumption"]
     endPointURL = endPointList.UKPowerSystemBaseWorld['endpoint_iri']
     KGStoragePath = defaultKGStoragePath
-    ifUpdateToTripleStore = True
-    topologyConfigList = [{
-        'BusNum': 10,
-        'BranchNum': 14,
-        'slackBusIndex': 1, 
-        'ElectricitySystemName': 'Great_Britain',
-        'generatorClusterFunctionName': 'sameRegionWithBus',
-        'voltageLevel': ["275", "400"]
-        }, 
-        {
-        'BusNum': 29,
-        'BranchNum': 99,
-        'slackBusIndex': 27, 
-        'ElectricitySystemName': 'Great_Britain',
-        'generatorClusterFunctionName': 'closestBus',
-        'voltageLevel': []
-        }]
+    ifUpdateToTripleStore = config_data["ifUpdateToTripleStore"]
+    topologyConfigList = config_data["topologyConfigList"] 
     testModelInitialisier = powerSystemBaseWorldInitialiser(DUKESDataVersion, startTime_of_EnergyConsumption,         
         endPointURL, KGStoragePath, ifUpdateToTripleStore, topologyConfigList)
     testModelInitialisier.BaseWorldInitialiser()
