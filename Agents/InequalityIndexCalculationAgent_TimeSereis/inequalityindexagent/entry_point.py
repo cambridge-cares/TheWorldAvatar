@@ -2,7 +2,7 @@
 from pyderivationagent.conf import config_derivation_agent
 
 from inequalityindexagent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
-from inequalityindexagent.agent import UtilityCostCalculationAgent
+from inequalityindexagent.agent import InequalityIndexCalculationAgent
 from inequalityindexagent.agent import default
 
 def create_app():
@@ -28,7 +28,7 @@ def create_app():
 
     #run_markup()
 
-    agent = UtilityCostCalculationAgent(
+    agent = InequalityIndexCalculationAgent(
         # Settings read from environment variables (.env file, docker-compose)
         register_agent=agent_config.REGISTER_AGENT,
         agent_iri=agent_config.ONTOAGENT_SERVICE_IRI, 

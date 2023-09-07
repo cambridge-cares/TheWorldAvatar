@@ -15,7 +15,7 @@ from inequalityindexagent.kg_operations.kgclient import KGClient
 from inequalityindexagent.kg_operations.tsclient import TSClient
 
 
-class UtilityCostCalculationAgent(DerivationAgent):
+class InequalityIndexCalculationAgent(DerivationAgent):
 
     def __init__(self, **kwargs):
         # Initialise DerivationAgent parent instance
@@ -25,10 +25,10 @@ class UtilityCostCalculationAgent(DerivationAgent):
         self.sparql_client = self.get_sparql_client(KGClient)
 
     def agent_input_concepts(self) -> list:
-        return [REGION_RESULTED_ENERGYCONSUMPTION, ONTOHEATNETWORK_UNITRATE]
+        return [ONTOCAPE_UTILITYCOST, ONTOCAPE_UTILITYCOST, REGION_MIN_FP,REGION_MAX_FP]
     
     def agent_output_concepts(self) -> list:
-        return [ONTOCAPE_UTILITYCOST]
+        return [REGION_INEQUALITYINDEX]
     
     def validate_inputs(self, http_request) -> bool:
         # Validate completeness of received HTTP request (i.e. non-empty HTTP request, 
@@ -48,7 +48,7 @@ class UtilityCostCalculationAgent(DerivationAgent):
                 file.write("False")  # Initialize the file with "False"
         if not has_function_run:
             # Update Unitrate provided
-            self.sparql_client.update_unit_rate_iri()
+            self.sparql_client.update_min_max_fp_iri()
             print("Assumptions/Indecies has been updated!")
             with open('state.txt', "w") as file:
                 file.write("True")
@@ -120,5 +120,5 @@ def default():
     # TODO: Update path to main upon merging
     msg  = "This is an utility cost calculation agent.<BR>"
     msg += "<BR>"
-    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/UtilityCostCalculationAgent<BR>"
+    msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/InequalityIndexCalculationAgent<BR>"
     return msg

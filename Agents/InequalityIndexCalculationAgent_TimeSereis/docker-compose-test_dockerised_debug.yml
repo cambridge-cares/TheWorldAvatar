@@ -18,8 +18,8 @@ services:
       # Stack & Stack Client parameters can be neglected as overwritten by mocked module imports
       #
       #--- Derivation Agent parameters ---#
-      - ONTOAGENT_SERVICE_IRI=http://www.example.com/resource/agents/Service__KL_UtilityCostCalculation/Service
-      - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5300/UtilityCostCalculation
+      - ONTOAGENT_SERVICE_IRI=http://www.example.com/resource/agents/Service__KL_InequalityIndexCalculation/Service
+      - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5300/InequalityIndexCalculation
       - DERIVATION_INSTANCE_BASE_URL=https://www.example.com/kg/derivation/
       - DERIVATION_PERIODIC_TIMESCALE=5
       - REGISTER_AGENT=false

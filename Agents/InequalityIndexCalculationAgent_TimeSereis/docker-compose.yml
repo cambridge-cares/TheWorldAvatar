@@ -12,9 +12,9 @@ services:
       - NAMESPACE=heatpump
       #--- Derivation Agent parameters ---#
       # For details, see: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_derivation_agent/pyderivationagent/conf/agent_conf.py
-      - ONTOAGENT_SERVICE_IRI=http://www.theworldavatar.com/resource/agents/Service__KL_UtilityCostCalculation/Service
+      - ONTOAGENT_SERVICE_IRI=http://www.theworldavatar.com/resource/agents/Service__KL_InequalityIndexCalculation/Service
       # Host and port of ONTOAGENT_OPERATION_HTTP_URL should match port specified in `port` node below
-      - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5300/UtilityCostCalculation
+      - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5300/InequalityIndexCalculation
       - DERIVATION_INSTANCE_BASE_URL=https://www.theworldavatar.com/kg/derivation/
       - DERIVATION_PERIODIC_TIMESCALE=604800
       - REGISTER_AGENT=true
@@ -33,11 +33,9 @@ services:
       # --- Index / Assumptions Space --- #
       # !!!! NO SPACING AFTER '='!!!!
 
-      # The year of the index, will be used to instantiate the indecies in the KG
-      - YEAR=2020
-      # Prices in the Unit of £/kWh
-      - ELECTRICITY_UNIT_COST=0.172
-      - GAS_UNIT_COST=0.0355
+      # Minimal and Maximal fuel poverty, will be used for normalization purpose
+      - MIN_FP=0
+      - MAX_FP=0.2
     ports:
       - "5300:5000"
     volumes:

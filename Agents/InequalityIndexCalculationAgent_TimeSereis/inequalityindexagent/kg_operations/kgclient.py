@@ -12,7 +12,7 @@ from rdflib import URIRef, Literal
 
 from py4jps import agentlogging
 from pyderivationagent.kg_operations import PySparqlClient
-from inequalityindexagent.utils.stack_configs import ELECTRICITY_UNIT_COST, GAS_UNIT_COST, YEAR
+from inequalityindexagent.utils.stack_configs import MIN_FP, MAX_FP
 
 from inequalityindexagent.datamodel.iris import *
 from inequalityindexagent.errorhandling.exceptions import *
@@ -46,137 +46,126 @@ class KGClient(PySparqlClient):
         
         return country_iri
 
-    # ----------- Verify unit rate iri --------------- #
-    def get_unit_rate_iri(self, country_iri):
+    # ---------- Verify assumptions iris ------------ # 
+    def get_assumption_iri(self, country_iri):
         query_string = f"""
-        SELECT ?unit_rate_iri ?elec_unit_rate_iri ?fuel_unit_rate_iri ?gas_unit_rate_iri
+        SELECT ?assumption_iri
         WHERE {{
-         <{country_iri}> <{ONTOHEATNETWORK_HASUNITRATE}> ?unit_rate_iri .
-         ?unit_rate_iri <{RDF_TYPE}> <{ONTOHEATNETWORK_UNITRATE}> ;
-                                <{OFP_VALIDFROM}> "2020-01-01T12:00:00.000Z"^^<{XSD_DATETIME}> ;
-                                <{OFP_VALIDTO}> "2020-12-31T12:00:00.000Z"^^<{XSD_DATETIME}> .
-         ?elec_unit_rate_iri <{IS_A}> ?unit_rate_iri;
-                          <{RDF_TYPE}>  <{REGION_ELECTRICITYUNITCOST}>.
-         ?fuel_unit_rate_iri <{IS_A}> ?unit_rate_iri;
-                          <{RDF_TYPE}>  <{ONTOHEATNETWORK_FUELUNITCOST}>.
-         ?gas_unit_rate_iri <{IS_A}> ?fuel_unit_rate_iri;
-                          <{RDF_TYPE}>  <{ONTOHEATNETWORK_GASUNITCOST}>.
+        ?assumption_iri <{REGION_APPLICABLETO}> <{country_iri}> .
         }}
         """
         res = self.performQuery(query_string)
 
         if not res:
-            unit_rate_iri = ONTOHEATNETWORK + "UnitRate_" + str(uuid.uuid4())
-            logger.info(f'No existed unit_rate_iri, created {unit_rate_iri}')
-            elec_unit_rate_iri = REGION + "ElectricityUnitCost_" + str(uuid.uuid4())
-            logger.info(f'No existed elec_unit_rate_iri, created {elec_unit_rate_iri}')
-            fuel_unit_rate_iri = ONTOHEATNETWORK + "FuelUnitCost_" + str(uuid.uuid4())
-            logger.info(f'No existed fuel_unit_rate_iri, created {fuel_unit_rate_iri}')
-            gas_unit_rate_iri = ONTOHEATNETWORK + "GasUnitCost_" + str(uuid.uuid4())
-            logger.info(f'No existed gas_unit_rate_iri, created {gas_unit_rate_iri}')
+            assumption_iri = REGION + "Assumption_" + str(uuid.uuid4())
+            logger.info(f'No existed assumption_iri, created {assumption_iri}')
         else: 
             res = res[0]
-            if res["unit_rate_iri"] == "" or res["unit_rate_iri"] == None:
-                unit_rate_iri = ONTOHEATNETWORK + "UnitRate_" + str(uuid.uuid4())
-                logger.info(f'No existed unit_rate_iri, created {unit_rate_iri}')
-            else:
-                unit_rate_iri = str(res["unit_rate_iri"])
-                logger.info(f'unit_rate_iri: {unit_rate_iri} will be used')
-
-            if res["elec_unit_rate_iri"] == "" or res["elec_unit_rate_iri"] == None:
-                elec_unit_rate_iri = REGION + "ElectricityUnitCost_" + str(uuid.uuid4())
-                logger.info(f'No existed elec_unit_rate_iri, created {elec_unit_rate_iri}') 
-            else:
-                elec_unit_rate_iri = str(res["elec_unit_rate_iri"])
-                logger.info(f'elec_unit_rate_iri: {elec_unit_rate_iri} will be used')
-
-            if res["fuel_unit_rate_iri"] == "" or res["fuel_unit_rate_iri"] == None:
-                fuel_unit_rate_iri = ONTOHEATNETWORK + "FuelUnitCost_" + str(uuid.uuid4())
-                logger.info(f'No existed fuel_unit_rate_iri, created {fuel_unit_rate_iri}')
-            else:
-                fuel_unit_rate_iri = str(res["fuel_unit_rate_iri"])
-                logger.info(f'fuel_unit_rate_iri: {fuel_unit_rate_iri} will be used')
-
-            if res["gas_unit_rate_iri"] == "" or res["gas_unit_rate_iri"] == None:
-                gas_unit_rate_iri = ONTOHEATNETWORK + "GasUnitCost_" + str(uuid.uuid4())
-                logger.info(f'No existed gas_unit_rate_iri, created {gas_unit_rate_iri}')
-            else:
-                gas_unit_rate_iri = str(res["gas_unit_rate_iri"])
-                logger.info(f'gas_unit_rate_iri: {gas_unit_rate_iri} will be used')
+            assumption_iri = str(res["assumption_iri"])
+            logger.info(f'assumption_iri: {assumption_iri} will be used')
         
-        return unit_rate_iri, elec_unit_rate_iri, fuel_unit_rate_iri, gas_unit_rate_iri
+        return assumption_iri
     
-    def update_unit_rate_iri(self):
+    # ----------- Verify min_max_fp iri --------------- #
+    def get_min_max_fp_iri(self, assumption_iri):
+        query_string = f"""
+        SELECT ?min_fp_iri ?max_fp_iri
+        WHERE {{
+         ?min_fp_iri <{IS_A}> <{assumption_iri}> ;
+                          <{RDF_TYPE}>  <{REGION_MIN_FP}>.
+         ?max_fp_iri <{IS_A}> <{assumption_iri}>;
+                          <{RDF_TYPE}>  <{REGION_MAX_FP}>.
+        }}
+        """
+        res = self.performQuery(query_string)
+
+        if not res:
+            min_fp_iri = REGION + "MinimalFuelPoverty_" + str(uuid.uuid4())
+            logger.info(f'No existed min_fp_iri, created {min_fp_iri}')
+            max_fp_iri = REGION + "MaximalFuelPoverty_" + str(uuid.uuid4())
+            logger.info(f'No existed max_fp_iri, created {max_fp_iri}')
+        else: 
+            res = res[0]
+            if res["min_fp_iri"] == "" or res["min_fp_iri"] == None:
+                min_fp_iri = REGION + "MinimalFuelPoverty_" + str(uuid.uuid4())
+                logger.info(f'No existed min_fp_iri, created {min_fp_iri}')
+            else:
+                min_fp_iri = str(res["min_fp_iri"])
+                logger.info(f'min_fp_iri: {min_fp_iri} will be used')
+
+            if res["max_fp_iri"] == "" or res["max_fp_iri"] == None:
+                max_fp_iri = REGION + "MaximalFuelPoverty_" + str(uuid.uuid4())
+                logger.info(f'No existed max_fp_iri, created {max_fp_iri}')
+            else:
+                max_fp_iri = str(res["max_fp_iri"])
+                logger.info(f'max_fp_iri: {max_fp_iri} will be used')
+
+        return min_fp_iri, max_fp_iri
+    
+    def update_min_max_fp_iri(self):
 
         country_iri = self.get_country_iri()
-        unit_rate_iri, elec_unit_rate_iri, fuel_unit_rate_iri, gas_unit_rate_iri = self.get_unit_rate_iri(country_iri)
+        assumption_iri = self.get_assumption_iri(country_iri)
+        min_fp_iri, max_fp_iri = self.get_min_max_fp_iri(assumption_iri)
         
         query_string = f"""
         INSERT DATA {{
-         <{country_iri}> <{ONTOHEATNETWORK_HASUNITRATE}> <{unit_rate_iri}>  .
-        <{unit_rate_iri}>  <{RDF_TYPE}> <{ONTOHEATNETWORK_UNITRATE}> ;
-                                <{OFP_VALIDFROM}> "2020-01-01T12:00:00.000Z"^^<{XSD_DATETIME}> ;
-                                <{OFP_VALIDTO}> "2020-12-31T12:00:00.000Z"^^<{XSD_DATETIME}> .
-         <{elec_unit_rate_iri}> <{IS_A}> <{unit_rate_iri}> ;
-                          <{RDF_TYPE}>  <{REGION_ELECTRICITYUNITCOST}> ;
-                          <{OM_HAS_NUMERICALVALUE}> "{ELECTRICITY_UNIT_COST}"^^<{XSD_FLOAT}> .
-         <{fuel_unit_rate_iri}> <{IS_A}> <{unit_rate_iri}> ;
-                          <{RDF_TYPE}>  <{ONTOHEATNETWORK_FUELUNITCOST}>.
-         <{gas_unit_rate_iri}> <{IS_A}> ?fuel_unit_rate_iri;
-                          <{RDF_TYPE}>  <{ONTOHEATNETWORK_GASUNITCOST}> ;
-                          <{OM_HAS_NUMERICALVALUE}> "{GAS_UNIT_COST}"^^<{XSD_FLOAT}> .
+         ?min_fp_iri <{IS_A}> <{assumption_iri}> ;
+                          <{RDF_TYPE}>  <{REGION_MIN_FP}> ;
+                          <{OM_HAS_NUMERICALVALUE}> "{MIN_FP}"^^<{XSD_FLOAT}> .
+         ?max_fp_iri <{IS_A}> <{assumption_iri}>;
+                          <{RDF_TYPE}>  <{REGION_MAX_FP}> ;
+                          <{OM_HAS_NUMERICALVALUE}> "{MAX_FP}"^^<{XSD_FLOAT}> .
         }}
         """
         res = self.performUpdate(query_string)
     
     # ----------- Get values based on iris ---------- #
-    def get_unit_rate(self, unit_rate_iri):
+    def get_min_max_fp(self, min_fp_iri, max_fp_iri):
         query_string = f"""
-        SELECT ?electricity_unit_cost ?gas_unit_cost 
+        SELECT ?min_fp ?max_fp
         WHERE {{
-         ?country_iri <{ONTOHEATNETWORK_HASUNITRATE}> <{unit_rate_iri}>  .
-        <{unit_rate_iri}>  <{RDF_TYPE}> <{ONTOHEATNETWORK_UNITRATE}> ;
-                                <{OFP_VALIDFROM}> "{YEAR}-01-01T12:00:00.000Z"^^<{XSD_DATETIME}> ;
-                                <{OFP_VALIDTO}> "{YEAR}-12-31T12:00:00.000Z"^^<{XSD_DATETIME}> .
-         ?elec_unit_rate_iri  <{IS_A}> <{unit_rate_iri}> ;
-                          <{RDF_TYPE}>  <{REGION_ELECTRICITYUNITCOST}> ;
-                          <{OM_HAS_NUMERICALVALUE}> ?electricity_unit_cost .
-         ?fuel_unit_rate_iri  <{IS_A}> <{unit_rate_iri}> ;
-                          <{RDF_TYPE}>  <{ONTOHEATNETWORK_FUELUNITCOST}>.
-         ?gas_unit_rate_iri  <{IS_A}> ?fuel_unit_rate_iri;
-                          <{RDF_TYPE}>  <{ONTOHEATNETWORK_GASUNITCOST}> ;
-                          <{OM_HAS_NUMERICALVALUE}> ?gas_unit_cost .
+         <{min_fp_iri}> <{IS_A}> ?assumption_iri ;
+                          <{RDF_TYPE}>  <{REGION_MIN_FP}> ;
+                          <{OM_HAS_NUMERICALVALUE}> ?min_fp .
+         <{max_fp_iri}> <{IS_A}> ?assumption_iri ;
+                          <{RDF_TYPE}>  <{REGION_MAX_FP}> ;
+                          <{OM_HAS_NUMERICALVALUE}> ?max_fp .
         }}
+
         """
         res = self.performQuery(query_string)
         if not res:
-            logger.error("unit cost result can not be found -- go check if it exist")
-            raise InvalidInput("unit cost result can not be found -- go check if it exist")
+            logger.error("min_max_fp result can not be found -- go check if it exist")
+            raise InvalidInput("min_max_fp result can not be found -- go check if it exist")
         else:
             res = res[0]
             try:
-                electricity_unit_cost = float(res['electricity_unit_cost'])  
+                min_fp = float(res['min_fp'])  
             except:
-                logger.error("electricity_unit_cost result can not be retrieved -- go check if it exist")
-                raise InvalidInput("electricity_unit_cost result can not be retrieved -- go check if it exist")
+                logger.error("min_fp result can not be retrieved -- go check if it exist")
+                raise InvalidInput("min_fp result can not be retrieved -- go check if it exist")
             try:
-                gas_unit_cost = float(res['gas_unit_cost'])  
+                max_fp_iri = float(res['max_fp_iri'])  
             except:
-                logger.error("gas_unit_cost result can not be retrieved -- go check if it exist")
-                raise InvalidInput("gas_unit_cost result can not be retrieved -- go check if it exist")
+                logger.error("max_fp_iri result can not be retrieved -- go check if it exist")
+                raise InvalidInput("max_fp_iri result can not be retrieved -- go check if it exist")
 
-        return electricity_unit_cost, gas_unit_cost
+        return min_fp_iri, max_fp_iri
     
-    def get_resulted_gas_elec_consumption_iri(self, resulted_consumption_iri):
+    def get_utility_cost_iri(self, resulted_consumption_iri):
         query_string = f"""
         SELECT ?region ?elec_consumption_iri ?gas_consumption_iri
         WHERE {{
-        ?region <{REGION_HAS_ENERGYCONSUMPTION_PROFILE}> <{resulted_consumption_iri}>.
-        <{resulted_consumption_iri}>  <{RDF_TYPE}> <{REGION_RESULTED_ENERGYCONSUMPTION}> .
-        ?elec_consumption_iri <{IS_A}> <{resulted_consumption_iri}> .
-        ?elec_consumption_iri  <{RDF_TYPE}> <{REGION_RESULTED_ELECTRICITY_CONSUMPTION}> .
-        ?gas_consumption_iri <{IS_A}> <{resulted_consumption_iri}> .
-        ?gas_consumption_iri  <{RDF_TYPE}> <{REGION_RESULTED_GAS_CONSUMPTION}> . }}
+        <{region}> <{ONTOCAPE_HASUTILITYCOST}> ?utility_cost_iri .
+        ?utility_cost_iri  <{RDF_TYPE}> <{ONTOCAPE_UTILITYCOST}> .
+        ?elec_cost_iri <{IS_A}> ?utility_cost_iri ;
+                       <{RDF_TYPE}> <{ONTOCAPE_ELECTRICITYCOSTS}> .
+        ?fuel_cost_iri <{IS_A}> ?utility_cost_iri  ;
+                       <{RDF_TYPE}> <{ONTOCAPE_FUELCOSTS}> .
+        ?gas_cost_iri <{IS_A}> ?fuel_cost_iri ;
+                      <{RDF_TYPE}> <{REGION_GASCOSTS}> .
+        }}
         """
         query_string = self.remove_unnecessary_whitespace(query_string)
         res = self.performQuery(query_string)

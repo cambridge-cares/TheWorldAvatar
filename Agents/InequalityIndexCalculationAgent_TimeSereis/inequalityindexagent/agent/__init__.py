@@ -1,1 +1,1 @@
-from .utilitycost_calculation import *
+from .inequalityindex_calculation import *

@@ -22,7 +22,7 @@ def retrieve_settings():
     """
 
     # Define global scope for global variables
-    global DATABASE, NAMESPACE, ELECTRICITY_UNIT_COST, GAS_UNIT_COST, YEAR
+    global DATABASE, NAMESPACE, MIN_FP, MAX_FP, YEAR
     
     try: 
         # Retrieve PostgreSQL/PostGIS database name
@@ -46,41 +46,32 @@ def retrieve_settings():
             logger.error('No "NAMESPACE" value has been provided in environment variables.')
             raise ValueError('No "NAMESPACE" value has been provided in environment variables.')
 
-        # Retrieve the ELECTRICITY_UNIT_COST 
-        ELECTRICITY_UNIT_COST = os.getenv('ELECTRICITY_UNIT_COST')    
-        if ELECTRICITY_UNIT_COST is None:
-            logger.error('"ELECTRICITY_UNIT_COST" is missing in environment variables.')
-            raise ValueError('"ELECTRICITY_UNIT_COST" is missing in environment variables.')
-        if ELECTRICITY_UNIT_COST == '':
-            logger.error('No "ELECTRICITY_UNIT_COST" value has been provided in environment variables.')
-            raise ValueError('No "ELECTRICITY_UNIT_COST" value has been provided in environment variables.')
-        ELECTRICITY_UNIT_COST = float(ELECTRICITY_UNIT_COST)
+        # Retrieve the MIN_FP 
+        MIN_FP = os.getenv('MIN_FP')    
+        if MIN_FP is None:
+            logger.error('"MIN_FP" is missing in environment variables.')
+            raise ValueError('"MIN_FP" is missing in environment variables.')
+        if MIN_FP == '':
+            logger.error('No "MIN_FP" value has been provided in environment variables.')
+            raise ValueError('No "MIN_FP" value has been provided in environment variables.')
+        MIN_FP = float(MIN_FP)
 
-        # Retrieve the GAS_UNIT_COST 
-        GAS_UNIT_COST = os.getenv('GAS_UNIT_COST')    
-        if GAS_UNIT_COST is None:
-            logger.error('"GAS_UNIT_COST" is missing in environment variables.')
-            raise ValueError('"GAS_UNIT_COST" is missing in environment variables.')
-        if GAS_UNIT_COST == '':
-            logger.error('No "GAS_UNIT_COST" value has been provided in environment variables.')
-            raise ValueError('No "GAS_UNIT_COST" value has been provided in environment variables.')
-        GAS_UNIT_COST = float(GAS_UNIT_COST)
+        # Retrieve the MAX_FP 
+        MAX_FP = os.getenv('MAX_FP')    
+        if MAX_FP is None:
+            logger.error('"MAX_FP" is missing in environment variables.')
+            raise ValueError('"MAX_FP" is missing in environment variables.')
+        if MAX_FP == '':
+            logger.error('No "MAX_FP" value has been provided in environment variables.')
+            raise ValueError('No "MAX_FP" value has been provided in environment variables.')
+        MAX_FP = float(MAX_FP)
 
-        # Retrieve the YEAR 
-        YEAR = os.getenv('YEAR')    
-        if YEAR is None:
-            logger.error('"YEAR" is missing in environment variables.')
-            raise ValueError('"YEAR" is missing in environment variables.')
-        if YEAR == '':
-            logger.error('No "YEAR" value has been provided in environment variables.')
-            raise ValueError('No "YEAR" value has been provided in environment variables.')
-        YEAR = str(YEAR)
     # TODO
     except:
         DATABASE = 'heatpump'
         NAMESPACE = 'test'
-        ELECTRICITY_UNIT_COST=0.172
-        GAS_UNIT_COST=0.0355
+        MIN_FP= 0
+        MAX_FP=0.2
         YEAR = "2020"
 
 
