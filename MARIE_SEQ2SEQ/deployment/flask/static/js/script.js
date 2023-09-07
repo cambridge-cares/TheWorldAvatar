@@ -39,13 +39,14 @@ function display_results(data) {
         }
     }
 
+    content += "<th>#</th>"
     vars.forEach(varname => {
         content += `<th>${varname}</th>`
     });
     content += "</tr></thead><tbody>"
 
-    data["results"]["bindings"].forEach(valueset => {
-        content += "<tr>"
+    data["results"]["bindings"].forEach((valueset, idx) => {
+        content += `<tr><td>${idx + 1}</td>`
         vars.forEach(varname => {
             content += `<td>${valueset[varname]["value"]}</td>`
         })
