@@ -57,6 +57,21 @@ function display_results(data) {
     document.getElementById("results").innerHTML = content;
 }
 
+class HttpError extends Error {
+    constructor(statusCode) {
+        super("HTTP Error")
+        this.statusCode = statusCode
+    }
+}
+
+function hideElems() {
+    document.getElementById('sparql-query-container').style.display = "none";
+    document.getElementById("error-container").style.display = "none"
+
+    document.getElementById("results").innerHTML = ""
+    document.getElementById("sparql-query").innerHTML = ""
+}
+
 function askQuestion() {
     if (is_processing) { // No concurrent questions
         return;
@@ -67,10 +82,7 @@ function askQuestion() {
         return;
     }
 
-    document.getElementById('sparql-query-container').style.display = "none";
-
-    document.getElementById("results").innerHTML = ""
-    document.getElementById("sparql-query").innerHTML = ""
+    hideElems();
 
     is_processing = true;
     document.getElementById('ask-button').className = "mybutton spinner"
@@ -84,16 +96,28 @@ function askQuestion() {
         body: JSON.stringify({ question })
     }).then(res => {
         if (!res.ok) {
-            throw Error(res.status)
+            throw new HttpError(res.status)
         }
         return res.json()
     }).then(json => {
         display_sparql_query(json["sparql_query"])
         display_results(json["data"])
     }).catch(error => {
-        console.log(error)
+        if (error instanceof HttpError) {
+            if (error.statusCode == 500) {
+                display500Error();
+            }
+        }
     }).finally(() => {
         is_processing = false;
         document.getElementById('ask-button').className = "mybutton"
     })
+}
+
+
+function display500Error() {
+    errorElem = document.getElementById("error-container")
+    errorElem.innerHTML = "An internal server error is encountered. Please try again."
+    errorElem.style.color = "red"
+    errorElem.style.display = "block"
 }
