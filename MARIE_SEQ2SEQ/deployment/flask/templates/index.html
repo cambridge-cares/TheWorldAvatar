@@ -76,6 +76,7 @@
                     <p>To use the Marie search engine, type a question into the field below, or select one of
                         the
                         provided sample questions.</p>
+                    <p>Marie currently assumes SI units and is unable to handle queries containing units.</p>
                 </div>
             </section>
 
@@ -100,84 +101,18 @@
             <section class="three-quarter-width">
                 <h3>Example Questions</h3>
 
-                <button type="submit" class="accordion">Numerical Questions</button>
+                {% for question_group in sample_questions %}
+                <button type="submit" class="accordion">{{question_group["title"]}}</button>
                 <div class="accordion-panel">
-                    To find instances based on their numerical attributes
+                    <p>{{question_group["description"]}}</p>
                     <ul>
-                        <li>
-                            <div class="sample-question">Find all species with boiling point above 0 celsius</div>
+                        {% for question in question_group["questions"] %}
+                        <li class="sample-question">{{question}}
                         </li>
-                        <li>
-                            <div class="sample-question">What are the chemical species having molecular weight
-                                around 150 g/mol</div>
-                        </li>
+                        {% endfor %}
                     </ul>
                 </div>
-
-                <button type="submit" class="accordion">Molecular properties</button>
-                <div class="accordion-panel">
-                    To search properties of molecules
-                    <ul>
-                        <li>
-                            <div class="sample-question">What is the charge of Benzene? </div>
-                        </li>
-                        <li>
-                            <div class="sample-question">How many heavy atoms are in C2H2O3?</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">What is the number of heavy atoms in C2H2O3?</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">Topological Polar Surface Area of methane?</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">Show the iupac name of CH2O2?</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">What is the exact mass of C16H34O?</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">Chemical formula of 5-hydroxysalicylic acid?</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">How many rotatable bonds are in C11H16O4?</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">Whats the number of covalent unit C12H24O2?</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">What is the charge of H57NO6PC26+?</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">CH3O5P's complexity?</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">What is the molecular weight of CH4?</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">What is the dipole moment of Benzene? </div>
-                        </li>
-                        <li>
-                            <div class="sample-question">Lennard jones diameter of carbon dioxide</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">Lennard jones well depth of methane</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">Rotational relaxation collision number of H2O2</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">What is the spin multiplicity of H2O?</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">What is the geometry of CO2?</div>
-                        </li>
-                        <li>
-                            <div class="sample-question">What's the covalent unit count of chemical entities belonging
-                                to aminoacridines?</div>
-                        </li>
-                    </ul>
-                </div>
+                {% endfor %}
             </section>
 
             <p><br></p>

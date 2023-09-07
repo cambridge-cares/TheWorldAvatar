@@ -1,8 +1,13 @@
+import json
 import os
 import time
 from flask import Flask, render_template, request
 
 from services import KgClient, TranslationClient
+
+
+with open("./resources/sample_questions.json", "r") as f:
+    SAMPLE_QUESTIONS = json.load(f)
 
 app = Flask(__name__)
 
@@ -14,7 +19,7 @@ kg_client = KgClient()
 
 @app.route("/", methods=["GET"])
 def home():
-    return render_template("index.html")
+    return render_template("index.html", sample_questions=SAMPLE_QUESTIONS)
 
 
 @app.route("/", methods=["POST"])

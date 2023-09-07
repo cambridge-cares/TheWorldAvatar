@@ -1,0 +1,43 @@
+[
+    {
+        "title": "Property search",
+        "description": "To search for properties of molecules",
+        "questions": [
+            "What is the charge of benzene?",
+            "What is the exact mass of C16H34O",
+            "What is the rotatable bond count in C11H16O4?",
+            "CH3O5P's compound complexity?",
+            "What is the molecular weight of CH4?",
+            "Enlighten me about the flash point, tautomer count, and hydrophobicity specific to InChI=1S/C6H7NO3/c7-5(6(9)10)3-1-2-4-8/h1-4H,7H2,(H,9,10).",
+            "Examine how the heavy atom count differs in C(CC(C(=O)O)N)CC(=O)O and C(CC(C(=O)O)NC(=O)CCC(=O)O)CN=C(N)N.",
+
+            "What's the covalent unit count of chemical entities belonging to aminoacridines?",
+            "What are the compound complexity and bond chiral def count of molecules categorized under sulfite ester?",
+            
+            "What labels can be used to recognize 3-(2,5-diketoimidazolidin-4-yl)propionic acid?",
+            "What are InChI=1S/C3H8O10P2/c4-3(5)2(13-15(9,10)11)1-12-14(6,7)8/h2H,1H2,(H,4,5)(H2,6,7,8)(H2,9,10,11)'s fundamental properties?",
+            "Can you provide information about the chemical classes attributed to InChI=1S/C3H9NO/c1-3(5)2-4/h3,5H,2,4H2,1H3?",
+            
+            "What's CSCC1C(C(C(O1)OP(=O)(O)O)O)O's SMILES?",
+            "Show the IUPAC name of CH2O2."
+        ]
+    },
+    {
+        "title": "Species search",
+        "description": "To find species based on their properties",
+        "questions": [
+            "Find all species with boiling point above 0",
+            "Catalog compounds wherein the logS value is lower than 29.",
+            "What are the chemical species having molecular weight around 150?",
+            "Can you list some examples of molecules exhibiting isoelectric point between 277 and 634?",
+            "Compile a roster of molecules demonstrating vapor pressure in the range of 322 to 697, and dissociation constants in the range of 181 to 656.",
+
+            "Enumerate the molecules categorized as ketotetrose phosphate.",
+            "Provide a roster of chemical entities employed as potassium channel blocker.",
+            
+            "Enumerate molecules with solubility exceeding 478 and falling into the aromatic amine classification.",
+            "List the compounds displaying viscosity less than 494, employed as a disinfectant.",
+            "Provide a roster of chemical species classified as gamma-lactam and employed as EC 3.4.17.23 (angiotensin-converting enzyme 2) inhibitor."
+        ]
+    }
+]
