@@ -45,14 +45,20 @@ public class OSMAgent extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
         try {
-            UsageMatcher.checkAndAddColumns(dbUrl, dbUser, dbPassword, pointTable, polygonTable);
-            UsageMatcher.updateOntoBuilt(dbUrl, dbUser, dbPassword, pointTable, polygonTable);
+            UsageMatcher usageMatcher = new UsageMatcher(dbUrl, dbUser, dbPassword);
             GeometryMatcher geometryMatcher = new GeometryMatcher(dbUrl, dbUser, dbPassword);
+            UsageShareCalculator shareCalculator = new UsageShareCalculator(dbUrl, dbUser, dbPassword);
+
+            usageMatcher.checkAndAddColumns(pointTable, polygonTable);
+            usageMatcher.updateOntoBuilt(pointTable, polygonTable);
+
             geometryMatcher.matchGeometry(pointTable);
             geometryMatcher.matchGeometry(polygonTable);
-            UsageMatcher.copyFromOSM(dbUrl, dbUser, dbPassword, pointTable, polygonTable, usageTable);
-            UsageShareCalculator.updateLandUse(dbUrl, dbUser, dbPassword, usageTable, landUseTable);
-            UsageShareCalculator.updateUsageShare(dbUrl, dbUser, dbPassword, usageTable);
+
+            usageMatcher.copyFromOSM(pointTable, polygonTable, usageTable);
+
+            shareCalculator.updateLandUse(usageTable, landUseTable);
+            shareCalculator.updateUsageShare(usageTable);
         }
         catch (Exception e) {
             e.printStackTrace();

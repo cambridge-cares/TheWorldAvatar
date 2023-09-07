@@ -19,6 +19,10 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 public class UsageMatcher {
+    RemoteRDBStoreClient rdbStoreClient;
+    public UsageMatcher(String database, String user, String password) {
+        this.rdbStoreClient  = new RemoteRDBStoreClient(database, user, password);
+    }
     /**
      * Inputs database name, postgis username, postgis password and subsequently update the OSM rows with ontobuilt category by
      * running SQL query to categorize as according to osm_tags.csv
@@ -26,9 +30,7 @@ public class UsageMatcher {
      * @param user
      * @param password
      */
-    public static void updateOntoBuilt(String database, String user, String password, String pointTable, String polygonTable) {
-        RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
-
+    public void updateOntoBuilt(String pointTable, String polygonTable) {
         List<String> tableNames = Arrays.asList(polygonTable, pointTable);
 
         for (String tableName : tableNames) {
@@ -93,9 +95,7 @@ public class UsageMatcher {
      * @param user
      * @param password
      */
-    public static void checkAndAddColumns(String database, String user, String password,  String pointTable, String polygonTable) {
-        RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
-
+    public void checkAndAddColumns(String pointTable, String polygonTable) {
         List<String> tableNames = Arrays.asList(polygonTable, pointTable);
 
         Map<String, String> columns = new HashMap<>();
@@ -121,9 +121,7 @@ public class UsageMatcher {
         }
     }
 
-    public static void copyFromOSM(String database, String user, String password, String pointTable, String polygonTable, String usageTable) {
-        RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
-
+    public void copyFromOSM(String pointTable, String polygonTable, String usageTable) {
         String usageSchema = usageTable.split("\\.")[0];
         String initialiseSchema = "CREATE SCHEMA IF NOT EXISTS " + usageSchema;
         String initialiseTable = "CREATE TABLE IF NOT EXISTS " + usageTable;
@@ -140,21 +138,6 @@ public class UsageMatcher {
         rdbStoreClient.executeUpdate(copyIri.replace("table", polygonTable));
     }
 
-    public static void unmatchedBuilding(String database, String user, String password, String usageTable) {
-        RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
-
-        String subQuery = GeoObject.getQuery();
-
-        String insert = "INSERT INTO " + usageTable + " (building_iri) \n" +
-                "SELECT q.urival FROM (\n" +
-                subQuery +
-                ") as q \n" +
-                "LEFT JOIN " + usageTable + " u ON q.urival = u.building_iri \n" +
-                "WHERE u.building_iri IS NULL";
-
-        rdbStoreClient.executeUpdate(insert);
-    }
-
     /**
      * Check if the column name exists
      * @param connection
@@ -163,7 +146,7 @@ public class UsageMatcher {
      * @return
      * @throws SQLException
      */
-    private static boolean isColumnExist(Connection connection, String tableNamewSchema, String columnName)
+    private boolean isColumnExist(Connection connection, String tableNamewSchema, String columnName)
             throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
 
@@ -184,7 +167,7 @@ public class UsageMatcher {
      * @param sql
      * @throws SQLException
      */
-    private static void executeSql(Connection connection, String sql) throws SQLException {
+    private void executeSql(Connection connection, String sql) throws SQLException {
         try (Statement statement = connection.createStatement()) {
             statement.execute(sql);
         }

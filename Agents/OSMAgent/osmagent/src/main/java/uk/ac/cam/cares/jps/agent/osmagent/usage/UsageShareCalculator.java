@@ -10,6 +10,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class UsageShareCalculator {
+        private RemoteRDBStoreClient rdbStoreClient;
+        public UsageShareCalculator(String database, String user, String password) {
+                this.rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
+
+        }
 
         /**
          * UsageShareCalculator contains 3 parts that run using SQL query
@@ -28,9 +33,7 @@ public class UsageShareCalculator {
          * @param user
          * @param password
          */
-        public static void updateUsageShare(String database, String user, String password, String usageTable) {
-                RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
-
+        public void updateUsageShare(String usageTable) {
                 String add_uuid_ossp_Extension = "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";";
 
                 String assignUsageShare =
@@ -81,9 +84,7 @@ public class UsageShareCalculator {
 
         }
 
-        public static void updateLandUse(String database, String user, String password, String usageTable, String landUseTable) throws IOException {
-                RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
-
+        public void updateLandUse(String usageTable, String landUseTable) throws IOException {
                 InputStreamReader inputStreamReader = new InputStreamReader(
                                 UsageMatcher.class.getResourceAsStream("/dlm_landuse.csv"));
                 CSVReader csvReader = new CSVReaderBuilder(inputStreamReader).withSkipLines(1).build();
