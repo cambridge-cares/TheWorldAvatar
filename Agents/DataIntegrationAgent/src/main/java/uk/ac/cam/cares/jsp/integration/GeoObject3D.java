@@ -94,7 +94,7 @@ public class GeoObject3D {
         }
 //ST_DWintin is temporary used to find building in MBS area of SG
         String sql = "SELECT id, gmlid, objectclass_id, name, public.ST_AsEWKT(envelope) AS geom FROM cityobject " +
-                        "WHERE objectclass_id = 26 AND public.ST_DWithin(public.ST_Transform(envelope,4326), public.ST_Point(1.2840041999866776, 103.85908503862036, 4326),144.9);";
+                        "WHERE objectclass_id = 26 AND public.ST_DWithin(public.ST_Transform(envelope,4326), public.ST_Point(1.2840041999866776, 103.85908503862036, 4326),145);";
         try (Statement stmt = srcConn.createStatement()) {
             ResultSet result = stmt.executeQuery(sql);
             while (result.next()) {
@@ -209,8 +209,8 @@ public class GeoObject3D {
             for(int i = 0; i < allObject3D.size(); i++){
                 cityobjectid = allObject3D.get(i).getId();
                 //footprint extraction method is not perfect now, got error if parameter < 1 in ST_ConcaveHull (need to be imporved)
-                String sql = "SELECT public.ST_ConcaveHull(public.ST_Collect(geom),1) FROM ( " +
-                "SELECT public.ST_MakeValid(public.ST_Union(geometry),'method=structure keepcollapsed=false') as geom " +
+                String sql = "SELECT public.ST_ConvexHull(public.ST_Union(geom))) FROM ( " +
+                "SELECT public.ST_MakeValid(geometry) as geom " +
                 "FROM surface_geometry WHERE parent_id  IN (SELECT lod2_multi_surface_id FROM thematic_surface WHERE building_id = " 
                 + cityobjectid + " AND objectclass_id = " + this.objectClassid + ") AND geometry is not null) As footprint;"; 
                 Statement stmt = srcConn.createStatement();
@@ -278,46 +278,51 @@ public class GeoObject3D {
                 
                  for(int i = 0; i < allObject3D.size(); i++){
                     int buildingid = allObject3D.get(i).getId();
-                    String sql = "SELECT sg.id as surfaceid, sg.root_id as rootid, sg.parent_id as parentid, sg.cityobject_id as cityobjid, b.id as buildingid FROM surface_geometry sg "+
-                    "JOIN building b ON b.lod3_multi_surface_id = sg.parent_id "+
-                    "WHERE sg.geometry IS NOT NULL AND public.ST_3DArea(public.ST_MakeValid(sg.geometry)) != 0 "+
-                    "AND public.ST_Orientation(sg.geometry) = 1 " +
-                    "AND public.ST_Area(sg.geometry)/public.ST_3DArea(public.ST_MakeValid(sg.geometry))>0.8 " +
-                    "AND b.id = " + buildingid +
-                    " GROUP BY buildingid, rootid, surfaceid"; 
-    
-                 
-                // String sql = "SELECT sg.id as surfaceid, sg.root_id as rootid, sg.parent_id as parentid, sg.cityobject_id as cityobjid, b.id as buildingid FROM surface_geometry sg "+
-                // "JOIN building b ON b.lod3_multi_surface_id = sg.parent_id "+
-                // "JOIN surface_calculation sc ON sg.id = sc.surface_id "+
-                // "WHERE sc.orientation = 1 AND sc.ratio > 0.8 "+
-                // "GROUP BY buildingid, rootid, surfaceid";
-                // // Statement stmt = srcConn.createStatement();
-                ResultSet result = stmt.executeQuery(sql);
-                while (result.next()) {
-                    Integer[] groundSurface = new Integer[4];
-                    List<Integer[]> groundList = new ArrayList<>();
-                    int buildingId = result.getInt("buildingid");
-                    int surfaceId = result.getInt("surfaceid");
-                    int parentid = result.getInt("parentid");
-                    int rootid = result.getInt("rootid");
-                    int cityobjid = result.getInt("cityobjid");
-                    groundSurface[0] = surfaceId;
-                    groundSurface[1] = parentid;
-                    groundSurface[2] = rootid;
-                    groundSurface[3] = cityobjid;
+                    String checkSql = "SELECT COUNT(*) FROM thematic_surface ts WHERE ts.objectclass_id = " + this.objectClassid + " AND ts.building_id = " + buildingid; 
+                    ResultSet result = stmt.executeQuery(checkSql);
+                    while (result.next()) {
+                        int count = result.getInt("count");
+                        if (count == 0){
+                            String sql = "SELECT sg.id as surfaceid, sg.root_id as rootid, sg.parent_id as parentid, sg.cityobject_id as cityobjid, b.id as buildingid FROM surface_geometry sg " +
+                                          "JOIN building b ON b.lod3_multi_surface_id = sg.parent_id "+
+                                          "WHERE sg.geometry IS NOT NULL AND public.ST_3DArea(public.ST_MakeValid(sg.geometry)) != 0 "+
+                                          "AND public.ST_Orientation(sg.geometry) = 1 " +
+                                          "AND public.ST_Area(sg.geometry)/public.ST_3DArea(public.ST_MakeValid(sg.geometry))>0.8 " +
+                                          "AND b.id = " + buildingid + ";";
+                            // String sql = "SELECT sg.id as surfaceid, sg.root_id as rootid, sg.parent_id as parentid, sg.cityobject_id as cityobjid, b.id as buildingid FROM surface_geometry sg "+
+                            // "JOIN building b ON b.lod3_multi_surface_id = sg.parent_id "+
+                            // "JOIN surface_calculation sc ON sg.id = sc.surface_id "+
+                            // "WHERE sc.orientation = 1 AND sc.ratio > 0.8 "+
+                            // "GROUP BY buildingid, rootid, surfaceid";
+                            // // Statement stmt = srcConn.createStatement();
+                            result = stmt.executeQuery(sql);
+                            while (result.next()) {
+                                Integer[] groundSurface = new Integer[4];
+                                List<Integer[]> groundList = new ArrayList<>();
+                                int buildingId = result.getInt("buildingid");
+                                int surfaceId = result.getInt("surfaceid");
+                                int parentid = result.getInt("parentid");
+                                int rootid = result.getInt("rootid");
+                                int cityobjid = result.getInt("cityobjid");
+                                groundSurface[0] = surfaceId;
+                                groundSurface[1] = parentid;
+                                groundSurface[2] = rootid;
+                                groundSurface[3] = cityobjid;
 
-                    if (groundMap.containsKey(buildingId)) {
-                        groundList = groundMap.get(buildingId);
-                        groundList.add(groundSurface);
-                    } else {
-                        groundList.add(groundSurface);
-                        groundMap.put(buildingId, groundList);
-                    }                   
-                                    
-                }                               
-                updateSurface(groundMap);  
-                //else for the other surface type need to be developed
+                                if (groundMap.containsKey(buildingId)) {
+                                    groundList = groundMap.get(buildingId);
+                                    groundList.add(groundSurface);
+                                } else {
+                                    groundList.add(groundSurface);
+                                    groundMap.put(buildingId, groundList);
+                                }                   
+                                                
+                            }                               
+                            updateSurface(groundMap);  
+                            //else for the other surface type need to be developed
+                        }
+                    }
+              
             }
         }
         }catch (SQLException e) {
