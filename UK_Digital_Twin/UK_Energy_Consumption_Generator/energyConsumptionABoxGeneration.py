@@ -1,18 +1,16 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 08 June 2022         #
+# Last Update Date: 09 Sept 2023         #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK energy consumption graph."""
 
 import os
 import owlready2
-import numpy as np
 from rdflib.extras.infixowl import OWL_NS
-from rdflib import Graph, URIRef, Literal, ConjunctiveGraph
+from rdflib import Graph, URIRef, Literal
 from rdflib.namespace import RDF, XSD, RDFS
 from rdflib.plugins.sleepycat import Sleepycat
-from rdflib.store import NO_STORE, VALID_STORE
 import sys
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
@@ -20,16 +18,17 @@ from UK_Digital_Twin_Package import UKDigitalTwin as UKDT
 from UK_Digital_Twin_Package import UKDigitalTwinTBox as T_BOX
 from UK_Digital_Twin_Package import EnergyConsumptionDataProperty as EngConsump
 from UK_Digital_Twin_Package import UKEnergyConsumption as UKec
-from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
-from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
+from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, readFile
 from UK_Digital_Twin_Package.LACodeOfOfficialRegion import LACodeOfOfficialRegion as LACode
 import uuid
+from pyderivationagent.kg_operations.sparql_client import PySparqlClient
 
 """Notation used in URI construction"""
 HASH = '#'
 SLASH = '/'
 UNDERSCORE = '_'
 OWL = '.owl'
+TTL = '.ttl'
 
 """Create an instance of Class UKDigitalTwin"""
 dt = UKDT.UKDigitalTwin()
@@ -45,52 +44,25 @@ ontoecape_space_and_time        = owlready2.get_ontology(t_box.ontoecape_space_a
 ontocape_coordinate_system      = owlready2.get_ontology(t_box.ontocape_coordinate_system).load()
 ontoeip_system_function         = owlready2.get_ontology(t_box.ontoeip_system_function).load()
 ontoenergysystem                = owlready2.get_ontology(t_box.ontoenergysystem).load()
-# bibtex         = owlready2.get_ontology(t_box.bibtex).load()
-# owl         = owlready2.get_ontology(t_box.owl).load()
-
-"""User specified folder path"""
-filepath = None
-userSpecified = False
-
-"""Energy Consumption Conjunctive graph identifier"""
-ukec_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn2017"
-
-"""The UK digital twin URL and UK enelectricity system URL"""
-# UKDigitalTwinURL = UKDT.nodeURIGenerator(1, dt.topNode, None)
-UKElectricitySystem = UKDT.nodeURIGenerator(2, dt.electricitySystem, None)
 
 ### Functions ### 
 """ The Energy Consumption DataProperty Instance constructor"""
 def createEnergyConsumptionDataPropertyInstance(version):
     engconsump = EngConsump.EnergyConsumptionData(version)   
     elecConDataArrays = readFile(engconsump.ElectricityConsumptionData)      
-    ukElectricityConsumption = UKDT.nodeURIGenerator(3, dt.energyConsumption, engconsump.VERSION)
-    root_node = ukElectricityConsumption
-    fileNum = len(elecConDataArrays)  # substruct the first header line 
-    
-    return engconsump, elecConDataArrays, root_node, ukElectricityConsumption, fileNum
+    return engconsump, elecConDataArrays
 
 """Main function: Add Triples to the regional and local nodes"""
-def addUKElectricityConsumptionTriples(ElectricitySystemIRI, version, OWLFileStoragePath, updateLocalOWLFile = True, storeType = 'default'):
+def addUKElectricityConsumptionTriples(ElectricitySystemIRI, version, updateEndpointIRI, KGFileStoragePath, updateLocalOWLFile = True):
+    ## Validate the file path
+    folder = os.path.exists(KGFileStoragePath)
+    if not folder:                
+        os.makedirs(KGFileStoragePath)           
+        print("---  New folder %s...  ---" % KGFileStoragePath)
+
     print('Starts adding regional and local nodes.')
     ukec = UKec.UKEnergyConsumption(version)
-    defaultStoredPath = ukec.StoreGeneratedOWLs
-    defaultPath_Sleepycat = ukec.SleepycatStoragePath 
-    filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
-    if filepath == None:
-        return
-    store = LocalGraphStore(storeType)
-    
-    if isinstance(store, Sleepycat):    
-        # Create Conjunctive graph maintain all power plant graphs
-        eleConConjunctiveGraph = ConjunctiveGraph(store=store, identifier = ukec_cg_id)
-        sl = eleConConjunctiveGraph.open(defaultPath_Sleepycat, create = False)
-        if sl == NO_STORE:
-            print('Cannot find the specified sleepycat store')
-    else:
-        eleConConjunctiveGraph = None
-
-    engconsump, elecConDataArrays, root_node, ukElectricityConsumption, fileNum = createEnergyConsumptionDataPropertyInstance(version)  
+    engconsump, elecConDataArrays = createEnergyConsumptionDataPropertyInstance(version)  
     
     # check the data file header
     if elecConDataArrays[0] == engconsump.headerElectricityConsumption:
@@ -103,7 +75,7 @@ def addUKElectricityConsumptionTriples(ElectricitySystemIRI, version, OWLFileSto
     ontologyIRI = dt.baseURL + SLASH + dt.topNode + SLASH + str(uuid.uuid4())  # root_node + dt.GB
     
     ## Create rdf graph with identifier, regional nodes are named graphs including its local nodes
-    graph = Graph(store = store, identifier = URIRef(ontologyIRI)) # graph(store='default', identifier)
+    graph = Graph(store = 'default', identifier = URIRef(ontologyIRI))
     
     # Import T-boxes
     graph.set((graph.identifier, RDF.type, OWL_NS['Ontology']))
@@ -119,15 +91,15 @@ def addUKElectricityConsumptionTriples(ElectricitySystemIRI, version, OWLFileSto
        
         # Define the URL of the nodes
         ec_place_name = elecConData[0].strip('\n').replace('|',',')
-        ec_root_node = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.TotalConsumptionKey + str(uuid.uuid4()) # + ec_place_name # top node of the named graph
-        timeperiod_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.TimePeriodKey + str(uuid.uuid4()) # + ec_place_name        
-        value_timeperiod_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.valueKey + str(uuid.uuid4()) #+ ukec.TimePeriodKey + ec_place_name 
-        starttime_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.StartTimeKey + str(uuid.uuid4()) # + ec_place_name 
-        value_totalconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.valueKey + str(uuid.uuid4()) # + ukec.TotalConsumptionKey + ec_place_name
-        domesticconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.DomesticConsumptionKey + str(uuid.uuid4()) # + ec_place_name
-        non_domesticconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.IndustrialAndCommercialConsumptionKey + str(uuid.uuid4()) # + ec_place_name
-        value_domesticconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.valueKey + str(uuid.uuid4()) # +ukec.DomesticConsumptionKey + ec_place_name
-        value_non_domesticconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.valueKey + str(uuid.uuid4()) # ukec.IndustrialAndCommercialConsumptionKey + ec_place_name
+        ec_root_node = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.TotalConsumptionKey + str(uuid.uuid4())
+        timeperiod_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.TimePeriodKey + str(uuid.uuid4())      
+        value_timeperiod_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.valueKey + str(uuid.uuid4())
+        starttime_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.StartTimeKey + str(uuid.uuid4())
+        value_totalconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.valueKey + str(uuid.uuid4())
+        domesticconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.DomesticConsumptionKey + str(uuid.uuid4())
+        non_domesticconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.IndustrialAndCommercialConsumptionKey + str(uuid.uuid4())
+        value_domesticconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.valueKey + str(uuid.uuid4())
+        value_non_domesticconsumption_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.valueKey + str(uuid.uuid4())
         observed_AdministrativeDivision_uri = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukec.AdministrativeDivisionKey + str(uuid.uuid4())    
         observed_place_uri = t_box.dbr + ec_place_name # dbpedia
                
@@ -183,21 +155,16 @@ def addUKElectricityConsumptionTriples(ElectricitySystemIRI, version, OWLFileSto
         graph.add((URIRef(observed_AdministrativeDivision_uri), OWL_NS['sameAs'], URIRef(observed_place_uri)))
         
         # print(graph.serialize(format="turtle").decode("utf-8"))
-
             
     # generate/update OWL files
     if updateLocalOWLFile == True:
          # Store/update the generated owl files      
-        if filepath[-2:] != "\\": 
-            filepath_ = filepath + '\\' + 'UK_energy_consumption_UK_' + str(version) + OWL
+        if KGFileStoragePath[-2:] != "/": 
+            filepath_ = KGFileStoragePath + '/' + 'UK_energy_consumption_UK_' + str(version) + TTL
         else:
-            filepath_ = filepath + 'UK_energy_consumption_UK_' + str(version) + OWL
-        storeGeneratedOWLs(graph, filepath_)
-    
-    if isinstance(store, Sleepycat):  
-        eleConConjunctiveGraph.close()               
-    return  
+            filepath_ = KGFileStoragePath + 'UK_energy_consumption_UK_' + str(version) + TTL
+        storeGeneratedOWLs(graph, filepath_)   
 
-if __name__ == '__main__':
-    addUKElectricityConsumptionTriples("http://www.theworldavatar.com/kb/ontoenergysystem/ElectricPowerSystem_71cf325f-727d-4618-9fd1-2aec80bb87bf", 2017, None, True, 'default')
-    print('****************************Terminated****************************')
+    sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
+    sparql_client.uploadOntology(filepath_)  
+    return  

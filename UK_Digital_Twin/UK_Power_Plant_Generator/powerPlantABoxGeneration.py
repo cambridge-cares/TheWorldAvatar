@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 07 April 2022        #
+# Last Update Date: 06 Sept 2023         #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power plant graph."""
@@ -8,10 +8,8 @@
 import os
 import owlready2
 from rdflib.extras.infixowl import OWL_NS
-from rdflib import Graph, URIRef, Literal, ConjunctiveGraph
+from rdflib import Graph, URIRef, Literal
 from rdflib.namespace import RDF, RDFS
-from rdflib.plugins.sleepycat import Sleepycat
-from rdflib.store import NO_STORE, VALID_STORE
 import sys
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
@@ -19,11 +17,10 @@ from UK_Digital_Twin_Package import UKDigitalTwin as UKDT
 from UK_Digital_Twin_Package import UKDigitalTwinTBox as T_BOX
 from UK_Digital_Twin_Package import DUKESDataProperty as DUKES
 from UK_Digital_Twin_Package import UKPowerPlant as UKpp
-from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 from UK_Digital_Twin_Package.LACodeOfOfficialRegion import LACodeOfOfficialRegion as LACode
-from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
+from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, readFile
 import uuid
-from pyasyncagent.kg_operations.sparql_client import PySparqlClient
+from pyderivationagent.kg_operations.sparql_client import PySparqlClient
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -41,14 +38,6 @@ t_box = T_BOX.UKDigitalTwinTBox()
 """Create an object of Class UKPowerPlant"""
 ukpp = UKpp.UKPowerPlant()
 
-"""OWL file storage path"""
-defaultStoredPath = ukpp.StoreGeneratedOWLs
-
-"""Sleepycat storage path"""
-userSpecifiePath_Sleepycat = None # user specified path
-userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
-defaultPath_Sleepycat = ukpp.SleepycatStoragePath
-
 """T-Box URI"""
 ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
 ontocape_technical_system      = owlready2.get_ontology(t_box.ontoecape_technical_system).load()
@@ -63,12 +52,7 @@ ontocape_coordinate_system      = owlready2.get_ontology(t_box.ontocape_coordina
 ontocape_SI_units               = owlready2.get_ontology(t_box.ontocape_SI_units).load()
 ontoenergysystem                = owlready2.get_ontology(t_box.ontoenergysystem).load()
 
-"""User specified folder path"""
-filepath = None # user specified path
-userSpecified = False # storage mode: False: default, True: user specified
-
 """UK electricity system URL"""
-# UKDigitalTwinURL = UKDT.nodeURIGenerator(1, dt.topNode, None)
 UKElectricitySystem = UKDT.nodeURIGenerator(2, dt.electricitySystem, None)
 
 ### Functions ### 
@@ -95,35 +79,19 @@ def createDUKESDataPropertyInstance(version):
         designcapacityArrays, builtYearArrays, ownerArrays, gpslocationArrays, regionArrays, root_uri, fileNum
 
 """Main Function: Add Triples to the named graph"""
-def addUKPowerPlantTriples(version, updateEndpointIRI, OWLFileStoragePath, updateLocalOWLFile = True, storeType = 'default'):  
-    global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, defaultPath_Sleepycat
-    filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
-    if filepath == None:
-        return
-    store = LocalGraphStore(storeType)   
-    if isinstance(store, Sleepycat):    
-        # Create Conjunctive graph maintain all power plant graphs
-        powerPlantConjunctiveGraph = ConjunctiveGraph(store=store)
-        
-        if os.path.exists(defaultPath_Sleepycat) and not userSpecified_Sleepycat:
-            print('****Non user specified Sleepycat storage path, will use the default storage path****')
-            sl = powerPlantConjunctiveGraph.open(defaultPath_Sleepycat, create = False)
-        
-        elif userSpecifiePath_Sleepycat == None:
-            print('****Needs user to specify a Sleepycat storage path****')
-            userSpecifiePath_Sleepycat = selectStoragePath()
-            userSpecifiePath_Sleepycat_ = userSpecifiePath_Sleepycat + '\\' + 'ConjunctiveGraph_UKPowerPlant'
-            sl = powerPlantConjunctiveGraph.open(userSpecifiePath_Sleepycat_, create = False)   
-        
-        if sl == NO_STORE:
-        # There is no underlying Sleepycat infrastructure, so create it
-            powerPlantConjunctiveGraph.open(defaultPath_Sleepycat, create=True)
-        else:
-            assert sl == VALID_STORE, "The underlying sleepycat store is corrupt"
-            
+def addUKPowerPlantTriples(version, updateEndpointIRI, KGFileStoragePath, updateEndpoint = True):  
+    
+    ## Validate the file path
+    folder = os.path.exists(KGFileStoragePath)
+    if not folder:                
+        os.makedirs(KGFileStoragePath)           
+        print("---  New folder %s...  ---" % KGFileStoragePath)
+
+    ## Specify the DUKES data properties      
     dukes, plantnameArrays, planttypeArrays, energygenArrays, gentechArrays, primaryfuelArrays, designcapacityArrays, builtYearArrays, ownerArrays, \
         gpslocationArrays, regionArrays, root_uri, fileNum = createDUKESDataPropertyInstance(version)     
      
+    ## Define the power system IRIs
     UKElectricitySystemIRI = UKElectricitySystem + str(uuid.uuid4())            
     GBElectricitySystemIRI = UKElectricitySystem + str(uuid.uuid4())
     NIElectricitySystemIRI = UKElectricitySystem + str(uuid.uuid4())
@@ -131,12 +99,12 @@ def addUKPowerPlantTriples(version, updateEndpointIRI, OWLFileStoragePath, updat
     UKAdministrativeDivisionIRI = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukpp.AdministrativeDivisionKey + str(uuid.uuid4())
     GBAdministrativeDivisionIRI = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukpp.AdministrativeDivisionKey + str(uuid.uuid4())
     NIAdministrativeDivisionIRI = dt.baseURL + SLASH + t_box.ontoenergysystemName + SLASH + ukpp.AdministrativeDivisionKey + str(uuid.uuid4())    
-     
+
+    ## Create the power plant entities  
     counter = 0
     while(counter < fileNum): 
         plantname = ''.join(plantnameArrays[counter]).strip('\n').strip(' ')
         planttype = ''.join(planttypeArrays[counter]).strip('\n').strip(' ')
-        # energygen = ''.join(energygenArrays[counter]).strip('\n').strip(' ')
         gentech = ''.join(gentechArrays[counter]).strip('\n').strip(' ')
         primaryfueltype = ''.join(primaryfuelArrays[counter][0]).strip('\n').strip(' ')
         primaryfuellabel = ''.join(primaryfuelArrays[counter][1]).strip('\n').strip(' ')
@@ -170,7 +138,7 @@ def addUKPowerPlantTriples(version, updateEndpointIRI, OWLFileStoragePath, updat
             latlon = str(gpslocation[0].strip('\n').strip(' ').replace(' ', '') + '#' + gpslocation[1].strip('\n').strip(' ').replace(' ', '')).replace('\xa0', '')
            
             ## Create rdf graph with identifier
-            graph = Graph(store = store, identifier = URIRef(ontologyIRI))
+            graph = Graph(store = 'default', identifier = URIRef(ontologyIRI))
             
             ## Import T-boxes and add attributes of the ontology
             graph.set((graph.identifier, RDF.type, OWL_NS['Ontology']))
@@ -264,24 +232,16 @@ def addUKPowerPlantTriples(version, updateEndpointIRI, OWLFileStoragePath, updat
             # print(graph.serialize(format="turtle").decode("utf-8"))
             
             ## generate/update OWL files
-            if updateLocalOWLFile == True:
+            if updateEndpoint == True:
                 # Store/update the generated owl files      
-                if filepath[-1:] != '\\': 
-                    filepath_ = filepath + '\\' + str(counter) + UNDERSCORE + plantname + '_UK' + TTL
+                if KGFileStoragePath[-1:] != '/': 
+                    filepath_ = KGFileStoragePath + '/' + str(counter) + UNDERSCORE + plantname + '_UK' + TTL
                 else:
-                    filepath_ = filepath + str(counter) + UNDERSCORE + plantname + '_UK' + TTL
+                    filepath_ = KGFileStoragePath + str(counter) + UNDERSCORE + plantname + '_UK' + TTL
                 storeGeneratedOWLs(graph, filepath_)
             
             sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
-            sparql_client.uploadOntology(filepath_)
-                  
+            sparql_client.uploadOntology(filepath_)                 
         counter += 1 
-    
-    if isinstance(store, Sleepycat):  
-        powerPlantConjunctiveGraph.close()
-    return UKElectricitySystemIRI, GBElectricitySystemIRI, NIElectricitySystemIRI
 
-if __name__ == '__main__':
-    updateEndpointIRI = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_powerplant/sparql"
-    addUKPowerPlantTriples(2021, updateEndpointIRI, None, True, 'default')
-    print('terminated')
+    return UKElectricitySystemIRI, GBElectricitySystemIRI, NIElectricitySystemIRI

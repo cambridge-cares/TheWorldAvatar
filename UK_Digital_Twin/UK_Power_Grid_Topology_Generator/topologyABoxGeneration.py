@@ -1,17 +1,14 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 07 June 2022         #
+# Last Update Date: 06 Sept 2023         #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid topology graph."""
 import csv
 import owlready2
-# import numpy as np
 from rdflib.extras.infixowl import OWL_NS
-from rdflib import Graph, URIRef, Literal, ConjunctiveGraph
+from rdflib import Graph, URIRef, Literal
 from rdflib.namespace import RDF, RDFS
-from rdflib.plugins.sleepycat import Sleepycat
-from rdflib.store import NO_STORE
 import sys, os
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
@@ -19,18 +16,15 @@ from UK_Digital_Twin_Package import UKDigitalTwin as UKDT
 from UK_Digital_Twin_Package import UKDigitalTwinTBox as T_BOX
 from UK_Digital_Twin_Package import TopologicalInformationProperty as TopoInfo
 from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
-from UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
 from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package import UKEnergyConsumption as UKec
 from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
-from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
-from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
+from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, readFile
 from UK_Digital_Twin_Package.DistanceCalculator import DistanceBasedOnGPSLocation
-from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endpointList
 from UK_Digital_Twin_Package import generatorCluster as genCluster
 import uuid
-
 import UK_Power_Grid_Topology_Generator.SPARQLQueriesUsedInTopologyABox as query_topo
+from pyderivationagent.kg_operations.sparql_client import PySparqlClient
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -38,18 +32,13 @@ SLASH = '/'
 UNDERSCORE = '_'
 OWL = '.owl'
 KV = 'kV'
-
-"""Graph store"""
-store = 'default'
+TTL = '.ttl'
 
 """Create an instance of Class UKDigitalTwin"""
 dt = UKDT.UKDigitalTwin()
 
 """Create an object of Class UKDigitalTwinTBox"""
 t_box = T_BOX.UKDigitalTwinTBox()
-
-# """Decommissioned: Create an object of Class UKPowerGridTopology"""
-# uk_topo = UK_Topo.UKPowerGridTopology()
 
 """Create an object of Class UKPowerPlant"""
 ukpp = UKpp.UKPowerPlant()
@@ -59,15 +48,6 @@ ukmf = ModelFactor.ModelFactor()
 
 """Create an object of Class UKEnergyConsumption"""
 ukec = UKec.UKEnergyConsumption()
-
-# """Create an object of Class UKPowerGridModel"""
-# uk_ebus_model = UK_PG.UKEbusModel()
-# uk_eline_model = UK_PG.UKElineModel()
-# uk_egen_model = UK_PG.UKEGenModel()
-
-"""Blazegraph UK digital tiwn"""
-endpoint_label = endpointList.ukdigitaltwin['label']
-endpoint_url = endpointList.ukdigitaltwin['queryendpoint_iri']
 
 def loadTboxs(): 
     """T-Box URI"""
@@ -96,18 +76,10 @@ def loadTboxs():
 """Data Array"""
 modelFactorArrays = readFile(ukmf.CO2EmissionFactorAndCostFactor)
 
-"""User specified folder path"""
-filepath = None
-userSpecified = False
-
-"""Topology Conjunctive graph identifier"""
-topo_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model"
-
 ### Functions ### 
 """Root_node, root_uri (top node) and namespace creator based on different bus number"""
-def rootNodeAndNameSpace(numOfBus, numOfBranch, endpoint_label, ElectricitySystemName): 
+def rootNodeAndNameSpace(numOfBus, numOfBranch, slackBusIndex, endpoint_label, ElectricitySystemName): 
     root_node = UKDT.nodeURIGenerator(3, dt.gridTopology, numOfBus)
-    # gridModelNodeSegment = UKDT.nodeURIGenerator(3, dt.powerGridModel, numOfBus).split(OWL)[0] 
     ontopowsys_namespace = dt.baseURL + SLASH + t_box.ontopowsysName + SLASH
     topology_root_node = root_node + str(uuid.uuid4())
     ElectricitySystemIRI = query_topo.queryElectricitySystemIRI(endpoint_label, ElectricitySystemName)
@@ -115,7 +87,8 @@ def rootNodeAndNameSpace(numOfBus, numOfBranch, endpoint_label, ElectricitySyste
                   'topology_root_node': topology_root_node,
                   'numOfBus': numOfBus,
                   'numOfBranch': numOfBranch,
-                  'ElectricitySystemIRI':ElectricitySystemIRI
+                  'ElectricitySystemIRI':ElectricitySystemIRI,
+                  'slackBusIndex':slackBusIndex
         }
     return topoConfig
 
@@ -127,7 +100,14 @@ def createTopologicalInformationPropertyInstance(numOfBus, voltageLevel):
     return topo_info, busInfoArrays, branchTopoInfoArrays, topo_info.BranchInfo
 
 """Main function: create the sub graph represents the Topology"""
-def createTopologyGraph(topoConfig:dir, generatorClusterFunctionName, voltageLevel, OWLFileStoragePath, updateLocalOWLFile = True, storeType = 'default'):
+def createTopologyGraph(topoConfig:dir, generatorClusterFunctionName, voltageLevel, updateEndpointIRI, KGFileStoragePath, updateEndpoint = True):
+
+    ## Validate the file path
+    folder = os.path.exists(KGFileStoragePath)
+    if not folder:                
+        os.makedirs(KGFileStoragePath)           
+        print("---  New folder %s...  ---" % KGFileStoragePath)
+
     ## Loading the T-boxes
     loadTboxs()
     
@@ -137,33 +117,16 @@ def createTopologyGraph(topoConfig:dir, generatorClusterFunctionName, voltageLev
     ontopowsys_namespace = topoConfig['ontopowsys_namespace']
     topology_root_node = topoConfig['topology_root_node']
     ElectricitySystemIRI = topoConfig['ElectricitySystemIRI']
+    slackBusIndex = topoConfig['slackBusIndex']
     
     ## initialise the topology instance
     uk_topo = UK_Topo.UKPowerGridTopology(numOfBus)
-    
-    ## initialise the storage
-    defaultStoredPath = uk_topo.StoreGeneratedOWLs
-    defaultPath_Sleepycat = uk_topo.SleepycatStoragePath
-    filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
-    if filepath == None:
-        return
-    store = LocalGraphStore(storeType) 
+   
     ## specify the topology properties according to the model type
     topo_info, busInfoArrays, branchTopoInfoArrays, filePathofBranchTopoInfo = createTopologicalInformationPropertyInstance(numOfBus, voltageLevel)
-
-    ## initialise the Sleepycat
-    if isinstance(store, Sleepycat): 
-        print('Create the graph for ', topo_info.EBus_num, ' buses and ', topo_info.ELine_num, ' branches topology.')
-        cg_topo_ukec = ConjunctiveGraph(store=store, identifier = topo_cg_id)
-        sl = cg_topo_ukec.open(defaultPath_Sleepycat, create = False)
-        if sl == NO_STORE:
-            print('Cannot find the specified sleepycat store')
-    else:
-        cg_topo_ukec = None
     
-    ## create a named graph
     ontologyIRI = dt.baseURL + SLASH + dt.topNode + SLASH + str(uuid.uuid4())
-    graph = Graph(store = store, identifier = URIRef(ontologyIRI))
+    graph = Graph(store = 'default', identifier = URIRef(ontologyIRI))
        
     ## Import T-boxes
     graph.set((graph.identifier, RDF.type, OWL_NS['Ontology']))
@@ -178,35 +141,34 @@ def createTopologyGraph(topoConfig:dir, generatorClusterFunctionName, voltageLev
     graph.add((URIRef(topology_root_node), RDFS.label, Literal("UK_Topology_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch")))  
     graph.add((URIRef(topology_root_node), URIRef(t_box.ontoenergysystem + "isTopologyOf"), URIRef(ElectricitySystemIRI))) 
     
-    
     ## check the aggregatedBus and return aggregatedBusList
     aggregatedBusList = checkaggregatedBus(numOfBus)
     
     ## create the bus nodes
-    graph, orderedBusList, orderedLatlon = addBusTopologyNodes(graph, topo_info.headerBusTopologicalInformation, busInfoArrays, ontopowsys_namespace, topology_root_node, uk_topo)
+    graph, orderedBusList, orderedLatlon, slackBusIRI = addBusTopologyNodes(graph, topo_info.headerBusTopologicalInformation, busInfoArrays, ontopowsys_namespace, topology_root_node, uk_topo, slackBusIndex)
     
     ## create branch nodes
     graph = addBranchTopologyNodes(graph, numOfBranch, topo_info.headerBranchTopologicalInformation, filePathofBranchTopoInfo, branchTopoInfoArrays, orderedBusList, orderedLatlon, ontopowsys_namespace, topology_root_node, uk_topo)
     
     ## create tehe generator nodes
-    graph = addGeneratorTopologyNodes(graph, orderedBusList, orderedLatlon, generatorClusterFunctionName, aggregatedBusList, ontopowsys_namespace, topology_root_node, uk_topo)
+    graph = addGeneratorTopologyNodes(graph, orderedBusList, orderedLatlon, generatorClusterFunctionName, aggregatedBusList, ontopowsys_namespace, topology_root_node, uk_topo, updateEndpointIRI)
     
     # print(graph.serialize(format="turtle").decode("utf-8"))
     
     ## generate/update OWL files
-    if updateLocalOWLFile == True:  
-        if filepath[-2:] != "\\": 
-            filepath_ = filepath + '\\' + 'UK_' + topo_info.Name + OWL
+    if updateEndpoint == True:  
+        if KGFileStoragePath[-2:] != "/": 
+            filepath_ = KGFileStoragePath + '/' + 'UK_' + topo_info.Name + TTL
         else:
-            filepath_ = filepath + 'UK_' + topo_info.Name + OWL
+            filepath_ = KGFileStoragePath + 'UK_' + topo_info.Name + TTL
         storeGeneratedOWLs(graph, filepath_)
-        
-    if isinstance(store, Sleepycat):  
-        cg_topo_ukec.close()       
-    return
 
+    sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
+    sparql_client.uploadOntology(filepath_)   
 
-def addBusTopologyNodes(graph, busTopoheader, busDataArray, ontopowsys_namespace, topology_root_node, uk_topo): 
+    return topology_root_node, slackBusIRI
+
+def addBusTopologyNodes(graph, busTopoheader, busDataArray, ontopowsys_namespace, topology_root_node, uk_topo, slackBusIndex): 
     print('****************Adding the triples of BusNode****************')
     ## Check the bus data header
     if busDataArray[0] != busTopoheader:
@@ -217,12 +179,11 @@ def addBusTopologyNodes(graph, busTopoheader, busDataArray, ontopowsys_namespace
     orderedBusList = []
     orderedLatlon = []
     while counter < len(busDataArray):   
-        # print('Counter is ', counter)
         busTopoData = busDataArray[counter]
         busTopoData[2] = str(busTopoData[2]).replace("|", ",")
         print("##Bus number ", counter, " located at ", busTopoData[2])
         ## the bus node uri
-        bus_node = ontopowsys_namespace + uk_topo.BusNodeKey + str(uuid.uuid4()) # uk_topo.EquipmentConnection_EBusKey + busTopoData[0].zfill(3) 
+        bus_node = ontopowsys_namespace + uk_topo.BusNodeKey + str(uuid.uuid4())
         latlon = (str(busTopoData[4].strip('\n')) + '#' + str(busTopoData[3].strip('\n'))).strip(' ').replace(' ', '').replace('\xa0', '')
         ## Link bus node with root node and specify its type
         graph.add((URIRef(topology_root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(bus_node)))
@@ -231,8 +192,10 @@ def addBusTopologyNodes(graph, busTopoheader, busDataArray, ontopowsys_namespace
         graph.add((URIRef(bus_node), URIRef(ontoenergysystem.hasWGS84LatitudeLongitude.iri), Literal(latlon, datatype = 'http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon')))
         orderedBusList.append(bus_node)
         orderedLatlon.append(latlon)
+        if slackBusIndex == counter:
+            slackBusIRI = bus_node
         counter += 1     
-    return graph, orderedBusList, orderedLatlon
+    return graph, orderedBusList, orderedLatlon, slackBusIRI
 
 def addBranchTopologyNodes(graph, numOfBranch, branchTopoHeader, filePathofBranchTopoInfo, branchTopoArray, orderedBusList, orderedLatlon, ontopowsys_namespace, topology_root_node, uk_topo): 
     print("****************Adding the triples of ELineNode****************") 
@@ -326,9 +289,9 @@ def addBranchTopologyNodes(graph, numOfBranch, branchTopoHeader, filePathofBranc
     print("***The BranchTopoInfo has been updated in " + filePathofBranchTopoInfo) 
     return graph
     
-def addGeneratorTopologyNodes(graph, orderedBusList, orderedLatlon, generatorClusterFunctionName, aggregatedBusList, ontopowsys_namespace, topology_root_node, uk_topo):    
+def addGeneratorTopologyNodes(graph, orderedBusList, orderedLatlon, generatorClusterFunctionName, aggregatedBusList, ontopowsys_namespace, topology_root_node, uk_topo, updateEndpointIRI):    
     print('****************Adding the triples of GeneratorNode****************')
-    # counter = 1 
+
     if modelFactorArrays[0] != ukmf.headerModelFactor:
         raise Exception('The bus model factor data header is not matched, please check the data file')
     
@@ -341,7 +304,7 @@ def addGeneratorTopologyNodes(graph, orderedBusList, orderedLatlon, generatorClu
         busInfoList.append(bus)
         i += 1
     
-    res_queryPowerPlantAttributes = list(query_topo.queryPowerPlantAttributes(endpoint_label))
+    res_queryPowerPlantAttributes = list(query_topo.queryPowerPlantAttributes(updateEndpointIRI))
     ## create an instance of class generatorCluster
     gc = genCluster.generatorCluster()
     ## get the cluster method via getattr function 
@@ -363,8 +326,7 @@ def addGeneratorTopologyNodes(graph, orderedBusList, orderedLatlon, generatorClu
         graph.add((URIRef(busGen['PowerGenerator']), URIRef(meta_model_topology.hasOutput.iri), URIRef(busGen['Bus_node'])))
        
         ## Add attributes: FixedOperatingCostandMaintenanceCost, VariableOperatingCostandMaintenanceCost, FuelCost, CarbonFactor
-        graph = AddCostAttributes(graph, busGen['PrimaryFuel'], busGen['GenerationTechnology'], busGen['PowerGenerator'], modelFactorArrays, ontopowsys_namespace, uk_topo)
-        # counter += 1               
+        graph = AddCostAttributes(graph, busGen['PrimaryFuel'], busGen['GenerationTechnology'], busGen['PowerGenerator'], modelFactorArrays, ontopowsys_namespace, uk_topo)         
      
     # print(graph.serialize(format="turtle").decode("utf-8"))
     return graph

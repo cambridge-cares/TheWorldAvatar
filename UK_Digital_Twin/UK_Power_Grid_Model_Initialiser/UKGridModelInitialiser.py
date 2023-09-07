@@ -100,8 +100,7 @@ class gridModelInitialiser(object):
 
         model_EGenABoxGeneration.createModel_EGen(self.numOfBus, self.topologyNodeIRI, self.powerSystemModelIRI, self.timeStamp, \
             self.agentIRI, self.OrderedBusNodeIRIList, self.derivationClient, self.endPointURL, self.startTime_of_EnergyConsumption, self.OPFOrPF, self.CarbonTax,\
-                self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder, " ", self.powerPlantOWLFileLocalPath, self.updateLocalPowerPlantOWLFileFlag)
-         
+                self.piecewiseOrPolynomial, self.pointsOfPiecewiseOrcostFuncOrder, " ", self.powerPlantOWLFileLocalPath, self.updateLocalPowerPlantOWLFileFlag)       
         return self
     
 if __name__ == '__main__':

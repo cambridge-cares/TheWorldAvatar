@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 17 March 2022        #
+# Last Update Date: 06 Sept 2023         #
 ##########################################
 
 """This module declare the properties of generating UK power grid model A-boxes"""
@@ -28,9 +28,6 @@ t_box = T_BOX.UKDigitalTwinTBox()
 
 """Create an instance of Class UKDigitalTwin"""
 dt = UKDT.UKDigitalTwin()
-
-"""Default remote endpoint"""
-endpoint = EndPointConfigAndBlazegraphRepoLabel.UKPowerGridModelKG
 
 """The namespace of ontopoesys"""
 ontopowsys_namespace = dt.baseURL + SLASH + t_box.ontopowsysName + SLASH

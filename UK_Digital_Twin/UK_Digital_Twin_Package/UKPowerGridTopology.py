@@ -1,16 +1,11 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 14 Oct 2021          #
+# Last Update Date: 09 Sept 2023         #
 ##########################################
 
 """This module declare the properties of generating UK power grid topology A-boxes"""
 
-from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel
-
 class UKPowerGridTopology:
-    
-    """Default remote endpoint"""
-    endpoint = EndPointConfigAndBlazegraphRepoLabel.UKGridTopologylKG
     
     """Node keys"""
     BusNodeKey = "BusNode_"
@@ -25,8 +20,7 @@ class UKPowerGridTopology:
     CoordinateSystemKey = "CoordinateSystem_"
     
     valueKey = "ScalarValue_"
-    # NumberOfKey = "Number_of_" ## where does this key come from?
 
-    def __init__(self, numOfBus = 10, Location = 'http://dbpedia.org/resource/United_Kingdom'):
-            self.numOfBus = numOfBus
-            self.location = Location
+    def __init__(self, numOfBus, Location = 'http://dbpedia.org/resource/United_Kingdom'):
+        self.numOfBus = numOfBus
+        self.location = Location
