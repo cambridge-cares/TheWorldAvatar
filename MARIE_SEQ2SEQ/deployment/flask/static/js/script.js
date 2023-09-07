@@ -16,12 +16,12 @@ function display_latency_info(trans_latency, kg_latency) {
     elem.style.display = "block";
 }
 
-function display_sparql_query(sparql_query) {
+function displaySparqlQuery(sparql_query) {
     document.getElementById("sparql-query").innerHTML = sparql_query;
     document.getElementById('sparql-query-container').style.display = "block";
 }
 
-function display_results(data) {
+function displayResults(data) {
     if (!data) {
         // TODO
         return
@@ -109,12 +109,16 @@ function askQuestion() {
         return res.json()
     }).then(json => {
         display_latency_info(json["translation_latency"], json["kg_latency"])
-        display_sparql_query(json["sparql_query"])
-        display_results(json["data"])
+        if (json["sparql_query"]) {
+            displaySparqlQuery(json["sparql_query"])
+            displayResults(json["data"])
+        } else {
+            displayError("The given question cannot be translated to a SPARQL query. Please try to reformulate your question.")
+        }
     }).catch(error => {
         if (error instanceof HttpError) {
             if (error.statusCode == 500) {
-                display500Error();
+                displayError("An internal server error is encountered. Please try again.");
             }
         }
     }).finally(() => {
@@ -123,10 +127,8 @@ function askQuestion() {
     })
 }
 
-
-function display500Error() {
+function displayError(message) {
     elem = document.getElementById("error-container")
-    elem.innerHTML = "An internal server error is encountered. Please try again."
-    elem.style.color = "red"
+    elem.innerHTML = message
     elem.style.display = "block"
 }
