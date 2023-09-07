@@ -23,7 +23,7 @@ function displaySparqlQuery(sparql_query) {
 
 function displayResults(data) {
     if (!data) {
-        // TODO
+        displayError("The predicted SPARQL query is malformed and cannot be executed against the OntoSpecies knowledge graph.")
         return
     }
     let content = "<table class='table table-sm table-hover'><thead><tr>"
@@ -37,12 +37,12 @@ function displayResults(data) {
                 is_var_used[vars.indexOf(key)] = true;
             }
         }
-    }
 
-    // remove vars with no values
-    for (let i = is_var_used.length - 1; i >= 0; i--) {
-        if (!is_var_used[i]) {
-            vars.splice(i);
+        // remove vars with no values
+        for (let i = is_var_used.length - 1; i >= 0; i--) {
+            if (!is_var_used[i]) {
+                vars.splice(i);
+            }
         }
     }
 
