@@ -20,15 +20,20 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 public class UsageMatcher {
     RemoteRDBStoreClient rdbStoreClient;
+
+    /**
+     * @param database database URL
+     * @param user username to database
+     * @param password password to database
+     */
     public UsageMatcher(String database, String user, String password) {
         this.rdbStoreClient  = new RemoteRDBStoreClient(database, user, password);
     }
+
     /**
-     * Inputs database name, postgis username, postgis password and subsequently update the OSM rows with ontobuilt category by
-     * running SQL query to categorize as according to osm_tags.csv
-     * @param database
-     * @param user
-     * @param password
+     * Matches OSM usage to OntoBuiltEnv:PropertyUsage class and updates pointTable and polygonTable accordingly
+     * @param pointTable table containing OSM data with the geometries being points
+     * @param polygonTable table containing OSM data with the geometries being polygons
      */
     public void updateOntoBuilt(String pointTable, String polygonTable) {
         List<String> tableNames = Arrays.asList(polygonTable, pointTable);
@@ -89,11 +94,9 @@ public class UsageMatcher {
     }
 
     /**
-     * Inputs database name, postgis username, postgis password.
-     * Check if "building_iri", "propertyusage_iri", "ontobuilt", "usageshare" columns exist, if not create it
-     * @param database
-     * @param user
-     * @param password
+     * Check and creates the columns building_iri, ontobuilt if they don't exist in pointTable and polygonTable
+     * @param pointTable table containing OSM data with the geometries being points
+     * @param polygonTable table containing OSM data with the geometries being polygons
      */
     public void checkAndAddColumns(String pointTable, String polygonTable) {
         List<String> tableNames = Arrays.asList(polygonTable, pointTable);
@@ -121,6 +124,12 @@ public class UsageMatcher {
         }
     }
 
+    /**
+     * Intialise usageTable with building_iri, propertyusage_iri, ontobuilt, usageshare columns and copy from pointTable and polygonTable non-null building_iri and ontobuilt values
+     * @param pointTable table containing OSM data with the geometries being points
+     * @param polygonTable table containing OSM data with the geometries being polygons
+     * @param usageTable centralised table to store usage information
+     */
     public void copyFromOSM(String pointTable, String polygonTable, String usageTable) {
         String usageSchema = usageTable.split("\\.")[0];
         String initialiseSchema = "CREATE SCHEMA IF NOT EXISTS " + usageSchema;
@@ -139,12 +148,11 @@ public class UsageMatcher {
     }
 
     /**
-     * Check if the column name exists
-     * @param connection
-     * @param tableNamewSchema
-     * @param columnName
-     * @return
-     * @throws SQLException
+     * Check if the column columnName exists
+     * @param connection PostgreSQL connection object
+     * @param tableNamewSchema table name with schema prefix
+     * @param columnName name of column to check
+     * @return true if column columnName exists, false otherwise
      */
     private boolean isColumnExist(Connection connection, String tableNamewSchema, String columnName)
             throws SQLException {
@@ -162,10 +170,9 @@ public class UsageMatcher {
     }
 
     /**
-     * Create connections to remoteStoreClient and execute SQL statements
-     * @param connection
-     * @param sql
-     * @throws SQLException
+     * Create connection to remoteStoreClient and execute SQL statement
+     * @param connection PostgreSQL connection object
+     * @param sql SQl statement to execute
      */
     private void executeSql(Connection connection, String sql) throws SQLException {
         try (Statement statement = connection.createStatement()) {

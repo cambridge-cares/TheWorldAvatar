@@ -49,15 +49,21 @@ public class OSMAgent extends JPSAgent {
             GeometryMatcher geometryMatcher = new GeometryMatcher(dbUrl, dbUser, dbPassword);
             UsageShareCalculator shareCalculator = new UsageShareCalculator(dbUrl, dbUser, dbPassword);
 
+            // match OSM usage to OntoBuiltEnv:PropertyUsage classes
             usageMatcher.checkAndAddColumns(pointTable, polygonTable);
             usageMatcher.updateOntoBuilt(pointTable, polygonTable);
 
+            // match OSM geometries with building IRI
             geometryMatcher.matchGeometry(pointTable);
             geometryMatcher.matchGeometry(polygonTable);
 
+            // intialise usage table and copy building IRI that has OSM usage
             usageMatcher.copyFromOSM(pointTable, polygonTable, usageTable);
 
+            // match buildings without OSM usage with land use
             shareCalculator.updateLandUse(usageTable, landUseTable);
+
+            // assign OntoBuiltEnv:PropertyUsage and calculate usage share for mixed usage buildings
             shareCalculator.updateUsageShare(usageTable);
         }
         catch (Exception e) {

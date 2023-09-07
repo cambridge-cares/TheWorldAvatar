@@ -9,35 +9,41 @@ import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+/**
+ * UsageShareCalculator contains 3 parts that run using SQL query
+ * 1) assignUsageShare - For each building_iri, assign Propertyusage_iri,
+ * calculate and assign usageShare to each OSM item.
+ * 2) updatePropertyUsageStatement - For each building_iri, that has two OSM
+ * items, check if they are the same ontoBuilt type,
+ * if they are the same ontoBuilt type, return the first instance as the
+ * propertyusage_iri
+ * 3) updateLandUse - For building_iri which are untagged to any osm_tags, as a
+ * default fallback,
+ * SQL query is run check and tag buildings with buildings_iri with
+ * propertyusage_iri and usageshare as according to the osm_landuse.csv
+ */
+
 public class UsageShareCalculator {
         private RemoteRDBStoreClient rdbStoreClient;
+
+        /**
+         * @param database database URL
+         * @param user username to database
+         * @param password password to database
+         */
         public UsageShareCalculator(String database, String user, String password) {
                 this.rdbStoreClient = new RemoteRDBStoreClient(database, user, password);
-
         }
 
         /**
-         * UsageShareCalculator contains 3 parts that run using SQL query
-         * 1) assignUsageShare - For each building_iri, assign Propertyusage_iri,
-         * calculate and assign usageShare to each OSM item.
-         * 2) updatePropertyUsageStatement - For each building_iri, that has two OSM
-         * items, check if they are the same ontoBuilt type,
-         * if they are the same ontoBuilt type, return the first instance as the
-         * propertyusage_iri
-         * 3) landUseMatcher - For building_iri which are untagged to any osm_tags, as a
-         * default fallback,
-         * SQL query is run check and tag buildings with buildings_iri with
-         * propertyusage_iri and usageshare as according to the osm_landuse.csv
-         *
-         * @param database
-         * @param user
-         * @param password
+         * Assigns OntoBuiltEnv:PropertyUsage IRI and usage share for building IRIs in usageTable
+         * @param usageTable centralised table to store usage information
          */
         public void updateUsageShare(String usageTable) {
                 String add_uuid_ossp_Extension = "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";";
 
+                // assign usageshare and propertyusage_iri
                 String assignUsageShare =
-                                // SQL to update polygons table
                                 "UPDATE " + usageTable + " AS p\n" +
                                                 "SET UsageShare = c.instances / c.total_instances::float,\n" +
                                                 "    propertyusage_iri = 'https://www.theworldavatar.com/kg/' || c.ontobuilt || '_' || uuid_generate_v4()::text\n"
@@ -54,8 +60,8 @@ public class UsageShareCalculator {
                                                 "WHERE p.building_iri = c.building_iri\n" +
                                                 "  AND p.ontobuilt = c.ontobuilt;";
 
+                // ensures that for the same building_iri with the same ontobuilt, propertyusage_iri is the same
                 String updatePropertyUsageStatement =
-                                // SQL to update polygons table
                                 "UPDATE " + usageTable + " AS p\n" +
                                                 "SET propertyusage_iri = subquery.min_propertyusage_iri\n" +
                                                 "FROM (\n" +
@@ -75,8 +81,7 @@ public class UsageShareCalculator {
                                                 "WHERE p.building_iri = subquery.building_iri\n" +
                                                 "    AND p.ontobuilt = subquery.ontobuilt;";
 
-                // Execute the SQL statement
-
+                // execute the SQL statement
                 rdbStoreClient.executeUpdate(add_uuid_ossp_Extension);
                 rdbStoreClient.executeUpdate(assignUsageShare);
                 rdbStoreClient.executeUpdate(updatePropertyUsageStatement);
@@ -84,6 +89,11 @@ public class UsageShareCalculator {
 
         }
 
+        /**
+         * Matches building IRIs not in usageTable with land use from landUseTable, and updates usageTable with the assigned OntoBuiltEnv:PropertyUsage class according to '/dlm_landuse.csv'
+         * @param usageTable centralised table to store usage information
+         * @param landUseTable table containing DLM land use data
+         */
         public void updateLandUse(String usageTable, String landUseTable) throws IOException {
                 InputStreamReader inputStreamReader = new InputStreamReader(
                                 UsageMatcher.class.getResourceAsStream("/dlm_landuse.csv"));
@@ -110,13 +120,10 @@ public class UsageShareCalculator {
                                         "Untagged buildings with building_iri are assigned for " + key + " with value:"
                                                         + value + " under the ontobuiltenv:" + ontobuilt
                                                         + " category.");
-
-
                 }
 
                 System.out.println(
                                 "Untagged building has been assigned an ontobuilt type according to the corresponding landuse.");
                 csvReader.close();
-
         }
 }
