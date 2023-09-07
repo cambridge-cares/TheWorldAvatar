@@ -1,18 +1,6 @@
-$('document').ready(function () {
-    $('#ask-button').click(function (e) {
-        askQuestion(e);
-    });
-
-    $('#input-field').keypress(function (e) {
-        if (e.which === 13) { //Enter key pressed
-            askQuestion(e);
-        }
-    });
-});
-
 const sampleQuestions = document.getElementsByClassName("sample-question");
 for (let elem of sampleQuestions) {
-    elem.addEventListener("click", function() {
+    elem.addEventListener("click", function () {
         document.getElementById('input-field').value = elem.textContent
         window.scrollTo(0, 0);
         askQuestion();
@@ -22,7 +10,7 @@ for (let elem of sampleQuestions) {
 let is_processing = false;
 
 function display_sparql_query(sparql_query) {
-    $('#sparql-query').append(sparql_query);
+    document.getElementById("sparql-query").innerHTML = sparql_query;
     document.getElementById('sparql-query-container').style.display = "block";
 }
 
@@ -65,7 +53,7 @@ function display_results(data) {
     })
 
     content += "</tbody></table>"
-    $('#results').append(content);
+    document.getElementById("results").innerHTML = content;
 }
 
 function askQuestion() {
@@ -73,36 +61,38 @@ function askQuestion() {
         return;
     }
 
-    const question = $("#input-field").val();
+    const question = document.getElementById("input-field").value;
     if (question === "") {
         return;
     }
 
     document.getElementById('sparql-query-container').style.display = "none";
 
-    $('#results').empty()
-    $('#sparql-query').empty()
+    document.getElementById("results").innerHTML = ""
+    document.getElementById("sparql-query").innerHTML = ""
 
     is_processing = true;
     document.getElementById('ask-button').className = "mybutton spinner"
 
-    $.ajax({
-        url: "/",
-        type: "POST",
-        data: JSON.stringify({ question }),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: function (response) {
-            display_sparql_query(response["sparql_query"])
-            display_results(response["data"])
-            is_processing = false;
-            document.getElementById('ask-button').className = "mybutton"
+    fetch("/", {
+        method: "POST",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
         },
-        error: function (xhr, ajaxOptions, thrownError) {
-            console.log(xhr.status);
-            console.log(thrownError);
-            is_processing = false;
-            document.getElementById('ask-button').className = "mybutton"
+        body: JSON.stringify({ question })
+    }).then(res => {
+        if (!res.ok) {
+            throw Error(res.status)
         }
+        return res.json()
+    }).then(json => {
+        display_sparql_query(json["sparql_query"])
+        display_results(json["data"])
+    }).catch(error => {
+        console.log(error)
+    }).finally(() => {
+        is_processing = false;
+        document.getElementById('ask-button').className = "mybutton"
     })
 }

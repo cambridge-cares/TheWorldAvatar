@@ -24,7 +24,6 @@
     <link href="http://kg.cmclinnovations.com/user/themes/quark/css/line-awesome.min.css" type="text/css"
         rel="stylesheet">
     <link href="/static/css/styles.css" type="text/css" rel="stylesheet">
-    <script src="http://kg.cmclinnovations.com/system/assets/jquery/jquery-2.x.min.js"></script>
 
 
 </head>
@@ -81,9 +80,9 @@
 
             <section class="marie-input-container full-width">
                 <div class="input-group">
-                    <input id="input-field" type="search" autocomplete="off" placeholder="Type your query...">
-                    <button id="ask-button" type="button" class="mybutton">
-                    </button>
+                    <input id="input-field" type="search" autocomplete="off" placeholder="Type your query..."
+                        onkeydown="if (event.keyCode == 13) askQuestion()">
+                    <button id="ask-button" type="button" class="mybutton" onclick="askQuestion()"></button>
                 </div>
             </section>
 
@@ -171,7 +170,8 @@
                             <div class="sample-question">What is the geometry of CO2?</div>
                         </li>
                         <li>
-                            <div class="sample-question">What's the covalent unit count of chemical entities belonging to aminoacridines?</div>
+                            <div class="sample-question">What's the covalent unit count of chemical entities belonging
+                                to aminoacridines?</div>
                         </li>
                     </ul>
                 </div>
@@ -218,12 +218,7 @@
         <p style="font-size: 75%;">All Rights Reserved.</p>
     </footer>
 
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-    <script src="http://kg.cmclinnovations.com/user/themes/quark/js/jquery.treemenu.js"></script>
-    <script src="http://kg.cmclinnovations.com/user/themes/quark/js/site.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="http://kg.cmclinnovations.com/user/themes/quark/js/accordian.js"></script>
-    <script src="http://kg.cmclinnovations.com/user/themes/quark/js/marie-dict.js"></script>
     <script src="../static/js/script.js"></script>
 </body>
 
