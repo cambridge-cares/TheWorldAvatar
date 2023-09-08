@@ -27,7 +27,8 @@ public class UsageMatcherTest {
                         when(mock.readNext()).thenReturn(testLine).thenReturn(null);
                     })) {
                 try (MockedConstruction<RemoteRDBStoreClient> remoteRDBStoreClientMock = mockConstruction(RemoteRDBStoreClient.class)) {
-                    UsageMatcher.updateOntoBuilt("", "", "", "points", "polygons");
+                    UsageMatcher usageMatcher = new UsageMatcher("", "", "");
+                    usageMatcher.updateOntoBuilt( "points", "polygons");
                     
                     verify(csvReaderMock.constructed().get(0), times(2)).readNext();
                     verify(remoteRDBStoreClientMock.constructed().get(0), times(2)).executeUpdate(argumentCaptor.capture());
@@ -64,7 +65,7 @@ public class UsageMatcherTest {
         doReturn(statementMock).when(connectionMock).createStatement();
         doReturn(databaseMetaDataMock).when(connectionMock).getMetaData();
 
-        doReturn(resultSetMock).when(databaseMetaDataMock).getColumns(isNull(), isNull(), anyString(), anyString());
+        doReturn(resultSetMock).when(databaseMetaDataMock).getColumns(isNull(), anyString(), anyString(), anyString());
 
         when(resultSetMock.next()).thenReturn(true).thenReturn(false).thenReturn(true).thenReturn(false).thenReturn(true).thenReturn(false).thenReturn(true).thenReturn(false);
 
@@ -72,13 +73,15 @@ public class UsageMatcherTest {
                 (mock, context) -> {
                     doReturn(connectionMock).when(mock).getConnection();
                 })) {
-            UsageMatcher.checkAndAddColumns("", "", "", "public.points", "public.polygons");
+            UsageMatcher usageMatcher = new UsageMatcher("", "", "");
 
-            verify(connectionMock, times(8)).getMetaData();
-            verify(connectionMock, times(4)).createStatement();
-            verify(databaseMetaDataMock, times(8)).getColumns(isNull(), isNull(), anyString(), anyString());
-            verify(resultSetMock, times(8)).next();
-            verify(statementMock, times(4)).execute(anyString());
+            usageMatcher.checkAndAddColumns("public.points", "public.polygons");
+
+            verify(connectionMock, times(4)).getMetaData();
+            verify(connectionMock, times(2)).createStatement();
+            verify(databaseMetaDataMock, times(4)).getColumns(isNull(), anyString(), anyString(), anyString());
+            verify(resultSetMock, times(4)).next();
+            verify(statementMock, times(2)).execute(anyString());
             verify(remoteRDBStoreClientMock.constructed().get(0), times(1)).getConnection();
         }
 

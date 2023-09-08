@@ -18,7 +18,9 @@ public class UsageShareCalculatorTest {
     @Test
     public void testUpdateUsageShare() {
         try (MockedConstruction<RemoteRDBStoreClient> remoteRDBStoreClientMock = mockConstruction(RemoteRDBStoreClient.class)) {
-            UsageShareCalculator.updateUsageShare("", "", "", "points", "polygons");
+            UsageShareCalculator usageShareCalculator = new UsageShareCalculator("", "", "");
+
+            usageShareCalculator.updateUsageShare( "usage.usage");
 
             ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
 
@@ -27,8 +29,8 @@ public class UsageShareCalculatorTest {
             List<String> allCaptures = argumentCaptor.getAllValues();
 
             assertEquals(3, allCaptures.size());
-            assertTrue(allCaptures.get(1).contains("points"));
-            assertTrue(allCaptures.get(2).contains("polygons"));
+            assertTrue(allCaptures.get(1).contains("usage.usage"));
+            assertTrue(allCaptures.get(2).contains("usage.usage"));
         }
     }
 
@@ -42,18 +44,18 @@ public class UsageShareCalculatorTest {
                         when(mock.readNext()).thenReturn(testLine).thenReturn(null);
                     })) {
                 try (MockedConstruction<RemoteRDBStoreClient> rdbStoreClientMock = mockConstruction(RemoteRDBStoreClient.class)) {
-                    UsageShareCalculator.updateLandUse("", "","", "","","");
+                    UsageShareCalculator usageShareCalculator = new UsageShareCalculator("", "", "");
+
+                    usageShareCalculator.updateLandUse("usage.usage", "public.landuse");
 
                     ArgumentCaptor<String> argumentCaptor = ArgumentCaptor.forClass(String.class);
 
-                    verify(rdbStoreClientMock.constructed().get(0), times(2)).executeUpdate(argumentCaptor.capture());
+                    verify(rdbStoreClientMock.constructed().get(0), times(1)).executeUpdate(argumentCaptor.capture());
                     List<String> allCaptures = argumentCaptor.getAllValues();
 
-                    assertEquals(2, allCaptures.size());
+                    assertEquals(1, allCaptures.size());
                     assertTrue(allCaptures.get(0).contains("testKey"));
                     assertTrue(allCaptures.get(0).contains("testValue"));
-                    assertTrue(allCaptures.get(1).contains("testKey"));
-                    assertTrue(allCaptures.get(1).contains("testValue"));
                 }
             }
         }
