@@ -50,7 +50,7 @@ CHEMCLASS_PATTERNS_VERBOSE = [
 ]
 USE_PATTERNS_VERBOSE = [
     "?SpeciesIRI os:hasUse ?UseIRI .",
-    "?UseIRI os:value ?UseValue .",
+    "?UseIRI rdfs:label ?UseValue .",
 ]
 ALL_PROPERTIES_PATTERNS_VERBOSE = [
     "?SpeciesIRI ?hasPropertyName ?PropertyNameIRI .",

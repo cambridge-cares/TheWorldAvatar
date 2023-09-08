@@ -13,7 +13,7 @@ WHERE {{
     FILTER( ?ChemicalClassValue = "{ChemClass}")
 
     ?SpeciesIRI os:hasUse ?UseIRI .
-    ?UseIRI os:value ?UseValue .
+    ?UseIRI rdfs:label ?UseValue .
 
     FILTER( ?UseValue = "{Use}")
 }}
