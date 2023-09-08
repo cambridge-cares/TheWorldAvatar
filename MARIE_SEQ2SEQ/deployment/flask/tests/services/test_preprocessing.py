@@ -95,12 +95,19 @@ class TestPreprocessing:
                 ),
             ),
             (
-                "What are the chemical species having molecular weight between 150 g/mol and 1kg/mol?",
+                "What are the chemical species having molecular weight between 150 g/mol and 1 kg/mol?",
                 dict(
                     preprocessed_text_for_user="What are the chemical species having molecular weight between 150.0 g / mol and 1000.0 g / mol?",
                     preprocessed_text_for_trans="What are the chemical species having molecular weight between 150.0 and 1000.0?",
                 ),
             ),
+            (
+                "Enumerate molecules with solubility exceeding 480 g/L and falling into the aromatic amine classification",
+                dict(
+                    preprocessed_text_for_user="Enumerate molecules with solubility exceeding 479.99999999999994 kg / m ** 3 and falling into the aromatic amine classification",
+                    preprocessed_text_for_trans="Enumerate molecules with solubility exceeding 479.99999999999994 and falling into the aromatic amine classification",
+                )
+            )
         ],
     )
     def test_sanitizeQuantities(self, text, expected):

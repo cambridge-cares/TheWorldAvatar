@@ -18,7 +18,7 @@ function display_latency_info(trans_latency, kg_latency) {
 
 function displayPreprocessedQuestion(question) {
     elem = document.getElementById("preprocessed-question")
-    elem.innerHTML = `<p style="margin: auto;">The input query has been reformatted to the following: ${question}</p>`
+    elem.innerHTML = `<p style="margin: auto;"><strong>The input query has been reformatted to the following</strong></p><p style="margin: auto; color: gray;">${question}</p>`
     elem.style.display = "block";
 }
 
@@ -61,12 +61,14 @@ function displayResults(data) {
     elem = document.getElementById("results")
     elem.innerHTML = content;
 
+
+    elem.style.display = "block"
+
     // create paginated table
     new DataTable('#results-table', {
         scrollX: true
     });
 
-    elem.style.display = "block"
 }
 
 class HttpError extends Error {

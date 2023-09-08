@@ -3,7 +3,7 @@ import tritonclient.http as httpclient
 
 class TranslationClient:
     def __init__(self, triton_endpoint: str = "localhost:8000"):
-        print("Connecting to " + triton_endpoint)
+        print("Connecting to triton server at " + triton_endpoint)
         self.client = httpclient.InferenceServerClient(url=triton_endpoint)
         if self.client.is_model_ready("translation"):
             print("Translation server is ready")

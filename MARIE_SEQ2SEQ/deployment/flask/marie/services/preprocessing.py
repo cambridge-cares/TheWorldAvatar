@@ -133,12 +133,16 @@ def sanitize_quantities(text: str):
                 text_for_user = text_segment
                 text_for_trans = text_segment
             elif isinstance(parsed, Quantity):
-                quantity_mks = parsed.to_root_units()  # meter/gram/second
-                text_for_user = str(quantity_mks)
                 if parsed.unitless:
-                    text_for_trans = str(text_for_user)
+                    text_for_user = text_segment
+                    text_for_trans = text_segment
                 else:
-                    text_for_trans = str(quantity_mks.magnitude)
+                    quantity_converted = parsed.to_base_units() # meter/kg/second
+                    if str(quantity_converted.units) == "kg / mol":
+                        quantity_converted = parsed.to_root_units()  # meter/gram/second
+                        
+                    text_for_user = str(quantity_converted)
+                    text_for_trans = str(quantity_converted.magnitude)
             else:  # [[quantity, condition], [quantity, condition], ...]
                 # This is not expected to happen because we parse a text segment with a single quantity
                 raise Exception("Unexpected parsed results")

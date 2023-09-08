@@ -8,8 +8,8 @@
             "What is the rotatable bond count in C11H16O4?",
             "CH3O5P's compound complexity?",
             "What is the molecular weight of CH4?",
-            "Enlighten me about the vapor pressure and boiling point specific to 1-chloro-2,4-dinitrobenzene.",
-            "Examine how the heavy atom count differs in C(CC(C(=O)O)N)CC(=O)O and C(CC(C(=O)O)NC(=O)CCC(=O)O)CN=C(N)N.",
+            "Enlighten me about the vapor pressure and boiling point specific to 1-chloro-2,4-dinitrobenzene",
+            "Examine how the heavy atom count differs in C(CC(C(=O)O)N)CC(=O)O and C(CC(C(=O)O)NC(=O)CCC(=O)O)CN=C(N)N",
             "Can you summarize the important aspects of CCN1C(=O)C=CC1=O?",
 
             "What's the covalent unit count of chemical entities belonging to aminoacridines?",
@@ -22,23 +22,23 @@
             
             "What's the molecular formula of CSCC1C(C(C(O1)OP(=O)(O)O)O)O?",
             "InChI of 2-amino-4-sulfanyl-butanoic acid",
-            "Show the IUPAC name of CH2O2."
+            "Show the IUPAC name of CH2O2"
         ]
     },
     {
         "title": "Species search",
         "description": "To find species based on their properties, chemical classes, uses, and identifiers",
         "questions": [
-            "Find all species with boiling point above 0",
-            "Catalog compounds wherein the logS value is lower than 29.",
-            "What are the chemical species having molecular weight around 150?",
-            "Compile a roster of molecules demonstrating mono isotopic weight in the range of 120 to 130, and melting point above 310.",
+            "Find all species with boiling point above 0°C",
+            "Catalog compounds wherein the logS value is lower than 29",
+            "What are the chemical species having molecular weight around 150 g/mol?",
+            "Compile a roster of molecules demonstrating mono isotopic weight in the range of 120 to 130, and melting point above 310 K",
 
-            "Enumerate the molecules categorized as ketotetrose phosphate.",
-            "Provide a roster of chemical entities employed as pH regulating agent.",
+            "Enumerate the molecules categorized as ketotetrose phosphate",
+            "Provide a roster of chemical entities employed as pH regulating agent",
             
-            "Enumerate molecules with solubility exceeding 478 and falling into the aromatic amine classification.",
-            "List the compounds displaying viscosity less than 494, employed as a disinfectant."
+            "Enumerate molecules with solubility exceeding 478 g/L and falling into the aromatic amine classification",
+            "List the compounds displaying viscosity less than 494 g/m/s, employed as a disinfectant"
         ]
     }
 ]
