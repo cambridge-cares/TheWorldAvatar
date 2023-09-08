@@ -36,7 +36,8 @@ newString = "JZT   EOS   -ION   RFE"
 inGrowString = "CIT-13  ITQ-39  ZSM-48  IPC-6   SSZ-57  SSZ-31  SSZ-70  IM-18  HPM-14"
 
 #testString = " ABW     ACO     AEI     AEL   "
-testString = " ABW     ACO     AEI     AEL     AEN     AET     AFG     AFI    "
+testString = " ABW     ACO      AET     AFG     AFI     CSV     ETV    PTY "
+# DFO 
 
 def getZeoList( arg="main" ):
     outString = ""
@@ -70,16 +71,18 @@ def getZeoList( arg="main" ):
 #         print( "Unknown argument '" + arg  "'" )
 
     output = outString.split()
-    #print( "Total ", len(output), " frameworks" )
+    print( "Total ", len(output), " frameworks" )
     return output
     pass # getZeoList()
 
 def zeoCodeToCode3( code ):
   codeShort = code.strip()
-  if "-" == codeShort[0]:
-    output = codeShort[1:]
+  if   "-" == codeShort[0]:
+    output  = codeShort[1:]
+  elif "_" == codeShort[0]:
+    output  = codeShort[1:]
   else:
-    output = codeShort[1:]
+    output  = codeShort[0:]
 
   if len( output ) != 3:
     logging.error( "Code is not 3 letters long: '" + output + "'" )

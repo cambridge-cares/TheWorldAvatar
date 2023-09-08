@@ -6,6 +6,7 @@ import zeolist
 import tilesignature
 import logging
 import math
+import numpy
 logging.basicConfig( level = logging.INFO )
 
 from pymatgen.core.structure import Structure, Lattice
@@ -16,6 +17,7 @@ from pymatgen.core.structure import Structure, Lattice
 class CsvMaker:
 
   def __init__( self ):
+    #self.zeoOption = "main"
     self.zeoOption = "test"
     self.zeoList = []
 
@@ -64,7 +66,7 @@ class CsvMaker:
     pass # CsvMaker.arrInit()
 
   def arrTransform( self, zeoname ):
-    print( "arrTransform started" )
+    #print( "arrTransform started" )
     TWOPI = 2 * math.pi
     DIRS = "xyz"
 
@@ -72,7 +74,7 @@ class CsvMaker:
 
     uuidDB = tools.loadUUID( )
 
-    path = os.path.join( "CIF", zeoname.upper() + ".cif")
+    path = os.path.join( "CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
     #dataIn = tools.readCsv( path )
     if not os.path.isfile( path ):
       logging.error( "File not found '" + path + "'." )
@@ -154,7 +156,7 @@ class CsvMaker:
 
         output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
                          uuid_v_comp, "", 
-                         1.0 + ix, "decimal" ] )
+                         0.0, "decimal" ] )
                          #round(structure.lattice.matrix[ix][iy], 12), "decimal" ] )
 
 
@@ -193,7 +195,7 @@ class CsvMaker:
 
             output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
                              uuid_m_comp, "", 
-                             round(structure.lattice.reciprocal_lattice.matrix[ix][iy], 12), "decimal" ] )
+                             round(structure.lattice.reciprocal_lattice.matrix[iy][ix]/TWOPI, 12), "decimal" ] )
 
     uuid_v_cart_to_frac = tools.getUUID( uuidDB, "Vector", 
                         "ZeoliteCIFTransformationVectorToFractional" + zeoname )
@@ -225,7 +227,7 @@ class CsvMaker:
 
         output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
                          uuid_v_comp, "", 
-                         1.0/(ix+1), "decimal" ] )
+                         0.0, "decimal" ] )
                          #round(structure.lattice.matrix[ix][iy], 12), "decimal" ] )
 
 
@@ -242,7 +244,7 @@ class CsvMaker:
 
     uuidDB = tools.loadUUID( )
 
-    path = os.path.join( "CIF", zeoname.upper() + ".cif")
+    path = os.path.join( "CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
     #dataIn = tools.readCsv( path )
     if not os.path.isfile( path ):
       logging.error( "File not found '" + path + "'." )
@@ -264,7 +266,7 @@ class CsvMaker:
 
     uuidDB = tools.loadUUID( )
 
-    path = os.path.join( "CIF", zeoname.upper() + ".cif")
+    path = os.path.join( "CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
     #dataIn = tools.readCsv( path )
     if not os.path.isfile( path ):
       logging.error( "File not found '" + path + "'." )
@@ -278,6 +280,9 @@ class CsvMaker:
     #print( "  ", structure.lattice.volume ) # volume
     #print( "  ", structure.lattice.reciprocal_lattice.a ) # reciprocal parameters
     #print( "  ", structure.lattice.reciprocal_lattice.matrix[0][0] ) # reciprocal parameters
+    #print( "  ", structure.lattice.reciprocal_lattice.matrix ) # reciprocal parameters
+    print( "  ", structure.lattice.matrix ) # reciprocal parameters
+    #print( TWOPI * numpy.linalg.inv( structure.lattice.matrix ) )
 
     # Define class instances:
     uuid_zeolite = tools.getUUID( uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )

@@ -5,13 +5,14 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 
 
 address = "http://localhost:8080/blazegraph/namespace/zeo02c/sparql"
+address = "http://localhost:8080/blazegraph/namespace/zeo03c/sparql"
 # wrap the dbpedia SPARQL end-point
 #endpoint = SPARQLWrapper("http://dbpedia.org/sparql")
 #endpoint = SPARQLWrapper("http://localhost:8080/blazegraph/zeo2b/")
 #endpoint = SPARQLWrapper("http://localhost:8080/blazegraph/namespace/zeo02b/sparql")
 
-def getUCVectors( end ):
-  endpoint = SPARQLWrapper( end )
+def getUCVectors( namespace ):
+  endpoint = SPARQLWrapper( namespace )
   endpoint.setQuery( """
 PREFIX zeo:	<http://www.theworldavatar.com/kg/ontozeolite/>
 PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
@@ -151,6 +152,135 @@ WHERE {
     output[ zeoname ]['vol'] = float( res['volume']['value'] )
 
   return output
+  pass # getUCVectors() 
+
+
+def getTransformationMatrix( namespace ):
+  endpoint = SPARQLWrapper( namespace )
+  endpoint.setQuery( """
+PREFIX zeo:	<http://www.theworldavatar.com/kg/ontozeolite/>
+PREFIX om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+SELECT ?zeoname ?mc_xx ?mc_xy ?mc_xz ?mc_yx ?mc_yy ?mc_yz ?mc_zx ?mc_zy ?mc_zz ?vc_x ?vc_y ?vc_z             ?mf_xx ?mf_xy ?mf_xz ?mf_yx ?mf_yy ?mf_yz ?mf_zx ?mf_zy ?mf_zz ?vf_x ?vf_y ?vf_z
+WHERE {
+  ?zeo       zeo:hasZeoliteCode     ?zeoname .
+  ?zeo       zeo:hasCIF             ?cifcore .
+
+  ?cifcore   zeo:hasCifCoreTransformation ?trans.
+  ?trans     zeo:hasTransformationMatrixToCartesian  ?mCart;
+             zeo:hasTransformationMatrixToFractional ?mFrac ;
+             zeo:hasTransformationVectorToCartesian  ?vCart;
+             zeo:hasTransformationVectorToFractional ?vFrac .
+
+  ?mCart     zeo:hasComponent       ?mc_11, ?mc_12, ?mc_13,
+                                    ?mc_21, ?mc_22, ?mc_23,
+                                    ?mc_31, ?mc_32, ?mc_33.
+  ?mc_11     zeo:hasValue           ?mc_xx ;
+             zeo:hasLabel           "xx" .
+  ?mc_12     zeo:hasValue           ?mc_xy ;
+             zeo:hasLabel           "xy" .
+  ?mc_13     zeo:hasValue           ?mc_xz ;
+             zeo:hasLabel           "xz" .
+  ?mc_21     zeo:hasValue           ?mc_yx ;
+             zeo:hasLabel           "yx" .
+  ?mc_22     zeo:hasValue           ?mc_yy ;
+             zeo:hasLabel           "yy" .
+  ?mc_23     zeo:hasValue           ?mc_yz ;
+             zeo:hasLabel           "yz" .
+  ?mc_31     zeo:hasValue           ?mc_zx ;
+             zeo:hasLabel           "zx" .
+  ?mc_32     zeo:hasValue           ?mc_zy ;
+             zeo:hasLabel           "zy" .
+  ?mc_33     zeo:hasValue           ?mc_zz ;
+             zeo:hasLabel           "zz" .
+
+  ?vCart     zeo:hasComponent       ?vc_1, ?vc_2, ?vc_3 .
+  ?vc_1      zeo:hasLabel           "x";
+             zeo:hasValue           ?vc_x .
+  ?vc_2      zeo:hasLabel           "y";
+             zeo:hasValue           ?vc_y .
+  ?vc_3      zeo:hasLabel           "z";
+             zeo:hasValue           ?vc_z .
+
+  ?mFrac     zeo:hasComponent       ?mf_11, ?mf_12, ?mf_13,
+                                    ?mf_21, ?mf_22, ?mf_23,
+                                    ?mf_31, ?mf_32, ?mf_33.
+  ?mf_11     zeo:hasValue           ?mf_xx ;
+             zeo:hasLabel           "xx" .
+  ?mf_12     zeo:hasValue           ?mf_xy ;
+             zeo:hasLabel           "xy" .
+  ?mf_13     zeo:hasValue           ?mf_xz ;
+             zeo:hasLabel           "xz" .
+  ?mf_21     zeo:hasValue           ?mf_yx ;
+             zeo:hasLabel           "yx" .
+  ?mf_22     zeo:hasValue           ?mf_yy ;
+             zeo:hasLabel           "yy" .
+  ?mf_23     zeo:hasValue           ?mf_yz ;
+             zeo:hasLabel           "yz" .
+  ?mf_31     zeo:hasValue           ?mf_zx ;
+             zeo:hasLabel           "zx" .
+  ?mf_32     zeo:hasValue           ?mf_zy ;
+             zeo:hasLabel           "zy" .
+  ?mf_33     zeo:hasValue           ?mf_zz ;
+             zeo:hasLabel           "zz" .
+
+  ?vFrac     zeo:hasComponent       ?vf_1, ?vf_2, ?vf_3 .
+  ?vf_1      zeo:hasLabel           "x";
+             zeo:hasValue           ?vf_x .
+  ?vf_2      zeo:hasLabel           "y";
+             zeo:hasValue           ?vf_y .
+  ?vf_3      zeo:hasLabel           "z";
+             zeo:hasValue           ?vf_z .
+  }
+""" )
+
+  endpoint.setReturnFormat(JSON)
+  output = dict()
+
+  results = endpoint.query().convert()
+
+  for toCartesian in [ True, False ]:
+    if toCartesian:
+      char = 'c'
+    else:
+      char = 'f'
+
+# interpret the results: 
+    for res in results["results"]["bindings"] :
+      #print( res['zeoname']['value'], res['ax']['value'] )
+      m = [ [0]*3 for i in range(3) ]
+      v = [0] * 3
+      m[0][0] = float( res['m'+char+'_xx']['value'] )
+      m[1][0] = float( res['m'+char+'_xy']['value'] )
+      m[2][0] = float( res['m'+char+'_xz']['value'] )
+      m[0][1] = float( res['m'+char+'_yx']['value'] )
+      m[1][1] = float( res['m'+char+'_yy']['value'] )
+      m[2][1] = float( res['m'+char+'_yz']['value'] )
+      m[0][2] = float( res['m'+char+'_zx']['value'] )
+      m[1][2] = float( res['m'+char+'_zy']['value'] )
+      m[2][2] = float( res['m'+char+'_zz']['value'] )
+
+      v[0]    = float( res['v'+char+'_x' ]['value'] )
+      v[1]    = float( res['v'+char+'_y' ]['value'] )
+      v[2]    = float( res['v'+char+'_z' ]['value'] )
+
+      zeoname = res['zeoname']['value'] 
+      if zeoname not in list( output.keys() ):
+        output[ zeoname ] = dict()
+      if toCartesian:
+        output[ zeoname ]['mToCart'] = m
+        output[ zeoname ]['vToCart'] = v
+      else:
+        output[ zeoname ]['mToFrac'] = m
+        output[ zeoname ]['vToFrac'] = v
+      #output[ zeoname ]['b'] = b
+      #output[ zeoname ]['c'] = c
+    #output[ zeoname ]['ra'] = ra
+    #output[ zeoname ]['rb'] = rb
+    #output[ zeoname ]['rc'] = rc
+    #output[ zeoname ]['vol'] = float( res['volume']['value'] )
+
+  return output
+  pass # getTransformationMatrix()
 
 
 def dot( v1, v2 ):
@@ -210,9 +340,61 @@ class TestUnitCell( unittest.TestCase ):
  
             vol = numpy.dot( numpy.cross( na, nb ), nc ) 
             self.assertAlmostEqual( vol, uc["vol"] )
-        pass
+        pass # test_volume
+
+    def test_coordinate_transformations( self ):
+        # Warning! There are also shift vectors in these transformations, 
+        #          but they are not defined in CIF, so there is not way to test them.
+
+        trans = getTransformationMatrix( address )
+        unitCells = getUCVectors( address ) #["ABW"]
+
+        for ik, k in enumerate(list( trans.keys() )):
+          #print( ik )
+          #print( k )
+          #print( numpy.array(trans[k]["mToCart"]) )
+
+          mToCart = numpy.array( trans[k]['mToCart'] )
+          mToFrac = numpy.array( trans[k]['mToFrac'] )
+          vToCart = numpy.array( trans[k]['vToCart'] )
+          vToFrac = numpy.array( trans[k]['vToFrac'] )
+          #print( mToCart )
+
+          # Test 1: toCart and back should give the original position
+          testM = numpy.dot( mToCart , mToFrac )
+          for iy in range(3):
+              for ix in range(3):
+                  if ix == iy:
+                      self.assertAlmostEqual( testM[iy][ix], 1. )
+                  else:
+                      self.assertAlmostEqual( testM[iy][ix], 0. )
+
+          # Test 2: toCart transforms [1,0,0] into a, [0,1,0] into b, and 
+          #         [0,0,1] into c vectors.
+          uc = unitCells[k]
+          toBeA = numpy.dot( mToCart, numpy.array([1,0,0]) )
+          #print( toBeA )
+          self.assertAlmostEqual( toBeA[0], uc["a"][0], msg=k )
+          self.assertAlmostEqual( toBeA[1], uc["a"][1], msg=k )
+          self.assertAlmostEqual( toBeA[2], uc["a"][2], msg=k )
+
+          toBeB = numpy.dot( mToCart, numpy.array([0,1,0]) )
+          self.assertAlmostEqual( toBeB[0], uc["b"][0], msg=k )
+          self.assertAlmostEqual( toBeB[1], uc["b"][1], msg=k )
+          self.assertAlmostEqual( toBeB[2], uc["b"][2], msg=k )
+
+          toBeC = numpy.dot( mToCart, numpy.array([0,0,1]) )
+          self.assertAlmostEqual( toBeC[0], uc["c"][0], msg=k )
+          self.assertAlmostEqual( toBeC[1], uc["c"][1], msg=k )
+          self.assertAlmostEqual( toBeC[2], uc["c"][2], msg=k )
+
+
+
+        pass # test_coordinate_transformations
+
 
     pass # class TestUnitCell
+
 
 '''
 for k in list( unitCells.keys() ):
