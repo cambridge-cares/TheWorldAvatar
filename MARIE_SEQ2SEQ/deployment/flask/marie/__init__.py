@@ -3,10 +3,12 @@ import os
 import time
 from flask import Flask, render_template, request
 
-from services import KgClient, TranslationClient
+from marie.services import KgClient, TranslationClient
 
 
-with open("./resources/sample_questions.json", "r") as f:
+with open(
+    os.path.join(os.path.dirname(__file__), "resources", "sample_questions.json"), "r"
+) as f:
     SAMPLE_QUESTIONS = json.load(f)
 
 app = Flask(__name__)
