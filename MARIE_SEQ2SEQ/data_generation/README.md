@@ -182,7 +182,7 @@ OPTIONAL{{?{PropertyName}IRI os:hasReferenceState ?{PropertyName}ReferenceStateI
 
 ```
 ?SpeciesIRI os:hasUse ?UseIRI .
-?UseIRI os:value ?UseValue .
+?UseIRI rdfs:label ?UseValue .
 ```
 
 </td>
