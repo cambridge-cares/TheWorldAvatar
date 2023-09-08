@@ -9,7 +9,7 @@
      xmlns:ontoassetmanagement="https://www.theworldavatar.com/kg/ontoassetmanagement/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">05 September 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">08 September 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoAssetManagement is an ontology that is designed to represent asset and its related information (e.g. purchase documents).</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -185,6 +185,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasAssetUpdate -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasAssetUpdate">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/AssetUpdateHistory"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/AssetDataUpdate"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship which describes the updates recorded in an asset update history.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has asset update</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasAttachment -->
 
 
@@ -341,19 +354,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the effective date of a payment. The date may be a past, present or future date.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has effective date</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasEvent -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasEvent">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/AssetUpdateHistory"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/AssetUpdateEvent"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship which describes the events that has occurred.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has event</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -534,6 +534,19 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the account in which an invoice or purchase order falls under.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has reference account</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/hasRemainingAmount -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/hasRemainingAmount">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/BudgetCategory"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the remaining amount of money for a budget category.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has remaining amount</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -792,9 +805,9 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/wasExecutedBy">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/AssetUpdateEvent"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoassetmanagement/AssetDataUpdate"/>
         <rdfs:range rdf:resource="https://spec.edmcouncil.org/fibo/ontology/FND/Parties/Parties/IndependentParty"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship which describes the party that executed the asset update event.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship which describes the party that updated the assets information.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">was executed by</rdfs:label>
     </owl:ObjectProperty>
@@ -1212,13 +1225,13 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/AssetUpdateEvent -->
+    <!-- https://www.theworldavatar.com/kg/ontoassetmanagement/AssetDataUpdate -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/AssetUpdateEvent">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoassetmanagement/AssetDataUpdate">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An update applied to the information of an asset.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoassetmanagement/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Asset update event</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Asset data update</rdfs:label>
     </owl:Class>
     
 
