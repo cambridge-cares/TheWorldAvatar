@@ -10,6 +10,7 @@ import uk.ac.cam.cares.jps.data.OtherInfoRepository;
 import uk.ac.cam.cares.jps.datastore.OtherInfoLocalSource;
 import uk.ac.cam.cares.jps.network.assetinfo.AssetNetworkSource;
 import uk.ac.cam.cares.jps.network.mail.MailNetworkSource;
+import uk.ac.cam.cares.jps.network.otherinfo.OtherInfoNetworkSource;
 
 @Module
 @InstallIn(SingletonComponent.class)
@@ -25,7 +26,7 @@ public class RepositoryModule {
     }
 
     @Provides
-    public OtherInfoRepository provideOtherInfoRepository(OtherInfoLocalSource otherInfoLocalSource) {
-        return new OtherInfoRepository(otherInfoLocalSource);
+    public OtherInfoRepository provideOtherInfoRepository(OtherInfoLocalSource otherInfoLocalSource, OtherInfoNetworkSource otherInfoNetworkSource) {
+        return new OtherInfoRepository(otherInfoLocalSource, otherInfoNetworkSource);
     }
 }

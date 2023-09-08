@@ -1,7 +1,10 @@
 package uk.ac.cam.cares.jps.datastore;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.*;
+
 import android.content.Context;
 import android.util.Pair;
 
+import androidx.datastore.preferences.core.MutablePreferences;
 import androidx.datastore.preferences.core.Preferences;
 import androidx.datastore.preferences.core.PreferencesKeys;
 import androidx.datastore.preferences.rxjava2.RxPreferenceDataStoreBuilder;
@@ -11,37 +14,38 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import io.reactivex.Flowable;
+import io.reactivex.Single;
 
 public class OtherInfoLocalSource {
     private static final Logger LOGGER = Logger.getLogger(OtherInfoLocalSource.class);
     private final Context applicationContext;
     private Flowable<Map<String, String>> typesFlow;
 
+    private RxDataStore<Preferences> dataStore;
+    private final Map<String, RxDataStore<Preferences>> dataStores = new HashMap<>();
+    private final Map<String, Flowable<Map<String, String>>> flowables = new HashMap<>();
+
     public OtherInfoLocalSource(@ApplicationContext Context applicationContext) {
         BasicConfigurator.configure();
         this.applicationContext = applicationContext;
 
-        RxDataStore<Preferences>  dataStore = new RxPreferenceDataStoreBuilder(applicationContext, /*name=*/ "types").build();
-        typesFlow = dataStore.data().map(preferences -> convertPreferencesToMap(preferences));
-
-    }
-
-    public Flowable<Map<String, String>> getOtherInfo() {
-        return typesFlow;
-    }
-
-    private List<Pair<String, String>> convertPreferencesToList(Preferences preferences) {
-        List<Pair<String, String>> results = new ArrayList<>();
-        for (Preferences.Key key : preferences.asMap().keySet()) {
-            results.add(new Pair<>(key.toString(), preferences.get(key).toString()));
+        for (String key : otherInfoFromAssetAgentKeys) {
+            RxDataStore<Preferences> temp = new RxPreferenceDataStoreBuilder(applicationContext, key).build();
+            dataStores.put(key, temp);
+            flowables.put(key, temp.data().map(preferences -> convertPreferencesToMap(preferences)));
         }
-        return results;
+
+    }
+
+    public Map<String, Flowable<Map<String, String>>> getOtherInfo() {
+        return flowables;
     }
 
     private Map<String, String> convertPreferencesToMap(Preferences preferences) {
@@ -51,6 +55,17 @@ public class OtherInfoLocalSource {
             results.put(key.toString(), preferencesMap.get(key).toString());
         }
         return results;
+    }
+
+    public void saveToLocalStore(String key, List<Map.Entry<String, String>> inputs) {
+        dataStores.get(key).updateDataAsync(prefsIn -> {
+            MutablePreferences mutablePreferences = prefsIn.toMutablePreferences();
+            mutablePreferences.clear();
+            for (Map.Entry<String, String> input : inputs) {
+                mutablePreferences.set(new Preferences.Key<>(input.getKey()), input.getValue());
+            }
+            return Single.just(mutablePreferences);
+        });
     }
 
 }

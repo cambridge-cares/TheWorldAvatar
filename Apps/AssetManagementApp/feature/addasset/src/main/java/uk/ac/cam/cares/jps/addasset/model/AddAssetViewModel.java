@@ -54,15 +54,15 @@ public class AddAssetViewModel extends ViewModel {
     }
 
     private void initInputFieldsDataModel() {
-        inputFieldsBySection.put(BASIC, getInputFieldListForSection(basicInfoOrder));
-        inputFieldsBySection.put(LOCATION, getInputFieldListForSection(locationInfoOrder));
-        inputFieldsBySection.put(SUPPLIER, getInputFieldListForSection(supplierInfoOrder));
-        inputFieldsBySection.put(PURCHASE, getInputFieldListForSection(docLineInfoOrder));
-        inputFieldsBySection.put(ITEM, getInputFieldListForSection(itemInfoOrder));
+        inputFieldsBySection.put(BASIC_SECTION_TITLE, getInputFieldListForSection(basicInfoOrder));
+        inputFieldsBySection.put(LOCATION_SECTION_TITLE, getInputFieldListForSection(locationInfoOrder));
+        inputFieldsBySection.put(SUPPLIER_SECTION_TITLE, getInputFieldListForSection(supplierInfoOrder));
+        inputFieldsBySection.put(PURCHASE_SECTION_TITLE, getInputFieldListForSection(docLineInfoOrder));
+        inputFieldsBySection.put(ITEM_SECTION_TITLE, getInputFieldListForSection(itemInfoOrder));
 
         // assume only 1 spec sheet and 1 manual
-        inputFieldsBySection.put(SPEC_SHEET, getInputFieldListForSection(Collections.singletonList(SPEC_SHEET)));
-        inputFieldsBySection.put(MANUAL, getInputFieldListForSection(Collections.singletonList(MANUAL)));
+        inputFieldsBySection.put(SPEC_SHEET_SECTION_TITLE, getInputFieldListForSection(Collections.singletonList(SPEC_SHEET_SECTION_TITLE)));
+        inputFieldsBySection.put(MANUAL_SECTION_TITLE, getInputFieldListForSection(Collections.singletonList(MANUAL_SECTION_TITLE)));
     }
 
     private void initInputTextSections() {
@@ -74,8 +74,8 @@ public class AddAssetViewModel extends ViewModel {
     }
 
     private void initDataSheetSections() {
-        DATA_SHEET_SECTIONS.add(SPEC_SHEET);
-        DATA_SHEET_SECTIONS.add(MANUAL);
+        DATA_SHEET_SECTIONS.add(SPEC_SHEET_SECTION_TITLE);
+        DATA_SHEET_SECTIONS.add(MANUAL_SECTION_TITLE);
     }
 
     private void initDropDownLiveData() {
@@ -108,17 +108,27 @@ public class AddAssetViewModel extends ViewModel {
     }
 
     public void requestAllDropDownOptionsFromRepository() {
-        repository.getTypes(new RepositoryCallback() {
+//        repository.getTypes(getRepositoryCallbackForKey(TYPE));
+        Map<String, RepositoryCallback> callbacks = new HashMap<>();
+        for (String key: otherInfoFromAssetAgentKeys) {
+            callbacks.put(key, getRepositoryCallbackForKey(key));
+        }
+
+        repository.getAllOtherInfo(callbacks);
+    }
+
+    private RepositoryCallback getRepositoryCallbackForKey(String key) {
+        return new RepositoryCallback() {
             @Override
             public void onSuccess(Object result) {
-                dropDownOptionsMap.get(TYPE).postValue((List<OtherInfoModel>) result);
+                dropDownOptionsMap.get(key).postValue((List<OtherInfoModel>) result);
             }
 
             @Override
             public void onFailure(Throwable error) {
                 // do nothing, update failed, or notify user?
             }
-        });
+        };
     }
 
     public MutableLiveData<List<OtherInfoModel>> getDropDownLiveDataByKey(String key) {
