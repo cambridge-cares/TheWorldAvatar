@@ -10,13 +10,7 @@ source flask_venv/bin/activate
 pip install -r requirements.txt
 ```
 
-Start the development server at `localhost:5000`.
-
-```
-python app.py
-```
-
-To enter debug mode (app is automatically reloaded upon code changes)
+Start the development server at `localhost:5000` in debug mode (app is automatically reloaded upon code changes)
 ```
 flask --app app.py --debug run
 ```
