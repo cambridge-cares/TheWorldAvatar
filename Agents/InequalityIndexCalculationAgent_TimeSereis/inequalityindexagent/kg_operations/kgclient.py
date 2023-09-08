@@ -12,7 +12,7 @@ from rdflib import URIRef, Literal
 
 from py4jps import agentlogging
 from pyderivationagent.kg_operations import PySparqlClient
-from inequalityindexagent.utils.stack_configs import MIN_FP, MAX_FP
+from inequalityindexagent.utils.stack_configs import MIN_FP, MAX_FP, ONTOP_URL
 
 from inequalityindexagent.datamodel.iris import *
 from inequalityindexagent.errorhandling.exceptions import *
@@ -120,6 +120,93 @@ class KGClient(PySparqlClient):
         """
         res = self.performUpdate(query_string)
     
+    # -------------------- Get iris ----------------- #
+    def get_elec_cost_gas_cost_iri(self, utility_cost_iri, status):
+        query_string = f"""
+        SELECT ?elec_cost_iri  ?gas_cost_iri
+        WHERE {{
+        ?region <{ONTOCAPE_HASUTILITYCOST}> <{utility_cost_iri}> .
+        <{utility_cost_iri}> <{RDF_TYPE}> <{ONTOCAPE_UTILITYCOST}> ;
+                            <{REGION_HASSTATUS}> {status} .
+        ?elec_cost_iri <{IS_A}> <{utility_cost_iri}> ;
+                       <{RDF_TYPE}> <{ONTOCAPE_ELECTRICITYCOSTS}> .
+        ?fuel_cost_iri <{IS_A}> <{utility_cost_iri}>  ;
+                       <{RDF_TYPE}> <{ONTOCAPE_FUELCOSTS}> .
+        ?gas_cost_iri <{IS_A}> ?fuel_cost_iri ;
+                      <{RDF_TYPE}> <{REGION_GASCOSTS}> .
+        }}
+        """
+        query_string = self.remove_unnecessary_whitespace(query_string)
+        res = self.performQuery(query_string)
+        if not res:
+            # In case some vars are missing (i.e. empty SPARQL result), return Nones
+            logger.error("utility_cost_iri can not be found -- go check if it exist")
+    
+        else:
+            res = res[0]
+            if res["elec_cost_iri"] == "" or res["elec_cost_iri"] == None:
+                logger.error(f'No existed elec_cost_iri')
+            else:
+                elec_cost_iri = str(res["elec_cost_iri"])
+
+            if res["gas_cost_iri"] == "" or res["gas_cost_iri"] == None:
+                logger.error(f'No existed gas_cost_iri')
+            else:
+                gas_cost_iri = str(res["gas_cost_iri"])
+            
+        return elec_cost_iri, gas_cost_iri
+
+    def get_all_utility_cost_iris(self):
+
+        query_string = f"""
+        SELECT ?before_utility_cost_iri ?after_utility_cost_iri
+        WHERE {{
+        ?region <{ONTOCAPE_HASUTILITYCOST}> ?before_utility_cost_iri;
+                <{ONTOCAPE_HASUTILITYCOST}> ?after_utility_cost_iri.
+
+        ?before_utility_cost_iri <{RDF_TYPE}> <{ONTOCAPE_UTILITYCOST}> ;
+                            <{REGION_HASSTATUS}> "Before" .
+        ?after_utility_cost_iri <{RDF_TYPE}> <{ONTOCAPE_UTILITYCOST}> ;
+                            <{REGION_HASSTATUS}> "After" .
+        }}
+        """
+        query_string = self.remove_unnecessary_whitespace(query_string)
+        res = self.performQuery(query_string)
+        if not res:
+            # In case some vars are missing (i.e. empty SPARQL result), return Nones
+            logger.error("utility_cost_iri can not be found -- go check if it exist")
+        
+        else:
+            before_utility_cost_iris_list = []
+            after_utility_cost_iris_list = []
+            for i in range(len(res)):
+                before_utility_cost_iris_list.append(res[i]['before_utility_cost_iri'])
+                after_utility_cost_iris_list.append(res[i]['after_utility_cost_iri'])
+            
+            return before_utility_cost_iris_list, after_utility_cost_iris_list
+
+    def generate_inequality_index_iri(self, region):
+        
+        query_string = f"""
+        SELECT ?inequalityindex_iri
+        WHERE {{
+        <{region}> <{REGION_HAS_INEQUALITY_INDEX}> ?inequalityindex_iri .
+        ?utility_cost_iri  <{RDF_TYPE}> <{REGION_INEQUALITYINDEX}> .
+        }}
+        """
+        res = self.performQuery(query_string)
+
+        if not res:
+            inequalityindex_iri = REGION + "InequalityIndex_" + str(uuid.uuid4())
+            logger.info(f'No existed inequalityindex_iri, created {inequalityindex_iri}')
+
+        else: 
+            res = res[0]
+            inequalityindex_iri = str(res["inequalityindex_iri"])
+            logger.info(f'inequalityindex_iri: {inequalityindex_iri} will be used')
+    
+        return inequalityindex_iri
+
     # ----------- Get values based on iris ---------- #
     def get_min_max_fp(self, min_fp_iri, max_fp_iri):
         query_string = f"""
@@ -146,104 +233,73 @@ class KGClient(PySparqlClient):
                 logger.error("min_fp result can not be retrieved -- go check if it exist")
                 raise InvalidInput("min_fp result can not be retrieved -- go check if it exist")
             try:
-                max_fp_iri = float(res['max_fp_iri'])  
+                max_fp = float(res['max_fp'])  
             except:
-                logger.error("max_fp_iri result can not be retrieved -- go check if it exist")
-                raise InvalidInput("max_fp_iri result can not be retrieved -- go check if it exist")
+                logger.error("max_fp result can not be retrieved -- go check if it exist")
+                raise InvalidInput("max_fp result can not be retrieved -- go check if it exist")
 
-        return min_fp_iri, max_fp_iri
+        return min_fp, max_fp
     
-    def get_utility_cost_iri(self, resulted_consumption_iri):
+    def get_status_of_utility_cost(self, utility_cost_iri):
         query_string = f"""
-        SELECT ?region ?elec_consumption_iri ?gas_consumption_iri
+        SELECT ?status 
         WHERE {{
-        <{region}> <{ONTOCAPE_HASUTILITYCOST}> ?utility_cost_iri .
-        ?utility_cost_iri  <{RDF_TYPE}> <{ONTOCAPE_UTILITYCOST}> .
-        ?elec_cost_iri <{IS_A}> ?utility_cost_iri ;
-                       <{RDF_TYPE}> <{ONTOCAPE_ELECTRICITYCOSTS}> .
-        ?fuel_cost_iri <{IS_A}> ?utility_cost_iri  ;
-                       <{RDF_TYPE}> <{ONTOCAPE_FUELCOSTS}> .
-        ?gas_cost_iri <{IS_A}> ?fuel_cost_iri ;
-                      <{RDF_TYPE}> <{REGION_GASCOSTS}> .
+        ?region <{ONTOCAPE_HASUTILITYCOST}> <{utility_cost_iri}> .
+        <{utility_cost_iri}>  <{RDF_TYPE}> <{ONTOCAPE_UTILITYCOST}> ;
+                            <{REGION_HASSTATUS}> ?status .
         }}
         """
         query_string = self.remove_unnecessary_whitespace(query_string)
         res = self.performQuery(query_string)
         if not res:
             # In case some vars are missing (i.e. empty SPARQL result), return Nones
-            res = dict(zip(['region', 'elec_consumption_iri', 'gas_consumption_iri'], (None,)*3))
+            logger.error("utility_cost_iri can not be found -- go check if it exist")
         else:
             res = res[0]
             try:
-                res['region'] = str(res['region'])
+                res['status'] = str(res['status'])
             except:
-                res['region'] = None
+                logger.error("utility_cost_iri can not be found -- go check if it exist")
 
-            try:
-                res['elec_consumption_iri'] = str(res['elec_consumption_iri'])
-            except:
-                res['elec_consumption_iri'] = None
-
-            try:
-                res['gas_consumption_iri'] = str(res['gas_consumption_iri'])
-            except:
-                res['gas_consumption_iri'] = None
-        
-        return res
+        return res[0]['status'] 
     
-    def generate_utility_cost_iri(self, region):
-        
+    def get_fuel_poverty_proportion(self, household_iri):
+        ontop_url = ONTOP_URL
+        service_expression = f'SERVICE <{ontop_url}> {{ '
         query_string = f"""
-        SELECT ?utility_cost_iri ?elec_cost_iri ?gas_cost_iri
+        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+        SELECT DISTINCT ?s (xsd:float(?a)/xsd:float(?num) AS ?result) ?num 
         WHERE {{
-        <{region}> <{ONTOCAPE_HASUTILITYCOST}> ?utility_cost_iri .
-        ?utility_cost_iri  <{RDF_TYPE}> <{ONTOCAPE_UTILITYCOST}> .
-        ?elec_cost_iri <{IS_A}> ?utility_cost_iri ;
-                       <{RDF_TYPE}> <{ONTOCAPE_ELECTRICITYCOSTS}> .
-        ?fuel_cost_iri <{IS_A}> ?utility_cost_iri  ;
-                       <{RDF_TYPE}> <{ONTOCAPE_FUELCOSTS}> .
-        ?gas_cost_iri <{IS_A}> ?fuel_cost_iri ;
-                      <{RDF_TYPE}> <{REGION_GASCOSTS}> .
-        }}
+        {service_expression} 
+        ?s   <{RDF_TYPE}> <{ONS_DEF_STAT}>;  
+            <{OFP_HASHOUSEHOLD}> <{household_iri}>.
+        <{household_iri}> <{OFP_FUELPOOR_HOUSEHOLD}> ?a;
+             <{OFP_HOUSHOLD}> ?num.
         """
+        query_string = self.remove_unnecessary_whitespace(query_string)
         res = self.performQuery(query_string)
-
         if not res:
-            utility_cost_iri = ONTOCAPE + "UtilityCosts_" + str(uuid.uuid4())
-            logger.info(f'No existed utility_cost_iri, created {utility_cost_iri}')
-            elec_cost_iri = ONTOCAPE + "ElectricityCosts_" + str(uuid.uuid4())
-            logger.info(f'No existed elec_cost_iri, created {elec_cost_iri}')
-            fuel_cost_iri = ONTOCAPE + "FuelCosts_" + str(uuid.uuid4())
-            logger.info(f'No existed fuel_cost_iri, created {fuel_cost_iri}')
-            gas_cost_iri = REGION + "GasCosts_" + str(uuid.uuid4())
-            logger.info(f'No existed gas_cost_iri, created {gas_cost_iri}')
-            deletion = False
-
-        else: 
+            logger.warning("Fuel Poverty result can not be found -- go check if you uploaded csv files/ or ontop.obda file missing?")
+            print("Fuel Poverty result can not be found -- go check if you uploaded csv files/ or ontop.obda file missing?")
+            fp = 0
+        else:
             res = res[0]
-            utility_cost_iri = str(res["utility_cost_iri"])
-            logger.info(f'utility_cost_iri: {utility_cost_iri} will be used')
-            elec_cost_iri = str(res["elec_cost_iri"])
-            logger.info(f'elec_cost_iri: {elec_cost_iri} will be used')
-            fuel_cost_iri = str(res["fuel_cost_iri"])
-            logger.info(f'fuel_cost_iri: {fuel_cost_iri} will be used')
-            gas_cost_iri = str(res["gas_cost_iri"])
-            logger.info(f'gas_cost_iri: {gas_cost_iri} will be used')
-            deletion = True
-    
-        return utility_cost_iri, elec_cost_iri, fuel_cost_iri, gas_cost_iri, deletion
+            try:
+                fp = float(res['result'])
+            except:
+                fp = 0
+            try:
+                region = float(res['s'])
+            except:
+                region = None
 
-    def instantiate_utilitycosts(self, g, utility_cost_iri, elec_cost_iri, 
-                                 fuel_cost_iri, gas_cost_iri, region):
+        return fp, region
         
-        g.add((URIRef(region),URIRef(ONTOCAPE_HASUTILITYCOST),URIRef(utility_cost_iri)))
-        g.add((URIRef(utility_cost_iri),URIRef(RDF_TYPE),URIRef(ONTOCAPE_UTILITYCOST)))
-        g.add((URIRef(elec_cost_iri),URIRef(IS_A),URIRef(utility_cost_iri)))
-        g.add((URIRef(elec_cost_iri),URIRef(RDF_TYPE),URIRef(ONTOCAPE_ELECTRICITYCOSTS)))
-        g.add((URIRef(fuel_cost_iri),URIRef(IS_A),URIRef(utility_cost_iri)))
-        g.add((URIRef(fuel_cost_iri),URIRef(RDF_TYPE),URIRef(ONTOCAPE_FUELCOSTS)))
-        g.add((URIRef(gas_cost_iri),URIRef(IS_A),URIRef(fuel_cost_iri)))
-        g.add((URIRef(gas_cost_iri),URIRef(RDF_TYPE),URIRef(REGION_GASCOSTS)))
+    def instantiate_inequality_index(self, g, inequalityindex_iri, inequality_index, region):
+        
+        g.add((URIRef(region),URIRef(REGION_HAS_INEQUALITY_INDEX),URIRef(inequalityindex_iri)))
+        g.add((URIRef(inequalityindex_iri),URIRef(RDF_TYPE),URIRef(REGION_INEQUALITYINDEX)))
+        g.add((URIRef(inequalityindex_iri),URIRef(OM_HAS_NUMERICALVALUE),URIRef(inequality_index)))
     
     def remove_unnecessary_whitespace(self, query: str) -> str:
         # Remove unnecessary whitespaces

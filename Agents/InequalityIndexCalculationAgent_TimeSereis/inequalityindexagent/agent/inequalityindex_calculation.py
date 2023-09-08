@@ -4,7 +4,8 @@
 ################################################
 import uuid
 from rdflib import Graph
-import datetime
+import re
+import numpy as np
 
 from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
@@ -25,7 +26,7 @@ class InequalityIndexCalculationAgent(DerivationAgent):
         self.sparql_client = self.get_sparql_client(KGClient)
 
     def agent_input_concepts(self) -> list:
-        return [ONTOCAPE_UTILITYCOST, ONTOCAPE_UTILITYCOST, REGION_MIN_FP,REGION_MAX_FP]
+        return [ONTOCAPE_UTILITYCOST, REGION_MIN_FP, REGION_MAX_FP, OFP_HOUSHOLD]
     
     def agent_output_concepts(self) -> list:
         return [REGION_INEQUALITYINDEX]
@@ -52,73 +53,120 @@ class InequalityIndexCalculationAgent(DerivationAgent):
             print("Assumptions/Indecies has been updated!")
             with open('state.txt', "w") as file:
                 file.write("True")
-                
+
+        # ----- Calculate / retrieve standard deviation ----- #
+        try:
+            with open('std.txt', "r") as file:
+                content = file.read()
+                existing_float = re.search(r'[-+]?\d*\.\d+|\d+', content)
+            if existing_float:
+                std = float(existing_float.group())
+        except:
+            with open('std.txt', "w") as file:
+                existing_float = None
+        if existing_float is None:
+            std = self.get_standard_deviation()
+            content = re.sub(r'[-+]?\d*\.\d+|\d+', str(std), content)
+            with open('std.txt', 'w') as file:
+                file.write(content)
+
         # ---------------- Get Input IRIs --------------- #
         inputs = derivation_inputs.getInputs()
-        resulted_consumption_iri = inputs[REGION_RESULTED_ENERGYCONSUMPTION]
-        unit_rate_iri = inputs[ONTOHEATNETWORK_UNITRATE]
+        utility_cost_iri_list = inputs[ONTOCAPE_UTILITYCOST]
+        min_fp_iri = inputs[REGION_MIN_FP][0]
+        max_fp_iri =  inputs[REGION_MAX_FP][0]
+        household_iri =  inputs[OFP_HOUSHOLD][0]
+        for a in utility_cost_iri_list:
+            res = self.sparql_client.get_status_of_utility_cost(a)
+            if "Before" in res:
+                before_utility_cost_iri = a
+            elif "After" in a:
+                after_utility_cost_iri = a
+            else:
+                self.logger.error(f"Utility Cost IRI can not be found")
+                raise Exception(f"Utility Cost IRI can not be found")
         
-        
-        # ---------------- Perform Calculation and populate Timeseries data ------------- #
-        # Initialise variables to be added to the TS client
+        # ---------------- Perform Calculation ------------- #
+        # Retrieve variables from the TS client
         dates = []
-        gas_cost_list = []
-        elec_cost_list = []
+        delta_cost_list = []
         # Initialise TS client
         ts_client = TSClient(kg_client=self.sparql_client)
-        res = self.sparql_client.get_resulted_gas_elec_consumption_iri(resulted_consumption_iri)
-        electricity_unit_cost, gas_unit_cost = self.sparql_client.get_unit_rate(unit_rate_iri)
-        resulted_gas_consumption_dict = ts_client.retrieve_data(res['gas_consumption_iri'])
-        resulted_elec_consumption_dict = ts_client.retrieve_data(res['elec_consumption_iri'])
 
-        for key, value in resulted_gas_consumption_dict.items():
-            # Calculate cost
-            gas_cost = gas_unit_cost * value
-            elec_cost = electricity_unit_cost * resulted_elec_consumption_dict[key]
-            dates.append(key)
-            gas_cost_list.append(gas_cost)
-            elec_cost_list.append(elec_cost)
+        elec_cost_iri, gas_cost_iri = self.sparql_client.get_elec_cost_gas_cost_iri(before_utility_cost_iri, 'Before')
+        elec_cost_before_dict = ts_client.retrieve_data(elec_cost_iri)
+        gas_cost_before_dict = ts_client.retrieve_data(gas_cost_iri)
+
+        elec_cost_iri, gas_cost_iri = self.sparql_client.get_elec_cost_gas_cost_iri(after_utility_cost_iri, 'After')
+        elec_cost_after_dict = ts_client.retrieve_data(elec_cost_iri)
+        gas_cost_after_dict = ts_client.retrieve_data(gas_cost_iri)
+
+        for key, value in elec_cost_before_dict.items():
+            # Calculate change of cost
+            delta_cost = elec_cost_after_dict[key] + gas_cost_after_dict[key] - (value + gas_cost_before_dict[key])
+            delta_cost_list.append[delta_cost]
+
+        total_delta_cost = sum(delta_cost_list)
+        fp, region = self.sparql_client.get_fuel_poverty_proportion(household_iri)
+        min_fp, max_fp = self.sparql_client.get_min_max_fp(min_fp_iri, max_fp_iri)
+        inequality_index = (total_delta_cost/std) * (fp - min_fp) / (max_fp - min_fp)
 
         # ---------------- Populate Triples for Non-Timeseries in the KG --------------- #
-        g, elec_cost_iri, gas_cost_iri = self.get_utilitycost_Graph(res['region'])
+        g, elec_cost_iri, gas_cost_iri = self.get_inequality_index_Graph(region)
+        
         # Collect the generated triples derivation_outputs
         derivation_outputs.addGraph(g)
-
-        dataIRIs = [elec_cost_iri, gas_cost_iri]
-        values = [elec_cost_list, gas_cost_list]
         
-        # Create Time Series
-        ts_client.add_timeseries(dates, dataIRIs, values)
-        
-        print('Utility Cost has been updated!')
+        print('Inequality Index has been updated!')
 
 
-    def get_utilitycost_Graph(self,
+    def get_inequality_index_Graph(self, inequality_index, 
                               region):
         # Initialise results and return triples
         g = Graph()
 
         # Verify iri
-        utility_cost_iri, elec_cost_iri, fuel_cost_iri, gas_cost_iri, deletion = self.sparql_client.generate_utility_cost_iri(region)
-        if deletion:
-            # Initialise TS client
-            ts_client = TSClient(kg_client=self.sparql_client)
-            # Remove TimeSeries
-            ts_client.delete_timeseries(elec_cost_iri)
-            ts_client.delete_timeseries(gas_cost_iri)
-            self.sparql_client.remove_triples_for_iri(utility_cost_iri, elec_cost_iri, fuel_cost_iri, gas_cost_iri)
-        
+        inequalityindex_iri = self.sparql_client.generate_inequality_index_iri(region)
+
         # Instantisation
-        g = self.sparql_client.instantiate_utilitycosts(g, utility_cost_iri, elec_cost_iri, fuel_cost_iri, gas_cost_iri,region)
+        g = self.sparql_client.instantiate_inequality_index(g, inequalityindex_iri, inequality_index, region)
         
-        return g, elec_cost_iri, gas_cost_iri
+        return g
+    
+    def get_standard_deviation(self):
+
+        before_utility_cost_iris_list, after_utility_cost_iris_list = self.sparql_client.get_all_utility_cost_iris()
+        total_delta_cost_list = []
+        # Initialise TS client
+        for i in range(len(before_utility_cost_iris_list)):
+            delta_cost_list = []
+            before_utility_cost_iri = before_utility_cost_iris_list[i]
+            after_utility_cost_iri = after_utility_cost_iris_list[i]
+            ts_client = TSClient(kg_client=self.sparql_client)
+            elec_cost_iri, gas_cost_iri = self.sparql_client.get_elec_cost_gas_cost_iri(before_utility_cost_iri, 'Before')
+            elec_cost_before_dict = ts_client.retrieve_data(elec_cost_iri)
+            gas_cost_before_dict = ts_client.retrieve_data(gas_cost_iri)
+
+            elec_cost_iri, gas_cost_iri = self.sparql_client.get_elec_cost_gas_cost_iri(after_utility_cost_iri, 'After')
+            elec_cost_after_dict = ts_client.retrieve_data(elec_cost_iri)
+            gas_cost_after_dict = ts_client.retrieve_data(gas_cost_iri)
+
+            for key, value in elec_cost_before_dict.items():
+                # Calculate change of cost
+                delta_cost = elec_cost_after_dict[key] + gas_cost_after_dict[key] - (value + gas_cost_before_dict[key])
+                delta_cost_list.append[delta_cost]
+
+            total_delta_cost = sum(delta_cost_list)
+            total_delta_cost_list.append(total_delta_cost)
+        std = np.nanstd(np.array(total_delta_cost_list))
+        return std
 
 def default():
     """
         Instructional message at the app root.
     """
     # TODO: Update path to main upon merging
-    msg  = "This is an utility cost calculation agent.<BR>"
+    msg  = "This is an inequality index calculation agent.<BR>"
     msg += "<BR>"
     msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/InequalityIndexCalculationAgent<BR>"
     return msg

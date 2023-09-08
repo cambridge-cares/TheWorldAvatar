@@ -57,10 +57,12 @@ def region_within_country_update_template(region, country_iri):
 
 def ontop_data_backup_template(region):
     region_code = region.split("/")[-1]
+    household_iri = OFP + "Household_" + region_code
     elec_consumption_iri = ONTOGASGRID + "ElectricityConsumptionMeasure_" + region_code
     gas_consumption_iri  = ONTOGASGRID + "GasConsumptionMeasure_" + region_code
     
     triple = f"""
+     <{household_iri}> <{RDF_TYPE}> <{OFP_HOUSHOLD}>.
      <{elec_consumption_iri}> <{RDF_TYPE}> <{OM_MEASURE}>.
      <{gas_consumption_iri}> <{RDF_TYPE}> <{OM_MEASURE}>.
      """
@@ -187,6 +189,37 @@ def initialize_assumptions(sparql_client):
             print(f'uptake_iri: {uptake_iri} will be used')
         
         return uptake_iri
+    
+    def get_min_max_fp_iri(sparql_client, assumption_iri):
+        
+        query_string = f"""
+        SELECT ?min_fp_iri ?max_fp_iri
+        WHERE {{
+         ?min_fp_iri <{IS_A}> <{assumption_iri}> ;
+                          <{RDF_TYPE}>  <{REGION_MIN_FP}>.
+         ?max_fp_iri <{IS_A}> <{assumption_iri}>;
+                          <{RDF_TYPE}>  <{REGION_MAX_FP}>.
+        }}
+        """
+        res = sparql_client.performQuery(query_string)
+
+        if not res:
+            min_fp_iri = REGION + "MinimalFuelPoverty_" + str(uuid.uuid4())
+            max_fp_iri = REGION + "MaximalFuelPoverty_" + str(uuid.uuid4())
+        else: 
+            res = res[0]
+            if res["min_fp_iri"] == "" or res["min_fp_iri"] == None:
+                min_fp_iri = REGION + "MinimalFuelPoverty_" + str(uuid.uuid4())
+            else:
+                min_fp_iri = str(res["min_fp_iri"])
+
+            if res["max_fp_iri"] == "" or res["max_fp_iri"] == None:
+                max_fp_iri = REGION + "MaximalFuelPoverty_" + str(uuid.uuid4())
+            else:
+                max_fp_iri = str(res["max_fp_iri"])
+
+        return min_fp_iri, max_fp_iri
+
 
     country_iri = check_country(sparql_client)
     assumption_iri = get_assumption_iri(sparql_client,country_iri)
@@ -198,6 +231,9 @@ def initialize_assumptions(sparql_client):
     boiler_efficiency_iri = get_boiler_efficiency_iri(sparql_client,assumption_iri)
     proportion_of_heating_iri = get_proportion_of_heating_iri(sparql_client,assumption_iri)
     uptake_iri = get_uptake_iri(sparql_client,assumption_iri)
+    
+    # Assumptions for Inequality Index agent
+    min_fp_iri, max_fp_iri = get_min_max_fp_iri(assumption_iri)
 
     query_string = f"""
     INSERT DATA {{
@@ -212,6 +248,10 @@ def initialize_assumptions(sparql_client):
                 <{RDF_TYPE}> <{REGION_PROPORTION_OF_HEATING}> .
     <{uptake_iri}> <{IS_A}> <{assumption_iri}> ;
                 <{RDF_TYPE}> <{REGION_UPTAKE}> .
+    <{min_fp_iri}> <{IS_A}> <{assumption_iri}> ;
+                <{RDF_TYPE}> <{REGION_MIN_FP}> .
+    <{max_fp_iri}> <{IS_A}> <{assumption_iri}> ;
+                <{RDF_TYPE}> <{REGION_MAX_FP}> .
     }}
     """
     sparql_client.performUpdate(query_string)
