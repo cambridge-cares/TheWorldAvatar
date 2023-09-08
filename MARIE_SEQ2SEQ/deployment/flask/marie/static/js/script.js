@@ -16,6 +16,12 @@ function display_latency_info(trans_latency, kg_latency) {
     elem.style.display = "block";
 }
 
+function displayPreprocessedQuestion(question) {
+    elem = document.getElementById("preprocessed-question")
+    elem.innerHTML = `<p style="margin: auto;">The input query has been reformatted to the following: ${question}</p>`
+    elem.style.display = "block";
+}
+
 function displaySparqlQuery(sparql_query) {
     document.getElementById("sparql-query").innerHTML = sparql_query;
     document.getElementById('sparql-query-container').style.display = "block";
@@ -52,12 +58,15 @@ function displayResults(data) {
     })
 
     content += "</tbody></table>"
-    document.getElementById("results").innerHTML = content;
+    elem = document.getElementById("results")
+    elem.innerHTML = content;
 
     // create paginated table
     new DataTable('#results-table', {
         scrollX: true
     });
+
+    elem.style.display = "block"
 }
 
 class HttpError extends Error {
@@ -68,12 +77,11 @@ class HttpError extends Error {
 }
 
 function hideElems() {
+    document.getElementById("preprocessed-question").style.display = "none"
     document.getElementById("latency-info").style.display = "none";
     document.getElementById('sparql-query-container').style.display = "none";
     document.getElementById("error-container").style.display = "none"
-
-    document.getElementById("results").innerHTML = ""
-    document.getElementById("sparql-query").innerHTML = ""
+    document.getElementById("results").style.display = "none"
 }
 
 function askQuestion() {
@@ -106,6 +114,9 @@ function askQuestion() {
     }).then(json => {
         display_latency_info(json["translation_latency"], json["kg_latency"])
         if (json["sparql_query"]) {
+            if (json["question"] != json["preprocessed_question"]) {
+                displayPreprocessedQuestion(json["preprocessed_question"])
+            }
             displaySparqlQuery(json["sparql_query"])
             displayResults(json["data"])
         } else {

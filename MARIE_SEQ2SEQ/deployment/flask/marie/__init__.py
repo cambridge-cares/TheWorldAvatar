@@ -1,16 +1,15 @@
 import json
 import os
 import time
+from importlib.resources import files
 from flask import Flask, render_template, request
 
-from marie.services import KgClient, TranslationClient
+from marie.services import KgClient, TranslationClient, sanitize_quantities
 
 
-with open(
-    os.path.join(os.path.dirname(__file__), "resources", "sample_questions.json"), "r"
-) as f:
-    SAMPLE_QUESTIONS = json.load(f)
-
+SAMPLE_QUESTIONS = json.loads(
+    files("marie.resources").joinpath("sample_questions.json").read_text()
+)
 app = Flask(__name__)
 
 translation_client = TranslationClient(
@@ -30,8 +29,13 @@ def ask():
     question = data.get("question")
     app.logger.info("Question received: " + str(question))
 
+    sanitized_inputs = sanitize_quantities(question)
+    app.logger.info("Santized inputs: " + str(sanitized_inputs))
+
     start_trans = time.time()
-    translation_result = translation_client.translate(question)
+    translation_result = translation_client.translate(
+        sanitized_inputs["preprocessed_text_for_trans"]
+    )
     end_trans = time.time()
     app.logger.info("Translation result: " + str(translation_result))
 
@@ -46,6 +50,7 @@ def ask():
 
     return dict(
         question=question,
+        preprocessed_question=sanitized_inputs["preprocessed_text_for_user"],
         sparql_query=sparql_query,
         data=data,
         translation_latency=end_trans - start_trans,
