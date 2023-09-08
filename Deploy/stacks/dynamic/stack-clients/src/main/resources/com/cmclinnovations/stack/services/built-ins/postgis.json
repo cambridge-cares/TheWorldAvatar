@@ -4,7 +4,7 @@
         "Name": "postgis",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/pgrouting/pgrouting:15-3.3-3.4.1-extra",
+                "Image": "ghcr.io/cambridge-cares/pgrouting/pgrouting:15-3.4-3.4.1-extra-bundled-SNAPSHOT",
                 "Env": [
                     "POSTGRES_HOST_AUTH_METHOD=scram-sha-256",
                     "POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256",
