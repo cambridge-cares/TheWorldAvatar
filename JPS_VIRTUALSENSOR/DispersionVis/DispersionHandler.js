@@ -296,7 +296,7 @@ class DispersionHandler {
         Object.keys(this.dispersions[this.selectedSimulation].pollutants).forEach(pollutant => searchParams.append("pollutant", pollutant));
         url += searchParams;
 
-        $.post(url);
+        return $.post(url);
     }
 
     updateVirtualSensors(derivation) {

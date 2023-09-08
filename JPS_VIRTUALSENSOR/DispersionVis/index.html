@@ -251,7 +251,7 @@
 
             MapHandler.MAP.doubleClickZoom.disable();
             MapHandler.MAP.on("dblclick", (e) => {
-                dispersionHandler.createVirtualSensor(e.lngLat.lat, e.lngLat.lng);
+                dispersionHandler.createVirtualSensor(e.lngLat.lat, e.lngLat.lng).done().then(() => dispersionHandler.plotData());
             });
         }
 
