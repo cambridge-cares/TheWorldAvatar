@@ -190,8 +190,6 @@ def addUKPowerPlantTriples(version, updateEndpointIRI, KGFileStoragePath, update
             
             graph.add((URIRef(EnergyGenerationIRI), RDF.type, URIRef(ontoeip_powerplant.PowerGeneration.iri)))                
             graph.add((URIRef(EnergyGenerationIRI), URIRef(ontoeip_powerplant.usesGenerationTechnology.iri), URIRef(GenerationTechnologyIRI)))
-                
-            # graph.add((URIRef(GenerationTechnologyIRI), RDF.type, URIRef(ontoeip_powerplant.PlantGenerationTechnology.iri)))
             
             graph.add((URIRef(GenerationTechnologyIRI), RDF.type, URIRef(GenerationTechnologyClassIRI)))
             graph.add((URIRef(GenerationTechnologyClassIRI), RDFS.subClassOf, URIRef(ontoeip_powerplant.PlantGenerationTechnology.iri)))

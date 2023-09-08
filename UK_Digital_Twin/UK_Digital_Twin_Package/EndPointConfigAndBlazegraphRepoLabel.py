@@ -9,7 +9,7 @@
 import sys, os
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
-from UK_Digital_Twin_Package.endPointofDigitalOcean import ONSEndpoint, UKPowerSystemBaseWorld, UKPopulationData, ONSEndpoint_TYPE
+from UK_Digital_Twin_Package.endPoint import ONSEndpoint, UKPowerSystemBaseWorld, UKPopulationData
 
 """UK digital twin in Blazegraph"""
 UKPowerSystemBaseWorld = { ## digital ocean 

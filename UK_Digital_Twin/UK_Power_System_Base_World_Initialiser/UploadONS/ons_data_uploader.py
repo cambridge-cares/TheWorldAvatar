@@ -8,12 +8,11 @@ import math, json
 import sys, os
 BASE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, BASE) 
+from pathlib import Path
 from UK_Digital_Twin_Package.queryInterface import performQuery
 from pyderivationagent.kg_operations.sparql_client import PySparqlClient
 from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endPointList
-
-with open('config.json', 'r') as config_file:
-    config_data = json.load(config_file)
+import shutil
 
 def curlCommandCreator(totalNumberOfTriples:int, interval:int, queryEndpoint:str, constructStr:str, fileName:str, batFileSavedPath:str, removedLines:int = 0):
     if interval > totalNumberOfTriples:
@@ -177,7 +176,7 @@ def queryLocalCode(startTime_of_EnergyConsumption, UKDigitalTwinEndPoint_iri):
 
     return LAList          
 
-def uploadONSFile(numOfFile:int, filePath:str, fileName:str, extension:str, stratNum:int, interval:int, updateEndpointIRI:str, givenIndexList:[], withEXTENSION:bool):
+def uploadONSFile(numOfFile:int, filePath:str, fileName:str, extension:str, stratNum:int, interval:int, updateEndpointIRI:str, givenIndexList:[]):
     if filePath[-1:] != "/": 
         filePath = filePath + '/'
     if extension[0] != ".":
@@ -185,27 +184,18 @@ def uploadONSFile(numOfFile:int, filePath:str, fileName:str, extension:str, stra
 
     if len(givenIndexList) != 0:
         for index in givenIndexList:
-            if withEXTENSION is True:
-                filepath_ = filePath + fileName + str(index)
-                os.rename(filepath_, filepath_ + extension)
-                sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
-                sparql_client.uploadOntology(filepath_ + extension)
-            else:
-                filepath_ = filePath + fileName + str(index) + extension
-                sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
-                sparql_client.uploadOntology(filepath_)
+            source_file = filePath + fileName + str(index)
+            destination_file = source_file + extension
+            shutil.copy(source_file, destination_file)
+            sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
+            sparql_client.uploadOntology(destination_file)
     else:
         for i in range(numOfFile):
-            if withEXTENSION is True:
-                filepath_ = filePath + fileName + str(stratNum + interval * i) 
-                os.rename(filepath_, filepath_ + extension)
-                sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
-                sparql_client.uploadOntology(filepath_ + extension)
-            else:
-                filepath_ = filePath + fileName + str(stratNum + interval * i) + extension
-                sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
-                sparql_client.uploadOntology(filepath_)
-
+            source_file = filePath + fileName + str(stratNum + interval * i)
+            destination_file = source_file + extension
+            shutil.copy(source_file, destination_file)
+            sparql_client = PySparqlClient(updateEndpointIRI, updateEndpointIRI)
+            sparql_client.uploadOntology(destination_file)
     print('--The upload of %s is done.--'%fileName)
     return 
 
@@ -264,58 +254,59 @@ if __name__ == '__main__':
 
     ## Update Endpoint IRI
     updateEndpointIRI = endPointList.ONS['endpoint_iri']
-    withEXTENSION = endPointList.ONS['with_ttl']
 
     ##-- upload the area bounderies and LA code --###
-    filePath = config_data['path'] + "/ONSKG_AreaBoundariesAndLACode/"
+    basePath =  str(Path(__file__).resolve().parent.parent.parent) + "/resources/ONSBatchFiles/"
+
+    filePath = basePath + "ONSKG_AreaBoundariesAndLACode/"
     fileName = "onsareaboundariesandlacode"
     numOfFile = 344
     stratNum = 1000
     interval = 1000
     givenIndexList = []
-    uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList, withEXTENSION)  
+    uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList)  
 
-    filePath = config_data['path'] + "/ONSKG_AreaBoundariesAndLACode/"
+    filePath = basePath + "ONSKG_AreaBoundariesAndLACode/"
     fileName = "onsareaboundariesandlacode"
     numOfFile = 344
     stratNum = 1000
     interval = 1000
     givenIndexList = [219500, 219750, 280250, 280375, 280500, 281125, 281190, 281250, 281500, 281625, 281750, 317500, 318500, 319500, 321500, 322500, 323500]
-    uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList, withEXTENSION)  
+    uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList)  
 
     #-- upload the ONSKG_WithinRelations --## 
-    filePath = config_data['path'] + "/ONSKG_WithinRelations/"
+    filePath = basePath + "ONSKG_WithinRelations/"
     fileName = "ONSwithinSubset"
     numOfFile = 309
     stratNum = 0
     interval = 1
     givenIndexList = []
-    uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList, withEXTENSION)  
+    uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList)  
 
     #-- upload the ONSKG_WithinRelations --## 
-    filePath = config_data['path'] + "/ONSKG_AreaCode/"
+    filePath = basePath + "ONSKG_AreaCode/"
     fileName = "onsareacode"
     numOfFile = 11
     stratNum = 50000
     interval = 50000
     givenIndexList = []
-    uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList, withEXTENSION)  
+    uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList)  
 
     #-- upload the ONSKG_WithinRelations --## 
-    filePath = config_data['path'] + "/ONSObsolete/"
+    filePath = basePath + "ONSObsolete/"
     fileName = "onsOBSOLETE"
     numOfFile = 7
     stratNum = 0
     interval = 1
     givenIndexList = []
-    uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList, withEXTENSION)  
+    uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList)  
 
     ##-- upload the ONSKG_WithinK03000001 (GB) --## 
-    filePath = config_data['path'] + "/WithinGB/"
+    filePath = basePath + "WithinGB/"
     fileName = "withinGB"
     numOfFile = 392
     stratNum = 0
     interval = 1
     givenIndexList = []
-    uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList, withEXTENSION)
+    uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList)
     

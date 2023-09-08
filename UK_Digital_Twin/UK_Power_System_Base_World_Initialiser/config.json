@@ -1,6 +1,9 @@
 {
     "DUKESDataVersion": "2019",
     "startTime_of_EnergyConsumption":"2017",
+    "PopulationVersion": "2019",
+    "limitLines": 3000,
+    "pointDistance":1,
     "ifUpdateToTripleStore": "True",
     "topologyConfigList":[{
         "BusNum": 10,

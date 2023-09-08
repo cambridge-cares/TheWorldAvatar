@@ -1,19 +1,19 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 12 July 2022         #
+# Last Update Date: 07 Sept 2023         #
 ##########################################
 
-"""This class defines the properties of DUKES data"""
+"""This class defines the properties of PopulationDensity data"""
 from pathlib import Path
 
 class PopulationDensityDataProperty:
     
-    def __init__(self, version = 2019):
+    def __init__(self, version, pointDistance):
         self.VERSION = version
     
         """ File path """
-        self.DataPath = "/mnt/c/Users/wx243/Documents/TheWorldAvatar/UK_Digital_Twin/Data files/PopulationDensity/"
-        self.PopulationDensityDataPath = self.DataPath + str(self.VERSION) + '/population_gbr.csv'
+        self.DataPath = str(Path(__file__).resolve().parent.parent) + "/Data files/PopulationDensity/"
+        self.PopulationDensityDataPath = self.DataPath + str(self.VERSION) + '/reduced_file_grid_size_%skm.csv'%str(pointDistance)
 
         """Header"""
         self.headerPopulationDensityData = ["Lat", "Lon", "Population\n"]
