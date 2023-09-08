@@ -65,6 +65,8 @@ class CsvMaker:
 
   def arrTransform( self, zeoname ):
     print( "arrTransform started" )
+    TWOPI = 2 * math.pi
+    DIRS = "xyz"
 
     output = []
 
@@ -85,10 +87,12 @@ class CsvMaker:
     output.append( [ uuid_cif, "instance", uuid_cif_core_trans,  
                      self.ontoPrefix + "hasCifCoreTransformation", "", "" ] )
 
+    ################# Fractional to Cartesian ########################
     uuid_m_frac_to_cart = tools.getUUID( uuidDB, "CIFCoreTransformationMatrixToCartesian", 
                         "ZeoliteCIFTransformationMatrixToCartesian_" + zeoname )
     output.append( [ uuid_m_frac_to_cart, "Instance", 
-                           "CIFCoreTransformationMatrixToCartesian", "", "", "" ] )
+                           "Matrix", "", "", "" ] )
+                           #"CIFCoreTransformationMatrixToCartesian", "", "", "" ] )
     output.append( [ uuid_cif_core_trans, "instance", uuid_m_frac_to_cart,  
                      self.ontoPrefix + "hasTransformationMatrixToCartesian", "", "" ] )
 
@@ -97,26 +101,134 @@ class CsvMaker:
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
                       "", "" ] )
 
-    dirs = "xyz"
     for iy in range(3):
         for ix in range(3):
             uuid_m_comp = tools.getUUID( uuidDB, "MatrixComponent", 
-                        "MatrixComponent"+str(ix)+str(iy)+"_" + zeoname )
+                        "MatrixComponentToCartesian"+str(ix)+str(iy)+"_" + zeoname )
             output.append( [ uuid_m_comp, "Instance", 
-                           "CIFCoreTransformationMatrixToCartesian", "", "", "" ] )
+                           "MatrixComponent", "", "", "" ] )
+                           #"CIFCoreTransformationMatrixToCartesian", "", "", "" ] )
             output.append( [ uuid_m_frac_to_cart, "instance", uuid_m_comp,  
                      self.ontoPrefix + "hasComponent", "", "" ] )
 
 
             output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
-                             uuid_m_comp, "", dirs[ix]+dirs[iy], "string" ] )
+                             uuid_m_comp, "", DIRS[ix]+DIRS[iy], "string" ] )
 
-            #output.append( [ self.ontoPrefix + "hasColumn", "Data Property", 
-            #                 uuid_m_comp, "", ix, "integer" ] )
+            output.append( [ self.ontoPrefix + "hasRowIndex", "Data Property", 
+                             uuid_m_comp, "", iy, "integer" ] )
+
+            output.append( [ self.ontoPrefix + "hasColumnIndex", "Data Property", 
+                             uuid_m_comp, "", ix, "integer" ] )
 
             output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
                              uuid_m_comp, "", 
                              round(structure.lattice.matrix[ix][iy], 12), "decimal" ] )
+
+    uuid_v_frac_to_cart = tools.getUUID( uuidDB, "Vector", 
+                        "ZeoliteCIFTransformationVectorToCartesian_" + zeoname )
+    output.append( [ uuid_v_frac_to_cart, "Instance", 
+                           "CIFCoreTransformationVectorToCartesian", "", "", "" ] )
+    output.append( [ uuid_cif_core_trans, "instance", uuid_v_frac_to_cart,  
+                     self.ontoPrefix + "hasTransformationVectorToCartesian", "", "" ] )
+
+    output.append( [ uuid_v_frac_to_cart, "Instance", 
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/angstrom",
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                      "", "" ] )
+
+    for ix in range(3):
+        uuid_v_comp = tools.getUUID( uuidDB, "VectorComponent", 
+                    "VectorComponentToCartesian" + str(ix) + "_" + zeoname )
+        output.append( [ uuid_v_comp, "Instance", 
+                       "VectorComponent", "", "", "" ] )
+                       #"CIFCoreTransformationVectorToCartesian", "", "", "" ] )
+        output.append( [ uuid_v_frac_to_cart, "instance", uuid_v_comp,  
+                         self.ontoPrefix + "hasComponent", "", "" ] )
+
+        output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                         uuid_v_comp, "", DIRS[ix], "string" ] )
+
+        output.append( [ self.ontoPrefix + "hasIndex", "Data Property", 
+                         uuid_v_comp, "", ix, "integer" ] )
+
+        output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+                         uuid_v_comp, "", 
+                         1.0 + ix, "decimal" ] )
+                         #round(structure.lattice.matrix[ix][iy], 12), "decimal" ] )
+
+
+    ################# Cartesian to Fractional ########################
+    uuid_m_cart_to_frac = tools.getUUID( uuidDB, "CIFCoreTransformationMatrixToFractional", 
+                        "ZeoliteCIFTransformationMatrixToFractional_" + zeoname )
+    output.append( [ uuid_m_cart_to_frac, "Instance", 
+                           "Matrix", "", "", "" ] )
+                           #"CIFCoreTransformationMatrixToCartesian", "", "", "" ] )
+    output.append( [ uuid_cif_core_trans, "instance", uuid_m_cart_to_frac,  
+                     self.ontoPrefix + "hasTransformationMatrixToFractional", "", "" ] )
+
+    output.append( [ uuid_m_cart_to_frac, "Instance", 
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                      "", "" ] )
+
+    for iy in range(3):
+        for ix in range(3):
+            uuid_m_comp = tools.getUUID( uuidDB, "MatrixComponent", 
+                        "MatrixComponentToFractional"+str(ix)+str(iy)+"_" + zeoname )
+            output.append( [ uuid_m_comp, "Instance", 
+                           "MatrixComponent", "", "", "" ] )
+                           #"CIFCoreTransformationMatrixToCartesian", "", "", "" ] )
+            output.append( [ uuid_m_cart_to_frac, "instance", uuid_m_comp,  
+                     self.ontoPrefix + "hasComponent", "", "" ] )
+
+            output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                             uuid_m_comp, "", DIRS[ix]+DIRS[iy], "string" ] )
+
+            output.append( [ self.ontoPrefix + "hasRowIndex", "Data Property", 
+                             uuid_m_comp, "", iy, "integer" ] )
+
+            output.append( [ self.ontoPrefix + "hasColumnIndex", "Data Property", 
+                             uuid_m_comp, "", ix, "integer" ] )
+
+            output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+                             uuid_m_comp, "", 
+                             round(structure.lattice.reciprocal_lattice.matrix[ix][iy], 12), "decimal" ] )
+
+    uuid_v_cart_to_frac = tools.getUUID( uuidDB, "Vector", 
+                        "ZeoliteCIFTransformationVectorToFractional" + zeoname )
+    output.append( [ uuid_v_cart_to_frac, "Instance", 
+                           "Vector", "", "", "" ] )
+                           #"CIFCoreTransformationVectorToFractional", "", "", "" ] )
+    output.append( [ uuid_cif_core_trans, "instance", uuid_v_cart_to_frac,  
+                     self.ontoPrefix + "hasTransformationVectorToFractional", "", "" ] )
+
+    output.append( [ uuid_v_cart_to_frac, "Instance", 
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
+                      "", "" ] )
+
+    for ix in range(3):
+        uuid_v_comp = tools.getUUID( uuidDB, "VectorComponent", 
+                    "VectorComponentToFractional" + str(ix) + "_" + zeoname )
+        output.append( [ uuid_v_comp, "Instance", 
+                       "VectorComponent", "", "", "" ] )
+                       #"CIFCoreTransformationVectorToCartesian", "", "", "" ] )
+        output.append( [ uuid_v_cart_to_frac, "instance", uuid_v_comp,  
+                         self.ontoPrefix + "hasComponent", "", "" ] )
+
+        output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
+                         uuid_v_comp, "", DIRS[ix], "string" ] )
+
+        output.append( [ self.ontoPrefix + "hasIndex", "Data Property", 
+                         uuid_v_comp, "", ix, "integer" ] )
+
+        output.append( [ self.ontoPrefix + "hasValue", "Data Property", 
+                         uuid_v_comp, "", 
+                         1.0/(ix+1), "decimal" ] )
+                         #round(structure.lattice.matrix[ix][iy], 12), "decimal" ] )
+
+
 
     tools.saveUUID( uuidDB )
 
@@ -249,8 +361,6 @@ class CsvMaker:
     output.append( [ uuid_cif_uc, "Instance", uuid_uc_abg,  
                      self.ontoPrefix + "hasUnitCellAngles", "", "" ] )
 
-    #output.append( [ self.ontoPrefix + "", "Data Property", 
-    #                 uuid_uc_abg, "", "", "string" ] )
     output.append( [ uuid_uc_abg, "Instance", 
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/degree",
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
@@ -300,9 +410,8 @@ class CsvMaker:
     output.append( [ uuid_cif_uc, "Instance", uuid_uc_abc,  
                      self.ontoPrefix + "hasUnitCellReciprocalLengths", "", "" ] )
 
-    # FIXME inverse-anstrom is not defined in OM:
     output.append( [ uuid_uc_r_abc, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocal-angstrom",
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
                       "", "" ] )
 
@@ -349,9 +458,8 @@ class CsvMaker:
     output.append( [ uuid_cif_uc, "Instance", uuid_uc_r_abg,  
                      self.ontoPrefix + "hasUnitCellReciprocalAngles", "", "" ] )
 
-    # FIXME inverse-degree is not defined in OM-2.
     output.append( [ uuid_uc_r_abg, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/invercse-degree",
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/degree",
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
                       "", "" ] )
 
@@ -562,23 +670,23 @@ class CsvMaker:
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_r_a, "", "a", "string" ] )
-    # FIXME reciprocal angstrom
+
     output.append( [ uuid_vec_r_a, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocal-angstrom",
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
                       "", "" ] )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_r_b, "", "b", "string" ] )
     output.append( [ uuid_vec_r_b, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocal-angstrom",
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
                       "", "" ] )
 
     output.append( [ self.ontoPrefix + "hasLabel", "Data Property", 
                      uuid_vec_r_c, "", "c", "string" ] )
     output.append( [ uuid_vec_r_c, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocal-angstrom",
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/reciprocalAngstrom",
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
                       "", "" ] )
 
@@ -711,9 +819,8 @@ class CsvMaker:
                      "Data Property", uuid_uc_volume, "", 
                      round(structure.lattice.volume, 12) , "decimal" ] )
 
-    # FIXME cubic-A is not in OM now. I can derive my own A^3 unit and replace it here
     output.append( [ uuid_uc_volume, "Instance", 
-                     "http://www.ontology-of-units-of-measure.org/resource/om-2/cubic-angstrom",
+                     "http://www.ontology-of-units-of-measure.org/resource/om-2/cubicAngstrom", 
                      "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",
                       "", "" ] )
 
@@ -816,9 +923,8 @@ class CsvMaker:
 
     #print( "faces =", faceN )
     for ic, cage in enumerate(cages):
-      #print( "ic = ", ic )
-      uuid_tile     = tools.getUUID( uuidDB, "Tile", "Tile-" + zeoname + "-cage" + str(ic+1) )
-      uuid_tile_num = tools.getUUID( uuidDB, "TileNumber", "TileNumber-" + zeoname + "-cage" + str(ic+1) )
+      uuid_tile     = tools.getUUID( uuidDB, "Tile", "Tile_" + zeoname + "_cage" + str(ic+1) )
+      uuid_tile_num = tools.getUUID( uuidDB, "TileNumber", "TileNumber_" + zeoname + "_cage" + str(ic+1) )
 
       output.append( [ uuid_tile, "Instance", "Tile", 
                        "", "", "" ] )
