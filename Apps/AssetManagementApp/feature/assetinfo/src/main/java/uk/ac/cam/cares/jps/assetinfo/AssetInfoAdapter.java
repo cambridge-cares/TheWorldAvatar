@@ -14,9 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +40,11 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
 
     private void buildAllPropertiesList(AssetInfo assetInfo) {
         Map<String, String> map = (Map<String, String>) assetInfo.getProperties().clone();
-        propertiesBySections.put(BASIC, getOrderedPropertiesList(map, basicInfoOrder));
-        propertiesBySections.put(LOCATION, getOrderedPropertiesList(map, locationInfoOrder));
-        propertiesBySections.put(SUPPLIER, getOrderedPropertiesList(map, supplierInfoOrder));
-        propertiesBySections.put(PURCHASE, getItemAndDocLineOrderedPropertiesList(map));
-        propertiesBySections.put(OTHERS, getOrderedPropertiesList(map, null));
+        propertiesBySections.put(BASIC_SECTION_TITLE, getOrderedPropertiesList(map, basicInfoOrder));
+        propertiesBySections.put(LOCATION_SECTION_TITLE, getOrderedPropertiesList(map, locationInfoOrder));
+        propertiesBySections.put(SUPPLIER_SECTION_TITLE, getOrderedPropertiesList(map, supplierInfoOrder));
+        propertiesBySections.put(PURCHASE_SECTION_TITLE, getItemAndDocLineOrderedPropertiesList(map));
+        propertiesBySections.put(OTHERS_SECTION_TITLE, getOrderedPropertiesList(map, null));
 
     }
 
