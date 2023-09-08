@@ -34,8 +34,14 @@ class CsvMaker:
 
   def prepare( self ):
     self.zeoList = zeolist.getZeoList( self.zeoOption )
+    self.uuidDB = tools.loadUUID( )
 
-    # May be command line arguments here:
+    # May be also command line arguments here:
+
+
+  def finalize( self ):
+    tools.saveUUID( self.uuidDB )
+
 
   def arrInit( self, zeoname ):
     output = [ ]
@@ -52,7 +58,8 @@ class CsvMaker:
                      "base", "", "" ] )
 
     # The framework should be initialized only once.
-    uuidDB = tools.loadUUID( )
+    #uuidDB = tools.loadUUID( )
+    uuidDB = self.uuidDB
 
     uuid_zeolite = tools.getUUID( uuidDB, "ZeoliteFramework", "Zeolite_" + zeoname )
     output.append( [ uuid_zeolite, "Instance", "ZeoliteFramework", "", "", "" ] )
@@ -60,7 +67,7 @@ class CsvMaker:
     output.append( [ self.ontoPrefix + "hasZeoliteCode", "Data Property", 
                      uuid_zeolite, "", zeoname.strip(' "'), "string" ] )
 
-    tools.saveUUID( uuidDB )
+    #tools.saveUUID( uuidDB )
 
     return output
     pass # CsvMaker.arrInit()
@@ -72,7 +79,8 @@ class CsvMaker:
 
     output = []
 
-    uuidDB = tools.loadUUID( )
+    #uuidDB = tools.loadUUID( )
+    uuidDB = self.uuidDB
 
     path = os.path.join( "CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
     #dataIn = tools.readCsv( path )
@@ -232,7 +240,7 @@ class CsvMaker:
 
 
 
-    tools.saveUUID( uuidDB )
+    #tools.saveUUID( uuidDB )
 
     return output
     pass # CsvMaker.arrTransform()
@@ -242,7 +250,8 @@ class CsvMaker:
 
     output = []
 
-    uuidDB = tools.loadUUID( )
+    #uuidDB = tools.loadUUID( )
+    uuidDB = self.uuidDB
 
     path = os.path.join( "CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
     #dataIn = tools.readCsv( path )
@@ -264,7 +273,8 @@ class CsvMaker:
     output = []
     TWOPI = 2 * math.pi
 
-    uuidDB = tools.loadUUID( )
+    #uuidDB = tools.loadUUID( )
+    uuidDB = self.uuidDB
 
     path = os.path.join( "CIF", zeolist.zeoCodeToCode3(zeoname).upper() + ".cif")
     #dataIn = tools.readCsv( path )
@@ -281,7 +291,7 @@ class CsvMaker:
     #print( "  ", structure.lattice.reciprocal_lattice.a ) # reciprocal parameters
     #print( "  ", structure.lattice.reciprocal_lattice.matrix[0][0] ) # reciprocal parameters
     #print( "  ", structure.lattice.reciprocal_lattice.matrix ) # reciprocal parameters
-    print( "  ", structure.lattice.matrix ) # reciprocal parameters
+    #print( "  ", structure.lattice.matrix ) # reciprocal parameters
     #print( TWOPI * numpy.linalg.inv( structure.lattice.matrix ) )
 
     # Define class instances:
@@ -833,7 +843,7 @@ class CsvMaker:
 
     ###########################################
 
-    tools.saveUUID( uuidDB )
+    #tools.saveUUID( uuidDB )
 
     return output
     pass # CsvMaker.arrUnitCell()
@@ -841,7 +851,8 @@ class CsvMaker:
   def arrTiles( self, zeoname ):
     output = []
 
-    uuidDB = tools.loadUUID()
+    #uuidDB = tools.loadUUID()
+    uuidDB = self.uuidDB
 
     path = os.path.join( self.inputDir, "Tile-signature-2023.csv" )
     dataIn = tools.readCsv( path )
@@ -1016,7 +1027,7 @@ class CsvMaker:
         #                               uuid_tile_face, "", int(cell[0]), "string" ] )
 
 
-    tools.saveUUID( uuidDB )
+    #tools.saveUUID( uuidDB )
 
     return output
     pass # CsvMaker.arrTiles()
@@ -1071,6 +1082,8 @@ class CsvMaker:
       #errCount += 1
       #logging.warning( "Not implemented creating zeolite csv" )
       pass
+
+    self.finalize() # << Important! Saves the current list of the UUIDs
 
     if errCount > 0:
       logging.warning( "Detected " + str(errCount) + " errors" )
