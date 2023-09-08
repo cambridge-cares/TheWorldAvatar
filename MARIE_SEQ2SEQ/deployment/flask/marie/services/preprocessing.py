@@ -100,8 +100,9 @@ def advance_to_magnitude(text: str, ptr: int = 0):
     Returns:
         The new pointer position that marks the start of a magnitude substring.
     """
-    while ptr < len(text) and not startswith_magnitude(text, ptr):
+    while ptr < len(text) and ((not startswith_magnitude(text, ptr)) or (ptr > 0 and not text[ptr - 1].isspace())):
         ptr += 1
+
     return ptr
 
 

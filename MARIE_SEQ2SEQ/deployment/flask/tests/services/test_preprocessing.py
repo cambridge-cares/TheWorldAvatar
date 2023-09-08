@@ -72,6 +72,7 @@ class TestPreprocessing:
             ("5 g/ml", 0, 0),
             ("8.20x10**+1 ppm and 170°C", 12, 20),
             ("8.20x10**+1 ppm and 170°C", 23, 25),
+            ("What is the exact mass of C16H34O?", 0, 34)
         ],
     )
     def test_advanceToMagnitude(self, text, ptr, expected):
