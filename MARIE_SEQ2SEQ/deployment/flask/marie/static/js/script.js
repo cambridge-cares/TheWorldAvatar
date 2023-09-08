@@ -1,14 +1,38 @@
-const sampleQuestions = document.getElementsByClassName("sample-question");
-for (let elem of sampleQuestions) {
-    elem.addEventListener("click", function () {
-        const question = elem.textContent.match(/\S+/g).join(" ")
-        document.getElementById('input-field').value = question
-        window.scrollTo(0, 0);
-        askQuestion();
-    })
+/* 
+------------------------------
+Custom classes
+------------------------------
+*/
+
+class HttpError extends Error {
+    constructor(statusCode) {
+        super("HTTP Error")
+        this.statusCode = statusCode
+    }
 }
 
+/* 
+------------------------------
+Global variables
+------------------------------
+*/
+
 let is_processing = false;
+
+
+/* 
+------------------------------
+Functions that manipulate UI
+------------------------------
+*/
+
+function hideElems() {
+    document.getElementById("preprocessed-question").style.display = "none"
+    document.getElementById("latency-info").style.display = "none";
+    document.getElementById('sparql-query-container').style.display = "none";
+    document.getElementById("error-container").style.display = "none"
+    document.getElementById("results").style.display = "none"
+}
 
 function display_latency_info(trans_latency, kg_latency) {
     elem = document.getElementById("latency-info")
@@ -71,19 +95,26 @@ function displayResults(data) {
 
 }
 
-class HttpError extends Error {
-    constructor(statusCode) {
-        super("HTTP Error")
-        this.statusCode = statusCode
-    }
+function displayError(message) {
+    elem = document.getElementById("error-container")
+    elem.innerHTML = message
+    elem.style.display = "block"
 }
 
-function hideElems() {
-    document.getElementById("preprocessed-question").style.display = "none"
-    document.getElementById("latency-info").style.display = "none";
-    document.getElementById('sparql-query-container').style.display = "none";
-    document.getElementById("error-container").style.display = "none"
-    document.getElementById("results").style.display = "none"
+
+/* 
+----------------------------------------
+Functions that respond to onclick events
+----------------------------------------
+*/
+
+function populateInputText(text) {
+    document.getElementById('input-field').value = text
+    window.scrollTo(0, 0);
+}
+
+function addToInputText(text) {
+    document.getElementById('input-field').value += text
 }
 
 function askQuestion() {
@@ -134,10 +165,4 @@ function askQuestion() {
         is_processing = false;
         document.getElementById('ask-button').className = "mybutton"
     })
-}
-
-function displayError(message) {
-    elem = document.getElementById("error-container")
-    elem.innerHTML = message
-    elem.style.display = "block"
 }
