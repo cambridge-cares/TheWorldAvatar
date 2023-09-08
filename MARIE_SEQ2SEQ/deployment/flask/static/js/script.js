@@ -26,24 +26,11 @@ function displayResults(data) {
         displayError("The predicted SPARQL query is malformed and cannot be executed against the OntoSpecies knowledge graph.")
         return
     }
-    let content = "<table id='results-table' class='table table-striped table-bordered'><thead><tr>"
+    let content = "<table id='results-table' class='table table-striped table-bordered' style='width: 100%;'><thead><tr>"
 
     let vars = data["head"]["vars"].slice();
-    let is_var_used = new Array(vars.length).fill(false);
-
     if (data["results"]["bindings"].length > 0) {
-        for (const key in data["results"]["bindings"][0]) {
-            if (data["results"]["bindings"][0][key]["value"]) {
-                is_var_used[vars.indexOf(key)] = true;
-            }
-        }
-
-        // remove vars with no values
-        for (let i = is_var_used.length - 1; i >= 0; i--) {
-            if (!is_var_used[i]) {
-                vars.splice(i);
-            }
-        }
+        vars = vars.filter(varname => varname in data["results"]["bindings"][0])
     }
 
     content += "<th>#</th>"
@@ -55,7 +42,11 @@ function displayResults(data) {
     data["results"]["bindings"].forEach((valueset, idx) => {
         content += `<tr><td>${idx + 1}</td>`
         vars.forEach(varname => {
-            content += `<td>${valueset[varname]["value"]}</td>`
+            if (varname in valueset) {
+                content += `<td>${valueset[varname]["value"]}</td>`
+            } else {
+                content += "<td></td>"
+            }
         })
         content += "</tr>"
     })
@@ -64,7 +55,9 @@ function displayResults(data) {
     document.getElementById("results").innerHTML = content;
 
     // create paginated table
-    new DataTable('#results-table');
+    new DataTable('#results-table', {
+        scrollX: true
+    });
 }
 
 class HttpError extends Error {
