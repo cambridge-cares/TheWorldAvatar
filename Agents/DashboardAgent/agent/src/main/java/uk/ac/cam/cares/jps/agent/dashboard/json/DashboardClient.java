@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
 import uk.ac.cam.cares.jps.agent.dashboard.stack.StackClient;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.AgentCommunicationClient;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.net.http.HttpResponse;
 import java.util.HashMap;
@@ -121,7 +122,13 @@ public class DashboardClient {
         // Retrieve all time series for the model
         Map<String, Map<String, List<String[]>>> timeSeries = this.SERVICE_CLIENT.getAllTimeSeries(spatialZone);
         // Generate JSON model syntax
-        String jsonSyntax = new GrafanaModel(title, this.DATABASE_CONNECTION_MAP, timeSeries).construct();
+        String jsonSyntax;
+        try {
+            jsonSyntax = new GrafanaModel(title, this.DATABASE_CONNECTION_MAP, timeSeries).construct();
+        } catch (Exception e) {
+            LOGGER.fatal("Failed to construct grafana model syntax. See error message for more details: " + e.getMessage());
+            throw new JPSRuntimeException("Failed to construct grafana model syntax. See error message for more details: " + e.getMessage());
+        }
         // Create a new dashboard based on the JSON model using a POST request with security token
         HttpResponse response = AgentCommunicationClient.sendPostRequest(route, jsonSyntax, this.SERVICE_ACCOUNT_TOKEN);
         // WIP: Retrieve the required information to form the URL
