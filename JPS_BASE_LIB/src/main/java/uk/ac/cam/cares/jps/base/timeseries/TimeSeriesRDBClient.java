@@ -41,11 +41,14 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
  * This class uses the jooq library to interact with a relational database.
- * <T> is the class type for the time values, e.g. LocalDateTime, Timestamp, Integer, Double etc.
+ * <T> is the class type for the time values, e.g. LocalDateTime, Timestamp,
+ * Integer, Double etc.
+ * 
  * @author Kok Foong Lee
  *
- * Update:
- * This class should not be used directly. It should only be accessed internally via {@link TimeSeriesClient TimeSeriesClient}
+ *         Update:
+ *         This class should not be used directly. It should only be accessed
+ *         internally via {@link TimeSeriesClient TimeSeriesClient}
  * @author Mehal Agarwal (ma988@cam.ac.uk)
  */
 
@@ -73,6 +76,7 @@ public class TimeSeriesRDBClient<T> {
 	private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
 	// Error message
 	private static final String CONNECTION_ERROR = "Failed to connect to database";
+
 	// Allowed aggregation function
 	protected enum AggregateFunction {
 		AVERAGE,
@@ -82,6 +86,7 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Standard constructor
+	 * 
 	 * @param timeClass class of the timestamps of the time series
 	 */
 	public TimeSeriesRDBClient(Class<T> timeClass) {
@@ -93,15 +98,22 @@ public class TimeSeriesRDBClient<T> {
 	}
 
 	/**
-	 * Initialise RDB table for particular time series and add respective entries to central lookup table
-	 * <p>For the list of supported classes, refer org.jooq.impl.SQLDataType
-	 * <p>The timeseries IRI needs to be provided. A unique uuid for the corresponding table will be generated.
-	 * @param dataIRI list of IRIs for the data provided as string
-	 * @param dataClass list with the corresponding Java class (typical String, double or int) for each data IRI
-	 * @param tsIRI IRI of the timeseries provided as string
-	 * @param conn connection to the RDB
+	 * Initialise RDB table for particular time series and add respective entries to
+	 * central lookup table
+	 * <p>
+	 * For the list of supported classes, refer org.jooq.impl.SQLDataType
+	 * <p>
+	 * The timeseries IRI needs to be provided. A unique uuid for the corresponding
+	 * table will be generated.
+	 * 
+	 * @param dataIRI   list of IRIs for the data provided as string
+	 * @param dataClass list with the corresponding Java class (typical String,
+	 *                  double or int) for each data IRI
+	 * @param tsIRI     IRI of the timeseries provided as string
+	 * @param conn      connection to the RDB
 	 */
-	protected String initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI, Connection conn) {
+	protected String initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI,
+			Connection conn) {
 		return initTimeSeriesTable(dataIRI, dataClass, tsIRI, null, conn);
 	}
 
@@ -109,14 +121,16 @@ public class TimeSeriesRDBClient<T> {
 	 * similar to above, but specifically to use with PostGIS
 	 * the additional argument srid is to restrict any geometry columns to the srid
 	 * if not needed, set to null, or use above the above method
+	 * 
 	 * @param dataIRI
 	 * @param dataClass
 	 * @param tsIRI
 	 * @param srid
-	 * @param conn connection to the RDB
+	 * @param conn      connection to the RDB
 	 * @return
 	 */
-	protected String initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI, Integer srid, Connection conn) {
+	protected String initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI, Integer srid,
+			Connection conn) {
 
 		// Generate UUID as unique RDB table name
 		String tsTableName = UUID.randomUUID().toString();
@@ -132,23 +146,26 @@ public class TimeSeriesRDBClient<T> {
 				initCentralTable(conn);
 			}
 
-			// Check if any data has already been initialised (i.e. is associated with different tsIRI)
+			// Check if any data has already been initialised (i.e. is associated with
+			// different tsIRI)
 			for (String s : dataIRI) {
-				if(checkDataHasTimeSeries(s, conn)) {
-					throw new JPSRuntimeException(exceptionPrefix + "<" + s + "> already has an assigned time series instance");
+				if (checkDataHasTimeSeries(s, conn)) {
+					throw new JPSRuntimeException(
+							exceptionPrefix + "<" + s + "> already has an assigned time series instance");
 				}
 			}
 
 			// Ensure that there is a class for each data IRI
 			if (dataIRI.size() != dataClass.size()) {
-				throw new JPSRuntimeException(exceptionPrefix + "Length of dataClass is different from number of data IRIs");
+				throw new JPSRuntimeException(
+						exceptionPrefix + "Length of dataClass is different from number of data IRIs");
 			}
 
 			// Assign column name for each dataIRI; name for time column is fixed
-			Map<String,String> dataColumnNames = new HashMap<>();
+			Map<String, String> dataColumnNames = new HashMap<>();
 			int i = 1;
 			for (String s : dataIRI) {
-				dataColumnNames.put(s, "column"+i);
+				dataColumnNames.put(s, "column" + i);
 				i++;
 			}
 
@@ -163,7 +180,8 @@ public class TimeSeriesRDBClient<T> {
 			// Re-throw JPSRuntimeExceptions
 			throw e;
 		} catch (Exception e) {
-			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with
+			// database) as JPSRuntimeException with respective message
 			LOGGER.error(e.getMessage());
 			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		}
@@ -173,10 +191,12 @@ public class TimeSeriesRDBClient<T> {
 	/**
 	 * Append time series data to an already existing RDB table
 	 * If certain columns within the table are not provided, they will be nulls
-	 * if a row with the equivalent time value exists, the values provided will overwrite
+	 * if a row with the equivalent time value exists, the values provided will
+	 * overwrite
 	 * the existing data in the table
+	 * 
 	 * @param ts_list TimeSeries object to add
-	 * @param conn connection to the RDB
+	 * @param conn    connection to the RDB
 	 */
 	protected void addTimeSeriesData(List<TimeSeries<T>> tsList, Connection conn) {
 
@@ -193,28 +213,32 @@ public class TimeSeriesRDBClient<T> {
 
 				// Check if central database lookup table exists
 				if (!checkCentralTableExists(conn)) {
-					throw new JPSRuntimeException(exceptionPrefix + "Central RDB lookup table has not been initialised yet");
+					throw new JPSRuntimeException(
+							exceptionPrefix + "Central RDB lookup table has not been initialised yet");
 				}
 
-				// Ensure that all provided dataIRIs/columns are located in the same RDB table (throws Exception if not)
+				// Ensure that all provided dataIRIs/columns are located in the same RDB table
+				// (throws Exception if not)
 				checkDataIsInSameTable(dataIRI, context);
 
 				String tsTableName = getTimeseriesTableName(dataIRI.get(0), context);
 				// Assign column name for each dataIRI; name for time column is fixed
-				Map<String,String> dataColumnNames = new HashMap<>();
+				Map<String, String> dataColumnNames = new HashMap<>();
 				for (String s : dataIRI) {
 					dataColumnNames.put(s, getColumnName(s, context));
 				}
 
 				// Append time series data to time series table
-				// if a row with the time value exists, that row will be updated instead of creating a new row
+				// if a row with the time value exists, that row will be updated instead of
+				// creating a new row
 				populateTimeSeriesTable(tsTableName, ts, dataColumnNames, conn);
 			} catch (JPSRuntimeException e) {
 				// Re-throw JPSRuntimeExceptions
 				throw e;
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage());
-				// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+				// Throw all exceptions incurred by jooq (i.e. by SQL interactions with
+				// database) as JPSRuntimeException with respective message
 				throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 			}
 
@@ -222,14 +246,24 @@ public class TimeSeriesRDBClient<T> {
 	}
 
 	/**
-	 * Retrieve time series within bounds from RDB (time bounds are inclusive and optional)
-	 * <p>Returns all data series from dataIRI list as one time series object (with potentially multiple related data series);
-	 * <br>Returned time series are in ascending order with respect to time (from oldest to newest)
-	 * <br>Returned time series contain potential duplicates (i.e. multiple entries for same time stamp)
-	 * @param dataIRI list of data IRIs provided as string
-	 * @param lowerBound start timestamp from which to retrieve data (null if not applicable)
-	 * @param upperBound end timestamp until which to retrieve data (null if not applicable)
-	 * @param conn connection to the RDB
+	 * Retrieve time series within bounds from RDB (time bounds are inclusive and
+	 * optional)
+	 * <p>
+	 * Returns all data series from dataIRI list as one time series object (with
+	 * potentially multiple related data series);
+	 * <br>
+	 * Returned time series are in ascending order with respect to time (from oldest
+	 * to newest)
+	 * <br>
+	 * Returned time series contain potential duplicates (i.e. multiple entries for
+	 * same time stamp)
+	 * 
+	 * @param dataIRI    list of data IRIs provided as string
+	 * @param lowerBound start timestamp from which to retrieve data (null if not
+	 *                   applicable)
+	 * @param upperBound end timestamp until which to retrieve data (null if not
+	 *                   applicable)
+	 * @param conn       connection to the RDB
 	 */
 	public TimeSeries<T> getTimeSeriesWithinBounds(List<String> dataIRI, T lowerBound, T upperBound, Connection conn) {
 
@@ -241,10 +275,12 @@ public class TimeSeriesRDBClient<T> {
 
 			// Check if central database lookup table exists
 			if (!checkCentralTableExists(conn)) {
-				throw new JPSRuntimeException(exceptionPrefix + "Central RDB lookup table has not been initialised yet");
+				throw new JPSRuntimeException(
+						exceptionPrefix + "Central RDB lookup table has not been initialised yet");
 			}
 
-			// Ensure that all provided dataIRIs/columns are located in the same RDB table (throws Exception if not)
+			// Ensure that all provided dataIRIs/columns are located in the same RDB table
+			// (throws Exception if not)
 			checkDataIsInSameTable(dataIRI, context);
 
 			// Retrieve table corresponding to the time series connected to the data IRIs
@@ -274,7 +310,8 @@ public class TimeSeriesRDBClient<T> {
 			}
 
 			// Perform query
-			Result<? extends Record> queryResult = context.select(columnList).from(table).where(timeColumn.between(lowerBound, upperBound))
+			Result<? extends Record> queryResult = context.select(columnList).from(table)
+					.where(timeColumn.between(lowerBound, upperBound))
 					.orderBy(timeColumn.asc()).fetch();
 
 			// Collect results and return a TimeSeries object
@@ -292,7 +329,8 @@ public class TimeSeriesRDBClient<T> {
 			throw e;
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
-			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with
+			// database) as JPSRuntimeException with respective message
 			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		}
 
@@ -300,8 +338,9 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Retrieve entire time series from RDB
+	 * 
 	 * @param dataIRI list of data IRIs provided as string
-	 * @param conn connection to the RDB
+	 * @param conn    connection to the RDB
 	 */
 	public TimeSeries<T> getTimeSeries(List<String> dataIRI, Connection conn) {
 		return getTimeSeriesWithinBounds(dataIRI, null, null, conn);
@@ -309,8 +348,9 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * returns a TimeSeries object with the latest value of the given IRI
+	 * 
 	 * @param dataIRI
-	 * @param conn connection to the RDB
+	 * @param conn    connection to the RDB
 	 */
 	public TimeSeries<T> getLatestData(String dataIRI, Connection conn) {
 		DSLContext context = DSL.using(conn, DIALECT);
@@ -321,7 +361,8 @@ public class TimeSeriesRDBClient<T> {
 
 			Field<Object> dataField = DSL.field(DSL.name(columnName));
 
-			Result<? extends Record> queryResult = context.select(timeColumn, dataField).from(tsTable).where(dataField.isNotNull())
+			Result<? extends Record> queryResult = context.select(timeColumn, dataField).from(tsTable)
+					.where(dataField.isNotNull())
 					.orderBy(timeColumn.desc()).limit(1).fetch();
 
 			List<T> timeValues = queryResult.getValues(timeColumn);
@@ -336,8 +377,9 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * returns a TimeSeries object with the oldest value of the given IRI
+	 * 
 	 * @param dataIRI
-	 * @param conn connection to the RDB
+	 * @param conn    connection to the RDB
 	 */
 	public TimeSeries<T> getOldestData(String dataIRI, Connection conn) {
 		DSLContext context = DSL.using(conn, DIALECT);
@@ -348,7 +390,8 @@ public class TimeSeriesRDBClient<T> {
 
 			Field<Object> dataField = DSL.field(DSL.name(columnName));
 
-			Result<? extends Record> queryResult = context.select(timeColumn, dataField).from(tsTable).where(dataField.isNotNull())
+			Result<? extends Record> queryResult = context.select(timeColumn, dataField).from(tsTable)
+					.where(dataField.isNotNull())
 					.orderBy(timeColumn.asc()).limit(1).fetch();
 
 			List<T> timeValues = queryResult.getValues(timeColumn);
@@ -363,8 +406,9 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Retrieve average value of a column; stored data should be in numerics
+	 * 
 	 * @param dataIRI data IRI provided as string
-	 * @param conn connection to the RDB
+	 * @param conn    connection to the RDB
 	 * @return The average of the provided data series as double
 	 */
 	public double getAverage(String dataIRI, Connection conn) {
@@ -373,8 +417,9 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Retrieve maximum value of a column; stored data should be in numerics
+	 * 
 	 * @param dataIRI data IRI provided as string
-	 * @param conn connection to the RDB
+	 * @param conn    connection to the RDB
 	 * @return The maximum of the provided data series as double
 	 */
 	public double getMaxValue(String dataIRI, Connection conn) {
@@ -383,8 +428,9 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Retrieve minimum value of a column; stored data should be in numerics
+	 * 
 	 * @param dataIRI data IRI provided as string
-	 * @param conn connection to the RDB
+	 * @param conn    connection to the RDB
 	 * @return The minimum of the provided data series as double
 	 */
 	public double getMinValue(String dataIRI, Connection conn) {
@@ -393,8 +439,9 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Retrieve latest (maximum) time entry for a given dataIRI
+	 * 
 	 * @param dataIRI data IRI provided as string
-	 * @param conn connection to the RDB
+	 * @param conn    connection to the RDB
 	 * @return The maximum (latest) timestamp of the provided data series
 	 */
 	public T getMaxTime(String dataIRI, Connection conn) {
@@ -417,7 +464,8 @@ public class TimeSeriesRDBClient<T> {
 			throw e;
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
-			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with
+			// database) as JPSRuntimeException with respective message
 			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		}
 
@@ -425,8 +473,9 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Retrieve earliest (minimum) time entry for a given dataIRI
+	 * 
 	 * @param dataIRI data IRI provided as string
-	 * @param conn connection to the RDB
+	 * @param conn    connection to the RDB
 	 * @return The minimum (earliest) timestamp of the provided data series
 	 */
 	public T getMinTime(String dataIRI, Connection conn) {
@@ -448,7 +497,8 @@ public class TimeSeriesRDBClient<T> {
 			throw e;
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
-			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with
+			// database) as JPSRuntimeException with respective message
 			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		}
 
@@ -456,11 +506,14 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Delete RDB time series table rows between lower and upper Bound
-	 * <p>Note that this will delete the entire rows in the corresponding table, i.e. all columns (in addition to the given data IRI)
-	 * @param dataIRI data IRI provided as string
+	 * <p>
+	 * Note that this will delete the entire rows in the corresponding table, i.e.
+	 * all columns (in addition to the given data IRI)
+	 * 
+	 * @param dataIRI    data IRI provided as string
 	 * @param lowerBound start timestamp from which to delete data
 	 * @param upperBound end timestamp until which to delete data
-	 * @param conn connection to the RDB
+	 * @param conn       connection to the RDB
 	 */
 	protected void deleteRows(String dataIRI, T lowerBound, T upperBound, Connection conn) {
 
@@ -480,7 +533,8 @@ public class TimeSeriesRDBClient<T> {
 			throw e;
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
-			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with
+			// database) as JPSRuntimeException with respective message
 			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		}
 
@@ -488,8 +542,9 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Delete individual time series (i.e. data for one dataIRI only)
+	 * 
 	 * @param dataIRI data IRI provided as string
-	 * @param conn connection to the RDB
+	 * @param conn    connection to the RDB
 	 */
 	protected void deleteTimeSeries(String dataIRI, Connection conn) {
 
@@ -503,7 +558,8 @@ public class TimeSeriesRDBClient<T> {
 			String columnName = getColumnName(dataIRI, context);
 			String tsTableName = getTimeseriesTableName(dataIRI, context);
 
-			// Retrieve number of columns of time series table (i.e. number of dataIRI + time column)
+			// Retrieve number of columns of time series table (i.e. number of dataIRI +
+			// time column)
 			if (getNumberOfColumns(conn, tsTableName) > 2) {
 
 				// Delete only column for dataIRI from RDB table if further columns are present
@@ -513,7 +569,8 @@ public class TimeSeriesRDBClient<T> {
 				context.delete(getDSLTable(DB_TABLE_NAME)).where(DATA_IRI_COLUMN.equal(dataIRI)).execute();
 
 			} else {
-				// Delete entire RDB table for single column time series (data column + time column)
+				// Delete entire RDB table for single column time series (data column + time
+				// column)
 				deleteTimeSeriesTable(dataIRI, conn);
 			}
 
@@ -522,7 +579,8 @@ public class TimeSeriesRDBClient<T> {
 			throw e;
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
-			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with
+			// database) as JPSRuntimeException with respective message
 			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		}
 
@@ -538,13 +596,16 @@ public class TimeSeriesRDBClient<T> {
 			Field<String> schemaColumn = DSL.field("table_schema", String.class);
 			condition.and(schemaColumn.eq(schema));
 		}
-		
+
 		return context.select(count()).from(columnsTable).where(condition).fetchOne(0, int.class);
 	}
+
 	/**
-	 * Delete all time series information related to a dataIRI (i.e. entire RDB table and entries in central table)
+	 * Delete all time series information related to a dataIRI (i.e. entire RDB
+	 * table and entries in central table)
+	 * 
 	 * @param dataIRI data IRI provided as string
-	 * @param conn connection to the RDB
+	 * @param conn    connection to the RDB
 	 */
 	protected void deleteTimeSeriesTable(String dataIRI, Connection conn) {
 
@@ -569,7 +630,8 @@ public class TimeSeriesRDBClient<T> {
 			throw e;
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
-			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with
+			// database) as JPSRuntimeException with respective message
 			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		}
 
@@ -577,6 +639,7 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Delete all time series RDB tables and central lookup table
+	 * 
 	 * @param conn connection to the RDB
 	 */
 	protected void deleteAll(Connection conn) {
@@ -592,7 +655,8 @@ public class TimeSeriesRDBClient<T> {
 
 				// Retrieve all time series table names from central lookup table
 				Table<?> dbTable = getDSLTable(DB_TABLE_NAME);
-				List<String> queryResult = context.selectDistinct(TABLENAME_COLUMN).from(dbTable).fetch(TABLENAME_COLUMN);
+				List<String> queryResult = context.selectDistinct(TABLENAME_COLUMN).from(dbTable)
+						.fetch(TABLENAME_COLUMN);
 
 				if (!queryResult.isEmpty()) {
 					for (String table : queryResult) {
@@ -606,31 +670,35 @@ public class TimeSeriesRDBClient<T> {
 
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
-			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with
+			// database) as JPSRuntimeException with respective message
 			throw new JPSRuntimeException("Error while executing SQL command", e);
 		}
 
 	}
 
-
 	/**
 	 * Initialise central database lookup table
+	 * 
 	 * @param context
-	 * <p>Requires existing RDB connection
+	 *                <p>
+	 *                Requires existing RDB connection
 	 */
 	private void initCentralTable(Connection conn) {
 		DSLContext context = DSL.using(conn, DIALECT);
-		// Initialise central lookup table: only creates empty table if it does not exist, otherwise it is left unchanged
+		// Initialise central lookup table: only creates empty table if it does not
+		// exist, otherwise it is left unchanged
 		try (CreateTableColumnStep createStep = context.createTableIfNotExists(getDSLTable(DB_TABLE_NAME))) {
 			createStep.column(DATA_IRI_COLUMN).column(TS_IRI_COLUMN)
-			.column(TABLENAME_COLUMN).column(COLUMNNAME_COLUMN).execute();
+					.column(TABLENAME_COLUMN).column(COLUMNNAME_COLUMN).execute();
 		}
-		context.createIndex().on(getDSLTable(DB_TABLE_NAME), Arrays.asList(DATA_IRI_COLUMN,TS_IRI_COLUMN,TABLENAME_COLUMN,COLUMNNAME_COLUMN)).execute();
+		context.createIndex().on(getDSLTable(DB_TABLE_NAME),
+				Arrays.asList(DATA_IRI_COLUMN, TS_IRI_COLUMN, TABLENAME_COLUMN, COLUMNNAME_COLUMN)).execute();
 	}
 
 	private boolean checkCentralTableExists(Connection conn) {
 		DSLContext context = DSL.using(conn, DIALECT);
-	    Table<Record> tables = DSL.table(DSL.name("information_schema", "tables"));
+		Table<Record> tables = DSL.table(DSL.name("information_schema", "tables"));
 		Field<String> tableNameColumn = DSL.field("table_name", String.class);
 
 		Condition condition = tableNameColumn.eq(DB_TABLE_NAME);
@@ -643,16 +711,21 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Add new entries to central RDB lookup table
-	 * <p>Requires existing RDB connection
-	 * @param tsTable name of the timeseries table provided as string
-	 * @param dataIRI list of data IRIs provided as string
-	 * @param dataColumnNames list of column names in the tsTable corresponding to the data IRIs
-	 * @param tsIRI timeseries IRI provided as string
+	 * <p>
+	 * Requires existing RDB connection
+	 * 
+	 * @param tsTable         name of the timeseries table provided as string
+	 * @param dataIRI         list of data IRIs provided as string
+	 * @param dataColumnNames list of column names in the tsTable corresponding to
+	 *                        the data IRIs
+	 * @param tsIRI           timeseries IRI provided as string
 	 * @param context
 	 */
-	private void populateCentralTable(String tsTable, List<String> dataIRI, Map<String, String> dataColumnNames, String tsIRI, Connection conn) {
+	private void populateCentralTable(String tsTable, List<String> dataIRI, Map<String, String> dataColumnNames,
+			String tsIRI, Connection conn) {
 		DSLContext context = DSL.using(conn, DIALECT);
-		InsertValuesStep4<Record, String, String, String, String> insertValueStep = context.insertInto(getDSLTable(DB_TABLE_NAME),
+		InsertValuesStep4<Record, String, String, String, String> insertValueStep = context.insertInto(
+				getDSLTable(DB_TABLE_NAME),
 				DATA_IRI_COLUMN, TS_IRI_COLUMN, TABLENAME_COLUMN, COLUMNNAME_COLUMN);
 
 		// Populate columns row by row
@@ -664,18 +737,23 @@ public class TimeSeriesRDBClient<T> {
 	}
 
 	/**
-	 * Create an empty RDB table with the given data types for the respective columns
-	 * <p>Requires existing RDB connection
-	 * @param tsTable name of the timeseries table provided as string
-	 * @param dataColumnNames list of column names in the tsTable corresponding to the data IRIs
-	 * @param dataIRI list of data IRIs provided as string
-	 * @param dataClass list with the corresponding Java class (typical String, double or int) for each data IRI
+	 * Create an empty RDB table with the given data types for the respective
+	 * columns
+	 * <p>
+	 * Requires existing RDB connection
+	 * 
+	 * @param tsTable         name of the timeseries table provided as string
+	 * @param dataColumnNames list of column names in the tsTable corresponding to
+	 *                        the data IRIs
+	 * @param dataIRI         list of data IRIs provided as string
+	 * @param dataClass       list with the corresponding Java class (typical
+	 *                        String, double or int) for each data IRI
 	 * @param srid
-	 * @param conn connection to the RDB
+	 * @param conn            connection to the RDB
 	 * @throws SQLException
 	 */
-	private void createEmptyTimeSeriesTable(String tsTable, Map<String,String> dataColumnNames, List<String> dataIRI,
-											List<Class<?>> dataClass, Integer srid, Connection conn) throws SQLException {
+	private void createEmptyTimeSeriesTable(String tsTable, Map<String, String> dataColumnNames, List<String> dataIRI,
+			List<Class<?>> dataClass, Integer srid, Connection conn) throws SQLException {
 
 		DSLContext context = DSL.using(conn, DIALECT);
 
@@ -696,7 +774,8 @@ public class TimeSeriesRDBClient<T> {
 					additionalGeomColumns.add(dataColumnNames.get(dataIRI.get(i)));
 					classForAdditionalGeomColumns.add(dataClass.get(i));
 				} else {
-					createStep = createStep.column(dataColumnNames.get(dataIRI.get(i)), DefaultDataType.getDataType(DIALECT, dataClass.get(i)));
+					createStep = createStep.column(dataColumnNames.get(dataIRI.get(i)),
+							DefaultDataType.getDataType(DIALECT, dataClass.get(i)));
 				}
 			}
 
@@ -707,7 +786,6 @@ public class TimeSeriesRDBClient<T> {
 				createStep.close();
 			}
 		}
-		
 
 		// create index on time column for quicker searches
 		context.createIndex().on(getDSLTable(tsTable), timeColumn).execute();
@@ -719,12 +797,16 @@ public class TimeSeriesRDBClient<T> {
 	}
 
 	/**
-	 * workaround because open source jOOQ DataType class does not support geometry datatypes properly
-	 * rather than creating a generic geometry column, this will restrict the column to the class provided
+	 * workaround because open source jOOQ DataType class does not support geometry
+	 * datatypes properly
+	 * rather than creating a generic geometry column, this will restrict the column
+	 * to the class provided
 	 * e.g. Polygon, Point, Multipolygon, along with the srid, if provided
+	 * 
 	 * @throws SQLException
 	 */
-	private void addGeometryColumns(String tsTable, List<String> columnNames, List<Class<?>> dataTypes, Integer srid, Connection conn) throws SQLException {
+	private void addGeometryColumns(String tsTable, List<String> columnNames, List<Class<?>> dataTypes, Integer srid,
+			Connection conn) throws SQLException {
 		StringBuilder sb = new StringBuilder();
 		sb.append(String.format("alter table %s ", getDSLTable(tsTable).toString()));
 
@@ -753,14 +835,18 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Append time series data from TimeSeries object to (existing) RDB table
-	 * <p>Requires existing RDB connection
-	 * @param tsTable name of the timeseries table provided as string
-	 * @param ts time series to write into the table
-	 * @param dataColumnNames list of column names in the tsTable corresponding to the data in the ts
-	 * @param conn connection to the RDB
+	 * <p>
+	 * Requires existing RDB connection
+	 * 
+	 * @param tsTable         name of the timeseries table provided as string
+	 * @param ts              time series to write into the table
+	 * @param dataColumnNames list of column names in the tsTable corresponding to
+	 *                        the data in the ts
+	 * @param conn            connection to the RDB
 	 * @throws SQLException
 	 */
-	private void populateTimeSeriesTable(String tsTable, TimeSeries<T> ts, Map<String,String> dataColumnNames, Connection conn) throws SQLException {
+	private void populateTimeSeriesTable(String tsTable, TimeSeries<T> ts, Map<String, String> dataColumnNames,
+			Connection conn) throws SQLException {
 
 		DSLContext context = DSL.using(conn, DIALECT);
 
@@ -782,13 +868,13 @@ public class TimeSeriesRDBClient<T> {
 		// Populate columns row by row
 		InsertValuesStepN<?> insertValueStep = context.insertInto(table, columnList);
 		int numRowsWithoutMatchingTime = 0;
-		for (int i=0; i<ts.getTimes().size(); i++) {
+		for (int i = 0; i < ts.getTimes().size(); i++) {
 			// newValues is the row elements
 			if (!checkTimeRowExists(tsTable, ts.getTimes().get(i), context)) {
-				Object[] newValues = new Object[dataIRIs.size()+1];
+				Object[] newValues = new Object[dataIRIs.size() + 1];
 				newValues[0] = ts.getTimes().get(i);
 				for (int j = 0; j < ts.getDataIRIs().size(); j++) {
-					newValues[j+1] = (ts.getValues(dataIRIs.get(j)).get(i));
+					newValues[j + 1] = (ts.getValues(dataIRIs.get(j)).get(i));
 				}
 				insertValueStep = insertValueStep.values(newValues);
 				numRowsWithoutMatchingTime += 1;
@@ -812,27 +898,34 @@ public class TimeSeriesRDBClient<T> {
 			for (int i = 0; i < ts.getDataIRIs().size(); i++) {
 				String dataIRI = ts.getDataIRIs().get(i);
 
-				if (i == (ts.getDataIRIs().size()-1)) {
-					updateStep.set(DSL.field(DSL.name(dataColumnNames.get(dataIRI))), ts.getValues(dataIRI).get(rowIndex))
+				if (i == (ts.getDataIRIs().size() - 1)) {
+					updateStep
+							.set(DSL.field(DSL.name(dataColumnNames.get(dataIRI))), ts.getValues(dataIRI).get(rowIndex))
 							.where(timeColumn.eq(ts.getTimes().get(rowIndex)));
 
-					// open source jOOQ does not support postgis geometries, hence not using execute() directly
+					// open source jOOQ does not support postgis geometries, hence not using
+					// execute() directly
 					try (PreparedStatement statement = conn.prepareStatement(updateStep.toString())) {
 						statement.executeUpdate();
 					}
 				} else {
-					updateStep.set(DSL.field(DSL.name(dataColumnNames.get(dataIRI))), ts.getValues(dataIRI).get(rowIndex));
+					updateStep.set(DSL.field(DSL.name(dataColumnNames.get(dataIRI))),
+							ts.getValues(dataIRI).get(rowIndex));
 				}
 			}
 		}
 	}
 
 	/**
-	 * Check whether dataIRI has a tsIRI associated with it (i.e. dataIRI exists in central lookup table)
-	 * <p>Requires existing RDB connection
+	 * Check whether dataIRI has a tsIRI associated with it (i.e. dataIRI exists in
+	 * central lookup table)
+	 * <p>
+	 * Requires existing RDB connection
+	 * 
 	 * @param dataIRI data IRI provided as string
-	 * @param conn connection to the RDB
-	 * @return True if the data IRI exists in central lookup table's dataIRI column, false otherwise
+	 * @param conn    connection to the RDB
+	 * @return True if the data IRI exists in central lookup table's dataIRI column,
+	 *         false otherwise
 	 */
 	boolean checkDataHasTimeSeries(String dataIRI, Connection conn) {
 		DSLContext context = DSL.using(conn, DIALECT);
@@ -840,6 +933,7 @@ public class TimeSeriesRDBClient<T> {
 		Table<?> table = getDSLTable(DB_TABLE_NAME);
 		return context.fetchExists(selectFrom(table).where(DATA_IRI_COLUMN.eq(dataIRI)));
 	}
+
 	boolean checkDataHasTimeSeries(String dataIRI) {
 		try (Connection conn = getConnection()) {
 			return checkDataHasTimeSeries(dataIRI, conn);
@@ -849,9 +943,14 @@ public class TimeSeriesRDBClient<T> {
 	}
 
 	/**
-	 * Ensure that all dataIRIs are associated with same RDB table (i.e. have same time series IRI)
-	 * <br>Throws JPSRuntime Exception if not all dataIRIs are attached to same table in the database
-	 * <p>Requires existing RDB connection;
+	 * Ensure that all dataIRIs are associated with same RDB table (i.e. have same
+	 * time series IRI)
+	 * <br>
+	 * Throws JPSRuntime Exception if not all dataIRIs are attached to same table in
+	 * the database
+	 * <p>
+	 * Requires existing RDB connection;
+	 * 
 	 * @param dataIRI list of data IRIs provided as string
 	 * @param context
 	 */
@@ -870,8 +969,11 @@ public class TimeSeriesRDBClient<T> {
 	}
 
 	/**
-	 * Retrieve tsIRI for provided dataIRI from central database lookup table (if it exists)
-	 * <p>Requires existing RDB connection
+	 * Retrieve tsIRI for provided dataIRI from central database lookup table (if it
+	 * exists)
+	 * <p>
+	 * Requires existing RDB connection
+	 * 
 	 * @param dataIRI data IRI provided as string
 	 * @param context
 	 * @return The attached time series IRI as string
@@ -880,18 +982,24 @@ public class TimeSeriesRDBClient<T> {
 		try {
 			// Look for the entry dataIRI in dbTable
 			Table<?> table = getDSLTable(DB_TABLE_NAME);
-			List<String> queryResult = context.select(TS_IRI_COLUMN).from(table).where(DATA_IRI_COLUMN.eq(dataIRI)).fetch(TS_IRI_COLUMN);
-			// Throws IndexOutOfBoundsException if dataIRI is not present in central lookup table (i.e. queryResult is empty)
+			List<String> queryResult = context.select(TS_IRI_COLUMN).from(table).where(DATA_IRI_COLUMN.eq(dataIRI))
+					.fetch(TS_IRI_COLUMN);
+			// Throws IndexOutOfBoundsException if dataIRI is not present in central lookup
+			// table (i.e. queryResult is empty)
 			return queryResult.get(0);
 		} catch (IndexOutOfBoundsException e) {
 			LOGGER.error(e.getMessage());
-			throw new JPSRuntimeException(exceptionPrefix + "<" + dataIRI + "> does not have an assigned time series instance");
+			throw new JPSRuntimeException(
+					exceptionPrefix + "<" + dataIRI + "> does not have an assigned time series instance");
 		}
 	}
 
 	/**
-	 * Retrieve column name for provided dataIRI from central database lookup table (if it exists)
-	 * <p>Requires existing RDB connection
+	 * Retrieve column name for provided dataIRI from central database lookup table
+	 * (if it exists)
+	 * <p>
+	 * Requires existing RDB connection
+	 * 
 	 * @param dataIRI data IRI provided as string
 	 * @param context
 	 * @return Corresponding column name in the RDB table related to the data IRI
@@ -900,18 +1008,24 @@ public class TimeSeriesRDBClient<T> {
 		try {
 			// Look for the entry dataIRI in dbTable
 			Table<?> table = getDSLTable(DB_TABLE_NAME);
-			List<String> queryResult = context.select(COLUMNNAME_COLUMN).from(table).where(DATA_IRI_COLUMN.eq(dataIRI)).fetch(COLUMNNAME_COLUMN);
-			// Throws IndexOutOfBoundsException if dataIRI is not present in central lookup table (i.e. queryResult is empty)
+			List<String> queryResult = context.select(COLUMNNAME_COLUMN).from(table).where(DATA_IRI_COLUMN.eq(dataIRI))
+					.fetch(COLUMNNAME_COLUMN);
+			// Throws IndexOutOfBoundsException if dataIRI is not present in central lookup
+			// table (i.e. queryResult is empty)
 			return queryResult.get(0);
 		} catch (IndexOutOfBoundsException e) {
 			LOGGER.error(e.getMessage());
-			throw new JPSRuntimeException(exceptionPrefix + "<" + dataIRI + "> does not have an assigned time series instance");
+			throw new JPSRuntimeException(
+					exceptionPrefix + "<" + dataIRI + "> does not have an assigned time series instance");
 		}
 	}
 
 	/**
-	 * Retrieve table name for provided dataIRI from central database lookup table (if it exists)
-	 * <p>Requires existing RDB connection
+	 * Retrieve table name for provided dataIRI from central database lookup table
+	 * (if it exists)
+	 * <p>
+	 * Requires existing RDB connection
+	 * 
 	 * @param dataIRI data IRI provided as string
 	 * @param context
 	 * @return Corresponding table name as string
@@ -920,18 +1034,23 @@ public class TimeSeriesRDBClient<T> {
 		try {
 			// Look for the entry dataIRI in dbTable
 			Table<?> table = getDSLTable(DB_TABLE_NAME);
-			List<String> queryResult = context.select(TABLENAME_COLUMN).from(table).where(DATA_IRI_COLUMN.eq(dataIRI)).fetch(TABLENAME_COLUMN);
-			// Throws IndexOutOfBoundsException if dataIRI is not present in central lookup table (i.e. queryResult is empty)
+			List<String> queryResult = context.select(TABLENAME_COLUMN).from(table).where(DATA_IRI_COLUMN.eq(dataIRI))
+					.fetch(TABLENAME_COLUMN);
+			// Throws IndexOutOfBoundsException if dataIRI is not present in central lookup
+			// table (i.e. queryResult is empty)
 			return queryResult.get(0);
 		} catch (IndexOutOfBoundsException e) {
 			LOGGER.error(e.getMessage());
-			throw new JPSRuntimeException(exceptionPrefix + "<" + dataIRI + "> does not have an assigned time series instance");
+			throw new JPSRuntimeException(
+					exceptionPrefix + "<" + dataIRI + "> does not have an assigned time series instance");
 		}
 	}
 
 	/**
 	 * Retrieve time series table for provided dataIRI in database
-	 * <p>Requires existing RDB connection
+	 * <p>
+	 * Requires existing RDB connection
+	 * 
 	 * @param dataIRI data IRI provided as string
 	 * @param context
 	 * @return Table object corresponding to the time series
@@ -945,6 +1064,7 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * check if a row exists to prevent duplicate rows with the same time value
+	 * 
 	 * @param tsTableName
 	 * @param time
 	 * @param context
@@ -961,10 +1081,13 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Retrieve aggregate value of a column; stored data should be in numerics
-	 * @param dataIRI data IRI provided as string
-	 * @param aggregateFunction enumerator for the wanted type of aggregation (AVERAGE, MAX, MIN)
-	 * @param conn connection to the RDB
-	 * @return The aggregate value of the whole time series corresponding to the dataIRI.
+	 * 
+	 * @param dataIRI           data IRI provided as string
+	 * @param aggregateFunction enumerator for the wanted type of aggregation
+	 *                          (AVERAGE, MAX, MIN)
+	 * @param conn              connection to the RDB
+	 * @return The aggregate value of the whole time series corresponding to the
+	 *         dataIRI.
 	 */
 	protected double getAggregate(String dataIRI, AggregateFunction aggregateFunction, Connection conn) {
 
@@ -976,7 +1099,8 @@ public class TimeSeriesRDBClient<T> {
 			// Retrieve table corresponding to the time series connected to the data IRI
 			Table<?> table = getTimeseriesTable(dataIRI, context);
 
-			// Create map between the data IRI and the corresponding column field in the table
+			// Create map between the data IRI and the corresponding column field in the
+			// table
 			String columnName = getColumnName(dataIRI, context);
 			Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
 
@@ -988,7 +1112,8 @@ public class TimeSeriesRDBClient<T> {
 				case MIN:
 					return context.select(min(columnField)).from(table).fetch(min(columnField)).get(0);
 				default:
-					throw new JPSRuntimeException(exceptionPrefix + "Aggregate function "+aggregateFunction.name()+" not valid!");
+					throw new JPSRuntimeException(
+							exceptionPrefix + "Aggregate function " + aggregateFunction.name() + " not valid!");
 			}
 
 		} catch (JPSRuntimeException e) {
@@ -996,33 +1121,41 @@ public class TimeSeriesRDBClient<T> {
 			throw e;
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
-			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with
+			// database) as JPSRuntimeException with respective message
 			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		}
 
 	}
 
 	/**
-	 * Get and set methods for private relational database properties (e.g. PostgreSQL)
+	 * Get and set methods for private relational database properties (e.g.
+	 * PostgreSQL)
 	 */
 	public void setRdbURL(String rdbURL) {
 		this.rdbURL = rdbURL;
 	}
+
 	public String getRdbURL() {
 		return rdbURL;
 	}
+
 	public void setRdbUser(String user) {
 		this.rdbUser = user;
 	}
+
 	public String getRdbUser() {
 		return rdbUser;
 	}
+
 	public void setRdbPassword(String password) {
 		this.rdbPassword = password;
 	}
 
 	/**
-	 * Load RDB URL, username and password from properties file ("timeseries.properties") at specified path
+	 * Load RDB URL, username and password from properties file
+	 * ("timeseries.properties") at specified path
+	 * 
 	 * @param filepath absolute path to timeseries properties file
 	 */
 	protected void loadRdbConfigs(String filepath) throws IOException {
@@ -1030,7 +1163,8 @@ public class TimeSeriesRDBClient<T> {
 		// Check whether properties file exists at specified location
 		File file = new File(filepath);
 		if (!file.exists()) {
-			throw new JPSRuntimeException(exceptionPrefix + "No properties file found at specified filepath: " + filepath);
+			throw new JPSRuntimeException(
+					exceptionPrefix + "No properties file found at specified filepath: " + filepath);
 		}
 
 		// Try-with-resource to ensure closure of input stream
@@ -1049,23 +1183,31 @@ public class TimeSeriesRDBClient<T> {
 			if (prop.containsKey("db.user")) {
 				setRdbUser(prop.getProperty("db.user"));
 			} else {
-				throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"db.user=<rdb_username>\" ");
+				throw new JPSRuntimeException(
+						exceptionPrefix + "Properties file is missing \"db.user=<rdb_username>\" ");
 			}
 			if (prop.containsKey("db.password")) {
 				setRdbPassword(prop.getProperty("db.password"));
 			} else {
-				throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"db.password=<rdb_password>\" ");
+				throw new JPSRuntimeException(
+						exceptionPrefix + "Properties file is missing \"db.password=<rdb_password>\" ");
 			}
 		}
 	}
 
 	/**
-	 * Initialise RDB table for particular time series and add respective entries to central lookup table
-	 * <p>For the list of supported classes, refer org.jooq.impl.SQLDataType
-	 * <p>The timeseries IRI needs to be provided. A unique uuid for the corresponding table will be generated.
-	 * @param dataIRI list of IRIs for the data provided as string
-	 * @param dataClass list with the corresponding Java class (typical String, double or int) for each data IRI
-	 * @param tsIRI IRI of the timeseries provided as string
+	 * Initialise RDB table for particular time series and add respective entries to
+	 * central lookup table
+	 * <p>
+	 * For the list of supported classes, refer org.jooq.impl.SQLDataType
+	 * <p>
+	 * The timeseries IRI needs to be provided. A unique uuid for the corresponding
+	 * table will be generated.
+	 * 
+	 * @param dataIRI   list of IRIs for the data provided as string
+	 * @param dataClass list with the corresponding Java class (typical String,
+	 *                  double or int) for each data IRI
+	 * @param tsIRI     IRI of the timeseries provided as string
 	 */
 	protected String initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI) {
 		return initTimeSeriesTable(dataIRI, dataClass, tsIRI, (Integer) null);
@@ -1075,6 +1217,7 @@ public class TimeSeriesRDBClient<T> {
 	 * similar to above, but specifically to use with PostGIS
 	 * the additional argument srid is to restrict any geometry columns to the srid
 	 * if not needed, set to null, or use above the above method
+	 * 
 	 * @param dataIRI
 	 * @param dataClass
 	 * @param tsIRI
@@ -1093,8 +1236,10 @@ public class TimeSeriesRDBClient<T> {
 	/**
 	 * Append time series data to an already existing RDB table
 	 * If certain columns within the table are not provided, they will be nulls
-	 * if a row with the equivalent time value exists, the values provided will overwrite
+	 * if a row with the equivalent time value exists, the values provided will
+	 * overwrite
 	 * the existing data in the table
+	 * 
 	 * @param ts_list TimeSeries object to add
 	 */
 	protected void addTimeSeriesData(List<TimeSeries<T>> tsList) {
@@ -1107,13 +1252,23 @@ public class TimeSeriesRDBClient<T> {
 	}
 
 	/**
-	 * Retrieve time series within bounds from RDB (time bounds are inclusive and optional)
-	 * <p>Returns all data series from dataIRI list as one time series object (with potentially multiple related data series);
-	 * <br>Returned time series are in ascending order with respect to time (from oldest to newest)
-	 * <br>Returned time series contain potential duplicates (i.e. multiple entries for same time stamp)
-	 * @param dataIRI list of data IRIs provided as string
-	 * @param lowerBound start timestamp from which to retrieve data (null if not applicable)
-	 * @param upperBound end timestamp until which to retrieve data (null if not applicable)
+	 * Retrieve time series within bounds from RDB (time bounds are inclusive and
+	 * optional)
+	 * <p>
+	 * Returns all data series from dataIRI list as one time series object (with
+	 * potentially multiple related data series);
+	 * <br>
+	 * Returned time series are in ascending order with respect to time (from oldest
+	 * to newest)
+	 * <br>
+	 * Returned time series contain potential duplicates (i.e. multiple entries for
+	 * same time stamp)
+	 * 
+	 * @param dataIRI    list of data IRIs provided as string
+	 * @param lowerBound start timestamp from which to retrieve data (null if not
+	 *                   applicable)
+	 * @param upperBound end timestamp until which to retrieve data (null if not
+	 *                   applicable)
 	 */
 	public TimeSeries<T> getTimeSeriesWithinBounds(List<String> dataIRI, T lowerBound, T upperBound) {
 		// All database interactions in try-block to ensure closure of connection
@@ -1128,6 +1283,7 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Retrieve entire time series from RDB
+	 * 
 	 * @param dataIRI list of data IRIs provided as string
 	 */
 	public TimeSeries<T> getTimeSeries(List<String> dataIRI) {
@@ -1136,8 +1292,9 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * returns a TimeSeries object with the latest value of the given IRI
+	 * 
 	 * @param dataIRI
-	 * @param conn connection to the RDB
+	 * @param conn    connection to the RDB
 	 */
 	public TimeSeries<T> getLatestData(String dataIRI) {
 		try (Connection conn = getConnection()) {
@@ -1150,6 +1307,7 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * returns a TimeSeries object with the oldest value of the given IRI
+	 * 
 	 * @param dataIRI
 	 */
 	public TimeSeries<T> getOldestData(String dataIRI) {
@@ -1163,6 +1321,7 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Retrieve average value of a column; stored data should be in numerics
+	 * 
 	 * @param dataIRI data IRI provided as string
 	 * @return The average of the provided data series as double
 	 */
@@ -1177,6 +1336,7 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Retrieve maximum value of a column; stored data should be in numerics
+	 * 
 	 * @param dataIRI data IRI provided as string
 	 * @return The maximum of the provided data series as double
 	 */
@@ -1191,6 +1351,7 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Retrieve minimum value of a column; stored data should be in numerics
+	 * 
 	 * @param dataIRI data IRI provided as string
 	 * @return The minimum of the provided data series as double
 	 */
@@ -1205,6 +1366,7 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Retrieve latest (maximum) time entry for a given dataIRI
+	 * 
 	 * @param dataIRI data IRI provided as string
 	 * @return The maximum (latest) timestamp of the provided data series
 	 */
@@ -1220,6 +1382,7 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Retrieve earliest (minimum) time entry for a given dataIRI
+	 * 
 	 * @param dataIRI data IRI provided as string
 	 * @return The minimum (earliest) timestamp of the provided data series
 	 */
@@ -1235,8 +1398,11 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Delete RDB time series table rows between lower and upper Bound
-	 * <p>Note that this will delete the entire rows in the corresponding table, i.e. all columns (in addition to the given data IRI)
-	 * @param dataIRI data IRI provided as string
+	 * <p>
+	 * Note that this will delete the entire rows in the corresponding table, i.e.
+	 * all columns (in addition to the given data IRI)
+	 * 
+	 * @param dataIRI    data IRI provided as string
 	 * @param lowerBound start timestamp from which to delete data
 	 * @param upperBound end timestamp until which to delete data
 	 */
@@ -1252,8 +1418,9 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Delete individual time series (i.e. data for one dataIRI only)
+	 * 
 	 * @param dataIRI data IRI provided as string
-	 * @param conn connection to the RDB
+	 * @param conn    connection to the RDB
 	 */
 	protected void deleteTimeSeries(String dataIRI) {
 		// All database interactions in try-block to ensure closure of connection
@@ -1266,7 +1433,9 @@ public class TimeSeriesRDBClient<T> {
 	}
 
 	/**
-	 * Delete all time series information related to a dataIRI (i.e. entire RDB table and entries in central table)
+	 * Delete all time series information related to a dataIRI (i.e. entire RDB
+	 * table and entries in central table)
+	 * 
 	 * @param dataIRI data IRI provided as string
 	 */
 	protected void deleteTimeSeriesTable(String dataIRI) {
@@ -1302,7 +1471,7 @@ public class TimeSeriesRDBClient<T> {
 	}
 
 	private void initSchemaIfNotExists(Connection conn) {
-		DSLContext context= DSL.using(conn, DIALECT);
+		DSLContext context = DSL.using(conn, DIALECT);
 		try (CreateSchemaFinalStep createStep = context.createSchemaIfNotExists(DSL.name(schema))) {
 			createStep.execute();
 		}
