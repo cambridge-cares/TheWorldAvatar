@@ -61,9 +61,9 @@ public class AssetInfoFragment extends Fragment {
             binding.assetInfoRv.setVisibility(View.VISIBLE);
         });
         viewModel.getError().observe(getViewLifecycleOwner(), error -> {
-            Toast.makeText(getContext(), getString(error), Toast.LENGTH_SHORT).show();
             binding.shimmerViewContainer.stopShimmer();
             binding.shimmerViewContainer.setVisibility(View.GONE);
+            binding.errorView.setVisibility(View.VISIBLE);
         });
         viewModel.getAssetInfoByIri(getArguments().getString("uri"));
 

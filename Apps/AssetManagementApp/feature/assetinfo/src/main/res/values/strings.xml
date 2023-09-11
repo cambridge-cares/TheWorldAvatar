@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="network_error">Not able to get the asset information, please try again.</string>
+    <string name="network_error">Not able to get the asset information, please check your network connection and try again.</string>
     <string name="asset_info">Asset Information</string>
 </resources>
