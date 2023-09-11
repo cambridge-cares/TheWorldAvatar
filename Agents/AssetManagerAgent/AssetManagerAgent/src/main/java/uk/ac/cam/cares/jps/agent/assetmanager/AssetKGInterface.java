@@ -222,7 +222,7 @@ public class AssetKGInterface {
             personNameIRI = PersonIRIs.getString("PersonNameIRI");
 
             if(workspaceName != null && !workspaceName.isBlank()){
-                workspaceIRI = getWorkspaceIRIByName(workspaceName).getQueryString();
+                workspaceIRI = getWorkspaceIRIStringByName(workspaceName);
             }
         }
         AssetData.put("assignedTo", assigneeName);
@@ -496,7 +496,7 @@ public class AssetKGInterface {
                 String personNameIRIString = reqResult.getJSONObject(0).getString("x0");
                 result.put("PersonNameIRI", personNameIRIString);
                 //Query Person instance from person name
-                result.put("PersonIRI", getIRIbyIRIObject(iri(personNameIRIString), hasName, storeClientAsset));
+                result.put("PersonIRI", getIRIStringbyIRIObject(iri(personNameIRIString), hasName, storeClientAsset));
                 return result;
             default:
                 throw new JPSRuntimeException("A person have more than 1 instance: " + name + ". Check the knowledge graph for duplicates.", null);
@@ -521,7 +521,7 @@ public class AssetKGInterface {
                 OrgNameIRI = reqResult.getJSONObject(0).getString("x0");
                 result.put("OrgNameIRI", OrgNameIRI);
                 //Query Person instance from person name
-                result.put("OrgIRI", getIRIbyIRIObject(iri(OrgNameIRI), hasName, storeClientAsset));
+                result.put("OrgIRI", getIRIStringbyIRIObject(iri(OrgNameIRI), hasName, storeClientAsset));
                 return result;
             default:
                 throw new JPSRuntimeException("An organization has more than 1 instance: " + orgName + ". Check the knowledge graph for duplicates.", null);
@@ -542,15 +542,15 @@ public class AssetKGInterface {
 
     }
 
-    private Iri getWorkspaceIRIByName (String name) {
+    private String getWorkspaceIRIStringByName (String name) {
         JSONArray reqResult = getIRIbyLiteral(name, hasWorkspaceIdentifier, storeClientAsset);
         switch (reqResult.length()) {
             case 0:
                 //Does not seem right to use Asest prefix here?
-                return genIRI("Workspace", P_ASSET);
+                return genIRIString("Workspace", P_ASSET);
                 
             case 1:
-                return iri(reqResult.getJSONObject(0).getString("x0"));
+                return reqResult.getJSONObject(0).getString("x0");
             default:
                 throw new JPSRuntimeException("Workspace has more than 1 instances: " + name + ". Check the knowledge graph for duplicates.", null);
         }
@@ -968,14 +968,14 @@ public class AssetKGInterface {
         
     }
 
-    private Iri getIRIbyIRIObject (Iri object, Iri predicate, RemoteStoreClient storeClient){
+    private String getIRIStringbyIRIObject (Iri object, Iri predicate, RemoteStoreClient storeClient){
         SelectQuery query = Queries.SELECT();
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
             Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         query.where(query.var().has(predicate, object));
         JSONObject reqResult = storeClient.executeQuery(query.getQueryString()).getJSONObject(0);
-        return iri(reqResult.getString("x0"));
+        return reqResult.getString("x0");
     }
 
     private JSONArray getIRIListbyIRIObject (Iri object, Iri predicate, RemoteStoreClient storeClient){
@@ -987,14 +987,14 @@ public class AssetKGInterface {
         return storeClient.executeQuery(query.getQueryString());
     }
 
-    private Iri getIRIbyIRISubject (Iri subject, Iri predicate, RemoteStoreClient storeClient){
+    private String getIRIStringbyIRISubject (Iri subject, Iri predicate, RemoteStoreClient storeClient){
         SelectQuery query = Queries.SELECT();
         query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
             Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
         );
         query.where(subject.has(predicate, query.var()));
         JSONObject reqResult = storeClient.executeQuery(query.getQueryString()).getJSONObject(0);
-        return iri(reqResult.getString("x0"));
+        return reqResult.getString("x0");
     }
 
     private JSONArray getIRIListbyIRISubject (Iri subject, Iri predicate, RemoteStoreClient storeClient){
