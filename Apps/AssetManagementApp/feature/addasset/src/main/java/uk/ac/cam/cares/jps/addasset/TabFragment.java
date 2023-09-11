@@ -1,5 +1,8 @@
 package uk.ac.cam.cares.jps.addasset;
 
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_SECTION_TITLE;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SPEC_SHEET_SECTION_TITLE;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,12 +19,14 @@ import androidx.lifecycle.ViewModelProvider;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.addasset.model.AddAssetViewModel;
 import uk.ac.cam.cares.jps.addasset.model.AssetPropertyDataModel;
+import uk.ac.cam.cares.jps.addasset.model.DropDownDataModel;
 import uk.ac.cam.cares.jps.addasset.view.DataSheetItemView;
 import uk.ac.cam.cares.jps.addasset.view.PropertyAutoCompleteTextView;
 import uk.ac.cam.cares.jps.addasset.view.PropertyGeneralInputTextView;
@@ -54,7 +59,7 @@ public class TabFragment extends Fragment {
 
         for (String section : sections) {
             View sectionView;
-            if (viewModel.DATA_SHEET_SECTIONS.contains(section)) {
+            if (Arrays.asList(SPEC_SHEET_SECTION_TITLE, MANUAL_SECTION_TITLE).contains(section)) {
                 sectionView = createDataSheetSection(inflater, section);
             } else {
                 sectionView = createInputTextSection(inflater, section);
@@ -73,8 +78,8 @@ public class TabFragment extends Fragment {
         LinearLayout linearLayout = sectionView.findViewById(R.id.linear_layout);
         for (AssetPropertyDataModel property : viewModel.getInputFieldsBySection().get(section)) {
             View inputText;
-            if (property.getType().equals(AssetPropertyDataModel.ViewType.DROP_DOWN)) {
-                inputText = new PropertyAutoCompleteTextView(requireContext(), property);
+            if (property instanceof DropDownDataModel) {
+                inputText = new PropertyAutoCompleteTextView(requireContext(), (DropDownDataModel) property);
                 viewModel.getDropDownLiveDataByKey(property.getFieldName()).observe(this.getViewLifecycleOwner(), options -> {
                     ((PropertyAutoCompleteTextView) inputText).updateAdapterList(options);
                 });

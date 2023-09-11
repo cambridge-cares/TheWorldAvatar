@@ -14,6 +14,7 @@ import java.util.List;
 
 import uk.ac.cam.cares.jps.addasset.R;
 import uk.ac.cam.cares.jps.addasset.model.AssetPropertyDataModel;
+import uk.ac.cam.cares.jps.addasset.model.DropDownDataModel;
 import uk.ac.cam.cares.jps.data.OtherInfoModel;
 
 public class PropertyAutoCompleteTextView extends PropertyBaseInputTextView {
@@ -32,7 +33,7 @@ public class PropertyAutoCompleteTextView extends PropertyBaseInputTextView {
         inflate(getContext(), R.layout.view_auto_complete_input_text_layout, this);
     }
 
-    public PropertyAutoCompleteTextView(Context context, AssetPropertyDataModel property) {
+    public PropertyAutoCompleteTextView(Context context, DropDownDataModel property) {
         super(context, R.layout.view_auto_complete_input_text_layout, property);
         this.context = context;
 

@@ -24,18 +24,21 @@ import java.util.List;
 
 import dagger.hilt.android.AndroidEntryPoint;
 import uk.ac.cam.cares.jps.addasset.databinding.FragmentAddAssetBinding;
+import uk.ac.cam.cares.jps.addasset.model.AddAssetViewModel;
 
 @AndroidEntryPoint
 public class AddAssetFragment extends Fragment {
     private FragmentAddAssetBinding binding;
     private Logger LOGGER = Logger.getLogger(AddAssetFragment.class);
     TabAdapter adapter;
+    AddAssetViewModel viewModel;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         BasicConfigurator.configure();
         binding = FragmentAddAssetBinding.inflate(inflater);
+        viewModel = new ViewModelProvider(requireActivity()).get(AddAssetViewModel.class);
         return binding.getRoot();
     }
 
@@ -53,5 +56,6 @@ public class AddAssetFragment extends Fragment {
         List<String> tabNames = Arrays.asList("General", "Purchase", "Documents");
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> tab.setText(tabNames.get(position))).attach();
 
+        binding.doneBt.setOnClickListener(view1 -> viewModel.addNewAsset());
     }
 }

@@ -2,10 +2,13 @@ package uk.ac.cam.cares.jps.addasset.model;
 
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.*;
 
+import android.util.Pair;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +29,8 @@ import uk.ac.cam.cares.jps.data.RepositoryCallback;
 
 @HiltViewModel
 public class AddAssetViewModel extends ViewModel {
+
+    private final Logger LOGGER = Logger.getLogger(AddAssetViewModel.class);
     OtherInfoRepository otherInfoRepository;
     AssetInfoRepository assetInfoRepository;
 
@@ -36,11 +41,11 @@ public class AddAssetViewModel extends ViewModel {
     private final Map<String, List<AssetPropertyDataModel>> inputFieldsBySection = new LinkedHashMap<>();
     private final Map<String, MutableLiveData<List<OtherInfoModel>>> dropDownOptionsMap = new HashMap<>();
 
-    public final List<String> INPUT_TEXT_SECTIONS = new ArrayList<>();
-    public final List<String> DATA_SHEET_SECTIONS = new ArrayList<>();
 
+    // use field keys to define each field view's appearance and behaviour
     private final List<String> mandatoryFieldKeys = Arrays.asList(TYPE, REFERENCE_LABEL, LOCATED_IN);
     private final List<String> dropDownFieldKeys = Arrays.asList(TYPE, ASSIGNED_TO, LOCATED_IN, SEAT_LOCATION, STORED_IN, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER, ITEM_NAME, SERVICE_CODE, SERVICE_CATEGORY);
+    private final List<String> dataSheetFieldKeys = Arrays.asList(SPEC_SHEET_SECTION_TITLE, MANUAL_SECTION_TITLE);
     private final List<String> disallowInputForDropDown = Arrays.asList(TYPE, ASSIGNED_TO);
     private final List<String> skippedFieldKeys = Arrays.asList(IRI, INVENTORY_ID, MANUFACTURE_URL);
     private final List<String> multiLineInputFieldKeys = Arrays.asList(ITEM_DESCRIPTION, SERVICE_CODE_DESCRIPTION, SERVICE_CATEGORY_DESCRIPTION);
@@ -49,8 +54,6 @@ public class AddAssetViewModel extends ViewModel {
     AddAssetViewModel(OtherInfoRepository otherInfoRepository, AssetInfoRepository assetInfoRepository) {
         BasicConfigurator.configure();
         initInputFieldsDataModel();
-        initInputTextSections();
-        initDataSheetSections();
         initDropDownLiveData();
 
         this.otherInfoRepository = otherInfoRepository;
@@ -69,19 +72,6 @@ public class AddAssetViewModel extends ViewModel {
         inputFieldsBySection.put(MANUAL_SECTION_TITLE, getInputFieldListForSection(Collections.singletonList(MANUAL_SECTION_TITLE)));
     }
 
-    private void initInputTextSections() {
-        INPUT_TEXT_SECTIONS.addAll(basicInfoOrder);
-        INPUT_TEXT_SECTIONS.addAll(locationInfoOrder);
-        INPUT_TEXT_SECTIONS.addAll(supplierInfoOrder);
-        INPUT_TEXT_SECTIONS.addAll(docLineInfoOrder);
-        INPUT_TEXT_SECTIONS.addAll(itemInfoOrder);
-    }
-
-    private void initDataSheetSections() {
-        DATA_SHEET_SECTIONS.add(SPEC_SHEET_SECTION_TITLE);
-        DATA_SHEET_SECTIONS.add(MANUAL_SECTION_TITLE);
-    }
-
     private void initDropDownLiveData() {
         for (String key : dropDownFieldKeys) {
             dropDownOptionsMap.put(key, new MutableLiveData<>());
@@ -97,12 +87,14 @@ public class AddAssetViewModel extends ViewModel {
 
             AssetPropertyDataModel assetPropertyDataModel;
             if (dropDownFieldKeys.contains(key)) {
-                assetPropertyDataModel = new AssetPropertyDataModel(key, AssetPropertyDataModel.ViewType.DROP_DOWN);
+                assetPropertyDataModel = new DropDownDataModel(key);
+                ((DropDownDataModel) assetPropertyDataModel).setDisallowInput(disallowInputForDropDown.contains(key));
+            } else if (dataSheetFieldKeys.contains(key)) {
+                assetPropertyDataModel = new DataSheetDataModel(key);
             } else {
-                assetPropertyDataModel = new AssetPropertyDataModel(key, AssetPropertyDataModel.ViewType.INPUT_FIELD);
+                assetPropertyDataModel = new AssetPropertyDataModel(key);
             }
 
-            assetPropertyDataModel.setDisallowInput(disallowInputForDropDown.contains(key));
             assetPropertyDataModel.setRequired(mandatoryFieldKeys.contains(key));
             assetPropertyDataModel.setMultiLine(multiLineInputFieldKeys.contains(key));
 
@@ -113,7 +105,7 @@ public class AddAssetViewModel extends ViewModel {
 
     public void requestAllDropDownOptionsFromRepository() {
         Map<String, RepositoryCallback> callbacks = new HashMap<>();
-        for (String key: otherInfoFromAssetAgentKeys) {
+        for (String key : otherInfoFromAssetAgentKeys) {
             callbacks.put(key, getRepositoryCallbackForKey(key));
         }
 
@@ -124,6 +116,8 @@ public class AddAssetViewModel extends ViewModel {
         return new RepositoryCallback() {
             @Override
             public void onSuccess(Object result) {
+                Pair<String, Integer> indexes = findIndexForFieldByKey(key);
+                ((DropDownDataModel) inputFieldsBySection.get(indexes.first).get(indexes.second)).setLabelsToIri((List<OtherInfoModel>) result);
                 dropDownOptionsMap.get(key).postValue((List<OtherInfoModel>) result);
             }
 
@@ -134,6 +128,21 @@ public class AddAssetViewModel extends ViewModel {
         };
     }
 
+    private Pair<String, Integer> findIndexForFieldByKey(String key) throws RuntimeException {
+        if (basicInfoOrder.contains(key)) {
+            return new Pair<>(BASIC_SECTION_TITLE, basicInfoOrder.indexOf(key));
+        } else if (locationInfoOrder.contains(key)) {
+            return new Pair<>(LOCATION_SECTION_TITLE, locationInfoOrder.indexOf(key));
+        } else if (supplierInfoOrder.contains(key)) {
+            return new Pair<>(SUPPLIER_SECTION_TITLE, supplierInfoOrder.indexOf(key));
+        } else if (docLineInfoOrder.contains(key)) {
+            return new Pair<>(PURCHASE_SECTION_TITLE, docLineInfoOrder.indexOf(key));
+        }
+
+        LOGGER.error("Key: " + key + "not found in any sections. Should not reach here!");
+        throw new RuntimeException("Key: " + key + "not found in any sections. Should not reach here!");
+    }
+
     public MutableLiveData<List<OtherInfoModel>> getDropDownLiveDataByKey(String key) {
         return dropDownOptionsMap.get(key);
     }
@@ -142,11 +151,17 @@ public class AddAssetViewModel extends ViewModel {
         AssetInfo assetInfo = new AssetInfo();
         for (List<AssetPropertyDataModel> fields : inputFieldsBySection.values()) {
             fields.forEach(field -> {
-                assetInfo.addProperties(field.getFieldName(), field.getFieldValue());
-                if (field.type.equals(AssetPropertyDataModel.ViewType.DROP_DOWN)) {
 
+                if (field instanceof DropDownDataModel) {
+                    assetInfo.addProperties(field.getFieldName(), ((DropDownDataModel) field).getValueIri());
+                } else if (field instanceof DataSheetDataModel) {
+                    // todo
+                } else {
+                    assetInfo.addProperties(field.getFieldName(), field.getFieldValue());
                 }
             });
         }
+
+        assetInfoRepository.createNewAsset(assetInfo);
     }
 }
