@@ -105,7 +105,7 @@ class KGClient(PySparqlClient):
             WHERE {{
             {emission_values}
             ?emission_iri <{RDF_TYPE}> <{OD_EMISSION}> ;
-                          <{OD_HAS_POLLUTANT_ID}> ?pollutantID ;
+                          <{OD_HAS_POLLUTANT_ID}>/<{RDF_TYPE}> ?pollutantID ;
                           <{OM_HAS_QUANTITY}> ?quantity . 
             OPTIONAL {{ ?quantity <{RDF_TYPE}> <{OM_TEMPERATURE}> ;
                                   <{OM_HASVALUE}>/<{OM_HAS_NUMERICAL_VALUE}> ?temperature }}
@@ -212,12 +212,15 @@ class KGClient(PySparqlClient):
             return g
         
         def _add_emission_instance(g:Graph, location:str, emission:dict) -> Graph:
-            # Create new emission instance
+            # Create new emission and pollutant type instance
             emission_iri = KB + 'Emission_' + str(uuid.uuid4())
+            pollutant_iri = KB + 'Pollutant_' + str(uuid.uuid4())
             # Add triples for single emission instance
             g.add((URIRef(location), URIRef(OD_EMITS), URIRef(emission_iri)))
             g.add((URIRef(emission_iri), URIRef(RDF_TYPE), URIRef(OD_EMISSION)))
-            g.add((URIRef(emission_iri), URIRef(OD_HAS_POLLUTANT_ID),
+            g.add((URIRef(emission_iri), URIRef(OD_HAS_POLLUTANT_ID), 
+                   URIRef(pollutant_iri)))
+            g.add((URIRef(pollutant_iri), URIRef(RDF_TYPE), 
                    URIRef(emission.pop('pollutantID'))))
             # Create OM:Quantity instances for temperature, density, and mass flow rate
             for k, v in emission.items():

@@ -62,11 +62,12 @@ TIME_TRIPLES_PER_PURE_INPUT = 6
 AGENT_SERVICE_TRIPLES = 4       # agent service triples
 DERIV_INPUT_TRIPLES = 2 + 4*3   # triples for derivation input message
 DERIV_OUTPUT_TRIPLES = 2 + 1*3  # triples for derivation output message
-EMISSION_TRIPLES = 21           # triples for newly instantiated emission instance
+EMISSION_TRIPLES = 22           # triples for newly instantiated emission instance
 # NOTE: Derivation Framework attaches belongsTo relationship to each output with rdf type
-RDF_TYPES_PER_EMISSION = 7      # number of rdf type statements per emission instance 
-                                # (incl. quantity, measure, ...)
-OUTPUT_TYPES = 5                # Emission, Temperature, Density, MassFlow, Measure
+RDF_TYPES_PER_EMISSION = 8      # number of rdf type statements per emission instance 
+                                # (incl. pollutant, quantity, measure, ...)
+OUTPUT_TYPES = 8                # Emission, 3 PollutantIDs (PM2.5, PM10, NO2),
+                                # Temperature, Density, MassFlow, Measure
 
 # 
 #  Values which should not require changing
