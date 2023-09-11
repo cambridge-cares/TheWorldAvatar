@@ -783,6 +783,9 @@ public class AssetKGInterface {
         Variable MeasureIRI = SparqlBuilder.var("MeasureIRI");
         Variable currencyIRI = SparqlBuilder.var("currencyIRI");
         Variable priceLiteral = SparqlBuilder.var("price");
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         
         query.where(invoiceIRI.has(hasPurchaseOrderLine, POLineIRI));
         query.where(POLineIRI.has(hasPriceDetails, PriceDetailsIRI));
