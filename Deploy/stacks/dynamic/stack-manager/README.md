@@ -267,6 +267,7 @@ The format of the stack configuration file is as follows:
     }
 }
 ```
+> NOTE: When adding services to the `includes` and `excludes` sections, use the file name (excluding the `.json` file extension) from the stack config files, rather than the name specified in `ServiceSpec`.
 
 ## Example - including a visualisation
 
