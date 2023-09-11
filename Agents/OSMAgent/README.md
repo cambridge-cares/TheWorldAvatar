@@ -5,7 +5,7 @@ The workflow of the agent can be broadly outlined in the following steps:
 1) Categorize OSM tags according to [OntoBuiltEnvironment](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobuiltenv) concept. 
 2) Identify and match OSM data with the 3D buildings instantiated by the [DataIntegrationAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-1524-integration-data-2/Agents/DataIntegrationAgent). To assign building IRI to OSM data, this is carried out through matching the geometry of the OSM data to the 3D buildings' footprint. 
 3) Calculate building usage share for all OSM data with tagged building IRI and non-null usage information.
-4) For OSM data with a tagged building IRI without usage information from OSM, the agent will tag it with the corresponding Digitales Landschaftsmodell (DLM) land use.  
+4) For 3D buildings without tagged OSM usage, the agent will tag it with the corresponding Digitales Landschaftsmodell (DLM) land use.  
 
 ## 2. Prerequisites
 ### 2.1. OntoBuiltEnvironment Classification
