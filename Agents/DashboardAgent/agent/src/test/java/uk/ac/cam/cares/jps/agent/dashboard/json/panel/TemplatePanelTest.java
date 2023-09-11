@@ -57,6 +57,38 @@ class TemplatePanelTest {
     }
 
     @Test
+    void testSetQuery() {
+        StringBuilder sampleQuery = new StringBuilder().append("sample");
+        // Construct the object
+        TemplatePanel panel = new TemplatePanel(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_DATABASE_ID, SAMPLE_METADATA);
+        panel.setTitle(SAMPLE_TITLE);
+        panel.setDescription(SAMPLE_DESCRIPTION);
+        // Execute method
+        panel.setQuery(sampleQuery);
+        // Verify if it is included
+        StringBuilder result = panel.genCommonJson(1, 1, 1, 1);
+        assertTrue(result.toString().contains(sampleQuery.toString()));
+    }
+
+    @Test
+    void testGenCommonJsonReplaceQuery() {
+        // Generate expected inputs
+        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID};
+        int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
+        String sampleQuery = "sample";
+        StringBuilder sampleQueryBuilder = new StringBuilder().append(sampleQuery);
+        // Construct the object
+        TemplatePanel panel = new TemplatePanel(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_DATABASE_ID, SAMPLE_METADATA);
+        panel.setTitle(SAMPLE_TITLE);
+        panel.setDescription(SAMPLE_DESCRIPTION);
+        panel.setQuery(sampleQueryBuilder);
+        // Execute method
+        StringBuilder result = panel.genCommonJson(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
+        // Verify results
+        assertEquals(genExpectedCommonJsonBase(SAMPLE_TITLE, SAMPLE_DESCRIPTION, expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA, sampleQuery), result.toString());
+    }
+
+    @Test
     void testGenCommonJson() {
         // Generate expected inputs
         String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID};
@@ -99,8 +131,14 @@ class TemplatePanelTest {
     }
 
     public static String genExpectedCommonJsonBase(String title, String description, String[] metadata, int[] geometryPositions, List<String[]> itemDetails) {
+        return genExpectedCommonJsonBase(title, description, metadata, geometryPositions, itemDetails, "");
+    }
+
+    public static String genExpectedCommonJsonBase(String title, String description, String[] metadata, int[] geometryPositions, List<String[]> itemDetails, String query) {
         String formattedMeasure = metadata[0].toLowerCase().replaceAll("\\s", "");
         String formattedItemGroup = metadata[1].toLowerCase().replaceAll("\\s", "");
+        String rawSql = query.isEmpty() ? "SELECT time AS \\\"time\\\", ${" + formattedMeasure + formattedItemGroup + ":csv} FROM \\\"" + metadata[2] + "\\\" WHERE $__timeFilter(time)"
+                : query;
         StringBuilder results = new StringBuilder();
         results.append("\"id\": null,")
                 .append("\"title\": \"").append(title).append("\",")
@@ -111,9 +149,8 @@ class TemplatePanelTest {
                 .append("\"editorMode\":\"code\",\"format\":\"table\",\"rawQuery\":true,\"refId\":\"A\",")
                 .append("\"sql\":{\"columns\": [{\"parameters\": [],\"type\":\"function\"}], ")
                 .append("\"groupBy\": [{\"property\":{\"type\":\"string\"},\"type\":\"groupBy\"}],\"limit\":50},")
-                .append("\"rawSql\":\"SELECT time AS \\\"time\\\", ${").append(formattedMeasure).append(formattedItemGroup)
-                .append(":csv} FROM \\\"").append(metadata[2]).append("\\\" WHERE $__timeFilter(time)\"}")
-                .append("],")
+                .append("\"rawSql\":\"").append(rawSql).append("\"")
+                .append("}],")
                 .append("\"gridPos\":{\"h\":").append(geometryPositions[0]).append(",")
                 .append("\"w\":").append(geometryPositions[1]).append(",")
                 .append("\"x\":").append(geometryPositions[2]).append(",")

@@ -31,7 +31,7 @@ public class PanelModel {
         if (timeSeries.containsKey(StringHelper.ROOM_KEY)) {
             // Room-related panels are designed to be at the top based on their topological hierarchy
             // Generate all the panels and store them into a queue
-            Queue<TimeSeriesChart> panelQueue = genMeasurePanelsForItemGroup(StringHelper.ROOM_KEY, timeSeries.get(StringHelper.ROOM_KEY), databaseConnectionMap);
+            Queue<TemplatePanel[]> panelQueue = genMeasurePanelsForItemGroup(StringHelper.ROOM_KEY, timeSeries.get(StringHelper.ROOM_KEY), databaseConnectionMap);
             // Compute the ending y position for the room's charts - assumes that there are two panel per row
             int lastYGroupPosition = rowNumber + (CHART_HEIGHT * (panelQueue.size() / 2));
             // Append the room panels to the stored syntax
@@ -44,7 +44,7 @@ public class PanelModel {
         }
         // For each item group that is not a room
         for (String currentItemGroup : timeSeries.keySet()) {
-            Queue<TimeSeriesChart> panelQueue = genMeasurePanelsForItemGroup(currentItemGroup, timeSeries.get(currentItemGroup), databaseConnectionMap);
+            Queue<TemplatePanel[]> panelQueue = genMeasurePanelsForItemGroup(currentItemGroup, timeSeries.get(currentItemGroup), databaseConnectionMap);
             groupPanelsAsRow(rowNumber, currentItemGroup, panelQueue);
         }
     }
@@ -66,8 +66,11 @@ public class PanelModel {
      * @param databaseConnectionMap A map linking each database to its connection ID.
      * @return A queue storing all measure panels associated with this item group.
      */
-    private Queue<TimeSeriesChart> genMeasurePanelsForItemGroup(String itemGroup, Map<String, List<String[]>> itemMeasures, Map<String, String> databaseConnectionMap) {
-        Queue<TimeSeriesChart> panelQueue = new ArrayDeque<>();
+    private Queue<TemplatePanel[]> genMeasurePanelsForItemGroup(String itemGroup, Map<String, List<String[]>> itemMeasures, Map<String, String> databaseConnectionMap) {
+        // Generate an empty queue of arrays for generating panels (at most three to accommodate screen resolutions)
+        // At the moment, one horizontal row (encapsulated by one array) is designed to contain only at most have 3 panels
+        Queue<TemplatePanel[]> panelQueue = new ArrayDeque<>();
+        TemplatePanel[] panelArr;
         // For each of the measures, create a chart
         for (String measure : itemMeasures.keySet()) {
             // Take note to exclude the assets and rooms key as that is not required
@@ -78,9 +81,22 @@ public class PanelModel {
                 String databaseID = databaseConnectionMap.get(database);
                 // Assume the unit of each measure for each asset type is consistent
                 String unit = itemMeasures.get(measure).get(0)[4];
-                // Creates a chart object and add it to the queue
-                TimeSeriesChart chart = new TimeSeriesChart(measure, itemGroup, unit, databaseID, itemMeasures.get(measure));
-                panelQueue.offer(chart);
+                // Create the panel objects and add it to the queue
+                Gauge gaugePanel = new Gauge(measure, itemGroup, unit, databaseID, itemMeasures.get(measure));
+                TimeSeriesChart tsChart = new TimeSeriesChart(measure, itemGroup, unit, databaseID, itemMeasures.get(measure));
+                // If this row is created for the rooms
+                if (itemGroup.equals(StringHelper.ROOM_KEY)) {
+                    // It should have an additional gauge panel displaying the average of all time series
+                    Gauge averageGaugePanel = new Gauge(measure, itemGroup, unit, databaseID, itemMeasures.get(measure), true);
+                    panelArr = new TemplatePanel[3]; // Three panels should be included
+                    panelArr[0] = averageGaugePanel;
+                    panelArr[1] = gaugePanel;
+                    panelArr[2] = tsChart;
+                } else {
+                    // For other item groups, we only expect 2 panels
+                    panelArr = new TemplatePanel[]{gaugePanel, tsChart};
+                }
+                panelQueue.offer(panelArr);
             }
         }
         return panelQueue;
@@ -93,25 +109,29 @@ public class PanelModel {
      * @param panelQueue A collection containing all the required charts to be appended to this row/group.
      * @return The group of panel syntax as a StringBuilder.
      */
-    private StringBuilder genPanelSyntax(int rowNumber, Queue<TimeSeriesChart> panelQueue) {
+    private StringBuilder genPanelSyntax(int rowNumber, Queue<TemplatePanel[]> panelQueue) {
         StringBuilder builder = new StringBuilder();
-        // Initialise chart number when handling different asset types to compute position
-        int chartNumber = 1;
         // While there are still items in the queue,
         while (!panelQueue.isEmpty()) {
             // Append a comma before if it is not the first panel
             if (builder.length() != 0) builder.append(",");
             // Retrieve the panel and remove it from the queue
-            TimeSeriesChart currentPanel = panelQueue.poll();
-            // Generate a dashboard with two column layout
-            // If chart number is even, x position must be chart width. Odd charts will have 0 as x position
-            int xPosition = chartNumber % 2 == 0 ? CHART_WIDTH : 0;
-            // Y position will increment by chart height for every two panels. Note that it will always start from the row number
-            int yPosition = rowNumber + (CHART_HEIGHT * ((chartNumber - 1) / 2));
-            // Construct its syntax and append it
-            builder.append(currentPanel.construct(CHART_HEIGHT, CHART_WIDTH, xPosition, yPosition));
-            // Increment this number as it increase
-            chartNumber++;
+            TemplatePanel[] currentPanelArr = panelQueue.poll();
+            // For a two panel row
+            if (currentPanelArr.length == 2) {
+                // They should have the same height, width and y-position but different xPosition
+                builder.append(currentPanelArr[0].construct(CHART_HEIGHT, CHART_WIDTH, 0, rowNumber + 1))
+                        .append(",")
+                        .append(currentPanelArr[1].construct(CHART_HEIGHT, CHART_WIDTH, CHART_WIDTH, rowNumber + 1));
+                // For a three panel row, they should fit in 4-8-12 format
+            } else if (currentPanelArr.length == 3) {
+                int firstChartWidth = 4;
+                builder.append(currentPanelArr[0].construct(CHART_HEIGHT, firstChartWidth, 0, rowNumber + 1))
+                        .append(",")
+                        .append(currentPanelArr[1].construct(CHART_HEIGHT, 8, firstChartWidth, rowNumber + 1))
+                        .append(",")
+                        .append(currentPanelArr[2].construct(CHART_HEIGHT, CHART_WIDTH, CHART_WIDTH, rowNumber + 1));
+            }
         }
         return builder;
     }
@@ -123,7 +143,7 @@ public class PanelModel {
      * @param itemGroup  The item group of interest. Should only accommodate asset types at the moment.
      * @param panelQueue A collection containing all the required charts to be appended to this row.
      */
-    private void groupPanelsAsRow(int rowNumber, String itemGroup, Queue<TimeSeriesChart> panelQueue) {
+    private void groupPanelsAsRow(int rowNumber, String itemGroup, Queue<TemplatePanel[]> panelQueue) {
         // Append a comma before if it is not the first row
         if (this.PANEL_SYNTAX.length() != 0) this.PANEL_SYNTAX.append(",");
         // Generate the row panel syntax

@@ -16,7 +16,7 @@ class TemplatePanel {
     private String TITLE;
     private String DESCRIPTION;
     private final String DATABASE_CONNECTION_ID;
-    private final StringBuilder QUERY_SYNTAX = new StringBuilder();
+    private StringBuilder QUERY_SYNTAX = new StringBuilder();
     private final StringBuilder FIELD_COLUMN_INDEX = new StringBuilder();
     private final StringBuilder FIELD_COLUMN_MAPPING = new StringBuilder();
 
@@ -66,6 +66,13 @@ class TemplatePanel {
     }
 
     /**
+     * Sets the query syntax.
+     */
+    protected void setQuery(StringBuilder query) {
+        this.QUERY_SYNTAX = query;
+    }
+
+    /**
      * Construct the common JSON parts for panel as a StringBuilder which will continue to append specific syntax for different query types.
      *
      * @return The variable syntax as a StringBuilder.
@@ -105,6 +112,7 @@ class TemplatePanel {
 
     /**
      * A placeholder method to construct the variable syntax required. This method must be overridden to be executed in the implemented classes.
+     *
      * @throws UnsupportedOperationException when this is not overridden.
      */
     protected String construct(int height, int width, int xPosition, int yPosition) {
@@ -113,10 +121,11 @@ class TemplatePanel {
 
     /**
      * Verifies if the mandatory variable exists.
+     *
      * @throws NullPointerException when variable is empty.
      */
     private void verifyVariable(String variable, String varType) {
-        if (variable==null) {
+        if (variable == null) {
             throw new NullPointerException(varType + " has not yet been set or is empty!");
         }
     }
