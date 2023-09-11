@@ -3,6 +3,12 @@ package uk.ac.cam.cares.jps.assetinfo;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.*;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.UnderlineSpan;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -140,6 +147,25 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
         for (Pair<String, String> content : propertiesBySections.getOrDefault(currentSectionName, new ArrayList<>())) {
             PropertyItemView propertyItemView = new PropertyItemView(context);
             propertyItemView.initView(content.first, content.second);
+
+            // browser intent
+            if (content.first.contains("Attachment")
+                    || Arrays.asList(MANUAL_SECTION_TITLE, SPEC_SHEET_SECTION_TITLE).contains(content.first)
+                    || content.first.equals(MANUFACTURE_URL)) {
+                String value = content.second;
+                SpannableString spannableString = new SpannableString(value);
+
+                UnderlineSpan underlineSpan = new UnderlineSpan();
+                spannableString.setSpan(underlineSpan, 0, value.length(), 0);
+
+                ForegroundColorSpan blueColorSpan = new ForegroundColorSpan(Color.BLUE);
+                spannableString.setSpan(blueColorSpan, 0, value.length(), 0);
+                propertyItemView.setValueTv(spannableString);
+
+                Intent pdfIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(value));
+                propertyItemView.setOnClickListener(view -> context.startActivity(pdfIntent));
+            }
+
             linearLayout.addView(propertyItemView);
         }
 

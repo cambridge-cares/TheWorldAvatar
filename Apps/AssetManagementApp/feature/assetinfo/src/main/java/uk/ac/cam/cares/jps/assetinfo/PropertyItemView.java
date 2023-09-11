@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.assetinfo;
 
 import android.content.Context;
+import android.text.SpannableString;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
@@ -29,6 +30,10 @@ public class PropertyItemView extends ConstraintLayout {
 
     public void initView(String label, String value) {
         labelTv.setText(label);
+        valueTv.setText(value);
+    }
+
+    public void setValueTv(SpannableString value) {
         valueTv.setText(value);
     }
 }
