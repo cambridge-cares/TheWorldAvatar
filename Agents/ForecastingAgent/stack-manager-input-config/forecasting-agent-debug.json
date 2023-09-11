@@ -1,9 +1,12 @@
 {
     "ServiceSpec": {
-        "Name": "forecasting-agent",
+        "Name": "forecasting-agent-debug",
         "TaskTemplate": {
             "ContainerSpec": {
                 "Image": "ghcr.io/cambridge-cares/forecasting-agent:2.0.0",
+                "Command": [
+                    "tail", "-f",  "/dev/null"
+                ],
                 "Env": [
                     "NAMESPACE=kb",
                     "DATABASE=postgres",
