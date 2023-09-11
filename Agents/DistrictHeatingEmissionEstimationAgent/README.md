@@ -101,7 +101,7 @@ It is recommended to pull the published Docker image from [Github container regi
 
 ```bash
 # Pull published (production) image
-docker pull ghcr.io/cambridge-cares/dhemission_agent:1.0.0
+docker pull ghcr.io/cambridge-cares/dhemission-agent:1.0.0
 ```
 
 ###  **Standalone Deployment**
@@ -120,16 +120,16 @@ To verify the correct startup of the agent, open the URL address the agent is ru
 
 If you want to spin up this agent as part of a stack, do the following:
 1) Build OR pull the (production) image using the commands provided above (do not spin up the image)
-2) Copy the `emission-agent.json` file from the [stack-manager-input-config] folder into the `inputs/config/services` folder of the stack manager
+2) Copy the `dhemission-agent.json` file from the [stack-manager-input-config] folder into the `inputs/config/services` folder of the stack manager (and add the service to the target stack config file in `inputs/config/`)
 3) Start the stack manager as usual (i.e. `bash ./stack.sh start <STACK_NAME>` from the stack-manager repo). This should start the container. Please use a bash terminal to avoid potential issues with inconsistent path separators.
-4) The agent shall become available at `http://<HOST>:<PORT>/DHemissionAgent/`
+4) The agent shall become available at `http://<HOST>:<PORT>/DHEmissionAgent/`
 
 
 ## 3.3 Notes on Debugging
 
 To debug the agent within the stack, follow these steps (a similar approach should work for the standalone version)
 
-1) Overwrite command specified in Dockerfile by providing `tail -f /dev/null` `Command` in stack-manager config file (this keeps the container alive indefinitely while doing nothing). An amended `emission-agent_debug` config is provided in the [stack-manager-input-config] folder.
+1) Overwrite command specified in Dockerfile by providing `tail -f /dev/null` `Command` in stack-manager config file (this keeps the container alive indefinitely while doing nothing). An amended `dhemission-agent-debug` config is provided in the [stack-manager-input-config] folder.
 2) Start stack-manager as usual
 3) Right click on running agent container -> select "Attach Visual Studio Code"
 4) Install required VSCode extensions inside the container

@@ -1,9 +1,12 @@
 {
     "ServiceSpec": {
-        "Name": "emission_agent",
+        "Name": "dhemission-agent-debug",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/dhemission_agent:1.0.0",
+                "Image": "ghcr.io/cambridge-cares/dhemission-agent:1.0.0",
+                "Command": [
+                    "tail", "-f",  "/dev/null"
+                ],
                 "Env": [
                     "NAMESPACE=kb",
                     "DATABASE=postgres",
@@ -39,7 +42,7 @@
     "endpoints": {
         "rest": {
             "url": "http://localhost:5000/",
-            "externalPath": "/DHemissionAgent/"
+            "externalPath": "/DHEmissionAgent/"
         }
     }
 }

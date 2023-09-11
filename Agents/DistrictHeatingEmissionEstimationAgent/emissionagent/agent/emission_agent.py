@@ -191,10 +191,11 @@ def default():
     Instructional message at the agent root.
     """
 
-    msg = '<B>Emission agent</B>:<BR><BR>'
-    msg += 'The Emission Agent "converts" instantiated (time series) data for burned natural gas '
-    msg += 'or generated heat amounts by an energy from waste plant into corresponding emission '
-    msg += 'values for certain emission types.<BR>'
+    msg = '<B>District Heating Emission Estimation Agent</B>:<BR><BR>'
+    msg += 'This emission estimation agent "converts" instantiated (time series) data for '
+    msg += '1) burned natural gas amounts by conventional gas boilers and a CHP gas turbine or '
+    msg += '2) generated heat amounts by an energy from waste plant into corresponding emission '
+    msg += 'values for certain emission types (i.e., PM2.5, PM10, NO2).<BR>'
     msg += "The agent is implemented as derivation agent using synchronous derivation."
     msg += "<BR><BR>"
     msg += 'For further details please see the <a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DistrictHeatingEmissionEstimationAgent/">District Heating Emission Estimation Agent README</a>.'
