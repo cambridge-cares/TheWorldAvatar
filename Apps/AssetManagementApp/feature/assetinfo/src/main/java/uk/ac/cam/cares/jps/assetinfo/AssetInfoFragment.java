@@ -54,13 +54,23 @@ public class AssetInfoFragment extends Fragment {
         view.findViewById(uk.ac.cam.cares.jps.ui.R.id.back_bt).setOnClickListener(v -> NavHostFragment.findNavController(this).navigateUp());
         ((TextView) view.findViewById(uk.ac.cam.cares.jps.ui.R.id.instance_title)).setText(R.string.asset_info);
 
-        viewModel.getAssetInfo().observe(this.getViewLifecycleOwner(), assetInfo -> assetInfoAdapter.updateProperties(assetInfo));
-        viewModel.getError().observe(getViewLifecycleOwner(), error -> Toast.makeText(getContext(), getString(error), Toast.LENGTH_SHORT).show());
+        viewModel.getAssetInfo().observe(this.getViewLifecycleOwner(), assetInfo -> {
+            assetInfoAdapter.updateProperties(assetInfo);
+            binding.shimmerViewContainer.stopShimmer();
+            binding.shimmerViewContainer.setVisibility(View.GONE);
+            binding.assetInfoRv.setVisibility(View.VISIBLE);
+        });
+        viewModel.getError().observe(getViewLifecycleOwner(), error -> {
+            Toast.makeText(getContext(), getString(error), Toast.LENGTH_SHORT).show();
+            binding.shimmerViewContainer.stopShimmer();
+            binding.shimmerViewContainer.setVisibility(View.GONE);
+        });
         viewModel.getAssetInfoByIri(getArguments().getString("uri"));
 
         assetInfoAdapter = new AssetInfoAdapter();
         binding.assetInfoRv.setLayoutManager(new LinearLayoutManager(view.getContext()));
         binding.assetInfoRv.setAdapter(assetInfoAdapter);
 
+        binding.shimmerViewContainer.startShimmer();
     }
 }

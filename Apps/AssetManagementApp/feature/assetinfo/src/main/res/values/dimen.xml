@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="placeholder_text_height" type="dimen">14sp</item>
+    <item name="placeholder_title_height" type="dimen">18sp</item>
+    <item name="placeholder_padding" type="dimen">14dp</item>
+</resources>

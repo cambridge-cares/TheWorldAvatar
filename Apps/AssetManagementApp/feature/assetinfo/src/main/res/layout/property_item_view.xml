@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:layout_marginBottom="@dimen/component_margin_small"
         android:textAlignment="textStart"
         android:textAppearance="?attr/textAppearanceSubtitle2"
         android:text="title"
