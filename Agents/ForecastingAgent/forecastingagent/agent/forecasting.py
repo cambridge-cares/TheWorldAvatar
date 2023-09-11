@@ -111,6 +111,13 @@ class ForecastingAgent(DerivationAgent):
                     raise TypeError(f"Derivation {derivationIRI}: More than one '{inp_name}' IRI provided.")
 
         # Retrieve IRI to forecast
+        # NOTE: When forecasting subclasses of om:Quantity, then "IRI to forecast" 
+        #       is handled differently by the Derived Information Framework: 
+        #       1) for createNewInfo, the IRI will be returned as instance of om:Quantity
+        #       2) for derivation updates, the IRI will be returned as instance of the
+        #          the actual subclass type
+        #       Hence, the following code distinguishes between the two cases
+        #
         # 1) For createSyncDerivationForNewInfo
         #       Prio 1) If (subclass of) an om:Quantity is provided, use this one
         #       Prio 2) If not, try to extract the appropriate owl:Thing

@@ -19,8 +19,6 @@ The dockerised agent can be deployed as "standalone" version (i.e., outside a la
 - [stack manager input config file] for deployment using the [Stack manager]
 
 ```bash
-OVERWRITE_FORECAST            # Boolean flag whether to overwrite data of existing forecast instance or create new one when updating forecast/derivation (optional)
-                              # NOTE: To align most closely with the intended use of the derivation framework, the default behavior is overwriting/replacing
 ROUNDING                      # Number of wanted decimal places (int) of forecast values (optional)
 
 #--- Deployment specific parameters ---#
@@ -73,7 +71,7 @@ If you intend to use a forecasting model pre-trained with [Darts]: Please be awa
 ## 1.3 Required Derivation Markup
 
 Before any forecast can be created (and instantiated), all required inputs need to be properly instantiated. This includes:
-- 1 `om:Quantity` or `owl:Thing`: the instance associated with the time series to be forecasted. This instance must pertain to a type that is either a direct or nested subclass of `om:Quantity` (priority 1) or `owl:Thing` (priority 2).
+- 1 `om:Quantity` or `owl:Thing`: the instance associated with the time series to be forecasted. This instance must pertain to a type that is either a direct or nested subclass of `om:Quantity` (priority 1) or `owl:Thing` (priority 2). Although most instances to be forecasted will likely be of (sub-)class `om:Quantity`, the support for the more general `owl:Thing` ensures that also concepts from other ontologies can be forecasted.
 - 1 `ts:ForecastingModel`: the forecasting model to be used (i.e., Prophet, pre-trained transformer, ...)
 - 1 `ts:Frequency`: the frequency of the forecast to be created (i.e., spacing of time steps)
 - 1 `time:Interval`: the interval to forecast (i.e., defining start and end time of the forecast to be created, both bounds inclusive)
@@ -144,7 +142,7 @@ deriv : https://www.theworldavatar.com/kg/ontoderivation/
 
 The agent is implemented as [derivation agent] using `DerivationWithTimeSeries`. Please note: 1) derivations with time series are currently restricted to synchronous derivations, i.e., derivations which get computed immediately upon request and 2) derivations with time series do not return any specific output triples, as all updates to the time series are expected to be conducted within the agent logic. Initial derivation output triples will only be generated when creating new derivation using `createSyncDerivationForNewInfo`.
 
-The internal Forecasting Agent logic ensures that updated forecasts either completely replace the previously instantiated forecast (i.e., overwrite entire time series table and update input/output intervals in KG) if `OVERWRITE_FORECAST=true` or create a new forecast instance (incl. all associated triples) and connect it as output to the corresponding derivation if `OVERWRITE_FORECAST=false` (the outdated forecast instance will be disconnected from the derivation, but remains to exists in the KG).
+**NOTE**: To align most closely with the intended use of the [Derived Information Framework], newly created forecasts automatically overwrite previously instantiated ones (i.e., overwrite entire time series table and update input/output intervals in KG). This behaviour can be changed by setting the optional environment variable `OVERWRITE_FORECAST=false`. In that case a new forecast will be created each time and the outdated forecast instance will be disconnected from the derivation, but remains to exists in the KG. **This setting must be used with caution and is generally not recommended!**
 
 The following code snippet provides an overview of how to create new and update existing forecast derivations:
 ```python
