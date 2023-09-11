@@ -21,7 +21,8 @@ public class IPPHandler {
             int port = PrinterURL.getPort();
 
             cupsClient = new CupsClient(host, port);
-            cupsPrinter = cupsClient.getPrinter(PrinterURL);
+            //cupsPrinter = cupsClient.getPrinter(PrinterURL);
+            cupsPrinter = cupsClient.getDefaultPrinter();
         } catch (Exception e) {
             throw new Exception("Failed to init IPP Handler.", e);
         }

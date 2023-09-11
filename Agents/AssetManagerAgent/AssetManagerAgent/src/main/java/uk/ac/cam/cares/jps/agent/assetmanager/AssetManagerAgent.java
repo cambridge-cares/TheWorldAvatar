@@ -74,7 +74,7 @@ public class AssetManagerAgent extends JPSAgent{
             LOGGER.info("Passing request to Asset Manager Agent..");
             String agentProperties = System.getenv(KEY_AGENTPROPERTIES);
             String FOLDER_QR = System.getenv(KEY_FOLDERqr);
-            JSONObject assetData = requestParams.getJSONObject("AssetData");
+            JSONObject assetData = requestParams.getJSONObject("assetData");
 
             try {
                 readPropFile(agentProperties);
@@ -84,15 +84,22 @@ public class AssetManagerAgent extends JPSAgent{
             
 
             String[] args = new String[] {ENDPOINT_KG_ASSET, ENDPOINT_KG_DEVICE, ENDPOINT_KG_PURCHASEDOC, ENDPOINT_PRINTER, FOLDER_QR};
+            /*
             try {
                 printerHandler = new QRPrinter(ENDPOINT_PRINTER, FOLDER_QR, 5.);
             } catch (Exception e) {
                 throw new JPSRuntimeException("Failed to create QR code printer handler", e);
             }
+            */
+            try{
+                instanceHandler = new AssetKGInterface(ENDPOINT_KG_ASSET, ENDPOINT_KG_DEVICE, ENDPOINT_KG_PURCHASEDOC);
+            } catch(Exception e) {
+
+            }
             
             if (urlPath.contains("retrievebydocs")){
-                String ID = requestParams.getString("ID");
-                jsonMessage = retrieveAssetInstance(args, ID);
+                JSONObject docsIRI = requestParams.getJSONObject("ID");
+                jsonMessage = getItemsByDocs(docsIRI);
             }
             if (urlPath.contains("retrieve")){
                 String ID = requestParams.getString("ID");
@@ -182,14 +189,20 @@ public class AssetManagerAgent extends JPSAgent{
         JSONObject message = new JSONObject();
         // handle input
         if (validateAssetData(assetData)){
-
+            try {
+                instanceHandler.instantiate(assetData);
+                message.accumulate("Result", "Instantiation succeed.");
+            } catch (Exception e) {
+                message.accumulate("Result", "Instantiation failed: " + e);
+            }
+            
         }
         else{
-            throw new JPSRuntimeException("Asset data is invalid. Input requires minimum of ID (yyyy-mm-dd/id), Name, Location and ontology prefix and class.");
+            message.accumulate("Result", "Instantiation failed: " + 
+                "Asset data is invalid. "+
+                "Input requires minimum of ID (yyyy-mm-dd/id), Name, Location and ontology prefix and class."
+            );
         }
-
-
-
         return message;
     }
 
@@ -211,7 +224,7 @@ public class AssetManagerAgent extends JPSAgent{
         if (!data.has("Name")){
             return false;
         }
-        if (!data.has("Location")){
+        if (!data.has("BuildingLocation")){
             return false;
         }
         if(!data.has("Prefix") && !data.has("AssetClass")){

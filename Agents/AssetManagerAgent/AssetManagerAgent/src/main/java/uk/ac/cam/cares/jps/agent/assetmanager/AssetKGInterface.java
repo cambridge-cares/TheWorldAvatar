@@ -32,6 +32,8 @@ import com.martiansoftware.jsap.Switch;
 import java.rmi.Remote;
 import java.util.*;
 
+import org.apache.commons.digester.substitution.VariableAttributes;
+import org.apache.jena.atlas.json.JSON;
 import org.apache.jena.sparql.function.library.print;
 import org.apache.jena.sparql.pfunction.library.versionARQ;
 import org.apache.logging.log4j.LogManager;
@@ -53,96 +55,115 @@ public class AssetKGInterface {
     private static final String ONTOASSET = "https://www.theworldavatar.com/kg/ontoassetmanagement/";
     private static final String ONTOBIM = "https://www.theworldavatar.com/kg/ontobim/";
     
-    private static final Prefix P_DEV = SparqlBuilder.prefix("ontodevice",iri(ONTODEV));
-    private static final Prefix P_LAB = SparqlBuilder.prefix("ontolab",iri(ONTOLAB));
-    private static final Prefix P_SYS = SparqlBuilder.prefix("ontosystem",iri(ONTOSYSTEM));
-    private static final Prefix P_INMA = SparqlBuilder.prefix("ontoinma",iri(ONTOINMA));
-    private static final Prefix P_ASSET = SparqlBuilder.prefix("ontoassetmanagement",iri(ONTOASSET));
-    private static final Prefix P_EPE = SparqlBuilder.prefix("ontoelecpowerequipment",iri(ONTOEPE));
-    private static final Prefix P_BIM = SparqlBuilder.prefix("ontobim", iri(ONTOBIM));
-    private static final Prefix P_SAREF = SparqlBuilder.prefix("saref", iri("https://saref.etsi.org/core/"));
-    private static final Prefix P_OM = SparqlBuilder.prefix("saref", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/"));
-    private static final Prefix P_FIBO_AAP = SparqlBuilder.prefix("FIBOaap", iri("https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/"));
-    private static final Prefix P_FIBO_ORG = SparqlBuilder.prefix("FIBOorg",iri("https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/"));
-    private static final Prefix P_BOT = SparqlBuilder.prefix("bot", iri("https://w3id.org/bot#"));
-    private static final Prefix P_P2P_ITEM = SparqlBuilder.prefix("P2Pitem", iri("https://purl.org/p2p-o/item#")); 
-    private static final Prefix P_P2P_DOCLINE = SparqlBuilder.prefix("P2Pdocline", iri("https://purl.org/p2p-o/documentline#")); 
-    private static final Prefix P_P2P_INVOICE = SparqlBuilder.prefix("P2Pinvoice", iri("https://purl.org/p2p-o/invoice#")); 
+    private static final Prefix Pref_DEV = SparqlBuilder.prefix("ontodevice",iri(ONTODEV));
+    private static final Prefix Pref_LAB = SparqlBuilder.prefix("ontolab",iri(ONTOLAB));
+    private static final Prefix Pref_SYS = SparqlBuilder.prefix("ontosystem",iri(ONTOSYSTEM));
+    private static final Prefix Pref_INMA = SparqlBuilder.prefix("ontoinma",iri(ONTOINMA));
+    private static final Prefix Pref_ASSET = SparqlBuilder.prefix("ontoassetmanagement",iri(ONTOASSET));
+    private static final Prefix Pref_EPE = SparqlBuilder.prefix("ontoelecpowerequipment",iri(ONTOEPE));
+    private static final Prefix Pref_BIM = SparqlBuilder.prefix("ontobim", iri(ONTOBIM));
+    private static final Prefix Pref_SAREF = SparqlBuilder.prefix("saref", iri("https://saref.etsi.org/core/"));
+    private static final Prefix Pref_OM = SparqlBuilder.prefix("saref", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/"));
+    private static final Prefix Pref_FIBO_AAP = SparqlBuilder.prefix("FIBOaap", iri("https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/"));
+    private static final Prefix Pref_FIBO_ORG = SparqlBuilder.prefix("FIBOorg",iri("https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/"));
+    private static final Prefix Pref_BOT = SparqlBuilder.prefix("bot", iri("https://w3id.org/bot#"));
+    private static final Prefix Pref_P2P_ITEM = SparqlBuilder.prefix("P2Pitem", iri("https://purl.org/p2p-o/item#")); 
+    private static final Prefix Pref_P2P_DOCLINE = SparqlBuilder.prefix("P2Pdocline", iri("https://purl.org/p2p-o/documentline#")); 
+    private static final Prefix Pref_P2P_INVOICE = SparqlBuilder.prefix("P2Pinvoice", iri("https://purl.org/p2p-o/invoice#")); 
 
+    private static final String P_DEV = ONTODEV;
+    private static final String P_LAB = ONTOLAB;
+    private static final String P_SYS = ONTOSYSTEM;
+    private static final String P_INMA = ONTOINMA;
+    private static final String P_ASSET = ONTOASSET;
+    private static final String P_EPE = ONTOEPE;
+    private static final String P_BIM = ONTOBIM;
+    private static final String P_SAREF = "https://saref.etsi.org/core/";
+    private static final String P_OM = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
+    private static final String P_FIBO_AAP = "https://spec.edmcouncil.org/fibo/ontology/FND/AgentsAndPeople/People/";
+    private static final String P_FIBO_ORG = "https://spec.edmcouncil.org/fibo/ontology/FND/Organizations/";
+    private static final String P_BOT = "https://w3id.org/bot#";
+    private static final String P_P2P_ITEM ="https://purl.org/p2p-o/item#"; 
+    private static final String P_P2P_DOCLINE = "https://purl.org/p2p-o/documentline#"; 
+    private static final String P_P2P_INVOICE = "https://purl.org/p2p-o/invoice#"; 
 
     //properties
-    private static final Iri consistsOf = P_SAREF.iri("consistsOf");
-    private static final Iri hasModel = P_SAREF.iri("hasModel");
+    private static final Iri consistsOf = Pref_SAREF.iri("consistsOf");
+    private static final Iri hasModel = Pref_SAREF.iri("hasModel");
 
-    private static final Iri hasItemInventoryIdentifier = P_ASSET.iri("hasItemInventoryIdentifier");
-    private static final Iri references = P_ASSET.iri("references");
-    private static final Iri assignedTo = P_ASSET.iri("assignedTo");
-    private static final Iri serialNumber = P_ASSET.iri("serialNumber");
-    private static final Iri isStoredIn = P_ASSET.iri("isStoredIn");
-    private static final Iri availableAt = P_ASSET.iri("availableAt");
-    private static final Iri isSuppliedBy = P_ASSET.iri("isSuppliedBy");
-    private static final Iri isManufacturedBy = P_ASSET.iri("isManufacturedBy");
-    private static final Iri isLocatedIn = P_ASSET.iri("isLocatedIn");
-    private static final Iri isLocatedAt = P_ASSET.iri("isLocatedAt");
-    private static final Iri hasAllocatedWorkspace = P_ASSET.iri("hasAllocatedWorkspace");
-    private static final Iri hasIdentifier = P_ASSET.iri("hasIdentifier");
-    private static final Iri hasDeliveryOrderLine = P_ASSET.iri("hasDeliveryOrderLine");
-    private static final Iri hasPurchaseOrderLine = P_ASSET.iri("hasPurchaseOrderLine");
-    private static final Iri deliveryOrderNumber = P_ASSET.iri("deliveryOrderNumber");
-    private static final Iri purchaseOrderNumber = P_ASSET.iri("purchaseOrderNumber");
-    private static final Iri hasPriceDetails = P_ASSET.iri("hasPriceDetails");
-    private static final Iri hasWorkspaceIdentifier = P_ASSET.iri("hasWorkspaceIdentifier");
-    private static final Iri hasCurrentLocation = P_ASSET.iri("hasCurrentLocation");
+    private static final Iri hasItemInventoryIdentifier = Pref_ASSET.iri("hasItemInventoryIdentifier");
+    private static final Iri references = Pref_ASSET.iri("references");
+    private static final Iri assignedTo = Pref_ASSET.iri("assignedTo");
+    private static final Iri serialNumber = Pref_ASSET.iri("serialNumber");
+    private static final Iri isStoredIn = Pref_ASSET.iri("isStoredIn");
+    private static final Iri availableAt = Pref_ASSET.iri("availableAt");
+    private static final Iri isSuppliedBy = Pref_ASSET.iri("isSuppliedBy");
+    private static final Iri isManufacturedBy = Pref_ASSET.iri("isManufacturedBy");
+    private static final Iri isLocatedIn = Pref_ASSET.iri("isLocatedIn");
+    private static final Iri isLocatedAt = Pref_ASSET.iri("isLocatedAt");
+    private static final Iri hasAllocatedWorkspace = Pref_ASSET.iri("hasAllocatedWorkspace");
+    private static final Iri hasIdentifier = Pref_ASSET.iri("hasIdentifier");
+    private static final Iri hasDeliveryOrderLine = Pref_ASSET.iri("hasDeliveryOrderLine");
+    private static final Iri hasPurchaseOrderLine = Pref_ASSET.iri("hasPurchaseOrderLine");
+    private static final Iri deliveryOrderNumber = Pref_ASSET.iri("deliveryOrderNumber");
+    private static final Iri purchaseOrderNumber = Pref_ASSET.iri("purchaseOrderNumber");
+    private static final Iri hasPriceDetails = Pref_ASSET.iri("hasPriceDetails");
+    private static final Iri hasWorkspaceIdentifier = Pref_ASSET.iri("hasWorkspaceIdentifier");
+    private static final Iri hasCurrentLocation = Pref_ASSET.iri("hasCurrentLocation");
+    private static final Iri hasFurnitureIdentifier = Pref_ASSET.iri("hasFurnitureIdentifier");
 
-    private static final Iri hasDataSheet = P_DEV.iri("hasDataSheet");
-    private static final Iri hasPrice = P_DEV.iri("hasPrice");
+    private static final Iri hasDataSheet = Pref_DEV.iri("hasDataSheet");
+    private static final Iri hasPrice = Pref_DEV.iri("hasPrice");
     
-    private static final Iri hasRoom = P_BIM.iri("hasRoom");
+    private static final Iri hasRoom = Pref_BIM.iri("hasRoom");
+    private static final Iri hasIfcRepresentation = Pref_BIM.iri("hasIfcRepresentation");
+    private static final Iri hasFacility = Pref_BIM.iri("hasFacility");
 
-    private static final Iri hasValue = P_OM.iri("hasValue");
-    private static final Iri hasUnit = P_OM.iri("hasUnit");
-    private static final Iri hasNumericalValue = P_OM.iri("hasNumericalValue");
+    private static final Iri hasValue = Pref_OM.iri("hasValue");
+    private static final Iri hasUnit = Pref_OM.iri("hasUnit");
+    private static final Iri hasNumericalValue = Pref_OM.iri("hasNumericalValue");
 
-    private static final Iri itemName = P_P2P_ITEM.iri("itemName");
-    private static final Iri hasAttribute = P_P2P_ITEM.iri("hasAttribute");
-    private static final Iri attributeName = P_P2P_ITEM.iri("attributeName");
-    private static final Iri attributeValue = P_P2P_ITEM.iri("attributeValue");
-    private static final Iri invoiceNumber = P_P2P_INVOICE.iri("invoiceNumber");
-    private static final Iri hasInvoiceLine = P_P2P_INVOICE.iri("hasInvoiceLine");
-    private static final Iri hasItem = P_P2P_DOCLINE.iri("hasItem");
-    private static final Iri InvoicedQuantity = P_P2P_DOCLINE.iri("InvoicedQuantity"); 
+    private static final Iri itemName = Pref_P2P_ITEM.iri("itemName");
+    private static final Iri hasAttribute = Pref_P2P_ITEM.iri("hasAttribute");
+    private static final Iri attributeName = Pref_P2P_ITEM.iri("attributeName");
+    private static final Iri attributeValue = Pref_P2P_ITEM.iri("attributeValue");
+    private static final Iri invoiceNumber = Pref_P2P_INVOICE.iri("invoiceNumber");
+    private static final Iri hasInvoiceLine = Pref_P2P_INVOICE.iri("hasInvoiceLine");
+    private static final Iri hasItem = Pref_P2P_DOCLINE.iri("hasItem");
+    private static final Iri InvoicedQuantity = Pref_P2P_DOCLINE.iri("InvoicedQuantity"); 
 
-    private static final Iri hasPersonName = P_FIBO_AAP.iri("People/hasPersonName");
+    private static final Iri hasPersonName = Pref_FIBO_AAP.iri("hasPersonName");
     private static final Iri hasLegalName = iri("https://spec.edmcouncil.org/fibo/ontology/FND/Relations/Relations/hasLegalName");
 
     private static final Iri hasName = iri("https://www.omg.org/spec/Commons/Designators/hasName");
 
-    private static final Iri containsElement = P_BOT.iri("containsElement");
+    private static final Iri containsElement = Pref_BOT.iri("containsElement");
 
     //External classes
-    private static final Iri Item = P_P2P_ITEM.iri("Item");
+    private static final Iri Item = Pref_P2P_ITEM.iri("Item");
     
-    private static final Iri SpecSheet = P_ASSET.iri("SpecSheet");
-    private static final Iri Manual = P_ASSET.iri("Manual");
-    private static final Iri Workspace = P_ASSET.iri("Workspace");
-    private static final Iri ServiceCategory = P_ASSET.iri("ServiceCategory");
-    private static final Iri DeliveryOrder = P_ASSET.iri("DeliveryOrder");
-    private static final Iri DeliveryOrderLine = P_ASSET.iri("DeliveryOrderLine"); 
-    private static final Iri PurchaseOrder = P_ASSET.iri("PurchaseOrder");
-    private static final Iri PurchaseOrderLine = P_ASSET.iri("PurchaseOrderLine");
-    private static final Iri E_Invoice = P_ASSET.iri("E-Invoice");
-    private static final Iri InvoiceLine = P_ASSET.iri("InvoiceLine");
-    private static final Iri PriceDetails = P_ASSET.iri("PriceDetails");
-    private static final Iri HomeTotalDiscountedAfterTaxPrice = P_ASSET.iri("HomeTotalDiscountedAfterTaxPrice");
+    private static final Iri SpecSheet = Pref_ASSET.iri("SpecSheet");
+    private static final Iri Manual = Pref_ASSET.iri("Manual");
+    private static final Iri Workspace = Pref_ASSET.iri("Workspace");
+    private static final Iri ServiceCategory = Pref_ASSET.iri("ServiceCategory");
+    private static final Iri DeliveryOrder = Pref_ASSET.iri("DeliveryOrder");
+    private static final Iri DeliveryOrderLine = Pref_ASSET.iri("DeliveryOrderLine"); 
+    private static final Iri PurchaseOrder = Pref_ASSET.iri("PurchaseOrder");
+    private static final Iri PurchaseOrderLine = Pref_ASSET.iri("PurchaseOrderLine");
+    private static final Iri E_Invoice = Pref_ASSET.iri("E-Invoice");
+    private static final Iri InvoiceLine = Pref_ASSET.iri("InvoiceLine");
+    private static final Iri PriceDetails = Pref_ASSET.iri("PriceDetails");
+    private static final Iri HomeTotalDiscountedAfterTaxPrice = Pref_ASSET.iri("HomeTotalDiscountedAfterTaxPrice");
 
-    private static final Iri Person = P_FIBO_AAP.iri("Person");
-    private static final Iri PersonName = P_FIBO_AAP.iri("PersonName");
-    private static final Iri FormalOrganization = P_FIBO_ORG.iri("FormalOrganization");
-    private static final Iri OrganizationName = P_FIBO_ORG.iri("OrganizationName");
+    private static final Iri Person = Pref_FIBO_AAP.iri("Person");
+    private static final Iri PersonName = Pref_FIBO_AAP.iri("PersonName");
+    private static final Iri FormalOrganization = Pref_FIBO_ORG.iri("FormalOrganization");
+    private static final Iri OrganizationName = Pref_FIBO_ORG.iri("OrganizationName");
 
-    private static final Iri AmountOfMoney = P_OM.iri("AmountOfMoney");
-    private static final Iri Measure = P_OM.iri("Measure");
-    private static final Iri SingaporeDollar = P_OM.iri("SingaporeDollar");
+    private static final Iri AmountOfMoney = Pref_OM.iri("AmountOfMoney");
+    private static final Iri Measure = Pref_OM.iri("Measure");
+    private static final Iri SingaporeDollar = Pref_OM.iri("SingaporeDollar");
+    private static final String SingaporeDollarString = P_OM + "SingaporeDollar";
 
     /**
      * Logger for reporting info/errors.
@@ -157,14 +178,14 @@ public class AssetKGInterface {
     }
 
     /**
-     * Instantiate asset based on data from excel file
+     * Instantiate asset based on data from given request
      */
     public void instantiate (JSONObject AssetDataRaw) throws Exception{
         //Get IRI from ID
         Iri deviceIRI = getIRIbyID(AssetDataRaw.getString("ID"), storeClientAsset);
         if(deviceIRI != null){
             throw new Exception("Instance already exist for id: " + AssetDataRaw.getString("ID") + 
-                "Please use /update instead for updating data."
+                ". Please use /update instead for updating data."
             );
         }
 
@@ -172,17 +193,17 @@ public class AssetKGInterface {
         //Create IRIs
         //Create Device IRI
         //TODO create safety check here -- class must exist in the given ontology
-        Prefix devicePrefix = getPrefixFromString(AssetDataRaw.getString("Prefix"));
-        deviceIRI = genIRI(AssetDataRaw.getString("AssetClass"), devicePrefix);
+        String devicePrefix = getPrefixStringFromName(AssetDataRaw.getString("Prefix"));
+        String deviceIRIString = genIRIString(AssetDataRaw.getString("AssetClass"), devicePrefix);
         String itemIRI = genIRIString("Item", P_ASSET);
-        String deviceTypeIRI = devicePrefix.iri(AssetDataRaw.getString("AssetClass")).toString();
+        String deviceTypeIRI = genIRIString(AssetDataRaw.getString("AssetClass"), devicePrefix);
         
-        AssetData.put("deviceIRI", deviceIRI.toString());
-        AssetData.put("deviceType", deviceTypeIRI.toString());
+        AssetData.put("deviceIRI", deviceIRIString);
+        AssetData.put("deviceTypeIRI", deviceTypeIRI);
         AssetData.put("ID", AssetDataRaw.getString("ID"));
-        AssetData.put("label", AssetDataRaw.getString("Name"));
+        AssetData.put("label", AssetDataRaw.getString("Name").replaceAll("(\\r|\\n)", " "));
         AssetData.put("itemIRI", itemIRI);
-        AssetData.put("itemComment", AssetDataRaw.getString("Comments"));
+        AssetData.put("itemComment", AssetDataRaw.getString("PurchaseOrderNum"));
         AssetData.put("ServiceCategoryIRI", genIRIString("ServiceCategory", P_ASSET));
         AssetData.put("ServiceCategoryName", AssetDataRaw.getString("BudgetCat"));
         AssetData.put("ServiceCategoryType", AssetDataRaw.getString("ServiceCode"));
@@ -195,13 +216,13 @@ public class AssetKGInterface {
         String personNameIRI = "";
         String workspaceIRI = "";
 
-        if(assigneeName != null){
+        if(assigneeName != null && !assigneeName.isBlank()){
             JSONObject PersonIRIs = getPersonTriples(assigneeName);
             personIRI = PersonIRIs.getString("PersonIRI");
             personNameIRI = PersonIRIs.getString("PersonNameIRI");
 
-            if(workspaceName != null){
-                workspaceIRI = getWorkspaceIRIByName(workspaceName).toString();
+            if(workspaceName != null && !workspaceName.isBlank()){
+                workspaceIRI = getWorkspaceIRIByName(workspaceName).getQueryString();
             }
         }
         AssetData.put("assignedTo", assigneeName);
@@ -210,49 +231,31 @@ public class AssetKGInterface {
         AssetData.put("workspaceName", workspaceName);
         AssetData.put("workspaceIRI", workspaceIRI);
 
-        
-        //Handle pricing
-        //TODO handle different currencies, currently default to SGD
-        String AmtOfMoneyIRI = ""; 
-        String MeasureIRI = "";
-        String currencyIRI = "";
-        String price = AssetDataRaw.getString("price");
-        if(price != null){
-            AmtOfMoneyIRI = genIRIString("AmountOfMoney", P_ASSET);
-            MeasureIRI = genIRIString("Measure", P_ASSET);
-            //Handle currency here
-            currencyIRI = SingaporeDollar.toString();
-        }
-        AssetData.put("amtMoney", AmtOfMoneyIRI);
-        AssetData.put("priceMeasureIRI", MeasureIRI);
-        AssetData.put("price", price);
-        AssetData.put("currencyIRI", currencyIRI);
-
         //Manual and Datasheets
         //SpecSheet
         String SpecSheetIRI = "";
         String SpecSheetFile = AssetDataRaw.getString("SpecSheet");
         String SpecSheetPage = AssetDataRaw.getString("SpecSheetPage");
-        if (SpecSheetFile != null) {
+        if (SpecSheetFile != null && !SpecSheetFile.isBlank()) {
             SpecSheetIRI = genIRIString("SpecSheet", P_ASSET);
         }
-        if (SpecSheetPage == null) {
+        if (SpecSheetPage == null || SpecSheetPage.isBlank()) {
             SpecSheetPage = "";
         }
         AssetData.put("SpecSheetIRI", SpecSheetIRI);
         AssetData.put("SpecSheetPage", SpecSheetPage);
         AssetData.put("SpecSheet", SpecSheetFile);
         //Manual
-        String ManualFile = AssetData.getString("Manual");
-        String ManualURL = AssetData.getString("ManualURL");
+        String ManualFile = AssetDataRaw.getString("Manual");
+        String ManualURL = AssetDataRaw.getString("ManualURL");
         String ManualIRI = "";
-        if(ManualFile == null){
+        if(ManualFile == null || ManualFile.isBlank()){
             ManualFile = "";
         }
         else{
             ManualIRI = genIRIString("Manual", P_ASSET);
         }
-        if (ManualURL == null) {ManualURL = "";}
+        if (ManualURL == null || ManualURL.isBlank()) {ManualURL = "";}
         AssetData.put("Manual", ManualFile);
         AssetData.put("ManualIRI", ManualIRI);
         AssetData.put("manualURL", ManualURL);
@@ -264,15 +267,15 @@ public class AssetKGInterface {
         String SupplierOrgIRI = "";
         String ManufacturerNameIRI = "";
         String ManufacturerOrgIRI = "";
-        if (SupplierName != null){
+        if (SupplierName != null && !SupplierName.isBlank()){
             JSONObject orgIRI = getOrganizationTriples(SupplierName);
-            SupplierNameIRI = orgIRI.getString("orgNameIRI");
-            SupplierOrgIRI = orgIRI.getString("orgIRI");
+            SupplierNameIRI = orgIRI.getString("OrgNameIRI");
+            SupplierOrgIRI = orgIRI.getString("OrgIRI");
         }
-        if(ManufacturerName != null) {
+        if(ManufacturerName != null && !ManufacturerName.isBlank()) {
             JSONObject orgIRI = getOrganizationTriples(ManufacturerName);
-            ManufacturerNameIRI = orgIRI.getString("orgNameIRI");
-            ManufacturerOrgIRI = orgIRI.getString("orgIRI");
+            ManufacturerNameIRI = orgIRI.getString("OrgNameIRI");
+            ManufacturerOrgIRI = orgIRI.getString("OrgIRI");
         }
 
         AssetData.put("SupplierName", SupplierName);
@@ -284,8 +287,8 @@ public class AssetKGInterface {
         AssetData.put("ManufacturerOrgIRI", ManufacturerOrgIRI);
 
         //serial and model number
-        String SerialNum = AssetData.getString("serialNum");
-        String ModelNum = AssetData.getString("modelNumber");
+        String SerialNum = AssetDataRaw.getString("serialNum");
+        String ModelNum = AssetDataRaw.getString("modelNumber");
         if(SerialNum == null){
             SerialNum = "";
         }
@@ -296,21 +299,50 @@ public class AssetKGInterface {
         AssetData.put("modelNumber", ModelNum);
 
         //storage
-        AssetData.put("storage", AssetDataRaw.getString("StorageIRI"));
+        String storageName = AssetDataRaw.getString("storage");
+        AssetData.put("storageID", storageName);
+        if (storageName.isBlank() || storageName == null) {
+            AssetData.put("cabinetIRI", "");
+            AssetData.put("storageIRI", "");
+        }
+        else{
+            if (storageName.toLowerCase().contains("cabinet") || storageName.toLowerCase().contains("cupboard") || storageName.contains("MS")){
+                //TODO handle cabinet type
+                String cabinetIRI = "";
+                JSONObject reqResult = queryStorageFurnitureIRIbyName(storageName);
+                if (reqResult == null) {
+                    cabinetIRI = genIRIString("Cabinet", P_ASSET);
+                }
+                else{
+                    cabinetIRI = reqResult.getString("cabinetIRI");
+                }
+                AssetData.put("cabinetIRI", cabinetIRI);
+            }
+            else{
+                //Assumed to be other assets or fumehoods
+                AssetData.put("storageIRI", queryStorageIRIbyID(storageName).getString("storageIRI"));
+                
+            }
+        }
 
         //Location and rooms
         //Workspace IRI is handled at "Person"
-        String location = "";
-        String room = "";
-        String workspace = "";
+        String location = AssetDataRaw.getString("BuildingLocation");
+        String facility = AssetDataRaw.getString("FacilityLocation");
+        String room = AssetDataRaw.getString("RoomLocation");
         String roomIRI = "";
-        String sectionIRI = "";
-        JSONObject locationIRIs = getLocationTriplesByDevice(roomIRI, sectionIRI);
-        if (locationIRIs == null) {
-            //Create IRIs here
-            //TODO handle existing rooms and locations.
-            
+        String facilityIRI = "";
+        String locationIRI = location;
+        JSONObject locationIRIs = getLocationTriples (location, facility, room);
+        if (locationIRIs != null){
+            locationIRI = locationIRIs.getString("locationIRI");
+            facilityIRI = locationIRIs.getString("facilityIRI");
+            roomIRI = locationIRIs.getString("RoomIRI");
         }
+        AssetData.put("locationIRI", locationIRI);
+        AssetData.put("facilityIRI", facilityIRI);
+        AssetData.put("RoomIRI", roomIRI);
+        AssetData.put("Location", location);
 
         //Purchase docs
         //Item and service code are handled above together with device
@@ -320,7 +352,7 @@ public class AssetKGInterface {
 
         JSONObject reqResultDocs = getPurchaseDocsTriples(invoiceNum, PONum, DONum);
         //Invoice
-        AssetData.put("invoiceNum", invoiceNum);
+        AssetData.put("InvoiceNum", invoiceNum);
         String invoiceLineIRI = reqResultDocs.getJSONObject("invoice").getString("InvoiceLineIRI");
         String invoiceIRI = reqResultDocs.getJSONObject("invoice").getString("InvoiceIRI");
         if(!invoiceIRI.isBlank()){AssetData.put("InvoiceIRI",invoiceIRI);}
@@ -346,6 +378,57 @@ public class AssetKGInterface {
         if(!DOLineIRI.isBlank()){AssetData.put("DeliveryOrderLineIRI",POLineIRI);}
         else{AssetData.put("DeliveryOrderLineIRI",genIRIString("DeliveryOrderLineIRI", P_ASSET));}
 
+        //handle pricing
+        JSONObject reqResPricing = null;
+        if(invoiceIRI != ""){
+            reqResPricing = queryPricingDetailsIRIbyInvoiceIRI(invoiceIRI);
+        }else{
+            if(POIRI != ""){
+                reqResPricing = queryPricingDetailsIRIbyInvoiceIRI(POIRI);
+            }else{
+                if(DOIRI != ""){
+                    reqResPricing = queryPricingDetailsIRIbyInvoiceIRI(DOIRI);
+                }
+            }
+        }
+        
+        String amtMoneyIRI = "";
+        String PriceDetailsIRI = "";
+        String priceIRI = "";
+        String MeasureIRI = "";
+        String currencyIRI = "";
+        String price = AssetDataRaw.getString("price");
+        if (reqResPricing== null){
+            //generate pricing instance IRI
+            //TODO handle different currencies, currently default to SGD
+            if(price != null && !price.isBlank()){
+                MeasureIRI = genIRIString("Measure", P_ASSET);
+                PriceDetailsIRI = genIRIString("PriceDetails", P_ASSET);
+                priceIRI = genIRIString("Price", P_ASSET);
+                //Handle currency here later
+                //currencyIRI = SingaporeDollar.getQueryString(); #-- Generate saref:SingaporeDollar instead??
+                currencyIRI = SingaporeDollarString;
+                //Handle device namepsace pricing
+                amtMoneyIRI = genIRIString("AmountOfMoney", P_DEV);
+            }
+
+        }
+        else {
+            //use existing instance
+            PriceDetailsIRI = reqResPricing.getString("PriceDetailsIRI");
+            priceIRI = reqResPricing.getString("priceIRI");
+            MeasureIRI = reqResPricing.getString("MeasureIRI");
+            currencyIRI = reqResPricing.getString("currencyIRI");
+        }
+
+        AssetData.put("PriceDetailsIRI", PriceDetailsIRI);
+        AssetData.put("priceIRI", priceIRI);
+        AssetData.put("priceMeasureIRI", MeasureIRI);
+        AssetData.put("price", price);
+        AssetData.put("currencyIRI", currencyIRI);
+        AssetData.put("amtMoney", amtMoneyIRI);
+
+        LOGGER.info(AssetData);
         createInstance(AssetData);
 
 
@@ -353,6 +436,28 @@ public class AssetKGInterface {
 
 
     Prefix getPrefixFromString (String ontology) throws Exception {
+        switch (ontology) {
+            case "ontodevice":
+                return Pref_DEV;
+
+            case "ontolab":
+                return Pref_LAB;
+
+            case "ontosystem":
+                return Pref_SYS;
+
+            case "ontoinma":
+                return Pref_INMA;
+            
+            case "ontoelecpowerequipment":
+                return Pref_EPE;
+            
+            default:
+                throw new Exception("Unrecognized ontology: " +  ontology, null);
+        }
+    }
+
+    String getPrefixStringFromName(String ontology) throws Exception {
         switch (ontology) {
             case "ontodevice":
                 return P_DEV;
@@ -376,19 +481,19 @@ public class AssetKGInterface {
 
     private JSONObject getPersonTriples(String name){
         JSONObject result = new JSONObject();
-        JSONObject reqResult = getIRIbyLiteral (name, hasPersonName, storeClientAsset);
+        JSONArray reqResult = getIRIbyLiteral (name, hasPersonName, storeClientAsset);
 
         switch (reqResult.length()) {
             case 0:
                 //Create IRI and add to result
-                Iri PersonIRI = genIRI("Person", P_ASSET);
-                Iri PersonNameIRI = genIRI("PersonName", P_ASSET);
+                String PersonIRI = genIRIString("Person", P_ASSET);
+                String PersonNameIRI = genIRIString("PersonName", P_ASSET);
                 result.put("PersonIRI", PersonIRI);
                 result.put("PersonNameIRI", PersonNameIRI);
                 return result;
             case 1:
                 //Add the existing IRI to result
-                String personNameIRIString = reqResult.getString("0x01");
+                String personNameIRIString = reqResult.getJSONObject(0).getString("x0");
                 result.put("PersonNameIRI", personNameIRIString);
                 //Query Person instance from person name
                 result.put("PersonIRI", getIRIbyIRIObject(iri(personNameIRIString), hasName, storeClientAsset));
@@ -401,7 +506,7 @@ public class AssetKGInterface {
 
     private JSONObject getOrganizationTriples (String orgName) {
         JSONObject result = new JSONObject();
-        JSONObject reqResult = getIRIbyLiteral (orgName, hasLegalName, storeClientAsset);
+        JSONArray reqResult = getIRIbyLiteral (orgName, hasLegalName, storeClientAsset);
         String OrgNameIRI, OrgIRI;
         switch (reqResult.length()) {
             case 0:
@@ -413,7 +518,7 @@ public class AssetKGInterface {
                 return result;
             case 1:
                 //Add the existing IRI to result
-                OrgNameIRI = reqResult.getString("0x01");
+                OrgNameIRI = reqResult.getJSONObject(0).getString("x0");
                 result.put("OrgNameIRI", OrgNameIRI);
                 //Query Person instance from person name
                 result.put("OrgIRI", getIRIbyIRIObject(iri(OrgNameIRI), hasName, storeClientAsset));
@@ -424,13 +529,13 @@ public class AssetKGInterface {
     }
 
     private Iri getIRIbyID (String ID, RemoteStoreClient storeClient){
-        JSONObject reqResult = getIRIbyLiteral (ID, hasItemInventoryIdentifier, storeClient);
+        JSONArray reqResult = getIRIbyLiteral (ID, hasItemInventoryIdentifier, storeClient);
 
         switch (reqResult.length()) {
             case 0:
                 return null;
             case 1:
-                return iri(reqResult.getString("0x01"));
+                return iri(reqResult.getJSONObject(0).getString("x0"));
             default:
                 throw new JPSRuntimeException("More than 1 asset instance have the same ID: " + ID + ". Check the knowledge graph for duplicates.", null);
         }
@@ -438,31 +543,34 @@ public class AssetKGInterface {
     }
 
     private Iri getWorkspaceIRIByName (String name) {
-        JSONObject reqResult = getIRIbyLiteral(name, hasWorkspaceIdentifier, storeClientDevice);
+        JSONArray reqResult = getIRIbyLiteral(name, hasWorkspaceIdentifier, storeClientAsset);
         switch (reqResult.length()) {
             case 0:
                 //Does not seem right to use Asest prefix here?
                 return genIRI("Workspace", P_ASSET);
                 
             case 1:
-                return iri(reqResult.getString("0x01"));
+                return iri(reqResult.getJSONObject(0).getString("x0"));
             default:
                 throw new JPSRuntimeException("Workspace has more than 1 instances: " + name + ". Check the knowledge graph for duplicates.", null);
         }
     }
+    /*
+    Query used is wrong, but might be useful for later, so delete once everything runs
 
-    private JSONObject getLocationTriplesByDevice (String roomIRI, String sectionIRI) {
-        return getLocationTriplesByDevice (iri(roomIRI), iri(sectionIRI));
+    @Deprecated
+    private JSONObject getLocationTriples (String roomIRI, String sectionIRI) {
+        return getLocationTriples (iri(roomIRI), iri(sectionIRI));
     }
-
-    private JSONObject getLocationTriplesByDevice (Iri roomIRI, Iri sectionIRI) {
+    @Deprecated
+    private JSONObject getLocationTriples (Iri roomIRI, Iri sectionIRI) {
         JSONObject result = new JSONObject();
         
         //query if item is not in registered rooms (home, NTU, etc.)
         result = queryUnregisteredLocation();
         if(result == null){
             //query if item is in registered rooms (Research Wing and CREATE Tower)
-            result = queryRegisteredLocation(roomIRI, sectionIRI);
+            result = queryRegisteredLocation(roomIRI, sectionIRI); //The query is wrong for queryRegisteredLocation
             if (result == null) {
                 //Instance does not exist yet, create new IRIs
                 return null;
@@ -471,8 +579,20 @@ public class AssetKGInterface {
         }
         return result;
     }
+    */
 
-    private JSONObject queryUnregisteredLocation () {
+    private JSONObject getLocationTriples (String buildingName, String facilityName, String roomName){
+        if (buildingName == "Research Wing" || buildingName == "CREATE Tower"){
+            return  queryLocationIRIByName(buildingName, facilityName, roomName);
+        }
+        else{
+            //Use String literal for the location as its not registered
+            return null;
+        }
+    }
+
+    //WHY IS THIS NECESSARRY? WHY DID I WRITE THIS???
+    private JSONObject queryUnregisteredLocation (String location) {
         JSONObject result = new JSONObject();
         SelectQuery queryUnregistered = Queries.SELECT();
         Variable locationLiteral = SparqlBuilder.var("locationLiteral");
@@ -484,15 +604,22 @@ public class AssetKGInterface {
                 //Not of this location type
                 return null;
                 
-            default:
-                result.put("Location", iri(reqResult.getJSONObject(0).getString("locationLiteral")));
+            case 1:
+                result.put("Location", reqResult.getJSONObject(0).getString("locationLiteral"));
                 return result;
+
+            default:
+                throw new JPSRuntimeException("Multiple off-CREATE campus location detected for the same asset:" );
         }
     }
 
+    @Deprecated
     private JSONObject queryRegisteredLocation (Iri roomIRI, Iri sectionIRI) {
         JSONObject result = new JSONObject();
         SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         Variable roomtypeIRI = SparqlBuilder.var("RoomTypeIRI");
         Variable SectionTypeIRI = SparqlBuilder .var("SectionTypeIRI");
         Variable WorkspaceIRI = SparqlBuilder.var("WorkspaceIRI");
@@ -514,14 +641,170 @@ public class AssetKGInterface {
                 return null;
                 
             case 1:
-                result.put("RoomIRI", iri(reqResult.getJSONObject(0).getString("RoomIRI")));
-                result.put("SectionIRI", iri(reqResult.getJSONObject(0).getString("SectionIRI")));
-                result.put("RoomTypeIRI", iri(reqResult.getJSONObject(0).getString("RoomTypeIRI")));
-                result.put("SectionTypeIRI", iri(reqResult.getJSONObject(0).getString("SectionTypeIRI")));
+                result.put("RoomIRI", reqResult.getJSONObject(0).getString("RoomIRI"));
+                result.put("SectionIRI", reqResult.getJSONObject(0).getString("SectionIRI"));
+                result.put("RoomTypeIRI", reqResult.getJSONObject(0).getString("RoomTypeIRI"));
+                result.put("SectionTypeIRI", reqResult.getJSONObject(0).getString("SectionTypeIRI"));
 
                 return result;
             default:
                 throw new JPSRuntimeException("Location has more than 1 IRIs: " + sectionIRI + ":" + roomIRI + ". Check the knowledge graph for duplicates.", null);
+        }
+    }
+
+    private JSONObject queryLocationIRIByName (String buildingName, String facilityName, String roomName) {
+        JSONObject result = new JSONObject();
+        Variable roomIRI = SparqlBuilder.var("roomIRI");
+        Variable roomTypeIRI = SparqlBuilder.var("roomTypeIRI");
+        Variable IFCReprIRI = SparqlBuilder.var("IFCReprIRI");
+        Variable facilityIRI = SparqlBuilder.var("facilityIRI");
+        Variable facilityTypeIRI = SparqlBuilder.var ("facilityTypeIRI");
+        Variable locationIRI = SparqlBuilder.var("locationIRI");
+        
+        SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
+        query.where(IFCReprIRI.has(RDFS.LABEL, Rdf.literalOf(roomName)));
+        query.where(roomIRI.has(hasIfcRepresentation, IFCReprIRI));
+        query.where(roomIRI.isA(roomTypeIRI));
+        query.where(facilityIRI.has(hasRoom, roomIRI));
+        query.where(facilityIRI.isA(facilityTypeIRI));
+        if (facilityName != null){
+            query.where(facilityIRI.has(RDFS.LABEL, Rdf.literalOf(facilityName)));
+        }
+        query.where(locationIRI.has(hasFacility, facilityIRI));
+        query.where(locationIRI.has(RDFS.LABEL, Rdf.literalOf(buildingName)));
+
+        JSONArray reqResult = storeClientDevice.executeQuery(query.getQueryString());
+        switch (reqResult.length()) {
+            case 0:
+                //location does not exist.
+                //Location presumed to exist as creating new locations is out of bound for the agent's responsibility
+                //as it opens room for more error (duplicates, wrong naming etc.)
+                throw new JPSRuntimeException("Specified location is not recorded in the knowledge graph. "
+                    +"Ensure the room is instantiated."
+                );
+                
+            case 1:
+                result.put("RoomIRI", reqResult.getJSONObject(0).getString("roomIRI"));
+                result.put("facilityIRI", reqResult.getJSONObject(0).getString("facilityIRI"));
+                result.put("RoomTypeIRI", reqResult.getJSONObject(0).getString("roomTypeIRI"));
+                result.put("facilityTypeIRI", reqResult.getJSONObject(0).getString("facilityTypeIRI"));
+                result.put("locationIRI", reqResult.getJSONObject(0).getString("locationIRI"));
+
+                return result;
+            default:
+                throw new JPSRuntimeException("Location has more than 1 IRI set: "+ buildingName+ ", "
+                    + facilityName+ ", "+ roomName + ". Check the knowledge graph for duplicates."
+                );
+        }
+
+    }
+
+    private JSONObject queryWorkspaceIRIbyName (String workspaceName) {
+        JSONObject result = new JSONObject();
+        Variable workspaceIRI = SparqlBuilder.var("workspaceIRI");
+        SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
+        query.where(workspaceIRI.has(RDFS.LABEL, Rdf.literalOf(workspaceName)));
+
+        JSONArray reqResult = storeClientDevice.executeQuery(query.getQueryString());
+        switch (reqResult.length()) {
+            case 0:
+                return null;
+                
+            case 1:
+                result.put("workspaceIRI", reqResult.getJSONObject(0).getString("workspaceIRI"));
+
+                return result;
+            default:
+                throw new JPSRuntimeException("Workspace has more than 1 IRI: " + workspaceName + ". Check the knowledge graph for duplicates.", null);
+        }
+    }
+
+    private JSONObject queryStorageIRIbyID(String ID) {
+        //For Asset storing other assets or FH/WFH
+        JSONObject result = new JSONObject();
+        SelectQuery query = Queries.SELECT();
+        Variable storageIRI = SparqlBuilder.var("storageIRI");
+
+        query.where(storageIRI.has(RDFS.LABEL, Rdf.literalOf(ID)));
+        JSONArray reqResult = storeClientDevice.executeQuery(query.getQueryString());
+        switch (reqResult.length()) {
+            case 0:
+                throw new JPSRuntimeException("Storage asset does not exist for storage: " + ID  +". Ensure the storage asset is instantiated first.");
+                
+            case 1:
+                result.put("workspaceIRI", reqResult.getJSONObject(0).getString("workspaceIRI"));
+
+                return result;
+            default:
+                throw new JPSRuntimeException("Storage has more than 1 IRI for ID: " + ID + ". Check the knowledge graph for duplicates.", null);
+        }
+
+    }
+
+    private JSONObject queryStorageFurnitureIRIbyName(String name) {
+        //FOr cabinets or other furnitures
+        JSONObject result = new JSONObject();
+        SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
+        Variable cabinetIRI = SparqlBuilder.var("cabinetIRI");
+
+        query.where(cabinetIRI.has(hasFurnitureIdentifier, Rdf.literalOf(name)));
+        JSONArray reqResult = storeClientDevice.executeQuery(query.getQueryString());
+        switch (reqResult.length()) {
+            case 0:
+                return null;
+                
+            case 1:
+                result.put("cabinetIRI", reqResult.getJSONObject(0).getString("cabinetIRI"));
+                return result;
+            default:
+                throw new JPSRuntimeException("Storage has more than 1 IRI for ID: " + name + ". Check the knowledge graph for duplicates.", null);
+        }
+    }
+
+    private JSONObject queryPricingDetailsIRIbyInvoiceIRI (String invoiceIRI){
+        return queryPricingDetailsIRIbyInvoiceIRI(iri(invoiceIRI));
+    }
+
+    private JSONObject queryPricingDetailsIRIbyInvoiceIRI (Iri invoiceIRI){
+        JSONObject result = new JSONObject();
+        SelectQuery query = Queries.SELECT();
+        Variable POLineIRI = SparqlBuilder.var("POLineIRI");
+        Variable PriceDetailsIRI = SparqlBuilder.var("PriceDetailsIRI");
+        Variable priceIRI = SparqlBuilder.var("priceIRI");
+        Variable MeasureIRI = SparqlBuilder.var("MeasureIRI");
+        Variable currencyIRI = SparqlBuilder.var("currencyIRI");
+        Variable priceLiteral = SparqlBuilder.var("price");
+        
+        query.where(invoiceIRI.has(hasPurchaseOrderLine, POLineIRI));
+        query.where(POLineIRI.has(hasPriceDetails, PriceDetailsIRI));
+        query.where(PriceDetailsIRI.has(hasPrice, priceIRI));
+        query.where(priceIRI.has(hasValue, MeasureIRI));
+        query.where(MeasureIRI.has(hasUnit, currencyIRI));
+        query.where(MeasureIRI.has(hasNumericalValue, priceLiteral));
+
+        JSONArray reqResult = storeClientPurchDoc.executeQuery(query.getQueryString());
+        switch (reqResult.length()) {
+            case 0:
+                return null;
+                
+            case 1:
+                result.put("PriceDetailsIRI", reqResult.getJSONObject(0).getString("PriceDetailsIRI"));
+                result.put("priceIRI", reqResult.getJSONObject(0).getString("priceIRI"));
+                result.put("MeasureIRI", reqResult.getJSONObject(0).getString("MeasureIRI"));
+                result.put("currencyIRI", reqResult.getJSONObject(0).getString("currencyIRI"));
+                result.put("price", reqResult.getJSONObject(0).getString("price"));
+                return result;
+            default:
+                throw new JPSRuntimeException("Invoice has more than 1 price IRI set: " + invoiceIRI + ". Check the knowledge graph for duplicates.", null);
         }
     }
 
@@ -544,6 +827,9 @@ public class AssetKGInterface {
     private JSONObject queryDocumentFromDocNum (String DocNum, Iri predicateToID, Iri predicateToDocLine) {
         JSONObject result = new JSONObject();
         SelectQuery queryInvoice = Queries.SELECT();
+        queryInvoice.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         Variable InvoiceIRI = SparqlBuilder.var("InvoiceIRI");
         Variable InvoiceLineIRI = SparqlBuilder.var("InvoiceLineIRI");
         queryInvoice.where(InvoiceIRI.has(predicateToID, DocNum));
@@ -558,8 +844,8 @@ public class AssetKGInterface {
                 return result;
                 
             case 1:
-                result.put("InvoiceIRI", iri(reqResult.getJSONObject(0).getString("InvoiceIRI")));
-                result.put("InvoiceLineIRI", iri(reqResult.getJSONObject(0).getString("InvoiceLineIRI")));
+                result.put("InvoiceIRI", reqResult.getJSONObject(0).getString("InvoiceIRI"));
+                result.put("InvoiceLineIRI", reqResult.getJSONObject(0).getString("InvoiceLineIRI"));
                 return result;
             default:
                 throw new JPSRuntimeException("Document has more than 1 IRIs: " + DocNum + ". Check the knowledge graph for duplicates.", null);
@@ -594,6 +880,9 @@ public class AssetKGInterface {
 
     private JSONArray getAllPersonIRI() {
         SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         Variable PersonIRI = SparqlBuilder.var("PersonIRI");
         Variable PersonNameIRI = SparqlBuilder.var("PersonNameIRI");
         Variable PersonNameLiteral = SparqlBuilder.var("PersonName");
@@ -608,6 +897,9 @@ public class AssetKGInterface {
         Variable SupplierNameIRI = SparqlBuilder.var("SupplierNameIRI");
         Variable SupplierNameLiteral = SparqlBuilder.var("SupplierName");
         SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         query.where(query.var().has(isSuppliedBy, SupplierOrgIRI));
         query.where(SupplierOrgIRI.has(hasName, SupplierNameIRI));
         query.where(SupplierNameIRI.has(hasLegalName, SupplierNameLiteral));
@@ -620,6 +912,9 @@ public class AssetKGInterface {
         Variable ManufacturerNameIRI = SparqlBuilder.var("ManufacturerNameIRI");
         Variable ManufacturerNameLiteral = SparqlBuilder.var("ManufacturerName");
         SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         query.where(query.var().has(isManufacturedBy, ManufacturerOrgIRI));
         query.where(ManufacturerOrgIRI.has(hasName, ManufacturerNameIRI));
         query.where(ManufacturerNameIRI.has(hasLegalName, ManufacturerNameLiteral));
@@ -634,6 +929,9 @@ public class AssetKGInterface {
 
     public JSONArray getItemListByDocIRI (Iri InvoiceIRI, Iri POiri, Iri DOiri){
         SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         Variable itemIRI = SparqlBuilder.var("itemIRI");
         if(InvoiceIRI != null){
             query.where(InvoiceIRI.has(hasItem, itemIRI));
@@ -652,46 +950,67 @@ public class AssetKGInterface {
         //It is assumed that the ID is unique and no duplicate ID exist
         //Cause thats what IDs do (at least supposed to)
         SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         query.where(query.var().has(query.var(), literal));
         return storeClient.executeQuery(query.getQueryString());
     }
 
-    private JSONObject getIRIbyLiteral (String literal, Iri predicate, RemoteStoreClient storeClient) {
+    private JSONArray getIRIbyLiteral (String literal, Iri predicate, RemoteStoreClient storeClient) {
         SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         query.where(query.var().has(predicate, literal));
-        JSONObject reqResult = storeClient.executeQuery(query.getQueryString()).getJSONObject(0);
+        JSONArray reqResult = storeClient.executeQuery(query.getQueryString());
         return reqResult;
         
     }
 
     private Iri getIRIbyIRIObject (Iri object, Iri predicate, RemoteStoreClient storeClient){
         SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         query.where(query.var().has(predicate, object));
         JSONObject reqResult = storeClient.executeQuery(query.getQueryString()).getJSONObject(0);
-        return iri(reqResult.getString("x01"));
+        return iri(reqResult.getString("x0"));
     }
 
     private JSONArray getIRIListbyIRIObject (Iri object, Iri predicate, RemoteStoreClient storeClient){
         SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         query.where(query.var().has(predicate, object));
         return storeClient.executeQuery(query.getQueryString());
     }
 
     private Iri getIRIbyIRISubject (Iri subject, Iri predicate, RemoteStoreClient storeClient){
         SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         query.where(subject.has(predicate, query.var()));
         JSONObject reqResult = storeClient.executeQuery(query.getQueryString()).getJSONObject(0);
-        return iri(reqResult.getString("x01"));
+        return iri(reqResult.getString("x0"));
     }
 
     private JSONArray getIRIListbyIRISubject (Iri subject, Iri predicate, RemoteStoreClient storeClient){
         SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         query.where(subject.has(predicate, query.var()));
         return storeClient.executeQuery(query.getQueryString());
     }
 
     private JSONArray getIriListByPredicate (Iri predicate, RemoteStoreClient storeClient) {
         SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         query.where(query.var().has(predicate, query.var()));
 
         return storeClient.executeQuery(query.getQueryString());
@@ -703,6 +1022,9 @@ public class AssetKGInterface {
      */
     Boolean checkConceptExistence(Iri target, RemoteStoreClient storeClient) {
         SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         
         //Query for all class acting as subject or object
         //query.where(query.var().has(query.var(),target));
@@ -718,6 +1040,9 @@ public class AssetKGInterface {
 
     Boolean checkLiteralExistence(String target, RemoteStoreClient storeClient) {
         SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         
         //Query for all class acting as subject or object
         //query.where(query.var().has(query.var(),target));
@@ -739,14 +1064,14 @@ public class AssetKGInterface {
     }
 
     private Iri genIRI (String ID, String prefix) {
-        return iri(prefix + ID + "_" + UUID.randomUUID());
+        return iri(genIRIString(ID, prefix));
     }
 
     private String genIRIString (String ID, Prefix prefix) {
-        return prefix.iri(ID + "_" + UUID.randomUUID()).toString();
+        return genIRI(ID, prefix).getQueryString();
     }
     private String genIRIString (String ID, String prefix) {
-        return iri(prefix + ID + "_" + UUID.randomUUID()).toString();
+        return prefix + ID + "_" + UUID.randomUUID();
     }
 
     /*
@@ -761,9 +1086,12 @@ public class AssetKGInterface {
     private void createAssetNameSpace (JSONObject data){
         //Asset namespace query
         ModifyQuery  query = Queries.MODIFY();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         //Device
         Iri deviceIRIVar = iri(data.getString("deviceIRI"));
-        Iri deviceTypeIRI = iri(data.getString("deviceType"));
+        Iri deviceTypeIRI = iri(data.getString("deviceTypeIRI"));
         String ID = data.getString("ID");
         Iri itemIRIVar = iri(data.getString("itemIRI"));
         String labelLiteralVar = data.getString("label");
@@ -772,7 +1100,9 @@ public class AssetKGInterface {
         Iri personNameIRI = iri(data.getString("personNameIRI"));
         String deviceOwnerLiteral = data.getString("assignedTo");
         //Workspace
-        Iri workspaceIRI = iri(data.getString("workspaceIRI"));
+        Iri WorkspaceOwnerIRI = iri(data.getString("personIRI"));
+        Iri WorkspaceIRI = iri(data.getString("workspaceIRI"));
+        String WorkspaceIDLiteral = data.getString("workspaceName");
         //Serial and model number
         String serialNumberLiteral = data.getString("serialNum");
         String modelNumber = data.getString("modelNumber");
@@ -781,8 +1111,6 @@ public class AssetKGInterface {
         Iri priceMeasureIRI = iri(data.getString("priceMeasureIRI"));
         String priceLiteral = data.getString("price");
         Iri priceCurrencyIRI = iri(data.getString("currencyIRI"));
-        //Storage
-        Iri storageIRI = iri(data.getString("storage"));
         //Spec sheets and manual
         String manualURL = data.getString("manualURL");
         Iri SpecSheetIRI = iri(data.getString("SpecSheetIRI")); 
@@ -794,11 +1122,11 @@ public class AssetKGInterface {
 
 
         //Supplier and manuf
-        Iri supplierIRIVar = iri(data.getString("suppliedBy"));
+        //Iri supplierIRIVar = iri(data.getString("suppliedBy"));
         Iri SupplierOrgIRI = iri(data.getString("SupplierOrgIRI"));
         Iri SupplierNameIRI = iri(data.getString("SupplierNameIRI"));
         String SupplierNameLiteral = data.getString("SupplierName");
-        Iri ManufacturerOrgIRI = iri(data.getString("ManufacturerIRI"));
+        Iri ManufacturerOrgIRI = iri(data.getString("ManufacturerOrgIRI"));
         Iri ManufacturerNameIRI = iri(data.getString("ManufacturerNameIRI"));
         String ManufacturerNameLiteral = data.getString("ManufacturerName");
 
@@ -820,13 +1148,18 @@ public class AssetKGInterface {
         //Device owner from asset list
         query.insert(PersonIRI.isA(Person));
         query.insert(personNameIRI.isA(PersonName));
-        query.insert(workspaceIRI.isA(Workspace));
         query.insert(deviceIRIVar.has(assignedTo, PersonIRI));
         query.insert(PersonIRI.has(hasName, personNameIRI));
         query.insert(personNameIRI.has(hasPersonName, Rdf.literalOf(deviceOwnerLiteral)));
-        query.insert(PersonIRI.has(hasAllocatedWorkspace, workspaceIRI));
-
         //Optional IRIs
+        //Workspace
+        if(!WorkspaceIDLiteral.isBlank()){
+            query.insert(WorkspaceIRI.isA(Workspace));
+            query.insert(WorkspaceOwnerIRI.has(hasAllocatedWorkspace, WorkspaceIRI));
+            query.insert(WorkspaceIRI.has(hasWorkspaceIdentifier, WorkspaceIDLiteral));
+        }
+
+
         //Serial number
         if (!serialNumberLiteral.isBlank()){
             query.insert(deviceIRIVar.has(serialNumber, Rdf.literalOf(serialNumberLiteral)));
@@ -847,11 +1180,6 @@ public class AssetKGInterface {
             query.insert(amountOfMoneyVar.has(hasValue, priceMeasureIRI));
             query.insert(priceMeasureIRI.has(hasNumericalValue, Rdf.literalOf(priceLiteral)));
             query.insert(priceMeasureIRI.has(hasUnit, priceCurrencyIRI));
-        }
-
-        //Stored in -- Assumes the storage IRI exist somewhere
-        if(storageIRI != null){
-            query.insert(deviceIRIVar.has(isStoredIn, storageIRI));
         }
         
         //Datasheet
@@ -876,14 +1204,14 @@ public class AssetKGInterface {
             query.insert(ManufacturerNameIRI.isA(OrganizationName));
             query.insert(deviceIRIVar.has(isManufacturedBy, ManufacturerOrgIRI));
             query.insert(ManufacturerOrgIRI.has(hasName, ManufacturerNameIRI));
-            query.insert(ManufacturerNameIRI.has(hasName, ManufacturerNameLiteral));
+            query.insert(ManufacturerNameIRI.has(hasLegalName, ManufacturerNameLiteral));
         }
         if(!SupplierNameLiteral.isBlank()){
             query.insert(SupplierOrgIRI.isA(FormalOrganization));
             query.insert(SupplierNameIRI.isA(OrganizationName));
-            query.insert(deviceIRIVar.has(isSuppliedBy, ManufacturerOrgIRI));
-            query.insert(ManufacturerOrgIRI.has(hasName, ManufacturerNameIRI));
-            query.insert(ManufacturerNameIRI.has(hasName, ManufacturerNameLiteral));
+            query.insert(deviceIRIVar.has(isSuppliedBy, SupplierOrgIRI));
+            query.insert(SupplierOrgIRI.has(hasName, SupplierNameIRI));
+            query.insert(SupplierNameIRI.has(hasLegalName, SupplierNameLiteral));
         }
 
         storeClientAsset.executeUpdate(query.getQueryString());
@@ -891,29 +1219,41 @@ public class AssetKGInterface {
 
     private void createDeviceNameSpace (JSONObject data){
         ModifyQuery query = Queries.MODIFY();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         Iri deviceIRI = iri(data.getString("deviceIRI"));
         Iri deviceTypeIRI = iri(data.getString("deviceTypeIRI"));
-        Iri roomtypeIRI = iri(data.getString("RoomTypeIRI"));
         Iri roomIRI = iri(data.getString("RoomIRI"));
-        Iri SectionIRI = iri(data.getString("SectionIRI"));
-        Iri SectionTypeIRI = iri(data.getString("SectionTypeIRI"));
-        Iri WorkspaceOwnerIRI = iri(data.getString("WorkspaceOwner"));
-        Iri WorkspaceIRI = iri(data.getString("WorkspaceIRI"));
-        String WorkspaceIDLiteral = data.getString("WorkspaceID");
+        Iri WorkspaceOwnerIRI = iri(data.getString("personIRI"));
+        Iri WorkspaceIRI = iri(data.getString("workspaceIRI"));
+        String WorkspaceIDLiteral = data.getString("workspaceName");
         String LocationString = data.getString("Location");
+        //Storage
+        String storageIRIString = data.getString("storageIRI");
+        //String furnitureIRIString = data.getString("furnitureIRI");
+        String cabinetIRIString = data.getString("cabinetIRI");
+        String storageIDLiteral = data.getString("storageID");
         
         //Query
         //get device type
         query.insert(deviceIRI.isA(deviceTypeIRI));
+        //Stored in -- Assumes the storage IRI exist somewhere
+        if(!storageIRIString.isBlank()){
+            query.insert(deviceIRI.has(isStoredIn, iri(storageIRIString)));
+        }
+        else{
+            if(!cabinetIRIString.isBlank()){
+                query.insert(deviceIRI.has(isStoredIn, iri(cabinetIRIString)));
+                query.insert(iri(cabinetIRIString).has(hasFurnitureIdentifier, storageIDLiteral));
+            }
+        }
         //get location
         if (LocationString == "Research Wing" || LocationString == "CREATE Tower"){
             if(roomIRI != null){
-                query.insert(roomIRI.isA(roomtypeIRI));
                 query.insert(roomIRI.has(containsElement, deviceIRI));
-                query.where(SectionIRI.has(hasRoom, roomIRI));
-                query.where(SectionIRI.isA(SectionTypeIRI));
+
                 //Workspace
-                //NOTE when transcribing to update query, add isLocatedIn, hasAllocatedWorkspace
                 if(!WorkspaceIDLiteral.isBlank()){
                     query.insert(WorkspaceIRI.isA(Workspace));
                     query.insert(deviceIRI.has(isLocatedAt, WorkspaceIRI));
@@ -929,11 +1269,14 @@ public class AssetKGInterface {
         }
         
 
-        storeClientDevice.executeQuery(query.getQueryString());
+        storeClientDevice.executeUpdate(query.getQueryString());
     }
 
     private void createPurchaseDocNamespace (JSONObject data){
         ModifyQuery query = Queries.MODIFY();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         Iri itemIRI = iri(data.getString("itemIRI"));
         String itemNameLiteral = data.getString("label");
         String itemCommentLiteral = data.getString("itemComment");
@@ -947,12 +1290,12 @@ public class AssetKGInterface {
         Iri DeliveryOrderIRI = iri(data.getString("DeliveryOrderIRI"));
         Iri PurchaseOrderIRI = iri(data.getString("PurchaseOrderIRI"));
         Iri DeliveryOrderLineIRI = iri(data.getString("DeliveryOrderLineIRI"));
-        String DeliveryOrderNumLiteral = data.getString("DeliveryOrderNum");
+        String DeliveryOrderNumLiteral = data.getString("DONum");
         Iri PurchaseOrderLineIRI = iri(data.getString("PurchaseOrderLineIRI"));
-        String PurchaseOrderNumLiteral = data.getString("PurchaseOrderNum");
+        String PurchaseOrderNumLiteral = data.getString("PONum");
 
         //price instances
-        Iri priceDetailsIRI = iri(data.getString("priceDetailsIRI"));
+        Iri priceDetailsIRI = iri(data.getString("PriceDetailsIRI"));
         Iri priceIRI = iri(data.getString("priceIRI"));
         Iri priceMeasureIRI = iri(data.getString("priceMeasureIRI"));
         String priceLiteral = data.getString("price");
@@ -961,7 +1304,7 @@ public class AssetKGInterface {
         Iri SupplierOrgIRI = iri(data.getString("SupplierOrgIRI"));
         Iri SupplierNameIRI = iri(data.getString("SupplierNameIRI"));
         String SupplierNameLiteral = data.getString("SupplierName");
-        Iri ManufacturerOrgIRI = iri(data.getString("ManufacturerIRI"));
+        Iri ManufacturerOrgIRI = iri(data.getString("ManufacturerOrgIRI"));
         Iri ManufacturerNameIRI = iri(data.getString("ManufacturerNameIRI"));
         String ManufacturerNameLiteral = data.getString("ManufacturerName");
 
@@ -1029,17 +1372,17 @@ public class AssetKGInterface {
             query.insert(ManufacturerNameIRI.isA(OrganizationName));
             query.insert(itemIRI.has(isManufacturedBy, ManufacturerOrgIRI));
             query.insert(ManufacturerOrgIRI.has(hasName, ManufacturerNameIRI));
-            query.insert(ManufacturerNameIRI.has(hasName, ManufacturerNameLiteral));
+            query.insert(ManufacturerNameIRI.has(hasLegalName, ManufacturerNameLiteral));
         }
         if(!SupplierNameLiteral.isBlank()){
             query.insert(SupplierOrgIRI.isA(FormalOrganization));
             query.insert(SupplierNameIRI.isA(OrganizationName));
-            query.insert(itemIRI.has(isSuppliedBy, ManufacturerOrgIRI));
-            query.insert(ManufacturerOrgIRI.has(hasName, ManufacturerNameIRI));
-            query.insert(ManufacturerNameIRI.has(hasName, ManufacturerNameLiteral));
+            query.insert(itemIRI.has(isSuppliedBy, SupplierOrgIRI));
+            query.insert(SupplierOrgIRI.has(hasName, SupplierNameIRI));
+            query.insert(SupplierNameIRI.has(hasLegalName, SupplierNameLiteral));
         }
 
-        storeClientPurchDoc.executeQuery(query.getQueryString());
+        storeClientPurchDoc.executeUpdate(query.getQueryString());
     }
 
     /**
@@ -1064,6 +1407,9 @@ public class AssetKGInterface {
 
         //Asset namespace query
         SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         Variable deviceIRIVar = SparqlBuilder.var("deviceIRI");
         Variable itemIRIVar = SparqlBuilder.var("itemIRI");
         Variable labelLiteralVar = SparqlBuilder.var("label");
@@ -1155,6 +1501,9 @@ public class AssetKGInterface {
     JSONObject retrieveDeviceNamespace (Iri deviceIRI) {
         //TODO repair this usint the queryRegisteredLocation and queryUnregisteredLocation
         SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         Variable deviceTypeIRI = SparqlBuilder.var("deviceTypeIRI");
         Variable roomtypeIRI = SparqlBuilder.var("RoomTypeIRI");
         Variable roomIRI = SparqlBuilder.var("RoomIRI");
@@ -1185,6 +1534,9 @@ public class AssetKGInterface {
 
     JSONObject retrievePurchaseDocNamespace (Iri itemIRI) {
         SelectQuery query = Queries.SELECT();
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
         Variable itemNameLiteral = SparqlBuilder.var("itemName");
         Variable itemCommentLiteral = SparqlBuilder.var("itemComment");
         Variable ServiceCategoryIRI = SparqlBuilder.var("ServiceCategoryIRI");
