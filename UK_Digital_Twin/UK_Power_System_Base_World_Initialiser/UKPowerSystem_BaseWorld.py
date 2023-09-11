@@ -88,5 +88,5 @@ if __name__ == '__main__':
     testModelInitialisier = powerSystemBaseWorldInitialiser(PopulationVersion, DUKESDataVersion, startTime_of_EnergyConsumption,         
         endPointURL, KGStoragePath, ifUpdateToTripleStore, topologyConfigList, limitLines, pointDistance, endPointURL_POPULATION)
     testModelInitialisier.BaseWorldInitialiser()
-    print(testModelInitialisier.topologyConfigList)
+    # print(testModelInitialisier.topologyConfigList)
     

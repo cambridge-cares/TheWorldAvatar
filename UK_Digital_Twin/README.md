@@ -25,23 +25,23 @@ Step 1: preparation of the environment
 - Following the activation of the conda environment, install the required packages by running the command `pip install -r requirements.txt`. Note: we assume that you are running the command at the same path of this README file.
 
 Step 2: How to build the base world knowledge graph for the UK power system?
-- 2.1 Check the data files: check the folder `\UK_Digital_Twin\Data file\DUKES`. There would be folders with the data pubulished by UK.GOV in different years, e.g. 2019. Go to the folder called `2019`. The .csv files there are the processed files based on the DUKES raw data file `\UK_Digital_Twin\Data file\DUKES\2019\DUKES2019.xls`. The original DUKES raw data file was sourced via `https://www.gov.uk/government/statistics/electricity-chapter-5-digest-of-united-kingdom-energy-statistics-dukes` and the excel file named 'Power stations in the United Kingdom (DUKES 5.11)' was downloaded. Columns relevant to the study are copied from the excel sheet (tab) named `5.11 Full list` within this excel file and pasted in producing the CSV files, e.g., plantname.csv, planttype.csv, etc. Each CSV file has exactly the same number of rows. Among the .csv files, only the 'gpslocation.csv' is manully created by collecting coordinates from the Google maps which contain all the lat-lon locations of the power plants listed in DUKES. After 2022, the original DUKES data started reporting the GPS locations but they are not accurate enough. Therefore, till 2023 the location of the power plant is still based on the manually collected one.
-- 2.2 Create namespaces for building the base world knowledge graph: By default, Blazegraph is the triple store used for managing the KG. The creation of namespaces in the Blazegraph endpoint was done manually in this work. The recommanded names of the namespaces are `ONS_subset`, `UKPopulationData` and `UKPowerSystemBaseWorld`. All these namespaces should be created with the option `Enable geospatial` ticked. Create `ONS_subset` to manage the subset of ONS data which was available from `https://statistics.data.gov.uk/sparql`. Create `UKPopulationData` and `UKPowerSystemBaseWorld` to store the triples describing the base world of the UK power system. The namespace `UKPopulationData` is specifically designed to contain the population data while `UKPowerSystemBaseWorld` is for the other data. After the creation of these three namespaces, set up the endpoint IRIs in `\UK_Digital_Twin\UK_Digital_Twin_Package\endPoint.py`.
+- 2.1 Check the data files: check the folder `\UK_Digital_Twin\Data files\DUKES`. There would be folders with the data pubulished by UK.GOV in different years, e.g. 2019. Go to the folder called `2019`. The .csv files there are the processed files based on the DUKES raw data file `\UK_Digital_Twin\Data file\DUKES\2019\DUKES2019.xls` that was downloaded from `https://www.gov.uk/government/statistics/electricity-chapter-5-digest-of-united-kingdom-energy-statistics-dukes`. In that page there are many files and the excel file named 'Power stations in the United Kingdom (DUKES 5.11)' was downloaded. Columns relevant to the study are copied from the excel sheet (tab) named `5.11 Full list` within this excel file and pasted in producing the CSV files, e.g., plantname.csv, planttype.csv, etc. Each CSV file has exactly the same number of rows. Among the .csv files, only the 'gpslocation.csv' is manully created by collecting coordinates from the Google maps which contain all the lat-lon locations of the power plants listed in DUKES. After 2022, the original DUKES data started reporting the GPS locations but they are not accurate enough. Therefore, till 2023 the location of the power plant is still based on the manually collected one.
+- 2.2 Create namespaces for building the base world knowledge graph: By default, Blazegraph is the triple store used for managing the KG. The creation of namespaces in the Blazegraph endpoint was done manually in this work. The recommended names of the namespaces are `ONS_subset`, `UKPopulationData` and `UKPowerSystemBaseWorld`. All these namespaces should be created with the option `Enable geospatial` ticked. Create `ONS_subset` to manage the subset of ONS data which was available from `https://statistics.data.gov.uk/sparql`. Create `UKPopulationData` and `UKPowerSystemBaseWorld` to store the triples describing the base world of the UK power system. The namespace `UKPopulationData` is specifically designed to contain the population data while `UKPowerSystemBaseWorld` is for the other data. After the creation of these three namespaces, set up the endpoint IRIs in `\UK_Digital_Twin\UK_Digital_Twin_Package\endPoint.py`.
 - 2.3 Create a replica of the required subset of ONS data: Copy all the files except the batch (.bat) files from Dropbox by following the instructions below:
 
-- Copy `Dropbox (Cambridge University)\CoMo shared\wx243\UK_Digital_Twin\resources\ONSData\ONSKG_AreaBoundariesAndLACode\*` to `\UK_Digital_Twin\resources\ONSData\ONSKG_AreaBoundariesAndLACode`
+- Copy all the files from `Dropbox (Cambridge University)\CoMo shared\wx243\c4e-wx243-TWAPowerSystem\Codes\resources\ONSData\ONSKG_AreaBoundariesAndLACode` to `\UK_Digital_Twin\resources\ONSData\ONSKG_AreaBoundariesAndLACode`
 
-- Copy `Dropbox (Cambridge University)\CoMo shared\wx243\UK_Digital_Twin\resources\ONSData\ONSKG_WithinRelations\*` to `\UK_Digital_Twin\resources\ONSData\ONSKG_WithinRelations`
+- Copy all the files from `Dropbox (Cambridge University)\CoMo shared\wx243\c4e-wx243-TWAPowerSystem\Codes\resources\ONSData\ONSKG_WithinRelations` to `\UK_Digital_Twin\resources\ONSData\ONSKG_WithinRelations`
 
-- Copy `Dropbox (Cambridge University)\CoMo shared\wx243\UK_Digital_Twin\resources\ONSData\ONSKG_AreaCode\*` to `\UK_Digital_Twin\resources\ONSData\ONSKG_AreaCode`
+- Copy all the files from `Dropbox (Cambridge University)\CoMo shared\wx243\c4e-wx243-TWAPowerSystem\Codes\resources\ONSData\ONSKG_AreaCode` to `\UK_Digital_Twin\resources\ONSData\ONSKG_AreaCode`
 
-- Copy `Dropbox (Cambridge University)\CoMo shared\wx243\UK_Digital_Twin\resources\ONSData\ONSObsolete\*` to `\UK_Digital_Twin\resources\ONSData\ONSObsolete`
+- Copy all the files from `Dropbox (Cambridge University)\CoMo shared\wx243\c4e-wx243-TWAPowerSystem\Codes\resources\ONSData\ONSObsolete` to `\UK_Digital_Twin\resources\ONSData\ONSObsolete`
 
-- Copy `Dropbox (Cambridge University)\CoMo shared\wx243\UK_Digital_Twin\resources\ONSData\WithinGB\*` to `\UK_Digital_Twin\resources\ONSData\WithinGB`
+- Copy all the files from `Dropbox (Cambridge University)\CoMo shared\wx243\c4e-wx243-TWAPowerSystem\Codes\resources\ONSData\WithinGB` to `\UK_Digital_Twin\resources\ONSData\WithinGB`
 
-Now, simply run `ons_data_uploader.py` from the path of `\UK_Digital_Twin\UK_Power_System_Base_World_Initialiser\UploadONS\` using the following command:
+Now, simply run `ons_data_uploader.py` from the path of `\UK_Digital_Twin\UK_Power_System_Base_World_Initialiser\UploadONS\` using the following command if you are at the UK_Digital_Twin folder:
 
-   `python ons_data_uploader.py`
+   `python UK_Power_System_Base_World_Initialiser/UploadONS/ons_data_uploader.py`
 
 Note: It is assumed that you have already uploaded all ONS Data required for this project to the KG, so you can go to item 2.4.
 
@@ -89,7 +89,13 @@ ONS = {
     'queryendpoint_iri' : ONSEndpoint,
     'updateendpoint_iri' : ONSEndpoint}
 
-- 2.4 Create the base world: Go to `\UK_Digital_Twin\UK_Power_System_Base_World_Initialiser\` and run `UKPowerSystem_BaseWorld.py`.
+
+- 2.4 Create the base world: Go to `\UK_Digital_Twin\UK_Power_System_Base_World_Initialiser\` and run `UKPowerSystem_BaseWorld.py` using the following command.
+
+   `python UK_Power_System_Base_World_Initialiser/UKPowerSystem_BaseWorld.py`
+
+This Python module will upload all UK power plants and their attributes including name, GPS location, related LA Code, owner, commission year, installed capacity, fuel type and technology type. It uploads UK electricity consumption data for each local administrative area as well as UK population data. It also uploads 10-bus topology and 29-bus topology of the UK power transmission network.
+
 Note: For the reproducability of results reported in Preprint 312, you do not need to modify the `config.json` file available in this folder. For running the code with data from a different year like 2022, modify the `config.json` file as follows:
 
 {
@@ -101,11 +107,10 @@ Note: For the reproducability of results reported in Preprint 312, you do not ne
 
 Similarly, you can change also year of energy consumption data.
 
-Step 3 (OPTIONAL): Ready for conducting the scenario analysis of SMR replacement with optimal flow analysis?
-- 3.1 Pre-requirement: If you want to post-process the result produced by SMR replacement, copy all the files from the path of `Dropbox (Cambridge University)\CoMo shared\wx243\SMR_Replacement\Codes\requiredFiles` to the `Required_Files` folder, which is at the same level of this README file.
-- 3.2 Conduct SMR Replacement: 
+Step 3 (OPTIONAL): Ready for conducting the scenario analysis of SMR replacement with optimal power flow (OPF) analysis?
+- 3.1 Pre-requirement: If you want to post-process the result produced by SMR replacement, copy all the files from the path of `Dropbox (Cambridge University)\CoMo shared\wx243\c4e-wx243-TWAPowerSystem\Codes\UK_Digital_Twin\resources\RegionalBreakdown_images` to the `UK_Digital_Twin\resources\required_images` folder.
 
-Step 4: create object of Class 
+- 3.2 Conduct SMR Replacement: 
 Set up the attributes of the object
 - topologyNodeIRI: There are two bus topologies, 10 bus model and 29 bus model. 
 	topologyNodeIRI_10Bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_b22aaffa-fd51-4643-98a3-ff72ee04e21e" 

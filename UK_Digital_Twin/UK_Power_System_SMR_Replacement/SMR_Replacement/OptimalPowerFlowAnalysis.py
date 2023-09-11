@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 08 August 2023       #
+# Last Update Date: 11 Sept 2023         #
 ##########################################
 
 """
@@ -9,6 +9,7 @@ The python class is developed to perform the SMR replacement. The Optimal Power 
 OPF can be used solely without SMR retrofitting by set the class attribute `withRetrofit:bool` to be False.
 """
 import math
+from pathlib import Path
 from logging import raiseExceptions
 from pickle import TRUE
 import sys, os, numpy, uuid, time
@@ -35,7 +36,7 @@ from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package.OWLfileStorer import readFile
 from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
 from SMRSitePreSelection import SitePreSelection_pymoo as sp_pymoo
-from pypower.api import ppoption, runopf, isload, runuopf ## numpy <1.23 otherwise will raise error message, if the pypower and numpy has conflicts again, try to uninstall both and `pip uninstall numpy pypower`, donwgrade the numpy to 1.22.0 and install h5py as well
+from pypower.api import ppoption, runopf, isload ## numpy <1.23 otherwise will raise error message, if the pypower and numpy has conflicts again, try to uninstall both and `pip uninstall numpy pypower`, donwgrade the numpy to 1.22.0 and install h5py as well
 import UK_Digital_Twin_Package.PYPOWER.pypower.runpf as pf
 from numpy import False_, r_, c_, ix_, zeros, pi, ones, exp, union1d, array, linalg, where, logical_or, arange, \
                     ones, sort, exp, pi, diff, min, \
@@ -50,14 +51,13 @@ from pymoo.optimize import minimize
 from pymoo.operators.crossover.sbx import SBX
 from pymoo.operators.mutation.pm import PM
 from pymoo.operators.repair.rounding import RoundingRepair
-from pymoo.operators.sampling.rnd import IntegerRandomSampling, BinaryRandomSampling, FloatRandomSampling
+from pymoo.operators.sampling.rnd import IntegerRandomSampling
 from SMRSitePreSelection.populationDensityCalculator import populationDensityCalculator
 from visualisationColourCreator import gen_fuel_col
 from UK_Digital_Twin_Package.DistanceCalculator import DistanceBasedOnGPSLocation
 from SMRSitePreSelection.demandingAndCentroidList import demandingAndCentroid
 from UK_Power_Grid_Topology_Generator.SPARQLQueriesUsedInTopologyABox import queryWithinRegion
 import shapely.geometry
-from SMRSitePreSelection.DecommissioningCost import DecommissioningCost as DCost
 import matplotlib.pyplot as plt
 from pymoo.decomposition.asf import ASF ##Augmented Scalarization Function (ASF)
 import pandas as pd
@@ -126,7 +126,9 @@ class OptimalPowerFlowAnalysis:
     
     def __init__(
         self, 
-        topologyNodeIRI:str,
+        numberOfBus:int,
+        numOfBranch:int,
+        self.topologyNodeIRI:str,
         eliminateClosedPlantIRIList:list,
         agentIRI:str,
         startTime_of_EnergyConsumption:str,
@@ -181,21 +183,27 @@ class OptimalPowerFlowAnalysis:
         self.powerSystemModelIRI = UK_PG.ontopowsys_namespace + UK_PG.powerSystemModelKey + str(uuid.uuid4())
         ## create the timeStamp, e.x. 2022-06-15T16:24:29.371941+00:00
         self.timeStamp = datetime.now(pytz.utc).isoformat()
+
+        self.numOfBus = numberOfBus
+        self.numOfBranch = numOfBranch
+
+        self.self.topologyNodeIRI = topologyNodeIRI
+
         if not ifReadLocalResults:
             ## query the number of the bus under the topology node IRI, and the bus node IRI, branch node IRI and generator node IRI
-            self.numOfBus, self.busNodeList = query_model.queryBusTopologicalInformation(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
-            self.branchNodeList, self.branchVoltageLevel = query_model.queryELineTopologicalInformation(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?ELineNode ?From_Bus ?To_Bus ?Value_Length_ELine ?Num_OHL_400 or 275            
-            self.generatorNodeList = query_model.queryEGenInfo(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel, eliminateClosedPlantIRIList) ## 0?PowerGeneratorIRI 1?FixedMO 2?VarMO 3?FuelCost 4?CO2EmissionFactor 5?Bus 6?Capacity 7?PrimaryFuel 8?Latlon 9?PowerPlant_LACode 10:Extant[if withRetrofit is set as 'True'] 11: samllerLAcode 12:GenerationTech   
-            self.capa_demand_ratio = demandAndCapacityRatioCalculator(self.generatorNodeList, topologyNodeIRI, startTime_of_EnergyConsumption)
+            self.numOfBus, self.busNodeList = query_model.queryBusTopologicalInformation(self.self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
+            self.branchNodeList, self.branchVoltageLevel = query_model.queryELineTopologicalInformation(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?ELineNode ?From_Bus ?To_Bus ?Value_Length_ELine ?Num_OHL_400 or 275            
+            self.generatorNodeList = query_model.queryEGenInfo(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel, eliminateClosedPlantIRIList) ## 0?PowerGeneratorIRI 1?FixedMO 2?VarMO 3?FuelCost 4?CO2EmissionFactor 5?Bus 6?Capacity 7?PrimaryFuel 8?Latlon 9?PowerPlant_LACode 10:Extant[if withRetrofit is set as 'True'] 11: samllerLAcode 12:GenerationTech   
+            self.capa_demand_ratio = demandAndCapacityRatioCalculator(self.generatorNodeList, self.topologyNodeIRI, startTime_of_EnergyConsumption)
             
             if withRetrofit is True:
                 for egen in self.generatorNodeList:
                     egen.append("Extant")
         else: 
-            self.numOfBus , _ = query_model.queryBusTopologicalInformation(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
+            self.numOfBus , _ = query_model.queryBusTopologicalInformation(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
         ##--2. passing arguments--##
         ## specify the topology node
-        self.topologyNodeIRI = topologyNodeIRI
+        self.self.topologyNodeIRI = self.topologyNodeIRI
         ## specify the startTime_of_EnergyConsumption for querying the demand load 
         self.startTime_of_EnergyConsumption = startTime_of_EnergyConsumption
         ## specify the agent IRI        
@@ -440,7 +448,7 @@ class OptimalPowerFlowAnalysis:
         if self.withRetrofit is True: 
             if len(self.retrofitGenerator) == 0 and len(self.retrofitGenerationFuelOrGenType) == 0:  
                 print("***As there is not specific generator assigned to be retrofitted by SMR, all generators located in GB will be treated as the potential sites.***")
-                self.retrofitListBeforeSelection = queryOPFInput.queryGeneratorToBeRetrofitted_AllPowerPlant(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel)
+                self.retrofitListBeforeSelection = queryOPFInput.queryGeneratorToBeRetrofitted_AllPowerPlant(self.self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel)
             elif len(self.retrofitGenerator) != 0:
                 for iri in self.retrofitGenerator:
                     parse(iri, rule='IRI')
@@ -450,7 +458,7 @@ class OptimalPowerFlowAnalysis:
                 for iri in self.retrofitGenerationFuelOrGenType:
                     parse(iri, rule='IRI')
                 print("***The potential sites are the generators of the type specified in retrofitGenerationFuelOrGenType.***")
-                self.retrofitListBeforeSelection = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(self.retrofitGenerationFuelOrGenType, self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel)
+                self.retrofitListBeforeSelection = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(self.retrofitGenerationFuelOrGenType, self.self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel)
 
             ## Add decommissioned nuclear sites into the potential sites for hosting SMR 
             if self.pickDecommissionedNuclearSites is True:   
@@ -1494,12 +1502,12 @@ class OptimalPowerFlowAnalysis:
         ## create the timeStamp, e.x. 2022-06-15T16:24:29.371941+00:00
         self.timeStamp = datetime.now(pytz.utc).isoformat()
 
-        BusModelKGInstanceCreator(self.ObjectSet, self.BusObjectList, self.numOfBus, self.topologyNodeIRI, self.powerSystemModelIRI, \
+        BusModelKGInstanceCreator(self.ObjectSet, self.BusObjectList, self.numOfBus, self.self.topologyNodeIRI, self.powerSystemModelIRI, \
             self.timeStamp, self.agentIRI, self.derivationClient, self.OWLUpdateEndPointURL, self.OWLFileStoragePath)
-        BranchModelKGInstanceCreator(self.ObjectSet, self.BranchObjectList, self.numOfBus, self.topologyNodeIRI, self.powerSystemModelIRI, \
+        BranchModelKGInstanceCreator(self.ObjectSet, self.BranchObjectList, self.numOfBus, self.self.topologyNodeIRI, self.powerSystemModelIRI, \
             self.timeStamp, self.agentIRI, self.derivationClient, self.OWLUpdateEndPointURL, self.OWLFileStoragePath)
         ##FIXME: include the SMR and the existing plants
-        # GeneratorModelKGInstanceCreator(self.ObjectSet, self.GeneratorObjectList, self.GeneratorToBeRetrofittedObjectList, self.OPFOrPF, self.newGeneratorType, self.numOfBus, self.topologyNodeIRI, self.powerSystemModelIRI, \
+        # GeneratorModelKGInstanceCreator(self.ObjectSet, self.GeneratorObjectList, self.GeneratorToBeRetrofittedObjectList, self.OPFOrPF, self.newGeneratorType, self.numOfBus, self.self.topologyNodeIRI, self.powerSystemModelIRI, \
         # self.timeStamp, self.agentIRI, self.derivationClient, self.OWLUpdateEndPointURL, self.OWLFileStoragePath)  
         return 
     
@@ -2449,7 +2457,7 @@ class OptimalPowerFlowAnalysis:
         for weather in weatherConditionList:
             weatherNameList.append(weather[2])
 
-        ## busGPSLocation = query_model.queryBusGPSLocation(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
+        ## busGPSLocation = query_model.queryBusGPSLocation(self.self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
         
         if ifSpecifiedResults is True:
             if specifiedConfigList == [] or specifiedConfigList == [[]]:
@@ -4505,10 +4513,12 @@ class OptimalPowerFlowAnalysis:
         plt.cla()
         return
 
+if __name__ == '__main__':
+    numberOfBus = 10
+    numOfBranch = 14
 
-if __name__ == '__main__':        
-    topologyNodeIRI_10Bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_b22aaffa-fd51-4643-98a3-ff72ee04e21e" 
-    topologyNodeIRI_29Bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_6017554a-98bb-4896-bc21-e455cb6b3958" 
+    self.topologyNodeIRI_10Bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_b22aaffa-fd51-4643-98a3-ff72ee04e21e" 
+    self.topologyNodeIRI_29Bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_6017554a-98bb-4896-bc21-e455cb6b3958" 
     
     AgentIRI = "http://www.example.com/triplestore/agents/Service__XXXAgent#Service"
 
@@ -4519,6 +4529,7 @@ if __name__ == '__main__':
     geospatialQueryEndpointLabel = "ukdigitaltwin_pd"
     updateEndPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
 
+    ###INTO CONFIG.JSON
     loadAllocatorName_10Bus = "regionalDemandLoad"
     loadAllocatorName_29Bus = "closestDemandLoad"
 
@@ -4547,7 +4558,7 @@ if __name__ == '__main__':
     generatorClusterFunctionName_10bus = "sameRegionWithBus" 
     generatorClusterFunctionName_29bus = "closestBus" 
 
-    eliminateClosedPlantIRIList = [
+    eliminateClosedPlantIRIList = [ ## FIXME: not includeded in the config.json
     "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_eeda9b60-bfe7-4801-abb7-a229633afdd3", ## Dungeness_B, Nuclear
     "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_42dddc5b-e0ea-4f69-882f-6dc66d14b7af", ## Hunterston_B, nuclear
     "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_b0509ae1-e4b5-4af9-96c5-bb072744ee14", ## Fiddlers_Ferry, coal
@@ -4606,11 +4617,9 @@ if __name__ == '__main__':
     ifReadLocalResults = False
     ifGenerateParetoFrontPDF = True
 
-
-    rootPath = '/mnt/d/wx243/FromTWA/npy/29bus_LCOE_60£_test/'
+    rootPath =  str(Path(__file__).resolve().parent.parent.parent) + "npy" + "/29bus_LCOE_%s£/"%(str(SMR_LCOE))
     # rootPath = '/mnt/d/wx243/FromTWA/npy/29bus_LCOE_60£_final/'
     ## rootPath = '/mnt/d/wx243/FromAW/npy/29bus_LCOE_£40/'
-   
 
     ## folder location cheching
     if not ifReadLocalResults:
@@ -4664,14 +4673,14 @@ if __name__ == '__main__':
     cutter = 5
     counter_smrChunk = 1
 ############29 Bus model##################################################################################################################################################################
-    testOPF_29BusModel = OptimalPowerFlowAnalysis(topologyNodeIRI_29Bus, eliminateClosedPlantIRIList, AgentIRI, "2017-01-31", slackBusNodeIRI_29Bus, loadAllocatorName_29Bus, 
+    testOPF_29BusModel = OptimalPowerFlowAnalysis(numberOfBus, numOfBranch, self.topologyNodeIRI_29Bus, eliminateClosedPlantIRIList, AgentIRI, "2017-01-31", slackBusNodeIRI_29Bus, loadAllocatorName_29Bus, 
         EBusModelVariableInitialisationMethodName_29Bus, ELineInitialisationMethodName_29Bus, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, 
         baseMVA, withRetrofit, retrofitGenerator, retrofitGenerationFuelOrTechType, DecommissionedNuclearSitesLocation, True, generatorClusterFunctionName_29bus, newGeneratorType, weighterList, discountRate, bankRate, projectLifeSpan, 
         yearlyOperationHours, SMRCapitalCost, SMR_LCOE, SMROperationalRatio, MonetaryValuePerHumanLife, NeighbourhoodRadiusForSMRUnitOf1MW, ProbabilityOfReactorFailure, SMRCapability, maxmumSMRUnitAtOneSite, 
         SMRIntergratedDiscount, DecommissioningCostEstimatedLevel, safeDistance, pop_size, n_offsprings, numberOfGenerations, ifReadLocalResults, updateEndPointURL)  
 
 ############10 Bus model##################################################################################################################################################################
-    # testOPF_29BusModel = OptimalPowerFlowAnalysis(topologyNodeIRI_10Bus, eliminateClosedPlantIRIList, AgentIRI, "2017-01-31", slackBusNodeIRI_10Bus, loadAllocatorName_10Bus, 
+    # testOPF_29BusModel = OptimalPowerFlowAnalysis(self.topologyNodeIRI_10Bus, eliminateClosedPlantIRIList, AgentIRI, "2017-01-31", slackBusNodeIRI_10Bus, loadAllocatorName_10Bus, 
     #     EBusModelVariableInitialisationMethodName_10Bus, ELineInitialisationMethodName_10Bus, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, 
     #     baseMVA, withRetrofit, retrofitGenerator, retrofitGenerationFuelOrTechType, DecommissionedNuclearSitesLocation, True, generatorClusterFunctionName_10bus, newGeneratorType, weighterList, discountRate, bankRate, projectLifeSpan, 
     #     yearlyOperationHours, SMRCapitalCost, SMR_LCOE, SMROperationalRatio, MonetaryValuePerHumanLife, NeighbourhoodRadiusForSMRUnitOf1MW, ProbabilityOfReactorFailure, SMRCapability, maxmumSMRUnitAtOneSite, 

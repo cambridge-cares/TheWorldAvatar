@@ -256,11 +256,11 @@ if __name__ == '__main__':
     updateEndpointIRI = endPointList.ONS['endpoint_iri']
 
     ##-- upload the area bounderies and LA code --###
-    basePath =  str(Path(__file__).resolve().parent.parent.parent) + "/resources/ONSBatchFiles/"
+    basePath =  str(Path(__file__).resolve().parent.parent.parent) + "/resources/ONSData/"
 
     filePath = basePath + "ONSKG_AreaBoundariesAndLACode/"
     fileName = "onsareaboundariesandlacode"
-    numOfFile = 344
+    numOfFile = 327
     stratNum = 1000
     interval = 1000
     givenIndexList = []
@@ -268,11 +268,12 @@ if __name__ == '__main__':
 
     filePath = basePath + "ONSKG_AreaBoundariesAndLACode/"
     fileName = "onsareaboundariesandlacode"
-    numOfFile = 344
+    numOfFile = 327
     stratNum = 1000
     interval = 1000
     givenIndexList = [219500, 219750, 280250, 280375, 280500, 281125, 281190, 281250, 281500, 281625, 281750, 317500, 318500, 319500, 321500, 322500, 323500]
     uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList)  
+    print("---ONSKG_AreaBoundariesAndLACode is uploaded---")
 
     #-- upload the ONSKG_WithinRelations --## 
     filePath = basePath + "ONSKG_WithinRelations/"
@@ -282,6 +283,7 @@ if __name__ == '__main__':
     interval = 1
     givenIndexList = []
     uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList)  
+    print("---ONSKG_WithinRelations is uploaded---")
 
     #-- upload the ONSKG_WithinRelations --## 
     filePath = basePath + "ONSKG_AreaCode/"
@@ -291,6 +293,7 @@ if __name__ == '__main__':
     interval = 50000
     givenIndexList = []
     uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList)  
+    print("---ONSKG_AreaCode is uploaded---")
 
     #-- upload the ONSKG_WithinRelations --## 
     filePath = basePath + "ONSObsolete/"
@@ -300,6 +303,7 @@ if __name__ == '__main__':
     interval = 1
     givenIndexList = []
     uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList)  
+    print("---ONSObsolete is uploaded---")
 
     ##-- upload the ONSKG_WithinK03000001 (GB) --## 
     filePath = basePath + "WithinGB/"
@@ -309,4 +313,5 @@ if __name__ == '__main__':
     interval = 1
     givenIndexList = []
     uploadONSFile(numOfFile, filePath, fileName, '.ttl', stratNum, interval, updateEndpointIRI, givenIndexList)
+    print("---WithinGB is uploaded---")
     

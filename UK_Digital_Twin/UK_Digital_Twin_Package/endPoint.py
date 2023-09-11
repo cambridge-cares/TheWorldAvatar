@@ -1,3 +1,3 @@
-ONSEndpoint = "http://128.199.91.193:3838/blazegraph/namespace/ONS_subset/sparql"
-UKPowerSystemBaseWorld = "http://128.199.91.193:3838/blazegraph/namespace/UKPowerSystemBaseWorld/sparql"
-UKPopulationData = "http://128.199.91.193:3838/blazegraph/namespace/UKPopulationData/sparql"
+ONSEndpoint = "<ONS_REPLICA_SPARQL_ENDPOINT>"
+UKPowerSystemBaseWorld = "<UKPOWERSYSTEMBASEWORLD_SPARQL_ENDPOINT>"
+UKPopulationData = "<UKPOPULATION_SPARQL_ENDPOINT>"
