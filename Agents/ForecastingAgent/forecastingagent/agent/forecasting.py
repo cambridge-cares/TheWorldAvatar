@@ -43,6 +43,12 @@ class ForecastingAgent(DerivationAgent):
     def agent_input_concepts(self) -> list:
         # Please note: Declared inputs/outputs need proper instantiation incl. 
         #              RDF TYPE declarations in the KG for the derivation to work
+        # NOTE: The instance to forecast must either be of type om:Quantity (priority 1) 
+        #       or owl:Thing (priority 2). Although om:Quantity will likely cover most of
+        #       the current use cases, the support for owl:Thing ensures that also concepts
+        #       from other ontologies can be forecasted. For detailed discussion also see:
+        # https://github.com/cambridge-cares/TheWorldAvatar/pull/866#discussion_r1311530447
+        # https://github.com/cambridge-cares/TheWorldAvatar/pull/866#issuecomment-1713483223
         return [TS_FORECASTINGMODEL, TIME_INTERVAL, TIME_DURATION, TS_FREQUENCY,
                 OM_QUANTITY, OWL_THING]
 
