@@ -18,13 +18,16 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import uk.ac.cam.cares.jps.data.AssetInfo;
+import uk.ac.cam.cares.jps.data.AssetInfoRepository;
 import uk.ac.cam.cares.jps.data.OtherInfoModel;
 import uk.ac.cam.cares.jps.data.OtherInfoRepository;
 import uk.ac.cam.cares.jps.data.RepositoryCallback;
 
 @HiltViewModel
 public class AddAssetViewModel extends ViewModel {
-    OtherInfoRepository repository;
+    OtherInfoRepository otherInfoRepository;
+    AssetInfoRepository assetInfoRepository;
 
     public Map<String, List<AssetPropertyDataModel>> getInputFieldsBySection() {
         return inputFieldsBySection;
@@ -43,14 +46,15 @@ public class AddAssetViewModel extends ViewModel {
     private final List<String> multiLineInputFieldKeys = Arrays.asList(ITEM_DESCRIPTION, SERVICE_CODE_DESCRIPTION, SERVICE_CATEGORY_DESCRIPTION);
 
     @Inject
-    AddAssetViewModel(OtherInfoRepository repository) {
+    AddAssetViewModel(OtherInfoRepository otherInfoRepository, AssetInfoRepository assetInfoRepository) {
         BasicConfigurator.configure();
         initInputFieldsDataModel();
         initInputTextSections();
         initDataSheetSections();
         initDropDownLiveData();
 
-        this.repository = repository;
+        this.otherInfoRepository = otherInfoRepository;
+        this.assetInfoRepository = assetInfoRepository;
     }
 
     private void initInputFieldsDataModel() {
@@ -108,13 +112,12 @@ public class AddAssetViewModel extends ViewModel {
     }
 
     public void requestAllDropDownOptionsFromRepository() {
-//        repository.getTypes(getRepositoryCallbackForKey(TYPE));
         Map<String, RepositoryCallback> callbacks = new HashMap<>();
         for (String key: otherInfoFromAssetAgentKeys) {
             callbacks.put(key, getRepositoryCallbackForKey(key));
         }
 
-        repository.getAllOtherInfo(callbacks);
+        otherInfoRepository.getAllOtherInfo(callbacks);
     }
 
     private RepositoryCallback getRepositoryCallbackForKey(String key) {
@@ -133,5 +136,17 @@ public class AddAssetViewModel extends ViewModel {
 
     public MutableLiveData<List<OtherInfoModel>> getDropDownLiveDataByKey(String key) {
         return dropDownOptionsMap.get(key);
+    }
+
+    public void addNewAsset() {
+        AssetInfo assetInfo = new AssetInfo();
+        for (List<AssetPropertyDataModel> fields : inputFieldsBySection.values()) {
+            fields.forEach(field -> {
+                assetInfo.addProperties(field.getFieldName(), field.getFieldValue());
+                if (field.type.equals(AssetPropertyDataModel.ViewType.DROP_DOWN)) {
+
+                }
+            });
+        }
     }
 }

@@ -11,7 +11,14 @@ public class AssetInfo {
         this.properties = assetInfoModel.getProperties();
     }
 
+    public AssetInfo() {
+        this.properties = new HashMap<>();
+    }
+
     public HashMap<String, String> getProperties() {
         return properties;
+    }
+    public void addProperties(String key, String value) {
+        this.properties.put(key, value);
     }
 }

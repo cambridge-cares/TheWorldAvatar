@@ -3,7 +3,7 @@ package uk.ac.cam.cares.jps.addasset.model;
 public class AssetPropertyDataModel {
     // data
     String fieldValue;
-    String fieldIri;
+    String valueIri;
     String fieldName;
     // ui related
 
@@ -47,8 +47,8 @@ public class AssetPropertyDataModel {
         return fieldValue;
     }
 
-    public String getFieldIri() {
-        return fieldIri;
+    public String getValueIri() {
+        return valueIri;
     }
 
     public ViewType getType() {
@@ -85,5 +85,9 @@ public class AssetPropertyDataModel {
 
     public boolean isMultiLine() {
         return isMultiLine;
+    }
+
+    public void setValueIri(String valueIri) {
+        this.valueIri = valueIri;
     }
 }
