@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-  forecasting_agent:
-    image: ghcr.io/cambridge-cares/forecasting_agent:2.0.0
+  forecasting-agent:
+    image: ghcr.io/cambridge-cares/forecasting-agent:2.0.0
     environment:
       - ROUNDING=6
       # Required environment variables for "standalone" deployment

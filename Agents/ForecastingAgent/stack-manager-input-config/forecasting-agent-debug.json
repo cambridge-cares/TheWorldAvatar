@@ -1,9 +1,9 @@
 {
     "ServiceSpec": {
-        "Name": "forecasting_agent",
+        "Name": "forecasting-agent-debug",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/forecasting_agent:2.0.0",
+                "Image": "ghcr.io/cambridge-cares/forecasting-agent:2.0.0",
                 "Command": [
                     "tail", "-f",  "/dev/null"
                 ],

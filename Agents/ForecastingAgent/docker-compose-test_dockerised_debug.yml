@@ -1,8 +1,8 @@
 version: '3.8'
 
 services:
-  forecasting_agent_w_overwrite:
-    image:  ghcr.io/cambridge-cares/forecasting_agent_test_debug:2.0.0
+  forecasting-agent-w-overwrite:
+    image:  ghcr.io/cambridge-cares/forecasting-agent-test-debug:2.0.0
     build:
       context: .
       target: debug_test
@@ -30,8 +30,8 @@ services:
       - ./forecastingagent:/app/forecastingagent
       - ./tests:/app/tests
 
-  forecasting_agent_wo_overwrite:
-    image:  ghcr.io/cambridge-cares/forecasting_agent_test_debug:2.0.0
+  forecasting-agent-wo-overwrite:
+    image:  ghcr.io/cambridge-cares/forecasting-agent-test-debug:2.0.0
     build:
       context: .
       target: debug_test
@@ -62,8 +62,8 @@ services:
   tests:
     build: .
     depends_on:
-      - forecasting_agent_w_overwrite
-      - forecasting_agent_wo_overwrite
+      - forecasting-agent-w-overwrite
+      - forecasting-agent-wo-overwrite
     env_file:
       - agent_test.env
     # Launch pytest in separate container with separate debugger (-s flag to enable more output/logging)

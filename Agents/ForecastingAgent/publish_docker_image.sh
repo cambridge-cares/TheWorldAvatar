@@ -6,7 +6,7 @@
 #
 AUTHOR="Jiaru Bai <jb2197@cam.ac.uk>"
 SPATH="$( cd  "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-AGENT_NAME='forecasting_agent'
+AGENT_NAME='forecasting-agent'
 CARES_GITHUB='ghcr.io/cambridge-cares/'
 DOCKER_COMPOSE_FILE='docker-compose.yml'
 STEP_NR=1

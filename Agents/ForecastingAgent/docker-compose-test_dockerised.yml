@@ -1,8 +1,8 @@
 version: '3.8'
 
 services:
-  forecasting_agent:
-    image:  ghcr.io/cambridge-cares/forecasting_agent:2.0.0
+  forecasting-agent:
+    image:  ghcr.io/cambridge-cares/forecasting-agent:2.0.0
     build:
       context: .
       target: prod
@@ -24,8 +24,8 @@ services:
       # (https://devopscube.com/run-docker-in-docker/)
       - /var/run/docker.sock:/var/run/docker.sock
 
-  forecasting_agent_test:
-    image:  ghcr.io/cambridge-cares/forecasting_agent_test:2.0.0
+  forecasting-agent-test:
+    image:  ghcr.io/cambridge-cares/forecasting-agent-test:2.0.0
     build:
       context: .
       target: test
