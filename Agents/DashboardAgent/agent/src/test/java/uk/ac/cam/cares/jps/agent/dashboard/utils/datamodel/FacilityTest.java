@@ -14,6 +14,8 @@ class FacilityTest {
     private static final String ASSET_LAMP_TYPE = "Lamp";
     private static final String ASSET_FRIDGE_ONE_NAME = "F1";
     private static final String ASSET_FRIDGE_TYPE = "Fridge";
+    private static final String ROOM_ONE_NAME = "Bedroom";
+    private static final String ROOM_TWO_NAME = "Kitchen";
     private static final String MEASURE_ELEC_NAME = "Electricity Consumption";
     private static final String MEASURE_ELEC_CONCEPT = "ElectricityConsumption";
     private static final String MEASURE_ELEC_UNIT = "kW";
@@ -22,7 +24,33 @@ class FacilityTest {
     private static final String MEASURE_STATE_UNIT = null;
 
     @Test
-    void testGetAllAssets() {
+    void testGetAllMeasure() {
+        // Set up IRIs
+        String assetElectricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
+        String assetElectricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
+        String roomElectricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
+        String roomElectricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
+        // Initialise object
+        Facility sample = new Facility(ASSET_LAMP_ONE_NAME, ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, assetElectricityMeasureIri, assetElectricityTimeSeriesIri);
+        sample.addRoom(ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
+        // Execute method
+        Map<String, Queue<String[]>> results = sample.getAllMeasures();
+        // Test results
+        assertEquals(2, results.size()); // Only one asset and room expected
+        // Retrieve and verify contents of asset
+        Queue<String[]> assetMetadataResult = results.get(ASSET_LAMP_ONE_NAME);
+        assertEquals(1, assetMetadataResult.size()); // Only one measure expected
+        String[] metadata = assetMetadataResult.poll();
+        AssetTest.verifyAssetMeasureArrayContents(ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, assetElectricityMeasureIri, assetElectricityTimeSeriesIri, MEASURE_ELEC_UNIT, metadata);
+        // Retrieve and verify contents of room
+        Queue<String[]> roomMetadataResult = results.get(ROOM_ONE_NAME);
+        assertEquals(1, roomMetadataResult.size()); // Only one measure expected
+        metadata = roomMetadataResult.poll();
+        RoomTest.verifyRoomMeasureArrayContents(MEASURE_ELEC_NAME, roomElectricityMeasureIri, roomElectricityTimeSeriesIri, MEASURE_ELEC_UNIT, metadata);
+    }
+
+    @Test
+    void testGetAllMeasuresForFirstAsset() {
         // Set up IRIs
         String electricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
         String electricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
@@ -39,6 +67,27 @@ class FacilityTest {
             // Verifies its contents
             String[] metadata = assetMetadataResult.poll();
             AssetTest.verifyAssetMeasureArrayContents(ASSET_LAMP_TYPE, MEASURE_ELEC_NAME, electricityMeasureIri, electricityTimeSeriesIri, MEASURE_ELEC_UNIT, metadata);
+        }
+    }
+
+    @Test
+    void testGetAllMeasuresForFirstRoom() {
+        // Set up IRIs
+        String electricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
+        String electricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
+        // Initialise object
+        Facility sample = new Facility(ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, electricityMeasureIri, electricityTimeSeriesIri);
+        // Execute method
+        Map<String, Queue<String[]>> results = sample.getAllMeasures();
+        // Test results
+        assertEquals(1, results.size()); // Only one room expected
+        for (String assetKey : results.keySet()) {
+            assertEquals(ROOM_ONE_NAME, assetKey); // Room key should be room name
+            Queue<String[]> assetMetadataResult = results.get(assetKey);
+            assertEquals(1, assetMetadataResult.size()); // Only one measure expected
+            // Verifies its contents
+            String[] metadata = assetMetadataResult.poll();
+            RoomTest.verifyRoomMeasureArrayContents(MEASURE_ELEC_NAME, electricityMeasureIri, electricityTimeSeriesIri, MEASURE_ELEC_UNIT, metadata);
         }
     }
 
@@ -128,5 +177,54 @@ class FacilityTest {
         AssetTest.verifyAssetMeasureArrayContents(ASSET_FRIDGE_TYPE, MEASURE_STATE_NAME, fridgeStateMeasureIri, fridgeStateTimeSeriesIri, MEASURE_STATE_UNIT, metadata);
         metadata = assetMetadataResult.poll();
         AssetTest.verifyAssetMeasureArrayContents(ASSET_FRIDGE_TYPE, MEASURE_ELEC_NAME, fridgeElectricityMeasureIri, fridgeElectricityTimeSeriesIri, MEASURE_ELEC_UNIT, metadata);
+    }
+
+    @Test
+    void testAddRoomForSecondRoom() {
+        // Set up IRIs
+        String electricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
+        String electricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
+        String roomStateMeasureIri = TestUtils.genInstance(MEASURE_STATE_CONCEPT);
+        String roomStateTimeSeriesIri = TestUtils.genTimeSeriesInstance();
+        // Initialise object
+        Facility sample = new Facility(ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, electricityMeasureIri, electricityTimeSeriesIri);
+        // Execute method
+        sample.addRoom(ROOM_TWO_NAME, MEASURE_STATE_NAME, MEASURE_STATE_UNIT, roomStateMeasureIri, roomStateTimeSeriesIri);
+        // Test results
+        Map<String, Queue<String[]>> results = sample.getAllMeasures();
+        assertEquals(2, results.size()); // Two rooms expected
+        // Retrieve and verify contents of first room
+        Queue<String[]> roomMetadataResult = results.get(ROOM_ONE_NAME);
+        assertEquals(1, roomMetadataResult.size()); // Only one measure expected
+        String[] metadata = roomMetadataResult.poll();
+        RoomTest.verifyRoomMeasureArrayContents(MEASURE_ELEC_NAME, electricityMeasureIri, electricityTimeSeriesIri, MEASURE_ELEC_UNIT, metadata);
+        // Retrieve and verify contents of second room
+        roomMetadataResult = results.get(ROOM_TWO_NAME);
+        assertEquals(1, roomMetadataResult.size()); // Only one measure expected
+        metadata = roomMetadataResult.poll();
+        RoomTest.verifyRoomMeasureArrayContents(MEASURE_STATE_NAME, roomStateMeasureIri, roomStateTimeSeriesIri, MEASURE_STATE_UNIT, metadata);
+    }
+
+    @Test
+    void testAddRoomForSecondMeasureOfSameRoom() {
+        // Set up IRIs
+        String roomElectricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
+        String roomElectricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
+        String roomStateMeasureIri = TestUtils.genInstance(MEASURE_STATE_CONCEPT);
+        String roomStateTimeSeriesIri = TestUtils.genTimeSeriesInstance();
+        // Initialise object
+        Facility sample = new Facility(ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
+        // Execute method
+        sample.addRoom(ROOM_ONE_NAME, MEASURE_STATE_NAME, MEASURE_STATE_UNIT, roomStateMeasureIri, roomStateTimeSeriesIri);
+        // Retrieve and test results
+        Map<String, Queue<String[]>> results = sample.getAllMeasures();
+        assertEquals(1, results.size()); // Only one room expected
+        Queue<String[]> roomMetadataResult = results.get(ROOM_ONE_NAME);
+        assertEquals(2, roomMetadataResult.size()); // Two measures expected
+        // Verifies its contents
+        String[] metadata = roomMetadataResult.poll();
+        RoomTest.verifyRoomMeasureArrayContents(MEASURE_STATE_NAME, roomStateMeasureIri, roomStateTimeSeriesIri, MEASURE_STATE_UNIT, metadata);
+        metadata = roomMetadataResult.poll();
+        RoomTest.verifyRoomMeasureArrayContents(MEASURE_ELEC_NAME, roomElectricityMeasureIri, roomElectricityTimeSeriesIri, MEASURE_ELEC_UNIT, metadata);
     }
 }

@@ -20,13 +20,14 @@ public class Room {
     /**
      * Standard Constructor. This will store the metadata retrieved from the SPARQL query.
      *
+     * @param name          Name of the room.
      * @param measureName   Name of the measure associated with the room.
      * @param unit          Measure unit symbol
      * @param measureIri    Corresponding dataIRI of the measure associated with the room.
      * @param timeSeriesIri Corresponding time series IRI of the measure.
      */
-    protected Room(String assetName, String measureName, String unit, String measureIri, String timeSeriesIri) {
-        this.ROOM_NAME = assetName;
+    protected Room(String name, String measureName, String unit, String measureIri, String timeSeriesIri) {
+        this.ROOM_NAME = name;
         this.addMeasure(measureName, unit, measureIri, timeSeriesIri);
     }
 
@@ -34,7 +35,7 @@ public class Room {
      * Adds the measure to be stored within this instance.
      *
      * @param measureName   Name of the measure associated with the room.
-     * @param unit          Measure unit symbol
+     * @param unit          Measure unit symbol.
      * @param measureIri    Corresponding dataIRI of the measure associated with the room.
      * @param timeSeriesIri Corresponding time series IRI of the measure.
      */
@@ -55,9 +56,9 @@ public class Room {
     protected String getRoomName() {return this.ROOM_NAME;}
 
     /**
-     * A getter method to retrieve all measure metadata associated with this room
+     * A getter method to retrieve all measure metadata associated with this room.
      *
-     * @returns A queue containing all room information. Within the array, first position is measure name; Second position is the dataIRI; Third position is time series IRI; Fourth position is unit if available; Fifth position is room if available.
+     * @returns A queue containing all room information. Within the array, first position is measure name; Second position is the dataIRI; Third position is time series IRI; Fourth position is unit if available; Fifth position is room.
      */
     protected Queue<String[]> getRoomData() {
         Queue<String[]> measureInfo = new ArrayDeque<>();
