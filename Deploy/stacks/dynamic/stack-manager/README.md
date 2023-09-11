@@ -1,5 +1,7 @@
 # The Stack Manager
 
+<img align="right" width="250" height="250" src="./img/twa-stack-logo-padded.svg">
+
 In the commands below placeholders are shown as `<STACK NAME>`, you will need to substitute in the required value when running the command.
 
 ## Prerequisites
@@ -265,6 +267,7 @@ The format of the stack configuration file is as follows:
     }
 }
 ```
+> NOTE: When adding services to the `includes` and `excludes` sections, use the file name (excluding the `.json` file extension) from the stack config files, rather than the name specified in `ServiceSpec`.
 
 ## Example - including a visualisation
 
