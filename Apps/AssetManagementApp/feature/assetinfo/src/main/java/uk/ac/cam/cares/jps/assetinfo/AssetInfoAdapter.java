@@ -76,7 +76,7 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
         allKeys.addAll(docLineInfoOrder);
 
         for (String key : map.keySet()) {
-            if (! allKeys.contains(key)) {
+            if (!allKeys.contains(key)) {
                 result.add(new Pair<>(key, map.get(key)));
             }
         }

@@ -28,9 +28,15 @@
         </activity>
 
         <activity android:name=".EquipmentInstanceActivity"
-            android:exported="false"
+            android:exported="true"
             android:theme="@style/Theme.BMSQueryApp.NoActionBar"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="uk.ac.cam.cares.jps.bmsqueryapp.action.VIEW_GRAPH"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/plain"/>
+            </intent-filter>
+        </activity>
     </application>
 
 

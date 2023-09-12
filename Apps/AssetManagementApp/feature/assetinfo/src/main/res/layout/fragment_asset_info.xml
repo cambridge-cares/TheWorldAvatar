@@ -56,15 +56,43 @@
         </LinearLayout>
     </com.facebook.shimmer.ShimmerFrameLayout>
 
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:id="@+id/asset_info_rv"-->
+<!--        android:visibility="gone"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/app_bar"-->
+<!--        />-->
 
-    <androidx.recyclerview.widget.RecyclerView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:id="@+id/asset_info_rv"
         app:layout_constraintTop_toBottomOf="@id/app_bar"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:visibility="gone"
-        />
+        app:layout_constraintBottom_toBottomOf="parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/asset_info_rv"
+                android:visibility="gone"
+                android:nestedScrollingEnabled="false"
+                />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/view_status_graph"
+                android:layout_margin="@dimen/component_margin"
+                android:id="@+id/view_graph_bt"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:visibility="gone"
+                android:layout_gravity="center"
+                />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -76,5 +104,7 @@
         android:visibility="gone">
         <include layout="@layout/view_network_error" />
     </LinearLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

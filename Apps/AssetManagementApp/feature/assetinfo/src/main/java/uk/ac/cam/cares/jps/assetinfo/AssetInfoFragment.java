@@ -1,5 +1,11 @@
 package uk.ac.cam.cares.jps.assetinfo;
 
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.HAS_TIME_SERIES;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.IRI;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.REFERENCE_LABEL;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.TYPE;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +25,8 @@ import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.LogManager;
@@ -59,6 +67,23 @@ public class AssetInfoFragment extends Fragment {
             binding.shimmerViewContainer.stopShimmer();
             binding.shimmerViewContainer.setVisibility(View.GONE);
             binding.assetInfoRv.setVisibility(View.VISIBLE);
+
+            binding.viewGraphBt.setOnClickListener(bt -> new MaterialAlertDialogBuilder(requireActivity()).setTitle(R.string.view_status_graph)
+                    .setMessage(R.string.view_status_in_bms_app).setPositiveButton(R.string.yes, (dialogInterface, i) -> {
+                        Intent bmsIntent = new Intent();
+                        bmsIntent.setAction("uk.ac.cam.cares.jps.bmsqueryapp.action.VIEW_GRAPH");
+                        bmsIntent.putExtra("equipmentIRI", assetInfo.getProperties().get(IRI));
+                        bmsIntent.putExtra("equipmentLabel", assetInfo.getProperties().getOrDefault(REFERENCE_LABEL, ""));
+                        bmsIntent.putExtra("equipmentType", assetInfo.getProperties().get(TYPE));
+                        bmsIntent.setType("text/plain");
+
+                        startActivity(bmsIntent);
+                    })
+                    .setNegativeButton(R.string.no, null)
+                    .show());
+            if (assetInfo.getProperties().get(HAS_TIME_SERIES).equals("true")) {
+                binding.viewGraphBt.setVisibility(View.VISIBLE);
+            }
         });
         viewModel.getError().observe(getViewLifecycleOwner(), error -> {
             binding.shimmerViewContainer.stopShimmer();
@@ -72,5 +97,7 @@ public class AssetInfoFragment extends Fragment {
         binding.assetInfoRv.setAdapter(assetInfoAdapter);
 
         binding.shimmerViewContainer.startShimmer();
+
+
     }
 }

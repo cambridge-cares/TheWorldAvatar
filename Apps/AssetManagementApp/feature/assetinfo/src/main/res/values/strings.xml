@@ -2,4 +2,8 @@
 <resources>
     <string name="network_error">Not able to get the asset information, please check your network connection and try again.</string>
     <string name="asset_info">Asset Information</string>
+    <string name="view_status_graph">View Status Graph</string>
+    <string name="yes">Yes\n</string>
+    <string name="no">No</string>
+    <string name="view_status_in_bms_app">Do you want to open BMSQueryApp to view live status?</string>
 </resources>

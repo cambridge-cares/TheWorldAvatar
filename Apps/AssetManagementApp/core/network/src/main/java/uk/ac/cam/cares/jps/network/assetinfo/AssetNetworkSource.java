@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.network.assetinfo;
 
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.HAS_TIME_SERIES;
+
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.StringRequest;
@@ -44,7 +46,9 @@ public class AssetNetworkSource {
             Gson gson = new Gson();
             Type type = new TypeToken<HashMap<String, String>>() {}.getType();
             try {
-                AssetInfoModel assets = new AssetInfoModel(gson.fromJson(new JSONObject(response).getJSONArray("meta").get(0).toString(), type));
+                JSONObject rawResponse = new JSONObject(response);
+                AssetInfoModel assets = new AssetInfoModel(gson.fromJson(rawResponse.getJSONArray("meta").get(0).toString(), type));
+                assets.setHasTimeSeries(rawResponse.has("time"));
                 onSuccessUpper.onResponse(assets);
             } catch (JSONException e) {
                 throw new RuntimeException(e);

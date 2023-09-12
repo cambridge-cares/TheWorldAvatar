@@ -61,4 +61,5 @@ public class AssetInfoConstant {
 
     static public final List<String> otherInfoFromAssetAgentKeys = Arrays.asList(TYPE, ASSIGNED_TO, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER);
 
+    static public final String HAS_TIME_SERIES = "hasTimeSeries";
 }
