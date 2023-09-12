@@ -87,6 +87,7 @@ public class CityDB extends GeoServerDataSubset {
 
     protected void augmentData(String database) {
         CityDBClient.getInstance().addBuildingHeight(database);
+        CityDBClient.getInstance().discoverThematicSurface(database);
     }
 
     @Override

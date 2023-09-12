@@ -274,4 +274,14 @@ public class CityDBClient extends ContainerClient {
             throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
         }
     }
+
+    public void discoverThematicSurface(String database) {
+        String sqlFilename = "citydb_thematic_surface_discovery.sql";
+        try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
+            String sqlQuery = new String(is.readAllBytes());
+            PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
+        }
+    }
 }
