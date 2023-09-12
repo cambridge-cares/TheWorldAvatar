@@ -1,0 +1,85 @@
+{
+    "name": "Sample Data",
+    "stack": "http://localhost",
+    "sources": [
+        {
+            "id": "3d-tiles-source",
+            "type": "tiles",
+            "uri": "http://localhost/tileset.json"
+        },
+        {
+            "id": "2d-power-network",
+            "type": "kml",
+            "uri": "http://localhost/power-network.kml",
+            "transparency": false
+        },
+        {
+            "id": "ntu-street",
+            "type": "geojson",
+            "uri": "http://localhost/NTU_route.geojson",
+            "transparency": false
+        },
+        {
+            "id": "NTUPower",
+            "type": "wms",
+            "uri": "http://localhost:3838/geoserver/the_world_avatar/wms",
+            "wmsLayer": "the_world_avatar:ntupowerfinal,the_world_avatar:arrows1,the_world_avatar:arrows2,the_world_avatar:arrows3,the_world_avatar:arrows4,the_world_avatar:arrows5,the_world_avatar:arrows6,the_world_avatar:arrows7,the_world_avatar:arrows8,the_world_avatar:arrows9, the_world_avatar:arrows10, the_world_avatar:arrows11,the_world_avatar:arrows12,the_world_avatar:arrows13,the_world_avatar:arrows14",
+            "transparency": true,
+            "format": "image/png"
+        },
+        {
+            "id": "ntu-street-geoserver",
+            "type": "wms",
+            "uri": "http://localhost:3838/geoserver/the_world_avatar/wms",
+            "wmsLayer": "the_world_avatar:ntu_street",
+            "transparency": true,
+            "format": "image/png"
+        },
+        {
+            "id": "ntu-venues",
+            "type": "wms",
+            "uri": "http://localhost:3838/geoserver/the_world_avatar/wms",
+            "wmsLayer": "the_world_avatar:ntu_venues",
+            "transparency": true,
+            "format": "image/png"
+        }
+    ],
+    "layers": [
+
+        {
+            "id": "3d-tiles-layer",
+            "name": "NTU buildings",
+            "source": "3d-tiles-source"
+        },
+        {
+            "id": "2d-power-network",
+            "name": "2D power network",
+            "source": "2d-power-network",
+            "visibility": "none"
+        },
+        {
+            "id": "ntu-street",
+            "name": "NTU Streets",
+            "source": "ntu-street",
+            "visibility": "none"
+        },
+        {
+            "id": "NTUPower",
+            "name": "NTU Power Network",
+            "source": "NTUPower",
+            "visibility": "none"
+        },
+        {
+            "id": "ntu-street-geoserver",
+            "name": "NTU Street (Geoserver)",
+            "source": "ntu-street-geoserver",
+            "visibility": "none"
+        },
+        {
+            "id": "ntu-venues",
+            "name": "NTU Venues",
+            "source": "ntu-venues",
+            "visibility": "none"
+        }
+    ]
+}
