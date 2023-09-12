@@ -5,12 +5,14 @@ import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class GaugeTest {
     private static final List<String[]> SAMPLE_METADATA = new ArrayList<>();
+    private static final String[] SAMPLE_THRESHOLDS = new String[2];
     private static final String SAMPLE_MEASURE = "ElectricalConsumption";
     private static final String SAMPLE_UNIT = "kwh";
     private static final String SAMPLE_ITEM_GROUP = "Fridge";
@@ -20,6 +22,8 @@ class GaugeTest {
     private static final String SAMPLE_ASSET_TABLE_NAME = "table1";
     private static final String SAMPLE_SEC_ASSET_NAME = "asset two";
     private static final String SAMPLE_SEC_ASSET_COL_NAME = "column16";
+    private static final String THRESHOLD_MIN = "1";
+    private static final String THRESHOLD_MAX = "5";
     private static final int SAMPLE_PANEL_HEIGHT = 8;
     private static final int SAMPLE_PANEL_WIDTH = 12;
     private static final int SAMPLE_PANEL_X_POSITION = 1;
@@ -30,6 +34,8 @@ class GaugeTest {
     static void setup() {
         SAMPLE_METADATA.add(new String[]{SAMPLE_FIRST_ASSET_NAME, SAMPLE_FIRST_ASSET_COL_NAME, SAMPLE_ASSET_TABLE_NAME});
         SAMPLE_METADATA.add(new String[]{SAMPLE_SEC_ASSET_NAME, SAMPLE_SEC_ASSET_COL_NAME, SAMPLE_ASSET_TABLE_NAME});
+        SAMPLE_THRESHOLDS[0] = THRESHOLD_MIN;
+        SAMPLE_THRESHOLDS[1] = THRESHOLD_MAX;
     }
 
     @Test
@@ -38,7 +44,19 @@ class GaugeTest {
         String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID};
         int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
         // Execute the method
-        Gauge chart = new Gauge(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, true);
+        Gauge chart = new Gauge(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, SAMPLE_THRESHOLDS, true);
+        // Verify results
+        String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
+        assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA, SAMPLE_THRESHOLDS, genAverageQuery(SAMPLE_METADATA)), result);
+    }
+
+    @Test
+    void testConstructorNoThresholds() {
+        // Generate expected inputs
+        String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID};
+        int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
+        // Execute the method
+        Gauge chart = new Gauge(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, new String[]{}, true);
         // Verify results
         String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
         assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA, genAverageQuery(SAMPLE_METADATA)), result);
@@ -50,7 +68,7 @@ class GaugeTest {
         String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID};
         int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
         // Execute the method
-        Gauge chart = new Gauge(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA);
+        Gauge chart = new Gauge(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, new String[]{});
         // Verify results
         String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
         assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA), result);
@@ -62,7 +80,7 @@ class GaugeTest {
         String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID};
         int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
         // Construct the object
-        Gauge chart = new Gauge(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA);
+        Gauge chart = new Gauge(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, "null", SAMPLE_DATABASE_ID, SAMPLE_METADATA, new String[]{});
         // Execute the method
         String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
         // Verify results
@@ -75,7 +93,7 @@ class GaugeTest {
         String[] expectedConfigItems = new String[]{SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_ASSET_TABLE_NAME, SAMPLE_DATABASE_ID, SAMPLE_UNIT};
         int[] expectedGeometryPosition = new int[]{SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION};
         // Construct the object
-        Gauge chart = new Gauge(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_UNIT, SAMPLE_DATABASE_ID, SAMPLE_METADATA);
+        Gauge chart = new Gauge(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_UNIT, SAMPLE_DATABASE_ID, SAMPLE_METADATA, new String[]{});
         // Execute the method
         String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
         // Verify results
@@ -83,28 +101,49 @@ class GaugeTest {
     }
 
     private static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails) {
-        return genExpectedResults(metadata, geometryPositions, itemDetails, "");
+        return genExpectedResults(metadata, geometryPositions, itemDetails, new String[]{}, "");
+    }
+
+    private static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails, String[] thresholds) {
+        return genExpectedResults(metadata, geometryPositions, itemDetails, thresholds, "");
     }
 
     private static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails, String query) {
+        return genExpectedResults(metadata, geometryPositions, itemDetails, new String[]{}, query);
+    }
+
+    private static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails, String[] thresholds, String query) {
         String titleContent = "Latest " + StringHelper.addSpaceBetweenCapitalWords(metadata[0]);
         titleContent = query.isEmpty() ? metadata.length > 4 ? titleContent + " [" + metadata[4] + "]" : titleContent : "Latest Average";
         String description = query.isEmpty() ? "A gauge chart displaying the latest value of all individuals' " + metadata[0].toLowerCase() + " for " + metadata[1].toLowerCase()
-                : "A gauge chart displaying the latest average value of " + metadata[0].toLowerCase() + " for " + metadata[1].toLowerCase();;
+                : "A gauge chart displaying the latest average value of " + metadata[0].toLowerCase() + " for " + metadata[1].toLowerCase();
+        boolean showThresholdMarkers = false;
+        String colorMode = "palette-classic";
+        String colorSteps = "{\"color\":\"red\",\"value\":80}";
+        String minMax = "";
+        if (thresholds.length != 0) {
+            showThresholdMarkers = true;
+            colorMode = "thresholds";
+            colorSteps = "{\"color\":\"green\",\"value\":" + thresholds[0] + "},{\"color\":\"red\",\"value\":" + thresholds[1] + "}";
+            // Ensure that the gauge can see past the max threshold to allow user to the limits
+            double maxValue = Float.parseFloat(thresholds[1]) + 1.0;
+            minMax = "\"min\":" + thresholds[0] + ",\"max\":" + maxValue + ",";
+        }
         StringBuilder sb = new StringBuilder();
         sb.append("{").append(TemplatePanelTest.genExpectedCommonJsonBase(titleContent, description, metadata, geometryPositions, itemDetails, query))
                 .append(",\"type\": \"gauge\",")
                 .append("\"fieldConfig\":{")
-                .append("\"defaults\":{\"color\":{\"mode\": \"palette-classic\"},")
+                .append("\"defaults\":{\"color\":{\"mode\": \"").append(colorMode).append("\"},")
                 .append("\"thresholds\":{\"mode\": \"absolute\",")
-                .append("\"steps\": [{\"color\":\"green\",\"value\":null},{\"color\":\"red\",\"value\":80}]},")
+                .append("\"steps\": [{\"color\":\"red\",\"value\":null},").append(colorSteps).append("]},")
+                .append(minMax)
                 .append("\"mappings\": []")
                 .append("},")
                 .append("\"overrides\": []")
                 .append("},")
                 .append("\"options\":{")
                 .append("\"reduceOptions\": {\"values\": false,\"calcs\": [\"lastNotNull\"],\"fields\": \"\"},")
-                .append("\"orientation\": \"auto\",\"showThresholdLabels\":false,\"showThresholdMarkers\":false,\"text\": {}")
+                .append("\"orientation\": \"auto\",\"showThresholdLabels\":false,\"showThresholdMarkers\":").append(showThresholdMarkers).append(",\"text\": {}")
                 .append("}")
                 .append("}");
         return sb.toString();

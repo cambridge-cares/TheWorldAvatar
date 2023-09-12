@@ -198,14 +198,20 @@ public class SparqlClient {
                 unit = null;
             }
             String timeSeriesIri = qs.getResource(SparqlQuery.TIME_SERIES).toString();
+            String minThreshold = qs.getLiteral(SparqlQuery.MIN_THRESHOLD).toString();
+            String maxThreshold = qs.getLiteral(SparqlQuery.MAX_THRESHOLD).toString();
             // Check if the facility already exists in the map
             if (this.SPATIAL_ZONES.containsKey(facilityName)) {
                 // If it does exist, add the asset to the existing facility object
                 Facility facility = this.SPATIAL_ZONES.get(facilityName);
                 facility.addRoom(roomName, measureName, unit, measureIri, timeSeriesIri);
+                if (!minThreshold.isEmpty() && !maxThreshold.isEmpty())
+                    facility.addThresholds(measureName, minThreshold, maxThreshold); // Add thresholds
             } else {
                 // If it does not exist, initialise a new facility object and add it in
                 Facility facility = new Facility(roomName, measureName, unit, measureIri, timeSeriesIri);
+                if (!minThreshold.isEmpty() && !maxThreshold.isEmpty())
+                    facility.addThresholds(measureName, minThreshold, maxThreshold); // Add thresholds
                 this.SPATIAL_ZONES.put(facilityName, facility);
             }
         });

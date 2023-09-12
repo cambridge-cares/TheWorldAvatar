@@ -99,6 +99,13 @@ public class PostGisClient {
     protected Map<String, Map<String, List<String[]>>> getMeasureColAndTableName(Map<String, Queue<String[]>> timeSeries) {
         // Initialise a queue to store all results across database
         Queue<String[]> postGisResults = new ArrayDeque<>();
+        Queue<String[]> thresholds = new ArrayDeque<>(); // for the thresholds
+        // If there are thresholds available, replace the empty queue
+        if (timeSeries.containsKey(StringHelper.THRESHOLD_KEY)) {
+            // Retrieve the thresholds and remove it immediately to prevent it from corrupting the workflow
+            thresholds = timeSeries.get(StringHelper.THRESHOLD_KEY);
+            timeSeries.remove(StringHelper.THRESHOLD_KEY);
+        }
         // Parse time series here so that it is only executed once rather than every loop
         String[] measureIris = parseTimeSeriesMapForQuery(timeSeries);
         // Connect to all existing database and attempt to retrieve the required metadata
@@ -114,7 +121,7 @@ public class PostGisClient {
                 throw new JPSRuntimeException("Error connecting to database at: " + database + " :" + e);
             }
         }
-        return processQueryResultsAsNestedMap(postGisResults);
+        return processQueryResultsAsNestedMap(postGisResults, thresholds);
     }
 
     /**
@@ -281,6 +288,7 @@ public class PostGisClient {
      * measure2: [[AssetName5, ColName5, TableName1, Database, unit],[AssetName6, ColName6, TableName1, Database, unit],[AssetName7, ColName7, TableName1, Database, unit]],
      * },
      * Rooms:{
+     * thresholds: [[measure1, minThreshold, maxThreshold],[measure2, minThreshold, maxThreshold]],
      * Rooms: [RoomName1, RoomName2],
      * measure1: [[RoomName1, ColName1, TableName2, Database, unit],[RoomName2, ColName3, TableName2, Database, unit]],
      * measure2: [[RoomName1, ColName2, TableName2, Database, unit],[RoomName2, ColName4, TableName2, Database, unit]]
@@ -288,9 +296,10 @@ public class PostGisClient {
      * }
      *
      * @param postGisResults The postGIS query results that has been stored as a queue containing all row values.
+     * @param thresholds     A queue containing an array of the threshold metadata.
      * @return The required map structure {assetType: {assets:[asset name list], measure: [[measureDetails],[measureDetails]]}, room : {measure: [[measureDetails],[measureDetails]]}}.
      */
-    private Map<String, Map<String, List<String[]>>> processQueryResultsAsNestedMap(Queue<String[]> postGisResults) {
+    private Map<String, Map<String, List<String[]>>> processQueryResultsAsNestedMap(Queue<String[]> postGisResults, Queue<String[]> thresholds) {
         Map<String, Map<String, List<String[]>>> results = new HashMap<>();
         // While there are still results
         while (!postGisResults.isEmpty()) {
@@ -323,6 +332,30 @@ public class PostGisClient {
             // Add the required measure metadata into the list
             measureMap.get(measureKey).add(new String[]{assetOrRoomName, columnName, tableName, database, unit});
         }
+        this.addThresholds(results, thresholds);
         return results;
+    }
+
+    /**
+     * Add the thresholds, typically for rooms, into the input map.
+     *
+     * @param metaMap    A map containing the item and their measure metadata for the dashboard.
+     * @param thresholds A queue containing an array of the threshold metadata.
+     */
+    private void addThresholds(Map<String, Map<String, List<String[]>>> metaMap, Queue<String[]> thresholds) {
+        // Only attempt this if there is more than one threshold and there are rooms
+        if (thresholds.size() > 0 && metaMap.containsKey(StringHelper.ROOM_KEY)) {
+            // Retrieve the nested map for rooms
+            Map<String, List<String[]>> roomMetadata = metaMap.get(StringHelper.ROOM_KEY);
+            // Initialise a new list to hold information
+            List<String[]> roomThresholds = new ArrayList<>();
+            // Append all thresholds from the Queue into the list
+            while (!thresholds.isEmpty()) {
+                String[] threshold = thresholds.poll();
+                roomThresholds.add(threshold);
+            }
+            // Store the thresholds
+            roomMetadata.put(StringHelper.THRESHOLD_KEY, roomThresholds);
+        }
     }
 }

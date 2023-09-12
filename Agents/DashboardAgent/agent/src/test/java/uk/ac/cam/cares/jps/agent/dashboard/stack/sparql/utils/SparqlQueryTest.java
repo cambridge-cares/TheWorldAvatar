@@ -24,12 +24,12 @@ class SparqlQueryTest {
         // Generate expected query
         StringBuilder expectedQuery = new StringBuilder();
         expectedQuery.append(genExpectedPrefixesString())
-                .append("SELECT DISTINCT ?facilityname ?roomname ?measure ?measurename ?unit ?timeseries ")
+                .append("SELECT DISTINCT ?facilityname ?roomname ?measure ?measurename ?unit ?timeseries ?minthreshold ?maxthreshold ")
                 .append("WHERE {")
                 .append(genExpectedFacilityString())
                 .append("?room ontobim:hasIfcRepresentation/rdfs:label ?roomname.")
-                .append("{?room ontodevice:hasTemperature/om:hasValue ?measure}")
-                .append("UNION {?room ontodevice:hasRelativeHumidity/om:hasValue ?measure}")
+                .append("{?room ontodevice:hasTemperature/om:hasValue ?measure.?facility ontodevice:hasMinThreshold/ontodevice:hasQuantity ?minquantity;ontodevice:hasMaxThreshold/ontodevice:hasQuantity ?maxquantity.?minquantity rdf:type om:Temperature;om:hasValue/om:hasNumericalValue ?minthreshold.?maxquantity rdf:type om:Temperature;om:hasValue/om:hasNumericalValue ?maxthreshold.}")
+                .append("UNION {?room ontodevice:hasRelativeHumidity/om:hasValue ?measure.?facility ontodevice:hasMinThreshold/ontodevice:hasQuantity ?minquantity;ontodevice:hasMaxThreshold/ontodevice:hasQuantity ?maxquantity.?minquantity rdf:type om:RelativeHumidity;om:hasValue/om:hasNumericalValue ?minthreshold.?maxquantity rdf:type om:RelativeHumidity;om:hasValue/om:hasNumericalValue ?maxthreshold.}")
                 .append(genExpectedCommonMeasureString())
                 .append("}");
         // Execute and test result

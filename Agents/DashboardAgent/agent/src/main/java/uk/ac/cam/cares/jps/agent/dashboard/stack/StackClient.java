@@ -105,6 +105,24 @@ public class StackClient {
 
     /**
      * Get all time series associated with assets from a specific spatial zone and rooms in the knowledge graph with groups of measures tied to group of asset types.
+     * The final format is as follows:
+     * { assetType1: {
+     * assets: [AssetName1, AssetName2, AssetName3],
+     * measure1: [[AssetName1, ColName1, TableName1, Database, unit],[AssetName2, ColName2, TableName1, Database, unit],[AssetName3, ColName3, TableName1, Database, unit]],
+     * measure2: [[AssetName1, ColName5, TableName1, Database, unit],[AssetName2, ColName6, TableName1, Database, unit],[AssetName3, ColName7, TableName1, Database, unit]],
+     * },
+     * assetType2: {
+     * assets: [AssetName5, AssetName6, AssetName7],
+     * measure1: [[AssetName5, ColName1, TableName1, Database, unit],[AssetName6, ColName2, TableName1, Database, unit],[AssetName7, ColName3, TableName1, Database, unit]],
+     * measure2: [[AssetName5, ColName5, TableName1, Database, unit],[AssetName6, ColName6, TableName1, Database, unit],[AssetName7, ColName7, TableName1, Database, unit]],
+     * },
+     * Rooms:{
+     * thresholds: [[measure1, minThreshold, maxThreshold],[measure2, minThreshold, maxThreshold]],
+     * Rooms: [RoomName1, RoomName2],
+     * measure1: [[RoomName1, ColName1, TableName2, Database, unit],[RoomName2, ColName3, TableName2, Database, unit]],
+     * measure2: [[RoomName1, ColName2, TableName2, Database, unit],[RoomName2, ColName4, TableName2, Database, unit]]
+     * }
+     * }
      *
      * @param spatialZone The spatial zone of interest.
      * @return A map: {assetType: {assets:[asset name list], measure[[measureDetails],[measureDetails]]}, room : {measure: [[measureDetails],[measureDetails]]}}.

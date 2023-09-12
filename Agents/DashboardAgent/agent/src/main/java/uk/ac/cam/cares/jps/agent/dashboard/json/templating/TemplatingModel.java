@@ -36,8 +36,8 @@ public class TemplatingModel {
             variableQueue.offer(variable);
             // For each of the measures, create a postgres variable that is tied to their asset type or room custom variable
             for (String measure : measures.keySet()) {
-                // Take note to exclude the assets and rooms keys as they are not required
-                if (!measure.equals(StringHelper.ASSET_KEY) && !measure.equals(StringHelper.ROOM_KEY)) {
+                // Take note to exclude the assets, rooms, and threshold keys as they are not required
+                if (!measure.equals(StringHelper.ASSET_KEY) && !measure.equals(StringHelper.ROOM_KEY) && !measure.equals(StringHelper.THRESHOLD_KEY)) {
                     // Retrieve the relevant database and database ID from the first item
                     // Assumes that each measure of a specific asset type belongs to only one database
                     String database = measures.get(measure).get(0)[3];

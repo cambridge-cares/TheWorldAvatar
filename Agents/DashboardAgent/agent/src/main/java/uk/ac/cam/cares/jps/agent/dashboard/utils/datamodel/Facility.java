@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.agent.dashboard.utils.datamodel;
 
+import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
+
 import java.util.*;
 
 /**
@@ -11,6 +13,7 @@ public class Facility {
     // Key value pair is asset name and its stored information respectively
     private final Map<String, Asset> ASSETS = new HashMap<>();
     private final Map<String, Room> ROOMS = new HashMap<>();
+    private final Queue<String[]> FACILITY_THRESHOLDS = new ArrayDeque<>();
 
     /**
      * Constructor to initialise a facility object with one room and measure.
@@ -42,7 +45,8 @@ public class Facility {
     /**
      * A getter method to retrieve all available rooms, assets and their corresponding time series and information in the facility.
      * Format: {asset1: [measure1, dataIRI, timeseriesIRI, unit, assetType], [measure2, dataIRI, timeseriesIRI, null(if no unit), assetType]],
-     * room1: [[measureName, dataIRI, timeseriesIRI, unit], [measureName, dataIRI, timeseriesIRI, unit]], ...]}
+     * room1: [[measureName, dataIRI, timeseriesIRI, unit], [measureName, dataIRI, timeseriesIRI, unit]], ...],
+     * thresholds: [[measureName, min, max],...]}
      *
      * @return A map linking all assets and rooms to their measures.
      */
@@ -57,6 +61,8 @@ public class Facility {
             String roomName = room.getRoomName();
             measures.put(roomName, room.getRoomData());
         }
+        // Only add the thresholds if there are values
+        if (!this.FACILITY_THRESHOLDS.isEmpty()) measures.put(StringHelper.THRESHOLD_KEY, this.FACILITY_THRESHOLDS);
         return measures;
     }
 
@@ -101,5 +107,17 @@ public class Facility {
             Asset element = new Asset(assetName, assetType, measureName, unit, measureIri, timeSeriesIri);
             this.ASSETS.put(assetName, element);
         }
+    }
+
+    /**
+     * Add the thresholds based on measures into this class.
+     *
+     * @param measureName  Name of the measure.
+     * @param minThreshold Min threshold set for this measure in this facility.
+     * @param maxThreshold Max threshold set for this measure in this facility.
+     */
+    public void addThresholds(String measureName, String minThreshold, String maxThreshold) {
+        String[] thresholdData = new String[]{measureName, minThreshold, maxThreshold};
+        this.FACILITY_THRESHOLDS.offer(thresholdData);
     }
 }

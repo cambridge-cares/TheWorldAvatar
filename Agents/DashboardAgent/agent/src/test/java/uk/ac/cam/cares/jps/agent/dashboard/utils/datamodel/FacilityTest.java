@@ -2,11 +2,12 @@ package uk.ac.cam.cares.jps.agent.dashboard.utils.datamodel;
 
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.dashboard.TestUtils;
+import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.Map;
 import java.util.Queue;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class FacilityTest {
     private static final String ASSET_LAMP_ONE_NAME = "Lamp1";
@@ -22,6 +23,9 @@ class FacilityTest {
     private static final String MEASURE_STATE_NAME = "On off state";
     private static final String MEASURE_STATE_CONCEPT = "State";
     private static final String MEASURE_STATE_UNIT = null;
+    private static final String THRESHOLD_NAME = "Scale";
+    private static final String THRESHOLD_MIN = "1";
+    private static final String THRESHOLD_MAX = "5";
 
     @Test
     void testGetAllMeasure() {
@@ -89,6 +93,20 @@ class FacilityTest {
             String[] metadata = assetMetadataResult.poll();
             RoomTest.verifyRoomMeasureArrayContents(MEASURE_ELEC_NAME, electricityMeasureIri, electricityTimeSeriesIri, MEASURE_ELEC_UNIT, metadata);
         }
+    }
+
+    @Test
+    void testGetAllMeasuresNoThreshold() {
+        // Set up IRIs
+        String roomElectricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
+        String roomElectricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
+        // Initialise object
+        Facility sample = new Facility(ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
+        // Execute method
+        Map<String, Queue<String[]>> results = sample.getAllMeasures();
+        // Retrieve and test results
+        assertEquals(1, results.size()); // Do not expect threshold to be available
+        assertFalse(results.containsKey(StringHelper.THRESHOLD_KEY));
     }
 
     @Test
@@ -226,5 +244,26 @@ class FacilityTest {
         RoomTest.verifyRoomMeasureArrayContents(MEASURE_STATE_NAME, roomStateMeasureIri, roomStateTimeSeriesIri, MEASURE_STATE_UNIT, metadata);
         metadata = roomMetadataResult.poll();
         RoomTest.verifyRoomMeasureArrayContents(MEASURE_ELEC_NAME, roomElectricityMeasureIri, roomElectricityTimeSeriesIri, MEASURE_ELEC_UNIT, metadata);
+    }
+
+    @Test
+    void testAddThresholds() {
+        // Set up IRIs
+        String roomElectricityMeasureIri = TestUtils.genInstance(MEASURE_ELEC_CONCEPT);
+        String roomElectricityTimeSeriesIri = TestUtils.genTimeSeriesInstance();
+        // Initialise object
+        Facility sample = new Facility(ROOM_ONE_NAME, MEASURE_ELEC_NAME, MEASURE_ELEC_UNIT, roomElectricityMeasureIri, roomElectricityTimeSeriesIri);
+        // Execute method
+        sample.addThresholds(THRESHOLD_NAME, THRESHOLD_MIN, THRESHOLD_MAX);
+        // Retrieve and test results
+        Map<String, Queue<String[]>> results = sample.getAllMeasures();
+        assertEquals(2, results.size()); // Expect two results - one for room, and one for threshold
+        assertTrue(results.containsKey(StringHelper.THRESHOLD_KEY));
+        Queue<String[]> thresholdMetadataResult = results.get(StringHelper.THRESHOLD_KEY);
+        assertEquals(1, thresholdMetadataResult.size()); // One threshold expected
+        String[] metadata = thresholdMetadataResult.poll();
+        assertEquals(THRESHOLD_NAME, metadata[0]);
+        assertEquals(THRESHOLD_MIN, metadata[1]);
+        assertEquals(THRESHOLD_MAX, metadata[2]);
     }
 }

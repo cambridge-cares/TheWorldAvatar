@@ -8,16 +8,21 @@ package uk.ac.cam.cares.jps.agent.dashboard.utils;
 public class StringHelper {
     public static String ASSET_KEY = "assets";
     public static String ROOM_KEY = "Rooms";
+    public static String THRESHOLD_KEY = "threshold";
 
     /**
      * Formats the SPARQL variable name for a SPARQL query syntax. Note that a space will be appended beforehand.
      */
-    public static String formatSparqlVarName(String variable) {return " ?" + variable;}
+    public static String formatSparqlVarName(String variable) {
+        return " ?" + variable;
+    }
 
     /**
      * Formats the variable names to remove white spaces, dashes, and underscores and use only lower cases for Grafana syntax.
      */
-    public static String formatVariableName(String variable) {return variable.toLowerCase().replaceAll("[\\s\\-_]", "");}
+    public static String formatVariableName(String variable) {
+        return variable.toLowerCase().replaceAll("[\\s\\-_]", "");
+    }
 
     /**
      * Add space between each word, which is defined by having the first letter be capital. For eg, MyTestCase will return My Test Case.

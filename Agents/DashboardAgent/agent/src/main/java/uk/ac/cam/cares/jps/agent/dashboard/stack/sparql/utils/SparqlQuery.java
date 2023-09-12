@@ -16,6 +16,8 @@ public class SparqlQuery {
     public static final String MEASURE_NAME = "measurename";
     public static final String UNIT = "unit";
     public static final String TIME_SERIES = "timeseries";
+    public static final String MIN_THRESHOLD = "minthreshold";
+    public static final String MAX_THRESHOLD = "maxthreshold";
 
     /**
      * Generate a simple SPARQL query for facilities. This query is meant to detect which namespace contains the
@@ -51,13 +53,23 @@ public class SparqlQuery {
                 .append(StringHelper.formatSparqlVarName(MEASURE_NAME))
                 .append(StringHelper.formatSparqlVarName(UNIT))
                 .append(StringHelper.formatSparqlVarName(TIME_SERIES))
+                .append(StringHelper.formatSparqlVarName(MIN_THRESHOLD))
+                .append(StringHelper.formatSparqlVarName(MAX_THRESHOLD))
                 .append(" WHERE {")
                 // Query to get assets within a facility
                 .append(genFacilitySyntax())
                 .append("?room ontobim:hasIfcRepresentation/rdfs:label").append(StringHelper.formatSparqlVarName(ROOM_NAME)).append(".")
                 // Possible measures are temperature and relative humidity
-                .append("{?room ontodevice:hasTemperature/om:hasValue").append(StringHelper.formatSparqlVarName(MEASURE)).append("}")
-                .append("UNION {?room ontodevice:hasRelativeHumidity/om:hasValue").append(StringHelper.formatSparqlVarName(MEASURE)).append("}")
+                .append("{?room ontodevice:hasTemperature/om:hasValue").append(StringHelper.formatSparqlVarName(MEASURE)).append(".")
+                .append("?facility ontodevice:hasMinThreshold/ontodevice:hasQuantity ?minquantity;ontodevice:hasMaxThreshold/ontodevice:hasQuantity ?maxquantity.")
+                .append("?minquantity rdf:type om:Temperature;om:hasValue/om:hasNumericalValue").append(StringHelper.formatSparqlVarName(MIN_THRESHOLD)).append(".")
+                .append("?maxquantity rdf:type om:Temperature;om:hasValue/om:hasNumericalValue").append(StringHelper.formatSparqlVarName(MAX_THRESHOLD)).append(".")
+                .append("}")
+                .append("UNION {?room ontodevice:hasRelativeHumidity/om:hasValue").append(StringHelper.formatSparqlVarName(MEASURE)).append(".")
+                .append("?facility ontodevice:hasMinThreshold/ontodevice:hasQuantity ?minquantity;ontodevice:hasMaxThreshold/ontodevice:hasQuantity ?maxquantity.")
+                .append("?minquantity rdf:type om:RelativeHumidity;om:hasValue/om:hasNumericalValue").append(StringHelper.formatSparqlVarName(MIN_THRESHOLD)).append(".")
+                .append("?maxquantity rdf:type om:RelativeHumidity;om:hasValue/om:hasNumericalValue").append(StringHelper.formatSparqlVarName(MAX_THRESHOLD)).append(".")
+                .append("}")
                 .append(genCommonMeasureSyntax())
                 .append("}");
         return query.toString();
