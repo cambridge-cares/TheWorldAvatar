@@ -10,7 +10,7 @@ from data_generation.word_augmenters import (
 )
 
 
-class TestAugmentData:
+class TestWordAugmenters:
     def test_getNonstopwordAlphabeticalTokenIdxes(self):
         tokens = [
             "Could",
