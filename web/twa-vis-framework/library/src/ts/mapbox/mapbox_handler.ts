@@ -93,10 +93,10 @@ class MapHandler_Mapbox extends MapHandler {
 
         } else if (features.length === 1) {
             let feature = features[0];
-
             let layer = Manager.DATA_STORE.getLayerWithID(feature["layer"]["id"]);
-            let clickable = layer.definition["clickable"];
-            if(clickable !== null && clickable === false) {
+            
+            let clickable = (layer.interactions === "all" || layer.interactions === "click-only");
+            if(!clickable) {
                 // No mouse interaction
                 return;
             }
@@ -139,7 +139,7 @@ class MapHandler_Mapbox extends MapHandler {
             let layerID = leaf["layer"]["id"];
             let layer = Manager.DATA_STORE.getLayerWithID(layerID);
 
-            let clickable = layer.definition["clickable"];
+            let clickable = (layer.interactions === "all" || layer.interactions === "click-only");
             if(clickable !== null && clickable === false) {
                 // No mouse interaction
                 continue;
@@ -225,17 +225,19 @@ class MapHandler_Mapbox extends MapHandler {
             let feature = features[0];
             let layer = Manager.DATA_STORE.getLayerWithID(feature["layer"]["id"]);
 
-            let clickable = layer.definition["clickable"];
-            if(clickable !== null && clickable === false) {
-                // No mouse interaction
+            // Only show pointer if layer is clickable
+            let clickable = (layer.interactions === "all" || layer.interactions === "click-only");
+            if(clickable) {
+                MapHandler.MAP.getCanvas().style.cursor = 'pointer';
+            }
+
+            // Check if hovering is allowed on this layer, bug out if not
+            let hoverable = (layer.interactions === "all" || layer.interactions === "hover-only");
+            if(!hoverable) {
                 return;
             }
 
-            // Change cursor
-            MapHandler.MAP.getCanvas().style.cursor = 'pointer';
-
             if(layer != null && layer instanceof MapboxLayer && feature != null) {
-
                 // Update the layer properties based on the new selection
                 MapboxUtils.updateStyleFilterInjections(feature?.properties?.iri, MapboxUtils.SELECTED_IRI);
 
@@ -348,12 +350,11 @@ class MapHandler_Mapbox extends MapHandler {
                 options["metadata"]["attribution"] = "CMCL";
             }
 
-            // Remove 'clickable' if specified
-            if(options["clickable"]) {
-                options["metadata"]["clickable"] = options["clickable"]
+            // Remove 'interactions' and 'clickable' if specified
+            if(options["interactions"]) {
+                delete options["interactions"]
+            } else if(options["clickable"]) {
                 delete options["clickable"]
-            } else {
-                options["metadata"]["clickable"] = true
             }
 
             // Remove 'treeable' if specified

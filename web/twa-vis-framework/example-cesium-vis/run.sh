@@ -15,7 +15,7 @@ echo "TAG=$VERSION" > .env
 echo "Written .env file"
 
 # Run docker compose build command
-echo "Running the example Mapbox visualisation..."
+echo "Running the example Cesium visualisation..."
 docker compose -f docker-compose.yml up -d
 
 # Clean up

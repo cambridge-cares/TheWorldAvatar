@@ -34,10 +34,6 @@ class MapboxUtils {
                 if(!layer["metadata"]["attribution"] || layer["metadata"]["attribution"] !== "CMCL") {
                     return false;
                 }
-
-                if(!layer["metadata"]["clickable"]) {
-                    return false;
-                }
             }
 
             return true;

@@ -38,7 +38,7 @@ class CesiumUtils {
         // Get sources of data for this layer
         let dataSources = MapHandler_Cesium.DATA_SOURCES[layerID];
 
-        if(dataSources !== null) {
+        if(dataSources != null) {
             for(let i = 0; i < dataSources.length; i++) {
                 let dataSource = dataSources[i];
 
@@ -202,8 +202,19 @@ class CesiumUtils {
 
                 // Pick a new feature
                 const pickedFeature = MapHandler.MAP.scene.pick(movement.endPosition);
-
                 if (!Cesium.defined(pickedFeature)) return;
+
+
+                // Try to get the layer object for the feature
+                let layerID = pickedFeature?.tileset?.layerID;
+                if(layerID == null) layerID = pickedFeature?.imageryLayer?.imageryProvider?.layerID
+                let layer = Manager.DATA_STORE.getLayerWithID(layerID);
+
+                // Check if hovering is allowed on this layer
+                let hoverable = (layer == null) || (layer.interactions === "all" || layer.interactions === "hover-only");
+                if(!hoverable) {
+                    return;
+                }
 
                 // Highlight the feature if it's not already selected.
                 if (pickedFeature !== selected.feature) {

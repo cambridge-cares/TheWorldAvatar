@@ -29,6 +29,11 @@ abstract class DataLayer {
     public order: number = 0;
 
     /**
+     * Type of interactions that are allowed ("all"|"hover-only"|"click-only"|"none")
+     */
+    public interactions = "all";
+
+    /**
      * Initialise a new DataLayer instance.
      */
     constructor(id: string, name: string, source: DataSource) {
@@ -37,20 +42,6 @@ abstract class DataLayer {
         this.source = source;
 
         console.info("Created DataLayer instance '" + this.name + "' with id '" + this.id + "'.");
-    }
-
-    /**
-     * Returns true if this layer is interactable.
-     * 
-     * @returns true if clickable
-     */
-    public isClickable(): boolean {
-        if(this.definition != null) {
-            if("clickable" in Object.keys(this.definition)) {
-                return this.definition["clickable"];
-            }
-        }
-        return false;
     }
 
 }

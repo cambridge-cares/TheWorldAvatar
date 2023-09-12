@@ -39,6 +39,7 @@
                     "name": "Countries",
                     "source": "gb-countries-source",
                     "source-layer": "countries_gb",
+                    "interactions": "hover-only",
                     "type": "fill",
                     "layout": {
                         "visibility": "none"
@@ -58,6 +59,7 @@
                     "name": "Countries",
                     "source": "gb-countries-source",
                     "source-layer": "countries_gb",
+                    "interactions": "hover-only",
                     "type": "line",
                     "layout": {
                         "visibility": "none"
@@ -73,6 +75,7 @@
                     "name": "Countries",
                     "source": "ni-countries-source",
                     "source-layer": "countries_ni",
+                    "interactions": "hover-only",
                     "type": "fill",
                     "layout": {
                         "visibility": "none"
@@ -92,6 +95,7 @@
                     "name": "Countries",
                     "source": "ni-countries-source",
                     "source-layer": "countries_ni",
+                    "interactions": "hover-only",
                     "type": "line",
                     "layout": {
                         "visibility": "none"
@@ -107,6 +111,7 @@
                     "name": "Ceremonial counties",
                     "source": "gb-counties-source",
                     "source-layer": "counties_gb",
+                    "interactions": "hover-only",
                     "type": "fill",
                     "layout": {
                         "visibility": "visible"
@@ -126,6 +131,7 @@
                     "name": "Ceremonial counties",
                     "source": "gb-counties-source",
                     "source-layer": "counties_gb",
+                    "interactions": "hover-only",
                     "type": "line",
                     "layout": {
                         "visibility": "visible"
@@ -141,6 +147,7 @@
                     "name": "Ceremonial counties",
                     "source": "ni-counties-source",
                     "source-layer": "counties_ni",
+                    "interactions": "hover-only",
                     "type": "fill",
                     "layout": {
                         "visibility": "visible"
@@ -160,6 +167,7 @@
                     "name": "Ceremonial counties",
                     "source": "ni-counties-source",
                     "source-layer": "counties_ni",
+                    "interactions": "hover-only",
                     "type": "line",
                     "layout": {
                         "visibility": "visible"

@@ -152,23 +152,34 @@ class MapHandler_Cesium extends MapHandler {
      * @param event mouse event
      */
     public handleClick(event) {
-        if(!MapHandler.ALLOW_CLICKS) return;
-
         // Get the feature at the click point
         let self = this;
         CesiumUtils.getFeature(event, function(feature) {
             window.currentFeature = feature;
 
+            // Try to get the layer object for the feature
+            let layerID = feature?.tileset?.layerID;
+            if(layerID == null) layerID = feature?.imageryLayer?.imageryProvider?.layerID
+            
+            // Prevent clicks if the layer is present and denys them
+            let layer = Manager.DATA_STORE.getLayerWithID(layerID);
+            let clickable = (layer == null) || (layer.interactions === "all" || layer.interactions === "click-only");
+            if (!clickable) {
+                return;
+            }
+
+            // Get feature properties
             if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
                 // 2D WMS feature
                 let properties = {...feature.data.properties};
                 self.manager.showFeature(feature, properties);
+
             } else {
                 // 3D feature
                 let properties = {};
                 let contentMetadata = feature?.content?.metadata;
     
-                // Transform properties for compatability with manager code
+                // Transform properties for compatibility with manager code
                 if (Cesium.defined(contentMetadata)) {
                     properties = {...contentMetadata["_properties"]};
 
@@ -197,12 +208,29 @@ class MapHandler_Cesium extends MapHandler {
      * @param event mouse event
      */
     private handleMouse(event) {
-        if(!MapHandler.ALLOW_CLICKS) return;
         let metaBox = document.getElementById("cesiumMetaBox");
         metaBox.style.display = "none";
+        document.getElementById("map").style.cursor = "default";
 
         // Get the feature at the click point
         CesiumUtils.getFeature(event, function(feature) {
+
+            // Try to get the layer object for the feature
+            let layerID = feature?.tileset?.layerID;
+            if(layerID == null) layerID = feature?.imageryLayer?.imageryProvider?.layerID
+            let layer = Manager.DATA_STORE.getLayerWithID(layerID);
+
+            // Check if clicking is allowed on this layer
+            let clickable = (layer == null) || (layer.interactions === "all" || layer.interactions === "click-only");
+            if(clickable) {
+                document.getElementById("map").style.cursor = "pointer";
+            }
+
+            // Check if hover effects are allowed
+            let hoverable = (layer == null) || (layer.interactions === "all" || layer.interactions === "hover-only");
+            if(!hoverable) {
+                return;
+            }
 
             if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
                 // 2D WMS feature
@@ -221,11 +249,21 @@ class MapHandler_Cesium extends MapHandler {
                 let properties = {};
                 let contentMetadata = feature?.content?.metadata;
     
-                // Transform properties for compatability with manager code
+                // Transform properties for compatibility with manager code
                 if (Cesium.defined(contentMetadata)) {
                     properties = {...contentMetadata["_properties"]};
+
+                } else if(typeof feature.getPropertyIds === "function") {
+                    // No metadata refined, try to get properties via id
+                    let ids = feature.getPropertyIds();
+                    if(ids != null) {
+                        ids.forEach(id => {
+                            properties[id] = feature.getProperty(id);
+                        });
+                    }
                 } else {
-                    // Do nothing, there's no data?
+                    // Unknown data type
+                    return;
                 }
 
                 let name = getName(properties);

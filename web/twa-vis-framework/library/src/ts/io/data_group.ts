@@ -131,6 +131,14 @@ class DataGroup {
                 break;
             }
            
+            if(node.hasOwnProperty("interactions")) {
+                // Store the level of acceptable mouse interactions
+                layer.interactions = node.interactions;
+            } else if(node.hasOwnProperty("clickable")) {
+                // Support older format of this property
+                layer.interactions = (node.clickable) ? "all" : "none";
+            }
+           
             this.dataLayers.push(layer);
         }
     }
