@@ -61,7 +61,9 @@ public class OSMAgent extends JPSAgent {
             usageMatcher.copyFromOSM(pointTable, polygonTable, usageTable);
 
             // match buildings without OSM usage with land use
-            shareCalculator.updateLandUse(usageTable, landUseTable);
+            if (!landUseTable.isEmpty()) {
+                shareCalculator.updateLandUse(usageTable, landUseTable);
+            }
 
             // assign OntoBuiltEnv:PropertyUsage and calculate usage share for mixed usage buildings
             shareCalculator.updateUsageShare(usageTable);
