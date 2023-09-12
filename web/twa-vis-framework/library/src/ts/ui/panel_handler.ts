@@ -19,11 +19,26 @@ class PanelHandler {
     timeseriesHandler: TimeseriesHandler;
 
     /**
+ * Optional callbacks to trigger once a feature selection is cleared.
+ */
+    public unselectionCallbacks = [];
+
+    /**
      * Constructor
      */
     constructor(manager) {
         this.manager = manager;
         this.timeseriesHandler = new TimeseriesHandler();
+    }
+
+    /**
+     * Adds a callback that will fire with no parameters once the
+     * current feature selection is cleared.
+     * 
+     * @param unselectionCallback callback function.
+     */
+    public addUnselectionCallback(unselectionCallback) {
+        this.unselectionCallbacks.push(unselectionCallback);
     }
 
     /**
@@ -109,7 +124,16 @@ class PanelHandler {
         // @ts-ignore
         $("#sidePanelInner").tabs("option", "active", 0);
 
-        if(Manager.PROVIDER === MapProvider.CESIUM) CesiumUtils.clearSilhouette();
+        if(Manager.PROVIDER === MapProvider.MAPBOX) {
+            MapboxUtils.updateStyleFilterInjections(null, null);
+        } else if(Manager.PROVIDER === MapProvider.CESIUM) {
+            CesiumUtils.clearSilhouette();
+        }
+
+        // Fire unselection callbacks
+        this.unselectionCallbacks.forEach(callback => {
+            callback();
+        });
 	}
 
     /**

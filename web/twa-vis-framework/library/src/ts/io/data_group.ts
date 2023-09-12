@@ -93,11 +93,15 @@ class DataGroup {
             switch(Manager.PROVIDER) {
                 case MapProvider.MAPBOX:
                     layer = new MapboxLayer(layerID, node["name"], source);
+                    layer.definition = node;
 
                     // Store display order if present
                     if(node.hasOwnProperty("order")) {
                         layer.order = node["order"];
                     }
+
+                    // Cache and injectable properties
+                    layer.cacheInjectableProperties();
 
                     // Register this layer to this connected stack
                     if(!Manager.STACK_LAYERS.hasOwnProperty(stack)) {
@@ -108,7 +112,8 @@ class DataGroup {
     
                 case MapProvider.CESIUM:
                     layer = new CesiumLayer(layerID, node["name"], source);
-
+                    layer.definition = node;
+                    
                     // Store display order if present
                     if(node.hasOwnProperty("order")) {
                         layer.order = node["order"];
@@ -126,7 +131,6 @@ class DataGroup {
                 break;
             }
            
-            layer.definition = node;
             this.dataLayers.push(layer);
         }
     }

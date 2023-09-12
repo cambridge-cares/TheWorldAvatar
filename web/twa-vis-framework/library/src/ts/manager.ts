@@ -54,6 +54,16 @@ class Manager {
     private inFullscreen: boolean = false;
     
     /**
+     * Optional callbacks to trigger once a singluar feature has been selected.
+     */
+    public selectionCallbacks = [];
+
+    /**
+     * Optional callbacks to trigger once a feature selection is cleared.
+     */
+    public unselectionCallbacks = [];
+
+    /**
      * Optional callback to trigger once data definitions have been loaded.
      */
     public dataLoadCallback;
@@ -158,36 +168,35 @@ class Manager {
 
     }
 
-    private toggleFullscreen() {
-        if(this.inFullscreen) {
-            // Disable full screen
-            document.getElementById("controlsContainer").style.display = "block";
-            document.getElementById("sidePanel").style.display = "block";
+    /**
+     * Adds a callback that will fire with the selected feature once a 
+     * singular feature has been selected.
+     * 
+     * @param selectionCallback callback function.
+     */
+    public addSelectionCallback(selectionCallback) {
+        this.selectionCallbacks.push(selectionCallback);
+    }
 
-            let sidePanel =  document.getElementById("sidePanel");
+    /**
+     * Adds a callback that will fire with no parameters once the
+     * current feature selection is cleared.
+     * 
+     * @param unselectionCallback callback function.
+     */
+    public addUnselectionCallback(unselectionCallback) {
+        this.unselectionCallbacks.push(unselectionCallback);
+        this.panelHandler.addUnselectionCallback(unselectionCallback);
+    }
 
-            if(sidePanel.classList.contains("large")) {
-                document.getElementById("map").style.width = "100%";
-            } else if(sidePanel.classList.contains("collapsed")) {
-                document.getElementById("map").style.width = "calc(100% - 28px)";
-            } else {
-                document.getElementById("map").style.width = "calc(100% - 500px)";
-            }
-
-            this.inFullscreen = false;
-        } else {
-            // Enable full scrren
-            document.getElementById("controlsContainer").style.display = "none";
-            document.getElementById("sidePanel").style.display = "none";
-            document.getElementById("map").style.width = "100%";
-            this.inFullscreen = true;
-        }
-
-        if(Manager.PROVIDER === MapProvider.MAPBOX) {
-            MapHandler.MAP.resize();
-        } else {
-            MapHandler.MAP.scene.requestRender();
-        }
+    /**
+     * Adds a callback that will fire with two arrays of layerIDs (visible, hidden)
+     * when any selection state in the layer tree changes.
+     * 
+     * @param treeSelectionCallback callback function.
+     */
+    public addTreeSelectionCallback(treeSelectionCallback) {
+        this.controlHandler.addTreeSelectionCallback(treeSelectionCallback);
     }
 
     /**
@@ -382,6 +391,11 @@ class Manager {
         
         // Store selected feature
         window.currentFeature = feature;
+
+        // Fire selection callbacks
+        this.selectionCallbacks.forEach(callback => {
+            callback(feature);
+        });
     }
 
     /**

@@ -109,9 +109,9 @@ class MapHandler_Mapbox extends MapHandler {
                 // Click on single feature
                 this.manager.showFeature(feature);
 
-                // Update the layer filters based on the new selection
+                // Update the layer properties based on the new selection
                 if(feature?.properties?.iri) {
-                    MapboxUtils.updateFilters(feature.properties.iri);
+                    MapboxUtils.updateStyleFilterInjections(null, feature?.properties?.iri);
                 }
             }
         }
@@ -217,6 +217,9 @@ class MapHandler_Mapbox extends MapHandler {
             MapHandler.MAP.getCanvas().style.cursor = '';
             if(MapHandler_Mapbox.POPUP !== null) MapHandler_Mapbox.POPUP.remove();
 
+            // Update the layer properties based on the new selection
+            MapboxUtils.updateStyleFilterInjections(null, MapboxUtils.SELECTED_IRI);
+
         } else if(features.length > 0) {
             // Mouse over single feature
             let feature = features[0];
@@ -231,8 +234,13 @@ class MapHandler_Mapbox extends MapHandler {
             // Change cursor
             MapHandler.MAP.getCanvas().style.cursor = 'pointer';
 
-            if(layer != null && layer instanceof MapboxLayer) {
-                if(feature !== null) MapboxUtils.showPopup(event, feature);
+            if(layer != null && layer instanceof MapboxLayer && feature != null) {
+
+                // Update the layer properties based on the new selection
+                MapboxUtils.updateStyleFilterInjections(feature?.properties?.iri, MapboxUtils.SELECTED_IRI);
+
+                // Show the popup
+                MapboxUtils.showPopup(event, feature);
             } 
         } 
     }
