@@ -37,6 +37,7 @@ This agent requires the following tools, which **MUST** run on the same stack. P
   - A name must be appended to all buildings, facilities, rooms, assets, sensors, and measures/dataIRIs through the `Instance rdfs:label "name"^^xsd:string` triple.
   - All sensor measures are attached according to the [OntoDevice](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodevice) ontology.
   - Units can be included into the dashboard through the `MeasureInstance om:hasUnit UnitInstance. UnitInstance om:symbol "symbols"^^xsd:string.` triples but are **OPTIONAL**.
+  - Only temperature and relative humidity can be currently retrieved for any room measures. Do note to include a min and max threshold triples for the facility holding these rooms. 
 
 #### 1.2 Docker Deployment
 **TEST ENVIRONMENT**
