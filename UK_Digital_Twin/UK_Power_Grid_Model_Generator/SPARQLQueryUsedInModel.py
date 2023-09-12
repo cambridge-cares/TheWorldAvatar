@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 19 April 2022        #
+# Last Update Date: 12 Sept 2023         #
 ##########################################
 
 """This module lists out the SPARQL queries used in generating the UK Grid Model A-boxes"""
@@ -34,8 +34,8 @@ allCapacity = []
 
 ####Bus information query####
 def queryBusTopologicalInformation(topologyNodeIRI, endpoint):
-    if endpoint == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['label']):
-        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['endpoint_iri'])
+    if endpoint == str(EndPointConfigAndBlazegraphRepoLabel.UKPowerSystemBaseWorld['label']):
+        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.UKPowerSystemBaseWorld['endpoint_iri'])
     elif parse(endpoint, rule='IRI'):
         endPointIRI = endpoint
     else:
@@ -79,8 +79,8 @@ def queryBusTopologicalInformation(topologyNodeIRI, endpoint):
     return int(len(res)), res 
 
 def queryBusGPSLocation(topologyNodeIRI, endpoint):
-    if endpoint == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['label']):
-        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['endpoint_iri'])
+    if endpoint == str(EndPointConfigAndBlazegraphRepoLabel.UKPowerSystemBaseWorld['label']):
+        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.UKPowerSystemBaseWorld['endpoint_iri'])
     elif parse(endpoint, rule='IRI'):
         endPointIRI = endpoint
     else:
@@ -114,8 +114,8 @@ def queryBusGPSLocation(topologyNodeIRI, endpoint):
 
 ####EGen information query####
 def queryEGenInfo(topologyNodeIRI, endPoint, eliminateClosedPlantIRIList:list):
-    if endPoint == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['label']):
-        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['endpoint_iri'])
+    if endPoint == str(EndPointConfigAndBlazegraphRepoLabel.UKPowerSystemBaseWorld['label']):
+        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.UKPowerSystemBaseWorld['endpoint_iri'])
     elif parse(endPoint, rule='IRI'):
         endPointIRI = endPoint
     else:
@@ -214,8 +214,8 @@ def queryEGenInfo(topologyNodeIRI, endPoint, eliminateClosedPlantIRIList:list):
     
 # query the total electricity consumption of a UK official region 
 def queryTotalElecConsumptionofGBOrUK(endPoint_label, topologyNodeIRI, startTime_of_EnergyConsumption):
-    if endPoint_label == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['label']):
-        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['endpoint_iri'])
+    if endPoint_label == str(EndPointConfigAndBlazegraphRepoLabel.UKPowerSystemBaseWorld['label']):
+        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.UKPowerSystemBaseWorld['endpoint_iri'])
     elif parse(endPoint_label, rule='IRI'):
         endPointIRI = endPoint_label
     else:
@@ -330,7 +330,7 @@ def queryPowerSystemLocation(endpoint_label, topologyNodeIRI):
 # Query the total consumption of the regions
 ## `ifQueryONSOrigionalEndpoint` determines the endpoint of querying ONS data. 
 ## If `ifQueryONSOrigionalEndpoint` set as `True`, the original ONS endpoint is used; when set as `False`, the subset of ONS deployed on CMCL Blazegraph is used. 
-def queryElectricityConsumption_Region(startTime_of_EnergyConsumption, UKDigitalTwinEndPoint_iri, ONSEndPoint_iri, ifQueryONSOrigionalEndpoint:bool = False):
+def queryElectricityConsumption_Region(startTime_of_EnergyConsumption, UKPowerSystemBaseWorldEndPoint_iri, ONSEndPoint_iri, ifQueryONSOrigionalEndpoint:bool = False):
     if ONSEndPoint_iri == str(EndPointConfigAndBlazegraphRepoLabel.ONS['label']):
         ONSEndPoint_iri = str(EndPointConfigAndBlazegraphRepoLabel.ONS['endpoint_iri'])
     elif not parse(ONSEndPoint_iri, rule='IRI'):
@@ -366,7 +366,7 @@ def queryElectricityConsumption_Region(startTime_of_EnergyConsumption, UKDigital
         }"""%(startTime_of_EnergyConsumption, ONSEndPoint_iri)
 
         print('...starts queryElectricityConsumption_Region...')   
-        res = json.loads(performQuery(UKDigitalTwinEndPoint_iri, queryStr))     
+        res = json.loads(performQuery(UKPowerSystemBaseWorldEndPoint_iri, queryStr))     
         print('...queryElectricityConsumption_Region is done...') 
     else:
         queryStr = """
@@ -398,7 +398,7 @@ def queryElectricityConsumption_Region(startTime_of_EnergyConsumption, UKDigital
         """% (startTime_of_EnergyConsumption)
      
         print('...starts queryElectricityConsumption_Region...')   
-        res = json.loads(performFederatedQuery(queryStr, [UKDigitalTwinEndPoint_iri, ONSEndPoint_iri]))
+        res = json.loads(performFederatedQuery(queryStr, [UKPowerSystemBaseWorldEndPoint_iri, ONSEndPoint_iri]))
         print('...queryElectricityConsumption_Region is done...') 
 
     for r in res:
@@ -409,9 +409,9 @@ def queryElectricityConsumption_Region(startTime_of_EnergyConsumption, UKDigital
     return res                  
          
 # query the total electricity consumption of each address area
-def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, UKDigitalTwinEndPoint_iri, ONSEndPoint_iri):    
-    if ONSEndPoint_iri == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['label']):
-        ONSEndPoint_iri = str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['endpoint_iri'])
+def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, UKPowerSystemBaseWorldEndPoint_iri, ONSEndPoint_iri):    
+    if ONSEndPoint_iri == str(EndPointConfigAndBlazegraphRepoLabel.UKPowerSystemBaseWorld['label']):
+        ONSEndPoint_iri = str(EndPointConfigAndBlazegraphRepoLabel.UKPowerSystemBaseWorld['endpoint_iri'])
     elif not parse(ONSEndPoint_iri, rule='IRI'):
         raiseExceptions("!!!!Please provide a valid query endpoint!!!!")
 
@@ -454,7 +454,7 @@ def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, UKDigi
     """% (startTime_of_EnergyConsumption)
     
     print('...Query ElectricityConsumption_LocalArea...')
-    res = json.loads(performFederatedQuery(queryStr, [UKDigitalTwinEndPoint_iri, ONSEndPoint_iri])) 
+    res = json.loads(performFederatedQuery(queryStr, [UKPowerSystemBaseWorldEndPoint_iri, ONSEndPoint_iri])) 
     print('...Query ElectricityConsumption_LocalArea is done...')
 
     toBeDeletedIndex = []      
@@ -527,8 +527,8 @@ def branchGeometryQueryCreator(topologyNodeIRI, branch_voltage_level):
 # queryELineTopologicalInformation is developed to perform the query for branch topological information and its geometry information
 def queryELineTopologicalInformation(topologyNodeIRI, endpoint):
     #  label = "UK_Topology_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch"
-    if endpoint == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['label']):
-        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['endpoint_iri'])
+    if endpoint == str(EndPointConfigAndBlazegraphRepoLabel.UKPowerSystemBaseWorld['label']):
+        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.UKPowerSystemBaseWorld['endpoint_iri'])
     elif parse(endpoint, rule='IRI'):
         endPointIRI = endpoint
     else:
@@ -567,27 +567,3 @@ def queryELineTopologicalInformation(topologyNodeIRI, endpoint):
             if '\"^^' in  r[key] :
                 r[key] = (r[key].split('\"^^')[0]).replace('\"','') 
     return res, branch_voltage_level 
-
-if __name__ == '__main__': 
-    # ONS_json = "http://statistics.data.gov.uk/sparql.json"
-    ONS_json = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ONS_subset/sparql"
-    ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql"
-    ukdigitaltwinendpointLable = "ukdigitaltwin_test2"
-    topologyNodeIRI = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_6017554a-98bb-4896-bc21-e455cb6b3958" 
-    # res = queryBusTopologicalInformation(topologyNodeIRI, "http://localhost:3838/blazegraph/namespace/ukdigitaltwin_test1/sparql")
-    #res = queryTotalElecConsumptionofGBOrUK( ukdigitaltwinendpointLable, topologyNodeIRI, "2017-01-31")
-    #res = queryPowerSystemLocation(ukdigitaltwinendpointLable, topologyNodeIRI)
-
-    # res = queryRegionalElecConsumption('ukdigitaltwin', 10, "2017-01-31", None, False)
-    res = queryElectricityConsumption_Region("2017-01-31", ukdigitaltwinendpoint, ONS_json, False)
-    # res = queryElectricityConsumption_LocalArea("2017-01-31", ukdigitaltwinendpoint, ONS_json)
-    # res, a = queryELineTopologicalInformation(29, 99, 'ukdigitaltwin', None, False)
-    # res, a = queryELineTopologicalInformation(10, 14, 'ukdigitaltwin', None, False)
-    # res = branchGeometryQueryCreator('10', ['275kV', '400kV'])
-    
-    # res = queryEBusandRegionalDemand(10, None, False, "ukdigitaltwin")
-    # geo = res[0]['Geo_InfoList']
-    #print(geo.geom_type)   
-    
-    print(res)
-    # print(len(res)) 

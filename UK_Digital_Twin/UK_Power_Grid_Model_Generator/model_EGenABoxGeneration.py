@@ -21,7 +21,6 @@ from UK_Digital_Twin_Package import UKDigitalTwin as UKDT
 from UK_Digital_Twin_Package import UKDigitalTwinTBox as T_BOX
 from UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
 from UK_Digital_Twin_Package import UKPowerPlant as UKpp
-from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
 from UK_Digital_Twin_Package import UKEnergyConsumption as UKec
 from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
@@ -57,34 +56,12 @@ ukpp = UKpp.UKPowerPlant()
 """Create an object of Class CO2FactorAndGenCostFactor"""
 ukmf = ModelFactor.ModelFactor()
 
-"""Create an object of Class UKPowerGridModel"""
-# uk_egen_model = UK_PG.UKEGenModel()
-
-"""Create an object of Class UKPowerGridTopology"""
-uk_topo = UK_Topo.UKPowerGridTopology()
-
 """Create an object of Class UKEnergyConsumption"""
 ukec = UKec.UKEnergyConsumption()
 
 """Blazegraph UK digital tiwn"""
-endpoint_label = endpointList.ukdigitaltwin['label']
-endpoint_iri = endpointList.ukdigitaltwin['queryendpoint_iri']
-
-"""Sleepycat storage path"""
-topoAndConsumpPath_Sleepycat = uk_topo.SleepycatStoragePath
-powerPlant_Sleepycat = ukpp.SleepycatStoragePath
-userSpecifiePath_Sleepycat = None # user specified path
-userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
-
-"""OWL file storage path"""
-# defaultStoredPath = uk_egen_model.StoreGeneratedOWLs # default path
-
-"""User specified folder path"""
-filepath = None
-userSpecified = False
-
-"""EGen Conjunctive graph identifier"""
-model_EGen_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EGen"
+endpoint_label = endpointList.UKPowerSystemBaseWorld['label']
+endpoint_iri = endpointList.UKPowerSystemBaseWorld['queryendpoint_iri']
 
 """Global variables EGenInfo array and capa_demand_ratio"""
 EGenInfo = []
@@ -94,7 +71,7 @@ number_of_localOWLFiles = 1
 ### Functions ### 
 """Main function: create the named graph Model_EGen and their sub graphs each EGen"""
 def createModel_EGen(numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSystemNodetimeStamp, AgentIRI, OrderedBusNodeIRIList, derivationClient, updateEndpointIRI, startTime_of_EnergyConsumption, \
-    OPFOrPF:bool, CarbonTax, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, splitCharacter, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"):
+    OPFOrPF:bool, CarbonTax, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, splitCharacter, KGFileStoragePath, updateLocalOWLFile = True, storeType = "default"):
     
     """T-Box URI"""
     if urllib.request.urlopen("http://www.theworldavatar.com/ontology/").getcode() == 200:
@@ -111,37 +88,6 @@ def createModel_EGen(numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSy
     ## TODO: the UKEGenModel initialisation function has changed 
     uk_egen_model = UK_PG.UKEGenModel(numOfBus)
 
-    ## Set up the default storage path
-    defaultStoredPath = uk_egen_model.StoreGeneratedOWLs
-    defaultPath_Sleepycat = uk_egen_model.SleepycatStoragePath
-    filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
-    if filepath == None:
-        return   
-    store = LocalGraphStore(storeType)
-    global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, capa_demand_ratio, number_of_localOWLFiles
-    if isinstance(store, Sleepycat):
-        print('The store is Sleepycat')
-        cg_model_EGen = ConjunctiveGraph(store=store, identifier = model_EGen_cg_id)
-        if userSpecifiePath_Sleepycat == None and userSpecified_Sleepycat:
-            print('****Needs user to specify a Sleepycat storage path****')
-            userSpecifiePath_Sleepycat = selectStoragePath()
-            userSpecifiePath_Sleepycat_ = userSpecifiePath_Sleepycat + '\\' + 'ConjunctiveGraph_UKPowerGrid_EGen'
-            sl = cg_model_EGen.open(userSpecifiePath_Sleepycat_, create = False) 
-            
-        elif os.path.exists(defaultPath_Sleepycat) and not userSpecified_Sleepycat:
-            print('****Non user specified Sleepycat storage path, will use the default storage path****')
-            sl = cg_model_EGen.open(defaultPath_Sleepycat, create = False)        
-        else:
-            print('****Create Sleepycat store with its default path****')
-            sl = cg_model_EGen.open(defaultPath_Sleepycat, create = True)   
-        
-        if sl == NO_STORE:
-        # There is no underlying Sleepycat infrastructure, so create it
-            cg_model_EGen.open(defaultPath_Sleepycat, create = True)
-        else:
-            assert sl == VALID_STORE, "The underlying sleepycat store is corrupt"
-    else:
-        print('Store is IOMemery')        
     
     ## calcualte the ratio between total power plant capacity and the total demand; 
         ## 1. If PF, this ratio is used to assign the generator output;
@@ -163,7 +109,7 @@ def createModel_EGen(numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSy
     while number_of_localOWLFiles <= totalFileNumber: 
         ## create a named graph
         ontologyIRI = dt.baseURL + SLASH + dt.topNode + SLASH + str(uuid.uuid4())
-        g = Graph(store = store, identifier = URIRef(ontologyIRI))
+        g = Graph(store = 'default', identifier = URIRef(ontologyIRI))
         ## Import T-boxes
         g.set((g.identifier, RDF.type, OWL_NS['Ontology']))
         g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontocape_mathematical_model)))
@@ -314,10 +260,10 @@ def createModel_EGen(numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSy
         ## generate/update OWL files
         if updateLocalOWLFile == True: # and (counter == 500 or number_of_localOWLFiles == totalFileNumber): 
             ## Store/update the generated owl files      
-            if filepath[-2:] != '\\': 
-                filepath_ = filepath + '\\' + 'GenModel_' + str(numOfBus) + '_Bus_Grid_' + str(number_of_localOWLFiles) + TTL
+            if KGFileStoragePath[-2:] != '/': 
+                filepath_ = KGFileStoragePath + '/' + 'GenModel_' + str(numOfBus) + '_Bus_Grid_' + str(number_of_localOWLFiles) + TTL
             else:
-                filepath_ = filepath + 'GenModel_' + str(numOfBus) + '_Bus_Grid_' + str(number_of_localOWLFiles) + TTL 
+                filepath_ = KGFileStoragePath + 'GenModel_' + str(numOfBus) + '_Bus_Grid_' + str(number_of_localOWLFiles) + TTL 
             storeGeneratedOWLs(g, filepath_)
             print(filepath_)
 
@@ -327,10 +273,7 @@ def createModel_EGen(numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSy
             # sparql_client.uploadOntology(filepath_)
             ## increase the number of number_of_localOWLFiles
             number_of_localOWLFiles += 1
-    
-    print("################FINISH createModel_EGen#################")
-    if isinstance(store, Sleepycat):  
-        cg_model_EGen.close()       
+      
     return
 
 def initialiseEGenModelVar(EGen_Model, egen, OrderedBusNodeIRIList, demand_capa_ratio, windOutputRatio, solarOutputRatio):
@@ -394,29 +337,3 @@ def demandAndCapacityRatioCalculator(EGenInfo, topologyNodeIRI, startTime_of_Ene
     demand_capa_ratio = total_demand/sum_of_capa
     print('demand_capa_ratio is: ', demand_capa_ratio)
     return demand_capa_ratio
-
-if __name__ == '__main__':    
-    jpsBaseLibGW = JpsBaseLib()
-    jpsBaseLibGW.launchGateway()
-
-    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-    jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
-    jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.derivation.*")
-
-    endPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test1/sparql"
-    storeClient = jpsBaseLib_view.RemoteStoreClient(endPointURL, endPointURL)
-
-    topologyNodeIRI_10Bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_b22aaffa-fd51-4643-98a3-ff72ee04e21e" 
-    powerSystemModelIRI = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerSystemModel_22fe8504-f3bb-403c-9363-34b258d59712"
-    AgentIRI = "http://www.example.com/triplestore/agents/Service__XXXAgent#Service"
-
-    ## set up the derivationInstanceBaseURL
-    derivationInstanceBaseURL = dt.baseURL + '/' + dt.topNode + '/'
-    ## initialise the derivationClient
-    derivationClient = jpsBaseLib_view.DerivationClient(storeClient, derivationInstanceBaseURL)
-
-    OrderedBusNodeIRIList= ['http://www.theworldavatar.com/kb/ontopowsys/BusNode_d6046ef2-6909-4f20-808f-cd9aa01c8ae5', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_ebace1f4-7d3a-44f6-980e-a4b844de670b', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_1f3c4462-3472-4949-bffb-eae7d3135591', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_f17335d2-53f6-4044-9d09-c3d9438c0950', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_c4d7dcca-a7f5-4887-a460-31706ab7ec9c', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_024c0566-d9f0-497d-955e-f7f4e55d4296', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_2d76797b-c638-460e-b73c-769e29785466', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_55285d5a-1d0e-4b1f-8713-246d601671e5', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_6202e767-3077-4910-9cb7-a888e80af788', 'http://www.theworldavatar.com/kb/ontopowsys/BusNode_84f6905c-d4cb-409f-861f-ea66fe25ddd0']
-
-    createModel_EGen(10, topologyNodeIRI_10Bus, powerSystemModelIRI, "2022-06-15T16:24:29.371941+00:00", AgentIRI, OrderedBusNodeIRIList, derivationClient, endPointURL,\
-        "2017-01-31", True, 18, 2, 2, ' ', None, True, 'default')
-    print('***********************Terminated***********************')

@@ -186,10 +186,10 @@ class OptimalPowerFlowAnalysis:
         ## -- Local objectives container --##
         self.ObjectSet = locals()     
         ##--1. specify the query/update endpoint information--##
-        self.queryUKDigitalTwinEndpointLabel = endpointList.ukdigitaltwin['label'] ## ukdigitaltwin
-        self.queryUKDigitalTwinEndpointIRI = endpointList.ukdigitaltwin['endpoint_iri']
-        self.geospatialQueryEndpointLabel = endpointList.ukdigitaltwin_pd['label'] ## population: ukdigitaltwin_pd
-        self.geospatialQueryEndpointIRI = endpointList.ukdigitaltwin_pd['endpoint_iri']
+        self.queryUKDigitalTwinEndpointLabel = endpointList.UKPowerSystemBaseWorld['label'] ## ukdigitaltwin
+        self.queryUKDigitalTwinEndpointIRI = endpointList.UKPowerSystemBaseWorld['endpoint_iri']
+        self.geospatialQueryEndpointLabel = endpointList.UKPopulationData['label'] ## population: ukdigitaltwin_pd
+        self.geospatialQueryEndpointIRI = endpointList.UKPopulationData['endpoint_iri']
         self.OWLUpdateEndPointURL = OWLUpdateEndPointURL ## derivation
         self.endPointUser = endPointUser
         self.endPointPassWord = endPointPassWord

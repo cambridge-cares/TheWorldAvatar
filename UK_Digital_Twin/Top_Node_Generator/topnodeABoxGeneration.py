@@ -116,8 +116,8 @@ topology_Endpoint = uk_topo.endpoint['lable']
 gridModel_Endpoint = UK_PG.endpoint['lable']
 
 """Blazegraph UK digital tiwn"""
-endpoint_label = endpointList.ukdigitaltwin['lable']
-endpoint_url = endpointList.ukdigitaltwin['queryendpoint_iri']
+endpoint_label = endpointList.UKPowerSystemBaseWorld['lable']
+endpoint_url = endpointList.UKPowerSystemBaseWorld['queryendpoint_iri']
 
 """UK digital twin top node Conjunctive graph identifier"""
 ukdt_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin"

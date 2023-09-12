@@ -52,8 +52,8 @@ t_box = T_BOX.UKDigitalTwinTBox()
 ukpp = UKpp.UKPowerPlant()
 
 """Blazegraph UK digital tiwn"""
-endpoint_label = endpointList.ukdigitaltwin['label']
-endpoint_iri = endpointList.ukdigitaltwin['queryendpoint_iri']
+endpoint_label = endpointList.UKPowerSystemBaseWorld['label']
+endpoint_iri = endpointList.UKPowerSystemBaseWorld['queryendpoint_iri']
 
 """Sleepycat storage path"""
 userSpecifiePath_Sleepycat = None # user specified path

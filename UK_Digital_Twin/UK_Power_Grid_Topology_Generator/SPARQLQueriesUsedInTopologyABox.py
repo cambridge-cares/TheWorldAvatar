@@ -334,9 +334,9 @@ def queryEnglandAndWalesAndScotlandBounderies(ONS_Endpoint_label):
     return EngAndWalesBound, EngBound, WalesBound, ScotlandBound           
 
    
-   
-   
-   
+# if __name__ == '__main__':
+#    res = queryGBOrNIBoundary(EndPointConfigAndBlazegraphRepoLabel.ONS['endpoint_iri'])
+#    print(res)
    
    
    

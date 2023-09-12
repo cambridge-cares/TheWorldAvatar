@@ -23,12 +23,3 @@ def demandingAreaCentriodFinder(queryEndpoint_iri, startTime_of_EnergyConsumptio
             lat = ec['Geo_InfoList'].centroid.y
             ec['Geo_InfoList'] = [lat, lon] 
     return res_queryElectricityConsumption_LocalArea
-
-
-if __name__ == '__main__':
-    ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql"
-    res = demandingAreaCentriodFinder(ukdigitaltwinendpoint, '2017-01-31', 'demandingAndCentroid.py')
-    print(len(res))
-    r1 = [res[0:50], res[50:100], res[100:150], res[150:200], res[200:250], res[250:300], res[300:350], res[350:]]
-    for r in r1:
-        print(r)

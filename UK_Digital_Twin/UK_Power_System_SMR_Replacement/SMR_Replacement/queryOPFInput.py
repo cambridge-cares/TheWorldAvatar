@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 04 August 2023       #
+# Last Update Date: 11 Sept 2023         #
 ##########################################
 
 import os, sys, json
@@ -10,8 +10,6 @@ from UK_Digital_Twin_Package.queryInterface import performQuery, performFederate
 from UK_Digital_Twin_Package.OWLfileStorer import readFile
 from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
 from shapely.wkt import loads
-import urllib.parse
-import requests
 from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel
 from rfc3987 import parse
 from logging import raiseExceptions
@@ -21,6 +19,71 @@ ukmf = ModelFactor.ModelFactor()
 
 """Model Parameter Array"""
 modelFactorArrays = readFile(ukmf.CO2EmissionFactorAndCostFactor)
+
+def queryEliminatePowerPlant(plantNameList:list, endpoint):
+    ppList = []
+    for ppName in plantNameList:
+        queryStr = """
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
+        SELECT DISTINCT ?powerPlantIRI
+        WHERE
+        {
+        ?powerPlantIRI rdfs:label "%s" .
+        ?powerPlantIRI rdf:type ontoeip_powerplant:PowerPlant .
+        }
+        """%ppName
+
+        print('...starts queryEliminatePowerPlant...')
+        ppList.append(json.loads(performQuery(endpoint, queryStr))[0]['powerPlantIRI'])
+        print('...finishes queryEliminatePowerPlant...')
+    return ppList
+
+def queryTopologyIRI(numOfBus, numOfBranch, endpoint):
+
+    label = "UK_Topology_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch"
+
+    queryStr = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+    SELECT DISTINCT ?topologyIRI
+    WHERE
+    {
+    ?topologyIRI rdfs:label "%s" .
+    ?topologyIRI rdf:type ontoenergysystem:PowerGridTopology .
+    }
+    """% label
+
+    print('...starts queryTopologyIRI...')
+    res = json.loads(performQuery(endpoint, queryStr))[0]['topologyIRI']
+    print('...finishes queryTopologyIRI...')
+    return res
+
+def querySlackBusNode(slackBusLocation:str, endpoint):
+
+    queryStr = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+    SELECT DISTINCT ?slackBusNodeIRI ?latlon
+    WHERE
+    {
+    ?slackBusNodeIRI ontoenergysystem:hasWGS84LatitudeLongitude ?latlon .
+    ?slackBusNodeIRI rdf:type ontopowsys_PowSysRealization:BusNode .
+    }
+    """
+
+    print('...starts querySlackBusNode...')
+    res = json.loads(performQuery(endpoint, queryStr))
+    print('...finishes querySlackBusNode...')
+    for r in res:
+        if r['latlon'] in slackBusLocation:
+            slackBus = r['slackBusNodeIRI']
+            break
+    return slackBus
 
 def queryGeneratorToBeRetrofitted_AllPowerPlant(topologyNodeIRI:str, endPoint_label):
     results = []
@@ -205,8 +268,8 @@ def queryGeneratorToBeRetrofitted_SelectedGenerator(retrofitGenerator:list, endP
     return results 
 
 def queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofitGenerationOrFuelType:list, topologyNodeIRI:str, endPoint_label):  
-    if endPoint_label == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['label']):
-        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['endpoint_iri'])
+    if endPoint_label == str(EndPointConfigAndBlazegraphRepoLabel.UKPowerSystemBaseWorld['label']):
+        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.UKPowerSystemBaseWorld['endpoint_iri'])
     elif parse(endPoint_label, rule='IRI'):
         endPointIRI = endPoint_label
     else:
@@ -429,7 +492,7 @@ if __name__ == '__main__':
 
     }GROUP BY ?PowerPlant_LACode
     """
-    res = json.loads(performFederatedQuery(qsrt, ["http://statistics.data.gov.uk/sparql.json","http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test2/sparql"]))
+    res = json.loads(performFederatedQuery(qsrt, ["http://statistics.data.gov.uk/sparql.json","http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/UKPowerSystemBaseWorld_test2/sparql"]))
 
 
     
@@ -437,7 +500,7 @@ if __name__ == '__main__':
     ocgt = "http://www.theworldavatar.com/kb/ontoeip/OpenCycleGasTurbine"
     
     topologyNodeIRI_29Bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_6017554a-98bb-4896-bc21-e455cb6b3958" 
-    queryEndpointLabel = "ukdigitaltwin_test2"
+    queryEndpointLabel = "UKPowerSystemBaseWorld_test2"
     
     
     res, _ = queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofitGenerationFuelOrTechType, topologyNodeIRI_29Bus, queryEndpointLabel)  

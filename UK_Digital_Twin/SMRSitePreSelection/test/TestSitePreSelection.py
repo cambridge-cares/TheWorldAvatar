@@ -31,7 +31,7 @@ class TestSitePreSelection(unittest.TestCase):
         replacementResult = [['y_0_0', 'y_1_0', 'y_2_0', 'y_3_0', 'y_4_0'], ['y_0_1', 'y_1_0', 'y_2_0', 'y_3_0', 'y_4_0'], ['y_0_1', 'y_1_1', 'y_2_0', 'y_3_0', 'y_4_0'], ['y_0_1', 'y_1_1', 'y_2_1', 'y_3_0', 'y_4_0'], ['y_0_1', 'y_1_1', 'y_2_1', 'y_3_0', 'y_4_0']]
         carbonTax = [0, 60, 80, 100, 200]
         for i in range(len(replacementResult)):
-            self.sps = sp.SitePreSelection('ukdigitaltwin_pd', genDiffType_s1, 0.02, 40, 1800000000, 2400000, 200, 0.002985, 470, 0.7, 0.0125, carbonTax[i], False, True, False, 4, 0)
+            self.sps = sp.SitePreSelection('UKPopulationData', genDiffType_s1, 0.02, 40, 1800000000, 2400000, 200, 0.002985, 470, 0.7, 0.0125, carbonTax[i], False, True, False, 4, 0)
             self.assertEqual(self.sps.SMRSitePreSelector(), replacementResult[i])
     
     ####genDiffType_s2: same decommissioning factors and same emission factors and different operating hours
@@ -44,7 +44,7 @@ class TestSitePreSelection(unittest.TestCase):
         replacementResult = [['y_0_0', 'y_1_0', 'y_2_0'], ['y_0_1', 'y_1_0', 'y_2_0'], ['y_0_1', 'y_1_1', 'y_2_0'], ['y_0_1', 'y_1_1', 'y_2_1']]
         carbonTax = [0, 60, 70, 80]
         for i in range(len(replacementResult)):
-            self.sps = sp.SitePreSelection('ukdigitaltwin_pd', genDiffType_s2, 0.02, 40, 1800000000, 2400000, 200, 0.002985, 470, 0.7, 0.0125, carbonTax[i], False, True, False, 4, 0)
+            self.sps = sp.SitePreSelection('UKPopulationData', genDiffType_s2, 0.02, 40, 1800000000, 2400000, 200, 0.002985, 470, 0.7, 0.0125, carbonTax[i], False, True, False, 4, 0)
             self.assertEqual(self.sps.SMRSitePreSelector(), replacementResult[i])
     
     ####genDiffType_s3: same emission factors, same operating hours and different decommissioning factors
@@ -58,7 +58,7 @@ class TestSitePreSelection(unittest.TestCase):
         replacementResult = [['y_0_0', 'y_1_0', 'y_2_0'], ['y_0_0', 'y_1_0', 'y_2_1'], ['y_0_0', 'y_1_1', 'y_2_1'], ['y_0_1', 'y_1_1', 'y_2_1']]
         carbonTax = [0, 54.09, 54.2, 55]
         for i in range(len(replacementResult)):
-            self.sps = sp.SitePreSelection('ukdigitaltwin_pd', genDiffType_s3, 0.02, 40, 1800000000, 2400000, 200, 0.002985, 470, 0.7, 0.0125, carbonTax[i], False, True, False, 4, 1)
+            self.sps = sp.SitePreSelection('UKPopulationData', genDiffType_s3, 0.02, 40, 1800000000, 2400000, 200, 0.002985, 470, 0.7, 0.0125, carbonTax[i], False, True, False, 4, 1)
             self.assertEqual(self.sps.SMRSitePreSelector(), replacementResult[i])
 
     ## Scenario 2: same types of generators located at the same location of different capacity
@@ -72,10 +72,10 @@ class TestSitePreSelection(unittest.TestCase):
         replacementResult = [['y_0_0', 'y_1_0', 'y_2_0'], ['y_0_0', 'y_1_0', 'y_2_1'], ['y_0_0', 'y_1_1', 'y_2_1'], ['y_0_1', 'y_1_1', 'y_2_1']]
         carbonTax = [0, 54.09, 54.2, 55]
         # for i in range(len(replacementResult)):
-        #     self.sps = sp.SitePreSelection('ukdigitaltwin_pd', genDiffType_s4, 0.02, 40, 1800000000, 2400000, 200, 0.002985, 470, 0.7, 0.0125, carbonTax[i], False, True, False, 4, 0)
+        #     self.sps = sp.SitePreSelection('UKPopulationData', genDiffType_s4, 0.02, 40, 1800000000, 2400000, 200, 0.002985, 470, 0.7, 0.0125, carbonTax[i], False, True, False, 4, 0)
         #     self.assertEqual(self.sps.SMRSitePreSelector(), replacementResult[i])
 
-        self.sps = sp.SitePreSelection('ukdigitaltwin_pd', genDiffType_s4, 0.02, 40, 1800000000, 2400000, 200, 0.002985, 470, 0.7, 0.0125, 42, False, True, False, 4, 0)
+        self.sps = sp.SitePreSelection('UKPopulationData', genDiffType_s4, 0.02, 40, 1800000000, 2400000, 200, 0.002985, 470, 0.7, 0.0125, 42, False, True, False, 4, 0)
         self.assertEqual(self.sps.SMRSitePreSelector(), replacementResult[0])
 
     ## Scenario 3: same types of generators located at the different locations of different capacity
@@ -89,7 +89,7 @@ class TestSitePreSelection(unittest.TestCase):
         replacementResult = [['y_0_0', 'y_1_0', 'y_2_0'], ['y_0_1', 'y_1_0', 'y_2_0'], ['y_0_1', 'y_1_1', 'y_2_0'], ['y_0_1', 'y_1_1', 'y_2_1']]
         carbonTax = [0, 60, 70, 90]
         for i in range(len(replacementResult)):
-            self.sps = sp.SitePreSelection('ukdigitaltwin_pd', genDiffType_s4, 0.02, 40, 1800000000, 2400000, 200, 0.002985, 470, 0.7, 0.0125, carbonTax[i], False, True, False, 4, 0)
+            self.sps = sp.SitePreSelection('UKPopulationData', genDiffType_s4, 0.02, 40, 1800000000, 2400000, 200, 0.002985, 470, 0.7, 0.0125, carbonTax[i], False, True, False, 4, 0)
             self.assertEqual(self.sps.SMRSitePreSelector(), replacementResult[i])
 
     

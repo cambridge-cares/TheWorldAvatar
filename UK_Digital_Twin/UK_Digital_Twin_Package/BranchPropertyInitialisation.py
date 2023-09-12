@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 12 Oct 2022          #
+# Last Update Date: 12 Sept 2023         #
 ##########################################
 
 import sys, os, json
@@ -127,8 +127,8 @@ class BranchPropertyInitialisation(object):
 
     """This method is called to check if the Branch Node exists in the remote triple store""" 
     def branchNodeIRIExitInRemoteStore(self, endpoint_label, branchNodeIRI): 
-        if endpoint_label == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['label']):
-            endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['endpoint_iri'])
+        if endpoint_label == str(EndPointConfigAndBlazegraphRepoLabel.UKPowerSystemBaseWorld['label']):
+            endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.UKPowerSystemBaseWorld['endpoint_iri'])
         elif parse(endpoint_label, rule='IRI'):
             endPointIRI = endpoint_label
         else:
@@ -142,8 +142,3 @@ class BranchPropertyInitialisation(object):
         print('...checking the existing of the branch node iri...')
         exitFlag = json.loads(performQuery(endPointIRI, queryStr))
         return exitFlag[0]['ASK']
-
-if __name__ == '__main__':           
-    bpi = BranchPropertyInitialisation()
-    test = bpi.branchNodeIRIExitInRemoteStore("ukdigitaltwin_test2","http://www.theworldavatar.com/kb/ontopowsys/OverheadLine_765dee93-6780-4182-9e93-fdad9e5b9de2")
-    print(test)

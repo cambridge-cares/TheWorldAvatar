@@ -146,8 +146,8 @@ def queryGeneratorToBeRetrofitted_SelectedGenerator(retrofitGenerator:list, endP
     return results 
 
 def queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(retrofitGenerationOrFuelType:list, topologyNodeIRI:str, endPoint_label):  
-    if endPoint_label == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['label']):
-        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['endpoint_iri'])
+    if endPoint_label == str(EndPointConfigAndBlazegraphRepoLabel.UKPowerSystemBaseWorld['label']):
+        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.UKPowerSystemBaseWorld['endpoint_iri'])
     elif parse(endPoint_label, rule='IRI'):
         endPointIRI = endPoint_label
     else:

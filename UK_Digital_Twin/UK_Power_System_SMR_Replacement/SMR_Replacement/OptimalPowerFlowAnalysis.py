@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 11 Sept 2023         #
+# Last Update Date: 12 Sept 2023         #
 ##########################################
 
 """
@@ -8,7 +8,7 @@ SMR replacement function
 The python class is developed to perform the SMR replacement. The Optimal Power Flow (OPF) analysis is intergarted as a part of this class. 
 OPF can be used solely without SMR retrofitting by set the class attribute `withRetrofit:bool` to be False.
 """
-import math
+import math, json
 from pathlib import Path
 from logging import raiseExceptions
 from pickle import TRUE
@@ -97,9 +97,9 @@ derivationInstanceBaseURL = dt.baseURL + SLASH + dt.topNode + SLASH
 modelFactorArrays = readFile(ukmf.CO2EmissionFactorAndCostFactor)
 
 ## Path to the files containing maps.
-base_image_path = "../../Required_Files/RegionalBreakdown_images/UKMapWithRegionalBoundaries.png"
-arrow_image_path = "../../Required_Files/RegionalBreakdown_images/arrow.png"
-legend_path = "../../Required_Files/RegionalBreakdown_images/breakdownLegend.png"
+base_image_path = str(Path(__file__).resolve().parent.parent.parent) + "/resources/required_images/UKMapWithRegionalBoundaries.png"
+arrow_image_path = str(Path(__file__).resolve().parent.parent.parent) + "/resources/required_images/arrow.png"
+legend_path = str(Path(__file__).resolve().parent.parent.parent) + "/resources/required_images/breakdownLegend.png"
 
 ## Looking for the area boundaries for the obsolete LA Code
 def boundarySearchForObsoleteLACode(LACode):
@@ -122,17 +122,17 @@ def boundarySearchForObsoleteLACode(LACode):
     boundary = shape(geometry)
     return boundary
 
-class OptimalPowerFlowAnalysis:
+class SMR_Replacement_with_OptimalFlowAnalysis:
     
     def __init__(
         self, 
         numberOfBus:int,
         numOfBranch:int,
-        self.topologyNodeIRI:str,
+        slackBusLocation:str,
         eliminateClosedPlantIRIList:list,
         agentIRI:str,
         startTime_of_EnergyConsumption:str,
-        slackBusNodeIRI:str, loadAllocatorName:str, EBusModelVariableInitialisationMethodName:str,
+        loadAllocatorName:str, EBusModelVariableInitialisationMethodName:str,
         ELineInitialisationMethodName:str, 
         piecewiseOrPolynomial:int, pointsOfPiecewiseOrcostFuncOrder:int, baseMVA: float,  
         withRetrofit:bool, retrofitGenerator: list, retrofitGenerationTechTypeOrGenerationTechnology: list, 
@@ -166,10 +166,10 @@ class OptimalPowerFlowAnalysis:
         ## -- Local objectives container --##
         self.ObjectSet = locals()     
         ##--1. specify the query/update endpoint information--##
-        self.queryUKDigitalTwinEndpointLabel = endpointList.ukdigitaltwin['label'] ## ukdigitaltwin
-        self.queryUKDigitalTwinEndpointIRI = endpointList.ukdigitaltwin['endpoint_iri']
-        self.geospatialQueryEndpointLabel = endpointList.ukdigitaltwin_pd['label'] ## population: ukdigitaltwin_pd
-        self.geospatialQueryEndpointIRI = endpointList.ukdigitaltwin_pd['endpoint_iri']
+        self.queryUKDigitalTwinEndpointLabel = endpointList.UKPowerSystemBaseWorld['label'] ## ukdigitaltwin
+        self.queryUKDigitalTwinEndpointIRI = endpointList.UKPowerSystemBaseWorld['endpoint_iri']
+        self.geospatialQueryEndpointLabel = endpointList.UKPopulationData['label'] ## population: ukdigitaltwin_pd
+        self.geospatialQueryEndpointIRI = endpointList.UKPopulationData['endpoint_iri']
         self.OWLUpdateEndPointURL = OWLUpdateEndPointURL ## derivation
         self.endPointUser = endPointUser
         self.endPointPassWord = endPointPassWord
@@ -187,29 +187,38 @@ class OptimalPowerFlowAnalysis:
         self.numOfBus = numberOfBus
         self.numOfBranch = numOfBranch
 
-        self.self.topologyNodeIRI = topologyNodeIRI
+        ## specify the topology node
+        self.topologyNodeIRI = queryOPFInput.queryTopologyIRI(numberOfBus, numOfBranch, self.queryUKDigitalTwinEndpointIRI)
+
+        ##--5. Identify the retrofitting generators--##
+        if type(withRetrofit) is not bool and withRetrofit in ["True", "TRUE"]:
+            self.withRetrofit = True 
+        elif type(withRetrofit) is not bool and withRetrofit in ["False", "FALSE"]:
+            self.withRetrofit = False 
+        elif type(withRetrofit) is bool:
+            self.withRetrofit = withRetrofit 
+        else:
+            raiseExceptions("Please provide a bool value to withRetrofit")
+
+        eliminateClosedPlantIRIList = queryOPFInput.queryEliminatePowerPlant(eliminateClosedPlantIRIList, self.queryUKDigitalTwinEndpointIRI)
 
         if not ifReadLocalResults:
             ## query the number of the bus under the topology node IRI, and the bus node IRI, branch node IRI and generator node IRI
-            self.numOfBus, self.busNodeList = query_model.queryBusTopologicalInformation(self.self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
+            _, self.busNodeList = query_model.queryBusTopologicalInformation(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
             self.branchNodeList, self.branchVoltageLevel = query_model.queryELineTopologicalInformation(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?ELineNode ?From_Bus ?To_Bus ?Value_Length_ELine ?Num_OHL_400 or 275            
-            self.generatorNodeList = query_model.queryEGenInfo(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel, eliminateClosedPlantIRIList) ## 0?PowerGeneratorIRI 1?FixedMO 2?VarMO 3?FuelCost 4?CO2EmissionFactor 5?Bus 6?Capacity 7?PrimaryFuel 8?Latlon 9?PowerPlant_LACode 10:Extant[if withRetrofit is set as 'True'] 11: samllerLAcode 12:GenerationTech   
+            self.generatorNodeList = query_model.queryEGenInfo(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel, eliminateClosedPlantIRIList) ## 0?PowerGeneratorIRI 1?FixedMO 2?VarMO 3?FuelCost 4?CO2EmissionFactor 5?Bus 6?Capacity 7?PrimaryFuel 8?Latlon 9?PowerPlant_LACode 10:GenerationTech 11:Extant 12:samllerLAcode
             self.capa_demand_ratio = demandAndCapacityRatioCalculator(self.generatorNodeList, self.topologyNodeIRI, startTime_of_EnergyConsumption)
             
-            if withRetrofit is True:
+            if self.withRetrofit is True:
                 for egen in self.generatorNodeList:
                     egen.append("Extant")
-        else: 
-            self.numOfBus , _ = query_model.queryBusTopologicalInformation(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
         ##--2. passing arguments--##
-        ## specify the topology node
-        self.self.topologyNodeIRI = self.topologyNodeIRI
         ## specify the startTime_of_EnergyConsumption for querying the demand load 
         self.startTime_of_EnergyConsumption = startTime_of_EnergyConsumption
         ## specify the agent IRI        
         self.agentIRI = agentIRI
         ## specify the slackBusNodeIRI (there is only one slack bus is allowed in the modelling)
-        self.slackBusNodeIRI = slackBusNodeIRI
+        self.slackBusNodeIRI = queryOPFInput.querySlackBusNode(slackBusLocation, self.queryUKDigitalTwinEndpointIRI)
         ## specify the loadAllocatorName
         self.loadAllocatorName = loadAllocatorName
         ## specify the EBusModel, ELine and EGen Variable Initialisation Method Name
@@ -244,11 +253,7 @@ class OptimalPowerFlowAnalysis:
             self.storeClient = self.jpsBaseLib_view.RemoteStoreClient(self.OWLUpdateEndPointURL, self.OWLUpdateEndPointURL, self.endPointUser, self.endPointPassWord)
         ## initialise the derivationClient
         self.derivationClient = self.jpsBaseLib_view.DerivationClient(self.storeClient, derivationInstanceBaseURL)  
-        ##--5. Identify the retrofitting generators--##
-        if type(withRetrofit) is not bool:
-            raiseExceptions("withRetrofit has to be a bool number")
-        else:
-            self.withRetrofit = withRetrofit 
+       
         self.retrofitGenerator = retrofitGenerator # GeneratorIRI, location, capacity
         self.retrofitGenerationFuelOrGenType = retrofitGenerationTechTypeOrGenerationTechnology    
         ##--6. Identify the generators type used to replace the exisiting generators--##
@@ -324,7 +329,7 @@ class OptimalPowerFlowAnalysis:
         self.CarbonTaxForOPF = -1 ## the initial carbon tax not for OPF calculation
         self.weatherConditionName = None
         self.time_now = time.strftime("%Y%m%d-%H%M", time.localtime())
-        self.localRootFilePath = '/mnt/d/wx243/FromTWA'
+        self.localRootFilePath = str(Path(__file__).resolve().parent.parent.parent) + "/outputs/smr_replacement_fig" #'/mnt/d/wx243/FromTWA'
         self.diagramPath = self.localRootFilePath + '/figFiles(LineChartANDHeatmapGrid)/' + self.time_now + '/'
         self.diagramPathParetoFront = self.localRootFilePath + '/ParetoFront/' + self.time_now + '/'
         self.diagramPathStack = self.localRootFilePath + '/figFiles(StackAreaGraph)/' + self.time_now + '/'
@@ -448,7 +453,7 @@ class OptimalPowerFlowAnalysis:
         if self.withRetrofit is True: 
             if len(self.retrofitGenerator) == 0 and len(self.retrofitGenerationFuelOrGenType) == 0:  
                 print("***As there is not specific generator assigned to be retrofitted by SMR, all generators located in GB will be treated as the potential sites.***")
-                self.retrofitListBeforeSelection = queryOPFInput.queryGeneratorToBeRetrofitted_AllPowerPlant(self.self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel)
+                self.retrofitListBeforeSelection = queryOPFInput.queryGeneratorToBeRetrofitted_AllPowerPlant(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel)
             elif len(self.retrofitGenerator) != 0:
                 for iri in self.retrofitGenerator:
                     parse(iri, rule='IRI')
@@ -458,7 +463,7 @@ class OptimalPowerFlowAnalysis:
                 for iri in self.retrofitGenerationFuelOrGenType:
                     parse(iri, rule='IRI')
                 print("***The potential sites are the generators of the type specified in retrofitGenerationFuelOrGenType.***")
-                self.retrofitListBeforeSelection = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(self.retrofitGenerationFuelOrGenType, self.self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel)
+                self.retrofitListBeforeSelection = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(self.retrofitGenerationFuelOrGenType, self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel)
 
             ## Add decommissioned nuclear sites into the potential sites for hosting SMR 
             if self.pickDecommissionedNuclearSites is True:   
@@ -1502,12 +1507,12 @@ class OptimalPowerFlowAnalysis:
         ## create the timeStamp, e.x. 2022-06-15T16:24:29.371941+00:00
         self.timeStamp = datetime.now(pytz.utc).isoformat()
 
-        BusModelKGInstanceCreator(self.ObjectSet, self.BusObjectList, self.numOfBus, self.self.topologyNodeIRI, self.powerSystemModelIRI, \
+        BusModelKGInstanceCreator(self.ObjectSet, self.BusObjectList, self.numOfBus, self.topologyNodeIRI, self.powerSystemModelIRI, \
             self.timeStamp, self.agentIRI, self.derivationClient, self.OWLUpdateEndPointURL, self.OWLFileStoragePath)
-        BranchModelKGInstanceCreator(self.ObjectSet, self.BranchObjectList, self.numOfBus, self.self.topologyNodeIRI, self.powerSystemModelIRI, \
+        BranchModelKGInstanceCreator(self.ObjectSet, self.BranchObjectList, self.numOfBus, self.topologyNodeIRI, self.powerSystemModelIRI, \
             self.timeStamp, self.agentIRI, self.derivationClient, self.OWLUpdateEndPointURL, self.OWLFileStoragePath)
         ##FIXME: include the SMR and the existing plants
-        # GeneratorModelKGInstanceCreator(self.ObjectSet, self.GeneratorObjectList, self.GeneratorToBeRetrofittedObjectList, self.OPFOrPF, self.newGeneratorType, self.numOfBus, self.self.topologyNodeIRI, self.powerSystemModelIRI, \
+        # GeneratorModelKGInstanceCreator(self.ObjectSet, self.GeneratorObjectList, self.GeneratorToBeRetrofittedObjectList, self.OPFOrPF, self.newGeneratorType, self.numOfBus, self.topologyNodeIRI, self.powerSystemModelIRI, \
         # self.timeStamp, self.agentIRI, self.derivationClient, self.OWLUpdateEndPointURL, self.OWLFileStoragePath)  
         return 
     
@@ -2457,7 +2462,7 @@ class OptimalPowerFlowAnalysis:
         for weather in weatherConditionList:
             weatherNameList.append(weather[2])
 
-        ## busGPSLocation = query_model.queryBusGPSLocation(self.self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
+        ## busGPSLocation = query_model.queryBusGPSLocation(self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
         
         if ifSpecifiedResults is True:
             if specifiedConfigList == [] or specifiedConfigList == [[]]:
@@ -4514,114 +4519,41 @@ class OptimalPowerFlowAnalysis:
         return
 
 if __name__ == '__main__':
-    numberOfBus = 10
-    numOfBranch = 14
 
-    self.topologyNodeIRI_10Bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_b22aaffa-fd51-4643-98a3-ff72ee04e21e" 
-    self.topologyNodeIRI_29Bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_6017554a-98bb-4896-bc21-e455cb6b3958" 
-    
-    AgentIRI = "http://www.example.com/triplestore/agents/Service__XXXAgent#Service"
+    ## 1. Specify the model config, 10-bus or 29 bus 
+    configName = str(input('Please specify the number of bus and number of branch (e.g. 1014 for 10-bus and 14-branch, 2999 for 29-bus and 99-branch): '))
+    with open('./UK_Power_System_SMR_Replacement/SMR_Replacement/config%s.json'%configName, 'r') as config_file:
+        config_data = json.load(config_file)
 
-    slackBusNodeIRI_10Bus = "http://www.theworldavatar.com/kb/ontopowsys/BusNode_1f3c4462-3472-4949-bffb-eae7d3135591"  ## the slack bus is recongnised by its latlon
-    slackBusNodeIRI_29Bus = "http://www.theworldavatar.com/kb/ontopowsys/BusNode_bc386bcb-33ab-4569-80c5-00dc9d0bffb8"  
+    ## 2. Specify the LCOE of SMR (£/MWh)
+    SMR_LCOE = int(input('Please specify the LCOE of SMR (£/MWh): '))
 
-    queryEndpointLabel = "ukdigitaltwin_test2"
-    geospatialQueryEndpointLabel = "ukdigitaltwin_pd"
-    updateEndPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
+    ## 3. Specify if generate GeoJSON file
+    generateVisualisationJSON_flag = int(input('Please specify if generate the geojson file for visulisation (1 for Yes, 2 for No): '))
+    if generateVisualisationJSON_flag == 1:
+        generateVisualisationJSON = True
+    else: 
+        generateVisualisationJSON = False
 
-    ###INTO CONFIG.JSON
-    loadAllocatorName_10Bus = "regionalDemandLoad"
-    loadAllocatorName_29Bus = "closestDemandLoad"
+    ## 4. Specify if this is the post-processing
+    ifReadLocalResults_flag = int(input('Please specify if use the existing results for post-processing (1 for Yes, 2 for No): '))
+    if ifReadLocalResults_flag == 1:
+        ifReadLocalResults = True
+    else: 
+        ifReadLocalResults = False
 
-    EBusModelVariableInitialisationMethodName_10Bus = "defaultInitialisation"
-    EBusModelVariableInitialisationMethodName_29Bus = "preSpecified"
+    ## 5. Specify if generate Pareto Front figures
+    ifGenerateParetoFrontPDF_flag = int(input('Please specify if creates the PDF files for Pareto Front (1 for Yes, 2 for No): '))
+    if ifGenerateParetoFrontPDF_flag == 1:
+        ifGenerateParetoFrontPDF = True
+    else: 
+        ifGenerateParetoFrontPDF = False
 
-    ELineInitialisationMethodName_10Bus = "defaultBranchInitialiser"
-    ELineInitialisationMethodName_29Bus = "preSpecifiedBranchInitialiser"
-    
-    piecewiseOrPolynomial = 2
-    pointsOfPiecewiseOrcostFuncOrder = 2
-    baseMVA = 100
-    withRetrofit = True
-    newGeneratorType = "SMR"
-    retrofitGenerator = []
-    retrofitGenerationFuelOrTechType = [
-     "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas", 
-     "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Coal", 
-     "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Oil",
-     "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#SourGas"]
+    ## 6. Specify the path for storing the raw simulation results files
+    numberOfBus = config_data["NumOfBus"]
+    numOfBranch = config_data["NumOfBranch"]
+    rootPath = str(Path(__file__).resolve().parent.parent.parent) + "/outputs/smr_replacements/%sbus%sbranch_LCOE_%s£/"%(str(numberOfBus), str(numOfBranch), str(SMR_LCOE))
 
-    DecommissionedNuclearSitesLocation = {'Wylfa': [53.4159603, -4.4902244], 'Oldbury': [51.6473724, -2.5721401], 
-                                          'Sellafield':[54.4205, -3.4975], 'Trawsfynydd': [52.925567,-3.9507508],
-                                          'Dungeness_B': [50.9138436, 0.9596944], 'Hunterston_B':[55.7214775,-4.8969607]}
-
-    generatorClusterFunctionName_10bus = "sameRegionWithBus" 
-    generatorClusterFunctionName_29bus = "closestBus" 
-
-    eliminateClosedPlantIRIList = [ ## FIXME: not includeded in the config.json
-    "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_eeda9b60-bfe7-4801-abb7-a229633afdd3", ## Dungeness_B, Nuclear
-    "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_42dddc5b-e0ea-4f69-882f-6dc66d14b7af", ## Hunterston_B, nuclear
-    "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_b0509ae1-e4b5-4af9-96c5-bb072744ee14", ## Fiddlers_Ferry, coal
-    "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_be02c84e-5183-4bb1-8c25-47e4e4f37d32", ## Aberthaw_B, coal
-    "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_d5653f2d-7384-46a3-aade-0f50ae1ac244", ## Cottam, coal
-    "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_2c32b4ea-a564-43c9-ab4e-0af602bd1432", ## Uskmouth_Power, coal
-    "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_b4e631c4-94cd-4211-a94b-1a3ac0385dbe", ## Thornhill, NG
-    "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_5a631515-6877-47bb-b441-463f28dfb274", ## Castleford, NG
-    "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_deadc3e2-6a04-4262-8f92-211147919801", ## Sandbach. NG
-    "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_a8e65869-6bf1-4e79-81a9-972058834699", ## Five_Oaks_1, oil
-    "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_4715ca1d-1ef0-4945-aef0-b4bc55e017e9"] ## Aberthaw_GT, oil
-
-    ## SMR site selection settings
-    discountRate = 0.035
-    bankRate = discountRate
-    projectLifeSpan = 60
-    SMRCapitalCost = 1800000000
-    MonetaryValuePerHumanLife = 2400000
-    NeighbourhoodRadiusForSMRUnitOf1MW = 200 ## unit is meter
-    ProbabilityOfReactorFailure = 0.002985
-    SMRCapability = 470
-    maxmumSMRUnitAtOneSite = 4
-    SMRIntergratedDiscount = 0.9
-    DecommissioningCostEstimatedLevel = 1
-    slackFactor = 1.1
-    safeDistance = 20
-    yearlyOperationHours = 8760
-    SMROperationalRatio = 0.9
-    
-    ## GA settings
-    pop_size = 500 ## 10 times of the decision variables
-    n_offsprings = 1000 ## 1-2 offspring of the parent generation
-    numberOfGenerations = 600 
-
-    SMR_LCOE = 60
-
-    ## The setting of £40
-    # NumberOfSMRUnitList = [0, 10, 12, 13,  15, 17, 18, 19,  25, 28, 29, 32,  33, 42, 43, 45,  47, 48, 49]
-    # weighterList = [0, 0.25, 0.5, 0.6, 0.75, 0.9, 1]
-    # CarbonTaxForOPFList = [0, 10, 20, 30, 40, 45, 50, 55, 60, 70, 80, 100, 151, 200]
-    # weatherConditionList = [[0.93, 0.78, "WHSH"], [0.93, 0.068, "WHSL"],
-    #                         [0.49, 0.38, "WBSB"],
-    #                           [0.157, 0.78, "WLSH"], [0.157, 0.068, "WLSL"]]
-
-    ## The setting of £60, base case
-    NumberOfSMRUnitList = [0] #[0, 1, 2, 5, 10, 12, 13, 15, 17, 18, 19, 20,  25, 28, 29, 30,  31, 32, 33, 34, 40, 42, 43, 45, 47, 48, 49]
-    weighterList = [0, 0.25, 0.5, 0.6, 0.75, 0.85, 0.9, 1]
-    CarbonTaxForOPFList = [0, 10, 15, 20, 30, 40, 45, 50, 55, 60, 70, 80, 100, 150, 200] 
-    weatherConditionList = [[0.93, 0.78, "WHSH"], [0.93, 0.068, "WHSL"],
-                            [0.49, 0.38, "WBSB"],
-                              [0.157, 0.78, "WLSH"], [0.157, 0.068, "WLSL"]]
-
-
-    ## stop generating the JSON files
-    generateVisualisationJSON = True
-    ifReadLocalResults = False
-    ifGenerateParetoFrontPDF = True
-
-    rootPath =  str(Path(__file__).resolve().parent.parent.parent) + "npy" + "/29bus_LCOE_%s£/"%(str(SMR_LCOE))
-    # rootPath = '/mnt/d/wx243/FromTWA/npy/29bus_LCOE_60£_final/'
-    ## rootPath = '/mnt/d/wx243/FromAW/npy/29bus_LCOE_£40/'
-
-    ## folder location cheching
     if not ifReadLocalResults:
         folder = os.path.exists(rootPath)
         if not folder:                
@@ -4629,339 +4561,172 @@ if __name__ == '__main__':
             print("---  new folder %s...  ---" % rootPath)
         else:
             print("---  There has npy folder!  ---")
-
-    ## Specified net demanding results for GeoJSON creation 
-    ifSpecifiedResultsForNetDemanding = True
-    # specifiedConfig = [[0, 20, "WBSB", 0.6], [0, 40, "WBSB", 0.6], [30, 55, "WBSB", 0.6], [33, 60, "WBSB", 0.6],
-    #                    [28, 55, "WBSB", 0.25], [33, 150, "WBSB", 0.25],
-    #                    [32, 55, "WBSB", 0.75], [32, 150, "WBSB", 0.75] ]
-
-    # specifiedConfig = [[19, 0, "WBSB", 0.6], [25, 10, "WBSB", 0.6], [32, 20, "WBSB", 0.6], [33, 30, "WBSB", 0.6], [33, 40, "WBSB", 0.6],
-    #                    [19, 0, "WBSB", 0.25], [19, 10, "WBSB", 0.25], [33, 20, "WBSB", 0.25], [33, 30, "WBSB", 0.25],
-    #                    [19, 0, "WBSB", 0.75], [25, 10, "WBSB", 0.75], [32, 20, "WBSB", 0.75], [32, 30, "WBSB", 0.75] ]
     
-    ## specifiedConfig = [[33, 100, "WBSB", 0.6]]
+    ## TODO: 7. Agent IRI and results update endpoint
+    AgentIRI = "http://www.example.com/triplestore/agents/Service__XXXAgent#Service"
+    updateEndPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
 
-    ## Loss: LCOE 40
-    ## specifiedConfig = [[33, 151, "WBSB", 0.25], [33, 151, "WBSB", 0.5], [33, 151, "WBSB", 0.75]]
-    ## specifiedConfig = [[32, 151, "WBSB", 0.75]]
-
-    ## Loss: LCOE 60
-    ## specifiedConfig = [[33, 150, "WBSB", 0.25], [33, 150, "WBSB", 0.5], [33, 150, "WBSB", 0.75]]
-    specifiedConfig = [[32, 150, "WBSB", 0.75]]
-
-    ## specifiedConfig = [[17, 0, "WBSB", 0.5], [25, 10, "WBSB", 0.5], [33, 20, "WBSB", 0.5], [33, 30, "WBSB", 0.5]]
-    # specifiedConfig = [[19, 50, "WBSB", 0.5]]
-
-    ## 3by3: 40£
-    # specifiedConfig = [[33, 151, "WBSB", 0.25], [33, 151, "WBSB", 0.5], [33, 151, "WBSB", 0.75],
-    #                    [49, 151, "WLSL", 0.25], [49, 151, "WLSL", 0.5], [49, 151, "WLSL", 0.75], 
-    #                    [13, 151, "WHSH", 0.25], [13, 151, "WHSH", 0.5], [13, 151, "WHSH", 0.75]]
-
-    ## 3by3: 60£
-    # specifiedConfig = [[33, 150, "WBSB", 0.25], [33, 150, "WBSB", 0.5], [33, 150, "WBSB", 0.75],
-    #                    [49, 150, "WLSL", 0.25], [49, 150, "WLSL", 0.5], [49, 150, "WLSL", 0.75], 
-    #                    [12, 150, "WHSH", 0.25], [12, 150, "WHSH", 0.5], [12, 150, "WHSH", 0.75]]
-    
-    ## For stack fig of the energy breakdown
-    EnergyBreakDown_weightList = [0.25, 0.5, 0.75]
-
-    ## For weather impact line chart
-    pickedWeight = 0.5
+    ## Initialise the module
+    smr_replacement_for_fossil_fuel = SMR_Replacement_with_OptimalFlowAnalysis(numberOfBus, numOfBranch, config_data["slackBusLocation"],
+                                                                            config_data["eliminateClosedPlantIRIList"], AgentIRI, config_data["consumptionDataVersion"], 
+                                                                            config_data["loadAllocatorName"],  config_data["EBusModelVariableInitialisationMethodName"],
+                                                                            config_data["ELineInitialisationMethodName"], config_data["piecewiseOrPolynomial"], 
+                                                                            config_data["pointsOfPiecewiseOrcostFuncOrder"], config_data["baseMVA"], config_data["withRetrofit"],
+                                                                            config_data["retrofitGenerator"], config_data["retrofitGenerationFuelOrTechType"], config_data["DecommissionedNuclearSitesLocation"],
+                                                                            True, config_data["generatorClusterFunctionName"], config_data["newGeneratorType"], config_data["weighterList"],
+                                                                            config_data["discountRate"], config_data["bankRate"], config_data["projectLifeSpan"], config_data["yearlyOperationHours"], 
+                                                                            config_data["SMRCapitalCost"], SMR_LCOE, config_data["SMROperationalRatio"], config_data["MonetaryValuePerHumanLife"], 
+                                                                            config_data["NeighbourhoodRadiusForSMRUnitOf1MW"], config_data["ProbabilityOfReactorFailure"], config_data["SMRCapability"], 
+                                                                            config_data["maxmumSMRUnitAtOneSite"], config_data["SMRIntergratedDiscount"], config_data["DecommissioningCostEstimatedLevel"], 
+                                                                            config_data["safeDistance"], config_data["pop_size"], config_data["n_offsprings"], config_data["numberOfGenerations"], 
+                                                                            ifReadLocalResults, updateEndPointURL)  
 
     ## cutter for the SMR list 
     cutter = 5
     counter_smrChunk = 1
-############29 Bus model##################################################################################################################################################################
-    testOPF_29BusModel = OptimalPowerFlowAnalysis(numberOfBus, numOfBranch, self.topologyNodeIRI_29Bus, eliminateClosedPlantIRIList, AgentIRI, "2017-01-31", slackBusNodeIRI_29Bus, loadAllocatorName_29Bus, 
-        EBusModelVariableInitialisationMethodName_29Bus, ELineInitialisationMethodName_29Bus, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, 
-        baseMVA, withRetrofit, retrofitGenerator, retrofitGenerationFuelOrTechType, DecommissionedNuclearSitesLocation, True, generatorClusterFunctionName_29bus, newGeneratorType, weighterList, discountRate, bankRate, projectLifeSpan, 
-        yearlyOperationHours, SMRCapitalCost, SMR_LCOE, SMROperationalRatio, MonetaryValuePerHumanLife, NeighbourhoodRadiusForSMRUnitOf1MW, ProbabilityOfReactorFailure, SMRCapability, maxmumSMRUnitAtOneSite, 
-        SMRIntergratedDiscount, DecommissioningCostEstimatedLevel, safeDistance, pop_size, n_offsprings, numberOfGenerations, ifReadLocalResults, updateEndPointURL)  
-
-############10 Bus model##################################################################################################################################################################
-    # testOPF_29BusModel = OptimalPowerFlowAnalysis(self.topologyNodeIRI_10Bus, eliminateClosedPlantIRIList, AgentIRI, "2017-01-31", slackBusNodeIRI_10Bus, loadAllocatorName_10Bus, 
-    #     EBusModelVariableInitialisationMethodName_10Bus, ELineInitialisationMethodName_10Bus, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, 
-    #     baseMVA, withRetrofit, retrofitGenerator, retrofitGenerationFuelOrTechType, DecommissionedNuclearSitesLocation, True, generatorClusterFunctionName_10bus, newGeneratorType, weighterList, discountRate, bankRate, projectLifeSpan, 
-    #     yearlyOperationHours, SMRCapitalCost, SMR_LCOE, SMROperationalRatio, MonetaryValuePerHumanLife, NeighbourhoodRadiusForSMRUnitOf1MW, ProbabilityOfReactorFailure, SMRCapability, maxmumSMRUnitAtOneSite, 
-    #     SMRIntergratedDiscount, DecommissioningCostEstimatedLevel, safeDistance, pop_size, n_offsprings, numberOfGenerations, ifReadLocalResults, updateEndPointURL)  
-
 
     if not ifReadLocalResults:
-        testOPF_29BusModel.powerPlantAndDemandingAreasMapper()
-        testOPF_29BusModel.retrofitGeneratorInstanceFinder() ## determine the retrofitListBeforeSelection, population_list and weightedDemandingDistance_list
-        testOPF_29BusModel.ModelPythonObjectInputInitialiser_BusAndBranch()
+        smr_replacement_for_fossil_fuel.powerPlantAndDemandingAreasMapper()
+        smr_replacement_for_fossil_fuel.retrofitGeneratorInstanceFinder() ## determine the retrofitListBeforeSelection, population_list and weightedDemandingDistance_list
+        smr_replacement_for_fossil_fuel.ModelPythonObjectInputInitialiser_BusAndBranch()
 
         ## cut the SMRNumberList
         newSMRNumberList = []
-        numberOfSMRListChunk = math.ceil(len(NumberOfSMRUnitList) / cutter)
+        numberOfSMRListChunk = math.ceil(len(config_data["NumberOfSMRUnitList"]) / cutter)
         for i in range(int(numberOfSMRListChunk)):
-            if  (i + 1) * cutter < len(NumberOfSMRUnitList):
-                SMRListChunk = NumberOfSMRUnitList[i *cutter : (i + 1) * cutter]
+            if  (i + 1) * cutter < len(config_data["NumberOfSMRUnitList"]):
+                SMRListChunk = config_data["NumberOfSMRUnitList"][i *cutter : (i + 1) * cutter]
             else:
-                SMRListChunk = NumberOfSMRUnitList[i *cutter :]
+                SMRListChunk = config_data["NumberOfSMRUnitList"][i *cutter :]
             newSMRNumberList.append(SMRListChunk)     
         for smrList in newSMRNumberList:
             summary_eachSMRDesign = []
             divergenceList_eachSMRDesign = []
-            ratio_eachSMRDesign = []
-            SMROutputAndOperationalRatio_eachSMRDesign = []
-            SMRInvestment_eachSMRDesign = []
-            emission_eachSMRDesign = []
-            energyBreakdown_eachSMRDesign = []
-            netDemanding_smallArea_eachSMRDesign = [] 
+            netDemanding_smallArea_eachSMRDesign = []
             netDemanding_regionalArea_eachSMRDesign = []
-            transmissionLoss_eachSMRDesign = []
-            energyBreakdown_smallArea_eachSMRDesign = []
             energyBreakdown_regionalArea_eachSMRDesign = []
-            emission_regionalArea_eachSMRDesign = []
-            busRawResult_eachSMRDesign = []
             branchRawResult_eachSMRDesign = []
-            genRawResult_eachSMRDesign = []
-            energyBreakdown_detailed_eachSMRDesign = []
-
             for numberOfSMRToBeIntroduced in smrList:
                 print('===The number of SMR is: ', str(numberOfSMRToBeIntroduced))
-                testOPF_29BusModel.siteSelector(numberOfSMRToBeIntroduced)
-                testOPF_29BusModel.optimaPicker(ifGenerateParetoFrontPDF)            
+                smr_replacement_for_fossil_fuel.siteSelector(numberOfSMRToBeIntroduced)
+                smr_replacement_for_fossil_fuel.optimaPicker(ifGenerateParetoFrontPDF)            
                 summary_eachCarbonTax = []
                 divergenceList_eachCarbonTax = []
-                SMR_eachCarbonTax = []
-                SMRInvestment_eachCarbonTax = []
-                ratio_eachCarbonTax = []
-                emission_eachCarbonTax = []
-                energyBreakdown_eachCarbonTax = []
                 netDemanding_smallArea_eachCarbonTax = []
                 netDemanding_regionalArea_eachCarbonTax = []
-                transmissionLoss_eachCarbonTax = []
-                energyBreakdown_smallArea_eachCarbonTax = []
                 energyBreakdown_regionalArea_eachCarbonTax = []
-                emission_regionalArea_eachCarbonTax = []
-                busRawResult_eachCarbonTax = []
                 branchRawResult_eachCarbonTax = []
-                genRawResult_eachCarbonTax = []
-                energyBreakdown_detailed_eachCarbonTax = []
          
-                for CarbonTaxForOPF in CarbonTaxForOPFList:
+                for CarbonTaxForOPF in config_data["CarbonTaxForOPFList"]:
                     summary_eachWeather = []
                     divergenceList_eachWeather = []
-                    ratio_eachWeather = []
-                    SMR_eachWeather = []
-                    SMRInvestment_eachWeather = []
-                    emission_eachWeather = []
-                    energyBreakdown_eachWeather = []
                     netDemanding_smallArea_eachWeather = []
                     netDemanding_regionalArea_eachWeather = []
-                    transmissionLoss_eachWeather = []
-                    energyBreakdown_smallArea_eachWeather = []
                     energyBreakdown_regionalArea_eachWeather = []
-                    emission_regionalArea_eachWeather = []
-                    busRawResult_eachWeather = []
-                    branchRawResult_eachWeather = []
-                    genRawResult_eachWeather = []
-                    energyBreakdown_detailed_eachWeather = []
-
-                    for weatherCondition in weatherConditionList:
-                        testOPF_29BusModel.ModelPythonObjectInputInitialiser_Generator(CarbonTaxForOPF, weatherCondition[0], weatherCondition[1], weatherCondition[2], False)
-                        testOPF_29BusModel.OPFModelInputFormatter()
-                        testOPF_29BusModel.OptimalPowerFlowAnalysisSimulation()
-                        testOPF_29BusModel.ModelOutputFormatter(generateVisualisationJSON) ## JSON file is generated at this step
-                        testOPF_29BusModel.CarbonEmissionCalculator()
-                        testOPF_29BusModel.netDemandingCalculator(ifReadLocalResults, [])
-                        testOPF_29BusModel.EnergyBreakdown_RegionAndSmallArea()
+                    branchRawResult_eachWeather = []                  
+                    for weatherCondition in config_data["weatherConditionList"]:
+                        smr_replacement_for_fossil_fuel.ModelPythonObjectInputInitialiser_Generator(CarbonTaxForOPF, weatherCondition[0], weatherCondition[1], weatherCondition[2], False)
+                        smr_replacement_for_fossil_fuel.OPFModelInputFormatter()
+                        smr_replacement_for_fossil_fuel.OptimalPowerFlowAnalysisSimulation()
+                        smr_replacement_for_fossil_fuel.ModelOutputFormatter(generateVisualisationJSON) ## JSON file is generated at this step
+                        smr_replacement_for_fossil_fuel.CarbonEmissionCalculator()
+                        smr_replacement_for_fossil_fuel.netDemandingCalculator(ifReadLocalResults, [])
+                        smr_replacement_for_fossil_fuel.EnergyBreakdown_RegionAndSmallArea()
                        
-                        summary_eachWeather.append([testOPF_29BusModel.totalCostList, testOPF_29BusModel.totalCO2EmissionList_Mt_yr,
-                                                     testOPF_29BusModel.CO2EmissionIntensity_gperkwh, testOPF_29BusModel.SMRInvestmentCost, 
-                                                     testOPF_29BusModel.annualisedOPEXList, testOPF_29BusModel.annualisedTotalEmissionCostList_MGBP_yr])
-                        del testOPF_29BusModel.totalCostList, testOPF_29BusModel.totalCO2EmissionList_Mt_yr, 
-                        testOPF_29BusModel.CO2EmissionIntensity_gperkwh, testOPF_29BusModel.SMRInvestmentCost
+                        summary_eachWeather.append([smr_replacement_for_fossil_fuel.totalCostList, smr_replacement_for_fossil_fuel.totalCO2EmissionList_Mt_yr,
+                                                     smr_replacement_for_fossil_fuel.CO2EmissionIntensity_gperkwh, smr_replacement_for_fossil_fuel.SMRInvestmentCost, 
+                                                     smr_replacement_for_fossil_fuel.annualisedOPEXList, smr_replacement_for_fossil_fuel.annualisedTotalEmissionCostList_MGBP_yr])
+                        del smr_replacement_for_fossil_fuel.totalCostList, smr_replacement_for_fossil_fuel.totalCO2EmissionList_Mt_yr, 
+                        smr_replacement_for_fossil_fuel.CO2EmissionIntensity_gperkwh, smr_replacement_for_fossil_fuel.SMRInvestmentCost
+                        divergenceList_eachWeather.append(smr_replacement_for_fossil_fuel.divergenceList)
+                        del smr_replacement_for_fossil_fuel.divergenceList
+                        netDemanding_smallArea_eachWeather.append(smr_replacement_for_fossil_fuel.netDemandingList_smallAreaForEachWeight)
+                        del smr_replacement_for_fossil_fuel.netDemandingList_smallAreaForEachWeight
+                        netDemanding_regionalArea_eachWeather.append(smr_replacement_for_fossil_fuel.netDemandingList_regionalAreaForEachWeight)
+                        del smr_replacement_for_fossil_fuel.netDemandingList_regionalAreaForEachWeight
+                        energyBreakdown_regionalArea_eachWeather.append(smr_replacement_for_fossil_fuel.output_regionalAreaForEachWeight) 
+                        del smr_replacement_for_fossil_fuel.output_regionalAreaForEachWeight
+                        branchRawResult_eachWeather.append(smr_replacement_for_fossil_fuel.branchOutputRecoder)
+                        del smr_replacement_for_fossil_fuel.branchOutputRecoder
 
-                        divergenceList_eachWeather.append(testOPF_29BusModel.divergenceList)
-                        del testOPF_29BusModel.divergenceList
-
-                        ratio_eachWeather.append([testOPF_29BusModel.OPEXRatioList, testOPF_29BusModel.annualisedOPEXList])
-                        del testOPF_29BusModel.OPEXRatioList
-                        del testOPF_29BusModel.annualisedOPEXList
-                        SMR_eachWeather.append([testOPF_29BusModel.SMRTotalOutputList, testOPF_29BusModel.SMRTotalOperationalRatioList])
-                        del testOPF_29BusModel.SMRTotalOutputList
-                        del testOPF_29BusModel.SMRTotalOperationalRatioList
-                        SMRInvestment_eachWeather.append(testOPF_29BusModel.SMRCostList)
-                        del testOPF_29BusModel.SMRCostList
-                        emission_eachWeather.append([testOPF_29BusModel.annualisedTotalEmissionCostList_MGBP_yr, testOPF_29BusModel.emissionCostContributionList_OPEX, testOPF_29BusModel.emissionCostContributionList_TotalCost])
-                        del testOPF_29BusModel.annualisedTotalEmissionCostList_MGBP_yr
-                        del testOPF_29BusModel.emissionCostContributionList_OPEX
-                        del testOPF_29BusModel.emissionCostContributionList_TotalCost
-                      
-                        energyBreakdown_eachWeather.append(testOPF_29BusModel.EnergySupplyBreakDown()[0])
-                        energyBreakdown_detailed_eachWeather.append([testOPF_29BusModel.EnergySupplyBreakDown()[1], testOPF_29BusModel.EnergySupplyBreakDown()[2]])
-                        netDemanding_smallArea_eachWeather.append(testOPF_29BusModel.netDemandingList_smallAreaForEachWeight)
-                        del testOPF_29BusModel.netDemandingList_smallAreaForEachWeight
-                        netDemanding_regionalArea_eachWeather.append(testOPF_29BusModel.netDemandingList_regionalAreaForEachWeight)
-                        del testOPF_29BusModel.netDemandingList_regionalAreaForEachWeight
-                        transmissionLoss_eachWeather.append(testOPF_29BusModel.transmissionLoss)
-                        del testOPF_29BusModel.transmissionLoss
-                        energyBreakdown_smallArea_eachWeather.append(testOPF_29BusModel.output_smallAreaForEachWeight)
-                        del testOPF_29BusModel.output_smallAreaForEachWeight
-                        energyBreakdown_regionalArea_eachWeather.append(testOPF_29BusModel.output_regionalAreaForEachWeight) 
-                        del testOPF_29BusModel.output_regionalAreaForEachWeight
-                        emission_regionalArea_eachWeather.append(testOPF_29BusModel.emission_regionalAreaForEachWeight) 
-                        del testOPF_29BusModel.emission_regionalAreaForEachWeight
-                        ## Raw data recorder
-                        busRawResult_eachWeather.append(testOPF_29BusModel.busOutputRecoder)
-                        del testOPF_29BusModel.busOutputRecoder
-                        branchRawResult_eachWeather.append(testOPF_29BusModel.branchOutputRecoder)
-                        del testOPF_29BusModel.branchOutputRecoder
-                        genRawResult_eachWeather.append(testOPF_29BusModel.genOutputRecoder)
-                        del testOPF_29BusModel.genOutputRecoder
-                    
                     summary_eachCarbonTax.append(summary_eachWeather)
                     divergenceList_eachCarbonTax.append(divergenceList_eachWeather)
-                    ratio_eachCarbonTax.append(ratio_eachWeather)
-                    SMR_eachCarbonTax.append(SMR_eachWeather)
-                    SMRInvestment_eachCarbonTax.append(SMRInvestment_eachWeather)
-                    emission_eachCarbonTax.append(emission_eachWeather)
-                    energyBreakdown_eachCarbonTax.append(energyBreakdown_eachWeather)
                     netDemanding_smallArea_eachCarbonTax.append(netDemanding_smallArea_eachWeather)
                     netDemanding_regionalArea_eachCarbonTax.append(netDemanding_regionalArea_eachWeather)
-                    transmissionLoss_eachCarbonTax.append(transmissionLoss_eachWeather)
-                    energyBreakdown_smallArea_eachCarbonTax.append(energyBreakdown_smallArea_eachWeather)
                     energyBreakdown_regionalArea_eachCarbonTax.append(energyBreakdown_regionalArea_eachWeather)
-                    emission_regionalArea_eachCarbonTax.append(emission_regionalArea_eachWeather)
-                    energyBreakdown_detailed_eachCarbonTax.append(energyBreakdown_detailed_eachWeather)
-                    ## Raw data recorder
-                    busRawResult_eachCarbonTax.append(busRawResult_eachWeather)
                     branchRawResult_eachCarbonTax.append(branchRawResult_eachWeather)
-                    genRawResult_eachCarbonTax.append(genRawResult_eachWeather)
 
-                    del summary_eachWeather, ratio_eachWeather, SMR_eachWeather, SMRInvestment_eachWeather, emission_eachWeather, energyBreakdown_eachWeather, \
-                        netDemanding_smallArea_eachWeather, netDemanding_regionalArea_eachWeather, transmissionLoss_eachWeather, energyBreakdown_smallArea_eachWeather, energyBreakdown_regionalArea_eachWeather, emission_regionalArea_eachWeather
+                    del summary_eachWeather, divergenceList_eachWeather, netDemanding_smallArea_eachWeather, netDemanding_regionalArea_eachWeather, energyBreakdown_regionalArea_eachWeather, branchRawResult_eachWeather
 
-                summary_eachSMRDesign.append(summary_eachCarbonTax)
+                summary_eachSMRDesign.append(summary_eachCarbonTax) 
                 divergenceList_eachSMRDesign.append(divergenceList_eachCarbonTax)
-                ratio_eachSMRDesign.append(ratio_eachCarbonTax)
-                SMROutputAndOperationalRatio_eachSMRDesign.append(SMR_eachCarbonTax)
-                SMRInvestment_eachSMRDesign.append(SMRInvestment_eachCarbonTax)
-                emission_eachSMRDesign.append(emission_eachCarbonTax)
-                energyBreakdown_eachSMRDesign.append(energyBreakdown_eachCarbonTax)
                 netDemanding_smallArea_eachSMRDesign.append(netDemanding_smallArea_eachCarbonTax)
                 netDemanding_regionalArea_eachSMRDesign.append(netDemanding_regionalArea_eachCarbonTax)
-                transmissionLoss_eachSMRDesign.append(transmissionLoss_eachCarbonTax)
-                energyBreakdown_smallArea_eachSMRDesign.append(energyBreakdown_smallArea_eachCarbonTax)
                 energyBreakdown_regionalArea_eachSMRDesign.append(energyBreakdown_regionalArea_eachCarbonTax)
-                emission_regionalArea_eachSMRDesign.append(emission_regionalArea_eachCarbonTax)
-                energyBreakdown_detailed_eachSMRDesign.append(energyBreakdown_detailed_eachCarbonTax)
-                ## Raw data recorder
-                busRawResult_eachSMRDesign.append(busRawResult_eachCarbonTax)
                 branchRawResult_eachSMRDesign.append(branchRawResult_eachCarbonTax)
-                genRawResult_eachSMRDesign.append(genRawResult_eachCarbonTax)
 
-                del summary_eachCarbonTax, divergenceList_eachCarbonTax, ratio_eachCarbonTax, SMR_eachCarbonTax, SMRInvestment_eachCarbonTax, emission_eachCarbonTax, energyBreakdown_eachCarbonTax, netDemanding_smallArea_eachCarbonTax, \
-                    netDemanding_regionalArea_eachCarbonTax, transmissionLoss_eachCarbonTax, energyBreakdown_smallArea_eachCarbonTax, energyBreakdown_regionalArea_eachCarbonTax, emission_regionalArea_eachCarbonTax, energyBreakdown_detailed_eachCarbonTax
+                del summary_eachCarbonTax, divergenceList_eachCarbonTax, netDemanding_smallArea_eachCarbonTax, \
+                    netDemanding_regionalArea_eachCarbonTax, energyBreakdown_regionalArea_eachCarbonTax, branchRawResult_eachCarbonTax
 
             if counter_smrChunk > 1:
                 summary_eachSMRDesign = (numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True)).tolist() + summary_eachSMRDesign 
                 divergenceList_eachSMRDesign = (numpy.load(rootPath + "np_divergenceList_eachSMRDesign.npy", allow_pickle=True)).tolist() + divergenceList_eachSMRDesign 
-                ratio_eachSMRDesign = (numpy.load(rootPath +"np_OPEXratio_eachSMRDesign.npy", allow_pickle=True)).tolist() + ratio_eachSMRDesign
-                SMROutputAndOperationalRatio_eachSMRDesign = (numpy.load(rootPath +"np_SMROutputAndOperationalRatio_eachSMRDesign.npy", allow_pickle=True)).tolist() + SMROutputAndOperationalRatio_eachSMRDesign
-                SMRInvestment_eachSMRDesign = (numpy.load(rootPath +"np_SMRInvestment_eachSMRDesign.npy", allow_pickle=True)).tolist() + SMRInvestment_eachSMRDesign
-                emission_eachSMRDesign = (numpy.load(rootPath +"np_emission_eachSMRDesign.npy", allow_pickle=True)).tolist() + emission_eachSMRDesign
-                energyBreakdown_eachSMRDesign = (numpy.load(rootPath +"np_energyBreakdown_eachSMRDesign.npy", allow_pickle=True)).tolist() + energyBreakdown_eachSMRDesign
-                netDemanding_smallArea_eachSMRDesign = (numpy.load(rootPath +"np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)).tolist() + netDemanding_smallArea_eachSMRDesign
                 netDemanding_regionalArea_eachSMRDesign = (numpy.load(rootPath +"np_netDemanding_regionalArea_eachSMRDesign.npy", allow_pickle=True)).tolist() + netDemanding_regionalArea_eachSMRDesign
-                transmissionLoss_eachSMRDesign = (numpy.load(rootPath +"np_transmissionLoss_eachSMRDesign.npy", allow_pickle=True)).tolist() + transmissionLoss_eachSMRDesign
-                energyBreakdown_smallArea_eachSMRDesign = (numpy.load(rootPath +"np_energyBreakdown_smallArea_eachSMRDesign.npy", allow_pickle=True)).tolist() + energyBreakdown_smallArea_eachSMRDesign
                 energyBreakdown_regionalArea_eachSMRDesign = (numpy.load(rootPath +"np_energyBreakdown_regionalArea_eachSMRDesign.npy", allow_pickle=True)).tolist() + energyBreakdown_regionalArea_eachSMRDesign
-                emission_regionalArea_eachSMRDesign = (numpy.load(rootPath +"np_emission_regionalArea_eachSMRDesign.npy", allow_pickle=True)).tolist() + emission_regionalArea_eachSMRDesign
-                energyBreakdown_detailed_eachSMRDesign = (numpy.load(rootPath +"np_energyBreakdown_detailed_eachSMRDesign.npy", allow_pickle=True)).tolist() + energyBreakdown_detailed_eachSMRDesign
-                
-                busRawResult_eachSMRDesign = (numpy.load(rootPath +"np_busRawResult_eachSMRDesign.npy", allow_pickle=True)).tolist() + busRawResult_eachSMRDesign
                 branchRawResult_eachSMRDesign = (numpy.load(rootPath +"np_branchRawResult_eachSMRDesign.npy", allow_pickle=True)).tolist() + branchRawResult_eachSMRDesign
-                ##genRawResult_eachSMRDesign = (numpy.load(rootPath +"np_genRawResult_eachSMRDesign.npy", allow_pickle=True)).tolist() + genRawResult_eachSMRDesign
-            
+                netDemanding_smallArea_eachSMRDesign = (numpy.load(rootPath +"np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)).tolist() + netDemanding_smallArea_eachSMRDesign
+                
             ## save raw data file
-            # numpy.save(rootPath + "np_genRawResult_eachSMRDesign.npy", numpy.array(genRawResult_eachSMRDesign))
-            # del genRawResult_eachSMRDesign
-            numpy.save(rootPath + "np_branchRawResult_eachSMRDesign.npy", numpy.array(branchRawResult_eachSMRDesign))
-            del branchRawResult_eachSMRDesign
-            numpy.save(rootPath + "np_busRawResult_eachSMRDesign.npy", numpy.array(busRawResult_eachSMRDesign))
-            del busRawResult_eachSMRDesign
-            numpy.save(rootPath + "np_energyBreakdown_smallArea_eachSMRDesign.npy", numpy.array(energyBreakdown_smallArea_eachSMRDesign))
-            del energyBreakdown_smallArea_eachSMRDesign
-            numpy.save(rootPath + "np_energyBreakdown_regionalArea_eachSMRDesign.npy", numpy.array(energyBreakdown_regionalArea_eachSMRDesign))
-            del energyBreakdown_regionalArea_eachSMRDesign
-            numpy.save(rootPath + "np_emission_regionalArea_eachSMRDesign.npy", numpy.array(emission_regionalArea_eachSMRDesign))
-            del emission_regionalArea_eachSMRDesign
-            numpy.save(rootPath + "np_netDemanding_smallArea_eachSMRDesign.npy", numpy.array(netDemanding_smallArea_eachSMRDesign))
-            del netDemanding_smallArea_eachSMRDesign
+            numpy.save(rootPath + "np_summary_eachSMRDesign.npy", numpy.array(summary_eachSMRDesign))
+            del summary_eachSMRDesign
+            numpy.save(rootPath + "np_divergenceList_eachSMRDesign.npy", numpy.array(divergenceList_eachSMRDesign))
+            del divergenceList_eachSMRDesign
             numpy.save(rootPath + "np_netDemanding_regionalArea_eachSMRDesign.npy", numpy.array(netDemanding_regionalArea_eachSMRDesign))
             del netDemanding_regionalArea_eachSMRDesign
-            numpy.save(rootPath + "np_energyBreakdown_detailed_eachSMRDesign.npy", numpy.array(energyBreakdown_detailed_eachSMRDesign))
-            del energyBreakdown_detailed_eachSMRDesign
+            numpy.save(rootPath + "np_energyBreakdown_regionalArea_eachSMRDesign.npy", numpy.array(energyBreakdown_regionalArea_eachSMRDesign))
+            del energyBreakdown_regionalArea_eachSMRDesign
+            numpy.save(rootPath + "np_branchRawResult_eachSMRDesign.npy", numpy.array(branchRawResult_eachSMRDesign))
+            del branchRawResult_eachSMRDesign
+            numpy.save(rootPath + "np_netDemanding_smallArea_eachSMRDesign.npy", numpy.array(netDemanding_smallArea_eachSMRDesign))
+            del netDemanding_smallArea_eachSMRDesign
 
-            numpy.save(rootPath + "np_summary_eachSMRDesign.npy", numpy.array(summary_eachSMRDesign))
-            numpy.save(rootPath + "np_divergenceList_eachSMRDesign.npy", numpy.array(divergenceList_eachSMRDesign))    
-            numpy.save(rootPath + "np_OPEXratio_eachSMRDesign.npy", numpy.array(ratio_eachSMRDesign))
-            numpy.save(rootPath + "np_SMROutputAndOperationalRatio_eachSMRDesign.npy", numpy.array(SMROutputAndOperationalRatio_eachSMRDesign))
-            numpy.save(rootPath + "np_SMRInvestment_eachSMRDesign.npy", numpy.array(SMRInvestment_eachSMRDesign))
-            numpy.save(rootPath + "np_emission_eachSMRDesign.npy", numpy.array(emission_eachSMRDesign))
-            numpy.save(rootPath + "np_energyBreakdown_eachSMRDesign.npy", numpy.array(energyBreakdown_eachSMRDesign) )
-            numpy.save(rootPath + "np_transmissionLoss_eachSMRDesign.npy", numpy.array(transmissionLoss_eachSMRDesign))
-
-            del summary_eachSMRDesign, divergenceList_eachSMRDesign, ratio_eachSMRDesign, SMROutputAndOperationalRatio_eachSMRDesign, SMRInvestment_eachSMRDesign, emission_eachSMRDesign, energyBreakdown_eachSMRDesign, transmissionLoss_eachSMRDesign
-            
             counter_smrChunk += 1   
 
     else:
-        # summary_eachSMRDesign = numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True) ## total cost and total emission
-        # divergenceList_eachSMRDesign = numpy.load(rootPath + "np_divergenceList_eachSMRDesign.npy", allow_pickle=True)
-        # OPEXratio_eachSMRDesign = numpy.load(rootPath + "np_OPEXratio_eachSMRDesign.npy", allow_pickle=True)
-        # SMRInvestment_eachSMRDesign = numpy.load(rootPath + "np_SMRInvestment_eachSMRDesign.npy", allow_pickle=True)
-        # SMROutputAndOperationalRatio_eachSMRDesign = numpy.load(rootPath +"np_SMROutputAndOperationalRatio_eachSMRDesign.npy", allow_pickle=True)
-        # emission_eachSMRDesign = numpy.load(rootPath +"np_emission_eachSMRDesign.npy", allow_pickle=True)
-        # energyBreakdown_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_eachSMRDesign.npy", allow_pickle=True)
-        # energyBreakdown_detailed_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_detailed_eachSMRDesign.npy", allow_pickle=True)      
-        # netDemanding_smallArea_eachSMRDesign = numpy.load(rootPath +"np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)
-        netDemanding_regionalArea_eachSMRDesign = numpy.load(rootPath +"np_netDemanding_regionalArea_eachSMRDesign.npy", allow_pickle=True)
-        # # transmissionLoss_eachSMRDesign = numpy.load(rootPath +"np_transmissionLoss_eachSMRDesign.npy", allow_pickle=True)    
-        # energyBreakdown_smallArea_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_smallArea_eachSMRDesign.npy", allow_pickle=True)
-        energyBreakdown_regionalArea_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_regionalArea_eachSMRDesign.npy", allow_pickle=True)
-        # emission_regionalArea_eachSMRDesign = numpy.load(rootPath +"np_emission_regionalArea_eachSMRDesign.npy", allow_pickle=True)
-        # busRawResult_eachSMRDesign = numpy.load(rootPath +"np_busRawResult_eachSMRDesign.npy", allow_pickle=True)
-        # branchRawResult_eachSMRDesign = numpy.load(rootPath +"np_branchRawResult_eachSMRDesign.npy", allow_pickle=True)
-        # genRawResult_eachSMRDesign = numpy.load(rootPath +"np_genRawResult_eachSMRDesign.npy", allow_pickle=True)
+        with open('./UK_Power_System_SMR_Replacement/SMR_Replacement/config_postProcessing_LCOE%s.json'%str(SMR_LCOE), 'r') as config_file_postp:
+            config_data_postp = json.load(config_file_postp)
 
+        ## total cost and total emission
+        summary_eachSMRDesign = (numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True)).tolist() 
+        netDemanding_regionalArea_eachSMRDesign = (numpy.load(rootPath +"np_netDemanding_regionalArea_eachSMRDesign.npy", allow_pickle=True)).tolist()
+        energyBreakdown_regionalArea_eachSMRDesign = (numpy.load(rootPath +"np_energyBreakdown_regionalArea_eachSMRDesign.npy", allow_pickle=True)).tolist()
+        branchRawResult_eachSMRDesign = (numpy.load(rootPath +"np_branchRawResult_eachSMRDesign.npy", allow_pickle=True)).tolist()
+        # netDemanding_smallArea_eachSMRDesign = (numpy.load(rootPath +"np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)).tolist()
 
-        # netDemanding_smallArea_eachSMRDesign = netDemanding_smallArea_eachSMRDesign.tolist()
-        netDemanding_regionalArea_eachSMRDesign = netDemanding_regionalArea_eachSMRDesign.tolist() 
-        # transmissionLoss_eachSMRDesign = transmissionLoss_eachSMRDesign.tolist()
-        # energyBreakdown_smallArea_eachSMRDesign = energyBreakdown_smallArea_eachSMRDesign.tolist()
-        energyBreakdown_regionalArea_eachSMRDesign = energyBreakdown_regionalArea_eachSMRDesign.tolist()
-        # emission_regionalArea_eachSMRDesign = emission_regionalArea_eachSMRDesign.tolist()
-        # busRawResult_eachSMRDesign = busRawResult_eachSMRDesign.tolist()
-        # branchRawResult_eachSMRDesign = branchRawResult_eachSMRDesign.tolist()
-        # genRawResult_eachSMRDesign = genRawResult_eachSMRDesign.tolist()
+        """The line charts"""
+        for pickedWeight in config_data_postp["pickedWeightList"]:
+            smr_replacement_for_fossil_fuel.lineGraph_weatherImpact(pickedWeight, config_data_postp["currentYear"], config_data_postp["currentYearlyCO2Emission_Mt"], 
+                                                                    config_data_postp["estimatedCO2Emissions_Mt"], config_data_postp["calculatedCO2Emissions_Mt"],
+                                                                    config_data_postp["correspondingCarbonTax"], config_data_postp["divergedPoint"],
+                                                                    config_data_postp["SMRTransitionWindowLowerBound"], config_data_postp["SMRTransitionWindowUpperBound"],
+                                                                    config_data_postp["NonSMRTransitionLowerBound"], config_data_postp["NonSMRTransitionUpperBound"],
+                                                                    summary_eachSMRDesign, config_data["NumberOfSMRUnitList"], config_data["CarbonTaxForOPFList"], 
+                                                                    config_data["weatherConditionList"])
+        """Capacity figure"""
+        smr_replacement_for_fossil_fuel.stackAreaGraphOverlayedWithBarChart_SMRvsCapacity(config_data_postp["givenNumberofSMR"], config_data_postp["reported_consumption"], config_data_postp["plannedNuclearCapacity"])
 
-    """The reusult data heatmap"""
-    ######## testOPF_29BusModel.resultsSheetCreator(NumberOfSMRUnitList, weatherConditionList, CarbonTaxForOPFList, summary_eachSMRDesign)
-    # testOPF_29BusModel.dataHeatmapCreator_totalCostAndEmission(summary_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)   
-    # testOPF_29BusModel.dataHeatmapCreator_CO2Emission(emission_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)   
-    # testOPF_29BusModel.dataHeatmapCreator_SubCost(summary_eachSMRDesign, OPEXratio_eachSMRDesign, emission_eachSMRDesign, SMRInvestment_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)
+        """WITH SPECIFIED CONFIGRATION""" 
+        # smr_replacement_for_fossil_fuel.GeoJSONCreator_netDemandingForSmallArea(netDemanding_smallArea_eachSMRDesign, config_data["NumberOfSMRUnitList"], config_data["CarbonTaxForOPFList"], 
+        #                                                             config_data["weatherConditionList"], config_data_postp["ifSpecifiedResultsForNetDemanding"], config_data_postp["specifiedConfig"])
+        smr_replacement_for_fossil_fuel.GeoJSONCreator_netDemandingForRegionalArea(netDemanding_regionalArea_eachSMRDesign, config_data["NumberOfSMRUnitList"], config_data["CarbonTaxForOPFList"], 
+                                                                    config_data["weatherConditionList"], config_data_postp["ifSpecifiedResultsForNetDemanding"], config_data_postp["specifiedConfig"])
+        smr_replacement_for_fossil_fuel.EnergySupplyBreakDownPieChartCreator_RegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, config_data["NumberOfSMRUnitList"], config_data["CarbonTaxForOPFList"], 
+                                                                    config_data["weatherConditionList"], config_data_postp["ifSpecifiedResultsForNetDemanding"], config_data_postp["specifiedConfig"])
+        smr_replacement_for_fossil_fuel.GeoJSONCreator_branchGrid(branchRawResult_eachSMRDesign, config_data["NumberOfSMRUnitList"], config_data["CarbonTaxForOPFList"], 
+                                                                    config_data["weatherConditionList"], config_data_postp["ifSpecifiedResultsForNetDemanding"], config_data_postp["specifiedConfig"])
+        smr_replacement_for_fossil_fuel.GeoJSONCreator_totalOutputOfRegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, config_data["NumberOfSMRUnitList"], config_data["CarbonTaxForOPFList"], 
+                                                                    config_data["weatherConditionList"], config_data_postp["ifSpecifiedResultsForNetDemanding"], config_data_postp["specifiedConfig"])
         
-    """The line charts and stack area graph"""
-    # for pickedWeight in EnergyBreakDown_weightList:
-    #     # testOPF_29BusModel.lineGraph_weatherImpact(pickedWeight, 2022, 53.7, 49.7, 49.5, 30, ["WHSL", 55, 0.5], 0, 20, 20, 40, summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)  ## LCOE 40 
-    #     testOPF_29BusModel.lineGraph_weatherImpact(pickedWeight, 2022, 53.7, 49.7, 49.5, 30, [], 45, 60, 20, 40, summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)  ## LCOE 60
-    # testOPF_29BusModel.lineGraph_weightImpact(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
-    # testOPF_29BusModel.lineGraph_SMRImpactForCO2Emission(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
-    # testOPF_29BusModel.stackAreaGraph_EnergyBreakDownForEachSMRDesign(energyBreakdown_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
-    # testOPF_29BusModel.stackAreaGraph_EnergyBreakDownForOptimisedDesign(summary_eachSMRDesign, energyBreakdown_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, EnergyBreakDown_weightList)
-    # testOPF_29BusModel.stackAreaGraphOverlayedWithBarChart_SMRvsCapacity(60, 30.6, 24)
-
-    """WITH SPECIFIED CONFIGRATION""" 
-    # testOPF_29BusModel.GeoJSONCreator_netDemandingForSmallArea(netDemanding_smallArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
-    testOPF_29BusModel.GeoJSONCreator_netDemandingForRegionalArea(netDemanding_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
-    # testOPF_29BusModel.EnergySupplyBreakDownPieChartCreator_RegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
-    # testOPF_29BusModel.GeoJSONCreator_branchGrid(branchRawResult_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
-    testOPF_29BusModel.GeoJSONCreator_totalOutputOfRegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
-    print('Terminal')
+    
+    print('-----Terminal-----')
 

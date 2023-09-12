@@ -1,6 +1,6 @@
 ###################################################
 # Author: Wanni Xie (wx243@cam.ac.uk)             #
-# Last Update Date: 13 Jan 2022                   #
+# Last Update Date: 12 Sept 2023                  #
 ###################################################
 from collections import Counter
 import sys, os
@@ -32,9 +32,9 @@ class demandLoadAllocator(object):
         # The query endpoints
         ons_label = endpointList.ONS['label']
         ons_iri = endpointList.ONS['queryendpoint_iri']
-        ukdigitaltwin_iri = endpointList.ukdigitaltwin['queryendpoint_iri']
+        UKPowerSystemBaseWorld_iri = endpointList.UKPowerSystemBaseWorld['queryendpoint_iri']
         # query regional consumption
-        res_queryElectricityConsumption_Region = list(query_model.queryElectricityConsumption_Region(startTime_of_EnergyConsumption, ukdigitaltwin_iri, ons_iri))
+        res_queryElectricityConsumption_Region = list(query_model.queryElectricityConsumption_Region(startTime_of_EnergyConsumption, UKPowerSystemBaseWorld_iri, ons_iri))
         # Find the located region of each bus 
         busLatLonKey = 'BusLatLon'
         res_queryBusTopologicalInformation = busLocatedRegionFinder(res_queryBusTopologicalInformation, ons_label, busLatLonKey)
@@ -91,9 +91,9 @@ class demandLoadAllocator(object):
       # res_queryElectricityConsumption_LocalArea = [Area_LACode, v_TotalELecConsumption, Geo_InfoList]
       ons_label = endpointList.ONS['label']
       ons_iri = endpointList.ONS['queryendpoint_iri']
-      ukdigitaltwin_iri = endpointList.ukdigitaltwin['queryendpoint_iri']
+      UKPowerSystemBaseWorld_iri = endpointList.UKPowerSystemBaseWorld['queryendpoint_iri']
     #   # query the local consumption
-    #   res_queryElectricityConsumption_LocalArea = list(query_model.queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, ukdigitaltwin_iri, ons_iri))
+    #   res_queryElectricityConsumption_LocalArea = list(query_model.queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, UKPowerSystemBaseWorld_iri, ons_iri))
     
     #   print('****The cluster principle is closestDemandLoad****')
     #   # find the centroid of the polygon, the value of the 
@@ -193,9 +193,9 @@ class demandLoadAllocator(object):
       print('****The cluster principle is closestDemandLoad_withEWSBoundCheck****')
       ons_label = endpointList.ONS['label']
       ons_iri = endpointList.ONS['queryendpoint_iri']
-      ukdigitaltwin_iri = endpointList.ukdigitaltwin['queryendpoint_iri']
+      UKPowerSystemBaseWorld_iri = endpointList.UKPowerSystemBaseWorld['queryendpoint_iri']
       # query the local consumption
-      res_queryElectricityConsumption_LocalArea = list(query_model.queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, ukdigitaltwin_iri, ons_iri))
+      res_queryElectricityConsumption_LocalArea = list(query_model.queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, UKPowerSystemBaseWorld_iri, ons_iri))
       # detect the location of the bus, in GB or in NI
       busInGB, busInNorthernIreland, countryBoundaryDict = busLocationFinderForGBOrNI(res_queryBusTopologicalInformation, ons_label)   
       # query the bounderies of England&Wales, England, Wales
@@ -443,85 +443,3 @@ def test_MultipolygonCentroid():
     centroid = centroidOfMultipolygon_withAreaWeighted(cardiffBoundary)
     return centroid
 
-####################### test end#################
-        
-#TODO: for visualisation
-def generatorClusteringColour(gen_bus):
-  #https://htmlcolorcodes.com/
-  map_bus_dict = {
-        0: "#ffffff",
-        1: "#AED6F1",
-        2: "#1F618D",
-        3: "#F9E79F",
-        4: "#99A3A4",
-        5: "#1B2631",
-        6: "#DC7633",
-        7: "#F1C40F",
-        8: "#1F618D",
-        9: "#873600",
-        10: "#c0c0c0",
-        11: "#800000",
-        12: "#808000",
-        13: "#00ff00",
-        14: "#ff00ff",
-        15: "#5f5fff",
-        16: "#5fd787",
-        17: "#875f5f",
-        18: "#af5f00",
-        19: "#d75f5f",
-        20: "#afffff",
-        21: "#d7af00",
-        22: "#3a3a3a",
-        23: "#0000af",
-        24: "#ffff00",
-        25: "#5f00ff",
-        26: "#5fd700",
-        27: "#ffd7ff",
-        28: "#080808",
-        29: "#1E8449"
-    }
-  return map_bus_dict[(gen_bus%30)]
-
-def genLocationJSONCreator(busAndDemandPairList_duplicated, class_label_29_gen_GPS): 
-    geojson_file = """
-      {
-        "type": "FeatureCollection",
-        "features": ["""
-      # iterating over features (rows in results array)
-    for r in busAndDemandPairList_duplicated:
-          # creating point feature 
-          feature = """{
-            "type": "Feature",
-            "properties": {
-              "Name": "%s",
-              "marker-color": "%s",
-              "marker-size": "small",
-              "marker-symbol": "circle",
-              "Connected_bus": "%s"
-              
-            },
-            "geometry": {
-              "type": "Point",
-              "coordinates": [
-                %s,
-                %s
-              ]
-            }                     
-          },""" %(r['Area_LACode'], generatorClusteringColour(r['Bus_node']), r['Bus_node'], r['Geo_InfoList'][1], r['Geo_InfoList'][0])         
-          # adding new line 
-          geojson_file += '\n'+feature   
-    # removing last comma as is last line
-    geojson_file = geojson_file[:-1]
-    # finishing file end 
-    end_geojson = """
-        ]
-      }
-      """
-    geojson_file += end_geojson
-    # saving as geoJSON
-    geojson_written = open(class_label_29_gen_GPS + '.geojson','w')
-    geojson_written.write(geojson_file)
-    geojson_written.close()
-    return
-
-    

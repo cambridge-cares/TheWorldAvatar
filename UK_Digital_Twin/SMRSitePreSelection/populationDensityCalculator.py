@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 26 July 2022         #
+# Last Update Date: 12 Sept 2023         #
 ##########################################
 
 """
@@ -16,8 +16,8 @@ from rfc3987 import parse
 from logging import raiseExceptions
 
 def populationDensityCalculator(centre:str, radius, queryEndPointLabel: str) -> float:
-    if queryEndPointLabel == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin_pd['label']):
-        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin_pd['endpoint_iri'])
+    if queryEndPointLabel == str(EndPointConfigAndBlazegraphRepoLabel.UKPopulationData['label']):
+        endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.UKPopulationData['endpoint_iri'])
     elif parse(queryEndPointLabel, rule='IRI'):
         endPointIRI = queryEndPointLabel
     else:
@@ -62,6 +62,6 @@ def populationDensityCalculator(centre:str, radius, queryEndPointLabel: str) -> 
     
     return populationWithinGivenCircle
 
-if __name__ == '__main__':
-    p = populationDensityCalculator('52.209556#0.120046', 100, 'ukdigitaltwin_pd')
-    print(p)
+# if __name__ == '__main__':
+#     p = populationDensityCalculator('52.209556#0.120046', 100, 'UKPopulationData')
+#     print(p)

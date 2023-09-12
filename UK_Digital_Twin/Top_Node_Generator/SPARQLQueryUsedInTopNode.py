@@ -186,7 +186,7 @@ def queryELineNodeURL(remoteEndPoint, numOfBus, SleepycatPath, localQuery):
 
 
 if __name__ == '__main__': 
-    queryEBusNodeURL("ukdigitaltwin", 10, None, False)
+    queryEBusNodeURL("UKPowerSystemBaseWorld", 10, None, False)
 
 
 

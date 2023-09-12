@@ -89,27 +89,3 @@ def deleteLookUpTable_withoutResources(endpoint_iri, queryendpoint_iri, updateen
     # print(delete_repo_info)
     print ('The repository information has been deleted from Blazegraph lookup table.')
     return
-   
-        
-if __name__ == '__main__': 
-    # endpoint_iri = "http://statistics.data.gov.uk/sparql.json"
-    # queryendpoint_iri = "http://statistics.data.gov.uk/sparql.json"
-    # updateendpoint_iri = "http://statistics.data.gov.uk/sparql.json"
-    # queryendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKDigitalTwin"
-    # updateendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKDigitalTwin/statements"
-    # label = "ons"
-    # deleteLookUpTable_withoutResources(endpoint_iri, queryendpoint_iri, updateendpoint_iri, label)
-    
-    # endpoint_iri = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test1/sparql"
-    # queryendpoint_iri = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test1/sparql"
-    # updateendpoint_iri = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test1/sparql"
-    # label = "ukdigitaltwin_test1" 
-    
-    endpoint_iri = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_powerplant/sparql"
-    queryendpoint_iri = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_powerplant/sparql"
-    updateendpoint_iri = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_powerplant/sparql"
-    # queryendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKDigitalTwin"
-    # updateendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKDigitalTwin/statements"
-    label = "ukdigitaltwin_powerplant"
-    
-    updateLookUpTable(endpoint_iri, queryendpoint_iri, updateendpoint_iri, label, True,False)

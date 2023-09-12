@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 06 Sept 2023         #
+# Last Update Date: 12 Sept 2023         #
 ##########################################
 
 """This module is used to recored the repository labels used in the remote triple store, Blazegraph. The lables will be refered when performing queries."""
@@ -11,8 +11,8 @@ BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 from UK_Digital_Twin_Package.endPoint import ONSEndpoint, UKPowerSystemBaseWorld, UKPopulationData
 
-"""UK digital twin in Blazegraph"""
-UKPowerSystemBaseWorld = { ## digital ocean 
+"""UK Power System Base World in Blazegraph"""
+UKPowerSystemBaseWorld = {
     'label': 'UKPowerSystemBaseWorld',
     'endpoint_iri' : UKPowerSystemBaseWorld,
     'queryendpoint_iri' : UKPowerSystemBaseWorld,
@@ -34,7 +34,7 @@ ONS = {
     'queryendpoint_iri' : ONSEndpoint,
     'updateendpoint_iri' : ONSEndpoint}
 
-"""ukdigitaltwin population density"""
+"""UK population data"""
 UKPopulationData = {
     'label': 'UKPopulationData',
     'endpoint_iri' : UKPopulationData,

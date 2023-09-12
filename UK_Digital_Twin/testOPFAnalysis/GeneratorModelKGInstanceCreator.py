@@ -60,8 +60,8 @@ uk_topo = UK_Topo.UKPowerGridTopology()
 ukec = UKec.UKEnergyConsumption()
 
 """Blazegraph UK digital tiwn"""
-endpoint_label = endpointList.ukdigitaltwin['label']
-endpoint_iri = endpointList.ukdigitaltwin['queryendpoint_iri']
+endpoint_label = endpointList.UKPowerSystemBaseWorld['label']
+endpoint_iri = endpointList.UKPowerSystemBaseWorld['queryendpoint_iri']
 
 """User specified folder path"""
 filepath = None

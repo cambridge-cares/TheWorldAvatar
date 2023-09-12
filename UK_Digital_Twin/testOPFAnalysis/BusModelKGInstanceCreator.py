@@ -50,8 +50,8 @@ ukec = UKec.UKEnergyConsumption()
 
 ## TODO: check if the endpoint is the right endpoint
 """Blazegraph UK digital tiwn"""
-endpoint_label = endpointList.ukdigitaltwin['label'] # remote query
-endpoint_iri = endpointList.ukdigitaltwin['queryendpoint_iri'] # federated query
+endpoint_label = endpointList.UKPowerSystemBaseWorld['label'] # remote query
+endpoint_iri = endpointList.UKPowerSystemBaseWorld['queryendpoint_iri'] # federated query
 ONS_JSON =  endpointList.ONS['endpoint_iri']
 
 """T-Box URI"""
