@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   rfid-query-agent:
-    image: rfid-query-agent:1.0.0
+    image: rfid-query-agent:1.1.0
     build: .
     container_name: rfid-query-agent
     pull_policy: if_not_present

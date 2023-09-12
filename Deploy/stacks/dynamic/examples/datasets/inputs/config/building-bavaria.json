@@ -1,0 +1,16 @@
+{
+    "database": "postgres",
+    "datasetDirectory": "building-bavaria",
+    "dataSubsets": [
+        {
+            "type": "CityDB",
+            "skip": false,
+            "importOptions": {
+                "sridIn": "25832"
+            }
+        }
+    ],
+    "mappings": [
+        "citydbOntop.obda"
+    ]
+}

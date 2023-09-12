@@ -1,0 +1,104 @@
+.head { width: 600px; padding:  6px; padding-left: 10px; text-color:#222;   text-align: left; font-family: arial,sans-serif; 	font-size:14px}
+.value {font-size: 35px;  font-family: arial,sans-serif;  vertical-align: middle;   display: inline-block; margin-left: 10px }
+.key_img { margin-left: 300px}
+.main_result {width: 600px;}
+.description {width: 600px;  padding-left: 10px; padding:  6px;}
+.google_result {margin-left: 20px; margin-top: 10px}
+.sideways {margin-right: 70px; }
+.sideways-container {	display:flex;
+                        flex-direction:row;
+                        width: 600px;
+                        }
+.webanswers-webanswers_table__webanswers-table {padding: 10px}
+.g {padding: 10px}
+.extra {width: 600px}
+
+
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px 0;
+  border-radius: 6px;
+
+  /* Position the tooltip text - see examples below! */
+  position: absolute;
+  z-index: 1;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.autocomplete-items {
+    color: black;
+}
+
+/*the container must be positioned relative:*/
+.autocomplete {
+  position: relative;
+  display: inline-block;
+}
+
+input {
+  border: 1px solid transparent;
+  background-color: #f1f1f1;
+  padding: 10px;
+  font-size: 16px;
+}
+
+input[type=text] {
+  background-color: #f1f1f1;
+  width: 100%;
+}
+
+input[type=submit] {
+  background-color: DodgerBlue;
+  color: #fff;
+  cursor: pointer;
+}
+
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  /*position the autocomplete items to be the same width as the container:*/
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+}
+
+/*when hovering an item:*/
+.autocomplete-items div:hover {
+  background-color: #e9e9e9;
+}
+
+/*when navigating through the items using the arrow keys:*/
+.autocomplete-active {
+  background-color: DodgerBlue !important;
+  color: #ffffff;
+}
