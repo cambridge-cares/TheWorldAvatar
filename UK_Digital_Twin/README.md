@@ -110,25 +110,136 @@ Similarly, you can change also year of energy consumption data.
 Step 3 (OPTIONAL): Ready for conducting the scenario analysis of SMR replacement with optimal power flow (OPF) analysis?
 - 3.1 Pre-requirement: If you want to post-process the result produced by SMR replacement, copy all the files from the path of `Dropbox (Cambridge University)\CoMo shared\wx243\c4e-wx243-TWAPowerSystem\Codes\UK_Digital_Twin\resources\RegionalBreakdown_images` to the `UK_Digital_Twin\resources\required_images` folder.
 
-- 3.2 Conduct SMR Replacement: 
-Set up the attributes of the object
-- topologyNodeIRI: There are two bus topologies, 10 bus model and 29 bus model. 
-	topologyNodeIRI_10Bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_b22aaffa-fd51-4643-98a3-ff72ee04e21e" 
-    topologyNodeIRI_29Bus = "http://www.theworldavatar.com/kb/ontoenergysystem/PowerGridTopology_6017554a-98bb-4896-bc21-e455cb6b3958" 
+- 3.2 Conduct SMR Replacement: For reproducing the results reported in Preprint 312, you need to run `SMRReplacemenWithOptimalFlowAnalysis.py` 4 times.
 
-- eliminateClosedPlantIRIList: identifies the power plants which are not going to be considered in OPF.
+First run: You will run the simulation this time. Go to `\UK_Digital_Twin\UK_Power_System_SMR_Replacement\SMR_Replacement\` and run `SMRReplacemenWithOptimalFlowAnalysis.py` using the following command.
 
-- agentIRI: specify the IRI of the agent which perform the current work (This attribute is relevant to the markup of the results which is so far not fully functionalised. Therefore, a fake IRI is provided.)  
+   `python UK_Power_System_SMR_Replacement/SMR_Replacement/SMRReplacemenWithOptimalFlowAnalysis.py`
 
-- slackBusNodeIRI: specify the IRI of the slack bus of the bus model.
-	slackBusNodeIRI_10Bus = "http://www.theworldavatar.com/kb/ontopowsys/BusNode_1f3c4462-3472-4949-bffb-eae7d3135591" 
-   slackBusNodeIRI_29Bus = "http://www.theworldavatar.com/kb/ontopowsys/BusNode_bc386bcb-33ab-4569-80c5-00dc9d0bffb8"
+Once the module starts, the terminal will firstly show the following sentence
 
-- loadAllocatorName: specify the name of the method used for allocate the demand to the bus, there are two avaliable methods 'regionalDemandLoad' and 'closestDemandLoad'.
-	'regionalDemandLoad' is to allocate the demand of the same offical region of the UK to the bus in this region. This method is originally design to the 10 bus model in which each region only has one bus. This method cannot deal with the situation that each region has more than one bus but it is suitable for more than one region sharing the same bus. This method is a relatively rough way for assigning the demand which is not always recommanded.
-	'closestDemandLoad' is the method that allocates the demand to its closet bus which can be used for any bus model.
+`Please specify the number of bus and number of branch (e.g. 1014 for 10-bus and 14-branch, 2999 for 29-bus and 99-branch): ` 
 
-- EBusModelVariableInitialisationMethodName: specify the method name of the initialising the bus specifications. There are two methods avaliable, "defaultInitialisation" and "preSpecified".
-	"defaultInitialisation" is designed for 10 bus model while the "preSpecified" is for 29 bus model.
+for determing which config file is used to initialise the SMR replacement simulation. There are two config files avaliable in this project with are accordingly with the number of topologies. You can enter either `1014` to use the 10-bus model or `2999` to use the 29-bus model. For reporoduing the results reported in Preprint 312, use `2999`.
 
-- startTime_of_EnergyConsumption: specify the demand data start time for data querying. The demand data published from UK GOV is updated each year. The knowledge graph which represents those data is labeled with its start time, e.g. "2017-01-31".
+After setting up the model type, the terminal will then show up the following question to specify the LCOE of the SMR
+
+`Please specify the LCOE of SMR (£/MWh): `
+
+The range could be any number. In this study, due to the prototype picked for the SMR, 40 ~ 60 £/MWh is insterested.
+
+For reporoduing the results reported in Preprint 312, use `40`.
+
+Following this step, the terminal will ask for the question `Please specify if generate the geojson file for visulisation (1 for Yes, 2 for No): ` to configurate the generation of GeoJSON files. For entering `1` is to generate the GeoJSON file for visulisation purpose and it is recommended. 
+
+For reporoduing the results reported in Preprint 312, use `1`.
+
+Then, you will see from the terminal asks that `Please specify if use the existing results for post-processing (1 for Yes, 2 for No): ` to specify if this running is for simulation or results post-processing. If this is the first time execution for calculating the result then you can enter `2`. Otherwise, entering `1` is for post processing the existed result files to create charts or diagrams. While choosing the post processing mode, please make sure that that results files are avaiable from the path `/UK_Digital_Twin/outputs/smr_replacements/` and the folder name is corresponding to the configs which are set up in the previous steps.
+
+For reporoduing the results reported in Preprint 312, use `2`.
+
+At the last step you need to decide whether to create the PDF files for Pareto Front `Please specify if creates the PDF files for Pareto Front (1 for Yes, 2 for No): `. Enters `1` for creating PDFs and `2` for not. It is recommended to select `1` for simulation and for post processing, it can be any value which will not affect the proccess.
+
+For reporoduing the results reported in Preprint 312, use `1`.
+
+Note: keep patience because the code might take as long as 40 hours on a machine with 32 GBs of memory.
+
+Second run: You will post-process the results generated in the first run. Go to `\UK_Digital_Twin\UK_Power_System_SMR_Replacement\SMR_Replacement\` and run `SMRReplacemenWithOptimalFlowAnalysis.py` using the following command.
+
+   `python UK_Power_System_SMR_Replacement/SMR_Replacement/SMRReplacemenWithOptimalFlowAnalysis.py`
+
+Once the module starts, the terminal will firstly show the following sentence
+
+`Please specify the number of bus and number of branch (e.g. 1014 for 10-bus and 14-branch, 2999 for 29-bus and 99-branch): ` 
+
+for determing which config file is used to initialise the SMR replacement simulation. There are two config files avaliable in this project with are accordingly with the number of topologies. You can enter either `1014` to use the 10-bus model or `2999` to use the 29-bus model. For reporoduing the results reported in Preprint 312, use `2999`.
+
+After setting up the model type, the terminal will then show up the following question to specify the LCOE of the SMR
+
+`Please specify the LCOE of SMR (£/MWh): `
+
+The range could be any number. In this study, due to the prototype picked for the SMR, 40 ~ 60 £/MWh is insterested.
+
+For reporoduing the results reported in Preprint 312, use `40`.
+
+Following this step, the terminal will ask for the question `Please specify if generate the geojson file for visulisation (1 for Yes, 2 for No): ` to configurate the generation of GeoJSON files. For entering `1` is to generate the GeoJSON file for visulisation purpose and it is recommended. 
+
+For reporoduing the results reported in Preprint 312, use `1`.
+
+Then, you will see from the terminal asks that `Please specify if use the existing results for post-processing (1 for Yes, 2 for No): ` to specify if this running is for simulation or results post-processing. If this is the first time execution for calculating the result then you can enter `2`. Otherwise, entering `1` is for post processing the existed result files to create charts or diagrams. While choosing the post processing mode, please make sure that that results files are avaiable from the path `/UK_Digital_Twin/outputs/smr_replacements/` and the folder name is corresponding to the configs which are set up in the previous steps.
+
+For reporoduing the results reported in Preprint 312, use `1`.
+
+At the last step you need to decide whether to create the PDF files for Pareto Front `Please specify if creates the PDF files for Pareto Front (1 for Yes, 2 for No): `. Enters `1` for creating PDFs and `2` for not. It is recommended to select `1` for simulation and for post processing, it can be any value which will not affect the proccess.
+
+For reporoduing the results reported in Preprint 312, use `1`.
+
+Once the code execution is finished, you will find figures reported in Preprint 312. Figures 2-6 may be found in the following path in PDF format:
+`UK_Digital_Twin\outputs\smr_replacement_fig`.
+
+Note: this is the post-processing step and is much faster than the first run.
+
+Third run: You will run the simulation again but with a different LCOE input this time. Go to `\UK_Digital_Twin\UK_Power_System_SMR_Replacement\SMR_Replacement\` and run `SMRReplacemenWithOptimalFlowAnalysis.py` using the following command.
+
+   `python UK_Power_System_SMR_Replacement/SMR_Replacement/SMRReplacemenWithOptimalFlowAnalysis.py`
+
+Once the module starts, the terminal will firstly show the following sentence
+
+`Please specify the number of bus and number of branch (e.g. 1014 for 10-bus and 14-branch, 2999 for 29-bus and 99-branch): ` 
+
+for determing which config file is used to initialise the SMR replacement simulation. There are two config files avaliable in this project with are accordingly with the number of topologies. You can enter either `1014` to use the 10-bus model or `2999` to use the 29-bus model. For reporoduing the results reported in Preprint 312, use `2999`.
+
+After setting up the model type, the terminal will then show up the following question to specify the LCOE of the SMR
+
+`Please specify the LCOE of SMR (£/MWh): `
+
+The range could be any number. In this study, due to the prototype picked for the SMR, 40 ~ 60 £/MWh is insterested.
+
+For reporoduing the results reported in Preprint 312, use `60`.
+
+Following this step, the terminal will ask for the question `Please specify if generate the geojson file for visulisation (1 for Yes, 2 for No): ` to configurate the generation of GeoJSON files. For entering `1` is to generate the GeoJSON file for visulisation purpose and it is recommended. 
+
+For reporoduing the results reported in Preprint 312, use `1`.
+
+Then, you will see from the terminal asks that `Please specify if use the existing results for post-processing (1 for Yes, 2 for No): ` to specify if this running is for simulation or results post-processing. If this is the first time execution for calculating the result then you can enter `2`. Otherwise, entering `1` is for post processing the existed result files to create charts or diagrams. While choosing the post processing mode, please make sure that that results files are avaiable from the path `/UK_Digital_Twin/outputs/smr_replacements/` and the folder name is corresponding to the configs which are set up in the previous steps.
+
+For reporoduing the results reported in Preprint 312, use `2`.
+
+At the last step you need to decide whether to create the PDF files for Pareto Front `Please specify if creates the PDF files for Pareto Front (1 for Yes, 2 for No): `. Enters `1` for creating PDFs and `2` for not. It is recommended to select `1` for simulation and for post processing, it can be any value which will not affect the proccess.
+
+For reporoduing the results reported in Preprint 312, use `1`.
+
+Note: similarly to the first run, the code might take as long as 40 hours.
+
+Final run: You will post-process the results generated in the third run. Go to `\UK_Digital_Twin\UK_Power_System_SMR_Replacement\SMR_Replacement\` and run `SMRReplacemenWithOptimalFlowAnalysis.py` using the following command.
+
+   `python UK_Power_System_SMR_Replacement/SMR_Replacement/SMRReplacemenWithOptimalFlowAnalysis.py`
+
+Once the module starts, the terminal will firstly show the following sentence
+
+`Please specify the number of bus and number of branch (e.g. 1014 for 10-bus and 14-branch, 2999 for 29-bus and 99-branch): ` 
+
+for determing which config file is used to initialise the SMR replacement simulation. There are two config files avaliable in this project with are accordingly with the number of topologies. You can enter either `1014` to use the 10-bus model or `2999` to use the 29-bus model. For reporoduing the results reported in Preprint 312, use `2999`.
+
+After setting up the model type, the terminal will then show up the following question to specify the LCOE of the SMR
+
+`Please specify the LCOE of SMR (£/MWh): `
+
+The range could be any number. In this study, due to the prototype picked for the SMR, 40 ~ 60 £/MWh is insterested.
+
+For reporoduing the results reported in Preprint 312, use `60`.
+
+Following this step, the terminal will ask for the question `Please specify if generate the geojson file for visulisation (1 for Yes, 2 for No): ` to configurate the generation of GeoJSON files. For entering `1` is to generate the GeoJSON file for visulisation purpose and it is recommended. 
+
+For reporoduing the results reported in Preprint 312, use `1`.
+
+Then, you will see from the terminal asks that `Please specify if use the existing results for post-processing (1 for Yes, 2 for No): ` to specify if this running is for simulation or results post-processing. If this is the first time execution for calculating the result then you can enter `2`. Otherwise, entering `1` is for post processing the existed result files to create charts or diagrams. While choosing the post processing mode, please make sure that that results files are avaiable from the path `/UK_Digital_Twin/outputs/smr_replacements/` and the folder name is corresponding to the configs which are set up in the previous steps.
+
+For reporoduing the results reported in Preprint 312, use `1`.
+
+At the last step you need to decide whether to create the PDF files for Pareto Front `Please specify if creates the PDF files for Pareto Front (1 for Yes, 2 for No): `. Enters `1` for creating PDFs and `2` for not. It is recommended to select `1` for simulation and for post processing, it can be any value which will not affect the proccess.
+
+For reporoduing the results reported in Preprint 312, use `1`.
+
+Once the code execution is finished, you will find figures reported in Preprint 312. Figures 2-6 may be found in the following path in PDF format:
+`UK_Digital_Twin\outputs\smr_replacement_fig`.
