@@ -64,6 +64,8 @@ public class CityDB extends GeoServerDataSubset {
 
         loadDataInternal(dataSubsetDir, database, baseIRI, lineage);
 
+        augmentData(database);
+
     }
 
     protected void loadDataInternal(Path dataSubsetDir, String database, String baseIRI, String lineage) {
@@ -81,6 +83,10 @@ public class CityDB extends GeoServerDataSubset {
         CityDBClient.getInstance()
                 .uploadFilesToPostGIS(dataSubsetDir.toString(), database, importOptions, lineage, baseIRI,
                         append || usePreviousIRIs);
+    }
+
+    protected void augmentData(String database) {
+        CityDBClient.getInstance().addBuildingHeight(database);
     }
 
     @Override

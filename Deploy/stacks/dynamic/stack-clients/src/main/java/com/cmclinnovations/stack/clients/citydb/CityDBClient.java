@@ -264,4 +264,14 @@ public class CityDBClient extends ContainerClient {
         }
         PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(preprocessSql);
     }
+
+    public void addBuildingHeight(String database) {
+        String sqlFilename = "citydb_add_building_height.sql";
+        try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
+            String sqlQuery = new String(is.readAllBytes());
+            PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
+        } catch (IOException ex) {
+            throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
+        }
+    }
 }
