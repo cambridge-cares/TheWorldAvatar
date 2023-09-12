@@ -19,7 +19,7 @@ from core.data_processing.input_processing import (
 )
 from core.data_processing.output_processing import preprocess_output
 from core.arguments_schema import DatasetArguments, ModelArguments
-from core.model_utils import get_hf_model_and_tokenizer
+from core.model_utils.hf import get_hf_model_and_tokenizer
 
 
 def get_t5_trainer(
