@@ -8,6 +8,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 
 from data_generation.example_generator import ExampleGenerator, make_arg_samplers
+from data_generation.constants import PROPERTIES, IDENTIFIERS
 
 
 DIRPATH = pathlib.Path(__file__).parent.resolve()
@@ -28,19 +29,7 @@ def generate_dataset(
     N_dev: int = 3,
     N_test: int = 3,
 ):
-    property_list = [
-        'AtomChiralCount', 'AtomChiralDefCount', 'AtomChiralUndefCount', 'BondChiralCount', 'BondChiralDefCount',
-        'BondChiralUndefCount', 'CanonicalizedCompound', 'Charge', 'CompoundComplexity', 'CovalentUnitCount',
-        'ExactMass', 'HeavyAtomCount', 'HydrogenBondAcceptorCount', 'HydrogenBondDonorCount', 'IsotopeAtomCount', 
-        'MolecularWeight', 'MonoIsotopicWeight', 'RotatableBondCount', 'SubStructureKeysFingerprint', 
-        'TautomerCount', 'XLogP3', 'AutoignitionTemperature', 'Caco2Permeability', 'CollisionCrossSection',
-        'Hydrophobicity', 'IonizationPotential', 'IsoelectricPoint', 'LogP', 'LogS', 'PolarSurfaceArea', 
-        'BoilingPoint', 'Density', 'DissociationConstants', 'EnthalpyOfSublimation', 'FlashPoint', 'StandardEnthalpyOfFormation', 
-        'HeatOfCombustion', 'HeatOfVaporization', 'HenrysLawConstant', 'MeltingPoint', 'OpticalRotation', 'Solubility',
-        'SurfaceTension', 'VaporDensity', 'VaporPressure', 'Viscosity'
-    ]
 
-    identifier_list = ['ChebiID', 'CID', 'EmpiricalFormula', 'InChI', 'InChIKey', 'IUPACName', 'MolecularFormula', 'SMILES']
 
     with open(os.path.join(RESOURCE_DIRPATH, "species.txt")) as f:
         species = [line.strip() for line in f.readlines()]
@@ -52,9 +41,9 @@ def generate_dataset(
     train_example_generators = []
     test_example_generators = []
 
-    train_arg_samplers, test_arg_samplers = make_arg_samplers(
-        properties=property_list,
-        identifiers=identifier_list,
+    samplers = make_arg_samplers(
+        properties=PROPERTIES,
+        identifiers=IDENTIFIERS,
         species=species,
         chemicalclasses=chemicalclasses,
         uses=uses,
@@ -85,14 +74,18 @@ def generate_dataset(
             query_template=query_template,
             query_compact_template=query_compact_template,
             qn_templates=train_question_templates,
-            arg_samplers=train_arg_samplers,
+            arg_samplers=samplers["train_arg_samplers"],
+            val_sampler=samplers["val_sampler"],
+            minvalue_maxvalue_sampler=samplers["minvalue_maxvalue_sampler"]
         ))
         test_example_generators.append(ExampleGenerator(
             template_name=template_name,
             query_template=query_template,
             query_compact_template=query_compact_template,
             qn_templates=test_question_templates,
-            arg_samplers=test_arg_samplers,
+            arg_samplers=samplers["test_arg_samplers"],
+            val_sampler=samplers["val_sampler"],
+            minvalue_maxvalue_sampler=samplers["minvalue_maxvalue_sampler"]
         ))
 
     train_examples = [next(example_generator) for _ in range(N_train) for example_generator in train_example_generators]

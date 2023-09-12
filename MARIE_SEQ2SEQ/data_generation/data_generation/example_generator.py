@@ -1,9 +1,11 @@
 from collections import defaultdict
 import random
-from typing import Any, Dict, List
+from typing import Callable, Dict, List, Tuple
 
 import numpy as np
 from sklearn.model_selection import train_test_split
+
+from data_generation.constants import ValueLabelsEntry
 
 
 def ExampleGenerator(
@@ -11,7 +13,9 @@ def ExampleGenerator(
     query_template: str,
     query_compact_template: str,
     qn_templates: List[str],
-    arg_samplers: Dict[str, Any],
+    arg_samplers: Dict[str, Callable[[int], List[ValueLabelsEntry]]],
+    val_sampler: Callable[[int], List[int]],
+    minvalue_maxvalue_sampler: Callable[[int], List[Tuple[int, int]]],
 ):
     argnames = get_argnames(query_template)
 
@@ -33,39 +37,40 @@ def ExampleGenerator(
         for argname in argnames:
             argnames_by_type[_remove_numerical_suffix(argname)].append(argname)
 
-        kwargs = dict()
+        qn_kwargs = dict()
+        sparql_kwargs = dict()
         for argtype, _argnames in argnames_by_type.items():
             if argtype == "maxvalue":
                 continue
             if argtype == "minvalue":
-                value_pairs = arg_samplers["minvalue_maxvalue"](k=len(_argnames))
+                value_pairs = minvalue_maxvalue_sampler(len(_argnames))
                 for argname, (minval, maxval) in zip(_argnames, value_pairs):
-                    kwargs[argname] = minval
-                    kwargs["maxvalue" + argname[len("minvalue") :]] = maxval
-            else:
-                values = arg_samplers[argtype](k=len(_argnames))
+                    maxvalue_argname = "maxvalue" + argname[len("minvalue") :]
+                    for kwargs in [qn_kwargs, sparql_kwargs]:
+                        kwargs[argname] = minval
+                        kwargs[maxvalue_argname] = maxval
+            elif argtype == "value":
+                values = val_sampler(len(_argnames))
                 for argname, value in zip(_argnames, values):
-                    kwargs[argname] = value
+                    for kwargs in [qn_kwargs, sparql_kwargs]:
+                        kwargs[argname] = value
+            else:
+                sampled_data = arg_samplers[argtype](len(_argnames))
+                for argname, sampled_datum in zip(_argnames, sampled_data):
+                    qn_kwargs[argname] = random.choice(sampled_datum.labels)
+                    sparql_kwargs[argname] = sampled_datum.value
+
         yield dict(
             template_name=template_name,
-            question=random.choice(qn_templates).format(
-                **{
-                    k: add_space_and_lower(v)
-                    if any(
-                        k.startswith(prefix) for prefix in ["Property", "Identifier"]
-                    )
-                    else v
-                    for k, v in kwargs.items()
-                }
-            ),
-            sparql_query=query_template.format(**kwargs),
-            sparql_query_compact=query_compact_template.format(**kwargs),
+            question=random.choice(qn_templates).format(**qn_kwargs),
+            sparql_query=query_template.format(**sparql_kwargs),
+            sparql_query_compact=query_compact_template.format(**sparql_kwargs),
         )
 
 
 def make_arg_samplers(
-    properties: List[str],
-    identifiers: List[str],
+    properties: List[ValueLabelsEntry],
+    identifiers: List[ValueLabelsEntry],
     species: List[str],
     chemicalclasses: List[str],
     uses: List[str],
@@ -76,44 +81,47 @@ def make_arg_samplers(
     )
     train_uses, test_uses = train_test_split(uses, test_size=0.1)
 
-    def make_sampler(values: List[str]):
-        def sampler(k: int=1):
-            return random.sample(values, k)
+    def make_sampler(sampling_data: List[ValueLabelsEntry]):
+        def sampler(k: int = 1):
+            return random.sample(sampling_data, k)
+
         return sampler
 
-    def val_sampler(k: int=1):
+    def make_sampler_from_values(values: List[str]):
+        sampling_data = [ValueLabelsEntry(value=val, labels=[val]) for val in values]
+        return make_sampler(sampling_data)
+
+    def val_sampler(k: int = 1):
         return np.random.randint(20, 500, size=k)
 
     def minvalue_maxvalue_sampler(k: int = 1):
-        values = []
-        for _ in range(k):
-            minval = random.randint(20, 500)
-            maxval = minval + random.randint(20, 500)
-            values.append((minval, maxval))
-        return values
+        minvals = np.random.randint(20, 500, size=k)
+        maxvals = minvals + np.random.randint(20, 500, size=k)
+        return list(zip(minvals, maxvals))
 
     property_sampler = make_sampler(properties)
     identifier_sampler = make_sampler(identifiers)
     train_arg_samplers = dict(
         PropertyName=property_sampler,
         IdentifierName=identifier_sampler,
-        species=make_sampler(train_species),
-        ChemClass=make_sampler(train_chemicalclasses),
-        Use=make_sampler(train_uses),
-        value=val_sampler,
-        minvalue_maxvalue=minvalue_maxvalue_sampler,
+        species=make_sampler_from_values(train_species),
+        ChemClass=make_sampler_from_values(train_chemicalclasses),
+        Use=make_sampler_from_values(train_uses),
     )
     test_arg_samplers = dict(
         PropertyName=property_sampler,
         IdentifierName=identifier_sampler,
-        species=make_sampler(test_species),
-        ChemClass=make_sampler(test_chemicalclasses),
-        Use=make_sampler(test_uses),
-        value=val_sampler,
-        minvalue_maxvalue=minvalue_maxvalue_sampler,
+        species=make_sampler_from_values(test_species),
+        ChemClass=make_sampler_from_values(test_chemicalclasses),
+        Use=make_sampler_from_values(test_uses),
     )
 
-    return train_arg_samplers, test_arg_samplers
+    return dict(
+        train_arg_samplers=train_arg_samplers,
+        test_arg_samplers=test_arg_samplers,
+        val_sampler=val_sampler,
+        minvalue_maxvalue_sampler=minvalue_maxvalue_sampler,
+    )
 
 
 def get_argnames(text: str):
@@ -136,10 +144,10 @@ def get_argnames(text: str):
             if idx == len(text):
                 raise ValueError("Text contains unclosed curly braces: " + text)
             arg_names.append(text[open_bracket_idx + 1 : idx])
-    
+
     arg_names = list(set(arg_names))
     arg_names.sort()
-    
+
     return arg_names
 
 
@@ -148,13 +156,3 @@ def _remove_numerical_suffix(text: str):
     while idx >= 0 and text[idx - 1].isdigit():
         idx -= 1
     return text[:idx]
-
-
-def add_space_and_lower(string: str):
-    new_string = ""
-    for char in string:
-        if char.isupper():
-            new_string += " " + char.lower()
-        else:
-            new_string += char
-    return new_string.strip()
