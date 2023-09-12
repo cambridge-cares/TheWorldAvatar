@@ -228,7 +228,7 @@ public class HeatEmissionAgent extends JPSAgent {
 		IRIandCO2Query.append("?a om:symbol ?unit . \n");
 		IRIandCO2Query.append("FILTER regex(str(?ftl),\"Natural gas liquid\").");
 		IRIandCO2Query.append("FILTER regex(str(?plant_item), \"plantitem\").} \n");
-		JSONArray IRIandCO2QueryResult = AccessAgentCaller.queryStore("jibusinessunits_new",
+		JSONArray IRIandCO2QueryResult = AccessAgentCaller.queryStore("jibusinessunits",
 				IRIandCO2Query.toString());
 		return IRIandCO2QueryResult;
 	}
@@ -246,7 +246,7 @@ public class HeatEmissionAgent extends JPSAgent {
 		FuelCEIEffiQuery.append("?cei om:hasNumericalValue ?CEI .");
 		FuelCEIEffiQuery.append("?cei om:hasUnit ?a .");
 		FuelCEIEffiQuery.append("?a om:symbol ?unit .}");
-		JSONArray plantInfoQueryResult = AccessAgentCaller.queryStore("jibusinessunits_new",
+		JSONArray plantInfoQueryResult = AccessAgentCaller.queryStore("jibusinessunits",
 				FuelCEIEffiQuery.toString());
 		return plantInfoQueryResult;
 	}
