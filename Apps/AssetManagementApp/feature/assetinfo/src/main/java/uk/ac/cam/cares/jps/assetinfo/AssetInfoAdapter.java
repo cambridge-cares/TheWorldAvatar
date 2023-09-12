@@ -47,11 +47,31 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
 
     private void buildAllPropertiesList(AssetInfo assetInfo) {
         Map<String, String> map = (Map<String, String>) assetInfo.getProperties().clone();
-        propertiesBySections.put(BASIC_SECTION_TITLE, getOrderedPropertiesList(map, basicInfoOrder));
-        propertiesBySections.put(LOCATION_SECTION_TITLE, getOrderedPropertiesList(map, locationInfoOrder));
-        propertiesBySections.put(SUPPLIER_SECTION_TITLE, getOrderedPropertiesList(map, supplierInfoOrder));
-        propertiesBySections.put(PURCHASE_SECTION_TITLE, getItemAndDocLineOrderedPropertiesList(map));
-        propertiesBySections.put(OTHERS_SECTION_TITLE, getOrderedPropertiesList(map, null));
+
+        List<Pair<String, String>> basicPropertyLists = getOrderedPropertiesList(map, basicInfoOrder);
+        if (basicPropertyLists.size() != 0) {
+            propertiesBySections.put(BASIC_SECTION_TITLE, basicPropertyLists);
+        }
+
+        List<Pair<String, String>> locationPropertyLists = getOrderedPropertiesList(map, locationInfoOrder);
+        if (locationPropertyLists.size() != 0) {
+            propertiesBySections.put(LOCATION_SECTION_TITLE, locationPropertyLists);
+        }
+
+        List<Pair<String, String>> supplierPropertyLists = getOrderedPropertiesList(map, supplierInfoOrder);
+        if (supplierPropertyLists.size() != 0) {
+            propertiesBySections.put(SUPPLIER_SECTION_TITLE, supplierPropertyLists);
+        }
+
+        List<Pair<String, String>> purchasePropertyLists = getItemAndDocLineOrderedPropertiesList(map);
+        if (purchasePropertyLists.size() != 0) {
+            propertiesBySections.put(PURCHASE_SECTION_TITLE, purchasePropertyLists);
+        }
+
+        List<Pair<String, String>> otherPropertyLists = getOrderedPropertiesList(map, null);
+        if (otherPropertyLists.size() != 0) {
+            propertiesBySections.put(OTHERS_SECTION_TITLE, otherPropertyLists);
+        }
 
     }
 
@@ -76,6 +96,9 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
         allKeys.addAll(docLineInfoOrder);
 
         for (String key : map.keySet()) {
+            if (key.equals(HAS_TIME_SERIES)) {
+                continue;
+            }
             if (!allKeys.contains(key)) {
                 result.add(new Pair<>(key, map.get(key)));
             }
