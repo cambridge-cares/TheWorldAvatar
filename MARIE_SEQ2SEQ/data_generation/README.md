@@ -29,12 +29,24 @@
 
 ## Usage
 
-### Create a dataset for training
+### Dataset creation
 
-The following command creates a train, dev, and test sets using the question and query templates are located under the `/templates` directory. 
+The following command creates a train, dev, and test sets using the question and query templates located under the `/templates` directory. 
 
 ```
 python data_generation/create_training_data.py
+```
+
+The format of the output dataset is as follows.
+```json
+[
+   {
+      "template_name": "string",
+      "question": "string",
+      "sparql_query": "string",
+      "sparql_query_compact": "string"
+   }
+]
 ```
 
 Each leaf directory corresponds to a template, comprising of
@@ -50,19 +62,39 @@ The three files must contain the same set of arguments, and the every argument m
 - `Use`
 - `value`, `minvalue`, `maxvalue`
 
+### Paraphrasing of natural language questions
+
+The natural language questions in the generated dataset can be paraphrased using OpenAI's ChatGPT API to further enhance linguistic variability. 
+
+1. Export the OpenAI's API key as an environment variable.
+
+   ```
+   export OPEN_API_KEY=<API-KEY>
+   ```
+
+1. Command to perform paraphrasing. The script sends a paraphrasing request to OpenAI's server for every question; for every batch of 10 questions, the paraphrased texts are saved into disk as a json file named `<index>.json`, where `<index>` is the index of the first question in the output file. This is to help with the resumption of the paraphrasing job in case of server faults.
+
+   ```
+   python data_generation/paraphrase.py <path-to-input-dataset-file> <path-to-output-dataset-file> --start_index <start-index-for-resumption>
+   ```
+
 ### Data augmentation
 
-Adapted from https://arxiv.org/pdf/1901.11196.pdf.
+Data augmentation methods are adapted from https://arxiv.org/pdf/1901.11196.pdf. 
 
-```python
-import nltk
-nltk.download("punkt")
-nltk.download("stopwords")
-```
+1. Download relevant `nltk` resources in a Python shell. 
 
-```
-python data_generation/augment_data.py --input_path data/train.json --output_path data/train_augmented.json --alpha 0.1 --n_aug 4
-```
+   ```python
+   import nltk
+   nltk.download("punkt")
+   nltk.download("stopwords")
+   ```
+   
+1. Command to perform data augmentation.
+
+   ```
+   python data_generation/augment_data.py --input_path data/train.json --output_path data/train_augmented.json --alpha 0.1 --n_aug 4
+   ```
 
 ## Compact query mapping rules
 
