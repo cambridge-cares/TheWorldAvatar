@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -98,6 +97,14 @@ class GaugeTest {
         String result = chart.construct(SAMPLE_PANEL_HEIGHT, SAMPLE_PANEL_WIDTH, SAMPLE_PANEL_X_POSITION, SAMPLE_PANEL_Y_POSITION);
         // Verify results
         assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA), result);
+    }
+
+    @Test
+    void testGetMeasure() {
+        // Construct the object
+        Gauge chart = new Gauge(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_UNIT, SAMPLE_DATABASE_ID, SAMPLE_METADATA, new String[]{});
+        // Execute the method and verify result
+        assertEquals(SAMPLE_MEASURE, chart.getMeasure());
     }
 
     private static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails) {

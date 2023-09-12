@@ -29,15 +29,9 @@ public class PanelModel {
             // Room-related panels are designed to be at the top based on their topological hierarchy
             // Generate all the panels and store them into a queue
             Queue<TemplatePanel[]> panelQueue = genMeasurePanelsForItemGroup(StringHelper.ROOM_KEY, timeSeries.get(StringHelper.ROOM_KEY), databaseConnectionMap);
-            // Compute the ending y position for the room's charts - assumes that there are two panel per row
-            int lastYGroupPosition = rowNumber + (CHART_HEIGHT * (panelQueue.size() / 2));
-            // Append the room panels to the stored syntax
-            this.PANEL_SYNTAX.append(genPanelSyntax(rowNumber, panelQueue));
+            rowNumber = separateRoomMeasurePerRow(rowNumber, panelQueue);
             // Remove the room values once it has been processed
             timeSeries.remove(StringHelper.ROOM_KEY);
-            // Update the row number accordingly as the last step to ensure the processing is not impacted
-            // Ensure that it is incremented by 1 so that the next panel starts below
-            rowNumber = lastYGroupPosition + 1;
         }
         // For each item group that is not a room
         for (String currentItemGroup : timeSeries.keySet()) {
@@ -126,6 +120,62 @@ public class PanelModel {
     }
 
     /**
+     * When necessary, this method supports the grouping of panels into a row for the dashboard in JSON format.
+     * Namely, it will group the panels associated with one room measure into a row. Each measure for these rooms
+     * will have a separate row for improved organisation.
+     *
+     * @param rowNumber  The current row number.
+     * @param panelQueue A collection containing all the required charts to be appended to these rows.
+     * @return row number.
+     */
+    private int separateRoomMeasurePerRow(int rowNumber, Queue<TemplatePanel[]> panelQueue) {
+        while (!panelQueue.isEmpty()) {
+            // Retrieve the current room panels and their measure names
+            TemplatePanel[] roomPanels = panelQueue.poll();
+            String measureName = roomPanels[0].getMeasure();
+            // Populate a new empty queue with only one array for this measure
+            Queue<TemplatePanel[]> intermediateQueue = new ArrayDeque<>();
+            intermediateQueue.offer(roomPanels);
+            // Append a comma before if it is not the first row
+            if (this.PANEL_SYNTAX.length() != 0) this.PANEL_SYNTAX.append(",");
+            // Generate the row panel syntax
+            this.PANEL_SYNTAX.append("{")
+                    .append("\"id\":null, \"type\":\"row\", \"collapsed\":true,")
+                    // Title should be the measure name of these rooms
+                    .append("\"title\": \"").append(StringHelper.addSpaceBetweenCapitalWords(measureName)).append("\",")
+                    .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(CHART_WIDTH * 2)
+                    .append(",\"x\": 0,\"y\": ").append(rowNumber).append("},")
+                    .append("\"panels\": [").append(genPanelSyntax(rowNumber, intermediateQueue))
+                    .append("]}");
+            // Increment the row number for each measure of the rooms
+            rowNumber++;
+        }
+        return rowNumber;
+    }
+
+    /**
+     * When necessary, this method supports the grouping of panels into a row for the dashboard in JSON format.
+     *
+     * @param rowNumber  The current row number.
+     * @param itemGroup  The item group of interest. Should only accommodate asset types at the moment.
+     * @param panelQueue A collection containing all the required charts to be appended to this row.
+     */
+    private void groupPanelsAsRow(int rowNumber, String itemGroup, Queue<TemplatePanel[]> panelQueue) {
+        // Append a comma before if it is not the first row
+        if (this.PANEL_SYNTAX.length() != 0) this.PANEL_SYNTAX.append(",");
+        // Generate the row panel syntax
+        this.PANEL_SYNTAX.append("{")
+                .append("\"id\":null, \"type\":\"row\", \"collapsed\":true,")
+                .append("\"title\": \"").append(StringHelper.addSpaceBetweenCapitalWords(itemGroup)).append("\",")
+                .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(CHART_WIDTH * 2)
+                .append(",\"x\": 0,\"y\": ").append(rowNumber).append("},")
+                .append("\"panels\": [").append(genPanelSyntax(rowNumber, panelQueue))
+                .append("]}");
+        // Increment the row number once this row for the item group has been set up
+        rowNumber++;
+    }
+
+    /**
      * Generates all available panels for each item group into the required Json format.
      *
      * @param rowNumber  The current row number.
@@ -157,27 +207,5 @@ public class PanelModel {
             }
         }
         return builder;
-    }
-
-    /**
-     * When necessary, this method supports the grouping of panels into a row for the dashboard in JSON format.
-     *
-     * @param rowNumber  The current row number.
-     * @param itemGroup  The item group of interest. Should only accommodate asset types at the moment.
-     * @param panelQueue A collection containing all the required charts to be appended to this row.
-     */
-    private void groupPanelsAsRow(int rowNumber, String itemGroup, Queue<TemplatePanel[]> panelQueue) {
-        // Append a comma before if it is not the first row
-        if (this.PANEL_SYNTAX.length() != 0) this.PANEL_SYNTAX.append(",");
-        // Generate the row panel syntax
-        this.PANEL_SYNTAX.append("{")
-                .append("\"id\":null, \"type\":\"row\", \"collapsed\":true,")
-                .append("\"title\": \"").append(StringHelper.addSpaceBetweenCapitalWords(itemGroup)).append("\",")
-                .append(" \"gridPos\": {\"h\": 1,\"w\": ").append(CHART_WIDTH * 2)
-                .append(",\"x\": 0,\"y\": ").append(rowNumber++).append("},")
-                .append("\"panels\": [").append(genPanelSyntax(rowNumber, panelQueue))
-                .append("]}");
-        // Increment the row number once this row for the item group has been set up
-        rowNumber++;
     }
 }

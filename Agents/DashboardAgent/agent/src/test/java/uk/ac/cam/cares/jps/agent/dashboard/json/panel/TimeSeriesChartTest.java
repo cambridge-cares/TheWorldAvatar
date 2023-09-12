@@ -58,6 +58,14 @@ class TimeSeriesChartTest {
         assertEquals(genExpectedResults(expectedConfigItems, expectedGeometryPosition, SAMPLE_METADATA), result);
     }
 
+    @Test
+    void testGetMeasure() {
+        // Construct the object
+        TimeSeriesChart chart = new TimeSeriesChart(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_UNIT, SAMPLE_DATABASE_ID, SAMPLE_METADATA);
+        // Execute the method and verify result
+        assertEquals(SAMPLE_MEASURE, chart.getMeasure());
+    }
+
     private static String genExpectedResults(String[] metadata, int[] geometryPositions, List<String[]> itemDetails) {
         String titleContent = StringHelper.addSpaceBetweenCapitalWords(metadata[0]) + " of " + StringHelper.addSpaceBetweenCapitalWords(metadata[1]);
         titleContent = metadata.length > 4 ? titleContent + " [" + metadata[4] + "]" : titleContent;

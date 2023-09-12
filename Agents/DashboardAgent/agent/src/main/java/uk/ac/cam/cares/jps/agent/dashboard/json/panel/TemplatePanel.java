@@ -13,6 +13,7 @@ import java.util.List;
  * @author qhouyee
  */
 class TemplatePanel {
+    private final String MEASURE;
     private String TITLE;
     private String DESCRIPTION;
     private final String DATABASE_CONNECTION_ID;
@@ -29,6 +30,7 @@ class TemplatePanel {
      * @param timeSeriesMetadata A list of assets and their metadata for the specified measure.
      */
     protected TemplatePanel(String measure, String itemGroup, String databaseId, List<String[]> timeSeriesMetadata) {
+        this.MEASURE = measure;
         this.DATABASE_CONNECTION_ID = databaseId;
         // Create the query syntax from the parameters
         // Assumes that each measure of a specific item group belongs to only 1 table
@@ -49,6 +51,13 @@ class TemplatePanel {
             // Append with a comma before in format of \"columnName\":indexNumber
             this.FIELD_COLUMN_INDEX.append(",\"").append(metadata[1]).append("\":").append(indexCounter++);
         }
+    }
+
+    /**
+     * Gets the measure of this panel.
+     */
+    protected String getMeasure() {
+        return this.MEASURE;
     }
 
     /**

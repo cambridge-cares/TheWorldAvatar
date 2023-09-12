@@ -130,6 +130,14 @@ class TemplatePanelTest {
         assertEquals("Construct() method is not supported for TemplatePanel. Please use their implementation classes instead!", thrownError.getMessage());
     }
 
+    @Test
+    void testGetMeasure() {
+        // Construct the object
+        TemplatePanel panel = new TemplatePanel(SAMPLE_MEASURE, SAMPLE_ITEM_GROUP, SAMPLE_DATABASE_ID, SAMPLE_METADATA);
+        // Execute the method and verify result
+        assertEquals(SAMPLE_MEASURE, panel.getMeasure());
+    }
+
     public static String genExpectedCommonJsonBase(String title, String description, String[] metadata, int[] geometryPositions, List<String[]> itemDetails) {
         return genExpectedCommonJsonBase(title, description, metadata, geometryPositions, itemDetails, "");
     }
