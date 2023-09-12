@@ -1,6 +1,8 @@
+from collections import defaultdict
 import random
 from typing import Any, Dict, List
 
+import numpy as np
 from sklearn.model_selection import train_test_split
 
 
@@ -11,33 +13,39 @@ def ExampleGenerator(
     qn_templates: List[str],
     arg_samplers: Dict[str, Any],
 ):
-    argnames = _get_argnames(query_template)
+    argnames = get_argnames(query_template)
 
-    assert argnames == _get_argnames(query_compact_template), (
+    assert argnames == get_argnames(query_compact_template), (
         "Templates for query and compact query don't contain the same set of arguments.\n"
         f"query_template: {query_template}\n"
         f"query_compact_template: {query_compact_template}"
     )
 
     for qn_template in qn_templates:
-        assert argnames == _get_argnames(qn_template), (
+        assert argnames == get_argnames(qn_template), (
             "Templates for query and question don't contain the same set of arguments.\n"
             f"query_template: {query_template}\n"
             f"qn_template: {qn_template}"
         )
 
     while True:
-        kwargs = dict()
+        argnames_by_type = defaultdict(list)
         for argname in argnames:
-            if argname.startswith("maxval"):
-                continue
-            if argname.startswith("minval"):
-                minval, maxval = arg_samplers["minval_maxval"]()
-                kwargs[argname] = minval
-                kwargs["maxval" + argname[len("minval") :]] = maxval
-            else:
-                kwargs[argname] = arg_samplers[_remove_numerical_suffix(argname)]()
+            argnames_by_type[_remove_numerical_suffix(argname)].append(argname)
 
+        kwargs = dict()
+        for argtype, _argnames in argnames_by_type.items():
+            if argtype == "maxvalue":
+                continue
+            if argtype == "minvalue":
+                value_pairs = arg_samplers["minvalue_maxvalue"](k=len(_argnames))
+                for argname, (minval, maxval) in zip(_argnames, value_pairs):
+                    kwargs[argname] = minval
+                    kwargs["maxvalue" + argname[len("minvalue") :]] = maxval
+            else:
+                values = arg_samplers[argtype](k=len(_argnames))
+                for argname, value in zip(_argnames, values):
+                    kwargs[argname] = value
         yield dict(
             template_name=template_name,
             question=random.choice(qn_templates).format(
@@ -69,17 +77,20 @@ def make_arg_samplers(
     train_uses, test_uses = train_test_split(uses, test_size=0.1)
 
     def make_sampler(values: List[str]):
-        def sampler():
-            return random.choice(values)
+        def sampler(k: int=1):
+            return random.sample(values, k)
         return sampler
 
-    def val_sampler():
-        return random.randint(20, 500)
+    def val_sampler(k: int=1):
+        return np.random.randint(20, 500, size=k)
 
-    def minval_maxval_sampler():
-        minval = random.randint(20, 500)
-        maxval = minval + random.randint(20, 500)
-        return minval, maxval
+    def minvalue_maxvalue_sampler(k: int = 1):
+        values = []
+        for _ in range(k):
+            minval = random.randint(20, 500)
+            maxval = minval + random.randint(20, 500)
+            values.append((minval, maxval))
+        return values
 
     property_sampler = make_sampler(properties)
     identifier_sampler = make_sampler(identifiers)
@@ -90,7 +101,7 @@ def make_arg_samplers(
         ChemClass=make_sampler(train_chemicalclasses),
         Use=make_sampler(train_uses),
         value=val_sampler,
-        minval_maxval=minval_maxval_sampler,
+        minvalue_maxvalue=minvalue_maxvalue_sampler,
     )
     test_arg_samplers = dict(
         PropertyName=property_sampler,
@@ -99,13 +110,13 @@ def make_arg_samplers(
         ChemClass=make_sampler(test_chemicalclasses),
         Use=make_sampler(test_uses),
         value=val_sampler,
-        minval_maxval=minval_maxval_sampler,
+        minvalue_maxvalue=minvalue_maxvalue_sampler,
     )
 
     return train_arg_samplers, test_arg_samplers
 
 
-def _get_argnames(text: str):
+def get_argnames(text: str):
     """Returns a set of argument names used in an f-string."""
     idx = 0
     arg_names: List[str] = []
