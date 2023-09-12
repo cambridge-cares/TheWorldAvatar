@@ -167,7 +167,7 @@ then
 
     printf "\n"
     echo "----------"
-    echo "Script completed, may need to wait a few minutes for the stack-data-uploader to finish."
+    echo "Script completed, may need to wait a few minutes (up to 10) for the stack-data-uploader to finish."
     echo "Visualisation should be available at http://localhost:38383/visualisation/"
     echo "----------"
 else

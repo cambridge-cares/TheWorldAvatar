@@ -9,6 +9,7 @@
             "skip": false,
             "table": "countries_gb",
             "subdirectory": "boundaries/countries_gb",
+            "sql": "ALTER TABLE countries_gb ADD COLUMN IF NOT EXISTS uuid uuid DEFAULT gen_random_uuid(); ALTER TABLE countries_gb ADD COLUMN IF NOT EXISTS iri varchar DEFAULT 'irigoeshere'; UPDATE countries_gb SET iri = 'https://theworldavatar.io/demos/uk-base-world/Country/' || uuid;",
             "ogr2ogrOptions": {
                 "sridIn": "EPSG:27700",
                 "sridOut": "EPSG:4326",
@@ -20,7 +21,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "countries_gb_geo",
-                    "sql": "SELECT ogc_fid, wkb_geometry, \"NAME\" as name FROM countries_gb",
+                    "sql": "SELECT ogc_fid, iri, wkb_geometry, \"NAME\" as name FROM countries_gb",
                     "escapeSql": false,
                     "geometry": {
                         "name": "wkb_geometry",
@@ -35,6 +36,7 @@
             "skip": false,
             "table": "countries_ni",
             "subdirectory": "boundaries/countries_ni",
+            "sql": "ALTER TABLE countries_ni ADD COLUMN IF NOT EXISTS uuid uuid DEFAULT gen_random_uuid(); ALTER TABLE countries_ni ADD COLUMN IF NOT EXISTS iri varchar DEFAULT 'irigoeshere'; UPDATE countries_ni SET iri = 'https://theworldavatar.io/demos/uk-base-world/Country/' || uuid;",
             "ogr2ogrOptions": {
                 "sridIn": "EPSG:29902",
                 "sridOut": "EPSG:4326",
@@ -46,7 +48,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "countries_ni_geo",
-                    "sql": "SELECT ogc_fid, wkb_geometry, 'Northern Ireland' as name FROM countries_ni",
+                    "sql": "SELECT ogc_fid, iri, wkb_geometry, 'Northern Ireland' as name FROM countries_ni",
                     "escapeSql": false,
                     "geometry": {
                         "name": "wkb_geometry",
@@ -61,6 +63,7 @@
             "skip": false,
             "table": "counties_gb",
             "subdirectory": "boundaries/counties_gb",
+            "sql": "ALTER TABLE counties_gb ADD COLUMN IF NOT EXISTS uuid uuid DEFAULT gen_random_uuid(); ALTER TABLE counties_gb ADD COLUMN IF NOT EXISTS iri varchar DEFAULT 'irigoeshere'; UPDATE counties_gb SET iri = 'https://theworldavatar.io/demos/uk-base-world/County/' || uuid;",
             "ogr2ogrOptions": {
                 "sridIn": "EPSG:27700",
                 "sridOut": "EPSG:4326",
@@ -72,7 +75,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "counties_gb_geo",
-                    "sql": "SELECT ogc_fid, wkb_geometry, \"NAME\" as name FROM counties_gb",
+                    "sql": "SELECT ogc_fid, iri, wkb_geometry, \"NAME\" as name FROM counties_gb",
                     "escapeSql": false,
                     "geometry": {
                         "name": "wkb_geometry",
@@ -87,6 +90,7 @@
             "skip": false,
             "table": "counties_ni",
             "subdirectory": "boundaries/counties_ni",
+            "sql": "ALTER TABLE counties_ni ADD COLUMN IF NOT EXISTS uuid uuid DEFAULT gen_random_uuid(); ALTER TABLE counties_ni ADD COLUMN IF NOT EXISTS iri varchar DEFAULT 'irigoeshere'; UPDATE counties_ni SET iri = 'https://theworldavatar.io/demos/uk-base-world/County/' || uuid;",
             "ogr2ogrOptions": {
                 "sridIn": "EPSG:29902",
                 "sridOut": "EPSG:4326",
@@ -98,7 +102,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "counties_ni_geo",
-                    "sql": "SELECT ogc_fid, wkb_geometry, \"county\" as name FROM counties_ni",
+                    "sql": "SELECT ogc_fid, iri, wkb_geometry, \"county\" as name FROM counties_ni",
                     "escapeSql": false,
                     "geometry": {
                         "name": "wkb_geometry",

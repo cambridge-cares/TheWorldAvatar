@@ -35,67 +35,139 @@
             ],
             "layers": [
                 {
-                    "id": "gb-countries-layer",
+                    "id": "gb-countries-fill-layer",
                     "name": "Countries",
                     "source": "gb-countries-source",
                     "source-layer": "countries_gb",
                     "type": "fill",
-                    "clickable": false,
                     "layout": {
                         "visibility": "none"
                     },
                     "paint": {
-                        "fill-color": "#000000",
-                        "fill-opacity": 0.2,
-                        "fill-outline-color": "#000000"
+                        "fill-color": "#2edaff",
+                        "fill-opacity": [
+                            "case",
+                            ["==", ["get", "iri"], "[HOVERED-IRI]"],
+                            0.45,
+                            0.15
+                        ]
                     }
                 },
                 {
-                    "id": "ni-countries-layer",
+                    "id": "gb-countries-line-layer",
+                    "name": "Countries",
+                    "source": "gb-countries-source",
+                    "source-layer": "countries_gb",
+                    "type": "line",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "line-color": "#2edaff",
+                        "line-width": 1,
+                        "line-opacity": 0.3
+                    }
+                },
+                {
+                    "id": "ni-countries-fill-layer",
                     "name": "Countries",
                     "source": "ni-countries-source",
                     "source-layer": "countries_ni",
                     "type": "fill",
-                    "clickable": false,
                     "layout": {
                         "visibility": "none"
                     },
                     "paint": {
-                        "fill-color": "#000000",
-                        "fill-opacity": 0.2,
-                        "fill-outline-color": "#000000"
+                        "fill-color": "#2edaff",
+                        "fill-opacity": [
+                            "case",
+                            ["==", ["get", "iri"], "[HOVERED-IRI]"],
+                            0.45,
+                            0.15
+                        ]
                     }
                 },
                 {
-                    "id": "gb-counties-layer",
-                    "name": "Ceremoninal counties",
+                    "id": "ni-countries-line-layer",
+                    "name": "Countries",
+                    "source": "ni-countries-source",
+                    "source-layer": "countries_ni",
+                    "type": "line",
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "line-color": "#2edaff",
+                        "line-width": 1,
+                        "line-opacity": 0.3
+                    }
+                },
+                {
+                    "id": "gb-counties-fill-layer",
+                    "name": "Ceremonial counties",
                     "source": "gb-counties-source",
                     "source-layer": "counties_gb",
                     "type": "fill",
-                    "clickable": false,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
-                        "fill-color": "#000000",
-                        "fill-opacity": 0.2,
-                        "fill-outline-color": "#000000"
+                        "fill-color": "#2edaff",
+                        "fill-opacity": [
+                            "case",
+                            ["==", ["get", "iri"], "[HOVERED-IRI]"],
+                            0.45,
+                            0.15
+                        ]
                     }
                 },
                 {
-                    "id": "ni-counties-layer",
-                    "name": "Ceremoninal counties",
+                    "id": "gb-counties-line-layer",
+                    "name": "Ceremonial counties",
+                    "source": "gb-counties-source",
+                    "source-layer": "counties_gb",
+                    "type": "line",
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "line-color": "#2edaff",
+                        "line-width": 1,
+                        "line-opacity": 0.3
+                    }
+                },
+                {
+                    "id": "ni-counties-fill-layer",
+                    "name": "Ceremonial counties",
                     "source": "ni-counties-source",
                     "source-layer": "counties_ni",
                     "type": "fill",
-                    "clickable": false,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
-                        "fill-color": "#000000",
-                        "fill-opacity": 0.2,
-                        "fill-outline-color": "#000000"
+                        "fill-color": "#2edaff",
+                        "fill-opacity": [
+                            "case",
+                            ["==", ["get", "iri"], "[HOVERED-IRI]"],
+                            0.45,
+                            0.15
+                        ]
+                    }
+                },
+                {
+                    "id": "ni-counties-line-layer",
+                    "name": "Ceremonial counties",
+                    "source": "ni-counties-source",
+                    "source-layer": "counties_ni",
+                    "type": "line",
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "line-color": "#2edaff",
+                        "line-width": 1,
+                        "line-opacity": 0.3
                     }
                 }
             ]
@@ -118,7 +190,7 @@
                     "source": "uk-population-source",
                     "type": "raster",
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     }
                 }
             ]
@@ -148,8 +220,8 @@
                     "id": "power_renewable_layer",
                     "name": "Power generation (renewable)",
                     "source": "uk-power-source",
-                    "type": "circle",
                     "source-layer": "dukes_2023",
+                    "type": "circle",
                     "filter": [
                         "!",
                         [
@@ -159,7 +231,7 @@
                         ]
                     ],
                     "layout": {
-                        "visibility": "visible",
+                        "visibility": "none",
                         "circle-sort-key": [
                             "*", -1.0, ["get", "capacity"]
                         ]
@@ -167,7 +239,12 @@
                     "paint": {
                         "circle-stroke-color": "#000000",
                         "circle-stroke-width": 1,
-                        "circle-opacity": 0.85,
+                        "circle-opacity": [
+                            "case",
+                            ["==", ["get", "iri"], "[HOVERED-IRI]"],
+                            1.0,
+                            0.65
+                        ],
                         "circle-radius": [
                             "interpolate",
                             ["linear"],
@@ -193,15 +270,15 @@
                     "id": "power_fossil_layer",
                     "name": "Power generation (non-renewable)",
                     "source": "uk-power-source",
-                    "type": "circle",
                     "source-layer": "dukes_2023",
+                    "type": "circle",
                     "filter": [
                         "in",
                         ["get", "type"],
                         ["literal", ["Fossil Fuel", "Nuclear"]]
                     ],
                     "layout": {
-                        "visibility": "visible",
+                        "visibility": "none",
                         "circle-sort-key": [
                             "*", -1.0, ["get", "capacity"]
                         ]
@@ -209,7 +286,12 @@
                     "paint": {
                         "circle-stroke-color": "#000000",
                         "circle-stroke-width": 1,
-                        "circle-opacity": 0.85,
+                        "circle-opacity": [
+                            "case",
+                            ["==", ["get", "iri"], "[HOVERED-IRI]"],
+                            1.0,
+                            0.65
+                        ],
                         "circle-radius": [
                             "interpolate",
                             ["linear"],
@@ -234,38 +316,44 @@
                     "id": "power_renewable_radius_layer",
                     "name": "Power generation (renewable)",
                     "source": "uk-power-radius-source",
-                    "treeable": false,
-                    "type": "fill",
                     "source-layer": "dukes_2023_pop",
+                    "order": -1,
+                    "minzoom": 9,
+                    "treeable": false,
+                    "clickable": false,
+                    "type": "fill",
                     "filter": [
-                        "in", ["get", "iri"], "[IRI]"
+                        "==", ["get", "iri"], "[SELECTED-IRI]"
                     ],
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
                         "fill-outline-color": "#000000",
                         "fill-color": "#000000",
-                        "fill-opacity": 0.15
+                        "fill-opacity": 0.10
                     }
                 },
                 {
                     "id": "power_fossil_radius_layer",
                     "name": "Power generation (non-renewable)",
                     "source": "uk-power-radius-source",
-                    "treeable": false,
-                    "type": "fill",
                     "source-layer": "dukes_2023_pop",
+                    "order": -1,
+                    "minzoom": 9,
+                    "treeable": false,
+                    "clickable": false,
+                    "type": "fill",
                     "filter": [
-                        "in", ["get", "iri"], "[IRI]"
+                        "==", ["get", "iri"], "[SELECTED-IRI]"
                     ],
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
                         "fill-outline-color": "#000000",
                         "fill-color": "#000000",
-                        "fill-opacity": 0.15
+                        "fill-opacity": 0.10
                     }
                 }
             ]
