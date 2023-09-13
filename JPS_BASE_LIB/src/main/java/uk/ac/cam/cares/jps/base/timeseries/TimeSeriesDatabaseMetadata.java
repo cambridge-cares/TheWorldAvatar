@@ -110,13 +110,22 @@ class TimeSeriesDatabaseMetadata {
         }
         List<List<String>> classSetsToAdd = getSqlClassSetsToAdd(classes, srid);
 
+        boolean breakLoop = false;
         for (List<String> classSetToAdd : classSetsToAdd) {
+            if (breakLoop) {
+                break;
+            }
             for (Entry<String, List<List<String>>> entry : existingClassSetsMap.entrySet()) {
+                if (breakLoop) {
+                    break;
+                }
+
                 List<List<String>> existingClassSets = entry.getValue();
 
                 for (List<String> existingClassSet : existingClassSets) {
                     if (existingClassSet.containsAll(classSetToAdd)) {
                         suitableTable = entry.getKey();
+                        breakLoop = true;
                         break;
                     }
                 }
