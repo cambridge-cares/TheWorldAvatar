@@ -77,8 +77,8 @@ def update_warnings(county=None, mock_api=None, query_endpoint=QUERY_ENDPOINT,
 
         # 2) Retrieve instantiated flood warnings and flood areas from KG
         logger.info("Retrieving instantiated flood warnings and areas from KG ...")
-        areas_kg = get_instantiated_flood_areas(kgclient=kg_client)  
-        warnings_kg = get_instantiated_flood_warnings(kgclient=kg_client)      
+        areas_kg = get_instantiated_flood_areas(kgclient=kg_client)
+        warnings_kg = get_instantiated_flood_warnings(kgclient=kg_client)
         logger.info("Instantiated warnings and areas retrieved.")
 
         # 3) Extract flood warnings and flood areas ...
@@ -125,6 +125,20 @@ def update_warnings(county=None, mock_api=None, query_endpoint=QUERY_ENDPOINT,
             # Derivation markup:
             # Drop timestamps of deleted flood warnings & derivation instances
             derivation_client.dropTimestampsOf(drop_times_iris)
+        
+        # It has been observed that some floodwarnings do not disappear from the
+        # visualisation, although corresponding warnings are successfully deleted
+        # within KG. The exact root cause of this could not be identified, as this
+        # behaviour could not be reproduced in a controlled environment.
+        # NOTE: This is a workaround to deactivate corresponding flood areas in 
+        #       PostGIS in order to remove them from the visualisation
+        postgis_client = PostGISClient()
+        areas_active_postgis = postgis_client.get_active_floodareas()
+        areas_wo_warning_kg = get_instantiated_flood_areas(kgclient=kg_client, 
+                                                           without_warning=True)
+        # Deactivate all flood areas without associated warning in KG
+        areas_to_deactivate = [a for a in areas_active_postgis if a in areas_wo_warning_kg]
+        postgis_client.set_flood_area_activity(activity=False, area_uri=areas_to_deactivate)
 
         # Print update summary 
         print(f'Instantiated areas: {instantiated_areas}')
@@ -552,13 +566,15 @@ def get_instantiated_flood_warnings(query_endpoint=QUERY_ENDPOINT,
 
 
 def get_instantiated_flood_areas(query_endpoint=QUERY_ENDPOINT,
-                                 kgclient=None) -> dict:
+                                 kgclient=None, without_warning=False) -> dict:
     """
     Retrieve all instantiated flood areas with associated 'hasLocation' Location IRIs
 
     Arguments:
         query_endpoint - SPARQL endpoint from which to retrieve data
         kgclient - pre-initialized KG client with endpoints
+        without_warning (bool): Whether to retrieve only flood areas without 
+                                current warnings (default: False, i.e. retrieve all)
 
     Returns:
         areas (dict): Dictionary with flood area IRIs as keys and associated 
@@ -571,7 +587,7 @@ def get_instantiated_flood_areas(query_endpoint=QUERY_ENDPOINT,
                                   update_endpoint=query_endpoint)
     
     # Retrieve instantiated flood warnings
-    query = get_all_flood_areas()
+    query = get_all_flood_areas(without_warning)
     res = kgclient.performQuery(query)
 
     # Unwrap results
