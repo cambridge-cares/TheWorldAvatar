@@ -11,19 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -85,7 +78,7 @@ public class AssetInfoFragment extends Fragment {
                 binding.viewGraphBt.setVisibility(View.VISIBLE);
             }
         });
-        viewModel.getError().observe(getViewLifecycleOwner(), error -> {
+        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
             binding.shimmerViewContainer.stopShimmer();
             binding.shimmerViewContainer.setVisibility(View.GONE);
             binding.errorView.setVisibility(View.VISIBLE);

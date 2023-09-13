@@ -8,43 +8,55 @@ import com.android.volley.Response;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import javax.inject.Inject;
 
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import uk.ac.cam.cares.jps.data.AssetInfo;
 import uk.ac.cam.cares.jps.data.AssetInfoRepository;
+import uk.ac.cam.cares.jps.data.RepositoryCallback;
+import uk.ac.cam.cares.jps.data.SettingRepository;
 
 @HiltViewModel
 public class AssetInfoViewModel extends ViewModel {
 
     static final Logger LOGGER = Logger.getLogger(AssetInfoViewModel.class);
 
-    AssetInfoRepository repository;
+    AssetInfoRepository assetInfoRepository;
 
     MutableLiveData<AssetInfo> assetInfo = new MutableLiveData<>();
-    MutableLiveData<Integer> error = new MutableLiveData<>();
+    MutableLiveData<Integer> errorMessage = new MutableLiveData<>();
 
     @Inject
-    AssetInfoViewModel(AssetInfoRepository repository) {
+    AssetInfoViewModel(AssetInfoRepository assetInfoRepository) {
         BasicConfigurator.configure();
-        this.repository = repository;
+        this.assetInfoRepository = assetInfoRepository;
     }
 
     void getAssetInfoByIri(String assetUri) {
-        Response.Listener<AssetInfo> onSuccess = response -> assetInfo.postValue(response);
+        RepositoryCallback callback = new RepositoryCallback() {
+            @Override
+            public void onSuccess(Object response) {
+                assetInfo.postValue((AssetInfo) response);
+            }
 
-        Response.ErrorListener onError = error -> {
-            LOGGER.error(error.getMessage());
-            this.error.postValue(R.string.network_error);
+            @Override
+            public void onFailure(Throwable error) {
+                LOGGER.error(error.getMessage());
+                errorMessage.postValue(R.string.network_error);
+            }
         };
-        repository.getAssetInfoByIri(assetUri, onSuccess, onError);
+        assetInfoRepository.getAssetInfoByIri(assetUri, callback);
     }
 
     MutableLiveData<AssetInfo> getAssetInfo() {
         return assetInfo;
     }
 
-    public MutableLiveData<Integer> getError() {
-        return error;
+    public MutableLiveData<Integer> getErrorMessage() {
+        return errorMessage;
     }
 }

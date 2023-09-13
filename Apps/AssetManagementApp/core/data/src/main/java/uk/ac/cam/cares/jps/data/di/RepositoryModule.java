@@ -21,8 +21,8 @@ import uk.ac.cam.cares.jps.network.otherinfo.OtherInfoNetworkSource;
 public class RepositoryModule {
     @Provides
     @Singleton
-    public AssetInfoRepository provideAssetInfoRepository(AssetNetworkSource networkSource) {
-        return new AssetInfoRepository(networkSource);
+    public AssetInfoRepository provideAssetInfoRepository(AssetNetworkSource networkSource, SettingRepository settingRepository) {
+        return new AssetInfoRepository(networkSource, settingRepository);
     }
 
     @Provides

@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.data;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.MANUAL_SECTION_TITLE;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.SPEC_SHEET_SECTION_TITLE;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.basicInfoOrder;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.docLineInfoOrder;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.itemInfoOrder;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.locationInfoOrder;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.supplierInfoOrder;
@@ -36,18 +37,7 @@ public class SettingRepository {
         Disposable typesDisposable = settingLocalSource.getSettings().subscribe(
                 stringIntegerMap -> {
                     if (stringIntegerMap.isEmpty()) {
-                        List<String> allKeys = new ArrayList<>();
-                        allKeys.addAll(basicInfoOrder);
-                        allKeys.addAll(locationInfoOrder);
-                        allKeys.addAll(supplierInfoOrder);
-                        allKeys.addAll(itemInfoOrder);
-                        allKeys.add(SPEC_SHEET_SECTION_TITLE);
-                        allKeys.add(MANUAL_SECTION_TITLE);
-
-                        for (String key : allKeys) {
-                            // MaterialCheckbox.STATE_CHECKED = 1
-                            settings.put(key, 1);
-                        }
+                        getDefaultSettings();
                         updateSettings(settings);
                     } else {
                         settings = stringIntegerMap;
@@ -68,5 +58,22 @@ public class SettingRepository {
     public void updateSettings(Map<String, Integer> newSettings) {
         settings = newSettings;
         settingLocalSource.updateSettings(newSettings);
+    }
+
+    public Map<String, Integer> getDefaultSettings() {
+        List<String> allKeys = new ArrayList<>();
+        allKeys.addAll(basicInfoOrder);
+        allKeys.addAll(locationInfoOrder);
+        allKeys.addAll(supplierInfoOrder);
+        allKeys.addAll(docLineInfoOrder);
+        allKeys.addAll(itemInfoOrder);
+        allKeys.add(SPEC_SHEET_SECTION_TITLE);
+        allKeys.add(MANUAL_SECTION_TITLE);
+
+        for (String key : allKeys) {
+            // MaterialCheckbox.STATE_CHECKED = 1
+            settings.put(key, 1);
+        }
+        return settings;
     }
 }
