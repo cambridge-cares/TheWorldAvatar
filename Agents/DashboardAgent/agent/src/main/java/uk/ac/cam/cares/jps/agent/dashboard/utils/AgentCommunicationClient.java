@@ -57,24 +57,44 @@ public class AgentCommunicationClient {
      * @param url API endpoint.
      */
     public static HttpResponse sendGetRequest(String url) {
-        return sendGetRequest(url, "", "");
+        return sendGetRequest(url, null, "", "");
     }
 
     /**
-     * Sends a GET request to a specific API endpoint with the username and password.
+     * Sends a GET request to a specific API endpoint authenticated with security tokens.
+     *
+     * @param url         API endpoint.
+     * @param bearerToken API token to access endpoint.
+     */
+    public static HttpResponse sendGetRequest(String url, String bearerToken) {return sendGetRequest(url, bearerToken, "", "");}
+
+    /**
+     * Sends a GET request to a specific API endpoint with basic authentication.
      *
      * @param url      API endpoint.
      * @param userName Username to access endpoint.
      * @param password Password to access endpoint.
      */
-    public static HttpResponse sendGetRequest(String url, String userName, String password) {
+    public static HttpResponse sendGetRequest(String url, String userName, String password) {return sendGetRequest(url, null, userName, password);}
+
+    /**
+     * Sends a GET request to a specific API endpoint with no, basic or token authentication.
+     *
+     * @param url         API endpoint.
+     * @param bearerToken API token to access endpoint.
+     * @param userName    Username to access endpoint.
+     * @param password    Password to access endpoint.
+     */
+    public static HttpResponse sendGetRequest(String url, String bearerToken, String userName, String password) {
         try {
             HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .GET()
                     .timeout(Duration.ofSeconds(3600));
-            // If username and password are provided, add the authentication
-            if (!userName.isEmpty() && !password.isEmpty())
+            if (bearerToken != null) {
+                requestBuilder.header("Authorization", "Bearer " + bearerToken);
+            } else if (!userName.isEmpty() && !password.isEmpty())
+                // If username and password are provided, add the authentication
                 requestBuilder.header("Authorization", getBasicAuthenticationHeader(userName, password));
             // Await response before continue executing the rest of the code
             return HTTP_CLIENT.send(requestBuilder.build(), HttpResponse.BodyHandlers.ofString());
@@ -87,33 +107,6 @@ public class AgentCommunicationClient {
         }
     }
 
-    /**
-     * An overloaded method that sends a POST request with JSON parameters to a specific API endpoint authenticated with security tokens.
-     *
-     * @param url        API endpoint.
-     * @param jsonParams JSON parameters to be sent in the request body.
-     */
-    public static HttpResponse sendPostRequest(String url, String jsonParams, String bearerToken) {
-        try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .header("Content-Type", "application/json")
-                    // Authorization for accessing the endpoint
-                    .header("Authorization", "Bearer " + bearerToken)
-                    // URL
-                    .uri(URI.create(url))
-                    .POST(HttpRequest.BodyPublishers.ofString(jsonParams))
-                    .timeout(Duration.ofSeconds(3600))
-                    .build();
-            // Await response before continue executing the rest of the code
-            return HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException e) {
-            LOGGER.fatal("Unable to connect or send request. Please ensure the url is valid. If valid, check the message for more details: " + e.getMessage());
-            throw new JPSRuntimeException("Unable to connect or send request. Please ensure the url is valid. If valid, check the message for more details: " + e.getMessage());
-        } catch (InterruptedException e) {
-            LOGGER.fatal("Thread has been interrupted! " + e.getMessage());
-            throw new JPSRuntimeException("Thread has been interrupted! " + e.getMessage());
-        }
-    }
 
     /**
      * An overloaded method that sends a POST request with JSON parameters to a specific API endpoint with basic authentication.
@@ -123,19 +116,41 @@ public class AgentCommunicationClient {
      * @param userName   Username for basic authentication.
      * @param password   Password for basic authentication.
      */
-    public static HttpResponse sendPostRequest(String url, String jsonParams, String userName, String password) {
+    public static HttpResponse sendPostRequest(String url, String jsonParams, String userName, String password) {return sendPostRequest(url, jsonParams, null, userName, password);}
+
+    /**
+     * An overloaded method that sends a POST request with JSON parameters to a specific API endpoint authenticated with security tokens.
+     *
+     * @param url         API endpoint.
+     * @param jsonParams  JSON parameters to be sent in the request body.
+     * @param bearerToken API token to access endpoint.
+     */
+    public static HttpResponse sendPostRequest(String url, String jsonParams, String bearerToken) {return sendPostRequest(url, jsonParams, bearerToken, null, null);}
+
+    /**
+     * A method that sends a POST request with JSON parameters to a specific API endpoint with basic or token authentication.
+     *
+     * @param url         API endpoint.
+     * @param jsonParams  JSON parameters to be sent in the request body.
+     * @param bearerToken API token to access endpoint.
+     * @param userName    Username for basic authentication.
+     * @param password    Password for basic authentication.
+     */
+    public static HttpResponse sendPostRequest(String url, String jsonParams, String bearerToken, String userName, String password) {
         try {
-            HttpRequest request = HttpRequest.newBuilder()
+            HttpRequest.Builder request = HttpRequest.newBuilder()
                     .header("Content-Type", "application/json")
-                    // Authorization for accessing the endpoint
-                    .header("Authorization", getBasicAuthenticationHeader(userName, password))
                     // URL
                     .uri(URI.create(url))
                     .POST(HttpRequest.BodyPublishers.ofString(jsonParams))
-                    .timeout(Duration.ofSeconds(3600))
-                    .build();
+                    .timeout(Duration.ofSeconds(3600));
+            if (bearerToken != null) {
+                request.header("Authorization", "Bearer " + bearerToken);
+            } else if (userName != null && password != null) {
+                request.header("Authorization", getBasicAuthenticationHeader(userName, password));
+            }
             // Await response before continue executing the rest of the code
-            return HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            return HTTP_CLIENT.send(request.build(), HttpResponse.BodyHandlers.ofString());
         } catch (IOException e) {
             LOGGER.fatal("Unable to connect or send request. Please ensure the url is valid. If valid, check the message for more details: " + e.getMessage());
             throw new JPSRuntimeException("Unable to connect or send request. Please ensure the url is valid. If valid, check the message for more details: " + e.getMessage());
