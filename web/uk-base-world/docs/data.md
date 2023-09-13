@@ -18,7 +18,7 @@ Data directories:
     inputs/data/uk_base_world/boundaries/counties_ni
 ```
 
-This data provides polygonal regions for the boundaries of countries with the UK and their ceremonial counties. Note that these are split between Great Britain and Northern Ireland as they use different projections (hence the need to load them as separate tables). Fortunately, these are seamless combined into two layers via the visualisation's `data.json` file.
+This data provides polygonal regions for the boundaries of countries with the UK and their ceremonial counties. Note that these are split between Great Britain and Northern Ireland as they use different projections (hence the need to load them as separate tables). Fortunately, these are seamlessly combined into two layers via the visualisation's `data.json` file.
 
 The shape files used for this data set are provided by [Ordnance Survey](https://www.ordnancesurvey.co.uk/products/boundary-line), [Ordnance Survey Northern Ireland](https://www.data.gov.uk/dataset/d3ca9d44-a7eb-4380-86cb-0cc28e1f1b27/osni-open-data-largescale-boundaries-ni-outline), and [Edinburgh Data Share](https://datashare.ed.ac.uk/handle/10283/2595?show=full). No pre-processing is needed on this data set, we're using it as is.
 
