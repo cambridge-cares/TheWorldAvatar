@@ -157,7 +157,7 @@ public class GeometryMatcher {
      */
     private boolean checkIfPoints(String table) {
         boolean flag = false;
-        String query = "SELECT ST_ASText(\"geometryProperty\") as geostring FROM " + table + " LIMIT 1";
+        String query = "SELECT ST_ASText(\"geometryProperty\") as geostring FROM " + table + " WHERE \"geometryProperty\" IS NOT NULL LIMIT 1";
         JSONArray result = postgisClient.executeQuery(query);
 
         if (!result.isEmpty()) {
@@ -181,12 +181,13 @@ public class GeometryMatcher {
         String geometry = geoObject.getGeometry();
 
         if (flag) {
-            query = "SELECT ogc_fid AS id FROM " + table + " WHERE public.ST_Intersects(public.ST_GeomFromText(\'" + geometry + "\'," + srid + ")," +
+            query = "SELECT ogc_fid AS id FROM " + table + " WHERE \"geometryProperty\" IS NOT NULL AND public.ST_Intersects(public.ST_GeomFromText(\'" + geometry + "\'," + srid + ")," +
                     "public.ST_Transform(\"geometryProperty\"," + srid + ")) AND building_iri IS NULL";
         }
         else {
             String subQuery = "(SELECT ogc_fid, public.ST_Area(public.ST_Intersection(public.ST_GeomFromText(\'" + geometry + "\'," + srid +
-                    "),public.ST_Transform(\"geometryProperty\"," + srid + "))) AS matchedarea, public.ST_Area(\"geometryProperty\") AS area FROM " + table + " WHERE landuse IS NULL AND building_iri is NULL) AS q";
+                    "),public.ST_Transform(\"geometryProperty\"," + srid + "))) AS matchedarea, public.ST_Area(\"geometryProperty\") AS area FROM " + table +
+                    " WHERE \"geometryProperty\" IS NOT NULL AND landuse IS NULL AND building_iri is NULL) AS q";
 
             query = "SELECT q.ogc_fid AS id FROM " + subQuery + " WHERE (matchedarea / area) >= " + threshold;
         }
