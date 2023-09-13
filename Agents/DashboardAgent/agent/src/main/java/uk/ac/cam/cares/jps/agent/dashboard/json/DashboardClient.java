@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -103,25 +104,49 @@ public class DashboardClient {
      * Creates all the connections from the dashboard to the PostGIS database.
      */
     private void createDataSources() {
-        LOGGER.info("Creating data source connections...");
+        LOGGER.info("Retrieving existing data source connections if any...");
         String route = this.SERVICE_CLIENT.getDashboardUrl() + DATA_SOURCE_ROUTE;
+        // Retrieves any existing data connections if available
+        HttpResponse response = AgentCommunicationClient.sendGetRequest(route, this.SERVICE_ACCOUNT_TOKEN);
+        JsonArray responseArray = AgentCommunicationClient.retrieveResponseBody(response).getAsJsonArray();
+        // A data source map to make it easier to check for its existence
+        Map<String, String> existingDataSources = new HashMap<>();
+        // For each existing data source,
+        for (JsonElement dataSource : responseArray) {
+            if (dataSource.isJsonObject()) {
+                JsonObject dataSourceObject = dataSource.getAsJsonObject();
+                String url = dataSourceObject.get("url").getAsString();
+                String databaseName = dataSourceObject.get("database").getAsString();
+                String databaseConnectionID = dataSourceObject.get("uid").getAsString();
+                // Store their name and url for checking if this database does not need to be reconnected in the dashboard
+                existingDataSources.put(databaseName, url);
+                // Store their existing metadata for generating the json model syntax
+                this.DATABASE_CONNECTION_MAP.put(databaseName, databaseConnectionID);
+                LOGGER.debug("Detected existing connection to " + databaseName);
+            }
+        }
+        LOGGER.info("Retrieving RDB databases...");
         List<String> dbList = this.SERVICE_CLIENT.getDatabaseNames();
-        int counter = 1;
+        // For each database, verify if they exist and create their dashboard connection when required
         for (String database : dbList) {
-            LOGGER.debug("Creating connection to " + database + "...");
-            // Generate a source name with prefix and a counter number
-            String sourceName = CONNECTION_NAME_PREFIX + counter++; // The counter will increase after execution
             String[] credentials = this.SERVICE_CLIENT.getPostGisCredentials();
-            // Format the syntax into valid json
-            PostgresDataSource source = new PostgresDataSource(sourceName, credentials[0], credentials[1], credentials[2], database);
-            // Execute request to create new connection
-            HttpResponse response = AgentCommunicationClient.sendPostRequest(route, source.construct(), this.SERVICE_ACCOUNT_TOKEN);
-            AgentCommunicationClient.verifySuccessfulRequest(response, FAILED_REQUEST_ERROR + response.body());
-            // Retrieve the connection ID generated for the database connection and link it to the database
-            JsonObject responseBody = AgentCommunicationClient.retrieveResponseBody(response).getAsJsonObject().get("datasource").getAsJsonObject();
-            String databaseConnectionID = responseBody.get("uid").getAsString();
-            String databaseName = responseBody.get("database").getAsString();
-            this.DATABASE_CONNECTION_MAP.put(databaseName, databaseConnectionID);
+            // If the existing data connections does not include this database or the url does not match it,
+            // Create a new connection and store its metadata
+            if (!existingDataSources.containsKey(database) || !existingDataSources.get(database).equals(credentials[0])) {
+                LOGGER.debug("Creating connection to " + database + "...");
+                // Generate a source name with prefix and a random uuid
+                String sourceName = CONNECTION_NAME_PREFIX + UUID.randomUUID();
+                // Format the syntax into valid json
+                PostgresDataSource source = new PostgresDataSource(sourceName, credentials[0], credentials[1], credentials[2], database);
+                // Execute request to create new connection
+                response = AgentCommunicationClient.sendPostRequest(route, source.construct(), this.SERVICE_ACCOUNT_TOKEN);
+                AgentCommunicationClient.verifySuccessfulRequest(response, FAILED_REQUEST_ERROR + response.body());
+                // Retrieve the connection ID generated for the database connection and link it to the database
+                JsonObject responseBody = AgentCommunicationClient.retrieveResponseBody(response).getAsJsonObject().get("datasource").getAsJsonObject();
+                String databaseConnectionID = responseBody.get("uid").getAsString();
+                String databaseName = responseBody.get("database").getAsString();
+                this.DATABASE_CONNECTION_MAP.put(databaseName, databaseConnectionID);
+            }
         }
         LOGGER.debug("All connections have been successfully established!");
     }

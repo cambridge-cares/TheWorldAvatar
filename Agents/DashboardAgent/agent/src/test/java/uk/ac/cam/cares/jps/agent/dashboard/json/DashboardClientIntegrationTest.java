@@ -129,4 +129,31 @@ class DashboardClientIntegrationTest {
             assertEquals(1, dataSources.size());
         }
     }
+
+    @Test
+    void testInitDashboardForRepeatedDatabaseConnection() {
+        try (MockedConstruction<StackClient> mockClient = Mockito.mockConstruction(StackClient.class, (mock, context) -> {
+            // Ensure all mocks return the test dashboard url and to allow the program to continue
+            Mockito.when(mock.getDashboardUrl()).thenReturn(IntegrationTestUtils.TEST_DASHBOARD_URL);
+            // Mock that this returns an empty string array as this test is not for creating dashboards
+            Mockito.when(mock.getAllSpatialZones()).thenReturn(new String[]{});
+            Mockito.when(mock.getDatabaseNames()).thenReturn(List.of(new String[]{SAMPLE_SQL_DATABASE}));
+            Mockito.when(mock.getPostGisCredentials()).thenReturn(new String[]{IntegrationTestUtils.TEST_POSTGIS_URL,
+                    IntegrationTestUtils.TEST_POSTGIS_USER, IntegrationTestUtils.TEST_POSTGIS_PASSWORD});
+        })) {
+            StackClient mockStackClient = new StackClient();
+            DashboardClient client = new DashboardClient(mockStackClient, IntegrationTestUtils.DASHBOARD_ACCOUNT_USER, IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
+            // Execute method twice and verify only one connection has been created
+            client.initDashboard();
+            client.initDashboard();
+            // Verify if an account has been created
+            List<Map<String, Object>> accountInfo = (List<Map<String, Object>>) IntegrationTestUtils.retrieveServiceAccounts(IntegrationTestUtils.DASHBOARD_ACCOUNT_USER, IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
+            assertEquals(1, accountInfo.size());
+            assertEquals(2.0, accountInfo.get(0).get("tokens")); // Two tokens should be generated
+            assertEquals(IntegrationTestUtils.SERVICE_ACCOUNT_NAME, accountInfo.get(0).get(IntegrationTestUtils.NAME_KEY));
+            // Verify that only one data source has been created
+            JsonArray dataSources = IntegrationTestUtils.retrieveDataSources(IntegrationTestUtils.DASHBOARD_ACCOUNT_USER, IntegrationTestUtils.DASHBOARD_ACCOUNT_PASS);
+            assertEquals(1, dataSources.size());
+        }
+    }
 }
