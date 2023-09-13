@@ -126,9 +126,12 @@ class TimeSeriesDatabaseMetadata {
         return suitableTable;
     }
 
-    String getExistingSuitableColumn(String table, Class<?> clas, int srid) {
+    String getExistingSuitableColumn(String table, Class<?> clas, Integer srid) {
         String sqlDataType;
         if (Geometry.class.isAssignableFrom(clas)) {
+            if (srid == null) {
+                srid = 0;
+            }
             sqlDataType = String.format("%s,%d", clas.getSimpleName(), srid).toUpperCase();
         } else {
             sqlDataType = DefaultDataType.getDataType(TimeSeriesRDBClient.DIALECT, clas).getTypeName();
