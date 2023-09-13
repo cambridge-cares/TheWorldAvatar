@@ -49,13 +49,19 @@ def get_all_flood_warnings() -> str:
     return query
 
 
-def get_all_flood_areas() -> str:
+def get_all_flood_areas(without_warning=False) -> str:
     # Retrieve all instantiated flood areas with associated locations
+    # (and optionally: exclude flood areas with current warning)
+    if without_warning:
+        filter_expression = f"FILTER NOT EXISTS {{ ?area_iri <{RT_CURRENT_WARNING}> ?warning_iri }}"
+    else:
+        filter_expression = ""
     query = f"""
         SELECT ?area_iri ?location_iri
         WHERE {{
         ?area_iri <{RDF_TYPE}> <{RT_FLOOD_AREA}> ; 
                   <{FLOOD_HAS_LOCATION}> ?location_iri . 
+        {filter_expression}
         }}
     """
     # Remove unnecessary whitespaces
