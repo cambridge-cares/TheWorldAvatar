@@ -17,18 +17,19 @@ In the [resource folder](osmagent/src/main/resources/), there are two CSV files 
 The agent has been implemented to work in the stack. Follow the instructions in the [stack-manager README](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md) to set up the stack.
 
 ### 2.3. DataIntegrationAgent
-This agent is designed to work with the data instantiated by the DataIntegrationAgent (referred to as 3D data), and assumed the presence of 3D data inside the stack PostgreSQL. 
+This agent is designed to work with the data instantiated by the DataIntegrationAgent (henceforth, referred to as 3D data), and assumed the presence of 3D data inside the stack PostgreSQL. 
 **Please ensure that the DataIntegrationAgent is deployed in the stack and ran first before building and running this agent.**
 
 ### 2.4. Uploading Raw Data
 #### 2.4.1. OSM Data
 Upload raw OSM data in the same stack PostgreSQL database as the 3D data using [stack-data-uploader] as a set of points and polygons of `.gml` data.
 The data structure and config file to upload the raw OSM data in stack-data-uploader is located in [inputs] directory. 
+Ensure that the database specified in [osm.json](inputs/config/osm.json) is the same database where the 3D data is located.
 
 To prepare OSM data in `.gml` format
-1) Download desired bounding box from [BBBike.org](https://extract.bbbike.org/) or [GeoFabrik](https://download.geofabrik.de/).
-2) The `.pbf` is then to be converted into `.osm` using [osmconvert](https://wiki.openstreetmap.org/wiki/Osmconvert). 
-3) `.osm` file is then imported into QGis's using [QuickOSM](https://plugins.qgis.org/plugins/QuickOSM/) plugin, the points and polygons layer are exported in `.gml` format.
+1) Download desired bounding box from [BBBike.org](https://extract.bbbike.org/) (check junk email) or [GeoFabrik](https://download.geofabrik.de/) in `.pbf` format.
+2) Convert the `.pbf` file into `.osm` format using [osmconvert](https://wiki.openstreetmap.org/wiki/Osmconvert). 
+3) Import the `.osm` file  into QGIS using [QuickOSM](https://plugins.qgis.org/plugins/QuickOSM/) plugin, then export points and polygons layer as `points.gml` and `polygons.gml`.
 
 #### 2.4.2. Digitales Landschaftsmodell (DLM) Land Use Data
 If unavailable within the database, DLM files can be uploaded via the stack-data-uploader in Pirmasens Digital Twin (PSDT) repository. 
@@ -49,8 +50,8 @@ You will need to provide your credentials (GitHub username/personal access token
 
 ### 3.2. Agent Configuration
 In the [config.properties](osmagent/src/main/resources/config.properties) file, specify the following:
-- Database name containing both 3D building and OSM data as `db.name`.
-- Schema name containing OSM data as `osm.schema`.
+- Database name containing both 3D building and OSM data as `db.name`. Default is set to the database value in [osm.json](inputs/config/osm.json). Change `db.name` if `osm.json` database value is changed.
+- Schema name containing OSM data as `osm.schema`. Default is set to the schema value in [osm.json](inputs/config/osm.json). Change `osm.schema` if `osm.json` schema value is changed.
 - Table name (inclusive of schema) containing DLM land use data as `landuse.table`. Leave empty if there is no land use data available, no land use matching will be run.
 
 ### 3.3. Building Docker Image
