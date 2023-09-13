@@ -56,7 +56,7 @@ public class SettingViewModel extends ViewModel {
     private Map<String, Integer> getSettingsInInteger() {
         Map<String, Integer> results = new HashMap<>();
         settings.forEach((key, value) -> {
-            if (!Arrays.asList(BASIC_SECTION_TITLE, LOCATION_SECTION_TITLE, SUPPLIER_SECTION_TITLE, PURCHASE_SECTION_TITLE, OTHERS_SECTION_TITLE).contains(key)) {
+            if (!Arrays.asList(BASIC_SECTION_TITLE, LOCATION_SECTION_TITLE, SUPPLIER_SECTION_TITLE, PURCHASE_SECTION_TITLE, ITEM_SECTION_TITLE, OTHERS_SECTION_TITLE).contains(key)) {
                 results.put(key, value.getValue());
             }
         });

@@ -21,4 +21,7 @@ public class AssetInfo {
     public void addProperties(String key, String value) {
         this.properties.put(key, value);
     }
+    public String getProperty(String key) {
+        return this.properties.get(key);
+    }
 }

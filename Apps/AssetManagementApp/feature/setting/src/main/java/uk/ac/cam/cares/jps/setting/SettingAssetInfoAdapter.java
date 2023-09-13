@@ -44,7 +44,8 @@ public class SettingAssetInfoAdapter extends RecyclerView.Adapter<SettingAssetIn
         checkboxStatusBySections.put(BASIC_SECTION_TITLE, basicInfoOrder);
         checkboxStatusBySections.put(LOCATION_SECTION_TITLE, locationInfoOrder);
         checkboxStatusBySections.put(SUPPLIER_SECTION_TITLE, supplierInfoOrder);
-        checkboxStatusBySections.put(PURCHASE_SECTION_TITLE, itemInfoOrder);
+        checkboxStatusBySections.put(PURCHASE_SECTION_TITLE, docLineInfoOrder);
+        checkboxStatusBySections.put(ITEM_SECTION_TITLE, itemInfoOrder);
         checkboxStatusBySections.put(OTHERS_SECTION_TITLE, Arrays.asList(SPEC_SHEET_SECTION_TITLE, MANUAL_SECTION_TITLE));
     }
 
