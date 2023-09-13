@@ -3,7 +3,7 @@
 # 4.1.0
 ### Features
 * Added an "interactions" layer parameter to set level of allowed mouse interaction ("all"|"click-only"|"hover-only"|"none", defaults to "all").
-* Added the ability to use placeholder "[SELECTED-IRI]" and "[HOVERED-IRI]" placeholders in Mapbox expressions (Cesium TBD).
+* Added the ability to use "[SELECTED-IRI]" and "[HOVERED-IRI]" placeholders in Mapbox expressions (Cesium TBD).
 * Added system to set callbacks for feature selection, unselection, and layer tree change events.
 ### Bug Fixes:
 * Fixed minor issue with loading metadata from selected raster layers in Cesium.
