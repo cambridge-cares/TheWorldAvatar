@@ -1,7 +1,7 @@
 {
-    "name": "pirmasens",
+    "name": "osm",
     "database": "postgres",
-    "datasetDirectory": "pirmasens",
+    "datasetDirectory": "osm",
     "dataSubsets": [
 		  {
             "type": "vector",

@@ -38,7 +38,15 @@ public class GeometryMatcher {
     public void matchGeometry(String table) throws ParseException {
         WKTReader wktReader = new WKTReader();
 
-        Map<Integer, OSMObject> osmObjects = OSMObject.getOSMObjects(dbUrl, user, password, table, "building IS NOT NULL AND building_iri IS NULL");
+        String condition = "building IS NOT NULL AND building_iri IS NULL";
+
+        boolean flag = checkIfPoints(table);
+
+        if (!flag) {
+            condition = "landuse IS NULL AND " + condition;
+        }
+
+        Map<Integer, OSMObject> osmObjects = OSMObject.getOSMObjects(dbUrl, user, password, table, condition);
 
         String updateStart = "UPDATE " + table + " SET building_iri = CASE";
         String updateEnd = " ELSE building_iri END";
@@ -101,8 +109,6 @@ public class GeometryMatcher {
         updates.clear();
         counter = 0;
         update = "";
-
-        boolean flag = checkIfPoints(table);
 
         // match building geometry, which were not matched in the first round, with OSM geometry that don't have building IRI
         for (Map.Entry<String, GeoObject> entry : geoObjects.entrySet()) {
@@ -180,7 +186,7 @@ public class GeometryMatcher {
         }
         else {
             String subQuery = "(SELECT ogc_fid, public.ST_Area(public.ST_Intersection(public.ST_GeomFromText(\'" + geometry + "\'," + srid +
-                    "),public.ST_Transform(\"geometryProperty\"," + srid + "))) AS matchedarea, public.ST_Area(\"geometryProperty\") AS area FROM " + table + " WHERE building_iri is NULL) AS q";
+                    "),public.ST_Transform(\"geometryProperty\"," + srid + "))) AS matchedarea, public.ST_Area(\"geometryProperty\") AS area FROM " + table + " WHERE landuse IS NULL AND building_iri is NULL) AS q";
 
             query = "SELECT q.ogc_fid AS id FROM " + subQuery + " WHERE (matchedarea / area) >= " + threshold;
         }
