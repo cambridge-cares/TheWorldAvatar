@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json;
 
+import com.google.gson.JsonArray;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
@@ -40,7 +41,7 @@ public class DashboardClient {
         this.DASHBOARD_ACCOUNT_PASSWORD = dashboardContainerPassword;
         // Verify if the dashboard container has been set up, and throws an error if not
         // A GET request to the endpoint should return a valid status code with an HTML file
-        HttpResponse response = AgentCommunicationClient.sendGetRequest(this.SERVICE_CLIENT.getDashboardUrl());
+        HttpResponse response = AgentCommunicationClient.sendGetRequest(this.SERVICE_CLIENT.getDashboardUrl(), this.DASHBOARD_ACCOUNT_USER , this.DASHBOARD_ACCOUNT_PASSWORD);
         AgentCommunicationClient.verifySuccessfulRequest(response, DASHBOARD_UNAVAILABLE_ERROR);
     }
 

@@ -7,5 +7,18 @@ services:
     build:
       context: ..
       target: test
+    depends_on:
+      - grafana_test
     ports:
       - "3067:8080"
+    networks:
+      - test-network
+  grafana_test:
+    image: grafana/grafana-oss:10.0.3
+    container_name: grafana_test
+    ports:
+      - "3068:3000"
+    networks:
+      - test-network
+networks:
+  test-network:
