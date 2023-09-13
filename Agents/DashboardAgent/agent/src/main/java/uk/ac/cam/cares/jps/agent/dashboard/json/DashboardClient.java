@@ -1,17 +1,18 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json;
 
-import com.google.gson.JsonArray;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
 import uk.ac.cam.cares.jps.agent.dashboard.stack.StackClient;
 import uk.ac.cam.cares.jps.agent.dashboard.utils.AgentCommunicationClient;
+import uk.ac.cam.cares.jps.agent.dashboard.utils.StringHelper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * A client that interacts with the dashboard container to set it up.
@@ -27,6 +28,7 @@ public class DashboardClient {
     private static final Logger LOGGER = LogManager.getLogger(DashboardAgent.class);
     private static final String CONNECTION_NAME_PREFIX = "Postgis";
     private static final String SERVICE_ACCOUNT_ROUTE = "/api/serviceaccounts";
+    private static final String SERVICE_ACCOUNT_SEARCH_SUB_ROUTE = "/search";
     private static final String DATA_SOURCE_ROUTE = "/api/datasources";
     private static final String DASHBOARD_CREATION_ROUTE = "/api/dashboards/db";
     private static final String DASHBOARD_UNAVAILABLE_ERROR = "Dashboard container has not been set up within the stack. Please set it up first!";
@@ -41,7 +43,7 @@ public class DashboardClient {
         this.DASHBOARD_ACCOUNT_PASSWORD = dashboardContainerPassword;
         // Verify if the dashboard container has been set up, and throws an error if not
         // A GET request to the endpoint should return a valid status code with an HTML file
-        HttpResponse response = AgentCommunicationClient.sendGetRequest(this.SERVICE_CLIENT.getDashboardUrl(), this.DASHBOARD_ACCOUNT_USER , this.DASHBOARD_ACCOUNT_PASSWORD);
+        HttpResponse response = AgentCommunicationClient.sendGetRequest(this.SERVICE_CLIENT.getDashboardUrl(), this.DASHBOARD_ACCOUNT_USER, this.DASHBOARD_ACCOUNT_PASSWORD);
         AgentCommunicationClient.verifySuccessfulRequest(response, DASHBOARD_UNAVAILABLE_ERROR);
     }
 
@@ -49,7 +51,7 @@ public class DashboardClient {
      * Initialise a new dashboard through HTTP API.
      */
     public void initDashboard() {
-        this.createServiceAccount();
+        this.createServiceAccountToken();
         this.createDataSources();
         // For each spatial zone, a separate dashboard should be generated
         String[] spatialZoneArray = this.SERVICE_CLIENT.getAllSpatialZones();
@@ -59,28 +61,42 @@ public class DashboardClient {
     }
 
     /**
-     * Creates a service account for creating connections and dashboards. Those requests require API keys generated from these service accounts.
+     * Creates a service account token for creating connections and dashboards.
      */
-    private void createServiceAccount() {
-        LOGGER.info("Creating service account...");
+    private void createServiceAccountToken() {
+        LOGGER.info("Checking for valid service accounts...");
         String route = this.SERVICE_CLIENT.getDashboardUrl() + SERVICE_ACCOUNT_ROUTE;
-        String params = "{ \"name\": \"grafana\", \"role\": \"Admin\", \"isDisabled\" : false}";
-        // Create a new service account
-        HttpResponse response = AgentCommunicationClient.sendPostRequest(route, params, this.DASHBOARD_ACCOUNT_USER, this.DASHBOARD_ACCOUNT_PASSWORD);
-        LOGGER.info("Generating a new token...");
-        // Retrieve the account ID to facilitate token creation process
+        HttpResponse response = AgentCommunicationClient.sendGetRequest(route + SERVICE_ACCOUNT_SEARCH_SUB_ROUTE, this.DASHBOARD_ACCOUNT_USER, this.DASHBOARD_ACCOUNT_PASSWORD);
         Map<String, Object> responseMap = AgentCommunicationClient.retrieveResponseBodyAsMap(response);
-        // ID is in Double format due to how GSON parses it's number
-        // For our use case, we require it to be transformed into a non-decimal number
-        Double idDoubleFormat = (Double) responseMap.get("id");
-        int accountId = idDoubleFormat.intValue();
+        // This should return a JSON array of objects, which may or may not have any existing accounts
+        List<Map<String, Object>> accountInfo = (List<Map<String, Object>>) responseMap.get("serviceAccounts");
+        int accountId;
+        if (accountInfo.size() > 0 && accountInfo.get(0).get("name").equals(StringHelper.SERVICE_ACCOUNT_NAME)) {
+            LOGGER.info("Valid service account detected...");
+            // ID is returned as double and should be parsed into integer for the routing to be valid
+            Double idDoubleFormat = (Double) accountInfo.get(0).get("id");
+            accountId = idDoubleFormat.intValue();
+        } else {
+            LOGGER.info("No valid account detected! Creating a new service account...");
+            // Create a new service account
+            String params = "{ \"name\": \"" + StringHelper.SERVICE_ACCOUNT_NAME + "\", \"role\": \"Admin\", \"isDisabled\" : false}";
+            response = AgentCommunicationClient.sendPostRequest(route, params, this.DASHBOARD_ACCOUNT_USER, this.DASHBOARD_ACCOUNT_PASSWORD);
+            // Retrieve the account ID to facilitate token creation process
+            responseMap = AgentCommunicationClient.retrieveResponseBodyAsMap(response);
+            // ID is in Double format due to how GSON parses it's number
+            // For our use case, we require it to be transformed into a non-decimal number
+            Double idDoubleFormat = (Double) responseMap.get("id");
+            accountId = idDoubleFormat.intValue();
+        }
+        LOGGER.info("Generating a new token...");
         // ID must be appended to the route in the following syntax
         route = route + "/" + accountId + "/tokens";
-        // Generate a new token
+        // Generate a new token with randomised name
+        String params = "{ \"name\": \"" + UUID.randomUUID() + "\", \"role\": \"Admin\", \"isDisabled\" : false}";
         response = AgentCommunicationClient.sendPostRequest(route, params, this.DASHBOARD_ACCOUNT_USER, this.DASHBOARD_ACCOUNT_PASSWORD);
         responseMap = AgentCommunicationClient.retrieveResponseBodyAsMap(response);
         this.SERVICE_ACCOUNT_TOKEN = responseMap.get("key").toString();
-        LOGGER.debug("Token for service account has been successfully generated!");
+        LOGGER.debug("Token for the service account has been successfully generated!");
     }
 
     /**

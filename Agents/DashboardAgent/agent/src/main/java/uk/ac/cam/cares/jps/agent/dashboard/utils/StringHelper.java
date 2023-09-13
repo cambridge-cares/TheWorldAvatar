@@ -9,6 +9,7 @@ public class StringHelper {
     public static String ASSET_KEY = "assets";
     public static String ROOM_KEY = "Rooms";
     public static String THRESHOLD_KEY = "threshold";
+    public static String SERVICE_ACCOUNT_NAME = "grafana";
 
     /**
      * Formats the SPARQL variable name for a SPARQL query syntax. Note that a space will be appended beforehand.
