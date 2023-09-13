@@ -851,6 +851,46 @@ public class QueryClient {
         return iriToPolygonMap;
     }
 
+    Map<String, List<List<Polygon>>> estimatePolygonsFromEnvelope(Map<String, String> buildingToEnvelopeMap) {
+        Map<String, List<List<Polygon>>> iriToPolygonMap = new HashMap<>();
+        buildingToEnvelopeMap.entrySet().forEach(mapEntry -> {
+            String[] envelopeString = mapEntry.getValue().split("#");
+
+            List<Double> xList = new ArrayList<>();
+            List<Double> yList = new ArrayList<>();
+            List<Double> zList = new ArrayList<>();
+            for (int i = 0; i < envelopeString.length; i += 3) {
+                xList.add(Double.valueOf(envelopeString[i]));
+                yList.add(Double.valueOf(envelopeString[i + 1]));
+                zList.add(Double.valueOf(envelopeString[i + 2]));
+            }
+
+            double xMin = Collections.min(xList);
+            double yMin = Collections.min(yList);
+            double xMax = Collections.max(xList);
+            double yMax = Collections.max(yList);
+            double zMin = Collections.min(zList);
+            double zMax = Collections.max(zList);
+
+            // create polygon
+            Coordinate[] coordinatesGround = { new Coordinate(xMin, yMin, zMin), new Coordinate(xMax, yMin, zMin),
+                    new Coordinate(xMax, yMax, zMin), new Coordinate(xMin, yMax, zMin),
+                    new Coordinate(xMin, yMin, zMin) };
+            Coordinate[] coordinatesRoof = { new Coordinate(xMin, yMin, zMax), new Coordinate(xMax, yMin, zMax),
+                    new Coordinate(xMax, yMax, zMax), new Coordinate(xMin, yMax, zMax),
+                    new Coordinate(xMin, yMin, zMax) };
+
+            Polygon polygonGround = new GeometryFactory().createPolygon(coordinatesGround);
+            Polygon polygonRoof = new GeometryFactory().createPolygon(coordinatesRoof);
+            List<List<Polygon>> polyList = new ArrayList<>();
+            polyList.add(List.of(polygonGround));
+            polyList.add(List.of(polygonRoof));
+
+            iriToPolygonMap.put(mapEntry.getKey(), polyList);
+        });
+        return iriToPolygonMap;
+    }
+
     // This method only retrieves items with an object Class ID of 26, which is the
     // OCGML identifier for buildings.
     // See
@@ -888,10 +928,11 @@ public class QueryClient {
         WhereBuilder wb2 = new WhereBuilder()
                 .addPrefix("ocgml", ONTO_CITYGML)
                 .addWhere("?cityObject", "ocgml:objectClassId", "?id")
+                .addWhere("?cityObject", "ocgml:EnvelopeType", "?envelope")
                 .addFilter("?id=26");
 
         SelectBuilder sb = new SelectBuilder()
-                .addVar("?cityObject");
+                .addVar("?cityObject").addVar("?envelope");
 
         Query query = sb.build();
         // add geospatial service
@@ -905,14 +946,21 @@ public class QueryClient {
 
         List<String> buildingOCGMLIRIList = new ArrayList<>();
 
+        Map<String, String> buildingToEnvelopeMap = new HashMap<>();
         for (int i = 0; i < buildingIRIQueryResult.length(); i++) {
-            String cityObjectIRI = buildingIRIQueryResult.getJSONObject(i).getString("cityObject");
-            if (!cityObjectIRIList.contains(cityObjectIRI))
-                buildingOCGMLIRIList.add(cityObjectIRI.replace("cityobject", "building"));
+            String envelopeString = buildingIRIQueryResult.getJSONObject(i).getString("envelope");
+            String buildingIri = buildingIRIQueryResult.getJSONObject(i).getString("cityObject").replace("cityobject",
+                    "building");
+            buildingToEnvelopeMap.put(buildingIri, envelopeString);
+            buildingOCGMLIRIList.add(buildingIri);
         }
 
-        return buildingsQuery(buildingOCGMLIRIList);
-
+        if (citiesNamespace.contentEquals("singaporeEPSG24500")) {
+            // temporary hack, bad code!
+            return estimatePolygonsFromEnvelope(buildingToEnvelopeMap);
+        } else {
+            return buildingsQuery(buildingOCGMLIRIList);
+        }
     }
 
     /**
@@ -920,7 +968,7 @@ public class QueryClient {
      * then adds a buffer
      */
     private Polygon getBoundingBoxOfPointSources(List<PointSource> allSources) {
-        double buffer = 200;
+        double buffer = 500;
         GeometryFactory geoFactory = new GeometryFactory();
         List<Point> convertedPoints = allSources.stream().map(s -> {
             double[] xyOriginal = { s.getLocation().getX(), s.getLocation().getY() };
@@ -1004,14 +1052,14 @@ public class QueryClient {
                 int.class) == 1;
     }
 
-    public void setElevation(List<StaticPointSource> pointSources, List<Building> buildings, int simulationSrid) {
+    public void setElevation(List<PointSource> pointSources, List<Building> buildings, int simulationSrid) {
 
         String elevationTable = EnvConfig.ELEVATION_TABLE;
 
         try (Connection conn = rdbStoreClient.getConnection();
                 Statement stmt = conn.createStatement();) {
             for (int i = 0; i < pointSources.size(); i++) {
-                StaticPointSource ps = pointSources.get(i);
+                PointSource ps = pointSources.get(i);
                 String originalSrid = "EPSG:" + ps.getLocation().getSRID();
                 double[] xyOriginal = { ps.getLocation().getX(), ps.getLocation().getY() };
                 double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);

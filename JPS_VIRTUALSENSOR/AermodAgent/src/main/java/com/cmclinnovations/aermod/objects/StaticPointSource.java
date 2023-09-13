@@ -29,14 +29,6 @@ public class StaticPointSource extends PointSource {
 
     }
 
-    public void setElevation(double elevation) {
-        this.baseElevation = elevation;
-    }
-
-    public double getElevation() {
-        return baseElevation;
-    }
-
     public void setCityObjectType(CityObjectType objType) {
         pointSourceOCGMLType = objType;
     }

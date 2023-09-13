@@ -154,7 +154,7 @@ public class AermodAgent extends DerivationAgent {
         boolean usesElevation = false;
         if (citiesNamespace != null) {
             if (queryClient.tableExists(EnvConfig.ELEVATION_TABLE)) {
-                queryClient.setElevation(staticPointSources, buildings, srid);
+                queryClient.setElevation(allSources, buildings, srid);
                 List<byte[]> elevData = queryClient.getScopeElevation(scope);
 
                 if (!elevData.isEmpty()) {
@@ -170,7 +170,7 @@ public class AermodAgent extends DerivationAgent {
                         EnvConfig.ELEVATION_TABLE);
             }
 
-            aermod.createBPIPPRMInput(staticPointSources, buildings, srid);
+            aermod.createBPIPPRMInput(allSources, buildings, srid);
             aermod.runBPIPPRM();
         }
 

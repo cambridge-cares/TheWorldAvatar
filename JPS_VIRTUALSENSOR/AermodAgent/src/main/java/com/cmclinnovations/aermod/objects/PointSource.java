@@ -24,6 +24,7 @@ public class PointSource {
     private Map<PollutantType, Double> flowrateInGramsPerS;
 
     private String iri;
+    private double baseElevation;
 
     public PointSource(String iri) {
         this.iri = iri;
@@ -40,6 +41,14 @@ public class PointSource {
 
     public Point getLocation() {
         return this.location;
+    }
+
+    public void setElevation(double elevation) {
+        this.baseElevation = elevation;
+    }
+
+    public double getElevation() {
+        return baseElevation;
     }
 
     public void setFlowrateInKgPerS(PollutantType pollutant, double flowRate) {

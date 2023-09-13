@@ -192,7 +192,7 @@ public class Aermod {
     }
 
     /* Write out data to BPIPPRM input file and run this program. */
-    public void createBPIPPRMInput(List<StaticPointSource> pointSources, List<Building> buildings, int simulationSrid) {
+    public void createBPIPPRMInput(List<PointSource> pointSources, List<Building> buildings, int simulationSrid) {
         StringBuilder sb = new StringBuilder();
         sb.append("\'BPIPPRM test run\' ");
         sb.append(System.lineSeparator());
@@ -226,7 +226,7 @@ public class Aermod {
         int numberSources = pointSources.size();
         sb.append(numberSources).append(System.lineSeparator());
         for (int i = 0; i < numberSources; i++) {
-            StaticPointSource ps = pointSources.get(i);
+            PointSource ps = pointSources.get(i);
             String originalSrid = "EPSG:" + ps.getLocation().getSRID();
             double[] xyOriginal = { ps.getLocation().getX(), ps.getLocation().getY() };
             double[] xyTransformed = CRSTransformer.transform(originalSrid, "EPSG:" + simulationSrid, xyOriginal);
