@@ -1,6 +1,7 @@
 SET search_path TO public,citydb;
 -- copy all surfaces with geometry that should be identified (belong to building, but not footprint/roofprint/solid) and identified them into a temporary table
-CREATE TABLE "public"."true_surface" AS (
+DROP TABLE IF EXISTS "public"."true_surface_1d9b061a";
+CREATE TABLE "public"."true_surface_1d9b061a" AS (
 SELECT "id","gmlid",box2envelope(Box3D("geometry")) AS "envelope", "parent_id", "root_id", "cityobject_id", CASE
     WHEN public.ST_3DArea(public.ST_MakeValid(geometry)) != 0 AND public.ST_Orientation(geometry) = 1 AND public.ST_Area(geometry)/public.ST_3DArea(public.ST_MakeValid(geometry))>0.8 THEN 35
     ELSE CASE 
@@ -14,23 +15,23 @@ WHERE "geometry" IS NOT NULL AND "cityobject_id" IN (SELECT "id" FROM "building"
 -- remove their parent and root from building
 UPDATE "citydb"."building"
 SET "lod2_multi_surface_id" = NULL WHERE 
-("lod2_multi_surface_id" IN (SELECT DISTINCT("parent_id") FROM "public"."true_surface")) OR ("lod2_multi_surface_id" IN (SELECT DISTINCT("root_id") FROM "public"."true_surface"));
+("lod2_multi_surface_id" IN (SELECT DISTINCT("parent_id") FROM "public"."true_surface_1d9b061a")) OR ("lod2_multi_surface_id" IN (SELECT DISTINCT("root_id") FROM "public"."true_surface_1d9b061a"));
 UPDATE "citydb"."building"
 SET "lod3_multi_surface_id" = NULL WHERE 
-("lod3_multi_surface_id" IN (SELECT DISTINCT("parent_id") FROM "public"."true_surface")) OR ("lod3_multi_surface_id" IN (SELECT DISTINCT("root_id") FROM "public"."true_surface"));
+("lod3_multi_surface_id" IN (SELECT DISTINCT("parent_id") FROM "public"."true_surface_1d9b061a")) OR ("lod3_multi_surface_id" IN (SELECT DISTINCT("root_id") FROM "public"."true_surface_1d9b061a"));
 -- unlink with parent and root in surface_geometry
 UPDATE "citydb"."surface_geometry"
-SET "parent_id" = NULL, "root_id" = NULL FROM "public"."true_surface"
-WHERE "citydb"."surface_geometry"."id" = "public"."true_surface"."id";
+SET "parent_id" = NULL, "root_id" = NULL FROM "public"."true_surface_1d9b061a"
+WHERE "citydb"."surface_geometry"."id" = "public"."true_surface_1d9b061a"."id";
 -- their parent, and root are no longer needed
 DELETE FROM "citydb"."surface_geometry" WHERE
-("id" IN (SELECT DISTINCT("parent_id") FROM "public"."true_surface")) OR ("id" IN (SELECT DISTINCT("root_id") FROM "public"."true_surface"));
+("id" IN (SELECT DISTINCT("parent_id") FROM "public"."true_surface_1d9b061a")) OR ("id" IN (SELECT DISTINCT("root_id") FROM "public"."true_surface_1d9b061a"));
 -- create city objects, update cityobject_id of existing surface geometries
 WITH "true_surface_with_row_number" AS (
             SELECT row_number() OVER (), "id", "class",
                 "gmlid" AS "surface_gmlid",
                 "envelope" AS "surface_envelope","cityobject_id" AS "bid"
-            FROM "public"."true_surface"
+            FROM "public"."true_surface_1d9b061a"
         ),
 "co" AS (
     INSERT INTO "citydb"."cityobject" (
@@ -78,8 +79,8 @@ INSERT INTO "citydb"."surface_geometry" (
                 0,
                 NULL,
                 "surface_geometry"."cityobject_id"
-                FROM "surface_geometry", "public"."true_surface" WHERE
-                "surface_geometry"."id" = "public"."true_surface"."id"
+                FROM "surface_geometry", "public"."true_surface_1d9b061a" WHERE
+                "surface_geometry"."id" = "public"."true_surface_1d9b061a"."id"
             );
 -- let children know their parents
 WITH "intermediate" AS (SELECT * FROM "surface_geometry" WHERE "geometry" IS NULL),
@@ -89,14 +90,14 @@ SELECT "cityobject_id","actual"."id" AS "actual_id","intermediate"."id" AS "inte
 FROM "intermediate" JOIN "actual" using ("cityobject_id"))
 UPDATE "surface_geometry"
 SET "parent_id" = "intermediate_id", "root_id" = "intermediate_id" FROM "intermediate_actual"
-WHERE "surface_geometry"."id" = "intermediate_actual"."actual_id";
+WHERE "surface_geometry"."id" = "intermediate_actual"."actual_id" AND (("surface_geometry"."parent_id" IS NULL) OR ("surface_geometry"."root_id" IS NULL));
 -- make parents self-aware
 UPDATE "surface_geometry"
 SET "root_id" = "id" WHERE "root_id" IS NULL;
 -- update thematic surface
 INSERT INTO "thematic_surface" ("id","objectclass_id","building_id","lod2_multi_surface_id")
-(SELECT "surface_geometry"."cityobject_id","true_surface"."class","true_surface"."cityobject_id","surface_geometry"."root_id"
-FROM "true_surface" JOIN "surface_geometry" ON "surface_geometry"."id" = "true_surface"."id");
+(SELECT "surface_geometry"."cityobject_id","true_surface_1d9b061a"."class","true_surface_1d9b061a"."cityobject_id","surface_geometry"."root_id"
+FROM "true_surface_1d9b061a" JOIN "surface_geometry" ON "surface_geometry"."id" = "true_surface_1d9b061a"."id");
 -- check if the average lowest point of roof surfaces is above the average highest point of ground surfaces
 -- if this is not satisfied by half of the buildings, then swap grounds and roofs around
 UPDATE "thematic_surface"
