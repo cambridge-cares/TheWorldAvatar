@@ -22,36 +22,22 @@ import io.reactivex.Single;
 
 public class OtherInfoLocalSource {
     private static final Logger LOGGER = Logger.getLogger(OtherInfoLocalSource.class);
-    private final Context applicationContext;
-    private Flowable<Map<String, String>> typesFlow;
-
-    private RxDataStore<Preferences> dataStore;
     private final Map<String, RxDataStore<Preferences>> dataStores = new HashMap<>();
     private final Map<String, Flowable<Map<String, String>>> flowables = new HashMap<>();
 
     public OtherInfoLocalSource(@ApplicationContext Context applicationContext) {
         BasicConfigurator.configure();
-        this.applicationContext = applicationContext;
 
         for (String key : otherInfoFromAssetAgentKeys) {
             RxDataStore<Preferences> temp = new RxPreferenceDataStoreBuilder(applicationContext, key).build();
             dataStores.put(key, temp);
-            flowables.put(key, temp.data().map(preferences -> convertPreferencesToMap(preferences)));
+            flowables.put(key, temp.data().map(preferences -> CommonFunctions.convertPreferencesToStringMap(preferences)));
         }
 
     }
 
     public Map<String, Flowable<Map<String, String>>> getOtherInfo() {
         return flowables;
-    }
-
-    private Map<String, String> convertPreferencesToMap(Preferences preferences) {
-        Map<String, String> results = new HashMap<>();
-        Map<Preferences.Key<?>, Object> preferencesMap =  preferences.asMap();
-        for (Preferences.Key key : preferencesMap.keySet()) {
-            results.put(key.toString(), preferencesMap.get(key).toString());
-        }
-        return results;
     }
 
     public void saveToLocalStore(String key, List<Map.Entry<String, String>> inputs) {

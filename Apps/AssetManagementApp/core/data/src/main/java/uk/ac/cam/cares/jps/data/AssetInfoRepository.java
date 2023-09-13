@@ -28,4 +28,8 @@ public class AssetInfoRepository {
         networkSource.getAssetInfoByIri(iri, onSuccess, onErrorUpper);
         return null;
     }
+
+    public void createNewAsset(AssetInfo assetInfo) {
+
+    }
 }

@@ -4,14 +4,40 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/background_grey">
-    <include layout="@layout/app_bar"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
         app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/app_bar"/>
+        android:id="@+id/app_bar_container">
+        <include layout="@layout/app_bar"
+            android:id="@+id/app_bar"/>
+    </LinearLayout>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ripple_done_24"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/app_bar_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_margin="@dimen/appbar_padding"
+        android:id="@+id/done_bt"/>
+
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/app_bar_container">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/app_bar"
+
         android:background="@color/white"
         android:orientation="vertical"
         android:padding="@dimen/component_margin_small"
@@ -53,7 +79,6 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/account_layout"
         android:background="@color/white"
         android:orientation="vertical"
         android:padding="@dimen/component_margin_small"
@@ -71,7 +96,6 @@
             android:layout_height="match_parent"
             android:text="@string/in_app_notification"
             android:id="@+id/in_app_notif_cb"
-            android:layoutDirection="rtl"
             />
 
         <CheckBox
@@ -79,7 +103,6 @@
             android:layout_height="match_parent"
             android:text="@string/email_notification"
             android:id="@+id/emial_notif_cb"
-            android:layoutDirection="rtl"
             />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -99,113 +122,25 @@
             android:text="@string/asset_info_display"
             android:textSize="@dimen/hint_font_size"
             android:textColor="@color/dark_grey"/>
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <androidx.recyclerview.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <CheckBox
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:text="@string/serial_no"
-                android:id="@+id/serial_no_cb"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/location_cb"
-                android:layoutDirection="rtl"
-                android:layout_marginEnd="@dimen/component_margin_small"
-                />
-
-            <CheckBox
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:text="@string/location"
-                android:id="@+id/location_cb"
-                app:layout_constraintStart_toEndOf="@id/serial_no_cb"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layoutDirection="rtl"
-                />
-
-            <CheckBox
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:text="@string/service_code"
-                android:id="@+id/service_code_cb"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/serial_no_cb"
-                app:layout_constraintEnd_toStartOf="@id/asset_type_cb"
-                android:layoutDirection="rtl"
-                android:layout_marginEnd="@dimen/component_margin_small"
-                />
-
-            <CheckBox
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:text="@string/asset_type"
-                android:id="@+id/asset_type_cb"
-                app:layout_constraintTop_toBottomOf="@id/location_cb"
-                app:layout_constraintStart_toEndOf="@id/service_code_cb"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layoutDirection="rtl"
-                />
-
-            <CheckBox
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:text="@string/group"
-                android:id="@+id/group_cb"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/service_code_cb"
-                app:layout_constraintEnd_toStartOf="@id/description_cb"
-                android:layoutDirection="rtl"
-                android:layout_marginEnd="@dimen/component_margin_small"
-                />
-
-            <CheckBox
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:text="@string/description"
-                android:id="@+id/description_cb"
-                app:layout_constraintTop_toBottomOf="@id/asset_type_cb"
-                app:layout_constraintStart_toEndOf="@id/group_cb"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layoutDirection="rtl"
-                />
-
-            <CheckBox
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:text="@string/model_no"
-                android:id="@+id/model_no_cb"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/group_cb"
-                app:layout_constraintEnd_toStartOf="@id/manual_cb"
-                android:layoutDirection="rtl"
-                android:layout_marginEnd="@dimen/component_margin_small"
-                />
-
-            <CheckBox
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:text="@string/manual"
-                android:id="@+id/manual_cb"
-                app:layout_constraintTop_toBottomOf="@id/description_cb"
-                app:layout_constraintStart_toEndOf="@id/model_no_cb"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layoutDirection="rtl"
-                />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_height="wrap_content"
+            android:id="@+id/asset_info_container"
+            android:orientation="vertical"
+            />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <Button
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/logout"
-        app:layout_constraintTop_toBottomOf="@id/asset_info_display_layout"
         android:id="@+id/logout_bt"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="@dimen/component_margin_small"
         android:backgroundTint="@color/white"
         android:textColor="@color/red"/>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

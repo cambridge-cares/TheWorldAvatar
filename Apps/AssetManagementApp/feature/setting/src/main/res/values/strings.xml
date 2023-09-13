@@ -16,4 +16,5 @@
     <string name="manual">Manuals</string>
     <string name="logout">Logout</string>
     <string name="setting">Setting</string>
+    <string name="new_setting_saved">New settings are saved.</string>
 </resources>
