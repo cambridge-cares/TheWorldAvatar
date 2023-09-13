@@ -20,7 +20,7 @@ import java.io.InputStreamReader;
  * 3) updateLandUse - For building_iri which are untagged to any osm_tags, as a
  * default fallback,
  * SQL query is run check and tag buildings with buildings_iri with
- * propertyusage_iri and usageshare as according to the osm_landuse.csv
+ * propertyusage_iri and usageshare according to dlm_landuse.csv
  */
 
 public class UsageShareCalculator {
