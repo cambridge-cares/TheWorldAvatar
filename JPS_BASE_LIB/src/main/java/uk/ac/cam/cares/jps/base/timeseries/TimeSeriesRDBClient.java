@@ -27,6 +27,7 @@ import org.jooq.InsertValuesStep4;
 import org.jooq.InsertValuesStepN;
 import org.jooq.Record;
 import org.jooq.Result;
+import org.jooq.Row2;
 import org.jooq.SQLDialect;
 import org.jooq.Table;
 import org.jooq.UpdateSetFirstStep;
@@ -65,7 +66,7 @@ public class TimeSeriesRDBClient<T> {
 	// Time series column field (for RDB)
 	private final Field<T> timeColumn;
 	// Constants
-	private static final SQLDialect DIALECT = SQLDialect.POSTGRES;
+	static final SQLDialect DIALECT = SQLDialect.POSTGRES;
 	// Central database table
 	private static final String DB_TABLE_NAME = "dbTable";
 	private static final Field<String> DATA_IRI_COLUMN = DSL.field(DSL.name("dataIRI"), String.class);
@@ -161,19 +162,32 @@ public class TimeSeriesRDBClient<T> {
 						exceptionPrefix + "Length of dataClass is different from number of data IRIs");
 			}
 
+			TimeSeriesDatabaseMetadata timeSeriesDatabaseMetadata = getTimeSeriesDatabaseMetadata(conn);
+			String existingSuitableTable = timeSeriesDatabaseMetadata.getExistingSuitableTable(dataClass, srid);
+
 			// Assign column name for each dataIRI; name for time column is fixed
 			Map<String, String> dataColumnNames = new HashMap<>();
-			int i = 1;
-			for (String s : dataIRI) {
-				dataColumnNames.put(s, "column" + i);
-				i++;
+			if (existingSuitableTable != null) {
+				for (int i = 0; i < dataIRI.size(); i++) {
+					String existingSuitableColumn = timeSeriesDatabaseMetadata.getExistingSuitableColumn(
+							existingSuitableTable, dataClass.get(i), srid);
+					dataColumnNames.put(dataIRI.get(i), existingSuitableColumn);
+				}
+			} else {
+				int i = 1;
+				for (String s : dataIRI) {
+					dataColumnNames.put(s, "column" + i);
+					i++;
+				}
 			}
 
 			// Add corresponding entries in central lookup table
 			populateCentralTable(tsTableName, dataIRI, dataColumnNames, tsIRI, conn);
 
 			// Initialise RDB table for storing time series data
-			createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRI, dataClass, srid, conn);
+			if (existingSuitableTable != null) {
+				createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRI, dataClass, srid, conn);
+			}
 
 			return tsTableName;
 		} catch (JPSRuntimeException e) {
@@ -765,7 +779,7 @@ public class TimeSeriesRDBClient<T> {
 			createStep = context.createTableIfNotExists(getDSLTable(tsTable));
 
 			// Create time column
-			createStep = createStep.column(timeColumn);
+			createStep = createStep.column(timeColumn).column(TS_IRI_COLUMN);
 
 			// Create 1 column for each value
 			for (int i = 0; i < dataIRI.size(); i++) {
@@ -787,8 +801,8 @@ public class TimeSeriesRDBClient<T> {
 			}
 		}
 
-		// create index on time column for quicker searches
-		context.createIndex().on(getDSLTable(tsTable), timeColumn).execute();
+		// create index on time column and time series IRI columns for quicker searches
+		context.createIndex().on(getDSLTable(tsTable), timeColumn, TS_IRI_COLUMN).execute();
 
 		// add remaining geometry columns with restrictions
 		if (!additionalGeomColumns.isEmpty()) {
@@ -1482,6 +1496,74 @@ public class TimeSeriesRDBClient<T> {
 			return DSL.table(DSL.name(schema, tableName));
 		} else {
 			return DSL.table(DSL.name(tableName));
+		}
+	}
+
+	TimeSeriesDatabaseMetadata getTimeSeriesDatabaseMetadata(Connection conn) {
+		TimeSeriesDatabaseMetadata timeSeriesDatabaseMetadata = new TimeSeriesDatabaseMetadata();
+		addDataTypes(conn, timeSeriesDatabaseMetadata);
+		addSpecificGeometryClass(conn, timeSeriesDatabaseMetadata);
+		return timeSeriesDatabaseMetadata;
+	}
+
+	void addDataTypes(Connection conn, TimeSeriesDatabaseMetadata timeSeriesDatabaseMetadata) {
+		DSLContext context = DSL.using(conn, DIALECT);
+		Table<Record> columnsTable = DSL.table(DSL.name("information_schema", "columns"));
+		Field<String> tableNameColumn = DSL.field("table_name", String.class);
+		Field<String> dataTypeColumn = DSL.field("data_type", String.class);
+		Field<String> udtNameColumn = DSL.field("udt_name", String.class);
+		Field<String> columnNameColumn = DSL.field("column_name", String.class);
+
+		Condition condition = tableNameColumn
+				.in(context.select(TABLENAME_COLUMN).from(getDSLTable(DB_TABLE_NAME)).fetch(TABLENAME_COLUMN))
+				.and(columnNameColumn.ne("time"));
+
+		if (schema != null) {
+			Field<String> schemaColumn = DSL.field("table_schema", String.class);
+			condition.and(schemaColumn.eq(schema));
+		}
+
+		Result<? extends Record> queryResult = context
+				.select(tableNameColumn, dataTypeColumn, udtNameColumn, columnNameColumn).from(columnsTable)
+				.where(condition).fetch();
+
+		queryResult.forEach(rec -> {
+			String tableName = rec.get(tableNameColumn);
+			String dataType = rec.get(dataTypeColumn);
+			String udtType = rec.get(udtNameColumn);
+			String columnName = rec.get(columnNameColumn);
+			timeSeriesDatabaseMetadata.addDataType(tableName, columnName, dataType);
+			timeSeriesDatabaseMetadata.addUdtType(tableName, columnName, udtType);
+		});
+	}
+
+	void addSpecificGeometryClass(Connection conn, TimeSeriesDatabaseMetadata timeSeriesMetadata) {
+		List<List<String>> geometryRows = timeSeriesMetadata.getGeometryRows();
+		if (!geometryRows.isEmpty()) {
+			DSLContext context = DSL.using(conn, DIALECT);
+			Field<String> tableNameColumn = DSL.field("f_table_name", String.class);
+			Field<String> columnNameColumn = DSL.field("f_geometry_column", String.class);
+			Field<String> typeColumn = DSL.field("type", String.class);
+			Field<Integer> sridColumn = DSL.field("srid", Integer.class);
+
+			List<Row2<String, String>> rows = new ArrayList<>();
+			geometryRows.forEach(geometryRow -> rows.add(row(geometryRow.get(0), geometryRow.get(1))));
+
+			Condition condition = row(tableNameColumn, columnNameColumn).in(rows);
+
+			Result<? extends Record> queryResult = context
+					.select(sridColumn, typeColumn, tableNameColumn, columnNameColumn)
+					.from(getDSLTable("geometry_columns")).where(condition).fetch();
+
+			queryResult.forEach(rec -> {
+				String tableName = rec.get(tableNameColumn);
+				String columnName = rec.get(columnNameColumn);
+				String geometryName = rec.get(typeColumn);
+				int srid = rec.get(sridColumn);
+
+				timeSeriesMetadata.addGeometryType(tableName, columnName, geometryName);
+				timeSeriesMetadata.addSrid(tableName, columnName, srid);
+			});
 		}
 	}
 }
