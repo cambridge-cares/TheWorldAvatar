@@ -45,12 +45,12 @@
                         "visibility": "none"
                     },
                     "paint": {
-                        "fill-color": "#2edaff",
+                        "fill-color": "#31ff61",
                         "fill-opacity": [
                             "case",
                             ["==", ["get", "iri"], "[HOVERED-IRI]"],
                             0.45,
-                            0.15
+                            0.10
                         ]
                     }
                 },
@@ -65,9 +65,9 @@
                         "visibility": "none"
                     },
                     "paint": {
-                        "line-color": "#2edaff",
+                        "line-color": "#31ff61",
                         "line-width": 1,
-                        "line-opacity": 0.3
+                        "line-opacity": 0.25
                     }
                 },
                 {
@@ -81,12 +81,12 @@
                         "visibility": "none"
                     },
                     "paint": {
-                        "fill-color": "#2edaff",
+                        "fill-color": "#31ff61",
                         "fill-opacity": [
                             "case",
                             ["==", ["get", "iri"], "[HOVERED-IRI]"],
-                            0.45,
-                            0.15
+                            0.25,
+                            0.10
                         ]
                     }
                 },
@@ -101,9 +101,9 @@
                         "visibility": "none"
                     },
                     "paint": {
-                        "line-color": "#2edaff",
+                        "line-color": "#31ff61",
                         "line-width": 1,
-                        "line-opacity": 0.3
+                        "line-opacity": 0.25
                     }
                 },
                 {
@@ -114,15 +114,15 @@
                     "interactions": "hover-only",
                     "type": "fill",
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
                         "fill-color": "#2edaff",
                         "fill-opacity": [
                             "case",
                             ["==", ["get", "iri"], "[HOVERED-IRI]"],
-                            0.45,
-                            0.15
+                            0.25,
+                            0.10
                         ]
                     }
                 },
@@ -134,12 +134,12 @@
                     "interactions": "hover-only",
                     "type": "line",
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
                         "line-color": "#2edaff",
                         "line-width": 1,
-                        "line-opacity": 0.3
+                        "line-opacity": 0.25
                     }
                 },
                 {
@@ -150,15 +150,15 @@
                     "interactions": "hover-only",
                     "type": "fill",
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
                         "fill-color": "#2edaff",
                         "fill-opacity": [
                             "case",
                             ["==", ["get", "iri"], "[HOVERED-IRI]"],
-                            0.45,
-                            0.15
+                            0.25,
+                            0.10
                         ]
                     }
                 },
@@ -170,12 +170,12 @@
                     "interactions": "hover-only",
                     "type": "line",
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
                         "line-color": "#2edaff",
                         "line-width": 1,
-                        "line-opacity": 0.3
+                        "line-opacity": 0.25
                     }
                 }
             ]
@@ -194,11 +194,11 @@
             "layers": [
                 {
                     "id": "uk-population-layer",
-                    "name": "UK Population Count",
+                    "name": "UK population count",
                     "source": "uk-population-source",
                     "type": "raster",
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     }
                 }
             ]
@@ -239,7 +239,7 @@
                         ]
                     ],
                     "layout": {
-                        "visibility": "none",
+                        "visibility": "visible",
                         "circle-sort-key": [
                             "*", -1.0, ["get", "capacity"]
                         ]
@@ -286,7 +286,7 @@
                         ["literal", ["Fossil Fuel", "Nuclear"]]
                     ],
                     "layout": {
-                        "visibility": "none",
+                        "visibility": "visible",
                         "circle-sort-key": [
                             "*", -1.0, ["get", "capacity"]
                         ]
@@ -331,10 +331,18 @@
                     "clickable": false,
                     "type": "fill",
                     "filter": [
-                        "==", ["get", "iri"], "[SELECTED-IRI]"
+                        "all", 
+                        ["==", ["get", "iri"], "[SELECTED-IRI]"],
+                        [
+                            "!", [
+                                "in",
+                                ["get", "type"],
+                                ["literal", ["Fossil Fuel", "Nuclear"]]
+                            ]
+                        ]
                     ],
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-outline-color": "#000000",
@@ -353,10 +361,16 @@
                     "clickable": false,
                     "type": "fill",
                     "filter": [
-                        "==", ["get", "iri"], "[SELECTED-IRI]"
+                        "all", 
+                        ["==", ["get", "iri"], "[SELECTED-IRI]"],
+                        [
+                            "in",
+                            ["get", "type"],
+                            ["literal", ["Fossil Fuel", "Nuclear"]]
+                        ]
                     ],
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-outline-color": "#000000",

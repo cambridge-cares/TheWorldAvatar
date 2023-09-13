@@ -6,7 +6,7 @@
  * @returns HTML string for legend content.
  */
 function buildLegend() {
-    $.get("./legend.html", function(contents) {
+    $.get("./legend/legend.html", function(contents) {
         manager.getPanelHandler().setLegend(contents);
     }); 
 }
@@ -69,6 +69,7 @@ function showCustomControls() {
 
     // Add a callback to fire once a feature is selected.
     manager.addSelectionCallback(function(feature) {
+        console.log(feature);
         let layerID = feature?.layer?.id;
 
         if(layerID.endsWith("power_renewable_layer") || layerID.endsWith("power_fossil_layer")) {
@@ -87,10 +88,18 @@ function showCustomControls() {
 
     // Add a callback to fire when the selection state of the layer tree changes
     manager.addTreeSelectionCallback(function(visibleLayerIDs, hiddenLayerIDs) {
-        if(hiddenLayerIDs.includes("0.2.power_renewable_radius_layer") && hiddenLayerIDs.includes("0.2.power_fossil_radius_layer")) {
+        if(window.currentFeature == null) {
             customControlsContainer.style.display = "none";
         } else {
-            customControlsContainer.style.display = "block";
+            let selectedLayer = window.currentFeature.layer.id;
+
+            if(selectedLayer === "0.2.power_renewable_layer" && visibleLayerIDs.includes("0.2.power_renewable_radius_layer")) {
+                customControlsContainer.style.display = "block";
+            } else if(selectedLayer === "0.2.power_fossil_layer" && visibleLayerIDs.includes("0.2.power_fossil_radius_layer")) {
+                customControlsContainer.style.display = "block";
+            } else {
+                customControlsContainer.style.display = "none";
+            }
         }
     });
 
