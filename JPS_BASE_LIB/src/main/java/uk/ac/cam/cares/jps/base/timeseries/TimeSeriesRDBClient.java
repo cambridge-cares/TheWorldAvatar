@@ -30,7 +30,6 @@ import org.jooq.Result;
 import org.jooq.Row2;
 import org.jooq.SQLDialect;
 import org.jooq.Table;
-import org.jooq.UpdateSetFirstStep;
 import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDataType;
@@ -185,7 +184,7 @@ public class TimeSeriesRDBClient<T> {
 			populateCentralTable(tsTableName, dataIRI, dataColumnNames, tsIRI, conn);
 
 			// Initialise RDB table for storing time series data
-			if (existingSuitableTable != null) {
+			if (existingSuitableTable == null) {
 				createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRI, dataClass, srid, conn);
 			}
 
@@ -236,6 +235,7 @@ public class TimeSeriesRDBClient<T> {
 				checkDataIsInSameTable(dataIRI, context);
 
 				String tsTableName = getTimeseriesTableName(dataIRI.get(0), context);
+				String tsIri = getTimeSeriesIRI(dataIRI.get(0), context);
 				// Assign column name for each dataIRI; name for time column is fixed
 				Map<String, String> dataColumnNames = new HashMap<>();
 				for (String s : dataIRI) {
@@ -245,7 +245,7 @@ public class TimeSeriesRDBClient<T> {
 				// Append time series data to time series table
 				// if a row with the time value exists, that row will be updated instead of
 				// creating a new row
-				populateTimeSeriesTable(tsTableName, ts, dataColumnNames, conn);
+				populateTimeSeriesTable(tsTableName, ts, dataColumnNames, tsIri, conn);
 			} catch (JPSRuntimeException e) {
 				// Re-throw JPSRuntimeExceptions
 				throw e;
@@ -794,7 +794,7 @@ public class TimeSeriesRDBClient<T> {
 			}
 
 			// Send consolidated request to RDB
-			createStep.execute();
+			createStep.constraints(unique(timeColumn, TS_IRI_COLUMN)).execute();
 		} finally {
 			if (createStep != null) {
 				createStep.close();
@@ -860,7 +860,7 @@ public class TimeSeriesRDBClient<T> {
 	 * @throws SQLException
 	 */
 	private void populateTimeSeriesTable(String tsTable, TimeSeries<T> ts, Map<String, String> dataColumnNames,
-			Connection conn) throws SQLException {
+			String tsIri, Connection conn) throws SQLException {
 
 		DSLContext context = DSL.using(conn, DIALECT);
 
@@ -875,58 +875,28 @@ public class TimeSeriesRDBClient<T> {
 		for (String data : dataIRIs) {
 			columnList.add(DSL.field(DSL.name(dataColumnNames.get(data))));
 		}
+		columnList.add(TS_IRI_COLUMN);
 
 		// collect the list of time values that exist in the table
 		// these rows are treated specially to avoid duplicates
-		List<Integer> rowsWithMatchingTime = new ArrayList<>();
 		// Populate columns row by row
 		InsertValuesStepN<?> insertValueStep = context.insertInto(table, columnList);
-		int numRowsWithoutMatchingTime = 0;
+
 		for (int i = 0; i < ts.getTimes().size(); i++) {
 			// newValues is the row elements
-			if (!checkTimeRowExists(tsTable, ts.getTimes().get(i), context)) {
-				Object[] newValues = new Object[dataIRIs.size() + 1];
-				newValues[0] = ts.getTimes().get(i);
-				for (int j = 0; j < ts.getDataIRIs().size(); j++) {
-					newValues[j + 1] = (ts.getValues(dataIRIs.get(j)).get(i));
-				}
-				insertValueStep = insertValueStep.values(newValues);
-				numRowsWithoutMatchingTime += 1;
-			} else {
-				rowsWithMatchingTime.add(i);
+			Object[] newValues = new Object[dataIRIs.size() + 2];
+			newValues[0] = ts.getTimes().get(i);
+			for (int j = 0; j < ts.getDataIRIs().size(); j++) {
+				newValues[j + 1] = (ts.getValues(dataIRIs.get(j)).get(i));
 			}
+			newValues[ts.getDataIRIs().size() + 1] = tsIri;
+			insertValueStep = insertValueStep.values(newValues);
+
 		}
 		// open source jOOQ does not support postgis, hence not using execute() directly
-		if (numRowsWithoutMatchingTime != 0) {
-			// if this gets executed when it's 0, null values will be added
-			try (PreparedStatement statement = conn.prepareStatement(insertValueStep.toString())) {
-				statement.executeUpdate();
-			}
-		}
-
-		// update existing rows with matching time value
-		// only one row can be updated in a single query
-		for (int rowIndex : rowsWithMatchingTime) {
-			UpdateSetFirstStep<?> updateStep = context.update(table);
-
-			for (int i = 0; i < ts.getDataIRIs().size(); i++) {
-				String dataIRI = ts.getDataIRIs().get(i);
-
-				if (i == (ts.getDataIRIs().size() - 1)) {
-					updateStep
-							.set(DSL.field(DSL.name(dataColumnNames.get(dataIRI))), ts.getValues(dataIRI).get(rowIndex))
-							.where(timeColumn.eq(ts.getTimes().get(rowIndex)));
-
-					// open source jOOQ does not support postgis geometries, hence not using
-					// execute() directly
-					try (PreparedStatement statement = conn.prepareStatement(updateStep.toString())) {
-						statement.executeUpdate();
-					}
-				} else {
-					updateStep.set(DSL.field(DSL.name(dataColumnNames.get(dataIRI))),
-							ts.getValues(dataIRI).get(rowIndex));
-				}
-			}
+		// if this gets executed when it's 0, null values will be added
+		try (PreparedStatement statement = conn.prepareStatement(insertValueStep.toString())) {
+			statement.executeUpdate();
 		}
 	}
 
