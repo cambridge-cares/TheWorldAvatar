@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.agent.dashboard.json;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
@@ -67,26 +69,23 @@ public class DashboardClient {
         LOGGER.info("Checking for valid service accounts...");
         String route = this.SERVICE_CLIENT.getDashboardUrl() + SERVICE_ACCOUNT_ROUTE;
         HttpResponse response = AgentCommunicationClient.sendGetRequest(route + SERVICE_ACCOUNT_SEARCH_SUB_ROUTE, this.DASHBOARD_ACCOUNT_USER, this.DASHBOARD_ACCOUNT_PASSWORD);
-        Map<String, Object> responseMap = AgentCommunicationClient.retrieveResponseBodyAsMap(response);
+        JsonObject responseBody = AgentCommunicationClient.retrieveResponseBody(response).getAsJsonObject();
         // This should return a JSON array of objects, which may or may not have any existing accounts
-        List<Map<String, Object>> accountInfo = (List<Map<String, Object>>) responseMap.get("serviceAccounts");
+        JsonArray accountInfo = responseBody.get("serviceAccounts").getAsJsonArray();
         int accountId;
-        if (accountInfo.size() > 0 && accountInfo.get(0).get("name").equals(StringHelper.SERVICE_ACCOUNT_NAME)) {
+        // Verify if there are any service accounts, and ensure that one of these accounts are equivalent to this agent's service account name
+        if (accountInfo.size() > 0 && accountInfo.get(0).getAsJsonObject().get("name").getAsString().equals(StringHelper.SERVICE_ACCOUNT_NAME)) {
             LOGGER.info("Valid service account detected...");
-            // ID is returned as double and should be parsed into integer for the routing to be valid
-            Double idDoubleFormat = (Double) accountInfo.get(0).get("id");
-            accountId = idDoubleFormat.intValue();
+            // Retrieve the account ID as int to make it easier to generate the token
+            accountId = accountInfo.get(0).getAsJsonObject().get("id").getAsInt();
         } else {
             LOGGER.info("No valid account detected! Creating a new service account...");
             // Create a new service account
             String params = "{ \"name\": \"" + StringHelper.SERVICE_ACCOUNT_NAME + "\", \"role\": \"Admin\", \"isDisabled\" : false}";
             response = AgentCommunicationClient.sendPostRequest(route, params, this.DASHBOARD_ACCOUNT_USER, this.DASHBOARD_ACCOUNT_PASSWORD);
-            // Retrieve the account ID to facilitate token creation process
-            responseMap = AgentCommunicationClient.retrieveResponseBodyAsMap(response);
-            // ID is in Double format due to how GSON parses it's number
-            // For our use case, we require it to be transformed into a non-decimal number
-            Double idDoubleFormat = (Double) responseMap.get("id");
-            accountId = idDoubleFormat.intValue();
+            // Retrieve the account ID as int to facilitate token creation process
+            responseBody = AgentCommunicationClient.retrieveResponseBody(response).getAsJsonObject();
+            accountId = responseBody.get("id").getAsInt();
         }
         LOGGER.info("Generating a new token...");
         // ID must be appended to the route in the following syntax
@@ -94,8 +93,9 @@ public class DashboardClient {
         // Generate a new token with randomised name
         String params = "{ \"name\": \"" + UUID.randomUUID() + "\", \"role\": \"Admin\", \"isDisabled\" : false}";
         response = AgentCommunicationClient.sendPostRequest(route, params, this.DASHBOARD_ACCOUNT_USER, this.DASHBOARD_ACCOUNT_PASSWORD);
-        responseMap = AgentCommunicationClient.retrieveResponseBodyAsMap(response);
-        this.SERVICE_ACCOUNT_TOKEN = responseMap.get("key").toString();
+        // Retrieve the key from the response
+        responseBody = AgentCommunicationClient.retrieveResponseBody(response).getAsJsonObject();
+        this.SERVICE_ACCOUNT_TOKEN = responseBody.get("key").getAsString();
         LOGGER.debug("Token for the service account has been successfully generated!");
     }
 
@@ -118,9 +118,9 @@ public class DashboardClient {
             HttpResponse response = AgentCommunicationClient.sendPostRequest(route, source.construct(), this.SERVICE_ACCOUNT_TOKEN);
             AgentCommunicationClient.verifySuccessfulRequest(response, FAILED_REQUEST_ERROR + response.body());
             // Retrieve the connection ID generated for the database connection and link it to the database
-            Map<String, Object> responseMap = (Map<String, Object>) AgentCommunicationClient.retrieveResponseBodyAsMap(response).get("datasource");
-            String databaseConnectionID = String.valueOf(responseMap.get("uid"));
-            String databaseName = String.valueOf(responseMap.get("database"));
+            JsonObject responseBody = AgentCommunicationClient.retrieveResponseBody(response).getAsJsonObject().get("datasource").getAsJsonObject();
+            String databaseConnectionID = responseBody.get("uid").getAsString();
+            String databaseName = responseBody.get("database").getAsString();
             this.DATABASE_CONNECTION_MAP.put(databaseName, databaseConnectionID);
         }
         LOGGER.debug("All connections have been successfully established!");
@@ -150,8 +150,8 @@ public class DashboardClient {
         HttpResponse response = AgentCommunicationClient.sendPostRequest(route, jsonSyntax, this.SERVICE_ACCOUNT_TOKEN);
         // WIP: Retrieve the required information to form the URL
         // URL key is available as /EXPOSED_URL_NAME/d/DASHBOARD_ID/DASHBOARD_TITLE
-        Map<String, Object> responseMap = AgentCommunicationClient.retrieveResponseBodyAsMap(response);
-        String dashboardId = responseMap.get("uid").toString();
-        String dashboardTitle = responseMap.get("slug").toString();
+        JsonObject responseBody = AgentCommunicationClient.retrieveResponseBody(response).getAsJsonObject();
+        String dashboardId = responseBody.get("uid").getAsString();
+        String dashboardTitle = responseBody.get("slug").getAsString();
     }
 }

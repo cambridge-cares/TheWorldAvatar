@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.dashboard.utils;
 
-import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.dashboard.DashboardAgent;
@@ -13,8 +14,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A class that provides methods to facilitate communication between agents through handling requests and responses.
@@ -40,15 +39,19 @@ public class AgentCommunicationClient {
     }
 
     /**
-     * Retrieves the body content of the response (usually in JSON), and process it into a Java Map.
+     * Retrieves the body content of the response (usually in JSON) as either a JSON Object or Array.
      *
      * @param response The response returned from the API.
-     * @return The response body as a map for easy access.
+     * @return The response body as either a JSON Object or Array.
      */
-    public static Map<String, Object> retrieveResponseBodyAsMap(HttpResponse response) {
-        Gson gson = new Gson();
-        // Although the method returns the result as a HashMap, it can be abstracted to its parent Map object
-        return gson.fromJson(response.body().toString(), HashMap.class);
+    public static JsonElement retrieveResponseBody(HttpResponse response) {
+        JsonElement jsonResponse = JsonParser.parseString(response.body().toString());
+        // When the response is a JSON Object
+        if (jsonResponse.isJsonObject()) {
+            return jsonResponse.getAsJsonObject();
+        }
+        // When the response is a JSON array
+        return jsonResponse.getAsJsonArray();
     }
 
     /**
@@ -106,7 +109,6 @@ public class AgentCommunicationClient {
             throw new JPSRuntimeException("Thread has been interrupted! " + e.getMessage());
         }
     }
-
 
     /**
      * An overloaded method that sends a POST request with JSON parameters to a specific API endpoint with basic authentication.
