@@ -1331,7 +1331,7 @@ class SMR_Replacement_with_OptimalFlowAnalysis:
                 CoalFiredGeneratorLabel = str(self.numOfBus) + 'BusModel_' + str(self.numberOfSMRToBeIntroduced) + '_SMRs_Introduced_CarbonTax' + str(self.CarbonTaxForOPF) + "_WeatherCondition_" + str(self.weatherConditionName) + "_weighter_" + str(weightForObjective1) + '_CoalFiredGenerator'
                 NaturalGasGeneratorLabel = str(self.numOfBus) + 'BusModel_' + str(self.numberOfSMRToBeIntroduced) + '_SMRs_Introduced_CarbonTax' + str(self.CarbonTaxForOPF) + "_WeatherCondition_" + str(self.weatherConditionName) + "_weighter_" + str(weightForObjective1) + '_NaturalGasGenerator'
 
-                self.filePathForJSON = self.localRootFilePath + '/GeneratorJSONFiles/' +  str(self.numberOfSMRToBeIntroduced) + '_SMRs_' + str(self.CarbonTaxForOPF) +'_CarbonTax' 
+                self.filePathForJSON = self.localRootFilePath + '/GeneratorJSONFiles_%s/'%(str(self.numOfBus) + 'bus' + str(self.SMR_LCOE) + 'LCOE') +  str(self.numberOfSMRToBeIntroduced) + '_SMRs_' + str(self.CarbonTaxForOPF) +'_CarbonTax' 
 
                 self.visualisationFileCreator_ExtantGenerator(GeneratorObjectList_EachWeight, ExtantGeneratorLabel) 
                 self.visualisationFileCreator_AddedSMRGenerator(SMRSiteObjectList_EachWeight, SMRIntroducedLabel)
@@ -4565,7 +4565,7 @@ if __name__ == '__main__':
     ## TODO: 7. Agent IRI and results update endpoint
     AgentIRI = "http://www.example.com/triplestore/agents/Service__XXXAgent#Service"
     updateEndPointURL = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin_test3/sparql"
-
+    ## [0, 1, 2, 5, 10, 12, 13, 15, 17, 18, 19, 20,  25, 28, 29, 30,  31, 32, 33, 34, 40, 42, 43, 45, 47, 48, 49],
     ## Initialise the module
     smr_replacement_for_fossil_fuel = SMR_Replacement_with_OptimalFlowAnalysis(numberOfBus, numOfBranch, config_data["slackBusLocation"],
                                                                             config_data["eliminateClosedPlantIRIList"], AgentIRI, config_data["consumptionDataVersion"], 
@@ -4582,8 +4582,8 @@ if __name__ == '__main__':
                                                                             ifReadLocalResults, updateEndPointURL)  
 
     ## cutter for the SMR list 
-    cutter = 5
-    counter_smrChunk = 1
+    cutter = 6
+    counter_smrChunk = 2
 
     if not ifReadLocalResults:
         smr_replacement_for_fossil_fuel.powerPlantAndDemandingAreasMapper()
@@ -4716,6 +4716,9 @@ if __name__ == '__main__':
         smr_replacement_for_fossil_fuel.stackAreaGraphOverlayedWithBarChart_SMRvsCapacity(config_data_postp["givenNumberofSMR"], config_data_postp["reported_consumption"], config_data_postp["plannedNuclearCapacity"])
 
         """WITH SPECIFIED CONFIGRATION""" 
+
+        config_data_postp["ifSpecifiedResultsForNetDemanding"]
+
         # smr_replacement_for_fossil_fuel.GeoJSONCreator_netDemandingForSmallArea(netDemanding_smallArea_eachSMRDesign, config_data["NumberOfSMRUnitList"], config_data["CarbonTaxForOPFList"], 
         #                                                             config_data["weatherConditionList"], config_data_postp["ifSpecifiedResultsForNetDemanding"], config_data_postp["specifiedConfig"])
         smr_replacement_for_fossil_fuel.GeoJSONCreator_netDemandingForRegionalArea(netDemanding_regionalArea_eachSMRDesign, config_data["NumberOfSMRUnitList"], config_data["CarbonTaxForOPFList"], 
@@ -4727,6 +4730,5 @@ if __name__ == '__main__':
         smr_replacement_for_fossil_fuel.GeoJSONCreator_totalOutputOfRegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, config_data["NumberOfSMRUnitList"], config_data["CarbonTaxForOPFList"], 
                                                                     config_data["weatherConditionList"], config_data_postp["ifSpecifiedResultsForNetDemanding"], config_data_postp["specifiedConfig"])
         
-    
     print('-----Terminal-----')
 
