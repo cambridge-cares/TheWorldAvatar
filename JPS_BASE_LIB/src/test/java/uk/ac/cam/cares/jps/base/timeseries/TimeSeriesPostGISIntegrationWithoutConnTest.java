@@ -26,7 +26,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  */
 public class TimeSeriesPostGISIntegrationWithoutConnTest {
     // Will create two Docker containers for Blazegraph and postgreSQL
-    // NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on
+    // NOTE: requires access to the docker.cmclinnovations.com registry from the
+    // machine the test is run on
 
     // Create Docker container with postgis image from Docker Hub
     DockerImageName myImage = DockerImageName.parse("postgis/postgis:14-3.3").asCompatibleSubstituteFor("postgres");
@@ -46,7 +47,8 @@ public class TimeSeriesPostGISIntegrationWithoutConnTest {
         tsClient.setRdbUser(postgres.getUsername());
         tsClient.setRdbPassword(postgres.getPassword());
 
-        tableName = tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class), "http://ts1", 4326);
+        tableName = tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
+                "http://ts1", 4326);
     }
 
     @After
@@ -58,6 +60,7 @@ public class TimeSeriesPostGISIntegrationWithoutConnTest {
 
     /**
      * simple test that checks the number of columns is correct
+     * 
      * @throws SQLException
      */
     @Test
@@ -65,12 +68,16 @@ public class TimeSeriesPostGISIntegrationWithoutConnTest {
         // 1 for time column and 1 for the geometry column
         try (Connection conn = tsClient.getConnection()) {
             DSLContext context = DSL.using(tsClient.getConnection(), SQLDialect.POSTGRES);
-            Assert.assertEquals(context.meta().getTables(tableName).get(0).fields().length, 2);
+
+            // including time and tsIRI columns
+            Assert.assertEquals(3, context.meta().getTables(tableName).get(0).fields().length);
         }
     }
+
     /**
      * uploading a geometry with the wrong srid will throw an exception
-     * the column was initialised with 4326 and this function tries to upload a point with 4325
+     * the column was initialised with 4326 and this function tries to upload a
+     * point with 4325
      */
     @Test
     public void testWrongSRID() {
@@ -85,12 +92,14 @@ public class TimeSeriesPostGISIntegrationWithoutConnTest {
         TimeSeries<Integer> tsUpload = new TimeSeries<Integer>(Arrays.asList(1), Arrays.asList("http://data1"), values);
 
         // upload to database
-        JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> tsClient.addTimeSeriesData(Arrays.asList(tsUpload)));
+        JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+                () -> tsClient.addTimeSeriesData(Arrays.asList(tsUpload)));
         Assert.assertTrue(e.getMessage().contains("Error while executing SQL command"));
     }
 
     /**
      * uploading the wrong geometry type will throw an exception
+     * 
      * @throws SQLException
      */
     @Test
@@ -103,7 +112,8 @@ public class TimeSeriesPostGISIntegrationWithoutConnTest {
 
         TimeSeries<Integer> tsUpload = new TimeSeries<Integer>(Arrays.asList(1), Arrays.asList("http://data1"), values);
         // upload to database
-        JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> tsClient.addTimeSeriesData(Arrays.asList(tsUpload)));
+        JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+                () -> tsClient.addTimeSeriesData(Arrays.asList(tsUpload)));
         Assert.assertTrue(e.getMessage().contains("Error while executing SQL command"));
     }
 
@@ -124,7 +134,8 @@ public class TimeSeriesPostGISIntegrationWithoutConnTest {
         tsClient.addTimeSeriesData(Arrays.asList(tsUpload));
 
         // query and check if it's the same
-        Point queriedPoint = tsClient.getTimeSeries(Arrays.asList("http://data1")).getValuesAsPoint("http://data1").get(0);
+        Point queriedPoint = tsClient.getTimeSeries(Arrays.asList("http://data1")).getValuesAsPoint("http://data1")
+                .get(0);
         Assert.assertTrue(queriedPoint.equals(point));
     }
 }
