@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.OptionalDouble;
 
@@ -756,15 +757,19 @@ public class TimeSeriesRDBClientIntegrationTest {
 	}
 
 	@Test
-	public void testDeleteTimeSeries() throws SQLException {
+	public void testDeleteTimeSeries() throws SQLException, NoSuchFieldException, SecurityException,
+			IllegalArgumentException, IllegalAccessException {
 		try (Connection conn = rdbStoreClient.getConnection()) {
-			DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
 			// Initialise time series tables
 			client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1, conn);
 
 			client.deleteTimeSeries("http://data1", conn);
-			client.deleteTimeSeries("http://data2", conn);
-			client.deleteTimeSeries("http://data3", conn);
+
+			JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+					() -> client.getTimeSeries(Arrays.asList("http://data1"), conn));
+			Assert.assertTrue(e.getMessage().contains("<http://data1> does not have an assigned time series instance"));
+
+			Assert.assertNotNull(client.getTimeSeries(Arrays.asList("http://data2", "http://data3"), conn));
 		}
 	}
 }
