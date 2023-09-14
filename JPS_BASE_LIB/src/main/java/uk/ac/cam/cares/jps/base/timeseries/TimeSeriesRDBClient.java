@@ -66,11 +66,11 @@ public class TimeSeriesRDBClient<T> {
 	// Constants
 	static final SQLDialect DIALECT = SQLDialect.POSTGRES;
 	// Central database table
-	private static final String DB_TABLE_NAME = "dbTable";
-	private static final Field<String> DATA_IRI_COLUMN = DSL.field(DSL.name("dataIRI"), String.class);
-	private static final Field<String> TS_IRI_COLUMN = DSL.field(DSL.name("timeseriesIRI"), String.class);
-	private static final Field<String> TABLENAME_COLUMN = DSL.field(DSL.name("tableName"), String.class);
-	private static final Field<String> COLUMNNAME_COLUMN = DSL.field(DSL.name("columnName"), String.class);
+	private static final String DB_TABLE_NAME = "time_series_quantities";
+	private static final Field<String> DATA_IRI_COLUMN = DSL.field(DSL.name("data_iri"), String.class);
+	private static final Field<String> TS_IRI_COLUMN = DSL.field(DSL.name("time_series_iri"), String.class);
+	private static final Field<String> TABLENAME_COLUMN = DSL.field(DSL.name("table_name"), String.class);
+	private static final Field<String> COLUMNNAME_COLUMN = DSL.field(DSL.name("column_name"), String.class);
 	// Exception prefix
 	private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
 	// Error message
@@ -173,7 +173,7 @@ public class TimeSeriesRDBClient<T> {
 				}
 				tsTableName = existingSuitableTable;
 			} else {
-				tsTableName = UUID.randomUUID().toString();
+				tsTableName = UUID.randomUUID().toString().replace("-", "_");
 				int i = 1;
 				for (String s : dataIRI) {
 					dataColumnNames.put(s, "column" + i);
