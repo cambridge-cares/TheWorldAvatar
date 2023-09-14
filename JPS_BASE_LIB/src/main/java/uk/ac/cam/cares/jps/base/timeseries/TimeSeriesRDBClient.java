@@ -30,7 +30,6 @@ import org.jooq.Result;
 import org.jooq.Row2;
 import org.jooq.SQLDialect;
 import org.jooq.Table;
-import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDataType;
 import org.postgis.Geometry;

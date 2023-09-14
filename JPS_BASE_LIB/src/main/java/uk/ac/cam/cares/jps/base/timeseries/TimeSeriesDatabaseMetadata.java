@@ -23,12 +23,6 @@ class TimeSeriesDatabaseMetadata {
     private Map<String, Map<String, Integer>> tableColumnSrid;
     private Map<String, Map<String, List<String>>> tableDataTypeColumn;
 
-    static Map<Class<?>, String> javaClassToPgDataType = new HashMap<>();
-    static {
-        javaClassToPgDataType.put(Double.class, "double precision");
-        javaClassToPgDataType.put(Integer.class, "integer");
-    }
-
     TimeSeriesDatabaseMetadata() {
         tableColumnDataType = new HashMap<>();
         tableColumnUdtType = new HashMap<>();
