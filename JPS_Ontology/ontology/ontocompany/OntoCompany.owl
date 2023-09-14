@@ -117,7 +117,7 @@
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontocompany/OntoCompany.owl#Company"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontocompany/OntoCompany.owl#Revenue"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a company and its annual revenue</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/chemicalprocesssystem/cpsperformance/economicperformance/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has revenue</rdfs:label>
     </owl:ObjectProperty>
     
@@ -144,7 +144,7 @@
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.purl.org/oema/infrastructure/Building"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#PlantItem"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemicalprocesssystem/cpsrealization/plant/PlantItem"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -249,7 +249,7 @@
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.purl.org/oema/infrastructure/Building"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#PlantItem"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemicalprocesssystem/cpsrealization/plant/PlantItem"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -871,10 +871,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#PlantItem -->
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemicalprocesssystem/cpsrealization/plant/PlantItem -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#PlantItem">
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemicalprocesssystem/cpsrealization/plant/PlantItem">
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/hasOntoCityGMLRepresentation"/>
