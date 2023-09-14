@@ -5,15 +5,13 @@ from typing import Callable, Dict, List, Tuple
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-from data_generation.constants import ValueLabelsEntry
-
 
 def ExampleGenerator(
     template_name: str,
     query_template: str,
     query_compact_template: str,
     qn_templates: List[str],
-    arg_samplers: Dict[str, Callable[[int], List[ValueLabelsEntry]]],
+    arg_samplers: Dict[str, Callable[[int], List[str]]],
     val_sampler: Callable[[int], List[int]],
     minvalue_maxvalue_sampler: Callable[[int], List[Tuple[int, int]]],
 ):
@@ -55,10 +53,10 @@ def ExampleGenerator(
                     for kwargs in [qn_kwargs, sparql_kwargs]:
                         kwargs[argname] = value
             else:
-                sampled_data = arg_samplers[argtype](len(_argnames))
-                for argname, sampled_datum in zip(_argnames, sampled_data):
-                    qn_kwargs[argname] = random.choice(sampled_datum.labels)
-                    sparql_kwargs[argname] = sampled_datum.value
+                values = arg_samplers[argtype](len(_argnames))
+                for argname, value in zip(_argnames, values):
+                    qn_kwargs[argname] = _add_space_and_lower(value)
+                    sparql_kwargs[argname] = value
 
         yield dict(
             template_name=template_name,
@@ -69,8 +67,8 @@ def ExampleGenerator(
 
 
 def make_arg_samplers(
-    properties: List[ValueLabelsEntry],
-    identifiers: List[ValueLabelsEntry],
+    properties: List[str],
+    identifiers: List[str],
     species: List[str],
     chemicalclasses: List[str],
     uses: List[str],
@@ -81,15 +79,11 @@ def make_arg_samplers(
     )
     train_uses, test_uses = train_test_split(uses, test_size=0.1)
 
-    def make_sampler(sampling_data: List[ValueLabelsEntry]):
+    def make_sampler(sampling_data: List[str]):
         def sampler(k: int = 1):
             return random.sample(sampling_data, k)
 
         return sampler
-
-    def make_sampler_from_values(values: List[str]):
-        sampling_data = [ValueLabelsEntry(value=val, labels=[val]) for val in values]
-        return make_sampler(sampling_data)
 
     def val_sampler(k: int = 1):
         return np.random.randint(20, 500, size=k)
@@ -104,16 +98,16 @@ def make_arg_samplers(
     train_arg_samplers = dict(
         PropertyName=property_sampler,
         IdentifierName=identifier_sampler,
-        species=make_sampler_from_values(train_species),
-        ChemClass=make_sampler_from_values(train_chemicalclasses),
-        Use=make_sampler_from_values(train_uses),
+        species=make_sampler(train_species),
+        ChemClass=make_sampler(train_chemicalclasses),
+        Use=make_sampler(train_uses),
     )
     test_arg_samplers = dict(
         PropertyName=property_sampler,
         IdentifierName=identifier_sampler,
-        species=make_sampler_from_values(test_species),
-        ChemClass=make_sampler_from_values(test_chemicalclasses),
-        Use=make_sampler_from_values(test_uses),
+        species=make_sampler(test_species),
+        ChemClass=make_sampler(test_chemicalclasses),
+        Use=make_sampler(test_uses),
     )
 
     return dict(
@@ -122,6 +116,19 @@ def make_arg_samplers(
         val_sampler=val_sampler,
         minvalue_maxvalue_sampler=minvalue_maxvalue_sampler,
     )
+
+
+def _add_space_and_lower(string: str):
+    chars = []
+    for i, char in enumerate(string):
+        if char.isupper():
+            if i > 0:
+                chars.extend([" ", char.lower()])
+            else:
+                chars.append(char.lower())
+        else:
+            chars.append(char)
+    return "".join(chars)
 
 
 def get_argnames(text: str):
