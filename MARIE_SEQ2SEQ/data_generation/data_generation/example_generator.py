@@ -5,6 +5,8 @@ from typing import Callable, Dict, List, Tuple
 import numpy as np
 from sklearn.model_selection import train_test_split
 
+from data_generation.utils import add_space_and_lower
+
 
 def ExampleGenerator(
     template_name: str,
@@ -55,7 +57,7 @@ def ExampleGenerator(
             else:
                 values = arg_samplers[argtype](len(_argnames))
                 for argname, value in zip(_argnames, values):
-                    qn_kwargs[argname] = _add_space_and_lower(value)
+                    qn_kwargs[argname] = add_space_and_lower(value)
                     sparql_kwargs[argname] = value
 
         yield dict(
@@ -116,19 +118,6 @@ def make_arg_samplers(
         val_sampler=val_sampler,
         minvalue_maxvalue_sampler=minvalue_maxvalue_sampler,
     )
-
-
-def _add_space_and_lower(string: str):
-    chars = []
-    for i, char in enumerate(string):
-        if char.isupper():
-            if i > 0:
-                chars.extend([" ", char.lower()])
-            else:
-                chars.append(char.lower())
-        else:
-            chars.append(char)
-    return "".join(chars)
 
 
 def get_argnames(text: str):
