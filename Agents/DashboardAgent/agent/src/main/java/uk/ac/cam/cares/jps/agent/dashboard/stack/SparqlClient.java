@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.http.HttpResponse;
 
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.query.QueryParseException;
+import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -198,8 +200,17 @@ public class SparqlClient {
                 unit = null;
             }
             String timeSeriesIri = qs.getResource(SparqlQuery.TIME_SERIES).toString();
-            String minThreshold = qs.getLiteral(SparqlQuery.MIN_THRESHOLD).toString();
-            String maxThreshold = qs.getLiteral(SparqlQuery.MAX_THRESHOLD).toString();
+            // Default values for thresholds if unavailable
+            String minThreshold = "";
+            String maxThreshold = "";
+            // Ensure that there are literals to process
+            if (qs.getLiteral(SparqlQuery.MIN_THRESHOLD)!=null && qs.getLiteral(SparqlQuery.MAX_THRESHOLD)!=null) {
+                Literal minLiteral = qs.getLiteral(SparqlQuery.MIN_THRESHOLD);
+                Literal maxLiteral = qs.getLiteral(SparqlQuery.MAX_THRESHOLD);
+                // Retrieves their value (typically an integer) and convert it into String
+                minThreshold = String.valueOf(minLiteral.getValue());
+                maxThreshold = String.valueOf(maxLiteral.getValue());
+            }
             // Check if the facility already exists in the map
             if (this.SPATIAL_ZONES.containsKey(facilityName)) {
                 // If it does exist, add the asset to the existing facility object
