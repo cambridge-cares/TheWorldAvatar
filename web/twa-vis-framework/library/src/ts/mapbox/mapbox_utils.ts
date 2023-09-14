@@ -182,19 +182,25 @@ class MapboxUtils {
 
 
     /**
-     * Change the underlying Mapbox style.
+     * Change the underlying Mapbox imagery style.
      * 
-     * @param {String} mode {"light", "dark", "satellite", "satellite-streets"}
+     * @param {String} mode terrain mode (i.e. "light", "dark" etc.)
      */
     public static  changeTerrain(mode) {
+        // Skip if selecting the same again
+        if(window.terrain === mode) return;
+        console.log("Changing from " + window.terrain + " to " + mode);
+
+        // Get the imagery URL for the chosen setting.
         let imagerySettings = Manager.SETTINGS.getSetting("imagery");
         if(imagerySettings == null) return;
 
+        // Update the imagery URL 
         let url = imagerySettings[mode];
         if(url == null) return;
-        
         if(url.endsWith("_token=")) url += MapHandler.MAP_API;
 
+        // Push new style URL to Mapbox map
         MapHandler.MAP.setStyle(url);
         MapHandler.MAP.setProjection({
             name: 'mercator'
@@ -202,9 +208,6 @@ class MapboxUtils {
 
         // Store the current terrain as a global variable
         window.terrain = mode;
-        
-        // Hide default building outlines
-        MapboxUtils.hideBuildings();
     }
 
     /**
@@ -225,19 +228,6 @@ class MapboxUtils {
 
         // Push settings
         Manager.SETTINGS.putSetting("imagery", imagerySettings);
-    }
-
-    /**
-     * Hide building outlines provided by Mapbox as these may conflict with custom
-     * building data.
-     */
-    public static hideBuildings() {
-        if(MapHandler.MAP == null) return;
-
-        let ids = ["building", "building-outline", "building-underground"];
-        ids.forEach(id => {
-            if(MapHandler.MAP.getLayer(id) != null) MapHandler.MAP.setLayoutProperty(id, "visibility", "none");
-        });
     }
 
     /**
@@ -365,50 +355,23 @@ class MapboxUtils {
 	 * @param {boolean} visible desired visibility.
 	 */
 	public static toggleLayer(layerID, visible) {
-		if(MapHandler.MAP.getLayer(layerID) === undefined) return;
-        if(layerID.endsWith("_cluster")) return;
+        // Get the original layer definition
+        let layerObject = Manager.DATA_STORE.getLayerWithID(layerID);
+        if(layerObject == null) return;
 
+        // Skip if setting to the same value
+        if(layerObject.getVisibility() === visible) return;
+
+        // Push the visibility to the Mapbox map
         MapHandler.MAP.setLayoutProperty(
             layerID,
             "visibility",
             (visible ? "visible" : "none")
         );
 
-        // Is there a corresponding _clickable layer?
-        if(MapHandler.MAP.getLayer(layerID + "_clickable") != null) {
-            MapHandler.MAP.setLayoutProperty(
-                layerID + "_clickable",
-                "visibility",
-                (visible ? "visible" : "none")
-            );
-        }
-
-        // Is there a corresponding _cluster layer?
-        if(MapHandler.MAP.getLayer(layerID + "_cluster") != null) {
-            MapHandler.MAP.setLayoutProperty(
-                layerID + "_cluster",
-                "visibility",
-                (visible ? "visible" : "none")
-            );
-        }
-
-        // Is there a corresponding _arrows layer?
-        if(MapHandler.MAP.getLayer(layerID + "_arrows") != null) {
-            MapHandler.MAP.setLayoutProperty(
-                layerID + "_arrows",
-                "visibility",
-                (visible ? "visible" : "none")
-            );
-        }
-
-        // Is there a corresponding -highlight layer?
-        if(MapHandler.MAP.getLayer(layerID + "-highlight") != null) {
-            MapHandler.MAP.setLayoutProperty(
-                layerID + "-highlight",
-                "visibility",
-                (visible ? "visible" : "none")
-            );
-        }
+        // Update the cached state within the layer definition
+        layerObject.cacheVisibility(visible);
+        console.log("Storing visibility for layer " + layerID + ", is now " + visible);
 	}
 
     /**

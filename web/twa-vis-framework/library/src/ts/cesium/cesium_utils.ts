@@ -35,38 +35,39 @@ class CesiumUtils {
 	 * @param {boolean} visible desired visibility.
 	 */
     public static toggleLayer(layerID, visible) {
-        // Get sources of data for this layer
-        let dataSources = MapHandler_Cesium.DATA_SOURCES[layerID];
+        // Get the original layer definition
+        let layerObject = Manager.DATA_STORE.getLayerWithID(layerID);
+        if(layerObject == null) return;
 
-        if(dataSources !== null) {
+        // Skip if setting to the same value
+        if(layerObject.getVisibility() === visible) return;
+
+        // Get data source instances from Cesium
+        let dataSources = MapHandler_Cesium.DATA_SOURCES[layerID];
+        if(dataSources != null) {
+
             for(let i = 0; i < dataSources.length; i++) {
                 let dataSource = dataSources[i];
 
                 if(dataSource instanceof Cesium.WebMapServiceImageryProvider) {
                     // 2D data, need to find imageryLayers using this provider
                     let layers = MapHandler.MAP.imageryLayers;
-                    
-                    for(let i = 0; i < layers.length; i++) {
-                        if(layers.get(i).imageryProvider === dataSource) {
-                            layers.get(i).show = visible;
+                    for(let j = 0; j < layers.length; j++) {
+                        if(layers.get(j).imageryProvider === dataSource) {
+                            layers.get(j).show = visible;
                         }
                     }
                 } else {
-                    // 3D data
+                    // 3D data, just update the source
                     dataSource.show = visible;
-
-                    if(dataSource instanceof Cesium.Cesium3DTileset) {
-                        let clippingPlanes = dataSource["clippingPlanes"];
-                        if(clippingPlanes == null) return;
-
-                        // clippingPlanes.enabled = visible;
-                        // let planeEntity = ClipHandler.PLANES[layerID];
-                        // planeEntity.show = visible;
-                    }
                 }
             }
         } 
+
+        // Update the cached state within the layer definition
+        layerObject.cacheVisibility(visible);
        
+        // Force re-render
         MapHandler.MAP.scene.requestRender();
     }
 

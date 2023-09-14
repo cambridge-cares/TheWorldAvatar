@@ -359,7 +359,7 @@ class MapHandler_Cesium extends MapHandler {
         let sourceKML = Cesium.KmlDataSource.load(source["uri"]);
         sourceKML.then((result) => {
             
-            result["show"] = layer.definition["visibility"] == undefined || layer.definition["visibility"] === "visible";
+            result["show"] = layer.getVisibility();
             result["layerID"] = layer.id;
 
             MapHandler.MAP.dataSources.add(result);
@@ -409,7 +409,7 @@ class MapHandler_Cesium extends MapHandler {
                 uri: source["uri"],
                 scale: source.hasOwnProperty("scale") ? source["scale"] : 1.0
             },
-            show: layer.definition["visibility"] == undefined || layer.definition["visibility"] === "visible"
+            show: layer.getVisibility()
         };
 
         MapHandler.MAP.entities.add(sourceEntity);
@@ -465,7 +465,7 @@ class MapHandler_Cesium extends MapHandler {
         // Define tileset options
         let options = {
             modelMatrix: position,
-            show: layer.definition["visibility"] == undefined || layer.definition["visibility"] === "visible"
+            show: layer.getVisibility()
         };
 
         // If clipping is enabled, pre-generate a clipping plane
@@ -485,9 +485,6 @@ class MapHandler_Cesium extends MapHandler {
         // Cache custom layerID for later use
         tileset["layerID"] = layer.id;
        
-        // Add the tileset to the map
-
-
         // If a style has been expressed in JSON, load it
         if("style" in layer.definition) {
             let style = layer.definition["style"];
@@ -539,7 +536,7 @@ class MapHandler_Cesium extends MapHandler {
         // Now that it's added, we can hide it (unfortunatly there's no constructor option for this)
         for(let i = 0; i < layers.length; i++) {
             if(layers.get(i).imageryProvider === provider) {
-                layers.get(i).show = layer.definition["visibility"] == undefined || layer.definition["visibility"] === "visible"
+                layers.get(i).show = layer.getVisibility()
             }
         }
 
