@@ -276,6 +276,66 @@ public class TimeSeriesClientTest {
     }
 
     @Test
+    public void testDeleteIndividualTimeSeriesNoTSIRI() throws NoSuchFieldException, IllegalAccessException {
+        // Set-up stubbing
+        Mockito.when(mockSparqlClient.getTimeSeries(dataIRIs.get(0))).thenReturn(null);
+        setRDFMock();
+
+        JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> testClientWithMocks.deleteIndividualTimeSeries(dataIRIs.get(0), conn));
+        Assert.assertTrue(e.getMessage().contains("not associated with any timeseries"));
+        Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
+        Assert.assertTrue(e.getMessage().contains(dataIRIs.get(0)));
+    }
+
+    @Test
+    public void testDeleteIndividualTimeSeriesExceptionAfterStep1() throws NoSuchFieldException, IllegalAccessException, SQLException {
+        String dataIRI = dataIRIs.get(0);
+        // Set-up stubbing
+        Mockito.when(mockSparqlClient.getTimeSeries(dataIRI)).thenReturn("tsIRI");
+        Mockito.when(mockSparqlClient.getAssociatedData(dataIRI).size()).thenReturn(2);
+        Mockito.doThrow(new JPSRuntimeException("KG down")).when(mockSparqlClient).removeTimeSeriesAssociation(dataIRI);
+        setRDFMock();
+
+        JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> testClientWithMocks.deleteIndividualTimeSeries(dataIRI, conn));
+        Assert.assertTrue(e.getMessage().contains("was not deleted"));
+        Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
+        Assert.assertTrue(e.getMessage().contains(dataIRI));
+        Assert.assertEquals("KG down", e.getCause().getMessage());
+        Assert.assertEquals(JPSRuntimeException.class, e.getCause().getClass());
+    }
+
+    @Test
+    public void testDeleteIndividualTimeSeriesExceptionAfterStep2() throws NoSuchFieldException, IllegalAccessException, SQLException {
+        String dataIRI = dataIRIs.get(0);
+        // KG reversion works //
+        // Set-up stubbing
+        Mockito.when(mockSparqlClient.getTimeSeries(dataIRI)).thenReturn("tsIRI");
+        Mockito.when(mockSparqlClient.getAssociatedData(dataIRI).size()).thenReturn(2);
+        Mockito.doNothing().when(mockSparqlClient).removeTimeSeriesAssociation(dataIRI);
+        setRDFMock();
+
+        Mockito.doThrow(new JPSRuntimeException("RDB down")).when(mockRDBClient).deleteTimeSeries(dataIRI, conn);
+        setRDBMock();
+        JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> testClientWithMocks.deleteIndividualTimeSeries(dataIRI, conn));
+        Assert.assertTrue(e.getMessage().contains("was not deleted"));
+        Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
+        Assert.assertTrue(e.getMessage().contains(dataIRI));
+        Assert.assertEquals("RDB down", e.getCause().getMessage());
+        Assert.assertEquals(JPSRuntimeException.class, e.getCause().getClass());
+        // KG reversion does not work //
+        // Set-up stubbing
+        Mockito.when(mockSparqlClient.getTimeSeries(dataIRI)).thenReturn("tsIRI");
+        Mockito.when(mockSparqlClient.getAssociatedData(dataIRI).size()).thenReturn(2);
+        Mockito.doThrow(new JPSRuntimeException("KG down")).when(mockSparqlClient)
+                .insertTimeSeriesAssociation(Mockito.anyString(), Mockito.anyString());
+        Mockito.doThrow(new JPSRuntimeException("RDB down")).when(mockRDBClient).deleteTimeSeries(dataIRI, conn);
+        e = Assert.assertThrows(JPSRuntimeException.class, () -> testClientWithMocks.deleteIndividualTimeSeries(dataIRI, conn));
+        Assert.assertTrue(e.getMessage().contains("Inconsistent state created when deleting time series"));
+        Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
+        Assert.assertTrue(e.getMessage().contains(dataIRI));
+    }
+
+    @Test
     public void testDeleteTimeSeriesNoTSIRI() throws NoSuchFieldException, IllegalAccessException, SQLException {
         String tsIRI = "tsIRI";
         // Set-up stubbing

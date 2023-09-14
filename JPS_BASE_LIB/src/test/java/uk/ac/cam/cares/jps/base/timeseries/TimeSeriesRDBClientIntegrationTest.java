@@ -754,4 +754,17 @@ public class TimeSeriesRDBClientIntegrationTest {
 			Assert.assertTrue(context.fetchExists(selectFrom(tables).where(condition)));
 		}
 	}
+
+	@Test
+	public void testDeleteTimeSeries() throws SQLException {
+		try (Connection conn = rdbStoreClient.getConnection()) {
+			DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
+			// Initialise time series tables
+			client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1, conn);
+
+			client.deleteTimeSeries("http://data1", conn);
+			client.deleteTimeSeries("http://data2", conn);
+			client.deleteTimeSeries("http://data3", conn);
+		}
+	}
 }

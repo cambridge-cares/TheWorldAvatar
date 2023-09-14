@@ -565,6 +565,48 @@ public class TimeSeriesRDBClient<T> {
 	}
 
 	/**
+	 * Delete individual time series (i.e. data for one dataIRI only)
+	 * If this data is part of a time series, only its entry in the lookup table
+	 * gets deleted and the remaining data is left in the time series table, it's
+	 * not possible to query the value via the client anyway
+	 * 
+	 * @param dataIRI data IRI provided as string
+	 * @param conn    connection to the RDB
+	 */
+	protected void deleteTimeSeries(String dataIRI, Connection conn) {
+
+		// Initialise connection and set jOOQ DSL context
+		DSLContext context = DSL.using(conn, DIALECT);
+
+		// All database interactions in try-block to ensure closure of connection
+		try {
+			String tsIri = getTimeSeriesIRI(dataIRI, context);
+			String tsTableName = getTimeseriesTableName(dataIRI, context);
+
+			// Delete entry in central lookup table
+			context.delete(getDSLTable(DB_TABLE_NAME)).where(DATA_IRI_COLUMN.equal(dataIRI)).execute();
+
+			// number of remaining data IRIs associated with this time series
+			int numDataRemaining = context.select(count()).from(getDSLTable(DB_TABLE_NAME))
+					.where(TS_IRI_COLUMN.equal(tsIri)).fetchOne(0, int.class);
+
+			if (numDataRemaining == 0) {
+				context.dropTable(getDSLTable(tsTableName)).execute();
+			}
+
+		} catch (JPSRuntimeException e) {
+			// Re-throw JPSRuntimeExceptions
+			throw e;
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with
+			// database) as JPSRuntimeException with respective message
+			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+		}
+
+	}
+
+	/**
 	 * Delete all time series information related to a dataIRI (i.e. entire RDB
 	 * table and entries in central table)
 	 * 
@@ -871,6 +913,11 @@ public class TimeSeriesRDBClient<T> {
 	 */
 	boolean checkDataHasTimeSeries(String dataIRI, Connection conn) {
 		DSLContext context = DSL.using(conn, DIALECT);
+
+		if (!checkCentralTableExists(conn)) {
+			return false;
+		}
+
 		// Look for the entry dataIRI in dbTable
 		Table<?> table = getDSLTable(DB_TABLE_NAME);
 		return context.fetchExists(selectFrom(table).where(DATA_IRI_COLUMN.eq(dataIRI)));
@@ -1339,6 +1386,22 @@ public class TimeSeriesRDBClient<T> {
 		// All database interactions in try-block to ensure closure of connection
 		try (Connection conn = getConnection()) {
 			deleteRows(dataIRI, lowerBound, upperBound, conn);
+		} catch (SQLException e) {
+			LOGGER.error(e.getMessage());
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
+	}
+
+	/**
+	 * Delete individual time series (i.e. data for one dataIRI only)
+	 * 
+	 * @param dataIRI data IRI provided as string
+	 * @param conn    connection to the RDB
+	 */
+	protected void deleteTimeSeries(String dataIRI) {
+		// All database interactions in try-block to ensure closure of connection
+		try (Connection conn = getConnection()) {
+			deleteTimeSeries(dataIRI, conn);
 		} catch (SQLException e) {
 			LOGGER.error(e.getMessage());
 			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);

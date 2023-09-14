@@ -366,6 +366,65 @@ public class TimeSeriesClient<T> {
 	}
 
 	/**
+	 * Delete individual time series in triple store and relational database (i.e.
+	 * time series for one dataIRI)
+	 * 
+	 * @param dataIRI dataIRIs as Strings
+	 * @param conn    connection to the RDB
+	 */
+	public void deleteIndividualTimeSeries(String dataIRI, Connection conn) {
+
+		// Check whether dataIRI is associated with any time series and
+		// Extract "backup" information (tsIRI) for potential later re-instantiation (in
+		// case RDB deletion fails)
+		String tsIRI = rdfClient.getTimeSeries(dataIRI);
+		if (tsIRI == null) {
+			throw new JPSRuntimeException(
+					exceptionPrefix + "DataIRI " + dataIRI + " not associated with any timeseries.");
+		}
+
+		// Check whether associated time series has further data associated with it
+		// If NOT: delete entire time series (i.e. whole tsIRI), if YES: delete only
+		// dataIRI time series
+		if (rdfClient.getAssociatedData(tsIRI).size() == 1) {
+			// If not, delete entire time series
+			deleteTimeSeries(tsIRI, conn);
+		} else {
+			// Step1: Delete time series association in knowledge base
+			// In case any exception occurs, nothing will be deleted in kb (no partial
+			// execution of SPARQL update - only one query)
+			try {
+				rdfClient.removeTimeSeriesAssociation(dataIRI);
+			} catch (Exception eRdfDelete) {
+				throw new JPSRuntimeException(
+						exceptionPrefix + "Timeseries association for " + dataIRI + " was not deleted!", eRdfDelete);
+			}
+
+			// Step2: Try to delete corresponding time series column and central table entry
+			// in relational database
+			try {
+				rdbClient.deleteTimeSeries(dataIRI, conn);
+			} catch (JPSRuntimeException eRdbDelete) {
+				// For exceptions thrown when deleting RDB elements in relational database,
+				// try to revert previous knowledge base deletion
+				// TODO Ideally try to avoid throwing exceptions in a catch block - potential
+				// solution: have insertTimeSeriesAssociation throw
+				// a different exception depending on what the problem was, and how it should be
+				// handled
+				try {
+					rdfClient.insertTimeSeriesAssociation(dataIRI, tsIRI);
+				} catch (Exception eRdfCreate) {
+					throw new JPSRuntimeException(exceptionPrefix
+							+ "Inconsistent state created when deleting time series association for " + dataIRI +
+							" , as database related deletion failed but KG triples were deleted.");
+				}
+				throw new JPSRuntimeException(
+						exceptionPrefix + "Timeseries association for " + dataIRI + " was not deleted!", eRdbDelete);
+			}
+		}
+	}
+
+	/**
 	 * Delete time series and all associated dataIRI connections from triple store
 	 * and relational database
 	 * 
@@ -1022,6 +1081,20 @@ public class TimeSeriesClient<T> {
 		// within rdb client (due to performance reasons)
 		try (Connection conn = rdbClient.getConnection()) {
 			rdbClient.deleteRows(dataIRI, lowerBound, upperBound, conn);
+		} catch (SQLException e) {
+			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
+		}
+	}
+
+	/**
+	 * Delete individual time series in triple store and relational database (i.e.
+	 * time series for one dataIRI)
+	 * 
+	 * @param dataIRI dataIRIs as Strings
+	 */
+	public void deleteIndividualTimeSeries(String dataIRI) {
+		try (Connection conn = rdbClient.getConnection()) {
+			deleteIndividualTimeSeries(dataIRI, conn);
 		} catch (SQLException e) {
 			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
 		}

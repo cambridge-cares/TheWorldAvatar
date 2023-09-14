@@ -238,6 +238,181 @@ public class TimeSeriesClientIntegrationTest {
 	}
 
 	@Test
+	public void testDeleteIndividualTimeSeriesWithoutExceptions() throws SQLException {
+
+		try (Connection conn = rdbStoreClient.getConnection()) {
+			// Initialise time series in knowledge base and database
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.GENERAL, null, null);
+
+			// Verify correct instantiation in both kb and database
+			Assert.assertEquals(1, tsClient.countTimeSeries());
+			Assert.assertEquals(dataIRI_1.size(),
+					tsClient.getAssociatedData(tsClient.getTimeSeriesIRI(dataIRI_1.get(0))).size());
+			TimeSeries<Instant> ts = tsClient.getTimeSeries(dataIRI_1, conn);
+			Assert.assertEquals(dataIRI_1.size(), ts.getDataIRIs().size());
+
+			// Delete 1st data series - verify deletion and that other data series are still
+			// unaltered
+			String dataIRI = dataIRI_1.remove(0);
+			tsClient.deleteIndividualTimeSeries(dataIRI, conn);
+			Assert.assertEquals(1, tsClient.countTimeSeries());
+			Assert.assertEquals(dataIRI_1.size(),
+					tsClient.getAssociatedData(tsClient.getTimeSeriesIRI(dataIRI_1.get(0))).size());
+			Assert.assertNull(tsClient.getTimeSeriesIRI(dataIRI));
+			ts = tsClient.getTimeSeries(dataIRI_1, conn);
+			Assert.assertFalse(ts.getDataIRIs().contains(dataIRI));
+			String finalDataIRI = dataIRI;
+			JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+					() -> tsClient.deleteIndividualTimeSeries(finalDataIRI, conn));
+			Assert.assertTrue(e.getMessage().contains("DataIRI " + dataIRI + " not associated with any timeseries."));
+
+			// Delete 2nd data series - verify deletion and that other data series are still
+			// unaltered
+			dataIRI = dataIRI_1.remove(0);
+			tsClient.deleteIndividualTimeSeries(dataIRI, conn);
+			Assert.assertEquals(1, tsClient.countTimeSeries());
+			Assert.assertEquals(dataIRI_1.size(),
+					tsClient.getAssociatedData(tsClient.getTimeSeriesIRI(dataIRI_1.get(0))).size());
+			Assert.assertNull(tsClient.getTimeSeriesIRI(dataIRI));
+			ts = tsClient.getTimeSeries(dataIRI_1, conn);
+			Assert.assertFalse(ts.getDataIRIs().contains(dataIRI));
+			String finalDataIRI1 = dataIRI;
+			e = Assert.assertThrows(JPSRuntimeException.class,
+					() -> tsClient.deleteIndividualTimeSeries(finalDataIRI1, conn));
+			Assert.assertTrue(e.getMessage().contains("DataIRI " + dataIRI + " not associated with any timeseries."));
+
+			// Delete 3rd data series - verify deletion
+			dataIRI = dataIRI_1.remove(0);
+			tsClient.deleteIndividualTimeSeries(dataIRI, conn);
+			Assert.assertEquals(0, tsClient.countTimeSeries());
+			Assert.assertNull(tsClient.getTimeSeriesIRI(dataIRI));
+
+			// Exception from executing SQL command with empty dataIRI
+			e = Assert.assertThrows(JPSRuntimeException.class, () -> tsClient.getTimeSeries(dataIRI_1, conn));
+			Assert.assertTrue(e.getMessage().contains("Error while executing SQL command"));
+			String finalDataIRI2 = dataIRI;
+			e = Assert.assertThrows(JPSRuntimeException.class,
+					() -> tsClient.deleteIndividualTimeSeries(finalDataIRI2, conn));
+			Assert.assertTrue(e.getMessage().contains("DataIRI " + dataIRI + " not associated with any timeseries."));
+		}
+	}
+
+	@Test
+	public void testDeleteIndividualTimeSeriesWithUnavailableKG() throws SQLException {
+
+		try (Connection conn = rdbStoreClient.getConnection()) {
+			// Initialise time series in knowledge base and database
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.INSTANTANEOUS, null, null);
+			String dataIRI = dataIRI_1.get(0);
+
+			// Interrupt triple store connection
+			blazegraph.stop();
+
+			// Delete time series in knowledge base and database
+			JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+					() -> tsClient.deleteIndividualTimeSeries(dataIRI, conn));
+			Assert.assertTrue(e.getCause().getMessage().contains("Error occurred during SPARQL query evaluation"));
+		}
+	}
+
+	@Test
+	public void testDeleteIndividualTimeSeriesWithKGDeleteException() throws IllegalArgumentException,
+			IllegalAccessException, NoSuchFieldException, SecurityException, SQLException {
+
+		try (Connection conn = rdbStoreClient.getConnection()) {
+			// Initialise time series in knowledge base and database
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.INSTANTANEOUS, null, null);
+			String dataIRI = dataIRI_1.get(0);
+
+			// Retrieve the value of the private field 'rdfClient' of the time series client
+			Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
+			RDFClient.setAccessible(true);
+			TimeSeriesSparql rdfClient = (TimeSeriesSparql) RDFClient.get(tsClient);
+
+			// Create a spy object of the real rdfClient and substitute the initial rdfClient with it
+			// Spy's behave exactly like normal instances, except for particularly stubbed methods
+			TimeSeriesSparql rdfClient_spy = spy(rdfClient);
+			RDFClient.set(tsClient, rdfClient_spy);
+			// Throw error when removal of time series in KG is intended
+			doThrow(new JPSRuntimeException("")).when(rdfClient_spy).removeTimeSeriesAssociation(Mockito.anyString());
+
+			// Delete time series in knowledge base and database
+			JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+					() -> tsClient.deleteIndividualTimeSeries(dataIRI, conn));
+			Assert.assertTrue(e.getMessage().contains("Timeseries association for " + dataIRI + " was not deleted!"));
+
+			// Check that knowledge base and database are still consistent
+			TimeSeries<Instant> ts = tsClient.getTimeSeries(dataIRI_1, conn);
+			List<String> kb = ts.getDataIRIs();
+			List<String> db = rdfClient.getAssociatedData(rdfClient.getTimeSeries(dataIRI));
+			kb.sort(null);
+			db.sort(null);
+			Assert.assertEquals(kb, db);
+		}
+	}
+
+	@Test
+	public void testDeleteIndividualTimeSeriesWithUnavailableRDB() throws SQLException {
+
+		try (Connection conn = rdbStoreClient.getConnection()) {
+			// Initialise time series in knowledge base and database
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.GENERAL, null, null);
+
+			// Retrieve latest database state and interrupt connection
+			TimeSeries<Instant> ts = tsClient.getTimeSeries(dataIRI_1, conn);
+			postgres.stop();
+
+			// DataIRI to be deleted
+			String dataIRI = dataIRI_1.get(0);
+			// Delete time series in knowledge base and database
+			JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+					() -> tsClient.deleteIndividualTimeSeries(dataIRI, conn));
+			Assert.assertTrue(e.getMessage().contains("Timeseries association for " + dataIRI + " was not deleted!"));
+
+			// Check that knowledge base and database are still consistent
+			List<String> kb = ts.getDataIRIs();
+			List<String> db = tsClient.getAssociatedData(tsClient.getTimeSeriesIRI(dataIRI));
+			kb.sort(null);
+			db.sort(null);
+			Assert.assertEquals(kb, db);
+			Assert.assertEquals(dataIRI_1.size(), kb.size());
+		}
+	}
+
+	@Test
+	public void testDeleteIndividualTimeSeriesWithKGRevertException() throws IllegalArgumentException,
+			IllegalAccessException, NoSuchFieldException, SecurityException, SQLException {
+
+		try (Connection conn = rdbStoreClient.getConnection()) {
+			// Initialise time series in knowledge base and database
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit, conn, TimeSeriesClient.Type.STEPWISECUMULATIVE, null, null);
+			String dataIRI = dataIRI_1.get(0);
+
+			// Retrieve the value of the private field 'rdfClient' of the time series client
+			Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
+			RDFClient.setAccessible(true);
+			TimeSeriesSparql rdfClient = (TimeSeriesSparql) RDFClient.get(tsClient);
+
+			// Create a spy object of the real rdfClient and substitute the initial rdfClient with it
+			// Spy's behave exactly like normal instances, except for particularly stubbed methods
+			TimeSeriesSparql rdfClient_spy = spy(rdfClient);
+			RDFClient.set(tsClient, rdfClient_spy);
+			// Throw error when removal of time series in KG is intended
+			doThrow(new JPSRuntimeException("")).when(rdfClient_spy).insertTimeSeriesAssociation(Mockito.any(),
+					Mockito.any());
+
+			// Interrupt postgreSQL connection
+			postgres.stop();
+
+			// Delete time series in knowledge base and database
+			JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+					() -> tsClient.deleteIndividualTimeSeries(dataIRI, conn));
+			Assert.assertTrue(e.getMessage()
+					.contains("Inconsistent state created when deleting time series association for " + dataIRI));
+		}
+	}
+
+	@Test
 	public void testDeleteTimeSeriesWithoutExceptions() throws SQLException {
 
 		try (Connection conn = rdbStoreClient.getConnection()) {
