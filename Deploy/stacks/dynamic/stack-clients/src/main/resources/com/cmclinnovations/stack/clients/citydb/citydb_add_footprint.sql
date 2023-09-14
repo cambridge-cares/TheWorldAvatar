@@ -25,7 +25,7 @@ WITH "fp_parent" AS (
 SET "lod0_footprint_id" = "fp_parent"."footprint_id" FROM "fp_parent" WHERE "building"."id" = "fp_parent"."bid" AND "building"."lod0_footprint_id" IS NULL),
 "fg" AS (SELECT "bid","footprint_id","gmlid",("dumpling").geom AS "geometry"
 FROM (SELECT "building_id",public.ST_Dump(public.ST_Union("geometry")) AS "dumpling" FROM "surface_geometry"
-        JOIN "thematic_surface" ON "surface_geometry"."root_id" = "thematic_surface"."lod2_multi_surface_id"
+        JOIN "thematic_surface" ON "surface_geometry"."root_id" = COALESCE("thematic_surface"."lod3_multi_surface_id","thematic_surface"."lod2_multi_surface_id")
         WHERE "geometry" IS NOT NULL AND "objectclass_id" = 35
         GROUP BY "building_id") AS "t1" JOIN "fp_parent" ON "fp_parent"."bid" = "t1"."building_id")
 -- add footprint geometry
