@@ -528,7 +528,7 @@ public class TimeSeriesSparql {
 			}
 
 			// optional: define time unit
-			if (timeUnit.get(i) != null) {
+			if (timeUnit != null && timeUnit.get(i) != null) {
 				modify.insert(tsIRI.has(hasTimeUnit, literalOf(timeUnit.get(i))));
 			}
 
