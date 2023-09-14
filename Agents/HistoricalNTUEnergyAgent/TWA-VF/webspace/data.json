@@ -8,18 +8,6 @@
             "uri": "http://localhost/tileset.json"
         },
         {
-            "id": "2d-power-network",
-            "type": "kml",
-            "uri": "http://localhost/power-network.kml",
-            "transparency": false
-        },
-        {
-            "id": "ntu-street",
-            "type": "geojson",
-            "uri": "http://localhost/NTU_route.geojson",
-            "transparency": false
-        },
-        {
             "id": "NTUPower",
             "type": "wms",
             "uri": "http://localhost:3838/geoserver/the_world_avatar/wms",
@@ -50,18 +38,6 @@
             "id": "3d-tiles-layer",
             "name": "NTU buildings",
             "source": "3d-tiles-source"
-        },
-        {
-            "id": "2d-power-network",
-            "name": "2D power network",
-            "source": "2d-power-network",
-            "visibility": "none"
-        },
-        {
-            "id": "ntu-street",
-            "name": "NTU Streets",
-            "source": "ntu-street",
-            "visibility": "none"
         },
         {
             "id": "NTUPower",

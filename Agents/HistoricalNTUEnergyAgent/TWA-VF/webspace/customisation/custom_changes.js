@@ -33,57 +33,6 @@ PanelHandler.prototype.prepareMetaContainers = function(e, t) {
             container.replaceWith(" ");
         });
 
-
-        // Function for Building Usage Button
-        const acedemicBuildings = [441, 55, 434, 37, 438, 46, 232, 306, 443, 424, 415, 21, 329, 303, 302, 409, 218, 404, 51, 349, 314, 142, 166, 432, 429, 444, 156, 305, 430, 420, 411, 427, 437, 428, 52, 402, 101, 436, 318, 450, 179, 127, 83, 448, 304, 311, 414, 400, 97, 38, 483, 375, 439, 114, 435, 412, 343, 363, 384, 103, 239, 248, 370, 245, 237, 254, 246, 364, 247, 244, 243, 203, 235, 61, 120, 40, 47, 488, 59, 449, 1, 50, 382, 50, 41];
-        const undergradHalls = [17, 401, 286, 58, 291, 292, 294, 95, 281, 296, 276, 406, 372, 272, 270, 342, 90, 265, 392, 152, 75, 362, 5, 3, 317, 295, 397, 178, 283, 187, 11, 126, 7, 128, 319, 53, 6, 242, 290, 22, 313, 13, 322, 301, 337, 345, 190, 15, 323, 325, 110, 354, 484, 282, 387, 327, 88, 186, 396, 212, 44, 348, 45, 347, 162, 330, 271, 280, 386, 299, 268, 30, 27, 379, 183, 352, 274, 398, 293, 355, 278, 309, 312, 324, 350, 445, 425, 332, 300, 344,334, 367, 316, 39, 481, 57, 395, 234, 431, 423, 338, 480, 479, 328, 335, 321, 91, 339, 393, 341, 189, 145, 394, 320, 48, 16, 14, 9, 8, 310, 28, 389, 10, 78, 23, 24, 26, 12, 29, 20, 308, 297, 356, 298, 369];
-        const staffHalls = [273, 275, 336, 285, 289, 79, 315, 25, 326, 2, 353, 221, 351, 188, 287,284, 86, 288, 391, 346, 191, 368, 385, 18]
-        const graduateHalls = [69, 397, 295, 317, 3, 5]
-        const admin = [429, 314, 142, 166, 432, 178, 398, 352, 183, 454]
-        const multipurpose = [399, 442, 333, 277, 360]
-
-        /*
-        document.getElementById('getBuildingUsageButton').addEventListener('click', function () {
-            alert('Showing Building Usage...');
-            let primitives = MapHandler.MAP.scene.primitives;
-
-            // Loop through each primitive
-            for (let i = 0; i < primitives.length; i++) {
-                let primitive = primitives.get(i);
-
-                // Check if the primitive is a 3D tileset
-                if (primitive instanceof Cesium.Cesium3DTileset) {
-                    primitive.tileVisible.addEventListener(function (tile) {
-                        let content = tile.content;
-                        let featuresLength = content.featuresLength;
-                        for (let j = 0; j < featuresLength; j++) {
-                            let feature = content.getFeature(j);
-                            let featureId = feature.getProperty('id'); // Replace 'id' with the correct property name for the ID
-                            if (acedemicBuildings.includes(featureId)) {
-                                feature.color = new Cesium.Color(76/255, 175/255, 80/255, 1.0);
-                            }
-                            if (undergradHalls.includes(featureId)) {
-                                feature.color = new Cesium.Color(255/255, 183/255, 77/255, 1.0);
-                            }
-                            if (staffHalls.includes(featureId)) {
-                                feature.color = new Cesium.Color(121/255, 85/255, 72/255, 1.0);
-                            }
-                            if (graduateHalls.includes(featureId)) {
-                                feature.color = new Cesium.Color(240/255, 98/255, 146/255, 1.0);
-                            }
-                            if (admin.includes(featureId)) {
-                                feature.color = new Cesium.Color(158/255, 158/255, 158/255, 1.0);
-                            }
-                            if (multipurpose.includes(featureId)) {
-                                feature.color = new Cesium.Color(103/255, 58/255, 183/255, 1.0);
-                            }
-                        }
-                    });
-                }
-            }
-        });
-        */
-
         document.getElementById('getWeatherDataButton').addEventListener('click', function () {
             alert('Getting weather data...');
 
@@ -414,6 +363,258 @@ PanelHandler.prototype.addSupportingData = function(e, a) {
             i.showBuiltInData(a);
         });
 };
+
+MapHandler_Cesium.prototype.addLayer = function(e) {
+    console.log("running addLayer function")
+    var t = e.source.definition,
+        a = t.uri;
+    switch (null == a && console.error("Cannot plot a data source that has no 'uri' parameter"), t.type.toLowerCase()) {
+        case "wms":
+        case "geoserver":
+            this.addWMS(t, e);
+            break;
+        case "kml":
+            this.addKMLFile(t, e);
+            break;
+        case "glb":
+        case "gltf":
+            this.addGLTFFile(t, e);
+            break;
+        case "tile":
+        case "tiles":
+            this.addTileset(t, e).then(function() {
+                const academicBuildings = [441, 55, 434, 37, 438, 46, 232, 306, 443, 424, 415, 21, 329, 303, 302, 409, 218, 404, 51, 349, 314, 142, 166, 432, 429, 444, 156, 305, 430, 420, 411, 427, 437, 428, 52, 402, 101, 436, 318, 450, 179, 127, 83, 448, 304, 311, 414, 400, 97, 38, 483, 375, 439, 114, 435, 412, 343, 363, 384, 103, 239, 248, 370, 245, 237, 254, 246, 364, 247, 244, 243, 203, 235, 61, 120, 40, 47, 488, 59, 449, 1, 50, 382, 50, 41];
+                const undergradHalls = [17, 401, 286, 58, 291, 292, 294, 95, 281, 296, 276, 406, 372, 272, 270, 342, 90, 265, 392, 152, 75, 362, 5, 3, 317, 295, 397, 178, 283, 187, 11, 126, 7, 128, 319, 53, 6, 242, 290, 22, 313, 13, 322, 301, 337, 345, 190, 15, 323, 325, 110, 354, 484, 282, 387, 327, 88, 186, 396, 212, 44, 348, 45, 347, 162, 330, 271, 280, 386, 299, 268, 30, 27, 379, 183, 352, 274, 398, 293, 355, 278, 309, 312, 324, 350, 445, 425, 332, 300, 344,334, 367, 316, 39, 481, 57, 395, 234, 431, 423, 338, 480, 479, 328, 335, 321, 91, 339, 393, 341, 189, 145, 394, 320, 48, 16, 14, 9, 8, 310, 28, 389, 10, 78, 23, 24, 26, 12, 29, 20, 308, 297, 356, 298, 369];
+                const staffHalls = [273, 275, 336, 285, 289, 79, 315, 25, 326, 2, 353, 221, 351, 188, 287,284, 86, 288, 391, 346, 191, 368, 385, 18]
+                const graduateHalls = [69, 397, 295, 317, 3, 5]
+                const admin = [429, 314, 142, 166, 432, 178, 398, 352, 183, 454]
+                const multipurpose = [399, 442, 333, 277, 360]
+
+                let primitives = MapHandler.MAP.scene.primitives;
+                console.log("adding color for primitives:" + primitives);
+                // Loop through each primitive
+                for (let i = 0; i < primitives.length; i++) {
+                    let primitive = primitives.get(i);
+                    // Check if the primitive is a 3D tileset
+                    if (primitive instanceof Cesium.Cesium3DTileset) {
+                        primitive.tileVisible.addEventListener(function (tile) {
+                            let content = tile.content;
+                            let featuresLength = content.featuresLength;
+                            for (let j = 0; j < featuresLength; j++) {
+                                console.log("adding color for each building")
+                                let feature = content.getFeature(j);
+                                let featureId = feature.getProperty('id'); // Replace 'id' with the correct property name for the ID
+                                if (academicBuildings.includes(featureId)) {
+                                    feature.color = new Cesium.Color(76/255, 175/255, 80/255, 1.0);
+                                }
+                                if (undergradHalls.includes(featureId)) {
+                                    feature.color = new Cesium.Color(255/255, 183/255, 77/255, 1.0);
+                                }
+                                if (staffHalls.includes(featureId)) {
+                                    feature.color = new Cesium.Color(121/255, 85/255, 72/255, 1.0);
+                                }
+                                if (graduateHalls.includes(featureId)) {
+                                    feature.color = new Cesium.Color(240/255, 98/255, 146/255, 1.0);
+                                }
+                                if (admin.includes(featureId)) {
+                                    feature.color = new Cesium.Color(158/255, 158/255, 158/255, 1.0);
+                                }
+                                if (multipurpose.includes(featureId)) {
+                                    feature.color = new Cesium.Color(103/255, 58/255, 183/255, 1.0);
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+            break;
+        default:
+            console.warn("Unknown type '" + t.type + "', skipping this data source.")
+    }
+
+
+
+    let coordinates = []; // Array to hold coordinates for the tube
+
+    function createRedPointWithLabel(name, longitude, latitude) {
+    const entity = MapHandler.MAP.entities.add({
+      name: name,
+      position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
+      point: {
+        pixelSize: 5,
+        color: Cesium.Color.RED,
+        outlineColor: Cesium.Color.WHITE,
+        outlineWidth: 2,
+        disableDepthTestDistance: Number.POSITIVE_INFINITY, // Always render on top
+      },
+      label: {
+        text: name,
+        font: "14pt monospace",
+        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        outlineWidth: 2,
+        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+        pixelOffset: new Cesium.Cartesian2(0, -9),
+        disableDepthTestDistance: Number.POSITIVE_INFINITY, // Always render on top
+      },
+    });
+
+    // Add the coordinates to the array
+    coordinates.push(longitude);
+    coordinates.push(latitude);
+
+    return entity;
+    }
+
+/*
+    function createBluePointWithLabel(name, longitude, latitude) {
+    const entity = MapHandler.MAP.entities.add({
+      name: name,
+      position: Cesium.Cartesian3.fromDegrees(longitude, latitude),
+      point: {
+        pixelSize: 5,
+        color: Cesium.Color.BLUE,
+        outlineColor: Cesium.Color.WHITE,
+        outlineWidth: 2,
+        disableDepthTestDistance: Number.POSITIVE_INFINITY, // Always render on top
+      },
+      label: {
+        text: name,
+        font: "14pt monospace",
+        style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+        outlineWidth: 2,
+        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+        pixelOffset: new Cesium.Cartesian2(0, -9),
+        disableDepthTestDistance: Number.POSITIVE_INFINITY, // Always render on top
+      },
+    });
+
+    // Add the coordinates to the array
+    coordinates.push(longitude);
+    coordinates.push(latitude);
+
+    return entity;
+    }
+    */
+
+    function computeCircle(radius) {
+    const positions = [];
+    for (let i = 0; i < 360; i++) {
+      const radians = Cesium.Math.toRadians(i);
+      positions.push(
+        new Cesium.Cartesian2(
+          radius * Math.cos(radians),
+          radius * Math.sin(radians)
+        )
+      );
+    }
+    return positions;
+    }
+
+    // Create your points here...
+    const SPMS = createRedPointWithLabel("SPMS", 103.6818313449, 1.3418622912);
+    const Gaia = createRedPointWithLabel("Gaia", 103.6832968323, 1.3420784334);
+    const EEE = createRedPointWithLabel("EEE", 103.6808374316, 1.3432265836);
+    const NYA = createRedPointWithLabel("NYA", 103.6802170967, 1.3444732784);
+    const SBS = createRedPointWithLabel("SBS", 103.6790837070, 1.3446677129);
+    const RSIS = createRedPointWithLabel("RSIS", 103.6828289455, 1.3445778104);
+    const SOH = createRedPointWithLabel("SOH", 103.6832219492, 1.3436959528);
+    const WKWSCI = createRedPointWithLabel("WKWSCI", 103.6798157027, 1.3422039360);
+    const SCSE = createRedPointWithLabel("SCSE", 103.6820219077, 1.3462758314);
+    const CCEB = createRedPointWithLabel("CCEB", 103.6814839745, 1.3423278539);
+    const ADM = createRedPointWithLabel("ADM", 103.6836713722, 1.3494452508);
+    const MSE = createRedPointWithLabel("MSE", 103.6828206330, 1.3466488196);
+    const MAE = createRedPointWithLabel("MAE", 103.6815714070, 1.3471301712);
+    const SRC = createRedPointWithLabel("SRC", 103.6877626788, 1.3493380482);
+    const Hall4 = createRedPointWithLabel("Hall4", 103.6859727443, 1.3443150373);
+    const Hall5 = createRedPointWithLabel("Hall5", 103.6871059725, 1.3443975857);
+    const Hall1 = createRedPointWithLabel("Hall1", 103.6874975524, 1.3454683228);
+    const CrescentHall = createRedPointWithLabel("Crescent Hall", 103.6882582783, 1.3461486472);
+    const Hall16 = createRedPointWithLabel("Hall16", 103.6811622680, 1.3503034094);
+    const Hall3 = createRedPointWithLabel("Hall3", 103.6820282620, 1.3506749592);
+    const Hall12 = createRedPointWithLabel("Hall12", 103.6807031375, 1.3511813697);
+    const Hall13 = createRedPointWithLabel("Hall13", 103.6813738353, 1.3517889450);
+    const Hall14 = createRedPointWithLabel("Hall14", 103.6820429886, 1.3523370583);
+    const NIE = createRedPointWithLabel("NIE", 103.6783990817, 1.3488637461);
+    const ASE = createRedPointWithLabel("ASE", 103.6793951143, 1.3467359942);
+    const CEE = createRedPointWithLabel("CEE", 103.6801307860, 1.3458486846);
+    const GH2 = createRedPointWithLabel("GH2", 103.6859232949, 1.3556889014);
+    const Hall11 = createRedPointWithLabel("Hall11", 103.6864649318, 1.3547248513);
+    const Hall10 = createRedPointWithLabel("Hall10", 103.6856292927, 1.3540245185);
+    const Hall9 = createRedPointWithLabel("Hall9", 103.6854104020, 1.3525671634);
+    const Hall8 = createRedPointWithLabel("Hall8", 103.6851604620, 1.3509547080);
+    const NYV = createRedPointWithLabel("Nanyang View", 103.6874021080, 1.3523853151);
+    const NYM = createRedPointWithLabel("Nanyang Meadows", 103.6891537361, 1.3513951034);
+    const NEC = createRedPointWithLabel("NEC", 103.6879722516, 1.3512641616);
+    const NYH = createRedPointWithLabel("NYH", 103.6867896898, 1.3498278509);
+    const Hall6 = createRedPointWithLabel("Hall6", 103.6870895070, 1.3478470168);
+    const Hall2 = createRedPointWithLabel("Hall2", 103.6861317072, 1.3478659302);
+    const TLSK = createRedPointWithLabel("Tan Lark Sye Walk", 103.6840865406, 1.3460192930);
+    const SSC = createRedPointWithLabel("SSC", 103.6833743723, 1.3454324190);
+    const UHSB = createRedPointWithLabel("UHSB", 103.6825848272, 1.3454364470);
+    //const LT1 = createBLuePointWithLabel("LT1", 103.681101, 1.345615);
+
+
+    const htmlOverlay = document.getElementById("LT1");
+    const scratch = new Cesium.Cartesian2();
+    MapHandler.MAP.scene.preRender.addEventListener(function () {
+      const position = Cesium.Cartesian3.fromDegrees(103.6905372633, 1.3485277454);
+      const canvasPosition = MapHandler.MAP.scene.cartesianToCanvasCoordinates(
+        position,
+        scratch
+      );
+      if (Cesium.defined(canvasPosition)) {
+        htmlOverlay.style.top = `${canvasPosition.y}px`;
+        htmlOverlay.style.left = `${canvasPosition.x}px`;
+      }
+    });
+
+    document.getElementById('LT1').addEventListener('click', function() {
+
+        var container = document.getElementById("metaTabs");
+
+        var iframe = document.createElement("iframe");
+        var header = document.createElement("b");  // Using h2 as an example, you can adjust the heading level as needed
+        header.textContent = "Class Schedule";
+        // Set attributes for the iframe
+        iframe.src = "http://localhost:3838/analytics/d-solo/a3e4e240-87cc-455e-888a-fd3af4e9e64d/ntu-dashboard?orgId=1&var-schedule=All&from=1672531200000&to=1672617599000&var-classroom=LT"+ a[Object.keys(a)[0]] +"&theme=light&panelId=2";
+        iframe.width = "450";
+        iframe.height = "100";
+        iframe.frameBorder = "0"; // Note: It's frameBorder, not frameborder
+        // Append the iframe to the container
+        //container.appendChild(header);
+        container.appendChild(iframe);
+
+        var iframe = document.createElement("iframe");
+        var header = document.createElement("b");  // Using h2 as an example, you can adjust the heading level as needed
+        header.textContent = "Aircon planning";
+        // Set attributes for the iframe
+        iframe.src = "http://localhost:3838/analytics/d-solo/a3e4e240-87cc-455e-888a-fd3af4e9e64d/ntu-dashboard?orgId=1&from=1672531200000&to=1672617599000&var-classroom=LT"+ a[Object.keys(a)[0]] +"&theme=light&var-schedule=All&panelId=5";
+        iframe.width = "450";
+        iframe.height = "200";
+        iframe.frameBorder = "0"; // Note: It's frameBorder, not frameborder
+        // Append the iframe to the container
+        //container.appendChild(header);
+        container.appendChild(iframe);
+
+        var iframe = document.createElement("iframe");
+        var header = document.createElement("b");  // Using h2 as an example, you can adjust the heading level as needed
+        header.textContent = "HVAC setting suggestions";
+        // Set attributes for the iframe
+        iframe.src = "http://localhost:3838/analytics/d-solo/a3e4e240-87cc-455e-888a-fd3af4e9e64d/ntu-dashboard?orgId=1&from=1672531200000&to=1672617599000&var-classroom=LT"+ a[Object.keys(a)[0]] +"&var-schedule=All&theme=light&panelId=4";
+        iframe.width = "450";
+        iframe.height = "200";
+        iframe.frameBorder = "0"; // Note: It's frameBorder, not frameborder
+        // Append the iframe to the container
+        //container.appendChild(header);
+        container.appendChild(iframe);
+
+    });
+
+}
+
+
+
+
 
 
 /* Add to existing functions

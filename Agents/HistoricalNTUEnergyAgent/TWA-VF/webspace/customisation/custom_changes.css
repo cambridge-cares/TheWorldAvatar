@@ -25,3 +25,21 @@
 .custom-button2:hover {
     background-color: #5989de;
 }
+
+.custom-button3 {
+    font-size: 15px;
+    width: 30px; /* Set width for the circle */
+    height: 30px; /* Set height for the circle */
+    line-height: 30px; /* Center the text vertically */
+    text-align: center; /* Center the text horizontally */
+    color: white;
+    background-color: #146a7a;
+    border: none;
+    border-radius: 50%; /* Makes the button a perfect circle */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: 3px;
+}
+.custom-button3:hover {
+    background-color: #5989de;
+}
