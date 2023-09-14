@@ -1398,14 +1398,14 @@ public class TimeSeriesRDBClient<T> {
 		}
 	}
 
-	TimeSeriesDatabaseMetadata getTimeSeriesDatabaseMetadata(Connection conn) {
+	private TimeSeriesDatabaseMetadata getTimeSeriesDatabaseMetadata(Connection conn) {
 		TimeSeriesDatabaseMetadata timeSeriesDatabaseMetadata = new TimeSeriesDatabaseMetadata();
 		addDataTypes(conn, timeSeriesDatabaseMetadata);
 		addSpecificGeometryClass(conn, timeSeriesDatabaseMetadata);
 		return timeSeriesDatabaseMetadata;
 	}
 
-	void addDataTypes(Connection conn, TimeSeriesDatabaseMetadata timeSeriesDatabaseMetadata) {
+	private void addDataTypes(Connection conn, TimeSeriesDatabaseMetadata timeSeriesDatabaseMetadata) {
 		DSLContext context = DSL.using(conn, DIALECT);
 		Table<Record> columnsTable = DSL.table(DSL.name("information_schema", "columns"));
 		Field<String> tableNameColumn = DSL.field("table_name", String.class);
@@ -1436,7 +1436,7 @@ public class TimeSeriesRDBClient<T> {
 		});
 	}
 
-	void addSpecificGeometryClass(Connection conn, TimeSeriesDatabaseMetadata timeSeriesMetadata) {
+	private void addSpecificGeometryClass(Connection conn, TimeSeriesDatabaseMetadata timeSeriesMetadata) {
 		List<List<String>> geometryRows = timeSeriesMetadata.getGeometryRows();
 		if (!geometryRows.isEmpty()) {
 			DSLContext context = DSL.using(conn, DIALECT);
