@@ -1,5 +1,5 @@
 {
-    "name": "solarkataster",
+    "name": "einstrahlungsraster",
     "database": "postgres",
     "workspace": "twa",
     "datasetDirectory": "einstrahlungsraster",
