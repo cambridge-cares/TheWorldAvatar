@@ -217,7 +217,7 @@ Once you have all your data and configuration files copied into the place the st
 
 <br/>
 <p align="center">
-    <img src="./img/expected-file-tree.png" alt="Stack data uploader structure" width="33%"/>
+    <img src="./img/expected-file-tree.png" alt="Stack data uploader structure" width="25%"/>
 </p>
 <p align="center">
     <em>Expected structure for stack-data-uploader files.</em><br/><br/><br/>
@@ -614,7 +614,6 @@ After refreshing the visualisation, you should now be able to see the clustered 
  <em>Clustered locations.</em><br/><br/><br/>
 </p>
 
-<br/>
 
 ## Conclusion
 
