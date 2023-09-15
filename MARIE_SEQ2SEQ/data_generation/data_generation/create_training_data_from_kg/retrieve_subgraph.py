@@ -37,7 +37,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"""
         results = []
 
         try_num = 0
-        try_limit = 5 if bindings is None else 1
+        try_limit = 5 if not bindings else 1
         while len(results) == 0 and try_num < try_limit:
             if tail_nums is None:
                 tail_nums = self.get_rand_tail_nums()
