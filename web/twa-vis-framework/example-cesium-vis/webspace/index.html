@@ -40,9 +40,6 @@
         <!-- Element for depth of field overlay -->
         <div id="tiltShift"></div>
 
-        <!-- Pop up box for hover-over effecrs -->
-        <div id="cesiumMetaBox"></div>
-
         <!-- Element the map controls will be added to (normally on the left) -->
         <div id="controlsContainer">
             <div id="controlContainer">
@@ -167,46 +164,47 @@
             window.manager = manager;
 
             // Read credentials
-            manager.readCredentials().then(() => {
+            var credentialPromise = manager.readCredentials();
+            
+            // Only start the map after data definitions have been read.
+            var dataPromise = manager.loadDefinitions();
 
-                // Only start the map after data definitions have been read.
-                var dataPromise = manager.loadDefinitions();
-                dataPromise.then(() => start());
+            // Start when credentials and definitions have been loaded
+            Promise.all([credentialPromise, dataPromise]).then(() => start());
 
-                /**
-                 * Starts the visualisation setup process.
-                 */
-                function start() {
-                    // Initialise the map object
-                    manager.initialiseMap();
+            /**
+             * Starts the visualisation setup process.
+             */
+            function start() {
+                // Initialise the map object
+                manager.initialiseMap();
 
-                    // ===== CUSTOMISABLE =====
-                    // Set the default content in the "General" tab of the side panel
-                    manager.getPanelHandler().setTitle("<h1>Example Visualisation</h1>");
-                    manager.getPanelHandler().setContent(`
-                        <p>This example visualisation has been put together to demonstrate the intended use of the centralised TWA Visualisation Framework (TWA-VF).
-                        This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put 
-                        together a new visualisation. It is intended for developers to use this example visualisation to gain an understanding of the TWA-VF 
-                        before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.</p>
+                // ===== CUSTOMISABLE =====
+                // Set the default content in the "General" tab of the side panel
+                manager.getPanelHandler().setTitle("<h1>Example Visualisation</h1>");
+                manager.getPanelHandler().setContent(`
+                    <p>This example visualisation has been put together to demonstrate the intended use of the centralised TWA Visualisation Framework (TWA-VF).
+                    This framework has been designed to make it easier for users not experienced with Typescript (or the mapping libraries) to quickly & easily put 
+                    together a new visualisation. It is intended for developers to use this example visualisation to gain an understanding of the TWA-VF 
+                    before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.</p>
 
-                        <p>The version of the TWA-VF packaged with this example visualisation can be seen in the developer's console.</p>
+                    <p>The version of the TWA-VF packaged with this example visualisation can be seen in the developer's console.</p>
 
-                        <p>For more information, please see the associated README file within the TWA repository or contact the CMCL technical team.</p>
-                    `);
-                    
-                    manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
-                    // ===== CUSTOMISABLE =====
+                    <p>For more information, please see the associated README file within the TWA repository or contact the CMCL technical team.</p>
+                `);
+                
+                manager.getPanelHandler().setFooter("The World Avatar, " + new Date().getFullYear());
+                // ===== CUSTOMISABLE =====
 
-                    // Save general tab state as default
-                    manager.getPanelHandler().storeDefault();
+                // Save general tab state as default
+                manager.getPanelHandler().storeDefault();
 
-                    // Load registered images and linked files
-                    manager.loadImagesAndLinks().then(() => {
-                        // Plot the data
-                        manager.plotData();
-                    });
-                }
-            });
+                // Load registered images and linked files
+                manager.loadImagesAndLinks().then(() => {
+                    // Plot the data
+                    manager.plotData();
+                });
+            }
         </script>
     </body>
 </html>

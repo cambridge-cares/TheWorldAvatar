@@ -72,8 +72,8 @@ class MapHandler_Cesium extends MapHandler {
             // Build the URL to pull tile imagery from Mapbox (defaults to dark theme)
             var tileURL = getDefaultImagery();
             if(tileURL.endsWith("access_token=")) {
-                tileURL = tileURL + MapHandler.MAP_API;
-            }
+                tileURL += MapHandler.MAP_API;
+            } 
 
             // Remove any existing imagery providers and add our own
             MapHandler.MAP.imageryLayers.removeAll(true);
@@ -157,6 +157,12 @@ class MapHandler_Cesium extends MapHandler {
         // Get the feature at the click point
         let self = this;
         CesiumUtils.getFeature(event, function(feature) {
+            if(feature == null) {
+                // Feature not over anything.
+                PopupHandler.setVisibility(false);
+                return;
+            }
+
             window.currentFeature = feature;
 
             if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
@@ -197,24 +203,20 @@ class MapHandler_Cesium extends MapHandler {
      * @param event mouse event
      */
     private handleMouse(event) {
+        PopupHandler.setVisibility(false);
         if(!MapHandler.ALLOW_CLICKS) return;
-        let metaBox = document.getElementById("cesiumMetaBox");
-        metaBox.style.display = "none";
 
         // Get the feature at the click point
         CesiumUtils.getFeature(event, function(feature) {
+            if(feature == null) {
+                PopupHandler.setVisibility(false);
+                return;
+            }
 
             if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
                 // 2D WMS feature
                 let properties = {...feature.data.properties};
-                let name = getName(properties);
-
-                if(name != null && name !== "") {
-                    metaBox.style.display = "block";
-                    metaBox.style.bottom = `${MapHandler.MAP.canvas.clientHeight - event.endPosition.y + 50}px`;
-                    metaBox.style.left = `${event.endPosition.x - 100}px`;
-                    metaBox.innerHTML = CesiumUtils.getPopupContent(properties);
-                } 
+                CesiumUtils.showPopup(properties);
 
             } else {
                 // 3D feature
@@ -224,17 +226,22 @@ class MapHandler_Cesium extends MapHandler {
                 // Transform properties for compatability with manager code
                 if (Cesium.defined(contentMetadata)) {
                     properties = {...contentMetadata["_properties"]};
+
+                } else if(typeof feature.getPropertyIds === "function") {
+                    // No metadata refined, try to get properties via id
+                    let ids = feature.getPropertyIds();
+                    if(ids != null) {
+                        ids.forEach(id => {
+                            properties[id] = feature.getProperty(id);
+                        });
+                    }
                 } else {
-                    // Do nothing, there's no data?
+                    // Unknown data type
+                    return;
                 }
 
-                let name = getName(properties);
-                if(name != null && name !== "") {
-                    metaBox.style.display = "block";
-                    metaBox.style.bottom = `${MapHandler.MAP.canvas.clientHeight - event.endPosition.y + 50}px`;
-                    metaBox.style.left = `${event.endPosition.x - 100}px`;
-                    metaBox.innerHTML = CesiumUtils.getPopupContent(properties);
-                }
+                // Show popup element
+                CesiumUtils.showPopup(properties);
             }
         });
     }
@@ -270,6 +277,8 @@ class MapHandler_Cesium extends MapHandler {
             return layer.source.type !== "wms" && layer.source.type !== "geoserver"; 
         });
         otherLayers.forEach(layer => this.plotLayer(null, layer));
+
+        console.log("DATA PLOTTED");
     }
 
     /**

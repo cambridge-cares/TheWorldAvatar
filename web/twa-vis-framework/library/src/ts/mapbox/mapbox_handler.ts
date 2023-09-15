@@ -5,11 +5,6 @@
 class MapHandler_Mapbox extends MapHandler {
 
     /**
-     * Mapbox popup element.
-     */
-    public static POPUP;
-
-    /**
      * Constructor.
      */
     constructor(manager: Manager) {
@@ -44,13 +39,6 @@ class MapHandler_Mapbox extends MapHandler {
             MapHandler.MAP.on("click", (event) => this.handleClick(event, null));
             MapHandler.MAP.on("mousemove", (event) => this.handleMouse(event));
 
-            // Create popup
-             // @ts-ignore
-            MapHandler_Mapbox.POPUP = new mapboxgl.Popup({
-                closeButton: false,
-                closeOnClick: false,
-                maxWidth: "400px"
-            });
         }  else {
             // Reinitialise state of existing map
             MapHandler.MAP.setStyle(newOptions["style"]);
@@ -210,7 +198,7 @@ class MapHandler_Mapbox extends MapHandler {
         if(features.length === 0) {
             // Mouse no longer over any features
             MapHandler.MAP.getCanvas().style.cursor = '';
-            if(MapHandler_Mapbox.POPUP !== null) MapHandler_Mapbox.POPUP.remove();
+            PopupHandler.setVisibility(false);
 
         } else if(features.length > 0) {
             // Mouse over single feature
@@ -227,7 +215,7 @@ class MapHandler_Mapbox extends MapHandler {
             MapHandler.MAP.getCanvas().style.cursor = 'pointer';
 
             if(layer != null && layer instanceof MapboxLayer) {
-                if(feature !== null) MapboxUtils.showPopup(event, feature);
+                if(feature !== null) MapboxUtils.showPopup(feature);
             } 
         } 
     }

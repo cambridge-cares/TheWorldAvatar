@@ -89,11 +89,13 @@ class Manager {
         // Enter Mapbox account name and API key here!
         await $.get("mapbox_username", {}, function (result) {
             MapHandler.MAP_USER = result;
+            console.log("USERNAME = " + MapHandler.MAP_USER);
         }).fail(function () {
             console.error("Could not read Mapbox username from 'mapbox_username' secret file.");
         });
         await $.get("mapbox_api_key", {}, function (result) {
             MapHandler.MAP_API = result;
+            console.log("KEY = " + MapHandler.MAP_API);
         }).fail(function () {
             console.error("Could not read Mapbox API key from 'mapbox_api_key' secret file.");
         });
@@ -278,7 +280,7 @@ class Manager {
         promises.push(this.panelHandler.addLinks(linksFile));
 
         // Return combined promise
-        return Promise.all(promises);
+        return Promise.allSettled(promises);
     }
     
     /**

@@ -125,21 +125,11 @@ class CesiumUtils {
         let imagerySettings = {};
 
         // Add possible imagery options
-        imagerySettings["Light"] =
-            "https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}?access_token="
-            + MapHandler.MAP_API;
-        imagerySettings["Dark"] =
-            "https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/256/{z}/{x}/{y}?access_token="
-            + MapHandler.MAP_API;
-        imagerySettings["Outdoors"] =
-            "https://api.mapbox.com/styles/v1/mapbox/outdoors-v11/tiles/256/{z}/{x}/{y}?access_token="
-            + MapHandler.MAP_API;
-        imagerySettings["Satellite (Raw)"] =
-            "https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/256/{z}/{x}/{y}?access_token="
-            + MapHandler.MAP_API;
-        imagerySettings["Satellite (Labelled)"] =
-            "https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/tiles/256/{z}/{x}/{y}?access_token="
-            + MapHandler.MAP_API;
+        imagerySettings["Light"] = "https://api.mapbox.com/styles/v1/mapbox/light-v11/tiles/256/{z}/{x}/{y}?access_token=";
+        imagerySettings["Dark"] = "https://api.mapbox.com/styles/v1/mapbox/dark-v11/tiles/256/{z}/{x}/{y}?access_token=";
+        imagerySettings["Outdoors"] = "https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/tiles/256/{z}/{x}/{y}?access_token=";
+        imagerySettings["Satellite (Raw)"] = "https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/256/{z}/{x}/{y}?access_token=";
+        imagerySettings["Satellite (Labelled)"] = "https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/tiles/256/{z}/{x}/{y}?access_token=";
 
         // Set default imagery to Dark
         imagerySettings["default"] = "Dark";
@@ -300,32 +290,19 @@ class CesiumUtils {
     }
 
     /**
-     * Generates content for pop-up box displayed on hover over.
+     * Generates and displays a descriptive popup on a Mapbox map.
+     * 
+     * @param feature selected feature
      */
-    public static getPopupContent(properties: Object) {
-        // Get feature details
-        let name = getName(properties);
-        let desc = getDescription(properties);
-
-        // Make HTML string
-        let html = "";
-        if(desc == null) {
-            html += "<h3 style='text-align: center !important;'>" + name + "</h3>";
-        } else {
-            html += "<h3>" + name + "</h3>";
-            if(desc.length > 100) {
-                html += "<div class='desc-popup long-popup'></br>" + desc + "</div>";
-            } else {
-                html += "<div class='desc-popup'></br>" + desc + "</div>";
-            }
+     public static showPopup(featureMetadata) {
+        if(featureMetadata == null) {
+            PopupHandler.setVisibility(false);
+            return;
         }
 
-        // Add thumbnail if present
-        if(properties["thumbnail"]) {
-            html += "<br/><br/>";
-            html += "<img class='thumbnail' src='" + properties["thumbnail"] + "'>";
-        }
-        return html;
+        // Update and show popup
+        PopupHandler.updatePopup(featureMetadata);
+        PopupHandler.setVisibility(true);
     }
 
     /**
