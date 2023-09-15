@@ -1,3 +1,4 @@
+from collections import defaultdict
 import random
 from typing import Dict, List, Optional
 
@@ -186,7 +187,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"""
         select_variables = ["?SpeciesIRI", "?IdentifierIRI", "?IdentifierValue"]
         where_clause_blocks = [self.get_where_species(identifier_name)]
 
-        for i in range(1, tail_nums["property_num"] + 1):
+        for i in range(1, tail_nums.get("property_num", 0) + 1):
             select_variables.extend(
                 [
                     f"?hasProperty{i}",
@@ -200,10 +201,10 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"""
                 )
             )
         where_clause_blocks.append(
-            self.get_where_property_filter(tail_nums["property_num"])
+            self.get_where_property_filter(tail_nums.get("property_num", 0))
         )
 
-        for i in range(1, tail_nums["identifier_num"] + 1):
+        for i in range(1, tail_nums.get("identifier_num", 0) + 1):
             select_variables.extend(
                 [f"?hasIdentifier{i}", f"?IdentifierIRI{i}", f"?IdentifierValue{i}"]
             )
@@ -213,16 +214,16 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"""
                 )
             )
         where_clause_blocks.append(
-            self.get_where_identifier_filter(tail_nums["identifier_num"])
+            self.get_where_identifier_filter(tail_nums.get("identifier_num", 0))
         )
 
-        if tail_nums["use_num"] > 0:
+        if tail_nums.get("use_num", 0) > 0:
             select_variables.extend(["?UseIRI", "?UseValue"])
             where_clause_blocks.append(
                 self.get_where_use(use_value_binding=bindings.get("UseValue"))
             )
 
-        if tail_nums["chemicalclass_num"] > 0:
+        if tail_nums.get("chemicalclass_num", 0) > 0:
             select_variables.extend(["?ChemicalClassIRI", "?ChemicalClassValue"])
             where_clause_blocks.append(
                 self.get_where_chemicalclass(

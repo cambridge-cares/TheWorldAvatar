@@ -1,5 +1,4 @@
 from collections import defaultdict
-import itertools
 import random
 from typing import Dict, Iterable, List
 
@@ -107,7 +106,7 @@ class DatasetFromKgMaker:
 
     def make_example_from_properties(self, property_names: Iterable[str]):
         subgraph = self.subgraph_retriever.get_subgraph(
-            tail_nums=defaultdict(lambda: 0, property_num=len(property_names)),
+            tail_nums=dict(property_num=len(property_names)),
             bindings={
                 f"hasProperty{i + 1}": "os:has" + property_name
                 for i, property_name in enumerate(property_names)
@@ -117,7 +116,7 @@ class DatasetFromKgMaker:
 
     def make_example_from_identifiers(self, identifier_names: Iterable[str]):
         subgraph = self.subgraph_retriever.get_subgraph(
-            tail_nums=defaultdict(lambda: 0, identifier_num=len(identifier_names)),
+            tail_nums=dict(identifier_num=len(identifier_names)),
             bindings={
                 f"hasIdentifier{i + 1}": "os:has" + identifier_name
                 for i, identifier_name in enumerate(identifier_names)
@@ -127,14 +126,14 @@ class DatasetFromKgMaker:
 
     def make_example_use_single(self, use: str):
         subgraph = self.subgraph_retriever.get_subgraph(
-            tail_nums=defaultdict(lambda: 0, use_num=1),
+            tail_nums=dict(use_num=1),
             bindings=dict(UseValue=use),
         )
         return self.example_maker_head2tail.make_example(subgraph)
 
     def make_example_chemicalclass_single(self, chemicalclass: str):
         subgraph = self.subgraph_retriever.get_subgraph(
-            tail_nums=defaultdict(lambda: 0, chemicalclass_num=1),
+            tail_nums=dict(chemicalclass_num=1),
             bindings=dict(ChemicalClassValue=chemicalclass),
         )
         return self.example_maker_head2tail.make_example(subgraph)
