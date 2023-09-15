@@ -40,6 +40,7 @@ public class AssetInfoRepository {
         Completable settingLocalCall = Completable.create(emitter -> settingRepository.getSettings(new RepositoryCallback() {
             @Override
             public void onSuccess(Object result) {
+                visibleProperties.clear();
                 for (Map.Entry<String, Integer> entry : ((Map<String, Integer>) result).entrySet()) {
                     if (entry.getValue() == 1) {
                         visibleProperties.add(entry.getKey());

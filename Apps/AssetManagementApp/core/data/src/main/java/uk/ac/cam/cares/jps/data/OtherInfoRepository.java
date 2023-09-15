@@ -22,7 +22,6 @@ public class OtherInfoRepository {
     private Logger LOGGER =  Logger.getLogger(OtherInfoRepository.class);
     private OtherInfoLocalSource otherInfoLocalSource;
     private OtherInfoNetworkSource otherInfoNetworkSource;
-    private Map<String, String> types = new HashMap<>();
     private Map<String, Map<String, String>> otherInfoByKey = new HashMap<>();
 
     @Inject
