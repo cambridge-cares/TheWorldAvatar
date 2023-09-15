@@ -68,6 +68,11 @@ public class AssetInfoAdapter extends RecyclerView.Adapter<AssetInfoAdapter.View
             propertiesBySections.put(PURCHASE_SECTION_TITLE, purchasePropertyLists);
         }
 
+        List<Pair<String, String>> maintenancePropertyLists = getOrderedPropertiesList(map, maintenanceInfoOrder);
+        if (maintenancePropertyLists.size() != 0) {
+            propertiesBySections.put(MAINTENANCE_SECTION_TITLE, maintenancePropertyLists);
+        }
+
         List<Pair<String, String>> otherPropertyLists = getOrderedPropertiesList(map, null);
         if (otherPropertyLists.size() != 0) {
             propertiesBySections.put(OTHERS_SECTION_TITLE, otherPropertyLists);

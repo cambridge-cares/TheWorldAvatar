@@ -49,6 +49,12 @@ public class AssetInfoConstant {
     static public final String SPEC_SHEET_SECTION_TITLE = "Spec Sheet";
     static public final String MANUAL_SECTION_TITLE = "Manual";
 
+    // MAINTENANCE KEYS
+    static public final String MAINTENANCE_SECTION_TITLE = "Maintenance";
+    static public final String MAINTENANCE_SCHEDULE_FOR = "Maintenance scheduled for";
+    static public final String MAINTENANCE_MAINTAINED_BY = "Maintained by";
+    static public final String MAINTENANCE_INTERVAL = "Maintenance Interval";
+
     static public final String OTHERS_SECTION_TITLE = "Others";
 
     // ORDERED KEYS
@@ -58,8 +64,10 @@ public class AssetInfoConstant {
     static public final List<String> priceInfoOrder = new ArrayList<>(Arrays.asList(PURCHASE_PRICE));
     static public final List<String> itemInfoOrder = new ArrayList<>(Arrays.asList(ITEM_NAME, ITEM_DESCRIPTION, PURCHASE_PRICE, PRICE_UNIT, SERVICE_CATEGORY, SERVICE_CATEGORY_DESCRIPTION, SERVICE_CODE, SERVICE_CODE_DESCRIPTION));
     static public final List<String> docLineInfoOrder = new ArrayList<>(Arrays.asList(PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER));
+    static public final List<String> maintenanceInfoOrder = new ArrayList<>(Arrays.asList(MAINTENANCE_SCHEDULE_FOR, MAINTENANCE_MAINTAINED_BY, MAINTENANCE_INTERVAL));
 
-    static public final List<String> otherInfoFromAssetAgentKeys = Arrays.asList(TYPE, ASSIGNED_TO, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER);
 
+//    static public final List<String> otherInfoFromAssetAgentKeys = Arrays.asList(TYPE, ASSIGNED_TO, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER);
+    static public final List<String> otherInfoFromAssetAgentKeys = Arrays.asList(TYPE, ASSIGNED_TO, VENDOR, MANUFACTURER, PURCHASE_REQUEST_NUMBER, PURCHASE_ORDER_NUMBER, INVOICE_NUMBER, DELIVERY_ORDER_NUMBER, LOCATED_IN, SEAT_LOCATION);
     static public final String HAS_TIME_SERIES = "hasTimeSeries";
 }

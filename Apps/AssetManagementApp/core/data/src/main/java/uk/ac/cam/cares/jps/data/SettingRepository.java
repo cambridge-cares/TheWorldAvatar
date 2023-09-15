@@ -6,6 +6,7 @@ import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.basicInfoOrder;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.docLineInfoOrder;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.itemInfoOrder;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.locationInfoOrder;
+import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.maintenanceInfoOrder;
 import static uk.ac.cam.cares.jps.utils.AssetInfoConstant.supplierInfoOrder;
 
 import org.apache.log4j.Logger;
@@ -67,6 +68,7 @@ public class SettingRepository {
         allKeys.addAll(supplierInfoOrder);
         allKeys.addAll(docLineInfoOrder);
         allKeys.addAll(itemInfoOrder);
+        allKeys.addAll(maintenanceInfoOrder);
         allKeys.add(SPEC_SHEET_SECTION_TITLE);
         allKeys.add(MANUAL_SECTION_TITLE);
 
