@@ -1,4 +1,4 @@
-PROPERTIES = [
+PROPERTY_NAMES = [
     "AtomChiralCount",
     "AtomChiralDefCount",
     "AtomChiralUndefCount",
@@ -47,7 +47,7 @@ PROPERTIES = [
     "Viscosity",
 ]
 
-IDENTIFIERS = [
+IDENTIFIER_NAMES = [
     "ChebiID",
     "CID",
     "EmpiricalFormula",

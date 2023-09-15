@@ -8,7 +8,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 
 from data_generation.example_generator import ExampleGenerator, make_arg_samplers
-from data_generation.constants import PROPERTIES, IDENTIFIERS
+from data_generation.constants import PROPERTY_NAMES, IDENTIFIER_NAMES
 
 
 DIRPATH = pathlib.Path(__file__).parent.resolve()
@@ -42,8 +42,8 @@ def generate_dataset(
     test_example_generators = []
 
     samplers = make_arg_samplers(
-        properties=PROPERTIES,
-        identifiers=IDENTIFIERS,
+        properties=PROPERTY_NAMES,
+        identifiers=IDENTIFIER_NAMES,
         species=species,
         chemicalclasses=chemicalclasses,
         uses=uses,
