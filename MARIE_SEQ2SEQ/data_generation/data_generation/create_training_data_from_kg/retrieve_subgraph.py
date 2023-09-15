@@ -182,6 +182,8 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"""
     def get_subgraph_query(
         self, tail_nums: Dict[str, int], bindings: Optional[dict] = None
     ):
+        if bindings is None:
+            bindings = dict()
         identifier_name = random.choice(self.IDENTIFIER_NAMES_FOR_HEAD)
 
         select_variables = ["?SpeciesIRI", "?IdentifierIRI", "?IdentifierValue"]
