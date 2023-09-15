@@ -9,48 +9,14 @@ The instantiated data is visualised using the Digital Twin Visualisation Framewo
 ## Creating the Visualisation
 This document marks down the steps taken to create flood router, isochrone under flooding and transport network criticality analysis. 
 
-## Pre-requisite for setting up.
-Before spinning up the stack insert [geoserver.json](KingsLynn_vis\inputs\geoserver) into services folder of stack-manager. This steps allows further modifcation and publishing of geoserver layer.
-
-Spin up the stack-manager with `kingslynn` as the `<STACK-NAME>` by running `./stack.sh start kingslynn`
-
-## Geoserver layers
-Geoserver setting configurations: 
-1) Under Settings - Globals, change the number of decimals to 6. 
-
-For each layers published: 
-1) In lat/lon bounding box, select compute for data and compute from native bounds.
-2) Under tile caching tab, enable application/json;type=geojson, application/vnd.mapbox-vector-tile under Tile Image Formats.
-
-### Publishing Geoserver layers
-Under layers tab, add a new layer, select kingslynn:routing_ways, publish the following layers: 
-1) isochrone_hospital_unflooded
-2) isochrone_hospital_flooded
-3) unreachable_population
-4) flood_polygon_single
-
-### Configure new SQL view
-Under layers tab, add a new layer, select kingslynn:routing_ways, configure new SQL views geoserver as below: 
-1) tsp_visualization
-2) tsp_nodes 
-3) routing_pointofinterest (edit the SQL view). routing_pointofinterest is supposed to be shortest_paths, this is just a quick fudge fix. 
-
-Use SQL commands found under [virtualTables](inputs/data/kingslynn/sql/virtualTables).
-
-Subsequently, you may run the DTVF container.
+After copying all relevant config and data files to their relevant directories with in the Stacks folder, spin up the stack-manager with `kingslynn` as the `<STACK-NAME>` by running `./stack.sh start kingslynn`. Ensure that 'visualisation' is included as a service by using the `kingslynn` manager config file.
 
 ### DTVF Prerequisite
 A valid Mapbox API token must be provided in your [index.html] file.
 
-```
-# To build the Image:
-docker-compose -f ./docker/docker-compose.yml build --force-rm
 
-# To generate a Container (i.e. run the Image):
-docker-compose -f ./docker/docker-compose.yml up -d --force-recreate
-```
 
-Visualization can be seen at [http://localhost:80](http://localhost:80)
+Visualization can be seen at [http://localhost:3838/visualisation](http://localhost:3838/visualisation)
 
 
 <!-- Links -->

@@ -8,7 +8,9 @@ Kindly retrieve from Shin Zert from CARES. `.tif` file.
 Downloaded from [ukpowernetworks](https://ukpowernetworks.opendatasoft.com/explore/dataset/grid-and-primary-sites/information/?disjunctive.sitename&disjunctive.powertransformercount&disjunctive.local_authority&location=14,52.76712,0.42611&basemap=jawg.light). `.csv` file. 
 
 ### Flood Data
-Retrived from CMCLInnovations. `.tif` file.
+Retrived from CMCLInnovations. `.tif` file. 
+
+_NB this data is proprietary and given to us under creative commons license. Need to reference this and be careful not to use in commercial public demonstration_
 
 ### Population
 Population Raster data is retrieved from [OpenPopGrid](http://openpopgrid.geodata.soton.ac.uk/). `.tif` file. 
