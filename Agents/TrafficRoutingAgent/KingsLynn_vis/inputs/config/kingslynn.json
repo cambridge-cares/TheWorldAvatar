@@ -3,7 +3,13 @@
     "database": "postgres",
     "workspace": "kingslynn",
     "datasetDirectory": "kingslynn",
-    "dataSubsets": [        
+    "styles": [
+        {
+            "name": "flood-style",
+            "file": "flood-style.sld"
+        }
+    ],
+    "dataSubsets": [
         {
             "type": "OSMRouting",
             "skip": false,
@@ -33,7 +39,7 @@
                         }
                     ]
                 }
-            },            
+            },
             "waysGeoServerSettings": {
                 "virtualTable": {
                     "name": "routing",
@@ -70,26 +76,25 @@
                     ]
                 }
             }
-        },        
+        },
         {
             "type": "raster",
             "name": "flood",
             "skip": false,
             "subdirectory": "flood",
-            "sql":"@/inputs/data/kingslynn/sql/flood.sql",
+            "sql": "@/inputs/data/kingslynn/sql/flood.sql",
             "geoServerSettings": {
                 "layerSettings": {
-                    "defaultStyle": "elevation"
+                    "defaultStyle": "kingslynn:flood-style"
                 }
             }
         },
-
         {
             "type": "raster",
             "name": "elevation",
             "skip": false,
             "subdirectory": "elevation",
-            "sql":"@/inputs/data/kingslynn/sql/elevation.sql",
+            "sql": "@/inputs/data/kingslynn/sql/elevation.sql",
             "geoServerSettings": {
                 "layerSettings": {
                     "defaultStyle": "elevation"
@@ -101,7 +106,7 @@
             "name": "population",
             "skip": false,
             "subdirectory": "population",
-            "sql":"@/inputs/data/kingslynn/sql/tripcentrality.sql",
+            "sql": "@/inputs/data/kingslynn/sql/tripcentrality.sql",
             "geoServerSettings": {
                 "layerSettings": {
                     "defaultStyle": "elevation"
@@ -111,9 +116,295 @@
         {
             "type": "tabular",
             "skip": false,
-            "sql":"@/inputs/data/kingslynn/sql/grid_primary_site.sql",
+            "sql": "@/inputs/data/kingslynn/sql/grid_primary_site.sql",
             "table": "grid_primary_site",
             "subdirectory": "grid_primary_site"
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "flood_polygon_single_10cm",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "select * from flood_polygon_single_10cm",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "MultiPolygon",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "flood_polygon_single_30cm",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "select * from flood_polygon_single_30cm",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "MultiPolygon",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "flood_polygon_single_90cm",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "select * from flood_polygon_single_90cm",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "MultiPolygon",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "isochrone_hospital_unflooded",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "select * from isochrone_hospital_unflooded",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "isochrone_polygon",
+                        "type": "Polygon",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "isochrone_hospital_flooded",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "select * from isochrone_hospital_flooded",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "isochrone_polygon",
+                        "type": "Polygon",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "isochrone_hospital_unflooded",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "select * from isochrone_hospital_unflooded",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "isochrone_polygon",
+                        "type": "Polygon",
+                        "srid": 4326
+                    }
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "tsp_visualization_unflooded",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/virtualTables/tsp_visualization_unflooded.sql",
+                    "escapeSql": false
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "tsp_visualization_flooded",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/virtualTables/tsp_visualization_flooded.sql",
+                    "escapeSql": false
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "tsp_visualization_flooded_90",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/virtualTables/tsp_visualization_flooded_90.sql",
+                    "escapeSql": false
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "tsp_nodes",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/virtualTables/tsp_nodes.sql",
+                    "escapeSql": false
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "shortest_paths_with_flood_10",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/virtualTables/shortest_paths_with_flood_10.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    },
+                    "parameters": [
+                        {
+                            "name": "source",
+                            "defaultValue": "52",
+                            "regexpValidator": "^^[\\w\\d\\s]+$"
+                        },
+                        {
+                            "name": "target",
+                            "defaultValue": "4",
+                            "regexpValidator": "^[\\w\\d\\s]+$"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "shortest_paths_with_flood_30",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/virtualTables/shortest_paths_with_flood_30.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    },
+                    "parameters": [
+                        {
+                            "name": "source",
+                            "defaultValue": "52",
+                            "regexpValidator": "^^[\\w\\d\\s]+$"
+                        },
+                        {
+                            "name": "target",
+                            "defaultValue": "4",
+                            "regexpValidator": "^[\\w\\d\\s]+$"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "shortest_paths_with_flood_90",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "@/inputs/data/kingslynn/sql/virtualTables/shortest_paths_with_flood_90.sql",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "MultiLineString",
+                        "srid": 4326
+                    },
+                    "parameters": [
+                        {
+                            "name": "source",
+                            "defaultValue": "52",
+                            "regexpValidator": "^^[\\w\\d\\s]+$"
+                        },
+                        {
+                            "name": "target",
+                            "defaultValue": "4",
+                            "regexpValidator": "^[\\w\\d\\s]+$"
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "vector",
+            "skip": false,
+            "schema": "public",
+            "subdirectory": "empty",
+            "name": "unreachable_population",
+            "geoServerSettings": {
+                "virtualTable": {
+                    "name": "routing",
+                    "sql": "select * from unreachable_population",
+                    "escapeSql": false,
+                    "geometry": {
+                        "name": "geom",
+                        "type": "Polygon",
+                        "srid": 4326
+                    }
+                }
+            }
+            
         }
-    ]
+    ],
+    "staticGeoServerData": {
+        "iconsDir": "icons"
+    }
 }

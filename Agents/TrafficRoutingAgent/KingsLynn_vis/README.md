@@ -9,8 +9,9 @@ The instantiated data is visualised using the Digital Twin Visualisation Framewo
 ## Creating the Visualisation
 This document marks down the steps taken to create flood router, isochrone under flooding and transport network criticality analysis. 
 
-After copying all relevant config and data files to their relevant directories with in the Stacks folder, spin up the stack-manager with `kingslynn` as the `<STACK-NAME>` by running `./stack.sh start kingslynn`. Ensure that 'visualisation' is included as a service by using the `kingslynn` manager config file.
+After copying all relevant config and data files to their relevant directories with in the Stacks folder, spin up the stack-manager with `kingslynn` as the `<STACK-NAME>` by running `./stack.sh start kingslynn`. Ensure that 'visualisation' is included as a service by using the `kingslynn` manager config file. Understanding of the stack-manager and stack-data-uploader are assumed here.
 
+NB this viz employs a somewhat hacky method of table post processing which requires having an `empty` data subdirectory. This can be seen in the inputs tree.
 ### DTVF Prerequisite
 A valid Mapbox API token must be provided in your [index.html] file.
 

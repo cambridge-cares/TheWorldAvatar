@@ -18,10 +18,10 @@ Population Raster data is retrieved from [OpenPopGrid](http://openpopgrid.geodat
 Note: Currently, QGIS is used to consume the .asc file, crops desired location and exported in tif file. 
 
 ### Raw OSM data
-1) [BBBike.org](https://extract.bbbike.org/) allows you to extract selected region. 
+1) [BBBike.org](https://extract.bbbike.org/) allows you to extract selected region. A file of around 3.5mb in the area around King's Lynn was found optimal. 
 2) [Geofabrik](https://download.geofabrik.de/) allows you to download OSM data via region/country 
 
-`.osm` file.
+`.osm` or `pbf` file, the latter preferred .
 
 Note: 
 Downloading cropped map from BBBike.org is currently the best option. If OSM map data is downloaded from Geofabrik and subsequently cropped by using tool such as osmium or osmium will result in leaving out certain nodes, subsequently when imported via osm2pgrouting will lead to invisible/non-existent road.

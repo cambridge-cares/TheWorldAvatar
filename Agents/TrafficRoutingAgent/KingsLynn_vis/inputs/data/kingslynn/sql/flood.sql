@@ -1,3 +1,5 @@
+Create EXTENSION IF NOT EXISTS postgis_sfcgal;
+
 CREATE
 OR REPLACE VIEW flood_polygon AS
 SELECT
@@ -8,7 +10,7 @@ FROM
 --- Wading depth of a car set to 10cm
 --- Wading depth of a range rover set to 90cm
 --- Ambulance, Fire truck at 30cm
-CREATE TABLE flood_polygon_single_10cm AS (
+CREATE TABLE IF NOT EXISTS flood_polygon_single_10cm AS (
     SELECT
         ST_UNION(geom_selected) AS geom
     FROM
@@ -22,7 +24,7 @@ CREATE TABLE flood_polygon_single_10cm AS (
         ) AS subquery
 );
 
-CREATE TABLE flood_polygon_single_30cm AS (
+CREATE TABLE IF NOT EXISTS flood_polygon_single_30cm AS (
     SELECT
         ST_UNION(geom_selected) AS geom
     FROM
@@ -36,7 +38,7 @@ CREATE TABLE flood_polygon_single_30cm AS (
         ) AS subquery
 );
 
-CREATE TABLE flood_polygon_single_30cm AS (
+CREATE TABLE IF NOT EXISTS flood_polygon_single_90cm AS (
     SELECT
         ST_UNION(geom_selected) AS geom
     FROM
@@ -51,7 +53,7 @@ CREATE TABLE flood_polygon_single_30cm AS (
 );
 
 CREATE
-OR REPLACE VIEW flood_cost_10cm AS
+ MATERIALIZED VIEW IF NOT EXISTS flood_cost_10cm AS
 SELECT
     rw.gid AS id,
     rw.tag_id as tag_id,
@@ -63,7 +65,7 @@ SELECT
                 SELECT
                     1
                 FROM
-                    flood_polygon_single
+                    flood_polygon_single_10cm
                 WHERE
                     st_intersects(rw.the_geom, flood_polygon_single_10cm.geom)
             )
@@ -76,7 +78,7 @@ SELECT
                 SELECT
                     1
                 FROM
-                    flood_polygon_single
+                    flood_polygon_single_10cm
                 WHERE
                     st_intersects(rw.the_geom, flood_polygon_single_10cm.geom)
             )
@@ -87,7 +89,7 @@ FROM
     routing_ways rw;
 
 CREATE
-OR REPLACE VIEW flood_cost_30cm AS
+ MATERIALIZED VIEW IF NOT EXISTS flood_cost_30cm AS
 SELECT
     rw.gid AS id,
     rw.tag_id as tag_id,
@@ -99,7 +101,7 @@ SELECT
                 SELECT
                     1
                 FROM
-                    flood_polygon_single
+                    flood_polygon_single_30cm
                 WHERE
                     st_intersects(rw.the_geom, flood_polygon_single_30cm.geom)
             )
@@ -112,7 +114,7 @@ SELECT
                 SELECT
                     1
                 FROM
-                    flood_polygon_single
+                    flood_polygon_single_30cm
                 WHERE
                     st_intersects(rw.the_geom, flood_polygon_single_30cm.geom)
             )
@@ -123,7 +125,7 @@ FROM
     routing_ways rw;
 
 CREATE
-OR REPLACE VIEW flood_cost_90cm AS
+MATERIALIZED VIEW IF NOT EXISTS flood_cost_90cm AS
 SELECT
     rw.gid AS id,
     rw.tag_id as tag_id,
@@ -135,7 +137,7 @@ SELECT
                 SELECT
                     1
                 FROM
-                    flood_polygon_single
+                    flood_polygon_single_90cm
                 WHERE
                     st_intersects(rw.the_geom, flood_polygon_single_90cm.geom)
             )
@@ -148,7 +150,7 @@ SELECT
                 SELECT
                     1
                 FROM
-                    flood_polygon_single
+                    flood_polygon_single_90cm
                 WHERE
                     st_intersects(rw.the_geom, flood_polygon_single_90cm.geom)
             )

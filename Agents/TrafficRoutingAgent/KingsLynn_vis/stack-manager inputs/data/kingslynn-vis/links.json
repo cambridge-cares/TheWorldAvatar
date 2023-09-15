@@ -24,6 +24,10 @@
         {
             "text": "UK-AIR Sensor Observation Service",
             "url": "https://uk-air.defra.gov.uk/data/about_sos"
+        },
+        {
+            "text": "Flood Data provided through the creative commons licence agreement",
+            "url": "https://creativecommons.org/licenses/by/4.0/"
         }
     ]
 }

@@ -6,19 +6,49 @@
             "stack": "http://localhost:3838",
             "sources": [
                 {
-                    "id": "flood_active",  
-                    "type": "geojson",
+                    "id": "flood_active_10cm",
+                    "type": "vector",
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aflood_polygon_single&outputFormat=application%2Fjson"
+                    "tiles": [
+                        "http://localhost:3838/geoserver/kingslynn/wms?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:flood_polygon_single_10cm&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "flood_active_30cm",
+                    "type": "vector",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "tiles": [
+                        "http://localhost:3838/geoserver/kingslynn/wms?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:flood_polygon_single_30cm&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "flood_active_90cm",
+                    "type": "vector",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "tiles": [
+                        "http://localhost:3838/geoserver/kingslynn/wms?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:flood_polygon_single_90cm&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
+                },
+                {
+                    "id": "flood_raster",
+                    "type": "raster",
+                    "tiles": [
+                        "http://localhost:3838/geoserver/kingslynn/wms?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:flood&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&transparent=true&format=image/png"
+                    ]
                 }
-            ], 
+            ],
             "layers": [
                 {
-                    "id": "flood",
-                    "name": "Active flood",
-                    "source": "flood_active",
+                    "id": "flood-10",
+                    "name": "10cm depth",
+                    "source": "flood_active_10cm",
+                    "source-layer": "flood_polygon_single_10cm",
                     "type": "fill",
                     "order": 1,
                     "layout": {
@@ -28,15 +58,54 @@
                         "fill-color": "#0000FF",
                         "fill-opacity": 0.4
                     }
+                },
+                {
+                    "id": "flood-30",
+                    "name": "30cm depth",
+                    "source": "flood_active_30cm",
+                    "source-layer": "flood_polygon_single_30cm",
+                    "type": "fill",
+                    "order": 1,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-color": "#0000FF",
+                        "fill-opacity": 0.5
+                    }
+                },
+                {
+                    "id": "flood-90",
+                    "name": "90cm depth",
+                    "source": "flood_active_90cm",
+                    "source-layer": "flood_polygon_single_90cm",
+                    "type": "fill",
+                    "order": 1,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-color": "#0000FF",
+                        "fill-opacity": 0.6
+                    }
+                },
+                {
+                    "id": "flood-raster",
+                    "name": "Gradient",
+                    "source": "flood_raster",
+                    "type": "raster",
+                    "layout": {
+                        "visibility": "visible"
+                    }
                 }
             ]
         },
         {
-            "name": "Isochrone",
+            "name": "Hospital Isochrone Flooded",
             "stack": "http://localhost:3838",
             "sources": [
                 {
-                    "id": "isochrone_1",  
+                    "id": "isochrone_1",
                     "type": "geojson",
                     "cluster": false,
                     "clusterMaxZoom": 14,
@@ -44,7 +113,7 @@
                     "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_hospital_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='2'"
                 },
                 {
-                    "id": "isochrone_2",  
+                    "id": "isochrone_2",
                     "type": "geojson",
                     "cluster": false,
                     "clusterMaxZoom": 14,
@@ -52,7 +121,7 @@
                     "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_hospital_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='4'"
                 },
                 {
-                    "id": "isochrone_3",  
+                    "id": "isochrone_3",
                     "type": "geojson",
                     "cluster": false,
                     "clusterMaxZoom": 14,
@@ -60,7 +129,7 @@
                     "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_hospital_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='6'"
                 },
                 {
-                    "id": "isochrone_4",  
+                    "id": "isochrone_4",
                     "type": "geojson",
                     "cluster": false,
                     "clusterMaxZoom": 14,
@@ -68,15 +137,14 @@
                     "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_hospital_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='8'"
                 },
                 {
-                    "id": "isochrone_5",  
+                    "id": "isochrone_5",
                     "type": "geojson",
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
                     "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_hospital_flooded&outputFormat=application%2Fjson&CQL_FILTER=minute='10'"
                 }
-                
-            ], 
+            ],
             "layers": [
                 {
                     "id": "isochrone_1_layer",
@@ -85,11 +153,11 @@
                     "type": "fill",
                     "order": 5,
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
-                        "fill-color": "#c90a0a",             
-                        "fill-outline-color": "#FF0000",
+                        "fill-color": "#157B3E",
+                        "fill-outline-color": "#000000",
                         "fill-opacity": 0.20
                     }
                 },
@@ -100,10 +168,10 @@
                     "type": "fill",
                     "order": 4,
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
-                        "fill-color": "#ff8800",             
+                        "fill-color": "#007355",
                         "fill-outline-color": "#000000",
                         "fill-opacity": 0.20
                     }
@@ -115,25 +183,25 @@
                     "type": "fill",
                     "order": 3,
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
-                        "fill-color": "#ebc244",             
+                        "fill-color": "#006A63",
                         "fill-outline-color": "#000000",
                         "fill-opacity": 0.20
                     }
-                },                
+                },
                 {
-                    "id": "isochrone_4_layer",
+                    "id": "isochrone_layer",
                     "name": "8 minutes",
                     "source": "isochrone_4",
                     "type": "fill",
                     "order": 2,
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
-                        "fill-color": "#add8e6",             
+                        "fill-color": "#005F69",
                         "fill-outline-color": "#000000",
                         "fill-opacity": 0.20
                     }
@@ -145,10 +213,10 @@
                     "type": "fill",
                     "order": 1,
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
-                        "fill-color": "#808080",             
+                        "fill-color": "#125364",
                         "fill-outline-color": "#000000",
                         "fill-opacity": 0.20
                     }
@@ -156,43 +224,11 @@
             ]
         },
         {
-            "name": "Unreachable Area",
+            "name": "Hospital Isochrone Unflooded",
             "stack": "http://localhost:3838",
             "sources": [
                 {
-                    "id": "Unreachable",  
-                    "type": "geojson",
-                    "cluster": false,
-                    "clusterMaxZoom": 14,
-                    "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aunreachable_population&outputFormat=application%2Fjson"
-                }
-                
-            ], 
-            "layers": [
-                {
-                    "id": "Unreachable_layer",
-                    "name": "Unreachable",
-                    "source": "Unreachable",
-                    "type": "fill",
-                    "order": 5,                    
-                    "layout": {
-                        "visibility": "none"
-                    },
-                    "paint": {
-                        "fill-color": "#FF2626",             
-                        "fill-outline-color": "#000000",
-                        "fill-opacity": 0.60
-                    }
-                }
-            ]
-        },
-        {
-            "name": "Isochrone_unflooded",
-            "stack": "http://localhost:3838",
-            "sources": [
-                {
-                    "id": "isochrone_unflooded_1",  
+                    "id": "isochrone_unflooded_1",
                     "type": "geojson",
                     "cluster": false,
                     "clusterMaxZoom": 14,
@@ -200,7 +236,7 @@
                     "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_hospital_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='2'"
                 },
                 {
-                    "id": "isochrone_unflooded_2",  
+                    "id": "isochrone_unflooded_2",
                     "type": "geojson",
                     "cluster": false,
                     "clusterMaxZoom": 14,
@@ -208,7 +244,7 @@
                     "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_hospital_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='4'"
                 },
                 {
-                    "id": "isochrone_unflooded_3",  
+                    "id": "isochrone_unflooded_3",
                     "type": "geojson",
                     "cluster": false,
                     "clusterMaxZoom": 14,
@@ -216,7 +252,7 @@
                     "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_hospital_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='6'"
                 },
                 {
-                    "id": "isochrone_unflooded_4",  
+                    "id": "isochrone_unflooded_4",
                     "type": "geojson",
                     "cluster": false,
                     "clusterMaxZoom": 14,
@@ -224,15 +260,14 @@
                     "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_hospital_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='8'"
                 },
                 {
-                    "id": "isochrone_unflooded_5",  
+                    "id": "isochrone_unflooded_5",
                     "type": "geojson",
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
                     "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aisochrone_hospital_unflooded&outputFormat=application%2Fjson&CQL_FILTER=minute='10'"
                 }
-                
-            ], 
+            ],
             "layers": [
                 {
                     "id": "isochrone_unflooded_1_layer",
@@ -244,8 +279,8 @@
                         "visibility": "none"
                     },
                     "paint": {
-                        "fill-color": "#c90a0a",             
-                        "fill-outline-color": "#000000",
+                        "fill-color": "#18677A",
+                        "fill-outline-color": "#FF0000",
                         "fill-opacity": 0.20
                     }
                 },
@@ -259,7 +294,7 @@
                         "visibility": "none"
                     },
                     "paint": {
-                        "fill-color": "#ff8800",             
+                        "fill-color": "#00888E",
                         "fill-outline-color": "#000000",
                         "fill-opacity": 0.20
                     }
@@ -274,11 +309,11 @@
                         "visibility": "none"
                     },
                     "paint": {
-                        "fill-color": "#ebc244",             
+                        "fill-color": "#1AA993",
                         "fill-outline-color": "#000000",
                         "fill-opacity": 0.20
                     }
-                },                
+                },
                 {
                     "id": "isochrone_unflooded_4_layer",
                     "name": "8 minutes",
@@ -289,7 +324,7 @@
                         "visibility": "none"
                     },
                     "paint": {
-                        "fill-color": "#add8e6",             
+                        "fill-color": "#61C88A",
                         "fill-outline-color": "#000000",
                         "fill-opacity": 0.20
                     }
@@ -304,7 +339,7 @@
                         "visibility": "none"
                     },
                     "paint": {
-                        "fill-color": "#808080",             
+                        "fill-color": "#A8E37B",
                         "fill-outline-color": "#000000",
                         "fill-opacity": 0.20
                     }
@@ -312,41 +347,75 @@
             ]
         },
         {
-            "name": "Travelling Salesman Problem",
+            "name": "Population Unreachable in 8 Minutes",
             "stack": "http://localhost:3838",
             "sources": [
                 {
-                    "id": "tsp",  
+                    "id": "Unreachable",
                     "type": "geojson",
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Atsp_visualization&outputFormat=application%2Fjson"
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Aunreachable_population&outputFormat=application%2Fjson"
+                }
+            ],
+            "layers": [
+                {
+                    "id": "Unreachable_layer",
+                    "name": "Unreachable Area",
+                    "source": "Unreachable",
+                    "treeable": false,
+                    "type": "fill",
+                    "order": 5,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "fill-color": "#FF2626",
+                        "fill-outline-color": "#000000",
+                        "fill-opacity": 0.60
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Multiple Asset Sites",
+            "stack": "http://localhost:3838",
+            "sources": [
+                {
+                    "id": "tsp_unflooded",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Atsp_visualization_unflooded&outputFormat=application%2Fjson"
                 },
                 {
-                    "id": "tspNodes",  
+                    "id": "tsp_flooded",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Atsp_visualization_flooded&outputFormat=application%2Fjson"
+                },
+                {
+                    "id": "tsp_flooded_90",
+                    "type": "geojson",
+                    "cluster": false,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Atsp_visualization_flooded_90&outputFormat=application%2Fjson"
+                },
+                {
+                    "id": "tspNodes",
                     "type": "geojson",
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
                     "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Atsp_nodes&outputFormat=application%2Fjson"
                 }
-            ], 
+            ],
             "layers": [
-                {
-                    "id": "tsp_layer",
-                    "name": "Quickest route to fix",
-                    "source": "tsp",
-                    "type": "line",
-                    "order": 50,
-                    "layout": {
-                        "visibility": "none"
-                    },
-                    "paint": {
-                        "line-color": "#FF0000",
-                        "line-width": 3
-                    }
-                },
                 {
                     "id": "tspNodeLayer",
                     "name": "Flooded power stations in King's Lynn",
@@ -355,14 +424,69 @@
                     "order": 50,
                     "layout": {
                         "icon-image": "power-primary",
-                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5],
+                        "icon-size": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            12,
+                            0.5
+                        ],
                         "icon-anchor": "bottom",
-                        "text-field": ["get", "seq"], 
+                        "text-field": [
+                            "get",
+                            "seq"
+                        ],
                         "text-size": 20,
                         "text-anchor": "top"
                     },
-                    "paint":{
-                        "text-color":"#000000"
+                    "paint": {
+                        "text-color": "#000000"
+                    }
+                },
+                {
+                    "id": "tsp_unflooded_layer",
+                    "name": "Shortest route by car (Unflooded)",
+                    "source": "tsp_unflooded",
+                    "type": "line",
+                    "order": 50,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "line-color": "#0b4452",
+                        "line-width": 3
+                    }
+                },
+                {
+                    "id": "tsp_flooded_layer",
+                    "name": "Shortest route by car (Flooded)",
+                    "source": "tsp_flooded",
+                    "type": "line",
+                    "order": 50,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "line-color": "#F57155",
+                        "line-width": 3
+                    }
+                },
+                {
+                    "id": "tsp_flooded_layer_90",
+                    "name": "Shortest route by Land Rover (Flooded)",
+                    "source": "tsp_flooded_90",
+                    "type": "line",
+                    "order": 50,
+                    "layout": {
+                        "visibility": "none"
+                    },
+                    "paint": {
+                        "line-color": "#7ccbdb",
+                        "line-width": 3
                     }
                 }
             ]
@@ -374,7 +498,7 @@
                 {
                     "id": "area-of-interest",
                     "type": "geojson",
-                    "data": "data/aoi.geojson", 
+                    "data": "data/aoi.geojson",
                     "generateId": true
                 },
                 {
@@ -383,27 +507,27 @@
                     "data": "data/buildings/os_bha_buildings.geojson"
                 },
                 {
-                    "id": "obe_buildings",  
+                    "id": "obe_buildings",
                     "type": "vector",
                     "tiles": [
                         "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:buildings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
-                    "id": "building_sales",  
+                    "id": "building_sales",
                     "type": "vector",
                     "tiles": [
                         "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:transactions&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
-                    "id": "building_values",  
+                    "id": "building_values",
                     "type": "vector",
                     "tiles": [
                         "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:marketvalues&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
-            ], 
+            ],
             "layers": [
                 {
                     "id": "buildings-layer-value",
@@ -411,26 +535,60 @@
                     "source": "building_values",
                     "source-layer": "marketvalues",
                     "type": "fill-extrusion",
-                    "minzoom": 8, 
+                    "minzoom": 8,
                     "order": 23,
                     "layout": {
                         "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": [
-                            "case", 
-                            ["==", ["get", "price"], null], "#000000", [
-                            "interpolate", ["linear"],
-                            ["number", ["get", "price"]],
-                            50000, "#0769AD",
-                            1200000, "#AD0202"
-                        ]],
+                            "case",
+                            [
+                                "==",
+                                [
+                                    "get",
+                                    "price"
+                                ],
+                                null
+                            ],
+                            "#000000",
+                            [
+                                "interpolate",
+                                [
+                                    "linear"
+                                ],
+                                [
+                                    "number",
+                                    [
+                                        "get",
+                                        "price"
+                                    ]
+                                ],
+                                50000,
+                                "#0769AD",
+                                1200000,
+                                "#AD0202"
+                            ]
+                        ],
                         "fill-extrusion-opacity": 0.8,
                         "fill-extrusion-base": 0,
                         "fill-extrusion-height": [
                             "case",
-                            ["has", "building height"],
-                            ["*", 1.4, ["to-number", ["get", "building height"]]],
+                            [
+                                "has",
+                                "building height"
+                            ],
+                            [
+                                "*",
+                                1.4,
+                                [
+                                    "to-number",
+                                    [
+                                        "get",
+                                        "building height"
+                                    ]
+                                ]
+                            ],
                             8
                         ]
                     }
@@ -441,26 +599,60 @@
                     "source": "building_sales",
                     "source-layer": "transactions",
                     "type": "fill-extrusion",
-                    "minzoom": 8, 
+                    "minzoom": 8,
                     "order": 22,
                     "layout": {
                         "visibility": "none"
                     },
                     "paint": {
                         "fill-extrusion-color": [
-                            "case", 
-                            ["==", ["get", "price"], null], "#000000", [
-                            "interpolate", ["linear"],
-                            ["number", ["get", "price"]],
-                            50000, "#0769AD",
-                            1200000, "#AD0202"
-                        ]],
+                            "case",
+                            [
+                                "==",
+                                [
+                                    "get",
+                                    "price"
+                                ],
+                                null
+                            ],
+                            "#000000",
+                            [
+                                "interpolate",
+                                [
+                                    "linear"
+                                ],
+                                [
+                                    "number",
+                                    [
+                                        "get",
+                                        "price"
+                                    ]
+                                ],
+                                50000,
+                                "#0769AD",
+                                1200000,
+                                "#AD0202"
+                            ]
+                        ],
                         "fill-extrusion-opacity": 0.8,
                         "fill-extrusion-base": 0,
                         "fill-extrusion-height": [
                             "case",
-                            ["has", "building height"],
-                            ["*", 1.4, ["to-number", ["get", "building height"]]],
+                            [
+                                "has",
+                                "building height"
+                            ],
+                            [
+                                "*",
+                                1.4,
+                                [
+                                    "to-number",
+                                    [
+                                        "get",
+                                        "building height"
+                                    ]
+                                ]
+                            ],
                             8
                         ]
                     }
@@ -471,7 +663,7 @@
                     "source": "obe_buildings",
                     "source-layer": "buildings",
                     "type": "fill-extrusion",
-                    "minzoom": 8, 
+                    "minzoom": 8,
                     "order": 21,
                     "layout": {
                         "visibility": "none"
@@ -479,20 +671,41 @@
                     "paint": {
                         "fill-extrusion-color": [
                             "match",
-                            ["get", "primary_usage_category"],
-                            "https://www.theworldavatar.com/kg/ontobuiltenv/Domestic", "#808080",
-                            "https://www.theworldavatar.com/kg/ontobuiltenv/EmergencyServices", "#D62728",
-                            "https://www.theworldavatar.com/kg/ontobuiltenv/MedicalCare", "#FF7F0E",
-                            "https://www.theworldavatar.com/kg/ontobuiltenv/Education", "#2CA02C",
-                            "https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic", "#1F77B4",
+                            [
+                                "get",
+                                "primary_usage_category"
+                            ],
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/Domestic",
+                            "#808080",
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/EmergencyServices",
+                            "#D62728",
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/MedicalCare",
+                            "#FF7F0E",
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/Education",
+                            "#2CA02C",
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic",
+                            "#1F77B4",
                             "#808080"
-                          ],
+                        ],
                         "fill-extrusion-opacity": 0.8,
                         "fill-extrusion-base": 0,
                         "fill-extrusion-height": [
                             "case",
-                            ["has", "building height"],
-                            ["*", 1.4, ["to-number", ["get", "building height"]]],
+                            [
+                                "has",
+                                "building height"
+                            ],
+                            [
+                                "*",
+                                1.4,
+                                [
+                                    "to-number",
+                                    [
+                                        "get",
+                                        "building height"
+                                    ]
+                                ]
+                            ],
                             8
                         ]
                     }
@@ -502,7 +715,7 @@
                     "name": "OS BHA Buildings (i.e. buildings without EPC information)",
                     "source": "ocgml_buildings",
                     "type": "fill-extrusion",
-                    "minzoom": 8, 
+                    "minzoom": 8,
                     "order": 20,
                     "layout": {
                         "visibility": "none"
@@ -513,15 +726,24 @@
                         "fill-extrusion-base": 0,
                         "fill-extrusion-height": [
                             "case",
-                            ["has", "fill-extrusion-height"],
-                            ["to-number", ["get", "fill-extrusion-height"]],
+                            [
+                                "has",
+                                "fill-extrusion-height"
+                            ],
+                            [
+                                "to-number",
+                                [
+                                    "get",
+                                    "fill-extrusion-height"
+                                ]
+                            ],
                             8
                         ]
                     }
                 },
                 {
                     "id": "aoi-layer",
-                    "name": "This layer is the area of interest, i.e. greater King's Lynn area", 
+                    "name": "This layer is the area of interest, i.e. greater King's Lynn area",
                     "source": "area-of-interest",
                     "type": "circle",
                     "treeable": false,
@@ -531,7 +753,19 @@
                         "visibility": "visible"
                     },
                     "paint": {
-                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 4, 25, 8, 100],
+                        "circle-radius": [
+                            "interpolate",
+                            [
+                                "linear"
+                            ],
+                            [
+                                "zoom"
+                            ],
+                            4,
+                            25,
+                            8,
+                            100
+                        ],
                         "circle-opacity": 0.15,
                         "circle-color": "#000000",
                         "circle-stroke-width": 0
@@ -540,22 +774,23 @@
             ]
         },
         {
-            "name": "Road",
+            "name": "Roads",
             "stack": "http://localhost:3838",
             "sources": [
                 {
-                    "id": "road",  
+                    "id": "road",
                     "type": "geojson",
                     "cluster": false,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
                     "data": "http://localhost:3838/geoserver/kingslynn/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=kingslynn%3Arouting_ways&outputFormat=application%2Fjson"
                 }
-            ], 
+            ],
             "layers": [
                 {
                     "id": "road_layer",
                     "name": "Road",
+                    "treeable": false,
                     "source": "road",
                     "type": "line",
                     "order": 50,
@@ -565,8 +800,7 @@
                     "paint": {
                         "line-color": "#D8E3FF",
                         "line-width": 2,
-                        "line-opacity":0.5
-
+                        "line-opacity": 0.5
                     }
                 }
             ]

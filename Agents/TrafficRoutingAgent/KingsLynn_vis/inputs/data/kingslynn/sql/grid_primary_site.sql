@@ -1,6 +1,6 @@
 --Importing grid_primary_site--
 ALTER TABLE grid_primary_site
-ADD COLUMN geom geometry(Point, 4326);
+ADD COLUMN IF NOT EXISTS geom geometry(Point, 4326);
 
 UPDATE grid_primary_site
 SET geom = 
@@ -20,7 +20,7 @@ WHERE geom IS NULL OR NOT ST_Within(geom, ST_MakeEnvelope(0.334832,52.732131,0.4
 
 
 --Add closest edge to site--
-ALTER TABLE grid_primary_site ADD COLUMN closest_edge INTEGER;
+ALTER TABLE grid_primary_site ADD COLUMN IF NOT EXISTS closest_edge INTEGER;
 
 UPDATE grid_primary_site SET closest_edge = (
   SELECT edge_id FROM pgr_findCloseEdges(
@@ -32,8 +32,8 @@ UPDATE grid_primary_site SET closest_edge = (
 
 -- Alter the "grid_primary_site" table to add the "source" and "target" columns
 ALTER TABLE grid_primary_site
-ADD COLUMN source BIGINT,
-ADD COLUMN target BIGINT;
+ADD COLUMN IF NOT EXISTS source BIGINT,
+ADD COLUMN IF NOT EXISTS target BIGINT;
 
 
 -- Update the "source" and "target" columns based on the matching "closest_edge" with "id" in the "routing_ways" table
@@ -43,9 +43,9 @@ FROM routing_ways
 WHERE grid_primary_site.closest_edge = routing_ways.gid;
 
 ALTER TABLE grid_primary_site
-ADD COLUMN closest_node INT;
+ADD COLUMN IF NOT EXISTS closest_node INT;
 
-ALTER TABLE grid_primary_site ADD COLUMN source_distance numeric;
+ALTER TABLE grid_primary_site ADD COLUMN IF NOT EXISTS source_distance numeric;
 UPDATE grid_primary_site AS p
 SET source_distance = (
     SELECT ST_DISTANCE(p.geom, w.the_geom)
@@ -53,7 +53,7 @@ SET source_distance = (
     WHERE p.source = w.id
 );
 
-ALTER TABLE grid_primary_site ADD COLUMN target_distance numeric;
+ALTER TABLE grid_primary_site ADD COLUMN IF NOT EXISTS target_distance numeric;
 UPDATE grid_primary_site AS p
 SET target_distance = (
     SELECT ST_DISTANCE(p.geom, w.the_geom)
@@ -77,16 +77,16 @@ FROM pgr_TSP(
         (
             SELECT array_agg(id)
             FROM routing_ways_vertices_pgr
-            WHERE id IN (SELECT closest_node FROM grid_primary_site, flood_polygon_single WHERE ST_Intersects(grid_primary_site.geom, flood_polygon_single.geom) OR ST_DISTANCE (grid_primary_site.geom, flood_polygon_single.geom) <0.005)
+            WHERE id IN (SELECT closest_node FROM grid_primary_site, flood_polygon_single_10cm WHERE ST_Intersects(grid_primary_site.geom, flood_polygon_single_10cm.geom) OR ST_DISTANCE (grid_primary_site.geom, flood_polygon_single_10cm.geom) <0.005)
         ),
         false
     )$$, 
     (
 		SELECT MAX(closest_node)
-FROM grid_primary_site, flood_polygon_single WHERE ST_Intersects(grid_primary_site.geom, flood_polygon_single.geom) OR ST_DISTANCE (grid_primary_site.geom, flood_polygon_single.geom) <0.005
+FROM grid_primary_site, flood_polygon_single_10cm WHERE ST_Intersects(grid_primary_site.geom, flood_polygon_single_10cm.geom) OR ST_DISTANCE (grid_primary_site.geom, flood_polygon_single_10cm.geom) <0.005
     ), 
     (
 		SELECT MAX(closest_node)
-FROM grid_primary_site, flood_polygon_single WHERE ST_Intersects(grid_primary_site.geom, flood_polygon_single.geom) OR ST_DISTANCE (grid_primary_site.geom, flood_polygon_single.geom) <0.005
+FROM grid_primary_site, flood_polygon_single_10cm WHERE ST_Intersects(grid_primary_site.geom, flood_polygon_single_10cm.geom) OR ST_DISTANCE (grid_primary_site.geom, flood_polygon_single_10cm.geom) <0.005
     )
 );

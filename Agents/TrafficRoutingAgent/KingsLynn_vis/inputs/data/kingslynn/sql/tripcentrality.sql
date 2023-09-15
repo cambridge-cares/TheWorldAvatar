@@ -1,25 +1,27 @@
-CREATE TABLE trips_centrality AS (
-SELECT
-  b.gid,
-  b.the_geom AS geom,
-  count(b.the_geom) AS count
-FROM
-	routing_ways AS t,
-  pgr_dijkstra(
-      'SELECT
-          g.gid AS id,
-          g.source,
-          g.target,
-          g.cost_s AS cost
-          FROM routing_ways AS g', 
-          7536, t.target,
-          directed := FALSE) AS j
-JOIN routing_ways AS b 
-  ON j.edge = b.gid 
-GROUP BY b.gid, b.the_geom
-); 
 
 
+-- This returns the most used roads
+-- CREATE VIEW trips_centrality AS (
+-- SELECT
+--   b.gid,
+--   b.name,
+--   b.the_geom AS geom,
+--   count(b.the_geom) AS count
+-- FROM
+-- 	routing_ways AS t,
+--   pgr_dijkstra(
+--       'SELECT
+--           g.gid AS id,
+--           g.source,z
+--           g.target,
+--           g.cost_s AS cost
+--           FROM routing_ways AS g', 
+--           7536, t.target,
+--           directed := FALSE) AS j
+-- JOIN routing_ways AS b 
+--   ON j.edge = b.gid 
+-- GROUP BY b.gid, b.the_geom
+-- ); 
 
 
 --Create Function
@@ -46,7 +48,7 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE VIEW isochrone_hospital_unflooded AS 
 SELECT
     minute_limit * 2 AS minute,
-    ST_ConvexHull(ST_Collect(subquery.the_geom)) AS isochrone_polygon
+    ST_OptimalAlphaShape(ST_Collect(subquery.the_geom)) AS isochrone_polygon
 FROM
     get_nearest_vertex(0.44596810988223834, 52.75684401611818) as hospital_id,
     generate_series(1, 5) AS minute_limit
@@ -73,7 +75,7 @@ ORDER BY minute_limit;
 CREATE OR REPLACE VIEW isochrone_hospital_flooded AS 
 SELECT
     minute_limit * 2 AS minute,
-    ST_ConvexHull(ST_Collect(subquery.the_geom)) AS isochrone_polygon
+    ST_OptimalAlphaShape(ST_Collect(subquery.the_geom)) AS isochrone_polygon
 FROM
     get_nearest_vertex(0.44596810988223834, 52.75684401611818) as hospital_id,
     generate_series(1, 5) AS minute_limit
@@ -98,12 +100,12 @@ ORDER BY minute_limit;
 --Unreachable population--
 CREATE OR REPLACE VIEW unreachable_population AS
 SELECT (
-    SELECT ST_Difference(u.isochrone_polygon, i.isochrone_polygon)
+    SELECT ST_Difference(u.isochrone_polygon, i.isochrone_polygon) as geom
     FROM isochrone_hospital_flooded AS i, isochrone_hospital_unflooded AS u
-    WHERE i.minute = 10 AND u.minute = 10
+    WHERE i.minute = 8 AND u.minute = 8
 ),ROUND(SUM((ST_SummaryStats(ST_Clip(population.rast, ST_Transform((
-    SELECT ST_Difference(u.isochrone_polygon, i.isochrone_polygon)
+    SELECT ST_Difference(u.isochrone_polygon, i.isochrone_polygon) as geom
     FROM isochrone_hospital_flooded AS i, isochrone_hospital_unflooded AS u
-    WHERE i.minute = 10 AND u.minute = 10
-), ST_SRID(population.rast)), TRUE))).sum)) AS "Unreachable Population In Less than 10 Minutes"
+    WHERE i.minute = 8 AND u.minute = 8
+), ST_SRID(population.rast)), TRUE))).sum)) AS "Unreachable Population In Less than 8 Minutes"
 FROM population
