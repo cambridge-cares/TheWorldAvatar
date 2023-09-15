@@ -7,9 +7,9 @@
 }
 
 #dynamicComponentTitle {
-  border: 1px solid #000000;
+  border: 1px solid #fff;
   border-radius: 10px;
-  background-color: #bebebe;
+  background-color: #ccc;
   outline: none;
   cursor: pointer;
   transition: 0.3s;
@@ -35,17 +35,21 @@
   flex-wrap: wrap;
   justify-content: space-between;
   padding: 0.5em 0 0;
-  background-color: rgb(233, 233, 233);
 }
 
 .asset-card {
-  width: 49%;
+  width: 100%;
   padding: 0.3em 0.5em;
-  margin: 0 0 0.5em;
+  margin: 1em 0;
   box-sizing: border-box;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
 .asset-card-line {
   display: flex;
   margin: 4px 0;
+}
+
+.asset-card-line:nth-child(even) {
+  background: rgb(238,238,238);
 }
