@@ -94,7 +94,7 @@ public class GeoObject3D {
         }
 //ST_DWintin is temporary used to find building in MBS area of SG
         String sql = "SELECT id, gmlid, objectclass_id, name, public.ST_AsEWKT(envelope) AS geom FROM cityobject " +
-                        "WHERE objectclass_id = 26";
+                        "WHERE objectclass_id = 26;";
         try (Statement stmt = srcConn.createStatement()) {
             ResultSet result = stmt.executeQuery(sql);
             while (result.next()) {
@@ -210,7 +210,7 @@ public class GeoObject3D {
                 cityobjectid = allObject3D.get(i).getId();
                 //footprint extraction method is not perfect now, got error if parameter < 1 in ST_ConcaveHull (need to be imporved)
                 String sql = "SELECT public.GeometryType(geom) As type, geom As footprint FROM ( " +
-                "SELECT public.ST_Union(public.ST_MakeValid(geometry)) as geom " +
+                "SELECT public.ST_Union(public.ST_CollectionExtract(public.ST_MakeValid(geometry),3)) as geom " +
                 "FROM surface_geometry WHERE parent_id  IN (SELECT lod2_multi_surface_id FROM thematic_surface WHERE building_id = " 
                 + cityobjectid + " AND objectclass_id = " + this.objectClassid + ") AND geometry is not null) As footprint;"; 
                 Statement stmt = srcConn.createStatement();
@@ -222,7 +222,7 @@ public class GeoObject3D {
                 }
                 //current postgis can't fully support to get footprint, so this part to handle special case, just to reduce error of footprint in whole datasets
                 if(type != null){
-                    if(type.equals("MULTIPOLYGON")){
+                    if(!type.equals("POLYGON")){
                         String subSql = "SELECT public.ST_ConcaveHull(public.ST_Collect(public.ST_GeomFromEWKT('" + footprint + "')),1) AS footprint";
                         ResultSet result2 = stmt.executeQuery(subSql);
                         while (result2.next()) {

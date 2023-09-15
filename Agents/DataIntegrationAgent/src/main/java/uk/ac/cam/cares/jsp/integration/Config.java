@@ -38,33 +38,6 @@ public class Config extends ContainerClient {
     private static final String SRC_TABLE_2D = "src.table.2d";
     private static final Logger LOGGER = LogManager.getLogger(Config.class);
 
-//    public void initProperties() {
-//
-//        if (!initialised) {
-//            try {
-//                postGISEndpointConfig = this.readEndpointConfig("postgis",
-//                        PostGISEndpointConfig.class);
-//
-//                Config.dburl = postGISEndpointConfig.getJdbcURL(DATABASE);
-//                Config.dbuser = postGISEndpointConfig.getUsername();
-//                Config.dbpassword = postGISEndpointConfig.getPassword();
-//
-////                blazegraphEndpointConfig = this.readEndpointConfig("blazegraph",
-////                        BlazegraphEndpointConfig.class);
-////                Config.kgurl = blazegraphEndpointConfig.getUrl("kb");
-////                Config.kguser = blazegraphEndpointConfig.getUsername();
-////                Config.kgpassword = blazegraphEndpointConfig.getPassword();
-////
-////                ontopEndpointConfig = this.readEndpointConfig("ontop", OntopEndpointConfig.class);
-////                Config.ontop_url = ontopEndpointConfig.getUrl();
-//
-//                initialised = true;
-//            } catch (Exception e) {
-//                LOGGER.error("This is fine running under test mode");
-//                LOGGER.error(e.getMessage());
-//            }
-//        }
-//    }
     /**
      * An overloaded method for stack transfers to retrieve the SQL database properties stored in the properties file.
      *
@@ -72,7 +45,7 @@ public class Config extends ContainerClient {
      */
     public String[] retrieveSQLConfig() {
         StringBuilder missingPropertiesErrorMessage = new StringBuilder();
-        try (InputStream input = this.getClass().getClassLoader().getResourceAsStream("endpoint.proerties")) {
+        try (InputStream input = this.getClass().getClassLoader().getResourceAsStream("endpoint.properties")) {
             Properties prop = new Properties();
             String[] config = new String[6];
             if(input != null){
@@ -82,7 +55,7 @@ public class Config extends ContainerClient {
                 prop.setProperty(SRC_DB_URL, "jdbc:postgresql://dataintegrationagent-postgis:5432");
                 prop.setProperty(SRC_DB_USER, "postgres");
                 prop.setProperty(SRC_DB_PASSWORD, "postgis");
-                prop.setProperty(SRC_DB_3D, "sg_ntu");
+                prop.setProperty(SRC_DB_3D, "ntu_nus");
                 prop.setProperty(SRC_DB_2D, "pirmasens_2d");
                 prop.setProperty(SRC_TABLE_2D, "pirmasens_2d");
             }

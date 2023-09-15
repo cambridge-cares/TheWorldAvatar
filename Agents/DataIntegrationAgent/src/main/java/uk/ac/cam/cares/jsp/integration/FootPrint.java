@@ -35,17 +35,16 @@ public class FootPrint {
         this.surfaceType = surfaceType;     
         if(thematicParams.equals("true")){
             this.thematic = true;
+            object3D.extractPrint_thematic(allObject3D, this.surfaceType);
         }else{
             this.thematic = false;
             object3D.identifySurface(allObject3D, this.surfaceType);
-        }
-        
-        object3D.extractPrint_thematic(allObject3D, this.surfaceType);
+        }       
     }
     
 
     /**
-     * Extracts the footprint of the building from its ground surface geometries
+     * Extracts the footprint of the building from its ground surface geometries, this method need gdal library, current unused
      * 
      * @param results JSONArray of the query results for ground surface geometries
      * @return footprint as a string
