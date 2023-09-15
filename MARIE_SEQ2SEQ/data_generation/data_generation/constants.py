@@ -1,3 +1,10 @@
+import os
+import pathlib
+
+
+PKG_ROOT_DIRPATH = pathlib.Path(__file__).parent.resolve()
+RESOURCE_DIRPATH = os.path.join(PKG_ROOT_DIRPATH, "resources")
+
 PROPERTY_NAMES = [
     "AtomChiralCount",
     "AtomChiralDefCount",
@@ -57,3 +64,10 @@ IDENTIFIER_NAMES = [
     "MolecularFormula",
     "SMILES",
 ]
+
+with open(os.path.join(RESOURCE_DIRPATH, "species.txt")) as f:
+    SPECIES = [line.strip() for line in f.readlines()]
+with open(os.path.join(RESOURCE_DIRPATH, 'chemical_classes.txt')) as f:
+    CHEMICALCLASSES = [line.strip() for line in f.readlines()]
+with open(os.path.join(RESOURCE_DIRPATH, 'uses.txt')) as f:
+    USES = [line.strip() for line in f.readlines()]

@@ -1,6 +1,5 @@
 from datetime import datetime
 import json
-import pathlib
 import random
 import os
 
@@ -8,11 +7,8 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 
 from data_generation.example_generator import ExampleGenerator, make_arg_samplers
-from data_generation.constants import PROPERTY_NAMES, IDENTIFIER_NAMES
+from data_generation.constants import CHEMICALCLASSES, PKG_ROOT_DIRPATH, PROPERTY_NAMES, IDENTIFIER_NAMES, RESOURCE_DIRPATH, SPECIES, USES
 
-
-DIRPATH = pathlib.Path(__file__).parent.resolve()
-RESOURCE_DIRPATH = os.path.join(DIRPATH, "resources")
 
 delimiter = ''  # GPT best practice '\n\n###\n\n'
 end_delimiter = '' # GPT best practice 'END'
@@ -29,27 +25,18 @@ def generate_dataset(
     N_dev: int = 3,
     N_test: int = 3,
 ):
-
-
-    with open(os.path.join(RESOURCE_DIRPATH, "species.txt")) as f:
-        species = [line.strip() for line in f.readlines()]
-    with open(os.path.join(RESOURCE_DIRPATH, 'chemical_classes.txt')) as f:
-        chemicalclasses = [line.strip() for line in f.readlines()]
-    with open(os.path.join(RESOURCE_DIRPATH, 'uses.txt')) as f:
-        uses = [line.strip() for line in f.readlines()]
-
     train_example_generators = []
     test_example_generators = []
 
     samplers = make_arg_samplers(
         properties=PROPERTY_NAMES,
         identifiers=IDENTIFIER_NAMES,
-        species=species,
-        chemicalclasses=chemicalclasses,
-        uses=uses,
+        species=SPECIES,
+        chemicalclasses=CHEMICALCLASSES,
+        uses=USES,
     )
 
-    for dirpath, dirnames, filenames in os.walk(os.path.join(DIRPATH, "templates")):
+    for dirpath, dirnames, filenames in os.walk(os.path.join(PKG_ROOT_DIRPATH, "templates")):
         if dirnames:
             dirnames.sort()
             continue

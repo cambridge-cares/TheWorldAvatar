@@ -1,4 +1,4 @@
-from typing import Dict, Union, List
+from typing import Dict, Optional, Union, List
 import random
 
 from data_generation.utils import add_space_and_lower
@@ -23,7 +23,10 @@ class ExampleMakerHead2Tail:
         ],
     }
 
-    def make_example(self, subgraph: Dict[str, Union[dict, List[dict]]]):
+    def make_example(self, subgraph: Optional[Dict[str, Union[dict, List[dict]]]]):
+        if subgraph is None:
+            return None
+        
         select_variables = []
 
         species = subgraph["head"]["IdentifierValue"]
@@ -71,11 +74,11 @@ class ExampleMakerHead2Tail:
             else:
                 raise ValueError("Unexpected tail type: " + tail["type"])
 
-        sparql_query = f"""SELECT {" ".join(["?label"] + select_variables)} 
-WHERE {{{where_clause_blocks}
+        sparql_query = f"""SELECT DISTINCT {" ".join(["?label"] + select_variables)} 
+WHERE {{{"".join(where_clause_blocks)}
 }}"""
-        sparql_query_compact = f"""SELECT {" ".join(select_variables)} 
-WHERE {{{where_clause_compact_blocks}
+        sparql_query_compact = f"""SELECT DISTINCT {" ".join(select_variables)} 
+WHERE {{{"".join(where_clause_compact_blocks)}
 }}"""
 
         return dict(
