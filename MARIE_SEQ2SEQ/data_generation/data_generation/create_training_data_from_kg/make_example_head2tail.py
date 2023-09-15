@@ -26,8 +26,9 @@ class ExampleMakerHead2Tail:
     def make_example(self, subgraph: Optional[Dict[str, Union[dict, List[dict]]]]):
         if subgraph is None:
             return None
-        
-        select_variables = []
+
+        select_variables = ["?label"]
+        select_variables_compact = []
 
         species = subgraph["head"]["IdentifierValue"]
         where_clause_blocks = [self.make_where_species(species)]
@@ -43,7 +44,10 @@ class ExampleMakerHead2Tail:
                 property_num += 1
                 PropertyName = tail["PropertyName"]
 
-                select_variables.append(f"?{PropertyName}Value")
+                select_variables.append(
+                    f"?{PropertyName}Value ?{PropertyName}UnitValue ?{PropertyName}ReferenceStateValue ?{PropertyName}ReferenceStateUnitValue"
+                )
+                select_variables_compact.append(f"?{PropertyName}Value")
                 where_clause_blocks.append(self.make_where_property(PropertyName))
                 where_clause_compact_blocks.append(
                     self.make_where_property_compact(PropertyName)
@@ -54,6 +58,7 @@ class ExampleMakerHead2Tail:
                 IdentifierName = tail["IdentifierName"]
 
                 select_variables.append(f"?{IdentifierName}Value")
+                select_variables_compact.append(f"?{IdentifierName}Value")
                 where_clause_blocks.append(self.make_where_identifier(IdentifierName))
                 where_clause_compact_blocks.append(
                     self.make_where_identifier_compact(IdentifierName)
@@ -61,11 +66,13 @@ class ExampleMakerHead2Tail:
                 ask_items.append(random.choice(self.IDENTIFIER_LABELS[IdentifierName]))
             elif tail["type"] == "use":
                 select_variables.append("?UseValue")
+                select_variables_compact.append("?UseValue")
                 where_clause_blocks.append(self.make_where_use())
                 where_clause_compact_blocks.append(self.make_where_use_compact())
                 ask_items.append("use")
             elif tail["type"] == "chemicalclass":
                 select_variables.append("?ChemicalClassValue")
+                select_variables_compact.append("?ChemicalClassValue")
                 where_clause_blocks.append(self.make_where_chemicalclass())
                 where_clause_compact_blocks.append(
                     self.make_where_chemicalclass_compact()
@@ -74,10 +81,10 @@ class ExampleMakerHead2Tail:
             else:
                 raise ValueError("Unexpected tail type: " + tail["type"])
 
-        sparql_query = f"""SELECT DISTINCT {" ".join(["?label"] + select_variables)} 
+        sparql_query = f"""SELECT DISTINCT {" ".join(select_variables)} 
 WHERE {{{"".join(where_clause_blocks)}
 }}"""
-        sparql_query_compact = f"""SELECT DISTINCT {" ".join(select_variables)} 
+        sparql_query_compact = f"""SELECT DISTINCT {" ".join(select_variables_compact)} 
 WHERE {{{"".join(where_clause_compact_blocks)}
 }}"""
 
@@ -93,12 +100,12 @@ WHERE {{{"".join(where_clause_compact_blocks)}
     ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label ; ?hasIdentifier ?IdentifierIRI .
     ?IdentifierIRI rdf:type ?Identifier ; os:value ?species .
     ?Identifier rdfs:subClassOf os:Identifier .
-    FILTER ( ?species = "{species}" )"""
+    VALUES ( ?species ) {{ ( "{species}" ) }}"""
 
     def make_where_species_compact(self, species: str):
         return f"""
     ?SpeciesIRI ?hasIdentifier ?species .
-    FILTER ( ?species = "{species}" )"""
+    VALUES ( ?species ) {{ ( "{species}" ) }}"""
 
     def make_where_property(self, PropertyName: str):
         return f"""
@@ -110,11 +117,11 @@ WHERE {{{"".join(where_clause_compact_blocks)}
         ?{PropertyName}ReferenceStateIRI os:value ?{PropertyName}ReferenceStateValue ; os:unit ?{PropertyName}ReferenceStateUnitIRI .
         ?{PropertyName}ReferenceStateUnitIRI rdfs:label ?{PropertyName}ReferenceStateUnitValue .
     }}"""
-    
+
     def make_where_property_compact(self, PropertyName: str):
         return f"""
     ?SpeciesIRI os:has{PropertyName} ?{PropertyName}Value ."""
-    
+
     def make_where_identifier(self, IdentifierName: str):
         return f"""
     ?SpeciesIRI os:has{IdentifierName} ?{IdentifierName}IRI .
