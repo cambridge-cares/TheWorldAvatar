@@ -39,10 +39,8 @@ In order to deploy (on a Linux machine):
     sudo ./stack.sh start psdt
     ```
 
-7. Run `copy_icons_into_geoserver.sh` from within the `stack-data-uploader-inputs` folder.
+7. Spin up the visualisation by following the instructions in its readme file.
 
-8. Spin up the visualisation by following the instructions in its readme file.
+8. In order to view the visualisation webpage in a browser from outside the host machine, you will need to either open a port in the firewall of the host machine, or set up an ssh tunnel. The required port number can be found in the docker-compose file of the visualisation.
 
-9. In order to view the visualisation webpage in a browser from outside the host machine, you will need to either open a port in the firewall of the host machine, or set up an ssh tunnel. The required port number can be found in the docker-compose file of the visualisation.
-
-10. In order to access the web-frontends of the containers in the stack from outside the host machine, you will need to either open a port in the firewall of the host machine, or set up an ssh tunnel. For the required port number, see the readme file of the `gateway`.
+9. In order to access the web-frontends of the containers in the stack from outside the host machine, you will need to either open a port in the firewall of the host machine, or set up an ssh tunnel. For the required port number, see the readme file of the `gateway`.

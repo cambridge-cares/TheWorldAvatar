@@ -14,7 +14,7 @@
           <PointSymbolizer>
             <Graphic>
               <ExternalGraphic>
-                <OnlineResource xlink:type="simple" xlink:href="./pylon.png" />
+                <OnlineResource xlink:type="simple" xlink:href="http://psdt-geoserver:8080/geoserver/www/icons/pylon.png" />
                 <Format>image/png</Format>
               </ExternalGraphic>
             </Graphic>
