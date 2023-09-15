@@ -1,18 +1,20 @@
 from typing import Dict, Union, List
+import random
 
 from data_generation.utils import add_space_and_lower
 
 
-class ExampleHeadToTailMaker:
-    def make_example_head_to_tail(self, subgraph: Dict[str, Union[dict, List[dict]]]):
+class ExampleMakerHead2Tail:
+    def make_example(self, subgraph: Dict[str, Union[dict, List[dict]]]):
         select_variables = []
 
         species = subgraph["head"]["IdentifierValue"]
-        where_clause = self.make_where_species(species)
-        where_clause_compact = self.make_where_species_compact(species)
-        ask_items = []
+        where_clause_blocks = [self.make_where_species(species)]
+        where_clause_compact_blocks = [self.make_where_species_compact(species)]
+        ask_items: List[str] = []
 
-        tails: List[dict] = subgraph["tails"]
+        tails: List[dict] = list(subgraph["tails"])
+        random.shuffle(tails)
         property_num = 0
         for tail in tails:
             if tail["type"] == "property":
@@ -20,47 +22,32 @@ class ExampleHeadToTailMaker:
                 PropertyName = tail["PropertyName"]
 
                 select_variables.append(f"?{PropertyName}Value")
-                where_clause += self.make_where_property(PropertyName)
-                where_clause_compact += self.make_where_property_compact(PropertyName)
+                where_clause_blocks.append(self.make_where_property(PropertyName))
+                where_clause_compact_blocks.append(self.make_where_property_compact(PropertyName))
                 ask_items.append(add_space_and_lower(PropertyName))
             elif tail["type"] == "use":
                 select_variables.append("?UseValue")
-                where_clause += self.make_where_use()
-                where_clause_compact += self.make_where_use_compact()
+                where_clause_blocks.append(self.make_where_use())
+                where_clause_compact_blocks.append(self.make_where_use_compact())
                 ask_items.append("use")
             elif tail["type"] == "chemicalclass":
                 select_variables.append("?ChemicalClassValue")
-                where_clause += self.make_where_chemicalclass()
-                where_clause_compact += self.make_where_chemicalclass_compact()
+                where_clause_blocks.append(self.make_where_chemicalclass())
+                where_clause_compact_blocks.append(self.make_where_chemicalclass_compact())
                 ask_items.append("chemical class")
             else:
                 raise ValueError("Unexpected tail type: " + tail["type"])
 
         sparql_query = f"""SELECT {" ".join(["?label"] + select_variables)} 
-    WHERE {{{where_clause}
+    WHERE {{{where_clause_blocks}
     }}"""
         sparql_query_compact = f"""SELECT {" ".join(select_variables)} 
-    WHERE {{{where_clause_compact}
+    WHERE {{{where_clause_compact_blocks}
     }}"""
-        canonical_question_tokens = ["What "]
-        if len(ask_items) < 2:
-            canonical_question_tokens.append("is")
-        else:
-            canonical_question_tokens.append("are")
-        for i, ask_item in enumerate(ask_items):
-            if i == 0:
-                pass
-            elif i < len(ask_items) - 1:
-                canonical_question_tokens.append(",")
-            else:
-                canonical_question_tokens.append(" and")
-            canonical_question_tokens.append(" the ")
-            canonical_question_tokens.append(ask_item)
-        canonical_question_tokens.append(" of {species}?")
 
         return dict(
-            canonical_question="".join(canonical_question_tokens),
-            species=subgraph["head"]["IdentifierValue"],
+            canonical_question=self.make_canonical_question(ask_items),
+            values=dict(species=subgraph["head"]["IdentifierValue"]),
             sparql_query=sparql_query,
             sparql_query_compact=sparql_query_compact,
         )
@@ -111,3 +98,21 @@ class ExampleHeadToTailMaker:
     def make_where_chemicalclass_compact(self):
         return f"""
         ?SpeciesIRI os:hasChemicalClass ?ChemicalClassValue ."""
+
+    def make_canonical_question(self, ask_items: List[str]):
+        canonical_question_tokens = ["What "]
+        if len(ask_items) < 2:
+            canonical_question_tokens.append("is")
+        else:
+            canonical_question_tokens.append("are")
+        for i, ask_item in enumerate(ask_items):
+            if i == 0:
+                pass
+            elif i < len(ask_items) - 1:
+                canonical_question_tokens.append(",")
+            else:
+                canonical_question_tokens.append(" and")
+            canonical_question_tokens.append(" the ")
+            canonical_question_tokens.append(ask_item)
+        canonical_question_tokens.append(" of {species}?")
+        return "".join(canonical_question_tokens)
