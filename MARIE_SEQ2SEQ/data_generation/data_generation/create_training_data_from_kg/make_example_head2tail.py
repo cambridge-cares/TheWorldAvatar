@@ -98,14 +98,14 @@ WHERE {{{"".join(where_clause_compact_blocks)}
     def make_where_species(self, species: str):
         return f"""
     ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label ; ?hasIdentifier ?IdentifierIRI .
+    VALUES ( ?species ) {{ ( "{species}" ) }}
     ?IdentifierIRI rdf:type ?Identifier ; os:value ?species .
-    ?Identifier rdfs:subClassOf os:Identifier .
-    VALUES ( ?species ) {{ ( "{species}" ) }}"""
+    ?Identifier rdfs:subClassOf os:Identifier ."""
 
     def make_where_species_compact(self, species: str):
         return f"""
-    ?SpeciesIRI ?hasIdentifier ?species .
-    VALUES ( ?species ) {{ ( "{species}" ) }}"""
+    VALUES ( ?species ) {{ ( "{species}" ) }}
+    ?SpeciesIRI ?hasIdentifier ?species ."""
 
     def make_where_property(self, PropertyName: str):
         return f"""
@@ -152,19 +152,19 @@ WHERE {{{"".join(where_clause_compact_blocks)}
     ?SpeciesIRI os:hasChemicalClass ?ChemicalClassValue ."""
 
     def make_canonical_question(self, ask_items: List[str]):
-        canonical_question_tokens = ["What "]
+        tokens = ["What "]
         if len(ask_items) < 2:
-            canonical_question_tokens.append("is")
+            tokens.append("is")
         else:
-            canonical_question_tokens.append("are")
+            tokens.append("are")
         for i, ask_item in enumerate(ask_items):
             if i == 0:
                 pass
             elif i < len(ask_items) - 1:
-                canonical_question_tokens.append(",")
+                tokens.append(",")
             else:
-                canonical_question_tokens.append(" and")
-            canonical_question_tokens.append(" the ")
-            canonical_question_tokens.append(ask_item)
-        canonical_question_tokens.append(" of {species}?")
-        return "".join(canonical_question_tokens)
+                tokens.append(" and")
+            tokens.append(" the ")
+            tokens.append(ask_item)
+        tokens.append(" of {species}?")
+        return "".join(tokens)
