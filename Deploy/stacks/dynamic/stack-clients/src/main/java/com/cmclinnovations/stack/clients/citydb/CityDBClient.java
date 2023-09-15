@@ -265,8 +265,7 @@ public class CityDBClient extends ContainerClient {
         PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(preprocessSql);
     }
 
-    public void addBuildingHeight(String database) {
-        String sqlFilename = "citydb_add_building_height.sql";
+    private void applySQLFile(String database, String sqlFilename) {
         try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
             String sqlQuery = new String(is.readAllBytes());
             PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
@@ -275,23 +274,15 @@ public class CityDBClient extends ContainerClient {
         }
     }
 
+    public void addBuildingHeight(String database) {
+        applySQLFile(database,"citydb_add_building_height.sql");
+    }
+
     public void discoverThematicSurface(String database) {
-        String sqlFilename = "citydb_thematic_surface_discovery.sql";
-        try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
-            String sqlQuery = new String(is.readAllBytes());
-            PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
-        }
+        applySQLFile(database,"citydb_thematic_surface_discovery.sql");
     }
     
     public void addFootprint(String database) {
-        String sqlFilename = "citydb_add_footprint.sql";
-        try (InputStream is = CityDBClient.class.getResourceAsStream(sqlFilename)) {
-            String sqlQuery = new String(is.readAllBytes());
-            PostGISClient.getInstance().getRemoteStoreClient(database).executeUpdate(sqlQuery);
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to read resource file '" + sqlFilename + "'.", ex);
-        }
+        applySQLFile(database,"citydb_add_footprint.sql");
     }
 }

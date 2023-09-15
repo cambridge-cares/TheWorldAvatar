@@ -29,6 +29,8 @@ public class CityDB extends GeoServerDataSubset {
     private Path previousFile;
     @JsonProperty
     private GeoServerVectorSettings geoServerSettings = new GeoServerVectorSettings();
+    @JsonProperty
+    private boolean augmentData = true;
 
     @JsonIgnore
     private String lineage;
@@ -64,7 +66,9 @@ public class CityDB extends GeoServerDataSubset {
 
         loadDataInternal(dataSubsetDir, database, baseIRI, lineage);
 
-        augmentData(database);
+        if (augmentData) {
+            augmentData(database);
+        }
 
     }
 
