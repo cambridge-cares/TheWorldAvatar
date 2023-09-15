@@ -2,8 +2,6 @@ package uk.ac.cam.cares.jps.addasset.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
@@ -13,7 +11,6 @@ import org.apache.log4j.Logger;
 import java.util.List;
 
 import uk.ac.cam.cares.jps.addasset.R;
-import uk.ac.cam.cares.jps.addasset.model.AssetPropertyDataModel;
 import uk.ac.cam.cares.jps.addasset.model.DropDownDataModel;
 import uk.ac.cam.cares.jps.data.OtherInfoModel;
 
@@ -47,9 +44,9 @@ public class PropertyAutoCompleteTextView extends PropertyBaseInputTextView {
             property.setFieldValue(selected.getName());
         });
 
-        if (property.isDisallowInput()) {
-            editText.setInputType(TextView.AUTO_SIZE_TEXT_TYPE_NONE);
-        }
+//        if (property.isDisallowNewItem()) {
+//            editText.setInputType(TextView.AUTO_SIZE_TEXT_TYPE_NONE);
+//        }
     }
 
     public void updateAdapterList(List<OtherInfoModel> options) {

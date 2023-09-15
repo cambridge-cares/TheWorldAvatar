@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.addasset.model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,18 +7,18 @@ import java.util.Map;
 import uk.ac.cam.cares.jps.data.OtherInfoModel;
 
 public class DropDownDataModel extends AssetPropertyDataModel{
-    boolean disallowInput;
+    boolean disallowNewItem;
     String valueIri = "";
     Map<String, String> labelsToIri = new HashMap<>();
 
     DropDownDataModel(String fieldName) {
         super(fieldName);
     }
-    public boolean isDisallowInput() {
-        return disallowInput;
+    public boolean isDisallowNewItem() {
+        return disallowNewItem;
     }
-    public void setDisallowInput(boolean disallowInput) {
-        this.disallowInput = disallowInput;
+    public void setDisallowNewItem(boolean disallowNewItem) {
+        this.disallowNewItem = disallowNewItem;
     }
 
     public String getValueIri() {

@@ -88,7 +88,7 @@ public class AddAssetViewModel extends ViewModel {
             AssetPropertyDataModel assetPropertyDataModel;
             if (dropDownFieldKeys.contains(key)) {
                 assetPropertyDataModel = new DropDownDataModel(key);
-                ((DropDownDataModel) assetPropertyDataModel).setDisallowInput(disallowInputForDropDown.contains(key));
+                ((DropDownDataModel) assetPropertyDataModel).setDisallowNewItem(disallowInputForDropDown.contains(key));
             } else if (dataSheetFieldKeys.contains(key)) {
                 assetPropertyDataModel = new DataSheetDataModel(key);
             } else {

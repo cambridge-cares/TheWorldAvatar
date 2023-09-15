@@ -4,4 +4,6 @@
     <string name="add_asset">Add Asset</string>
     <string name="upload_document">Upload Document</string>
     <string name="description">Description</string>
+    <string name="save">Save as draft</string>
+    <string name="done">Done</string>
 </resources>
