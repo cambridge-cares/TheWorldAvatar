@@ -42,8 +42,17 @@ Before we can use the data we've downloaded, we need to clean it up a little to 
 "OrganisationCode","Name","NationalGrouping","HighLevelHealthGeography","AddressOne","AddressTwo","AddressThree","AddressFour","AddressFive","Postcode","OpenDate","CloseDate","StatusCode","OrganisationSubTypeCode","ParentOrganisationCode","JoinParentDate","LeftParentDate","Telephone","","","","AmendedRecordIndicator","","CurrentCareOrganisation","","",""
 ```
 
+As an example, the first few lines of the cleaned up CSV file should look similar to the below:
+
+```json
+"OrganisationID","OrganisationCode","OrganisationType","SubType","OrganisationName","OrganisationStatus","IsPimsManaged","Address1","Address2","Address3","City","County","Postcode","Latitude","Longitude"
+"46946","C83036","GP practice","UNKNOWN","Gosberton Medical Centre","Visible","FALSE","Lowgate","Gosberton","Spalding","Lincs","","PE11 4NL","52.86989212","-0.159257933"
+"46947","A83023","GP practice","UNKNOWN","Stanley Medical Group","Visible","FALSE","Stanley Primary Care Centre","Clifford Road","Stanley","Stanley","Durham","DH9 0AB","54.87003326","-1.69803834"
+"46948","A82006","GP practice","UNKNOWN","Appleby Medical Practice","Visible","FALSE","The Riverside Building","Chapel Street","","Appleby in Westmorland","Cumbria","CA16 6QR","54.57808685","-2.492977619"
+```
+
 **3. Fix funky characters:**<br/>
-These raw CSV files also contain some strange characters that aren't supported in UTF-8. You'll need to run the [provided bash script](./resources/nhs.sh) with the locations of the files as arguments to replace the strange characters with supported ones and encoded the files as UTF-8.
+These raw CSV files also contain some strange characters that aren't supported in UTF-8. You'll need to run the [provided bash script](./resources/nhs.sh) with the locations of the files as arguments to replace the strange characters with supported ones and encoded the files as UTF-8. Alternavitly, you can also do this in Excel.
 
     ./nhs.sh GPPractices.csv egpcur.csv
 
@@ -204,6 +213,16 @@ An example configuration file that covers all three CSVs used in tutorial, can b
 }
 ```
 
+Once you have all your data and configuration files copied into the place the stack-data-uploader expects, this should leave your file tree looking something like the below image.
+
+<br/>
+<p align="center">
+    <img src="./img/expected-file-tree.png" alt="Stack data uploader structure" width="33%"/>
+</p>
+<p align="center">
+    <em>Expected structure for stack-data-uploader files.</em><br/><br/><br/>
+</p>
+
 <br/>
 
 ## Testing the upload
@@ -262,13 +281,13 @@ If you haven't already, it's worth reading through the [Overview](./overview.md)
 
 The first step here is to spin up an empty visualisation. When creating a new visualisation, it is recommended that the committed example visualisation is used.
 
-To that end, copy the [example Mapbox visualisation](../example-mapbox-vis/) to a new directory on your local machine. Using the README file within, you should be able to then spin up a docker container hosting the visualisation.
+To that end, copy the [example Mapbox visualisation](../example-mapbox-vis/) (the one containing the `run.sh` and `docker-compose.yml` files) to a new directory (of your choice) on your local machine. Using the README file within, you should be able to then spin up a docker container hosting the visualisation.
 
 If you then access the visualisation (usually at `localhost`), you should see the example visualisation along with its sample data in Cambridge, India, and Singapore.
 
 **2. Updating the configuration file:**<br/>
 
-To show our new NHS data, we'll need to clear the visualisation's `data.json` file of its contents before we work on it.
+To show our new NHS data, we'll need to clear the visualisation's `data.json` file of its contents before we work on it. We can also delete the `data` subdirectory from the `webspace` directory, and the `links.json` file.
 
 Within the `data.json` file, we'll add a single group named "NHS Sites" with no sources and no layers. Within this group, we'll then nest another group named "England" with a single source and a single layer.
 
