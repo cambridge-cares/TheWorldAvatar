@@ -1,4 +1,5 @@
 from collections import defaultdict
+import itertools
 import random
 from typing import Dict, List, Optional
 
@@ -43,6 +44,7 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"""
             if tail_nums is None:
                 tail_nums = self.get_rand_tail_nums()
             sparql_query = self.get_subgraph_query(tail_nums, bindings)
+            print(sparql_query)
 
             self.sparql_client.setQuery(sparql_query)
             results = self.sparql_client.queryAndConvert()["results"]["bindings"]
@@ -74,6 +76,18 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"""
             chemicalclass_num=chemicalclass_num,
         )
 
+    def get_rand_tail_nums_non_identifier(self):
+        property_num = random.randint(0, 3)
+        use_num = random.randint(property_num, 3) - property_num
+        chemicalclass_num = (
+            random.randint(property_num + use_num, 3) - property_num - use_num
+        )
+        return dict(
+            property_num=property_num,
+            use_num=use_num,
+            chemicalclass_num=chemicalclass_num,
+        )
+
     def get_where_species(self, identifier_name: str):
         return f"""
     ?SpeciesIRI a os:Species ; os:has{identifier_name} ?IdentifierIRI .
@@ -92,22 +106,22 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"""
     ?SpeciesIRI ?hasProperty{i} ?PropertyIRI{i} .
     ?PropertyIRI{i} os:value ?PropertyValue{i} ."""
 
+    def get_where_filter(self, variable_prefix: str, variable_num: int):
+        filter_clauses = []
+        for i, j in itertools.combinations(range(1, variable_num + 1), r=2):
+            filter_clauses.append(
+                f"FILTER ( ?{variable_prefix}{i} != ?{variable_prefix}{j} )"
+            )
+        filter_clauses_str = f"""
+    """.join(filter_clauses)
+        if filter_clauses_str:
+            return f"""
+    {filter_clauses_str}"""
+        return ""
+
     def get_where_property_filter(self, property_num: int):
-        if property_num < 2:
-            return ""
-
-        if property_num == 2:
-            return """
-    FILTER ( ?hasProperty1 != ?hasProperty2 )"""
-
-        if property_num == 3:
-            return """
-    FILTER ( ?hasProperty1 != ?hasProperty2 )
-    FILTER ( ?hasProperty1 != ?hasProperty3 )
-    FILTER ( ?hasProperty2 != ?hasProperty3 )"""
-
-        raise ValueError(
-            f"`property_num` is expected to be in the range of [0, 3] inclusive, but got {property_num}."
+        return self.get_where_filter(
+            variable_prefix="hasProperty", variable_num=property_num
         )
 
     def get_where_identifier(
@@ -126,24 +140,11 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"""
     ?IdentifierIRI{i} os:value ?IdentifierValue{i} ."""
 
     def get_where_identifier_filter(self, identifier_num: int):
-        if identifier_num < 2:
-            return ""
-
-        if identifier_num == 2:
-            return """
-    FILTER ( ?hasIdentifier1 != ?hasIdentifier2 )"""
-
-        if identifier_num == 3:
-            return """
-    FILTER ( ?hasIdentifier1 != ?hasIdentifier2 )
-    FILTER ( ?hasIdentifier1 != ?hasIdentifier3 )
-    FILTER ( ?hasIdentifier2 != ?hasIdentifier3 )"""
-
-        raise ValueError(
-            f"`identifier_num` is expected to be in the range of [0, 3] inclusive, but got {identifier_num}."
+        return self.get_where_filter(
+            variable_prefix="hasIdentifier", variable_num=identifier_num
         )
 
-    def get_where_use(self, use_value_binding: Optional[str] = None):
+    def get_where_use(self, i: int, use_value_binding: Optional[str] = None):
         value_binding_str = (
             f"""
     VALUES (?UseValue) {{
@@ -155,12 +156,16 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"""
 
         return (
             value_binding_str
-            + """?SpeciesIRI os:hasUse ?UseIRI .
-    ?UseIRI rdfs:label ?UseValue ."""
+            + f"""
+    ?SpeciesIRI os:hasUse ?UseIRI{i} .
+    ?UseIRI{i} rdfs:label ?UseValue{i} ."""
         )
 
+    def get_where_use_filter(self, use_num: int):
+        return self.get_where_filter(variable_prefix="UseValue", variable_num=use_num)
+
     def get_where_chemicalclass(
-        self, chemicalclass_value_binding: Optional[str] = None
+        self, i: int, chemicalclass_value_binding: Optional[str] = None
     ):
         value_binding_str = (
             f"""
@@ -173,10 +178,16 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"""
 
         return (
             value_binding_str
-            + """?SpeciesIRI os:hasChemicalClass* ?x .
-    ?x ?y ?z .
-    ?z rdfs:subClassOf* ?ChemicalClassIRI .
-    ?ChemicalClassIRI rdf:type os:ChemicalClass ; rdfs:label ?ChemicalClassValue ."""
+            + f"""
+    ?SpeciesIRI os:hasChemicalClass* ?x{i} .
+    ?x{i} ?y{i} ?z{i} .
+    ?z rdfs:subClassOf* ?ChemicalClassIRI{i} .
+    ?ChemicalClassIRI{i} rdf:type os:ChemicalClass ; rdfs:label ?ChemicalClassValue{i} ."""
+        )
+
+    def get_where_chemicalclass_filter(self, chemicalclass_num: int):
+        return self.get_where_filter(
+            variable_prefix="ChemicalClassValue", variable_num=chemicalclass_num
         )
 
     def get_subgraph_query(
@@ -186,57 +197,68 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"""
             bindings = dict()
         identifier_name = random.choice(self.IDENTIFIER_NAMES_FOR_HEAD)
 
-        select_variables = ["?SpeciesIRI", "?IdentifierIRI", "?IdentifierValue"]
+        select_variables = ["?SpeciesIRI ?IdentifierIRI ?IdentifierValue"]
         where_clause_blocks = [self.get_where_species(identifier_name)]
+        if any(x > 0 for x in tail_nums.values()):
+            where_clause_blocks.append("\n")
 
-        for i in range(1, tail_nums.get("property_num", 0) + 1):
-            select_variables.extend(
-                [
-                    f"?hasProperty{i}",
-                    f"?PropertyIRI{i}",
-                    f"?PropertyValue{i}",
-                ]
+        property_num = tail_nums.get("property_num", 0)
+        for i in range(1, property_num + 1):
+            select_variables.append(
+                f"?hasProperty{i} ?PropertyIRI{i} ?PropertyValue{i}"
             )
             where_clause_blocks.append(
                 self.get_where_property(
                     i, has_property_binding=bindings.get(f"hasProperty{i}")
                 )
             )
-        where_clause_blocks.append(
-            self.get_where_property_filter(tail_nums.get("property_num", 0))
-        )
+        where_clause_blocks.append(self.get_where_property_filter(property_num))
+        if property_num > 0:
+            where_clause_blocks.append("\n")
 
-        for i in range(1, tail_nums.get("identifier_num", 0) + 1):
-            select_variables.extend(
-                [f"?hasIdentifier{i}", f"?IdentifierIRI{i}", f"?IdentifierValue{i}"]
+        identifier_num = tail_nums.get("identifier_num", 0)
+        for i in range(1, identifier_num + 1):
+            select_variables.append(
+                f"?hasIdentifier{i} ?IdentifierIRI{i} ?IdentifierValue{i}"
             )
             where_clause_blocks.append(
                 self.get_where_identifier(
                     i, has_identifier_binding=bindings.get(f"hasIdentifier{i}")
                 )
             )
-        where_clause_blocks.append(
-            self.get_where_identifier_filter(tail_nums.get("identifier_num", 0))
-        )
+        where_clause_blocks.append(self.get_where_identifier_filter(identifier_num))
+        if identifier_num > 0:
+            where_clause_blocks.append("\n")
 
-        if tail_nums.get("use_num", 0) > 0:
-            select_variables.extend(["?UseIRI", "?UseValue"])
+        use_num = tail_nums.get("use_num", 0)
+        for i in range(1, use_num + 1):
+            select_variables.append(f"?UseIRI{i} ?UseValue{i}")
             where_clause_blocks.append(
-                self.get_where_use(use_value_binding=bindings.get("UseValue"))
+                self.get_where_use(i, use_value_binding=bindings.get(f"UseValue{i}"))
             )
+        where_clause_blocks.append(self.get_where_use_filter(use_num))
+        if use_num > 0:
+            where_clause_blocks.append("\n")
 
-        if tail_nums.get("chemicalclass_num", 0) > 0:
-            select_variables.extend(["?ChemicalClassIRI", "?ChemicalClassValue"])
+        chemicalclass_num = tail_nums.get("chemicalclass_num", 0)
+        for i in range(1, chemicalclass_num + 1):
+            select_variables.append(f"?ChemicalClassIRI{i} ?ChemicalClassValue{i}")
             where_clause_blocks.append(
                 self.get_where_chemicalclass(
-                    chemicalclass_value_binding=bindings.get("ChemicalClassValue")
+                    i,
+                    chemicalclass_value_binding=bindings.get(f"ChemicalClassValue{i}"),
                 )
             )
+        where_clause_blocks.append(
+            self.get_where_chemicalclass_filter(chemicalclass_num)
+        )
+        if chemicalclass_num > 0:
+            where_clause_blocks.append("\n")
 
         return f"""{self.PREFIXES}
 
 SELECT {" ".join(select_variables)} 
-WHERE {{{"".join(where_clause_blocks)}
+WHERE {{{"".join(where_clause_blocks).rstrip()}
 }}
 LIMIT 1"""
 
@@ -279,17 +301,21 @@ LIMIT 1"""
                 )
             )
 
-        if "UseIRI" in values:
+        for i in range(1, 4):
+            if f"UseIRI{i}" not in values:
+                break
             tails.append(
-                dict(type="use", UseIRI=values["UseIRI"], UseValue=values["UseValue"])
+                dict(type="use", UseIRI=values[f"UseIRI{i}"], UseValue=values[f"UseValue{i}"])
             )
 
-        if "ChemicalClassIRI" in values:
+        for i in range(1, 4):
+            if f"ChemicalClassIRI{i}" not in values:
+                break
             tails.append(
                 dict(
                     type="chemicalclass",
-                    ChemicalClassIRI=values["ChemicalClassIRI"],
-                    ChemicalClassValue=values["ChemicalClassValue"],
+                    ChemicalClassIRI=values[f"ChemicalClassIRI{i}"],
+                    ChemicalClassValue=values[f"ChemicalClassValue{i}"],
                 )
             )
 
