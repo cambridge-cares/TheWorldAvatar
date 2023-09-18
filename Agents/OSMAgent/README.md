@@ -80,7 +80,7 @@ curl -X POST localhost:3838/osmagent/update
 ```
 
 ## 7. TWA-VF Visualization
-The results of the OSMAgent - building usages is designed to be compatible with TWA-VF and queryable via FeatureInfoAgent. Please find the setup instructions in [resources](OSMAgent/src/main/resources/FeatureInfoAgent/).
+The result of OSMAgent - Building Usages is designed to be compatible with TWA-VF and queryable via FeatureInfoAgent. Please find the setup instructions in [resources](OSMAgent/src/main/resources/FeatureInfoAgent/).
 
 [stack-data-uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
 [inputs]: inputs/
