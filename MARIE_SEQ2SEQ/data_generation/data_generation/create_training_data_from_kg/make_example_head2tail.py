@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Optional, Union, List
 import random
-
-from data_generation.utils import add_space_and_lower
+from data_generation.constants import IDENTIFIER_LABELS, PROPERTY_LABELS
 
 
 class ExampleMakerHead2Tail:
@@ -18,15 +17,15 @@ class ExampleMakerHead2Tail:
         tail_helpers: List[ExampleH2TQueryConstructorHelperTail] = [
             self.resolve_tail_helper(tail) for tail in tails
         ]
-        all_helpers: List[ExampleH2TQueryConstructorHelper] = [head_helper] + tail_helpers
+        all_helpers: List[ExampleH2TQueryConstructorHelper] = [
+            head_helper
+        ] + tail_helpers
 
         select_variables = [helper.get_select_variables() for helper in all_helpers]
         select_variables_compact = [
             helper.get_select_variables_compact() for helper in all_helpers
         ]
-        where_clauses = [
-            helper.get_where_clauses() for helper in all_helpers
-        ]
+        where_clauses = [helper.get_where_clauses() for helper in all_helpers]
         where_clauses_compact = [
             helper.get_where_clauses_compact() for helper in all_helpers
         ]
@@ -69,15 +68,16 @@ WHERE {{{"".join(where_clauses_compact)}
             tokens.append("is")
         else:
             tokens.append("are")
+
         for i, ask_item in enumerate(ask_items):
             if i == 0:
-                pass
+                tokens.append(" the ")
             elif i < len(ask_items) - 1:
-                tokens.append(",")
+                tokens.append(", ")
             else:
-                tokens.append(" and")
-            tokens.append(" the ")
+                tokens.append(" and ")
             tokens.append(ask_item)
+
         tokens.append(" of {species}?")
         return "".join(tokens)
 
@@ -132,7 +132,9 @@ class AskItemGetter(ABC):
         pass
 
 
-class ExampleH2TQueryConstructorHelperTail(ExampleH2TQueryConstructorHelper, AskItemGetter):
+class ExampleH2TQueryConstructorHelperTail(
+    ExampleH2TQueryConstructorHelper, AskItemGetter
+):
     pass
 
 
@@ -167,28 +169,10 @@ class ExampleH2TQueryConstructorHelperProperty(ExampleH2TQueryConstructorHelperT
     ?SpeciesIRI os:has{PropertyName} ?{PropertyName}Value ."""
 
     def get_ask_item(self):
-        return add_space_and_lower(self.property_name)
+        return random.choice(PROPERTY_LABELS[self.property_name])
 
 
 class ExampleH2TQueryConstructorHelperIdentifier(ExampleH2TQueryConstructorHelperTail):
-    IDENTIFIER_LABELS = {
-        "ChebiID": ["ChEBI ID", "Chemical Entities of Biological Interest ID"],
-        "CID": ["CID", "PubChem CID", "PubChem ID", "PubChem Compound ID"],
-        "EmpiricalFormula": ["empirical formula"],
-        "InChI": [
-            "InChI",
-            "International Chemical Identifier",
-            "IUPAC International Chemical Identifier",
-        ],
-        "InChIKey": ["InChIKey", "hashed InChI"],
-        "IUPACName": ["IUPAC name"],
-        "MolecularFormula": ["molecular formula"],
-        "SMILES": [
-            "SMILES",
-            "SMILES string",
-        ],
-    }
-
     def __init__(self, identifier_name: str):
         self.identifier_name = identifier_name
 
@@ -213,7 +197,7 @@ class ExampleH2TQueryConstructorHelperIdentifier(ExampleH2TQueryConstructorHelpe
     ?SpeciesIRI os:has{IdentifierName} ?{IdentifierName}Value ."""
 
     def get_ask_item(self):
-        return random.choice(self.IDENTIFIER_LABELS[self.identifier_name])
+        return random.choice(IDENTIFIER_LABELS[self.identifier_name])
 
 
 class ExampleH2TQueryConstructorHelperUse(ExampleH2TQueryConstructorHelperTail):
@@ -237,7 +221,9 @@ class ExampleH2TQueryConstructorHelperUse(ExampleH2TQueryConstructorHelperTail):
         return "use"
 
 
-class ExampleH2TQueryConstructorHelperChemicalClass(ExampleH2TQueryConstructorHelperTail):
+class ExampleH2TQueryConstructorHelperChemicalClass(
+    ExampleH2TQueryConstructorHelperTail
+):
     def get_select_variables(self):
         return "?ChemicalClassValue"
 
