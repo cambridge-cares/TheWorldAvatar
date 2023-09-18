@@ -6,7 +6,7 @@ from typing import Dict, List, Optional
 from data_generation.constants import IDENTIFIER_NAMES, PROPERTY_NAMES
 
 
-class QueryConstructor:
+class RetrieveQueryConstructor:
     PREFIXES = """PREFIX os: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"""
@@ -21,23 +21,23 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"""
         if bindings is None:
             bindings = dict()
 
-        head_helper = QueryConstructionHelperHead(
+        head_helper = RetrieveQueryConstructionHelperHead(
             identifier_name=random.choice(self.IDENTIFIER_NAMES_FOR_HEAD)
         )
-        property_helper = QueryConstructionHelperProperty(
+        property_helper = RetrieveQueryConstructionHelperProperty(
             tail_num=tail_nums.get("property_num", 0), value_bindings=bindings
         )
-        identifier_helper = QueryConstructionHelperIdentifier(
+        identifier_helper = RetrieveQueryConstructionHelperIdentifier(
             tail_num=tail_nums.get("identifier_num", 0), value_bindings=bindings
         )
-        use_helper = QueryConstructionHelperUse(
+        use_helper = RetrieveQueryConstructionHelperUse(
             tail_num=tail_nums.get("use_num", 0), value_bindings=bindings
         )
-        chemicalclass_helper = QueryConstructionHelperChemicalClass(
+        chemicalclass_helper = RetrieveQueryConstructionHelperChemicalClass(
             tail_num=tail_nums.get("chemicalclass_num", 0), value_bindings=bindings
         )
 
-        helpers: List[QueryConstructionHelper] = [
+        helpers: List[RetrieveQueryConstructionHelper] = [
             head_helper,
             property_helper,
             identifier_helper,
@@ -56,7 +56,7 @@ WHERE {{{"".join(where_clause_blocks).rstrip()}
 LIMIT 1"""
 
 
-class QueryConstructionHelper(ABC):
+class RetrieveQueryConstructionHelper(ABC):
     @abstractmethod
     def get_select_variables(self) -> str:
         pass
@@ -66,7 +66,7 @@ class QueryConstructionHelper(ABC):
         pass
 
 
-class QueryConstructionHelperHead(QueryConstructionHelper):
+class RetrieveQueryConstructionHelperHead(RetrieveQueryConstructionHelper):
     def __init__(self, identifier_name: str):
         self.identifier_name = identifier_name
 
@@ -80,7 +80,7 @@ class QueryConstructionHelperHead(QueryConstructionHelper):
 """
 
 
-class QueryConstructionHelperTail(QueryConstructionHelper, ABC):
+class RetrieveQueryConstructionHelperTail(RetrieveQueryConstructionHelper, ABC):
     def __init__(
         self,
         tail_num: int,
@@ -142,7 +142,7 @@ class QueryConstructionHelperTail(QueryConstructionHelper, ABC):
         pass
 
 
-class QueryConstructionHelperProperty(QueryConstructionHelperTail):
+class RetrieveQueryConstructionHelperProperty(RetrieveQueryConstructionHelperTail):
     def __init__(self, tail_num: int, value_bindings: Dict[str, str] = dict()):
         super().__init__(
             tail_num,
@@ -168,7 +168,7 @@ class QueryConstructionHelperProperty(QueryConstructionHelperTail):
     ?PropertyIRI{tail_id} os:value ?PropertyValue{tail_id} ."""
 
 
-class QueryConstructionHelperIdentifier(QueryConstructionHelperTail):
+class RetrieveQueryConstructionHelperIdentifier(RetrieveQueryConstructionHelperTail):
     def __init__(self, tail_num: int, value_bindings: Dict[str, str] = dict()):
         super().__init__(
             tail_num,
@@ -196,7 +196,7 @@ class QueryConstructionHelperIdentifier(QueryConstructionHelperTail):
     ?IdentifierIRI{tail_id} os:value ?IdentifierValue{tail_id} ."""
 
 
-class QueryConstructionHelperUse(QueryConstructionHelperTail):
+class RetrieveQueryConstructionHelperUse(RetrieveQueryConstructionHelperTail):
     def __init__(self, tail_num: int, value_bindings: Dict[str, str] = dict()):
         super().__init__(
             tail_num,
@@ -226,7 +226,7 @@ class QueryConstructionHelperUse(QueryConstructionHelperTail):
         )
 
 
-class QueryConstructionHelperChemicalClass(QueryConstructionHelperTail):
+class RetrieveQueryConstructionHelperChemicalClass(RetrieveQueryConstructionHelperTail):
     def __init__(self, tail_num: int, value_bindings: Dict[str, str] = dict()):
         super().__init__(
             tail_num,
