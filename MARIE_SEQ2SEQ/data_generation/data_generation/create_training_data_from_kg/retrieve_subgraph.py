@@ -1,4 +1,4 @@
-from collections import defaultdict
+from abc import ABC, abstractmethod
 import itertools
 import random
 from typing import Dict, List, Optional
@@ -93,103 +93,6 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"""
     ?SpeciesIRI a os:Species ; os:has{identifier_name} ?IdentifierIRI .
     ?IdentifierIRI os:value ?IdentifierValue ."""
 
-    def get_where_property(self, i: int, has_property_binding: Optional[str] = None):
-        has_property_values = (
-            [has_property_binding]
-            if has_property_binding is not None
-            else [f"os:has{p}" for p in PROPERTY_NAMES]
-        )
-        return f"""
-    VALUES (?hasProperty{i}) {{
-        {" ".join([f"({val})" for val in has_property_values])}
-    }}
-    ?SpeciesIRI ?hasProperty{i} ?PropertyIRI{i} .
-    ?PropertyIRI{i} os:value ?PropertyValue{i} ."""
-
-    def get_where_filter(self, variable_prefix: str, variable_num: int):
-        filter_clauses = []
-        for i, j in itertools.combinations(range(1, variable_num + 1), r=2):
-            filter_clauses.append(
-                f"FILTER ( ?{variable_prefix}{i} != ?{variable_prefix}{j} )"
-            )
-        filter_clauses_str = f"""
-    """.join(filter_clauses)
-        if filter_clauses_str:
-            return f"""
-    {filter_clauses_str}"""
-        return ""
-
-    def get_where_property_filter(self, property_num: int):
-        return self.get_where_filter(
-            variable_prefix="hasProperty", variable_num=property_num
-        )
-
-    def get_where_identifier(
-        self, i: int, has_identifier_binding: Optional[str] = None
-    ):
-        has_identifier_values = (
-            [has_identifier_binding]
-            if has_identifier_binding is not None
-            else [f"os:has{i}" for i in IDENTIFIER_NAMES]
-        )
-        return f"""
-    VALUES (?hasIdentifier{i}) {{
-        {" ".join([f"({val})" for val in has_identifier_values])}
-    }}
-    ?SpeciesIRI ?hasIdentifier{i} ?IdentifierIRI{i} .
-    ?IdentifierIRI{i} os:value ?IdentifierValue{i} ."""
-
-    def get_where_identifier_filter(self, identifier_num: int):
-        return self.get_where_filter(
-            variable_prefix="hasIdentifier", variable_num=identifier_num
-        )
-
-    def get_where_use(self, i: int, use_value_binding: Optional[str] = None):
-        value_binding_str = (
-            f"""
-    VALUES (?UseValue) {{
-        (\"{use_value_binding}\")
-    }}"""
-            if use_value_binding is not None
-            else ""
-        )
-
-        return (
-            value_binding_str
-            + f"""
-    ?SpeciesIRI os:hasUse ?UseIRI{i} .
-    ?UseIRI{i} rdfs:label ?UseValue{i} ."""
-        )
-
-    def get_where_use_filter(self, use_num: int):
-        return self.get_where_filter(variable_prefix="UseValue", variable_num=use_num)
-
-    def get_where_chemicalclass(
-        self, i: int, chemicalclass_value_binding: Optional[str] = None
-    ):
-        value_binding_str = (
-            f"""
-    VALUES (?ChemicalClassValue) {{
-        (\"{chemicalclass_value_binding}\")
-    }}"""
-            if chemicalclass_value_binding is not None
-            else ""
-        )
-
-        return (
-            value_binding_str
-            + f"""
-    ?SpeciesIRI os:hasChemicalClass* ?x{i} .
-    ?x{i} ?y{i} ?z{i} .
-    ?z rdfs:subClassOf* ?ChemicalClassIRI{i} .
-    ?ChemicalClassIRI{i} rdf:type os:ChemicalClass ; rdfs:label ?ChemicalClassValue{i} ."""
-        )
-
-    def get_where_chemicalclass_filter(self, chemicalclass_num: int):
-        return self.get_where_filter(
-            variable_prefix="ChemicalClassValue", variable_num=chemicalclass_num
-        )
-
     def get_subgraph_query(
         self, tail_nums: Dict[str, int], bindings: Optional[dict] = None
     ):
@@ -203,57 +106,30 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"""
             where_clause_blocks.append("\n")
 
         property_num = tail_nums.get("property_num", 0)
-        for i in range(1, property_num + 1):
-            select_variables.append(
-                f"?hasProperty{i} ?PropertyIRI{i} ?PropertyValue{i}"
-            )
-            where_clause_blocks.append(
-                self.get_where_property(
-                    i, has_property_binding=bindings.get(f"hasProperty{i}")
-                )
-            )
-        where_clause_blocks.append(self.get_where_property_filter(property_num))
-        if property_num > 0:
-            where_clause_blocks.append("\n")
+        property_helper = QueryConstructionHelperProperty(
+            tail_num=property_num, value_bindings=bindings
+        )
+        select_variables.append(property_helper.get_select_variables())
+        where_clause_blocks.append(property_helper.get_where_clauses())
 
         identifier_num = tail_nums.get("identifier_num", 0)
-        for i in range(1, identifier_num + 1):
-            select_variables.append(
-                f"?hasIdentifier{i} ?IdentifierIRI{i} ?IdentifierValue{i}"
-            )
-            where_clause_blocks.append(
-                self.get_where_identifier(
-                    i, has_identifier_binding=bindings.get(f"hasIdentifier{i}")
-                )
-            )
-        where_clause_blocks.append(self.get_where_identifier_filter(identifier_num))
-        if identifier_num > 0:
-            where_clause_blocks.append("\n")
+        identifier_helper = QueryConstructionHelperIdentifier(
+            tail_num=identifier_num, value_bindings=bindings
+        )
+        select_variables.append(identifier_helper.get_select_variables())
+        where_clause_blocks.append(identifier_helper.get_where_clauses())
 
         use_num = tail_nums.get("use_num", 0)
-        for i in range(1, use_num + 1):
-            select_variables.append(f"?UseIRI{i} ?UseValue{i}")
-            where_clause_blocks.append(
-                self.get_where_use(i, use_value_binding=bindings.get(f"UseValue{i}"))
-            )
-        where_clause_blocks.append(self.get_where_use_filter(use_num))
-        if use_num > 0:
-            where_clause_blocks.append("\n")
+        use_helper = QueryConstructionHelperUse(
+            tail_num=use_num, value_bindings=bindings
+        )
+        select_variables.append(use_helper.get_select_variables())
+        where_clause_blocks.append(use_helper.get_where_clauses())
 
         chemicalclass_num = tail_nums.get("chemicalclass_num", 0)
-        for i in range(1, chemicalclass_num + 1):
-            select_variables.append(f"?ChemicalClassIRI{i} ?ChemicalClassValue{i}")
-            where_clause_blocks.append(
-                self.get_where_chemicalclass(
-                    i,
-                    chemicalclass_value_binding=bindings.get(f"ChemicalClassValue{i}"),
-                )
-            )
-        where_clause_blocks.append(
-            self.get_where_chemicalclass_filter(chemicalclass_num)
-        )
-        if chemicalclass_num > 0:
-            where_clause_blocks.append("\n")
+        chemicalclass_helper = QueryConstructionHelperChemicalClass(tail_num=chemicalclass_num, value_bindings=bindings)
+        select_variables.append(chemicalclass_helper.get_select_variables())
+        where_clause_blocks.append(chemicalclass_helper.get_where_clauses())
 
         return f"""{self.PREFIXES}
 
@@ -305,7 +181,11 @@ LIMIT 1"""
             if f"UseIRI{i}" not in values:
                 break
             tails.append(
-                dict(type="use", UseIRI=values[f"UseIRI{i}"], UseValue=values[f"UseValue{i}"])
+                dict(
+                    type="use",
+                    UseIRI=values[f"UseIRI{i}"],
+                    UseValue=values[f"UseValue{i}"],
+                )
             )
 
         for i in range(1, 4):
@@ -320,3 +200,180 @@ LIMIT 1"""
             )
 
         return dict(head=head, tails=tails)
+
+
+class QueryConstructionHelperTail(ABC):
+    def __init__(
+        self,
+        tail_num: int,
+        var_prefix_for_mutual_exclusion: str,
+        value_bindings: Dict[str, str] = dict(),
+    ):
+        self.tail_num = tail_num
+        self.var_prefix_for_mutual_exclusion = var_prefix_for_mutual_exclusion
+        self.value_bindings = value_bindings
+
+    def get_select_variables(self):
+        return " ".join(
+            [
+                self.get_select_variable_per_tail(tail_id)
+                for tail_id in range(1, self.tail_num + 1)
+            ]
+        )
+
+    @abstractmethod
+    def get_select_variable_per_tail(self, tail_id: int) -> str:
+        pass
+
+    def get_where_clauses(self) -> str:
+        clauses = (
+            "".join(
+                [
+                    self.get_where_clauses_per_tail(tail_id)
+                    for tail_id in range(1, self.tail_num + 1)
+                ]
+            )
+            + self.get_filter_pairwise_notequal()
+        )
+        if self.tail_num > 0:
+            clauses += "\n"
+        return clauses
+
+    @abstractmethod
+    def get_where_clauses_per_tail(
+        self, tail_id: int, value_binding: Optional[str]
+    ) -> str:
+        pass
+
+    def get_filter_pairwise_notequal(self) -> str:
+        variable_prefix = self.var_prefix_for_mutual_exclusion
+        variable_num = self.tail_num
+
+        filter_clauses = []
+        for i, j in itertools.combinations(range(1, variable_num + 1), r=2):
+            filter_clauses.append(
+                f"FILTER ( ?{variable_prefix}{i} != ?{variable_prefix}{j} )"
+            )
+        filter_clauses_str = f"""
+    """.join(
+            filter_clauses
+        )
+        if filter_clauses_str:
+            return f"""
+    {filter_clauses_str}"""
+        return ""
+
+
+class QueryConstructionHelperProperty(QueryConstructionHelperTail):
+    def __init__(self, tail_num: int, value_bindings: Dict[str, str] = dict()):
+        super().__init__(
+            tail_num,
+            var_prefix_for_mutual_exclusion="hasProperty",
+            value_bindings=value_bindings,
+        )
+
+    def get_select_variable_per_tail(self, tail_id: int):
+        return f"?hasProperty{tail_id} ?PropertyIRI{tail_id} ?PropertyValue{tail_id}"
+
+    def get_where_clauses_per_tail(self, tail_id: int):
+        has_property_binding = self.value_bindings.get(f"hasProperty{tail_id}")
+        has_property_values = (
+            [has_property_binding]
+            if has_property_binding is not None
+            else [f"os:has{p}" for p in PROPERTY_NAMES]
+        )
+        return f"""
+    VALUES (?hasProperty{tail_id}) {{
+        {" ".join([f"({val})" for val in has_property_values])}
+    }}
+    ?SpeciesIRI ?hasProperty{tail_id} ?PropertyIRI{tail_id} .
+    ?PropertyIRI{tail_id} os:value ?PropertyValue{tail_id} ."""
+
+
+class QueryConstructionHelperIdentifier(QueryConstructionHelperTail):
+    def __init__(self, tail_num: int, value_bindings: Dict[str, str] = dict()):
+        super().__init__(
+            tail_num,
+            var_prefix_for_mutual_exclusion="hasIdentifier",
+            value_bindings=value_bindings,
+        )
+
+    def get_select_variable_per_tail(self, tail_id: int):
+        return (
+            f"?hasIdentifier{tail_id} ?IdentifierIRI{tail_id} ?IdentifierValue{tail_id}"
+        )
+
+    def get_where_clauses_per_tail(self, tail_id: int):
+        has_identifier_binding = self.value_bindings.get(f"hasIdentifier{tail_id}")
+        has_identifier_values = (
+            [has_identifier_binding]
+            if has_identifier_binding is not None
+            else [f"os:has{i}" for i in IDENTIFIER_NAMES]
+        )
+        return f"""
+    VALUES (?hasIdentifier{tail_id}) {{
+        {" ".join([f"({val})" for val in has_identifier_values])}
+    }}
+    ?SpeciesIRI ?hasIdentifier{tail_id} ?IdentifierIRI{tail_id} .
+    ?IdentifierIRI{tail_id} os:value ?IdentifierValue{tail_id} ."""
+
+
+class QueryConstructionHelperUse(QueryConstructionHelperTail):
+    def __init__(self, tail_num: int, value_bindings: Dict[str, str] = dict()):
+        super().__init__(
+            tail_num,
+            var_prefix_for_mutual_exclusion="UseValue",
+            value_bindings=value_bindings,
+        )
+
+    def get_select_variable_per_tail(self, tail_id: int):
+        return f"?UseIRI{tail_id} ?UseValue{tail_id}"
+
+    def get_where_clauses_per_tail(self, tail_id: int):
+        use_value_binding = self.value_bindings.get(f"UseValue{tail_id}")
+        value_binding_str = (
+            f"""
+    VALUES (?UseValue{tail_id}) {{
+        (\"{use_value_binding}\")
+    }}"""
+            if use_value_binding is not None
+            else ""
+        )
+
+        return (
+            value_binding_str
+            + f"""
+    ?SpeciesIRI os:hasUse ?UseIRI{tail_id} .
+    ?UseIRI{tail_id} rdfs:label ?UseValue{tail_id} ."""
+        )
+
+class QueryConstructionHelperChemicalClass(QueryConstructionHelperTail):
+    def __init__(self, tail_num: int, value_bindings: Dict[str, str] = dict()):
+        super().__init__(
+            tail_num,
+            var_prefix_for_mutual_exclusion="ChemicalClassValue",
+            value_bindings=value_bindings,
+        )
+
+    def get_select_variable_per_tail(self, tail_id: int):
+        return f"?ChemicalClassIRI{tail_id} ?ChemicalClassValue{tail_id}"
+
+    def get_where_clauses_per_tail(self, tail_id: int):
+        chemicalclass_value_binding = self.value_bindings.get(f"ChemicalClassValue{tail_id}")
+        value_binding_str = (
+            f"""
+    VALUES (?ChemicalClassValue{tail_id}) {{
+        (\"{chemicalclass_value_binding}\")
+    }}"""
+            if chemicalclass_value_binding is not None
+            else ""
+        )
+
+        return (
+            value_binding_str
+            + f"""
+    ?SpeciesIRI os:hasChemicalClass* ?x{tail_id} .
+    ?x{tail_id} ?y{tail_id} ?z{tail_id} .
+    ?z{tail_id} rdfs:subClassOf* ?ChemicalClassIRI{tail_id} .
+    ?ChemicalClassIRI{tail_id} rdf:type os:ChemicalClass ; rdfs:label ?ChemicalClassValue{tail_id} ."""
+        )
