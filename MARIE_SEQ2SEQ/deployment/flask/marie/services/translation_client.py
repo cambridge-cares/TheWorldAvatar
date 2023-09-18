@@ -9,16 +9,19 @@ class TranslationClient:
 
         try_num = 0
         try_limit = 3
-        while try_num < try_limit:
+        is_ready = False
+        while not is_ready and try_num < try_limit:
             try:
                 if self.client.is_model_ready("translation"):
                     print("Translation server is ready.")
-                    break
+                    is_ready = True
+                else:
+                    try_num += 1
             except ConnectionRefusedError:
                 try_num += 1
-        else:
-            print(
-                "There are issues connecting to translation server. Please ensure that the translation server is running."
+        if not is_ready:
+            raise Exception(
+                "There are issues connecting to translation server. Please ensure that the translation server is running and restart the app."
             )
 
     def translate(self, text: str):

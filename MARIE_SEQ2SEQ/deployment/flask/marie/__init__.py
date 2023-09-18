@@ -39,14 +39,16 @@ def ask():
     sanitized_inputs = sanitize_quantities(question)
     app.logger.info("Santized inputs: " + str(sanitized_inputs))
 
+    app.logger.info("Sending translation request to triton server...")
     start_trans = time.time()
     translation_result = translation_client.translate(
         sanitized_inputs["preprocessed_text_for_trans"]
     )
     end_trans = time.time()
     app.logger.info("Translation result: " + str(translation_result))
-
+    
     sparql_query = translation_result.get("sparql_query").strip()
+    app.logger.info("Sending sparql query to KG server...")
     start_kg = time.time()
     if sparql_query:
         data = kg_client.query(sparql_query)
