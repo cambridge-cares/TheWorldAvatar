@@ -10,8 +10,8 @@ The ontology can be divided into these respective domains:
 ```mermaid
     erDiagram
     "foaf:Document" ||--o{ "time:Instant" : createdOn
-    "foaf:Document" ||--o{ "foaf:Document"" : references
-    "foaf:Document" ||--o{ "Attachment"" : hasAttachment
+    "foaf:Document" ||--o{ "foaf:Document" : references
+    "foaf:Document" ||--o{ "Attachment" : hasAttachment
     "foaf:Document" ||--o{ "fibo-parties:PartyInRole" : hasConcernedParty
     "foaf:Document" {
         hasExternalRemarks string
