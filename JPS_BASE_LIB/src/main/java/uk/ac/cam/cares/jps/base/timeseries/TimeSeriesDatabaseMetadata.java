@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.jooq.impl.DefaultDataType;
 import org.postgis.Geometry;
@@ -17,86 +18,61 @@ class TimeSeriesDatabaseMetadata {
     // column name set within each table is unique
     // one data type can have multiple columns, e.g. 2 columns in a table may be of
     // the same type
-    private Map<String, Map<String, String>> tableColumnDataType;
-    private Map<String, Map<String, String>> tableColumnUdtType;
-    private Map<String, Map<String, String>> tableColumnGeometryType;
-    private Map<String, Map<String, Integer>> tableColumnSrid;
-    private Map<String, Map<String, List<String>>> tableDataTypeColumn;
+    private Map<String, String> columnDataType;
+    private Map<String, String> columnUdtName;
+    private Map<String, String> columnGeometryType;
+    private Map<String, Integer> columnSrid;
+    private Map<String, List<String>> dataTypeColumn;
 
     TimeSeriesDatabaseMetadata() {
-        tableColumnDataType = new HashMap<>();
-        tableColumnUdtType = new HashMap<>();
-        tableColumnGeometryType = new HashMap<>();
-        tableColumnSrid = new HashMap<>();
-        tableDataTypeColumn = new HashMap<>();
+        columnDataType = new HashMap<>();
+        columnUdtName = new HashMap<>();
+        columnGeometryType = new HashMap<>();
+        columnSrid = new HashMap<>();
+        dataTypeColumn = new HashMap<>();
     }
 
-    void addDataType(String table, String column, String dataType) {
-        tableColumnDataType.computeIfAbsent(table, k -> new HashMap<>());
-        tableColumnDataType.get(table).put(column, dataType);
+    void addDataType(String column, String dataType) {
+        columnDataType.put(column, dataType);
     }
 
-    void addUdtType(String table, String column, String udtType) {
-        tableColumnUdtType.computeIfAbsent(table, k -> new HashMap<>());
-        tableColumnUdtType.get(table).put(column, udtType);
+    void addUdtName(String column, String udtName) {
+        columnUdtName.put(column, udtName);
     }
 
-    void addGeometryType(String table, String column, String geometryType) {
-        tableColumnGeometryType.computeIfAbsent(table, k -> new HashMap<>());
-        tableColumnGeometryType.get(table).put(column, geometryType);
+    void addGeometryType(String column, String geometryType) {
+        columnGeometryType.put(column, geometryType);
     }
 
-    void addSrid(String table, String column, int srid) {
-        tableColumnSrid.computeIfAbsent(table, k -> new HashMap<>());
-        tableColumnSrid.get(table).put(column, srid);
+    void addSrid(String column, int srid) {
+        columnSrid.put(column, srid);
     }
 
     /**
-     * returns table and column with udt_type = 'geometry'
+     * returns list of columns with udt_type = 'geometry'
      */
-    List<List<String>> getGeometryRows() {
-        List<List<String>> rows = new ArrayList<>();
-        tableColumnUdtType.entrySet().forEach(tableEntry -> {
-            tableEntry.getValue().entrySet().forEach(columnEntry -> {
-                if (columnEntry.getValue().contentEquals("geometry")) {
-                    List<String> row = new ArrayList<>();
-                    row.add(tableEntry.getKey());
-                    row.add(columnEntry.getKey());
-                    rows.add(row);
-                }
-            });
+    List<String> getGeometryColumns() {
+        List<String> geometryColumns = new ArrayList<>();
+        columnUdtName.entrySet().forEach(entry -> {
+            if (entry.getValue().contentEquals("geometry")) {
+                geometryColumns.add(entry.getKey());
+            }
         });
-        return rows;
+        return geometryColumns;
     }
 
     /**
-     * the complexity of this operation can scale very badly if there are many
-     * different combinations to match because for each class, there are always
-     * two possible choices to match. The appropriate choice can be different for
-     * each class, i.e. Java choice 1 matches Database choice 1 in a case, Java
-     * choice 1 matches Database choice 2 for a different class, and vice versa
-     * 
-     * On the Java side, they are:
-     * 1) DefaultDataType.getDataType(TimeSeriesRDBClient.DIALECT,
-     * newClassToAdd).getTypeName();
-     * 2) DefaultDataType.getDataType(TimeSeriesRDBClient.DIALECT,
-     * newClassToAdd).getSQLDataType().getName();
-     * 
-     * on the database side, they can be either (for non geometry types)
-     * 1) udt_name from information_schema.columns
-     * 2) data_type from information_schema.columns
-     * 
-     * As you can see, the number of combinations is N squared from both sides.
+     * returns true if existing time_series_data has all the columns needed for this
+     * new time series
      * 
      * @param classes
      * @param srid
      * @return
      */
-    String getExistingSuitableTable(List<Class<?>> classes, Integer srid) {
-        String suitableTable = null;
-        Map<String, List<List<String>>> existingClassSetsMap = getExistingClassSetsMap();
-        if (existingClassSetsMap.isEmpty()) {
-            return suitableTable;
+    List<Boolean> hasMatchingColumn(List<Class<?>> classes, Integer srid) {
+        List<List<String>> existingClassSets = getExistingClassSets();
+        if (existingClassSets.isEmpty()) {
+            return classes.stream().map(v -> false).collect(Collectors.toList());
         }
 
         if (srid == null) {
@@ -104,32 +80,27 @@ class TimeSeriesDatabaseMetadata {
         }
         List<List<String>> classSetsToAdd = getSqlClassSetsToAdd(classes, srid);
 
-        boolean breakLoop = false;
+        List<Boolean> hasMatchingColumn = new ArrayList<>();
         for (List<String> classSetToAdd : classSetsToAdd) {
-            if (breakLoop) {
-                break;
-            }
-            for (Entry<String, List<List<String>>> entry : existingClassSetsMap.entrySet()) {
-                if (breakLoop) {
+            boolean match = false;
+            for (List<String> existingClassSet : existingClassSets) {
+                if (match) {
                     break;
                 }
-
-                List<List<String>> existingClassSets = entry.getValue();
-
-                for (List<String> existingClassSet : existingClassSets) {
-                    if (existingClassSet.containsAll(classSetToAdd)) {
-                        suitableTable = entry.getKey();
-                        breakLoop = true;
+                for (String existingClass : existingClassSet) {
+                    if (classSetToAdd.contains(existingClass)) {
+                        match = true;
                         break;
                     }
                 }
             }
+            hasMatchingColumn.add(match);
         }
 
-        return suitableTable;
+        return hasMatchingColumn;
     }
 
-    String getExistingSuitableColumn(String table, Class<?> clas, Integer srid) {
+    String getExistingSuitableColumn(Class<?> clas, Integer srid) {
         String sqlDataType;
         if (Geometry.class.isAssignableFrom(clas)) {
             if (srid == null) {
@@ -138,63 +109,39 @@ class TimeSeriesDatabaseMetadata {
             sqlDataType = String.format("%s,%d", clas.getSimpleName(), srid).toUpperCase();
         } else {
             sqlDataType = DefaultDataType.getDataType(TimeSeriesRDBClient.DIALECT, clas).getTypeName();
-            if (!tableDataTypeColumn.get(table).containsKey(sqlDataType)) {
+            if (!dataTypeColumn.containsKey(sqlDataType)) {
                 // alternative, one of these is guaranteed to match due to the way class sets
                 // were matched
                 sqlDataType = DefaultDataType.getDataType(TimeSeriesRDBClient.DIALECT, clas).getSQLDataType()
                         .getName();
             }
         }
-        return tableDataTypeColumn.get(table).get(sqlDataType).remove(0);
+        return dataTypeColumn.get(sqlDataType).remove(0);
     }
 
     List<List<String>> getSqlClassSetsToAdd(List<Class<?>> classes, int srid) {
-        List<List<String>> overallList = new ArrayList<>();
-        overallList.add(new ArrayList<>());
-        return getSqlClassSetsToAddRecursively(classes, srid, overallList);
-    }
+        List<List<String>> classSets = new ArrayList<>();
+        classes.stream().forEach(newClassToAdd -> {
+            List<String> classSet = new ArrayList<>();
+            if (!Geometry.class.isAssignableFrom(newClassToAdd)) {
+                String typeName = DefaultDataType.getDataType(TimeSeriesRDBClient.DIALECT, newClassToAdd).getTypeName();
+                String sqlDataType = DefaultDataType.getDataType(TimeSeriesRDBClient.DIALECT, newClassToAdd)
+                        .getSQLDataType().getName();
 
-    List<List<String>> getSqlClassSetsToAddRecursively(List<Class<?>> classes, int srid,
-            List<List<String>> overallList) {
-        Class<?> newClassToAdd = classes.get(0);
+                if (!typeName.contentEquals(sqlDataType)) {
+                    classSet.add(typeName);
+                    classSet.add(sqlDataType);
+                } else {
+                    classSet.add(typeName);
+                }
 
-        if (!Geometry.class.isAssignableFrom(newClassToAdd)) {
-            String typeName = DefaultDataType.getDataType(TimeSeriesRDBClient.DIALECT, newClassToAdd).getTypeName();
-            String sqlDataType = DefaultDataType.getDataType(TimeSeriesRDBClient.DIALECT, newClassToAdd)
-                    .getSQLDataType().getName();
-
-            if (!typeName.contentEquals(sqlDataType)) {
-                List<List<String>> overallListCopy = new ArrayList<>();
-                overallList.stream().forEach(list -> {
-                    List<String> newList = new ArrayList<>();
-                    list.stream().forEach(newList::add);
-                    overallListCopy.add(newList);
-                });
-
-                overallList.stream().forEach(list -> {
-                    list.add(typeName);
-                });
-
-                overallListCopy.stream().forEach(list -> {
-                    list.add(sqlDataType);
-                });
-
-                overallList.addAll(overallListCopy);
             } else {
-                overallList.stream().forEach(list -> list.add(typeName));
+                classSet.add(String.format("%s,%d", newClassToAdd.getSimpleName(), srid).toUpperCase());
             }
+            classSets.add(classSet);
+        });
 
-        } else {
-            overallList.stream().forEach(list -> {
-                list.add(String.format("%s,%d", newClassToAdd.getSimpleName(), srid).toUpperCase());
-            });
-        }
-
-        if (classes.size() == 1) {
-            return overallList;
-        } else {
-            return getSqlClassSetsToAddRecursively(classes.subList(1, classes.size()), srid, overallList);
-        }
+        return classSets;
     }
 
     /**
@@ -202,50 +149,35 @@ class TimeSeriesDatabaseMetadata {
      * 
      * @return
      */
-    Map<String, List<List<String>>> getExistingClassSetsMap() {
-        Map<String, List<List<String>>> tableToClassSetsMap = new HashMap<>();
+    List<List<String>> getExistingClassSets() {
+        List<List<String>> classSets = new ArrayList<>();
 
-        // table loop
-        tableColumnUdtType.keySet().stream().forEach(table -> { // table loop
-            List<List<String>> overallList = new ArrayList<>();
-            overallList.add(new ArrayList<>());
-            tableToClassSetsMap.put(table, overallList);
+        columnUdtName.keySet().stream().forEach(column -> { // column loop
+            List<String> classSet = new ArrayList<>();
+            if (columnUdtName.get(column).contentEquals("geometry")) {
+                // e.g. Point,4326
+                String sqlType = String.format("%s,%d", columnGeometryType.get(column),
+                        columnSrid.get(column));
+                classSet.add(sqlType);
 
-            tableDataTypeColumn.computeIfAbsent(table, k -> new HashMap<>());
+                dataTypeColumn.computeIfAbsent(sqlType, k -> new ArrayList<>());
+                dataTypeColumn.get(sqlType).add(column);
+            } else {
+                String dataType = columnDataType.get(column);
+                String udtName = columnUdtName.get(column);
 
-            tableColumnUdtType.get(table).keySet().stream().forEach(column -> { // column loop
-                if (tableColumnUdtType.get(table).get(column).contentEquals("geometry")) {
-                    // e.g. Point,4326
-                    String sqlType = String.format("%s,%d", tableColumnGeometryType.get(table).get(column),
-                            tableColumnSrid.get(table).get(column));
-                    overallList.stream().forEach(list -> list.add(sqlType));
+                dataTypeColumn.computeIfAbsent(dataType, k -> new ArrayList<>());
+                dataTypeColumn.get(dataType).add(column);
+                dataTypeColumn.computeIfAbsent(udtName, k -> new ArrayList<>());
+                dataTypeColumn.get(udtName).add(column);
 
-                    tableDataTypeColumn.get(table).computeIfAbsent(sqlType, k -> new ArrayList<>());
-                    tableDataTypeColumn.get(table).get(sqlType).add(column);
-                } else {
-                    List<List<String>> overallListCopy = new ArrayList<>();
-                    overallList.stream().forEach(list -> {
-                        List<String> newList = new ArrayList<>();
-                        list.stream().forEach(newList::add);
-                        overallListCopy.add(newList);
-                    });
+                classSet.add(dataType);
+                classSet.add(udtName);
+            }
 
-                    String dataType = tableColumnDataType.get(table).get(column);
-                    overallList.stream().forEach(list -> list.add(dataType));
-
-                    String udtType = tableColumnUdtType.get(table).get(column);
-                    overallListCopy.stream().forEach(list -> list.add(udtType));
-
-                    overallList.addAll(overallListCopy);
-
-                    tableDataTypeColumn.get(table).computeIfAbsent(dataType, k -> new ArrayList<>());
-                    tableDataTypeColumn.get(table).get(dataType).add(column);
-                    tableDataTypeColumn.get(table).computeIfAbsent(udtType, k -> new ArrayList<>());
-                    tableDataTypeColumn.get(table).get(udtType).add(column);
-                }
-            });
+            classSets.add(classSet);
         });
 
-        return tableToClassSetsMap;
+        return classSets;
     }
 }

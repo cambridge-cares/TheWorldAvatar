@@ -34,8 +34,6 @@ public class TimeSeriesPostGISIntegrationWithoutConnTest {
     @Container
     private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(myImage);
 
-    private String tableName;
-
     // RDB client
     private TimeSeriesRDBClient<Integer> tsClient;
 
@@ -47,7 +45,7 @@ public class TimeSeriesPostGISIntegrationWithoutConnTest {
         tsClient.setRdbUser(postgres.getUsername());
         tsClient.setRdbPassword(postgres.getPassword());
 
-        tableName = tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
+        tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
                 "http://ts1", 4326);
     }
 
@@ -70,7 +68,7 @@ public class TimeSeriesPostGISIntegrationWithoutConnTest {
             DSLContext context = DSL.using(tsClient.getConnection(), SQLDialect.POSTGRES);
 
             // including time and tsIRI columns
-            Assert.assertEquals(3, context.meta().getTables(tableName).get(0).fields().length);
+            Assert.assertEquals(3, context.meta().getTables("time_series_data").get(0).fields().length);
         }
     }
 

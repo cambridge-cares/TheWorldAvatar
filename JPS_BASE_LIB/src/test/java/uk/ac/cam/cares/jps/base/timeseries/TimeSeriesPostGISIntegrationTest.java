@@ -31,8 +31,6 @@ public class TimeSeriesPostGISIntegrationTest {
     private static final String user = "postgres";
     private static final String password = "postgres";
 
-    private String tableName;
-
     // RDB client
     private TimeSeriesRDBClient<Integer> tsClient;
     // RemoteRDBStoreClient
@@ -57,10 +55,10 @@ public class TimeSeriesPostGISIntegrationTest {
     public void testInitTimeSeriesTable() throws SQLException {
         try (Connection conn = rdbStoreClient.getConnection()) {
             DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
-            tableName = tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
+            tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
                     "http://ts1", 4326, conn);
             // 1 for time column, 1 for the geometry column, 1 for tsIRI column
-            Assert.assertEquals(3, context.meta().getTables(tableName).get(0).fields().length);
+            Assert.assertEquals(3, context.meta().getTables("time_series_data").get(0).fields().length);
         }
 
     }
@@ -82,7 +80,7 @@ public class TimeSeriesPostGISIntegrationTest {
         values.add(Arrays.asList(point));
 
         try (Connection conn = rdbStoreClient.getConnection()) {
-            tableName = tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
+            tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
                     "http://ts1", 4326, conn);
             TimeSeries<Integer> tsUpload = new TimeSeries<Integer>(Arrays.asList(1), Arrays.asList("http://data1"),
                     values);
@@ -108,7 +106,7 @@ public class TimeSeriesPostGISIntegrationTest {
         values.add(Arrays.asList(polygon));
 
         try (Connection conn = rdbStoreClient.getConnection()) {
-            tableName = tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
+            tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
                     "http://ts1", 4326, conn);
             TimeSeries<Integer> tsUpload = new TimeSeries<Integer>(Arrays.asList(1), Arrays.asList("http://data1"),
                     values);
@@ -133,7 +131,7 @@ public class TimeSeriesPostGISIntegrationTest {
         values.add(Arrays.asList(point));
 
         try (Connection conn = rdbStoreClient.getConnection()) {
-            tableName = tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
+            tsClient.initTimeSeriesTable(Arrays.asList("http://data1"), Arrays.asList(Point.class),
                     "http://ts1", 4326, conn);
             // upload data
             TimeSeries<Integer> tsUpload = new TimeSeries<Integer>(Arrays.asList(1), Arrays.asList("http://data1"),

@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.Properties;
 import java.io.File;
 import java.io.InputStream;
@@ -23,11 +22,10 @@ import org.jooq.CreateSchemaFinalStep;
 import org.jooq.CreateTableColumnStep;
 import org.jooq.DSLContext;
 import org.jooq.Field;
-import org.jooq.InsertValuesStep4;
+import org.jooq.InsertValuesStep3;
 import org.jooq.InsertValuesStepN;
 import org.jooq.Record;
 import org.jooq.Result;
-import org.jooq.Row2;
 import org.jooq.SQLDialect;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
@@ -67,9 +65,13 @@ public class TimeSeriesRDBClient<T> {
 	static final SQLDialect DIALECT = SQLDialect.POSTGRES;
 	// Central database table
 	private static final String DB_TABLE_NAME = "time_series_quantities";
+
+	private static final String TIME_SERIES_DATA = "time_series_data";
+	private static final String TS_IRI_COLUMN_STRING = "time_series_iri";
+	private static final String TIME_COLUMN = "time";
+
 	private static final Field<String> DATA_IRI_COLUMN = DSL.field(DSL.name("data_iri"), String.class);
-	private static final Field<String> TS_IRI_COLUMN = DSL.field(DSL.name("time_series_iri"), String.class);
-	private static final Field<String> TABLENAME_COLUMN = DSL.field(DSL.name("table_name"), String.class);
+	private static final Field<String> TS_IRI_COLUMN = DSL.field(DSL.name(TS_IRI_COLUMN_STRING), String.class);
 	private static final Field<String> COLUMNNAME_COLUMN = DSL.field(DSL.name("column_name"), String.class);
 	// Exception prefix
 	private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
@@ -89,7 +91,7 @@ public class TimeSeriesRDBClient<T> {
 	 * @param timeClass class of the timestamps of the time series
 	 */
 	public TimeSeriesRDBClient(Class<T> timeClass) {
-		timeColumn = DSL.field(DSL.name("time"), timeClass);
+		timeColumn = DSL.field(DSL.name(TIME_COLUMN), timeClass);
 	}
 
 	public void setSchema(String schema) {
@@ -111,9 +113,9 @@ public class TimeSeriesRDBClient<T> {
 	 * @param tsIRI     IRI of the timeseries provided as string
 	 * @param conn      connection to the RDB
 	 */
-	protected String initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI,
+	protected void initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI,
 			Connection conn) {
-		return initTimeSeriesTable(dataIRI, dataClass, tsIRI, null, conn);
+		initTimeSeriesTable(dataIRI, dataClass, tsIRI, null, conn);
 	}
 
 	/**
@@ -128,7 +130,7 @@ public class TimeSeriesRDBClient<T> {
 	 * @param conn      connection to the RDB
 	 * @return
 	 */
-	protected String initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI, Integer srid,
+	protected void initTimeSeriesTable(List<String> dataIRIList, List<Class<?>> dataClass, String tsIRI, Integer srid,
 			Connection conn) {
 
 		// All database interactions in try-block to ensure closure of connection
@@ -144,7 +146,7 @@ public class TimeSeriesRDBClient<T> {
 
 			// Check if any data has already been initialised (i.e. is associated with
 			// different tsIRI)
-			for (String s : dataIRI) {
+			for (String s : dataIRIList) {
 				if (checkDataHasTimeSeries(s, conn)) {
 					throw new JPSRuntimeException(
 							exceptionPrefix + "<" + s + "> already has an assigned time series instance");
@@ -152,44 +154,44 @@ public class TimeSeriesRDBClient<T> {
 			}
 
 			// Ensure that there is a class for each data IRI
-			if (dataIRI.size() != dataClass.size()) {
+			if (dataIRIList.size() != dataClass.size()) {
 				throw new JPSRuntimeException(
 						exceptionPrefix + "Length of dataClass is different from number of data IRIs");
 			}
 
-			TimeSeriesDatabaseMetadata timeSeriesDatabaseMetadata = getTimeSeriesDatabaseMetadata(conn);
-			String existingSuitableTable = timeSeriesDatabaseMetadata.getExistingSuitableTable(dataClass, srid);
+			if (checkTimeSeriesTableExists(conn)) {
+				TimeSeriesDatabaseMetadata timeSeriesDatabaseMetadata = getTimeSeriesDatabaseMetadata(conn);
+				List<Boolean> hasMatchingColumn = timeSeriesDatabaseMetadata.hasMatchingColumn(dataClass, srid);
 
-			// Generate UUID as unique RDB table name
-			String tsTableName;
-
-			// Assign column name for each dataIRI; name for time column is fixed
-			Map<String, String> dataColumnNames = new HashMap<>();
-			if (existingSuitableTable != null) {
-				for (int i = 0; i < dataIRI.size(); i++) {
-					String existingSuitableColumn = timeSeriesDatabaseMetadata.getExistingSuitableColumn(
-							existingSuitableTable, dataClass.get(i), srid);
-					dataColumnNames.put(dataIRI.get(i), existingSuitableColumn);
+				// Assign column name for each dataIRI; name for time column is fixed
+				Map<String, String> dataColumnNames = new HashMap<>();
+				for (int i = 0; i < hasMatchingColumn.size(); i++) {
+					if (Boolean.TRUE.equals(hasMatchingColumn.get(i))) {
+						// use existing column
+						String existingSuitableColumn = timeSeriesDatabaseMetadata
+								.getExistingSuitableColumn(dataClass.get(i), srid);
+						dataColumnNames.put(dataIRIList.get(i), existingSuitableColumn);
+					} else {
+						// add new columns
+						int columnIndex = getNumberOfDataColumns(conn) + 1;
+						String columnName = "column" + columnIndex;
+						addColumn(dataClass.get(i), columnName, srid, conn);
+						dataColumnNames.put(dataIRIList.get(i), columnName);
+					}
 				}
-				tsTableName = existingSuitableTable;
+
+				// Add corresponding entries in central lookup table
+				populateCentralTable(dataIRIList, dataColumnNames, tsIRI, conn);
 			} else {
-				tsTableName = UUID.randomUUID().toString().replace("-", "_");
+				Map<String, String> dataColumnNames = new HashMap<>();
 				int i = 1;
-				for (String s : dataIRI) {
-					dataColumnNames.put(s, "column" + i);
-					i++;
+				for (String dataIri : dataIRIList) {
+					dataColumnNames.put(dataIri, "column" + i);
+					i += 1;
 				}
+				createEmptyTimeSeriesTable(dataColumnNames, dataIRIList, dataClass, srid, conn);
+				populateCentralTable(dataIRIList, dataColumnNames, tsIRI, conn);
 			}
-
-			// Add corresponding entries in central lookup table
-			populateCentralTable(tsTableName, dataIRI, dataColumnNames, tsIRI, conn);
-
-			// Initialise RDB table for storing time series data
-			if (existingSuitableTable == null) {
-				createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRI, dataClass, srid, conn);
-			}
-
-			return tsTableName;
 		} catch (JPSRuntimeException e) {
 			// Re-throw JPSRuntimeExceptions
 			throw e;
@@ -235,7 +237,6 @@ public class TimeSeriesRDBClient<T> {
 				// (throws Exception if not)
 				checkDataIsInSameTable(dataIRI, context);
 
-				String tsTableName = getTimeseriesTableName(dataIRI.get(0), context);
 				String tsIri = getTimeSeriesIRI(dataIRI.get(0), context);
 				// Assign column name for each dataIRI; name for time column is fixed
 				Map<String, String> dataColumnNames = new HashMap<>();
@@ -246,7 +247,7 @@ public class TimeSeriesRDBClient<T> {
 				// Append time series data to time series table
 				// if a row with the time value exists, that row will be updated instead of
 				// creating a new row
-				populateTimeSeriesTable(tsTableName, ts, dataColumnNames, tsIri, conn);
+				populateTimeSeriesTable(ts, dataColumnNames, tsIri, conn);
 			} catch (JPSRuntimeException e) {
 				// Re-throw JPSRuntimeExceptions
 				throw e;
@@ -299,7 +300,6 @@ public class TimeSeriesRDBClient<T> {
 			checkDataIsInSameTable(dataIRI, context);
 
 			// Retrieve table corresponding to the time series connected to the data IRIs
-			Table<?> table = getTimeseriesTable(dataIRI.get(0), context);
 			String tsIri = getTimeSeriesIRI(dataIRI.get(0), context);
 
 			// Create map between data IRI and the corresponding column field in the table
@@ -319,14 +319,16 @@ public class TimeSeriesRDBClient<T> {
 
 			// Potentially update bounds (if no bounds were provided)
 			if (lowerBound == null) {
-				lowerBound = context.select(min(timeColumn)).from(table).fetch(min(timeColumn)).get(0);
+				lowerBound = context.select(min(timeColumn)).from(getDSLTable(TIME_SERIES_DATA)).fetch(min(timeColumn))
+						.get(0);
 			}
 			if (upperBound == null) {
-				upperBound = context.select(max(timeColumn)).from(table).fetch(max(timeColumn)).get(0);
+				upperBound = context.select(max(timeColumn)).from(getDSLTable(TIME_SERIES_DATA)).fetch(max(timeColumn))
+						.get(0);
 			}
 
 			// Perform query
-			Result<? extends Record> queryResult = context.select(columnList).from(table)
+			Result<? extends Record> queryResult = context.select(columnList).from(getDSLTable(TIME_SERIES_DATA))
 					.where(timeColumn.between(lowerBound, upperBound).and(TS_IRI_COLUMN.eq(tsIri)))
 					.orderBy(timeColumn.asc()).fetch();
 
@@ -372,14 +374,13 @@ public class TimeSeriesRDBClient<T> {
 		DSLContext context = DSL.using(conn, DIALECT);
 
 		try {
-			Table<?> tsTable = getTimeseriesTable(dataIRI, context);
 			String columnName = getColumnName(dataIRI, context);
 			String tsIri = getTimeSeriesIRI(dataIRI, context);
 
 			Field<Object> dataField = DSL.field(DSL.name(columnName));
 
-			Result<? extends Record> queryResult = context.select(timeColumn, dataField).from(tsTable)
-					.where(dataField.isNotNull().and(TS_IRI_COLUMN.eq(tsIri)))
+			Result<? extends Record> queryResult = context.select(timeColumn, dataField)
+					.from(getDSLTable(TIME_SERIES_DATA)).where(dataField.isNotNull().and(TS_IRI_COLUMN.eq(tsIri)))
 					.orderBy(timeColumn.desc()).limit(1).fetch();
 
 			List<T> timeValues = queryResult.getValues(timeColumn);
@@ -402,14 +403,13 @@ public class TimeSeriesRDBClient<T> {
 		DSLContext context = DSL.using(conn, DIALECT);
 
 		try {
-			Table<?> tsTable = getTimeseriesTable(dataIRI, context);
 			String columnName = getColumnName(dataIRI, context);
 			String tsIri = getTimeSeriesIRI(dataIRI, context);
 
 			Field<Object> dataField = DSL.field(DSL.name(columnName));
 
-			Result<? extends Record> queryResult = context.select(timeColumn, dataField).from(tsTable)
-					.where(dataField.isNotNull().and(TS_IRI_COLUMN.eq(tsIri)))
+			Result<? extends Record> queryResult = context.select(timeColumn, dataField)
+					.from(getDSLTable(TIME_SERIES_DATA)).where(dataField.isNotNull().and(TS_IRI_COLUMN.eq(tsIri)))
 					.orderBy(timeColumn.asc()).limit(1).fetch();
 
 			List<T> timeValues = queryResult.getValues(timeColumn);
@@ -469,13 +469,11 @@ public class TimeSeriesRDBClient<T> {
 
 		// All database interactions in try-block to ensure closure of connection
 		try {
-
 			// Retrieve table corresponding to the time series connected to the data IRI
-			Table<?> table = getTimeseriesTable(dataIRI, context);
 			String tsIri = getTimeSeriesIRI(dataIRI, context);
 
-			List<T> queryResult = context.select(max(timeColumn)).from(table).where(TS_IRI_COLUMN.eq(tsIri))
-					.fetch(max(timeColumn));
+			List<T> queryResult = context.select(max(timeColumn)).from(getDSLTable(TIME_SERIES_DATA))
+					.where(TS_IRI_COLUMN.eq(tsIri)).fetch(max(timeColumn));
 
 			return queryResult.get(0);
 
@@ -506,10 +504,10 @@ public class TimeSeriesRDBClient<T> {
 		// All database interactions in try-block to ensure closure of connection
 		try {
 			// Retrieve table corresponding to the time series connected to the data IRI
-			Table<?> table = getTimeseriesTable(dataIRI, context);
 			String tsIri = getTimeSeriesIRI(dataIRI, context);
 
-			List<T> queryResult = context.select(min(timeColumn)).from(table).where(TS_IRI_COLUMN.eq(tsIri))
+			List<T> queryResult = context.select(min(timeColumn)).from(getDSLTable(TIME_SERIES_DATA))
+					.where(TS_IRI_COLUMN.eq(tsIri))
 					.fetch(min(timeColumn));
 
 			return queryResult.get(0);
@@ -545,12 +543,11 @@ public class TimeSeriesRDBClient<T> {
 		// All database interactions in try-block to ensure closure of connection
 		try {
 			// Retrieve RDB table for dataIRI
-			Table<?> table = getTimeseriesTable(dataIRI, context);
 			String tsIri = getTimeSeriesIRI(dataIRI, context);
 
 			// Delete rows between bounds (including bounds!)
-			context.delete(table).where(timeColumn.between(lowerBound, upperBound).and(TS_IRI_COLUMN.eq(tsIri)))
-					.execute();
+			context.delete(getDSLTable(TIME_SERIES_DATA))
+					.where(timeColumn.between(lowerBound, upperBound).and(TS_IRI_COLUMN.eq(tsIri))).execute();
 
 		} catch (JPSRuntimeException e) {
 			// Re-throw JPSRuntimeExceptions
@@ -581,7 +578,6 @@ public class TimeSeriesRDBClient<T> {
 		// All database interactions in try-block to ensure closure of connection
 		try {
 			String tsIri = getTimeSeriesIRI(dataIRI, context);
-			String tsTableName = getTimeseriesTableName(dataIRI, context);
 
 			// Delete entry in central lookup table
 			context.delete(getDSLTable(DB_TABLE_NAME)).where(DATA_IRI_COLUMN.equal(dataIRI)).execute();
@@ -591,7 +587,7 @@ public class TimeSeriesRDBClient<T> {
 					.where(TS_IRI_COLUMN.equal(tsIri)).fetchOne(0, int.class);
 
 			if (numDataRemaining == 0) {
-				context.dropTable(getDSLTable(tsTableName)).execute();
+				context.dropTable(getDSLTable(TIME_SERIES_DATA)).execute();
 			}
 
 		} catch (JPSRuntimeException e) {
@@ -623,20 +619,18 @@ public class TimeSeriesRDBClient<T> {
 
 			// Retrieve RDB table for dataIRI
 			String tsIRI = getTimeSeriesIRI(dataIRI, context);
-			String tsTableName = getTimeseriesTableName(dataIRI, context);
 
 			// Delete entries in central lookup table
 			context.delete(getDSLTable(DB_TABLE_NAME)).where(TS_IRI_COLUMN.equal(tsIRI)).execute();
 
-			int numDataRemaining = context.select(count()).from(getDSLTable(DB_TABLE_NAME))
-					.where(TABLENAME_COLUMN.eq(tsTableName)).fetchOne(0, int.class);
+			int numDataRemaining = context.select(count()).from(getDSLTable(DB_TABLE_NAME)).fetchOne(0, int.class);
 
 			if (numDataRemaining == 0) {
 				// delete entire table
-				context.dropTable(getDSLTable(tsTableName)).execute();
+				context.dropTable(getDSLTable(TIME_SERIES_DATA)).execute();
 			} else {
 				// delete only the entries
-				context.delete(getDSLTable(tsTableName)).where(TS_IRI_COLUMN.eq(tsIRI)).execute();
+				context.delete(getDSLTable(TIME_SERIES_DATA)).where(TS_IRI_COLUMN.eq(tsIRI)).execute();
 			}
 
 		} catch (JPSRuntimeException e) {
@@ -666,20 +660,11 @@ public class TimeSeriesRDBClient<T> {
 
 			// Check if central database lookup table exists
 			if (checkCentralTableExists(conn)) {
+				context.dropTable(getDSLTable(DB_TABLE_NAME)).execute();
+			}
 
-				// Retrieve all time series table names from central lookup table
-				Table<?> dbTable = getDSLTable(DB_TABLE_NAME);
-				List<String> queryResult = context.selectDistinct(TABLENAME_COLUMN).from(dbTable)
-						.fetch(TABLENAME_COLUMN);
-
-				if (!queryResult.isEmpty()) {
-					for (String table : queryResult) {
-						// Delete time series RDB table
-						context.dropTable(getDSLTable(table)).execute();
-					}
-					// Delete central lookup table
-					context.dropTable(dbTable).execute();
-				}
+			if (checkTimeSeriesTableExists(conn)) {
+				context.dropTable(getDSLTable(TIME_SERIES_DATA)).execute();
 			}
 
 		} catch (Exception e) {
@@ -703,11 +688,10 @@ public class TimeSeriesRDBClient<T> {
 		// Initialise central lookup table: only creates empty table if it does not
 		// exist, otherwise it is left unchanged
 		try (CreateTableColumnStep createStep = context.createTableIfNotExists(getDSLTable(DB_TABLE_NAME))) {
-			createStep.column(DATA_IRI_COLUMN).column(TS_IRI_COLUMN)
-					.column(TABLENAME_COLUMN).column(COLUMNNAME_COLUMN).execute();
+			createStep.column(DATA_IRI_COLUMN).column(TS_IRI_COLUMN).column(COLUMNNAME_COLUMN).execute();
 		}
 		context.createIndex().on(getDSLTable(DB_TABLE_NAME),
-				Arrays.asList(DATA_IRI_COLUMN, TS_IRI_COLUMN, TABLENAME_COLUMN, COLUMNNAME_COLUMN)).execute();
+				Arrays.asList(DATA_IRI_COLUMN, TS_IRI_COLUMN, COLUMNNAME_COLUMN)).execute();
 	}
 
 	private boolean checkCentralTableExists(Connection conn) {
@@ -735,16 +719,15 @@ public class TimeSeriesRDBClient<T> {
 	 * @param tsIRI           timeseries IRI provided as string
 	 * @param context
 	 */
-	private void populateCentralTable(String tsTable, List<String> dataIRI, Map<String, String> dataColumnNames,
+	private void populateCentralTable(List<String> dataIRI, Map<String, String> dataColumnNames,
 			String tsIRI, Connection conn) {
 		DSLContext context = DSL.using(conn, DIALECT);
-		InsertValuesStep4<Record, String, String, String, String> insertValueStep = context.insertInto(
-				getDSLTable(DB_TABLE_NAME),
-				DATA_IRI_COLUMN, TS_IRI_COLUMN, TABLENAME_COLUMN, COLUMNNAME_COLUMN);
+		InsertValuesStep3<Record, String, String, String> insertValueStep = context.insertInto(
+				getDSLTable(DB_TABLE_NAME), DATA_IRI_COLUMN, TS_IRI_COLUMN, COLUMNNAME_COLUMN);
 
 		// Populate columns row by row
 		for (String s : dataIRI) {
-			insertValueStep = insertValueStep.values(s, tsIRI, tsTable, dataColumnNames.get(s));
+			insertValueStep = insertValueStep.values(s, tsIRI, dataColumnNames.get(s));
 		}
 
 		insertValueStep.execute();
@@ -766,7 +749,7 @@ public class TimeSeriesRDBClient<T> {
 	 * @param conn            connection to the RDB
 	 * @throws SQLException
 	 */
-	private void createEmptyTimeSeriesTable(String tsTable, Map<String, String> dataColumnNames, List<String> dataIRI,
+	private void createEmptyTimeSeriesTable(Map<String, String> dataColumnNames, List<String> dataIRI,
 			List<Class<?>> dataClass, Integer srid, Connection conn) throws SQLException {
 
 		DSLContext context = DSL.using(conn, DIALECT);
@@ -776,7 +759,7 @@ public class TimeSeriesRDBClient<T> {
 		CreateTableColumnStep createStep = null;
 		try {
 			// Create table
-			createStep = context.createTableIfNotExists(getDSLTable(tsTable));
+			createStep = context.createTable(getDSLTable(TIME_SERIES_DATA));
 
 			// Create time column
 			createStep = createStep.column(timeColumn).column(TS_IRI_COLUMN);
@@ -802,11 +785,11 @@ public class TimeSeriesRDBClient<T> {
 		}
 
 		// create index on time column and time series IRI columns for quicker searches
-		context.createIndex().on(getDSLTable(tsTable), timeColumn, TS_IRI_COLUMN).execute();
+		context.createIndex().on(getDSLTable(TIME_SERIES_DATA), timeColumn, TS_IRI_COLUMN).execute();
 
 		// add remaining geometry columns with restrictions
 		if (!additionalGeomColumns.isEmpty()) {
-			addGeometryColumns(tsTable, additionalGeomColumns, classForAdditionalGeomColumns, srid, conn);
+			addGeometryColumns(additionalGeomColumns, classForAdditionalGeomColumns, srid, conn);
 		}
 	}
 
@@ -819,13 +802,14 @@ public class TimeSeriesRDBClient<T> {
 	 * 
 	 * @throws SQLException
 	 */
-	private void addGeometryColumns(String tsTable, List<String> columnNames, List<Class<?>> dataTypes, Integer srid,
+	private void addGeometryColumns(List<String> columnNames, List<Class<?>> dataTypes, Integer srid,
 			Connection conn) throws SQLException {
 		StringBuilder sb = new StringBuilder();
-		sb.append(String.format("alter table %s ", getDSLTable(tsTable).toString()));
+		sb.append(String.format("alter table %s ", getDSLTable(TIME_SERIES_DATA).toString()));
 
 		for (int i = 0; i < columnNames.size(); i++) {
-			sb.append(String.format("add %s geometry(%s", columnNames.get(i), dataTypes.get(i).getSimpleName()));
+			sb.append(String.format("add %s geometry(%s", DSL.name(columnNames.get(i)),
+					dataTypes.get(i).getSimpleName()));
 
 			// add srid if given
 			if (srid != null) {
@@ -859,15 +843,12 @@ public class TimeSeriesRDBClient<T> {
 	 * @param conn            connection to the RDB
 	 * @throws SQLException
 	 */
-	private void populateTimeSeriesTable(String tsTable, TimeSeries<T> ts, Map<String, String> dataColumnNames,
+	private void populateTimeSeriesTable(TimeSeries<T> ts, Map<String, String> dataColumnNames,
 			String tsIri, Connection conn) throws SQLException {
 
 		DSLContext context = DSL.using(conn, DIALECT);
 
 		List<String> dataIRIs = ts.getDataIRIs();
-
-		// Retrieve RDB table from table name
-		Table<?> table = getDSLTable(tsTable);
 
 		List<Field<?>> columnList = new ArrayList<>();
 		// Retrieve list of corresponding column names for dataIRIs
@@ -880,7 +861,7 @@ public class TimeSeriesRDBClient<T> {
 		// collect the list of time values that exist in the table
 		// these rows are treated specially to avoid duplicates
 		// Populate columns row by row
-		InsertValuesStepN<?> insertValueStep = context.insertInto(table, columnList);
+		InsertValuesStepN<?> insertValueStep = context.insertInto(getDSLTable(TIME_SERIES_DATA), columnList);
 
 		for (int i = 0; i < ts.getTimes().size(); i++) {
 			// newValues is the row elements
@@ -1010,48 +991,6 @@ public class TimeSeriesRDBClient<T> {
 	}
 
 	/**
-	 * Retrieve table name for provided dataIRI from central database lookup table
-	 * (if it exists)
-	 * <p>
-	 * Requires existing RDB connection
-	 * 
-	 * @param dataIRI data IRI provided as string
-	 * @param context
-	 * @return Corresponding table name as string
-	 */
-	private String getTimeseriesTableName(String dataIRI, DSLContext context) {
-		try {
-			// Look for the entry dataIRI in dbTable
-			Table<?> table = getDSLTable(DB_TABLE_NAME);
-			List<String> queryResult = context.select(TABLENAME_COLUMN).from(table).where(DATA_IRI_COLUMN.eq(dataIRI))
-					.fetch(TABLENAME_COLUMN);
-			// Throws IndexOutOfBoundsException if dataIRI is not present in central lookup
-			// table (i.e. queryResult is empty)
-			return queryResult.get(0);
-		} catch (IndexOutOfBoundsException e) {
-			LOGGER.error(e.getMessage());
-			throw new JPSRuntimeException(
-					exceptionPrefix + "<" + dataIRI + "> does not have an assigned time series instance");
-		}
-	}
-
-	/**
-	 * Retrieve time series table for provided dataIRI in database
-	 * <p>
-	 * Requires existing RDB connection
-	 * 
-	 * @param dataIRI data IRI provided as string
-	 * @param context
-	 * @return Table object corresponding to the time series
-	 */
-	private Table<?> getTimeseriesTable(String dataIRI, DSLContext context) {
-		// Retrieve the table name attached to the data IRI
-		String tableName = getTimeseriesTableName(dataIRI, context);
-
-		return getDSLTable(tableName);
-	}
-
-	/**
 	 * Retrieve aggregate value of a column; stored data should be in numerics
 	 * 
 	 * @param dataIRI           data IRI provided as string
@@ -1068,8 +1007,6 @@ public class TimeSeriesRDBClient<T> {
 
 		// All database interactions in try-block to ensure closure of connection
 		try {
-			// Retrieve table corresponding to the time series connected to the data IRI
-			Table<?> table = getTimeseriesTable(dataIRI, context);
 			String tsIri = getTimeSeriesIRI(dataIRI, context);
 
 			// Create map between the data IRI and the corresponding column field in the
@@ -1079,14 +1016,14 @@ public class TimeSeriesRDBClient<T> {
 
 			switch (aggregateFunction) {
 				case AVERAGE:
-					return context.select(avg(columnField)).from(table).where(TS_IRI_COLUMN.eq(tsIri))
-							.fetch(avg(columnField)).get(0).doubleValue();
+					return context.select(avg(columnField)).from(getDSLTable(TIME_SERIES_DATA))
+							.where(TS_IRI_COLUMN.eq(tsIri)).fetch(avg(columnField)).get(0).doubleValue();
 				case MAX:
-					return context.select(max(columnField)).from(table).where(TS_IRI_COLUMN.eq(tsIri))
-							.fetch(max(columnField)).get(0);
+					return context.select(max(columnField)).from(getDSLTable(TIME_SERIES_DATA))
+							.where(TS_IRI_COLUMN.eq(tsIri)).fetch(max(columnField)).get(0);
 				case MIN:
-					return context.select(min(columnField)).from(table).where(TS_IRI_COLUMN.eq(tsIri))
-							.fetch(min(columnField)).get(0);
+					return context.select(min(columnField)).from(getDSLTable(TIME_SERIES_DATA))
+							.where(TS_IRI_COLUMN.eq(tsIri)).fetch(min(columnField)).get(0);
 				default:
 					throw new JPSRuntimeException(
 							exceptionPrefix + "Aggregate function " + aggregateFunction.name() + " not valid!");
@@ -1185,8 +1122,8 @@ public class TimeSeriesRDBClient<T> {
 	 *                  double or int) for each data IRI
 	 * @param tsIRI     IRI of the timeseries provided as string
 	 */
-	protected String initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI) {
-		return initTimeSeriesTable(dataIRI, dataClass, tsIRI, (Integer) null);
+	protected void initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI) {
+		initTimeSeriesTable(dataIRI, dataClass, tsIRI, (Integer) null);
 	}
 
 	/**
@@ -1200,9 +1137,9 @@ public class TimeSeriesRDBClient<T> {
 	 * @param srid
 	 * @return
 	 */
-	protected String initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI, Integer srid) {
+	protected void initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI, Integer srid) {
 		try (Connection conn = getConnection()) {
-			return initTimeSeriesTable(dataIRI, dataClass, tsIRI, srid, conn);
+			initTimeSeriesTable(dataIRI, dataClass, tsIRI, srid, conn);
 		} catch (SQLException e) {
 			LOGGER.error(e.getMessage());
 			throw new JPSRuntimeException(exceptionPrefix + CONNECTION_ERROR, e);
@@ -1476,9 +1413,8 @@ public class TimeSeriesRDBClient<T> {
 		Field<String> udtNameColumn = DSL.field("udt_name", String.class);
 		Field<String> columnNameColumn = DSL.field("column_name", String.class);
 
-		Condition condition = tableNameColumn
-				.in(context.select(TABLENAME_COLUMN).from(getDSLTable(DB_TABLE_NAME)).fetch(TABLENAME_COLUMN))
-				.and(columnNameColumn.ne("time"));
+		Condition condition = tableNameColumn.eq(TIME_SERIES_DATA).and(columnNameColumn.ne("time"))
+				.and(columnNameColumn.ne(TS_IRI_COLUMN_STRING));
 
 		if (schema != null) {
 			Field<String> schemaColumn = DSL.field("table_schema", String.class);
@@ -1486,46 +1422,84 @@ public class TimeSeriesRDBClient<T> {
 		}
 
 		Result<? extends Record> queryResult = context
-				.select(tableNameColumn, dataTypeColumn, udtNameColumn, columnNameColumn).from(columnsTable)
+				.select(dataTypeColumn, udtNameColumn, columnNameColumn).from(columnsTable)
 				.where(condition).fetch();
 
 		queryResult.forEach(rec -> {
-			String tableName = rec.get(tableNameColumn);
 			String dataType = rec.get(dataTypeColumn);
-			String udtType = rec.get(udtNameColumn);
+			String udtName = rec.get(udtNameColumn);
 			String columnName = rec.get(columnNameColumn);
-			timeSeriesDatabaseMetadata.addDataType(tableName, columnName, dataType);
-			timeSeriesDatabaseMetadata.addUdtType(tableName, columnName, udtType);
+			timeSeriesDatabaseMetadata.addDataType(columnName, dataType);
+			timeSeriesDatabaseMetadata.addUdtName(columnName, udtName);
 		});
 	}
 
 	private void addSpecificGeometryClass(Connection conn, TimeSeriesDatabaseMetadata timeSeriesMetadata) {
-		List<List<String>> geometryRows = timeSeriesMetadata.getGeometryRows();
-		if (!geometryRows.isEmpty()) {
+		List<String> geometryColumns = timeSeriesMetadata.getGeometryColumns();
+		if (!geometryColumns.isEmpty()) {
 			DSLContext context = DSL.using(conn, DIALECT);
 			Field<String> tableNameColumn = DSL.field("f_table_name", String.class);
 			Field<String> columnNameColumn = DSL.field("f_geometry_column", String.class);
 			Field<String> typeColumn = DSL.field("type", String.class);
 			Field<Integer> sridColumn = DSL.field("srid", Integer.class);
 
-			List<Row2<String, String>> rows = new ArrayList<>();
-			geometryRows.forEach(geometryRow -> rows.add(row(geometryRow.get(0), geometryRow.get(1))));
-
-			Condition condition = row(tableNameColumn, columnNameColumn).in(rows);
+			Condition condition = tableNameColumn.eq(TIME_SERIES_DATA).and(columnNameColumn.in(geometryColumns));
 
 			Result<? extends Record> queryResult = context
-					.select(sridColumn, typeColumn, tableNameColumn, columnNameColumn)
+					.select(sridColumn, typeColumn, columnNameColumn)
 					.from(getDSLTable("geometry_columns")).where(condition).fetch();
 
 			queryResult.forEach(rec -> {
-				String tableName = rec.get(tableNameColumn);
 				String columnName = rec.get(columnNameColumn);
 				String geometryName = rec.get(typeColumn);
 				int srid = rec.get(sridColumn);
 
-				timeSeriesMetadata.addGeometryType(tableName, columnName, geometryName);
-				timeSeriesMetadata.addSrid(tableName, columnName, srid);
+				timeSeriesMetadata.addGeometryType(columnName, geometryName);
+				timeSeriesMetadata.addSrid(columnName, srid);
 			});
 		}
+	}
+
+	private boolean checkTimeSeriesTableExists(Connection conn) {
+		DSLContext context = DSL.using(conn, DIALECT);
+		Table<Record> tables = DSL.table(DSL.name("information_schema", "tables"));
+		Field<String> tableNameColumn = DSL.field("table_name", String.class);
+
+		Condition condition = tableNameColumn.eq(TIME_SERIES_DATA);
+		if (schema != null) {
+			Field<String> schemaColumn = DSL.field("table_schema", String.class);
+			condition = condition.and(schemaColumn.eq(schema));
+		}
+		return context.select(count()).from(tables).where(condition).fetchOne(0, int.class) == 1;
+	}
+
+	private void addColumn(Class<?> clas, String columnName, Integer srid, Connection conn) throws SQLException {
+		if (Geometry.class.isAssignableFrom(clas)) {
+			addGeometryColumns(Arrays.asList(columnName), Arrays.asList(clas), srid, conn);
+		} else {
+			DSLContext context = DSL.using(conn, DIALECT);
+			context.alterTable(getDSLTable(TIME_SERIES_DATA))
+					.add(DSL.name(columnName), DefaultDataType.getDataType(DIALECT, clas)).execute();
+		}
+	}
+
+	/**
+	 * mainly to determine column names
+	 */
+	private int getNumberOfDataColumns(Connection conn) {
+		DSLContext context = DSL.using(conn, DIALECT);
+		Table<Record> columnsTable = DSL.table(DSL.name("information_schema", "columns"));
+		Field<String> tableNameColumn = DSL.field("table_name", String.class);
+		Field<String> columnNameColumn = DSL.field("column_name", String.class);
+
+		Condition condition = tableNameColumn.eq(TIME_SERIES_DATA)
+				.and(columnNameColumn.notIn(TIME_COLUMN, TS_IRI_COLUMN_STRING));
+
+		if (schema != null) {
+			Field<String> schemaColumn = DSL.field("table_schema", String.class);
+			condition.and(schemaColumn.eq(schema));
+		}
+
+		return context.select(count()).from(columnsTable).where(condition).fetchOne(0, int.class);
 	}
 }
