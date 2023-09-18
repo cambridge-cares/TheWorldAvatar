@@ -1,5 +1,7 @@
 # Feature Info Agent
 
+<img align="right" width="250" height="250" src="./docs/fia-logo.svg">
+
 This Feature Info Agent (FIA) acts as a single access point for [TWA Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/TWA-Visualisations) to query for both meta and time series data of an individual feature (i.e. a single geographical location) before display within the side panel of the visualisation.
 
 Please see the [CHANGELOG](./CHANGELOG.md) file for details on recent changes; the latest available image of the FIA can be determine by viewing its [GitHub package page](https://github.com/cambridge-cares/TheWorldAvatar/pkgs/container/feature-info-agent).
@@ -57,7 +59,7 @@ Queries for metadata should not concern themselves with data relating to time se
 Queries that generate multiple rows with the same property name are supported, their values will be combined into a single JSON array by the agent.
 
 <p align="center">
-   <img src="meta-query-example.jpg" alt="Example result of a metadata query" width="50%"/>
+   <img src="./docs/meta-query-example.jpg" alt="Example result of a metadata query" width="50%"/>
 </p>
 <p align="center">
    <em>Results of a valid SPARQL query for metadata.</em>
@@ -67,7 +69,7 @@ Queries that generate multiple rows with the same property name are supported, t
 Queries for time series need to return the measurement/forecast IRIs (i.e. the IRIs which are connected via `ts:hasTimeSeries`) to the actual time series instances stored in the relational database. Those IRIs will be used to grab the actual values from PostgreSQL as well as parameters associated with each measurement/forecast. Required columns are `Series` containing the time series' IRI, `Name` containing a user facing name for this entry, and `Unit` containing the unit (which can be blank);any other columns are currently ignored
 
 <p align="center">
-    <img src="time-query-example.jpg" alt="Example result of a time series query" width="75%"/>
+    <img src="./docs/time-query-example.jpg" alt="Example result of a time series query" width="75%"/>
 </p>
 <p align="center">
    <em>Results of a valid SPARQL query for time series IRIs.</em>
