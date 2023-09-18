@@ -23,6 +23,31 @@ At the time of writing, the FIA has a few restrictions that all deploying develo
 - The FIA can only return time series data on series that uses the Instant class.
   - This is due to a limitation with the underlying TimeseriesClient.
 
+### Class discovery
+
+In addition to the above restrictions, the FIA uses a hardcoded series of SPARQL queries to ask the KG was classes the received A-Box IRI belongs to. For the FIA to detect a class, then use it to find and run the correct metadata/time series query, the data must be able to fulfil the below query.
+
+If the below query returns no results, the FIA will not function; developers may need to update their triples/mapping until the query does return.
+
+```
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT distinct ?class WHERE {
+    [IRI] rdf:type ?class
+}
+```
+
+```
+prefix owl: <http://www.w3.org/2002/07/owl#>
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+select distinct ?class { 
+    SERVICE [ONTOP] { [IRI] a ?x . }
+    ?x rdfs:subClassOf* ?class .
+    ?class rdf:type owl:Class .
+}
+```
+
 ## Requirements
 
 For the FIA to function, a number of configuration steps need to take place before deployment, these are detailed in the subsections below. It is also necessary for users to have good knowledge of Docker, JSON, and to be familiar with management of the TWA Stack system.
@@ -115,3 +140,41 @@ A number of example metadata and time series queries, along with an example FIA 
 ## Troubleshooting
 
 For troubleshooting and FAQs, please see the [FIA Troubleshooting](./docs/troubleshooting.md) document.
+
+## Development
+
+The FIA is a simple HTTP agent written using the existing TWA agent framework. The core functionality of the agent is split across 4 classes; the central `FeatureInfoAgent` class that acts as the receiver and transmitter for HTTP requests, and classes that actually run logic (which should be self-explanatory): `ClassHandler`, `MetaHandler`, and `TimeHandler`.
+
+The algorithm used to find, format, and return data after a request is received is detailed in the diagram below (although you can also read the in-code documentation for more details).
+
+Building the Docker image for the FIA is automatically triggered under certain conditions (see above), but developers can also build a local copy using the provided `build.sh` script after supplying the required `repo_username.txt` and `repo_password.txt` files within the `credentials` directory.
+
+```mermaid
+graph TD;
+   A[Server starts] --> B{Has configuration already loaded?};
+   B -- No --> C[Read FIA configuration file.];
+   B -- Yes --> D[Wait for HTTP requests.];
+   D ----> E[Ask stack client for Ontop URL.];
+   E ----> F[Ask stack client for Postgres URL.];
+   F ----> G[Scan Blazegraph for available namespaces.];
+   G ----> H[Wait for HTTP requests];
+```
+
+<br/><br/>
+
+```mermaid
+graph TD;
+   A[Incoming '/get' request] --> B{Is request valid?};
+   B -- No --> C[Return BAD_REQUEST code.];
+   B -- Yes --> D[Check for 'endpoint' parameter.];
+   D ----> E[Run class determination queries.];
+   E ----> F{Class IRIs returned?};
+   F -- No --> G[Return NO_CONTENT code.];
+   F -- Yes --> H{Class matches registered entry?};
+   H -- No --> I[Return NO_CONTENT code.];
+   H -- Yes --> J[Run registered meta query if present.];
+   J ----> K[Run registered time query if present.];
+   K ----> L[Query RDB using time series IRIs if present.];
+   L ----> M[Format data as JSON];
+   M ----> N[Return content via HTTP.];
+```
