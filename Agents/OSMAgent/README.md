@@ -16,15 +16,15 @@ In the [resource folder](osmagent/src/main/resources/), there are two CSV files 
 ### 2.2. Stack Set Up
 The agent has been implemented to work in the stack. Follow the instructions in the [stack-manager]'s README to set up the stack.
 
-### 2.2. CityDb
+### 2.3. CityDb
 The agent works with 3D buildings uploaded from CityGML data, follow the instructions in the [stack-data-uploader]'s README.
 
-### 2.3. DataIntegrationAgent
+### 2.4. DataIntegrationAgent
 This agent is designed to work with the LoD0 footprint extracted by the DataIntegrationAgent, and assumed the presence of the 3D buildings and LoD0 footprint inside the stack PostgreSQL. 
 **Please ensure that the DataIntegrationAgent is deployed in the stack and ran first before building and running this agent.**
 
-### 2.4. Uploading Raw Data
-#### 2.4.1. OSM Data
+### 2.5. Uploading Raw Data
+#### 2.5.1. OSM Data
 Upload raw OSM data in the same stack PostgreSQL database as the 3D buildings using [stack-data-uploader] as a set of points and polygons of `.gml` data.
 The data structure and config file to upload the raw OSM data in stack-data-uploader is located in [inputs] directory. 
 Ensure that the database specified in [osm.json](inputs/config/osm.json) is the same database where the 3D buildings is located.
@@ -34,7 +34,7 @@ To prepare OSM data in `.gml` format
 2) Convert the `.pbf` file into `.osm` format using [osmconvert](https://wiki.openstreetmap.org/wiki/Osmconvert). 
 3) Import the `.osm` file  into QGIS using [QuickOSM](https://plugins.qgis.org/plugins/QuickOSM/) plugin, then export points and polygons layer as `points.gml` and `polygons.gml`.
 
-#### 2.4.2. Digitales Landschaftsmodell (DLM) Land Use Data
+#### 2.5.2. Digitales Landschaftsmodell (DLM) Land Use Data
 If unavailable within the database, DLM files can be uploaded via the stack-data-uploader in Pirmasens Digital Twin (PSDT) repository. 
 The link to the DLM file in PSDT is available [here](https://github.com/cambridge-cares/pirmasens/tree/main/psdt/stack-data-uploader-inputs/data/dlm). 
 Please note that PSDT is a private repository, permission may be required.
@@ -83,7 +83,7 @@ curl -X POST localhost:3838/osmagent/update
 ```
 
 ## 7. TWA-VF Visualization
-The result of OSMAgent - Building Usages is designed to be compatible with TWA-VF and queryable via FeatureInfoAgent. Please find the setup instructions in [resources](osmagent/src/main/resources/FeatureInfoAgent/).
+The result of OSMAgent - Building Usages is designed to be compatible with TWA-VF and queryable via FeatureInfoAgent. Please find the setup instructions in [resources](osmagent/src/main/resources/FeatureInfoAgent/) folder.
 
 [stack-data-uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
 [stack-manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
