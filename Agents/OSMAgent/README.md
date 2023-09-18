@@ -36,7 +36,7 @@ If unavailable within the database, DLM files can be uploaded via the stack-data
 The link to the DLM file in PSDT is available [here](https://github.com/cambridge-cares/pirmasens/tree/main/psdt/stack-data-uploader-inputs/data/dlm). 
 Please note that PSDT is a private repository, permission may be required.
 
-**Please ensure that the DLM land use data is uploaded in the same PostgreSQL database as the 3D data and OSM data. All datasets can have different schemas however all datasets are assumed to be in the same PostgresSQL database.**
+**Please ensure that the DLM land use data is uploaded in the same PostgreSQL database as the 3D data and OSM data. 3D Buildings, OSM data and DLM data can have different schemas however all datasets are assumed to be in the same PostgresSQL database.**
 
 ## 3. Build
 ### 3.1. GitHub Credentials
@@ -50,9 +50,12 @@ You will need to provide your credentials (GitHub username/personal access token
 
 ### 3.2. Agent Configuration
 In the [config.properties](osmagent/src/main/resources/config.properties) file, specify the following:
-- Database name containing both 3D building and OSM data as `db.name`. Default is set to the database value in [osm.json](inputs/config/osm.json). Change `db.name` if `osm.json` database value is changed.
-- Schema name containing OSM data as `osm.schema`. Default is set to the schema value in [osm.json](inputs/config/osm.json). Change `osm.schema` if `osm.json` schema value is changed.
-- Table name (inclusive of schema) containing DLM land use data as `landuse.table`. Leave empty if there is no land use data available, no land use matching will be run.
+- `db.name` - Database name containing both 3D building and OSM data. 
+Default is set to the database value specified in [osm.json](inputs/config/osm.json). Change `db.name` if [osm.json](inputs/config/osm.json) database value is changed.
+- `osm.schema` - Schema name containing OSM data. 
+Default is set to the schema value specified in [osm.json](inputs/config/osm.json). Change `osm.schema` if [osm.json](inputs/config/osm.json) schema value is changed.
+- `landuse.table` -  Table name (inclusive of schema) containing DLM land use data as . 
+Leave empty if there is no land use data available, no land use matching will be run.
 
 ### 3.3. Building Docker Image
 In the same directory as this README, run `docker-compose build`. This will build the OSMAgent Docker Image
@@ -75,6 +78,9 @@ To run the agent, simply run the following cURL command:
 ```
 curl -X POST localhost:3838/osmagent/update
 ```
+
+## 7. TWA-VF Visualization
+The results of the OSMAgent - building usages is designed to be compatible with TWA-VF and queryable via FeatureInfoAgent. Please find the setup instructions in [resources](OSMAgent/src/main/resources/FeatureInfoAgent/).
 
 [stack-data-uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
 [inputs]: inputs/
