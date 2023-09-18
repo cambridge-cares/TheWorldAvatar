@@ -1,14 +1,25 @@
 import numpy as np
 import tritonclient.http as httpclient
 
+
 class TranslationClient:
     def __init__(self, triton_endpoint: str = "localhost:8000"):
         print("Connecting to triton server at " + triton_endpoint)
         self.client = httpclient.InferenceServerClient(url=triton_endpoint)
-        if self.client.is_model_ready("translation"):
-            print("Translation server is ready")
+
+        try_num = 0
+        try_limit = 3
+        while try_num < try_limit:
+            try:
+                if self.client.is_model_ready("translation"):
+                    print("Translation server is ready.")
+                    break
+            except ConnectionRefusedError:
+                try_num += 1
         else:
-            print("There are issues connecting to translation server")
+            print(
+                "There are issues connecting to translation server. Please ensure that the translation server is running."
+            )
 
     def translate(self, text: str):
         text = np.array(

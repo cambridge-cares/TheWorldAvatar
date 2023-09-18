@@ -10,4 +10,4 @@ RUN pip3 install -e . && \
 ENV TRITON_ENDPOINT triton:8000
 
 ENTRYPOINT ["gunicorn"]
-CMD ["--workers=4", "--bind=0.0.0.0:5000", "--log-level=debug", "marie:app"]
+CMD ["--workers=2", "--preload", "--bind=0.0.0.0:5000", "--log-level=debug", "marie:app"]
