@@ -46,14 +46,14 @@ def append_content_metadata_schema(tileset: Tileset):
     }}
 
 
-def make_root_tile(bbox: Optional[List[float]] = None, geometry_file_paths: Optional[List[str]] = [], building_data: Optional[List[str]] = []):
+def make_root_tile(bbox: Optional[List[float]] = None, geometry_file_paths: Optional[List[str]] = [], root_metadata: Optional[List[str]] = []):
     """Generates a root tile with the provided arguments and default values. The root tile will only
     include geometry content for non-asset elements like the building, furniture, and solar panels.
 
     Args:
         bbox (optional): A 12-element list that represents Next tileset's boundingVolume.box property. Defaults to None.
         geometry_file_paths (optional): A list of geometry file paths if available to be appended. Defaults to an empty list.
-        building_data (optional): A list containing the data IRI and name of the building in this order. Defaults to an empty list.
+        root_metadata (optional): A list containing the data IRI and name of the root contents in this order. Defaults to an empty list.
     Returns:
         A root tile.
     """
@@ -64,12 +64,12 @@ def make_root_tile(bbox: Optional[List[float]] = None, geometry_file_paths: Opti
         refine="ADD",
     )
     # If there is building data, generate a placeholder dictionary content
-    if len(building_data) > 0:
+    if len(root_metadata) > 0:
         building_dict = {
             "class": "ContentMetaData",
             "properties": {
-                NAME_VAR: building_data[1],
-                IRI_VAR: building_data[0]
+                NAME_VAR: root_metadata[1],
+                IRI_VAR: root_metadata[0]
             }
         }
     # If there are geometry contents available
@@ -78,7 +78,7 @@ def make_root_tile(bbox: Optional[List[float]] = None, geometry_file_paths: Opti
         if len(geometry_file_paths) == 1:
             root_tile["content"] = {"uri": geometry_file_paths[0]}
             # If there is building data, append the metadata
-            if len(building_data) > 0:
+            if len(root_metadata) > 0:
                 root_tile["content"]["metadata"] = building_dict
         else:
             # If there are more than one item, use the "contents" nomenclature with a list
@@ -87,7 +87,7 @@ def make_root_tile(bbox: Optional[List[float]] = None, geometry_file_paths: Opti
             for path in geometry_file_paths:
                 temp_dict = {"uri": path}
                 # If there is building data, append the metadata to all geometries
-                if len(building_data) > 0:
+                if len(root_metadata) > 0:
                     temp_dict["metadata"] = building_dict
                 root_tile["contents"].append(temp_dict)
 

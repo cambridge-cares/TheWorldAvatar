@@ -84,6 +84,6 @@ def gen_root_content(asset_data: pd.DataFrame, building_data: list[str], root_co
     else:
         bbox = compute_bbox(compute_bbox_list)
         root_tile = make_root_tile(
-            bbox=bbox, geometry_file_paths=root_content_list, building_data=building_data)
+            bbox=bbox, geometry_file_paths=root_content_list, root_metadata=building_data)
 
     return make_tileset(root_tile)
