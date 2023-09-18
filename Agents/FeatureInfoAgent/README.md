@@ -149,32 +149,4 @@ The algorithm used to find, format, and return data after a request is received 
 
 Building the Docker image for the FIA is automatically triggered under certain conditions (see above), but developers can also build a local copy using the provided `build.sh` script after supplying the required `repo_username.txt` and `repo_password.txt` files within the `credentials` directory.
 
-```mermaid
-graph TD;
-   A[Server starts] --> B{Has configuration already loaded?};
-   B -- No --> C[Read FIA configuration file.];
-   B -- Yes --> D[Wait for HTTP requests.];
-   D ----> E[Ask stack client for Ontop URL.];
-   E ----> F[Ask stack client for Postgres URL.];
-   F ----> G[Scan Blazegraph for available namespaces.];
-   G ----> H[Wait for HTTP requests];
-```
-
-<br/><br/>
-
-```mermaid
-graph TD;
-   A[Incoming '/get' request] --> B{Is request valid?};
-   B -- No --> C[Return BAD_REQUEST code.];
-   B -- Yes --> D[Check for 'endpoint' parameter.];
-   D ----> E[Run class determination queries.];
-   E ----> F{Class IRIs returned?};
-   F -- No --> G[Return NO_CONTENT code.];
-   F -- Yes --> H{Class matches registered entry?};
-   H -- No --> I[Return NO_CONTENT code.];
-   H -- Yes --> J[Run registered meta query if present.];
-   J ----> K[Run registered time query if present.];
-   K ----> L[Query RDB using time series IRIs if present.];
-   L ----> M[Format data as JSON];
-   M ----> N[Return content via HTTP.];
-```
+Mermaid diagrams are available for the [start up routine](./docs/mermaid-startup.md) and the [main retrieval algorithm](./docs/mermaid-get-request.md).
