@@ -108,9 +108,11 @@ public class CityDB extends GeoServerDataSubset {
 
     public void createLayer(String database) {
 
+        long[] shiftedThmaticSurfaceIDs = new long[0];
         long[] fudgedThematicSurfaceIDs = new long[0];
 
         if (!skipThematicSurfacesFudge) {
+            shiftedThmaticSurfaceIDs = CityDBClient.getInstance().applyThematicSurfacesShift(database);
             fudgedThematicSurfaceIDs = CityDBClient.getInstance().applyThematicSurfacesFix(database);
         }
 
@@ -118,6 +120,9 @@ public class CityDB extends GeoServerDataSubset {
 
         if (!skipThematicSurfacesFudge && 0 != fudgedThematicSurfaceIDs.length) {
             CityDBClient.getInstance().revertThematicSurfacesFix(database, fudgedThematicSurfaceIDs);
+        }
+        if (!skipThematicSurfacesFudge && 0 != shiftedThmaticSurfaceIDs.length) {
+            CityDBClient.getInstance().revertThematicSurfacesShift(database, shiftedThmaticSurfaceIDs);
         }
     }
 
