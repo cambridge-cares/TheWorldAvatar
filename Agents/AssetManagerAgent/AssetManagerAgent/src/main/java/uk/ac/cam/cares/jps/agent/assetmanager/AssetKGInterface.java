@@ -111,6 +111,16 @@ public class AssetKGInterface {
     private static final Iri hasWorkspaceIdentifier = Pref_ASSET.iri("hasWorkspaceIdentifier");
     private static final Iri hasCurrentLocation = Pref_ASSET.iri("hasCurrentLocation");
     private static final Iri hasFurnitureIdentifier = Pref_ASSET.iri("hasFurnitureIdentifier");
+    private static final Iri hasProjectIdentifier = Pref_ASSET.iri("hasProjectIdentifier");
+    private static final Iri hasGrant = Pref_ASSET.iri("hasGrant");
+    private static final Iri hasAccount = Pref_ASSET.iri("hasAccount");
+    private static final Iri hasBudget = Pref_ASSET.iri("hasBudget");
+    private static final Iri hasBudgetCategory = Pref_ASSET.iri("hasBudgetCategory");
+    private static final Iri hasServiceCategory = Pref_ASSET.iri("hasServiceCategory");
+    private static final Iri hasServiceCategoryIdentifier = Pref_ASSET.iri("hasServiceCategoryIdentifier");
+    private static final Iri hasServiceCode = Pref_ASSET.iri("hasServiceCode");
+    private static final Iri hasServiceCodeIdentifier = Pref_ASSET.iri("hasServiceCodeIdentifier");
+    private static final Iri allocatedTo = Pref_ASSET.iri("allocatedTo");
 
     private static final Iri hasDataSheet = Pref_DEV.iri("hasDataSheet");
     private static final Iri hasPrice = Pref_DEV.iri("hasPrice");
@@ -209,9 +219,7 @@ public class AssetKGInterface {
         AssetData.put("label", AssetDataRaw.getString("Name").replaceAll("(\\r|\\n)", " ").replace("\\", "\\\\"));
         AssetData.put("itemIRI", itemIRI);
         AssetData.put("itemComment", AssetDataRaw.getString("PurchaseOrderNum"));
-        AssetData.put("ServiceCategoryIRI", genIRIString("ServiceCategory", P_ASSET));
-        AssetData.put("ServiceCategoryName", AssetDataRaw.getString("BudgetCat"));
-        AssetData.put("ServiceCategoryType", AssetDataRaw.getString("ServiceCode"));
+
         
 
 
@@ -475,12 +483,79 @@ public class AssetKGInterface {
         //Budgets and Projects
         String assignedProject = AssetDataRaw.getString("AssignedProject");
         String purchaserProject = AssetDataRaw.getString("Project");
+        String serviceCategory = AssetDataRaw.getString("BudgetCat");
+        String serviceCode = AssetDataRaw.getString("ServiceCode");
+        String assignedProjectIRI = "";
+        String assignedProjectGrantIRI = "";
+        String assignedProjectAccountIRI = "";
+        String assignedProjectBudgetIRI = "";
+        String assignedProjectBudgetCatIRI = "";
         
+        String purchaserProjectIRI = "";
+        String purchaserProjectGrantIRI = "";
+        String purchaserProjectAccountIRI = "";
+        String purchaserProjectBudgetIRI = "";
+        String purchaserProjectBudgetCatIRI = "";
+        
+        String ServiceCategoryName = AssetDataRaw.getString("BudgetCat");
+        String ServiceCategoryType = AssetDataRaw.getString("ServiceCode");
+        String serviceCategoryIRI = "";
+        String serviceCodeIRI = "";
+
+        if (!(assignedProject == null || assignedProject.isBlank())){
+            JSONObject assignedProjectIRIs = getProjectFundingTriples(assignedProject);
+
+            assignedProjectIRI = assignedProjectIRIs.getString("projectIRI");
+            assignedProjectGrantIRI = assignedProjectIRIs.getString("researchGrantIRI");
+            assignedProjectAccountIRI = assignedProjectIRIs.getString("accountIRI");
+            assignedProjectBudgetIRI = assignedProjectIRIs.getString("budgetIRI");
+            assignedProjectBudgetCatIRI = assignedProjectIRIs.getString("budgetCatIRI");
+        }
+
+        if (assignedProject.equals(purchaserProject)) {
+            purchaserProjectIRI = assignedProjectIRI;
+            purchaserProjectGrantIRI = assignedProjectGrantIRI;
+            purchaserProjectAccountIRI = assignedProjectAccountIRI;
+            purchaserProjectBudgetIRI = assignedProjectBudgetIRI;
+            purchaserProjectBudgetCatIRI = assignedProjectBudgetCatIRI;
+        }
+        else{
+            if (!(purchaserProject == null || purchaserProject.isBlank())){
+                JSONObject purchaserProjectIRIs = getProjectFundingTriples(purchaserProject);
+
+                purchaserProjectIRI = purchaserProjectIRIs.getString("projectIRI");
+                purchaserProjectIRI = purchaserProjectIRIs.getString("researchGrantIRI");
+                purchaserProjectIRI = purchaserProjectIRIs.getString("accountIRI");
+                purchaserProjectBudgetIRI = purchaserProjectIRIs.getString("budgetIRI");
+                purchaserProjectBudgetCatIRI = purchaserProjectIRIs.getString("budgetCatIRI");
+
+                JSONObject reqResultBudget = getBudgetTriples(purchaserProject, ServiceCategoryName, ServiceCategoryType);
+            }
+        }
+
+        AssetData.put("assignedProject", assignedProject);
+        AssetData.put("assignedProjectIRI", assignedProjectIRI);
+        AssetData.put("assignedProjectGrantIRI", assignedProjectGrantIRI);
+        AssetData.put("assignedProjectAccountIRI", assignedProjectAccountIRI);
+        AssetData.put("assignedProjectBudgetIRI", assignedProjectBudgetIRI);
+
+        AssetData.put("purchaserProject", purchaserProject);
+        AssetData.put("purchaserProjectIRI", purchaserProjectIRI);
+        AssetData.put("purchaserProjectGrantIRI", purchaserProjectGrantIRI);
+        AssetData.put("purchaserProjectAccountIRI", purchaserProjectAccountIRI);
+        AssetData.put("purchaserProjectBudgetIRI", purchaserProjectBudgetIRI);
+        
+
+        //AssetData.put("ServiceCategoryIRI", genIRIString("ServiceCategory", P_ASSET));
+        
+        AssetData.put("ServiceCategoryName", ServiceCategoryName);
+        AssetData.put("ServiceCategoryType", ServiceCategoryType);
+        AssetData.put("ServiceCategoryIRI", reqResultBudget.getString("serviceCategoryIRI"));
+        AssetData.put("ServiceCategoryTypeIRI", reqResultBudget.getString("serviceCodeIRI"));
+        AssetData.put("purchaserProjectBudgetCatIRI", reqResultBudget.getString("budgetCatIRI"));
 
         LOGGER.info(AssetData);
         createInstance(AssetData);
-
-
     }
 
 
@@ -978,7 +1053,7 @@ public class AssetKGInterface {
         return storeClientPurchDoc.executeQuery(query.getQueryString());
 
     }
-        private JSONArray getAllManufacturerIRI() {
+    private JSONArray getAllManufacturerIRI() {
         Variable ManufacturerOrgIRI = SparqlBuilder.var("ManufacturerIRI");
         Variable ManufacturerNameIRI = SparqlBuilder.var("ManufacturerNameIRI");
         Variable ManufacturerNameLiteral = SparqlBuilder.var("ManufacturerName");
@@ -1015,6 +1090,123 @@ public class AssetKGInterface {
         }
 
         return storeClientPurchDoc.executeQuery(query.getQueryString());
+    }
+
+    JSONObject getProjectFundingTriples (String projectName) {
+        JSONObject result = new JSONObject();
+        SelectQuery query = Queries.SELECT();
+        Variable projectIRI = SparqlBuilder.var("projectIRI");
+        Variable researchGrantIRI = SparqlBuilder.var("researchGrantIRI");
+        Variable accountIRI = SparqlBuilder.var("accountIRI");
+        Variable budgetIRI = SparqlBuilder.var("budgetIRI");
+        query.prefix(Pref_DEV, Pref_LAB, Pref_SYS, Pref_INMA, Pref_ASSET, Pref_EPE, Pref_BIM, Pref_SAREF,
+            Pref_OM, Pref_FIBO_AAP, Pref_FIBO_ORG, Pref_BOT, Pref_P2P_ITEM, Pref_P2P_DOCLINE, Pref_P2P_INVOICE
+        );
+        query.where(projectIRI.has(hasProjectIdentifier, projectName));
+        query.where(projectIRI.has(hasGrant, researchGrantIRI));
+        query.where(researchGrantIRI.has(hasAccount, accountIRI));
+        query.where(accountIRI.has(hasBudget, budgetIRI));
+
+        JSONArray reqResult = storeClientPurchDoc.executeQuery(query.getQueryString());
+        LOGGER.info("Query project funding info check result for project::"+projectName+" : "+reqResult);
+        switch (reqResult.length()) {
+            case 0:
+                //Project doesn't exist. Make new IRIs
+                result.put("projectIRI", genIRIString("Project", P_ASSET));
+                result.put("researchGrantIRI", genIRIString("ResearchGrant", P_ASSET));
+                result.put("accountIRI", genIRIString("Account", P_ASSET));
+                result.put("budgetIRI", genIRIString("Budget", P_ASSET));
+                return result;
+                
+            case 1:
+                result.put("projectIRI", reqResult.getJSONObject(0).getString("projectIRI"));
+                result.put("researchGrantIRI", reqResult.getJSONObject(0).getString("researchGrantIRI"));
+                result.put("accountIRI", reqResult.getJSONObject(0).getString("accountIRI"));
+                result.put("budgetIRI", reqResult.getJSONObject(0).getString("budgetIRI"));
+                return result;
+            default:
+                throw new JPSRuntimeException("Project has more than 1 IRIs: " + projectName + ". Check the knowledge graph for duplicates.", null);
+        }
+
+    }
+
+    JSONObject getBudgetTriples(String projectName, String serviceCategory, String serviceCode){
+         JSONObject result = new JSONObject();
+        //Retrieve Budget Category IRI and service category first. 
+        //Create service category if doesn't exist
+        JSONObject reqResultServiceCat = getServiceCategoryTriples(projectName, serviceCategory);
+        String budgetCatIRI = reqResultServiceCat.getString("budgetCatIRI");
+        String serviceCategoryIRI = reqResultServiceCat.getString("serviceCategoryIRI");
+        //Retrieve service code, if doesn't exist, create new one
+        JSONObject reqResultServiceCode = getServiceCodeTriples(budgetCatIRI, serviceCode);
+        String serviceCodeIRI = reqResultServiceCode.getString("serviceCodeIRI");
+
+        result.put("budgetCatIRI", budgetCatIRI);
+        result.put("serviceCategoryIRI", serviceCategoryIRI);
+        result.put("serviceCodeIRI", serviceCodeIRI);
+
+        return result;
+    }
+
+    JSONObject getServiceCategoryTriples(String projectName, String serviceCategory){
+        JSONObject result = new JSONObject();
+        SelectQuery query = Queries.SELECT();
+        Variable budgetCategoryIRI = SparqlBuilder.var("budgetCategoryIRI");
+        Variable serviceCategoryIRI = SparqlBuilder.var("serviceCategoryIRI");
+        Variable projectIRI = SparqlBuilder.var("projectIRI");
+        Variable researchGrantIRI = SparqlBuilder.var("researchGrantIRI");
+        Variable accountIRI = SparqlBuilder.var("accountIRI");
+        Variable budgetIRI = SparqlBuilder.var("budgetIRI");
+
+        query.where(projectIRI.has(hasProjectIdentifier, projectName));
+        query.where(projectIRI.has(hasGrant, researchGrantIRI)); 
+        query.where(researchGrantIRI.has(hasAccount, accountIRI));
+        query.where(accountIRI.has(hasBudget, budgetIRI));
+        query.where(budgetIRI.has(hasBudgetCategory, budgetCategoryIRI));
+        query.where(budgetCategoryIRI.has(hasServiceCategory, serviceCategoryIRI));
+        query.where(serviceCategoryIRI.has(hasServiceCategoryIdentifier, serviceCategory));
+
+        JSONArray reqResult = storeClientPurchDoc.executeQuery(query.getQueryString());
+        LOGGER.info("Query service category info check result for project::"+serviceCategory+" : "+reqResult);
+        switch (reqResult.length()) {
+            case 0:
+                //Project doesn't exist. Make new IRIs
+                result.put("budgetCatIRI", genIRIString("BudgetCategory", P_ASSET));
+                result.put("serviceCategoryIRI", genIRIString("ServiceCategory", P_ASSET));
+                return result;
+                
+            case 1:
+                result.put("budgetCatIRI", reqResult.getJSONObject(0).getString("budgetCatIRI"));
+                result.put("serviceCategoryIRI", reqResult.getJSONObject(0).getString("serviceCategoryIRI"));
+                return result;
+            default:
+                throw new JPSRuntimeException("Service category has more than 1 IRIs: " + serviceCategory + ". Check the knowledge graph for duplicates.", null);
+        }
+
+    }
+
+    JSONObject getServiceCodeTriples(String budgetCategoryIRI, String serviceCode){
+        JSONObject result = new JSONObject();
+        SelectQuery query = Queries.SELECT();
+        Variable serviceCodeIRI = SparqlBuilder.var("serviceCodeIRI");
+        query.where(iri(budgetCategoryIRI).has(hasServiceCode, serviceCodeIRI));
+        query.where(serviceCodeIRI.has(hasServiceCodeIdentifier, serviceCode));
+
+        JSONArray reqResult = storeClientPurchDoc.executeQuery(query.getQueryString());
+        LOGGER.info("Query service code info check result for project::"+serviceCode+" : "+reqResult);
+        switch (reqResult.length()) {
+            case 0:
+                //Project doesn't exist. Make new IRIs
+                result.put("serviceCodeIRI", genIRIString("ServiceCode", P_ASSET));
+                return result;
+                
+            case 1:
+                result.put("serviceCodeIRI", reqResult.getJSONObject(0).getString("serviceCodeIRI"));
+                return result;
+            default:
+                throw new JPSRuntimeException("Service code has more than 1 IRIs: " + serviceCode + ". Check the knowledge graph for duplicates.", null);
+        }
+        
     }
 
     private JSONArray getIRIbyLiteral (String literal, RemoteStoreClient storeClient) {
@@ -1205,14 +1397,16 @@ public class AssetKGInterface {
         Iri ManufacturerNameIRI = iri(data.getString("ManufacturerNameIRI"));
         String ManufacturerNameLiteral = data.getString("ManufacturerName");
 
+        //Projects
+        Iri assignedProjectIRI = iri(data.getString("assignedProject"));
+
 
         /*
          * INSTANTIATE QUERY
          */
         query.insert(deviceIRIVar.isA(deviceTypeIRI));
         query.insert(itemIRIVar.isA(Item));
-
-
+        query.insert(itemIRIVar.has(allocatedTo, assignedProjectIRI));
 
         //Device
         query.insert(deviceIRIVar.has(hasItemInventoryIdentifier, Rdf.literalOf(ID)));
@@ -1357,6 +1551,14 @@ public class AssetKGInterface {
         Iri ServiceCategoryIRI = iri(data.getString("ServiceCategoryIRI"));
         String ServiceCategoryNameLiteral = data.getString("ServiceCategoryName");
         String ServiceCategoryTypeLiteral = data.getString("ServiceCategoryType");
+        
+        //Purchasing project instances
+        String purchaserProjectLiteral = data.getString("purchaserProject");
+        Iri purchaserProjectIRI = iri(data.getString("purchaserProjectIRI"));
+        Iri purchaserProjectGrantIRI = iri(data.getString("purchaserProjectGrantIRI"));
+        Iri purchaserProjectAccountIRI = iri(data.getString("purchaserProjectAccountIRI"));
+        Iri purchaserProjectBudgetIRI = iri(data.getString("purchaserProjectBudgetIRI"));
+
         //invoice instances
         Iri InvoiceIRI = iri(data.getString("InvoiceIRI"));
         String InvoiceNumLiteral = data.getString("InvoiceNum");
@@ -1389,8 +1591,7 @@ public class AssetKGInterface {
         query.insert(itemIRI.has(itemName, Rdf.literalOf(itemNameLiteral)));
         query.insert(itemIRI.has(RDFS.COMMENT, Rdf.literalOf(itemCommentLiteral)));
         query.insert(itemIRI.has(hasAttribute, ServiceCategoryIRI));
-        query.insert(ServiceCategoryIRI.has(attributeName, ServiceCategoryTypeLiteral));
-        query.insert(ServiceCategoryIRI.has(attributeValue, ServiceCategoryNameLiteral));
+
         //OPTIONAL QUERIES
 
         //Invoice, DO and PO
@@ -1455,6 +1656,11 @@ public class AssetKGInterface {
             query.insert(SupplierOrgIRI.has(hasName, SupplierNameIRI));
             query.insert(SupplierNameIRI.has(hasLegalName, SupplierNameLiteral));
         }
+
+        //Projects and service codes
+
+        query.insert(ServiceCategoryIRI.has(attributeName, ServiceCategoryTypeLiteral));
+        query.insert(ServiceCategoryIRI.has(attributeValue, ServiceCategoryNameLiteral));
 
         storeClientPurchDoc.executeUpdate(query.getQueryString());
     }
