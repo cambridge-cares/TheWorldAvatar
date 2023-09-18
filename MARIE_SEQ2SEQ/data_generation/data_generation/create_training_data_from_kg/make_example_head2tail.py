@@ -24,19 +24,19 @@ class ExampleMakerHead2Tail:
         select_variables_compact = [
             helper.get_select_variables_compact() for helper in all_helpers
         ]
-        where_clause_blocks = [
-            helper.get_where_clause_blocks() for helper in all_helpers
+        where_clauses = [
+            helper.get_where_clauses() for helper in all_helpers
         ]
-        where_clause_compact_blocks = [
-            helper.get_where_clause_compact_blocks() for helper in all_helpers
+        where_clauses_compact = [
+            helper.get_where_clauses_compact() for helper in all_helpers
         ]
         ask_items = [helper.get_ask_item() for helper in tail_helpers]
 
         sparql_query = f"""SELECT DISTINCT {" ".join(select_variables)} 
-WHERE {{{"".join(where_clause_blocks).rstrip()}
+WHERE {{{"".join(where_clauses).rstrip()}
 }}"""
         sparql_query_compact = f"""SELECT DISTINCT {" ".join(select_variables_compact)} 
-WHERE {{{"".join(where_clause_compact_blocks)}
+WHERE {{{"".join(where_clauses_compact)}
 }}"""
 
         return dict(
@@ -92,11 +92,11 @@ class ExampleH2TQueryConstructorHelper(ABC):
         pass
 
     @abstractmethod
-    def get_where_clause_blocks(self) -> str:
+    def get_where_clauses(self) -> str:
         pass
 
     @abstractmethod
-    def get_where_clause_compact_blocks(self) -> str:
+    def get_where_clauses_compact(self) -> str:
         pass
 
 
@@ -110,7 +110,7 @@ class ExampleH2TQueryConstructorHelperHead(ExampleH2TQueryConstructorHelper):
     def get_select_variables_compact(self):
         return ""
 
-    def get_where_clause_blocks(self):
+    def get_where_clauses(self):
         species = self.identifier_value
         return f"""
     VALUES ( ?species ) {{ ( "{species}" ) }}
@@ -119,7 +119,7 @@ class ExampleH2TQueryConstructorHelperHead(ExampleH2TQueryConstructorHelper):
     ?Identifier rdfs:subClassOf os:Identifier .
 """
 
-    def get_where_clause_compact_blocks(self):
+    def get_where_clauses_compact(self):
         species = self.identifier_value
         return f"""
     VALUES ( ?species ) {{ ( "{species}" ) }}
@@ -148,7 +148,7 @@ class ExampleH2TQueryConstructorHelperProperty(ExampleH2TQueryConstructorHelperT
         PropertyName = self.property_name
         return f"?{PropertyName}Value"
 
-    def get_where_clause_blocks(self):
+    def get_where_clauses(self):
         PropertyName = self.property_name
         return f"""
     ?SpeciesIRI os:has{PropertyName} ?{PropertyName}IRI .
@@ -161,7 +161,7 @@ class ExampleH2TQueryConstructorHelperProperty(ExampleH2TQueryConstructorHelperT
     }}
 """
 
-    def get_where_clause_compact_blocks(self):
+    def get_where_clauses_compact(self):
         PropertyName = self.property_name
         return f"""
     ?SpeciesIRI os:has{PropertyName} ?{PropertyName}Value ."""
@@ -200,14 +200,14 @@ class ExampleH2TQueryConstructorHelperIdentifier(ExampleH2TQueryConstructorHelpe
         IdentifierName = self.identifier_name
         return f"?{IdentifierName}Value"
 
-    def get_where_clause_blocks(self):
+    def get_where_clauses(self):
         IdentifierName = self.identifier_name
         return f"""
     ?SpeciesIRI os:has{IdentifierName} ?{IdentifierName}IRI .
     ?{IdentifierName}IRI os:value ?{IdentifierName}Value .
 """
 
-    def get_where_clause_compact_blocks(self):
+    def get_where_clauses_compact(self):
         IdentifierName = self.identifier_name
         return f"""
     ?SpeciesIRI os:has{IdentifierName} ?{IdentifierName}Value ."""
@@ -223,13 +223,13 @@ class ExampleH2TQueryConstructorHelperUse(ExampleH2TQueryConstructorHelperTail):
     def get_select_variables_compact(self):
         return "?UseValue"
 
-    def get_where_clause_blocks(self):
+    def get_where_clauses(self):
         return f"""
     ?SpeciesIRI os:hasUse ?UseIRI .
     ?UseIRI rdfs:label ?UseValue .
 """
 
-    def get_where_clause_compact_blocks(self):
+    def get_where_clauses_compact(self):
         return f"""
     ?SpeciesIRI os:hasUse ?UseValue ."""
 
@@ -244,7 +244,7 @@ class ExampleH2TQueryConstructorHelperChemicalClass(ExampleH2TQueryConstructorHe
     def get_select_variables_compact(self):
         return "?ChemicalClassValue"
 
-    def get_where_clause_blocks(self):
+    def get_where_clauses(self):
         return f"""
     ?SpeciesIRI os:hasChemicalClass* ?x .
     ?x ?y ?z .
@@ -252,7 +252,7 @@ class ExampleH2TQueryConstructorHelperChemicalClass(ExampleH2TQueryConstructorHe
     ?ChemicalClassIRI rdf:type os:ChemicalClass ; rdfs:label ?ChemicalClassValue .
 """
 
-    def get_where_clause_compact_blocks(self):
+    def get_where_clauses_compact(self):
         return f"""
     ?SpeciesIRI os:hasChemicalClass ?ChemicalClassValue ."""
 

@@ -46,12 +46,12 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"""
         ]
 
         select_variables = [helper.get_select_variables() for helper in helpers]
-        where_clause_blocks = [helper.get_where_clauses() for helper in helpers]
+        where_clause = [helper.get_where_clauses() for helper in helpers]
 
         return f"""{self.PREFIXES}
 
 SELECT {" ".join(select_variables)} 
-WHERE {{{"".join(where_clause_blocks).rstrip()}
+WHERE {{{"".join(where_clause).rstrip()}
 }}
 LIMIT 1"""
 
@@ -94,7 +94,7 @@ class RetrieveQueryConstructionHelperTail(RetrieveQueryConstructionHelper, ABC):
     def get_select_variables(self):
         return " ".join(
             [
-                self.get_select_variable_per_tail(tail_id)
+                self.get_select_variables_per_tail(tail_id)
                 for tail_id in range(1, self.tail_num + 1)
             ]
         )
@@ -132,7 +132,7 @@ class RetrieveQueryConstructionHelperTail(RetrieveQueryConstructionHelper, ABC):
         return ""
 
     @abstractmethod
-    def get_select_variable_per_tail(self, tail_id: int) -> str:
+    def get_select_variables_per_tail(self, tail_id: int) -> str:
         pass
 
     @abstractmethod
@@ -150,7 +150,7 @@ class RetrieveQueryConstructionHelperProperty(RetrieveQueryConstructionHelperTai
             value_bindings=value_bindings,
         )
 
-    def get_select_variable_per_tail(self, tail_id: int):
+    def get_select_variables_per_tail(self, tail_id: int):
         return f"?hasProperty{tail_id} ?PropertyIRI{tail_id} ?PropertyValue{tail_id}"
 
     def get_where_clauses_per_tail(self, tail_id: int):
@@ -176,7 +176,7 @@ class RetrieveQueryConstructionHelperIdentifier(RetrieveQueryConstructionHelperT
             value_bindings=value_bindings,
         )
 
-    def get_select_variable_per_tail(self, tail_id: int):
+    def get_select_variables_per_tail(self, tail_id: int):
         return (
             f"?hasIdentifier{tail_id} ?IdentifierIRI{tail_id} ?IdentifierValue{tail_id}"
         )
@@ -204,7 +204,7 @@ class RetrieveQueryConstructionHelperUse(RetrieveQueryConstructionHelperTail):
             value_bindings=value_bindings,
         )
 
-    def get_select_variable_per_tail(self, tail_id: int):
+    def get_select_variables_per_tail(self, tail_id: int):
         return f"?UseIRI{tail_id} ?UseValue{tail_id}"
 
     def get_where_clauses_per_tail(self, tail_id: int):
@@ -234,7 +234,7 @@ class RetrieveQueryConstructionHelperChemicalClass(RetrieveQueryConstructionHelp
             value_bindings=value_bindings,
         )
 
-    def get_select_variable_per_tail(self, tail_id: int):
+    def get_select_variables_per_tail(self, tail_id: int):
         return f"?ChemicalClassIRI{tail_id} ?ChemicalClassValue{tail_id}"
 
     def get_where_clauses_per_tail(self, tail_id: int):

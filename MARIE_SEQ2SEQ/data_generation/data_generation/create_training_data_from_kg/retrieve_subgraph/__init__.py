@@ -3,7 +3,7 @@ from typing import Dict, Optional
 
 from SPARQLWrapper import SPARQLWrapper, JSON, POST
 
-from .construct_query import QueryConstructor
+from .construct_query import RetrieveQueryConstructor
 from .parse_kg_response import KgResponseParser
 
 
@@ -16,7 +16,7 @@ class SubgraphRetriever:
         sparql_client.setReturnFormat(JSON)
         sparql_client.setMethod(POST)
         self.sparql_client = sparql_client
-        self.query_constructor = QueryConstructor()
+        self.query_constructor = RetrieveQueryConstructor()
         self.kg_response_parser = KgResponseParser()
 
     def get_subgraph(
