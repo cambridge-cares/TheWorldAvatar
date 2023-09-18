@@ -88,48 +88,38 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"""
             chemicalclass_num=chemicalclass_num,
         )
 
-    def get_where_species(self, identifier_name: str):
-        return f"""
-    ?SpeciesIRI a os:Species ; os:has{identifier_name} ?IdentifierIRI .
-    ?IdentifierIRI os:value ?IdentifierValue ."""
-
     def get_subgraph_query(
         self, tail_nums: Dict[str, int], bindings: Optional[dict] = None
     ):
         if bindings is None:
             bindings = dict()
-        identifier_name = random.choice(self.IDENTIFIER_NAMES_FOR_HEAD)
 
-        select_variables = ["?SpeciesIRI ?IdentifierIRI ?IdentifierValue"]
-        where_clause_blocks = [self.get_where_species(identifier_name)]
-        if any(x > 0 for x in tail_nums.values()):
-            where_clause_blocks.append("\n")
-
-        property_num = tail_nums.get("property_num", 0)
+        head_helper = QueryConstructionHelperHead(
+            identifier_name=random.choice(self.IDENTIFIER_NAMES_FOR_HEAD)
+        )
         property_helper = QueryConstructionHelperProperty(
-            tail_num=property_num, value_bindings=bindings
+            tail_num=tail_nums.get("property_num", 0), value_bindings=bindings
         )
-        select_variables.append(property_helper.get_select_variables())
-        where_clause_blocks.append(property_helper.get_where_clauses())
-
-        identifier_num = tail_nums.get("identifier_num", 0)
         identifier_helper = QueryConstructionHelperIdentifier(
-            tail_num=identifier_num, value_bindings=bindings
+            tail_num=tail_nums.get("identifier_num", 0), value_bindings=bindings
         )
-        select_variables.append(identifier_helper.get_select_variables())
-        where_clause_blocks.append(identifier_helper.get_where_clauses())
-
-        use_num = tail_nums.get("use_num", 0)
         use_helper = QueryConstructionHelperUse(
-            tail_num=use_num, value_bindings=bindings
+            tail_num=tail_nums.get("use_num", 0), value_bindings=bindings
         )
-        select_variables.append(use_helper.get_select_variables())
-        where_clause_blocks.append(use_helper.get_where_clauses())
+        chemicalclass_helper = QueryConstructionHelperChemicalClass(
+            tail_num=tail_nums.get("chemicalclass_num", 0), value_bindings=bindings
+        )
 
-        chemicalclass_num = tail_nums.get("chemicalclass_num", 0)
-        chemicalclass_helper = QueryConstructionHelperChemicalClass(tail_num=chemicalclass_num, value_bindings=bindings)
-        select_variables.append(chemicalclass_helper.get_select_variables())
-        where_clause_blocks.append(chemicalclass_helper.get_where_clauses())
+        helpers: List[QueryConstructionHelper] = [
+            head_helper,
+            property_helper,
+            identifier_helper,
+            use_helper,
+            chemicalclass_helper,
+        ]
+
+        select_variables = [helper.get_select_variables() for helper in helpers]
+        where_clause_blocks = [helper.get_where_clauses() for helper in helpers]
 
         return f"""{self.PREFIXES}
 
@@ -202,7 +192,31 @@ LIMIT 1"""
         return dict(head=head, tails=tails)
 
 
-class QueryConstructionHelperTail(ABC):
+class QueryConstructionHelper(ABC):
+    @abstractmethod
+    def get_select_variables(self) -> str:
+        pass
+
+    @abstractmethod
+    def get_where_clauses(self) -> str:
+        pass
+
+
+class QueryConstructionHelperHead(QueryConstructionHelper):
+    def __init__(self, identifier_name: str):
+        self.identifier_name = identifier_name
+
+    def get_select_variables(self):
+        return "?SpeciesIRI ?IdentifierIRI ?IdentifierValue"
+
+    def get_where_clauses(self) -> str:
+        return f"""
+    ?SpeciesIRI a os:Species ; os:has{self.identifier_name} ?IdentifierIRI .
+    ?IdentifierIRI os:value ?IdentifierValue .
+"""
+
+
+class QueryConstructionHelperTail(QueryConstructionHelper, ABC):
     def __init__(
         self,
         tail_num: int,
@@ -221,10 +235,6 @@ class QueryConstructionHelperTail(ABC):
             ]
         )
 
-    @abstractmethod
-    def get_select_variable_per_tail(self, tail_id: int) -> str:
-        pass
-
     def get_where_clauses(self) -> str:
         clauses = (
             "".join(
@@ -238,12 +248,6 @@ class QueryConstructionHelperTail(ABC):
         if self.tail_num > 0:
             clauses += "\n"
         return clauses
-
-    @abstractmethod
-    def get_where_clauses_per_tail(
-        self, tail_id: int, value_binding: Optional[str]
-    ) -> str:
-        pass
 
     def get_filter_pairwise_notequal(self) -> str:
         variable_prefix = self.var_prefix_for_mutual_exclusion
@@ -262,6 +266,16 @@ class QueryConstructionHelperTail(ABC):
             return f"""
     {filter_clauses_str}"""
         return ""
+
+    @abstractmethod
+    def get_select_variable_per_tail(self, tail_id: int) -> str:
+        pass
+
+    @abstractmethod
+    def get_where_clauses_per_tail(
+        self, tail_id: int, value_binding: Optional[str]
+    ) -> str:
+        pass
 
 
 class QueryConstructionHelperProperty(QueryConstructionHelperTail):
@@ -347,6 +361,7 @@ class QueryConstructionHelperUse(QueryConstructionHelperTail):
     ?UseIRI{tail_id} rdfs:label ?UseValue{tail_id} ."""
         )
 
+
 class QueryConstructionHelperChemicalClass(QueryConstructionHelperTail):
     def __init__(self, tail_num: int, value_bindings: Dict[str, str] = dict()):
         super().__init__(
@@ -359,7 +374,9 @@ class QueryConstructionHelperChemicalClass(QueryConstructionHelperTail):
         return f"?ChemicalClassIRI{tail_id} ?ChemicalClassValue{tail_id}"
 
     def get_where_clauses_per_tail(self, tail_id: int):
-        chemicalclass_value_binding = self.value_bindings.get(f"ChemicalClassValue{tail_id}")
+        chemicalclass_value_binding = self.value_bindings.get(
+            f"ChemicalClassValue{tail_id}"
+        )
         value_binding_str = (
             f"""
     VALUES (?ChemicalClassValue{tail_id}) {{
