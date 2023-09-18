@@ -10,15 +10,15 @@ class ExampleMakerHead2Tail:
         if subgraph is None:
             return None
 
-        head_helper = ExampleQueryConstructorHelperHead(
+        head_helper = ExampleH2TQueryConstructorHelperHead(
             identifier_value=subgraph["head"]["IdentifierValue"]
         )
         tails: List[dict] = list(subgraph["tails"])
         random.shuffle(tails)
-        tail_helpers: List[ExampleQueryConstructorHelperTail] = [
+        tail_helpers: List[ExampleH2TQueryConstructorHelperTail] = [
             self.resolve_tail_helper(tail) for tail in tails
         ]
-        all_helpers: List[ExampleQueryConstructorHelper] = [head_helper] + tail_helpers
+        all_helpers: List[ExampleH2TQueryConstructorHelper] = [head_helper] + tail_helpers
 
         select_variables = [helper.get_select_variables() for helper in all_helpers]
         select_variables_compact = [
@@ -48,17 +48,17 @@ WHERE {{{"".join(where_clause_compact_blocks)}
 
     def resolve_tail_helper(self, tail: Dict[str, str]):
         if tail["type"] == "property":
-            tail_helper = ExampleQueryConstructorHelperProperty(
+            tail_helper = ExampleH2TQueryConstructorHelperProperty(
                 property_name=tail["PropertyName"]
             )
         elif tail["type"] == "identifier":
-            tail_helper = ExampleQueryConstructorHelperIdentifier(
+            tail_helper = ExampleH2TQueryConstructorHelperIdentifier(
                 identifier_name=tail["IdentifierName"]
             )
         elif tail["type"] == "use":
-            tail_helper = ExampleQueryConstructorHelperUse()
+            tail_helper = ExampleH2TQueryConstructorHelperUse()
         elif tail["type"] == "chemicalclass":
-            tail_helper = ExampleQueryConstructorHelperChemicalClass()
+            tail_helper = ExampleH2TQueryConstructorHelperChemicalClass()
         else:
             raise ValueError("Unexpected tail type: " + tail["type"])
         return tail_helper
@@ -82,7 +82,7 @@ WHERE {{{"".join(where_clause_compact_blocks)}
         return "".join(tokens)
 
 
-class ExampleQueryConstructorHelper(ABC):
+class ExampleH2TQueryConstructorHelper(ABC):
     @abstractmethod
     def get_select_variables(self) -> str:
         pass
@@ -100,7 +100,7 @@ class ExampleQueryConstructorHelper(ABC):
         pass
 
 
-class ExampleQueryConstructorHelperHead(ExampleQueryConstructorHelper):
+class ExampleH2TQueryConstructorHelperHead(ExampleH2TQueryConstructorHelper):
     def __init__(self, identifier_value: str):
         self.identifier_value = identifier_value
 
@@ -132,11 +132,11 @@ class AskItemGetter(ABC):
         pass
 
 
-class ExampleQueryConstructorHelperTail(ExampleQueryConstructorHelper, AskItemGetter):
+class ExampleH2TQueryConstructorHelperTail(ExampleH2TQueryConstructorHelper, AskItemGetter):
     pass
 
 
-class ExampleQueryConstructorHelperProperty(ExampleQueryConstructorHelperTail):
+class ExampleH2TQueryConstructorHelperProperty(ExampleH2TQueryConstructorHelperTail):
     def __init__(self, property_name: str):
         self.property_name = property_name
 
@@ -170,7 +170,7 @@ class ExampleQueryConstructorHelperProperty(ExampleQueryConstructorHelperTail):
         return add_space_and_lower(self.property_name)
 
 
-class ExampleQueryConstructorHelperIdentifier(ExampleQueryConstructorHelperTail):
+class ExampleH2TQueryConstructorHelperIdentifier(ExampleH2TQueryConstructorHelperTail):
     IDENTIFIER_LABELS = {
         "ChebiID": ["ChEBI ID", "Chemical Entities of Biological Interest ID"],
         "CID": ["CID", "PubChem CID", "PubChem ID", "PubChem Compound ID"],
@@ -216,7 +216,7 @@ class ExampleQueryConstructorHelperIdentifier(ExampleQueryConstructorHelperTail)
         return random.choice(self.IDENTIFIER_LABELS[self.identifier_name])
 
 
-class ExampleQueryConstructorHelperUse(ExampleQueryConstructorHelperTail):
+class ExampleH2TQueryConstructorHelperUse(ExampleH2TQueryConstructorHelperTail):
     def get_select_variables(self):
         return "?UseValue"
 
@@ -237,7 +237,7 @@ class ExampleQueryConstructorHelperUse(ExampleQueryConstructorHelperTail):
         return "use"
 
 
-class ExampleQueryConstructorHelperChemicalClass(ExampleQueryConstructorHelperTail):
+class ExampleH2TQueryConstructorHelperChemicalClass(ExampleH2TQueryConstructorHelperTail):
     def get_select_variables(self):
         return "?ChemicalClassValue"
 
