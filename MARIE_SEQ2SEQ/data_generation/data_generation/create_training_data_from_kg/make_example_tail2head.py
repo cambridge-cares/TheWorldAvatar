@@ -1,5 +1,6 @@
+from abc import ABC, abstractmethod
 import random
-from typing import Dict, List, Literal, Optional, Union
+from typing import Dict, List, Optional, Union
 
 from data_generation.utils import add_space_and_lower
 
@@ -8,65 +9,41 @@ class ExampleMakerTail2Head:
     def make_example(self, subgraph: Optional[Dict[str, Union[dict, List[dict]]]]):
         if subgraph is None:
             return None
+
+        head_helper = ExampleT2HQueryConstructorHelperHead()
+
+        tails: List[dict] = [tail for tail in subgraph["tails"] if tail["type"] != "identifier"]
+        if len(tails) == 0:
+            return None
         
-        select_variables = ["?label ?IUPACNameValue"]
-        select_variables_compact = ["?IUPACNameValue"]
-
-        where_clause_blocks = [self.make_where_species()]
-        where_clause_compact_blocks = [self.make_where_species_compact()]
-        ask_items: List[str] = []
-        bindings : Dict[str, str] = dict()
-
-        tails: List[dict] = list(subgraph["tails"])
         random.shuffle(tails)
-        property_num = 0
-        use_num = 0
-        chemicalclass_num = 0
-        for tail in tails:
-            if tail["type"] == "property":
-                property_num += 1
-                PropertyName = tail["PropertyName"]
-                PropertyValue = tail["PropertyValue"]
-                numerical_clause = random.choice(["higher", "lower", "inside", "outside", "around"])
+        tail_helper_resolver = TailHelperResolver()
+        tail_helpers: List[ExampleT2HQueryConstructorHelperTail] = [
+            tail_helper_resolver.resolve(tail) for tail in tails 
+        ]
 
-                select_variables.append(
-                    f"?{PropertyName}Value ?{PropertyName}UnitValue ?{PropertyName}ReferenceStateValue ?{PropertyName}ReferenceStateUnitValue"
-                )
-                select_variables_compact.append(f"?{PropertyName}Value")
-                where_clause_blocks.append(self.make_where_property(PropertyName))
-                where_clause_compact_blocks.append(
-                    self.make_where_property_compact(PropertyName)
-                )
-                filter_clause, ask_item = self.make_where_property_filter_and_ask_item(PropertyName, PropertyValue, numerical_clause)
-                where_clause_blocks.append(filter_clause)
-                where_clause_compact_blocks.append(filter_clause)
-                ask_items.append(ask_item)
-            elif tail["type"] == "use":
-                use_num += 1
-                UseValue = tail["UseValue"]
+        all_helpers: List[ExampleT2HQueryConstructorHelper] = [
+            head_helper
+        ] + tail_helpers
 
-                where_clause_blocks.append(self.make_where_use(use_num, UseValue))
-                where_clause_compact_blocks.append(self.make_where_use_compact(UseValue))
-                ask_items.append(f"use is as {{UseValue{use_num}}}")
-                bindings[f"UseValue{use_num}"] = UseValue
-            elif tail["type"] == "chemicalclass":
-                chemicalclass_num += 1
-                ChemicalClassValue = tail["ChemicalClassValue"]
+        select_variables = [helper.get_select_variables() for helper in all_helpers]
+        select_variables_compact = [
+            helper.get_select_variables_compact() for helper in all_helpers
+        ]
+        where_clauses = [helper.get_where_clauses() for helper in all_helpers]
+        where_clauses_compact = [
+            helper.get_where_clauses_compact() for helper in all_helpers
+        ]
+        ask_items = [helper.get_ask_item() for helper in tail_helpers]
+        bindings = {
+            k: v for helper in tail_helpers for k, v in helper.get_binding().items()
+        }
 
-                where_clause_blocks.append(self.make_where_chemicalclass(chemicalclass_num, ChemicalClassValue))
-                where_clause_compact_blocks.append(
-                    self.make_where_chemicalclass_compact(ChemicalClassValue)
-                )
-                ask_items.append(f"chemical class is {{ChemicalClassValue{chemicalclass_num}}}")
-                bindings[f"ChemicalClassValue{chemicalclass_num}"] = ChemicalClassValue
-            else:
-                raise ValueError("Unexpected tail type: " + tail["type"])
-        
         sparql_query = f"""SELECT DISTINCT {" ".join(select_variables)}
-WHERE {{{"".join(where_clause_blocks)}
+WHERE {{{"".join(where_clauses).rstrip()}
 }}"""
         sparql_query_compact = f"""SELECT DISTINCT {" ".join(select_variables_compact)}
-WHERE {{{"".join(where_clause_compact_blocks)}
+WHERE {{{"".join(where_clauses_compact)}
 }}"""
 
         return dict(
@@ -76,32 +53,116 @@ WHERE {{{"".join(where_clause_compact_blocks)}
             sparql_query_compact=sparql_query_compact,
         )
 
-    def make_where_species(self):
+    def make_canonical_question(self, ask_items: List[str]):
+        tokens = ["What are the chemical species whose "]
+        for i, ask_item in enumerate(ask_items):
+            tokens.append(ask_item)
+            if i < len(ask_items) - 2:
+                tokens.append(", ")
+            elif i == len(ask_items) - 2:
+                tokens.append(" and ")
+        tokens.append("?")
+        return "".join(tokens)
+
+
+class TailHelperResolver:
+    def __init__(self):
+        self.use_num = 0
+        self.chemicalclass_num = 0
+
+    def resolve(self, tail: Dict[str, str]):
+        if tail["type"] == "property":
+            tail_helper = ExampleT2HQueryConstructorHelperTailProperty(
+                property_name=tail["PropertyName"], property_value=tail["PropertyValue"]
+            )
+        elif tail["type"] == "use":
+            self.use_num += 1
+            tail_helper = ExampleT2HQueryConstructorHelperTailUse(
+                tail_id=self.use_num, use_value=tail["UseValue"]
+            )
+        elif tail["type"] == "chemicalclass":
+            self.chemicalclass_num += 1
+            tail_helper = ExampleT2HQueryConstructorHelperTailChemicalClass(
+                tail_id=self.chemicalclass_num,
+                chemicalclass_value=tail["ChemicalClassValue"],
+            )
+        else:
+            raise ValueError("Unexpected tail type: " + tail["type"])
+        return tail_helper
+
+
+class ExampleT2HQueryConstructorHelper(ABC):
+    def get_select_variables(self):
+        return ""
+
+    def get_select_variables_compact(self):
+        return ""
+
+    @abstractmethod
+    def get_where_clauses(self) -> str:
+        pass
+
+    @abstractmethod
+    def get_where_clauses_compact(self) -> str:
+        pass
+
+
+class ExampleT2HQueryConstructorHelperHead(ExampleT2HQueryConstructorHelper):
+    def get_select_variables(self):
+        return "?label ?IUPACNameValue"
+
+    def get_select_variables_compact(self):
+        return "?IUPACNameValue"
+
+    def get_where_clauses(self):
         return f"""
     ?SpeciesIRI rdf:type os:Species ; rdfs:label ?label ; os:hasIUPACName ?IUPACNameIRI .
-    ?IUPACNameIRI os:value ?IUPACNameValue ."""
+    ?IUPACNameIRI os:value ?IUPACNameValue .
+"""
 
-    def make_where_species_compact(self):
+    def get_where_clauses_compact(self):
         return f"""
     ?SpeciesIRI os:hasIUPACName ?IUPACNameValue ."""
 
-    def get_value_lower(self, value_str: str, eps=1e-6):
-        value = float(value_str) * 0.9
-        if abs(value) < eps:
-            value = (value > 0) * 0.5
-        if random.getrandbits(1):
-            value = round(value)
-        return value
-    
-    def get_value_higher(self, value_str: str, eps=1e-6):
-        value = float(value_str) * 1.1
-        if abs(value) < eps:
-            value = (value > 0) * 0.5
-        if random.getrandbits(1):
-            value = round(value)
-        return value
 
-    def make_where_property(self, PropertyName: str):
+class AskItemAndBindingGetter(ABC):
+    @abstractmethod
+    def get_ask_item(self) -> str:
+        pass
+
+    def get_binding(self):
+        return dict()
+
+
+class ExampleT2HQueryConstructorHelperTail(
+    ExampleT2HQueryConstructorHelper, AskItemAndBindingGetter
+):
+    pass
+
+
+class ExampleT2HQueryConstructorHelperTailProperty(
+    ExampleT2HQueryConstructorHelperTail
+):
+    def __init__(self, property_name: str, property_value: str):
+        self.property_name = property_name
+        self.property_value = property_value
+        self.numerical_clause = random.choice(
+            ["higher", "lower", "inside", "outside", "around"]
+        )
+
+        self.filter_clause = None
+        self.ask_item = None
+
+    def get_select_variables(self):
+        PropertyName = self.property_name
+        return f"?{PropertyName}Value ?{PropertyName}UnitValue ?{PropertyName}ReferenceStateValue ?{PropertyName}ReferenceStateUnitValue"
+
+    def get_select_variables_compact(self):
+        PropertyName = self.property_name
+        return f"?{PropertyName}Value"
+
+    def get_where_clauses(self):
+        PropertyName = self.property_name
         return f"""
     ?SpeciesIRI os:has{PropertyName} ?{PropertyName}IRI .
     ?{PropertyName}IRI os:value ?{PropertyName}Value ; os:unit ?{PropertyName}UnitIRI ; os:hasProvenance ?{PropertyName}ProvenanceIRI . 
@@ -110,14 +171,29 @@ WHERE {{{"".join(where_clause_compact_blocks)}
         ?{PropertyName}IRI os:hasReferenceState ?{PropertyName}ReferenceStateIRI .
         ?{PropertyName}ReferenceStateIRI os:value ?{PropertyName}ReferenceStateValue ; os:unit ?{PropertyName}ReferenceStateUnitIRI .
         ?{PropertyName}ReferenceStateUnitIRI rdfs:label ?{PropertyName}ReferenceStateUnitValue .
-    }}"""
-    
-    def make_where_property_compact(self, PropertyName: str):
-        return f"""
-    ?SpeciesIRI os:hasProperty{PropertyName} ?{PropertyName}Value ."""
+    }}{self.get_filter_clause()}
+"""
 
-    def make_where_property_filter_and_ask_item(self, PropertyName: str, PropertyValue: str, numerical_clause: str):
+    def get_where_clauses_compact(self):
+        return f"""
+    ?SpeciesIRI os:hasIUPACName ?IUPACNameValue ."""
+
+    def get_ask_item(self) -> str:
+        if self.ask_item is None:
+            self.populate_property_filter_and_ask_item()
+        return self.ask_item
+
+    def get_filter_clause(self) -> str:
+        if self.filter_clause is None:
+            self.populate_property_filter_and_ask_item()
+        return self.filter_clause
+
+    def populate_property_filter_and_ask_item(self):
+        PropertyName = self.property_name
+        PropertyValue = self.property_value
+        numerical_clause = self.numerical_clause
         property_verbalised = add_space_and_lower(PropertyName)
+
         if numerical_clause == "higher":
             value = self.get_value_lower(PropertyValue)
             filter_clause = f"""
@@ -136,53 +212,101 @@ WHERE {{{"".join(where_clause_compact_blocks)}
                 low = self.get_value_higher(PropertyValue)
                 high = self.get_value_higher(low)
             filter_clause = f"""
-    FILTER ( ?{PropertyName}Value < {low} && ?{PropertyName}Value > {high} )"""
-            ask_item = f"a {property_verbalised} "
+    FILTER ( ?{PropertyName}Value < {low} || ?{PropertyName}Value > {high} )"""
+            ask_item = f"{property_verbalised} is outside the range between {low} and {high}"
         elif numerical_clause == "inside":
             low = self.get_value_lower(PropertyValue)
             high = self.get_value_higher(PropertyValue)
             filter_clause = f"""
-        FILTER ( ?{PropertyName}Value > {low} && ?{PropertyName}Value < {high} )"""
+    FILTER ( ?{PropertyName}Value > {low} && ?{PropertyName}Value < {high} )"""
             ask_item = f"{property_verbalised} is between {low} and {high}"
         elif numerical_clause == "around":
             value = float(PropertyValue)
             if random.getrandbits(1):
                 value = round(value)
             filter_clause = f"""
-        FILTER ( ?{PropertyName}Value > {value}*0.9 && ?{PropertyName}Value < {value}*1.1 )"""
+    FILTER ( ?{PropertyName}Value > {value}*0.9 && ?{PropertyName}Value < {value}*1.1 )"""
             ask_item = f"{property_verbalised} is around {value}"
         else:
-            raise ValueError(f"Unexpected argument for `numerical_clause`: {numerical_clause}.")
+            raise ValueError(
+                f"Unexpected argument for `numerical_clause`: {numerical_clause}."
+            )
 
-        return filter_clause, ask_item
-    
-    def make_where_use(self, i: int, UseValue: str):
+        self.filter_clause = filter_clause
+        self.ask_item = ask_item
+
+    def get_value_lower(self, value_str: str, eps=1e-6):
+        value = float(value_str) * 0.9
+        if abs(value) < eps:
+            value = -0.5
+        elif random.getrandbits(1):
+            value = round(value)
+        return value
+
+    def get_value_higher(self, value_str: str, eps=1e-6):
+        value = float(value_str) * 1.1
+        if abs(value) < eps:
+            value = 0.5
+        elif random.getrandbits(1):
+            value = round(value)
+        return value
+
+
+class ExampleT2HQueryConstructorHelperTailUse(ExampleT2HQueryConstructorHelperTail):
+    def __init__(self, tail_id: int, use_value: str):
+        self.tail_id = tail_id
+        self.use_value = use_value
+
+    def get_where_clauses(self):
+        i = self.tail_id
+        UseValue = self.use_value
         return f"""
     ?SpeciesIRI os:hasUse ?UseIRI{i} .
-    ?UseIRI{i} rdfs:label \"{UseValue}\" ."""
-    
-    def make_where_use_compact(self, UseValue: str):
+    ?UseIRI{i} rdfs:label \"{UseValue}\" .
+"""
+
+    def get_where_clauses_compact(self):
+        UseValue = self.use_value
         return f"""
     ?SpeciesIRI os:hasUse \"{UseValue}\" ."""
 
-    def make_where_chemicalclass(self, i: int, ChemicalClassValue: str):
+    def get_ask_item(self):
+        i = self.tail_id
+        return f"use is as {{UseValue{i}}}"
+
+    def get_binding(self):
+        i = self.tail_id
+        UseValue = self.use_value
+        return {f"UseValue{i}": UseValue}
+
+
+class ExampleT2HQueryConstructorHelperTailChemicalClass(
+    ExampleT2HQueryConstructorHelperTail
+):
+    def __init__(self, tail_id: int, chemicalclass_value: str):
+        self.tail_id = tail_id
+        self.chemicalclass_value = chemicalclass_value
+
+    def get_where_clauses(self):
+        i = self.tail_id
+        ChemicalClassValue = self.chemicalclass_value
         return f"""
     ?SpeciesIRI os:hasChemicalClass* ?x{i} .
 	?x{i} ?y{i} ?z{i} .
 	?z{i} rdfs:subClassOf* ?ChemicalClassIRI{i} .
-	?ChemicalClassIRI{i} rdf:type os:ChemicalClass ; rdfs:label \"{ChemicalClassValue}\" ."""
+	?ChemicalClassIRI{i} rdf:type os:ChemicalClass ; rdfs:label \"{ChemicalClassValue}\" .
+"""
 
-    def make_where_chemicalclass_compact(self, ChemicalClassValue: str):
+    def get_where_clauses_compact(self):
+        ChemicalClassValue = self.chemicalclass_value
         return f"""
     ?SpeciesIRI os:hasChemicalClass \"{ChemicalClassValue}\" ."""
 
-    def make_canonical_question(self, ask_items: List[str]):
-        tokens = ["What are the chemical species whose "]
-        for i, ask_item in enumerate(ask_items):
-            tokens.append(ask_item)
-            if i < len(ask_items) - 2:
-                tokens.append(", ")
-            elif i == len(ask_items) - 2:
-                tokens.append(" and ")
-        tokens.append("?")
-        return "".join(tokens)
+    def get_ask_item(self):
+        i = self.tail_id
+        return f"chemical class is {{ChemicalClassValue{i}}}"
+
+    def get_binding(self):
+        i = self.tail_id
+        ChemicalClassValue = self.chemicalclass_value
+        return {f"ChemicalClassValue{i}": ChemicalClassValue}
