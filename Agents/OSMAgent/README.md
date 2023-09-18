@@ -72,7 +72,7 @@ Spin up with `./stack.sh start <STACK NAME>` in the [stack-manager's main folder
 The debugger port will be available at 5005.
 
 ## 6. Running the Agent
-The agent is reachable at the `/update` endpoint. No request parameters is required to run the agent at the `/update endpoint`.
+The agent is reachable at the `/update` endpoint. No request parameters is required to run the agent at the `/update` endpoint.
 
 To run the agent, simply run the following cURL command:
 ```
@@ -80,7 +80,7 @@ curl -X POST localhost:3838/osmagent/update
 ```
 
 ## 7. TWA-VF Visualization
-The result of OSMAgent - Building Usages is designed to be compatible with TWA-VF and queryable via FeatureInfoAgent. Please find the setup instructions in [resources](OSMAgent/src/main/resources/FeatureInfoAgent/).
+The result of OSMAgent - Building Usages is designed to be compatible with TWA-VF and queryable via FeatureInfoAgent. Please find the setup instructions in [resources](osmagent/src/main/resources/FeatureInfoAgent/).
 
 [stack-data-uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
 [inputs]: inputs/

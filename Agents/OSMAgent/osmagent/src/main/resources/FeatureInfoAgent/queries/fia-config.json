@@ -2,7 +2,7 @@
     "queries": [
         {
             "class": "https://w3id.org/bot#Building",
-            "metaFile": "usage.sparql",
+            "metaFile": "building_usage.sparql",
             "timeFile": ""
         }
     ]
