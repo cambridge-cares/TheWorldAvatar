@@ -76,7 +76,7 @@ def create_app():
             root_data = []
 
         logger.info("Retrieving properties from yaml...")
-        query_endpoint, update_endpoint = load_properties(
+        query_endpoint, update_endpoint, solar_panel_tileset, sewage_tileset = load_properties(
             './config/properties.yaml')
 
         logger.info("Cleaning the data directory...")

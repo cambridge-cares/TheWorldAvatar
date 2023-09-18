@@ -152,7 +152,11 @@ def flaskapp():
     yaml_path = "./config/properties.yaml"
     data = dict(
         query_endpoint=C.KG_ENDPOINT,
-        update_endpoint=C.KG_ENDPOINT
+        update_endpoint=C.KG_ENDPOINT,
+        solar_panel_tileset_iri="",
+        solar_panel_tileset_name="",
+        sewage_tileset_iri="",
+        sewage_tileset_name=""
     )
     with open(yaml_path, 'w') as outfile:
         yaml.dump(data, outfile)
